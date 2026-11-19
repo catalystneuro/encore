@@ -103,6 +103,12 @@ def session_meta(asset):
                 v = _col(u, c)
                 m["u_" + c] = v.tolist() if not isinstance(v, np.ndarray) or v.dtype != object \
                     else list(v)
+        m["u_columns"] = sorted(u.keys())
+        m["wf_shape"] = list(u["waveform_mean"].shape) if "waveform_mean" in u else None
+        el = f["general/extracellular_ephys/electrodes"]
+        m["n_electrodes"] = int(el["id"].shape[0])
+        m["probe_sides"] = (sorted(set(_s(x) for x in el["probe_side"][:]))
+                            if "probe_side" in el else [])
         idx = u["spike_times_index"][:]
         m["u_n_spikes"] = np.diff(np.r_[0, idx]).tolist()
         st = u["spike_times"]
@@ -248,7 +254,8 @@ def acg_counts(t, lo, hi, binsize=0.001, maxlag=0.3):
         m = d < maxlag
         if not m.any():
             break
-        b = (d[m] / binsize).astype(int)
+        # rounded before the floor, so that a lag of exactly k bins is not truncated into bin k - 1
+        b = np.floor(np.round(d[m] / binsize, 6)).astype(int)
         counts += np.bincount(b, minlength=nb)[:nb]
     return counts
 
@@ -296,18 +303,17 @@ def pair_corr(counts, pairs):
 
 # ---------- statistics ----------
 
-def boot_kw(groups, n_boot=5000, rng=None):
+def boot_kw(groups, n_boot=5000, rng=None, chunk=500):
     """Bootstrap Kruskal-Wallis (Methods, Statistical analysis): pool, reassign to groups of the
-    same sizes with replacement, p is the fraction of null H at or above the observed."""
+    same sizes with replacement, p is the fraction of null H at or above the observed. The null
+    statistics are computed in blocks of resamplings at once (kw_rows)."""
     from scipy.stats import kruskal
     groups = [np.asarray(g, float)[np.isfinite(g)] for g in groups]
     h = kruskal(*groups).statistic
     pool = np.concatenate(groups)
     sizes = [len(g) for g in groups]
-    null = np.empty(n_boot)
-    for b in range(n_boot):
-        s = rng.choice(pool, size=len(pool), replace=True)
-        null[b] = kruskal(*np.split(s, np.cumsum(sizes)[:-1])).statistic
+    null = np.concatenate([kw_rows(pool[rng.integers(0, len(pool), (min(chunk, n_boot - i), len(pool)))],
+                                   sizes) for i in range(0, n_boot, chunk)])
     return h, float(np.mean(null >= h))
 
 
@@ -379,8 +385,30 @@ def skaggs_info(rate, occ):
 # ---------- per-session processing ----------
 
 def electrode_shanks(f):
-    """Physical shank of each electrode row (electrodes table, shank; chanMap kcoords)."""
-    return f["general/extracellular_ephys/electrodes/shank"][:]
+    """Shank of each electrode row (electrodes table, shank; chanMap kcoords). Files with 128
+    channels have probe_side Front and Back: electrodes on both faces of the same four shanks
+    (the same rel_x on both faces), so a shank is the shank number whatever the face. The
+    paper's pair counts by shank distance (Figure 5d, Extended Data Figure 10d) are found only
+    this way (notebook, fig5d)."""
+    return f["general/extracellular_ephys/electrodes/shank"][:].astype(int)
+
+
+def electrode_columns(f):
+    """One column of electrodes per shank face: shank + 100 on the Back face. Used for the LFP
+    depth profiles (pick_theta_channel), so that each profile runs along one column."""
+    el = f["general/extracellular_ephys/electrodes"]
+    sh = el["shank"][:].astype(int)
+    if "probe_side" in el:
+        side = np.array([_s(x) for x in el["probe_side"][:]])
+        sh = sh + 100 * (side == "Back")
+    return sh
+
+
+def electrode_xy(f):
+    """Position of each electrode row on its probe (rel_x, rel_y, um; rel_y rises towards the
+    top of the shank)."""
+    el = f["general/extracellular_ephys/electrodes"]
+    return el["rel_x"][:].astype(float), el["rel_y"][:].astype(float)
 
 
 def ccg_pair(a, b, binsize=0.002, maxlag=0.3):
@@ -421,11 +449,20 @@ def homecage_session(asset, m, ccgs=True):
     with open_nwb(asset) as f:
         trains_all = spike_trains(f)
         shanks = electrode_shanks(f)
+        cols = electrode_columns(f)
+        ex, ey = electrode_xy(f)
+        el = f["general/extracellular_ephys/electrodes"]
+        bad = el["bad_channel"][:] if "bad_channel" in el else np.zeros(len(shanks), bool)
         maxel = f["units/max_electrode"][:]
-        ids = f["electrodes"][:] if "electrodes" in f else None
-    ct = np.array(m.get("u_putative_cell_type", [None] * m["n_units"]), dtype=object)
+        ct = np.array(m.get("u_putative_cell_type", [None] * m["n_units"]), dtype=object)
+        pyr = np.where(ct == "Pyramidal Cell")[0]
+        wf = f["units/waveform_mean"]
+        wf = wf[:][pyr].astype(np.float32) if len(pyr) else None
     lr = np.array(m.get("u_light_responsive", [False] * m["n_units"]), bool)
-    pyr = np.where(ct == "Pyramidal Cell")[0]
+    # mean waveforms as (units, channels, samples); the channel axis is the one as long as the
+    # electrodes table
+    if wf is not None and wf.shape[1] != len(shanks):
+        wf = np.swapaxes(wf, 1, 2)
     hc = homecage_intervals(m)
     hc_dur = float(np.sum(hc[:, 1] - hc[:, 0]))
     trains = [trains_all[i][in_intervals(trains_all[i], hc)] for i in pyr]
@@ -445,6 +482,7 @@ def homecage_session(asset, m, ccgs=True):
                       "burst35": s35 / l if l > 0 else np.nan,
                       "rip_rate": float(rrate[k]), "rip_part": float(rpart[k]),
                       "shank": int(shanks[maxel[i]]) if maxel[i] < len(shanks) else -1,
+                      "col": int(cols[maxel[i]]), "x": float(ex[maxel[i]]), "y": float(ey[maxel[i]]),
                       "maxel": int(maxel[i])})
     lrk = [k for k, i in enumerate(pyr) if lr[i]]
     nrk = [k for k, i in enumerate(pyr) if not lr[i]]
@@ -453,13 +491,29 @@ def homecage_session(asset, m, ccgs=True):
     pairs = sbd + dbd
     rc = pair_corr(counts, pairs)
     sync = [ccg_sync(trains[a], trains[b]) if ccgs else np.nan for a, b in pairs]
+    # ed10: for same-shank pairs, the distance between the maximum-waveform channels and the
+    # waveform profile distance, the L2 norm of the difference of the mean waveforms concatenated
+    # over the shank's good channels (Extended Data Fig. 2d-f; the code's form divides it by the
+    # number of good channels)
+    wdist = []
+    for a, b in pairs:
+        ca, cb = cells[a], cells[b]
+        if ca["shank"] != cb["shank"] or wf is None:
+            wdist.append((np.nan, np.nan, np.nan))
+            continue
+        ch = np.where((shanks == ca["shank"]) & ~bad)[0]
+        d = float(np.linalg.norm(wf[a][ch] - wf[b][ch]))
+        wdist.append((d, d / len(ch), float(np.hypot(ca["x"] - cb["x"], ca["y"] - cb["y"]))))
     pr = [{"session": m["session_id"], "subject": m["subject_id"], "birthdate": m["birthdate"],
            "sbd": n < len(sbd), "a": int(pyr[a]), "b": int(pyr[b]), "rip_corr": rc[n],
-           "sync": sync[n], "shank_a": cells[a]["shank"], "shank_b": cells[b]["shank"]}
+           "sync": sync[n], "shank_a": cells[a]["shank"], "shank_b": cells[b]["shank"],
+           "wf_dist": wdist[n][0], "wf_dist_code": wdist[n][1], "el_dist": wdist[n][2]}
           for n, (a, b) in enumerate(pairs)]
     with np.errstate(invalid="ignore", divide="ignore"):
         cm = np.corrcoef(counts.T.astype(float)) if len(pyr) > 1 else np.zeros((len(pyr), len(pyr)))
     info = {"session": m["session_id"], "rip_corr_mat": cm.astype(np.float32),
+            "active": np.packbits(counts > 0, axis=0), "n_rip_rows": counts.shape[0],
+            "lr_cols": np.array(lrk, int), "nr_cols": np.array(nrk, int),
             "hc_dur": hc_dur, "n_rip_hc": int(keep.sum()),
             "n_rip": len(rip), "rip_hc_dur": (rip_hc[:, 1] - rip_hc[:, 0]).tolist()}
     return cells, pr, info
@@ -551,10 +605,12 @@ def maze_session(asset, m):
     with open_nwb(asset) as f:
         tr = spike_trains(f, pyr)
         shanks = electrode_shanks(f)
+        ex, ey = electrode_xy(f)
         maxel = f["units/max_electrode"][:]
         maps, occ, info, dt = linear_maps(f, m, t0, t1, tr)
     return {"session": m["session_id"], "subject": m["subject_id"], "birthdate": m["birthdate"],
-            "env": env, "pyr": pyr, "lr": lr[pyr], "shank": shanks[maxel[pyr]], "maps": maps,
+            "env": env, "pyr": pyr, "lr": lr[pyr], "shank": shanks[maxel[pyr]], "x": ex[maxel[pyr]],
+            "y": ey[maxel[pyr]], "unit": pyr, "maps": maps,
             "occ": occ, "trials": info, "dt": dt,
             "trial_counts": {a: sum(1 for i in info if i["arm"] == a) for a in ("left", "right")}}
 
@@ -578,62 +634,115 @@ def _sos(lo, hi, fs=1250.0, order=4):
 
 def pick_theta_channel(f, m, win_s=52.4288):
     """The theta channel (Methods, Theta-cycle detection): 'a channel with a positive sharp wave
-    (that is, above the center of the pyramidal layer)'. The paper does not say how it was
-    picked from the channels that qualify (assumption): in one LFP chunk of about 52 s during
-    homecage non-REM sleep with the most SPW-Rs, the pyramidal layer centre is the good channel
-    with the largest ripple-band (130-200 Hz) power at the ripple peaks; the theta channel is
-    the good channel with a positive mean sharp wave (2-40 Hz LFP at 0 to 50 ms after the
-    peaks, against the chunk mean) that has the largest ripple power, so that it lies just
-    above the centre, preferring the shank of the pyramidal layer centre and taking any shank
-    when that shank has none. With no such channel at all, the pyramidal layer channel is used.
+    (that is, above the center of the pyramidal layer)'. How it was picked among the channels
+    that qualify is not given (assumption). In one LFP chunk of about 52 s of homecage non-REM
+    sleep with the most SPW-Rs:
+    - the pyramidal layer centre is the good channel with the largest ripple-band (130-200 Hz)
+      power at the ripple peaks;
+    - the sharp wave of a channel is its mean LFP (uV) 0 to 50 ms after the ripple peaks minus
+      its mean 100 to 50 ms before them (a pre-ripple baseline, so that slow drift common to all
+      channels does not set the sign);
+    - the theta channel is a good channel other than the centre on the centre's shank with a
+      positive sharp wave, the one with the largest ripple power, that is, the qualifying channel
+      nearest the centre. The positive sharp wave is what the Methods use to define 'above', so
+      the side of the centre is not imposed from rel_y (whose direction relative to the layer is
+      checked from the profile, not assumed). When that shank has none, the same is done on the
+      other shanks, each against its own centre. When no shank has one, the good channel next
+      to the centre with larger rel_y is used and the session is flagged.
     Returns (theta channel row, pyramidal channel row, details)."""
     from scipy.signal import sosfiltfilt
     lfp = f["processing/ecephys/LFP/LFP/data"]
+    conv = float(lfp.attrs.get("conversion", 1.0)) * 1e6
     fs = float(f["processing/ecephys/LFP/LFP/starting_time"].attrs["rate"])
     n = int(round(win_s * fs))
     peaks = f["processing/ecephys/Ripples/peaks"][:]
-    ss = m["sleep"]
-    nrem = np.array([(a, b) for a, b, l in zip(ss["start_time"], ss["stop_time"], ss["label"])
-                     if l == "Non-REM"]).reshape(-1, 2)
+    nrem = state_intervals(m, "Non-REM")
     hc = homecage_intervals(m)
-    ok = in_intervals(peaks, merge(nrem)) & in_intervals(peaks, hc)
+    ok = in_intervals(peaks, nrem) & in_intervals(peaks, hc)
     p = peaks[ok] if ok.sum() > 20 else peaks
     blk = np.floor(p * fs / n).astype(int)
     b = np.bincount(blk).argmax()
-    x = lfp[b * n:(b + 1) * n, :].astype(float)
+    x = lfp[b * n:(b + 1) * n, :].astype(float) * conv
     t0 = b * n / fs
     pk = ((p[blk == b] - t0) * fs).astype(int)
-    pk = pk[(pk > 100) & (pk < len(x) - 100)]
+    pk = pk[(pk > 130) & (pk < len(x) - 130)]
     rip = sosfiltfilt(_sos(130, 200, fs), x, axis=0)
-    sw = sosfiltfilt(_sos(2, 40, fs), x, axis=0)
     w = np.arange(-30, 31)
     rpow = np.array([np.mean(rip[pk[:, None] + w, c] ** 2) for c in range(x.shape[1])])
-    w2 = np.arange(0, 63)
-    swa = np.array([np.mean(sw[pk[:, None] + w2, c]) - np.mean(sw[:, c])
+    post, pre = np.arange(0, 63), np.arange(-125, -62)
+    swa = np.array([np.mean(x[pk[:, None] + post, c]) - np.mean(x[pk[:, None] + pre, c])
                     for c in range(x.shape[1])])
     el = f["general/extracellular_ephys/electrodes"]
     bad = el["bad_channel"][:] if "bad_channel" in el else np.zeros(x.shape[1], bool)
-    shank = el["shank"][:]
+    shank = electrode_columns(f)
+    _, y = electrode_xy(f)
     rp = np.where(bad, -np.inf, rpow)
     pyr_ch = int(np.argmax(rp))
-    cand = np.where((shank == shank[pyr_ch]) & ~bad & (swa > 0))[0]
+
+    def above_positive(s):
+        k = np.where((shank == s) & ~bad)[0]
+        if not len(k):
+            return None, None
+        centre = k[np.argmax(rpow[k])]
+        c = k[(k != centre) & (swa[k] > 0)]
+        return (int(c[np.argmax(rpow[c])]) if len(c) else None), int(centre)
+
+    th, centre = above_positive(shank[pyr_ch])
     where = "same shank"
-    if not len(cand):
-        cand = np.where(~bad & (swa > 0))[0]
-        where = "other shank"
-    th = int(cand[np.argmax(rpow[cand])]) if len(cand) else pyr_ch
-    return th, pyr_ch, {"n_ripples": int(len(pk)), "sw_theta": float(swa[th]),
-                        "sw_pyr": float(swa[pyr_ch]), "positive_found": bool(len(cand)),
-                        "where": where if len(cand) else "none, pyramidal channel"}
+    if th is None:
+        best = None
+        for s in np.unique(shank):
+            if s == shank[pyr_ch]:
+                continue
+            c, cen = above_positive(s)
+            if c is not None and (best is None or rpow[c] > rpow[best[0]]):
+                best = (c, cen)
+        if best is not None:
+            th, centre = best
+            where = "other shank"
+    if th is None:
+        k = np.where((shank == shank[pyr_ch]) & ~bad & (y > y[pyr_ch]))[0]
+        th = int(k[np.argmin(y[k])]) if len(k) else pyr_ch
+        centre = pyr_ch
+        where = "none positive, next channel with larger rel_y"
+    # SPW reversal per shank (ed3): between the two neighbouring good channels with the steepest
+    # fall from a positive (upper) to a negative (lower) sharp wave, interpolated to zero; NaN
+    # on a shank without such a pair. The ripple-power centre of each shank is kept too.
+    rev, cen = {}, {}
+    for s in np.unique(shank):
+        k = np.where((shank == s) & ~bad)[0]
+        if not len(k):
+            continue
+        k = k[np.argsort(-y[k])]
+        cen[int(s)] = float(y[k[np.argmax(rpow[k])]])
+        best, rv = 0.0, np.nan
+        for u, d in zip(k[:-1], k[1:]):
+            if swa[u] > 0 > swa[d] and swa[u] - swa[d] > best:
+                best = swa[u] - swa[d]
+                rv = y[u] + (y[d] - y[u]) * swa[u] / (swa[u] - swa[d])
+        rev[int(s)] = float(rv)
+    k = np.where((shank == shank[pyr_ch]) & ~bad)[0]
+    up, down = k[y[k] > y[pyr_ch]], k[y[k] < y[pyr_ch]]
+    return th, pyr_ch, {"rev": rev, "cen": cen, "n_ripples": int(len(pk)), "sw_theta": float(swa[th]),
+                        "sw_pyr": float(swa[pyr_ch]), "where": where,
+                        "dy_theta": float(y[th] - y[centre]),
+                        "n_pos_above": int(np.sum(swa[up] > 0)), "n_pos_below": int(np.sum(swa[down] > 0)),
+                        "sw_above_mean": float(swa[up].mean()) if len(up) else np.nan,
+                        "sw_below_mean": float(swa[down].mean()) if len(down) else np.nan,
+                        "sw_next_above": float(swa[up[np.argmin(y[up])]]) if len(up) else np.nan,
+                        "sw_next_below": float(swa[down[np.argmax(y[down])]]) if len(down) else np.nan}
 
 
-def read_channel(f, ch, block=2 ** 16 * 16):
+def read_channels(f, chans, block=2 ** 16 * 16):
+    """Whole-session LFP of the given channel rows, in microvolts, one row per channel."""
     lfp = f["processing/ecephys/LFP/LFP/data"]
     conv = float(lfp.attrs.get("conversion", 1.0))
-    out = np.empty(lfp.shape[0], np.float32)
+    u = sorted(set(int(c) for c in chans))
+    out = np.empty((len(u), lfp.shape[0]), np.float32)
     for s in range(0, lfp.shape[0], block):
-        out[s:s + block] = lfp[s:s + block, ch]
-    return out * conv * 1e6  # microvolts
+        out[:, s:s + block] = lfp[s:s + block, u].T
+    out *= conv * 1e6
+    return [out[u.index(int(c))] for c in chans]
 
 
 def theta_phase_amp(x, fs=1250.0):
@@ -693,32 +802,19 @@ def _mask_intervals(mask, fs):
     return np.c_[s, e] / fs
 
 
-def theta_session(asset, m, novel=False):
-    """Theta measures of one session. Homecage wake and REM (homecage_intervals with the lab's
-    sleep states): for each light-responsive pyramidal cell the Rayleigh p, preferred phase and
-    mean resultant length in wake (amplitude above its mean) and in REM (all); per SBD and DBD
-    pair the theta-cycle cofiring (Methods, Cofiring analysis; cycles with both edges in
-    homecage WAKE, get_corrHome_v2.m). For a novel session also the theta-related rate of every
-    pyramidal cell in each behavioural subsession, with and without the wake restriction."""
-    fs = 1250.0
-    with open_nwb(asset) as f:
-        th, pch, det = pick_theta_channel(f, m)
-        x = read_channel(f, th)
-        ct = np.array(m["u_putative_cell_type"], dtype=object)
-        pyr = np.where(ct == "Pyramidal Cell")[0]
-        trains = spike_trains(f, pyr)
-    lr = np.array(m["u_light_responsive"], bool)[pyr]
+def _theta_measures(x, m, trains, lr, novel, ref, fs=1250.0):
+    """Theta measures from one LFP channel x (see theta_session); ref names the channel."""
     amp, ph = theta_phase_amp(x)
-    del x
     hc = homecage_intervals(m)
     wake = intersect(state_intervals(m, "Awake"), hc)
     rem = intersect(state_intervals(m, "REM"), hc)
     wake_hi = intersect(wake, _mask_intervals(amp > amp.mean(), fs))
+    pyr = m["_pyr"]
     cells = []
     for k in np.where(lr)[0]:
         t = trains[k]
         row = {"session": m["session_id"], "subject": m["subject_id"],
-               "birthdate": m["birthdate"], "unit": int(pyr[k])}
+               "birthdate": m["birthdate"], "unit": int(pyr[k]), "ref": ref}
         for st, iv in (("wake", wake_hi), ("rem", rem)):
             tt = t[in_intervals(t, iv)]
             idx = np.clip((tt * fs).astype(int), 0, len(ph) - 1)
@@ -730,11 +826,11 @@ def theta_session(asset, m, novel=False):
             row.update({st + "_p_shift": ps, st + "_mrl_shift": rs})
         cells.append(row)
     cyc = theta_cycles(amp, ph, fs)
-    out = {"session": m["session_id"], "theta_ch": th, "pyr_ch": pch, **det,
-           "n_cycles": len(cyc), "wake_s": float(np.sum(np.diff(wake, axis=1)))}
+    del amp, ph
     W = state_intervals(m, "Awake")
     cw = cyc[in_intervals(cyc[:, 0], intersect(W, hc)) & in_intervals(cyc[:, 1], intersect(W, hc))]
-    out["n_cycles_hc_wake"] = len(cw)
+    out = {"n_cycles": len(cyc), "wake_s": float(np.sum(np.diff(wake, axis=1))),
+           "n_cycles_hc_wake": len(cw)}
     counts = np.zeros((len(cw), len(pyr)), np.int32)
     edges = cw.ravel()
     for j, t in enumerate(trains):
@@ -745,12 +841,12 @@ def theta_session(asset, m, novel=False):
     sbd = [(a, b) for n, a in enumerate(lrk) for b in lrk[n + 1:]]
     dbd = [(a, b) for a in lrk for b in nrk]
     tc = pair_corr(counts, sbd + dbd)
-    pairs = [{"session": m["session_id"], "subject": m["subject_id"],
+    pairs = [{"session": m["session_id"], "subject": m["subject_id"], "ref": ref,
               "birthdate": m["birthdate"], "sbd": n < len(sbd), "a": int(pyr[a]),
               "b": int(pyr[b]), "theta_corr": tc[n]} for n, (a, b) in enumerate(sbd + dbd)]
     with np.errstate(invalid="ignore", divide="ignore"):
-        out["theta_corr_mat"] = (np.corrcoef(counts.T.astype(float)) if len(pyr) > 1
-                                 else np.zeros((len(pyr), len(pyr)))).astype(np.float32)
+        cmat = (np.corrcoef(counts.T.astype(float)) if len(pyr) > 1
+                else np.zeros((len(pyr), len(pyr)))).astype(np.float32)
     rates = []
     if novel:
         for n_ep, (t0, t1, env, name) in enumerate(behaviour_epochs(m)):
@@ -763,11 +859,42 @@ def theta_session(asset, m, novel=False):
                 e = c.ravel()
                 for j, t in enumerate(trains):
                     kk = np.searchsorted(e, t, side="right")
-                    rates.append({"session": m["session_id"], "unit": int(pyr[j]),
+                    rates.append({"session": m["session_id"], "unit": int(pyr[j]), "ref": ref,
                                   "lr": bool(lr[j]), "epoch": n_ep, "env": env,
                                   "wake_only": restrict, "n_cycles": len(c), "dur": dur,
                                   "spikes": int(np.sum(kk % 2 == 1)),
                                   "rate": np.sum(kk % 2 == 1) / dur if dur > 0 else np.nan})
+    return cells, pairs, out, rates, cmat
+
+
+def theta_session(asset, m, novel=False):
+    """Theta measures of one session, on two channels: the theta channel of pick_theta_channel
+    (ref 'rule', the Methods' reading) and the pyramidal layer centre (ref 'centre', a variant
+    showing how much the phase reference matters). Homecage wake and REM (homecage_intervals
+    with the lab's sleep states): for each light-responsive pyramidal cell the Rayleigh p,
+    preferred phase and mean resultant length in wake (amplitude above its mean) and in REM
+    (all); per SBD and DBD pair the theta-cycle cofiring (Methods, Cofiring analysis; cycles
+    with both edges in homecage WAKE, get_corrHome_v2.m). For a novel session also the
+    theta-related rate of every pyramidal cell in each behavioural subsession, with and without
+    the wake restriction. The correlation matrix kept is the rule channel's."""
+    with open_nwb(asset) as f:
+        th, pch, det = pick_theta_channel(f, m)
+        xs = read_channels(f, [th, pch])
+        ct = np.array(m["u_putative_cell_type"], dtype=object)
+        pyr = np.where(ct == "Pyramidal Cell")[0]
+        trains = spike_trains(f, pyr)
+    lr = np.array(m["u_light_responsive"], bool)[pyr]
+    m = dict(m, _pyr=pyr)
+    cells, pairs, rates = [], [], []
+    out = {"session": m["session_id"], "theta_ch": th, "pyr_ch": pch, **det}
+    for ref, x in (("rule", xs[0]), ("centre", xs[1])):
+        c, p, o, r, cmat = _theta_measures(x, m, trains, lr, novel, ref)
+        cells += c
+        pairs += p
+        rates += r
+        out.update({k + ("" if ref == "rule" else "_centre"): v for k, v in o.items()})
+        if ref == "rule":
+            out["theta_corr_mat"] = cmat
     return cells, pairs, out, rates
 
 
@@ -861,10 +988,53 @@ def transmission(a, b, sd_s=0.008):
 ISI_EDGES = np.logspace(np.log10(0.005), np.log10(1.0), 16)  # 15 log bins, 5-1000 ms (claims)
 
 
+# Variants of the connection test (assumptions; see mono_flags). The first is the main reading.
+MONO_VARIANTS = {
+    "main": {},
+    "peak3": {"window": "peak"},
+    "hollow0.4": {"hollow": 0.4},
+    "hollow0.8": {"hollow": 0.8},
+    "sd7ms": {"sd_s": 0.007},
+    "sd10ms": {"sd_s": 0.010},
+    "no_minimums": {"min_counts": 0, "min_pre": 0},
+    "alpha1e-5": {"alpha": 1e-5},
+}
+
+
+def mono_flags(C, n_pre, window="fixed", hollow=0.6, sd_s=0.015, alpha=0.001, min_counts=50,
+               min_pre=100):
+    """Connection test on many CCGs at once (rows of C, 0.8 ms bins, lags -50..50 ms).
+    window 'fixed': the bins at 0.8, 1.6 and 2.4 ms lag, the 0.8-2.8 ms window of the Methods'
+    transmission measure (assumption). window 'peak': the Methods' reliability test read
+    literally, 'spike counts in 3 bins surrounding [the bin] of peak' firing, with the peak taken
+    in the 0.8-2.8 ms window and its two neighbours tested. In both, a bin must exceed the
+    hollowed-Gaussian baseline (Poisson upper tail) and the peak bin must exceed the largest of
+    the three bins before zero lag (Poisson), each at alpha Bonferroni corrected over 3 bins.
+    min_counts (CCG counts in +-50 ms) and min_pre (presynaptic spikes) are minimums assumed
+    here to skip pairs with too few spikes for any test."""
+    from scipy.ndimage import convolve1d
+    from scipy.stats import poisson
+    C = np.asarray(C, float)
+    nb = (C.shape[1] - 1) // 2
+    base = convolve1d(C, hollow_gauss(sd_s / MONO_BIN, hollow), axis=1, mode="mirror")
+    win = nb + np.arange(1, 4)
+    pk = win[np.argmax(C[:, win], axis=1)]
+    rows = np.arange(len(C))
+    test = win[None, :] if window == "fixed" else pk[:, None] + np.arange(-1, 2)[None, :]
+    test = np.broadcast_to(test, (len(C), 3))
+    cb = C[rows[:, None], test]
+    p_base = poisson.sf(cb - 1, np.maximum(base[rows[:, None], test], 1e-9)).min(1)
+    mirror = nb - np.arange(1, 4)
+    p_ant = poisson.sf(C[rows, pk] - 1, np.maximum(C[:, mirror].max(1), 1e-9))
+    ok = (C.sum(1) >= max(min_counts, 1)) & (np.asarray(n_pre) >= max(min_pre, 1))
+    return ok & (p_base < alpha / 3) & (p_ant < alpha / 3)
+
+
 def mono_session(asset, m):
     """Pyramidal-to-interneuron connections of one session, from spikes outside the light pulse
-    periods; per connection the transmission probability for presynaptic spikes with preceding
-    ISI of 10 to 40 ms (claims, fig7ce) and per ISI bin (fig7d)."""
+    periods, under each of MONO_VARIANTS; per pair detected under any variant the transmission
+    probability for presynaptic spikes with preceding ISI of 10 to 40 ms (claims, fig7ce) and
+    per ISI bin (fig7d)."""
     ct = np.array(m["u_putative_cell_type"], dtype=object)
     pyr = np.where(ct == "Pyramidal Cell")[0]
     inn = np.where(np.isin(ct, ["Narrow Interneuron", "Wide Interneuron"]))[0]
@@ -878,31 +1048,33 @@ def mono_session(asset, m):
         cut.append((m["pulse_t0"] - 1.0, m["pulse_t1"] + 1.0))
     keep = subtract([[0, m["last_spike"] + 1]], cut)
     tr = {i: tr[i][in_intervals(tr[i], keep)] for i in np.r_[pyr, inn]}
-    conn = np.zeros((len(pyr), len(inn)), bool)
-    rows, pvals = [], []
+    nbins = 2 * int(round(MONO_LAG / MONO_BIN)) + 1
+    C = np.zeros((len(pyr) * len(inn), nbins), np.int32)
+    npre = np.zeros(len(pyr) * len(inn), np.int64)
     for p_, i in enumerate(pyr):
-        a = tr[i]
-        if len(a) < 100:
-            continue
-        isi = np.r_[np.inf, np.diff(a)]
         for q, j in enumerate(inn):
-            c, _ = ccg_lags(a, tr[j])
-            if c.sum() < 50:
-                continue
-            pb, pa = mono_p(c)
-            pvals.append((p_, q, pb, pa))
-            if pb < 0.001 / 3 and pa < 0.001 / 3:
-                conn[p_, q] = True
-                sel = (isi >= 0.010) & (isi <= 0.040)
-                st = transmission(a[sel], tr[j])
-                by = [transmission(a[(isi >= lo) & (isi < hi)], tr[j])
-                      for lo, hi in zip(ISI_EDGES[:-1], ISI_EDGES[1:])]
-                rows.append({"session": m["session_id"], "subject": m["subject_id"],
-                             "birthdate": m["birthdate"], "pre": int(i), "post": int(j),
-                             "pre_lr": bool(lr[i]), "stp": st, "stp_isi": by})
+            if len(tr[i]):
+                C[p_ * len(inn) + q] = ccg_lags(tr[i], tr[j])[0]
+            npre[p_ * len(inn) + q] = len(tr[i])
+    flags = {k: mono_flags(C, npre, **v).reshape(len(pyr), len(inn))
+             for k, v in MONO_VARIANTS.items()}
+    anyf = np.any([v for v in flags.values()], axis=0)
+    rows = []
+    for p_, q in zip(*np.where(anyf)):
+        i, j = pyr[p_], inn[q]
+        a = tr[i]
+        isi = np.r_[np.inf, np.diff(a)]
+        sel = (isi >= 0.010) & (isi <= 0.040)
+        rows.append({"session": m["session_id"], "subject": m["subject_id"],
+                     "birthdate": m["birthdate"], "pre": int(i), "post": int(j),
+                     "pre_lr": bool(lr[i]), "stp": transmission(a[sel], tr[j]),
+                     "stp_isi": [transmission(a[(isi >= lo) & (isi < hi)], tr[j])
+                                 for lo, hi in zip(ISI_EDGES[:-1], ISI_EDGES[1:])],
+                     **{"v_" + k: bool(v[p_, q]) for k, v in flags.items()}})
+    tested = (C.sum(1) >= 50) & (npre >= 100)
     return {"session": m["session_id"], "subject": m["subject_id"],
             "birthdate": m["birthdate"], "pyr": pyr, "inn": inn, "lr": lr[pyr],
-            "conn": conn, "rows": rows, "pvals": np.array(pvals).reshape(-1, 4)}
+            "conn": flags["main"], "flags": flags, "rows": rows, "n_tested": int(tested.sum())}
 
 
 def convergence(conn, a, b):
@@ -911,11 +1083,54 @@ def convergence(conn, a, b):
     return np.sum(conn[a] & conn[b]) / u if u > 0 else np.nan
 
 
+def open_field_maps(f, name, t0, t1, trains, cm_per_unit=1.0, smin=SPEED_MIN, fwhm_cm=4.5):
+    """Two-dimensional rate maps of an open field (Methods, Spatial ratemap analyses): 1 cm x
+    1 cm bins, samples with speed > 1.5 cm/s (speed from constant-velocity Kalman filters of x
+    and y), spikes and time per bin smoothed with a 4.5 cm FWHM Gaussian, rate = smoothed spikes
+    / smoothed time, never-visited bins NaN. The files give open-field positions in the lab's
+    units without a scale; cm_per_unit is that scale, assumed 1 (see novel_session), with other
+    values as variants. Returns maps (ncells, nbins) over the flattened grid and the raw
+    occupancy (nbins,) in s."""
+    from scipy.ndimage import gaussian_filter
+    g = f["processing/behavior/" + name]
+    xy = g["data"][:].astype(float) * cm_per_unit
+    ts = g["timestamps"][:]
+    k = np.where((ts >= t0) & (ts <= t1) & np.all(np.isfinite(xy), 1))[0]
+    ts, xy = ts[k], xy[k]
+    dt = float(np.median(np.diff(ts)))
+    sp = np.hypot(kalman_speed(ts, xy[:, 0]), kalman_speed(ts, xy[:, 1]))
+    run = sp > smin
+    nx, ny = int(np.ceil(xy[:, 0].max())) + 1, int(np.ceil(xy[:, 1].max())) + 1
+    bx = np.clip(np.floor(xy[:, 0]).astype(int), 0, nx - 1)
+    by = np.clip(np.floor(xy[:, 1]).astype(int), 0, ny - 1)
+    lin = bx * ny + by
+    occ = np.bincount(lin[run], minlength=nx * ny) * dt
+    sig = fwhm_cm / 2.3548
+    so = gaussian_filter(occ.reshape(nx, ny), sig, mode="constant")
+    maps = np.full((len(trains), nx * ny), np.nan)
+    for c, t in enumerate(trains):
+        t = t[(t >= ts[0]) & (t <= ts[-1])]
+        j = np.clip(np.searchsorted(ts, t), 0, len(ts) - 1)
+        ok = run[j]
+        s = np.bincount(lin[j[ok]], minlength=nx * ny).reshape(nx, ny).astype(float)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            r = (gaussian_filter(s, sig, mode="constant") / so).ravel()
+        r[occ == 0] = np.nan
+        maps[c] = r
+    return maps, occ, dt
+
+
+OPEN_SCALES = (1.0, 2.0, 0.5)  # cm per lab unit: the assumption (1) and two variants
+
+
 def novel_session(asset, m):
     """Rate maps of all pyramidal cells in the familiar figure-eight (first subsession) and in
-    each later subsession with a linearized position in cm (novel figure-eight and linear
-    tracks). Open fields are left out: their x and y are in the lab's units with no scale
-    (dataset description), so the 1 cm bins of the Methods cannot be formed."""
+    each later subsession. Linear tracks and the novel figure-eight use their linearized
+    position, which the files give in centimeters, in 1 cm bins (as many as the series' largest
+    value). Open fields use the 2D head position, whose x and y are in the lab's units with no
+    scale; they are binned assuming one unit is 1 cm (assumption: in the linear tracks, where
+    the files give both, the lab-unit track axis spans 116 units for a 110 cm linearized track),
+    and at 2 and 0.5 cm per unit as variants (open_field_maps)."""
     ep = behaviour_epochs(m)
     ct = np.array(m["u_putative_cell_type"], dtype=object)
     pyr = np.where(ct == "Pyramidal Cell")[0]
@@ -924,6 +1139,22 @@ def novel_session(asset, m):
     with open_nwb(asset) as f:
         tr = spike_trains(f, pyr)
         for n, (t0, t1, env, name) in enumerate(ep):
+            if env.startswith("openField"):
+                ser = [k for k, v in m["series"].items() if k.startswith("SubjectPosition/")
+                       and k.endswith("_" + env) and v["t0"] >= t0 - 1 and v["t1"] <= t1 + 1]
+                if not ser:
+                    out.append({"epoch": n, "env": env, "maps": None, "why": "no position series "
+                                "inside the epoch"})
+                    continue
+                sc = {}
+                for s in OPEN_SCALES:
+                    maps, occ, dt = open_field_maps(f, ser[0], t0, t1, tr, cm_per_unit=s)
+                    sc[s] = (maps[None], occ[None])
+                v = m["series"][ser[0]]
+                out.append({"epoch": n, "env": env, "kind": "open", "maps": sc[1.0][0],
+                            "occ": sc[1.0][1], "scales": sc, "series": ser[0], "unit": v["unit"],
+                            "nbins": sc[1.0][1].shape[1], "trial_counts": None})
+                continue
             ser = linear_series_for(m, t0, t1, env)
             if ser is None:
                 out.append({"epoch": n, "env": env, "maps": None, "why": "no linearized series "
@@ -933,7 +1164,8 @@ def novel_session(asset, m):
             xmax = float(np.nanmax(g["data"][:]))
             nbins = NBINS if n == 0 else int(np.ceil(xmax))
             maps, occ, info, dt = linear_maps(f, m, t0, t1, tr, nbins=nbins, env=env)
-            out.append({"epoch": n, "env": env, "maps": maps, "occ": occ, "nbins": nbins,
+            out.append({"epoch": n, "env": env, "kind": "linear", "maps": maps, "occ": occ,
+                        "nbins": nbins, "series": ser, "unit": m["series"][ser]["unit"],
                         "trial_counts": {a: sum(1 for i in info if i["arm"] == a)
                                          for a in ("left", "right")}})
     return {"session": m["session_id"], "subject": m["subject_id"],
@@ -975,3 +1207,85 @@ def clock_checks(asset, m, shift=1.0):
                       for c in range(len(trains))]
                 out["si_" + lab] = float(np.nanmedian(si))
     return out
+
+
+# ---------- resampling controls (ed3, ed5, ed10) ----------
+
+def kw_rows(X, sizes):
+    """Kruskal-Wallis H for each row of X (rows are pooled samples, split into groups of the
+    given sizes in order), with the tie correction, as scipy.stats.kruskal gives it."""
+    from scipy.stats import rankdata
+    X = np.atleast_2d(X)
+    B, N = X.shape
+    R = rankdata(X, axis=1)
+    cuts = np.r_[0, np.cumsum(sizes)]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        H = sum(R[:, a:b].sum(1) ** 2 / (b - a) for a, b in zip(cuts[:-1], cuts[1:]))
+    H = 12.0 / (N * (N + 1)) * H - 3 * (N + 1)
+    S = np.sort(X, axis=1)
+    new = np.ones((B, N), bool)
+    new[:, 1:] = S[:, 1:] != S[:, :-1]
+    run = np.cumsum(new, axis=1) - 1 + (np.arange(B) * N)[:, None]
+    t = np.bincount(run.ravel(), minlength=B * N).astype(float)
+    tie = np.bincount(np.repeat(np.arange(B), N), weights=(t ** 3 - t), minlength=B)
+    return H / (1 - tie / (N ** 3 - N))
+
+
+def boot_kw_fast(groups, n_boot=5000, rng=None):
+    """boot_kw computed for all resamplings at once (same null: the pooled values reassigned to
+    groups of the same sizes with replacement)."""
+    groups = [np.asarray(g, float)[np.isfinite(g)] for g in groups]
+    sizes = [len(g) for g in groups]
+    pool = np.concatenate(groups)
+    h = float(kw_rows(pool[None], sizes)[0])
+    null = kw_rows(pool[rng.integers(0, len(pool), (n_boot, len(pool)))], sizes)
+    return h, float(np.mean(null >= h))
+
+
+def depth_match_draw(depth, group, ref, rng, binw=20.0):
+    """One depth-matched resampling (ed3; resample_depth.m draws with subsample1D, whose binning
+    is not in the repository, so bins of 20 um, the electrode pitch, are a standard choice):
+    per group, n cells drawn with replacement with probabilities that give the group the depth
+    distribution of ref. Returns indices into depth."""
+    lo = min(depth.min(), ref.min())
+    edges = np.arange(lo - binw / 2, max(depth.max(), ref.max()) + binw, binw)
+    rp = np.histogram(ref, edges)[0] / len(ref)
+    out = []
+    for g in np.unique(group):
+        k = np.where(group == g)[0]
+        b = np.clip(np.digitize(depth[k], edges) - 1, 0, len(rp) - 1)
+        gp = np.bincount(b, minlength=len(rp)) / len(k)
+        w = rp[b] / gp[b]
+        out.append(rng.choice(k, size=len(k), replace=True, p=w / w.sum()))
+    return np.concatenate(out)
+
+
+def subsample2d(sbd, dbd, size, rng, nbins=100):
+    """subsample2D_local.m (claims, ed5): each pair's two values log10 transformed (zeros set to
+    -2), the DBD points binned in a 100 x 100 histogram, bins drawn with the SBD pairs'
+    probabilities in those bins (bins without DBD pairs dropped) and one DBD pair drawn per bin.
+    One-dimensional values (ed10, waveform distance) use a 100-bin histogram. Returns indices
+    into dbd."""
+    def lg(v):
+        v = np.asarray(v, float)
+        with np.errstate(divide="ignore"):
+            return np.where(v > 0, np.log10(np.where(v > 0, v, 1)), -2.0)
+    s, d = lg(sbd), lg(dbd)
+    if s.ndim == 1:
+        s, d = s[:, None], d[:, None]
+    edges = [np.linspace(min(d[:, j].min(), s[:, j].min()), max(d[:, j].max(), s[:, j].max()) + 1e-9,
+                         nbins + 1) for j in range(d.shape[1])]
+    def code(v):
+        c = np.zeros(len(v), int)
+        for j in range(v.shape[1]):
+            c = c * nbins + np.clip(np.digitize(v[:, j], edges[j]) - 1, 0, nbins - 1)
+        return c
+    cs, cd = code(s), code(d)
+    order = np.argsort(cd)
+    cd_sorted = cd[order]
+    ub, start, cnt = np.unique(cd_sorted, return_index=True, return_counts=True)
+    ps = np.bincount(cs, minlength=nbins ** d.shape[1])[ub].astype(float)
+    if ps.sum() == 0:
+        return np.array([], int)
+    pick = rng.choice(len(ub), size=size, replace=True, p=ps / ps.sum())
+    return order[start[pick] + rng.integers(0, cnt[pick])]
