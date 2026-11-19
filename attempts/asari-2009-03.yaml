@@ -148,7 +148,7 @@ outcomes:
   - Fits at 1-ms resolution, with 1 to 3 exponentials and the paper's one-tenth rule; start
     values from a grid (a standard choice).
 - claim: fig3b-fractional-power-decay
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_asari_2009.ipynb
   output: claim:fig3b-fractional-power-decay
   measured:
@@ -161,23 +161,16 @@ outcomes:
     One mean per probe removed, the line CxtDep.m leaves commented out (347), is shown as a
     variant only and matches in none (0.63 at 0.58 to 0.59 s with silence, 0.71 at 0.30 s
     without). Q(t) is 0.67 over the first 100 ms, 0.20 near 1 s and 0.08 near 2 s. The decay is of
-    the order of a second, but its time constant is about twice the paper's.
+    the order of a second, but its time constant is about twice the paper's. Graded as
+    fig4-predictability-upper-bound, which shows the same pattern (size within tolerance, time
+    constant about twice the paper's in every fit), after the third verification round. What holds
+    is the size from about 0.49 and a decay lasting seconds, far beyond the 71-ms noise
+    autocorrelation; the paper's "long decay constant of about one second" fails as a value.
   deviations:
   - The paper's centering ("centered the subthreshold responses to have zero mean", r(t) -
     <r(t)>_t, Methods, Analysis) is taken as CxtDep.m does it, each trial's mean over the probe
     removed (line 346, printed in the notebook). One mean per probe, commented out there (line
     347), is shown as a variant that does not decide.
-  proposed:
-    outcome: partially_reproduced
-    reason: Graded as fig4-predictability-upper-bound, which shows the same pattern from the same
-      power terms and was graded partially reproduced with the verifier's agreement. Neither
-      criterion defines a partial outcome. Here alpha1 is within 0.49 +/- 0.049 in all 4 readings
-      with silence counted (0.457 to 0.464), the reading that gives the paper's 305 probes, and tau1
-      is 1.94 to 2.01 s there (1.50 to 2.01 s over the 8 readings), 1.9 times 1.04 s and outside
-      tolerance in all. In fig4, 1 + alpha1 is within tolerance in 10 of 14 fits and tau1 is 1.60
-      to 2.83 s. The decay from about 0.49 holds and its time constant is about twice the paper's,
-      so the claim holds in part. The notebook sets the two claims side by side in the cell after
-      fig4-predictability-upper-bound.
 - claim: timescale-longer-than-membrane
   outcome: reproduced
   notebook: reproduce_asari_2009.ipynb
@@ -898,3 +891,27 @@ verifications:
     reason: Agrees. It rests on the criterion's own wording (a first crossing), and the record says
       so.
     response: No change.
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The one proposed change of outcome (fig3b-fractional-power-decay) and the analysis
+    behind it in the full executed notebook of round 2 (reproduce_asari_2009.ipynb, cells 29, 30,
+    35, 37 and 38), with the claims file and the attempt record. Its report is
+    transcripts/asari-2009/verifier-3-report.md.
+  results:
+  - claim: fig3b-fractional-power-decay
+    agrees: true
+    outcome: partially_reproduced
+    reason: The numbers come from the data; with silence counted alpha1 is 0.457 to 0.464, within
+      0.49 +/- 0.049 in 4 of 4 readings, and tau1 is 1.94 to 2.01 s (1.50 to 1.58 s without),
+      within tolerance in 0 of 8. The choice was not made to reach the result, as the decisive
+      figures are from the silence-counted reading, already the main reading and the measured
+      value before any change was proposed. The criterion defines no partial outcome, and neither
+      does fig4-predictability-upper-bound's; in both the size is within tolerance and the time
+      constant is about twice the paper's, and the size part is if anything stronger for fig3b.
+      Caveat, which does not change the outcome. The quoted "long decay constant of about one
+      second" fails as a value; what holds is the size and that the decay lasts on the order of
+      seconds, far beyond the 71-ms noise autocorrelation.
+    response: Changed to partially_reproduced and the proposal removed. The notes, the notebook's
+      result cell and summary now say that the size and a decay lasting seconds hold and the
+      time constant of about one second does not.
