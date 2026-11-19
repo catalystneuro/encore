@@ -1,0 +1,332 @@
+schema_version: 3
+id: martinez-conde-2019-02
+datasets:
+- archive: crcns
+  id: pvc-12
+  version: unversioned
+  doi: 10.6080/K05D8Q1T
+  relation: primary
+paper: doi:10.1371/journal.pone.0210941
+date: '2026-11-19'
+entry: martinez-conde-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44431347658
+outcomes:
+- claim: neuron-counts
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:neuron-counts
+  measured:
+  - 53
+  - 22
+  - 29
+  - 26
+  - 7
+  - 10
+  - 36
+  notes: The zip holds 77 recordings of 53 cell codes (49 from monkey J, 4 from monkey A), 22 in
+    Edge-compare (Square and Edge), 29 in Star and 26 in Corners, against 58, 25, 30 and 28. Of the
+    overlap counts only the 7 neurons tested in all three conditions match; 10 were tested in two
+    (paper 11) and 36 in one (paper 40). The spreadsheet V1_Vasarely_data_SMC.xlsx lists 58 cell
+    codes, the paper's number, but 5 of them have no condition marked and no files. The files match
+    the spreadsheet's marks exactly. Only 43 neurons, in 60 recordings (22, 12 and 26), have the
+    aligned map the other claims use. The 118 recorded and the 102 and 16 per monkey cannot be
+    checked, as the discarded neurons are not deposited.
+- claim: spikes-per-condition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The number of spikes per neuron and condition needs the spike count map or the spike
+    times. The files hold rate maps (spike count divided by eye time); the eye time map that turns
+    a rate map back into counts is in one recording of 77 (ABC050900J1A, 15,644 spikes, above the
+    stated minimum of 10,000). Neither reading of the criterion can be computed over the data set.
+- claim: s4-baseline-no-difference
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:s4-baseline-no-difference
+  notes: Absolute baseline medians are 7.70 spikes/s for Square and Edge (n = 22, quartiles 2.63 to
+    14.45), 2.31 for Star (n = 12) and 2.64 for Corners (n = 25). All three readings find a
+    difference; (a) BH-corrected rank sum tests separate Square and Edge from Star (p = 0.036) and
+    from Corners (p = 0.009), not Star from Corners (p = 0.446); (b) Kruskal-Wallis H = 10.43,
+    p = 0.005; (c) one-way ANOVA F = 7.71, p = 0.001. The unsmoothed map and the map without the
+    off-display masking give the same. With the BaseActivity values the files store (9, 10 and 19
+    recordings) no reading finds a difference (Kruskal-Wallis p = 0.114, smallest BH p = 0.115).
+    Those stored values correlate with the paper's squares (Spearman rho 0.98, 0.88 and 0.74 by
+    condition) but are not reproduced by any placement of 16 DU squares that was tried, so how they
+    were computed is not known. The Star group is 12 of the paper's 30 neurons.
+  deviations:
+  - The Square and Edge and Star squares are placed inside the corners of the circumscribing square,
+    where Fig 2A and 2B (lower panels) draw them; the Corners squares inside the two ROI corners on
+    the 0% side, where Fig 2C draws them, since the text gives no position (Methods, Corners). Fig 2
+    was read from the journal's page, as the text under paper/ has no figures.
+  - Squares that fall off the display are left out of the mean (11 of 188); one Corners recording
+    (ABC07250J1E) with both squares off the display is left out of every baseline-based measure.
+- claim: fig4a-above-baseline
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4a-above-baseline
+  notes: Neurons above the unit line, P180 19 of 22, S90 20 of 22, S52 12 of 12 and S40 25 of 25.
+    Mass-centre distance under reading (a), mean raw values, 3.85, 8.09, 19.04 and 26.62 spikes/s;
+    under reading (b), mean log10 values, 0.17, 0.30, 0.88 and 1.04, with 2 S40 points of zero or
+    below left out. Both are ordered P180 < S90 < S52 < S40 and positive. The unsmoothed map gives
+    the same order.
+- claim: fig4b-spike-rate-difference
+  outcome: partially_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4b-spike-rate-difference
+  measured:
+  - 26.62
+  - 19.04
+  - 8.09
+  - 3.85
+  notes: Means (SEM) S40 26.62 (4.31, n = 25), S52 19.04 (3.10, n = 12), S90 8.09 (1.92, n = 22)
+    and P180 3.85 (0.83, n = 22) spikes/s. The order S40 > S52 > S90 > P180 holds. S40, S52 and
+    P180 are within the paper's SEM; S90 is 0.66 below the lower bound (8.75). Variants move single
+    values across the bounds; the unsmoothed map gives S90 9.49 (in) and P180 2.91 (out), the
+    stored baselines give S52 20.90 (out), monkey J alone gives all four within, and the map without
+    the off-display masking gives the main result.
+  deviations:
+  - Star rests on 12 of the paper's 30 neurons, Square and Edge on 22 of 25 and Corners on 25 of 28,
+    the recordings that hold the aligned map and a baseline on the display.
+  - The spike rate map is the deposited ROI-aligned smoothed map (Standard.smoothed_image); its
+    registration (eye-signal correction, 60 ms latency, RF offset) is the authors' and cannot be
+    redone from the files.
+  - The bright S40 fold is the zigzag tooth that points into the 0% side, found from the sampled
+    stimulus luminance (25.5 grey levels above its surround at the midpoint, the other tooth 24.8
+    below), as Fig 2C draws it; the dark fold is not used (Methods, Corners, paragraph 2).
+- claim: fig4b-pairwise-significance
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig4b-pairwise-significance
+  notes: BH-adjusted rank sum p-values with six pairs, S40 > S90 p = 0.0001, S40 > P180 and
+    S52 > P180 p < 0.0001; the same with the three named pairs. Of the other pairs, S52 > S90 is
+    significant (p = 0.0063), S40 against S52 (p = 0.29) and S90 against P180 (p = 0.083) are not.
+    The named pairs stay significant with the unsmoothed map, the stored baselines and without the
+    off-display masking.
+- claim: fig5-average-maps
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig5-average-maps
+  notes: Population-average spike rate difference maps, aligned on the condition's fold midpoint.
+    Midpoint values S40 26.79, S52 19.04, S90 8.09 and P180 3.85 spikes/s; means over the ten blocks
+    23.15, 16.89, 7.22 and 3.22. Both are ordered by decreasing angle. The midpoint reading repeats
+    the means of fig4b-spike-rate-difference, as the claim notes.
+  deviations:
+  - Corners maps come in two frame sizes (20 of 273 x 209 DU, 6 of 257 x 193); they are aligned on
+    the S40 midpoint before averaging (shifts of 0 or 8 DU).
+- claim: table1-edge
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-edge
+  measured:
+  - 5.23
+  - 29.16
+  - 16.82
+  - 16.70
+  - 18.36
+  notes: Reading (a) gives minimum 5.23, maximum 29.16, mean 16.82, median 16.70 and midpoint 18.36
+    spikes/s against 7.98, 33.13, 20.44, 20.77 and 22.01; only the maximum is within tolerance.
+    Reading (b) gives 9.73, 20.65, 16.82, 17.55 and 18.36; only the median is within. Under (a) every
+    value is lower than the paper's. The unsmoothed map
+    reaches 2 of 5, the stored baselines 0 and the unmasked map 1.
+  deviations:
+  - Edge blocks are 15 DU long and 8 DU wide, centred on the Edge line, so half of each block lies on
+    the black background beside the rectangle; the paper does not say on which side of the Edge the
+    8 DU lie.
+- claim: table1-p180
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-p180
+  measured:
+  - -1.91
+  - 9.99
+  - 3.22
+  - 2.66
+  - 3.85
+  notes: Reading (a) gives minimum -1.91, maximum 9.99, mean 3.22, median 2.66 and midpoint 3.85
+    spikes/s against 0.18, 10.28, 4.55, 4.03 and 4.87; the maximum and midpoint are within (2 of 5).
+    Reading (b) gives 1.36, 4.50, 3.22, 3.22 and 3.85; the median and midpoint are within (2 of 5).
+    With the stored baselines (9 neurons) 4 of 5 are within under (a), a variant only.
+- claim: table1-s90
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s90
+  measured:
+  - 2.14
+  - 13.21
+  - 7.22
+  - 7.28
+  - 8.09
+  notes: Reading (a)(i) gives minimum 2.14, maximum 13.21, mean 7.22, median 7.28 and midpoint 8.09
+    spikes/s against 4.36, 14.61, 9.22, 9.31 and 10.69; only the maximum is within. No reading
+    ((a), (b), (a ii), (b ii)) gives more than 1 of 5; the variants give at most 3 (stored
+    baselines, (a ii)).
+- claim: table1-s52
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s52
+  measured:
+  - 6.98
+  - 28.37
+  - 16.84
+  - 16.31
+  - 19.04
+  notes: Under reading (a ii), each half of the aligned diagonal summarised and the summaries
+    averaged, minimum 6.98, maximum 28.37, mean 16.84, median 16.31 and midpoint 19.04 spikes/s
+    against 6.26, 25.39, 15.66, 15.93 and 18.10, all within tolerance. Reading (a)(i) gives 4 of 5
+    (minimum 8.70 out), (b) and (b ii) give 3. Measured values are those of (a ii), the reading that
+    matches; the first reading listed, (a)(i), gives 8.70, 24.77, 16.82, 16.77 and 19.04. Based on 12
+    of the paper's 30 Star neurons.
+- claim: table1-s40
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:table1-s40
+  measured:
+  - 10.33
+  - 34.19
+  - 23.21
+  - 23.35
+  - 26.62
+  notes: Reading (a) gives minimum 10.33, maximum 34.19, mean 23.21, median 23.35 and midpoint 26.62
+    spikes/s against 9.33, 35.11, 22.81, 22.83 and 25.60, all within tolerance (n = 25). Reading (b)
+    gives 3 of 5.
+- claim: fig6-midpoint-representative
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig6-midpoint-representative
+  notes: None of the ten rank sum tests (midpoint against the per-neuron mean and median of the ten
+    blocks, for Edge, P180, S90, S52 and S40) is significant; the smallest p is 0.415 (S40 median),
+    with either way of combining the S90 and S52 halves, and the same with the unsmoothed and the
+    unmasked map. Median differences, midpoint minus fold, are 0.02 to 2.88 spikes/s. The paired
+    signed-rank variant finds 3 of 10 significant (S90 median p = 0.025, S40 mean p = 0.015, S40
+    median p = 0.0067), the midpoint being above the fold average.
+- claim: fig7a-rms-contrast-fit
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7a-rms-contrast-fit
+  measured:
+  - 0.9565
+  - 2.1117
+  - 1.1424
+  - 0.2560
+  - 0.9692
+  - 0.8265
+  notes: Local RMS contrast in a 16 x 16 DU square centred on the Edge, moved in 1.5% steps on the
+    stimulus sampled in the aligned frame (median over the 22 recordings, which differ by at most
+    0.15). Under reading (a), standard deviation over mean, it runs from 0.96 to 2.11 and does not
+    rise with luminance (2.11 at 0%, 1.51 at 100%); the least-absolute-residual exponential fit gives
+    a = 1.14, b = 0.256, c = 0.97, R2 = 0.83 (the values measured, in the order of the expected
+    ones). Under reading (b), the standard deviation of luminance scaled to 0 to 1, it runs from
+    0.014 to 0.476; the fit gives a = -15.9, b = 0.0003, c = 15.9 and R2 = 0.998. Only c under (a) and
+    R2 under (b) fall within tolerance. Half of the square lies on the black background, so neither
+    definition can give 0.61 to 0.943 on this stimulus; the paper's definition (its reference 21)
+    and the luminance of the background in its computation are not stated.
+- claim: fig7c-fold-edge-equivalence
+  outcome: not_reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7c-fold-edge-equivalence
+  notes: The inverse of the paper's fit puts the ten RMS levels at luminance 0, 2.3, 4.9, 7.9, 11.4,
+    15.7, 21.2, 28.7, 40.9 and 77.7 percent. Edge responses run from 8.34 to 20.09 spikes/s over the
+    luminance levels, above the P180 mean (3.85) and below the S40 mean (26.62) at every level.
+    Under reading (a) the level nearest S40 is 90% (meets the rule) but the level nearest P180 is 0%,
+    not within 10% of 50%. Under reading (b) P180 is matched at the lowest RMS level (61.0), as the
+    rule allows, but the level nearest S40 is 94.3 (Edge 19.96), 4.3 from 90 against a step of 3.7.
+    Neither reading meets both conditions. A refit of the RMS curve cannot be inverted at these
+    levels under either reading of fig7a.
+- claim: fig7c-fold-edge-significance
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7c-fold-edge-significance
+  notes: Two-sample t-tests of fold midpoint spike rate differences against Edge responses at the ten
+    RMS levels. P180 is lower than the Edge at 0.943 (difference -16.1 spikes/s, t = -3.78, df 42)
+    with adjusted p = 0.0076 (BH over 40), 0.0038 (BH per fold), 0.020 (Bonferroni over 40) and
+    0.0050 (Bonferroni per fold). S40 is higher than the Edge at 0.610 and 0.647 (18.3 and 17.6
+    spikes/s) with BH-over-40 p = 0.0076 for both and Bonferroni-over-40 p = 0.018 and 0.026. Every
+    reading meets the criterion. S40 is significant up to 0.684 with Bonferroni over 40, the closest
+    to the paper's "less than 68%", and up to 0.832 with BH over 40. P180 is lower than the Edge at
+    every level under BH.
+  deviations:
+  - The Edge levels are placed by the inverse of the paper's fitted parameters, since the RMS curve
+    could not be reproduced (fig7a-rms-contrast-fit); the criterion names this as the main reading.
+- claim: fig7d-nonlinear
+  outcome: reproduced
+  notebook: reproduce_martinez_conde_2019.ipynb
+  output: claim:fig7d-nonlinear
+  notes: The means fall monotonically with angle (26.62, 19.04, 8.09, 3.85 spikes/s at 40, 52, 90
+    and 180 degrees). The least-squares line (slope -0.144 spikes/s per degree, R2 0.778) misses
+    three means by more than their SEM (P180 +2.36 against 0.83, S90 -6.38 against 1.92, S40 +4.94
+    against 4.31). In the variant, the slopes for 40 to 52, 52 to 90 and 90 to 180 degrees are
+    -0.632, -0.288 and -0.047 spikes/s per degree; the last two differ by 0.241 against a propagated
+    SEM of 0.099, the first two by 0.344 against 0.453.
+- claim: fig7d-dog-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the output of the difference-of-Gaussians model of the paper's reference 3 at the four
+    angles. The paper shows it only as a line in Fig 7D and names no public numeric source; the data
+    set does not hold it. Searched the paper's text and supporting information legends and the data
+    set's files.
+- claim: s3-latency-peak
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Re-registering spikes at latencies of 1 to 2400 ms needs spike times and eye positions. The
+    data set holds only rate maps made at the paper's 60 ms latency (no spike times, no eye traces).
+findings:
+- kind: data_missing
+  about: data
+  statement: The data set holds 77 recordings of 53 neurons (22 Square and Edge, 29 Star, 26 Corners),
+    against the 58 neurons and 25, 30 and 28 per condition the paper analysed. Its spreadsheet lists
+    58 cell codes, but 5 (050800J1, 062000J1, 072100_C, 062600A2, 09250A1) have no condition and no
+    files.
+- kind: data_missing
+  about: data
+  statement: 17 of the 29 Star recordings cannot be placed on the stimulus. 15 (prefix ABD) lack the
+    ROI-aligned Standard map. The other 2 (ABS042700J2, ABS051000J3) lack it too; their stimulus
+    files are MATLAB 7.3 files of another layout whose polygons are closed outlines of 11 points (the
+    paper's 12-point star has 24 vertices), and one of their map files is MATLAB 7.3 too.
+    The full-screen maps are in gaze coordinates and the RF offset needed to align them is not
+    stored. (A check made while preparing, not run in the notebook, found no rotation and shift
+    that turns the full-screen maps into the aligned maps of the recordings that have both.)
+- kind: data_missing
+  about: data
+  statement: No spike times, eye positions or spike count maps are deposited, and the eye time map is
+    in one recording of 77 (ABC050900J1A). The number of spikes per condition and the latency
+    analysis of S3 Fig cannot be computed, and the eye-signal correction and registration cannot be
+    checked.
+- kind: metadata_error
+  about: data
+  statement: The descriptor says `image` holds raw spike counts per pixel and `smoothed_image_norm` is
+    the smoothed image normalised by the time spent at each pixel. `image` is spike count divided by
+    eye time in ms (spikes per ms; image x eyetime is an integer in the one recording with eyetime),
+    and `smoothed_image_norm` is the smoothed map minus BaseActivity, divided by its maximum minus
+    BaseActivity.
+- kind: metadata_insufficient
+  about: data
+  statement: The fields the analysis needs are undocumented. The `Standard` struct (the ROI in
+    stimulus coordinates, rotated to the preferred orientation, with its own image, smoothed_image
+    and polygon vertices), the stimulus polygon vertices, `eyetime`, and `BaseActivity` (in 38 of
+    the 60 aligned recordings) are not described. How BaseActivity was computed is not stated, and
+    no placement of 16 DU squares on the aligned map reproduces it (smallest maximum error 3.9% of
+    the largest value for Square and Edge, 12.4% for Star, 18.6% for Corners). The vertex order of the Star polygons differs between
+    the map and stimulus files in 10 of 12 recordings, and Corners maps come in two frame sizes.
+- kind: methods_unavailable
+  about: paper
+  statement: How was the local RMS contrast along the Edge computed (Fig 7A)? On the stimulus in the
+    files a 16 x 16 DU square centred on the Edge is half black background; the standard deviation
+    over the mean gives 0.96 to 2.11, not rising with luminance, and the standard deviation of
+    normalised luminance gives 0.014 to 0.476. Neither gives 0.61 to 0.943. Which luminance scale,
+    background level and normalisation (reference 21) were used?
+- kind: methods_unavailable
+  about: paper
+  statement: Which test found no difference in absolute baseline across the stimuli (S4 Fig), and how
+    was the absolute baseline computed? The baseline squares of the Methods give Square and Edge a
+    higher baseline than Star and Corners (Kruskal-Wallis p = 0.005), while the BaseActivity values
+    stored in the files show no difference (p = 0.114). Where were the two Corners baseline squares
+    placed? The text gives no position; this attempt used the ROI corners Fig 2C draws.
