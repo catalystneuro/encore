@@ -18,7 +18,7 @@ Corners stimuli.
 | Table 1, S52 and S40 rows | Reproduced |
 | Midpoint represents the whole fold (Fig 6) | Reproduced |
 | RMS contrast along the Edge and its exponential fit (Fig 7A) | Not reproduced |
-| P180 matches a 50% Edge, S40 a 90% Edge (Fig 7C) | Not reproduced |
+| P180 matches a 50% Edge, S40 a 90% Edge (Fig 7C) | Not reproduced (rests on an assumption about the margin; asked of a reader) |
 | P180 below the 94% Edge, S40 above Edges under 68% (Fig 7C) | Reproduced |
 | Angle and response related monotonically but not linearly (Fig 7D) | Reproduced |
 | Similar to the DOG model output (Fig 7D) | Blocked: data missing |

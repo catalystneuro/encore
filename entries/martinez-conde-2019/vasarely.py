@@ -28,8 +28,9 @@ Parameters and where they come from:
   `Standard.image` is offered as the variant the claim names.
 - Midpoint fold response: mean in an 8 x 8 DU square centred on the fold's 50% luminance point
   (Results, Strength of neuronal responses, paragraph 1). The 50% point is taken between the
-  vertices of polygons 49 and 50 (polygon i has grey level about i/99 x 100, checked against the
-  sampled stimulus in the notebook). Which 8 pixels make an 8 DU span is a standard choice
+  vertices of polygons 49 and 50 (polygon i has grey level about i/99 x 100 along the Square and
+  Edge and Star folds and about (99 - i)/99 x 100 along the Corners fold, so the 50% point is
+  between the same two polygons; checked against the sampled stimulus in the notebook). Which 8 pixels make an 8 DU span is a standard choice
   (pixel centres within 4 DU of the centre, rounded); it cannot change a result beyond a pixel.
 - Square (S90) and Star (S52): the two symmetric midpoints on the aligned diagonal are averaged
   (Methods, Corners, paragraph 2).
@@ -44,7 +45,8 @@ Parameters and where they come from:
   0% areas, placed inside the two ROI corners on the 0% side, as Fig 2C (lower panel) draws
   them (the text gives no position; the figure was read from the journal's page).
 - Blocks along a fold: ten non-overlapping blocks from 0% to 100%, each 8 DU wide and one tenth
-  of the fold's length (Results, Responses averaged along the entire fold, paragraph 1).
+  of the fold's length (Results, Responses averaged along the entire fold, paragraph 1). The
+  block order matters only for the profiles drawn; the Table 1 and Fig 6 summaries do not use it.
 - Edge squares for Fig 7: 16 x 16 DU squares centred on the Edge at a luminance level (Results,
   Neuron responses to corner-folds vs. different contrasts along edge, paragraph 1).
 """
@@ -115,6 +117,15 @@ def _verts(struct, keys):
     return out
 
 
+def sample_stimulus(img, M, shape, stim_offset=1.0):
+    """Grey level of the stimulus image at each pixel of the Standard frame (nearest pixel; NaN
+    off the display), through the affine map M from Standard to screen coordinates."""
+    H, W = shape
+    yy, xx = np.mgrid[0:H, 0:W]
+    sc = np.c_[xx.ravel(), yy.ravel(), np.ones(xx.size)] @ M - stim_offset
+    return map_coordinates(img, [sc[:, 1], sc[:, 0]], order=0, cval=np.nan).reshape(H, W)
+
+
 def load_recording(z, rec, stim_offset=1.0):
     """Load one recording's Standard-frame maps (spikes/s) and the stimulus luminance there.
 
@@ -127,7 +138,12 @@ def load_recording(z, rec, stim_offset=1.0):
     if kind != "v5":
         return out
     out["fields"] = d.dtype.names
-    out["full_image_sum"] = float(_dense(d["image"]).sum())
+    full = _dense(d["image"])
+    out["full_image_sum"] = float(full.sum())
+    # recording-wide summaries of the gaze-frame map (spikes/s), to compare recordings with and
+    # without the aligned map: the mean over pixels with a nonzero rate, and the fraction of such pixels
+    out["full_rate_nonzero_mean"] = 1000.0 * float(full[full > 0].mean()) if (full > 0).any() else np.nan
+    out["full_coverage"] = float((full > 0).mean())
     if "eyetime" in d.dtype.names:
         out["eyetime"] = _dense(d["eyetime"])
         out["full_image"] = _dense(d["image"])
@@ -170,14 +186,14 @@ def load_recording(z, rec, stim_offset=1.0):
     exact = [f for f in fits if f[0] < max(1e-6, 2 * emin)]
     scored = []
     for err, M, shift, direction in exact:
-        sc = np.c_[xx.ravel(), yy.ravel(), np.ones(xx.size)] @ M - stim_offset
-        lum = map_coordinates(img, [sc[:, 1], sc[:, 0]], order=0, cval=np.nan).reshape(H, W)
+        lum = sample_stimulus(img, M, (H, W), stim_offset)
         off = np.isnan(lum)
         match = float(zero[off].mean()) if off.any() else 1.0
         proper = np.linalg.det(M[:2]) > 0
         scored.append((proper, match, -shift, err, M, shift, direction, lum))
     proper, match, _, err, M, shift, direction, lum = max(scored, key=lambda t: (t[0], t[1], t[2]))
     out["frame_fit_error"] = err
+    out["frame_M"] = M
     out["frame_candidates"] = len(exact)
     out["offscreen_zero_match"] = match
     out["vertex_shift"] = (shift, direction)
@@ -204,8 +220,17 @@ def _mid(track):
     return (track[49] + track[50]) / 2.0
 
 
+def _dark_first(V, j, lum):
+    """(start, end) of the track of vertex j, ordered so that the start is the 0% end. In the Corners
+    files polygon 0 is at the bright end of the fold, so the track is reversed there (shown by the
+    block luminance profiles in the notebook's data check)."""
+    t = _fold_track(V, j)
+    lo, hi = [lum[int(round(t[i][1])), int(round(t[i][0]))] for i in (10, 89)]
+    return (t[99], t[0]) if lo > hi else (t[0], t[99])
+
+
 def geometry(rec):
-    """Folds (each a list of halves, each a (start, end) pair with start at polygon 0),
+    """Folds (each a list of halves, each a (start, end) pair with start at the 0% end),
     midpoints, baseline squares (x0, y0 top-left, side) and the Edge for one recording."""
     cond = rec["condition"]
     g = dict(folds={}, baseline=[])
@@ -265,8 +290,8 @@ def geometry(rec):
         bright = max(info, key=lambda t: t[0])
         dark = min(info, key=lambda t: t[0])
         j = bright[1]
-        g["folds"]["S40"] = dict(halves=[(C[0, j], C[99, j])], mids=[bright[2]])
-        g["dark_S40"] = dict(halves=[(C[0, dark[1]], C[99, dark[1]])], mids=[dark[2]])
+        g["folds"]["S40"] = dict(halves=[_dark_first(C, j, lum)], mids=[bright[2]])
+        g["dark_S40"] = dict(halves=[_dark_first(C, dark[1], lum)], mids=[dark[2]])
         g["bright_contrast"] = (bright[0], dark[0])
         top, bottom = np.nanmean(lum[:16]), np.nanmean(lum[-16:])
         y0 = 0 if top < bottom else H - BASE_BOX
@@ -277,21 +302,30 @@ def geometry(rec):
 
 # ---------------------------------------------------------------- measures
 
+def window(M, r0, c0, h, w):
+    """The part of the h x w window with top-left pixel (r0, c0) that lies inside M. The ends are
+    clipped at 0 too, so that a window wholly above or left of M is empty (a negative slice end
+    would otherwise wrap around)."""
+    return M[max(r0, 0):max(r0 + h, 0), max(c0, 0):max(c0 + w, 0)]
+
+
+def _window_mean(M, r0, c0, h, w):
+    sub = window(M, r0, c0, h, w)
+    return float(np.nanmean(sub)) if sub.size and np.isfinite(sub).any() else np.nan
+
+
 def box_mean(M, cx, cy, w, h=None):
     """Mean of M over the w x h pixels centred on (cx, cy) (x = column, y = row)."""
     h = w if h is None else h
     c0 = int(np.floor(cx - w / 2 + 0.5))
     r0 = int(np.floor(cy - h / 2 + 0.5))
-    r0c, c0c = max(r0, 0), max(c0, 0)
-    sub = M[r0c:r0 + h, c0c:c0 + w]
-    return float(np.nanmean(sub)) if sub.size else np.nan
+    return _window_mean(M, r0, c0, h, w)
 
 
 def square_mean(M, x0, y0, w):
     """Mean of M over the w x w pixels with top-left corner at (x0, y0)."""
     c0, r0 = int(round(x0)), int(round(y0))
-    sub = M[max(r0, 0):r0 + w, max(c0, 0):c0 + w]
-    return float(np.nanmean(sub)) if sub.size else np.nan
+    return _window_mean(M, r0, c0, w, w)
 
 
 def baseline(M, g):
