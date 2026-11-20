@@ -4,7 +4,7 @@ Tests the electrophysiology findings of [Zheng et al. (2024)](https://doi.org/10
 on [DANDI:000552](https://dandiarchive.org/dandiset/000552/0.261113.1035), the CA1 silicon-probe
 recordings of mice running a spontaneous alternation task on a figure-8 maze, three of which also ran
 in novel mazes. It detects place fields and their step-like switches in 45 familiar and 8 novel
-sessions, and tests electrode drift on the wide-band signal of one session. The two-photon imaging of
+sessions, and tests electrode drift on the wide-band signal of three sessions. The two-photon imaging of
 Figure 7 is not deposited.
 
 | Claim | Outcome |
@@ -22,7 +22,7 @@ Figure 7 is not deposited.
 | Population vectors themselves favour gradual models (Fig. S4G) | Not reproduced |
 | Switches are abrupt (Fig. 3K) | Reproduced |
 | Switchers drive population drift (Fig. S5) | Reproduced |
-| A GLM explains 20% and 14% of switching deviance (Fig. 4) | Partially reproduced |
+| A GLM explains 20% and 14% of switching deviance (Fig. 4) | Partially reproduced, on an assumption |
 | More switching in the delay zone (Fig. 4) | Not reproduced |
 | Choice and speed do not predict switching (Fig. 4) | Not reproduced |
 | Switching decreases with trial (Fig. 4D, 4I) | Partially reproduced, on an assumption |
@@ -36,10 +36,10 @@ Figure 7 is not deposited.
 | Fields are stable after switching ON (Fig. S12) | Partially reproduced |
 | Co-switching above chance in 17%/20% and 57%/29% of sessions (Fig. 6) | Not reproduced |
 | Up to 5% of fields switch per trial (Fig. 6F) | Reproduced |
-| Pre-existing fields before ON and after OFF (Fig. S14) | Partially reproduced |
+| Pre-existing fields before ON and after OFF (Fig. S14) | Partially reproduced, on an assumption |
 | ChR2 expression does not affect switching (Fig. S2) | Reproduced |
 | Imaging across days (Fig. 7, Fig. S15), two claims | Blocked: data missing |
-| Neighbouring waveforms do not change across a switch (Fig. S1) | Not reproduced, on one session and an assumption |
+| Neighbouring waveforms do not change across a switch (Fig. S1) | Not reproduced, on three sessions and an assumption |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -49,9 +49,9 @@ attempt pins 0.261113.1035, a re-conversion of the same sessions with the same s
 labels. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/zheng-2024-01.yaml`](../../attempts/zheng-2024-01.yaml).
 
-- `reproduce_zheng_2024.ipynb`: the analysis. It takes about 32 minutes: 23 of them run the field
-  and switch pipeline under five seeds and once more with trial-averaged maps, in four processes, and
-  8 stream the wide-band signal of one session for the electrode-drift test.
+- `reproduce_zheng_2024.ipynb`: the analysis. It took 49 minutes in the second revision's run: 31 of
+  them run the field and switch pipeline under five seeds and once more with trial-averaged maps, in
+  four processes, and 15 stream the wide-band signal of three sessions for the electrode-drift test.
 - `switching.py`: loading the files, rate maps, place-field detection, optimal partitioning and
   switch detection, and head-scan detection, with the source of every parameter. Other notebooks on
   this dandiset can import it.

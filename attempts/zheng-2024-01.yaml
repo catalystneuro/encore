@@ -215,6 +215,7 @@ outcomes:
     (pv_corr_analysis.py, divide_category_by_quantile); the Methods do not say.
 - claim: fig4-glm-deviance
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_zheng_2024.ipynb
   output: claim:fig4-glm-deviance
   measured:
@@ -228,7 +229,10 @@ outcomes:
     for OFF, with position fourth. The values hold and the ranking holds for ON only. The criterion's
     partial clause ("only the ranking holds") does not name this case; partially reproduced is a
     judgment, the verifier's as well. Under four other seeds the held-out values are 0.190 to 0.194
-    (ON) and 0.114 to 0.121 (OFF, below 0.126). The code's split (5 shuffle splits, 10% held out)
+    (ON) and 0.114 to 0.121 (OFF, below 0.126), so held-out OFF is within tolerance only under the
+    claim's seed; the in-sample values involve no random draw and are within, so the values hold
+    under every seed and the outcome is the same. The measured values are reading (a), the first the
+    criterion lists, as the protocol asks when both readings match. The code's split (5 shuffle splits, 10% held out)
     gives 0.167 and 0.099, with position, number of fields and trial first for OFF. The paper itself
     says trial contributes more to switching OFF.
   deviations:
@@ -239,6 +243,10 @@ outcomes:
   - Speed and its CV are of the absolute smoothed velocity of the linearised position in the segment.
   - Held-out explained deviance is 1 minus the test deviance over that of the training mean, fitted
     with statsmodels in place of sklearn.
+  - Assumed that values within tolerance with the ranking holding for ON only is partially
+    reproduced. The criterion's full condition fails on the OFF ranking, and its partial clause
+    ("only the ranking holds") does not name this case; the verifier gave the same outcome as a
+    judgment.
 - claim: fig4-delay-zone-more-switching
   outcome: not_reproduced
   notebook: reproduce_zheng_2024.ipynb
@@ -309,7 +317,9 @@ outcomes:
     trial and position bin r = 0.031 and -0.035 (within); per arm and trial (the GLM rows, familiar) r
     = 0.006 (within). Per trial, the first version's reading, r = 0.154 (p = 1.3e-07, 1166 trials) and
     -0.148 (p = 0.0086, 312), outside; per frame over all trial frames, r = -0.024 familiar
-    (within) and -0.105 novel (outside). The normalised switch count per arm and trial is not clearly
+    (within) and -0.105 novel (outside); per trial over all trial frames, r = -0.082 and -0.261
+    (outside). The outcome rests on the adopted reading, which only the familiar p supports. The
+    normalised switch count per arm and trial is not clearly
     related to speed under any reading (ON r = -0.015, p = 0.29; OFF r = -0.031, p = 0.025, below 0.1
     in size), so the second part holds.
   deviations:
@@ -325,9 +335,10 @@ outcomes:
   notebook: reproduce_zheng_2024.ipynb
   output: claim:fig4no-head-scans-not-related
   notes: 3149 head scans in 45 familiar sessions. The bin with most head-scan trials is bin 50 (111 cm,
-    289 trials), the paper's "position 50, between green and red sections", at the end of the choice
-    arms. Per position bin the central arm has the fewest head-scan trials (9.73 against 10.0 in the
-    delay zone and 34.1 to 46.6 elsewhere); in totals it has 253, more than the delay zone's 160, as
+    289 trials), the paper's "position 50, between green and red sections"; it is the first bin past
+    the 111 cm cut, in the return side arm, just past the end of the choice arm. Per position bin the
+    central arm has the fewest head-scan trials (9.73 against 10.0 in the delay zone, a small margin,
+    and 34.1 to 46.6 elsewhere); in totals it has 253, more than the delay zone's 160, as
     it spans 26 bins and the delay zone 16. Per-bin counts of switch-ON trials and head-scan trials
     are positively correlated (r = 0.262, p = 0.0085; OFF r = 0.099, p = 0.33), so the part on no
     relationship does not hold. 345 of 1552 switch-ON events have a head scan within 5 bins on the
@@ -466,6 +477,7 @@ outcomes:
     0.037 and 0.067 (novel).
 - claim: figs14-preexisting-fields-ephys
   outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_zheng_2024.ipynb
   output: claim:figs14-preexisting-fields-ephys
   measured:
@@ -479,8 +491,10 @@ outcomes:
     3.5e-11 (OFF) in familiar sessions. The majorities and the test hold under both readings; the OFF
     fraction is off under both.
   deviations:
-  - The threshold is the field's 95th-percentile shuffle map averaged over the field's bins; the
-    paper does not say how the bin-wise threshold is reduced to one value.
+  - Assumed that the threshold is the field's 95th-percentile shuffle map averaged over the field's
+    bins; the paper does not say how the bin-wise threshold is reduced to one value. The OFF fraction
+    (0.436, or 0.247 by peak rate) depends on this choice; the outcome is partially reproduced under
+    both readings of the selection.
 - claim: figs2-chr2-no-effect
   outcome: reproduced
   notebook: reproduce_zheng_2024.ipynb
@@ -507,31 +521,44 @@ outcomes:
   assumed: true
   notebook: reproduce_zheng_2024.ipynb
   output: claim:figs1-not-electrode-drift
-  notes: Tested on one session, e16_3m1_210201, the smallest of the 11 wide-band files (52 GB), with 44
-    switches ON and 30 OFF. The raw signal and the spike times share a clock (mean waveform at the
-    spike times 152.5 uV peak to trough, 26.5 uV with the spikes shifted by 0.5 s). At the code's
-    switch time, the animal at the field's peak on the switch trial, the neighbours' amplitude falls
-    across switches ON by a median of 1.76 uV of 152.7 (1.2%), 1382 neighbour and switch pairs from
-    32 switching units, Wilcoxon signed-rank p = 0.0034; across switches OFF it does not change
-    (median 0.03 uV, 914 pairs, p = 0.31). The ON result depends on the choices. With the trough
-    depth as amplitude, p = 0.11 (ON) and 0.82 (OFF); at the trial's start, the criterion's first
-    reading, p = 0.32 and 0.88; at the entry into the field, its second, p = 0.26 (ON) and 0.00023
-    (OFF, median +1.59 uV). With at least 5 spikes per window at the code's time, p = 0.00021 and
-    0.87. Every change is about 1% of the amplitude. The full test, on the 2041 switches of the 11
-    sessions with a raw file, needs about 78 GB of wide-band data and was not run; the other 34
-    sessions have no wide-band signal in the dandiset.
+  notes: Tested on three of the 11 sessions with a wide-band file, e16_3m1_210201 (the first revision's
+    session), e16_3m1_210203 and e13_26m1_211124 (two animals), with 113 switches ON and 76 OFF. In all
+    three the raw signal and the spike times share a clock (median mean-waveform amplitude 143.5 to
+    151.3 uV at the spike times, 25.5 to 27.4 uV with the spikes shifted by 0.5 s). Pooled over the
+    three sessions, the criterion's test of neighbour-switch pairs (peak-to-trough) gives p < 0.05
+    under every switch time. At the trial's start (reading a) ON p = 0.012 (median -1.0 uV, 3138
+    pairs) and OFF p = 0.13; at the entry into the field (reading b) ON p = 0.26 and OFF p = 0.00081
+    (median +0.82 uV); at the code's time, the animal at the field's peak, ON p = 0.019 (median -0.89
+    uV, 3093 pairs from 89 switching units) and OFF p = 0.24. On e16_3m1_210201 alone the trial's
+    start gave no significant change (p = 0.32 and 0.88) and the other two times did (entry OFF p =
+    0.00023, code's time ON p = 0.0034), so with one session the outcome depended on the switch time;
+    with three it does not. It depends on the amplitude. With the trough depth, the trial's start (p
+    = 0.34 and 0.30) and the entry into the field (p = 0.55 and 0.12) give no significant change, and
+    only the code's time does (ON p = 0.029, OFF 0.81). The pairs reuse the same neighbours across
+    switches and are not independent, so their p values are too small. With one value per switch (the
+    median over its neighbours) only the trial's start ON gives p < 0.05 (0.017); with one value per
+    neighbour, the code's time ON (0.026), the trial's start OFF (0.028) and the entry OFF (0.019).
+    The changes are small, pooled medians at most 0.8% of the amplitude and per session and reading
+    at most 2.7%. The full test, on the 2041 switches of the 11 sessions with a raw file, needs about
+    78 GB of wide-band data and was not run; the other 34 sessions have no wide-band signal in the
+    dandiset.
   deviations:
-  - One session of the 11 with a wide-band file, and of the paper's 46; the paper's code
-    (extract_waveform_script.py) also reads one session's raw file.
-  - The switch time is when the animal is at the field's peak on the switch trial, the median time
-    of the trial's forward frames in each position bin interpolated at the peak (code
-    process_central_arm.py, get_trial_pos_info and get_all_switch_times_combined); the criterion's two
-    readings are shown.
+  - Three sessions of the 11 with a wide-band file, and of the paper's 46; the paper's code
+    (extract_waveform_script.py) reads one session's raw file at a time. The two added in the second
+    revision are the sessions with the fewest switches, chosen to keep the notebook within its time.
+  - Assumed that the switch time is the code's, when the animal is at the field's peak on the switch
+    trial, the median time of the trial's forward frames in each position bin interpolated at the peak
+    (process_central_arm.py, get_trial_pos_info and get_all_switch_times_combined). It is not one of
+    the criterion's two readings (the trial's start, the entry into the field); all three are run, and
+    with the peak-to-trough amplitude each gives a p below 0.05 on the three sessions.
   - Waveforms are the raw signal within 1 ms of each spike on the unit's largest-waveform channel,
     for every other unit on the shank with spikes in both 20-s windows (code
     extract_waveform_script.py), each spike's snippet less its own mean.
   - Assumed that the amplitude of a mean waveform is its peak-to-trough difference; the paper does
-    not define it. With the trough depth no test is significant at the code's switch time.
+    not define it. With the trough depth only the code's switch time gives a significant change (ON
+    p = 0.029), and under the criterion's two readings the outcome would be reproduced.
+  - The criterion's test pools neighbour-switch pairs, which are not independent; tests with one
+    value per switch and one per neighbour are shown as variants.
 findings:
 - kind: metadata_error
   severity: major
@@ -602,9 +629,12 @@ findings:
     which starts it at the first trial; the legend's windows are swapped against the code.
 - kind: methods_unavailable
   statement: Figure S1H plots spike amplitudes of neighbouring neurons before and after a switch
-    without defining amplitude for a mean raw waveform. In e16_3m1_210201, at the code's switch time,
-    the peak-to-trough falls by 1.2% across switches ON (p = 0.0034) while the trough depth does not
-    change (p = 0.11). How was the amplitude measured, and on which sessions?
+    without defining amplitude for a mean raw waveform, and the legend does not say which moment of
+    the switch trial the 20-s windows are taken around. On three sessions here the peak-to-trough
+    changes significantly (p < 0.05, pairs pooled) at the trial's start, at the entry into the field
+    and at the code's time (the animal at the field's peak), by at most 0.8% in median, while the
+    trough depth changes significantly only at the code's time (ON p = 0.029). How was the amplitude
+    measured, around which moment, and on which sessions?
 - kind: data_missing
   severity: minor
   statement: Wide-band signal is deposited for 11 of the 45 familiar sessions (raw_ecephys files of 52
@@ -892,3 +922,255 @@ verifications:
       peak-to-trough amplitude, with the ON change 1.2% (p = 0.0034); the trough depth and the
       criterion's two switch-time readings give no significant ON change. A methods_unavailable
       finding asks how amplitude was measured.
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusions and summary, the helper
+    module, the attempt record and the claims file, with the paper's full text under paper/. No finding
+    in the record is rated critical, so none was reviewed as one.
+  results:
+  - claim: fig1d-pv-decorrelation
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig1e-novel-drift-faster
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig1e-later-lags-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig1h-rate-decorrelates-location-stable
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree. Cell 21 says "In 52 session and environment units (fields
+      per unit 79 to 711)"; cell 20 prints 53 units, 52 have slopes. Trivial.
+    response: Cell 21 now says 53 units, 52 of which have at least five lags. No change of outcome.
+  - claim: fig1i-location-mse-increases
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: switch-step-size-filter
+    agrees: true
+    outcome: not_reproduced
+    reason: 'No change from round 1, and I agree. Remaining, and bearing on a conclusion: upstream counts
+      are still low under every variant, 2,794 to 2,825 putative fields against 3,184 +- 318; familiar
+      switching 1,884 to 1,933 against 2,310 +- 231. The cause is not found. This drives switch-step-size-filter,
+      fig2d and multifield.'
+    response: 'Not resolved: the cause of the low counts is still not found, and no new variant was run
+      in this round. The code''s get_n_cpd, which the significance bound and the tie rule are cited to,
+      is now quoted in the notebook''s switch-step-size-filter section, with why pval.idxmin() keeps the
+      smaller K, so that it can be checked without the code. Outcome unchanged.'
+  - claim: fig2d-switch-fractions
+    agrees: true
+    outcome: not_reproduced
+    reason: 'No change from round 1, and I agree. Remaining, and bearing on a conclusion: upstream counts
+      are still low under every variant, 2,794 to 2,825 putative fields against 3,184 +- 318; familiar
+      switching 1,884 to 1,933 against 2,310 +- 231. The cause is not found. This drives switch-step-size-filter,
+      fig2d and multifield. fig2d hinges on two things: the familiar OFF fraction is 0.0014 short, and
+      the tie rule (647 fields tied). With ties broken toward the larger K, all four fractions are within
+      tolerance, which would make it partially reproduced. The smaller-K rule is cited to the code, which
+      is not under paper/, so I cannot verify it.'
+    response: 'Not resolved: the cause of the low counts is still not found, and no new variant was run
+      in this round. The code''s get_n_cpd, which the significance bound and the tie rule are cited to,
+      is now quoted in the notebook''s switch-step-size-filter section, with why pval.idxmin() keeps the
+      smaller K, so that it can be checked without the code. The code keeps the smaller K, so the larger-K
+      rule stays a variant and the outcome is unchanged.'
+  - claim: fig2e-switch-fraction-by-experience
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree. The summary (cell 107) says that under the trial-averaged
+      variant "the Familiar against Novel test ... gives p = 0.058, and no other outcome would differ".
+      The trial-averaged variant reran only the cell-50 and cell-52 summaries plus multifield (cell 52).
+      The GLM, fig6, figs12, figs14, figs13, figs5 and fig4di were not rerun, so this cannot be claimed
+      for them.
+    response: The summary now names the quantities that were run under the variant and says the other
+      claims were not run under it. Outcome unchanged.
+  - claim: fig3df-step-beats-polynomial-fields
+    agrees: true
+    outcome: partially_reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig3df-polynomial-beats-step-population
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: figs4g-population-vectors-gradual
+    agrees: true
+    outcome: not_reproduced
+    reason: No change from round 1, and I agree. Cell 42 says "below the expected 0.54 to 0.77 for orders
+      1 and 3". Order 2 (0.510) is also below 0.54.
+    response: Cell 42 now says all three orders are below. Outcome unchanged.
+  - claim: fig3k-switch-abrupt
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: figs5-switchers-drive-drift
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig4-glm-deviance
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; it remains a judgment, since the criterion's partial clause does not cover this case.
+      The measured values given are reading (a), and the held-out OFF value of 0.128 is within tolerance
+      only under the claim's seed. Under the other four seeds it is 0.114 to 0.121 (cell 55). Reading
+      (b), in-sample 0.202 and 0.145, holds without depending on the seed and would be the better measured
+      value. The outcome is a criterion gap, so assumed true would fit. Remaining, held-out OFF is within
+      tolerance under one seed only.
+    response: 'Marked assumed: true, with a deviation that states the assumption. The notes and the conclusion
+      now say held-out OFF is within tolerance only under the claim''s seed, and that the in-sample values
+      involve no random draw and are within, so the values hold under every seed. The measured values
+      stay reading (a): the protocol asks for the first reading the criterion lists when several match,
+      and under the claim''s seed both do. Outcome unchanged.'
+  - claim: fig4-delay-zone-more-switching
+    agrees: true
+    outcome: not_reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig4-behavior-not-predictive
+    agrees: true
+    outcome: not_reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig4di-switching-decreases-with-trial
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption (trials from the fourth on) is stated and reasonable; the trial counts 1031/288
+      match the legend's 1029/281. The record now says plainly that the decrease disappears once the last
+      two trials are also left out (no correlation significant, cell 64). I agree.
+    response: No change.
+  - claim: figs8-speed-no-trend
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (per frame of forward locomotion) is stated and the outcome is acceptable,
+      but it is weak. The paper's two values point to different units, familiar p = 3e-11 implies about
+      4 x 10^5 samples, novel p = 0.78 about 200. Per trial, both r are well outside tolerance (0.154
+      and -0.148); per trial over all frames they are -0.082 and -0.261 (cell 67). Within cell 67 the
+      code comment still calls per-trial "the main, as the claim's legend plots one point per trial",
+      which contradicts the adopted reading, and the Figure S8C legend says no such thing. Also cell 8,
+      "The x and y of the novel figure-8 maze carry no scale (the file says so)"; no output shows this.
+    response: 'The cell-67 comment is corrected: per trial is a variant, and per frame of forward locomotion
+      the reading adopted, with the familiar p as its reason. The notes now give the per-trial values
+      over all frames and say that only the familiar p supports the adopted reading. The data check now
+      prints the x and y unit of every environment and the end of the description of those without a scale
+      (unit n.a., "with no scale given in the source"), which cell 8 cites. Outcome unchanged; the methods_unavailable
+      finding asks the authors.'
+  - claim: fig4no-head-scans-not-related
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption (per position bin) is stated and reasonable, and matches my round-1 outcome.
+      The margin is very thin, 9.73 against 10.0 head-scan trials per bin in the central arm and the delay
+      zone (cell 70). Cell 71 and the notes say "bin 50 ... at the end of the choice arms"; cell 70 prints
+      the bin's segment as return_side, the first bin past the 111 cm cut. This is consistent with the
+      paper's "between green and red sections", but it is not inside the choice arm.
+    response: Cell 71 and the notes now say bin 50 is the first bin past the 111 cm cut, in the return
+      side arm, just past the end of the choice arm, and that the per-bin margin over the delay zone is
+      small. Outcome unchanged.
+  - claim: figs9-splitter-switching
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: figs13-btsp-signatures
+    agrees: true
+    outcome: partially_reproduced
+    reason: No change from round 1, and I agree. (3 of 5 parts hold.)
+    response: No change.
+  - claim: fig5c-switchiness-not-intrinsic
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig5d-nrem-rate-relations
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: multifield-independent-switching
+    agrees: true
+    outcome: not_reproduced
+    reason: 'No change from round 1, and I agree. Remaining, and bearing on a conclusion: upstream counts
+      are still low under every variant, 2,794 to 2,825 putative fields against 3,184 +- 318; familiar
+      switching 1,884 to 1,933 against 2,310 +- 231. The cause is not found. This drives switch-step-size-filter,
+      fig2d and multifield.'
+    response: 'Not resolved: the cause of the low counts is still not found, and no new variant was run
+      in this round. The code''s get_n_cpd, which the significance bound and the tie rule are cited to,
+      is now quoted in the notebook''s switch-step-size-filter section, with why pval.idxmin() keeps the
+      smaller K, so that it can be checked without the code. Outcome unchanged.'
+  - claim: figs12-stability-after-switch-on
+    agrees: true
+    outcome: partially_reproduced
+    reason: No change from round 1, and I agree. The new code_mismatch finding (windows swapped) is cited
+      to the code, which is not under paper/, so I cannot verify it.
+    response: The code's stored outputs that the finding rests on ([fig] stability after pop up.ipynb,
+      nosw_start_frac = 0.5 and 0) and the line of stability_analysis.py that sets the window's start
+      are now quoted in the section's introduction. Outcome unchanged.
+  - claim: fig6-co-switching
+    agrees: true
+    outcome: not_reproduced
+    reason: No change from round 1, and I agree. Familiar ON is 10 of 45 sessions under every seed (10
+      to 11), which is one session beyond the "within one session" allowance. The within-turn null is
+      now conservative (false-positive rate 0.035, cell 91).
+    response: No change.
+  - claim: fig6f-switching-asynchronous
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: figs14-preexisting-fields-ephys
+    agrees: true
+    outcome: partially_reproduced
+    reason: No change from round 1, and I agree. The OFF fraction (0.436 against 0.2) depends on reducing
+      the shuffle threshold to a mean over the field's bins. This is stated as a deviation but not flagged
+      assumed. It does not change the partial outcome.
+    response: 'Marked assumed: true; the deviation, the section''s introduction and its conclusion now
+      state the threshold''s reduction as an assumption. Outcome unchanged.'
+  - claim: figs2-chr2-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: fig7-preexisting-across-days
+    agrees: true
+    outcome: blocked
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: figs15-imaging-not-artifact
+    agrees: true
+    outcome: blocked
+    reason: No change from round 1, and I agree.
+    response: No change.
+  - claim: figs1-not-electrode-drift
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree only as a one-session result, and the assumption is misplaced. The adopted switch
+      time (the animal at the field's peak) is not one of the criterion's two readings. Under the criterion's
+      reading (a), the trial start, neither test is significant (p = 0.32 and 0.88), which would be reproduced.
+      Under reading (b), entry into the field, OFF gives p = 0.00023, and with trough depth p = 0.031
+      (cell 104). So the outcome depends on the switch-time reading more than on the amplitude definition,
+      and the record should flag that as the assumption. Also unflagged, the 1,382 pairs reuse the same
+      ~140 neighbours across switches from 32 units, so the pairs are not independent and the p values
+      are inflated. Every change is at most about 1% of the amplitude, and only 1 of the 45 sessions was
+      tested. Cell 105 and the notes say "The changes are about 1% of the amplitude in every reading";
+      at the code's switch time the OFF change is 0.03% (relative 0.0003), so the supported wording is
+      "at most about 1%".
+    response: The test now runs on three sessions (e16_3m1_210201 and, added, e16_3m1_210203 and e13_26m1_211124,
+      a second animal), about 15 minutes of streaming. Pooled, the criterion's pair test with the peak-to-trough
+      amplitude gives p < 0.05 under all three switch times (trial's start ON p = 0.012, entry into the
+      field OFF p = 0.00081, code's time ON p = 0.019), so the outcome no longer depends on the switch-time
+      reading; it depends on the amplitude (with the trough depth only the code's time gives p < 0.05,
+      ON p = 0.029). The switch time is now flagged as an assumption beside the amplitude. Tests with
+      one value per switch and one per neighbour are added for the non-independence of the pairs; they
+      give p < 0.05 in one and three of the six reading and direction cells. The wording on the size is
+      corrected (pooled medians at most 0.8%, per session and reading at most 2.7%). Outcome unchanged;
+      no change is proposed, as the verified outcome holds on three sessions, and the methods_unavailable
+      finding now also asks about the switch time.

@@ -119,10 +119,11 @@ def load_session(session):
         xk = [k for k in xy_d if k.endswith(e.environment) or len(xy_d) == 1]
         xy = xy_d[xk[0]].data[:].astype(float) if xk else None
         xy_unit = xy_d[xk[0]].unit if xk else None
+        xy_desc = xy_d[xk[0]].description if xk else None
         trials = tr[(tr.start_time >= e.start_time) & (tr.start_time < e.stop_time)].copy()
         tasks.append(dict(env=e.environment, kind=e.task, start=e.start_time, stop=e.stop_time,
                           familiar=e.environment in FAMILIAR_ENVS, t=t, lin=x, xy=xy,
-                          xy_unit=xy_unit, trials=trials.reset_index(drop=True)))
+                          xy_unit=xy_unit, xy_desc=xy_desc, trials=trials.reset_index(drop=True)))
     io.close()
     return dict(session=session, units=units, spikes=spikes, nrem=nrem, tasks=tasks)
 
@@ -616,6 +617,7 @@ def run_session(session, claim_seed=None, field_map="pooled"):
         o["pbin"] = task["pbin"].astype(np.int16)
         if task["xy"] is not None and task["familiar"]:
             o["xy"] = task["xy"].astype(np.float32)
+        o["xy_unit"], o["xy_desc"] = task["xy_unit"], task["xy_desc"]
     return res
 
 
