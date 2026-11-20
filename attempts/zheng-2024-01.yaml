@@ -1,0 +1,508 @@
+schema_version: 3
+id: zheng-2024-01
+datasets:
+- archive: dandi
+  id: "000552"
+  version: 0.261113.1035
+  doi: 10.48324/dandi.000552/0.261113.1035
+  relation: reuses
+paper: doi:10.1016/j.celrep.2024.114702
+date: 2026-11-20
+entry: zheng-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44698512378
+outcomes:
+- claim: fig1d-pv-decorrelation
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig1d-pv-decorrelation
+  notes: All 90 familiar and all 14 novel session and turn units with at least five lags have a
+    negative slope of PV correlation on lags 1 to 10 (median -0.0170 and -0.0252 per lag), Wilcoxon
+    signed-rank p = 1.7e-16 and 0.00012. The slope is negative in every animal. Under the four other
+    pipeline seeds the place-cell sets change little (see the seed cell).
+  deviations:
+  - Version 0.261113.1035 in place of the cited 0.230630.2304, which has no cell-type labels; the
+    spike times are the same (data check).
+  - 45 of the paper's 46 familiar sessions; e13_26m1_210913 is not in the dandiset.
+  - Forward locomotion is a smoothed velocity of the linearised position above 1 cm/s in the running
+    direction (Methods, Behavior segmentation, smoothing of 10 samples; the code's directed speed
+    'v'), as the novel figure-8 maze's x and y have no scale.
+- claim: fig1e-novel-drift-faster
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig1e-novel-drift-faster
+  measured:
+  - 104
+  - 0.51
+  notes: Over lags 1 to 10 novel slopes are more negative (median -0.0252 against -0.0170), rank-sum
+    p = 0.0148, 104 units (90 familiar, 14 novel). Cohen's d (familiar minus novel) is 0.51, just
+    below the expected 0.58 +- 0.058; the criterion reports d without requiring it. Under the four
+    other pipeline seeds p is 0.0129 to 0.0164 and d 0.511 to 0.520. With turns averaged per session
+    (45 familiar, 7 novel) p = 0.0587, d = 0.69.
+  deviations:
+  - As for fig1d-pv-decorrelation.
+- claim: fig1e-later-lags-no-difference
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig1e-later-lags-no-difference
+  notes: Lags 11 to 20, 28 units (17 familiar, 11 novel), rank-sum p = 0.76, d = 0.03; lags 21 to 30,
+    6 units (2 and 4), p = 0.0641, d = -2.87. The paper had 26 and 8 units. Two familiar units give
+    the last window almost no power.
+  deviations:
+  - As for fig1d-pv-decorrelation.
+- claim: fig1h-rate-decorrelates-location-stable
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig1h-rate-decorrelates-location-stable
+  notes: In 52 session and environment units the peak-rate correlation falls with lag (median slope
+    -0.0298, 52 of 52 negative, Wilcoxon p = 3.5e-10). The location correlation is 0.984 at lag 1 and
+    0.975 at lag 10, median slope -0.00036; the ratio of median slopes is 83, above the criterion's
+    2. The location slopes are also below zero (51 of 52, p = 3.7e-10).
+  deviations:
+  - Merged turn-common fields are split into their two turn parts, so that every field is a series
+    over its turn's trials; the code aligns the turns by within-turn trial index
+    (get_plot_pf_param_population_corr_vs_lag), up to the shorter turn's count.
+- claim: fig1i-location-mse-increases
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig1i-location-mse-increases
+  notes: Reading (a), the per-unit slope of the location distance on lags 1 to 10 is positive in 51
+    of 52 units (median 0.596 bins squared per lag), Wilcoxon p = 3.7e-10; familiar p = 1.1e-13,
+    novel p = 0.016. Reading (b), OLS of the median over units on lag 1 to 30, slope 0.765, p =
+    1.2e-10.
+  deviations:
+  - As for fig1h-rate-decorrelates-location-stable.
+- claim: switch-step-size-filter
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:switch-step-size-filter
+  measured:
+  - 2770
+  - 191
+  notes: Over both environments 2770 fields have a significant change point (expected 3184 +- 318)
+    and the code's filter removes 191 (6.9%; expected 212 +- 21). Familiar only, 2062 and 173. With the
+    raw maximum as the norm, 581 are removed (21.0%). The share removed matches the paper's 7%; the
+    putative count is low under every reading and every seed (2757 to 2779; removed 187 to 202).
+  deviations:
+  - 45 of 46 familiar sessions, which lowers counts by about 2%.
+  - Place fields compare the trial-pooled rate map with shuffles pooled the same way, as the code
+    does (place_field_analysis.py, ratemap_from_spk_beh_df_onetrialtype); the Methods say
+    trial-averaged.
+  - Turn-common central-arm fields take each trial's peak rate from that trial's turn field.
+  - Speed and forward locomotion as for fig1d-pv-decorrelation.
+- claim: fig2d-switch-fractions
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig2d-switch-fractions
+  measured:
+  - 11246
+  - 1889
+  - 0.127
+  - 0.078
+  - 2234
+  - 690
+  - 0.243
+  - 0.158
+  notes: Familiar 11246 fields (within tolerance), 1889 switching (below 2310 +- 231), ON 0.127
+    (within), OFF 0.078 (below 0.09 +- 0.009). Novel 2234 fields, 690 switching, ON 0.243 (all
+    within), OFF 0.158 (below 0.18 +- 0.018). Five of eight values are within tolerance; two of the
+    four ON and OFF fractions are not, so neither the full nor the partial criterion holds. Switching
+    is about twice as common in novel as in familiar sessions (30.9% against 16.8%), as in the paper.
+    Under the four other seeds familiar switching is 1883 to 1912 and the OFF fractions 0.0767 to
+    0.0787 (familiar) and 0.149 to 0.159 (novel); the outcome is the same. With the raw maximum as the
+    norm the fractions are lower (familiar 14.2%, novel 26.4%).
+  deviations:
+  - As for switch-step-size-filter.
+- claim: fig2e-switch-fraction-by-experience
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig2e-switch-fraction-by-experience
+  measured:
+  - 0.143
+  - 0.208
+  - 0.306
+  notes: Medians 0.143 (Familiar only, 34 sessions), 0.208 (Familiar, 11) and 0.306 (Novel, 8), all
+    within tolerance. Rank-sum p = 4.8e-05, 0.017 and 6.2e-05, in the stated directions. Under the
+    four other seeds the medians are 0.137 to 0.151, 0.201 to 0.209 and 0.293 to 0.306, and every p
+    is below 0.026.
+  deviations:
+  - 11 Familiar sessions, not 12, as e13_26m1_210913 is not in the dandiset.
+- claim: fig3df-step-beats-polynomial-fields
+  outcome: partially_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig3df-step-beats-polynomial-fields
+  measured: 0.908
+  notes: The change-point model is better for 0.966 (K = 1, 13480 fields), 0.951 (K = 2) and 0.908
+    (K = 3) of fields; the bound of 0.96 holds at K = 1 only, and all three exceed the partial level
+    of 0.90. The measured value given is the smallest, at K = 3. In novel fields alone the fractions
+    are 0.958, 0.992 and 0.975. Under the other seeds the three fractions vary by less than 0.001.
+  deviations:
+  - As for switch-step-size-filter (the fields).
+- claim: fig3df-polynomial-beats-step-population
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig3df-polynomial-beats-step-population
+  notes: The polynomial explains more variance of mean PV correlation against lag for 0.867, 0.827
+    and 0.861 of units (K = 1 to 3; 105, 104 and 101 units); median R2(CPM) - R2(poly) -0.177, -0.073
+    and -0.047, Wilcoxon p = 4.7e-14, 1.9e-10 and 2.2e-12.
+- claim: figs4g-population-vectors-gradual
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs4g-population-vectors-gradual
+  measured: 0.434
+  notes: The polynomial is better for 0.434, 0.510 and 0.402 of units (orders 1 to 3; 106, 104 and 102
+    units), against the expected 0.54 to 0.77. The mean R2 difference (CPM minus polynomial) is
+    slightly positive at each order (0.0051, 0.0050, 0.0038; Cohen's d 0.20, 0.16, 0.08) and not
+    significant (Wilcoxon p = 0.096, 0.17, 0.073), where the paper finds a significant bias toward the
+    polynomial (d -0.1 to -0.24). PCA kept a median of 10 features, two fewer than trials, as the
+    Methods say is usual. The measured value given is order 1.
+  deviations:
+  - The polynomial regressors use trial number standardised to zero mean and unit variance, which
+    does not change the fit.
+- claim: fig3k-switch-abrupt
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig3k-switch-abrupt
+  measured: 0.808
+  notes: Under reading (a), individual first passage times, 0.808 (ON, 4179 passages) and 0.813 (OFF,
+    2608) are under two trials, within 0.675 to 0.847. Under reading (b), switch durations, 0.525 and
+    0.540, outside it. The duration distributions differ from the negative binomial with two
+    successes and p = 0.5 by a chi-squared test (p = 1.3e-40 ON, 2.8e-31 OFF), with fewer zero and
+    more one-trial durations; whether they "resemble" it is not tested by the paper. 30 post and 43
+    pre passages had no crossing within the segment and are left out.
+  deviations:
+  - Reading (a) matches and (b) does not; the text's "first passage times" supports (a), and the
+    legend of Figure 3K plots durations.
+- claim: figs5-switchers-drive-drift
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs5-switchers-drive-drift
+  measured:
+  - -0.0067
+  - -0.0096
+  notes: Turns pooled (the code), switchers decorrelate faster in 38 of 45 familiar sessions (median
+    difference -0.0067, Wilcoxon p = 3.7e-09) and 8 of 8 novel sessions (-0.0096, p = 0.0078, as the
+    paper's p). Per turn, 76 of 90 (p = 1.7e-13) and 16 of 16 (p = 3.1e-05). The medians are smaller
+    in size than the expected -0.009 and -0.011 and outside tolerance. Under the four other seeds of
+    the sampling the familiar medians are -0.0061 to -0.0068 and the novel -0.0099 to -0.0109, with
+    p at most 1.2e-10 and 0.0078.
+  deviations:
+  - Non-switchers are sampled with replacement when fewer than the switchers, as the code does
+    (pv_corr_analysis.py, divide_category_by_quantile); the Methods do not say.
+- claim: fig4-glm-deviance
+  outcome: partially_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig4-glm-deviance
+  measured:
+  - 0.202
+  - 0.142
+  - 5117
+  notes: 5117 rows from 45 sessions. In-sample explained deviance is 0.202 (ON) and 0.142 (OFF), both
+    within tolerance (reading b, given as measured); held out under repeated 5-fold cross-validation
+    0.192 (within) and 0.123 (below 0.126). The three largest held-out drops are position, animal and
+    number of fields for ON, as stated, but trial, number of fields and animal for OFF, with position
+    fourth. The values hold under a reading and the ranking holds for ON only. Under four other seeds
+    the held-out values are 0.191 to 0.193 (ON) and 0.111 to 0.119 (OFF). The code's split (5 shuffle
+    splits, 10% held out) gives 0.169 and 0.092, with position, trial and number of fields first for
+    OFF.
+  deviations:
+  - Trials from the fourth on, and the segment cut points, from the code (behavior_and_switching.py).
+  - A switch is counted in the segment of its field's peak on the change-point trial; N_field counts
+    the fields of the trial's turn and the merged fields with their peak in the segment. The Methods
+    say "the number of fields whose peak lied in that arm".
+  - Speed and its CV are of the absolute smoothed velocity of the linearised position in the segment.
+  - Held-out explained deviance is 1 minus the test deviance over that of the training mean, fitted
+    with statsmodels in place of sklearn.
+- claim: fig4-delay-zone-more-switching
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig4-delay-zone-more-switching
+  notes: Relative to the delay zone, switching ON is more likely in the central (0.312, CI 0.105 to
+    0.518), choice (0.650) and return side (0.773) arms and less likely only in the pre-delay zone
+    (-0.289, CI -0.555 to -0.023); switching OFF is more likely in the central (0.428) and choice
+    (0.305) arms. The per-field median switch-ON count is lowest in the delay zone (0.0066 against
+    0.0076 to 0.0122).
+  deviations:
+  - As for fig4-glm-deviance.
+- claim: fig4-behavior-not-predictive
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig4-behavior-not-predictive
+  notes: The current-choice intervals include zero (ON 0.078, CI -0.052 to 0.208; OFF 0.018), but a
+    correct previous trial lowers switching ON (-0.145, CI -0.268 to -0.022, p = 0.021); for OFF the
+    interval includes zero (-0.148, CI -0.307 to 0.012). Leaving out speed or its CV does not reduce
+    prediction beyond the spread over splits (ON median drops 0.00134, SD 0.00356, and -0.00003; OFF
+    -0.00003 and -0.00001). The speed part holds; the previous-choice part does not for ON.
+  deviations:
+  - As for fig4-glm-deviance.
+- claim: fig4di-switching-decreases-with-trial
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig4di-switching-decreases-with-trial
+  measured:
+  - -0.062
+  - -0.084
+  - -0.123
+  - -0.144
+  - 1031
+  - 288
+  notes: Under the adopted reading, trials from the fourth on (1031 familiar and 288 novel trials,
+    against the legend's 1029 and 281), the correlation of normalised switch count with z-scored
+    trial is negative and significant for familiar ON (r = -0.062, p = 0.046), familiar OFF (-0.123, p
+    = 7.2e-05) and novel OFF (-0.144, p = 0.014), and not for novel ON (-0.084, p = 0.15); three of
+    four, each smaller in size than the expected r. Over all trials (1166 and 312) none is negative and
+    significant (familiar ON r = 0.073, p = 0.013; OFF -0.000; novel 0.049 and -0.021), because a
+    change point needs two trials on each side within a turn, so the first trials of a session hold
+    no switch. The Spearman variant gives the same as Pearson over all trials. The question of which
+    trials is put to the paper's authors.
+  deviations:
+  - Assumed that the trials are those from the fourth on, as the code's GLM uses them; the legend's
+    trial counts (1029 and 281) fit this reading (1031 and 288) and not all trials (1166 and 312).
+    The outcome rests on this choice; over all trials it would be not reproduced.
+- claim: figs8-speed-no-trend
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs8-speed-no-trend
+  measured:
+  - 0.154
+  - -0.148
+  notes: Speed (mean over forward frames, z-scored) changes with trial, familiar r = 0.154 (p =
+    1.3e-07, 1166 trials) and novel r = -0.148 (p = 0.0086), outside 0.01 +- 0.05 and -0.02 +- 0.05.
+    With speed over all trial frames, r = -0.082 and -0.261. The normalised switch count per arm and
+    trial is not clearly related to speed (ON r = -0.019, p = 0.18; OFF r = -0.030, p = 0.031, below
+    0.1 in size), so the second part holds.
+  deviations:
+  - Speed from the linearised position, as for fig1d-pv-decorrelation; the paper's speed is from x
+    and y.
+  - All trials; with the paper's trial count for Figure 4D the familiar set would be trials from the
+    fourth on (see fig4di-switching-decreases-with-trial), not run for speed.
+- claim: fig4no-head-scans-not-related
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig4no-head-scans-not-related
+  notes: 3149 head scans in 45 familiar sessions. The bin with most head-scan trials is bin 50 (111 cm,
+    289 trials), the reward area. The central arm has 253 head-scan trials, more than the delay zone's
+    160, though per bin it has the fewest (9.7 against 10.0 to 46.6). Per-bin counts of switch-ON
+    trials and head-scan trials are positively correlated (r = 0.255, p = 0.01; OFF r = 0.114, p =
+    0.26). 338 of 1518 switch-ON events have a head scan within 5 bins on the same trial.
+  deviations:
+  - The track is sampled per turn (both turns share the linearised coordinate; the code's
+    find_tmaze_turns separates the turns). With one track the side arms read as off-track.
+  - Head-scan trials are counted in the bin where the scan starts; switch trials in the bin of the
+    field's peak.
+- claim: figs9-splitter-switching
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs9-splitter-switching
+  notes: Of 1376 familiar splitter fields 14.5% switch (ON 9.1%, OFF 8.9%; other fields 17.1%), of 248
+    novel ones 27.0% (other fields 31.4%). Splitter switches fall in every third of the session (ON 33,
+    61 and 82; OFF 72, 44 and 46).
+- claim: figs13-btsp-signatures
+  outcome: partially_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs13-btsp-signatures
+  notes: Three of five parts hold. Width and speed on the switch-ON trial correlate in familiar fields
+    (1431 first switches; half-peak width r = 0.074, p = 0.0049; field width r = 0.068, p = 0.0099),
+    with 2 of 10 spatial bins significant alone. The next-trial shift is backward in familiar fields
+    (625 against 473, p = 0.00027) and also in novel ones (240 against 180, p = 0.014), where the paper
+    finds no significant shift. Trial 0 does not differ from trial 1 (p = 0.44 and 0.59 under the two
+    normalisations); the rate rises from trial -2 to -1 (p = 9.9e-12) but not significantly from -3
+    to -2 (p = 0.078 and 0.075).
+  deviations:
+  - Speed is the trial's mean forward speed from the linearised position.
+- claim: fig5c-switchiness-not-intrinsic
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig5c-switchiness-not-intrinsic
+  measured:
+  - 1006
+  - 6.63
+  - 9.2
+  notes: In 1006 neurons with fields in both environments of a session, residual switchiness is not
+    correlated across environments (t = 1.31, R2 = 0.0017, p = 0.19), while noisiness (t = 6.63, p =
+    5.6e-11) and shiftiness (t = 9.20, p = 2e-19; with the code's median 9.12) are. Both t values are
+    larger than the expected 4.8 and 7.9 and outside tolerance; the criterion is on significance.
+  deviations:
+  - NREM rate is the spike count in the lab's Non-REM intervals over their duration, log10.
+- claim: fig5d-nrem-rate-relations
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig5d-nrem-rate-relations
+  notes: Signs and significance match the paper in all six regressions; noisiness t = -12.12 and
+    -11.95 (p = 1.2e-31, 7.5e-31), shiftiness -1.00 (p = 0.32) and -5.63 (p = 2.3e-08), switchiness
+    0.59 (p = 0.55) and -0.82 (p = 0.41), familiar and novel, in the 1006 neurons of
+    fig5c-switchiness-not-intrinsic.
+  deviations:
+  - As for fig5c-switchiness-not-intrinsic.
+- claim: multifield-independent-switching
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:multifield-independent-switching
+  measured:
+  - 271
+  - 34
+  notes: 271 pairs of switching fields of the same neuron in the same session and turn (219 familiar),
+    against 781 +- 78; 34 (12.5%) switch on the same trial (20 with the same type), against 41 +- 4.
+    Pairing fields of a neuron across turns gives 615 pairs and 34 (5.5%) on the same trial, close to
+    the paper's share but not its counts. No reading puts both counts within tolerance.
+- claim: figs12-stability-after-switch-on
+  outcome: partially_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs12-stability-after-switch-on
+  measured:
+  - 0.396
+  - 0.233
+  - 0.443
+  - 0.292
+  - 0.342
+  - 0.402
+  - 2.04
+  - 1.356
+  - 2.417
+  - 1.673
+  - 1.673
+  - 1.939
+  notes: Switch-ON fields have lower CV and location SD than non-switching fields against every
+    window in familiar (400 against 2678 fields; CV p = 3e-79, 4.4e-50, 3.4e-53) and novel sessions
+    (129 against 317; CV p = 4.8e-17, 4.9e-10, 9.5e-08). The novel middle-window location test,
+    expected not significant, is significant (p = 0.0058 and 0.046). Three of twelve medians are within
+    tolerance (familiar start CV, familiar and novel start SD). The medians given are under middle
+    reading (a); under (b) the CV medians are 0.349 and 0.376 and the SD medians 1.625 and 1.855.
+- claim: fig6-co-switching
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig6-co-switching
+  measured:
+  - 0.356
+  - 0.311
+  - 0.571
+  - 0.429
+  notes: Reading (a), the session test, 16 of 45 familiar sessions co-switch ON (0.356) and 14 OFF
+    (0.311), against 0.17 and 0.20; novel 4 of 7 (0.571, as expected) and 3 of 7 (one more than the
+    expected 2). Reading (b), any significant trial, gives higher fractions (familiar 0.822 and 0.689;
+    novel 7 and 6 of 7). Co-switching above chance is more frequent than in the paper. Under the four
+    other seeds the counts are 15 to 16 and 14 to 15 familiar, 4 and 3 to 4 novel.
+  deviations:
+  - All field pairs are counted, including pairs of fields of one neuron; the shift is circular over
+    trials 2 to n - 2 (code gen_circular_shuffle leaves out the first two trials and the last).
+  - The code's lag-1 window variant was not run.
+- claim: fig6f-switching-asynchronous
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:fig6f-switching-asynchronous
+  measured: 0.0222
+  notes: The 95th percentile of per-trial fractions of fields switching is 0.0177 (ON) and 0.0129 (OFF)
+    in familiar sessions (986 trials) and 0.0222 and 0.0147 in novel ones (280), all below 0.055; the
+    largest is given as measured. The single largest fractions are 0.055 and 0.090 (familiar) and
+    0.037 and 0.067 (novel).
+- claim: figs14-preexisting-fields-ephys
+  outcome: partially_reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs14-preexisting-fields-ephys
+  measured:
+  - 0.658
+  - 0.433
+  notes: By mean within-field rate (the legend's reading) 0.658 of 1974 switch-ON fields (within 0.6
+    +- 0.06) and 0.433 of 1228 switch-OFF fields (expected 0.2 +- 0.02) are below threshold; by mean
+    within-field peak rate (the Results' reading) 0.426 and 0.248. In the selected fields the
+    within-field rate exceeds the outside rate for 0.755 (ON, familiar), 0.674 (ON, novel), 0.835
+    (OFF, familiar) and 0.793 (OFF, novel), and the session-level test gives p = 1.1e-13 (ON) and
+    4.2e-11 (OFF) in familiar sessions. The majorities and the test hold under both readings; the OFF
+    fraction is off under both.
+  deviations:
+  - The threshold is the field's 95th-percentile shuffle map averaged over the field's bins; the
+    paper does not say how the bin-wise threshold is reduced to one value.
+- claim: figs2-chr2-no-effect
+  outcome: reproduced
+  notebook: reproduce_zheng_2024.ipynb
+  output: claim:figs2-chr2-no-effect
+  measured: 4243
+  notes: Among 4243 pyramidal place cells (432 light-responsive), switching category does not depend on
+    light responsiveness (four categories chi-squared = 4.47, p = 0.215; switching against not, p =
+    0.412). Including the 902 pyramidal cells without fields as a fifth category gives p = 3e-08, as
+    fewer light-responsive cells lack fields (35 of 467); that comparison is outside the claim.
+  deviations:
+  - Neurons are counted once per session; light-responsive is the files' label (pyramidal, SALT p
+    at most 0.001 and the reliability test, the paper's criteria).
+- claim: fig7-preexisting-across-days
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the two-photon imaging (14 experiments, 11 mice), which the paper says is available from
+    M. Bartos on request. It is not in dandiset 000552 and no public deposit is named in the paper.
+- claim: figs15-imaging-not-artifact
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the same two-photon imaging as fig7-preexisting-across-days, not deposited.
+- claim: figs1-not-electrode-drift
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs per-spike amplitudes of neighbouring units around each switch. The processed files hold
+    only mean waveforms. The wide-band signal is in the raw files of 11 sessions (52 to 175 GB each),
+    which hold 2000 of the 3430 switches; 40 s of one 16-channel shank is 38 MB per switch, about 77 GB
+    to stream with spike extraction on top, beyond the run's time and the notebook limit. The other
+    sessions have no wide-band signal in the dandiset. Nothing of this test was run.
+findings:
+- kind: metadata_error
+  severity: major
+  statement: The version the paper cites (0.230630.2304) has no putative cell type and no
+    light-responsive label for its units, which the paper's selection of pyramidal cells and its ChR2
+    analysis need, and its trial table marks 28 of the 30 familiar-maze trials of e16_3m1_210201 as
+    not familiar. Version 0.261113.1035 adds the labels and corrects the flag; the spike times of that
+    session are identical in the two versions.
+- kind: data_missing
+  severity: minor
+  statement: Session e13_26m1_210913, one of the paper's 46 familiar sessions, is not in the dandiset.
+- kind: metadata_insufficient
+  severity: minor
+  statement: On the linear mazes the trials' visited_arm holds the running direction without saying
+    so; left is a run toward higher linearised position in all 108 such trials and right toward lower
+    in all 110.
+- kind: other
+  about: data
+  severity: minor
+  statement: The paper requires at least 50 putative pyramidal cells per session, but by the files'
+    CellExplorer labels six of its familiar sessions have fewer (e14_2m3_201118 39, e14_2m3_201121 40,
+    e15_10m1_200803 47, e15_9f1_200715 42, e15_9f1_200720 49, e16_2m1_201121 48). The paper's labels
+    may differ from the files'.
+- kind: other
+  about: data
+  severity: none
+  statement: Spikes share the position clock; the pyramidal cells' spatial information is lower with
+    spikes shifted by 5 s or 30 s in all 53 analysed tasks, and highest unshifted in 52 (in
+    e16_3m2_211212's linear maze a 1-s shift is slightly higher). Every familiar trial starts in the
+    delay zone.
+- kind: methods_unavailable
+  statement: Which trials enter Figures 4D and 4I is not stated. The legend's 1,029 familiar and 281
+    novel trials fit trials from the fourth on (1031 and 288 here), as in the code's GLM, and not all
+    trials (1166 and 312). Over all trials switching does not decrease with trial here, so the result
+    depends on the choice. Were the first three trials of each session left out?
+- kind: methods_unavailable
+  statement: For Figure S14 the Results select fields by the average within-field peak rate and the
+    legend by the mean within-field rate, and neither says how the bin-wise shuffle threshold is
+    reduced to one value for a field. Here 0.43 or 0.25 of switch-OFF fields fall below it, against
+    the paper's 20%. Which quantity and which threshold were used?
+- kind: methods_unavailable
+  statement: For the 781 same-neuron pairs of switching fields the paper does not say whether pairs
+    are formed within a turn or across the whole maze; here they number 271 within a turn and 615 over
+    the maze. How were the pairs formed?
+- kind: code_mismatch
+  statement: The Methods detect place fields on trial-averaged rate maps, while the code
+    (place_field_analysis.py) compares the map pooled over trials (summed counts over summed
+    occupancy) with shuffles pooled the same way.
+- kind: code_mismatch
+  statement: The Methods and the Figure 4 legend describe repeated 5-fold stratified cross-validation
+    for the GLM, while the code uses StratifiedShuffleSplit with 5 splits and 10% held out. The two
+    give 0.192 and 0.169 held-out explained deviance for switching ON here.
+- kind: paper_inconsistency
+  statement: The Results cite Figures 4O and 4P for the relation of head scanning and switching;
+    Figure 4 has no panel P (its legend ends at O).
