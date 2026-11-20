@@ -1,31 +1,51 @@
-I wrote `claims/pelot-2020.yaml`. The quote checker passes: 34 claims, 34 quotes, 21 statistical values, 0 problems. Nothing is committed.
+I updated `claims/pelot-2020.yaml` to protocol pilot-18 for all seven datasets. The quote checker passes: 43 claims, 43 quotes, 21 statistical values, 0 problems.
 
-**Text read:** the version of record from Europe PMC (PMC7672126, flattened JATS XML). That covers the abstract, Introduction, Methods, Results, figure legends and Discussion. No PDF was supplied, so I read no figure. The paper links no code. The archive's file list shows a MATLAB `code` folder inside SPARC:60, but it belongs to the dataset, so I did not open it.
+**Text read.** The version of record from Europe PMC (PMC7672126), flattened from JATS XML: abstract, Introduction, Methods, Results, figure legends and Discussion. No PDF was supplied, so no figure was read. The paper links no code, so none was read.
 
-**Contents:**
-- **Claims:** 34 in total, all with quotes. That is 33 findings and 1 link check that the dataset holds the 9 + 9 rat samples.
-- **Statistics:** 9 claims carry 21 entries. These are the mixed-model ANOVA F and p values for nerve diameter, fascicle number and fascicle diameter, and the Tukey HSD p values.
-- **Criteria and expected values:** 32 claims have criteria and 16 have expected values. Tolerances are the paper's SDs for means, 10% otherwise, and 0 for counts.
-- **Data:** 9 claims test the rat dataset alone. 14 combine rat with the human or pig data (`with_inputs`). 11 rest on human or pig data only (`elsewhere`).
+**What is missing from the paper text**
+- **Eqs. 1 to 4** (the perineurium thickness fits) were lost when the text was flattened. Only the R2 values and fascicle counts survive, so the fit form and coefficients are open. The PDF would settle them.
+- **The whole supplement** is absent. The paper's own numbers are all in the main text, so I wrote claims, but three claims cannot be fully decided without it:
+  - Supplement 4 holds the literature values for `literature-comparison-human-pig` and `rat-literature-comparison`.
+  - Supplement 6 holds the age trends for `no-age-trend`.
+- **The reference list is empty.** I matched each dataset to the paper's citations (Pelot et al. 2020a to g) from the dataset titles and the legends that cite each one: 60 = g, 16 = e, 65 = a, 61 = c, 64 = f, 82 = d, 89 = b.
 
-**Details the paper leaves open, and the readings named:**
-- **Form of the perineurium fit (Eq. 3):** a straight line with an intercept, a line through zero, or another model fitted by linear least squares.
-- **Which rat fascicles are fitted:** all 22 segmented fascicles, or only the 18 largest.
-- **Rat ratios of subdiaphragmatic to cervical size (0.32 for endoneurial area, 0.68 for diameter):** the largest fascicle only, or all fascicles plus the connective-tissue boundary in the three multifascicular samples.
-- **"Thickest/thinnest perineurium for a given diameter":** the fits compared over the diameters all three species share, or at 250 µm (the size of the Figure 8 examples).
-- **Ratio of perineurium thickness to diameter falling with diameter:** the slope implied by the fit, or the sign of a Spearman correlation.
-- **No difference between levels in the perineurium relationship (no test named):** overlap of the fit coefficients' confidence bounds, or an F-test of a level term.
-- **No age trend (its test is in Supplement 6):** Pearson or Spearman correlation with age.
-- **The single human vs pig Tukey p:** the species main-effect contrast, or the comparison at each level.
-- **Mean fascicle diameter:** the mean over all fascicles, or the mean of per-sample means. For rats, the arithmetic or geometric mean.
-- **"Similar to 3%" for rat perineurium:** the 3% line, or the paper's 2.75% re-fit. I set "within a factor of two" myself, and the file says so.
-- **Variability:** the coefficient of variation, or the reported SDs.
+**Counts**
+- 43 claims, all with quotes and criteria; 5 are link claims.
+- 9 claims carry statistics.
+- 1 claim is `elsewhere` (the Sunderland and Bradley reanalysis) and has no `datasets`, since it rests on none of the seven.
+- 2 are `with_inputs` (the two literature comparisons).
 
-**Missing from the paper as supplied:**
-- **Eqs. 1 to 4:** dropped in the flattening, so the fit coefficients are not available as expected values. Only R² and the fascicle counts are.
-- **The whole supplement:**
-  - Supplement 4 holds the literature values that the rat literature-comparison claim needs; that claim can't be decided without it.
-  - Supplement 6 fixes the age-trend test.
-- **The reference list is empty:** the SPARC identifiers of the human and pig datasets (Pelot et al. 2020a to f) can't be pinned. The `where` fields cite them by name only.
+**What changed**
+- **Data fields:** claims on human and pig data now rest on sparc-65, 64 and 89 through `datasets`; they were `elsewhere` or `with_inputs` before. Every claim except the Sunderland one lists its datasets.
+- **New link claims:** `human-sample-set`, `pig-mt-sample-set`, `pig-if-sample-set`, and `mt-micrograph-collections` (covering sparc-16, 61 and 82).
+- **New finding claims:** `pig-oblong-human-round`, `human-subdiaphragmatic-fatty-tissue`, `pig-cervical-cell-bodies`, and `pig-if-endoneurium-lower`.
+- **Mixed-model criteria:** they now name the JMP settings. REML with Kenward-Roger degrees of freedom is taken from JMP, the software the paper names. Whether variance components are bounded at zero is run both ways.
+- **`rat-carotid-sheath-bundles`:** its criterion no longer contradicts itself. It is now tested on the rat micrographs in sparc-16, with the counting rule named as open. This touches a question still open in `questions/pelot-2020.yaml`, which I did not mark answered.
+- **Smaller changes:** an R2 reading for the Sunderland fit, a quartile method, and the two ways of forming the human and pig means.
+- **Old check removed:** the check of 2026-11-18 applied to the earlier file, so I did not carry it over; its changes are kept.
+- **Ids:** all old ids are kept.
 
-**An inconsistency noted in the file:** the rat diameter ratio of 0.68 in the Discussion does not follow from the Results' means, which give 0.135/0.260 = 0.52.
+**Details the paper leaves open, with the readings named**
+- **Variance components in the mixed models:** unbounded (JMP's default) or bounded at zero.
+- **Tukey contrasts printed with one p for both levels:** main-effect contrast, with per-level contrasts as a variant.
+- **Perineurium fit form:** linear with intercept, through zero, or another model linear in its coefficients.
+- **Rat fascicles in the perineurium fit:** all segmented fascicles, or only the largest per sample.
+- **"Largest" rat fascicle:** by outer area, with inner area shown if it picks another fascicle.
+- **Human and pig fascicle means:** pooled over all fascicles, or the mean of per-sample means.
+- **Rat tissue in the Discussion's ratios:** the largest fascicle, or all fascicles. The paper's 0.68 diameter ratio conflicts with its own 0.52.
+- **Pig IF against MT comparison:** all MT samples, or the same four samples per level.
+- **Words with no measure in the paper.** The rules I named are choices of the file, and the outcomes rest on them:
+  - "approximately ten times": a ratio between 5 and 20.
+  - "clearest": relative difference, or difference over pooled SD.
+  - "more consistent": coefficient of variation, or ranges.
+  - "oblong": aspect ratio, or circularity.
+  - "many": at least half, or at least a third.
+  - "similar": within a factor of two.
+  - "for a given diameter": fits compared over the common range, or at 250 µm.
+- **The two absence claims with no stated test:**
+  - Level difference in the perineurium relationship: overlapping confidence bounds, or an F-test.
+  - Age trends: Pearson, or Spearman.
+- **Judged by eye:** fat, cell bodies and carotid-sheath bundles, as the paper gives no rule.
+- **Sunderland R2:** centred or uncentred.
+
+**Inconsistencies in the paper, recorded for the author:** the rat diameter ratio (0.68 against 0.52), and the pig cervical sample count (21 stated, 22 implied by the Methods' own description).

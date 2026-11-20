@@ -1,54 +1,65 @@
-I ran steps 1 to 5 and the handover (step 6). Of the 35 claims, 29 are reproduced, 3 partially reproduced, 2 not reproduced and 1 blocked. The entry's checks pass and the notebook runs from a clean environment in 264 s. No reader questions were asked. Nothing is committed.
+I finished steps 1 to 5 and the handover (step 6). The entry is at `entries/pelot-2020`, the record at `attempts/pelot-2020-02.yaml`, and the handover in `executed/pelot-2020/handover`. `entry.py lock`, `all` and `check` all pass, the notebook runs from a clean environment in about 6 minutes, and the record validates against the attempt schema. I did not verify my own work, and nothing is committed.
 
-**1. Outcomes**
+## 1. Outcomes
+
+36 of the 43 claims reproduced, 2 partially, 3 not reproduced, 2 blocked.
 
 | Claim | Outcome |
 |---|---|
-| rat-sample-set (link), rat-nerve-diameter, rat-subdiaphragmatic-multifascicular, rat-multifascicular-proportions, rat-fascicle-diameter | reproduced |
-| nerve-diameter-anova | reproduced, rests on an assumption (JMP settings) |
-| human-pig-nerve-diameter-similar, rat-ten-times-smaller, fascicle-number-human-pig, fascicle-diameter-anova, cervical-fascicle-diameter-species, subdiaphragmatic-fascicle-diameter-comparable | reproduced |
-| nerve-cervical-larger | reproduced, rests on an assumption (reading of "clearest") |
-| fascicles-larger-cervical | reproduced, rests on an assumption (degrees of freedom) |
-| rat-diameter-like-fascicle, human-pig-tissue-proportions, rat-level-ratios (only under the connective-tissue reading), human-pig-level-ratios | reproduced |
-| human-variability | reproduced, rests on an assumption (the measure) |
-| perineurium-species-order, perineurium-ratio-decreases, human-, pig- and rat-perineurium-fit (73/0.749, 284/0.298, 22/0.765), perineurium-thicker-larger-fascicles, sunderland-reanalysis (2.750%, R² 0.510), pig-if-mt-consistent | reproduced |
-| rat-perineurium-near-3-percent, human-pig-perineurium-thicker | reproduced, rest on assumptions (the claims file's measures) |
-| literature-comparison-human-pig (9 of 11 parts hold), rat-literature-comparison (the cervical part fails) | partially reproduced, rest on assumptions |
-| peanut-fascicle-counts | partially reproduced (11 of 12 counts match; pig cervical has 24 peanut fascicles where the paper says 25) |
-| perineurium-no-level-difference | not reproduced: human and pig fits differ by level (p < 1e-6), rat does not |
-| no-age-trend | not reproduced: 3 of 26 correlations have p < 0.05, all in pigs |
-| rat-carotid-sheath-bundles | blocked, data missing: only the vagus is traced |
+| rat-sample-set, human-sample-set, pig-mt-sample-set, pig-if-sample-set, mt-micrograph-collections (link claims) | reproduced |
+| nerve-diameter-anova | reproduced (assumed: only with the subject variance left unbounded, JMP's default; F 599.6 / 11.05 / 2.45 against the paper's 577.1 / 11.01 / 2.445) |
+| human-pig-nerve-diameter-similar, rat-nerve-diameter, rat-ten-times-smaller, nerve-cervical-larger | reproduced |
+| fascicle-number-human-pig, rat-subdiaphragmatic-multifascicular, rat-multifascicular-proportions | reproduced |
+| fascicle-diameter-anova, rat-fascicle-diameter, cervical-fascicle-diameter-species, subdiaphragmatic-fascicle-diameter-comparable | reproduced |
+| fascicles-larger-cervical | reproduced (assumed: with containment degrees of freedom the rat contrast is p = 0.089) |
+| rat-diameter-like-fascicle, human-pig-tissue-proportions, pig-if-endoneurium-lower, rat-level-ratios, human-pig-level-ratios, human-variability, pig-oblong-human-round | reproduced |
+| perineurium-species-order, perineurium-ratio-decreases, human-, pig- and rat-perineurium-fit (R² 0.749, 0.298, 0.767), perineurium-thicker-larger-fascicles | reproduced |
+| sunderland-reanalysis | reproduced (slope 2.750%, R² 0.510) |
+| rat-perineurium-near-3-percent, human-pig-perineurium-thicker, pig-if-mt-consistent | reproduced |
+| pig-cervical-cell-bodies | reproduced (by eye) |
+| peanut-fascicle-counts | partially reproduced (pig cervical: 57 bundles in 24 peanut fascicles, the paper says 25) |
+| rat-carotid-sheath-bundles | partially reproduced (by eye; at most 5 bundles counted, the paper says up to 6) |
+| perineurium-no-level-difference | not reproduced (cervical and subdiaphragmatic fits differ in human and pig, F ≈ 20, p < 0.0001) |
+| no-age-trend | not reproduced (3 of 27 Pearson tests below 0.05, all pig) |
+| human-subdiaphragmatic-fatty-tissue | not reproduced (by eye: fat in 29 of 32 human sections, but also in 13 of 45 pig sections; the criterion allows at most 1) |
+| literature-comparison-human-pig, rat-literature-comparison | blocked, data_missing (the Supplement 4 literature values are not available) |
 
-**2. What was found**
+## 2. Dataset, assumptions, questions
 
-- **Measurement.** Measuring the traces with the paper's own method gives the code folder's rat output values exactly (differences 0.0), and the human values from SPARC:65 exactly.
-- **Sister datasets.** The human and pig data are in SPARC:65, 64 and 89, which I used as pinned inputs. The paper's supplement cites SPARC:65 version 6 and SPARC:89 version 1, so I pinned those. SPARC:64 is at its latest version, 4.
-- **Supplement.** Supplement 4 (the literature values) and Supplement 6 were not under `paper/`. Both are in Europe PMC's supplementary files, so I used them.
-- **Findings about the dataset:**
-  - The derivative folder's `RatVNMorphology_OutputMetrics.mat` is an older March 2020 output. It holds all three species and does not match the traces or the paper.
-  - The code folder's output file keeps only 7 of the 22 rat perineurium thicknesses.
-  - The readme gives ages of 65 to 268 days; `subjects.xlsx` and the paper give 75 to 268.
-  - `samples.xlsx` does not say the subdiaphragmatic samples are anterior. R17-1 has a NerveMask that nothing explains.
-- **Findings about the paper:**
-  - The code takes the first inner trace as the "largest" rat fascicle. It is not the largest in R22-1 and R23-1, and the paper's 0.121 ± 0.032 mm and its rat level p = 0.0234 rest on that.
-  - The Discussion's rat ratios (0.32, 0.68) are computed over all fascicles, which contradicts the Methods' largest-fascicle rule.
-- **Assumptions:**
-  - The mixed models use REML with unbounded variance components, which is JMP's default. This reproduces the paper's F values closely (599.6, 11.05, 2.455 against 577.1, 11.01, 2.445).
-  - Satterthwaite degrees of freedom stand in for Kenward-Roger.
-  - The rat largest fascicle is taken by endoneurial area.
-- **Questions for the authors** (recorded as `methods_unavailable` findings): the JMP settings; the test behind "did not suggest a difference" between levels; how the age trends were judged, since Supplement 6 is a figure with no test.
+**What the datasets hold.** The datasets contain the authors' own MATLAB code. Copying what that code does reproduces the deposited human output metrics exactly.
 
-**3. Where the protocol was unclear, wrong or missing something**
+**Findings about the data:**
+- **Rat traces changed after version 1 (major).** The sparc-60 rat masks changed between version 1 and version 2, with no changelog entry. The paper's numbers match the current masks; the deposited output-metrics `.mat` file matches version 1.
+- **Pig values in that output file are wrong (major).** Its pig fascicle diameters are about 1.40 times what the masks give (and what the paper reports). Its pig fascicle counts come from the version 1 masks of sparc-64.
+- **Rat nerve diameter in the output file (minor).** For the three multifascicular rats it uses the connective-tissue boundary. That reading is the one that reproduces the Discussion's 0.68 ratio; the Results' means give 0.52. I recorded this as a paper inconsistency.
+- **Inverted masks (minor).** 18 masks are stored as TIFF "MinIsWhite", so tools that read raw bits get them inverted.
+- **Other minor metadata errors:**
+  - The sparc-60 and sparc-16 readmes say the rats were 65 days old at minimum; the subjects sheets say 75.
+  - In sparc-61, C48-2 is filed under the wrong sample, and copies of other micrographs sit in other subjects' folders.
+  - A copied scale-bar file in sparc-89.
 
-1. A finding about an input dataset has nowhere to go: findings are shown on the attempt dataset's page. The inverted C54-3 NerveMask in SPARC:65 (it makes the published code measure the image frame) and the pig IF count of 24 went into notes instead.
-2. The check treats `tifffile.imread(` as reading a figure, but the TIFFs are the data. I switched to `TiffFile.asarray`.
-3. The paper's primary sister datasets are not in `papers/datasets/pelot-2020.yaml`, so I recorded them under `inputs`, not `datasets`. They should be added there.
-4. `paper/` lacked the supplement, but it was public. I used it, and recorded the gap.
-5. The rule to put SHA-256 in the notebook header conflicts with computing them. The header says each file is checked as it is read, and the last cell prints them.
-6. The criterion's "REML as the standard choice" does not settle bounded against unbounded variance components. I took JMP's default and marked the outcome as an assumption; the bounded fit is shown as a variant.
-7. The peanut-count criterion has no partial clause. I used partially reproduced for 11 of 12 matching counts.
-8. The check will not accept `data_missing` for `elsewhere` claims even when the outside input is missing. That stopped mattering here once the supplement was found.
+**Assumptions:**
+- Satterthwaite degrees of freedom in place of JMP's Kenward-Roger.
+- The claims file's own tests for the two "no difference" / "no trend" claims, since the paper names none.
+- My by-eye readings of compressed micrograph derivatives at reduced resolution. They are recorded in `pelot.py`, and the notebook shows the images they were read from.
 
-**4. Runtime and failures**
+**Questions for the authors** (recorded as a methods_unavailable finding):
+- Which JMP settings were used: variance bounding and the degrees-of-freedom method.
+- What test lies behind "did not suggest a difference" between levels in the perineurium fits.
+- Whether the age trends in Supplement 6 were tested.
+- The rules for counting carotid-sheath bundles and for calling adipose tissue.
 
-Wall time was about 1 h 30 min (02:20 to 03:47 UTC). Three notebook runs failed before the passing one: a `90+` age format in SPARC:65 version 6, a helper function that ended up in a markdown cell, and a key error in the final cell. All three were fixed. The statsmodels convergence warnings come only from the bounded variant fits.
+I asked a reader nothing. I did not come across any earlier attempt's results.
+
+## 3. Where the protocol was unclear
+
+1. **Pinned version vs the version that matches the paper.** The prompt pins sparc-60 version 5, but the deposited outputs match version 1. I kept version 5, which also matches the paper's own perineurium results, and showed version 1 as a variant. I read version 1 files through the Pennsieve file browser at their object versions.
+2. **Claims judged by eye.** The criteria require visual judgement, which conflicts with "compute every result" and "no embedded numbers". I stored my readings in the helper, displayed the images in the notebook, and marked those outcomes as assumed.
+3. **Sunderland data labelled "elsewhere".** The claims file says the Sunderland data have no archive, but they are deposited in sparc-65. I tested the claim on that file and listed it under `inputs`.
+4. **JMP's Kenward-Roger method is not available.** I used Satterthwaite and showed containment degrees of freedom as a variant.
+
+## 4. Runtime and failures
+
+- Author run from 03:21 to about 04:25 UTC. The notebook takes about 350 s, with 1.15 GB peak memory.
+- No step failed.
+- A harness folder, `entries/pelot-2020/.claude/.cc-writes`, sits inside the entry directory. I left it alone.

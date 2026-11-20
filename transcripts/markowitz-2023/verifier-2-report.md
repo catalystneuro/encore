@@ -1,53 +1,71 @@
-**Round-2 verification: Markowitz et al. 2023 on DANDI 000559 (0.260528.0858)**
+**Verifier report, round 2: Markowitz et al. 2023 on DANDI:000559 (0.261113.1911)**
 
-The claims file has 24 claims, and the attempt record gives an outcome for all 24:
-- 12 have an outcome from a test: 7 reproduced, 3 partially reproduced, 2 not reproduced.
-- 12 are blocked: 4 metadata_insufficient (fig3l, fig3m, fig3i, fig4f), 1 data_missing (fig2a) and 7 "other: not attempted".
+The claims file has 44 claims. The attempt record gives an outcome for all 44: 14 reproduced, 4 partially reproduced, 10 not reproduced and 16 blocked. Six outcomes are marked `assumed: true`: fig1f-syllable-vs-movement-onset, fig1f-dip-then-peak, fig1j, fig2g, ed7d and fig3i.
 
-The paper text is saved in `paper/` and was used to check the values the record quotes from it.
+### 1. Outcomes
 
-**1. Stated outcomes**
+I agree with 41 of the 44 outcomes. I disagree with one, agree with one only partly, and agree with two only because their criteria say so (fig2k and ed10i, which section 3 reports as claims-file misreadings).
 
-I agree with all 24.
-- **fig1e-velocity-timescales, partially reproduced.** Cell 12: transient rate is positive at 47 of 100 timescales of 10 s or more; amplitude at 0 of 100.
-- **fig1h-syllable-dlight-differs, partially reproduced.** Cell 16: H = 266.40, outside 209.29 ± 20.93.
-- **fig1l, fig2b, fig2i: reproduced.**
-- **fig2e-dlight-predicts-future-usage, partially reproduced.** This is no longer provisional. Cell 26 shows the same number of groups in the observed value and in every shuffle at every n, and 6 of 10 values of n up to 190 are significant.
-- **ed7-dms-fewer-transients: reproduced.**
-- **ed7-dms-no-usage-prediction: not reproduced, as the pre-set criterion requires.** Cell 30: significant at 9 of 10 values of n.
-- **fig3e-optoda-learning and fig3f-cumulative-counts: reproduced.**
-- **fig3e-learner-count: not reproduced.** Cell 36 finds 7 learners against the paper's 9.
-- **fig3h-stim-post-correlation: reproduced.** Cell 37: r = 0.891, P = 0.017.
-- **fig3l and fig3m: blocked, metadata_insufficient.** Cells 40–42: 9 of 12 controls are significant at 250 ms, and 2 of 2 at 3 s.
-- **The other 10 blocked claims:** I agree with each.
+**Disagree**
+- **fig1f-syllable-vs-movement-onset (reproduced).** I would say partially reproduced.
+  - Reading (a) is z-scored against shuffles, and that z grows with the square root of the number of events. Cell 15 compares 23,122–43,107 syllable onsets per mouse with 696–1,553 initiations from stillness, about a 30-fold difference.
+  - So syllable 2.25 against movement 1.17 can come from event count alone. With all detections (4-fold fewer events than syllable onsets), reading (a) favours movement (P = 0.004).
+  - Under the criterion's own definition (all detections), reading (b) meets the rule and reading (a) is significant in the opposite direction.
+  - The 25th-percentile stillness rule is stated, but it is not a reasonable basis for the outcome without a count-matched comparison, such as syllable onsets subsampled to the initiation count per mouse.
 
-**2. Sentences the printed outputs do not support**
+**Agree only in part**
+- **ed10d (blocked, metadata_insufficient).** The direction of stimulation can be recovered from the data. In up sessions the stimulated instances sit above the target's 75th velocity percentile, and in down sessions below its 25th. The five dls-ai32jr mice, whose direction is unstated, may be the paper's five. The block is not settled until this is tried.
 
-Every "**Result:" conclusion (cells 14, 17, 20, 24, 27, 31, 35, 38, 43) matches the printed numbers. I checked the paper values the record cites against the paper text: 75 % of detections stimulated (Methods), 379 experiments (Methods), control P = 0.082 (Fig. 3h legend), 216 experiments (Fig. 1b legend), and U = 97 (Extended Data Fig. 7b legend). All match. The exceptions:
+**Agree because the criterion says so**
+- **fig2k (reproduced).** The outcome follows the criterion. The raw correlations, though, are negative (cell 52: −0.36 and −0.46 under reading (a)) and turn positive only against the destination-permuting null. See section 3.
+- **ed10i (reproduced).** Correct on the criterion's two tests. The misreading from round 1 still stands (section 3).
 
-- **README run time.** "It takes about 16 minutes, 6 of them streaming 1,723 files." Cell 45 prints a run time of 13.1 min. Cell 3 prints 67 s plus 133 s of streaming, about 3.3 min. The file count (383 + 1,340) is correct.
-- **dLight+ChrimsonR sessions.** The Summary (cell 44) and the record's data_missing finding say "Of the dLight+ChrimsonR mice, only the 250-ms sessions are present." No cell prints the pulse lengths of the dLight+ChrimsonR stimulation files: cell 6 leaves those mice out of `C`.
-- **635-nm stimulator.** Cell 9, cell 44 and the record's metadata_error finding say "every closed-loop file states a 635-nm stimulator." Cell 6 prints this only for the 1,340 Opto-DA and control files, not for the dLight+ChrimsonR closed-loop files.
-- **Rotated clocks.** The record's format_error finding says "with one backward jump of about a session length." No cell prints this. Cells 5 and 6 print only the counts (28 and 547).
-- **Cell 38.** "Ranking by the log2 fold change gives 10." Cell 36 counts mice above the control maximum of log2 fold change; it does not rank them. This is a wording issue only.
+**Agree, with notes**
+- **ed3c (reproduced).** This follows the claim's criterion ("processed as in the fig_s03 notebook"). The claims file's own header, however, makes the Methods' fit with intercept the main reading and the no-intercept fit a variant. Under that rule the forelimb r of −0.026 misses. The outcome rests on this choice and should be marked `assumed`. In round 1 I wrongly listed the intercept as not affecting a conclusion.
+- **fig2e-not-autocorrelation (partially reproduced).** The criterion has no partial case, so this outcome is a judgment. It should carry `assumed: true`.
+- **fig3i (not reproduced).** The trial-matched assumption is stated and reasonable. Comparing stimulation minus catch between the two arms, which share the same 3:1 imbalance, would settle it with more power than discarding two-thirds of the stimulation trials.
+- **fig1f-dip-then-peak (reproduced).** The criterion is met, but the maximum (1.67) falls at +1.0 s, the edge of the window the claims file assumed.
 
-The record's verification `reason` fields state my round-1 reasons accurately and in my own words, including the problems I tied to each claim (NaN shuffle, catch fraction, how the block was worded, binning, habituation, RF settings, P reporting). My two "not checked" points that had no claim (rotated-clock alignment and 378 against 177 sessions) do not appear in `reason`. They were addressed in the notebook (cells 8 and 5).
+**All other outcomes: agree.** The other assumptions are stated and reasonable: fig1j's bound, fig2g's peak-against-peak reading, and ed7d's movement definition (its syllable half fails either way). The other blocks are justified as stated: fig1l too_large, fig2a and fig3c data_missing, and the rest not run.
 
-**3. Round-1 points**
+### 2. Statements the numbers do not support
 
-Resolved:
-- **Problem 1, NaN shuffle:** fixed, and cell 26 prints the group counts.
-- **Problem 2, substitute catch set:** cells 40–42 add the stimulated fraction per mouse and per session, and a variant with catch trials at least 2 s from any pulse.
-- **Problem 3, how the block is worded:** cells 0 and 43 and the record now give the outcome under the literal criterion and rest the block on the catch fraction and the controls.
-- **Problem 4, one-sided P:** fixed in cell 37.
-- **Problem 5, binning:** fixed in cell 12.
-- **Problem 6, habituation sessions:** now left out (cells 5 and 10).
-- **Problem 7, RF settings:** listed as deviations.
-- **Problem 8, P reporting:** fixed.
-- **Rotated clocks:** cell 8 splits the pulse-alignment check by clock, 0.938 and 0.936.
-- **Session counts:** cell 5 tabulates sessions after each filter (177 against the paper's 379).
+- **Photometry cell 33 and the record's fig2b-across notes:** "Over 166 experiments". The code-reading set is 164 (cell 3), and the record's deviation says this set was used. In cell 2, a dLight+ChrimsonR file with post-day session numbers that is an excitation session falls in `base_methods` but not in `pure_post`, so it enters `Ic`. That is probably where the 2 extra come from, and they would be the 2-s excitation sessions cell 3 says were left out. If so, every `Ic` analysis includes 2 stimulation sessions: fig1h (a), fig1j, fig2b, fig2i, fig2e, fig2h and fig2k. That is 2 of 166, so unlikely to change an outcome, but unverified.
+- **Photometry cell 16 and the record's fig1f notes:** "the outcome rests on the stillness rule, the definition the Methods' description supports". Cell 15 does not separate the definition from the 30-fold difference in event count.
+- **Photometry cell 0:** "fig3c-calibration, fig4i | blocked (data_missing)". The record has fig4i as `blocked_by: other`.
+- **Photometry cell 66 (Summary):** "22 DLS and 92 DMS photometry-session files have behaviour but no photometry". Cell 3 gives 22 dLight-only plus 10 dLight+ChrimsonR DLS files. The record's finding has this right.
+- **README:** "About 30 minutes". The photometry notebook ran from 00:09 to 00:54, about 45 minutes.
+- **README:** "The food-reward and calibration sessions are not in the dandiset … were not run within the time". This omits ed10d, which is blocked for insufficient metadata.
+- **Photometry cell 49 and the record:** "The overlap of the windows does not explain them". The z values support this (4.78 and 5.07), but with 200 shuffles the neighbours' Holm P is 0.05, the floor of that test (cell 48). Minor.
 
-Remaining points that bear on a conclusion:
-- **ed7-dms-no-usage-prediction.** The paper's Extended Data Fig. 7 has no lagged future-usage test. Its support for this claim is the encoding model (7e) and the panel title "does not correlate with syllable usage or entropy". The attempt's own across-syllable count test in DMS is not significant (cell 23: r = 0.026, P = 0.170), which agrees with the paper; the record's notes do not mention it. The fig2e-style test finds DMS stronger than DLS, and DLS is only partially significant. That pattern suggests the attempt's version of the test (equal time segments, no z-scoring to the shuffles) differs from the paper's. The outcome follows the criterion, but the notes should say this.
-- **fig1h.** The cause of the H gap (266.40 against 209.29) is still unknown. The variants added in cell 16 rule out the quality filter and the post-session rule.
-- **fig3e-learner-count.** The cause of 7 learners against 9 is still unknown. The per-target table in cell 36 shows a spread for 3442 and dls-ai32jr-1 similar to that of the control that sets the threshold, and no single cause.
+All other sentences of the conclusions, the Summaries and the record's notes match the printed outputs.
+
+The attempt record states my round-1 reasons accurately and in my own words for all 44 claims.
+
+### 3. Round-1 points
+
+**Resolved**
+- 1, clock: the per-mouse check gives a best shift of −3 samples in 19 of 22 mice across all groups.
+- 3, fig2h overlap.
+- 4, fig2g null.
+- 5, experiment set: counts at each step and quality control (b) are now shown, apart from the 166 above.
+- 6 and 12, fig1e.
+- 7, Monday-baseline variant and learner overlap.
+- 9, fig3i: addressed, outcome changed.
+- 10, `jsd`.
+- 11, 13, 14 and 15.
+- Keypoint alignment, fig3m light timing and trial counts, ed10i coordinate ranges, and the blocked reasons.
+- fig2k is now tested, and fig4i's `blocked_by` was corrected.
+
+**Partly resolved**
+- 2, movement onsets. Diagnostics were added, but the event-count confound described in section 1 is new.
+
+**Remaining points that bear on a conclusion**
+1. **fig1f.** Event count drives the shuffle-z comparison. The outcome needs a count-matched test.
+2. **fig2k: claims-file misreading.** The Methods z-score against "Pearson coefficients estimated after shuffling dLight peak values". The criterion uses the code's destination-permuting null, which goes against its own rule that the Methods give the main reading. Neither null was run as a variant. With raw r negative, the Methods' null could reverse the outcome.
+3. **ed3c: claims-file inconsistency.** The header rule and the claim's criterion name different fits, and the two fits give different outcomes.
+4. **ed10i: claims-file misreading (round-1 point 8).** The criterion reads the paper's "experiment-wide" statistic (n = 32 mice) as target-onset JSD per mouse. The notebook's experiment-wide test gives P = 0.005, with Opto-DA lower than controls.
+5. **fig2e-not-autocorrelation: criterion gap (point 16).** The criterion has no case for an autocorrelation that turns significantly negative, and n ≥ 10 syllables cannot resolve "a few hundred milliseconds".
+6. **Within-DLS group split.** It is not a clock problem, but it is unexplained. Cell 15 gives syllable-onset peaks of −4.28 to 2.73 in dLight+ChrimsonR mice against 2.73 to 5.02 in dLight-only mice. This bears on fig1f reading (b) and the syllable half of ed7d.
+7. **ed10d.** Recover the stimulation direction from stimulated-instance velocities before keeping the block.
+8. **The 2 extra experiments** in the `Ic` analyses (section 2).
