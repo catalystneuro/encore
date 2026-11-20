@@ -724,6 +724,25 @@ findings:
   statement: sparc-65 holds a second nerve trace, NerveMask_AllTissue.tif, for C47-2, C54-3, C55-3 and C63-1 (effective
     diameters 1328 to 2692 um against 1026 to 1864 um for NerveMask.tif) with no description of which is the analysed
     one; the code and the output file use NerveMask.tif, the trace adjusted by hand as the Figure 2 legend describes.
+- about: data
+  kind: other
+  severity: minor
+  datasets:
+  - sparc-60
+  found: on_prompt
+  statement: files/code/RatVNMorphology_OutputMetrics.mat in sparc-60 holds 7 rat perineurium thicknesses (thkperi_um,
+    4 entries), while the traces give 22 perineurial rings in its 18 samples, so the thicknesses behind the rat perineurium
+    fit can be had only by measuring the traces again.
+- about: data
+  kind: metadata_insufficient
+  severity: minor
+  datasets:
+  - sparc-60
+  found: on_prompt
+  statement: samples.xlsx of sparc-60 gives the nine subdiaphragmatic samples as 'subdiaphragmatic vagus nerve' without
+    saying they are the anterior trunk, which only the readme and the file names (RAbdominalAnterior*.xlsx and the derivative
+    micrographs) give. R17-1 has a NerveMask.tif (effective diameter 126.9 um) although its trace holds one perineurial
+    ring, and no text file of the dataset says whether it is meant to be used.
 verifications:
 - date: '2026-11-20'
   kind: agent
@@ -1315,3 +1334,98 @@ verifications:
       fascicle diameters about 40% too large, with no sign that anything is wrong. The other ratings are acceptable.
     response: 'Severity changed from major to critical, the verifier''s rating: the values are wrong and nothing in the
       files shows it.'
+reconciliation:
+  earlier: pelot-2020-01
+  date: '2026-11-20'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: >-
+      pelot-2020-02 finds the same deposited output metrics file (RatVNMorphology_OutputMetrics.mat in sparc-60,
+      the same file as CadaverVNMorphology_OutputMetrics.mat in sparc-65) out of date against the rat traces,
+      and traces it to version 1 of the traces; its finding 3 reports the connective tissue boundary for the
+      multifascicular samples and its finding 2 the stale pig values of the same file.
+  - finding: 2
+    status: still_present
+    now: 14
+    note: >-
+      On sparc-60 version 5, thkperi_um of files/code/RatVNMorphology_OutputMetrics.mat still holds 7 values in 4
+      entries, against 22 perineurial rings measured from the traces of its 18 samples (earlier_findings.ipynb).
+  - finding: 3
+    status: still_present
+    now: 5
+    note: >-
+      pelot-2020-02 reports the same readme age range, 65 to 268 days against 75 to 268 in the subjects sheet, and
+      finds it also in the readme of sparc-16.
+  - finding: 4
+    status: still_present
+    now: 15
+    note: >-
+      samples.xlsx still gives the nine subdiaphragmatic samples as 'subdiaphragmatic vagus nerve' with no row
+      saying anterior, which only the readme and file names give, and R17-1 still has a NerveMask.tif (126.9 um)
+      with one perineurial ring and no text file mentioning NerveMask (earlier_findings.ipynb).
+  - finding: 5
+    status: still_present
+    now: 11
+    note: >-
+      pelot-2020-02 reports the same mismatch, DataPlotting_v4.m keeping FascicleIn{1} and not the largest rat
+      fascicle, with the same values (R22-1 39.3 against 105.8 um; 121.1 +/- 32.3 against 129.1 +/- 14.0 um).
+  - finding: 6
+    status: still_present
+    now: 9
+    note: >-
+      pelot-2020-02 reports the nerve diameter ratio (0.678 only with the connective tissue boundary, 0.52 from the
+      Results' means); its rat-level-ratios notes also give the endoneurial area ratio as 0.317 with all fascicles
+      and 0.270 with the largest, the other half of the earlier finding.
+  - finding: 7
+    status: still_present
+    now: 10
+    note: >-
+      Part (1) of pelot-2020-02's finding 10 asks the same question on the JMP settings, with the nerve diameter
+      interaction non-significant only with a negative subject variance and the pig level contrast (0.012 against
+      0.0009) unexplained.
+  - finding: 8
+    status: still_present
+    now: 10
+    note: >-
+      Part (2) of pelot-2020-02's finding 10 asks what test supports no level difference in the perineurium fits,
+      with separate human and pig fits differing (F about 20, p < 0.0001).
+  - finding: 9
+    status: still_present
+    now: 10
+    note: >-
+      Part (3) of pelot-2020-02's finding 10 asks whether Supplement 6 tested age trends, with 3 of 27 Pearson
+      correlations below 0.05 in pigs (the earlier finding counted 26 tests).
+  outcomes:
+  - claim: fascicles-larger-cervical
+    earlier: partially_reproduced
+    cause: reading
+    choice: >-
+      Whether JMP's Kenward-Roger degrees of freedom are computed on the observed REML information (pelot-2020-01,
+      after round 2) or on the expected information (pelot-2020-02, mixed.py).
+    note: >-
+      Both fit the same unbounded REML model with Kenward-Roger tests; on the expected information both get pig
+      p = 0.012 (df 7.6) and rat 0.044, three species, and on the observed information pelot-2020-01 gets pig
+      p = 0.055 (df 3.74), two species. pelot-2020-01 chose the observed information because it gives the paper's
+      nerve diameter F values (577.0, 11.01, 2.4455 against 577.1, 11.01, 2.445), but neither choice gives the
+      paper's pig p of 0.0009.
+    confidence: high
+  - claim: rat-carotid-sheath-bundles
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      pelot-2020-01 blocked it because the criterion then said both that the claim was testable with the cervical
+      micrographs and not testable when only the vagus is traced; the criterion was rewritten for pelot-2020-02 to
+      be tested by eye on the micrographs whether or not the other bundles are traced. Under it pelot-2020-02 counted
+      2 to 6 bundles in the nine left sections at full resolution (5 at most on thumbnails), a judgement by eye that
+      pelot-2020-01 did not make.
+    confidence: high
+  protocol: >-
+    docs/pilot-notes.md has no section for any version after pilot-14, so what pilot-17 and pilot-18 changed is not
+    recorded there. tools/entry.py gives two rules. From pilot-17 an attempt names the notes of the paper's authors it
+    used; pelot-2020 has no author notes, so this changed nothing. From pilot-18 each finding about the data gives its
+    severity; pelot-2020-02's data findings carry one and pelot-2020-01's do not, and no outcome depends on it. The
+    larger differences between the attempts come from the claims file, rewritten under pilot-18 for all seven
+    datasets of the paper (pelot-2020-01 tested sparc-60 and read the others as inputs), not from a protocol rule.
