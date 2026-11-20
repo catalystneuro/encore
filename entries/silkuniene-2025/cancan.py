@@ -17,12 +17,17 @@ Where the parameters come from:
   geometrical centre, the two diagonals of a well pooled as one experiment, background as the
   mean of 3 ROIs inside an electrode footprint subtracted from every ROI: Methods 2.5 (claims
   file F1 to F3). The 406-um side along the diagonal is the claims file's standard choice (O1).
-- Which footprint holds the background ROIs is not given (O1, "any one, a standard choice").
-  Here each footprint gets 3 ROIs (its centre and 0.5 mm to either side across the diagonal)
-  and the footprint with the lowest mean is used, a standard choice that keeps debris lying in a
-  footprint out of the background; `profiles` also returns every footprint's value. Where the
-  near-electrode signal is close to background the footprint changes the result, and the
-  notebook shows each footprint as a reading (fig7-offtarget-40-50-fold).
+- Which footprint holds the background ROIs is not given ("within a footprint of an electrode",
+  Methods 2.5). The claims file, amended on 2026-11-20 in answer to this attempt's question,
+  makes it an open reading (O1 i to iv, the footprint at the same position in every well). Each
+  footprint gets 3 ROIs (its centre and 0.5 mm to either side across the diagonal); `profiles`
+  returns every footprint's value, and `with_background` gives the profile with the background
+  from one footprint. `profiles` itself subtracts the darkest footprint of the well, the choice
+  this attempt made before the answer, kept in the notebook as a reference.
+- ROIs parallel to the sides (Fig. 3C, claim fig3bc-rate-suppresses-off-target): along the lines
+  through the centre to the middle of each side, 6.4 mm out (half the 12.8-mm side), at whole
+  mm to 6 mm (`DIST_PAR_A`) or contiguous to 6.09 mm (`DIST_PAR_B`), the last ROIs inside the
+  square; `parallel_profiles`.
 - ROI positions (O1): reading (a) ROIs centred at whole mm, 0 to 7 mm (`DIST_A`); reading (b)
   contiguous ROIs, one ROI length (0.406 mm) per step, from the centre outward (`DIST_B`).
 - Electrode geometry: four 2.8-mm needles in a square with 15.3-mm side-to-side diagonals
@@ -62,6 +67,8 @@ DIAG_GAP_MM = 15.3                              # Methods 2.2, edge to edge alon
 SIDE_MM = (DIAG_GAP_MM + NEEDLE_D_MM) / np.sqrt(2)   # 12.8 mm between electrode centres
 DIST_A = np.arange(0.0, 7.01, 1.0)                     # O1 reading (a)
 DIST_B = np.arange(0, 19) * ROI_ALONG_MM               # O1 reading (b), out to 7.3 mm
+DIST_PAR_A = np.arange(0.0, 6.01, 1.0)                 # parallel to the sides, to 6.4 mm
+DIST_PAR_B = np.arange(0, 16) * ROI_ALONG_MM           # contiguous, out to 6.09 mm
 
 
 # ---------------------------------------------------------------- listing and metadata
@@ -309,6 +316,35 @@ def profiles(im: np.ndarray, geom: dict, dists=DIST_A) -> dict:
                 backgrounds=np.array(bgs), dists=np.asarray(dists))
 
 
+def parallel_profiles(im: np.ndarray, geom: dict, dists=DIST_PAR_A) -> dict:
+    """As `profiles`, along the four half-lines from the centre parallel to the sides of the
+    square, each ending at the middle of a side, 6.4 mm out (Fig. 3C, claims file
+    fig3bc-rate-suppresses-off-target). Row k runs toward the middle of the side from corner k
+    to corner k+1 (corner order of `find_array`); the background is that of `profiles`."""
+    cx, cy = geom["centre"]
+    c = np.asarray(geom["corners"])
+    half = []
+    for k in range(4):
+        mx, my = (c[k] + c[(k + 1) % 4]) / 2
+        u = np.array([mx - cx, my - cy])
+        u = u / np.hypot(*u)
+        half.append([roi_mean(im, (cx + d / MM_PER_PX * u[0], cy + d / MM_PER_PX * u[1]), u)
+                     for d in dists])
+    p = profiles(im, geom, dists[:1])
+    bg = p["background"]
+    return dict(half=np.array(half) - bg, raw=np.array(half), background=bg,
+                backgrounds=p["backgrounds"], dists=np.asarray(dists))
+
+
+def with_background(p: dict, footprint) -> dict:
+    """A profile from `profiles` or `parallel_profiles` with the background taken from one
+    footprint (claims file O1 readings i to iv): `footprint` 0 to 3 is the footprint at that
+    corner of `find_array` (upper left, upper right, lower right, lower left in the image),
+    the same position in every well; "min" is the darkest footprint of the well."""
+    bg = float(np.min(p["backgrounds"])) if footprint == "min" else float(p["backgrounds"][footprint])
+    return dict(p, half=p["raw"] - bg, background=bg)
+
+
 def pooled(p: dict, reading: str = "a") -> tuple[np.ndarray, np.ndarray]:
     """One experiment's profile from its half-diagonals (claims file O2).
 
@@ -439,6 +475,8 @@ def _one_well(job):
             im = images[m["asset_id"]][c]
             out.append(dict(m, chan=name, how=how, geom=geom, n_found=len(found), detections=dets,
                             pa=profiles(im, geom, DIST_A), pb=profiles(im, geom, DIST_B),
+                            qa=parallel_profiles(im, geom, DIST_PAR_A),
+                            qb=parallel_profiles(im, geom, DIST_PAR_B),
                             zone=zone_values(im, geom)))
     return out
 

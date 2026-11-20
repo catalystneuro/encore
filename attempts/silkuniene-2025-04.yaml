@@ -22,7 +22,7 @@ datasets:
   doi: 10.48324/dandi.001284/0.250701.1610
   relation: primary
 paper: doi:10.1016/j.bioelechem.2025.109016
-date: 2026-11-19
+date: 2026-11-20
 entry: silkuniene-2025
 provenance:
   kind: agent
@@ -51,62 +51,154 @@ outcomes:
 - claim: fig3a-centre-enhanced
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig3a-centre-enhanced
+  proposed:
+    outcome: partially_reproduced
+    reason: >-
+      After the reader's answer of 2026-11-20 the claim lists DANDI:001276, and it is tested on its CT26
+      wells at 2 bursts (x4), CANCAN at 1 Hz (n = 2) and 0.2 MHz (n = 6) and controls (n = 4). The
+      CANCAN half holds and the control half does not, and with two rates held the criterion allows at
+      most partial. The claim holds in part.
   notes: >-
-    The claim rests on DANDI:001047, whose files all state a 3.8-mm inter-electrode distance and a
-    3.2-kV first pulse and whose images show a small array (notebook, data check); the packet-rate
-    series on the paper's 15.3-mm array is not in it. No dandiset holds the 1-kHz or 10-kHz wells.
-    DANDI:001276 holds CT26 wells at 2 bursts (x4) at 1 Hz (n = 2), control (n = 4) and 0.2 MHz
-    (n = 6). The claims file assigns the series to 001047 only; whether these 001276 wells should be
-    used is asked of a reader (questions/silkuniene-2025.yaml). As a variant that decides nothing,
-    the CANCAN centre exceeds YP at 4 mm by a gap at both rates, but the control centre is not below
-    YP at 4, 6 and 7 mm by a gap (all wells, and the 13 August 2024 wells alone).
+    What the answer changed. The verified outcome was blocked, as the claims file listed 001047 only,
+    whose files all state a 3.8-mm array and a 3.2-kV first pulse. The reader found that by the paper
+    the 0.2-MHz condition of the series is the protocol of the 2-burst CT26 group of Fig. 7 and added
+    001276, with the criterion judging the claim on the rates held and capping it at partial. Tested
+    now on 001276, under the ROI readings, the footprint readings (i) to (iv) of the amended O1,
+    pooling and side. At 0.2 MHz the centre exceeds YP at 4 mm by a gap in 24 of 24 combinations
+    (t-test p 0.0003 to 0.0053); at 1 Hz in 21 of 24 (all 8 under pooling b, 13 of 16 under pooling
+    a; t-test p 0.062 to 0.195). The control centre (2237 to 2301 a.u.) is not below YP at 4, 6 and 7
+    mm by a gap in any of the 24 (YP at 4 mm 1749 to 2267 a.u.; t-test p 0.25 to 0.98), and the 13
+    August 2024 wells give the same. 001047 holds none of these wells, and no dandiset holds the
+    1-kHz or 10-kHz wells. The verified outcome is kept and a change to partially_reproduced is
+    proposed for a further round.
+  deviations:
+  - >-
+    The 1-Hz CANCAN group has 2 wells and the control group 4, where the paper reports n = 3 per rate
+    and n = 5 controls; all wells are used, and the 13 August 2024 wells, the one date with all
+    three conditions, are shown as a second set.
 - claim: fig3bc-rate-suppresses-off-target
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig3bc-rate-suppresses-off-target
+  proposed:
+    outcome: reproduced
+    reason: >-
+      Tested on 001276 after the reader's answer. Under pooling (b), the reading the Fig. 4A legend
+      gives for the near-electrode values of these experiments, 0.2 MHz is below 1 Hz by a gap at 6
+      mm, 7 mm and the perimeter under every footprint and ROI reading (24 of 24); under pooling (a)
+      the left side at 7 mm fails in 7 of 8 combinations, where one of the two 1-Hz wells is low. The
+      outcome rests on pooling (b), an assumption.
   notes: >-
-    The series is not in DANDI:001047 (see fig3a-centre-enhanced). 001276 holds two 1-Hz CANCAN
-    CT26 wells and no measurements parallel to the sides; the claim was not tested on them, as its
-    datasets list 001047 only (asked of a reader). As a variant, 0.2 MHz is below 1 Hz by a gap at 6
-    mm (76 against 1041 a.u.) and 7 mm (185 against 1901 a.u.), whole-mm ROIs.
+    What the answer changed. The verified outcome was blocked, as the claims file listed 001047 only;
+    the reader added 001276 (see fig3a-centre-enhanced). The perimeter part is tested on ROIs placed
+    by code on the whole-well images along the lines through the centre parallel to the sides (6 mm
+    under whole-mm ROIs and 6.09 mm under contiguous ROIs, the last inside the square; the
+    criterion's two perimeter readings are the same ROIs here). Over the footprint readings (i) to
+    (iv), YP at 0.2 MHz is 2.5 to 6.6% of that at 1 Hz at 6 mm, 4.3 to 11.9% at 7 mm and 6.8 to 16.4%
+    at the perimeter (t-test p at most 0.0095, 0.0193 and 0.0048). By the graph rule it is lower by a
+    gap in 24 of 24 combinations at the perimeter, 23 of 24 at 6 mm and 17 of 24 at 7 mm; every
+    failure is under pooling (a) on the left side (40 of 48 hold under pooling a, 24 of 24 under
+    pooling b). The 13 August 2024 wells give 39 of 48 and 24 of 24. The verified outcome is kept and
+    a change to reproduced, resting on the pooling, is proposed.
+  deviations:
+  - >-
+    The ROIs parallel to the sides are placed by code on the whole-well images, from the centre to
+    the middle of each side (cancan.parallel_profiles); the paper's Fig. 3C ROIs were measured on
+    one set only and their positions are not given.
+  - >-
+    The 1-Hz group has 2 wells, where the paper reports n = 3.
+  - >-
+    Proposed as an assumption, pooling (b) of O2 decides where the readings differ. The Fig. 4A
+    legend says "measurements in 4 diagonal directions from the center were pooled" for the
+    near-electrode values of the same experiments (Fig. 4B); Fig. 3B plots profiles from -x to x
+    (pooling a), under which one side fails at 7 mm.
 - claim: fig3-lorentzian-profile
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig3-lorentzian-profile
+  proposed:
+    outcome: partially_reproduced
+    reason: >-
+      Tested on 001276 after the reader's answer. At 1 Hz and 0.2 MHz, along the diagonals and
+      parallel to the sides, R is above 0.9 with p below 0.001 under every reading; the claim speaks
+      of every rate and the criterion judges it on the two rates held, at most partially reproduced.
   notes: >-
-    The packet-rate series is not in DANDI:001047 (see fig3a-centre-enhanced; asked of a reader). As
-    a variant on the 001276 wells, the Lorentzian fit over -4 to 4 mm gives R 0.959 to 0.997 with p
-    below 1e-4 at 1 Hz and 0.2 MHz under every reading.
+    What the answer changed. The verified outcome was blocked, as the claims file listed 001047 only;
+    the reader added 001276 and wrote that with only some rates held the claim is at most partially
+    reproduced. Over the footprint readings (i) to (iv), the ROI readings, pooling, both R readings
+    and both directions, R is 0.946 to 0.997 with the largest p 1.2e-04 (62 of 64 combinations below
+    1e-4); the 13 August 2024 wells give R 0.946 to 0.994. The 1-kHz and 10-kHz wells are in no
+    dandiset. The verified outcome is kept and a change to partially_reproduced is proposed.
 - claim: fig3-tail-deviation-falls-with-rate
   outcome: blocked
   blocked_by: data_missing
   notes: >-
-    Depends on fig3-lorentzian-profile; the packet-rate series is not in DANDI:001047. As a variant on
-    the two rates of 001276, the data lie above the fit beyond 4 mm by 26.8 to 28.6% of the fitted
-    peak at 1 Hz and 3.2 to 3.5% at 0.2 MHz; two rates give no trend.
+    The reader's answer of 2026-11-20 kept this claim on DANDI:001047 only, as a trend over the
+    packet rates cannot be tested with two rates; 001047 holds no images from the paper's array, and
+    no dandiset holds the 1-kHz or 10-kHz wells. As a variant that decides nothing, on the two rates
+    of 001276 the data lie above the fit beyond 4 mm by 24.6 to 35.9% of the fitted peak at 1 Hz and
+    1.1 to 4.4% at 0.2 MHz (footprint readings i to iv).
 - claim: fig4b-40-fold-ratio
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_silkuniene_2025.ipynb
+  output: claim:fig4b-40-fold-ratio
+  proposed:
+    outcome: reproduced
+    reason: >-
+      Tested on the six CT26 0.2-MHz wells at 2 bursts (x4) of 001276 after the reader's answer. The
+      ratio is inside 36 to 44 under 10 of 48 combinations of footprint, ROI reading, pooling, side
+      and distance; the first the criterion lists (footprint i, pooling a, 6 mm, ratio of means,
+      whole-mm ROIs) gives 39.4. As the criterion says, the outcome rests on the footprint that gives
+      it, an assumption.
   notes: >-
-    The series is not in DANDI:001047 (asked of a reader). As a variant that decides nothing, the
-    six CT26 0.2-MHz wells at 2 bursts (x4) of 001276 give centre to near-electrode ratios of 28.4
-    (6 mm) and 11.7 (7 mm) as ratios of means, 36.7 and 15.7 as means of per-well ratios, with the
-    darkest footprint as background. At 6 mm the ratio of means is 28.4 to 149 over the background
-    footprints; on the three 13 August 2024 wells it is 40.1 with the darkest footprint.
+    What the answers changed. The verified outcome was blocked, as the claims file listed 001047
+    only; the reader added 001276 (first answer) and made the background footprint an open reading,
+    the claim holding when the ratio is in range under one combination and resting on the footprint
+    that gives it (second answer). At 6 mm the ratio of means is 33.4 to 39.4 with footprint (i),
+    31.2 to 36.3 with (ii), 39.9 to 48.8 with (iii) and 75.0 to 114.9 with (iv); at 7 mm every
+    footprint gives 10.6 to 29.5. The mean of per-well ratios is unstable, as with a fixed footprint
+    some wells' near-electrode values fall below zero. The darkest footprint, used before the answer,
+    gives a 6-mm ratio of means of 26.7 to 30.4 and a mean of ratios of 35.4 to 52.0. On the 13 August
+    2024 wells (n = 3) 6 of 48 combinations are inside. The fields are the paper's simulation and are
+    not tested. The verified outcome is kept and a change to reproduced, resting on the footprint, is
+    proposed.
+  deviations:
+  - >-
+    Proposed as an assumption, the footprint that gives the background is the one under which the
+    ratio is in range (claims file O1 and the criterion, as amended on 2026-11-20); every
+    combination is shown.
 - claim: fig4b-centre-no-rate-effect
   outcome: blocked
   blocked_by: data_missing
-  notes: The packet-rate series is not in DANDI:001047, and no dandiset holds the 1-kHz and 10-kHz wells.
+  notes: >-
+    The packet-rate series is not in DANDI:001047, and no dandiset holds the 1-kHz and 10-kHz wells.
+    The reader's answer of 2026-11-20 kept the claim on 001047 only, as the test is a family over the
+    rates, which the two rates of 001276 cannot give.
 - claim: fig4b-near-electrode-decline
   outcome: blocked
   blocked_by: data_missing
-  notes: The packet-rate series is not in DANDI:001047, and no dandiset holds the 1-kHz and 10-kHz wells.
+  notes: >-
+    The packet-rate series is not in DANDI:001047, and no dandiset holds the 1-kHz and 10-kHz wells.
+    The reader's answer of 2026-11-20 kept the claim on 001047 only, as a power-law trend over the
+    rates cannot be fitted to two rates.
 - claim: fig4c-fwhm-falls-with-rate
   outcome: blocked
   blocked_by: data_missing
-  notes: The packet-rate series is not in DANDI:001047, and no dandiset holds the 1-kHz and 10-kHz wells.
+  notes: >-
+    The packet-rate series is not in DANDI:001047, and no dandiset holds the 1-kHz and 10-kHz wells
+    the claim's values and tests rest on. The reader's answer of 2026-11-20 kept the claim on 001047
+    only.
 - claim: fig4c-log-trend
   outcome: blocked
   blocked_by: data_missing
-  notes: Depends on fig4c-fwhm-falls-with-rate; the series is in no dandiset.
+  notes: >-
+    Depends on fig4c-fwhm-falls-with-rate; the series is in no dandiset. The reader's answer of
+    2026-11-20 kept the claim on 001047 only.
 - claim: fig5-raised-electrodes-weaken-centre
   outcome: not_reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -124,6 +216,11 @@ outcomes:
     0-mm centre at every elevation with all wells (2.0 to 12.7% in the August wells). In the October
     2024 wells alone (5, 5 and 4 wells) the centre is 121.8% of the all-wells 0-mm mean at 0 mm and
     38.0% and 7.1% of it at 1 and 2 mm.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The outcome is the same under each: with all wells the 1-mm centre is 48.2 to 48.5% of the 0-mm
+    mean (no gap) and the 2-mm centre 28.2 to 28.5% (gap); with the August wells neither drop has a
+    gap.
   deviations:
   - >-
     The dandiset holds 12, 11 and 11 YP wells at 0, 1 and 2 mm, where the paper reports n = 6 to 7;
@@ -142,6 +239,10 @@ outcomes:
     1.4% of the centre), below the centre by more than the error bars under both ROI readings
     (t-test p = 0.008 to 0.009; paired p = 0.025). At 1 mm the gap holds (about 13% of the
     centre); at 2 mm the centre Pr is 23 a.u. and it does not.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The gaps hold under each and both ROI readings, Pr at 6 and 7 mm being -0.2 to 1.2% of the
+    centre (t-test p 0.008 to 0.009).
   deviations:
   - >-
     The Pr images share the frame of the YP image of the same well (spot centres 0.05 to 0.16 mm
@@ -159,6 +260,9 @@ outcomes:
     narrower than the Pr spot. With the 7 August YP wells, the paper's n, the ratio is 0.82 to 0.83.
     The tails differ the other way (fig5b-reversible-beyond-2mm), so a spot size read from the
     tails, not the FWHM the criterion uses, could rank them differently.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The ratio is 0.723 to 0.750 with all YP wells, outside both ranges in all 16 combinations.
   deviations:
   - All 12 YP wells at 0 mm are used against the 5 Pr wells; the 5 matched wells are shown.
 - claim: fig5b-gaussian-pr-lorentzian-yp
@@ -176,6 +280,10 @@ outcomes:
     0.993, YP Gaussian 0.960 to 0.979; both orderings hold under every reading, and every F test p
     is below 1.1e-06. With the 7 August YP wells, YP R2 is 0.976 to 0.995 (Lorentzian) and 0.947
     to 0.966 (Gaussian), the Lorentzian above under every reading.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    R2 is 0.933 to 0.959 and 0.984 to 0.998 for Pr and 0.973 to 0.993 and 0.962 to 0.984 for YP,
+    within tolerance with both orderings holding; the largest F-test p is 1.4e-06.
 - claim: fig5b-reversible-beyond-2mm
   outcome: reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -189,6 +297,10 @@ outcomes:
     not match. With the four half-diagonals pooled (O2 reading b), reading (b) gives 2.06 and 2.09
     mm and reading (a) 3.00 and 2.84 mm. With the 7 August YP wells, reading (b) gives 1.78 to 1.83
     mm.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    Reading (b) gives 2.04 to 2.15 mm in all 16 combinations of ROI reading and pooling; reading (a)
+    2.84 to 3.50 mm.
 - claim: fig5c-nuclear-yp-centre
   outcome: partially_reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -229,6 +341,10 @@ outcomes:
     all seven 600-ns wells (mostly 300 against 900 ns; under contiguous ROIs also 600 against 900 ns
     at +/-0.81 mm). The broader 300-ns peak is the effect the paper
     reports in Fig. 6D, so the paper's "similar" and its Fig. 6D finding pull against each other.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    Durations differ by a gap at some distance under every reading (4 to 26 distance and pair
+    combinations with n = 5, 2 to 16 with all seven 600-ns wells).
 - claim: fig6d-longer-pulses-sharper-peak
   outcome: reproduced
   assumed: true
@@ -259,6 +375,11 @@ outcomes:
     the authors are asked about both (findings). The verifier did not agree with reproduced in
     either round, and after round 2 a change to not_reproduced is proposed (proposed, and the
     measures of B2 and B3 in the notebook).
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    With the main wells every slope on experiments is negative with p = 0.0003 to 0.0465 (on group
+    means 0.000 to 0.154); with only B2 left out p = 0.45 to 0.88; with all seven wells 0.84 to
+    0.98. The outcome and the proposed change are as they were.
   deviations:
   - >-
     Assumed, per-experiment FWHM values are the regression points (claims file O4 reading a). The
@@ -280,6 +401,17 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_silkuniene_2025.ipynb
   output: claim:fig6d-600-900-differ-from-300
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: >-
+      After the reader's answer of 2026-11-20 the background footprint is an open reading (O1 i to
+      iv), and the criterion's outcome depends on it. With footprint (i) neither comparison is below
+      0.05 under any reading of ROI and fit range (not reproduced); with (ii) and (iii) the 900-ns one
+      is under 2 and 3 of 6 readings; with (iv) the 900-ns one is under all 6 and both under 3. The
+      paper does not say which footprint it used, and no position is better supported than another,
+      so no choice has a defensible basis. The darkest footprint of each well, which gave the
+      verified partial outcome, is not among the readings the claims file names.
   measured:
   - 0.1686
   - 0.0118
@@ -293,6 +425,11 @@ outcomes:
     0.05 under at least one reading only in the main choice; the 900-ns comparison does not depend
     on the choice. With only B2 left out the 600-ns FWHM is larger than at 300 ns and the outcome is
     still partial.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The 900-ns comparison is below 0.05 (two comparisons) in 11 of 24 combinations (corrected p
+    0.0021 to 0.1126) and the 600-ns comparison in 3 of 24 (0.031 to 0.78), and the outcome the
+    criterion gives depends on the footprint (proposed).
   deviations:
   - The same assumption on the 600-ns wells as fig6d-longer-pulses-sharper-peak.
 - claim: fig6d-900ns-fwhm
@@ -310,6 +447,10 @@ outcomes:
     FWHM is 1.755 to 1.763 mm (contiguous ROIs) and 1.850 to 1.857 mm (whole-mm ROIs); with the spot
     wells shifted by the median difference, 1.745 to 1.771 mm and 11.41 to 11.57% (contiguous),
     inside both tolerances, and 1.831 to 1.837 mm (whole-mm), outside.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The FWHM is 1.602 to 1.721 mm (10.47 to 11.25%), both values within tolerance in 21 of 24
+    combinations; the criterion needs one.
 - claim: fig7be-center-linear-with-bursts
   outcome: partially_reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -324,6 +465,11 @@ outcomes:
     draw, but the CT26 p below 0.001 depends on which wells are used, so the claim holds in part.
     The outcome is partial under both O4 readings, so it does not rest on that choice. Changed from
     reproduced after round 1.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    On experiments the CT26 slope has p = 1.004e-03 to 1.808e-03 and the CHO slope 6.7e-13 to
+    2.5e-11; on group means CT26 0.030 to 0.055 and CHO 0.0005 to 0.0012. Partially reproduced under
+    every footprint.
   deviations:
   - >-
     Per-experiment values are the main regression points (O4 reading a), as for Fig. 6D; the Fig. 7
@@ -341,11 +487,27 @@ outcomes:
     (5719) but inside its 95% band (4028 to 7410 on experiments, 3204 to 8225 on means). It is not
     above the 4-burst mean (3869 +/- 55) by more than the error bars. Reading (b) holds and reading
     (a) does not.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The 6-burst mean (4617 to 4845 a.u.) is below the line (5425 to 5676) and inside its band, and
+    not above the 4-burst mean by a gap, under every footprint.
 - claim: fig7cf-fwhm-with-bursts
   outcome: reproduced
   assumed: true
   notebook: reproduce_silkuniene_2025.ipynb
   output: claim:fig7cf-fwhm-with-bursts
+  proposed:
+    outcome: blocked
+    blocked_by: methods_underspecified
+    reason: >-
+      After the reader's answer of 2026-11-20 the background footprint is an open reading (O1 i to
+      iv). On individual experiments the CT26 slope is positive with p below 0.001 under every
+      footprint, but the CHO slope p is 0.076 to 0.237 with footprint (i), 0.131 to 0.410 with (ii),
+      0.0065 to 0.020 with (iii) and 0.018 to 0.075 with (iv), so the criterion holds in 6, 6, 0 and 2
+      of the 6 readings of ROI and fit range, and with (iii) and most of (iv) the CHO slope has p
+      below 0.05, which it calls not reproduced. The paper does not say which footprint it used and
+      no position is better supported than another; the darkest footprint, which gave the verified
+      outcome, is not among the readings the claims file names.
   notes: >-
     On individual experiments the CT26 slope is 0.95 to 1.22 mm per burst, p 3.0e-09 to 2.5e-07,
     and the CHO slope (2 to 6 bursts) 0.08 to 0.14 mm per burst, p 0.068 to 0.33. On group means
@@ -357,6 +519,10 @@ outcomes:
     because the legend gives p < 0.001 for the CT26 slope of panel B, which is fitted to three group
     means and would need t of about 636 on means. The argument holds for panel B only; with four
     group means the panel C CT26 p reaches 0.0005 under one reading. The verifier agreed in round 2.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The CT26 slope keeps p below 0.001 (at most 5.8e-07), but the CHO slope p falls below 0.05 with
+    footprints (iii) and (iv), and the criterion holds in 14 of 24 combinations (proposed).
   deviations:
   - Assumed, per-experiment values are the regression points (O4 reading a).
 - claim: fig7-sharpest-peak-one-burst
@@ -377,6 +543,10 @@ outcomes:
     their FWHM shifted by the median difference between the two ways of locating the array, the
     FWHM is 1.117 to 1.124 mm (7.30 to 7.35%, area reading b 2.39 to 2.42%) under whole-mm ROIs,
     inside all three tolerances.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The 1-burst FWHM is 0.932 to 1.126 mm, all three values are within tolerance in 12 of 24
+    combinations, and it is the smallest group in all 24.
 - claim: fig7-offtarget-40-50-fold
   outcome: reproduced
   assumed: true
@@ -398,15 +568,18 @@ outcomes:
     (A), 6 mm, ratio of means, whole-mm ROIs, upper-left footprint. Changed from not_reproduced
     after round 1. The evidence is weak: for CT26 at 1 burst and 6 mm the footprint choice alone
     moves the ratio of means from 23.6 to 57.0, across the whole band, and the darkest footprint
-    used for every other claim gives no group inside it. Whether O1 should name the footprint is
-    asked of a reader (questions/silkuniene-2025.yaml).
+    gives no group inside it.
+    What the second answer changed (2026-11-20): the claims file now names the footprint readings
+    (i) to (iv) and says the claim holds under one combination, resting on the footprint that gives
+    it, as an assumption. That is how the outcome was recorded after round 1, so it stands; the
+    question of the earlier note is answered.
   deviations:
   - >-
-    Assumed, the footprint that gives the background is an open reading. Methods 2.5 subtracts "the
-    mean of 3 ROIs inside an electrode footprint" without saying which; the claims file calls the
-    choice standard (O1), but here it changes the result, so each footprint is run, ranked by value
-    and at each fixed position. The darkest footprint, used for the other claims to keep debris out,
-    gives the lowest ratio.
+    Assumed, the footprint that gives the background is the one under which the ratio is in range.
+    Methods 2.5 subtracts "the mean of 3 ROIs inside an electrode footprint" without saying which;
+    the claims file, amended on 2026-11-20, names each footprint as a reading (O1 i to iv) and rests
+    the outcome on the footprint that gives it. Each is run at a fixed position, and as variants
+    ranked by value. The darkest footprint gives the lowest ratio.
 - claim: fig7-cho-replicates-ct26
   outcome: reproduced
   notebook: reproduce_silkuniene_2025.ipynb
@@ -415,19 +588,24 @@ outcomes:
     For 2, 4 and 6 bursts in both cell lines, centre YP exceeds YP at 6 and at 7 mm by more than
     the error bars under both ROI readings (CHO centre 578 to 3045 a.u., near the electrodes 8 to
     537 a.u.); 1 burst also holds.
+    What the second answer changed (2026-11-20): the background footprint is now an open reading,
+    (i) to (iv) the footprint at the same position in every well, and the claim was run under each.
+    The gaps hold in all 48 combinations for 2 to 6 bursts, and at 1 burst in 14 of 16.
 findings:
 - kind: data_missing
   statement: >-
     DANDI:001047, which cites the paper, holds images from a 3.8-mm array with a 3.2-kV first
-    pulse (per-file metadata and images), not the paper's 15.3-mm array with 7.2-kV pulses. The
-    packet-rate series of Figures 3 and 4 (1 Hz to 0.2 MHz) is in none of the four dandisets, and
+    pulse (per-file metadata and images), not the paper's 15.3-mm array with 7.2-kV pulses. Of the
+    packet-rate series of Figures 3 and 4 (1 Hz to 0.2 MHz) only the 1-Hz, 0.2-MHz and control wells
+    are deposited, in 001276; the 1-kHz and 10-kHz wells are in none of the four dandisets, and
     neither are the field simulation (Fig. 1), the thermochromic film images (Fig. 2) or the
-    high-resolution images of Fig. 5C. Eleven of the paper's claims cannot be tested.
+    high-resolution images of Fig. 5C. Seven of the paper's claims cannot be tested.
 - kind: metadata_insufficient
   statement: >-
     DANDI:001276 holds CT26 and CHO wells exposed at a 1-Hz packet rate and control wells, which
     its description (0.2 MHz, 1 to 6 bursts) does not mention and whose role in the paper is not
-    stated; they may be part of the packet-rate series of Figures 3 and 4. The CT26 wells at 2
+    stated; by the paper's protocol they fit the packet-rate series of Figures 3 and 4, and a
+    reader's answer assigns four of its claims to them. The CT26 wells at 2
     bursts (x4) hold CANCAN at 1 Hz (n = 2) and 0.2 MHz (n = 6) and controls (n = 4), with all three
     conditions on 13 August 2024.
 - kind: selection_undocumented
@@ -480,7 +658,9 @@ findings:
   statement: >-
     Question for the authors. Where were the ROIs placed along the diagonals, and which footprint
     gave the background? The centre to near-electrode ratios (Fig. 4B, Results 3.4) depend strongly
-    on the background, as the near-electrode signal is close to it.
+    on the background, as the near-electrode signal is close to it, and with the footprint at a
+    fixed position in every well the Fig. 6D comparisons with 300 ns and the CHO slope of Fig. 7F
+    change significance with the footprint.
 - kind: metadata_error
   found: on_prompt
   severity: minor
