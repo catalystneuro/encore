@@ -136,10 +136,11 @@ claims:
     tolerance: 2.6
     unit: percent
   criterion: Proportions as in the Figure 1J legend, nuclei of the Drd1a+ or Drd2+ cluster, with
-    those expressing the other receptor counted as dual expressing. The denominator is open;
-    readings, (a) all nuclei in the two MSN clusters, (b) those clusters without the dual
-    expressing nuclei. Reproduced when under one reading both values are within tolerance and
-    the chi-squared tests of ASt against TS and against DS (Holm-corrected) give p < 0.001.
+    those expressing the other receptor counted as dual expressing. The denominator is all nuclei
+    in the two MSN clusters, dual expressing included, since 71% and 26% sum to 97% and the
+    legend counts dual expressing nuclei as a third class. Reproduced when both values are within
+    tolerance and the chi-squared tests of ASt against TS and against DS (Holm-corrected) give
+    p < 0.001.
 - id: fig1l-rnascope-drd2-enriched
   statement: RNAscope confirms the Drd2+ enrichment of the ASt (68% Drd2+, 27% Drd1a+), with the
     Drd1a to Drd2 balance of the ASt differing from TS and DS.
@@ -169,6 +170,13 @@ claims:
     value: 27
     tolerance: 2.7
     unit: percent
+  criterion: Cells labeled when over the puncta threshold of 6 for a probe, dual labeled when over
+    it for both (STAR Methods, Object identification; Comparison of Drd1a/Drd2 composition).
+    Denominator the cells labeled for Drd1a, Drd2 or both (Figure 1L legend). Pooling is open;
+    readings, (a) cells pooled over mice, (b) the mean of per-mouse proportions. Per mouse and
+    region the log-ratio log(Drd1a-only / Drd2-only), two-tailed paired t-tests, Holm over the
+    three region pairs (STAR Methods). Reproduced when under one reading both values are within
+    tolerance and the ASt against TS and ASt against DS tests give p < 0.05.
 - id: figs4-cdh6-slit2-gradient
   statement: Cdh6 and Slit2 are expressed most in the ASt, more than in dorsal TS and CeA, decrease
     in a dorsoventral gradient through the TS to the DS, and are expressed as highly in the LA as in
@@ -188,6 +196,14 @@ claims:
     statistic: F(7, 16) = 22.65
     p: 3.6e-7
     n: 3 mice
+  criterion: Per mouse and region, the share of DAPI cells labeled for each gene at 3 or more
+    puncta (STAR Methods, Object identification). Eight regions (df 7, 16); the text names ASt,
+    CeA, LA, DS and TS(v), TS(m), TS(d) (Figure S4A), and the eighth is not named. One-way ANOVA
+    over regions with Tukey's test (Figure S4 legend). Reproduced when for each gene the ANOVA
+    gives p < 0.05, Tukey puts ASt above TS(d) and above CeA at p < 0.05, ASt against LA is not
+    significant, and the region means fall in the order ASt > TS(v) > TS(m) > TS(d) > DS. The
+    ordering of means is this file's reading of "decreasing in a dorsoventral gradient"; the paper
+    reports no test of it.
 - id: figs5-ephys-mice-discriminate
   statement: Paired mice in the electrophysiology experiments discriminate the cues, with more
     port entry to CS-reward and more defensive behavior to CS-shock, while unpaired mice do not.
@@ -262,9 +278,11 @@ claims:
     the pie charts give each region's share normalized for region size. Open, with readings run
     together, the linkage ((a) average, (b) Ward, (c) MATLAB's default, single), the traces'
     span ((a) the 20 s cue, (b) 20 s before to 20 s after onset) and the bin size (10 or 100 ms).
-    The tree is cut into seven clusters. A cluster is sustained when its mean CS-shock z over
-    0.1 to 19 s is above 1 and its mean over the last 5 s of the cue is above half its mean
-    over the first 5 s. Reproduced when under one reading the two sustained clusters with the
+    The number of clusters is not stated; the Results name clusters 1 to 7, so the tree is cut
+    into seven, and eight is run as a variant in case the figure holds more. A cluster is
+    sustained when its mean CS-shock z over 0.1 to 19 s is above 1 and its mean over the last
+    5 s of the cue is above half its mean over the first 5 s; both thresholds are choices made
+    here, as the paper defines "sustained" only by eye. Reproduced when under one reading the two sustained clusters with the
     largest mean CS-shock z each have ASt as the region with the largest normalized share.
 - id: fig2o-ast-greater-cs-shock-responses
   statement: ASt neurons have greater phasic (0 to 100 ms) and sustained (0.1 to 19 s) responses to
@@ -306,14 +324,17 @@ claims:
     statistic: F (2, 547) = 15.57
     p: 0.0001
     p_relation: "<"
+    n: 193 ASt, 212 TS and 145 CeA neurons
   - about: CS-reward sustained, region
     test: one-way ANOVA with region as factor
     statistic: F (2, 547) = 16.38
     p: 0.0001
     p_relation: "<"
+    n: 193 ASt, 212 TS and 145 CeA neurons
   criterion: As fig2o-ast-greater-cs-shock-responses, for CS-reward. Reproduced when both ANOVAs
     give p < 0.0001 and the mean ASt phasic z to CS-reward is above 0 by a one-sample t-test at
-    p < 0.05. The paper does not name the direction of the Tukey comparisons for CS-reward, so
+    p < 0.05. The paper gives no test for "robust phasic responses"; the one-sample t-test is a
+    choice made here. The paper does not name the direction of the Tukey comparisons for CS-reward, so
     they are reported, not judged.
 - id: fig2p-ast-more-responsive
   statement: A greater proportion of ASt neurons than of TS or CeA neurons respond phasically to
@@ -343,15 +364,16 @@ claims:
     directions from cue onset both at the population level
   depends_on:
   - fig2-recorded-neurons
-  criterion: As the code does (scripts/trajectories/trajectories_rev_2025.py at the commit read),
-    following the STAR Methods (Neural trajectory analysis). Paired ASt units, 100 ms bins, -20 to
-    40 s around each CS onset; per animal, each neuron z-scored over all its trials and bins,
-    averaged per CS type, all animals' neurons stacked; PCA on the concatenated averages, keeping
-    the components that explain 90% of variance; Euclidean distance between the CS-shock and
-    CS-reward projections per bin. The paper gives no test. Reproduced when the mean distance over
-    0 to 18 s exceeds the largest distance in the -20 to 0 s baseline. The Methods say the PCA
-    includes paired and unpaired animals; the code's version for Figure 2Q is shown, and a PCA
-    over both groups is a variant.
+  criterion: From the STAR Methods (Neural trajectory analysis), with details they leave open from
+    the code (scripts/trajectories/trajectories_rev_2025.py at the commit read). ASt units, 100 ms
+    bins, -20 to 40 s around each CS onset; per animal, each neuron z-scored over all its trials
+    and bins, averaged per CS type, all animals' neurons stacked; one PCA on the concatenated
+    averages of paired and unpaired animals, as the Methods say; Euclidean distance between the
+    paired CS-shock and CS-reward projections per bin in the complete principal component space,
+    as the Methods say. The code fits the PCA on paired animals only and keeps the components
+    that explain 90% of variance; that is run as a variant. The paper gives no test. Reproduced
+    when the mean distance over 0 to 18 s exceeds the largest distance in the -20 to 0 s
+    baseline; this threshold is a choice made here.
 - id: figs7-paired-greater-than-unpaired
   statement: ASt neurons of paired mice have greater phasic and sustained responses to CS-shock and
     greater phasic responses to CS-reward than those of unpaired controls.
@@ -467,12 +489,16 @@ claims:
     p_relation: "<"
   criterion: From the STAR Methods. Per animal, 100 random draws of trial pairs (shock-shock,
     reward-reward, shock-reward); each trial's population vector minus its mean over -20 to 0 s;
-    cosine similarity per bin; averaged over 0 to 18 s. Animals as in the code (ASt, at least 10
-    units, at least 30 trials per CS; 8 paired and 3 unpaired animals in its printout). Open, the
+    cosine similarity per bin; averaged over 0 to 18 s. Animals as in the code that plots the
+    example pairs (pairwise_trajectory_workflow.py; ASt, at least 10 units, at least 30 trials
+    per CS; 8 paired and 3 unpaired animals in its printout); the code holds no statistics for
+    Figure S8E-F, so this selection is the nearest the code gives, not the selection of the test. Open, the
     unit of the Wilcoxon test; readings, (a) per-animal means, shock-reward against the mean of
     the two same-CS comparisons; (b) per-animal means against each same-CS comparison separately;
     (c) the iterations pooled. Reproduced when under one reading the paired group gives
-    shock-reward lower at p < 0.01 and the unpaired group does not show it at p < 0.05. Vectors
+    shock-reward lower at p < 0.01 and the unpaired group does not show it at p < 0.05. With 3
+    unpaired animals a per-animal signed-rank test cannot reach p < 0.05, so under readings (a)
+    and (b) the unpaired part cannot fail; the unpaired effect size is reported. Vectors
     are in neuron space as the Methods say; the code's 3-PC velocity vectors
     (trajectory_comparison_plots_v3.py) are a variant.
 - id: figs9-sustained-only-cs-shock
@@ -547,10 +573,10 @@ claims:
   expected:
   - quantity: mice in the high group
     value: 8
-    tolerance: 0
+    tolerance: 0.8
   - quantity: mice in the low group
     value: 7
-    tolerance: 0
+    tolerance: 0.7
   criterion: Paired mice clustered on their CS-shock defensive behavior by hierarchical clustering
     into two clusters (Figure S10C); the linkage is open, readings average and Ward. Per mouse, the
     mean phasic and sustained CS-shock z of its ASt neurons. Reproduced when under one reading the
@@ -637,6 +663,11 @@ claims:
     statistic: F (1,32) = 10.48
     p: 0.0028
     n: 8 ChR2 and 10 eYFP mice
+  criterion: Freezing per mouse in laser ON and OFF epochs of the open field (3 to 6 and 9 to 12
+    min ON; STAR Methods, Open field test), two-way ANOVA group by laser epoch with Bonferroni
+    post hoc tests (STAR Methods, Statistical analysis of behavior). How freezing was scored in
+    the open field (Ethovision settings) is not given. Reproduced when the interaction gives
+    p < 0.05 and the post hoc test has ChR2 freezing higher in ON than OFF epochs at p < 0.05.
 - id: fig3c-ast-activation-avoidance
   statement: ChR2 mice avoid the side of a real-time place preference arena paired with ASt
     stimulation; eYFP mice do not.
@@ -653,6 +684,10 @@ claims:
     statistic: F(1,18) = 0.2911
     p: 0.5961
     n: 10 eYFP mice
+  criterion: Percentage of time on the ON and OFF sides in three time bins of the 30 min session,
+    two-way repeated measures ANOVA (side by time bin) for each group (STAR Methods, Statistical
+    analysis of behavior). Reproduced when the ChR2 effect of side gives p < 0.05 with less time
+    on the ON side and the eYFP effect of side does not give p < 0.05.
 - id: fig3fg-no-motor-onset-response
   statement: Average ASt activity does not change at the onset of freezing or darting bouts, and few
     ASt neurons are excited at those onsets, unlike at CS-shock onset.
@@ -696,7 +731,9 @@ claims:
     Wilcoxon signed-rank test of each mouse's accuracy against its own chance (printed W = 0,
     p = 0.0039 for paired, p = 0.5 for unpaired), shown as a variant. Reproduced when the paired
     mice's accuracies exceed chance by the Mann-Whitney U test at p < 0.01 and the unpaired
-    mice's do not at p < 0.05.
+    mice's do not at p < 0.05. With 3 unpaired mice a two-sided Mann-Whitney U test of their
+    accuracies against their chance values cannot reach p < 0.05, so the unpaired part cannot
+    fail; the unpaired accuracy above chance is reported.
 - id: fig3h-behavior-not-decoded
   statement: Freezing and darting cannot be decoded from ASt activity in either paired or unpaired
     mice.
@@ -746,7 +783,10 @@ claims:
     every fifth bin (500 ms); GEE Poisson, log link, AR(1) within trial; full model with CS,
     freeze, dart, z-scored speed and normalized time; neurons where any model fails to converge
     dropped; CS p-value from 1,000 trial-level shuffles of CS labels, Benjamini-Hochberg at 0.05
-    within group. Fisher's exact test, one-sided as in the code. Reproduced when all four values
+    within group. The Methods call the CS p-value two-sided but write it as the share of
+    permutations with the permuted coefficient at or above the observed one, which is one-sided;
+    the code takes the share with |permuted| at or above |observed| (line 356), which settles it
+    as two-sided. The one-sided formula is run as a variant. Fisher's exact test, one-sided as in the code. Reproduced when all four values
     are within tolerance and the test gives p < 0.001.
 - id: fig3k-cs-improves-prediction
   statement: Adding CS identity improves cross-validated spike count prediction beyond behavioral
@@ -824,6 +864,11 @@ claims:
     statistic: F (1,10) = 9.117
     p: 0.0129
     n: 6 ChR2 Drd2-Cre mice
+  criterion: As fig3b-ast-activation-freezing for the open field (ON epochs 8 to 12 and 20 to 24 min
+    in the Drd1a-Cre and Drd2-Cre cohorts; STAR Methods, Open field test) and as
+    fig3c-ast-activation-avoidance for real-time place preference, in Drd2-Cre mice. Reproduced
+    when the open field interaction gives p < 0.05 with ChR2 freezing higher in ON epochs, and the
+    ChR2 effect of side gives p < 0.05 with less time on the ON side.
 - id: fig4df-drd1-activation-no-effect
   statement: Activating Drd1a+ ASt neurons affects neither freezing nor place preference.
   source: Figure 4D and 4F
@@ -1067,6 +1112,13 @@ claims:
     statistic: t 19 = 2.235
     p: 0.038
     n: 8 NpHR and 13 eYFP mice
+  criterion: Per mouse, total defensive behavior (freezing plus darting) during CS-shock on laser ON
+    trials against laser OFF trials (STAR Methods, Two-tone discrimination tasks; Figure 6C), and
+    NpHR against eYFP mice by Student's t test. The per-mouse measure is open; readings, (a) the
+    percent change from OFF to ON, as Figure S16 reports for freezing and darting, (b) the
+    difference ON minus OFF. Reproduced when under one reading the test gives p < 0.05 with the
+    larger reduction in NpHR mice. The NpHR mean percent change is reported against the
+    Discussion's "nearly 50%", which is not judged.
 - id: figs16-drd2-inhibition-freezing-darting
   statement: Inhibiting Drd2+ ASt neurons reduces both freezing (-40.4% against -16.3% in eYFP)
     and darting (-48.9% against 3.7%) to CS-shock.
@@ -1084,6 +1136,28 @@ claims:
     statistic: t19 = 2.097
     p: 0.0496
     n: 8 NpHR and 13 eYFP mice
+  expected:
+  - quantity: NpHR change in freezing, laser ON against OFF
+    value: -40.4
+    tolerance: 6.4
+    unit: percent
+  - quantity: eYFP change in freezing, laser ON against OFF
+    value: -16.3
+    tolerance: 7.9
+    unit: percent
+  - quantity: NpHR change in darting, laser ON against OFF
+    value: -48.9
+    tolerance: 3.5
+    unit: percent
+  - quantity: eYFP change in darting, laser ON against OFF
+    value: 3.7
+    tolerance: 19.4
+    unit: percent
+  criterion: Per mouse, percent change in freezing and in darting (STAR Methods, Behavioral analysis
+    of two-tone discrimination task) during CS-shock from laser OFF to laser ON trials (Figure
+    S16H and S16J); Student's t-tests of NpHR against eYFP mice. Tolerances are the SEMs the
+    legends give. Reproduced when both tests give p < 0.05 with the larger reduction in NpHR mice
+    and the four group means are within tolerance.
 - id: fig6f-drd2-inhibition-no-reward-effect
   statement: Inhibiting Drd2+ ASt neurons does not change port entry during CS-reward.
   source: Figure 6F
@@ -1092,6 +1166,7 @@ claims:
   - test: Student's t test
     statistic: t 19 = 0.809
     p: 0.428
+    n: 8 NpHR and 13 eYFP mice
   criterion: A claim of absence, on the paper's Student's t test at p < 0.05.
 - id: fig6g-j-drd2-inhibition-no-other-effects
   statement: Inhibiting Drd2+ ASt neurons does not change locomotion in an open field, place
@@ -1104,18 +1179,22 @@ claims:
     test: two-way ANOVA, group x laser interaction
     statistic: F (1,32) = 0.011
     p: 0.9167
+    n: 5 NpHR and 13 eYFP mice
   - about: real-time place preference, NpHR effect of side
     test: two-way RM ANOVA
     statistic: F(1,8) = 0.6896
     p: 0.4304
+    n: 5 NpHR mice
   - about: elevated plus maze
     test: two-way ANOVA, group x laser interaction
     statistic: F (1,32) = 0.011
     p: 0.9177
+    n: 5 NpHR and 13 eYFP mice
   - about: contextual fear, day 2
     test: Student's t test
     statistic: t 16 = 0.395
     p: 0.6984
+    n: 5 NpHR and 13 eYFP mice
   criterion: A claim of absence, on the paper's four tests at p < 0.05.
 - id: figs17-drd1-inhibition-no-effect
   statement: Inhibiting Drd1a+ ASt neurons affects neither defensive behavior to CS-shock nor port
@@ -1129,8 +1208,72 @@ claims:
     test: Student's t-test
     statistic: t13 = 0.137
     p: 0.893
+    n: 6 NpHR and 9 eYFP Drd1a-Cre mice
   - about: port entry during CS-reward
     test: Student's t-test
     statistic: t13 = 0.493
     p: 0.63
+    n: 6 NpHR and 9 eYFP Drd1a-Cre mice
   criterion: A claim of absence, on the paper's two Student's t-tests at p < 0.05.
+- id: figs2-ast-many-degs
+  statement: ASt neurons in both the Drd1a+ and Drd2+ clusters have large numbers of differentially
+    expressed genes compared with neurons from the other regions, hundreds in the Discussion's
+    words.
+  source: Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 3;
+    Figures S2B and S3; Discussion, ASt neurons have distinct genetic identities, paragraph 1
+  quote: ASt neurons within both the Drd1a + and Drd2 + clusters had large numbers of differentially
+    expressed genes (DEGs) compared with neurons from other regions
+  data: elsewhere
+  where: GEO GSE211437
+  depends_on:
+  - fig1b-ast-distinct-subclusters
+  criterion: Within the Drd1a+ and Drd2+ clusters, pseudobulk by batch with Libra run_de and edgeR's
+    likelihood ratio test, genes kept at 1.5-fold and Benjamini-Hochberg p < 0.01 (STAR Methods,
+    Differential expression). The comparison is open; readings, (a) ASt batches against all other
+    regions' batches (region-specific genes), (b) ASt against each of CeA, TS and DS (pairwise, as
+    Figure S2B shows), counting the union. Reproduced when under one reading each cluster has at
+    least 200 DEGs, up and down together. The 200 is this file's reading of "hundreds"
+    (Discussion); Figure S2B gives the counts only in a figure.
+- id: figs12gh-activation-no-epm-effect
+  statement: Activating Drd1a+ or Drd2+ ASt neurons does not change time spent in the open arms of an
+    elevated plus maze.
+  source: Figure S12G-H; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 4
+  quote: Activation of Drd1a + and Drd2 + ASt neurons did not have a significant effect on time spent
+    in open arms of an elevated plus maze
+  statistics:
+  - about: Drd1a-Cre
+    test: two-way ANOVA, group x laser interaction
+    statistic: F(1,20) = 0.4057
+    p: 0.5314
+    n: 5 ChR2 and 7 eYFP mice
+  - about: Drd2-Cre
+    test: two-way ANOVA, group x laser interaction
+    statistic: F(1,40) = 0.9907
+    p: 0.3256
+    n: 6 ChR2 and 16 eYFP mice
+  criterion: A claim of absence, on the paper's two two-way ANOVAs (group by laser epoch, time in
+    open arms per epoch; STAR Methods) at p < 0.05.
+checks:
+- date: 2026-11-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1j-ast-drd2-enriched. Dropped the denominator reading without dual expressing nuclei; 71% and 26% sum to 97% and the Figure 1J legend counts dual expressing nuclei as a third class, so only the reading with them fits the paper.
+  - fig1l-rnascope-drd2-enriched. Added a criterion; the statement claims the ASt balance differs from TS and DS, which the expected values alone do not settle. Puncta threshold and log-ratio paired t-tests from the STAR Methods; pooling of cells named as open.
+  - figs4-cdh6-slit2-gradient. Added a criterion; the claim had none and no expected values. ANOVA and Tukey from the Figure S4 legend, puncta threshold from the STAR Methods; said that the eighth region is not named and that the ordering of means is this file's reading of the gradient.
+  - fig2e-ast-sustained-clusters. The cut into seven clusters and the sustained thresholds (z above 1, last 5 s above half the first 5 s) were stated as fixed; the paper gives neither. Said they are choices, and added eight clusters as a variant.
+  - fig2o-region-differs-cs-reward. Said that the one-sample t-test of ASt phasic z against 0 is a choice made here; the paper gives no test for "robust phasic responses". Added n to the statistics.
+  - fig2q-trajectories-diverge. The criterion took the code's PCA (paired only, 90% of variance) as main and the Methods' as a variant. The STAR Methods say one PCA over paired and unpaired animals and distance in the complete PC space; per protocol step 2 the Methods are now main and the code a variant (confirmed at trajectories_rev_2025.py line 461 at the commit read). Said that the baseline threshold is a choice.
+  - figs8-single-trial-divergence. Said that the animal selection comes from the code that plots example pairs, as the code has no statistics for Figure S8E-F, and that with 3 unpaired animals the per-animal signed-rank test cannot reach p < 0.05.
+  - fig3h-cs-decoded-paired-only. Said that with 3 unpaired mice the Mann-Whitney U test cannot reach p < 0.05, so the unpaired part cannot fail.
+  - fig3j-cs-encoding-glm. The Methods call the CS permutation p-value two-sided but write a one-sided formula; the code (line 356) uses absolute values. Named this, with the code's two-sided test as main and the formula as a variant.
+  - figs10-high-defensive-mice-greater-responses. Tolerance 0 on mouse counts had no reason; set to 10% (0.8, 0.7), which still requires the exact counts.
+  - fig3b-ast-activation-freezing, fig3c-ast-activation-avoidance, fig4eg-drd2-activation-freezing-avoidance, fig6e-drd2-inhibition-reduces-defense. Added criteria; none had one and none is settled by expected values. Tests and epochs from the legends and STAR Methods; the per-mouse measure of fig6e named as open, and the open field freezing scoring named as not given.
+  - figs16-drd2-inhibition-freezing-darting. Added the four group mean changes the statement quotes as expected values, with the legend SEMs as tolerances, and a criterion.
+  - fig6f-drd2-inhibition-no-reward-effect, fig6g-j-drd2-inhibition-no-other-effects, figs17-drd1-inhibition-no-effect. Added n from the legends.
+  - figs2-ast-many-degs. New claim; the Results finding of large numbers of DEGs in ASt Drd1a+ and Drd2+ neurons had none. The 200 threshold for "hundreds" is named as this file's reading.
+  - figs12gh-activation-no-epm-effect. New claim; the Results state that activating Drd1a+ or Drd2+ ASt neurons did not change open arm time, and no claim covered it.
+  - Open. fig2-recorded-neurons is a link claim written by the reader, which protocol step 1.4 assigns to the author; it is kept because other claims depend on it and it only checks the paper's own counts.
+  - Open. Figures S15L-Q (imaging activity not aligned with freezing bouts) and S11B-C (VGAT activation leaves center time and open arm time unchanged) have no claim; both are secondary and give no Results statistic for the first.
