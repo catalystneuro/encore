@@ -198,6 +198,16 @@ outcomes:
   - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
     cells cannot be identified.
   assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: The assumption the outcome rests on, the main penalty, is not one the evidence supports for this comparison.
+      Under 1000 x variance the decrease is 5.1% (P1 a), p = 0.11, outside 18 to 22% and not significant (notebook,
+      "Ridge penalty variants"). The paper's selection rule does not separate the two penalties (mean held-out r 0.420
+      at 1000 x and 0.437 at 10000 x, on 8 cases from 4 units; "Choice of the ridge penalty"). The round-2 verifier
+      reports that in its synthetic check this estimator, under the main penalty, gives a narrower noise-driven centre
+      than movie-driven from the same true RF, so the effect can arise with no difference behind it. That check is
+      the verifier's; a version for the notebook was written but could not be run in this revision (see the round-2
+      response).
 - claim: fig3c-surround-contrast
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -249,6 +259,13 @@ outcomes:
   - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
     cells cannot be identified.
   assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: As for fig3b-spatial-width-correlations. Under 1000 x variance the decrease is 2.7% (P1 a, surround reading
+      a), p = 0.67, outside 30.6 to 37.4% (notebook, "Ridge penalty variants"); held-out prediction does not separate
+      the penalties (0.420 against 0.437); and the round-2 verifier's synthetic check gives a weaker noise-driven surround
+      from the same true RF under the main penalty. Only one of four combinations of readings is within tolerance
+      under the main penalty (37.2%; the others 38.7 to 44.2%).
 - claim: fig3d-temporal-width-contrast
   outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -278,6 +295,12 @@ outcomes:
   - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
     cells cannot be identified.
   assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion's partial outcome is "the tests hold and the sizes do not". The noise test does not hold
+      (p = 0.011 against p < 0.001, notebook cell for this claim), so under the criterion the result is not reproduced,
+      whatever the movie part shows. The verified outcome departed from the criterion; the round-2 verifier pointed
+      this out.
 - claim: fig3d-temporal-width-correlations
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -328,6 +351,14 @@ outcomes:
   - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
     cells cannot be identified.
   assumed: true
+  proposed:
+    outcome: reproduced
+    reason: The criterion has no partial outcome, so one reading must be stated. The paper measures the surround/center
+      ratio and the temporal width on the same RF, and the paper's RFs are at 128 Hz with 24 lags of 8 ms (Estimation
+      of Receptive Fields, par. 4). With both measures from the 128 Hz RFs, r = -0.466 (surround reading a) and -0.480
+      (reading b), p below 1e-12 over 222 points of 111 cells, within -0.55 to -0.45 (notebook cell for this claim).
+      The reading is an assumption, and the outcome stays assumed. The penalty of the 128 Hz RFs was not varied (see
+      the round-2 response).
 - claim: figs1-property-correlations
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -540,6 +571,12 @@ outcomes:
     0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
     1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
     per second of data.
+  - 'The outcome rests on assumptions (round-2 verifier): the contrast readings, where reading (a) runs from 0 to
+    1.24-2.46 in each 150 s segment, far from the paper''s 0.27-0.43, so its thirds are sorted largely by luminance,
+    and reading (b) cuts the thirds at about 0.35 and 0.38; and the penalty, the full-data penalty applied to one
+    third of the frames, so each third''s RF is regularized about three times more heavily relative to its data.
+    A variant with the penalty scaled to each third''s frames was written but not run in this revision (time).'
+  assumed: true
 - claim: fig6a-reliability-contrast
   outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -690,6 +727,10 @@ outcomes:
     per second of data.
   - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
     cells cannot be identified.
+  - 'The outcome rests on the stimulus reading: it passes with the 12 s clips (stimulus reading b) and not with the
+    long segments, while fig8a, fig8b and fig8de pass only with the long segments. No single stimulus reading passes
+    all four claims (round-2 verifier).'
+  assumed: true
 - claim: fig8a-filtered-kurtosis
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -781,6 +822,10 @@ outcomes:
   - The noise level is scanned (0 to 6000 in steps of 150); the paper does not give it.
   - For the long segments, the 120-trial reading uses every k-th filtered value, at most 60000, to bound the run
     time (a standard choice).
+  - 'The outcome rests on the stimulus reading: it passes with the long segments (stimulus reading a) and not with
+    the 12 s clips, while fig7d passes only with the 12 s clips. No single stimulus reading passes fig7d, fig8a,
+    fig8b and fig8de together (round-2 verifier).'
+  assumed: true
 - claim: disc-lcns-hcwn-reliability-sparseness
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -1017,6 +1062,13 @@ outcomes:
     0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
     1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
     per second of data.
+  - 'The outcome rests on the penalty (round-2 verifier). The penalty is fixed relative to the stimulus variance,
+    and at equal spike counts the movie estimates use 14203 to 19589 frames and the noise estimates 53935 to 54000,
+    so the movie estimate is regularized about 2.8 to 3.8 times more heavily relative to its X''X. The strict criterion
+    is barely attainable even with nothing different (two movie simulations differ at 1 to 3 points, reading i),
+    and the "beyond chance" comparison depends on the penalty. A variant with the noise penalty scaled to its frame
+    count, and one at 1000 x variance, were written but not run in this revision (time).'
+  assumed: true
 verifications:
 - date: '2026-11-19'
   kind: agent
@@ -1263,6 +1315,253 @@ verifications:
     response: Tested and changed to not reproduced. The simulation was run with two known RFs and five seeds; the
       movie and noise estimates differ beyond their segment spread at 32 to 66 of 5292 points, against 1 to 3 for
       two movie-driven simulations.
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the run of 2026-11-20 (commit 53d6557), the helper module and the claims
+    file, with the paper. Its report is transcripts/lesica-2007/verifier-2-report.md. The revision after it changed text
+    and the record only; the notebook''s code is as verified, so the cell numbers and values cited are those of the verified
+    run. New variants (a second penalty for the 128 Hz RFs, penalty variants and a same-RF check in the spherical-asymmetry
+    simulation, a scaled penalty for the Figure 5 thirds) were written and tested on subsets, but with the 128 Hz variant
+    the main-pass cell ran past its 3600 s limit on this revision''s machine, which is about twice as slow as the verified
+    run''s (the penalty-choice cell took 231 s against 115 s), and the notebook was already near the 60 min limit there;
+    they were taken out. The re-run of the unchanged code (tools/entry.py all) also failed on this machine: the main-pass
+    cell ran past 3600 s (the notebook stopped at 3968 s), where the verified run took 1990 s for that cell; a further run with a 7200 s cell limit had not finished after 100 min and was stopped. The verifier
+    also reported a claims-file reading (the header''s 50 Hz frames, 60 Hz in the files), which affects no criterion; it
+    is asked in questions/lesica-2007.yaml. The round-1 reasons above cite round-1 cell numbers, which no longer point to
+    the same cells.'
+  results:
+  - claim: sample-composition
+    agrees: true
+    outcome: not_reproduced
+    reason: 'It fails under all three penalties: 111, 29 and 0 cells, against 68.'
+    response: No change.
+  - claim: firing-rate-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: firing-rate-lc-ns-wn-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; assumes reading P2a.
+    response: No change.
+  - claim: ln-prediction-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig3b-spatial-width-contrast
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig3b-spatial-width-correlations
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The assumption is not reasonable. In round 1 the verifier''s synthetic check gave a narrower RF centre and
+      a weaker surround for noise than for the movie under this penalty, even when the true RF was the same for both, so
+      the estimator produces this effect with no real difference behind it. The new variant agrees: at 1000 x variance the
+      effect is 5.1% (p = 0.11) (cell 107). The selection rule does not separate the two penalties: held-out r is 0.420,
+      0.434 and 0.437 at 1000 x, 3000 x and 10000 x (cell 9), on only 8 cases from 4 units. It would record this as not
+      reproduced, or at least not as reproduced.'
+    response: The verified outcome is kept, and a change to not reproduced is proposed under `proposed`, resting on the
+      1000 x variance result and the held-out prediction shown in the notebook. A same-RF synthetic check under three penalties
+      was written for the simulation cell but could not be run in this revision (see `reviewed`), so the estimator bias rests
+      on the verifier's own check. The notebook's conclusion now says the change is proposed.
+  - claim: fig3c-surround-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. White noise fails under both penalties.
+    response: No change.
+  - claim: fig3c-surround-correlations
+    agrees: false
+    outcome: not_reproduced
+    reason: 'As for fig3b-spatial-width-correlations: the effect is explained by estimator bias under the chosen penalty.
+      At 1000 x variance it is 2.7% (p = 0.67) (cell 107). It would record this as not reproduced, or at least not as reproduced.'
+    response: The verified outcome is kept, and a change to not reproduced is proposed under `proposed`, as for fig3b-spatial-width-correlations.
+  - claim: fig3d-temporal-width-contrast
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion defines partial as the tests hold and the sizes do not. Here the white-noise test fails (p = 0.011
+      against p < 0.001, cell 37), so by the criterion this is not reproduced. The record says it departs from the criterion.
+    response: The verified outcome is kept, and a change to not reproduced is proposed under `proposed`. The 128 Hz RFs
+      still use one penalty. A variant at 1000 x variance was written and timed on one unit (128 s against 106 s without
+      it), but with it the main pass ran past its 3600 s cell limit on this revision's machine, so it was taken out; the
+      dependence of the 128 Hz results on the penalty is untested.
+  - claim: fig3d-temporal-width-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change of outcome. The 128 Hz RFs still use one penalty. A variant at 1000 x variance was written and timed
+      on one unit (128 s against 106 s without it), but with it the main pass ran past its 3600 s cell limit on this revision's
+      machine, so it was taken out; the dependence of the 128 Hz results on the penalty is untested.
+  - claim: surround-temporal-correlation
+    agrees: false
+    reason: The criterion has no partial outcome. The main reading pairs the frame-rate surround with the 128 Hz width and
+      gives r = -0.366, outside -0.55 to -0.45; taking both measures from the 128 Hz RF gives -0.466 and -0.480, inside
+      the tolerance (cell 42), which is closer to the paper, which takes both from the same RF. The record should adopt
+      one reading as the stated assumption, giving reproduced (both 128 Hz) or not reproduced (main), not partially reproduced.
+    response: The reading with both measures from the 128 Hz RFs is adopted as the stated assumption, as the paper takes
+      both from the same RF. The verified outcome is kept, and a change to reproduced (assumed) is proposed under `proposed`.
+      The 128 Hz RFs still use one penalty. A variant at 1000 x variance was written and timed on one unit (128 s against
+      106 s without it), but with it the main pass ran past its 3600 s cell limit on this revision's machine, so it was
+      taken out; the dependence of the 128 Hz results on the penalty is untested.
+  - claim: figs1-property-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig4b-gain-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig4b-gain-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; marked assumed because the gain change flips sign at 1000 x variance.
+    response: No change.
+  - claim: fig4c-offset-contrast
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig4c-offset-correlations-none
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; assumes the per-animal adjustment is applied within the set compared, which is the natural reading of
+      P5.
+    response: No change.
+  - claim: fig4d-normalized-offset-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig4d-normalized-offset-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig5-within-trial-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: Accepted under the criterion, but it rests on assumptions that are not marked. Contrast reading (a) runs from
+      0 to 1.24-2.46, nowhere near the paper's 0.27-0.43, so its thirds are sorted largely by mean luminance and clipping.
+      Reading (b) separates the thirds only between 0.35 and 0.38. Each third's RF uses the full-data penalty on one third
+      of the frames. The result that the top third never has the lower gain (0 of 24) may come from these choices. It should
+      be marked assumed.
+    response: Marked assumed, with a deviation stating the three choices, and the notebook's conclusion says so. A variant
+      with the penalty scaled to each third's frames was written and tested on one unit but not run in the notebook in this
+      revision (see `reviewed`).
+  - claim: fig6a-reliability-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig6a-reliability-correlations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig6b-sparseness-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig6b-sparseness-correlations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig7c-effective-contrast
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig7d-reliability-tracks-effective-contrast
+    agrees: true
+    outcome: reproduced
+    reason: 'Accepted under the criterion, which allows one reading per claim, but the passing readings are opposite: fig7d
+      passes only with the 12 s clips (cell 79), and fig8a, fig8b and fig8de only with the long segments (cells 81, 85,
+      87). No single stimulus reading passes all four. fig7d should be marked assumed, and the record should state this.'
+    response: Marked assumed, with a deviation stating the opposite readings; the notebook's conclusion says so.
+  - claim: fig8a-filtered-kurtosis
+    agrees: true
+    outcome: reproduced
+    reason: Accepted under the criterion; it passes only with the long segments (cell 81), the reading opposite to the one
+      fig7d passes with.
+    response: No change of outcome; the opposite readings are stated in the deviations of fig7d and fig8de.
+  - claim: fig8-model-sparseness-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: fig8b-model-vs-experiment-sparseness
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. It passes only with the long segments (cell 85).
+    response: No change.
+  - claim: fig8de-noise-reconciles
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under stimulus reading (a), with all five seeds (cell 87). It passes only with the long segments while
+      fig7d passes only with the 12 s clips; it should be marked assumed.
+    response: Marked assumed, with a deviation stating the opposite readings; the notebook's conclusion says so.
+  - claim: disc-lcns-hcwn-reliability-sparseness
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: disc-lcns-hcwn-rf-nl-differences
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: methods-latency-biphasic
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; assumes the 128 Hz RFs and the p < 0.05 reading. The 128 Hz RFs use the same penalty, and no penalty
+      variant was run for them.
+    response: No change of outcome. The 128 Hz RFs still use one penalty. A variant at 1000 x variance was written and timed
+      on one unit (128 s against 106 s without it), but with it the main pass ran past its 3600 s cell limit on this revision's
+      machine, so it was taken out; the dependence of the 128 Hz results on the penalty is untested.
+  - claim: methods-offset-varies-across-animals
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: celltype-y-wider-than-x
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: celltype-y-stronger-surround
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: celltype-off-wider-temporal
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: celltype-prediction-x-y
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome and its assumptions are stated and reasonable.
+    response: No change.
+  - claim: methods-spherical-asymmetry
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Accepted under the criterion: the strict every-point criterion fails. Two movie simulations also differ from
+      each other at 1 to 3 points, so the criterion is barely attainable even when nothing differs. The beyond-chance conclusion
+      rests on the chosen penalty: it is fixed relative to stimulus variance, but the movie estimate uses 14,203 to 19,589
+      frames and the noise estimate about 54,000 (cell 104), so the movie estimate is regularized about 3 to 4 times more
+      heavily relative to its data, which confounds the comparison. It should be marked assumed.'
+    response: Marked assumed, with a deviation stating the frame-count confound; the notebook's conclusion says so. Variants
+      with the noise penalty scaled to its frame count and at 1000 x variance were written for the simulation cell and tested
+      on one seed with a toy RF (75 s per seed), but could not be run in the notebook in this revision (see `reviewed`).
 findings:
 - kind: other
   about: data
