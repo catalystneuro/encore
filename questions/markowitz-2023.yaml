@@ -13,3 +13,46 @@ questions:
     and the claim is reproduced. The comparison over all instance onsets of each mouse, computed in
     optoda.ipynb as a variant, gives U = 48, f = 0.20, P = 0.005, with Opto-DA mice lower than
     controls, so under the legend's reading the claim would not be reproduced.
+- claim: fig2k-dlight-predicts-sequence-variability
+  question: The criterion z-scores the correlation against shuffles that permute destinations within each
+    row of the transition counts (the code's randomize_cols). The Methods z-score it against "Pearson
+    coefficients estimated after shuffling dLight peak values". The claims file's header says that where
+    the Methods and the code disagree the Methods give the main reading and the code a variant. Should the
+    criterion's null be the Methods' shuffle of dLight peak values?
+  passage: 'Methods, Analysing the moment-to-moment relationship between dLight and syllable statistics within
+    an experiment, "Finally, Pearson correlation values were then calculated between dLight values and the
+    behavioural features estimated at each bin size. Pearson coefficients were z-scored using the mean and
+    s.d. from Pearson coefficients estimated after shuffling dLight peak values."'
+  why: The raw correlations are negative under both binnings (Pearson -0.064 and -0.056 at n = 5 and 10
+    under reading (b), -0.380 and -0.517 under reading (a)) and are positive only against the criterion's
+    null. Under the Methods' null, run in photometry.ipynb as a variant with 200 shuffles, reading (a)
+    stays significantly positive (one-sided P = 0.025 and 0.005), so the claim would still be reproduced,
+    but reading (b) turns significantly negative (P = 0.005 for a negative correlation). If the Methods'
+    null is the main reading and reading (a) does not decide, the outcome changes.
+- claim: ed3c-keypoint-velocity
+  question: The claims file's definitions make the Methods' RANSAC fit with slope and bias the main reading of
+    dLight processing and the fig_s03 notebook's fit without intercept a variant. The criterion of this
+    claim says to process dLight "as in the fig_s03 notebook (cell 15)", which fits without intercept.
+    Which fit should decide this claim?
+  passage: 'Methods, Photometry active referencing, "to account for differences in gain or DC offset, RANSAC
+    ordinary least squares regression was used to fit the reference signal to the dLight signal"; claims file
+    header, Definitions, "The code''s only worked example (fig_s03 notebook, cell 15) uses the same steps with
+    a centred window and a RANSAC fit without intercept ... the no-intercept fit is a variant."'
+  why: With the fit without intercept the forelimb r is -0.019, within -0.02 +- 0.002, and the claim is
+    reproduced; with the Methods' fit with intercept it is -0.026, which misses the tolerance and does not
+    round to -0.02, so the claim would be partially reproduced.
+- claim: fig2e-not-autocorrelation
+  question: The criterion's reproduced case needs both curves inside the shuffle band at some n where the
+    usage correlation is significant, and its not-reproduced case needs either to stay as high as the usage
+    curve. It has no case for an autocorrelation that turns significantly negative, and its smallest n (10
+    syllables, several seconds) cannot test the statement's "a few hundred milliseconds". Should the
+    criterion say how such a result is classed, and should the decline be tested at a shorter timescale?
+  passage: 'Results, Dopamine predicts future syllable use and sequencing, paragraph 2, "The relationship
+    between dopamine transient amplitudes and syllable usage was not due to autocorrelation in the dLight
+    signal or to correlations between dopamine and velocity, both of which declined sharply after a few
+    hundred milliseconds (Fig. 2e)."'
+  why: The autocorrelation z falls from 5.63 at n = 10 to -3.66 at n = 30 and stays between -1.16 and
+    -4.34, outside the band, to n = 390; the velocity curve is inside the band only at n = 370 and 390.
+    Neither case of the criterion applies, so the outcome (partially reproduced) is a judgment. A criterion
+    that counts a negative autocorrelation as not explaining a positive usage effect would make it
+    reproduced; one that requires both curves inside the band would make it not reproduced.
