@@ -118,7 +118,9 @@ claims:
   criterion: Slopes as in fig1d-pv-decorrelation, one per session and turn or direction, from
     lags 1 to 10 (the code requires at least 5 lags in the window). Familiar against novel slopes
     by a two-sided Wilcoxon rank-sum test (Figure 1E legend). Reproduced when p < 0.05 with the
-    novel slopes more negative; Cohen's d is reported against the expected value.
+    novel slopes more negative; Cohen's d is reported against the expected value, signed so
+    that a more negative novel slope gives a positive d (the legend does not give the order of
+    the groups; this is the order that matches the text).
 - id: fig1e-later-lags-no-difference
   statement: Over trial lags 11 to 20 and 21 to 30 no significant difference in decorrelation slope
     between novel and familiar environments was detected.
@@ -130,12 +132,12 @@ claims:
     test: Wilcoxon rank-sum test
     p: 0.3
     statistic: Cohen's d = 0.54
-    n: '26'
+    n: 26 session and turn units
   - about: lags 21 to 30
     test: Wilcoxon rank-sum test
     p: 0.68
     statistic: Cohen's d = -0.35
-    n: '8'
+    n: 8 session and turn units
   depends_on:
   - fig1d-pv-decorrelation
   criterion: A claim of absence. Slopes as in fig1e-novel-drift-faster over lags 11 to 20 and 21
@@ -226,8 +228,8 @@ claims:
   criterion: Fields are the place fields after merging of turn-common central-arm fields, over the
     46 familiar and 8 novel sessions; a switching field has at least one switch ON or OFF (code
     fig1 notebook, has_sw). Reproduced when all values are within tolerance; partially reproduced
-    when the four fractions (switching, ON, OFF per environment) are within tolerance but the
-    field counts are not.
+    when the ON and OFF fractions of both environments (four values) are within tolerance but
+    the field counts are not.
 - id: fig2e-switch-fraction-by-experience
   statement: The fraction of switching fields per session is lowest in animals that experienced
     only the familiar maze (median 0.15), higher in familiar sessions of animals that also
@@ -275,8 +277,8 @@ claims:
   quote: The change-point models explained more variance for more than 96% of the place fields across
     all model complexities
   expected:
-    quantity: lowest fraction of place fields better explained by the change-point model, over
-      orders 1 to 3
+    quantity: lower bound on the fraction of place fields better explained by the change-point
+      model, at each order 1 to 3 (the claim holds above it; see criterion)
     value: 0.96
     tolerance: 0.0
   criterion: For each place field, the change-point model with K change points (K + 1 segments,
@@ -316,22 +318,22 @@ claims:
     test: Wilcoxon signed rank test
     p: 0.006
     statistic: Cohen's d = -0.1
-    n: '108'
+    n: 108 session and turn units
   - about: order 2
     test: Wilcoxon signed rank test
     p: 0.01
     statistic: Cohen's d = -0.19
-    n: '106'
+    n: 106 session and turn units
   - about: order 3
     test: Wilcoxon signed rank test
     p: 0.0006
     statistic: Cohen's d = -0.24
-    n: '104'
+    n: 104 session and turn units
   expected:
     quantity: fraction of session and turn units better explained by the polynomial model, each
       order
-    value: 0.65
-    tolerance: 0.065
+    value: 0.655
+    tolerance: 0.115
     unit: range 0.6 to 0.7 widened by 10% of each bound (0.54 to 0.77)
   criterion: Per session and turn, the matrix of trial population vectors (place cells x position)
     reduced by PCA to the components holding just above 95% of the variance; a vector-valued
@@ -349,8 +351,8 @@ claims:
     and the distribution of passage times resembled the expected negative binomial distribution
   expected:
     quantity: fraction under two trials (switch ON and switch OFF)
-    value: 0.76
-    tolerance: 0.085
+    value: 0.761
+    tolerance: 0.086
     unit: range 0.75 to 0.77 widened by 10% of each bound (0.675 to 0.847)
   depends_on:
   - fig2d-switch-fractions
@@ -539,11 +541,12 @@ claims:
   criterion: Speed z-scored within session against trial, Pearson correlation (Figure S8C legend);
     the tolerance on r is 0.05 absolute, as 10% of values near zero is below sampling noise. The
     paper's own familiar p (3 x 10-11) is significant though r is 0.01, so the absence for speed
-    is judged on r; reproduced when both r are within tolerance. For Figure S8A and S8B, the
-    normalised switch count per arm and trial against the average speed in the arm, Pearson
-    correlation (STAR Methods default for linear correlation); the paper reports no value, and r
-    and p are reported. Partially reproduced when the speed-trial part holds and a speed-switching
-    correlation has |r| above 0.1 with p < 0.05.
+    is judged on r. For Figure S8A and S8B, the normalised switch count per arm and trial against
+    the average speed in the arm, Pearson correlation (STAR Methods default for linear
+    correlation); the paper reports no value, and r and p are reported. A clear linear
+    relationship is taken as |r| above 0.1 with p < 0.05, a threshold chosen here. Reproduced
+    when both speed-trial r are within tolerance and neither speed-switching correlation (ON,
+    OFF) is clear; partially reproduced when only the speed-trial part holds.
 - id: fig4no-head-scans-not-related
   statement: Most head scans occur in the reward area and few in the central arm, and there is no
     reliable relationship between field switching and the incidence of head scanning.
@@ -606,10 +609,14 @@ claims:
     the switch trial against mean speed in that trial, linear regression (Pearson), familiar and
     novel; the paper gives no width definition for a single trial, so readings are (a) the
     detected field's width and (b) the width of the trial rate map above half its peak within the
-    field. (2) Shift of the field peak from the switch trial to the next, two-sided Wilcoxon
+    field. The Results add that the correlation holds after controlling for position (Figure
+    S13B, the same regression within each of ten spatial bins, familiar only); these per-bin
+    results are reported. (2) Shift of the field peak from the switch trial to the next, two-sided Wilcoxon
     signed-rank test against zero; backward is against running direction. (3) Normalised
-    within-field peak rate around the switch (trial 0), paired Wilcoxon signed-rank tests between
-    neighbouring trials. Reproduced when the width-speed correlation is significant in familiar,
+    within-field peak rate around the switch (trial 0), averaged over fields, paired Wilcoxon
+    signed-rank tests between neighbouring trials (Figure S13D). The paper does not say how the
+    rate is normalised; readings (a) divided by the field's maximum over trials, (b) divided by
+    its mean over trials. Reproduced when the width-speed correlation is significant in familiar,
     the familiar shift is backward at p < 0.05 and the novel shift is not significant, trial 0
     against 1 is not significant and trials -3 to -1 rise significantly; partially reproduced
     when at least three of these hold.
@@ -655,8 +662,9 @@ claims:
     (the code takes the median), switchiness the variance explained by the one-change-point
     model. Each metric, familiar and novel, regressed on log NREM firing rate; the novel residual
     regressed on the familiar residual, standardised (Figure 5C legend; code metric across fam
-    novel notebook, resid_regression). Units read as (a) neurons with each metric averaged over
-    fields (Methods) or (b) fields matched across environments by the code's field index. For the
+    novel notebook, resid_regression). Units are neurons with each metric averaged over fields
+    (Methods; Figure 5C legend, per dot a neuron, n = 955); fields matched across environments by
+    the code's field index are shown as a variant only. For the
     switchiness, a claim of absence on the paper's test; reproduced when it is not significant at
     p < 0.05 while CV and lap correlation are significant and positive; partially reproduced when
     the switchiness part holds and one of the other two does.
@@ -718,9 +726,10 @@ claims:
     whether the switch types must match, so readings are any switch and same type). Reproduced
     when both counts are within tolerance under a reading.
 - id: figs12-stability-after-switch-on
-  statement: Fields that switched ON have a lower CV of peak rate and less jitter of peak location
-    over the five trials after the switch than non-switching fields over five trials from the
-    start or middle of the session.
+  statement: Fields that switched ON have a lower CV of peak rate over the five trials after the
+    switch than non-switching fields over five trials from the start or middle of the session, in
+    familiar and novel environments; their peak location is also less jittery, except against the
+    middle window in the novel environment (p = 0.4).
   source: Results, Switching, neuron or circuit property, paragraph 2; Figure S12A, S12B, S12D,
     S12E
   quote: Specifically, switch-ON fields had lower CV of firing rates within the five trials after the
@@ -772,18 +781,38 @@ claims:
   - quantity: median CV, non-switching, middle window, novel
     value: 0.46
     tolerance: 0.046
+  - quantity: median SD of peak location, non-switching, start window, familiar
+    value: 2.05
+    tolerance: 0.205
+  - quantity: median SD of peak location, switch ON, familiar
+    value: 1.64
+    tolerance: 0.164
+  - quantity: median SD of peak location, non-switching, start window, novel
+    value: 2.4
+    tolerance: 0.24
+  - quantity: median SD of peak location, switch ON, novel
+    value: 1.95
+    tolerance: 0.195
+  - quantity: median SD of peak location, non-switching, middle window, familiar
+    value: 2.28
+    tolerance: 0.228
+  - quantity: median SD of peak location, non-switching, middle window, novel
+    value: 2.68
+    tolerance: 0.268
   depends_on:
   - fig2d-switch-fractions
   criterion: Fields that switched ON once against non-switching fields; place cells with spatial
     information above 0.5 bit/spike and fields with peak rate above 1 Hz on 90% of trials (Figure
     S12 legend). CV of per-trial peak rate and SD of peak location over the five trials after the
-    switch, or over the first five trials or five middle trials (the paper does not say which
-    five are the middle; the standard choice of the five centred on the session midpoint is used,
-    as the choice is unlikely to change the outcome) for non-switching fields; two-sided Wilcoxon
-    rank-sum tests. Reproduced when switch-ON CV is lower at p < 0.05 for both windows in familiar
-    and in novel and the medians are within tolerance; partially reproduced when the direction and
-    significance hold in familiar only. Location results are reported, with the novel middle
-    window expected not significant.
+    switch, or over the first five trials or five middle trials for non-switching fields;
+    two-sided Wilcoxon rank-sum tests (Figure S12 legend). The paper does not say which five
+    trials are the middle, and with novel p = 0.019 the choice could change the outcome; readings
+    (a) the five centred on the session midpoint, (b) the five starting at the midpoint. Reproduced
+    when, under a reading, switch-ON CV is lower at p < 0.05 for both windows in familiar and in
+    novel, switch-ON location SD is lower at p < 0.05 in familiar (both windows) and in novel
+    (start window), and the medians are within tolerance; the novel middle-window location test is
+    expected not significant and is reported. Partially reproduced when the CV directions and
+    significance hold in familiar only.
 - id: fig6-co-switching
   statement: Place fields co-switch on the same trial more than expected by chance in a subset of
     sessions, 17% (ON) and 20% (OFF) of familiar and 57% (ON) and 29% (OFF) of novel sessions.
@@ -851,7 +880,8 @@ claims:
   depends_on:
   - fig2d-switch-fractions
   criterion: Selection as in Figure S14 legend (mean within-field rate before the first ON, or after
-    the last OFF, below the shuffle threshold of field detection). Outside region extends the field
+    the last OFF, below the shuffle threshold of field detection); the Results describe the
+    selected quantity as the average within-field peak firing rate, which is the other reading. Outside region extends the field
     by 10% of track length on each side until the track end or another field (Methods,
     Quantification of pre-existing constraint). Within minus outside mean rate over the pre-ON
     (post-OFF) trials. The paper reports no test here; the code's notebook tests session averages
@@ -925,3 +955,27 @@ claims:
     reading taken, with switching against not switching as the other), tagged against not tagged
     from the dandiset's light-responsive labels; chi-squared test of independence. Reproduced
     when p >= 0.05 under the readings; not reproduced when any gives p < 0.05.
+checks:
+- date: 2026-11-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs4g-population-vectors-gradual, expected value and tolerance changed from 0.65 +- 0.065 to 0.655 +- 0.115, so that they span the stated range 0.54 to 0.77 (0.6 to 0.7 widened by 10% of each bound); the old pair covered only 0.585 to 0.715.
+  - fig3k-switch-abrupt, expected value and tolerance changed from 0.76 +- 0.085 to 0.761 +- 0.086, to span the stated range 0.675 to 0.847.
+  - figs12-stability-after-switch-on, the statement said switch-ON fields had less location jitter against both windows, but the Figure S12E legend gives novel middle-window p = 0.4; the statement now names that exception.
+  - figs12-stability-after-switch-on, added the six location-SD medians of the Figure S12B and S12E legends to expected and made the location results part of the criterion, as the statement rests on them.
+  - figs12-stability-after-switch-on, the choice of the five middle trials was called unable to change the outcome; with novel CV p = 0.019 it could, so the criterion now names two readings (centred on, or starting at, the midpoint).
+  - fig5c-switchiness-not-intrinsic, fields matched across environments were an equal reading; the Figure 5C legend and the Methods make the unit a neuron (n = 955), so the field-matched analysis from the code is now a variant only.
+  - figs13-btsp-signatures, added the Figure S13B control (regression within ten spatial bins, familiar only) that the Results cite for the width-speed correlation, and named the rate normalisation of Figure S13D as open with two readings.
+  - figs14-preexisting-fields-ephys, the Results describe the selection on the average within-field peak rate while the Figure S14 legend says mean within-field rate; both are now named as readings.
+  - figs8-speed-no-trend, the criterion did not say whether a clear speed-switching correlation prevents reproduction; it now does, and it says that the |r| > 0.1 threshold is chosen here.
+  - fig2d-switch-fractions, the partial criterion named "four fractions (switching, ON, OFF per environment)", which is six values; it now names the four ON and OFF fractions.
+  - fig3df-step-beats-polynomial-fields, the expected quantity now says that 0.96 is a lower bound, so that the zero tolerance cannot be read as requiring exactly 0.96.
+  - fig1e-novel-drift-faster, the criterion now gives the sign convention for Cohen's d, which the legend leaves unstated.
+  - fig1e-later-lags-no-difference and figs4g-population-vectors-gradual, n given in words with its unit, as the protocol asks.
+  - Open, fig1h-rate-decorrelates-location-stable, the factor of two between the peak-rate and location slopes is chosen by the writer; the paper states the contrast only in words and gives no test.
+  - Open, fig6f-switching-asynchronous, "up to 5%" is judged on the 95th percentile of per-trial fractions, a choice the paper does not make (the Figure 6F legend marks means); the maximum is reported.
+  - Open, fig3df-polynomial-beats-step-population, fig4-behavior-not-predictive and fig4no-head-scans-not-related, the paper reports no test, so the majority rules, the drop threshold and the default tests are chosen here and labelled as such.
+  - Open, the code details cited from the Zenodo repository (segment cut points, trial exclusions, shuffle details) were not checked, as the code is not under paper/.
+  - Open, minor findings without a claim, namely Figure S1A and S1B (sleep waveform amplitudes do not differ between switching and stable neurons), Figure S7 (no behavioral or neural signature separates the delay zone) and Figure S11 (multiple-field switching); none is a main finding and none has a reported test except S11 (p = 0.03).
