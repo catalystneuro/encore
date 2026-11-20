@@ -78,7 +78,11 @@
 # M4. Decoding of reward timing (Methods, Decoding expected reward timing; code
 #     Olfaction_Figure_Revision.m lines 546 to 626). Discount matrix gamma_i^t on t = 0 to 12 s
 #     in 120 points (dt 0.1 s), from one half's fitted gammas; responses of the other half,
-#     minus the first half's baseline, each neuron scaled so its maximum over delays is 1;
+#     minus a baseline, each neuron scaled so its maximum over delays is 1. The Methods take the
+#     baseline from the same half as the responses ("we use the mean responses and baseline from
+#     half the trials to construct ... and use the estimated discount factors from the other
+#     half"); the code (line 572, Base_Train) subtracts the baseline of the half that gives the
+#     gammas. The Methods decide; the code's baseline is a variant;
 #     regularised SVD inverse with Tikhonov parameter alpha = 2 (code; Extended Data Fig. 4b
 #     "black line at 2"); negative predictions set to 0 and normalised to sum 1. DecodeTime is
 #     not in the deposit, so how many singular components enter the main decoder is open: (a)
@@ -158,7 +162,7 @@ claims:
   statement: In a branching MDP learned from three trajectories, a two-discount agent with
     discounts 0.6 and 0.99 reaches 94% correct, more than single-discount agents (77% with 0.6,
     83% with 0.99).
-  source: Methods, Myopic learning bias, branching task, paragraph 3; Extended Data Fig. 2e
+  source: Methods, Myopic learning bias, branching task, paragraph 4; Extended Data Fig. 2e
   quote: For the single-discount agent, we report the maximum performance over the agents with
     discounts [0.6,0.6] and [0.99,0.99], which achieve a performance of 77±2% and 83±1% respectively.
     For the multi-discount agent, we use the discounts [0.6,0.99], which achieves a performance of
@@ -192,10 +196,13 @@ claims:
     at commit 37f11c6 (Ext_Fig_3_myopic_bias_maze.py, Fig_2_g_train_lunar_multi_gamma.py,
     Fig_2_g_lunar_q_accuracy.py)
   criterion: Kendall rank correlation between estimated and true values as a function of the
-    discount, as the Methods set it (10,000 sets of two trajectories for the maze; 10 networks,
-    25,000 states for Lunar Lander). Reproduced when, in both settings, the discount with the
-    highest accuracy is lower for the near group (lower half of the maze; close to the landing
-    site) than for the far group.
+    discount, as the Methods set it (10,000 sets of two trajectories for the maze, while the
+    Extended Data Fig. 2h legend says error bars are across 300 sets; 10 networks, 25,000 states
+    for Lunar Lander). The paper does not say where close and far from the landing site divide;
+    the code (Fig_2_g_lunar_q_accuracy.py, compute_accuracy_for_states) splits states at the
+    median height of the lander, and that split is used. Reproduced when, in both settings, the
+    discount with the highest accuracy is lower for the near group (lower half of the maze; close
+    to the landing site) than for the far group.
 - id: cued-delay-neurons
   statement: Of 78 optogenetically identified VTA dopamine neurons recorded in the cued delay task,
     50 pass the selection criteria.
@@ -237,20 +244,25 @@ claims:
   - quantity: VR trials per session, mean
     value: 58.8
     tolerance: 5.88
-  criterion: Sessions with at least one neuron of the analysed set (M3 for the cued delay task, M6
-    for VR). Readings, as the text allows, for VR trials are (a) open-loop trials without teleport
+  criterion: The Methods count "sessions in which neurons were recorded in the task", which does not
+    say whether the neurons are all recorded dopamine neurons or the analysed ones. Readings for the
+    sessions are (a) sessions with at least one optogenetically identified dopamine neuron recorded
+    in the task, (b) sessions with at least one neuron of the analysed set (M3 for the cued delay
+    task, M6 for VR). Readings, as the text allows, for VR trials are (a) open-loop trials without teleport
     or speed manipulation only, (b) all trials of those sessions; for the cued delay task, (a)
     trials of the four odor cues, (b) all trials. Reproduced when the counts and means are within
-    tolerance under one reading.
+    tolerance under one session reading and one trial reading.
 - id: fig2b-anticipatory-licking
   statement: Mice lick in anticipation of reward, and the onset of anticipatory licking is later
     for cues predicting longer delays.
-  source: Results, Discounting across dopamine neurons, paragraph 1; Figure 2b
+  source: Results, Discounting across dopamine neurons, paragraph 2; Figure 2b
   quote: Importantly, the onset of the anticipatory licking was delayed for trials with cues
     predicting longer reward delays, indicating that the mice learned the delay contingencies
   criterion: The paper gives no test and no definition of onset. Lick rate per delay in 200 ms bins
-    from -2 to 12 s around the odor (code LickPSTHs_Revision.m), averaged over the sessions of the
-    analysed neurons. Onset is open; readings (a) the first bin after the odor at which the lick
+    from -2 to 12 s around the odor (code LickPSTHs_Revision.m), computed for the session of each
+    recorded neuron and averaged over neurons (Fig. 2b legend "mean across behavior for all
+    recorded neurons"; the code loops over every loaded neuron). Whether "all recorded neurons"
+    means the 78 recorded or the 50 analysed is open; both are run. Onset is open; readings (a) the first bin after the odor at which the lick
     rate exceeds the pre-cue mean by half of its rise to the pre-reward maximum, (b) the first
     bin exceeding the pre-cue mean by 2 s.d. of the pre-cue bins. Reproduced when, under one
     reading, onset increases with delay across the four cues (ties between the two shortest
@@ -263,8 +275,10 @@ claims:
     increased
   depends_on:
   - cued-delay-neurons
-  criterion: Cue response as M1, averaged over trials per neuron and delay, then over the 50
-    neurons. No test is reported. Reproduced when the population mean falls monotonically from 0.6
+  criterion: Cue response averaged over trials per neuron and delay, then over the 50 neurons. The
+    Fig. 2c inset plots "firing rate in the 0.5s following the cue", while the legend names 0.1 to
+    0.4 s as the cue response of the later analyses; readings are (a) 0 to 0.5 s, (b) M1. No test
+    is reported. Reproduced when the population mean falls monotonically from 0.6
     to 9.375 s; partially reproduced when it falls from the shortest to the longest delay with one
     inversion.
 - id: fig2f-exponential-better-than-hyperbolic
@@ -367,8 +381,7 @@ claims:
   - cued-delay-neurons
   criterion: Decoding and test as M4, under readings (a) and (b) of the number of components.
     Reproduced when, under one reading, the Wasserstein distance is smaller for data than for
-    shuffle at p < 0.05 for all four delays and the median decoded time increases with the true
-    delay; partially reproduced for two or three delays.
+    shuffle at p < 0.05 for all four delays; partially reproduced for two or three delays.
 - id: fig2k-better-than-single-discount
   statement: Decoding with each neuron's own discount factor is more accurate than a single-discount
     model for the 1.5, 3.75 and 9.375 s delays, but not for 0.6 s.
@@ -444,7 +457,10 @@ claims:
   - cued-delay-neurons
   criterion: A claim of absence. Per neuron, the session's mean lick rate per delay after the odor,
     fitted with the exponential model and bounds of M2; Spearman correlation with the neural gamma
-    over the neurons of each mouse, two-tailed, p < 0.05 counts as an effect. The window is 0.6 s
+    over the neurons of each mouse, two-tailed, p < 0.05 counts as an effect. The neurons of each
+    mouse are open; readings are (a) the M3 neurons of the mouse, (b) the code's set
+    (LickPSTHs_Revision.m line 132, positive held-out R2 and ML below 900 um without the 2 spikes/s
+    cut). The window is 0.6 s
     after the cue in the Methods and 0.2 to 0.8 s (bins 12 to 14 of 200 ms) in the code
     (LickPSTHs_Revision.m); the Methods window decides and the code's is a variant. Reproduced
     when neither mouse shows p < 0.05; r is reported.
@@ -504,11 +520,15 @@ claims:
     value: 0.23
     tolerance: 0.023
     unit: per second
-  criterion: Fit as M7 on M6. Reproduced when the mean and s.d. of the per-neuron gammas are within
-    tolerance and the mean fitted value function is convex (its second difference positive over
-    most of the last 4.3 s, judged on the mean over fits); partially reproduced when the value
-    function is convex and the gammas spread over at least 0.2 to 0.8 but the summary is outside
-    tolerance. The fit has random initial values; a standard seed is used and recorded.
+  criterion: Fit as M7 on M6. The paper gives no measure of convexity; it is judged on the mean
+    fitted value function over fits (Fig. 3k), with readings (a) second difference positive at more
+    than half of the bins, (b) the function lies below the straight line joining its first and last
+    bins. Reproduced when the mean and s.d. of the per-neuron gammas are within tolerance and the
+    value function is convex under one reading; partially reproduced when the value function is
+    convex and the 20th, 70th and 90th percentiles of the gammas are within 10% of 0.25, 0.56 and
+    0.88 (the percentiles of the Fig. 3l fit the Methods give, Mixing in distributed RL models,
+    paragraph 3) but the mean or s.d. is outside tolerance. The fit has random initial values; a
+    standard seed is used and recorded.
 - id: ed8b-slope-correlates-with-discount
   statement: The inferred VR discount factor and the ramp slope are strongly correlated (r = 0.81).
   source: Extended Data Fig. 8b
@@ -646,3 +666,206 @@ claims:
     bootstrap estimate (M7) and the cued delay responses and baselines (code
     Tuning_Figures_Revision.m lines 424 to 617). Reproduced when, under one reading of M4, data
     beat shuffle at p < 0.05 for 1.5, 3.75 and 9.375 s.
+- id: ed5g-single-animal-decoding
+  statement: Reward timing can also be decoded from the cue responses of the neurons of a single
+    mouse, in the two mice with most neurons (m3044 and m3054), slightly less accurately than from
+    the whole population.
+  source: Results, Discounting across dopamine neurons, paragraph 5; Extended Data Fig. 5g
+  quote: We performed the decoding analysis at the single animal level for two of the animals for
+    which we had sufficient number of neurons and observed decoding of subjective reward timing
+  depends_on:
+  - cued-delay-neurons
+  - fig2k-reward-timing-decoded
+  criterion: M4 on the M3 neurons of each mouse, with the discount matrix of that mouse's neurons
+    (Extended Data Fig. 5c,f). The paper reports no test for single animals; the test of Fig. 2k
+    (data against shuffle, M4) is the one used. Reproduced when, in each mouse and under one
+    reading of M4, data beat shuffle at p < 0.05 for all four delays; partially reproduced for two
+    or three delays in a mouse. The median Wasserstein distances are reported beside the
+    population's.
+- id: ed6g-decoding-matches-simulation
+  statement: Decoding accuracy from the recorded cue responses is comparable to decoding from
+    responses simulated from each neuron's fitted exponential model with matched trial numbers;
+    the data are marginally better at 0.6, 3.75 and 9.375 s and not at 1.5 s.
+  source: Results, Discounting across dopamine neurons, paragraph 5; Extended Data Fig. 6f-g
+  quote: Furthermore, the decoding performance was comparable to simulated data with matched trial
+    numbers, indicating that the remaining uncertainty in decoded reward timing is primarily driven
+    by limited sample size in the data
+  statistics:
+  - about: 0.6 s, data against simulation
+    test: one-tailed Wilcoxon signed rank test
+    p: 0.002
+  - about: 1.5 s, data against simulation
+    test: one-tailed Wilcoxon signed rank test
+    p: 0.999
+  - about: 3.75 s, data against simulation
+    test: one-tailed Wilcoxon signed rank test
+    p: 1.0e-12
+    p_relation: "<"
+  - about: 9.375 s, data against simulation
+    test: one-tailed Wilcoxon signed rank test
+    p: 0.027
+  depends_on:
+  - fig2k-reward-timing-decoded
+  criterion: Simulation as the Methods give it (Simulations to assess limits on parameter
+    estimation, paragraph 2), 80 trials per neuron, 20 per delay, Poisson with the mean of each
+    neuron's exponential fit (the mean parameters over bootstraps) as rate (code
+    SimulationForRecovery_Olf.m line 99, poissrnd of the predicted rate); 100 bootstraps of
+    half-splits fitted as M2; decoded as M4 (code Olfaction_Figure_Revision.m lines 1092 to 1260).
+    One-tailed signed-rank test that the data distance is smaller, over the 200 decodings. The
+    simulation is random; a standard seed is used and recorded. Reproduced when, under one reading
+    of M4, the test agrees with the paper at every delay (p < 0.05 at 0.6, 3.75 and 9.375 s, not at
+    1.5 s); partially reproduced at three of the four delays.
+- id: ed7de-gain-baseline-not-related-to-ml-position
+  statement: The VR baseline and gain are not significantly correlated with the medio-lateral
+    position of the implant (baseline r = -0.011, P = 0.92; gain r = -0.19, P = 0.069).
+  source: Results, Ramping heterogeneity and discounting, paragraph 4; Extended Data Fig. 7d-e
+  quote: The baseline parameter inferred in the VR task is not correlated with the medio-lateral
+    (ML) position of the implant (Pearson’s r = −0.011, P = 0.92, two-tailed t-test). e, The
+    inferred gain in the VR task reduces with increasing medio-lateral (ML) position but the effect
+    does not reach significance (Pearson’s r = −0.19, P = 0.069, two-tailed t-test)
+  statistics:
+  - about: baseline
+    test: Pearson correlation, two-tailed t-test
+    statistic: r = -0.011
+    p: 0.92
+    n: 90 neurons
+  - about: gain
+    test: Pearson correlation, two-tailed t-test
+    statistic: r = -0.19
+    p: 0.069
+    n: 90 neurons
+  depends_on:
+  - fig3-common-value-fit
+  criterion: A claim of absence, judged on the paper's test, Pearson correlation of the per-neuron
+    mean baseline and mean gain (M7) with the unit's ML position, two-tailed, p < 0.05 counts as an
+    effect (code VR_Figures_Revision.m lines 547 and 548). Reproduced when neither has p < 0.05; r
+    is reported.
+- id: ed8cd-vr-licking-not-related-to-discount
+  statement: In the VR task, the ramp in anticipatory licking is not correlated with the neural
+    discount factor in either of the two mice with most neurons, whichever pair of the three lick
+    windows measures the ramp.
+  source: Results, Ramping heterogeneity and discounting, paragraph 4; Extended Data Fig. 8c-d
+  quote: the neural discount factor and the ramp in licking activity is not correlated irrespective
+    of the window used to compute the ramp in licking activity
+  statistics:
+  - about: m3044, late against early
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.09
+    p: 0.64
+  - about: m3044, late against middle
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = -0.05
+    p: 0.79
+  - about: m3044, early against middle
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.17
+    p: 0.37
+  - about: m3054, late against early
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = -0.1
+    p: 0.62
+  - about: m3054, late against middle
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.032
+    p: 0.88
+  - about: m3054, early against middle
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = -0.11
+    p: 0.61
+  depends_on:
+  - fig3-common-value-fit
+  criterion: A claim of absence. Per neuron, the lick rate of its session in the windows of the
+    Methods (Analyzing behavioral discounting through the lick rate in the VR task), early -3.45 to
+    -2.95 s, middle -1.95 to -1.45 s and late -0.75 to -0.25 s before reward; modulation indices
+    (A - B) / (A + B) for late-early, late-middle and middle-early (eq. 24 is lost from the text;
+    code VR_Behavior_Revision.m lines 77 to 79). Spearman correlation with the M7 gamma over the M6
+    neurons of each mouse (code Valid_VR_3044), two-tailed, p < 0.05 counts as an effect.
+    Reproduced when none of the six correlations has p < 0.05; r is reported.
+- id: ed8ej-single-animal-vr-fits
+  statement: Fitted to the neurons of one mouse alone (m3044, 29 neurons; m3054, 24 neurons), the
+    common value model gives gains, baselines and discount factors strongly correlated with those
+    of the full population fit (discount factor r = 0.75 in m3044 and 0.88 in m3054).
+  source: Results, Ramping heterogeneity and discounting, paragraph 4; Methods, Common Value
+    Function model, paragraph 2; Extended Data Fig. 8e-j
+  quote: Furthermore, the model fit was robust when applied at the single animal level for the two
+    animals with sufficient numbers of neurons
+  statistics:
+  - about: m3044, gain
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.78
+    p: 2.1e-6
+  - about: m3044, baseline
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.75
+    p: 5.7e-6
+  - about: m3044, discount factor
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.75
+    p: 6.8e-6
+  - about: m3054, gain
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.97
+    p: 1.3e-6
+  - about: m3054, baseline
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.98
+    p: 1.1e-6
+  - about: m3054, discount factor
+    test: Spearman rank correlation, two-tailed t-test
+    statistic: r = 0.88
+    p: 2.6e-6
+  depends_on:
+  - fig3-common-value-fit
+  expected:
+  - quantity: VR neurons in m3044
+    value: 29
+    tolerance: 2.9
+  - quantity: VR neurons in m3054
+    value: 24
+    tolerance: 2.4
+  - quantity: Spearman r, m3044 gain
+    value: 0.78
+    tolerance: 0.078
+  - quantity: Spearman r, m3044 baseline
+    value: 0.75
+    tolerance: 0.075
+  - quantity: Spearman r, m3044 discount factor
+    value: 0.75
+    tolerance: 0.075
+  - quantity: Spearman r, m3054 gain
+    value: 0.97
+    tolerance: 0.097
+  - quantity: Spearman r, m3054 baseline
+    value: 0.98
+    tolerance: 0.098
+  - quantity: Spearman r, m3054 discount factor
+    value: 0.88
+    tolerance: 0.088
+  criterion: M7 fitted to the M6 neurons of each mouse alone (code Master_Script_SingleValue_m3044.m
+    and Master_Script_SingleValue_m3054.m); Spearman correlation, two-tailed, of each per-neuron
+    mean parameter with the full population fit (code VR_Figures_Revision.m lines 909 to 911 and
+    1051 to 1053). Reproduced when the counts and the six r are within tolerance with p < 0.05;
+    partially reproduced when all six r are positive with p < 0.05 but some are outside tolerance.
+    The printed p-values (near 1e-6 for r = 0.97 with 24 neurons) are larger than such r would give;
+    p is reported, not compared.
+checks:
+- date: 2026-11-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - M4 (header). The text said the baseline subtracted from the test responses is that of the half that gives the gammas. That is the code's choice (Olfaction_Figure_Revision.m line 572); the Methods take responses and baseline from the same half. The Methods are now the main reading and the code a variant, as the protocol requires. This applies to every claim using M4.
+  - ed2e-branching-myopic-bias. Source pointed at paragraph 3 of the branching task section; the quoted sentences are in paragraph 4.
+  - ed2-myopic-bias-maze-lunar. The close and far split for Lunar Lander was unstated; the code splits at the median lander height, now cited. Named the disagreement between 10,000 sets (Methods) and 300 sets (Extended Data Fig. 2h legend).
+  - session-trial-counts. The Methods count sessions "in which neurons were recorded", which the criterion had narrowed to sessions of analysed neurons. Both readings are now listed.
+  - fig2b-anticipatory-licking. Source pointed at paragraph 1, the sentence is in paragraph 2. The criterion averaged over sessions of the analysed neurons; the legend says the mean over all recorded neurons and the code loops over every neuron, so the average is now per neuron, with 78 and 50 as readings.
+  - fig2c-mean-cue-response-decreases. The inset plots the rate in the 0.5 s after the cue, not the 0.1 to 0.4 s window; both are now readings.
+  - fig2k-reward-timing-decoded. Removed the requirement that the median decoded time increase with delay; the paper quantifies decoding only by the Wasserstein test against shuffle.
+  - fig3-common-value-fit. The convexity rule and the partial rule (gammas spread over 0.2 to 0.8) were not from the paper. Convexity is now named as open with two readings, and the partial rule uses the 20th, 70th and 90th percentiles the Methods report (0.25, 0.56, 0.88).
+  - ed5-behavioral-neural-discount-uncorrelated. The neurons per mouse were unstated; the code's set omits the 2 spikes/s cut, so the M3 set and the code's set are readings.
+  - Added ed5g-single-animal-decoding, ed6g-decoding-matches-simulation, ed7de-gain-baseline-not-related-to-ml-position, ed8cd-vr-licking-not-related-to-discount and ed8ej-single-animal-vr-fits. Each is a finding stated in the Results with its own Extended Data panel and had no claim.
+  - Checked, unchanged. Every quote, p-value and expected value against the text; the slope bins and tests (VR_Figures_Revision.m lines 100 to 139), the decoding alpha, grid indices and single-discount decoder, the cued delay lick window (bins 12 to 14), the ML correlation line and the Fig. 4b bootstrap draw in the Mendeley scripts, and the simulation repository at commit 37f11c6.
+  - Open. The cued delay exclusion counts (17, 11 and 4 against 78 minus 50; 23 non-selected and 13 negative R2 in Extended Data Fig. 3) cannot be reconciled from the paper.
+  - Open. DecodeTime is not in the deposit, so the number of singular components in the main decoder stays open with two readings.
+  - Open. Extended Data Fig. 5h-i (discount factor with low against high lick rate trials) and Extended Data Figs 3g-j and 6b have no claim; they are robustness panels not stated as findings in the Results.
+  - Open. The sharing parameter of the mixing model is lost from the text and its code is not deposited, so mixing-model-accuracy cannot be run as published.
