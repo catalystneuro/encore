@@ -179,10 +179,12 @@ claims:
   depends_on:
   - fig2c-condition-lds-variance
   criterion: Frequencies of the eigenvalues of each condition's LDS (angle of the eigenvalue over
-    2 pi times the 100 Hz sampling rate, as in the code's extractParams.m). Reproduced when, in
-    each dataset, the median frequencies of the complex eigenvalue pairs, sorted by frequency,
-    lie within 10% of 0.5, 1.5, 2.5 and 4 Hz for the pairs present (at least three) and at least
-    one real eigenvalue is present on most conditions.
+    2 pi times the 100 Hz sampling rate, as in the code's extractParams.m). An LDS of k dimensions
+    holds at most (k - 1)/2 complex pairs, so a dataset fitted with 5 or 7 dimensions (allowed by
+    fig2c) cannot show all four frequencies. Reproduced when, in each dataset, the median
+    frequencies of the complex eigenvalue pairs, sorted by frequency, lie within 10% of 0.5, 1.5,
+    2.5 and 4 Hz in that order for as many pairs as the dimensionality allows, and at least one
+    real eigenvalue is present on most conditions.
 - id: fig3c-eigenvalue-distance-auc
   statement: Eigenvalues differed between conditions only slightly more than expected from
     estimation noise, with ROC-AUC 0.51 to 0.58 between the between-condition distances and the
@@ -194,10 +196,11 @@ claims:
     floor due to estimation noise (ROC-AUC = 0.51–0.58; Fig. 3b, c ).'
   depends_on:
   - fig2c-condition-lds-variance
-  criterion: Distance between two conditions is the norm of the difference of their
-    frequency-sorted eigenvalue vectors (code eigValDistance.m; the legend of Figure 3b says
-    averaging over corresponding eigenvalues, and the mean of the absolute differences is shown as
-    a variant). The null is open between the two the Methods give, (a) two sets of 20 Poisson
+  criterion: Distance between two conditions is the mean over corresponding (frequency-sorted)
+    eigenvalues of their distance in the complex plane (Figure 3b legend, "averaging over the
+    distances between corresponding eigenvalues"; Methods, "mean distance between the
+    eigenvalues"). The code's eigValDistance.m, the norm of the difference of the sorted
+    eigenvalue vectors, is shown as a variant. The null is open between the two the Methods give, (a) two sets of 20 Poisson
     trials simulated from each condition's rates, smoothed, averaged and fitted, 500 repeats per
     condition (Methods, main control); (b) random halves of the real trials, 500 repeats (the
     Methods' additional control and the code's compareTrialSimilarity.m). AUC folded to at least
@@ -358,12 +361,14 @@ claims:
   criterion: Alignment index as in the shared method for each ordered pair of different conditions
     and each rotation. Noise is the alignment index between loading matrices fitted by regression
     on the fixed basis to two random halves of a condition's trials (Methods, Measuring the
-    across-condition alignment of rotations); repeats are open between 36 (Methods) and 200 (code
-    singleFrequencyOverlapControl.m). The paper's AUC is per rotation; the range covers rotations
-    and datasets. Reproduced when every rotation in every dataset has AUC in 0.765 to 1 with
-    observed alignment lower, and the test gives p < 0.001; partially when at least half of the
-    rotations do. The Results name a signed-rank test of unequal-size samples, so the code's
-    rank-sum test decides and the paper's name is recorded.
+    across-condition alignment of rotations), 36 repeats (Methods); the code's 200 repeats
+    (singleFrequencyOverlapControl.m) are a variant. The paper's AUC is per rotation; the range
+    covers rotations and datasets. The Results name a Wilcoxon signed-rank test and do not say
+    what is paired; readings are (a) per condition, its mean alignment with the other conditions
+    against its mean noise alignment, signed-rank test over conditions; (b) the code's rank-sum
+    test of the two unpaired distributions. Reproduced when every rotation in every dataset has
+    AUC in 0.765 to 1 with observed alignment lower, and the test gives p < 0.001 under one
+    reading; partially when at least half of the rotations do.
 - id: fig4c-subspace-excursion-angles
   statement: Across conditions, each rotation's planes spanned 6 to 20 distinct dimensions with
     angles above 45 degrees to each other, and more that varied above chance.
@@ -415,9 +420,12 @@ claims:
   criterion: Methods, Explaining variability in jPCA-identified rotations. Per condition, the
     variance due to the rotational basis functions after the same soft normalisation and mean
     subtraction as jPCA, against the variance in each retained jPCA plane (six planes in all, two
-    per M1 dataset and one per PMd dataset); Pearson correlation per plane. Reproduced when every
-    plane's rho lies in 0.351 to 0.506 and the share with p < 0.05 is within tolerance (4 of 6
-    planes is 67%); partially when the rho range holds for at least half.
+    per M1 dataset and one per PMd dataset); Pearson correlation per plane. Over 72 conditions any
+    rho above about 0.23 has p < 0.05, so the rho range and the 66% cannot both describe every
+    plane. Readings for the range are (a) per dataset, the mean rho over its retained planes; (b)
+    the rho of the planes correlated at p < 0.05. Reproduced when, under one reading, the values
+    lie in 0.351 to 0.506 and the share of planes with p < 0.05 is within tolerance (4 of 6
+    planes is 67%); partially when one of the two holds.
 - id: fig4f-plane-alignment-explains-jpca
   statement: Conditions without clear rotations in the jPCA planes had rotations misaligned with
     those planes; the alignment index with the jPCA plane correlated strongly with the variance
@@ -592,7 +600,8 @@ claims:
     variance explained in the offset column over held-out conditions. The kernel is open between
     (a) the Ornstein-Uhlenbeck kernel, length scale 10^3, of the LDR encoder and (b) the Gaussian
     kernel, length scale 400, lambda 0.1, of the rotation predictions (Methods). Shuffle, reach
-    parameters permuted across conditions, 1000 permutations. Reproduced when, under one reading,
+    parameters permuted across conditions; the paper gives no count, and 1000 permutations is a
+    standard choice, the fewest that can give p < 0.001. Reproduced when, under one reading,
     every dataset's linear value lies in 33.3 to 78.1% and kernel value in 62.1 to 89.1%, both
     above all permutations.
 - id: fig7c-ldr-encoding
@@ -675,8 +684,9 @@ claims:
     bins, scaled to spikes/s, times the pseudo-inverse of the basis; predicted parameters times the
     kinematic basis functions give hand position; variance explained per trial (code
     getVarExplainedKinematics.m, negatives set to 0). Kinematic readings as in fig6e. Reproduced
-    when, under one reading, every dataset's mean over trials lies in 75.6 to 100% and exceeds a
-    condition-shuffled null with p < 0.001.
+    when, under one reading, every dataset's mean over trials lies in 75.6 to 100%. The Methods'
+    condition-shuffled null with a signed-rank test is run and reported; the paper reports no
+    result for it, so it does not decide.
 - id: fig7f-decoder-beats-standard
   statement: The LDR-based decoder outperformed every other offline decoder tested, including GPFA
     denoising followed by nonlinear decoders.
@@ -709,9 +719,12 @@ claims:
     activity produced no substantial degradation in decoding quality (Supplementary Fig. 8 ;
     Wilcoxon signed-rank test, p = 0.04–0.96).
   statistics:
-  - test: Wilcoxon signed-rank test
+  - about: lowest of the reported range
+    test: Wilcoxon signed-rank test
     p: 0.04
-    p_relation: ">"
+  - about: highest of the reported range
+    test: Wilcoxon signed-rank test
+    p: 0.96
   depends_on:
   - fig7f-ldr-decoding
   criterion: A claim of absence. Output-potent dimensions as in the code removePotent.m (the
@@ -742,3 +755,20 @@ claims:
     Pearson correlation over all held-out trials of a dataset, per parameter. Reproduced when the
     eight correlations (two parameters, four datasets) lie in 0.144 to 0.451 with p < 0.001 (rule
     for ranges over the eight).
+checks:
+- date: 2026-11-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3a-eigenvalue-clusters. The criterion required at least three complex pairs, but an LDS of 5 dimensions (within the 5 to 9 of fig2c) holds only two. The pairs are now judged as far as each dataset's dimensionality allows, in frequency order.
+  - fig3c-eigenvalue-distance-auc. The code's vector norm was the main distance and the legend's average a variant. The Figure 3b legend and the Methods both give a mean over corresponding eigenvalues, so that is now the main measure and the code's norm the variant.
+  - fig4b-plane-alignment (and suppfig6a-location-alignment, which follows it). The criterion set aside the Results' signed-rank test for the code's rank-sum test. The paper's test can be run with per-condition pairing, so that is now reading (a) and the rank-sum test reading (b). The Methods' 36 repeats now decide, with the code's 200 as a variant, as the file's own rule says.
+  - fig4d-jpca-variance-correlation. The criterion required every plane's rho in 0.351 to 0.506 and also 4 of 6 planes at p < 0.05. Over 72 conditions every rho above about 0.23 is significant, so the two cannot both hold. Named two readings for the rho range (mean per dataset; significant planes only).
+  - fig6e-kinematics-predict-location. The 1000 permutations are not in the paper; now marked as a standard choice.
+  - fig7f-ldr-decoding. Removed the requirement to beat a condition-shuffled null at p < 0.001. The statement does not claim it and the paper reports no result for that null. It is now reported and does not decide.
+  - suppfig8-no-output-potent-dependence. The statistics recorded p > 0.04, which the paper does not say; it reports p = 0.04 to 0.96. Now recorded as the two exact ends of the range.
+  - Open. suppfig3-model-comparison compares a cross-validated TBF value with in-sample jPCA and LDS values. The Supplementary Figure 3 legend says the comparison is cross-validated, and the Methods give no held-out variance for jPCA or the single-condition LDS. The mix stays as the main reading, with all in-sample as the variant.
+  - Open. suppfig8-no-output-potent-dependence uses p of at least 0.036 as its threshold for absence. The paper calls p = 0.04 not a substantial degradation and gives no threshold, so this is the file's own reading.
+  - Open. fig6c-location-tracks-direction is qualitative in the paper; the circular correlation and its p < 0.05 are the file's reading.
+  - Open. Many criteria rest on the code at commit b65f28d (windows, folds, penalties, SVD reductions, reach-duration definition). This check read only the paper and supplement and did not re-read the code, so those details are taken as the writer reported them.
