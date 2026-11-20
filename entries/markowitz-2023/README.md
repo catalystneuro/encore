@@ -7,9 +7,9 @@ in `attempts/markowitz-2023-02.yaml`.
 
 - `photometry.ipynb`: the dLight photometry findings of Figs. 1 and 2 and Extended Data Figs. 2, 3
   and 7 (DLS dopamine at syllable transitions, its relation to velocity, to syllable use and to
-  sequence entropy, and DMS against DLS). About 25 minutes.
+  sequence entropy, and DMS against DLS). About 30 minutes.
 - `optoda.ipynb`: the closed-loop Opto-DA findings of Fig. 3 and Extended Data Fig. 10 (target
-  reinforcement, learners, sequence entropy, kinematics, duration, place preference). About 4
+  reinforcement, learners, sequence entropy, kinematics, duration, place preference). About 10
   minutes.
 - `markowitz.py`: streaming loaders for the dandiset's NWB files and the shared measures.
 
@@ -17,7 +17,7 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 and the differences from the paper's method.
 
 The food-reward and calibration sessions are not in the dandiset, so the claims on them are
-blocked; the encoding, decoding and reinforcement-learning models and several Opto-DA panels were
-not run within the time of the attempt.
+blocked; the encoding, decoding and reinforcement-learning models, the syllable decoder and the
+Opto-DA target-specificity panel were not run within the time of the attempt.
 
 Run with `python tools/entry.py run entries/markowitz-2023`.

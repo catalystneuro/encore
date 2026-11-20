@@ -8,7 +8,14 @@ Parameters and where they come from:
   second-order Butterworth at 3 Hz, fitted to dLight by RANSAC with slope and
   bias, subtracted, and z-scored in a centred 20-s (600-sample) sliding window.
 - Quality control (claims file, definitions): (a) the Methods' maximum
-  percentage dF/F0 above 1.5 and dLight-to-reference correlation below 0.6.
+  percentage dF/F0 above 1.5 and dLight-to-reference correlation below 0.6;
+  (b) the code's rule (signal.py, compute_photometry_quality_metrics; io/df.py,
+  dlight_exclude as the claims file gives it): the 90th percentile of the
+  exponentially smoothed dF/F (window 50, tau 10) in percent above 1.5, the
+  correlation of the smoothed dLight and reference dF/F below 0.6, and no raw
+  dF/F value above 1.0. The smoothing kernel is scipy's symmetric exponential
+  window of 50 samples with tau 10, normalised to sum 1 (an assumption on how
+  "window 50, tau 10" is implemented; the code is outside the claims file).
 - Syllable-associated dLight (Methods, "Analysing the relationship between
   dLight and syllable statistics within an experiment across syllables"): the
   maximum z-scored dLight from syllable onset to 300 ms after, inclusive
@@ -103,8 +110,22 @@ def rolling_z(x, win=600):
     return ((s - m) / sd).to_numpy()
 
 
-def process_dlight(sig, ref, seed=0):
-    """Re-referenced, sliding-window z-scored dLight (module docstring)."""
+def qc_code(sig, ref):
+    """Quality-control metrics of reading (b) (module docstring)."""
+    from scipy.signal.windows import exponential
+    w = exponential(50, tau=10)
+    w = w / w.sum()
+    ok = np.isfinite(sig) & np.isfinite(ref)
+    s_ = np.convolve(np.where(ok, sig, 0), w, mode="same")
+    r_ = np.convolve(np.where(ok, ref, 0), w, mode="same")
+    return dict(qcb_p90_pct=float(np.percentile(s_, 90) * 100), qcb_corr=float(np.corrcoef(s_, r_)[0, 1]),
+                qcb_raw_max=float(np.nanmax(sig)))
+
+
+def process_dlight(sig, ref, seed=0, return_rr=False, intercept=True):
+    """Re-referenced, sliding-window z-scored dLight (module docstring). With `return_rr`, also
+    the re-referenced trace before the sliding z-score. `intercept=False` fits the reference without
+    a bias, as photometry/signal.py rereference does in the fig_s03 notebook (the claims file's variant)."""
     from scipy.signal import butter, filtfilt
     from sklearn.linear_model import RANSACRegressor, LinearRegression
     b, a = butter(2, 3.0 / (FS / 2), "low")
@@ -113,8 +134,10 @@ def process_dlight(sig, ref, seed=0):
     ref = np.where(ok, ref, np.nanmedian(ref))
     ref_lp = filtfilt(b, a, ref)
     # RANSAC's random subsets are a standard choice that does not change the fit materially
-    r = RANSACRegressor(LinearRegression(), random_state=seed).fit(ref_lp[:, None], sig)
+    r = RANSACRegressor(LinearRegression(fit_intercept=intercept), random_state=seed).fit(ref_lp[:, None], sig)
     rr = sig - r.predict(ref_lp[:, None])
+    if return_rr:
+        return rolling_z(rr), float(np.corrcoef(sig, ref)[0, 1]), rr
     return rolling_z(rr), float(np.corrcoef(sig, ref)[0, 1])
 
 
@@ -150,9 +173,15 @@ def load_photometry(row):
         d["t"] = st.astype(np.float64) if st is not None else None
         d["syl"] = sl.astype(np.int16) if sl is not None else None
         return d
-    z, corr = process_dlight(sig, ref)
+    z, corr, rr = process_dlight(sig, ref, return_rr=True)
+    d.update(qc_code(sig, ref))
+    # clock ranges of the photometry and syllable series, for the alignment check
+    d["t_range"] = (float(t[0]), float(t[-1]))
+    d["syl_range"] = (float(st.min()), float(st.max())) if st is not None else None
+    d["ext_range"] = (float(et[0]), float(et[-1]))
     d["t"] = t
     d["z"] = z.astype(np.float32)
+    d["rr"] = rr.astype(np.float32)
     d["dff"] = sig.astype(np.float32)
     d["qc_max_pct"] = float(np.nanmax(sig) * 100)
     d["qc_corr"] = corr
@@ -294,10 +323,12 @@ def load_keypoint(row):
         d["t"] = f["processing/ophys/SignalF/timestamps"][()]
         kp = "processing/behavior/keypoints/"
         d["rate"] = float(f[kp + "medial_spine/starting_time"].attrs["rate"])
+        d["kp_start"] = float(f[kp + "medial_spine/starting_time"][()])
         for k in ["rostral_spine", "medial_spine", "caudal_spine", "left_forepaw", "right_forepaw"]:
             d[k] = f[kp + k + "/data"][()].astype(float)
     f0 = lambda x: pd.Series(x).rolling(150, center=True, min_periods=75).quantile(0.10).to_numpy()
     dff_s = (sig - f0(sig)) / f0(sig)
     dff_r = (ref - f0(ref)) / f0(ref)
     d["z"], d["refcorr"] = process_dlight(dff_s, dff_r)
+    d["z_noint"], _ = process_dlight(dff_s, dff_r, intercept=False)
     return d
