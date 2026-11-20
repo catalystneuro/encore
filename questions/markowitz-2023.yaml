@@ -1,58 +1,91 @@
 questions:
 - claim: ed10i-no-place-preference
-  question: The criterion tests the target-onset JSD by pairs and by mice, and reads the statement's
-    experiment-wide comparison (n = 32 mice, U = 114, P = 0.41) as the per-mouse mean of the
-    target-onset JSD. The Extended Data Fig. 10i legend describes the second test as a JSD computed
-    over experiment-wide centroid locations for each mouse, that is over all of a mouse's positions,
-    not only at target onsets. Should the experiment-wide test use all centroid locations of each
-    mouse on stimulation days against other days?
-  passage: 'Extended Data Fig. 10i legend, "Right: JSD of centroid location distributions computed
-    over experiment-wide centroid locations for each mouse (n = 32 mice, p = 0.41, U = 114, f = 0.48,
-    two-sided Mann-Whitney U test)."'
-  why: Under the criterion as written both tests give P >= 0.05 (pairs P = 0.174, mice P = 0.425)
-    and the claim is reproduced. The comparison over all instance onsets of each mouse, computed in
-    optoda.ipynb as a variant, gives U = 48, f = 0.20, P = 0.005, with Opto-DA mice lower than
-    controls, so under the legend's reading the claim would not be reproduced.
+  question: The criterion tests the target-onset JSD by pairs and by mice, and reads the statement's experiment-wide
+    comparison (n = 32 mice, U = 114, P = 0.41) as the per-mouse mean of the target-onset JSD. The Extended
+    Data Fig. 10i legend describes the second test as a JSD computed over experiment-wide centroid locations
+    for each mouse, that is over all of a mouse's positions, not only at target onsets. Should the experiment-wide
+    test use all centroid locations of each mouse on stimulation days against other days?
+  passage: 'Extended Data Fig. 10i legend, "Right: JSD of centroid location distributions computed over
+    experiment-wide centroid locations for each mouse (n = 32 mice, p = 0.41, U = 114, f = 0.48, two-sided
+    Mann-Whitney U test)."'
+  why: Under the criterion as written both tests give P >= 0.05 (pairs P = 0.174, mice P = 0.425) and
+    the claim is reproduced. The comparison over all instance onsets of each mouse, computed in optoda.ipynb
+    as a variant, gives U = 48, f = 0.20, P = 0.005, with Opto-DA mice lower than controls, so under the
+    legend's reading the claim would not be reproduced.
+  answer: Changed. The criterion took the experiment-wide test as the per-mouse mean of the target-onset
+    JSD, which neither the legend nor the code does. The legend says "computed over experiment-wide centroid
+    locations for each mouse", and the fig_s10h, s10i notebook (cells 33 and 34, "compute JSDs for all
+    locations, not just during the target") computes one JSD per mouse from the centroids at the onsets
+    of all syllables on stimulation days against other days. The Methods are silent, so the code settles
+    the reading. The criterion now uses the onsets of all syllables as the main reading and the centroids
+    of all frames as a variant, and the claim is reproduced only when both tests give P >= 0.05 under
+    the main reading.
+  answered: 2026-11-20
 - claim: fig2k-dlight-predicts-sequence-variability
   question: The criterion z-scores the correlation against shuffles that permute destinations within each
     row of the transition counts (the code's randomize_cols). The Methods z-score it against "Pearson
     coefficients estimated after shuffling dLight peak values". The claims file's header says that where
-    the Methods and the code disagree the Methods give the main reading and the code a variant. Should the
-    criterion's null be the Methods' shuffle of dLight peak values?
-  passage: 'Methods, Analysing the moment-to-moment relationship between dLight and syllable statistics within
-    an experiment, "Finally, Pearson correlation values were then calculated between dLight values and the
-    behavioural features estimated at each bin size. Pearson coefficients were z-scored using the mean and
-    s.d. from Pearson coefficients estimated after shuffling dLight peak values."'
+    the Methods and the code disagree the Methods give the main reading and the code a variant. Should
+    the criterion's null be the Methods' shuffle of dLight peak values?
+  passage: Methods, Analysing the moment-to-moment relationship between dLight and syllable statistics
+    within an experiment, "Finally, Pearson correlation values were then calculated between dLight values
+    and the behavioural features estimated at each bin size. Pearson coefficients were z-scored using
+    the mean and s.d. from Pearson coefficients estimated after shuffling dLight peak values."
   why: The raw correlations are negative under both binnings (Pearson -0.064 and -0.056 at n = 5 and 10
     under reading (b), -0.380 and -0.517 under reading (a)) and are positive only against the criterion's
     null. Under the Methods' null, run in photometry.ipynb as a variant with 200 shuffles, reading (a)
     stays significantly positive (one-sided P = 0.025 and 0.005), so the claim would still be reproduced,
     but reading (b) turns significantly negative (P = 0.005 for a negative correlation). If the Methods'
     null is the main reading and reading (a) does not decide, the outcome changes.
+  answer: Changed. The Methods give the null for this analysis, which includes sequence randomness, "Pearson
+    coefficients were z-scored using the mean and s.d. from Pearson coefficients estimated after shuffling
+    dLight peak values". dlight_06 instead permutes the transition counts (randomize_cols). By the file's
+    rule the Methods give the main reading, so the criterion now z-scores against 1,000 shuffles of the
+    instances' dLight peak values within mouse and segment before binning, and names the code's shuffle
+    as a variant. Readings (a) and (b) of the binning are unchanged.
+  answered: 2026-11-20
 - claim: ed3c-keypoint-velocity
-  question: The claims file's definitions make the Methods' RANSAC fit with slope and bias the main reading of
-    dLight processing and the fig_s03 notebook's fit without intercept a variant. The criterion of this
-    claim says to process dLight "as in the fig_s03 notebook (cell 15)", which fits without intercept.
+  question: The claims file's definitions make the Methods' RANSAC fit with slope and bias the main reading
+    of dLight processing and the fig_s03 notebook's fit without intercept a variant. The criterion of
+    this claim says to process dLight "as in the fig_s03 notebook (cell 15)", which fits without intercept.
     Which fit should decide this claim?
-  passage: 'Methods, Photometry active referencing, "to account for differences in gain or DC offset, RANSAC
-    ordinary least squares regression was used to fit the reference signal to the dLight signal"; claims file
-    header, Definitions, "The code''s only worked example (fig_s03 notebook, cell 15) uses the same steps with
-    a centred window and a RANSAC fit without intercept ... the no-intercept fit is a variant."'
+  passage: Methods, Photometry active referencing, "to account for differences in gain or DC offset, RANSAC
+    ordinary least squares regression was used to fit the reference signal to the dLight signal"; claims
+    file header, Definitions, "The code's only worked example (fig_s03 notebook, cell 15) uses the same
+    steps with a centred window and a RANSAC fit without intercept ... the no-intercept fit is a variant."
   why: With the fit without intercept the forelimb r is -0.019, within -0.02 +- 0.002, and the claim is
-    reproduced; with the Methods' fit with intercept it is -0.026, which misses the tolerance and does not
-    round to -0.02, so the claim would be partially reproduced.
+    reproduced; with the Methods' fit with intercept it is -0.026, which misses the tolerance and does
+    not round to -0.02, so the claim would be partially reproduced.
+  answer: Changed. The Methods state the fit for all photometry, "RANSAC ordinary least squares regression
+    was used to find the slope and bias with which to transform the reference signal", and the file's
+    Definitions make that the main reading and the no-intercept fit a variant. The criterion contradicted
+    this by pointing to the fig_s03 notebook (cell 15). It now processes dLight as in the Definitions
+    with the fit with slope and bias, and the notebook's fit without intercept is a variant. Expected
+    values and tolerances are unchanged.
+  answered: 2026-11-20
 - claim: fig2e-not-autocorrelation
-  question: The criterion's reproduced case needs both curves inside the shuffle band at some n where the
-    usage correlation is significant, and its not-reproduced case needs either to stay as high as the usage
-    curve. It has no case for an autocorrelation that turns significantly negative, and its smallest n (10
-    syllables, several seconds) cannot test the statement's "a few hundred milliseconds". Should the
-    criterion say how such a result is classed, and should the decline be tested at a shorter timescale?
-  passage: 'Results, Dopamine predicts future syllable use and sequencing, paragraph 2, "The relationship
+  question: The criterion's reproduced case needs both curves inside the shuffle band at some n where
+    the usage correlation is significant, and its not-reproduced case needs either to stay as high as
+    the usage curve. It has no case for an autocorrelation that turns significantly negative, and its
+    smallest n (10 syllables, several seconds) cannot test the statement's "a few hundred milliseconds".
+    Should the criterion say how such a result is classed, and should the decline be tested at a shorter
+    timescale?
+  passage: Results, Dopamine predicts future syllable use and sequencing, paragraph 2, "The relationship
     between dopamine transient amplitudes and syllable usage was not due to autocorrelation in the dLight
     signal or to correlations between dopamine and velocity, both of which declined sharply after a few
-    hundred milliseconds (Fig. 2e)."'
+    hundred milliseconds (Fig. 2e)."
   why: The autocorrelation z falls from 5.63 at n = 10 to -3.66 at n = 30 and stays between -1.16 and
     -4.34, outside the band, to n = 390; the velocity curve is inside the band only at n = 370 and 390.
     Neither case of the criterion applies, so the outcome (partially reproduced) is a judgment. A criterion
-    that counts a negative autocorrelation as not explaining a positive usage effect would make it
-    reproduced; one that requires both curves inside the band would make it not reproduced.
+    that counts a negative autocorrelation as not explaining a positive usage effect would make it reproduced;
+    one that requires both curves inside the band would make it not reproduced.
+  answer: 'Changed in part. The Fig. 2e legend tests all three curves one-sided, "Solid bars indicate
+    statistical significance (P < 0.05, one-sided shuffle test)", so a curve below the shuffle band is
+    not significant in the paper''s sense and cannot account for a positive usage correlation. The criterion
+    now uses that one-sided test, counts a curve as declined at n when it is not significantly positive
+    there, and adds a partially reproduced case for results between the two others. The timescale stays:
+    the paper cites Fig. 2e, whose bins are in syllables (from 5 in the Methods, 10 in the code, several
+    seconds either way), so no bin of the paper''s own analysis is a few hundred milliseconds and adding
+    a shorter one would be a method the paper does not use. The claim is judged at the bins the figure
+    shows.'
+  answered: 2026-11-20
