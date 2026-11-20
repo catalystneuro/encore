@@ -134,7 +134,8 @@ claims:
     as the code selects them (opening comment, Conditions), over the 14 mice kept, for V1 (the
     area of Figures 2 to 4). Reproduced when all six match; partially reproduced when the counts
     match after a stated difference in trial selection (for example lonaive taken as 50 trials
-    per mouse, 700 in all, but other counts differing by under 5%); otherwise not reproduced.
+    per mouse, 700 in all, but other counts differing by under 5%, a bound chosen here, as the
+    paper gives none); otherwise not reproduced.
     Each difference is reported with its likely cause.
 - id: three-contrasts-gamma-increase
   statement: Each of the three oddball contrasts (deviance detection, global oddball,
@@ -169,16 +170,14 @@ claims:
     value: 3.875
     tolerance: 1.625
     unit: dB
-  - quantity: xxxy peak ⍺/β power above aperiodic after onset, V1
-    value: 5
-    tolerance: 0.5
-    unit: dB
   criterion: Condition spectrograms as in the opening comment, S6, in V1. Ranges are widened by 10%
     of each bound (2.5-5 dB becomes 2.25-5.5 dB, written as 3.875 with tolerance 1.625); "above 5
-    dB" is read as a maximum of at least 4.5 dB. Reproduced when the maximum of the 40-55 Hz power
-    after onset in "XXXY" is in range and lasts past 250 ms, the ⍺/β maximum in "xxxy" in the
-    first 150 ms is at least 4.5 dB and falls back below 1 dB later in the stimulus, and "XXXY"
-    shows an ⍺/β rise followed by a fall. Partially reproduced when the shapes hold but a value is
+    dB" has no upper bound and is read as a maximum of at least 4.5 dB (5 less 10%). Reproduced
+    when the maximum of the 40-55 Hz power after onset in "XXXY" is in range and lasts past 250 ms,
+    the ⍺/β maximum in "xxxy" in the first 150 ms is at least 4.5 dB and falls back below 1 dB
+    later in the stimulus, and "XXXY" shows an ⍺/β rise followed by a fall. The 250 ms ("long-
+    lasting"), 150 ms ("fast") and 1 dB ("baseline") bounds are choices made here; the paper gives
+    no times or levels for these words. Partially reproduced when the shapes hold but a value is
     out of range. Run under both S3 readings.
 - id: fig2c-dd-v1-contrast
   statement: In V1, deviance detection ("XXXY" against "xxxy") gives a significant decrease of
@@ -214,8 +213,9 @@ claims:
     Partially reproduced when both clusters are significant but a size is out of range. Run under
     both S3 readings.
 - id: fig2d-dd-gamma-laminar
-  statement: In V1 the deviance-induced ɣ increase is strongest in superficial layers (L1 to L2/3,
-    about 2 dB), while after about 100 ms a weak (under 1 dB) loss of ɣ power appears in L5/6.
+  statement: In V1 the deviance-induced ɣ increase is strongest in superficial layers 1 to 4 (about
+    2 dB; the legend places it earliest and strongest at the L1 and L2/3 boundary), while after
+    about 100 ms a weak (under 1 dB) loss of ɣ power appears in L5/6.
   source: Figure 2d and legend; Results, Narrowband ɣ oscillations reflect deviance detection,
     paragraph 3
   quote: Figure 2(d) shows that ɣ oscillations are strongest in superficial layers 1-4 (around 2 dB
@@ -242,12 +242,12 @@ claims:
   - fig2c-dd-v1-contrast
   expected:
   - quantity: largest ⍺/β decrease, L2/3 to L5/6, V1
-    value: -1.75
-    tolerance: 0.45
+    value: -1.775
+    tolerance: 0.425
     unit: dB
   - quantity: largest ⍺/β increase in L1, V1
-    value: 1.3
-    tolerance: 0.4
+    value: 1.275
+    tolerance: 0.375
     unit: dB
   criterion: Laminar ⍺/β panel of the DD contrast in V1 (opening comment, S5). The legend gives the
     desynchronization as 1.5-2 dB and the text as 2 dB; the legend range widened by 10% (1.35 to
@@ -266,7 +266,8 @@ claims:
   - fig2c-dd-v1-contrast
   criterion: Laminar θ panel of the DD contrast in V1 (opening comment, S5). Reproduced when the
     significant θ values are positive, lie in L1 channels, have a largest value between 0.45 and
-    1.1 dB (0.5-1 dB widened by 10%), and begin after 150 ms; partially reproduced when a weak
+    1.1 dB (0.5-1 dB widened by 10%), and begin after 150 ms (the legend's "late"; 150 ms is a
+    choice made here); partially reproduced when a weak
     positive θ cluster exists outside L1 or earlier; not reproduced when θ shows no significant
     increase or an increase above 1.1 dB.
 - id: fig2g-dd-gamma-csd-feedforward
@@ -336,15 +337,17 @@ claims:
   - trial-counts
   criterion: A claim of absence. The test is the code's (aligned_subject_spectra), which the
     Supplementary Figure 1 legend describes only by overlapping 2-SEM bands. Per mouse, area and
-    condition, the LFP of S1 (aligned, not downsampled) from P4 onset minus 20 ms to offset plus
-    20 ms; Syncopy mtmfft power spectrum, Hann taper, 500 ms window, 2 Hz steps; averaged over
-    trials and channels; one FOOOF fit (fixed mode, defaults) gives offset and exponent; a Welch
-    t-test with 1000 permutations (scipy ttest_ind, equal_var False, PermutationMethod) of the
-    per-mouse parameters, oddball against control. Reproduced when no area has p < 0.05 for
-    either parameter; not reproduced when any does; the p-values and effect sizes are reported.
-    The window of the text ("from 50 ms before oddball onset to 50 ms after oddball offset",
-    Results, Spectral power effects, paragraph 1) is shown as a variant, as is a fit restricted to
-    2-90 Hz (Methods).
+    condition, the LFP of S1 (aligned, not downsampled) from 50 ms before P4 onset to 50 ms after
+    offset (Results, Spectral power effects, paragraph 1); Syncopy mtmfft power spectrum, Hann
+    taper, 500 ms window, 2 Hz steps (code; the Methods' 2 Hz resolution); averaged over trials
+    and channels; one FOOOF fit (fixed mode, defaults) over 2 to 90 Hz (Methods) gives offset and
+    exponent; a Welch t-test with 1000 permutations (scipy ttest_ind, equal_var False,
+    PermutationMethod) of the per-mouse parameters, oddball against control (code). Reproduced
+    when no area has p < 0.05 for either parameter; not reproduced when any does; the p-values and
+    effect sizes are reported. The code's choices where they differ from the paper's text (window
+    from 20 ms before onset to 20 ms after offset, OFFSET in aligned_subject_spectra; FOOOF fitted
+    over the whole spectrum, 2 to 150 Hz, PowerSpectrum.aperiodic_parameters) are shown as a
+    variant.
 - id: suppfig1-aperiodic-no-difference-all
   statement: Over the whole stimulus, the aperiodic component shows no significant difference
     between oddball and control for any of the three contrasts in any of the six areas.
@@ -403,10 +406,14 @@ claims:
     permutations between mice. The tolerances are the distances from each mean to the farther
     bound of the paper's 99% CI. Reproduced when both means are in tolerance, XXXY is higher and
     p < 0.05; partially reproduced when XXXY is significantly higher but a mean is out of
-    tolerance. The ±50 ms window of the text is a variant.
+    tolerance. Open, the window and FOOOF range, where the paper's text and the code differ.
+    Readings (a) the text's window, 50 ms before P4 onset to 50 ms after offset (Results, Spectral
+    power effects, paragraph 1), with FOOOF fitted over 2 to 90 Hz (Methods); (b) the code's, 20 ms
+    before onset to 20 ms after offset, FOOOF over 2 to 150 Hz. Both are run; the claim is judged
+    under either.
 - id: dd-gamma-peak-frequency-lm
   statement: In LM the deviance-detection oddball's ɣ peak frequency is significantly higher than
-    the control's (35 against 41 Hz, p < 0.01).
+    the control's (control 35 Hz, oddball 41 Hz, p < 0.01).
   source: Supplementary Figure 2 legend
   quote: In DD, the oddball’s ɣ-band peak frequency significantly (in a permutation-based t-test
     with 1000 permutations) shifted higher than that of the control condition V1 (35-38 Hz, ⍺ < 0.
@@ -532,7 +539,7 @@ claims:
     the oddball in all six areas; the global-oddball control has greater ⍺/β power in V1, LM, RL,
     AL and PM; for stimulus-specific adaptation the oddball has greater ⍺/β power in LM and AL.
   source: Supplementary Figure 2 legend; Results, ɣ oscillations responded to global oddballs,
-    paragraph 4
+    paragraph 3
   quote: DD shows significant difference in heights of the ⍺/β (10-30 Hz) peaks, with the control
     condition showing greater ⍺/β power than the oddball condition, in V1, LM, RL, AL, PM, and AM;
     in LM and AL the SSA contrast shows higher ⍺/β power in the oddball condition ... In V1, LM, RL, AL, and PM the GO contrast shows higher ⍺/β power in the
@@ -595,7 +602,9 @@ claims:
     widened by 10% (1.8 to 4.4 and 3.6 to 6.6 dB). Reproduced when both ⍺/β maxima in the first
     150 ms are in range, the xxxX ⍺/β power falls below 1 dB before 250 ms while the xxxx ⍺/β
     power stays above 1 dB through 200 ms, and the mean 40-55 Hz power over 150-500 ms is higher in
-    xxxX than in xxxx. Partially reproduced when the ⍺/β time courses hold but a value does not.
+    xxxX than in xxxx. The 150 ms, 250 ms and 1 dB bounds and the 150-500 ms window are choices
+    made here; the 200 ms is the legend's. Partially reproduced when the ⍺/β time courses hold but
+    a value does not.
 - id: fig3c-go-v1-contrast
   statement: In V1 the global oddball ("xxxX" against "xxxx") gives a significant fast increase in
     high ɣ (55-90 Hz) trailing into a sustained 40-55 Hz ɣ increase, an immediate rise in θ power,
@@ -618,7 +627,8 @@ claims:
     channel-averaged contrast has significant positive values at 55-90 Hz in the first 150 ms,
     positive 40-55 Hz values persisting past 300 ms, positive θ (2-10 Hz) values starting before
     150 ms, and negative ⍺/β values; partially reproduced when the ɣ and θ increases hold but the
-    ⍺/β decrease is absent. Run under both S3 readings.
+    ⍺/β decrease is absent. The 150 ms ("fast", "immediate") and 300 ms ("sustained") bounds are
+    choices made here. Run under both S3 readings.
 - id: fig3d-go-gamma-laminar
   statement: In V1 the global oddball raises ɣ power by 0.2-0.4 dB in L2/3, L4 and L5/6 at onset,
     strengthening to about 0.6 dB by the end of the stimulus, while ɣ power falls in L1.
@@ -634,7 +644,8 @@ claims:
     Reproduced when L2/3, L4 and L5/6 channels have significant positive values in the first 100
     ms, the largest positive value in the last 100 ms of the stimulus is 0.54 to 0.66 dB (0.6,
     10%), and L1 channels have significant negative values; partially reproduced when the
-    increases hold without the L1 decrease or the late value is out of range.
+    increases hold without the L1 decrease or the late value is out of range. The first and last
+    100 ms windows ("immediately upon onset", "by the end") are choices made here.
 - id: fig3e-go-alphabeta-laminar
   statement: In V1 the global oddball gives an ⍺/β decrease in L1 (upper supragranular layers) and
     an ⍺/β increase starting in L5/6 that spreads up to L4 and L2/3 while weakening.
@@ -759,12 +770,12 @@ claims:
   - trial-counts
   expected:
   - quantity: largest early (0-150 ms) decrease, all bands, V1
-    value: -1.0
-    tolerance: 0.55
+    value: -1.05
+    tolerance: 0.6
     unit: dB
   - quantity: largest later ɣ increase, V1
-    value: 1.3
-    tolerance: 0.4
+    value: 1.275
+    tolerance: 0.375
     unit: dB
   criterion: Common method (opening comment, S1 to S5), V1, panel c as S5 says. Ranges widened by
     10% (0.45 to 1.65 dB; 0.9 to 1.65 dB). The legend gives 1-2 dB for both; its range is a
@@ -928,7 +939,9 @@ claims:
     tolerance and the four DD, GO cases named as not significant have no masked L2/3 ɣ point;
     partially reproduced when every sign matches and 7 to 10 values are in tolerance. The
     legend's error bars (2 SEM over channels) are drawn by the code as 2 SD divided by the number
-    of channels; both are reported.
+    of channels; both are reported. The bar plot of the same name in aligned_subject_spectra
+    (per-mouse, unmasked L2/3 ɣ power in hand-set per-condition bands) is not this figure, as the
+    legend describes masked clusters averaged over channels.
 - id: fig5-hierarchy-restriction
   statement: Deviance-detection and global-oddball ɣ modulations in L2/3 are restricted to early
     areas (V1, LM, RL and AL for deviance detection; V1, LM and RL for the global oddball), while
@@ -971,9 +984,10 @@ claims:
     per-mouse trial-averaged spectra (N = 14), from per-mouse spectrograms of S2 cropped to 0-150
     ms and averaged over time, trials and channels; (b) the code's (grand_fastsweep_spectra), the
     pooled spectrogram of S2 cropped to 0-150 ms and averaged over time and trials, one FOOOF fit
-    per channel, channels as samples. The Results text lists other areas ("V1, LM, AL, PM, and AM
-    all exhibited a spectral tilt"; for SSA "V1, AL, and PM" in one paragraph and "V1, PM, and AM"
-    in another); the legend is judged. Reproduced when, under one reading, at least 5 of the 7
+    per channel, channels as samples. The Results text agrees with the legend (areas V1, LM, AL,
+    PM and AM; GO in V1, AL and PM; SSA in V1, PM and AM) except one sentence of the SSA section
+    (Stimulus change induces ɣ vs ⍺/β push-pull, paragraph 4), which gives SSA tilt in "V1, AL,
+    and PM"; the legend is judged. Reproduced when, under one reading, at least 5 of the 7
     starred cases pass at their level and at most 2 of the 11 unstarred cases pass at 0.05;
     partially reproduced for 3 or 4 starred cases.
 - id: suppfig4-pupil-dd-no-difference
@@ -987,8 +1001,29 @@ claims:
     procedure for its statistical tests", so the test is a cluster-based permutation test over
     time (MNE, 1000 permutations, two-tailed, cluster-forming and cluster p threshold 0.01) on
     per-trial pupil-size traces z-scored over the P4 epochs of both conditions, trials pooled
-    across mice, from P4 onset to offset. Reproduced when no cluster has p < 0.01; not reproduced
+    across mice, from P4 onset to offset (the window is not given; P4 itself is a choice made
+    here). Reproduced when no cluster has p < 0.01; not reproduced
     when one does; the largest mean difference is reported. Open, the z-scoring (over all P4 trials
     of both conditions pooled, as the legend's "across P4" reads, or within each mouse); both are
     run, and the claim stands on the pooled one, with the per-mouse one and the legend's 2-SEM
     band overlap shown as variants.
+checks:
+- date: '2026-11-20'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - "fig2e-dd-alphabeta-laminar: expected values were 1.75 +/- 0.45 and 1.3 +/- 0.4, which do not match the criterion's ranges (1.5-2 and 1-1.5 dB widened by 10%, so 1.35-2.2 and 0.9-1.65); now 1.775 +/- 0.425 and 1.275 +/- 0.375."
+  - "fig4c-ssa-v1-contrast: expected values were -1.0 +/- 0.55 and 1.3 +/- 0.4, which do not match the stated ranges (0.5-1.5 and 1-1.5 dB widened by 10%); now -1.05 +/- 0.6 and 1.275 +/- 0.375."
+  - "fig2ab-dd-condition-spectra: removed the expected value 5 +/- 0.5 dB for the xxxy alpha/beta peak, as the legend gives only a lower bound (over 5 dB) and the entry capped it at 5.5 dB; the criterion keeps the lower bound of 4.5 dB. The 150 ms, 250 ms and 1 dB bounds are now labelled choices made here."
+  - "fig2d-dd-gamma-laminar: the statement said the increase is strongest in L1 to L2/3; the Results sentence quoted says layers 1-4 and the legend says the L1 and L2/3 boundary; the statement now gives both."
+  - "dd-gamma-peak-frequency-lm: the statement's '(35 against 41 Hz)' read as oddball against control, the reverse of the criterion's reading; now 'control 35 Hz, oddball 41 Hz'."
+  - "dd-aperiodic-no-difference: the main test used the code's window (20 ms margins) and full-spectrum FOOOF fit (2 to 150 Hz, checked at cee2e6f), with the paper's text as a variant; the protocol puts the paper first, so the main test now uses the Results window (50 ms margins) and the Methods range (2 to 90 Hz), and the code's choices are the variant. This applies to suppfig1-aperiodic-no-difference-all, which uses this test."
+  - "dd-gamma-peak-frequency-v1: the window and FOOOF range now have two readings, the paper's text (50 ms margins, 2 to 90 Hz) and the code's (20 ms margins, 2 to 150 Hz). The claims that reuse these spectra (dd-gamma-peak-frequency-lm, dd-gamma-power-and-peak-only-v1-lm, ssa-gamma-peak-frequency-lower, suppfig2-alphabeta-peaks, suppfig2-gamma-height-differences, go-theta-peaks) inherit both readings."
+  - "suppfig2-alphabeta-peaks: the source pointed at paragraph 4 of the global-oddball section; the quoted passage is paragraph 3."
+  - "suppfig3-fastsweep-aperiodic: the criterion said the Results list other areas than the legend; they agree, except one sentence in the SSA section (V1, AL and PM); corrected."
+  - "trial-counts, fig2f-dd-theta, fig3ab-go-condition-spectra, fig3c-go-v1-contrast, fig3d-go-gamma-laminar, suppfig4-pupil-dd-no-difference: thresholds and windows not given by the paper (5% count bound, 150, 250 and 300 ms, first and last 100 ms, 1 dB baseline, pupil window) are now labelled choices made here."
+  - "fig5-l23-gamma-by-area: noted that aligned_subject_spectra writes a bar plot under the same file name from per-mouse unmasked spectra, which is not the figure the legend describes."
+  - "Checked against the code at cee2e6f: aligned_subject_spectra (20 ms margins, 500 ms Hann mtmfft, Welch permutation t-tests, per-mouse gamma peak in 30-90 Hz, normal 99% interval), oscillatory_contrasts (LOW_GAMMA_BAND 30-50 Hz in BANDS, L2/3 band power averaged over time then channels, error bars 2 SD over number of channels) and grand_oscillatory_csds (bands 4-8, 12-24 and 30-50 Hz with the phase channels stated in S7) match the file. No pupil analysis is in the code; 'pupil' appears only in notebook outputs."
+  - "Open, not settled here: the grading counts (11 of 13, 9 of 11, 5 of 7 and similar) and partial-reproduction rules are the claim writer's choices; the paper gives no basis for them."
+  - "Open, not settled here: the CSD feedforward and feedback rule (order of first sinks above the display threshold) is a choice made here, as the paper judges the patterns by eye."
