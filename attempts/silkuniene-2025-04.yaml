@@ -481,6 +481,27 @@ findings:
     Question for the authors. Where were the ROIs placed along the diagonals, and which footprint
     gave the background? The centre to near-electrode ratios (Fig. 4B, Results 3.4) depend strongly
     on the background, as the near-electrode signal is close to it.
+- kind: metadata_error
+  found: on_prompt
+  severity: minor
+  datasets:
+  - "001277"
+  statement: >-
+    In 001277 the OME metadata, which only the 13 Cy3-DAPI files carry, give 12 significant bits per
+    pixel, but these files hold values far above 4095 (maxima in the central 2000 x 2000 pixels 8926
+    to 25073 in the Cy3 channel and 19419 to 65535 in the DAPI channel), so the stored values are not
+    12-bit camera counts. The ImageSeries unit is "n.a." in all 49 files and no scaling is described;
+    the FITC and DAPI files carry no OME metadata.
+- kind: metadata_insufficient
+  found: on_prompt
+  severity: minor
+  datasets:
+  - "001277"
+  statement: >-
+    The 001277 files give no electrode positions, ROI coordinates or measured profiles: each holds
+    one image, the analysis and processing groups are empty, and no OME ROI element is present, so
+    the electrode footprints have to be found in the images. The plate (P1 to P3) and well (A1 to
+    B3) of each image are given only by its subject id.
 verifications:
 - date: 2026-11-19
   kind: agent
@@ -938,3 +959,111 @@ verifications:
     outcome: reproduced
     reason: Agrees as stated.
     response: No change.
+reconciliation:
+  earlier: silkuniene-2025-03
+  date: 2026-11-20
+  blind: true
+  findings:
+  - finding: 1
+    status: partly_fixed
+    now: 1
+    note: >-
+      This attempt used all four dandisets of the paper, and the raised-electrode wells of Fig. 5
+      are in 001284 and the burst-number series with the CHO cells of Fig. 7 in 001276, so that part
+      of the earlier finding, made on 001277 alone, no longer holds. The packet-rate series of
+      Figs. 3 and 4 and the thermometry of Fig. 2 are still in none of the four (finding 1).
+  - finding: 2
+    status: still_present
+    now: 5
+    note: >-
+      Finding 5 reports the same "9 packets of pulses delivered at 0.2MHz" in every 001277 file,
+      against 18, 9 and 6 packets for 300, 600 and 900 ns in the dandiset description and the paper.
+  - finding: 3
+    status: still_present
+    now: 3
+    note: >-
+      Finding 3 reports the 7 wells labelled 600 ns in 001277 against the paper's n = 5, and
+      finding 10 asks which five form Fig. 6. The earlier question whether the 600-ns wells are
+      also the 0-mm group of Fig. 5 no longer arises, as 001284 holds that series.
+  - finding: 4
+    status: still_present
+    now: 4
+    note: >-
+      Finding 4 reports the same two wells, P1-20240926-B2 and B3, as unlike the other 600-ns wells
+      (B2's YP spot 5.39 mm from the array centre, B3's YP at 3 and 5 mm 46% and 35% of its centre);
+      their FWHMs here are 16.05 and 5.49 mm, against about 18 and 5 mm in the earlier attempt.
+  - finding: 5
+    status: still_present
+    now: 7
+    note: >-
+      Finding 7 reports the same duplicate Cy3-DAPI image of well P2-20240925-B3
+      (sub-P2-20240925-B3_image.nwb and sub-P2-20240925-B3_obj-w6fqmq_image.nwb).
+  - finding: 6
+    status: still_present
+    now: 12
+    note: >-
+      Checked in earlier_findings.ipynb. The 13 Cy3-DAPI files give 12 significant bits in their
+      OME metadata and hold values up to 25073 (Cy3) and 65535 (DAPI) in their central 2000 x 2000
+      pixels, and the unit is "n.a." in all 49 files; the FITC and DAPI files carry no OME metadata,
+      so the earlier "every file" holds for the Cy3-DAPI files only.
+  - finding: 7
+    status: still_present
+    now: 13
+    note: >-
+      Checked in earlier_findings.ipynb. Each of the 49 files holds one image, with empty analysis
+      and processing groups and no OME ROI element, no text field names a position, ROI, plate or
+      well, and the plate and well are given only by the subject ids.
+  - finding: 8
+    status: still_present
+    now: 10
+    note: >-
+      Findings 9, 10 and 11 ask the same questions of the authors (individual experiments or group
+      means for the Fig. 6D trend, which five 600-ns wells, where the ROIs were placed). The question
+      on the Fig. 5 group is answered by 001284, and the linear or logarithmic trend is not asked
+      again, as the new criterion runs both.
+  outcomes:
+  - claim: fig6d-longer-pulses-sharper-peak
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      The earlier criterion (claims/silkuniene-2025/001277.yaml) blocked the claim whenever its
+      readings differ, and in both attempts the 15 individual values and the 3 means differ (earlier
+      p 0.0020 to 0.050 against 0.012 to 0.18, here 0.0008 to 0.0058 against 0.048 to 0.165); the
+      paper's claims file written under pilot-14 lets the author adopt the reading the paper best
+      supports, and this attempt adopted the individual values. Both leave out the same two 600-ns
+      wells, and the 1-mm readings differ (p 0.042 to 0.050 earlier, at most 0.0058 here) because
+      this attempt centred 11 of the 15 wells, all five at 300 ns, on the YP spot where it found no
+      reliable footprints, while the earlier one fitted a footprint square in every well.
+    confidence: high
+  - claim: fig6d-600-900-differ-from-300
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      The earlier criterion blocked the claim when its readings differ, and the claim also inherited
+      the block of fig6d-longer-pulses-sharper-peak; there 900 against 300 ns was significant with
+      contiguous ROIs (Bonferroni p 0.0053 to 0.0089) and not with 1-mm steps (0.077 to 0.131). The
+      pilot-14 criterion gives partially reproduced when one comparison is significant, and here 900
+      against 300 ns is significant under every reading (0.0063 to 0.0118 over 2 comparisons), the
+      1-mm gap closed by the spot-centred wells (three spot-centred 900-ns wells at 1.60 to 1.81 mm
+      against 1.85 mm for both footprint wells), while 600 against 300 ns is significant under no
+      reading earlier and under one here.
+    supports: partially_reproduced
+    confidence: medium
+  - claim: fig6d-900ns-fwhm
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      The earlier attempt blocked the claim only because it depends on
+      fig6d-longer-pulses-sharper-peak, which its criterion blocked; its own values met the
+      criterion with contiguous ROIs (1.69 to 1.71 mm, 11.0 to 11.1%). This attempt's parent is
+      reproduced, and its values, 1.688 to 1.767 mm and 11.03 to 11.55%, are essentially the same.
+    supports: reproduced
+    confidence: high
+  protocol: >-
+    Pilot-14 files records by paper instead of by dataset. The three claims files written per
+    dandiset under pilot-10 were replaced by one claims file for the paper, with new ids for most
+    claims outside Fig. 6 and criteria that let an author adopt the reading the paper best supports
+    where readings differ, and this attempt tested it on all four dandisets (001047, 001276, 001277
+    and 001284), where the earlier attempt used 001277 alone. Claims on Figs. 5 and 7, blocked as
+    data_missing before, were tested, and the three Fig. 6D claims are no longer blocked by a
+    clause that blocks on differing readings.
