@@ -11,10 +11,10 @@ four-electrode array. Dye uptake is measured in ROIs along the diagonals of the 
 | Claim | Outcome |
 |---|---|
 | Field simulation, heating (Figs. 1 and 2) | Blocked: data missing |
-| Centre enhanced by CANCAN, dip in the control (Fig. 3A) | Blocked: data missing (verified before the reader's answer); partially reproduced on 001276 proposed |
-| 0.2 MHz suppresses off-target uptake (Fig. 3B, C) | Blocked: data missing (verified); reproduced (on an assumption) on 001276 proposed |
-| Lorentzian profile, R > 0.9 (Fig. 3) | Blocked: data missing (verified); partially reproduced on 001276 proposed (two rates held) |
-| 40-fold centre to near-electrode ratio (Fig. 4B) | Blocked: data missing (verified); reproduced (on an assumption about the background footprint) on 001276 proposed |
+| Centre enhanced by CANCAN, dip in the control (Fig. 3A) | Partially reproduced on 001276 (two rates held; the control dip fails) |
+| 0.2 MHz suppresses off-target uptake (Fig. 3B, C) | Blocked: data missing (verified before the reader's answer); reproduced on 001276 on an assumption about the pooling was proposed, and the verifier did not agree (it would block the claim as methods underspecified) |
+| Lorentzian profile, R > 0.9 (Fig. 3) | Partially reproduced on 001276 (two rates held) |
+| 40-fold centre to near-electrode ratio (Fig. 4B) | Reproduced on 001276 (on an assumption about the background footprint, which alone moves the ratio across the band) |
 | Rest of the packet-rate series (Figs. 3 and 4, five claims) | Blocked: data missing (001047 holds a smaller array; no dandiset holds the 1-kHz and 10-kHz wells) |
 | Raising the electrodes weakens the central spot | Not reproduced |
 | Cell killing focused at the centre | Reproduced |
@@ -24,17 +24,17 @@ four-electrode array. Dye uptake is measured in ROIs along the diagonals of the 
 | Zones of Fig. 5C | Partially reproduced (high-resolution images not deposited) |
 | 900-ns peak highest, not significantly | Reproduced |
 | Normalized decline similar across durations | Not reproduced |
-| FWHM falls with pulse duration | Reproduced (on an assumption); a change to not reproduced is proposed, as the result rests on leaving out a 600-ns well whose only difference is its broad profile |
-| 600 and 900 ns each narrower than 300 ns | Partially reproduced; a block (methods underspecified) is proposed, as the outcome depends on the background footprint |
+| FWHM falls with pulse duration | Not reproduced (it holds only when a 600-ns well whose only difference is its broad profile is left out) |
+| 600 and 900 ns each narrower than 300 ns | Blocked: methods underspecified (the outcome depends on the background footprint) |
 | 900-ns FWHM 1.7 mm | Reproduced |
 | Centre YP linear in burst number | Partially reproduced |
 | CT26 saturation at 6 bursts | Partially reproduced |
-| FWHM grows with bursts in CT26, not CHO | Reproduced (on an assumption); a block (methods underspecified) is proposed, as the outcome depends on the background footprint |
+| FWHM grows with bursts in CT26, not CHO | Blocked: methods underspecified (the outcome depends on the background footprint) |
 | Sharpest peak, 1 burst in CT26, 1.1 mm | Reproduced |
 | Off-target 40 to 50 times smaller (Fig. 7 series) | Reproduced (on an assumption about the background footprint) |
 | CHO cells replicate the focusing | Reproduced |
 
-After the first verification rounds a reader answered two questions on the claims file (questions/silkuniene-2025.yaml): four packet-rate claims now list DANDI:001276, and the electrode footprint that gives the background is an open reading that every claim citing it is run under. Outcomes verified before the answers are kept, with the changes the answers bring proposed for a further round.
+After the first verification rounds a reader answered two questions on the claims file (questions/silkuniene-2025.yaml): four packet-rate claims now list DANDI:001276, and the electrode footprint that gives the background is an open reading that every claim citing it is run under. The changes the answers bring were proposed and reviewed in a third verification round, which agreed with all but one: the change of the Fig. 3B, C claim to reproduced, whose outcome stays as verified. Two further questions from that round are with a reader.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
