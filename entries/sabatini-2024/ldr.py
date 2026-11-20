@@ -153,6 +153,8 @@ def load_session(monkey, shuffle_seeds=(), progress=False):
     nunits = len(sidx)
     loc = f["general/extracellular_ephys/electrodes/location"][:]
     el = u["electrodes"][:]
+    unit_cols = sorted(u.keys())
+    electrode_cols = sorted(f["general/extracellular_ephys/electrodes"].keys())
     area = np.array(["PMd" if b"Pre-Motor" in loc[e] else "M1" for e in el])
     counts = np.zeros((ntr, nunits, nwin), np.uint8)
     unit_jumps = np.zeros(nunits, int)
@@ -202,8 +204,11 @@ def load_session(monkey, shuffle_seeds=(), progress=False):
         R[i] = sm[:, gi]
         for sd in shuffle_seeds:
             # the trial's 1 ms bins permuted in time, the same permutation for every unit so that
-            # spike correlations between units are kept (Methods, Control for data smoothing); over
-            # the window read (assumption; claims, tbf-shuffle-control, code scrambleTrials.m)
+            # spike correlations between units are kept (Methods, Control for data smoothing). The
+            # span permuted is the 1.5 s window read, -500 to +1001 ms around movement onset
+            # (assumption: neither the Methods nor the claims give the span; a longer span would
+            # move more spikes into the analysis window from farther away and lower the shuffled
+            # variance explained, a shorter one raise it)
             cs = c[:, rngs[sd].permutation(nwin)]
             RS[sd][i] = gaussian_filter1d(cs, SMOOTH_SD_MS, axis=1, mode="reflect")[:, gi] * 1000
         cc = c[:, gi[0]:gi[0] + 1210].reshape(nunits, 121, 10).sum(2)
@@ -219,7 +224,8 @@ def load_session(monkey, shuffle_seeds=(), progress=False):
             RW2[i] = np.nan
     info = dict(asset_id=aid, n_all_trials=len(d["start_time"]), unit_jumps=unit_jumps,
                 n_hand_segments=len(hsegs), hand_segment_bounds=hb, ok_window=ok_win,
-                spikes_per_unit=np.diff(np.r_[0, sidx]))
+                spikes_per_unit=np.diff(np.r_[0, sidx]), unit_columns=unit_cols,
+                electrode_columns=electrode_cols, unit_electrode=el, n_electrodes=len(loc))
     tr = {k: v[idx] for k, v in d.items()}
     tr["duration_ms"] = dur
     return dict(trials=tr, all_trials=d, R=R, RS=RS, RW=RW, RW2=RW2, C10=C10, hand=hand,
@@ -572,7 +578,13 @@ def kin_basis(vel_list):
     """Kinematic basis functions (Methods, Extracting kinematic basis functions, raw-SVD reading):
     SVD of x and y hand velocity of all conditions of all datasets; the top two right singular
     vectors over time; integrated over time to position basis functions. vel_list: arrays
-    (conditions, time, 2)."""
+    (conditions, time, 2).
+
+    Scale (assumption): the velocity vectors have unit norm and the position functions are their
+    cumulative sums over 10 ms bins, with no factor for the bin width. The scale of the position
+    functions sets the scale of the reach parameters, and with it what the OU length scale of 10^3
+    (fig6e, fig7c, suppfig7a) means; the paper's kinFuncEval, which fixes it, is not published. The
+    notebook shows those claims with length scales of 10^2 and 10^4 as well."""
     rows = np.concatenate([v.transpose(0, 2, 1).reshape(-1, v.shape[1]) for v in vel_list])
     U, S, Vt = np.linalg.svd(rows, full_matrices=False)
     Bv = Vt[:2]

@@ -9,17 +9,19 @@ the orientation of rotational planes, the state space location, and LDR encoding
 
 | Group | Outcomes |
 |---|---|
-| Reproduced | 9 claims, among them the factorization's variance explained, the misalignment of rotational planes across conditions, prediction of rotations from each other and from the location, and LDR encoding |
-| Partially reproduced | 16 claims, among them the comparison with instantaneous decoders, run without the GPFA decoders |
-| Not reproduced | 9 claims, among them the eigenvalue distances, the single-LDS fit, the dimensionality of rotation orientations and location, and the warping control |
+| Reproduced | 11 claims, among them the factorization's variance explained, the misalignment of rotational planes across conditions, the segregation of frequencies, prediction of rotations from each other and from the location, and LDR encoding against standard encoding models |
+| Partially reproduced | 12 claims, among them LDR decoding, the time-shuffle control, and the comparison with instantaneous decoders, run without the GPFA decoders |
+| Not reproduced | 11 claims, among them the eigenvalue frequencies and distances, the basis frequencies, the single-LDS fit, the dimensionality of rotation orientations and location, and the warping control |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and
 the differences from the paper's method.
 
 The dandiset's units are one per electrode, with no single- or multi-unit label, where the paper used
-sorted units; the Nitschke file joins five recording segments whose clocks overlap. The attempt record,
+sorted units; the Nitschke file joins five recording segments whose clocks overlap. The main notebook
+uses all successful trials; `reproduce_sabatini_2024_trials_b.ipynb` runs the same analyses on trials
+with a delay above 400 ms, the claims file's other reading, and every outcome is the same. The attempt record,
 with the reasons, the differences from the paper's method and the findings about the dataset, is
 [`attempts/sabatini-2024-01.yaml`](../../attempts/sabatini-2024-01.yaml).
 
 Run with `python tools/entry.py run entries/sabatini-2024`; it streams about 1 GB of spike times and hand
-position and takes about 30 minutes.
+position and the two notebooks take about 25 and 15 minutes.
