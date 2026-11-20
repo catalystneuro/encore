@@ -365,6 +365,18 @@ jobs:
           [[ "$result" =~ (^|[^0-9])0:shell-ok ]] || { echo "::error::The token is visible to the agent's commands"; exit 1; }
           [ "$mode" = default ] || { echo "::error::Claude Code started in permission mode $mode, not default"; exit 1; }
 
+      - name: Guard the runner's memory
+        # A command of the agent's that exhausts the memory ends the whole job with nothing saved (docs/protocol.md,
+        # "Keep it within memory": nine times on 2026-11-06, three on 2026-11-19 on rozsa-2023). earlyoom ends the
+        # largest Python process when under 6% of the memory is free, before the runner itself is starved, so the
+        # agent sees its command killed and can read less at once. It never chooses the agent or the runner. A
+        # runner where it cannot be installed goes on without it.
+        run: |
+          sudo apt-get install -y -q earlyoom > /dev/null 2>&1 || { echo "earlyoom could not be installed; no guard"; exit 0; }
+          echo "EARLYOOM_ARGS=\"-m 6 -s 100 -r 3600 --prefer '^(python|jupyter|ipykernel)' --avoid '^(node|claude|Runner|provjobd|hosted-compute)'\"" \
+            | sudo tee /etc/default/earlyoom
+          sudo systemctl restart earlyoom && systemctl is-active earlyoom || echo "earlyoom did not start; no guard"
+
       - name: Run the agent
         id: agent
         # Shorter than the job's limit, so that the transcript is still exported when it is reached.
