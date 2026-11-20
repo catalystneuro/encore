@@ -1,0 +1,490 @@
+schema_version: 3
+id: sabatini-2024-01
+datasets:
+- archive: dandi
+  id: "000070"
+  version: 0.260528.0919
+  doi: 10.48324/dandi.000070/0.260528.0919
+  relation: reuses
+paper: doi:10.1038/s41467-024-51308-7
+date: 2026-11-20
+entry: sabatini-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44720511633
+inputs: []
+outcomes:
+- claim: data-composition
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:data-composition
+  measured:
+  - 72
+  - 1595
+  - 2121
+  notes: Both monkeys have the 72 conditions, 36 straight and 36 curved; the two readings of the
+    conditions give the same set (maze conditions not a multiple of 3 are exactly the 1-target mazes,
+    once maze 0, a set of 203 and 419 trials outside the 108, is left out). Trials, reading (a) all
+    successful, 1595 (J) and 2121 (N); reading (b) delay above 400 ms, 1381 and 1884; all four within
+    10% of 1469 and 2014. Each array holds 96 units, one per electrode, and the units table has no
+    single-unit, multi-unit or quality column, so the units the dataset marks as single or multi-units
+    cannot be counted; 96 is inside 71 to 130, but the same 96 in all four arrays, one per electrode,
+    is not the paper's 79 to 118 sorted units. The counts and conditions hold; the unit part does not
+    hold as the criterion states it.
+  deviations:
+  - The units are the dandiset's per-electrode units; the paper used sorted single units and stable
+    multi-units.
+- claim: jpca-fit-r2
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:jpca-fit-r2
+  assumed: true
+  notes: Reading (a), the skew-symmetric R2 in the first plane, gives 0.776, 0.664, 0.623 and 0.452
+    (M1-J, PMd-J, M1-N, PMd-N); three of four in 0.576 to 0.803. Refitted on straight and curved
+    reaches alone, straight 0.843, 0.753, 0.763, 0.781 and curved 0.712, 0.574, 0.660, 0.562, all in
+    their ranges and straight higher in every dataset. Reading (b), unconstrained, gives 0.823, 0.692,
+    0.685, 0.466 (two of four in range), straight 0.811 to 0.897 and curved 0.613 to 0.757. The
+    per-condition R2 paired by maze (straight against curved, 36 pairs) gives p = 0.058, 0.28, 5e-05
+    and 0.53, against the paper's p < 0.001; this part of the statement is not reproduced, and does not
+    decide.
+  deviations: &common
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials are the successful trials of the 72 conditions with a delay above 400 ms (reading (b) of
+    the claims file), chosen because its counts are nearest the paper's; the paper gives no trial
+    selection. This is an assumption; reading (a) was not run for the analyses for lack of time.
+  - The paper's MATLAB code was not run; it needs preprocessed files that are available only on
+    request. Methods follow the claims file and the Methods.
+- claim: jpca-variance-explained
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:jpca-variance-explained
+  assumed: true
+  notes: Retained planes (two for M1, one for PMd) hold on average 8.9, 11.6, 11.7 and 5.1% of the
+    population variance, s.d. 3.6, 11.6, 5.4 and 3.2% across conditions (the paper gives s.d. below
+    13%). Three of four lie in 6.3 to 13.2%; PMd-N is below.
+  deviations: *common
+- claim: single-lds-variance
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:single-lds-variance
+  assumed: true
+  notes: One full-rank LDS over all conditions, simulated from each condition's state at -150 ms,
+    explains on average 76.6, 80.5, 82.1 and 77.4% over -150 to +850 ms (reading a) and 79.2, 83.4,
+    86.8 and 82.4% over the whole window (reading b), above 41.4 to 72.6% in every dataset. Units
+    pooled per electrode may give smoother, lower-dimensional population activity than sorted units,
+    which would raise every variance explained here.
+  deviations: *common
+- claim: fig2c-condition-lds-variance
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig2c-condition-lds-variance
+  assumed: true
+  notes: Cross-validated dimensionality (even split, odd k from 1 to 21, 100 folds) is 5, 5, 7 and 5,
+    the same under all five seeds; the LDS explains 84.4, 90.2, 94.2 and 90.6% (s.d. 3.6 to 4.7%),
+    within 63.9 to 100%. The code's 3/4 split chooses 7, 5, 7 and 7 (86.9 to 94.2%).
+  deviations: *common
+- claim: fig3a-eigenvalue-clusters
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3a-eigenvalue-clusters
+  assumed: true
+  notes: Every condition has the same number of complex pairs (2 in the k = 5 datasets; 3 in M1-N
+    except one condition) and at least one real eigenvalue on all 72 conditions, so the eigenvalues
+    cluster with an offset. Median pair frequencies are 0.85 and 2.35 Hz (M1-J), 0.54 and 1.53 (PMd-J),
+    0.68, 1.74 and 3.21 (M1-N), 0.73 and 1.67 (PMd-N); only PMd-J is within 10% of 0.5 and 1.5 Hz.
+  deviations: *common
+- claim: fig3c-eigenvalue-distance-auc
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3c-eigenvalue-distance-auc
+  assumed: true
+  notes: AUC under the Poisson null (a) 0.812, 0.705, 0.631, 0.704 and under the half-split null (b)
+    0.696, 0.641, 0.662, 0.680; only M1-N under (a) lies in 0.459 to 0.638. The code's norm distance
+    gives AUCs within 0.02 of these. Under null (b) the five seeds give 0.694 to 0.709 (M1-J), 0.636 to
+    0.641, 0.656 to 0.667 and 0.673 to 0.680. Median distance between conditions 0.011 to 0.016,
+    noise 0.006 to 0.013.
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - 100 repeats per condition for each null, where the Methods give 500 (time); the other four seeds use
+    20.
+  - The Poisson null simulates 10 ms counts from the smoothed rates and smooths them at 10 ms
+    resolution, where the paper's pipeline works at 1 ms.
+- claim: suppfig2-eigenvalues-from-kinematics
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig2-eigenvalues-from-kinematics
+  assumed: true
+  measured: 0.275
+  notes: Mean leave-one-out R2 over the real and imaginary parts of the frequency-sorted eigenvalues,
+    pooled over the four datasets, is 0.275 under both kinematic readings (0.135 to 0.480 per
+    dataset), above 0.1 +- 0.05. Components without variance (the imaginary part of the real
+    eigenvalue) are left out; they would add zeros and lower the mean.
+  deviations: *common
+- claim: fig3g-basis-frequencies
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3g-basis-frequencies
+  assumed: true
+  notes: Cross-validation chooses k = 6, 5, 7 and 6 under all five seeds; raised to odd, 7, 5, 7, 7.
+    De-mixing gives 3 rotation pairs and one offset in M1-J, M1-N and PMd-N, 2 pairs in PMd-J.
+    Frequencies 0.70, 1.82, 3.08 (M1-J), 0.64, 1.54 (PMd-J), 0.69, 1.79, 3.23 (M1-N), 0.74, 1.55, 2.71
+    Hz (PMd-N); 3 of 11 are within 10% of 0.5, 1.5, 2.5 or 4 Hz and none is near 0.5 or 4 Hz. The
+    structure (pairs plus an offset) holds; the frequencies are about 1.2 to 1.4 times the paper's.
+  deviations: *common
+- claim: tbf-variance-explained
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:tbf-variance-explained
+  assumed: true
+  notes: Reading (a), -150 to +850 ms with the de-mixed basis, 93.5, 93.6, 96.6 and 95.3% (s.d. 0.8 to
+    1.5%); reading (b), whole window and raw basis, 92.1, 92.4, 96.1 and 94.5%; all within 81 to 100%.
+  deviations: *common
+- claim: tbf-shuffle-control
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:tbf-shuffle-control
+  assumed: true
+  notes: Shuffled variance explained 42.2, 28.7, 41.8 and 42.1%, real higher on 72 of 72 conditions,
+    rank-sum p = 3.9e-25 (signed-rank variant 1.7e-13). PMd-J lies below 31.5 to 50.6%. Under the five
+    seeds the shuffled means vary by at most 0.006 (PMd-J 0.287 to 0.292).
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - Time bins are permuted within the 1.5 s window read around movement onset (-500 to +1000 ms), with
+    one permutation for all units of a trial so that correlations between units are kept (Methods,
+    Control for data smoothing, "preserving inter-neuron spike correlations"); the span shuffled is
+    not given and is an assumption.
+- claim: fig3h-recoverability
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3h-recoverability
+  assumed: true
+  notes: Recoverability 97.3, 97.9, 98.6 and 98.6% (within 81.9 to 100%), real higher on all 72
+    conditions, rank-sum p = 3.9e-25. Chance (the shuffled data) is 89.6, 86.0, 89.0 and 89.6%; only
+    PMd-J lies in 56.7 to 88%. Five seeds move chance by at most 0.012. The main result holds; the
+    chance level is higher than the paper's.
+  deviations: *common
+- claim: fig3i-duration-warping
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig3i-duration-warping
+  assumed: true
+  measured: 0.235
+  notes: Unwarped rho -0.157, 0.083, 0.235 (M1-N, p = 0.047) and 0.077; M1-N has the opposite sign to
+    -0.26. Warped (600 ms, truncated at 850 ms) rho -0.514 (p = 4e-06), -0.071, -0.024 and -0.193; only
+    M1-J lies in -0.693 to -0.468 with p < 0.001. The 250 ms post-reach variant gives -0.363, -0.175,
+    -0.096 and -0.323. Condition mean durations are 242 to 606 ms (J) and 252 to 573 ms (N).
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - Reach end is searched within 850 ms after onset, so durations are capped at 850 ms.
+  - Warping is applied to the 1 ms smoothed rates of each trial before averaging; the basis of the
+    warped data is de-mixed before recoverability is computed.
+- claim: suppfig3-model-comparison
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig3-model-comparison
+  assumed: true
+  notes: Under the main reading the cross-validated TBF value (held-out variance at the dataset's k;
+    71.1, 79.0, 86.6, 79.1%) exceeds jPCA (5.1 to 11.7%) but not the in-sample single-condition LDS
+    (84.4 to 94.2%) in any dataset. With all three in sample (the variant), TBF (93.5 to 96.6%) is the
+    highest in every dataset. The claims file's check noted this mix as open.
+  deviations: *common
+- claim: fig4b-plane-alignment
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4b-plane-alignment
+  assumed: true
+  notes: AUC per rotation 0.912, 0.886, 0.861 (M1-J), 0.945, 0.933 (PMd-J), 0.949, 0.952, 0.933 (M1-N),
+    0.958, 0.949, 0.940 (PMd-N), observed lower on 72 of 72 conditions; reading (a) signed-rank p =
+    1.7e-13 for each; reading (b) rank-sum p printed as 0. Four other seeds change each AUC by at most
+    0.002. The paper's 4 Hz rotation is not present here; the rotations tested are those found.
+  deviations: *common
+- claim: fig4c-subspace-excursion-angles
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4c-subspace-excursion-angles
+  assumed: true
+  notes: Excursion angles above 45 degrees per rotation, 5, 13, 11 (M1-J), 7, 14 (PMd-J), 3, 9, 11
+    (M1-N), 7, 18, 25 (PMd-N); 8 of 11 in 5.4 to 22 (9 of 11 counting the seed plane's two
+    dimensions). Angles above the 95th percentile of half-split noise angles 4 to 9 per rotation,
+    fewer than the count above 45 degrees for 7 of 11 rotations, so the second part of the criterion
+    fails with this noise level.
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - The search over sequences is a greedy search from every seed, keeping the sequence with the
+    largest summed angles; the Methods say the search was optimised over all sequences.
+  - Chance is the 95th percentile of the largest principal angle between half-split estimates of the
+    same condition's plane (assumption; the code's control is described only as the fraction of noise
+    SEA above the data).
+- claim: rotation-orientation-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:rotation-orientation-dimensionality
+  assumed: true
+  notes: PCs to 80% are 2 to 23 (reading a, stacked columns) or 2 to 22 (reading b, activity), and
+    participation ratios 1.8 to 18.7 or 1.7 to 18.5, against 20.7 to 44 and 15.03 to 40.48; only PMd-N
+    2.71 Hz is in range. SNR dimensionality is 10 to 21 for 9 of 11 rotations (in 6.3 to 36.3); for
+    the slowest rotation of M1-N and PMd-N the alignment keeps rising to all 96 dimensions under all
+    five seeds. Orientations here are much lower-dimensional than in the paper.
+  deviations: *common
+- claim: fig4d-jpca-variance-correlation
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4d-jpca-variance-correlation
+  assumed: true
+  measured: 83
+  notes: Rho per plane -0.061 and 0.711 (M1-J), 0.930 (PMd-J), 0.663 and 0.627 (M1-N), 0.682 (PMd-N).
+    Reading (a), per-dataset means 0.325, 0.930, 0.645, 0.682; reading (b), significant planes 0.627
+    to 0.930; neither lies in 0.351 to 0.506. Five of six planes (83%) have p < 0.05, outside 66 +-
+    6.6%. The correlations are mostly stronger than the paper's.
+  deviations: *common
+- claim: fig4f-plane-alignment-explains-jpca
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig4f-plane-alignment-explains-jpca
+  assumed: true
+  notes: Rho 0.941, 0.926 (M1-J), 0.832 (PMd-J), 0.689, 0.817 (M1-N), 0.815 (PMd-N), all with p at most
+    2.3e-11; five of six in 0.738 to 1.
+  deviations: *common
+- claim: fig5a-frequencies-segregated
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig5a-frequencies-segregated
+  assumed: true
+  notes: Of 20 ordered rotation comparisons, 18 show same-frequency alignment higher by median, by
+    mean and on more than half of the condition pairs, with p < 1e-6 under both readings. For M1-N 3.23
+    Hz onto 0.69 and 1.79 Hz, the medians are lower (0.176 against 0.191 and 0.193) and same-frequency
+    is higher on 49% and 48% of pairs, while the mean difference is positive (+0.038 and +0.042) and
+    the signed-rank test gives p = 9e-11 and 4e-08 (rank-sum 0.85 and 0.68). Whether same-frequency is
+    higher there depends on the measure; it is counted as not shown. 18 of 20 (90%) is at least 80%.
+  deviations: *common
+- claim: fig5c-rotations-predict-rotations
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig5c-rotations-predict-rotations
+  assumed: true
+  notes: Mean variance explained per ordered pair 41.4 to 94.6% (all 20 in 38.7 to 100%), null 2.4 to
+    76.3%, signed-rank p at most 4.9e-13 for every pair. Four other seeds move pair means by at most
+    0.03.
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - Rotations of each fold's factorization are matched to the full-data rotations by nearest
+    frequency.
+- claim: suppfig6a-location-alignment
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig6a-location-alignment
+  assumed: true
+  notes: AUC 0.883, 0.748, 0.870 and 0.945, observed lower on 72, 70, 72 and 72 conditions, signed-rank
+    p at most 2.1e-13; PMd-J is below 0.792. Four other seeds give PMd-J 0.746 to 0.758.
+  deviations: *common
+- claim: suppfig6b-location-dimensionality
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig6b-location-dimensionality
+  assumed: true
+  notes: SEA location dimensions above 15 degrees 0, 1, 1, 0 (1, 2, 2, 1 with the seed); PCs to 80% 4,
+    5, 2, 5 (reading a); participation ratio 4.2, 3.2, 2.3, 3.5; all below their ranges. The SNR
+    procedure keeps rising to the largest dimensionality, 72 (the number of conditions), under all
+    five seeds, so it gives no estimate.
+  deviations: *common
+- claim: suppfig6c-location-distinct-from-rotations
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig6c-location-distinct-from-rotations
+  assumed: true
+  notes: Location-to-location alignment median 0.935 to 0.969 against location onto rotation planes
+    0.078 to 0.670; p printed as 0 under both readings in every dataset.
+  deviations: *common
+- claim: fig6b-location-predicts-rotations
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig6b-location-predicts-rotations
+  assumed: true
+  notes: Methods version (6 folds, lambda 0.1) 70.9, 72.3, 80.9 and 71.6%, null 19.1, 12.9, 22.6 and
+    13.0%, signed-rank p at most 2.4e-13; the code's variant 76.6, 73.1, 85.6 and 77.1%. Four other
+    seeds give 70.5 to 82.2%.
+  deviations: *common
+- claim: fig6c-location-tracks-direction
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig6c-location-tracks-direction
+  assumed: true
+  notes: With PC 2 flipped, circular correlation of target angle with the location's angle in the PC
+    1-2 plane is 0.613 (p = 4e-06), 0.701 (6e-09), 0.245 (0.016) and 0.053 (0.62) for M1-J, PMd-J, M1-N
+    and PMd-N; PMd-N fails in either orientation.
+  deviations: *common
+- claim: fig6e-kinematics-predict-location
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig6e-kinematics-predict-location
+  assumed: true
+  notes: Kinematic reading (a) (SVD basis), linear 53.3, 55.0, 70.4, 41.4% (in 33.3 to 78.1%); OU kernel
+    70.4, 68.8, 88.7, 76.9% (in 62.1 to 89.1%); both above all 1000 permutations (p = 0.001). Reading
+    (b) (skew-normal basis) gives linear 41.5 to 70.4% and OU 69.6 to 89.1%, also all in range. The
+    Gaussian kernel (kernel reading b) gives 32.2 to 54.4%, below the range. Five seeds give OU 68.8 to
+    71.8 (M1-J), 65.9 to 70.5, 86.9 to 88.7 and 73.2 to 76.9%, all in range.
+  deviations: *common
+- claim: fig7c-ldr-encoding
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig7c-ldr-encoding
+  assumed: true
+  notes: SVD kinematic basis, linear 76.5, 68.1, 84.3, 72.3% (s.d. 5.9 to 18.9%), kernel 84.0, 85.0,
+    92.1, 86.7% (s.d. 2.7 to 7.8%); against the shuffled null, p at most 2.6e-08 (linear) and 1.9e-13
+    (kernel). Skew-normal basis within 0.01 of these. Five seeds give linear 66.4 to 69.4% for PMd-J
+    and kernel 83.4 to 92.1% overall, all in range.
+  deviations: *common
+- claim: suppfig7a-not-memorization
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig7a-not-memorization
+  assumed: true
+  notes: Sextants held out, kernel against nearest neighbour, SVD basis, 75.2 against 66.7% (p = 6e-10),
+    67.6 against 58.5% (p = 0.019), 85.8 against 77.7% (p = 2e-11), 76.7 against 67.7% (p = 3e-11);
+    PMd-J misses p < 0.01, and under the skew-normal basis PMd-J gives p = 0.89.
+  deviations: *common
+- claim: fig7c-standard-encoding-worse
+  outcome: reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig7c-standard-encoding-worse
+  assumed: true
+  notes: Both LDR models exceed every standard model with p < 0.001 in all 24 comparisons under both
+    kinematic readings. The linear multi-parameter model explains 51.7 to 53.4%. The OU kernel models
+    on position (length scale 1e12) and velocity (1e11) explain 0% with the assumed penalty 0.1,
+    because the kernel is nearly constant at these length scales; those 16 comparisons are not
+    informative, and the outcome rests on the 8 comparisons with the linear model.
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - Velocity angle enters the linear model as its cosine and sine, and features are z-scored; the
+    kernel penalty is 0.1 (the Methods' L2 for kernel decoders). The Methods give neither (assumption).
+- claim: fig7f-ldr-decoding
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig7f-ldr-decoding
+  assumed: true
+  notes: Mean variance explained in single-trial hand position, SVD basis, 77.4, 74.7, 87.4 and 73.4%
+    (medians 84.4, 83.1, 92.0, 82.3%); M1-J and M1-N in 75.6 to 100%. Skew-normal basis 76.8, 74.1,
+    86.8 and 72.9%. Over the five seeds, M1-J 76.2 to 77.7, PMd-J 68.9 to 74.7, M1-N 87.4 to 88.3, PMd-N
+    72.2 to 76.1%; two or three datasets in range under each seed, so the outcome holds under all five.
+    The condition-shuffled null gives 2.0 to 3.8% (p below 1e-200).
+  deviations: *common
+- claim: fig7f-decoder-beats-standard
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:fig7f-decoder-beats-standard
+  assumed: true
+  notes: Against 24 instantaneous decoders (ridge, lambda 1, on single trials; OU kernel, length scale
+    100, L2 0.1, on single trials or trial averages; activity smoothed at 20 or 100 ms, 100 ms lag;
+    six per dataset), the LDR decoder is higher in every comparison with two-sided signed-rank p at
+    most 1.5e-184. The instantaneous decoders explain 0.5 to 73.1% of single-trial position (the best,
+    M1-N kernel on single trials at 100 ms, 73.1% against 87.4%). The GPFA decoders were not run, so
+    the claim holds against all but them, which the criterion counts as partial.
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - GPFA decoders not run; the paper gives neither latent dimensionality nor bin size.
+  - Kernel decoders on single trials are trained on 3000 random time points of the training trials (the
+    Methods say "a subset"; the size is an assumption). The 100 ms smoothing is applied to 10 ms counts
+    (s.d. 10 bins). Only position is decoded; variance explained is over -250 to +850 ms, where the
+    LDR decoder's is over -350 to +850 ms.
+- claim: suppfig8-no-output-potent-dependence
+  outcome: not_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:suppfig8-no-output-potent-dependence
+  assumed: true
+  notes: Removing the four-dimensional row space of the least-squares map from activity to hand
+    position and velocity lowers the per-condition decoded variance from 75.9 to 69.7% (M1-J), 75.0 to
+    70.1, 87.2 to 83.3 and 75.2 to 70.9% (SVD basis), drops of 3.9 to 6.3 points, and the two-sided
+    signed-rank test gives p < 0.001 in every dataset, below 0.036. The dataset holds no EMG, so the
+    muscle dimensions could not be removed.
+  deviations:
+  - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label,
+    where the paper used 79 to 118 sorted single and stable multi-units.
+  - Trials as reading (b) of the claims file (assumption; see data-composition).
+  - No EMG in the dataset; only kinematic dimensions are removed, as the criterion allows.
+- claim: trial-curvature-decoding
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024.ipynb
+  output: claim:trial-curvature-decoding
+  assumed: true
+  notes: Within-condition residuals of decoded and actual curvature parameters, SVD basis, rho 0.319
+    and 0.162 (M1-J), 0.229 and 0.093 (PMd-J), 0.449 and 0.548 (M1-N), 0.191 and 0.290 (PMd-N), all p
+    below 0.001; 6 of 8 in 0.144 to 0.451. Skew-normal basis 5 of 8 in range.
+  deviations: *common
+findings:
+- kind: format_error
+  about: data
+  severity: major
+  statement: The Nitschke file (sub-Nitschke_ses-20100923) joins five recording segments whose clocks
+    overlap. Trial start times, hand timestamps and every unit's spike times jump backwards four times
+    (segments span 5 to 6076 s, 6074 to 12077 s, 6071 to 12494 s, 6120 to 13516 s and 6074 to 6658 s),
+    so spike times are not sorted and a trial's spikes cannot be selected by time alone; doing so mixes
+    spikes of up to four segments. Splitting each unit's spikes at the jumps and assigning trials to
+    segments in file order gives condition decoding of 0.41 to 0.46 in segments 0 to 2 and 0.16 in
+    segment 3 (chance 0.014; 0.006 to 0.027 with the previous trial's labels).
+- kind: metadata_insufficient
+  about: data
+  severity: major
+  statement: The units table holds 96 units per array, one per electrode, in both files, with no column
+    for single or multi-unit, sorting quality or isolation. The paper reports 79 to 118 single and
+    stable multi-units per array. Whether these units are threshold crossings or sorted units merged
+    per electrode is not stated.
+- kind: format_error
+  about: data
+  severity: minor
+  statement: In the Jenkins file, one unit's spike train (the second row of the units table) holds two
+    sorted runs one after the other, the second restarting at 4.7 s after the first reached 15668.6 s.
+    The two runs were merged and sorted here.
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: Hand, cursor and eye positions are labelled "meters" with a conversion of NaN, but hold
+    millimetres (reaches of about 130 and positions from -182 to 159).
+- kind: data_missing
+  about: data
+  severity: minor
+  statement: The dataset holds no EMG, which the paper's Supplementary Figure 8 removes along with
+    kinematic dimensions.
+- kind: other
+  about: data
+  severity: minor
+  statement: In the Nitschke file, condition information in segment 3 is lower within the segment
+    (decoding 0.161) than in segments 0 to 2 (0.411 to 0.459), while a decoder trained on the other
+    segments reaches 0.478 on it, and decoding does not peak at another time offset. This is consistent
+    with a change of the recorded units over the session; segment 4 (22 trials) is too small to check
+    on its own.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) Which trials were analysed? Successful trials with a
+    delay above 400 ms give 1381 (J) and 1884 (N) and all successful trials 1595 and 2121, against
+    1469 and 2014 in the Figure 7 legend; the first was used here. (2) Which units were used, and are
+    they in the dandiset? The files hold one unit per electrode with no single or multi-unit label.
+    (3) What penalty was used for the OU kernel encoding models with length scales 1e11 and 1e12? With
+    a penalty of 0.1 they predict only the mean. (4) How were the noise excursion angles of Figure 4c
+    computed? (5) Were the jPCA and single-condition LDS values of Supplementary Figure 3
+    cross-validated, and how?
+- kind: methods_unavailable
+  statement: The paper's code (kaufmanlab/LDR-public) loads preprocessed files (ShenoyMonkeyData and
+    others) that the Data availability statement offers only on request, so the code cannot be run on
+    the public data, and the trial and unit selection behind them cannot be checked.
