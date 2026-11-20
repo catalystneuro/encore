@@ -37,13 +37,25 @@ BIN = 1.0 / 128  # [paper] "spike times were binned at 128 Hz" (Estimation of Re
 NLAGS = 12  # [assume] 12 lags of one 16.68 ms frame (200 ms), the frame-rate equivalent of the
 #             paper's 24 lags of 8 ms (192 ms); see estimate_rf
 WIN = 21  # [paper] "441 spatial points (21 x 21 grid)" (Estimation of Receptive Fields, par. 4)
-RIDGE_REL = 3000.0  # [paper + assume] The paper's RLS with K0 = D x I converges to the ridge solution with
-#                     penalty 1/D (Haykin 2002), computed here in batch. Its D = 0.001 is for its own
-#                     stimulus scale; it chose D as "the value ... that provided the most accurate
-#                     predictions of responses to natural scene movies" (Estimation of Receptive Fields,
-#                     par. 3), and the notebook chooses the penalty the same way (choose_ridge), which
-#                     sets this value. [assume] The penalty is RIDGE_REL times the stimulus variance,
-#                     the same relative to the stimulus in every condition (see the notebook)
+RIDGE_REL = 10000.0  # [paper + assume] The paper's RLS with initial conditions g = 0 and K0 = D x I converges
+#                     to the ridge solution with penalty 1/D (Haykin 2002), computed here in batch. The paper
+#                     chose D as "the value of D that produced the RF estimates that provided the most
+#                     accurate predictions of responses to natural scene movies" (Estimation of Receptive
+#                     Fields, par. 3); the notebook applies the same rule (choose_ridge), which sets this
+#                     value. [assume] The penalty is RIDGE_REL times the stimulus variance, the same relative
+#                     to the stimulus in every condition. The paper's own value, D = 0.001 on its stimulus
+#                     scale ("zero mean and possible values between -106 and 106", gray levels about the
+#                     mean of 125), is a penalty of 1000 in gray levels; it is in the selection grid and is
+#                     run as a variant (PENALTIES), where it gives RFs at the noise level (see the notebook)
+RIDGE = 1000.0  # [paper] the literal penalty 1/D, in gray levels squared; a variant
+PENALTIES = {"main": ("rel", None), "rel1000": ("rel", 1000.0), "paper": ("abs", RIDGE)}
+#   [assume] the variants computed in the same pass: "main" RIDGE_REL x variance; "rel1000" 1000 x
+#   variance, the lowest of the first round's grid and below the mean eigenvalue of X'X (so the
+#   movie estimate stays decorrelated); "paper" the literal 1000 in gray levels
+NLAGS8 = 24  # [paper] "24 temporal points spaced at 8 ms" (Estimation of Receptive Fields, par. 4)
+WIN8 = 15  # [assume] the 128 Hz RF is estimated in a 15 x 15 window (3 deg) centred on the maximal point of
+#            the frame-rate RF, smaller than the paper's 21 x 21 to fit the time limit; used for the
+#            temporal properties only
 NSEG = 9  # [paper] "Each response was broken into nine segments" (par. 4)
 NL_GROUP = 250  # [paper] "separated into groups of 250 values" (Estimation of Static Nonlinearities)
 MEAN_LUM = 125.0  # [paper] movies rescaled to a mean of 125 of 0-255 (Natural Scene Movie and WN Stimuli)
@@ -172,10 +184,10 @@ def locate(stim, counts, lags=(2, 3, 4, 5, 6)):
     return int(r), int(c)
 
 
-def window(center, size=48):
-    h = WIN // 2
-    r0 = min(max(center[0] - h, 0), size - WIN)
-    c0 = min(max(center[1] - h, 0), size - WIN)
+def window(center, size=48, win=WIN):
+    h = win // 2
+    r0 = min(max(center[0] - h, 0), size - win)
+    c0 = min(max(center[1] - h, 0), size - win)
     return r0, c0
 
 
@@ -208,36 +220,52 @@ def _xty(S, r, a, b, nl):
     return np.concatenate([S[lo - l:b - l].T @ r[lo:b] for l in range(nl)])
 
 
-def estimate_rf(S, r, a, b, rngs=(), nl=NLAGS, nseg=NSEG):
-    """RF from frames a..b-1 of stimulus S (frames x pixels) and frame counts r, as the mean of
+def estimate_rf(S, r, a, b, rngs=(), nl=NLAGS, nseg=NSEG, lams=None):
+    """RF from frames (or bins) a..b-1 of stimulus S (samples x pixels) and counts r, as the mean of
     nseg segment estimates [paper, Estimation of Receptive Fields, par. 4]. Each estimate is the
-    ridge solution (X'X + lam I)^-1 X'y, lam = RIDGE_REL x stimulus variance, the converged value of the paper's RLS with g0 = 0 and
-    K0 = D x I [paper, par. 3]. Returns the mean RF (lags x pixels), the SD over segments, and,
-    for each generator in rngs, the mean RF from responses shuffled in time within each segment
-    (the noise estimate of the inclusion rule and of the centre's error level [paper, Natural
-    Scene Movie and White Noise Stimuli, par. 2; Definition of Center and Surround])."""
+    ridge solution (X'X + lam I)^-1 X'y, the converged value of the paper's RLS with g0 = 0 and
+    K0 = D x I [paper, par. 3]. lams: the penalties, absolute (default [RIDGE_REL x the stimulus
+    variance]). Returns one dict
+    per penalty: the mean RF (lags x pixels), the SD over segments, and, for each generator in
+    rngs, the mean RF from responses shuffled in time within each segment (the noise estimate of
+    the inclusion rule and of the centre's error level [paper, Natural Scene Movie and White Noise
+    Stimuli, par. 2; Definition of Center and Surround]). The shuffles are the same for every
+    penalty."""
+    if lams is None:
+        lams = [RIDGE_REL * float(np.mean(np.square(S[a:b], dtype=np.float64)))]
     P = S.shape[1]
     bounds = np.linspace(a, b, nseg + 1).astype(int)
-    lam = RIDGE_REL * float(np.mean(np.square(S[a:b], dtype=np.float64)))
-    rfs, shuf = [], [[] for _ in rngs]
+    rfs = [[] for _ in lams]
+    shuf = [[[] for _ in rngs] for _ in lams]
     for k in range(nseg):
         s0, s1 = bounds[k], bounds[k + 1]
-        M = _xtx(S, s0, s1, nl)
-        M[np.diag_indices_from(M)] += lam
-        c = scipy.linalg.cho_factor(M, overwrite_a=True, check_finite=False)
+        M0 = _xtx(S, s0, s1, nl)
         Y = [r]
         for rng in rngs:
             rs = r.copy()
             rs[s0:s1] = rng.permutation(r[s0:s1])
             Y.append(rs)
         Y = np.array(Y, dtype=S.dtype).T
-        sol = scipy.linalg.cho_solve(c, _xty(S, Y, s0, s1, nl), check_finite=False)
-        rfs.append(sol[:, 0])
-        for j in range(len(rngs)):
-            shuf[j].append(sol[:, j + 1])
-    rfs = np.array(rfs).reshape(nseg, nl, P)
-    return {"rf": rfs.mean(0), "sd": rfs.std(0), "segments": rfs,
-            "shuffled": [np.array(x).reshape(nseg, nl, P).mean(0) for x in shuf]}
+        XY = _xty(S, Y, s0, s1, nl)
+        for i, lam in enumerate(lams):
+            M = M0.copy()
+            M[np.diag_indices_from(M)] += lam
+            try:
+                c = scipy.linalg.cho_factor(M, overwrite_a=True, check_finite=False)
+                sol = scipy.linalg.cho_solve(c, XY, check_finite=False)
+            except np.linalg.LinAlgError:  # not positive definite in single precision: solve in double
+                M = M0.astype(np.float64)
+                M[np.diag_indices_from(M)] += lam
+                sol = scipy.linalg.solve(M, XY.astype(np.float64), assume_a="pos").astype(S.dtype)
+            rfs[i].append(sol[:, 0])
+            for j in range(len(rngs)):
+                shuf[i][j].append(sol[:, j + 1])
+    out = []
+    for i in range(len(lams)):
+        x = np.array(rfs[i]).reshape(nseg, nl, P)
+        out.append({"rf": x.mean(0), "sd": x.std(0), "segments": x,
+                    "shuffled": [np.array(y).reshape(nseg, nl, P).mean(0) for y in shuf[i]]})
+    return out
 
 
 def equal_spike_stop(r1, r2):
@@ -254,14 +282,14 @@ def equal_spike_stop(r1, r2):
 # RF properties
 # ----------------------------------------------------------------------------------------------
 
-def center_surround(rf, err):
+def center_surround(rf, err, win=WIN):
     """[paper, Definition of Center and Surround, after Lesica and Stanley 2004] The maximal point;
     the centre is the pixels at its latency, contiguous with it (4-connected [standard]), of its
     sign and above the error level err; the surround is a ring around the centre at most four
     pixels wide (four 8-connected dilations [standard])."""
     lag, pix = np.unravel_index(np.argmax(np.abs(rf)), rf.shape)
     sign = np.sign(rf[lag, pix])
-    frame = rf[lag].reshape(WIN, WIN)
+    frame = rf[lag].reshape(win, win)
     ok = (frame * sign) > err
     lab, _ = scipy.ndimage.label(ok)
     center = lab == lab.reshape(-1)[pix]
@@ -440,8 +468,8 @@ def sparseness(rate):
 
 def pct_change(a, b):
     """[claim, P1] Percent change from condition a to b: (a) of the sample means, (b) mean of each
-    cell's percent change; (c) the ratio of the means minus one, which equals (a) for increases
-    (the claim's (c) reads 'increased by X%' as a ratio of X/100)."""
+    cell's percent change; (c) the ratio of the means, in percent (the claim's (c) reads 'increased
+    by X%' as a ratio of X/100, so it is compared with X directly)."""
     a, b = np.asarray(a, float), np.asarray(b, float)
     ok = np.isfinite(a) & np.isfinite(b)
     a, b = a[ok], b[ok]
@@ -475,28 +503,69 @@ def _rep_rows(reps, key, unit):
     return starts[keep], float(np.median(durs))
 
 
-def condition(St, ft, spikes, a, b, rngs):
+def penalty(kind, value, var):
+    if kind == "abs":
+        return value
+    return (RIDGE_REL if value is None else value) * var
+
+
+def condition(St, ft, spikes, a, b, rngs, variants=True):
     """RF and NL of one unit in one stimulus condition, from frames a..b-1 (St frames x pixels in the
-    unit's window). rngs: generators for the shuffled-response noise estimate (one per seed)."""
+    unit's window). rngs: generators for the shuffled-response noise estimate (one per seed). The
+    main estimate uses the penalty PENALTIES["main"]; with variants, the other PENALTIES are
+    computed from the same shuffles and returned under "variants"."""
     r = frame_counts(spikes, ft)
     if r[a:b].sum() < NSEG:
         return {"n_spikes": float(r[a:b].sum()), "frames": (a, b), "failed": "fewer spikes than segments"}
-    est = estimate_rf(St, r, a, b, rngs=rngs)
-    rf = est["rf"]
-    errs = [s.std() for s in est["shuffled"]]
-    y = filtered(St, rf)
+    var = float(np.mean(np.square(St[a:b], dtype=np.float64)))
+    names = list(PENALTIES) if variants else ["main"]
+    lams = [penalty(*PENALTIES[n], var) for n in names]
+    ests = estimate_rf(St, r, a, b, rngs=rngs, lams=lams)
     t0, t1 = ft[max(a, NLAGS - 1)], ft[b - 1] + (ft[1] - ft[0])
     c8, tc = bin_counts(spikes, t0, t1)
-    y8 = y[frame_of(tc, ft)]
-    try:
-        xs, ys = nonlinearity(y8, c8 / BIN)
-        gain, q = fit_rectifier(xs, ys)
-    except ValueError:  # fewer than 250 bins in a segment: no NL
-        xs, ys, gain, q = np.array([]), np.array([]), np.nan, np.nan
-    yv = y[max(a, NLAGS - 1):b]
-    return {"rf": rf, "rf_sd": est["sd"], "err": errs[0], "errs": errs, "nl_x": xs, "nl_y": ys,
-            "gain": gain, "offset": q, "y_sd": float(np.nanstd(yv)), "frames": (a, b),
-            "n_spikes": float(r[a:b].sum())}
+    fi = frame_of(tc, ft)
+    outs = []
+    for est, lam in zip(ests, lams):
+        rf = est["rf"]
+        errs = [x.std() for x in est["shuffled"]]
+        y = filtered(St, rf)
+        try:
+            xs, ys = nonlinearity(y[fi], c8 / BIN)
+            gain, q = fit_rectifier(xs, ys)
+        except ValueError:  # fewer than 250 bins in a segment: no NL
+            xs, ys, gain, q = np.array([]), np.array([]), np.nan, np.nan
+        yv = y[max(a, NLAGS - 1):b]
+        outs.append({"rf": rf, "rf_sd": est["sd"], "err": errs[0], "errs": errs, "nl_x": xs, "nl_y": ys,
+                     "gain": gain, "offset": q, "y_sd": float(np.nanstd(yv)), "frames": (a, b),
+                     "n_spikes": float(r[a:b].sum()), "lam": lam})
+    out = outs[0]
+    out["variants"] = dict(zip(names[1:], outs[1:]))
+    return out
+
+
+def rf8(F, rms, w8, ft, spikes, a, b, rng):
+    """[paper] The RF at the paper's resolution: "spike times were binned at 128 Hz ... 24 temporal
+    points spaced at 8 ms" (Estimation of Receptive Fields, par. 4), nine segments.
+    The stimulus of each 128 Hz bin is the frame on screen at its centre (sample and hold). Window:
+    WIN8 x WIN8 pixels at w8 [assume, see WIN8]. Frames a..b-1 as in the frame-rate estimate (same
+    number of spikes at HC and LC). Penalty [assume]: RIDGE_REL x stimulus variance x (frame period /
+    BIN), the same penalty per second of data as the frame-rate estimate. Returns the temporal properties of the centre, its sign and the
+    surround/center ratios."""
+    r0, c0 = w8
+    S = np.ascontiguousarray(F[:b, r0:r0 + WIN8, c0:c0 + WIN8]).reshape(b, -1) * np.float32(MEAN_LUM * rms)
+    t1 = ft[b - 1] + (ft[1] - ft[0])
+    c8, tc = bin_counts(spikes, ft[a], t1)
+    Sb = np.ascontiguousarray(S[frame_of(tc, ft)])
+    if c8.sum() < NSEG:
+        return {"failed": "fewer spikes than segments"}
+    lam = RIDGE_REL * float(np.mean(np.square(S[a:b], dtype=np.float64))) / (FRAME_RATE * BIN)
+    est = estimate_rf(Sb, c8, 0, len(c8), rngs=[rng], nl=NLAGS8, lams=[lam])[0]
+    rf, err = est["rf"], est["shuffled"][0].std()
+    cs = center_surround(rf, err, win=WIN8)
+    out = {"rf": rf, "err": err, "sign": cs["sign"], "snr": float(np.abs(rf).max() / err),
+           "surround_ratio_a": surround_ratio(rf, cs, "a"), "surround_ratio_b": surround_ratio(rf, cs, "b")}
+    out.update(temporal_props(rf, cs, BIN))
+    return out
 
 
 def _frames(tmpl, idx):
@@ -506,19 +575,24 @@ def _frames(tmpl, idx):
     return tmpl[idx]
 
 
-def process_session(f, T, seeds, wn_seconds=WN_SECONDS, ns_skip=0, wn=True, key=(0, 0)):
+def process_session(f, T, seeds, wn_seconds=WN_SECONDS, ns_skip=0, wn=True, key=(0, 0), variants=True, do8=True, units_only=None):
     """All per-unit measures of one penetration. T: templates {'NAT', 'WN'} (frames x 48 x 48).
     seeds: the seeds of the shuffles (the claim's seed and the four others); each unit's
     generators are seeded with [seed, *key, unit] so that the result does not depend on the
     order in which penetrations are processed. ns_skip: first frames of the 15 min movie left
     out of RF and NL estimation (Expt2, whose 90 s repeats show movie frames 0-5400; see the
-    notebook). wn: whether to estimate white-noise RFs."""
+    notebook). wn: whether to estimate white-noise RFs. variants: whether to compute the variant
+    penalties (see condition).
+    do8: whether to estimate the 128 Hz RFs (rf8), in a window centred on the maximal point of the
+    HC movie RF, for all four stimuli. units_only: process only these unit indices (development)."""
     s = load_session(f)
     tr, units = s["trials"], s["units"]
     iH, iL = _trial(tr, "ns", "H"), _trial(tr, "ns", "L")
     wH, wL = _trial(tr, "wn", "H", modality="SBN"), _trial(tr, "wn", "L", modality="SBN")
     out = []
     for u in range(len(units["unit_name"])):
+        if units_only is not None and u not in units_only:
+            continue
         rngs = [np.random.default_rng([sd, *key, u]) for sd in seeds]
         sp = units["spikes"][u]
         d = {k: units[k][u] for k in ["unit_name", "electrode_number", "LGN_layer", "xy_class", "possible_duplicate_of"]}
@@ -542,9 +616,17 @@ def process_session(f, T, seeds, wn_seconds=WN_SECONDS, ns_skip=0, wn=True, key=
             SH = cut(FH, float(tr["contrast_rms"][iH]))
             SL = cut(_frames(T["NAT"], idxL), float(tr["contrast_rms"][iL]))
             eH, eL = equal_spike_stop(rH[ns_skip:], rL[ns_skip:])
-            d["ns_H"] = condition(SH, ftH, sp, ns_skip, ns_skip + eH, rngs)
-            d["ns_L"] = condition(SL, ftL, sp, ns_skip, ns_skip + eL, rngs)
+            d["ns_H"] = condition(SH, ftH, sp, ns_skip, ns_skip + eH, rngs, variants)
+            d["ns_L"] = condition(SL, ftL, sp, ns_skip, ns_skip + eL, rngs, variants)
             d["rms"] = {"ns_H": float(tr["contrast_rms"][iH]), "ns_L": float(tr["contrast_rms"][iL])}
+            w8 = None
+            if do8 and "rf" in d["ns_H"]:
+                pix = int(np.argmax(np.abs(d["ns_H"]["rf"]).max(0)))
+                w8 = window((r0 + pix // WIN, c0 + pix % WIN), win=WIN8)
+                d["window8"] = w8
+                rng8 = np.random.default_rng([seeds[0], *key, u, 8])
+                d["ns_H_8"] = rf8(FH, d["rms"]["ns_H"], w8, ftH, sp, ns_skip, ns_skip + eH, rng8)
+                d["ns_L_8"] = rf8(_frames(T["NAT"], idxL), d["rms"]["ns_L"], w8, ftL, sp, ns_skip, ns_skip + eL, rng8)
             if wn and wH is not None and wL is not None:
                 ftWH, idxWH = tr["frame_times"][wH]
                 ftWL, idxWL = tr["frame_times"][wL]
@@ -552,9 +634,14 @@ def process_session(f, T, seeds, wn_seconds=WN_SECONDS, ns_skip=0, wn=True, key=
                 rWH, rWL = frame_counts(sp, ftWH)[:nW], frame_counts(sp, ftWL)[:nW]
                 d["rate_wn_H"], d["rate_wn_L"] = rWH.sum() / (ftWH[nW - 1] - ftWH[0]), rWL.sum() / (ftWL[nW - 1] - ftWL[0])
                 fH, fL = equal_spike_stop(rWH, rWL)
-                d["wn_H"] = condition(cut(_frames(T["WN"], idxWH[:nW]), float(tr["contrast_rms"][wH])), ftWH, sp, 0, fH, rngs)
-                d["wn_L"] = condition(cut(_frames(T["WN"], idxWL[:nW]), float(tr["contrast_rms"][wL])), ftWL, sp, 0, fL, rngs)
+                FWH, FWL = _frames(T["WN"], idxWH[:nW]), _frames(T["WN"], idxWL[:nW])
+                d["wn_H"] = condition(cut(FWH, float(tr["contrast_rms"][wH])), ftWH, sp, 0, fH, rngs, variants)
+                d["wn_L"] = condition(cut(FWL, float(tr["contrast_rms"][wL])), ftWL, sp, 0, fL, rngs, variants)
                 d["rms"].update(wn_H=float(tr["contrast_rms"][wH]), wn_L=float(tr["contrast_rms"][wL]))
+                d["wn_trials"] = {"H": str(tr["trial_key"][wH]), "L": str(tr["trial_key"][wL])}
+                if w8 is not None:
+                    d["wn_H_8"] = rf8(FWH, d["rms"]["wn_H"], w8, ftWH, sp, 0, fH, rng8)
+                    d["wn_L_8"] = rf8(FWL, d["rms"]["wn_L"], w8, ftWL, sp, 0, fL, rng8)
             if s["reps"] is not None:
                 d.update(repeats(s, u, T, None, (ftH, rH)))
         except Exception as e:  # recorded, and the unit counted as dropped
@@ -629,23 +716,21 @@ def repeats(s, u, T, cut, unique_H):
 
 
 
-def choose_ridge(cases, lams):
+def choose_ridge(cases, specs):
     """[paper, Estimation of Receptive Fields, par. 3] "the value of D that produced the RF estimates
     that provided the most accurate predictions of responses to natural scene movies was used".
     For each case (stimulus frames x pixels, frame counts), the RF is estimated as in the Methods
     (nine segments) from the first 90% of the movie and its linear prediction is correlated with
-    the frame counts of the last 10%. Returns the correlations, cases x penalties."""
-    global RIDGE_REL
-    keep = RIDGE_REL
-    out = np.zeros((len(cases), len(lams)))
+    the frame counts of the last 10%. specs: penalties as (kind, value), see penalty. Returns the
+    correlations, cases x penalties."""
+    out = np.zeros((len(cases), len(specs)))
     for i, (S, r) in enumerate(cases):
         ntr = int(0.9 * len(r))
-        for j, lam in enumerate(lams):
-            RIDGE_REL = lam
-            rf = estimate_rf(S, r, 0, ntr)["rf"]
-            y = filtered(S[ntr - NLAGS + 1:], rf)[NLAGS - 1:]
+        var = float(np.mean(np.square(S[:ntr], dtype=np.float64)))
+        ests = estimate_rf(S, r, 0, ntr, lams=[penalty(k, v, var) for k, v in specs])
+        for j, est in enumerate(ests):
+            y = filtered(S[ntr - NLAGS + 1:], est["rf"])[NLAGS - 1:]
             out[i, j] = np.corrcoef(y, r[ntr:])[0, 1]
-    RIDGE_REL = keep
     return out
 
 
@@ -654,13 +739,14 @@ def choose_ridge(cases, lams):
 # ----------------------------------------------------------------------------------------------
 
 CONDITIONS = ["ns_H", "ns_L", "wn_H", "wn_L"]
-PROPS = ["spatial_width", "surround_ratio_a", "surround_ratio_b", "temporal_width", "latency", "biphasic",
-         "gain", "offset", "norm_offset"]
+PROPS = ["spatial_width", "surround_ratio_a", "surround_ratio_b", "temporal_width_8", "temporal_width", "latency_8",
+         "latency", "biphasic_8", "biphasic", "gain", "offset", "norm_offset"]
 
 
-def unit_table(results, dt=1 / FRAME_RATE):
+def unit_table(results, dt=1 / FRAME_RATE, which="main"):
     """One row per unit: rates, RF peak over noise under each seed, and the RF and NL properties of
-    each condition. The noise is the SD of the RF estimated from shuffled responses."""
+    each condition. The noise is the SD of the RF estimated from shuffled responses. which: the
+    penalty (a key of PENALTIES). The 128 Hz RF's properties (rf8) are added with the suffix _8."""
     rows = []
     for path, s, out in results:
         for d in out:
@@ -671,6 +757,12 @@ def unit_table(results, dt=1 / FRAME_RATE):
                 x = d.get(c)
                 if not x:
                     continue
+                if which != "main" and "variants" in x:
+                    x = x["variants"][which]
+                x8 = d.get(c + "_8")
+                if x8 and "failed" not in x8:
+                    for k in ["snr", "sign", "temporal_width", "latency", "biphasic", "surround_ratio_a", "surround_ratio_b"]:
+                        r[c + "_" + k + "_8"] = x8[k]
                 if "failed" in x:
                     r[c + "_snr"] = 0.0
                     r[c + "_snrs"] = [0.0] * 5
@@ -714,3 +806,121 @@ def repeat_measures(d):
         out[c] = {"rel_a": sig_a / noise, "rel_b": sig_b / noise, "sparse": sparseness(np.concatenate(psth)),
                   "rate": float(np.mean(rates)), "n_reps": [len(R) for R in blocks]}
     return out
+
+
+# ----------------------------------------------------------------------------------------------
+# Figure 5: RFs and NLs from the periods of high and low contrast within the RF
+# ----------------------------------------------------------------------------------------------
+
+CONTRAST_WINDOW = 60  # [assume] reading (b): sliding window of 60 frames (1 s) for each pixel's temporal
+#                       RMS contrast; the paper gives no length
+
+
+def rf_contrast(F, rms, weights, reading):
+    """[claim, fig5 readings] Contrast within the RF for each frame of the HC movie F (frames x pixels,
+    template units), in RMS contrast (SD / mean of luminance, mean 125). weights: one per pixel
+    (a mask, or the RF's absolute spatial profile). Reading (a): per frame, the weighted RMS
+    contrast over the RF pixels. Reading (b): per pixel, the RMS contrast of its luminance over a
+    sliding window of CONTRAST_WINDOW frames, averaged over the RF pixels with the weights."""
+    w = weights / weights.sum()
+    sel = w > 0
+    lum = np.clip(MEAN_LUM * (1 + rms * F[:, sel].astype(np.float64)), 0, 255)  # [standard] as displayed, 0-255
+    w = w[sel]
+    if reading == "a":
+        mu = lum @ w
+        return np.sqrt(np.maximum((lum ** 2) @ w - mu ** 2, 0)) / np.maximum(mu, 1.0)
+    k = CONTRAST_WINDOW
+    m1 = scipy.ndimage.uniform_filter1d(lum, k, axis=0, mode="nearest")
+    m2 = scipy.ndimage.uniform_filter1d(lum ** 2, k, axis=0, mode="nearest")
+    return (np.sqrt(np.maximum(m2 - m1 ** 2, 0)) / np.maximum(m1, 1.0)) @ w
+
+
+def estimate_rf_rows(S, r, rows, lam, nl=NLAGS, nseg=NSEG):
+    """Ridge RF from the response frames in rows only (sorted frame indices >= nl - 1), as the mean
+    of nseg estimates from consecutive groups of rows [paper, par. 4, applied to a subset of
+    frames]. The design matrix is built explicitly."""
+    P = S.shape[1]
+    out = []
+    for g in np.array_split(rows, nseg):
+        X = np.empty((len(g), nl * P), dtype=S.dtype)
+        for l in range(nl):
+            X[:, l * P:(l + 1) * P] = S[g - l]
+        M = X.T @ X
+        M[np.diag_indices_from(M)] += lam
+        c = scipy.linalg.cho_factor(M, overwrite_a=True, check_finite=False)
+        out.append(scipy.linalg.cho_solve(c, X.T @ r[g].astype(S.dtype), check_finite=False))
+    return np.mean(out, 0).reshape(nl, P)
+
+
+def thirds(asset_id, jobs, seed0):
+    """Figure 5 analysis for units of one penetration. jobs: (unit index, window, ns_skip, frame-rate
+    HC RF, its error level, readings). For each reading: the contrast trace over the HC movie frames
+    used for the RF, its range in each 150 s segment (stepped by 30 s), and the RF and NL from the
+    response frames whose stimulus (at the RF's peak lag) lies in the top and bottom thirds of all
+    values. The noise level of each third's RF (for its centre) is from a shuffled response."""
+    from threadpoolctl import threadpool_limits
+    f = open_asset(asset_id)
+    s = load_session(f)
+    tr = s["trials"]
+    iH = _trial(tr, "ns", "H")
+    ft, idx = tr["frame_times"][iH]
+    rms = float(tr["contrast_rms"][iH])
+    F = _frames(_T["NAT"], idx)
+    out = []
+    with threadpool_limits(1):
+        for u, (r0, c0), skip, rf, err, readings in jobs:
+            sp = s["units"]["spikes"][u]
+            r = frame_counts(sp, ft)
+            Fw = np.ascontiguousarray(F[:, r0:r0 + WIN, c0:c0 + WIN]).reshape(len(F), -1)
+            S = Fw * np.float32(MEAN_LUM * rms)
+            cs = center_surround(rf, err)
+            lag = cs["lag"]
+            prof = np.abs(rf[lag])
+            weights = {"center": cs["center"].reshape(-1).astype(float), "weighted": prof}
+            lam = RIDGE_REL * float(np.mean(np.square(S[skip:], dtype=np.float64)))
+            t0, t1 = ft[skip], ft[-1] + (ft[1] - ft[0])
+            c8, tc = bin_counts(sp, t0, t1)
+            fi = frame_of(tc, ft)
+            res = {"unit": u}
+            for rd, wname in readings:
+                ctr = rf_contrast(Fw, rms, weights[wname], rd)
+                seg = 9000
+                rng_ = [(ctr[a:a + seg].min(), ctr[a:a + seg].max()) for a in range(skip, len(ctr) - seg + 1, 1800)]
+                frames = np.arange(max(skip, NLAGS - 1), len(r))
+                cval = ctr[frames - lag]
+                lo, hi = np.percentile(cval, [100 / 3, 200 / 3])
+                d = {"ranges": np.array(rng_), "mean": float(ctr[skip:].mean()), "cuts": (float(lo), float(hi))}
+                y = filtered(S, rf)
+                for name, rows in (("top", frames[cval >= hi]), ("bottom", frames[cval <= lo])):
+                    est = estimate_rf_rows(S, r, rows, lam)
+                    rs = r.copy()
+                    rs[rows] = np.random.default_rng([seed0, u, len(rows)]).permutation(r[rows])
+                    e = estimate_rf_rows(S, rs, rows, lam).std()
+                    p = rf_properties(est, e, 1 / FRAME_RATE)
+                    yy = filtered(S, est)
+                    keep = np.isin(fi, rows)
+                    try:
+                        xs, ys = nonlinearity(yy[fi][keep], c8[keep] / BIN)
+                        p["gain"], p["offset"] = fit_rectifier(xs, ys)
+                    except ValueError:
+                        p["gain"], p["offset"] = np.nan, np.nan
+                    p["n_frames"], p["n_spikes"] = len(rows), float(r[rows].sum())
+                    d[name] = p
+                res[rd + "_" + wname] = d
+            out.append(res)
+    f.close()
+    return out
+
+
+def _thirds_worker(job):
+    return thirds(*job)
+
+
+def run_thirds(T, jobs, procs=4):
+    import multiprocessing as mp
+    global _T
+    _T = T
+    with mp.get_context("fork").Pool(procs) as pool:
+        res = pool.map(_thirds_worker, jobs, chunksize=1)
+    _T = None
+    return res

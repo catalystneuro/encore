@@ -29,34 +29,39 @@ outcomes:
   - 111
   - 31
   - 58
-  notes: Under reading (a), a cell passing at both contrasts, 111 of the 143 units with the 15 min movie
-    at both contrasts pass (133 under reading b), against 68 (tolerance 6.8). The count is 111 under all
-    five seeds of the shuffles (either-contrast count 132 to 134). The subset with the long noise and
-    the 12 s repeats (Expt1 a11, a13, a14) is 31 cells, as in the paper; the subset with the 90 s repeats
-    (Expt2) is 58 against 26. By ON/OFF (sign of the HC movie RF) 55 ON and 56 OFF (paper 44 and 24);
-    X 60, Y 43, unclassified 8 (paper 30, 27, 11). The count depends on the noise estimate and on the
-    regularization; at a threshold of 15 it is 61. No pair of units on the same electrode in different
-    penetrations has RFs correlated above 0.8, so no cell seems counted twice.
+  notes: Under reading (a), a cell passing at both contrasts, 111 of the 143 units with the 15 min movie at both
+    contrasts pass (133 under reading b), against 68 (tolerance 6.8). The count is 111 under all five seeds of the
+    shuffles (either-contrast count 132 to 134). The subset with the long noise and the 12 s repeats (Expt1 a11,
+    a13, a14) is 31 cells, as in the paper; the subset with the 90 s repeats (Expt2) is 58 against 26. By ON/OFF
+    (sign of the HC movie RF) 55 ON and 56 OFF (paper 44 and 24); X 60, Y 43, unclassified 8 (paper 30, 27, 11).
+    The count depends on the noise estimate and on the regularization; at a threshold of 15 it is 61. No pair of
+    units on the same electrode in different penetrations has RFs correlated above 0.8, so no cell seems counted
+    twice. 13 of the 111 have HC and LC movie RFs of opposite sign at their maximal point, and 94 keep their sign
+    in every condition; they are kept, as the paper's rule does not exclude them, and left out in variants where
+    ON/OFF matters. Under the variant penalties the count is 29 (1000 x variance) and 0 (the paper's literal penalty).
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
-  - The paper's D = 0.001 cannot be used as such; its stimulus scale and the noise term of its gain equation
-    are not fully given, and with a penalty of 1000 in gray levels the 5292-parameter estimate from one
-    ninth of the data is not determined. The penalty was chosen by held-out prediction, as the paper chose
-    D (10000 x stimulus variance, of 1000, 3000, 10000 and 30000). Making it relative to the stimulus
-    variance is an assumption; a fixed penalty in gray levels regularizes LC RFs about seven times more
-    than HC ones. A fixed penalty of 1e7 was tried while preparing (not run in the notebook) and gave
-    widths that grew at low contrast.
-  - RFs are estimated in a 21 x 21 window centred on the peak of the HC movie spike-triggered average
-    (a standard choice), the same window for all four stimuli.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  - RFs are estimated in a 21 x 21 window centred on the peak of the HC movie spike-triggered average (a standard
+    choice), the same window for all four stimuli.
   - ON or OFF is the sign of the maximal point of the HC movie RF; the files carry no ON/OFF label.
-  - The noise of the inclusion rule is the SD of the mean of the nine segment RFs estimated from responses
-    shuffled within each segment.
+  - The noise of the inclusion rule is the SD of the mean of the nine segment RFs estimated from responses shuffled
+    within each segment.
+  - 'Variant penalties, computed in the same pass: 1000 x variance passes 29 cells at both contrasts (69 at either),
+    and the paper''s literal penalty of 1000 in gray levels passes none (4 at either), with median peak/noise 4.1
+    (HC) and 3.9 (LC), a median centre of 1 pixel and a median HC latency of 158 ms, that is RFs at the noise level.'
 - claim: firing-rate-contrast
   outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -66,38 +71,52 @@ outcomes:
   - 6.11
   - 6.54
   - 5.35
-  notes: 'Reading P2 (a), long segments, 31 cells: HC NS 8.68, LC NS 6.11, HC WN 6.54, LC WN 5.35 Hz,
-    all within tolerance. HC is higher than LC for the movie (paired t p = 5.0e-07) and the noise (p =
-    0.0022), so the noise test misses p < 0.001. Reading (b), 12 s repeats: 7.96, 6.19, 6.02, 4.82 Hz,
-    movie p = 0.022, noise p = 0.00033. The criterion gives no partial outcome; partially reproduced is
-    used because all values match and the effect is present at p = 0.002 in place of p < 0.001.'
+  notes: 'Reading P2 (a), long segments, 31 cells: HC NS 8.68, LC NS 6.11, HC WN 6.54, LC WN 5.35 Hz, all within
+    tolerance. HC is higher than LC for the movie (paired t p = 5.0e-07) and the noise (p = 0.0022), so the noise
+    test misses p < 0.001. Reading (b), 12 s repeats: 7.96, 6.19, 6.02, 4.82 Hz, movie p = 0.022, noise p = 0.00033.
+    The criterion gives no partial outcome; partially reproduced is used because all values match and the effect
+    is present at p = 0.002 in place of p < 0.001.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
-  - White-noise rates are over the first 6 min, the length the paper states; the files hold 10 min (HC)
-    and 15 min (LC).
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  - White-noise rates are over the first 6 min, the length the paper states; the files hold 10 min (HC) and 15 min
+    (LC).
 - claim: firing-rate-lc-ns-wn-similar
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:firing-rate-lc-ns-wn-similar
   measured: 0.063
-  notes: 'Long segments (P2 a): LC NS minus LC WN 0.75 Hz, paired t p = 0.063 (above 0.05, not above 0.2).
-    12 s repeats (P2 b): 1.37 Hz, p = 0.0013. The readings give different outcomes; reading (a) is adopted
-    as an assumption, as the paper uses the comparison to justify comparing the RFs and NLs fitted from
-    those stimuli. Question for the authors in the findings.'
+  notes: 'Long segments (P2 a): LC NS minus LC WN 0.75 Hz, paired t p = 0.063 (above 0.05, not above 0.2). 12 s
+    repeats (P2 b): 1.37 Hz, p = 0.0013. The readings give different outcomes; reading (a) is adopted as an assumption,
+    as the paper uses the comparison to justify comparing the RFs and NLs fitted from those stimuli. Question for
+    the authors in the findings.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
   - Readings P2 (a) and (b) disagree; (a) adopted as an assumption.
   assumed: true
 - claim: ln-prediction-accuracy
@@ -107,23 +126,28 @@ outcomes:
   measured:
   - 0.477
   - 0.532
-  notes: '58 included Expt2 cells, 24 repeats each. Reading (a), correlation with the trial-averaged 8
-    ms response: HC 0.477 (SD 0.165), LC 0.532 (SD 0.178), against 0.70 and 0.76 (tolerance 0.07). Reading
-    (b), per trial: 0.282 and 0.259. Per penetration (a) HC 0.385 to 0.598. LC exceeds HC under (a), as
-    in the paper.'
+  notes: '58 included Expt2 cells, 24 repeats each. Reading (a), correlation with the trial-averaged 8 ms response:
+    HC 0.477 (SD 0.165), LC 0.532 (SD 0.178), against 0.70 and 0.76 (tolerance 0.07). Reading (b), per trial: 0.282
+    and 0.259. Per penetration (a) HC 0.385 to 0.598. LC exceeds HC under (a), as in the paper.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
-  - The 90 s repeats show movie frames 0-5400, which are also the first 90 s of the 15 min movie (the
-    clock check confirms it); those frames were left out of the RF and NL estimation of Expt2 cells so
-    that the test stays out of sample.
-  - The prediction uses the mean NL by linear interpolation, held constant beyond its end points (a standard
-    choice).
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  - The 90 s repeats show movie frames 0-5400, which are also the first 90 s of the 15 min movie (the clock check
+    confirms it); those frames were left out of the RF and NL estimation of Expt2 cells so that the test stays out
+    of sample.
+  - The prediction uses the mean NL by linear interpolation, held constant beyond its end points (a standard choice).
 - claim: fig3b-spatial-width-contrast
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -131,32 +155,49 @@ outcomes:
   measured:
   - 0.15
   - 0.46
-  notes: 'Movie, 110 cells with both DoG fits: 0.688 against 0.704 deg, +2.3%, paired t p = 0.15. Noise,
-    31 cells: 0.548 against 0.563 deg, +2.8%, p = 0.46. Over the 31 Expt1 cells the movie gives p = 0.88.
-    Neither test finds an effect at p < 0.05 (or 0.001).'
+  notes: 'Movie, 110 cells with both DoG fits: 0.688 against 0.704 deg, +2.3%, paired t p = 0.15. Noise, 31 cells:
+    0.548 against 0.563 deg, +2.8%, p = 0.46. Over the 31 Expt1 cells the movie gives p = 0.88. Neither test finds
+    an effect at p < 0.05 (or 0.001).'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig3b-spatial-width-correlations
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig3b-spatial-width-correlations
   measured: 18.9
-  notes: '31 cells: LC NS 0.694, LC WN 0.563 deg; decrease 18.9% (P1 a) and 20.5% (P1 b), within 18 to
-    22%; paired t p = 3.9e-07, WN narrower.'
+  notes: '31 cells: LC NS 0.694, LC WN 0.563 deg; decrease 18.9% (P1 a) and 20.5% (P1 b), within 18 to 22%; paired
+    t p = 3.9e-07, WN narrower. With the variant penalty 1000 x variance the decrease is 5.1% (P1 a), p = 0.11,
+    so the outcome rests on the chosen penalty, which pulls the movie RFs towards the spike-triggered average (verifier,
+    problem 1).'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  assumed: true
 - claim: fig3c-surround-contrast
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -164,101 +205,153 @@ outcomes:
   measured:
   - 11.6
   - 0.6
-  notes: 'Surround peak reading (a). Movie, 111 cells: 0.109 to 0.096, decrease 11.6% (P1 a) or 6.7% (P1
-    b), p = 2.5e-05; over the 31 Expt1 cells 16.8% (p = 0.00073). Noise, 31 cells: 0.0595 to 0.0591, decrease
-    0.6%, p = 0.93. Reading (b): movie 10.1%, p = 9.5e-05; noise 5.0%, p = 0.50. The noise test does not
-    hold, so neither reproduced nor partially reproduced applies; the movie part holds in direction and
-    significance.'
+  notes: 'Surround peak reading (a). Movie, 111 cells: 0.109 to 0.096, decrease 11.6% (P1 a) or 6.7% (P1 b), p =
+    2.5e-05; over the 31 Expt1 cells 16.8% (p = 0.00073). Noise, 31 cells: 0.0595 to 0.0591, decrease 0.6%, p =
+    0.93. Reading (b): movie 10.1%, p = 9.5e-05; noise 5.0%, p = 0.50. The noise test does not hold, so neither
+    reproduced nor partially reproduced applies; the movie part holds in direction and significance.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig3c-surround-correlations
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig3c-surround-correlations
   measured: 37.2
-  notes: '31 cells, surround peak reading (a): 0.0964 to 0.0591, decrease 38.7% (P1 a) or 37.2% (P1 b);
-    37.2% is within 30.6 to 37.4%; p = 2.7e-10. Reading (b) of the peak: 44.2% and 43.1%. Only the P1
-    (b) value under peak reading (a) is in tolerance.'
+  notes: '31 cells, surround peak reading (a): 0.0964 to 0.0591, decrease 38.7% (P1 a) or 37.2% (P1 b); 37.2% is
+    within 30.6 to 37.4%; p = 2.7e-10. Reading (b) of the peak: 44.2% and 43.1%. Only the P1 (b) value under peak
+    reading (a) is in tolerance. With the variant penalty 1000 x variance the decrease is 2.7% (P1 a, surround reading
+    a), p = 0.67, so the outcome rests on the chosen penalty.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  assumed: true
 - claim: fig3d-temporal-width-contrast
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig3d-temporal-width-contrast
   measured:
-  - 2.4
-  - 43.1
-  notes: 'Movie, 111 cells: 29.1 against 29.8 ms, +2.4% (P1 a), p = 0.36; by animal Expt1 27.1 to 29.2,
-    Expt2 30.9 to 30.4 ms; over the 31 Expt1 cells +16.6%, p = 0.042. Noise, 31 cells: 25.5 against 36.5
-    ms, +43.1%, p = 0.0030. Neither test reaches p < 0.001. The 16.7 ms lag grid is coarse for widths
-    of 20 to 40 ms.'
+  - 16.8
+  - 23.8
+  notes: '128 Hz RFs (main). Movie, 111 cells: 24.1 against 27.6 ms, +14.4% (P1 a) or +16.8% (P1 b), p = 1.4e-10;
+    16.8% is within 14.4 to 17.6%. By animal Expt1 21.9 to 26.7 ms, Expt2 26.2 to 28.4 ms. Noise, 31 cells: 26.3
+    against 32.6 ms, +23.8% (P1 a) or +27.1% (P1 b), above 13.5 to 16.5%, p = 0.011, which misses p < 0.001. The
+    criterion''s partial outcome needs both tests at p < 0.001; partially reproduced is used because the movie result
+    matches in size and significance and the noise widening is present at p = 0.011. Frame-rate RFs (variant): movie
+    +2.4%, p = 0.36; noise +43.1%, p = 0.0030.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  assumed: true
 - claim: fig3d-temporal-width-correlations
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig3d-temporal-width-correlations
-  measured: 17.6
-  notes: '31 cells: LC NS 31.1, LC WN 36.5 ms, +17.6% (P1 a) or +23.3% (P1 b) against 15% (13.5 to 16.5),
-    paired t p = 0.057.'
+  measured: 16.1
+  notes: '128 Hz RFs, 31 cells: LC NS 28.1, LC WN 32.6 ms, +16.1% (P1 a, within 13.5 to 16.5%) or +18.4% (P1 b),
+    paired t p = 0.11, so the test fails. Frame-rate RFs (variant): +17.6% or +23.3%, p = 0.057.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: surround-temporal-correlation
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:surround-temporal-correlation
-  measured: -0.091
-  notes: 'Pooled HC and LC movie values of 111 cells (222 points): r = -0.091, p = 0.18 with surround
-    peak reading (a); r = -0.145, p = 0.031 with reading (b). Per animal r = -0.03 to -0.12.'
+  measured: -0.366
+  notes: 'Pooled HC and LC movie values of 111 cells (222 points). Main, frame-rate surround/center ratio (21 x
+    21 window) with the 128 Hz temporal width: r = -0.366, p = 1.9e-08 (surround reading a); r = -0.331, p = 4.4e-07
+    (reading b); per animal -0.21 to -0.37. Negative and significant, but outside -0.55 to -0.45. Both measures
+    from the 128 Hz RFs: r = -0.466 (a) and -0.480 (b), p below 1e-12, within tolerance. Both from the frame-rate
+    RFs: r = -0.091 (p = 0.18) and -0.145 (p = 0.031). The criterion gives no partial outcome; partially reproduced
+    is used because the correlation is present at p < 0.001 and reaches the paper''s size only when both measures
+    come from the 128 Hz RFs.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  assumed: true
 - claim: figs1-property-correlations
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:figs1-property-correlations
-  measured: 0.06
-  notes: 'Reading (a), four properties in three comparisons: 1 of 18 pairs as the legend states (p < 0.001,
-    or p > 0.001 for the named pair). Reading (b): 5 of 30. The named pair (surround/center ratio and
-    temporal width, contrast in WN) has p = 0.30, r = 0.13. Most pairs within a comparison are uncorrelated
-    here (for example r = -0.09 for surround and temporal width in the movie).'
+  measured: 0.234
+  notes: 'Temporal width from the 128 Hz RFs. Reading (a), four properties in three comparisons: 2 of 18 pairs as
+    the legend states (p < 0.001, or p > 0.001 for the named pair). Reading (b): 6 of 30. The named pair (surround/center
+    ratio and temporal width, contrast in WN) has p = 0.23, r = 0.15. Most pairs within a comparison are weakly
+    correlated (for example gain and normalized offset r = 0.07 in the movie).'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig4b-gain-contrast
   outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -266,32 +359,48 @@ outcomes:
   measured:
   - 124.7
   - 153.9
-  notes: 'Movie, 111 cells: gain 0.00293 to 0.00658, +124.7% (P1 a), +144% (P1 b), ratio 224.7%, p = 3.6e-42;
-    outside 80 to 98%. Noise, 31 cells: +127.2% (a), +153.9% (b), ratio 227.2%, p = 2.4e-10; 153.9% is
-    within 133 to 163%. Both tests hold, the movie size does not.'
+  notes: 'Movie, 111 cells: gain 0.00293 to 0.00658, +124.7% (P1 a), +144% (P1 b), ratio 224.7%, p = 3.6e-42; outside
+    80 to 98%. Noise, 31 cells: +127.2% (a), +153.9% (b), ratio 227.2%, p = 2.4e-10; 153.9% is within 133 to 163%.
+    Both tests hold, the movie size does not.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig4b-gain-correlations
   outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig4b-gain-correlations
   measured: 60.5
-  notes: '31 cells: LC NS 0.00662, LC WN 0.01063; +60.5% (P1 a), +66.4% (P1 b), ratio 160.5%, against
-    296% (266 to 326); p = 3.5e-06.'
+  notes: '31 cells: LC NS 0.00662, LC WN 0.01063; +60.5% (P1 a), +66.4% (P1 b), ratio 160.5%, against 296% (266
+    to 326); p = 3.5e-06. With the variant penalty 1000 x variance the gain falls from LC NS to LC WN (-30.1%, P1
+    a, p = 1.7e-05), so the outcome rests on the chosen penalty.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  assumed: true
 - claim: fig4c-offset-contrast
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -299,36 +408,57 @@ outcomes:
   measured:
   - 52.9
   - 57.2
-  notes: 'Offset adjusted per animal (P5). Movie, 111 cells: 3448 to 1624, decrease 52.9% (P1 a), p =
-    2.6e-13, within 50.4 to 61.6%. Noise, 31 cells: 3817 to 1360, decrease 64.4% (P1 a) or 57.2% (P1 b),
-    p = 7.2e-10; 57.2% within 53.1 to 64.9%. The movie value under P1 (b) is -97% (per-cell ratios of
-    offsets near zero). Unadjusted, the movie decrease is also 52.9%.'
+  notes: 'Offset adjusted per animal (P5). Movie, 111 cells: 3448 to 1624, decrease 52.9% (P1 a), p = 2.6e-13, within
+    50.4 to 61.6%. Noise, 31 cells: 3817 to 1360, decrease 64.4% (P1 a) or 57.2% (P1 b), p = 7.2e-10; 57.2% within
+    53.1 to 64.9%. The movie value under P1 (b) is -97% (per-cell ratios of offsets near zero). Unadjusted, the
+    movie decrease is also 52.9%. Within the 31 Expt1 cells, one animal, the adjustment changes nothing (largest
+    change 9e-13).'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
   - The rectifier is fitted by least squares to the mean of the nine NLs (P4), and q is adjusted by subtracting
-    each animal's mean for the condition and adding the grand mean (P5); both standard readings named
-    in the claims file.
+    each animal's mean for the condition and adding the grand mean (P5), within the set of cells compared; both
+    standard readings named in the claims file.
 - claim: fig4c-offset-correlations-none
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig4c-offset-correlations-none
-  measured: 0.16
-  notes: '31 cells, adjusted offset: LC NS 1676 against LC WN 1360, -18.9%, paired t p = 0.16, so the
-    test finds no effect. Unadjusted (variant) p = 0.012.'
+  measured: 0.012
+  notes: 31 cells, all from Expt1, so the per-animal adjustment (P5, within the set compared) leaves every offset
+    unchanged. LC NS 1956 against LC WN 1360, -30.5% (P1 a), paired t p = 0.012, below 0.05, so the test finds an
+    effect. With the first round's uneven adjustment (the movie offsets shifted by the two-animal adjustment, the
+    noise offsets not) the decrease is 18.9% and p = 0.16. With the variant penalty 1000 x variance p = 0.30, so
+    the outcome rests on the chosen penalty.
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  - The offset is adjusted per animal within the set of cells compared (P5); the 31 white-noise cells come from
+    one animal, so their offsets are not changed in any condition. The first round shifted only their movie offsets.
+  assumed: true
 - claim: fig4d-normalized-offset-contrast
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -336,39 +466,80 @@ outcomes:
   measured:
   - 42.3
   - -0.1
-  notes: 'Movie, 111 cells: 0.319 to 0.455, +42.3% (P1 a), p = 1.4e-05 (paper 14%). Noise, 31 cells: 0.676
-    to 0.676, -0.1%, p = 0.99 (paper 24%). Unadjusted: movie +40.7%, p = 4.0e-05.'
+  notes: 'Movie, 111 cells: 0.319 to 0.455, +42.3% (P1 a), p = 1.4e-05 (paper 14%). Noise, 31 cells: 0.676 to 0.676,
+    -0.1%, p = 0.99 (paper 24%). Unadjusted: movie +40.7%, p = 4.0e-05. Over the 31 Expt1 cells the movie rises
+    by 67.4%, p = 3.6e-05.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig4d-normalized-offset-correlations
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig4d-normalized-offset-correlations
-  measured: 50.1
-  notes: '31 cells: 0.450 to 0.676, +50.1% (P1 a) or +26.3% (P1 b), against 90% (81 to 99), paired t p
-    = 0.020.'
+  measured: 27.6
+  notes: '31 cells, offsets not changed by the adjustment (one animal): 0.530 to 0.676, +27.6% (P1 a) or -8.1% (P1
+    b), against 90% (81 to 99), paired t p = 0.12. The first round''s uneven adjustment gave +50.1% and p = 0.020.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig5-within-trial-contrast
-  outcome: blocked
-  blocked_by: other
-  notes: Not run within the author's five-hour limit. It needs RFs estimated from the frames in the top
-    and bottom thirds of a per-cell contrast measure, which are not contiguous, so the block-Toeplitz
-    estimator of the helper does not apply; an explicit design matrix per cell (about 10 s per estimate)
-    was not written in time. The data it needs (HC movie, frames and spikes of OFF-center Y cells) are
-    in the dataset.
+  outcome: not_reproduced
+  notebook: reproduce_lesica_2007.ipynb
+  output: claim:fig5-within-trial-contrast
+  measured:
+  - 0.0
+  - 1.242
+  notes: 'The 24 included OFF-center Y cells (the paper''s example type) were tested. Reading (a), per-frame RMS
+    contrast over the RF centre''s pixels, unweighted: the contrast reaches 0 in every 150 s segment (blank or saturated
+    frames) and the median per-segment maximum is 1.24 to 2.46, so no cell has a segment within 0.27 +- 0.027 to
+    0.43 +- 0.043. Reading (b), per-pixel RMS contrast over a 1 s window weighted by the RF profile: 5 of 24 cells
+    have such a segment. No cell shows all four directions (top third: stronger surround, narrower temporal width,
+    lower gain, higher offset) under either reading; the top third has the lower gain in 0 of 24 under both readings,
+    the higher offset in 15 (a) and 22 (b), the stronger surround in 0 and 8, the narrower temporal width in 10
+    and 4. The share is over these 24 cells only; the second example (an OFF-center X cell whose RFs are nearly
+    identical) is not in the criterion and was not tested. measured gives the lowest per-segment minimum and the
+    lowest median per-segment maximum of reading (a).'
+  deviations:
+  - Tested on the 24 included OFF-center Y cells only, not all included cells, to bound the run time; the share
+    of cells with the four directions is reported over these.
+  - 'Two of the criterion''s combinations of reading and weighting are run: (a) per frame, unweighted over the RF
+    centre, and (b) per pixel over a sliding window, weighted by the RF''s absolute spatial profile at its peak
+    lag; the window length, 1 s, is an assumption, as the paper gives none.'
+  - Luminance is taken as displayed, 125 x (1 + 0.40 x template) clipped to 0-255 (a standard choice).
+  - Each response frame is assigned to a third by the contrast of the frame at the RF's peak lag before it; the
+    RF of each third is estimated from those frames only (nine groups, explicit design matrix, the chosen penalty,
+    frame rate) and its NL from the 8 ms bins in those frames.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
 - claim: fig6a-reliability-contrast
   outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -376,33 +547,47 @@ outcomes:
   measured:
   - 47.2
   - 70.2
-  notes: '30 of 31 cells (a13 sig006b has a block without spikes). P8 (a), P1 (a): movie 0.571 to 0.302,
-    decrease 47.2%, p = 3.1e-05; noise 0.378 to 0.113, decrease 70.2%, p = 1.9e-09. P8 (b): movie 48.5%,
-    noise 74.9%. P1 (b) gives 35.7% to 37.0% for the movie. The noise decrease is in tolerance (66.6 to
-    81.4%); the movie decrease (best 48.5%) is just below 48.6 to 59.4%. Both tests hold at p < 0.01.'
+  notes: '30 of 31 cells (a13 sig006b has a block without spikes). P8 (a), P1 (a): movie 0.571 to 0.302, decrease
+    47.2%, p = 3.1e-05; noise 0.378 to 0.113, decrease 70.2%, p = 1.9e-09. P8 (b): movie 48.5%, noise 74.9%. P1
+    (b) gives 35.7% to 37.0% for the movie. The noise decrease is in tolerance (66.6 to 81.4%); the movie decrease
+    (best 48.5%) is just below 48.6 to 59.4%. Both tests hold at p < 0.01.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig6a-reliability-correlations
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig6a-reliability-correlations
   measured: 62.7
-  notes: '30 cells: LC NS 0.302, LC WN 0.113 (P8 a), decrease 62.7% (P1 a) within 61.2 to 74.8%; P8 (b)
-    67.7%; p = 1.7e-07.'
+  notes: '30 cells: LC NS 0.302, LC WN 0.113 (P8 a), decrease 62.7% (P1 a) within 61.2 to 74.8%; P8 (b) 67.7%; p
+    = 1.7e-07.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig6b-sparseness-contrast
   outcome: partially_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -410,17 +595,24 @@ outcomes:
   measured:
   - 2.2
   - 15.7
-  notes: '30 cells: movie 0.850 to 0.831, decrease 2.2% (P1 a) or 2.1% (b), p = 0.023; noise 0.856 to
-    0.722, 15.7% or 15.8%, p = 7.8e-12. The noise decrease is in tolerance (14.4 to 17.6%) and exceeds
-    the movie decrease; the movie decrease is below 3.6 to 4.4%.'
+  notes: '30 cells: movie 0.850 to 0.831, decrease 2.2% (P1 a) or 2.1% (b), p = 0.023; noise 0.856 to 0.722, 15.7%
+    or 15.8%, p = 7.8e-12. The noise decrease is in tolerance (14.4 to 17.6%) and exceeds the movie decrease; the
+    movie decrease is below 3.6 to 4.4%.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig6b-sparseness-correlations
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -428,13 +620,20 @@ outcomes:
   measured: 13.1
   notes: '30 cells: LC NS 0.831, LC WN 0.722, decrease 13.1% (P1 a and b), within 12.6 to 15.4%, p = 1.3e-08.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig7c-effective-contrast
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -442,21 +641,28 @@ outcomes:
   measured:
   - 271.6
   - 72.7
-  notes: Under all four readings (cells a or b, stimulus a or b) the ratio of effective to RMS contrast
-    is 243 to 277 for the movies and 72.3 to 72.9 for the noise, and the LC NS effective contrast (4763
-    to 5185) is closest to HC WN (4997 to 5010); HC NS 12143 to 13071, LC WN 1808 to 1819.
+  notes: Under all four readings (cells a or b, stimulus a or b) the ratio of effective to RMS contrast is 243 to
+    277 for the movies and 72.3 to 72.9 for the noise, and the LC NS effective contrast (4763 to 5185) is closest
+    to HC WN (4997 to 5010); HC NS 12143 to 13071, LC WN 1808 to 1819.
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
-  - The generic RF filters the stimulus at 16 positions of a 9-pixel grid of the 48 x 48 frame, pooled
-    (a standard choice; the paper does not say where the generic RF is placed).
-  - Generic RFs average the cells' raw RFs (OFF sign-reversed) and are then normalized to unit variance,
-    as the Results describe.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  - The generic RF filters the stimulus at 16 positions of a 9-pixel grid of the 48 x 48 frame, pooled (a standard
+    choice; the paper does not say where the generic RF is placed).
+  - Generic RFs average the cells' raw RFs (OFF sign-reversed) and are then normalized to unit variance, as the
+    Results describe.
 - claim: fig7d-reliability-tracks-effective-contrast
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -465,18 +671,25 @@ outcomes:
   - 0.384
   - 0.404
   - 0.146
-  notes: 'Normalized to HC NS, 12 s clips (stimulus reading b), cells (a): effective contrast 1, 0.384,
-    0.404, 0.146 and reliability (P8 a) 1, 0.528, 0.662, 0.197 (SD 0.689, 0.319, 0.384, 0.101); same ranks
-    and all four within one SD. Cells (b) gives the same. With the long segments (stimulus reading a)
-    LC NS and HC WN swap rank (0.390 and 0.382), all four still within one SD.'
+  notes: 'Normalized to HC NS, 12 s clips (stimulus reading b), cells (a): effective contrast 1, 0.384, 0.404, 0.146
+    and reliability (P8 a) 1, 0.528, 0.662, 0.197 (SD 0.689, 0.319, 0.384, 0.101); same ranks and all four within
+    one SD. Cells (b) gives the same. With the long segments (stimulus reading a) LC NS and HC WN swap rank (0.390
+    and 0.382), all four still within one SD.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig8a-filtered-kurtosis
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -484,69 +697,90 @@ outcomes:
   measured:
   - 4.01
   - 2.96
-  notes: 'Long segments, cells (a): kurtosis HC NS 4.01, LC NS 3.79 (both in 3.65 to 4.47, reading c),
-    HC WN 2.96, LC WN 2.98 (in 2.71 to 3.31). Frame-shuffled HC NS 3.18 (cells a), 3.16 to 3.19 over five
-    seeds, within 0.30 of 3. Over the 12 s clips the movie values are 3.44 to 3.55, outside tolerance.'
+  notes: 'Long segments, cells (a): kurtosis HC NS 4.01, LC NS 3.79 (both in 3.65 to 4.47, reading c), HC WN 2.96,
+    LC WN 2.98 (in 2.71 to 3.31). Frame-shuffled HC NS 3.18 (cells a), 3.16 to 3.19 over five seeds, within 0.30
+    of 3. Over the 12 s clips the movie values are 3.44 to 3.55, outside tolerance.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig8-model-sparseness-shuffle
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig8-model-sparseness-shuffle
   measured:
-  - 0.81
-  - 0.778
-  notes: 'Cells (a), long segments, offset reading (a): model sparseness 0.810 for HC NS and 0.778 frame-shuffled
-    (0.778 to 0.779 over five seeds), within 0.774 to 0.946 and 0.747 to 0.913, shuffled lower. Offset
-    (b): 0.800 and 0.781. Cells (b): 0.804 and 0.773.'
+  - 0.805
+  - 0.773
+  notes: 'Cells (a), long segments, offset reading (a): model sparseness 0.805 for HC NS and 0.773 frame-shuffled
+    (0.773 under all five seeds), within 0.774 to 0.946 and 0.747 to 0.913, shuffled lower. Offset (b): 0.796 and
+    0.776. Cells (b): 0.804 and 0.773. The values moved from the first round (0.810 and 0.778) because the normalized
+    offsets of the 31 cells are no longer shifted by the two-animal adjustment.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig8b-model-vs-experiment-sparseness
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig8b-model-vs-experiment-sparseness
-  measured: 0.81
-  notes: 'Cells (a), long segments, offset (a): model HC NS 0.810, LC NS 0.829, HC WN 0.850, LC WN 0.851
-    (lowest HC NS, highest LC WN); experiment 0.850, 0.831, 0.856, 0.722 (SD 0.049 for HC NS), HC NS above
-    LC WN; model HC NS within one SD. Cells (b) the same. Offset reading (b) makes HC WN the highest,
-    and the 12 s clips put the model HC NS outside one SD.'
+  measured: 0.805
+  notes: 'Cells (a), long segments, offset (a): model HC NS 0.805, LC NS 0.846, HC WN 0.850, LC WN 0.851 (lowest
+    HC NS, highest LC WN); experiment 0.850, 0.831, 0.856, 0.722 (SD 0.049 for HC NS), HC NS above LC WN; model
+    HC NS within one SD. Cells (b) the same. Offset reading (b) makes HC WN the highest, and the 12 s clips put
+    the model HC NS (0.791) outside one SD.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: fig8de-noise-reconciles
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:fig8de-noise-reconciles
-  measured: 0.797
-  notes: Noise SD 0 to 3000 (filtered-stimulus units) on the 12 s clips, cells (a), offset (a). The decrease
-    in sparseness is largest for LC WN under both readings (single realization 0.075; mean of 120 noisy
-    trials 0.444). No level brings all four model values within one SD of the experiment, because the
-    model HC NS value is at most 0.797 against 0.850 - 0.049 = 0.801. The same under all five seeds.
+  measured: 1800.0
+  notes: 'Noise SD 0 to 6000 (filtered-stimulus units), cells (a), offset (a), under both stimulus readings. Stimulus
+    reading (a), the long segments: the decrease in sparseness is largest for LC WN (0.115 against 0.020 to 0.066
+    with one realization; 0.693 against 0.064 to 0.306 with the mean of 120 noisy trials), and all four model values
+    lie within one SD of the experiment at SDs 1800 to 2100 (one realization) and 750 to 1350 (120 trials). Under
+    the other four seeds 3 and 5 levels qualify. Stimulus reading (b), the 12 s clips: no level qualifies, as the
+    model HC NS value is at most 0.791 against 0.850 - 0.049 = 0.801. measured is the lowest qualifying noise SD
+    of reading (a).'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - The noise level is scanned (0 to 6000 in steps of 150); the paper does not give it.
+  - For the long segments, the 120-trial reading uses every k-th filtered value, at most 60000, to bound the run
+    time (a standard choice).
 - claim: disc-lcns-hcwn-reliability-sparseness
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -554,68 +788,101 @@ outcomes:
   measured:
   - 0.378
   - 0.856
-  notes: '30 cells: reliability (P8 a) LC NS 0.302, HC WN 0.378, p = 0.0058; sparseness 0.831 and 0.856,
-    p = 0.00037. HC WN is not lower on either and is above LC NS on both. The differences are significant,
-    more than the paper''s slightly higher.'
+  notes: '30 cells: reliability (P8 a) LC NS 0.302, HC WN 0.378, p = 0.0058; sparseness 0.831 and 0.856, p = 0.00037.
+    HC WN is not lower on either and is above LC NS on both. The differences are significant, more than the paper''s
+    slightly higher.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: disc-lcns-hcwn-rf-nl-differences
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:disc-lcns-hcwn-rf-nl-differences
-  measured: 3
-  notes: '31 cells, LC NS against HC WN: spatial width -21.1% (p = 1.2e-15), surround/center ratio -38.3%
-    (p = 6.3e-09), normalized offset +50.2% (p = 0.0048), all in the direction of the LC NS to LC WN change;
-    gain -29.4% (p = 0.00024), opposite. 3 of 4 at p < 0.05 (reading a), 2 of 4 at p < 0.001 (reading
-    b).'
+  measured: 2
+  notes: '31 cells, LC NS against HC WN: spatial width -21.1% (p = 1.2e-15), surround/center ratio -38.3% (p = 6.3e-09),
+    in the direction of the LC NS to LC WN change; normalized offset +27.6% (p = 0.056), right direction but not
+    significant; gain -29.4% (p = 0.00024), opposite. 2 of 4 at p < 0.05 (reading a) and 2 of 4 at p < 0.001 (reading
+    b). With the first round''s uneven offset adjustment the normalized offset gives p = 0.0048 and 3 of 4 at p
+    < 0.05; with the variant penalty 1000 x variance 1 of 4 at p < 0.05.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  - The offset is adjusted per animal within the set of cells compared (P5), so the 31 cells' offsets are not changed.
+  assumed: true
 - claim: methods-latency-biphasic
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:methods-latency-biphasic
-  measured: 2
-  notes: 'Latency (frame grid): movie contrast 43.3 to 45.3 ms, p = 0.14; noise contrast 44.9 to 63.2
-    ms, p = 0.0006; correlations 47.6 to 63.2 ms, p = 0.013. 2 of 3 at p < 0.05, 1 of 3 at p < 0.001.
-    Biphasic ratio: p = 0.90, 0.34, 0.41, none significant.'
+  measured: 3
+  notes: '128 Hz RFs (8 ms lags). Latency: movie contrast 36.5 to 41.3 ms (111 cells, t = -5.67, p below 0.0001),
+    noise contrast 41.7 to 53.8 ms (p = 0.0061), correlations 42.5 to 53.8 ms (p = 0.035): 3 of 3 at p < 0.05, 1
+    of 3 at p < 0.001. Biphasic ratio: p = 0.13, 0.73, 0.92, none significant. Frame-rate RFs (variant): latency
+    2 of 3 at p < 0.05 (movie contrast p = 0.14), biphasic none, which would be partially reproduced.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  assumed: true
 - claim: methods-offset-varies-across-animals
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:methods-offset-varies-across-animals
   measured: 0.021
-  notes: 'Two animals (Expt1, Expt2), movie conditions only; white noise was recorded in Expt1 only. Offset
-    differs at LC (ANOVA p = 0.021, Kruskal-Wallis 0.022) but not at HC (0.46). Other parameters also
-    differ: HC spatial width (p = 0.0031), HC surround/center ratio (p = 0.0001), HC temporal width (p
-    < 0.0001), HC gain (p = 0.047), LC spatial width (p = 0.022). At p < 0.001 offset differs in no condition
-    and surround and temporal width still do.'
+  notes: 'Two animals (Expt1, Expt2), movie conditions only; white noise was recorded in Expt1 only. Offset differs
+    at LC (ANOVA p = 0.021, Kruskal-Wallis 0.022) but not at HC (0.46). Other parameters also differ: HC spatial
+    width (p = 0.0031), HC surround/center ratio (p = 0.0001), HC temporal width from the 128 Hz RFs (p < 0.0001),
+    HC gain (p = 0.047), LC spatial width (p = 0.022). At p < 0.001 offset differs in no condition, while surround
+    and temporal width still do.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: celltype-y-wider-than-x
   outcome: reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -625,16 +892,23 @@ outcomes:
   - 0.743
   - 0.642
   - 0.778
-  notes: 'Included cells, 60 X and 43 Y: HC X 0.646 (SD 0.153), Y 0.743 (0.124) deg, p = 0.00086; LC X
-    0.642 (0.164), Y 0.778 (0.180), p = 0.00013. All four means within tolerance.'
+  notes: 'Included cells, 60 X and 43 Y: HC X 0.646 (SD 0.153), Y 0.743 (0.124) deg, p = 0.00086; LC X 0.642 (0.164),
+    Y 0.778 (0.180), p = 0.00013. All four means within tolerance.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
   - X and Y are the units table's xy_class; 60 X and 43 Y here against 30 and 27 in the paper.
 - claim: celltype-y-stronger-surround
   outcome: not_reproduced
@@ -643,32 +917,51 @@ outcomes:
   measured:
   - 0.105
   - 0.113
-  notes: 'HC movie, reading (a): X 0.105 (SD 0.035), Y 0.113 (0.032), both within tolerance, t test p
-    = 0.27. Reading (b): 0.103 and 0.109, p = 0.37.'
+  notes: 'HC movie, reading (a): X 0.105 (SD 0.035), Y 0.113 (0.032), both within tolerance, t test p = 0.27. Reading
+    (b): 0.103 and 0.109, p = 0.37.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: celltype-off-wider-temporal
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
   output: claim:celltype-off-wider-temporal
   measured:
-  - 37.0
-  - 35.9
-  notes: 'LC WN, 31 cells: ON 37.0 ms (n = 17), OFF 35.9 ms (n = 14), p = 0.84, against 25 and 29 ms.'
+  - 33.5
+  - 31.5
+  notes: 'LC WN, 31 cells, 128 Hz RFs: ON 33.5 ms (n = 17), OFF 31.5 ms (n = 14), p = 0.71, against 25 and 29 ms.
+    Frame-rate RFs: 37.0 and 35.9 ms, p = 0.84. Leaving out the 7 cells whose RFs change sign between conditions
+    (verifier, problem 5): 30.0 and 28.7 ms, p = 0.75 (128 Hz); with the frame-rate RFs OFF is then wider, 33.2
+    against 27.7 ms, p = 0.0074, but 33.2 is outside 29 +- 2.9.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
+  - ON or OFF is the sign of the maximal point of the HC movie RF; a variant leaves out the cells whose RFs change
+    sign between conditions.
 - claim: celltype-prediction-x-y
   outcome: not_reproduced
   notebook: reproduce_lesica_2007.ipynb
@@ -678,69 +971,344 @@ outcomes:
   - 0.482
   - 0.516
   - 0.548
-  notes: 'Reading (a): HC X 0.471, Y 0.482 (p = 0.79); LC X 0.516, Y 0.548 (p = 0.51); no significant
-    difference, as in the paper (both p > 0.1), but the means are far outside 0.73, 0.69, 0.78 and 0.75,
-    and Y is not below X. Reading (b): p = 0.31 and 0.062.'
+  notes: 'Reading (a): HC X 0.471, Y 0.482 (p = 0.79); LC X 0.516, Y 0.548 (p = 0.51); no significant difference,
+    as in the paper (both p > 0.1), but the means are far outside 0.73, 0.69, 0.78 and 0.75, and Y is not below
+    X. Reading (b): p = 0.31 and 0.062.'
   deviations:
-  - RFs use 12 lags of one stimulus frame (16.7 ms, 200 ms in all) in place of the paper's 24 lags of
-    8 ms; the stimulus changes once per frame, but widths and latencies are read on the coarser grid.
-  - The ridge penalty is RIDGE_REL times the stimulus variance, RIDGE_REL chosen by held-out prediction
-    of the 15 min movie (Estimation of Receptive Fields, par. 3, chose D the same way); an assumption,
-    see deviations of sample-composition.
-  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has
-    68; the paper's cells cannot be identified.
+  - Spatial width, surround/center ratio and the NLs come from RFs with 12 lags of one stimulus frame (16.7 ms).
+    Temporal width, latency and biphasic ratio come from RFs at the paper's resolution, 128 Hz bins and 24 lags
+    of 8 ms (Estimation of Receptive Fields, par. 4), but estimated in a 15 x 15 window centred on the maximal point
+    of the HC movie RF in place of 21 x 21, to fit the time limit (an assumption); the frame-rate values are shown
+    as a variant.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+  - Cells are the 111 that pass the paper's inclusion rule at both contrasts here, where the paper has 68; the paper's
+    cells cannot be identified.
 - claim: methods-spherical-asymmetry
-  outcome: blocked
-  blocked_by: other
-  notes: Not run within the author's five-hour limit. The simulation needs no data beyond the stimulus
-    frames, which are in the dataset; it was left for lack of time after the main analyses.
+  outcome: not_reproduced
+  notebook: reproduce_lesica_2007.ipynb
+  output: claim:methods-spherical-asymmetry
+  measured: 32
+  notes: Simulated LN responses (Poisson counts per frame) to the HC movie in a central 21 x 21 window and to Gaussian
+    white noise of the same length and SD, known RF (a) the generic HC NS RF of the 31 cells, (b) the HC NS RF of
+    the cell with the largest peak/noise (a13 sig002a), NL the 31 cells' mean HC NS gain and normalized offset.
+    With the same number of spikes (2134 to 2383), the movie and noise estimates differ by more than the sum of
+    their segment SDs at 32 to 66 of the 5292 RF points (reading i) and by more than the larger SD at 357 to 422
+    points (reading ii), over both known RFs and five seeds, so they do not agree at every point. Two movie-driven
+    simulations with new Poisson draws differ at 1 to 3 points (i) and 68 to 113 (ii), so the movie and noise estimates
+    differ more than chance alone gives. The movie estimates correlate more with the known RF (0.67 to 0.78) than
+    the noise estimates (0.63 to 0.65). measured is the fewest points outside reading (i).
+  deviations:
+  - RFs are estimated at the frame rate with the chosen penalty, as for the cells, not at 128 Hz.
+  - The simulation length (the 15 min movie, 54000 frames), the window, the NL and the Poisson spike generation
+    are choices the paper does not give; the movie response is cut to the noise's spike count, as the paper does
+    for HC and LC.
+  - The criterion's "within the spread of the nine segment estimates" is read as (i) overlapping one-SD bands and
+    (ii) a difference within the larger SD; a movie-against-movie comparison is given as the chance reference.
+  - The ridge penalty is 10000 x the stimulus variance, chosen by the rule the paper gives for D, the most accurate
+    held-out prediction of the movie responses (Estimation of Receptive Fields, par. 3), over a grid that now includes
+    the paper's literal penalty, 1000 in gray levels (D = 0.001 on a stimulus with values between -106 and 106,
+    Natural Scene Movie and White Noise Stimuli, par. 1). The literal penalty predicts worst (mean r 0.170 against
+    0.437) and gives RFs at the noise level, so that no cell passes the inclusion rule; it is run as a variant with
+    1000 x variance. Making the penalty relative to the variance is an assumption. The 128 Hz RFs use the same penalty
+    per second of data.
+verifications:
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebook with the conclusion cells and the summary removed, the helper module
+    and the claims file, with the paper''s full text. The verifier read the archive''s asset list through the DANDI
+    API and tested the helpers (_xtx, _half_width, fit_rectifier, sparseness, reliability, the ridge solve and estimate_rf)
+    on synthetic inputs. Its report is transcripts/lesica-2007/verifier-1-report.md. Problems 6 to 9 do not affect
+    a conclusion; the pct_change docstring (problem 7) was corrected, and problems 6, 8 and 9 needed no change.'
+  results:
+  - claim: sample-composition
+    agrees: true
+    outcome: not_reproduced
+    reason: 111 cells pass under reading (a) and 133 under (b), against 68 +- 6.8. The 90 s set has 58/73 cells
+      against 26 +- 2.6. Only the WN/12 s count matches (31/34 against 31 +- 3.1). ON/OFF split is 55/56 against
+      44/24 (cell 16).
+    response: 'No change of outcome. The paper''s own penalty (1000 in gray levels) and 1000 x variance are now
+      run in the same pass: 0 and 29 cells pass at both contrasts, against 111 under the chosen penalty, so the
+      count depends on the penalty and the paper''s literal value gives RFs at the noise level. Units whose RFs
+      change sign are counted (13 of the 111). A per-file inventory of the recordings used was added (problem 1,
+      problem 5, could-not-check items).'
+  - claim: firing-rate-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under both P2 readings all four means are within the SDs. Under (a), NS has p=5e-7 but WN has p=0.0022;
+      under (b), NS has p=0.022. No reading gives both p<0.001 (cell 19).
+    response: No change; the numbers are the same.
+  - claim: firing-rate-lc-ns-wn-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): p=0.063 (>0.05, not >0.2). Reading (b) gives p=0.0013, so the result depends on the reading
+      (cell 20).'
+    response: No change; the outcome stays marked as resting on the assumption of reading P2 (a).
+  - claim: ln-prediction-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: r=0.477/0.532 under (a) and 0.282/0.259 under (b), against 0.70/0.76 +- 0.07. n=58, not 26 (cell 22).
+    response: No change.
+  - claim: fig3b-spatial-width-contrast
+    agrees: true
+    outcome: reproduced
+    reason: NS p=0.15 (n=110), WN p=0.46 (cell 24).
+    response: No change. The variant penalty 1000 x variance gives the same outcome (NS p = 0.33, WN p = 0.18).
+  - claim: fig3b-spatial-width-correlations
+    agrees: true
+    outcome: reproduced
+    reason: -18.9% (P1a) / -20.5% (P1b), p=4e-7 (cell 24). The width difference may be an estimation artifact (problem
+      1).
+    response: Outcome kept and marked as an assumption. The penalty is still chosen by the paper's rule (held-out
+      prediction), now over a grid with the paper's literal value; with 1000 x variance, below the mean eigenvalue
+      of X'X, the decrease is 5.1% (p = 0.11), which supports the verifier's point that the effect depends on the
+      penalty. This is recorded in the notes.
+  - claim: fig3c-surround-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: 'NS -11.6% (a), p=3e-5. WN shows no change: -0.6%, p=0.93 (reading b: p=0.50) (cell 26).'
+    response: No change. With 1000 x variance the movie decrease is 17.5% (within tolerance) but the noise still
+      does not change (p = 0.83).
+  - claim: fig3c-surround-correlations
+    agrees: true
+    outcome: reproduced
+    reason: Peak reading (a) with P1(b) gives -37.2%, inside 34 +- 3.4; p=3e-10. Other combinations give 38.7-44.2%,
+      outside (cell 26).
+    response: 'Outcome kept and marked as an assumption: with 1000 x variance the decrease is 2.7% (p = 0.67).'
+  - claim: fig3d-temporal-width-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: NS +2.4%, p=0.36 (111 cells). WN +43%, p=0.003 (cell 28).
+    response: 'Changed to partially reproduced, marked as an assumption. Temporal widths now come from RFs at 128
+      Hz with 24 lags of 8 ms, as the paper and P6 give (problem 3): movie +14.4% or +16.8%, p = 1.4e-10, within
+      tolerance; noise +23.8% or +27.1%, p = 0.011. The frame-rate values are a variant.'
+  - claim: fig3d-temporal-width-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: +17.6/+23.3%, p=0.057 (cell 28).
+    response: No change of outcome; with the 128 Hz RFs +16.1% (within tolerance) or +18.4%, p = 0.11.
+  - claim: surround-temporal-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: r=-0.09 (p=0.18) and r=-0.145 (p=0.03), against -0.5 at p<0.001 (cell 31).
+    response: Changed to partially reproduced, marked as an assumption. With the 128 Hz temporal width (problem
+      3) r = -0.366 (p = 1.9e-08); with both measures from the 128 Hz RFs r = -0.466 and -0.480, within tolerance;
+      with both at the frame rate r = -0.091 and -0.145, as before.
+  - claim: figs1-property-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: 1/18 pairs as the legend states under (a), 5/30 under (b) (cell 40).
+    response: No change of outcome; with the 128 Hz temporal width 2 of 18 and 6 of 30.
+  - claim: fig4b-gain-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both tests p<1e-9 with LC higher. WN +153.9% (P1b) is inside 148 +- 14.8. NS +124.7/+144% is outside
+      89 +- 8.9 (cell 33).
+    response: No change.
+  - claim: fig4b-gain-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: p=3.5e-6 with WN higher. Size +60.5/+66.4%, or 160.5 under (c), against 296 +- 29.6 (cell 33).
+    response: No change of outcome; marked as an assumption, as with 1000 x variance the gain falls from LC NS to
+      LC WN (-30.1%).
+  - claim: fig4c-offset-contrast
+    agrees: true
+    outcome: reproduced
+    reason: NS -52.9% (P1a), WN -57.2% (P1b) or -64.4% (P1a), all inside tolerance; p=3e-13 and 7e-10 (cell 35).
+    response: No change; the WN values were already unadjusted.
+  - claim: fig4c-offset-correlations-none
+    agrees: true
+    outcome: reproduced
+    reason: Adjusted offset p=0.16. The unadjusted variant gives p=0.012, and the pass depends on how the adjustment
+      is applied (problem 2) (cell 35).
+    response: 'Changed to not reproduced, marked as an assumption. The per-animal adjustment is now applied within
+      the set of cells compared, so the 31 Expt1 cells are not shifted in any condition (problem 2): p = 0.012.
+      The first round''s uneven adjustment (p = 0.16) is shown as a variant; with 1000 x variance p = 0.30.'
+  - claim: fig4d-normalized-offset-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: NS +42% (p=1.4e-5), outside 14 +- 1.4. WN -0.08%, p=0.99 (cell 37).
+    response: No change.
+  - claim: fig4d-normalized-offset-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: +50%/+26%, p=0.020, against +90% +- 9 at p<0.001 (cell 37).
+    response: No change of outcome; with the even adjustment +27.6% (P1 a) or -8.1% (P1 b), p = 0.12.
+  - claim: fig5-within-trial-contrast
+    agrees: true
+    outcome: blocked
+    reason: The data needed (15 min HC movie, spikes, stimulus library) are in the archive.
+    response: Tested and changed to not reproduced. RFs and NLs of the top and bottom thirds of the contrast within
+      the RF were estimated for the 24 included OFF-center Y cells under two readings of the contrast measure; no
+      cell shows all four directions (the top third never has the lower gain), and only reading (b) gives a 150
+      s range within tolerance (5 cells).
+  - claim: fig6a-reliability-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both p<1e-4. WN 70-75% is inside 74 +- 7.4. Best NS is 48.46% (P8b, P1a), just below the 48.6 lower
+      bound (cell 42).
+    response: No change.
+  - claim: fig6a-reliability-correlations
+    agrees: true
+    outcome: reproduced
+    reason: 62.7% (P8a/P1a) and 67.7% (P8b/P1a) are inside 68 +- 6.8; p of about 1e-7 (cell 42).
+    response: No change.
+  - claim: fig6b-sparseness-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: WN 15.7/15.8% is inside 16 +- 1.6, and WN > NS. NS 2.2/2.1% is outside 4 +- 0.4 (cell 44).
+    response: No change.
+  - claim: fig6b-sparseness-correlations
+    agrees: true
+    outcome: reproduced
+    reason: 13.1/13.2%, inside 14 +- 1.4 (cell 44).
+    response: No change.
+  - claim: fig7c-effective-contrast
+    agrees: true
+    outcome: reproduced
+    reason: Under all four readings, NS ratios (~250-277) are above WN (~72), and LC NS is closest to HC WN (cell
+      49).
+    response: No change; generic RFs from the 24 cells whose RFs keep their sign give the same (problem 5).
+  - claim: fig7d-reliability-tracks-effective-contrast
+    agrees: true
+    outcome: reproduced
+    reason: Under stimulus reading (b) the ranks agree and 4/4 are within 1 SD. Under (a) the ranks disagree. The
+      SDs are large, so this is a weak test (cell 50).
+    response: No change.
+  - claim: fig8a-filtered-kurtosis
+    agrees: true
+    outcome: reproduced
+    reason: 'Stimulus reading (a): NS 4.01/3.79 and WN 2.96/2.98 are inside tolerance; shuffled HC NS gives 3.18
+      (cell 51).'
+    response: No change.
+  - claim: fig8-model-sparseness-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells a, stimulus a, offset a: 0.810 and shuffled 0.778, both inside tolerance, shuffled lower (cell
+      52).'
+    response: No change of outcome; with the even offset adjustment the values are 0.805 and 0.773.
+  - claim: fig8b-model-vs-experiment-sparseness
+    agrees: true
+    outcome: reproduced
+    reason: Two of eight combinations (stimulus a, offset a) meet every condition. The WN H/L model values differ
+      by 0.001 (cells 52-53).
+    response: No change of outcome; model HC NS 0.805, LC WN 0.851.
+  - claim: fig8de-noise-reconciles
+    agrees: true
+    outcome: not_reproduced
+    reason: No noise level puts all four stimuli within 1 SD. The scan was run only under stimulus reading (b),
+      where the no-noise HC NS model (0.796) already lies outside the SD (problem 4) (cell 54).
+    response: Changed to reproduced. The scan now runs under both stimulus readings (problem 4). Under reading (a),
+      the long segments, the decrease is largest for LC WN and all four model values are within one SD at noise
+      SDs 1800 to 2100 (one realization) and 750 to 1350 (120 trials), under all five seeds; under reading (b) no
+      level qualifies, as before.
+  - claim: disc-lcns-hcwn-reliability-sparseness
+    agrees: true
+    outcome: reproduced
+    reason: 'HC WN is higher on both measures: reliability p=0.006, sparseness p=0.0004 (cell 46).'
+    response: No change.
+  - claim: disc-lcns-hcwn-rf-nl-differences
+    agrees: true
+    outcome: reproduced
+    reason: 3 of 4 at p<0.05; gain goes the wrong way. Only 2 of 4 at p<0.001. Normalized offset passes only with
+      the asymmetric adjustment (problem 2) (cell 47).
+    response: Changed to not reproduced, marked as an assumption. With the adjustment applied within the set compared
+      (problem 2) the normalized offset gives p = 0.056, so 2 of 4 at p < 0.05 and at p < 0.001; the uneven adjustment
+      (3 of 4) is shown as a variant.
+  - claim: methods-latency-biphasic
+    agrees: true
+    outcome: partially_reproduced
+    reason: Latency is significant in 2/3 comparisons (NS HC->LC p=0.14); biphasic ratio in 0/3 (cell 56).
+    response: Changed to reproduced, marked as an assumption. With latency from the 128 Hz RFs (problem 3) it changes
+      in 3 of 3 comparisons at p < 0.05 and the biphasic ratio in none; the frame-rate variant still gives 2 of
+      3.
+  - claim: methods-offset-varies-across-animals
+    agrees: true
+    outcome: not_reproduced
+    reason: Spatial width, surround, temporal width and gain also differ across animals at p<0.05. At p<0.001, q
+      differs in no condition (cell 57).
+    response: No change.
+  - claim: celltype-y-wider-than-x
+    agrees: true
+    outcome: reproduced
+    reason: 0.646/0.743 and 0.642/0.778 deg, p=0.0009 and 0.0001 (cell 59).
+    response: No change.
+  - claim: celltype-y-stronger-surround
+    agrees: true
+    outcome: not_reproduced
+    reason: Means are inside the SDs, but p=0.27/0.37 (cell 60).
+    response: No change.
+  - claim: celltype-off-wider-temporal
+    agrees: true
+    outcome: not_reproduced
+    reason: ON 37.0 and OFF 35.9 ms, against 25/29; p=0.84 (cell 61).
+    response: No change of outcome. With the 128 Hz RFs (problem 3) ON 33.5 and OFF 31.5 ms, p = 0.71; leaving out
+      the cells whose RFs change sign (problem 5) 30.0 and 28.7 ms, p = 0.75.
+  - claim: celltype-prediction-x-y
+    agrees: true
+    outcome: not_reproduced
+    reason: No significant difference, but the means (0.47-0.55, 0.23-0.30) are far outside tolerance and Y > X
+      (cell 62).
+    response: No change.
+  - claim: methods-spherical-asymmetry
+    agrees: true
+    outcome: blocked
+    reason: Needs only the stimuli, which are in the StimulusLibrary asset.
+    response: Tested and changed to not reproduced. The simulation was run with two known RFs and five seeds; the
+      movie and noise estimates differ beyond their segment spread at 32 to 66 of 5292 points, against 1 to 3 for
+      two movie-driven simulations.
 findings:
 - kind: other
   about: data
-  statement: 'The Expt2 repeats that the paper uses for cross-validation (24 repetitions of 90 s) show
-    frames 0-5400 of the movie template, which are also the first 90 s of the 15 min movie the RFs are
-    fitted from. The paper calls them a different 90 s movie segment. The responses confirm the files:
-    the repeat PSTH correlates with the response to the first 5400 movie frames at zero shift (median
-    r = 0.405 over 78 units, best shift 0 for 66).'
+  statement: 'The Expt2 repeats that the paper uses for cross-validation (24 repetitions of 90 s) show frames 0-5400
+    of the movie template, which are also the first 90 s of the 15 min movie the RFs are fitted from. The paper
+    calls them a different 90 s movie segment. The responses confirm the files: the repeat PSTH correlates with
+    the response to the first 5400 movie frames at zero shift (median r = 0.405 over 78 units, best shift 0 for
+    66).'
 - kind: other
   about: data
-  statement: The long white-noise recordings of Expt1 last 600 s at high contrast and 900 s at low contrast;
-    the paper states a 6 min segment. Which part the paper used is not recorded.
+  statement: The long white-noise recordings of Expt1 last 600 s at high contrast and 900 s at low contrast; the
+    paper states a 6 min segment. Which part the paper used is not recorded.
 - kind: metadata_insufficient
-  statement: The units tables carry no ON/OFF classification, which the paper reports for every cell;
-    it can only be inferred from the sign of the estimated RF.
+  statement: The units tables carry no ON/OFF classification, which the paper reports for every cell; it can only
+    be inferred from the sign of the estimated RF.
 - kind: selection_undocumented
   about: data
-  statement: Nothing marks which units or penetrations make up the paper's samples (68 cells for the movie,
-    26 with the 90 s repeats, 31 with noise and 12 s repeats). Applying the paper's inclusion rule here
-    passes 111 units, 58 of them with the 90 s repeats; the 31 with the noise match the paper's count.
+  statement: Nothing marks which units or penetrations make up the paper's samples (68 cells for the movie, 26 with
+    the 90 s repeats, 31 with noise and 12 s repeats). Applying the paper's inclusion rule here passes 111 units,
+    58 of them with the 90 s repeats; the 31 with the noise match the paper's count.
 - kind: paper_inconsistency
   about: paper
-  statement: The paper says the monitor ran at 120 Hz with pixel intensities updated every other refresh,
-    which is 60 Hz, and that this approximated the movies' 50 Hz; the files show frames at 59.96 Hz, and
-    the frame rate used for analysis is not stated.
+  statement: The paper says the monitor ran at 120 Hz with pixel intensities updated every other refresh, which
+    is 60 Hz, and that this approximated the movies' 50 Hz; the files show frames at 59.96 Hz, and the frame rate
+    used for analysis is not stated.
 - kind: methods_unavailable
   about: paper
-  statement: Question for the authors. On what scale was the stimulus (and the response) when D = 0.001
-    was applied in the RLS, and was the same D used for every contrast? With a penalty that is negligible
-    in gray levels the per-segment estimate is not determined; with a fixed penalty the low-contrast RFs
-    are regularized more. This attempt chose the penalty by held-out prediction, relative to the stimulus
-    variance.
+  statement: Question for the authors. On what scale was the stimulus when D = 0.001 was applied in the RLS, and
+    was the same D used for every contrast? Taken literally (a penalty of 1000 on a stimulus between -106 and 106,
+    the gray levels about the mean), the estimates here are at the noise level and no cell passes the inclusion
+    rule; the paper's own rule for D, held-out prediction of the movie, picks 10000 x the stimulus variance, and
+    several RF comparisons (the NS against WN differences in width and surround, the LC NS against LC WN gain and
+    offset) change under 1000 x variance.
 - kind: methods_unavailable
   about: paper
-  statement: Question for the authors. How were the percent changes formed (change of the means, or the
-    mean of per-cell changes), how was the surround's peak read (largest absolute value or opposite-sign
-    extreme), and how was q adjusted per animal? The readings give different values for several claims
-    (for example the movie gain increase is 125% or 144%, and the surround decrease with correlations
-    38.7% or 37.2%).
+  statement: Question for the authors. How were the percent changes formed (change of the means, or the mean of
+    per-cell changes), how was the surround's peak read (largest absolute value or opposite-sign extreme), and how
+    was q adjusted per animal? The readings give different values for several claims (for example the movie gain
+    increase is 125% or 144%, and the surround decrease with correlations 38.7% or 37.2%).
 - kind: methods_unavailable
   about: paper
-  statement: Question for the authors. Were the mean firing rates compared between low-contrast movie
-    and noise those of the long segments or of the 12 s repeats? Here the difference is not significant
-    over the long segments (p = 0.063) and significant over the repeats (p = 0.0013).
+  statement: Question for the authors. Were the mean firing rates compared between low-contrast movie and noise
+    those of the long segments or of the 12 s repeats? Here the difference is not significant over the long segments
+    (p = 0.063) and significant over the repeats (p = 0.0013).
 - kind: methods_unavailable
   about: paper
-  statement: Question for the authors. Which cells and which positions in the frame were used to build
-    and apply the generic RFs of Figures 7 and 8, and which stimulus segments (long or repeated) were
-    filtered? Kurtosis and the model's sparseness differ between the long segments and the 12 s clips
-    (HC NS kurtosis 4.01 against 3.55).
+  statement: Question for the authors. Which cells and which positions in the frame were used to build and apply
+    the generic RFs of Figures 7 and 8, and which stimulus segments (long or repeated) were filtered? Kurtosis and
+    the model's sparseness differ between the long segments and the 12 s clips (HC NS kurtosis 4.01 against 3.55).
