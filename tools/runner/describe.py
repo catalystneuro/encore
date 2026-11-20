@@ -180,6 +180,30 @@ def has_publication(target: dict, fix: dict) -> bool:
             or any(not d.lower().startswith(PREPRINT_SERVERS) for d in fix.get("papers", {})))
 
 
+# A relation by which a dataset only cites a paper: no sign that the dataset holds the paper's data.
+CITES_ONLY = {"References", "Cites"}
+
+
+def siblings(paper: str, targets: list[dict] | None = None, listed: dict | None = None, doi: str | None = None,
+             status=None) -> list[str]:
+    """The folders of the targets that name a paper as theirs, that the paper is not listed on yet, and whose
+    paper match has no verdict: the paper's other datasets, as far as the archives say. A chain runs their paper
+    match before the paper's claims are read, so that the paper is tested on all of its datasets and none is read as
+    outside data (pelot-2020 was listed on one of its seven, 2026-11-19). The arguments after the first are for tests."""
+    targets = main_targets() if targets is None else targets
+    listed = main_papers()[1] if listed is None else listed
+    doi = (doi or str((main_yaml(f"papers/datasets/{paper}.yaml") or {}).get("paper") or "")).removeprefix("doi:").lower()
+    status = status or match_status
+    have = set(listed.get(paper) or [])
+    out = []
+    for t in targets:
+        names = any(str(p.get("doi") or "").lower() == doi and p.get("relation") not in CITES_ONLY
+                    for p in t.get("papers") or [])
+        if doi and names and t["key"] not in have and published(t) and status(t) == "unchecked":
+            out.append(t["folder"])
+    return out
+
+
 def published(target: dict) -> bool:
     """Whether a target has a published version: a DANDI draft can still change under an attempt.
     The other archives publish every dataset they list."""
@@ -456,6 +480,8 @@ def main() -> int:
                             for k in keys) else "false")
     elif command == "claims-ready":
         print("true" if claims_ready(rest[0]) and claims_cover(rest[0]) else "false")
+    elif command == "siblings":
+        print("\n".join(siblings(rest[0])))
     elif command == "match":
         found = next((t for t in main_targets() if t["folder"] == rest[0]), None)
         if found is None:

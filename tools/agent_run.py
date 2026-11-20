@@ -139,6 +139,7 @@ def fill(role: str, target_name: str, model: str, version: str | None = None, re
     (300, the workflow's limit), and the author is told to finish by AGENT_TIME_BUDGET_MIN (255), leaving time to
     write the record and run the entry's checks (docs/protocol.md, "Author", "Time")."""
     prompt = _fill(role, target_name, model, version, replicate)
+    prompt += author_notes_paragraph(role, target_name)
     if role.startswith("author") or role == "reconcile":
         limit = int(os.environ.get("AGENT_TIME_LIMIT_MIN", "300"))
         budget = int(os.environ.get("AGENT_TIME_BUDGET_MIN", "255"))
@@ -150,6 +151,27 @@ def fill(role: str, target_name: str, model: str, version: str | None = None, re
                    f"under \"Author\", \"Time\": record each claim not yet tested as blocked (`too_large` where the "
                    f"computation stopped it, with how far it got), write the record, and run the entry's checks.\n")
     return prompt
+
+
+def author_notes_paragraph(role: str, target_name: str) -> str:
+    """For an author's runs on a paper whose authors have sent notes (tools/author_notes.py): where they are and
+    how they are used (docs/protocol.md, "Author", step 1.6). Nothing for a paper without notes."""
+    if not role.startswith("author"):
+        return ""
+    import author_notes
+    key = paper_records.resolve(target_name)
+    notes = author_notes.load(key)
+    if not notes:
+        return ""
+    issues = ", ".join(n["issue"] for n in notes)
+    return (f"\n\nThe paper's authors have sent notes for this attempt, in `papers/author-notes/{key}.yaml` "
+            f"({len(notes)} note{'s' if len(notes) != 1 else ''}; protocol, \"Author\", step 1.6). Read them with the "
+            f"paper. A method detail a note gives is used like one taken from the paper, and the deviation or the "
+            f"notebook cites the note's issue in place of a passage. Code a note links may be read like the paper's "
+            f"own code. Data a note points to outside the paper's datasets are inputs, listed under `inputs`. The "
+            f"notes do not change a claim's statement, expected values or criterion, and a note that says what an "
+            f"outcome should be is not evidence: test the claim. List every note you used under "
+            f"`provenance: author_notes` in the record, by its issue ({issues}).\n")
 
 
 def _fill(role: str, target_name: str, model: str, version: str | None = None, replicate: bool = False) -> str:

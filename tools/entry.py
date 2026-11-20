@@ -333,6 +333,22 @@ def check(entry_dir: Path) -> Report:
         # hazon-2022 did on 2026-11-12), and the site takes such a finding by its kind.
         version = re.fullmatch(r"pilot-(\d+)", str(((attempt.get("provenance") or {}).get("agent") or {}).get("protocol") or ""))
         told = not version or int(version[1]) >= 15
+        # From pilot-17, an attempt on a paper whose authors had sent notes says which it used, or that it used none
+        # by listing none: the latest attempt names each note that was there when it was made (docs/protocol.md,
+        # "Notes from the paper's authors"), so that the authors' input is never used unseen.
+        if path == mine[-1] and version and int(version[1]) >= 17:
+            import author_notes
+            import paper_records
+            key = paper_records.key_of_doi(attempt["paper"])
+            there = [n["issue"] for n in (author_notes.load(key) if key else []) if str(n["date"]) <= str(attempt.get("date"))]
+            named = (attempt.get("provenance") or {}).get("author_notes") or []
+            for issue in named:
+                if issue not in there:
+                    report.error(where, f"`provenance: author_notes` names {issue}, which is not a note in "
+                                        f"papers/author-notes/{key}.yaml")
+            if there and not named:
+                report.error(where, f"the paper's authors had sent notes (papers/author-notes/{key}.yaml) when this "
+                                    "attempt was made; list those it used under `provenance: author_notes`")
         for n, f in enumerate(attempt.get("findings") or [], 1):
             if told and f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
                 report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
@@ -341,9 +357,20 @@ def check(entry_dir: Path) -> Report:
             if told and about == "data" and len(used) > 1 and not f.get("datasets"):
                 report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
                                     f"(`datasets:`, from {', '.join(used)})")
+            # From pilot-18 a finding about the data says how much it harms a user of the dataset (docs/protocol.md,
+            # the attempt record). Earlier attempts were not asked.
+            if version and int(version[1]) >= 18 and about == "data" and not f.get("severity"):
+                report.error(where, f"finding {n}: it is about the data; give its `severity` (critical, major, minor "
+                                    f"or none, as docs/protocol.md defines them)")
             for d in f.get("datasets") or []:
                 if str(d) not in used:
                     report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
+        # A verification round's review of a finding points at the finding by its number in the record.
+        for r, rnd in enumerate(attempt.get("verifications") or [], 1):
+            for item in rnd.get("findings") or []:
+                if item["finding"] > len(attempt.get("findings") or []):
+                    report.error(where, f"verification round {r} reviews finding {item['finding']}, and the record "
+                                        f"has {len(attempt.get('findings') or [])} findings")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
         # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}

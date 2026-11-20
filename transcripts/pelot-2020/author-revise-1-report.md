@@ -1,29 +1,32 @@
-I've addressed all twelve points of the round-1 report. The entry passes `check` and the clean run (240 s), and every conclusion in the notebook and the record matches the new numbers. No outcome changed; the only status change is that `rat-carotid-sheath-bundles` is now blocked for `other` instead of `data_missing`.
+The entry passes `tools/entry.py all` (447 s), and the record passes `check`. Outcomes now: 37 reproduced, 3 partially reproduced, 3 not reproduced, 0 blocked (before: 36, 2, 3, 2). Nothing is committed.
 
-**Mixed-model tests (points 2, 4 and 8).** All the mixed models are now tested with Kenward-Roger F tests and degrees of freedom, which is what JMP reports for these fits. I wrote it in `vagus.py` and checked it on a balanced test design, where it gives the exact F tests.
-- It brings the nerve-diameter F values closer to the paper: 587.3, 11.03 and 2.450, against the paper's 577.1, 11.01 and 2.445.
-- The pig df of 3.74 the verifier flagged comes from the observed information that the Satterthwaite method uses. Kenward-Roger uses the expected information and gives 7.55. The notebook prints both.
-- With Kenward-Roger, `fascicles-larger-cervical` holds for all three species under both rat fascicle rules: pig p = 0.012, rat p = 0.044 (0.0089 with the paper code's rat values). Of the eight combinations printed, six give all three species and two give two, so the outcome stays marked as resting on an assumption.
-- I dropped the degenerate rat-only fit (p = 1e-64). In its place is a rat-only Kenward-Roger model (p = 1.7e-07) and a paired t test (p = 8.0e-07).
-- Satterthwaite for effects with more than one degree of freedom now uses the standard method lmerTest uses, not the mean of per-coefficient df.
+**Outcome changes (allowed in round 1)**
+- **literature-comparison-human-pig: blocked → partially_reproduced.** The verifier was right: `DataPlotting_v4.m` hard-codes the Figure 7 literature means and SDs, in the legend's order. The notebook now reads them from the file. 9 of 12 parts hold. The human cervical endoneurial area, the overlapping ranges, and the posterior-branch subdiaphragmatic sizes fail.
+- **rat-literature-comparison: blocked → partially_reproduced.** The subdiaphragmatic part holds against all 4 published values. Only 1 of the 3 published cervical means falls within our mean ± SD.
+- **rat-carotid-sheath-bundles: partially → reproduced.** At full resolution R24-3 holds six bundles; the thumbnails missed two small ones. Each counted bundle is now numbered on the images, and eight profiles that could be vessels are circled and not counted. Counting them would put no section above six. This still rests on calls made by eye.
 
-**Added or corrected:**
-- **`no-age-trend`:** the notebook now opens the supplement. Supplement 6 is only a figure of the metrics against age, with no test, so it doesn't settle the method. With a Holm correction no test is below 0.05, which would make the claim reproduced. I kept not reproduced, because the claims file fixes the uncorrected test.
-- **Literature claims:**
-  - The odd Fazan and Lachat rows are that study's own means converted between area and diameter; the notebook now prints Supplement 4's notes.
-  - I added a left-side-only reading and stopped counting the "posterior study" part, which isn't in the claim. Human-pig is now 8 of 10 parts, still partially reproduced under both readings.
-  - For the rat claim the readings disagree: left-only would make it reproduced. I kept every published row as the main reading, because the paper says it compares left and right nerves and Figure 7 plots both. The record marks this as an assumption.
-- **`pig-if-mt-consistent`:** the bound-by-bound reading is shown. The MT minimum fails it (23.7 µm against 5 µm), and no fascicle under 23.7 µm exists in the deposited file. The outcome stays reproduced because the criterion only tests containment.
-- **`peanut-fascicle-counts`:** per-sample pig counts are shown. The 25th cervical peanut fascicle isn't in any sample, and the code never saves its own count, so that can't be compared.
-- **`rat-carotid-sheath-bundles`:** the nine cervical micrographs are now shown with the trace drawn over each. The claim stays blocked: no other bundle is traced or labelled, and a count by eye would be my judgement, not a measurement. This partly keeps the verifier's disagreement, and the record says so.
-- **Checksum cell:** it now comes before the summary, so the handover no longer cuts it.
-- The round is recorded under `verifications` for all 35 claims. `pypdf` was added to the requirements and the environment relocked.
+**Fixes and added outputs**
+- **Degrees of freedom (problem 1):** Kenward-Roger is now implemented in `mixed.py` and is the main reading. It reproduces the classical split-plot tests on balanced synthetic data; it has not been checked against JMP itself. Under it, fascicles-larger-cervical holds on the claims file's own method: pig p = 0.012, rat p = 0.044.
+- **Rat fascicle choice (problem 2):** the verifier was right here too. The paper's code keeps the first ring in boundary order, not the largest, and that reproduces the paper's 0.121 ± 0.032 mm and its rat p values. The criterion's "largest" still decides the outcomes; the code's choice is shown as a variant and recorded as a `code_mismatch` finding.
+- **Hole areas (problem 8):** now measured as MATLAB traces them. Cervical rat diameters match the deposited file to within 4e-6. Small numbers shifted; no outcome changed.
+- **Variants added:**
+  - Sample-clustered tests for perineurium-no-level-difference. The human difference remains; the pig one goes away.
+  - Holm and Benjamini-Hochberg corrections for no-age-trend: no test stays below 0.05.
+  - The strict-bound reading for pig-if-mt-consistent: the MT minimum fails it. The version 1 masks have a 4.7 µm trace, so the paper's 5 µm probably comes from them.
+- **Other outputs:**
+  - Per-sample peanut counts. No nested outer traces; the paper's 25 cannot be traced from the deposited files.
+  - Version 1 pig counts for all 18 samples: they match the deposited file in 18 of 18.
+  - A comparison of the two human nerve traces.
+  - Full-resolution crops of the pig cell-body fascicles and the P14-2 fascicles (no somata).
+  - Pig fat regions with the authors' nerve traces drawn over them: the fat lies inside the traced nerve.
+- **Record:**
+  - Round-1 `verifications` block covering all 43 claims; the verifier agreed with every outcome it reviewed.
+  - Two findings updated in place. Three new findings added at the end, so the existing numbers still point at the same findings.
+- **Questions file:** new `questions/pelot-2020.yaml` asks a reader about four claims: the Sunderland data (deposited in sparc-65, not elsewhere), the independence assumption in perineurium-no-level-difference, the multiplicity correction in no-age-trend, and the rat fascicle selection.
 
-**Not done, and why:**
-- **Point 1:** I kept the largest rat fascicle as the main run, not the code's first-trace rule. The claims file and the paper's Methods both say "largest", and the protocol puts the Methods before the code. The code's rule runs as a variant on every claim it affects. Because the claims file reads the paper correctly here, I asked no question about it.
-- **Point 9:** no change; both tests belong to the claims file.
-- **Kenward-Roger check against R:** I couldn't run the R cross-check (lme4/pbkrtest) the verifier suggested, because R isn't installed.
-
-**Question for a reader.** I added one to the new `questions/pelot-2020.yaml`. It asks whether `no-age-trend` should correct for the 26 tests, now that Supplement 6 turns out to be plots only.
-
-Nothing was committed.
+**Not done**
+- No claim was changed.
+- KR has not been compared with JMP or R's pbkrtest; R is not installed here.
+- The right-side rat sheaths were not re-read at full resolution. They do not decide the outcome.
+- The roughly 1.4× pig fascicle diameters in the deposited file stay unexplained. The per-fascicle ratio ranges from 1.36 to 1.61, so it is not a scale factor.
+- The executed notebook is now 14 MB, up from 9.5 MB, because of the full-resolution images.

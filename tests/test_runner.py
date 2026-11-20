@@ -172,6 +172,24 @@ def test_a_repeat_authors_commit_may_remove_the_questions_filed_by_dataset():
     assert not ok("claims/silkuniene-2025.yaml")
 
 
+def test_the_agents_job_guards_the_runners_memory_before_the_agent_starts():
+    # rozsa-2023, 2026-11-19: three author runs ended with the runner starved by the agent's own scripts and nothing
+    # saved. The guard ends the largest Python process first, never the agent or the runner, and a runner without
+    # it goes on.
+    import re
+    import yaml
+    workflow = yaml.safe_load((REPO / ".github" / "workflows" / "attempt.yml").read_text())
+    steps = next(j["steps"] for j in workflow["jobs"].values() if any(s.get("name") == "Run the agent" for s in j["steps"]))
+    names = [s.get("name") for s in steps]
+    assert names.index("Guard the runner's memory") < names.index("Run the agent")
+    run = steps[names.index("Guard the runner's memory")]["run"]
+    assert "exit 0" in run and run.rstrip().endswith('|| echo "earlyoom did not start; no guard"')
+    prefer, avoid = (re.search(rf"--{k} '([^']+)'", run).group(1) for k in ("prefer", "avoid"))
+    for name, spared in (("python3.12", False), ("python", False), ("jupyter-nbconvert", False), ("node", True),
+                         ("claude", True), ("Runner.Worker", True), ("Runner.Listener", True)):
+        assert bool(re.search(avoid, name)) == spared and bool(re.search(prefer, name)) != spared, name
+
+
 def test_a_run_flagged_on_the_unverified_account_is_queued_on_the_verified_one(tmp_path):
     # RUNNER_FALLBACK=queue:<file>: the paper goes first in the verified lanes' queue file (once), the rest of its
     # roles are marked for the verified account, and the chain ends QUEUED ON VERIFIED (exit 0), not STOPPED.
@@ -263,6 +281,30 @@ def test_the_reconcile_run_is_given_the_earlier_attempts_entry():
     assert "if: inputs.role == 'reconcile'" in step[:200] and 'git archive FETCH_HEAD "entries/$FOLDER"' in step[:500]
     assert "earlier-entry" not in workflow[workflow.index("paths=(attempts claims entries README.md)"):][:300]
     assert "`earlier-entry/`" in (REPO / "docs" / "agents" / "reconcile.md").read_text()
+
+
+def test_a_papers_other_datasets_have_their_paper_match_before_its_claims_are_read():
+    # pelot-2020 was listed on one of its seven datasets, and its attempt read the others as outside data. A chain
+    # now runs the paper match of every target that names the paper and has no verdict, before the claims.
+    targets = [
+        {"key": "sparc:60", "folder": "sparc-60", "archive": "sparc", "papers": [{"doi": "10.1/P", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:64", "folder": "sparc-64", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:65", "folder": "sparc-65", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:70", "folder": "sparc-70", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "References"}]},
+        {"key": "sparc:71", "folder": "sparc-71", "archive": "sparc", "papers": [{"doi": "10.1/other", "relation": "IsDescribedBy"}]},
+        {"key": "dandi:000001", "folder": "000001", "archive": "dandi", "published_version": None,
+         "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+    ]
+    status = lambda t: "no_match" if t["folder"] == "sparc-65" else "unchecked"
+    found = describe.siblings("p-2020", targets=targets, listed={"p-2020": ["sparc:60"]}, doi="doi:10.1/P", status=status)
+    # Not the one it is listed on, one already judged, one that only cites the paper, another paper's, or a draft.
+    assert found == ["sparc-64"]
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    body = chain[chain.index("set -uo pipefail"):]
+    step = body.index('python "$here/describe.py" siblings "$d"')
+    assert body.index("esac", body.index('case "$match" in')) < step < body.index('deprecated=$(python "$here/describe.py" deprecated "$d")')
+    assert 'SIBLINGS=0 MATCH_ONLY=1 RUNNER_NOTIFY=none "$here/chain.sh" "$sib"' in body
+    assert '[ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]' in body
 
 
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():
