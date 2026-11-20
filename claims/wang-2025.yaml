@@ -145,12 +145,32 @@ claims:
   quote: Explained variance followed a logical progression, with greater explained variance in areas
     closer to the sensory or motor periphery (Fig. 2b ).
   statistics:
-  - about: medulla against each of midbrain, ALM, striatum and thalamus
+  - about: medulla against midbrain
     test: two-tailed Mann-Whitney U test
     p: 1.04e-11
     corrected: Bonferroni
-    n: 36, 79, 77, 67 and 62 insertions
-  - about: thalamus against midbrain, ALM and striatum (largest of the three p)
+    n: 36 medulla and 79 midbrain insertions
+  - about: medulla against ALM
+    test: two-tailed Mann-Whitney U test
+    p: 1.24e-13
+    corrected: Bonferroni
+  - about: medulla against striatum
+    test: two-tailed Mann-Whitney U test
+    p: 1.03e-13
+    corrected: Bonferroni
+  - about: medulla against thalamus
+    test: two-tailed Mann-Whitney U test
+    p: 3.31e-15
+    corrected: Bonferroni
+  - about: midbrain against thalamus
+    test: two-tailed Mann-Whitney U test
+    p: 2.47e-11
+    corrected: Bonferroni
+  - about: ALM against thalamus
+    test: two-tailed Mann-Whitney U test
+    p: 2.80e-08
+    corrected: Bonferroni
+  - about: striatum against thalamus
     test: two-tailed Mann-Whitney U test
     p: 8.26e-09
     corrected: Bonferroni
@@ -303,12 +323,13 @@ claims:
   - quantity: sessions
     value: 105
     tolerance: 10.5
-  criterion: Tolerances are the s.e.m. given. Response epoch, single 64-trial test split. Per the
-    code (Figure2.get_method_comparison_stats), neurons with trial-average rate above 2 Hz and
-    explained variance above 0.005 under all three methods; per neuron, improvement = (EV_better -
-    EV_worse) / EV_worse; per session, the mean over its neurons; the mean and s.e.m. over sessions;
-    a Wilcoxon signed-rank test of the session means against zero, one-sided p (two-sided p halved)
-    times 3. The Methods' threshold of 0.01 is the variant. Reproduced when all three improvements
+  criterion: Tolerances are the s.e.m. given. Response epoch, single 64-trial test split. Neurons
+    with trial-average rate above 2 Hz and explained variance above 0.01 under all three methods
+    (Methods, Epoch-averaged explained variance; the code, Figure2.get_method_comparison_stats, uses
+    0.005, a variant to be shown); per neuron, improvement = (EV_better - EV_worse) / EV_worse; per
+    session, the mean over its neurons; the mean and s.e.m. over sessions; a Wilcoxon signed-rank
+    test of the session means against zero, one-sided p (two-sided p halved) times 3 (code).
+    Reproduced when all three improvements
     are positive with corrected p < 0.001 and within tolerance; partially reproduced when the
     ordering end-to-end > embedding > marker holds with p < 0.001 but the percentages fall outside
     tolerance (the mean of a ratio is sensitive to the filter; the code's own output prints 174%,
@@ -398,11 +419,6 @@ claims:
   quote: For seven of the nuclei, we had a sufficient number of recorded neurons for analysis
     (threshold set at 100 ... Explained variance based on the embedding method varied significantly
     among nuclei (Fig. 3c,d,f and see Extended Data Fig. 4 for pairwise statistics).
-  statistics:
-  - test: pairwise two-tailed Mann-Whitney U tests with Bonferroni correction (Extended Data Fig. 4)
-    p: 0.1
-    p_relation: "<"
-    corrected: Bonferroni
   expected:
   - quantity: CN neurons
     value: 235
@@ -431,8 +447,8 @@ claims:
     cross-validated response-epoch explained variance above 0.01; nuclei with more than 100 such
     neurons kept (code, Figure4.get_thalamus_nuclei_inds). Reproduced when the same seven nuclei pass
     the threshold, the counts are within 10%, and at least one pair of nuclei differs in explained
-    variance by two-tailed Mann-Whitney U at Bonferroni-corrected p < 0.05 (21 pairs), with VAL lower
-    than PO, VM and VP as in thalamus-ev-not-rate.
+    variance by two-tailed Mann-Whitney U at Bonferroni-corrected p < 0.05 (21 pairs; Extended Data
+    Fig. 4 legend). The pairwise p-values are reported.
 - id: thalamus-ev-not-rate
   statement: Differences in explained variance among thalamic nuclei are not explained by spike rate;
     rates do not differ among PO, VAL, VM and VP, while explained variance in VAL differs from PO,
@@ -455,9 +471,11 @@ claims:
     p_relation: "<"
   criterion: Neurons as in fig3f-thalamic-nuclei. One-way ANOVA (F-test) across the four nuclei of
     trial-average spike rate, and of response-epoch explained variance (code,
-    Figure4.get_barplot_stats). Reproduced when the rate test gives p > 0.1, the explained-variance
-    test gives p < 0.001, and the VAL mean is the lowest of the four. The absence half is judged on
-    the paper's F-test alone.
+    Figure4.get_barplot_stats). The text does not say whether VAL is above or below the other three;
+    the reading taken from "differed significantly between VAL and PO/VM/VP" is that the VAL mean is
+    the highest or the lowest of the four, and its direction is reported. Reproduced when the rate
+    test gives p > 0.1, the explained-variance test gives p < 0.001, and the VAL mean is the highest
+    or the lowest of the four. The absence half is judged on the paper's F-test alone.
   depends_on:
   - fig3f-thalamic-nuclei
 - id: supfig2-noise-injection
@@ -490,7 +508,9 @@ claims:
     6.8 ms (positive tau uses future frames); for each tau the epoch-averaged explained variance;
     neurons with trial-average rate above 2 Hz, zero-shift explained variance above 0.01, and peak
     over tau at least 1.2 times the mean over tau. Area curves are each neuron's explained variance
-    normalized to its value at zero shift, averaged over neurons. Reproduced when the medulla curve
+    normalized to its value at zero shift, averaged over the area's neurons within each session and
+    then over sessions (Fig. 4b legend, "mean across sessions"; Methods, Data pooling, uniform
+    weights across sessions); the plain mean over pooled neurons is a variant. Reproduced when the medulla curve
     peaks at a positive shift and medulla has the highest mean best offset and the highest fraction
     of neurons with positive best offset of the five areas.
 - id: edfig6-offset-ev-correlation
@@ -523,7 +543,8 @@ claims:
   - about: striatum
     test: Spearman rank correlation
     statistic: R = 0.15
-    p: 3.0e-07
+    p: 0.001
+    p_relation: "<"
     corrected: Bonferroni
     n: 1,171 neurons
   - about: thalamus
@@ -566,11 +587,11 @@ claims:
   criterion: Neurons and offsets as in fig4b-medulla-leads; the best offset is the arg max of the
     fold-averaged explained variance over tau; Spearman correlation per area between best offset and
     zero-shift response-epoch explained variance (code, supp_fig_S6.ipynb, which prints R = -0.064, p
-    = 0.22 for medulla), p times 5. The legend prints the striatum p as "3e7", read as 3e-7. The
-    claim holds (reproduced) when medulla has corrected p > 0.1 and the other four areas have positive
-    R with corrected p < 0.001; the R values and counts are judged against their tolerances (10%) and
-    reported. A 10% tolerance on an R of 0.06 is narrow; R within 0.03 of the paper's value with the
-    same significance outcome counts as a match, as the paper prints R to two decimals.
+    = 0.22 for medulla), p times 5. The legend prints the striatum p as "3e7", a misprint; the
+    statistics record the main text's P < 0.001 for striatum. Reproduced when medulla has corrected
+    p > 0.1, the other four areas have positive R with corrected p < 0.001 (main text), and the R
+    values and counts are within tolerance; partially reproduced when this pattern of significance
+    holds but some R values or counts fall outside tolerance.
   depends_on:
   - fig4b-medulla-leads
 - id: fig5a-somatosensory-vs-alm
@@ -584,6 +605,7 @@ claims:
   - test: one-sided Mann-Whitney U test
     p: 0.0001
     p_relation: "<"
+    corrected: Bonferroni
     n: 870 somatosensory and 1,059 ALM neurons
   expected:
   - quantity: somatosensory mean best offset
@@ -960,9 +982,11 @@ claims:
     and within R; 20-fold cross-validation, AUC averaged over folds. Classifier, regularized logistic
     regression with the penalty from nested leave-one-out cross-validation (Methods); the code uses
     RidgeClassifierCV with balanced class weights and 20 random folds, a variant. A neuron is choice-
-    (movement-) modulated when its choice (movement) AUC is at least 0.65 and the other is below
-    0.65; the ratio is the count of choice-only over movement-only neurons (code,
+    (movement-) modulated when its choice (movement) AUC exceeds 0.65 (Methods) and the other does
+    not; the ratio is the count of choice-only over movement-only neurons (code,
     get_medulla_alm_fraction_stats, which prints medulla 171/142, ALM 710/148, midbrain 678/159).
+    The Methods say "exceeded 0.65" and that some neurons pass for both; counting all neurons above
+    0.65 for each AUC (both included) is a variant to be shown.
     Test (code), two-sided binomial test of medulla's choice-only count out of its choice-only plus
     movement-only count against the pooled proportion of the two areas compared, p times 2.
     Reproduced when the three ratios are within tolerance and both corrected p < 0.001.
@@ -998,7 +1022,8 @@ claims:
     performance is much better than that of using the markers (in the training ... sessions exp. var.
     difference 18.2% +/- 1.2% sem, n=122 recordings, p<0.001. In the ... hold-out sessions difference
     16.5% +/- 1.1% sem, n=192 recordings, p<0.001), though ... it’s slightly worse than that of the
-    session-dependent (in the training sessions exp. var. ... difference 12.8% +/- 3.0% sem, n=192
+    session-dependent (in the training sessions exp. var. ... difference 3.6% +/- 1.1% sem, n=122
+    recordings, p<0.001. In the hold-out sessions, ... difference 12.8% +/- 3.0% sem, n=192
     recordings, p<0.001)
   statistics:
   - about: session-independent against markers, training sessions
@@ -1051,3 +1076,22 @@ claims:
     open; the author states those used.
   depends_on:
   - fig2e-method-improvement
+checks:
+- date: 2026-11-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2b-area-ordering. The thalamus entry gave 8.26e-09 as the largest of the three thalamus p-values; the largest is ALM against thalamus, 2.80e-08 (Extended Data Fig. 3 legend). Split the two grouped entries into the seven pairs with their printed p-values.
+  - fig2e-method-improvement. The criterion took the code's explained-variance threshold of 0.005 as the main reading and the Methods' 0.01 as the variant; the protocol puts the Methods first (Methods, Epoch-averaged explained variance). Swapped them.
+  - fig3f-thalamic-nuclei. Removed the statistics entry p < 0.1; it is the threshold for showing pairs in Extended Data Fig. 4, not a result. Removed the requirement that VAL be lower than PO, VM and VP, which no text or legend states.
+  - thalamus-ev-not-rate. The criterion required VAL to have the lowest mean; the text says only that VAL differed from PO/VM/VP. Now VAL must be the highest or the lowest of the four, with the direction reported.
+  - fig4b-medulla-leads. Area curves were averaged over pooled neurons; the Fig. 4b legend gives the mean across sessions and the Methods (Data pooling) give uniform weights across sessions. Averaged within sessions, then over sessions, with pooled neurons as a variant.
+  - edfig6-offset-ev-correlation. The striatum p was recorded as 3e-07, a reading of the legend's misprinted "3e7" that the checker cannot find; recorded the main text's P < 0.001 instead. Removed the rule that R within 0.03 counts as a match, which the paper does not give and which contradicted the stated 10% tolerances; R and counts outside tolerance now give partially reproduced.
+  - fig5a-somatosensory-vs-alm. Added corrected Bonferroni to the statistic; the Fig. 5 legend says all three comparisons were Bonferroni corrected.
+  - fig7d-alm-midbrain-vs-medulla. The threshold read "at least 0.65"; the Methods say "exceeded 0.65". Named counting all neurons above threshold (both included) as a variant, since the Methods note that some neurons pass for both.
+  - supp-session-independent-autoencoder. The quote's ellipsis joined the training-session clause to the held-out value (12.8%, n=192), misreading as the training result; the quote now gives both clauses (3.6%, n=122 and 12.8%, n=192).
+  - Open. The choice decoder of Figs. 6 and 7 is not described in the Methods and its code is not public; the criteria name readings (fig6a-choice-from-video).
+  - Open. The direction of the VAL difference in Fig. 3f could not be read; no main-text PDF was supplied, so figures were not seen.
+  - fig2b-area-ordering. The checker flags 2.8e-08 because it does not try the printed form 2.80e-08; confirmed by reading the Extended Data Fig. 3 legend.
+  - Open. Some criteria use this file's rules where the paper gives none (fig5-significant-offsets fallback, edfig10-subtraction-consistent five of six areas, fig4b-medulla-leads highest of five areas); each says so.
