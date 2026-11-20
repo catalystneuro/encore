@@ -17,9 +17,9 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 and the differences from the paper's method.
 
 The food-reward and calibration sessions are not in the dandiset, so the claims on them are
-blocked; the velocity-modulation claim (Extended Data Fig. 10d) is blocked because most of its files
-do not state the direction of stimulation, and `optoda.ipynb` shows a test with the direction read
-from the data; the syllable decoder of Fig. 1l was too large to run; the encoding, decoding and
+blocked. Most files of the velocity-modulation claim (Extended Data Fig. 10d) do not state the
+direction of stimulation; `optoda.ipynb` reads it from the data, after correcting a 2700-s offset
+of the detection clock, and tests the claim on that basis; the syllable decoder of Fig. 1l was too large to run; the encoding, decoding and
 reinforcement-learning models and the Opto-DA target-specificity panel were not run within the time
 of the attempt.
 
