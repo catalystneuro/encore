@@ -1,0 +1,838 @@
+# Claims for Capek, Arenas, Alpert, ... Para & Gallio (2025), "Evolution of temperature preference in
+# flies of the genus Drosophila", Nature 641, 447-455, doi:10.1038/s41586-025-08682-z, on dandiset
+# 001609 ("Comparative anatomy of thermosensory projection neurons in Drosophila species"; title and
+# description read on the archive, no data or asset list read).
+#
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-20, protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read. The version of record, as supplied in paper/10.1038-s41586-025-08682-z.txt (PyMuPDF
+# extraction of the PDF): main text, figure legends 1 to 5, Methods, Data and Code availability,
+# Extended Data Fig. 1 to 7 legends, the Nature Portfolio reporting summary, and the Source Data
+# workbook (41586_2025_8682_MOESM3_ESM.xlsx, one sheet per panel, extracted into the same file). The
+# paper has no other supplementary information; the Extended Data figures are its supplement.
+#
+# Code. None to read: "No custom algorithms or computer code was produced as part of this work"
+# (Code availability). The reporting summary names the software used (Fiji 2.14.0, CMTK Registration
+# GUI, neuTube 1.0, Vaa3D 1.1.2, CAJAL 1.0.3, scikit-learn 1.5.0, umap-learn, SigClust, Clustal Omega
+# 1.2.3 in Geneious Prime 2023.1.1, STAR 2.7.9a, MATLAB R2023a, Igor Pro 6.37, AxoGraph 1.5.4).
+#
+# Data the paper used, as it reports them.
+#   Behaviour. Two-choice temperature preference: groups of 15 male flies, 3-5 days old, on four
+#     Peltier tiles, base temperature 25 C against a test temperature in opposite quadrants, 3 min,
+#     then the configuration reversed for 3 min; PI = (no. BT - no. TT)/total, the two trials
+#     averaged; positive PI is avoidance of the test temperature, negative is attraction; each group
+#     tested against zero by a two-tailed one-sample t-test at 0.05 (Methods, Temperature preference
+#     assays). Species and strains: D. persimilis (NDSSC 14011-0111.51; extra strain 14011-0111.24),
+#     D. melanogaster (Canton-S; extra strain EG16), D. mojavensis mojavensis (15081-1352.47; extra
+#     strain D. m. wrigleyi 15081-1352.29), D. mettleri (15081-1502.13); D. melanogaster Gr28b
+#     mutants and rescues (Gr28b.d exc66 control, exc8 mutant, HC>DmelGr28b.d, HC>DmojGr28b.d);
+#     D. mojavensis Gr28b.d delta1 mutant and its DmelGr28b.d rescue. Optogenetic red/blue light
+#     choice with groups of 25 flies (Extended Data Fig. 5f).
+#   Electrophysiology. Whole-cell patch clamp of HEK293T (and S2R+) cells expressing Gr28b.d of four
+#     species; currents normalized, log-transformed, plotted against 1/T; threshold at the
+#     intersection of linear fits to the shallowest and steepest regions (Methods, Electrophysiology).
+#     Only per-cell thresholds and Q10 values are deposited (Source Data); no raw recordings.
+#   Sequences and RNA-seq. Gr28b.d coding sequences in GenBank (OQ624956 D. persimilis, OQ621410
+#     D. mojavensis, PP885916 D. mettleri); arista RNA-seq in NCBI SRA BioProject PRJNA948454.
+#   Connectome. Hemibrain v1.2.1 on neuprint.janelia.org (Fig. 4f, Extended Data Fig. 5a-c).
+#   Anatomy (the dandiset). TPN-V and other thermosensory projection neurons dye-labelled by
+#     electroporation in dissected brains, imaged on a two-photon microscope at 1,024 x 1,024 pixels in
+#     two mounting orientations, "front view" (scanned on the anterior-posterior axis) and "top view"
+#     (scanned on the dorsal-ventral axis). LH and calyx segmented in Fiji, stacks registered within
+#     species with CMTK, neurons traced with neuTube after thresholding (or Simple Neurite Tracer
+#     masks), skeletons exported as SWC. n = 5 TPN-V reconstructions per species for D. melanogaster,
+#     D. mojavensis, D. persimilis and D. mettleri (Fig. 5f), plus fills of one extra strain each of
+#     D. melanogaster, D. mojavensis and D. persimilis (Extended Data Fig. 7d-g). The dandiset
+#     description lists ten TPN-V z-stacks per species (five front view, five top view), front and top
+#     fills of an extra strain of each species, and representative fills of TPN-Ia, TPN-Ib and TPN-VI
+#     in D. mojavensis. Confocal images (Fig. 3f-i, 4c), the DM1 olfactory fills (Extended Data Fig. 6)
+#     and the full set of dye-fill experiments counted in Extended Data Fig. 4 are not in that list.
+#
+# The dandiset can test only the anatomy claims (Fig. 4e, 4h, 4i, 5b, 5e, 5f, 5g, Extended Data Fig.
+# 3d, 3e, 7d-g). Behaviour, threshold and connectome claims use the Source Data or the public archives
+# named above (data elsewhere).
+#
+# Method details the paper leaves open for the anatomy claims, with the readings named in the
+# criteria. (1) Which stacks form the n = 5 reconstructions per species: the Methods do not say whether
+# the front-view and top-view stacks of a species are the same five neurons, or which view feeds the
+# LH and which the calyx analysis. (2) The threshold used to binarize stacks before neuTube tracing.
+# (3) The size images are normalized to before the centre of mass (COM) is measured (Extended Data Fig.
+# 3e source data give COM in pixels; the frame size is not stated). (4) The linkage of the
+# agglomerative clustering (scikit-learn, "using Gower distance as a similarity measure"). (5) What
+# SigClust is run on (it needs feature vectors; the paper has a distance matrix) and which split it
+# tests. (6) UMAP parameters. CAJAL sampling (100 points, Euclidean distances, Gromov-Wasserstein) and
+# the combination of the two matrices (each normalized to its maximum, then summed) are fixed by the
+# Methods.
+#
+# Source Data irregularities noted for the author (not used to change any expected value). The sheet
+# named Figure5c holds the Fig. 5d thresholds and the sheet named Figure5d holds the Fig. 5c PIs. In
+# EDFigure5f the TLHON-II Gal4/+ values are identical to the TLHON-II > CsChrimson values. In EDFigure2
+# the wild-type 45 C values equal Figure1d's 40 C column, and the 40 C group has 7 and 7 values where
+# the legend says N = 11. Figure2i lists 12 cells where the legend says n = 13. The Fig. 3j legend
+# prints nearly the same P values for the control and the DmelGr28b.d rescue.
+schema_version: 2
+paper: doi:10.1038/s41586-025-08682-z
+claims:
+- id: fig1b-persimilis-prefers-cool
+  statement: In two-choice assays against a 25 C base, D. persimilis prefers about 15 to 20 C and
+    avoids warmer test temperatures (n = 8 groups of 15 flies).
+  source: Results, Thermal preference in Drosophila species, paragraph 1; Figure 1b
+  quote: in two-choice temperature preference assays, D. persimilis prefers distinctly cool
+    conditions9 (15–20 °C; Fig. 1a,b)
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure1b
+  criterion: Per test temperature, the group PIs (PI = (no. BT - no. TT)/total; negative is
+    attraction) tested against zero by a two-tailed one-sample t-test at 0.05 (Methods, Temperature
+    preference assays). The paper does not say how "prefers 15 to 20 C" is decided. Readings are (a)
+    the PI is significantly negative at both 15 and 20 C; (b) 15 and 20 C are the only test
+    temperatures with a negative mean PI. Reproduced when, under one reading, that holds and the PI is
+    significantly positive at 30, 35 and 40 C.
+- id: fig1c-melanogaster-prefers-25
+  statement: D. melanogaster prefers about 25 C, avoiding both lower and higher test temperatures
+    against a 25 C base (n = 6 groups of 15 flies).
+  source: Results, Thermal preference in Drosophila species, paragraph 2; Figure 1c
+  quote: in laboratory assays this species prefers temperatures close to those also favoured by its
+    human host10,11 (about 25 °C; Fig. 1c)
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure1c
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 per test temperature
+    (Methods). Reproduced when the PI is significantly positive at 10, 15, 20, 30, 35 and 40 C;
+    partially reproduced when it is at five of these six.
+- id: fig1d-mojavensis-prefers-hot
+  statement: D. mojavensis prefers about 30 to 35 C over 25 C (n = 11 groups of 15 flies), conditions
+    that D. melanogaster and D. persimilis strongly avoid.
+  source: Results, Thermal preference in Drosophila species, paragraphs 3 and 4; Figure 1d
+  quote: D. mojavensis prefers distinctly hot conditions9,14 (30–35 °C; Fig. 1d), conditions that were
+    strongly avoided by both D. melanogaster and D. persimilis
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheets
+    Figure1b, Figure1c and Figure1d
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 per test temperature
+    (Methods). Reproduced when the D. mojavensis PI is significantly negative at 30 and 35 C and the
+    D. melanogaster and D. persimilis PIs are significantly positive at 30 and 35 C. Partially
+    reproduced when the D. mojavensis part holds alone. The Figure1d 40 C column equals the wild-type
+    45 C values of sheet EDFigure2; it is not used here.
+- id: fig2n-species-thresholds
+  statement: The heat activation threshold of Gr28b.d expressed in HEK293T cells differs between
+    species, about 21 C for D. persimilis (n = 9 cells), 26 C for D. melanogaster (n = 13) and 29 C for
+    D. mojavensis (n = 13), each pair differing significantly.
+  source: Figure 2n; Results, Divergent heat thresholds for Gr28b.d, paragraphs 3 to 5
+  quote: n, Systematic differences in threshold reveal species specificity (n = 9, 13 and 13,
+    respectively)
+  statistics:
+  - about: D. persimilis against D. melanogaster
+    test: one-way analysis of variance
+    p: 2.9e-6
+    n: 9 and 13 cells
+  - about: D. persimilis against D. mojavensis
+    test: one-way analysis of variance
+    p: 9.9e-10
+    n: 9 and 13 cells
+  - about: D. melanogaster against D. mojavensis
+    test: one-way analysis of variance
+    p: 1.39e-4
+    n: 13 and 13 cells
+  expected:
+  - quantity: mean threshold, DperGr28b.d in HEK293T cells (value printed in Figure 2n)
+    value: 21.13
+    tolerance: 2.11
+    unit: degrees C
+  - quantity: mean threshold, DmelGr28b.d in HEK293T cells (value printed in Figure 2n)
+    value: 25.88
+    tolerance: 2.59
+    unit: degrees C
+  - quantity: mean threshold, DmojGr28b.d in HEK293T cells (value printed in Figure 2n)
+    value: 28.98
+    tolerance: 2.9
+    unit: degrees C
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure2n (per-cell thresholds; the recordings are not deposited)
+  criterion: Means of the per-cell thresholds. The legend calls the pairwise P values "one-way analysis
+    of variance" without saying how pairs are formed. Readings are (a) a one-way ANOVA on each pair of
+    species alone; (b) Tukey HSD after a one-way ANOVA of the three species; (c) uncorrected pairwise
+    contrasts using the pooled error of the three-species ANOVA. Reproduced when all three means are
+    within tolerance, ordered D. persimilis < D. melanogaster < D. mojavensis, and every pair has p <
+    0.05 under one reading.
+- id: fig2o-s2r-same-threshold
+  statement: The DmelGr28b.d threshold recorded in Drosophila S2R+ cells (about 26 C, n = 13) is the
+    same as in HEK293T cells.
+  source: Figure 2o; Results, Divergent heat thresholds for Gr28b.d, paragraph 3
+  quote: the in vitro threshold of about 26 °C was not a function of the expression system, as it was
+    the same when DmelGr28b.d was expressed in an insect cell line
+  statistics:
+  - about: DmelGr28b.d in HEK293T against S2R+ cells
+    test: one-way analysis of variance
+    p: 0.986
+    n: 13 and 13 cells
+  expected:
+  - quantity: mean threshold, DmelGr28b.d in S2R+ cells (value printed in Figure 2o)
+    value: 25.82
+    tolerance: 2.58
+    unit: degrees C
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheets
+    Figure2n and Figure2o
+  criterion: A claim of absence, judged on the paper's test, a one-way ANOVA of the HEK293T against
+    the S2R+ thresholds at 0.05. Reproduced when p >= 0.05 and the S2R+ mean is within tolerance; the
+    difference in means is reported.
+- id: fig2i-two-q10-processes
+  statement: Arrhenius plots of DmelGr28b.d currents show two processes with different Q10 values,
+    below and above the threshold.
+  source: Figure 2h,i legend
+  quote: A representative Arrhenius plot (Methods) reveals two distinct processes characterized by
+    different Q10 values
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure2i
+  criterion: From the per-cell Q10 values of the two processes (Methods, Q10 = (I2/I1)^(10/(T2 - T1))).
+    The paper reports no test and no numbers in the text. Reproduced when the mean Q10 of the second
+    (steep) process exceeds that of the first; the number of cells where it does is reported. The sheet
+    lists 12 cells, the legend n = 13.
+- id: fig2cd-sequence-identity
+  statement: DperGr28b.d is 84.3% identical to DmelGr28b.d, and DmojGr28b.d is 79.7% identical to
+    both DmelGr28b.d and DperGr28b.d.
+  source: Figure 2d; Results, Divergent heat thresholds for Gr28b.d, paragraphs 4 and 5
+  quote: Next, we tested D. persimilis Gr28b.d (DperGr28b.d; 84% identical to the DmelGr28b.d protein
+    sequence, Fig. 2c) ... (DmojGr28b.d; 79.7% identical to DmelGr28b.d and 79.7% identical to
+    DperGr28b.d, Fig. 2d)
+  expected:
+  - quantity: identity, D. melanogaster against D. persimilis (Figure 2d)
+    value: 84.3
+    tolerance: 8.43
+    unit: percent
+  - quantity: identity, D. melanogaster against D. mojavensis
+    value: 79.7
+    tolerance: 7.97
+    unit: percent
+  - quantity: identity, D. mojavensis against D. persimilis
+    value: 79.7
+    tolerance: 7.97
+    unit: percent
+  data: elsewhere
+  where: GenBank OQ624956 (DperGr28b.d) and OQ621410 (DmojGr28b.d); the paper gives no accession for
+    DmelGr28b.d
+  criterion: Protein alignment with Clustal Omega v1.2.3 (Methods, Phylogenetic analysis; reporting
+    summary, in Geneious Prime 2023.1.1). The DmelGr28b.d sequence is open; the reading is the
+    Gr28b-PD protein of the D. melanogaster reference genome. How identity is counted is open; readings
+    are (a) identical positions over all aligned columns, gaps included (the Geneious default); (b)
+    identical positions over columns without gaps; (c) identical positions over the shorter sequence.
+    Reproduced when all three values are within tolerance under one reading.
+- id: fig2a-exon-d-divergent
+  statement: Gr28b.d is divergent across 25 Drosophila species, most of all in the amino terminus and
+    transmembrane domains encoded by exon D, while the pore domain is much more conserved.
+  source: Results, Divergent heat thresholds for Gr28b.d, paragraph 1; Figure 2a-c; Extended Data
+    Figure 1
+  quote: the sequence of Gr28b is divergent across Drosophila species ... especially within the amino
+    terminus and the transmembrane domains encoded by the D exon (by contrast, the pore domain is much
+    more conserved
+  criterion: Clustal Omega v1.2.3 alignment of the 25 Gr28b.d proteins (Methods). The paper names no
+    source for 22 of the sequences. Reproduced when the mean pairwise identity per alignment column is
+    lower over the exon-D region than over the region coded by the common exons.
+- id: fig3ce-arista-rnaseq
+  statement: RNA-seq of D. mojavensis aristae shows selective expression of the Gr28b.d variant among
+    the Gr28b variants, at levels comparable to Ir25a and Ir93a.
+  source: Results, Conserved heat sensing in D. mojavensis, paragraph 1; Figure 3c-e
+  quote: we performed RNA sequencing of D. mojavensis arista samples and confirmed selective expression
+    of the DmojGr28b.d variant in this organ, at levels comparable to those of other gene products that
+    have known expression in thermoreceptors (Ir25a and Ir93a; Fig. 3c–e)
+  expected:
+  - quantity: total reads
+    value: 19107080
+    tolerance: 0
+    unit: reads
+  - quantity: reads uniquely mapped to the genome
+    value: 92.12
+    tolerance: 9.21
+    unit: percent
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA948454
+  criterion: Reads trimmed to 75 bp, aligned with STAR (v2.7.9a, default parameters), counts per gene
+    from STAR, RPKM from gene lengths and total mapped reads, shown as log2(RPKM + 1) (Methods, RNA
+    sequencing). The total read count must match exactly, as it is a count of the deposited reads. The
+    genome assembly and the annotation of the five predicted Gr28b variants are not given; how reads in
+    exons shared by the variants are assigned is open. Readings are (a) counts over each variant's own
+    first exon; (b) counts over full transcript models, ambiguous reads left out. "Comparable" is not
+    defined; readings are (i) Gr28b.d log2(RPKM + 1) inside the range spanned by Ir25a and Ir93a; (ii)
+    within 1 log2 unit of the lower of the two. Reproduced when, under a reading, Gr28b.d has the
+    highest RPKM of the five Gr28b variants and is comparable to Ir25a and Ir93a.
+- id: fig3ab-locus-structure
+  statement: The Gr28b locus of D. mojavensis has the same structure as that of D. melanogaster, with
+    five predicted variants differing in the first coding exon, each from its own promoter.
+  source: Results, Conserved heat sensing in D. mojavensis, paragraph 1; Figure 3a,b
+  quote: At the genome level, the structure of the Gr28b locus is very similar between the two species,
+    including the existence of five predicted variants that differ in the first coding exon
+  criterion: The paper names no genome assembly or annotation for D. mojavensis. Reproduced when five
+    alternative first coding exons (A to E) joined to shared downstream exons are found at the
+    D. mojavensis Gr28b locus.
+- id: fig3fi-gfp-three-arista-neurons
+  statement: A DmojGr28b.d promoter fusion to GFP labels three neurons of the D. mojavensis arista, as
+    the analogous construct does in D. melanogaster.
+  source: Results, Conserved heat sensing in D. mojavensis, paragraph 1; Figure 3f-i
+  quote: This reagent directly allowed us to visualize expression in three neurons of the arista
+  expected:
+  - quantity: GFP-labelled neurons per arista, D. mojavensis
+    value: 3
+    tolerance: 0
+    unit: neurons
+- id: fig3j-mel-mutant-loses-innocuous-avoidance
+  statement: Control D. melanogaster avoid test temperatures above 25 C (n = 11 groups), while
+    Gr28b exc8 mutants lose avoidance of 27.5 and 30 C (n = 8) and keep avoidance of 35 and 40 C.
+  source: Figure 3j; Results, Divergent heat response in D. mojavensis, paragraph 1
+  quote: Control D. melanogaster avoid heat above 25 °C (n = 11 each); DmelGr28bexc8 mutants lose
+    avoidance of 27.5 °C and 30 °C (empty arrowheads; n = 8 each)
+  statistics:
+  - about: control, 25 C
+    test: two-tailed one-sample t-test
+    p: 0.331
+  - about: control, 27.5 C
+    test: two-tailed one-sample t-test
+    p: 9.16e-3
+  - about: control, 30 C
+    test: two-tailed one-sample t-test
+    p: 2.21e-3
+  - about: control, 35 C
+    test: two-tailed one-sample t-test
+    p: 6.87e-7
+  - about: control, 40 C
+    test: two-tailed one-sample t-test
+    p: 1.11e-9
+  - about: mutant, 25 C
+    test: two-tailed one-sample t-test
+    p: 0.854
+  - about: mutant, 27.5 C
+    test: two-tailed one-sample t-test
+    p: 0.671
+  - about: mutant, 30 C
+    test: two-tailed one-sample t-test
+    p: 0.864
+  - about: mutant, 35 C
+    test: two-tailed one-sample t-test
+    p: 4.94e-4
+  - about: mutant, 40 C
+    test: two-tailed one-sample t-test
+    p: 1.08e-6
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure3j
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05, per genotype and test
+    temperature (Figure 3 legend; Methods). Reproduced when the control PI is significantly positive at
+    27.5, 30, 35 and 40 C and not at 25 C, and the mutant PI is not significantly different from zero
+    at 25, 27.5 and 30 C (the absence judged on this test) and significantly positive at 35 and 40 C.
+- id: fig3j-cross-species-rescue-mel
+  statement: In D. melanogaster Gr28b mutants, DmelGr28b.d restores avoidance from 27.5 C (n = 8
+    groups), while DmojGr28b.d restores avoidance of 30 C but not of 27.5 C (n = 10), a D. mojavensis-like
+    threshold.
+  source: Figure 3j; Results, Cross-species rescue of Gr28b.d, paragraph 3
+  quote: same-species rescue restores the normal D. melanogaster avoidance of hot temperatures starting
+    at 27.5 °C ... expression of DmojGr28b.d in D. melanogaster mutant flies also restored avoidance,
+    but only to 30 °C and not to 27.5 °C
+  statistics:
+  - about: DmelGr28b.d rescue, 25 C
+    test: two-tailed one-sample t-test
+    p: 0.331
+  - about: DmelGr28b.d rescue, 27.5 C
+    test: two-tailed one-sample t-test
+    p: 9.16e-3
+  - about: DmelGr28b.d rescue, 30 C
+    test: two-tailed one-sample t-test
+    p: 2.21e-3
+  - about: DmelGr28b.d rescue, 35 C
+    test: two-tailed one-sample t-test
+    p: 6.97e-7
+  - about: DmelGr28b.d rescue, 40 C
+    test: two-tailed one-sample t-test
+    p: 1.11e-9
+  - about: DmojGr28b.d rescue, 25 C
+    test: two-tailed one-sample t-test
+    p: 0.362
+  - about: DmojGr28b.d rescue, 27.5 C
+    test: two-tailed one-sample t-test
+    p: 0.685
+  - about: DmojGr28b.d rescue, 30 C
+    test: two-tailed one-sample t-test
+    p: 6.94e-3
+  - about: DmojGr28b.d rescue, 35 C
+    test: two-tailed one-sample t-test
+    p: 6.49e-6
+  - about: DmojGr28b.d rescue, 40 C
+    test: two-tailed one-sample t-test
+    p: 5.38e-10
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure3j
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 (Figure 3 legend).
+    Reproduced when the DmelGr28b.d rescue PI is significantly positive at 27.5, 30, 35 and 40 C and
+    not at 25 C, and the DmojGr28b.d rescue PI is significantly positive at 30, 35 and 40 C and not
+    significantly different from zero at 25 and 27.5 C (the absence judged on this test). The printed
+    P values of the DmelGr28b.d rescue nearly equal the control's, so the recomputed values are
+    reported beside them.
+- id: fig3k-moj-mutant-loses-attraction
+  statement: Wild-type D. mojavensis are indifferent to 27.5 C but attracted to 30 and 35 C (n = 6
+    groups); Gr28b.d delta1 mutants lose attraction to 30 and 35 C (n = 8).
+  source: Figure 3k; Results, Divergent heat response in D. mojavensis, paragraph 2
+  quote: Wild-type D. mojavensis are indifferent to 27.5 °C but attracted to 30 °C and 35 °C (n = 6
+    each); DmojGr28b.dΔ1 mutants lose attraction to 30 °C and 35 °C
+  statistics:
+  - about: wild type, 25 C
+    test: two-tailed one-sample t-test
+    p: 0.833
+  - about: wild type, 27.5 C
+    test: two-tailed one-sample t-test
+    p: 0.986
+  - about: wild type, 30 C
+    test: two-tailed one-sample t-test
+    p: 2.57e-3
+  - about: wild type, 35 C
+    test: two-tailed one-sample t-test
+    p: 8.56e-3
+  - about: mutant, 25 C
+    test: two-tailed one-sample t-test
+    p: 0.845
+  - about: mutant, 27.5 C
+    test: two-tailed one-sample t-test
+    p: 0.443
+  - about: mutant, 30 C
+    test: two-tailed one-sample t-test
+    p: 0.08
+  - about: mutant, 35 C
+    test: two-tailed one-sample t-test
+    p: 0.282
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure3k
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 (Figure 3 legend).
+    Reproduced when the wild-type PI is significantly negative at 30 and 35 C and not significantly
+    different from zero at 25 and 27.5 C, and the mutant PI is not significantly different from zero
+    at any test temperature (the absences judged on this test).
+- id: fig3k-mel-rescue-in-moj
+  statement: Expressing DmelGr28b.d in D. mojavensis Gr28b.d delta1 mutants restores attraction to 30
+    and 35 C and also produces attraction to 27.5 C, a D. melanogaster-like threshold (n = 7, 7, 7 and
+    6 groups).
+  source: Figure 3k; Results, Cross-species rescue of Gr28b.d, paragraph 4
+  quote: the D. melanogaster-rescued D. mojavensis now seemed to also be attracted to 27.5 °C, a
+    temperature that their wild-type counterpart were indifferent to
+  statistics:
+  - about: rescue, 25 C
+    test: two-tailed one-sample t-test
+    p: 0.701
+  - about: rescue, 27.5 C
+    test: two-tailed one-sample t-test
+    p: 7.15e-4
+  - about: rescue, 30 C
+    test: two-tailed one-sample t-test
+    p: 2.43e-4
+  - about: rescue, 35 C
+    test: two-tailed one-sample t-test
+    p: 8.14e-3
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    Figure3k
+  depends_on:
+  - fig3k-moj-mutant-loses-attraction
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 (Figure 3 legend).
+    Reproduced when the rescue PI is significantly negative at 27.5, 30 and 35 C and not at 25 C, and
+    the wild-type PI at 27.5 C is not (from fig3k-moj-mutant-loses-attraction).
+- id: ed2-moj-mutant-noxious-normal
+  statement: D. mojavensis Gr28b.d delta1 mutants avoid noxious heat (40 and 45 C) as wild-type flies
+    do, with no difference between the two.
+  source: Extended Data Figure 2; Results, Divergent heat response in D. mojavensis, paragraph 2
+  quote: The D. mojavensis Gr28b.d null mutant displays normal avoidance of noxious heat
+  statistics:
+  - about: wild type against mutant, 40 C
+    test: two-tail two sample t-test
+    p: 0.678
+  - about: wild type against mutant, 45 C
+    test: two-tail two sample t-test
+    p: 0.72
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    EDFigure2
+  criterion: A claim of absence, judged on the paper's test, a two-tailed two-sample t-test of
+    wild-type against mutant PIs at 0.05, at 40 and at 45 C. Reproduced when neither is significant;
+    the mean PIs and their difference are reported. The sheet has 7 and 7 groups at 40 C (legend N =
+    11), and its wild-type 45 C values equal Figure1d's 40 C column.
+- id: fig4f-tpnv-top-common-output
+  statement: In the hemibrain connectome TPN-V is the top common synaptic output of the three hot
+    TRNs of the arista, receiving 14% of all their output synapses and 26% (564 of 2146) when local
+    interneurons are left out.
+  source: Methods, Connectomics; Figure 4f
+  quote: TPN-V stands as the overall top common synaptic output of the hot TRNs (receiving 14% of all
+    output synapses), as well as if one excludes connections to local interneurons (cells that do not
+    leave the PAL), in which case TPN-V receives 26% of all hot TRN output synapses (564/2146 synapses
+  expected:
+  - quantity: synapses from the hot TRNs onto TPN-V
+    value: 564
+    tolerance: 56
+    unit: synapses
+  - quantity: TPN-V share of hot TRN output synapses, local interneurons left out
+    value: 26
+    tolerance: 2.6
+    unit: percent
+  - quantity: TPN-V share of all hot TRN output synapses
+    value: 14
+    tolerance: 1.4
+    unit: percent
+  data: elsewhere
+  where: Hemibrain v1.2.1 on neuprint.janelia.org
+  criterion: neuPrint Common connectivity query of the three hot TRNs (body IDs 2069320377, 2163102697
+    and 5813024340, from sheet EDFigure5a of the Source Data), partners ranked, threshold > 9 synapses
+    (Methods, Connectomics). The 2146 is the sum of the weights of the 15 projection-neuron types in
+    sheet Figure4f. Open is whether the > 9 threshold applies to each TRN or to the summed weight;
+    both readings are run. Reproduced when TPN-V is the top common output and all three values are
+    within tolerance under one reading.
+- id: ed5a-tlhon2-main-target
+  statement: TPN-V carries 52.67% of the hot TRN output synapses onto TPNs and is the main direct path
+    from the hot TRNs to TLHON-II, which in turn is the main synaptic output of TPN-V, overall and
+    within the LH.
+  source: Extended Data Figure 5a-c; Results, Divergent TPN-V innervation of the LH, paragraph 5
+  quote: TPN-V is the major output of the aristal hot TRNs (comprising 52.67% of hot TRN output synapses
+    to TPNs) and the major direct path of connectivity from hot TRNs to Thermosensory Lateral Horn
+    Output Neuron II (TLHON-II), which is in turn the major target of TPN-V
+  expected:
+  - quantity: TPN-V share of hot TRN output synapses onto TPNs
+    value: 52.67
+    tolerance: 5.27
+    unit: percent
+  data: elsewhere
+  where: Hemibrain v1.2.1 on neuprint.janelia.org
+  criterion: neuPrint queries as in Methods, Connectomics (Shortest path from each hot TRN to TLHON-II,
+    body ID 514068564; TPN-V is body 1975878958 in sheet EDFigure5a). Reproduced when the share is
+    within tolerance, TPN-V is the TPN with the most synapses onto TLHON-II, and TLHON-II is the
+    downstream partner with the most synapses from TPN-V both over the whole brain and within the
+    right LH ROI.
+- id: ed5e-tlhon2-silencing
+  statement: Silencing TLHON-II with Kir2.1 reduces heat avoidance at 30, 35 and 40 C but not at 25 C
+    (n = 8 groups per condition).
+  source: Extended Data Figure 5e; Results, Divergent TPN-V innervation of the LH, paragraph 5
+  quote: Genetic silencing using TLHON-II:Gal4>Kir2.1 impacts heat avoidance
+  statistics:
+  - about: 25 C
+    test: 2-way ANOVA
+    p: 0.748
+    n: 8 groups per genotype
+  - about: 30 C
+    test: 2-way ANOVA
+    p: 1.95e-3
+    n: 8 groups per genotype
+  - about: 35 C
+    test: 2-way ANOVA
+    p: 4.15e-5
+    n: 8 groups per genotype
+  - about: 40 C
+    test: 2-way ANOVA
+    p: 4.91e-7
+    n: 8 groups per genotype
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    EDFigure5e
+  criterion: The legend gives one P value per temperature from a 2-way ANOVA without saying what is
+    compared. Readings are (a) a genotype by temperature two-way ANOVA of the three genotypes, then
+    Tukey comparisons of TLHON-II > Kir2.1 with each control at each temperature, taking the larger P;
+    (b) the same with the two controls pooled; (c) the genotype effect of a one-way ANOVA at each
+    temperature. Reproduced when, under one reading, the experimental PI is below both controls with
+    p < 0.05 at 30, 35 and 40 C and p >= 0.05 at 25 C.
+- id: ed5f-tlhon2-optogenetic-avoidance
+  statement: Optogenetic activation of TLHON-II with CsChrimson makes flies avoid red light, while the
+    Gal4 and UAS controls show no preference (n = 9 groups of 25 flies).
+  source: Extended Data Figure 5f; Results, Divergent TPN-V innervation of the LH, paragraph 5
+  quote: Optogenetic activation via TLHON-II:Gal4>CsChrimson is sufficient to induce avoidance of red
+    light
+  statistics:
+  - about: Gal4/+
+    test: one sample t-test
+    p: 0.44
+  - about: UAS/+
+    test: one sample t-test
+    p: 0.983
+  - about: Gal4>UAS
+    test: one sample t-test
+    p: 2.54e-5
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    EDFigure5f
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 (Methods, Optogenetic
+    preference assays). Reproduced when the Gal4 > CsChrimson PI is significantly positive and neither
+    control differs from zero (the absence judged on this test). In the sheet the Gal4/+ values are
+    identical to the Gal4 > CsChrimson values, which would not give the printed p = 0.440; the result
+    for Gal4/+ is reported as computed from the sheet, with this noted.
+- id: fig4c-hot-glomerulus-conserved
+  statement: In D. mojavensis the hot receptor neurons of the arista target a place in the PAL
+    similar to the hot glomerulus of D. melanogaster.
+  source: Results, Mapping heat pathways in D. mojavensis, paragraph 2; Figure 4b,c
+  quote: in D. mojavensis, hot receptors of the arista target a location in the PAL similar to the ‘hot
+    glomerulus’ targeted by the analogous hot receptor cells in D. melanogaster
+  criterion: Judged as the paper does, by comparing confocal stacks of Gr28b.d promoter GFP (D.
+    mojavensis) and HC-Gal4 GFP (D. melanogaster) with nc82 counterstain (Methods, Immunostaining;
+    Fluorescence microscopy). Reproduced when the GFP terminals in D. mojavensis occupy a single
+    glomerulus at the corresponding position of the PAL.
+- id: fig4e-tpn-types-conserved
+  statement: Dye fills in D. mojavensis label the main TPN types described in D. melanogaster,
+    including TPN-Ia, TPN-Ib, TPN-III and TPN-VI.
+  source: Results, Mapping heat pathways in D. mojavensis, paragraph 4; Figure 4e
+  quote: Dye labelling revealed that the main TPN pathways that we previously described in D.
+    melanogaster are also present in D. mojavensis
+  data: with_inputs
+  criterion: As in Figure 4e, each D. mojavensis fill of a named type is compared with the hemibrain
+    v1.2.1 skeleton of that type (Methods, Neuron reconstructions). Reproduced when each of the
+    dandiset's representative fills (TPN-Ia, TPN-Ib, TPN-VI) shows the same PAL glomeruli, tract and
+    target regions as the EM type it is named for; partially reproduced when two of three do. TPN-III
+    is not in the dandiset's description and is reported as untested if absent.
+- id: ed4-tpnv-most-labelled
+  statement: TPN-V is the most often labelled TPN type in the dye fills (28 of 32 D. melanogaster
+    brains), and labelling frequencies follow connectivity with the hot TRNs and are similar across
+    species.
+  source: Results, Divergent TPN-V innervation of the LH, paragraph 1; Results, Mapping heat pathways
+    in D. mojavensis, paragraph 4; Extended Data Figure 4
+  quote: TPN-V was by far the most common TPN cell type labelled in our experiments (28/32 brains we
+    injected had at least some TPN-V labelling
+  expected:
+  - quantity: D. melanogaster brains with TPN-V labelled
+    value: 28
+    tolerance: 0
+    unit: brains of 32
+  criterion: Counts of fills that labelled up to 3 or 4 TPNs, classed by type, with experiments
+    labelling only local interneurons, too many TPNs, or olfactory projections left out (Extended
+    Data Figure 4 legend). The count must match exactly. Reproduced when TPN-V is the most frequent type
+    in each species and the order TPN-V, TPN-Ia, TPN-Ib follows the synapse weights 564, 434, 249 of
+    sheet Figure4f. The dandiset's description lists only selected stacks, so the full set of fills
+    may not be there.
+- id: fig4h-moj-laca-more-extensive
+  statement: D. mojavensis TPN-V innervates the lateral accessory calyx (lACA) of the mushroom body
+    more extensively than D. melanogaster TPN-V.
+  source: Results, Divergent TPN-V innervation of the LH, paragraph 2; Figure 4h
+  quote: in D. mojavensis, the innervation of the lACA by TPN-V appeared more extensive than that of D.
+    melanogaster
+  criterion: The paper shows this in representative front-view stacks and gives no measure of lACA
+    extent (the lACA is not segmented; only LH and calyx volumes are, Methods, Neuron reconstructions).
+    Readings are (a) the traced cable length of each reconstruction inside the calyx volume; (b) the
+    number of above-threshold pixels in the front-view maximum projection cropped to the calyx, as for
+    the COM (Methods, Quantification of projection neuron anatomy). The paper reports no test.
+    Reproduced when, under one reading, the D. mojavensis median over its five neurons exceeds the
+    D. melanogaster median; a one-sided Mann-Whitney test is shown as a variant.
+- id: fig4i-moj-lacks-anterior-ventral-lh
+  statement: D. melanogaster TPN-V innervates the ventral LH along its anterior-posterior extent, while
+    D. mojavensis TPN-V is limited to the posterior half of the ventral LH and lacks innervation of
+    the anterior-ventral LH.
+  source: Results, Divergent TPN-V innervation of the LH, paragraph 2 to 3; Figure 4i; Extended Data
+    Figure 6e
+  quote: TPN-V projections within the ventral LH appear less extensive and are limited to the posterior
+    half of the ventral LH region. In fact, in D. mojavensis, the anterior–ventral LH appears to
+    entirely lack TPN-V innervation
+  criterion: Measured with the paper's spatial measure, the COM of the LH maximum projection (Methods,
+    Quantification of projection neuron anatomy; Extended Data Figure 3e plots mean and SD of 5 per
+    species). Which stacks feed it is open; readings are (a) top-view stacks, the anterior-posterior
+    axis lying in the image plane; (b) registered reconstructions projected on the dorsal-ventral
+    axis. Reproduced when, under one reading, the D. mojavensis mean COM lies posterior to the D.
+    melanogaster mean and the two mean plus or minus SD intervals do not overlap along that axis. The
+    fraction of LH pixels or cable in the anterior half of the LH is shown as a variant, near zero for
+    D. mojavensis if "entirely lack" holds.
+- id: fig5b-persimilis-anterior-lh
+  statement: D. persimilis TPN-V innervates the anterior-ventral LH substantially, as D. melanogaster
+    TPN-V does.
+  source: Results, LH innervation matches species behaviour, paragraph 2; Figure 5b,f
+  quote: Our dye fills demonstrated substantial innervation of the anterior–ventral LH in D. persimilis,
+    similar to what we described for D. melanogaster
+  depends_on:
+  - fig4i-moj-lacks-anterior-ventral-lh
+  criterion: The LH COM measure and readings of fig4i-moj-lacks-anterior-ventral-lh. Reproduced when,
+    under the reading used there, the D. persimilis mean COM along the anterior-posterior axis is
+    closer to the D. melanogaster mean than to the D. mojavensis mean, and its mean plus or minus SD
+    interval does not overlap the D. mojavensis one.
+- id: fig5b-persimilis-laca-more
+  statement: D. persimilis TPN-V innervation of the lACA appears more pronounced than that of D.
+    melanogaster.
+  source: Results, LH innervation matches species behaviour, paragraph 2; Figure 5b
+  quote: Innervation of the lACA appeared more pronounced than in D. melanogaster (asterisks)
+  depends_on:
+  - fig4h-moj-laca-more-extensive
+  criterion: The measure and readings of fig4h-moj-laca-more-extensive. Reproduced when, under one
+    reading, the D. persimilis median exceeds the D. melanogaster median.
+- id: fig5e-mettleri-anterior-lh
+  statement: D. mettleri TPN-V amply innervates the anterior-ventral LH, resembling D. melanogaster
+    and D. persimilis more than its relative D. mojavensis.
+  source: Results, LH innervation matches species behaviour, paragraph 5; Figure 5e,f
+  quote: Our results show ample TPN-V innervation of the anterior–ventral LH in this species (Fig. 5e),
+    more closely resembling the innervation pattern of D. melanogaster and D. persimilis than that of
+    its relative D. mojavensis
+  depends_on:
+  - fig4i-moj-lacks-anterior-ventral-lh
+  criterion: The LH COM measure and readings of fig4i-moj-lacks-anterior-ventral-lh. Reproduced when,
+    under the reading used there, the D. mettleri mean COM along the anterior-posterior axis is closer
+    to both the D. melanogaster and D. persimilis means than to the D. mojavensis mean, and its mean
+    plus or minus SD interval does not overlap the D. mojavensis one.
+- id: fig5e-mettleri-laca-intermediate
+  statement: The lACA innervation of D. mettleri TPN-V lies between those of D. mojavensis and D.
+    persimilis.
+  source: Results, LH innervation matches species behaviour, paragraph 5; Figure 5e,f
+  quote: the D. mettleri pattern of TPN-V innervation within the lACA appears to lie in between that of
+    D. mojavensis and D. persimilis
+  depends_on:
+  - fig4h-moj-laca-more-extensive
+  criterion: The measure and readings of fig4h-moj-laca-more-extensive. Reproduced when, under one
+    reading, the D. mettleri median lies between the D. mojavensis and D. persimilis medians.
+- id: fig5g-moj-clusters-apart
+  statement: In a combined morphology (CAJAL) and centre of mass distance matrix of LH arborizations,
+    the five D. mojavensis TPN-V reconstructions cluster apart from those of D. melanogaster, D.
+    persimilis and D. mettleri (SigClust p = 1.97e-5).
+  source: Figure 5g; Results, LH innervation matches species behaviour, paragraph 5; Methods,
+    Quantification of projection neuron anatomy
+  quote: A distance matrix for reconstructions in f (Methods) demonstrates distinct clustering of the D.
+    mojavensis TPN-V arborizations within the LH
+  statistics:
+  - test: SigClust test
+    p: 1.97e-5
+    n: 20 reconstructions, 5 per species
+  criterion: From the Methods. Reconstructions cropped to the LH; CAJAL (v1.0.3) samples 100 points
+    per skeleton, builds Euclidean distance matrices and computes pairwise Gromov-Wasserstein
+    distances; the LH COM of each neuron is measured on a normalized maximum projection and pairwise
+    taxicab distances taken; both matrices are divided by their maxima and summed; hierarchical
+    clustering with scikit-learn AgglomerativeClustering, UMAP with umap-learn, SigClust at 0.05.
+    Open are the linkage (readings average and complete; single as a variant), the input to SigClust
+    (readings (a) rows of the summed distance matrix as feature vectors; (b) a classical
+    multidimensional scaling embedding of the matrix; (c) the UMAP coordinates) and the split it tests
+    (the D. mojavensis reconstructions against the rest). Reproduced when, under one reading, the top
+    split of the dendrogram separates the five D. mojavensis reconstructions from the other fifteen
+    and SigClust gives p < 0.05. Partially reproduced when D. mojavensis forms a pure cluster below the
+    top split, or four of five group together, with p < 0.05.
+- id: ed3d-cajal-sorts-lh-not-calyx
+  statement: CAJAL morphology distances alone sort TPN-V neurons by species in the LH but much less in
+    the calyx.
+  source: Extended Data Figure 3d
+  quote: UMAP embedding of pairwise distances from CAJAL analysis alone shows neuronal morphologies sort
+    out by species in the Lateral Horn (LH) but not as much for the Calyx (CA)
+  depends_on:
+  - fig5g-moj-clusters-apart
+  criterion: Gromov-Wasserstein distances from CAJAL as in fig5g-moj-clusters-apart, computed
+    separately for LH and calyx crops. The paper shows UMAP plots only. Readings for "sort out by
+    species" are (a) the fraction of neurons whose nearest neighbour by distance is of the same
+    species; (b) the mean silhouette score by species on the distance matrix. Reproduced when, under
+    one reading, the LH value exceeds the calyx value.
+- id: ed3e-com-link
+  kind: link
+  statement: The dandiset's TPN-V stacks are those whose LH and calyx centres of mass the paper reports,
+    so that the COM computed from them reproduces the pattern of the Source Data.
+  source: Extended Data Figure 3e; Source Data sheet EDFigure3e
+  data: with_inputs
+  criterion: Per species, the COM of the maximum projection cropped to the LH and to the calyx (Methods,
+    Quantification of projection neuron anatomy). The normalized frame size is not given, so COM is
+    compared as a fraction of the crop. The link holds when the dandiset has five TPN-V stacks per
+    species for the four species, and the LH COM species means show the Source Data's pattern, D.
+    mojavensis lowest on the axis the sheet calls Y (sheet means about 78 against 135 to 145 for the
+    others) and highest on X; it is partial when only one axis shows it.
+- id: ed7-additional-strains-behaviour
+  statement: Additional strains of D. persimilis, D. melanogaster and D. mojavensis show the same
+    temperature preference as the strains of Figure 1.
+  source: Extended Data Figure 7a-c; Results, LH innervation matches species behaviour, paragraph 3
+  quote: Preference indexes measured from additional strains of D. persimilis, D. melanogaster, and D.
+    mojavensis, demonstrate consistent behavior within populations of the same species
+  statistics:
+  - about: D. persimilis strain 24, 15 C
+    test: two-tail one sample t-test
+    p: 6.30e-3
+  - about: D. persimilis strain 24, 20 C
+    test: two-tail one sample t-test
+    p: 3.33e-4
+  - about: D. persimilis strain 24, 25 C
+    test: two-tail one sample t-test
+    p: 0.747
+  - about: D. persimilis strain 24, 30 C
+    test: two-tail one sample t-test
+    p: 2.47e-5
+  - about: D. persimilis strain 24, 35 C
+    test: two-tail one sample t-test
+    p: 7.67e-6
+  - about: D. persimilis strain 24, 40 C
+    test: two-tail one sample t-test
+    p: 1.55e-7
+  - about: D. melanogaster EG16, 15 C
+    test: two-tail one sample t-test
+    p: 2.22e-9
+  - about: D. melanogaster EG16, 20 C
+    test: two-tail one sample t-test
+    p: 9.38e-6
+  - about: D. melanogaster EG16, 25 C
+    test: two-tail one sample t-test
+    p: 0.488
+  - about: D. melanogaster EG16, 30 C
+    test: two-tail one sample t-test
+    p: 1.34e-5
+  - about: D. melanogaster EG16, 35 C
+    test: two-tail one sample t-test
+    p: 1.76e-10
+  - about: D. mojavensis wrigleyi, 25 C
+    test: two-tail one sample t-test
+    p: 0.888
+  - about: D. mojavensis wrigleyi, 30 C
+    test: two-tail one sample t-test
+    p: 3.66e-8
+  - about: D. mojavensis wrigleyi, 35 C
+    test: two-tail one sample t-test
+    p: 1.58e-7
+  - about: D. mojavensis wrigleyi, 40 C
+    test: two-tail one sample t-test
+    p: 1.13e-5
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheets
+    EDFigure7a, EDFigure7b and EDFigure7c
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 (legend). Reproduced
+    when the D. persimilis strain is significantly negative at 15 and 20 C and positive at 30, 35 and
+    40 C; the D. melanogaster strain significantly positive at 15, 20, 30 and 35 C; the D. mojavensis
+    strain significantly negative at 30 and 35 C; and none of the three differs from zero at 25 C.
+    The sign at 40 C for D. mojavensis wrigleyi is reported.
+- id: ed7-additional-strains-anatomy
+  statement: TPN-V anatomy is consistent within species across strains, and in the distance matrix the
+    reconstructions of the additional strains cluster with their own species.
+  source: Extended Data Figure 7d-g
+  quote: 2-photon z-stacks of dye-labelled TPN-V in each of the three strains shows consistent anatomy
+    within species ... A distance matrix of reconstructions (see methods) shows additional strains
+    cluster by species
+  depends_on:
+  - fig5g-moj-clusters-apart
+  criterion: The additional-strain reconstructions are added to the distance matrix of
+    fig5g-moj-clusters-apart, with the same method and readings. The number of additional-strain
+    reconstructions is not given. "Cluster by species" is read as (a) each additional reconstruction's
+    nearest neighbour is of its own species; (b) the D. mojavensis wrigleyi reconstructions fall in
+    the D. mojavensis cluster and the D. melanogaster and D. persimilis ones outside it. Reproduced
+    when one reading holds for every additional reconstruction.
+- id: fig5c-mettleri-avoids-heat
+  statement: D. mettleri is indifferent to 27.5 C but avoids 30 C and higher, in the innocuous and
+    noxious range (n = 8 groups of 15 flies).
+  source: Results, LH innervation matches species behaviour, paragraph 4; Figure 5c
+  quote: in two-choice assays, this species seems indifferent to 27.5 °C (like D. mojavensis) but
+    robustly avoids 30 °C (like D. melanogaster)
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    named Figure5d (it holds the Figure 5c preference indexes)
+  criterion: Two-tailed one-sample t-test of the group PIs against zero at 0.05 (Methods). Reproduced
+    when the PI is not significantly different from zero at 27.5 C (the absence judged on this test)
+    and significantly positive at 30, 35 and 40 C.
+- id: fig5d-mettleri-threshold
+  statement: The heat activation threshold of D. mettleri Gr28b.d in HEK293T cells is about 30 C (n
+    = 13 recordings), between the behavioural thresholds of 27.5 and 30 C.
+  source: Figure 5d; Results, LH innervation matches species behaviour, paragraph 4
+  quote: This is very close to the threshold we recorded in vitro (about 30 °C, Fig. 5d
+  expected:
+  - quantity: mean threshold, DmetGr28b.d in HEK293T cells (value printed in Figure 5d)
+    value: 30.1
+    tolerance: 3.01
+    unit: degrees C
+  data: elsewhere
+  where: Nature Source Data for doi:10.1038/s41586-025-08682-z (41586_2025_8682_MOESM3_ESM.xlsx), sheet
+    named Figure5c (it holds the Figure 5d thresholds)
+- id: ed6-olfactory-lh-conserved
+  statement: The DM1 olfactory projection neuron innervates the LH in D. mojavensis as in D.
+    melanogaster, while D. mojavensis TPN-V innervates only the posterior LH, so LH architecture
+    itself is conserved.
+  source: Extended Data Figure 6c,e; Results, Divergent TPN-V innervation of the LH, paragraph 6
+  quote: 2-photon imaging demonstrates that DM1-PN innervation (white, labelled with AlexaFluorTM 594
+    dye) of the LH is essentially identical in D. mojavensis as compared to D. melanogaster
+  data: with_inputs
+  criterion: Judged as in Extended Data Figure 6, by comparing D. mojavensis DM1 fills (three flies)
+    with the hemibrain v1.2.1 DM1 projection neuron skeleton, and the TPN-V fill in the same brain
+    with the EM TPN-V. Reproduced when the DM1 fill covers the same LH and calyx regions as the EM DM1
+    neuron while the TPN-V fill is confined to the posterior LH. The dandiset's description does not
+    list DM1 fills.
