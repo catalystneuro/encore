@@ -18,4 +18,4 @@ values of Figure 7 (Supplement 4, not supplied) are read from the paper's plotti
 in the datasets. A failure to reproduce here may be a failure
 of this attempt, not of the paper: see the reasoning and the differences from the paper's method.
 
-Run with `python tools/entry.py all entries/pelot-2020`; about 8 minutes, 1.5 GB of memory.
+Run with `python tools/entry.py all entries/pelot-2020`; about 8 minutes, 1.3 GB of memory.
