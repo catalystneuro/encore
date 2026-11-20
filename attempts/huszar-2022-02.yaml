@@ -1,0 +1,1687 @@
+schema_version: 3
+id: huszar-2022-02
+datasets:
+- archive: dandi
+  id: '000552'
+  version: 0.261113.1035
+  doi: 10.48324/dandi.000552/0.261113.1035
+  relation: primary
+paper: doi:10.1038/s41593-022-01138-x
+date: 2026-11-19
+entry: huszar-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44458325474
+outcomes:
+- claim: cohort-birthdates
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:cohort-birthdates
+  measured:
+  - 17
+  - 12
+  - 5
+  notes: 17 subjects, 12 male and 5 female, with 4, 3, 6 and 4 mice at E13.5, E14.5, E15.5 and E16.5. All 17 animals of Supplementary
+    Table 1 are present and agree on birthdate. Sex and electroporation day are derived from the subject id, as the subject
+    descriptions say.
+- claim: st1-animal-sessions
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:st1-animal-sessions
+  measured:
+  - 96
+  - 104
+  - 664
+  notes: All 17 mice match the table's session count and its light-responsive count. The 15 homecage mice give 96 sessions
+    and 664 light-responsive cells; all 17 give 104 sessions.
+  deviations:
+  - The claims file lists the per-mouse counts "in the table's row order" but names the mice in birthdate order in its opening
+    comment. The table's row order was read from the image of Supplementary Table 1 (Supplementary Information PDF, page 2),
+    which lists e13_1m1, e13_1f1, e14_1m1, e15_4m1, e15_4m2, e15_5m1, e13_16f1 and so on; with that order every row matches.
+- claim: sessions-durations
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:sessions-durations
+  measured:
+  - 96
+  - 309.9
+  notes: No session set has 92 sessions. Under the 96-session reading (the 15 homecage mice) the count is within 92 +- 9.2,
+    the median duration is 309.9 min (309.1 +- 30.9) and the durations run from 113.7 to 475.6 min, the paper's exact range.
+    Under the 104-session reading the count is outside tolerance (median 319.6 min, range 113.7 to 494.2 min). Two sessions,
+    e13_1f1_200305 and e13_1f1_200307, hold only wake in their sleep states, so the criterion's requirement that every session
+    holds non-REM sleep fails; the criterion's partial outcome is for durations without the count and does not cover this
+    case, so the outcome is not reproduced although everything but the sleep condition holds. Duration is the LFP length,
+    which differs from the last spike by at most 13.6 min. Each of the two holds a single sleep-state row, Awake over the
+    whole recording (414.7 and 331.5 min), with 1,942 and 1,247 ripples detected, so the sessions were scored and carry no
+    sleep. The criterion's missing case is asked of a reader (questions/huszar-2022.yaml).
+- claim: spwr-duration
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:spwr-duration
+  measured: 36.0
+  notes: Reading (a)(i), the pooled median of all detected ripples, is 36.00 ms over the 96 homecage-mouse sessions (428,509
+    ripples) and over all 104. Every other combination gives 36.00 to 36.80 ms; the code's reading (c)(i), the mean of per-session
+    medians, gives 36.28 ms. All ripples last 20.0 to 199.2 ms. The ripples are the dataset's, detected by the lab with bz_FindRipples.
+- claim: unit-count
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:unit-count
+  measured:
+  - 9472
+  - 7411
+  - 2060
+  notes: Reading (a), the 96 sessions of the 15 homecage mice, gives 9,472 units, 7,411 pyramidal cells and 2,060 interneurons
+    (1,556 narrow, 504 wide), the paper's type counts exactly; the extra unit over 9,471 has no cell type ("Unknown"). Reading
+    (b), all 104 sessions, gives 11,656 units, 9,243 pyramidal and 2,410 interneurons, outside tolerance.
+- claim: ed2-light-responsive-count
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:ed2-light-responsive-count
+  measured:
+  - 664
+  - 0.0896
+  notes: Reading (a), the stored light_responsive column, marks 664 of 7,411 pyramidal cells (8.96%), leaving 6,747. Reading
+    (b) from the stored SALT p (<= 0.001, or the code's < 0.001) and reliability flag gives the same 664. No non-pyramidal
+    unit is marked. Detection from the raw pulse responses was not repeated.
+- claim: ed2-waveform-validation
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:ed2-waveform-validation
+  notes: The waveform distance needs the mean waveform of light-evoked spikes, which needs the wide-band signal around the
+    pulses. The processed files hold only each unit's mean waveform over all spikes. The wide-band signal is in 11 raw files,
+    5 of them homecage-mouse sessions (52 to 141 GB each); the other 91 homecage sessions have none in the dataset. The trough-to-peak
+    half, printed for the record and not judged, gives means of 0.696 ms (664 light-responsive) and 0.700 ms (6,747 nonresponsive),
+    t-test p = 0.134, the paper's values.
+- claim: ed1-brdu-specificity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology (BrdU and tdTomato counts) is not in the dataset, which holds only electrophysiology and behaviour, and
+    the paper names no other public deposit of it.
+- claim: fig1c-radial-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The tdTomato puncta depths come from histology, which is not in the dataset or any public deposit the paper names.
+- claim: fig1e-labelled-fraction
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1e-labelled-fraction
+  measured:
+  - 5.39
+  - 11.16
+  - 14.74
+  - 9.16
+  notes: Per-session means 5.39, 11.16, 14.74 and 9.16% over 30, 24, 24 and 18 sessions (s.d. 4.99, 8.53, 8.68, 3.84), the
+    paper's values; F = 8.525 as printed, bootstrap p < 0.0002 under all five seeds (the paper gives 0.0004). E13.5 is lowest
+    and E15.5 highest.
+- claim: fig1f-rem-shift
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1f-rem-shift
+  measured:
+  - 27.78
+  - 21.33
+  - 21.05
+  - 23.33
+  - -1.36
+  notes: 'With the Methods'' Rayleigh threshold of 0.01, 90, 75, 76 and 60 light-responsive cells are locked in both states
+    (the legend gives 123, 106, 143, 76; see questions/huszar-2022.yaml). The REM-shifting fractions are 27.78, 21.33, 21.05
+    and 23.33%, all four outside tolerance (E13.5 by 0.02 points). The slope is -1.36% per day (95% bootstrap interval -5.8
+    to 2.9), with one-tailed p 0.277, 0.301, 0.280, 0.272 and 0.269 under the five seeds, so it is negative but not significant.
+    No reading gives a significant slope: the code''s threshold of 0.05 gives 28.57, 23.66, 24.77, 19.72%, slope -2.54, p
+    = 0.092; the 72 sessions whose channel follows the rule -1.41, p = 0.259; the layer centre channel -2.01, p = 0.183. By
+    mouse the fractions vary widely (0 to 75%).'
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring. The preferred phases depend on the channel's depth, so this
+    claim is the one most exposed to it; the outcome is the same under every channel reading.
+  - Theta phases are taken in the homecage period only (wake and REM within it), as the homecage metrics of the code; the
+    Methods do not restrict the state periods to the homecage.
+- claim: fig1g-rate-by-birthdate
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1g-rate-by-birthdate
+  measured:
+  - 1.5165
+  - 1.6199
+  - 1.5438
+  - 1.1523
+  notes: 184, 132, 233 and 115 light-responsive cells (the paper's n). Medians 1.52, 1.62, 1.54 and 1.15 Hz, all within tolerance;
+    E16.5 lowest. Bootstrap Kruskal-Wallis H = 8.46, p = 0.034 under the claim's seed, 0.034 to 0.041 over the five (paper
+    H = 11.82, p = 0.016).
+- claim: fig1h-burst-by-birthdate
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1h-burst-by-birthdate
+  measured:
+  - 0.0873
+  - 0.0912
+  - 0.1031
+  - 0.0798
+  notes: Medians 0.087, 0.091, 0.103 and 0.080 (2-5 ms over 200-300 ms, 1 ms ACG bins of homecage spikes); the bootstrap Kruskal-Wallis
+    gives H = 20.6 and p 0 to 0.0004 over the seeds, and the profile is an inverted U with its peak at E15.5. All four medians
+    are about 25% below the paper's and outside tolerance. The code's 3-5 ms variant gives 0.080, 0.080, 0.094, 0.074, also
+    an inverted U. The ACG binning now rounds before the floor, so that a lag of exactly k ms is counted in bin k (verifier,
+    round 1); the medians moved by at most 0.001.
+  deviations:
+  - The legend's 2-5 ms window is used, as the criterion says; the gap to the paper's medians suggests the ACG or its normalisation
+    differs from the one described, which the paper does not give in more detail.
+- claim: ed3-depth-control
+  outcome: not_reproduced
+  notes: 'Depth differs across birthdates before matching (bootstrap Kruskal-Wallis H = 23.5, p < 0.0002; paper H = 26.3),
+    and every kept depth-matched resampling has 0.4 < p < 0.6 on depth, so the matching holds. Fractions of 500 matched resamplings
+    with p < 0.05: burst index 0.980 (paper 0.712), SPW-R rate 0.990 (0.988), SPW-R participation 0.992 (0.938), wake theta
+    depth 1.000 (1.0), spatial information 0.980 (0.726), coverage 0.992 (0.738). Three are within tolerance; burst index,
+    spatial information and coverage lie above it, and the criterion''s partial outcome needs the burst fraction within tolerance,
+    so the outcome is not reproduced, although the birthdate differences survive depth matching more often than in the paper,
+    which is what the statement says. The four extra seeds (20 resamplings each) give 0.90 to 1.0 for every measure, the burst
+    fraction outside tolerance under each; with depth from the ripple-power centre on every shank face the homecage fractions
+    are 0.92 to 1.0, burst 0.92, still outside. 376 of the 664 homecage cells (318 of 466 maze cells) lie on shank faces without
+    a sharp-wave reversal. The fractions moved slightly from the previous run (burst 0.976) because the resampling shares
+    its generator with the theta depth, whose cells changed with the theta channel.'
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:ed3-depth-control
+  measured:
+  - 0.98
+  - 0.99
+  - 0.992
+  - 1.0
+  - 0.98
+  - 0.992
+  deviations:
+  - 'Assumption: the depth reference. Depth is the maximum-waveform channel''s rel_y minus the SPW reversal of its shank face,
+    the reversal taken where the sharp wave (as for the theta channel) steps from positive to negative between neighbouring
+    channels, interpolated to zero; on a face without such a step the ripple-power centre stands in. The variant takes the
+    ripple-power centre on every face.'
+  - subsample1D is not in the repository; depth is matched in 20 um bins (the electrode pitch), a standard choice, per birthdate
+    with replacement and n preserved, against the depths of all 664 homecage light-responsive cells; the maze measures are
+    resampled over the 466 maze cells against the same reference.
+  - To fit the run's time the inner bootstrap tests use 200 resamplings for the depth test and 300 for each measure, a draw
+    is retried at most 100 times, and the four extra seeds run 20 resamplings each.
+- claim: fig2b-synchrony-per-animal
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2b-synchrony-per-animal
+  measured: 10
+  notes: Of the 13 animals of the claim (the homecage mice without e13_1f1 and e13_1m1), SBD pairs cofire more in SPW-Rs than
+    DBD pairs with rank-sum p < 0.05 in 10 (reading a; e14_2m3, e15_4m1 and e16_2m1 are not significant), and the mean z-scored
+    CCG within 50 ms is higher for SBD in 12 (reading b; not e15_4m2). Both lie in 10 to 12. In the files the two left-out
+    mice do have SBD pairs, 1 in e13_1f1 and 2 in e13_1m1; with all 15 the counts are 10 and 13.
+  deviations:
+  - Reading (b) uses spikes of the homecage period, as the other homecage measures; the code's CCGs take spikes outside pulses
+    over the whole session.
+- claim: fig2c-theta-cofiring
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2c-theta-cofiring
+  measured:
+  - 0.017
+  - 0.007
+  - 3751
+  - 50461
+  notes: SBD median 0.0170 and DBD 0.0070 over 3,727 and 50,392 pairs with a correlation (3,751 and 50,461 pairs, the paper's
+    counts; 24 and 69 pairs without spikes in the cycles dropped); rank-sum p = 1.3e-42. Both medians lie just below tolerance
+    (0.0170 to 0.0208 and 0.0078 to 0.0096; the SBD median rounds to the lower bound, and the notebook's check puts it below),
+    so the outcome is partially reproduced. On the 72 sessions whose channel follows the rule the medians are 0.0164 and 0.0069
+    (p = 1.7e-30); on the layer centre channel 0.0178 and 0.0079, both within tolerance (p = 4.3e-42). Theta cycles in homecage
+    wake per session median 2,994 (63 to 15,512). As a clock check, 558 of 664 light-responsive cells are phase locked in
+    wake against 29 when their spikes are set against the phase 10.3 s later.
+  deviations:
+  - 'Assumption: the theta channel. The Methods require "a channel with a positive sharp wave (that is, above the center of
+    the pyramidal layer)" and do not say how one is chosen among those that qualify. The sharp wave of a channel is its mean
+    LFP (uV) 0 to 50 ms after the ripple peaks minus its mean 100 to 50 ms before them, in a 52 s stretch of homecage non-REM
+    sleep; in the 6 sessions with 20 or fewer ripples in homecage non-REM (among them e13_1f1_200305 and e13_1f1_200307, which
+    have no non-REM sleep) all ripples are used. The theta channel is the channel of the pyramidal layer centre''s shank face
+    with a positive sharp wave and larger rel_y than the centre, the one with the largest ripple power; on another face when
+    that one has none (6 sessions); and the channel next to the centre with larger rel_y when no face has one (32 of 104 sessions,
+    which depart from the Methods). 320 of the 327 positive channels on the centre''s face lie at larger rel_y than the centre,
+    so larger rel_y is above the layer. In the first revision a positive channel below the centre also qualified, which 6
+    sessions used; both halves of the Methods'' phrase are now required (verifier, round 2), and 72 of 104 sessions follow
+    the rule. Variants: the layer centre channel, and the 72 sessions whose channel follows the rule.'
+  - The theta filter is a fourth-order Chebyshev type II band-pass (20 dB, buzcode's default), applied forward and backward;
+    the amplitude threshold (mean + 1 SD) is taken over the whole session.
+- claim: fig2d-theta-depth
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2d-theta-depth
+  measured:
+  - 0.1206
+  - 0.0903
+  - 0.0925
+  - 0.104
+  notes: 'Wake, 176, 114, 172 and 96 locked cells (paper 178, 127, 207, 101), medians 0.121, 0.090, 0.093 and 0.104, all within
+    tolerance, E14.5 and E15.5 below E13.5 and E16.5; bootstrap Kruskal-Wallis H = 35.8, p < 0.0002 under all seeds. REM,
+    98, 87, 106 and 70 cells, medians 0.146, 0.141, 0.147 and 0.148, H = 1.65, p 0.64 to 0.66 over the seeds, so the absence
+    of a REM difference holds. The variants keep the profile and the test (p < 0.0002) but each puts one median just outside
+    tolerance: E14.5 0.089 on the 72 sessions whose channel follows the rule, E16.5 0.115 on the layer centre channel.'
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring.
+- claim: fig2f-ripple-firing-by-birthdate
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2f-ripple-firing-by-birthdate
+  measured:
+  - 7.484
+  - 8.8232
+  - 7.9118
+  - 6.1295
+  - 0.237
+  - 0.2686
+  - 0.2355
+  - 0.1942
+  notes: SPW-R rate medians 7.48, 8.82, 7.91 and 6.13 Hz, H = 19.9, p 0 to 0.0002; participation 0.237, 0.269, 0.236 and 0.194,
+    H = 17.9, p 0 to 0.001; all eight within tolerance and both inverted U. Ripples are those starting and ending in the homecage
+    period (77.7% of all detected).
+- claim: fig2g-ripple-cofiring
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2g-ripple-cofiring
+  measured:
+  - 0.0385
+  - 0.0226
+  notes: SBD median 0.0385 and DBD 0.0226 over 3,738 and 50,171 pairs with a correlation (13 and 290 pairs with a constant
+    count vector dropped); rank-sum p = 4.7e-98. Both within tolerance. SBD exceeds DBD at each birthdate.
+- claim: ed5-matched-controls
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'Both expected values are fractions of L-ratio and theta-rate matched resamplings of the novel ratemap correlations.
+    The units table has no L-ratio or other isolation metric (its 21 columns are printed), so the L-ratio half cannot be run
+    and the claim is blocked. The rate-matched half was run for the record (subsample2D_local.m, 500 resamplings): fractions
+    with p < 0.05 are 1.000 for SPW-R cofiring (matched on SPW-R rate), 1.000 for theta cofiring and 0.998 for familiar ratemap
+    correlations (matched on the homecage rate, as the theta-related rate is computed here only for novel sessions), and 0.498
+    for novel ratemap correlations (matched on the novel theta-related rate; paper 0.958). One generator serves the four comparisons
+    in turn, so the later fractions move when an earlier input changes: with the theta pairs of the first revision the novel
+    fraction was 0.604.'
+- claim: fig3c-assembly-cofiring
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run. The first run reached its time limit before the assembly analysis was built, and the claim was recorded
+    as too_large under the protocol''s time rule. The estimate given then, about 9 GB for a median session and over 12 GB
+    for the largest, is for the dense double-precision matrix of homecage spikes in 1 ms bins (about 14 million bins by a
+    median of 77 pyramidal cells), held whole. It is not a limit of the analysis: the covariance can be accumulated over chunks
+    of bins, or computed from the spike times, and the projections and expression strengths need only a few signals of that
+    length. Such an implementation was not attempted (verifier, round 2: not attempted, not too large); building it is a new
+    analysis, which waits for a new attempt.'
+- claim: fig3e-assembly-expression
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig3c-assembly-cofiring, which was not run; see its notes. The expression strength on the 1 ms matrix
+    would be computed in the same chunked passes.
+- claim: ed6-heldout-assemblies
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig3c-assembly-cofiring, which was not run; see its notes. It also needs a separate ICA for each held-out
+    neuron, on SPW-R bins and on the maze, which was not attempted.
+- claim: ed7-sbd-coactivation
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Depends on fig3e-assembly-expression, which was not run (see fig3c-assembly-cofiring), and its part (b) needs that
+    claim''s assembly expression on the 1 ms matrix. Part (e) needs only which cells fire in each SPW-R and was run for the
+    record: 78 sessions have at least two light-responsive cells (paper 84) and 65 at least three (paper 65); against 1,000
+    random equal-sized nonresponsive groups per session, the mean z of the probability of k coactive light-responsive cells
+    is 8.7 for k > 2 (431 session-k values, t-test p = 8.9e-12), above zero as the claim says.'
+- claim: fig4d-model-fit
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run. It depends on fig3e-assembly-expression, whose four observed mean expression rates the model is fitted
+    to, and that claim was not run. The simulation itself was not attempted and no timing was made, so no size can be given
+    from a run. Its size from the Methods: at each point of the code''s parameter grid (devAssembly_paramsVrev.mat, whose
+    size the paper does not give) one bell-shaped model and 100 uniform-model runs, each simulating 350 units over 10,000
+    samples and repeating with ICA until 200 assemblies are found.'
+- claim: maze-cohort
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:maze-cohort
+  measured:
+  - 9
+  - 3
+  notes: The nine mice of the table's Figure 5 column have 57 sessions whose first subsession is the figure-eight (53 labelled
+    figure-8 maze, 4 tmaze_familiar), 2, 2, 2 and 3 mice per birthdate; the three Figure 6 mice have later subsessions in
+    all 12 of their sessions. No other mouse has behavioural subsessions.
+- claim: maze-task
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:maze-task
+  measured:
+  - 202.8
+  - 30.0
+  notes: Trials span a median 202.8 cm of linearized position (maximum 205.0 cm) and tracking runs at 30.0 Hz in every session,
+    both within tolerance. Only 30 of 57 familiar sessions hold at least ten left and ten right trials (counting trials whose
+    visited arm is left or right), and 6 hold fewer than 20 trials, the fewest 12 (e16_2m1_201116, 7 and 5); neither the full
+    nor the partial condition holds. The trials table itself, before the mapping filters, gives the same counts (30 of 57
+    sessions with ten of each arm, 51 with at least 20); the counted trials differ from it by one trial in two sessions, and
+    no visited_arm value other than left or right occurs.
+- claim: novel-explorations
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:novel-explorations
+  measured: 16
+  notes: 16 subsessions after the familiar one in the 12 sessions of the three novel mice, in six environments (tmaze_ipshita
+    3, linear_thomas 3, linear_manu 3, openField_gergo 3, openField_coolbox 2, openField_thomas 2), that is one novel figure-eight,
+    two linear tracks and three open fields.
+- claim: fig5b-spatial-info-by-birthdate
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5b-spatial-info-by-birthdate
+  measured:
+  - 0.5639
+  - 0.6321
+  - 0.9183
+  - 0.6201
+  - 29.5
+  - 31.5
+  - 31.0
+  - 12.0
+  notes: '164, 76, 111 and 115 light-responsive cells (the paper''s n). Spatial information, concatenated maps (first reading),
+    medians 0.56, 0.63, 0.92 and 0.62 bits/s, H = 23.1, p < 0.0002 under all seeds; mean of left and right 0.52, 0.62, 0.87,
+    0.54. Coverage reading (a) on concatenated maps 29.5, 31.5, 31 and 12 cm (p 0.0002 to 0.0008), reading (b) 34.5, 32, 37,
+    12. Every reading has the highest median at E14.5 or E15.5 with E13.5 and E16.5 below it and p < 0.05, but no reading
+    puts all the medians within tolerance: spatial information on concatenated maps is 29.5 to 40% below the paper''s, and
+    only the E13.5 coverage under reading (b), 34.5 cm, is within tolerance.'
+  deviations:
+  - Speed from a constant-velocity Kalman filter of the linearized position with settings chosen here, as the claims file
+    allows; maps from trials whose visited arm is left or right.
+- claim: fig5c-sbd-ratemap-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5c-sbd-ratemap-overlap
+  measured:
+  - 0.0189
+  - -0.0239
+  - 2609
+  - 39965
+  notes: 2,609 SBD and 39,965 DBD pairs, the paper's counts. SBD median 0.0189 against DBD -0.0239 (122 DBD pairs without
+    a correlation), rank-sum p = 5.9e-9. The DBD median is within tolerance and the SBD median above it (0.0137 to 0.0167).
+    The code's variant (pairs with any unvisited bin dropped) gives 0.0187 and -0.0249, p = 8.1e-9.
+- claim: fig5d-overlap-by-distance
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5d-overlap-by-distance
+  measured:
+  - 0.0601
+  - 0.0268
+  - 0.0386
+  - 0.0147
+  - 0.0234
+  - 0.011
+  notes: 2,561 SBD and 38,497 DBD pairs at 0 to 500 um (1,394 pairs 750 um apart dropped); same-shank pairs 1,205 SBD and
+    13,494 DBD (Extended Data Fig. 10d gives 1,205 and 13,549). Two-way ANOVA, birthdate F = 14.5, p = 0.0001; distance p
+    = 0.0007; interaction p = 0.40. Tukey SBD against DBD at 0 um p = 0.0002, 250 um p = 0.041, 500 um p = 0.96, as the paper
+    says. Of the six means only DBD at 0 um is within tolerance.
+  deviations:
+  - The post hoc test is Tukey's HSD over the six birthdate-by-distance groups (statsmodels). The two-way model with interaction
+    has the six-group residual mean square (printed), so this is the comparison MATLAB's multcompare makes on the anovan model;
+    the ANOVA uses type III sums of squares, as anovan's default.
+  - Shank distance is |shank difference| x 250 um (kcoords, criterion), with the two faces (probe_side Front and Back) of
+    a shank counted as one shank; this gives the paper's pair counts (2,561 SBD, and 1,205 same-shank as Extended Data Fig.
+    10d), and agrees with the electrodes' x positions for 42,224 of 42,574 pairs.
+- claim: fig5e-pv-decorrelation
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5e-pv-decorrelation
+  measured:
+  - 0.93
+  - 0.4878
+  - 0.4072
+  - 0.4074
+  notes: Medians stem 0.930, turn 1 0.488, arm 0.407 and turn 2 0.407 over 4,074, 2,106, 4,209 and 1,136 bins (160 bins without
+    a correlation); stem highest, H = 7,589, bootstrap p < 0.0002 under all seeds (1,000 resamplings for the four extra seeds).
+    Turn 1 is outside tolerance (0.371 to 0.453).
+- claim: fig5f-remap-together
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5f-remap-together
+  notes: Tercile edges at the 0, 33, 66 and 99th percentiles of the SBD left and right correlations; 5,144 SBD and 77,443
+    DBD observations. Birthdate main effect F = 24.0, p = 9.5e-7, SBD higher; tercile p = 2.2e-13; interaction p = 0.60. SBD
+    means 0.020, 0.049, 0.072 against DBD 0.002, 0.022, 0.043 (Supplementary Table 5, SBD 0.041, 0.050, 0.076, DBD 0.010,
+    0.023, 0.043). With open outer edges the result is the same.
+- claim: fig6c-theta-rate-preserved
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6c-theta-rate-preserved
+  measured:
+  - 0.735
+  - 2544
+  notes: 2,544 pyramidal cells of the 12 novel sessions, the paper's n. Spearman rho = 0.735, p < 1e-300, the same with and
+    without the wake restriction; per mouse 0.723 to 0.742; 0.738 on the layer centre channel; 0.734 over the 1,259 cells
+    of the 5 novel sessions whose channel follows the rule. Novel rates pool all later subsessions, open fields included,
+    as theta rates need no position.
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring.
+- claim: fig6d-rate-lower-novel
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6d-rate-lower-novel
+  measured:
+  - 0.757
+  - 0.672
+  notes: Familiar median 0.757 Hz and novel 0.672 Hz over 2,544 cells, rank-sum p = 0.00093; paired signed-rank variant p
+    = 2.8e-7. Both medians within tolerance. On the layer centre channel 0.755 and 0.676 Hz, p = 0.0026. On the 5 novel sessions
+    whose channel follows the rule (1,259 cells) 0.704 and 0.643 Hz, rank-sum p = 0.051 and paired signed-rank p = 0.0047,
+    so on that subset the rank-sum test falls just short of 0.05.
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring.
+- claim: fig6d-info-lower-novel
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6d-info-lower-novel
+  measured:
+  - 0.661
+  - 0.26
+  notes: 'Familiar median 0.661 bits/s over 2,532 cells, novel 0.260 over 3,289 cell-environment values (paper 3,443), rank-sum
+    p = 5.0e-100; the equal-weight variant gives 0.684 and 0.289. Both medians are outside tolerance (0.792 to 0.968 and 0.351
+    to 0.429). Every reading gives the same outcome: novel 0.305 at 2 cm per unit, 0.226 at 0.5, 0.251 at 0.85, and 0.367
+    (within tolerance) without the open fields, all with p < 1e-35. Novel medians by environment 0.046 (openField_coolbox)
+    to 0.449 (tmaze_ipshita).'
+  deviations:
+  - 'Assumption: the open-field scale. The files give open-field positions in the lab''s units with no scale (openField_gergo
+    31.5 x 35.0, openField_coolbox 22.5 x 22.5, openField_thomas about 43 x 52 units). They are binned assuming one unit is
+    1 cm, the Methods'' 1 cm x 1 cm bins and 4.5 cm FWHM, speed from Kalman filters of x and y. The notebook prints the evidence
+    (position_scale_check). Where a lab-unit 2D series that is not normalized to 0-1 runs beside a linearized series in cm
+    (two linear tracks and the novel figure-eight), their simultaneous speeds give 0.85, 0.88 and 0.93 cm per unit, against
+    1.00 to 1.19 for the familiar maze''s 2D series, which the files give in cm; five other lab-unit series span 0 to 1. The
+    open fields carry no such check, and their 90th-percentile speeds (4.7 to 11.6 units/s, against 11.2 to 15.8 cm/s on the
+    familiar maze in the same sessions) fit a scale near 1 without ruling out 2. 0.85, 2 and 0.5 cm per unit are run as variants,
+    and the open fields left out as a fourth. The linear_manu subsession of e16_3m2_211211 is left out, as its position series
+    lies in another epoch.'
+  - Familiar information is computed on the concatenated left and right maps, the first reading of fig5b-spatial-info-by-birthdate.
+- claim: fig6c-novel-ratemap-corr-higher
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6c-novel-ratemap-corr-higher
+  measured:
+  - -0.0451
+  - -0.0307
+  notes: 'Familiar median -0.0451 over 31,211 pairs (paper 31,067) and novel -0.0307 over 39,702 pair-environment values (paper
+    41,991), rank-sum p = 0.78: novel is higher but not significantly, so the outcome is not reproduced. The outcome rests
+    on the open-field scale. At 0.85 cm per unit, the scale that the lab-unit series of the linear tracks and the novel figure-eight
+    give, the novel median is -0.0313 with p = 0.57, and without the open fields -0.032 with p = 0.75, the same outcome; at
+    2 cm per unit -0.0246 with p = 2.1e-6, and at 0.5 cm per unit -0.0331 with p = 0.010, both of which would give partially
+    reproduced. The open fields'' own scale is not in the data, so the outcome is conditional on it (verifier, round 2). The
+    familiar median is within tolerance; the novel one is far below 0.048 under every reading, and no environment reaches
+    it (-0.048 to -0.007).'
+  deviations:
+  - 'Assumption: the open-field scale. The files give open-field positions in the lab''s units with no scale (openField_gergo
+    31.5 x 35.0, openField_coolbox 22.5 x 22.5, openField_thomas about 43 x 52 units). They are binned assuming one unit is
+    1 cm, the Methods'' 1 cm x 1 cm bins and 4.5 cm FWHM, speed from Kalman filters of x and y. The notebook prints the evidence
+    (position_scale_check). Where a lab-unit 2D series that is not normalized to 0-1 runs beside a linearized series in cm
+    (two linear tracks and the novel figure-eight), their simultaneous speeds give 0.85, 0.88 and 0.93 cm per unit, against
+    1.00 to 1.19 for the familiar maze''s 2D series, which the files give in cm; five other lab-unit series span 0 to 1. The
+    open fields carry no such check, and their 90th-percentile speeds (4.7 to 11.6 units/s, against 11.2 to 15.8 cm/s on the
+    familiar maze in the same sessions) fit a scale near 1 without ruling out 2. 0.85, 2 and 0.5 cm per unit are run as variants,
+    and the open fields left out as a fourth. The linear_manu subsession of e16_3m2_211211 is left out, as its position series
+    lies in another epoch.'
+  assumed: true
+- claim: fig6e-sbd-novel-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6e-sbd-novel-overlap
+  measured:
+  - 0.0206
+  - -0.0326
+  notes: 'SBD median 0.021 over 1,390 values against DBD -0.033 over 38,312 (paper 1,510 and 40,481), rank-sum p = 0.0011.
+    Both medians outside tolerance (0.117 and 0.046). Every reading gives the same outcome: p = 0.00023 at 2 cm per unit,
+    0.0037 at 0.5, 0.0012 at 0.85, 0.002 without the open fields. SBD exceeds DBD in every environment.'
+  deviations:
+  - 'Assumption: the open-field scale. The files give open-field positions in the lab''s units with no scale (openField_gergo
+    31.5 x 35.0, openField_coolbox 22.5 x 22.5, openField_thomas about 43 x 52 units). They are binned assuming one unit is
+    1 cm, the Methods'' 1 cm x 1 cm bins and 4.5 cm FWHM, speed from Kalman filters of x and y. The notebook prints the evidence
+    (position_scale_check). Where a lab-unit 2D series that is not normalized to 0-1 runs beside a linearized series in cm
+    (two linear tracks and the novel figure-eight), their simultaneous speeds give 0.85, 0.88 and 0.93 cm per unit, against
+    1.00 to 1.19 for the familiar maze''s 2D series, which the files give in cm; five other lab-unit series span 0 to 1. The
+    open fields carry no such check, and their 90th-percentile speeds (4.7 to 11.6 units/s, against 11.2 to 15.8 cm/s on the
+    familiar maze in the same sessions) fit a scale near 1 without ruling out 2. 0.85, 2 and 0.5 cm per unit are run as variants,
+    and the open fields left out as a fourth. The linear_manu subsession of e16_3m2_211211 is left out, as its position series
+    lies in another epoch.'
+- claim: fig6f-remap-together-novel
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6f-remap-together-novel
+  notes: 1,380 SBD and 37,762 DBD observations. Reading (a), edges from the familiar correlations of each pair once, birthdate
+    F = 7.75, p = 0.0054; reading (b), the code's edges, F = 8.39, p = 0.0038; SBD higher (overall mean novel correlation
+    0.036 against 0.013), above DBD in the middle and upper terciles, not the lowest; interaction p = 0.0073 under (a). With
+    each pair counted once (mean over its novel environments) p = 0.0081. Under reading (a) the main effect holds with SBD
+    higher at 2, 0.5 and 0.85 cm per unit (p = 0.0018, 0.023, 0.0060) and without the open fields (p = 0.016, SBD above DBD
+    in all three terciles), so the outcome does not depend on the scale. The tercile means under (a), SBD 0.004, 0.030, 0.072
+    and DBD 0.008, 0.015, 0.015, are all below Supplementary Table 5's (SBD 0.0952, 0.1566, 0.15; DBD 0.0851, 0.0846, 0.0989),
+    as the novel correlations are lower here as a whole.
+  deviations:
+  - 'Assumption: the open-field scale. The files give open-field positions in the lab''s units with no scale (openField_gergo
+    31.5 x 35.0, openField_coolbox 22.5 x 22.5, openField_thomas about 43 x 52 units). They are binned assuming one unit is
+    1 cm, the Methods'' 1 cm x 1 cm bins and 4.5 cm FWHM, speed from Kalman filters of x and y. The notebook prints the evidence
+    (position_scale_check). Where a lab-unit 2D series that is not normalized to 0-1 runs beside a linearized series in cm
+    (two linear tracks and the novel figure-eight), their simultaneous speeds give 0.85, 0.88 and 0.93 cm per unit, against
+    1.00 to 1.19 for the familiar maze''s 2D series, which the files give in cm; five other lab-unit series span 0 to 1. The
+    open fields carry no such check, and their 90th-percentile speeds (4.7 to 11.6 units/s, against 11.2 to 15.8 cm/s on the
+    familiar maze in the same sessions) fit a scale near 1 without ruling out 2. 0.85, 2 and 0.5 cm per unit are run as variants,
+    and the open fields left out as a fourth. The linear_manu subsession of e16_3m2_211211 is left out, as its position series
+    lies in another epoch.'
+  - Reading (a) takes its tercile edges from the familiar correlations with each pair once; the earlier run took them from
+    the table merged with the novel values, which counted pairs of sessions with two novel environments twice (verifier, round
+    1).
+  assumed: true
+- claim: fig7b-sbd-convergence
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7b-sbd-convergence
+  measured:
+  - 0.4545
+  - 0.3636
+  notes: SBD median 0.455 over 3,748 pairs and DBD 0.364 over 50,341 (3 and 120 pairs with no targets dropped), rank-sum p
+    = 1.3e-79. Both medians are well above the paper's (0.273, 0.200). The detector finds 50,618 connections of 184,230 possible
+    pairs against the paper's 31,932, which raises every convergence index; no variant of its assumed details comes near the
+    paper's count (38,402 to 50,756, 20% to 59% more), and under every variant SBD exceeds DBD, with SBD medians of 0.385
+    to 0.455 and DBD medians of 0.278 to 0.368, all above the paper's.
+  deviations:
+  - 'Assumption: the connection detector. The Methods say the test is "identical to the reliability test" and refer to English
+    et al. (2017). Taken from the Methods: 0.8 ms bins, spikes outside the pulse periods, a hollowed Gaussian baseline with
+    the reliability test''s 15 ms s.d., Poisson tests at alpha 0.001 Bonferroni corrected, the peak against the bins before
+    zero lag. Assumed: the lags tested (the three bins at 0.8 to 2.8 ms, the window of the transmission measure), a hollow
+    fraction of 0.6 (Stark and Abeles 2009), Bonferroni over those three bins, at least 100 presynaptic spikes and 50 CCG
+    counts in +-50 ms. Each is varied in the notebook: the reliability test''s literal 3 bins around the peak (50,756 connections),
+    hollow 0.4 and 0.8 (50,575, 50,663), s.d. 7 and 10 ms (49,564, 50,149), no minimums (50,621), alpha 1e-5 (38,402).'
+- claim: fig7ce-convergence-by-birthdate
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7ce-convergence-by-birthdate
+  measured:
+  - 0.1169
+  - 0.1429
+  - 0.1
+  - 0.0536
+  - 0.0141
+  - 0.0153
+  - 0.0172
+  - 0.015
+  notes: 'Corrected convergence over 1,199, 532, 1,578 and 439 SBD pairs (paper 1,200, 533, 1,579, 439), medians 0.117, 0.143,
+    0.100 and 0.054, H = 47.3, p < 0.0002 under all seeds; transmission probability over 2,040, 671, 1,584 and 859 connections
+    (paper 1,180, 440, 1,155, 557), medians 0.0141, 0.0153, 0.0172, 0.0150, H = 35.5, p < 0.0002. Both are inverted U. Only
+    the E15.5 corrected convergence is within tolerance; the transmission medians are below both the legend''s and the table''s
+    readings. Under the detector variants at most two of the four transmission medians are within tolerance of the legend''s
+    (alpha 1e-5: 0.0163, 0.0177, 0.0203, 0.0181).'
+  deviations:
+  - Assumption on the connection detector; see fig7b-sbd-convergence.
+  - The transmission baseline is the CCG convolved with an 8 ms s.d. hollowed Gaussian (Methods), with the hollow fraction
+    0.6 assumed.
+- claim: fig7d-transmission-gamma
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7d-transmission-gamma
+  notes: Mean transmission over about 50,500 connections per bin rises from 0.0190 (5 to 7 ms) through 0.0249 (14 to 21 ms)
+    to a peak of 0.0269 at 29 to 42 ms (centre 34.9 ms) and declines slowly to 0.0248 at 1 s. The peak lies outside 13.5 to
+    25.3 ms; the depression at short intervals holds. The peak exceeds the 20 to 29 ms bin (0.0266, centre 24.5 ms, inside
+    the range) by 0.0003; with the connections resampled 1,000 times under the claim's seed the difference has a 95% interval
+    of 0.00017 to 0.00050 and the peak is in the 29 to 42 ms bin in 999 resamplings (once at 42 to 59 ms), never inside 13.5
+    to 25.3 ms, and the same under the four other seeds (200 resamplings each). With light-responsive presynaptic cells only
+    the peak is in the same bin. The peak stays in the 29 to 42 ms bin under every detector variant.
+  deviations:
+  - Assumption on the connection detector; see fig7b-sbd-convergence. The mean is over all detected connections, as the criterion
+    says.
+- claim: fig7fg-convergence-cofiring
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7fg-convergence-cofiring
+  measured:
+  - 50618
+  - 184230
+  - 86.24
+  notes: 184,230 possible pyramidal-interneuron pairs, the paper's number exactly; 50,618 connections (31,932 +- 3,193 expected)
+    and 86.24% of 371,756 pyramidal pairs sharing an interneuron (65.27 +- 6.53% expected), so two of the three counts fail;
+    the detector variants give 38,402 to 50,756 connections and 74.5 to 86.4%, all outside tolerance. The legend's zero and
+    nonzero pairs sum to 315,722, against 371,756 pairs here (370,837 with any target); the paper's pair set differs in a
+    way the outputs do not show. The slopes all hold. Reading (a), nonresponsive pairs with nonzero convergence, slopes 0.0040
+    (SPW-R, t = 55.5), 0.0028 (theta, t = 48.6) and 0.0017 (ratemap, t = 4.3), and reading (b) 0.0042, 0.0029 and 0.0023;
+    every bootstrap p is below 0.001 under all five seeds. SPW-R and theta cofiring rise across all five quintiles; the ratemap
+    correlation of nonresponsive pairs is flat over the first four quintiles (0.0111, 0.0115, 0.0109, 0.0096) and rises in
+    the top one (0.0206). The theta slope (a) is 0.0026 on the sessions whose channel follows the rule and 0.0031 on the others,
+    both p < 0.001.
+  deviations:
+  - Assumption on the connection detector; see fig7b-sbd-convergence. Theta cofiring rests also on the theta channel assumption
+    (fig2c-theta-cofiring).
+- claim: ed10-waveform-matched-controls
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'Depends on ed2-waveform-validation, blocked because the light-evoked waveforms need the wide-band signal, so the
+    claim is blocked. The round 2 verifier points out that the criterion computes the waveform distance on spontaneous spikes,
+    so the claim needs nothing that blocks ed2; whether the dependency should stand is asked of a reader (questions/huszar-2022.yaml).
+    Its own parts need only the spontaneous mean waveforms (waveform_mean holds every channel) and the electrode layout, and
+    were run for the record. Same-shank pairs number 1,743 SBD and 15,996 DBD, and 347 and 3,588 more than 60 um apart, the
+    paper''s counts exactly. Waveform profile distance at > 60 um: with the legend''s L2 norm SBD pairs are closer (p = 4.5e-17),
+    with the code''s division by the number of good channels they do not differ (p = 0.62; paper p = 0.55). At > 60 um SBD
+    pairs cofire more in SPW-Rs (0.0364 against 0.0202, p = 9.9e-11) and theta cycles (0.0199 against 0.0087, p = 2.7e-5),
+    all four medians within tolerance; familiar ratemap correlations 0.0143 against -0.0278 over 252 and 3,007 pairs (paper
+    252 and 2,998), p = 0.078, the SBD median outside tolerance. Waveform-matched resamplings with p < 0.05: 1.0 for SPW-R
+    and theta cofiring, 0.132 for ratemap correlations (paper 0.894; 0.106 in the previous run, as the shared generator follows
+    the theta pairs). Were the claim tested, the ratemap comparison failing at p < 0.05 would make it not reproduced under
+    its criterion.'
+findings:
+- kind: data_missing
+  about: data
+  statement: Sessions e13_1f1_200305 and e13_1f1_200307 have only wake in their SleepStates table, with no non-REM or REM
+    sleep, while the paper says every recording included a homecage period of sleep and wake. A third session has no REM.
+    Either the sleep scoring of these sessions is missing from the files or they held no sleep.
+- kind: metadata_error
+  about: data
+  statement: In e16_3m2_211211 the position series named for the linear_manu subsession (LinearizedSpatialSeries3_linear_manu
+    and SpatialSeries3_linear_manu) has timestamps from 9,575 to 11,203 s, inside the openField_thomas epoch (9,559 to 12,002
+    s), and none inside the linear_manu epoch (15,124 to 16,771 s). The series or its epoch is mislabelled or mistimed; the
+    attempt leaves both subsessions out.
+- kind: metadata_insufficient
+  about: data
+  statement: 'Positions outside the familiar figure-eight are in the lab''s units with no spatial scale, as the files'' own
+    descriptions say, and the units differ between environments: five novel figure-eight and linear-track series span 0 to
+    1, while three others give 0.85 to 0.93 cm per unit when their speeds are set against the simultaneous linearized position
+    in cm. Linearized positions of the novel figure-eight and linear tracks are in cm, but the open fields (7 of the 16 novel
+    explorations) have only the 2D position, so their 1 cm bins rest on an assumed scale, and one novel ratemap outcome (Fig.
+    6c) depends on it.'
+- kind: data_missing
+  about: data
+  statement: The units table has no cluster isolation metric. The paper uses each unit's L-ratio (Extended Data Figs 2h and
+    5), so its L-ratio controls cannot be repeated on the dataset.
+- kind: other
+  about: data
+  statement: The paper leaves out two E13.5 mice from the per-animal comparison because only a single light-responsive neuron
+    per session was recorded in them (Extended Data Fig. 4 legend). In the files these mice, e13_1f1 and e13_1m1, have sessions
+    with two light-responsive cells, giving 1 and 2 same-birthdate pairs.
+- kind: other
+  about: data
+  statement: The Methods say animals ran at least ten trials along each arm in every session. In the trials table, 27 of the
+    57 familiar figure-eight sessions hold fewer than ten trials of one visited arm, and 6 hold fewer than 20 trials in all
+    (fewest 7 left and 5 right, e16_2m1_201116). Trials may be missing from the table, or the paper's rule may describe training.
+- kind: paper_inconsistency
+  about: paper
+  statement: The Methods give 92 sessions lasting 113.7 to 475.6 min (median 309.1), while Supplementary Table 1, Figure 1e
+    and Figure 7f give 96 sessions for the 15 homecage mice. The files hold 96 sessions for those mice, and their durations
+    run from exactly 113.7 to 475.6 min (median 309.9), so the 92 appears to be a miscount of the same 96 sessions.
+- kind: methods_unavailable
+  about: paper
+  statement: How the theta channel was chosen among channels with a positive sharp wave above the centre of the pyramidal
+    layer is not given, nor how the sharp wave was measured. With the sharp wave against a pre-ripple baseline, 32 of 104
+    sessions in this attempt have no channel above a layer centre with a positive sharp wave, and theta cofiring (Fig. 2c)
+    moves in and out of tolerance with the channel. Which channel per session, or the rule, would settle it.
+- kind: methods_unavailable
+  about: paper
+  statement: The monosynaptic connection test is described as identical to the reliability test with reference to English
+    et al. (2017), without the lags tested, the hollow fraction, the number of comparisons corrected for, or a minimum count.
+    With the choices of this attempt, and with each varied in turn, it finds 38,402 to 50,756 connections against the paper's
+    31,932, which changes the convergence values and the transmission peak (Fig. 7). The detector's parameters, or the list
+    of detected connections, would settle it.
+- kind: methods_unavailable
+  about: paper
+  statement: The burst index (Fig. 1h legend, ACG count at 2-5 ms over 200-300 ms) computed on the homecage spikes gives medians
+    about 25% below the paper's, with the same shape; the code's 3-5 ms gives lower values still. The ACG used (bins, spike
+    set, normalisation) is not fully given.
+- kind: metadata_insufficient
+  about: data
+  statement: In 25 files (9 mice) the electrodes table gives probe_side Front or Back with shank numbers 1 to 4 on each, without
+    saying whether these are two probes or two faces of one probe. Both faces have the same x positions, and the paper's pair
+    counts by shank (2,561 SBD pairs within 500 um, 1,205 SBD and 13,494 DBD on the same shank in the maze, 1,743 and 15,996
+    in the homecage, 347 and 3,588 of them more than 60 um apart) are found only when both faces count as one shank, so they
+    are read here as faces of the same shanks.
+- kind: paper_inconsistency
+  about: paper
+  statement: The Figure 1f legend gives n = 123, 106, 143 and 76 modulated neurons for the REM-shift fractions, cells locked
+    in both wake and REM, but these exceed the REM-locked counts the paper gives for Figure 2d, and Figure 1f (top) gives
+    n = 95 for E13.5. This attempt finds 90, 75, 75 and 60 cells locked in both states.
+- kind: paper_inconsistency
+  about: paper
+  found: on_prompt
+  statement: The Results describe the three mice of the novel environments as a separate cohort ("we exposed a separate
+    cohort of animals (n = 3; Supplementary Table 1)"), but one of them, e13_26m1, is also among the nine mice of the
+    familiar figure-eight analyses (the Figure 5 column of Supplementary Table 1). In the files all four of its sessions
+    begin with the familiar figure-eight before the novel environment, as do those of the other two novel mice.
+verifications:
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text under paper/. The verifier checked the archive's file list and
+    metadata for the blocked claims and tested the helpers on synthetic inputs (interval handling, ripple_measures, skaggs_info,
+    rayleigh, boot_kw, boot_anova, convergence, theta phase, ccg_sync and the monosynaptic test). It had no attempt record
+    and took the claims from the claims file.
+  results:
+  - claim: cohort-birthdates
+    agrees: true
+    outcome: reproduced
+    reason: 17 mice, 12 M and 5 F, birthdate counts 4/3/6/4 (cell 8).
+    response: No change.
+  - claim: st1-animal-sessions
+    agrees: true
+    outcome: reproduced
+    reason: All 17 mice match the table row by row. Sessions are 96 and 104; light-responsive cells are 664 (cell 10).
+    response: No change.
+  - claim: sessions-durations
+    agrees: false
+    outcome: partially_reproduced
+    reason: On the 96 sessions the count is within 92 +- 9.2 and the median is 309.9 min. The range is 113.7 to 475.6 min,
+      exactly the paper's. Two sessions (e13_1f1_200305 and _200307) have no non-REM sleep, so "every session holds non-REM"
+      fails (cell 12). Read literally, the criterion gives not_reproduced, because it has no category for this case (problem
+      11). The verifier asked for the sleep-state table and durations of the two sessions, to tell "no sleep" from "no scoring".
+    response: 'Outcome kept at not_reproduced, the criterion read literally, with the disagreement recorded; the gap in the
+      criterion is asked of a reader in questions/huszar-2022.yaml. The notebook now prints the two sessions'' sleep tables:
+      one Awake row each over the whole recording (414.7 and 331.5 min), with 1,942 and 1,247 ripples, so they were scored
+      and hold no sleep.'
+  - claim: spwr-duration
+    agrees: true
+    outcome: reproduced
+    reason: The median is 36.0 to 36.8 ms under every combination of readings, and no ripple lies outside 20 to 200 ms (cell
+      18).
+    response: No change.
+  - claim: unit-count
+    agrees: true
+    outcome: reproduced
+    reason: 'On the 96 sessions: 9,472 units, 7,411 pyramidal cells, 2,060 interneurons (1,556 narrow, 504 wide) (cell 14).'
+    response: No change.
+  - claim: ed2-light-responsive-count
+    agrees: true
+    outcome: reproduced
+    reason: 664 of 7,411 (8.96%) under both readings (cell 16).
+    response: No change.
+  - claim: ed2-waveform-validation
+    agrees: true
+    outcome: blocked
+    reason: 'The light-evoked waveforms need wide-band data. On the archive the 11 raw files include only 5 homecage-mouse
+      sessions (52 to 141 GB each). The trough-to-peak part was computed and matches the paper: 0.696 against 0.700 ms, p
+      = 0.134 (cell 86).'
+    response: No change.
+  - claim: ed1-brdu-specificity
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only 115 ecephys NWB files and no histology.
+    response: No change.
+  - claim: fig1c-radial-depth
+    agrees: true
+    outcome: blocked
+    reason: Same reason as ed1 (no histology in the archive).
+    response: No change.
+  - claim: fig1e-labelled-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Means and s.d. equal the paper's. F = 8.525, bootstrap p < 0.0002 (cell 20).
+    response: No change.
+  - claim: fig1f-rem-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Fractions 27.96/20.99/19.74/21.54%; the E14.5 and E15.5 fractions are outside tolerance. Slope -2.05 %/day, p
+      about 0.16 across seeds, and p = 0.162 with the 0.05 variant (cell 37). This depends on the theta-channel choice (problem
+      1): in 62 of 104 sessions no channel with a positive sharp wave was found and the pyramidal-layer channel was used,
+      which breaks the Methods'' rule, and fig1f classifies cells by absolute phase, so it depends directly on the reference
+      channel; no variant was run on the sessions that follow the rule. The both-locked counts (93/81/76/65) are not compared
+      with the paper''s, whose legend n exceed its own REM-locked counts (problem 10).'
+    response: 'The sharp wave is now measured against a pre-ripple baseline in microvolts (the conversion factor was missing),
+      and the theta channel is a channel with a positive sharp wave next to the layer centre; 76 of 104 sessions now follow
+      the rule. The notebook prints each session''s channel position relative to the centre and the sharp-wave profile, and
+      runs fig1f on the 76 sessions and on the layer centre channel. Outcome unchanged: 27.78/21.33/21.33/23.33%, slope -1.33
+      %/day, p 0.25 to 0.28, and no reading gives a significant slope. The both-locked counts are printed beside the legend''s,
+      and the inconsistency is recorded as a finding and asked of a reader.'
+  - claim: fig1g-rate-by-birthdate
+    agrees: true
+    outcome: reproduced
+    reason: Medians 1.52/1.62/1.54/1.15 Hz, all within tolerance. E16.5 is lowest, p = 0.034 to 0.041 (cell 25).
+    response: No change.
+  - claim: fig1h-burst-by-birthdate
+    agrees: true
+    outcome: partially_reproduced
+    reason: p <= 0.0004 and the inverted-U holds. All four medians (0.088 to 0.104) are about 25% below the paper's (cell
+      27). acg_counts truncates floating-point lags, so a lag of exactly 2 ms fell into the 1 ms bin in a synthetic test;
+      the effect is small and cannot explain the offset (problem 6).
+    response: acg_counts now rounds before the floor. Medians 0.087/0.091/0.103/0.080, p <= 0.0004; outcome unchanged.
+  - claim: ed3-depth-control
+    agrees: false
+    outcome: blocked
+    reason: The analysis was not run ("not reached in the run's time"). The data it needs is in the files (depth from the
+      sharp-wave profile and the electrode positions), so it is testable; "not reached in time" is not a data limit (problem
+      4).
+    response: 'Tested: depth from the sharp-wave reversal of each shank face, 500 depth-matched resamplings as resample_depth.m.
+      Outcome changed from blocked to not_reproduced (assumed): the matching holds, but the burst, spatial information and
+      coverage fractions (0.976, 0.980, 0.992) lie above the paper''s beyond tolerance.'
+  - claim: fig2b-synchrony-per-animal
+    agrees: true
+    outcome: reproduced
+    reason: 'Among the 13 animals: reading (a) gives 10, reading (b) gives 12, both within 10 to 12 (cell 33).'
+    response: No change.
+  - claim: fig2c-theta-cofiring
+    agrees: true
+    outcome: reproduced
+    reason: SBD 0.0180 against DBD 0.0078, p = 1e-41, pair counts exact. The DBD median sits at the edge of its tolerance.
+      The theta channel does not follow the Methods' rule in 62 of 104 sessions. On the sessions where it does, the SBD median
+      is 0.0145, outside tolerance (cell 41, problem 1). The sharp-wave amplitude is printed as uV but is computed on raw
+      values without the conversion factor.
+    response: With the revised channel (positive sharp wave against a pre-ripple baseline, in uV; 76 of 104 sessions follow
+      the rule) the medians are 0.0169 and 0.0071, both just below tolerance, so the outcome changes to partially_reproduced
+      (assumed). On the 76 conforming sessions 0.0162 and 0.0070; on the layer centre channel 0.0178 and 0.0079, within tolerance.
+  - claim: fig2d-theta-depth
+    agrees: true
+    outcome: reproduced
+    reason: Wake medians 0.120/0.097/0.090/0.107, all within tolerance and in the claimed order, p about 0. REM p about 0.74
+      (cell 39). No variant was run on the sessions that follow the Methods' rule (problem 1).
+    response: 'With the revised channel: 0.121/0.092/0.091/0.104, all within tolerance, p < 0.0002; REM p 0.66 to 0.68. Outcome
+      unchanged. The variants on the 76 conforming sessions and on the layer centre channel keep the profile and test but
+      each puts one median just outside tolerance; stated in the notes.'
+  - claim: fig2f-ripple-firing-by-birthdate
+    agrees: true
+    outcome: reproduced
+    reason: For both measures all medians are within tolerance, the inverted-U holds and p <= 0.001 (cell 29).
+    response: No change.
+  - claim: fig2g-ripple-cofiring
+    agrees: true
+    outcome: reproduced
+    reason: SBD 0.0385 against DBD 0.0226, p = 5e-98 (cell 31).
+    response: No change.
+  - claim: ed5-matched-controls
+    agrees: false
+    outcome: blocked
+    reason: Blocked (data_missing) for the L-ratio only. The rate-matched parts (a) and (b) could have been tested with data
+      the notebook already holds (problem 4). Asked to print the units table's columns, to show whether an L-ratio exists.
+    response: The units table's columns are printed (21, no isolation metric). The rate-matched half is now run and reported
+      in the notes (fractions 1.0, 1.0, 0.998 and 0.598 for the novel ratemap correlations, paper 0.958); the claim stays
+      blocked, as its expected values include the L-ratio fraction.
+  - claim: fig3c-assembly-cofiring
+    agrees: true
+    outcome: blocked
+    reason: 'The data is present; the analysis was not run (other: compute).'
+    response: No change; recorded as too_large, with the memory estimate in the notes.
+  - claim: fig3e-assembly-expression
+    agrees: true
+    outcome: blocked
+    reason: 'Same as fig3c: the data is present; the analysis was not run.'
+    response: No change.
+  - claim: ed6-heldout-assemblies
+    agrees: true
+    outcome: blocked
+    reason: 'Same as fig3c: the data is present; the analysis was not run.'
+    response: No change.
+  - claim: ed7-sbd-coactivation
+    agrees: false
+    outcome: blocked
+    reason: It needs only the SPW-R count matrices that homecage_session already builds, so it was cheap to test (problem
+      4).
+    response: 'Part (e) is now run and reported in the notes (65 sessions with >= 3 light-responsive cells, the paper''s 65;
+      mean z 8.7 for k > 2). The claim stays blocked: it depends on fig3e-assembly-expression, which is blocked, and its part
+      (b) needs that claim''s assembly expression.'
+  - claim: fig4d-model-fit
+    agrees: true
+    outcome: blocked
+    reason: 'A simulation; it needs no data beyond published values (other: compute).'
+    response: No change; not run in this revision.
+  - claim: maze-cohort
+    agrees: true
+    outcome: reproduced
+    reason: 9 familiar-maze mice (2/2/2/3) and 3 novel-environment mice (cell 48).
+    response: No change.
+  - claim: maze-task
+    agrees: true
+    outcome: not_reproduced
+    reason: Trial extent 202.8 cm and tracking at 30 Hz both hold. Only 30 of 57 sessions have >= 10 trials of each type,
+      and only 51 of 57 have >= 20 trials (cell 51). Trials are counted only after the mapping filters and are not compared
+      with the trials table, so the failure may be an artefact of the filters (problem 5).
+    response: 'The notebook now prints the trials table''s left and right counts per session beside the counted trials: the
+      table gives the same 30 of 57 and 51 of 57, the counts differ by one trial in two sessions, and no other visited_arm
+      value occurs. Outcome unchanged.'
+  - claim: novel-explorations
+    agrees: true
+    outcome: reproduced
+    reason: '16 explorations in 6 environments: 2 linear tracks, 3 open fields, 1 figure-eight (cell 53).'
+    response: No change.
+  - claim: fig5b-spatial-info-by-birthdate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both tests give p < 0.001 and the inverted-U holds under every reading. Information medians are 0.56 to 0.92 bits/s,
+      about 30% low, and the coverage medians are outside tolerance (cell 55).
+    response: No change.
+  - claim: fig5c-sbd-ratemap-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: SBD 0.0189 is outside tolerance; DBD -0.0239 is within. p = 6e-9 (cell 57).
+    response: No change.
+  - claim: fig5d-overlap-by-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Birthdate main effect p = 1e-4. The post hoc comparison is significant at 0 and 250 um and not at 500 um. Five
+      of the six means are outside tolerance (cell 59). Tukey is run on a six-group one-way model and not on the two-way model;
+      shank distance as |shank difference| x 250 um assumes consecutive shank ids on one probe; 1,394 pairs at 750 um are
+      dropped (problem 7). Asked whether any session has more than one probe.
+    response: 'The notebook prints that 25 files mark electrodes Front or Back with shanks 1 to 4 on each, at the same x positions:
+      faces of the same shanks, as the paper''s pair counts (2,561 SBD, 1,205 same-shank) are found only that way; it also
+      checks the shank distance against the x positions and shows that the two-way model with interaction has the six-group
+      residual mean square, so Tukey-Kramer over the six groups is multcompare on that model. Outcome unchanged.'
+  - claim: fig5e-pv-decorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: The stem is highest and p = 0. The turn 1 median, 0.488, is outside tolerance (cell 61).
+    response: No change.
+  - claim: fig5f-remap-together
+    agrees: true
+    outcome: reproduced
+    reason: Main effect p = 9e-7, and SBD is above DBD in all three terciles (cell 63).
+    response: No change.
+  - claim: fig6c-theta-rate-preserved
+    agrees: true
+    outcome: reproduced
+    reason: rho = 0.741, n = 2,544 exactly (cell 43).
+    response: With the revised theta channel rho = 0.736 (0.738 on the layer centre channel); outcome unchanged.
+  - claim: fig6d-rate-lower-novel
+    agrees: true
+    outcome: reproduced
+    reason: Familiar 0.755 Hz against novel 0.675 Hz, rank-sum p = 0.0013 (cell 45).
+    response: With the revised theta channel 0.759 against 0.670 Hz, p = 0.00073; outcome unchanged.
+  - claim: fig6d-info-lower-novel
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Novel is lower, p = 1e-35. The familiar median, 0.661, is outside tolerance. This uses only 8 of the 16 explorations
+      (problem 2): all 7 open fields and the linear track of e16_3m2_211211 are dropped, the latter never explained; the units
+      and bin counts of the novel series are never printed.'
+    response: The open fields are now included, binned at an assumed 1 cm per lab unit with 2 and 0.5 cm per unit and their
+      omission as variants; the notebook prints each novel series, its unit and bin count, and why the e16_3m2_211211 linear
+      track is left out (its series lies in the openField_thomas epoch). Outcome unchanged under every reading (novel 0.260,
+      both medians outside tolerance).
+  - claim: fig6c-novel-ratemap-corr-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Novel -0.032 against familiar -0.045, p = 0.75 (cell 70). This is not decisive: 8 of 16 explorations are missing,
+      including every open field, and the novel position units are unverified (problem 2). Pearson correlations of open-field
+      maps can be computed with bins chosen from the arena''s geometry.'
+    response: 'Open fields included at an assumed scale: novel -0.031, p = 0.78, outcome unchanged and marked as resting on
+      the scale; at 2 and 0.5 cm per unit p = 2.1e-6 and 0.010, which would give partially reproduced, as the notes say.'
+  - claim: fig6e-sbd-novel-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: SBD is above DBD, p = 0.002, but both medians (0.030 and -0.034) are far from the paper's 0.117 and 0.046. Same
+      subset caveat (cell 72, problem 2).
+    response: 'Open fields included: SBD 0.021 against DBD -0.033, p = 0.0011; the same outcome under every scale reading.'
+  - claim: fig6f-remap-together-novel
+    agrees: true
+    outcome: reproduced
+    reason: Main effect p = 0.016 under reading (a) and 0.013 under (b), SBD higher. This holds on the subset only (cell 74).
+      In reading (a) the tercile edges are computed on the merged table, and familiar correlations of sessions with two novel
+      environments are counted twice (problem 8).
+    response: 'Reading (a) now takes its edges from each familiar pair once, and a variant counts each pair once in the ANOVA.
+      With the open fields: p = 0.0054 and 0.0038, SBD higher; one value per pair p = 0.0081. Outcome unchanged.'
+  - claim: fig7b-sbd-convergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: SBD is above DBD, p = 1e-79. The medians, 0.45 and 0.36, are far above 0.27 and 0.20 (cell 78). The detector finds
+      58% more connections than the paper; its test window is fixed at 0.8 to 2.4 ms whereas the reliability test uses "3
+      bins surrounding [the] peak", the hollow fraction and the minimums of 50 CCG counts and 100 presynaptic spikes are assumptions
+      not all stated as such, and only alpha was varied (problem 3).
+    response: The minimums are now stated, and each assumed detail is varied (the literal 3 bins around the peak, hollow 0.4
+      and 0.8, s.d. 7 and 10 ms, no minimums, alpha 1e-5) with the connection count, the fig7b medians, the share of pairs
+      with a shared target, the fig7d peak and the fig7ce transmission medians printed for each. No variant comes near 31,932
+      connections (38,402 to 50,756). Outcome unchanged.
+  - claim: fig7ce-convergence-by-birthdate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both tests give p about 0 and both shapes hold. 7 of the 8 medians are outside tolerance (cell 80).
+    response: Detector variants added (see fig7b); outcome unchanged.
+  - claim: fig7d-transmission-gamma
+    agrees: true
+    outcome: not_reproduced
+    reason: The peak bin is 29 to 42 ms, not 13.5 to 25.3 ms. The curve is nearly flat from 20 to 60 ms (cell 82).
+    response: 'Detector variants added: the peak is in the same bin under every one. Outcome unchanged.'
+  - claim: fig7fg-convergence-cofiring
+    agrees: true
+    outcome: not_reproduced
+    reason: 50,618 connections against 31,932 +- 3,193, and 86.2% of pairs share a target against 65.27%; both counts fail.
+      All six slopes are positive with p < 0.001 (cell 84). The pair set (371,756 pyramidal pairs against the legend's 315,722)
+      differs and the notebook does not say why (problem 9).
+    response: Detector variants added (38,402 to 50,756 connections, 74.5 to 86.4% shared, all outside tolerance). The notebook
+      prints the legend's 315,722 beside the 371,756 pairs and the 370,837 with any target; the difference is not explained
+      by pairs without targets, and the notes say so. Outcome unchanged.
+  - claim: ed10-waveform-matched-controls
+    agrees: false
+    outcome: blocked
+    reason: The notebook blocks it only through its dependency on ed2. Its cofiring and ratemap comparisons for same-shank
+      pairs more than 60 um apart need no light-evoked waveforms; electrode positions and max_electrode are in the files (problem
+      4). Asked for the shape of waveform_mean.
+    response: waveform_mean holds every channel (72 samples by 64 or 128 channels), printed in the data check. All of the
+      claim's own parts are now run and reported in the notes; the claim stays blocked by its dependency on ed2-waveform-validation,
+      as the protocol requires.
+- date: '2026-11-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary, the helper module,
+    the claims file, the attempt record and the README, with the paper's full text under paper/. The verifier took counts
+    of claims and outcomes from the attempt record.
+  results:
+  - claim: cohort-birthdates
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. README: "Cohort, sessions, units and light-responsive counts
+      (5 claims)": only 4 claims fit that row (cohort-birthdates, st1-animal-sessions, unit-count, ed2-light-responsive-count),
+      and the README''s rows sum to 45.'
+    response: No change of outcome. The README row now says 4 claims, and its rows sum to 44.
+  - claim: st1-animal-sessions
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: sessions-durations
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'I still read this as partially reproduced, as in round 1. On the 96 homecage sessions the count, median and range
+      all hold (cell 14). The only failure is "every session holds non-REM", and the criterion has no category for that case.
+      The record states my disagreement and refers the gap to a reader. That is acceptable, but the gap is in the claims file
+      and is still open. README: "two sessions without sleep states": they have sleep states, one Awake row each; they have
+      no sleep (cells 5 and 14).'
+    response: Outcome kept at not_reproduced, the criterion read literally, with the disagreement recorded; the question for
+      a reader stands in questions/huszar-2022.yaml. The README now says the two sessions hold wake only, no sleep.
+  - claim: spwr-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: unit-count
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: ed2-light-responsive-count
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: ed2-waveform-validation
+    agrees: true
+    outcome: blocked
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: ed1-brdu-specificity
+    agrees: true
+    outcome: blocked
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig1c-radial-depth
+    agrees: true
+    outcome: blocked
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig1e-labelled-fraction
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig1f-rem-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Theta channel (fig1f, fig2c, fig2d, fig6c-theta, fig6d-rate,
+      fig7fg): stated, with layer-centre and "rule-only" variants. The 76 sessions counted as following the rule include 6
+      whose channel lies below the layer centre (dy_theta -300, -300, -260, -260, -20, -20 um); at most 70 sessions follow
+      "above the centre". e13_1f1_200305 and _200307 have no non-REM sleep; for them pick_theta_channel falls back to all
+      ripples, which is not stated.'
+    response: 'pick_theta_channel now requires a positive sharp wave and larger rel_y than the centre; 72 of 104 sessions
+      follow the rule (two of the six had a qualifying channel above the centre as well), and the notebook prints that the
+      channel of every rule session lies above its centre with a positive sharp wave. The fallback to all ripples is stated
+      and printed: it applies to the 6 sessions with 20 or fewer ripples in homecage non-REM, the two without non-REM among
+      them. fig1f: 27.78, 21.33, 21.05 and 23.33%, slope -1.36% per day, p 0.269 to 0.301; on the 72 rule sessions -1.41,
+      p = 0.259. Outcome unchanged.'
+  - claim: fig1g-rate-by-birthdate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig1h-burst-by-birthdate
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: ed3-depth-control
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Depth reference (ed3): stated. Not reproduced follows from the criterion, and it matches the paper''s "weakens
+      bursting differences", which this attempt does not find. The fallback depth is used for 376 of 664 cells. My round-1
+      reason said the claim was testable and that "not reached in time" is not a data limit; I disagreed with the block, and
+      the record shows agrees: true for it. The same applies, less strongly, to ed5, ed7 and ed10.'
+    response: 'No change of outcome. The fractions moved slightly with the revised theta channel (0.980, 0.990, 0.992, 1.000,
+      0.980, 0.992), and the notes give this run''s values. The round-1 results for ed3, ed5, ed7 and ed10 now read agrees:
+      false.'
+  - claim: fig2b-synchrony-per-animal
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig2c-theta-cofiring
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. fig2c''s SBD median, 0.0169, misses tolerance by 0.0001 and is
+      within it on the centre channel (cell 55), so "partially" rests on the channel. That is stated. Theta channel (fig1f,
+      fig2c, fig2d, fig6c-theta, fig6d-rate, fig7fg): stated, with layer-centre and "rule-only" variants. The 76 sessions
+      counted as following the rule include 6 whose channel lies below the layer centre (dy_theta -300, -300, -260, -260,
+      -20, -20 um); at most 70 sessions follow "above the centre". e13_1f1_200305 and _200307 have no non-REM sleep; for them
+      pick_theta_channel falls back to all ripples, which is not stated. fig2c sits 0.0001 from tolerance, so even this could
+      change its outcome.'
+    response: 'pick_theta_channel now requires a positive sharp wave and larger rel_y than the centre; 72 of 104 sessions
+      follow the rule (two of the six had a qualifying channel above the centre as well), and the notebook prints that the
+      channel of every rule session lies above its centre with a positive sharp wave. The fallback to all ripples is stated
+      and printed: it applies to the 6 sessions with 20 or fewer ripples in homecage non-REM, the two without non-REM among
+      them. fig2c: SBD 0.0170 and DBD 0.0070, both still below tolerance by the notebook''s check (the SBD median rounds to
+      the lower bound), so the outcome is unchanged; on the 72 rule sessions 0.0164 and 0.0069.'
+  - claim: fig2d-theta-depth
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Theta channel (fig1f, fig2c, fig2d, fig6c-theta, fig6d-rate,
+      fig7fg): stated, with layer-centre and "rule-only" variants. The 76 sessions counted as following the rule include 6
+      whose channel lies below the layer centre (dy_theta -300, -300, -260, -260, -20, -20 um); at most 70 sessions follow
+      "above the centre". e13_1f1_200305 and _200307 have no non-REM sleep; for them pick_theta_channel falls back to all
+      ripples, which is not stated.'
+    response: 'pick_theta_channel now requires a positive sharp wave and larger rel_y than the centre; 72 of 104 sessions
+      follow the rule (two of the six had a qualifying channel above the centre as well), and the notebook prints that the
+      channel of every rule session lies above its centre with a positive sharp wave. The fallback to all ripples is stated
+      and printed: it applies to the 6 sessions with 20 or fewer ripples in homecage non-REM, the two without non-REM among
+      them. fig2d: wake medians 0.121, 0.090, 0.093 and 0.104, all within tolerance, p < 0.0002; REM p 0.64 to 0.66. Outcome
+      unchanged.'
+  - claim: fig2f-ripple-firing-by-birthdate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig2g-ripple-cofiring
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: ed5-matched-controls
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Attempt record, ed5 notes and response: it says "1.000 ... 1.000
+      ... 0.998 for familiar ratemap correlations ... and 0.598 for novel". Cell 125 prints familiar 1.000 and novel 0.604.'
+    response: The notes give this run's fractions, 1.000, 1.000, 0.998 and 0.498. They move between runs because one generator
+      serves the four comparisons in turn and the theta pairs before them changed; the notebook says so, with the previous
+      run's 0.604.
+  - claim: fig3c-assembly-cofiring
+    agrees: false
+    outcome: blocked
+    reason: I don't accept "too_large". The 9 to 12 GB figure is for a dense double-precision matrix. The record itself says
+      a chunked covariance "was not attempted". These four, and ed7 through its dependency, are "not attempted", not too large.
+    response: Outcome kept as blocked, too_large, as round 2 allows no change of outcome and the first run's time is what
+      stopped the analysis. The notes now say plainly that it was not attempted and that the 9 to 12 GB figure is for the
+      dense matrix, not a limit of the analysis; building a chunked version is a new analysis, which the protocol leaves to
+      a new attempt. The notebook header, summary and README say "not run".
+  - claim: fig3e-assembly-expression
+    agrees: false
+    outcome: blocked
+    reason: I don't accept "too_large". The 9 to 12 GB figure is for a dense double-precision matrix. The record itself says
+      a chunked covariance "was not attempted". These four, and ed7 through its dependency, are "not attempted", not too large.
+    response: Outcome kept as blocked, too_large, as round 2 allows no change of outcome and the first run's time is what
+      stopped the analysis. The notes now say plainly that it was not attempted and that the 9 to 12 GB figure is for the
+      dense matrix, not a limit of the analysis; building a chunked version is a new analysis, which the protocol leaves to
+      a new attempt. The notebook header, summary and README say "not run".
+  - claim: ed6-heldout-assemblies
+    agrees: false
+    outcome: blocked
+    reason: I don't accept "too_large". The 9 to 12 GB figure is for a dense double-precision matrix. The record itself says
+      a chunked covariance "was not attempted". These four, and ed7 through its dependency, are "not attempted", not too large.
+    response: Outcome kept as blocked, too_large, as round 2 allows no change of outcome and the first run's time is what
+      stopped the analysis. The notes now say plainly that it was not attempted and that the 9 to 12 GB figure is for the
+      dense matrix, not a limit of the analysis; building a chunked version is a new analysis, which the protocol leaves to
+      a new attempt. The notebook header, summary and README say "not run".
+  - claim: ed7-sbd-coactivation
+    agrees: true
+    outcome: blocked
+    reason: I agree with 38 of the 44 outcomes as recorded. I don't accept "too_large". The 9 to 12 GB figure is for a dense
+      double-precision matrix. The record itself says a chunked covariance "was not attempted". These four, and ed7 through
+      its dependency, are "not attempted", not too large.
+    response: Outcome kept; the notes now say that fig3e was not run, not that it is too large as implemented.
+  - claim: fig4d-model-fit
+    agrees: false
+    outcome: blocked
+    reason: I don't accept "too_large". The 9 to 12 GB figure is for a dense double-precision matrix. The record itself says
+      a chunked covariance "was not attempted". These four, and ed7 through its dependency, are "not attempted", not too large.
+      fig4d is a simulation, and the record gives no size for it at all.
+    response: Outcome kept as blocked (round 2). The notes now give its size from the Methods (per grid point one bell-shaped
+      model and 100 uniform-model runs, each repeated with ICA until 200 assemblies), say that no timing was made, and that
+      it depends on the observed rates of fig3e, which was not run.
+  - claim: maze-cohort
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: maze-task
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: novel-explorations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig5b-spatial-info-by-birthdate
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Cell 76 and the record''s fig5b notes: "no reading brings the
+      medians within tolerance": under reading (b), coverage at E13.5 (34.5) is within tolerance (cell 75). "25 to 40% below":
+      the concatenated-map medians are 29.5 to 40% below.'
+    response: 'Corrected in the conclusion and the notes: no reading puts all medians within tolerance, the E13.5 coverage
+      under reading (b) is within it, and spatial information is 29.5 to 40% below. Outcome unchanged.'
+  - claim: fig5c-sbd-ratemap-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig5d-overlap-by-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig5e-pv-decorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig5f-remap-together
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 38 of the 44 outcomes as recorded.
+    response: No change.
+  - claim: fig6c-theta-rate-preserved
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Theta channel (fig1f, fig2c, fig2d, fig6c-theta, fig6d-rate,
+      fig7fg): stated, with layer-centre and "rule-only" variants. The 76 sessions counted as following the rule include 6
+      whose channel lies below the layer centre (dy_theta -300, -300, -260, -260, -20, -20 um); at most 70 sessions follow
+      "above the centre". e13_1f1_200305 and _200307 have no non-REM sleep; for them pick_theta_channel falls back to all
+      ripples, which is not stated. Cell 132, Summary: "Every theta claim is also shown ... on the 76 sessions alone": fig6c-theta
+      and fig6d-rate have no 76-session variant, only "6 of 12" is printed (cells 58 and 61), and fig7fg has neither variant.'
+    response: 'pick_theta_channel now requires a positive sharp wave and larger rel_y than the centre; 72 of 104 sessions
+      follow the rule (two of the six had a qualifying channel above the centre as well), and the notebook prints that the
+      channel of every rule session lies above its centre with a positive sharp wave. The fallback to all ripples is stated
+      and printed: it applies to the 6 sessions with 20 or fewer ripples in homecage non-REM, the two without non-REM among
+      them. A rule-session variant is added: on the 5 novel sessions that follow the rule, rho = 0.734 over 1,259 cells; main
+      reading rho = 0.735. Outcome unchanged.'
+  - claim: fig6d-rate-lower-novel
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Theta channel (fig1f, fig2c, fig2d, fig6c-theta, fig6d-rate,
+      fig7fg): stated, with layer-centre and "rule-only" variants. The 76 sessions counted as following the rule include 6
+      whose channel lies below the layer centre (dy_theta -300, -300, -260, -260, -20, -20 um); at most 70 sessions follow
+      "above the centre". e13_1f1_200305 and _200307 have no non-REM sleep; for them pick_theta_channel falls back to all
+      ripples, which is not stated. fig6c-theta and fig6d-rate have no 76-session variant, only "6 of 12" is printed (cells
+      58 and 61).'
+    response: 'pick_theta_channel now requires a positive sharp wave and larger rel_y than the centre; 72 of 104 sessions
+      follow the rule (two of the six had a qualifying channel above the centre as well), and the notebook prints that the
+      channel of every rule session lies above its centre with a positive sharp wave. The fallback to all ripples is stated
+      and printed: it applies to the 6 sessions with 20 or fewer ripples in homecage non-REM, the two without non-REM among
+      them. A rule-session variant is added: 0.704 against 0.643 Hz over 1,259 cells, rank-sum p = 0.051 and paired signed-rank
+      p = 0.0047, stated in the notes; the main reading gives 0.757 and 0.672 Hz, p = 0.00093. Outcome unchanged.'
+  - claim: fig6d-info-lower-novel
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. fig6d-info and fig6e both carry the open-field-scale deviation
+      without assumed: true. That is acceptable, because both outcomes are the same under every scale reading (cells 96, 102).
+      The 116 units for 110 cm of linearized track, the open-field sizes in lab units and "0 to 1 in some" are cited but not
+      printed (cells 93 and 94).'
+    response: 'The notebook now prints the scale evidence (a new data-check cell, position_scale_check): extents and speeds
+      of every 2D series, and cm per unit from the simultaneous linearized speeds (0.85, 0.88 and 0.93 for the lab-unit series
+      not normalized to 0-1, 1.00 to 1.19 for the familiar maze''s cm series, about 100 for the five 0-1 series). A variant
+      at 0.85 cm per unit is added. Novel 0.251 at 0.85 cm per unit; outcome unchanged.'
+  - claim: fig6c-novel-ratemap-corr-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The assumption is stated, but it is weakly supported and it decides the outcome. At the assumed 1 cm per unit,
+      p = 0.784. At 2 cm and at 0.5 cm per unit, p = 2.1e-6 and 0.0104, both of which would give partially reproduced (cell
+      99). The evidence offered for 1 cm per unit is not in any printed output: neither the "116 units for 110 cm" track nor
+      the open-field sizes in lab units. At 1 cm per unit, openField_coolbox would be 22.5 x 22.5 cm, which is small for an
+      open field. I accept the outcome only as conditional on the scale. The data do not decide it.'
+    response: 'The notebook now prints the scale evidence (a new data-check cell, position_scale_check): extents and speeds
+      of every 2D series, and cm per unit from the simultaneous linearized speeds (0.85, 0.88 and 0.93 for the lab-unit series
+      not normalized to 0-1, 1.00 to 1.19 for the familiar maze''s cm series, about 100 for the five 0-1 series). A variant
+      at 0.85 cm per unit is added. At 0.85 cm per unit p = 0.57, the same outcome. The open fields'' own scale is not in
+      the data, so the outcome stays marked as assumed and conditional on the scale, as its notes and the metadata_insufficient
+      finding say.'
+  - claim: fig6e-sbd-novel-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. fig6d-info and fig6e both carry the open-field-scale deviation
+      without assumed: true. That is acceptable, because both outcomes are the same under every scale reading (cells 96, 102).
+      The 116 units for 110 cm of linearized track, the open-field sizes in lab units and "0 to 1 in some" are cited but not
+      printed (cells 93 and 94).'
+    response: 'The notebook now prints the scale evidence (a new data-check cell, position_scale_check): extents and speeds
+      of every 2D series, and cm per unit from the simultaneous linearized speeds (0.85, 0.88 and 0.93 for the lab-unit series
+      not normalized to 0-1, 1.00 to 1.19 for the familiar maze''s cm series, about 100 for the five 0-1 series). A variant
+      at 0.85 cm per unit is added. p = 0.0012 at 0.85 cm per unit; outcome unchanged.'
+  - claim: fig6f-remap-together-novel
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. fig6f (assumed): the scale variants were not run, as the record
+      says. The interaction is significant (p = 0.0073), SBD is below DBD in the lowest tercile, and the Supplementary Table
+      5 means that the criterion says to report are not compared (cell 105). None of this changes the outcome. The record''s
+      fig6f notes say "the earlier run without them gave p = 0.016 and 0.013"; this notebook has no such output.'
+    response: The scale variants are run (main effect p = 0.0018, 0.023 and 0.0060 at 2, 0.5 and 0.85 cm per unit, 0.016 without
+      the open fields, SBD higher in each), the interaction and the lowest tercile are stated, the Supplementary Table 5 means
+      are printed and compared, and the sentence on the earlier run is removed. Outcome unchanged.
+  - claim: fig7b-sbd-convergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Connection detector (fig7b, fig7ce, fig7d, fig7fg): stated, and
+      every assumed detail is varied (cell 109). Cell 112: "medians above the paper''s (0.385 to 0.455 against 0.278 to 0.368)".
+      The second range is this attempt''s DBD medians across variants, not the paper''s values. Cell 132: "finds about 60%
+      more connections than the paper under every variant of them": at alpha 1e-5 the count is 38,402, 20% more (cell 109).'
+    response: 'Both sentences corrected: SBD medians 0.385 to 0.455 and DBD 0.278 to 0.368 across the variants, all above
+      the paper''s 0.273 and 0.200; the variants find 20% to 59% more connections than the paper. Outcome unchanged.'
+  - claim: fig7ce-convergence-by-birthdate
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Connection detector (fig7b, fig7ce, fig7d, fig7fg): stated, and
+      every assumed detail is varied (cell 109).'
+    response: No change.
+  - claim: fig7d-transmission-gamma
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Connection detector (fig7b, fig7ce, fig7d, fig7fg): stated, and
+      every assumed detail is varied (cell 109). fig7d: the peak bin (0.0269) beats the 20 to 29 ms bin (0.0266, centre 24.5
+      ms, inside 13.5 to 25.3 ms) by 0.0003, with no uncertainty given (cell 117). Not reproduced is right as a literal reading,
+      but fragile.'
+    response: 'A bootstrap over connections is added: the difference has a 95% interval of 0.00017 to 0.00050, and the peak
+      is in the 29 to 42 ms bin in 999 of 1,000 resamplings and never inside 13.5 to 25.3 ms, under all five seeds. Outcome
+      unchanged.'
+  - claim: fig7fg-convergence-cofiring
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with 38 of the 44 outcomes as recorded. Connection detector (fig7b, fig7ce, fig7d, fig7fg): stated, and
+      every assumed detail is varied (cell 109). fig7fg has neither theta variant. Cell 121: it says slopes "0.0040, 0.0029
+      and 0.0017 for nonresponsive pairs", but the theta slope for reading (a) is 0.0028. "all rise with convergence": for
+      ratemaps the (a) quintile means are 0.0111, 0.0115, 0.0109, 0.0096 and 0.0206, so they rise only in the top quintile.
+      Problem 9 (the paper''s pair set of 315,722) is stated but still unexplained. It does not change an outcome, because
+      the counts fail either way.'
+    response: Conclusion and notes corrected (theta slope 0.0028; the ratemap correlation rises only in the top quintile).
+      A rule-session variant of the theta slope is added (0.0026 on the rule sessions, 0.0031 on the others, both p < 0.001);
+      no centre-channel variant, as the summary now says. The pair set stays unexplained, as the notes say. Outcome unchanged.
+  - claim: ed10-waveform-matched-controls
+    agrees: false
+    outcome: not_reproduced
+    reason: 'I disagree, and this is a claims-file issue. depends_on lists ed2-waveform-validation. Yet the criterion computes
+      the waveform distance "on spontaneous spikes", so it needs none of the light-evoked waveforms that block ed2. The claim''s
+      own parts were computed (cell 127). Under its criterion they give not reproduced: "Not reproduced when an SBD-DBD comparison
+      fails at p < 0.05", and the ratemap comparison at > 60 um gives p = 0.0779. The block therefore hides a failing result.
+      The record''s ed10 notes say "0.132 for ratemap correlations"; cell 127 prints "familiar ratemap 0.106".'
+    response: 'Kept blocked: the claims file lists ed2-waveform-validation under depends_on, and a claim that depends on a
+      blocked claim is blocked. The dependency is asked of a reader in questions/huszar-2022.yaml, with the result the claim''s
+      own parts give (the ratemap comparison at p = 0.078, which would make it not reproduced), and the notes say so. No proposed
+      change is written, as the outcome follows the claims file as it stands. The ratemap fraction is 0.132 in this run and
+      0.106 in the previous one; the notes give this run''s number and why it moves.'
+reconciliation:
+  earlier: huszar-2022-01
+  date: 2026-11-19
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: >-
+      Every processed file now has a light_responsive column, with opto_p_salt and opto_h_reliable beside
+      it, and an OptogeneticPulses table (477,092 pulses in 104 files); 664 units are light-responsive in
+      the 15 homecage mice (earlier_findings.ipynb).
+  - finding: 2
+    status: fixed
+    note: >-
+      Every units table now holds putative_cell_type and waveform_mean; the 15 homecage mice give 7,411
+      pyramidal cells, 1,556 narrow and 504 wide interneurons and 1 Unknown (earlier_findings.ipynb).
+  - finding: 3
+    status: fixed
+    note: >-
+      All 104 files have units, the six mice included (202 to 1,432 units each), 11,656 in all and 9,472 in
+      the 15 homecage mice. The six still have no position, which no claim of the paper asks of them
+      (earlier_findings.ipynb).
+  - finding: 4
+    status: fixed
+    note: >-
+      The 12 novel-cohort sessions now hold 16 position series outside the familiar maze, 7 of them in the
+      three open fields, so every novel exploration has position (earlier_findings.ipynb).
+  - finding: 5
+    status: fixed
+    note: >-
+      Every mouse has one sex in all of its files (e13_1f1 F in 5, e13_1m1 M in 12), giving 12 males and 5
+      females (earlier_findings.ipynb).
+  - finding: 6
+    status: fixed
+    note: >-
+      is_familiar_maze is True for all 1,294 trials of single-recording sessions and for every trial of a
+      session's first recording, False for the 362 others (earlier_findings.ipynb).
+  - finding: 7
+    status: partly_fixed
+    now: 3
+    note: >-
+      The novel position series are no longer labelled cm; all 16 have unit n.a. and descriptions saying
+      they are in the lab's units with no scale (earlier_findings.ipynb). The scale is still missing, which
+      huszar-2022-02 reports as its finding 3.
+  - finding: 8
+    status: fixed
+    note: >-
+      The version holds 11 raw files, and each gives the date of its file name as its session start
+      (earlier_findings.ipynb).
+  - finding: 9
+    status: fixed
+    note: >-
+      The LFP of e16_3m1_210201 is labelled 1250 Hz with a conversion of 1.95e-07 V, as in all 104 processed
+      files (earlier_findings.ipynb).
+  - finding: 10
+    status: fixed
+    note: >-
+      In all 104 files the units table has an electrodes column with indices inside the electrodes table, and
+      its electrode_group references resolve to the file's electrode groups (earlier_findings.ipynb).
+  - finding: 11
+    status: fixed
+    note: >-
+      The day is still held only in the subject id and the age is still P3M/P6M, but the subject description
+      now states that the e-number of the id is the electroporation day and that no source gives another
+      record of it or each mouse's age (earlier_findings.ipynb).
+  - finding: 12
+    status: still_present
+    now: 1
+    note: >-
+      huszar-2022-02 reports the same two files, e13_1f1_200305 and e13_1f1_200307, with only wake in their
+      SleepStates table.
+  - finding: 13
+    status: still_present
+    now: 6
+    note: >-
+      huszar-2022-02 finds 27 familiar figure-eight sessions with fewer than ten trials on a visited arm and 6
+      with fewer than 20 trials, the earlier counts (over 57 sessions of the nine maze mice, where
+      huszar-2022-01 counted 65); the 19 trials without a start or stop time are also still there
+      (earlier_findings.ipynb).
+  - finding: 14
+    status: still_present
+    now: 7
+    note: >-
+      huszar-2022-02 reports the same 92 against 96 sessions, with the files' 96 homecage sessions running
+      from exactly 113.7 to 475.6 min.
+  - finding: 15
+    status: still_present
+    now: 13
+    note: >-
+      e13_26m1 is among the nine familiar-maze mice and the three novel mice, and all four of its sessions run
+      the familiar figure-eight before the novel environment (earlier_findings.ipynb). huszar-2022-02 did not
+      report it; it is added as its finding 13.
+  outcomes:
+  - claim: sessions-durations
+    earlier: partially_reproduced
+    cause: claims_changed
+    note: >-
+      Both attempts measure the same sessions, 104 files (median 319.6 min, 113.7 to 494.2 min) and 96 for
+      the 15 homecage mice (median 309.9 min, 113.7 to 475.6 min), and the same two e13_1f1 sessions with only
+      wake. The criterion huszar-2022-01 tested, written by its own author, named the sleep condition without
+      an outcome, and that attempt took its failure as partial; the reader's criterion makes it part of
+      reproduced with not reproduced otherwise, so huszar-2022-02 records not reproduced and asks a reader
+      about the case.
+    confidence: high
+  - claim: unit-count
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      On version 0.230630.2304 six mice had no units (8,201 units in 65 files) and there were no cell types,
+      so huszar-2022-01 used a 5 Hz rule (87.8% pyramidal). On 0.261113.1035 every file has units and the
+      lab's cell types, and the 96 homecage sessions give 9,472 units, 7,411 pyramidal cells and 2,060
+      interneurons. The criterion also changed, from the units of all files to readings over the 96 or 104
+      sessions with the type counts.
+    supports: reproduced
+    confidence: high
+  - claim: ed2-light-responsive-count
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      huszar-2022-01 found no light-responsive label and no pulse times (its finding 1). The new version has
+      the light_responsive column and the lab's SALT and reliability statistics, from which huszar-2022-02
+      counts 664 of 7,411 pyramidal cells.
+    confidence: high
+  - claim: fig1e-labelled-fraction
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing light-responsive labels on the earlier version; with the labels huszar-2022-02
+      measures per-session means of 5.39, 11.16, 14.74 and 9.16%.
+    confidence: high
+  - claim: fig1f-rem-shift
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels, and for the LFP, then held only in the raw files of 12 sessions. The new
+      processed files have both, and huszar-2022-02 finds REM-shifting fractions of 27.78, 21.33, 21.05 and
+      23.33% with a slope of -1.36% per day that is not significant.
+    confidence: high
+  - claim: fig1g-rate-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds medians of 1.5165, 1.6199, 1.5438 and
+      1.1523 Hz over the paper's numbers of cells.
+    confidence: high
+  - claim: fig1h-burst-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds burst index medians of 0.0873, 0.0912,
+      0.1031 and 0.0798, an inverted U about 25% below the paper's values.
+    confidence: high
+  - claim: fig2b-synchrony-per-animal
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and the six mice without units; with both now in the files
+      huszar-2022-02 finds SBD pairs cofiring more in 10 of the 13 animals.
+    confidence: high
+  - claim: fig2c-theta-cofiring
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and the LFP of the processed files; with both, huszar-2022-02 finds SBD
+      and DBD medians of 0.017 and 0.007 over the paper's 3,751 and 50,461 pairs, just below tolerance.
+    confidence: high
+  - claim: fig2d-theta-depth
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and LFP; with both, huszar-2022-02 finds wake medians of 0.1206, 0.0903,
+      0.0925 and 0.104.
+    confidence: high
+  - claim: fig2f-ripple-firing-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels (the ripples were already there); with them huszar-2022-02 finds SPW-R
+      rate medians of 7.484, 8.8232, 7.9118 and 6.1295 Hz and participation of 0.237, 0.2686, 0.2355 and
+      0.1942.
+    confidence: high
+  - claim: fig2g-ripple-cofiring
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked because SBD and DBD pairs could not be formed without labels; with them huszar-2022-02 finds
+      medians of 0.0385 and 0.0226.
+    confidence: high
+  - claim: fig5b-spatial-info-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds spatial information medians of 0.5639,
+      0.6321, 0.9183 and 0.6201 bits/s, the paper's profile but below its values.
+    confidence: high
+  - claim: fig5c-sbd-ratemap-overlap
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 forms the paper's 2,609 SBD and 39,965 DBD
+      pairs, with medians of 0.0189 and -0.0239.
+    confidence: high
+  - claim: fig5d-overlap-by-distance
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and the units' missing link to the electrodes (huszar-2022-01 finding
+      10); with both now in the files huszar-2022-02 finds 2,561 SBD pairs within 500 um and the paper's
+      tests, with one of the six means within tolerance.
+    confidence: high
+  - claim: fig5f-remap-together
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds the birthdate main effect (F = 24.0, p =
+      9.5e-7) with SBD higher.
+    confidence: high
+  - claim: fig6e-sbd-novel-overlap
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them, and with the open fields now holding position,
+      huszar-2022-02 finds SBD and DBD medians of 0.0206 and -0.0326, both outside tolerance.
+    confidence: high
+  - claim: fig6f-remap-together-novel
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels; with them huszar-2022-02 finds SBD pairs higher (F = 7.75, p = 0.0054
+      under reading (a)).
+    confidence: high
+  - claim: fig7b-sbd-convergence
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and cell types; with both, huszar-2022-02 finds SBD and DBD medians of
+      0.4545 and 0.3636, above the paper's, from 50,618 detected connections.
+    confidence: high
+  - claim: fig7ce-convergence-by-birthdate
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      Blocked for the missing labels and cell types; with both, huszar-2022-02 finds corrected convergence
+      medians of 0.1169, 0.1429, 0.1 and 0.0536, an inverted U with one value within tolerance.
+    confidence: high
+  - claim: fig7fg-convergence-cofiring
+    earlier: blocked
+    cause: dataset_changed
+    note: >-
+      huszar-2022-01 could run its connection test only on two sessions with a 5 Hz rule for interneurons
+      (1,001 against 2,060), as 39 of the 96 sessions had no units and the processed files had no LFP; it
+      found 0.407 to 0.448 of pairs connected (paper 0.173) and blocked the claim as methods_underspecified.
+      On the new version huszar-2022-02 runs it on all 96 sessions with the lab's cell types, gets the
+      paper's 184,230 pairs exactly but 50,618 connections and 86.24% sharing a target, and records not
+      reproduced with an assumed detector and a methods_unavailable finding (its finding 9). Both detectors
+      find far more connections than the paper, so the outcome turns on how the detector's details are read.
+    confidence: medium
+  protocol: >-
+    huszar-2022-01 ran under pilot-7 and huszar-2022-02 under pilot-16. Since pilot-8 a claim carries the
+    paper's own words and statistics; since pilot-9 every method comes from the paper and a claim is blocked
+    as methods_underspecified only when the readings the paper allows disagree; since pilot-10 a reader
+    writes the claims file from the paper without seeing the data, and the author may not change it. The
+    claims huszar-2022-01 tested were written by its own author after the data check, with 35 claims; the
+    reader's file has 44, adds st1-animal-sessions and eight Extended Data claims, and rewrites criteria
+    (sessions-durations now makes the sleep condition part of reproduced, unit-count judges the cell-type
+    counts, novel-explorations counts subsessions with zero tolerance), which is the cause of one changed
+    outcome here. pilot-12 made huszar-2022-02 blind and added this comparison; pilot-13 raised the notebook
+    limit to 60 minutes, which the 36-minute main notebook of huszar-2022-02 needed; pilot-14 files records
+    by paper, so both are huszar-2022. docs/pilot-notes.md has no section for pilot-11, pilot-15 or pilot-16.

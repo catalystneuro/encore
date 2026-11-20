@@ -220,6 +220,16 @@
               "pattern": "^https://"
             }
           }
+        },
+        "author_notes": {
+          "description": "The notes from the paper's authors that this attempt used (papers/author-notes/<paper>.yaml), each by its issue's address (docs/protocol.md, Author, step 1.6).",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https://github\\.com/.+/issues/[0-9]+$"
+          }
         }
       }
     },
@@ -299,6 +309,10 @@
           "assumed": {
             "description": "True when the outcome rests on an assumption about a method the paper leaves open: a choice the paper best supports, stated in a deviation that says what was assumed and why (docs/protocol.md, Author, step 1.6).",
             "type": "boolean"
+          },
+          "seed_sensitive": {
+            "type": "boolean",
+            "description": "True when the outcome is not the same under all five seeds the protocol asks for (docs/protocol.md, Author, step 3)."
           },
           "proposed": {
             "description": "A change of outcome found after the last verification round, held until a further round agrees with it.",
@@ -448,6 +462,46 @@
           "reviewed": {
             "description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.",
             "type": "string"
+          },
+          "findings": {
+            "description": "From protocol pilot-18, in round 2: what the verifier said of each finding the record rates `critical` (docs/protocol.md, the attempt record).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "finding",
+                "agrees"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "The finding's number in this record's `findings`, from 1.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "agrees": {
+                  "description": "Whether the verifier agreed that the outputs show the finding and that it is critical.",
+                  "type": "boolean"
+                },
+                "severity": {
+                  "description": "The severity the verifier would give, where it differs.",
+                  "enum": [
+                    "critical",
+                    "major",
+                    "minor",
+                    "none"
+                  ]
+                },
+                "reason": {
+                  "description": "The verifier's reason, in its own words.",
+                  "type": "string"
+                },
+                "response": {
+                  "description": "What the author changed or replied.",
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -492,6 +546,15 @@
             "enum": [
               "data",
               "paper"
+            ]
+          },
+          "severity": {
+            "description": "For a finding about the data: how much it harms someone who uses the dataset (docs/protocol.md, the attempt record). `critical`: the data are wrong and nothing shows it, so an analysis gives a wrong result. `major`: a main analysis is blocked or changed, and the user would notice. `minor`: evident from the values or easy to work around, a wrong unit label included. `none`: no problem, a check that passed. Required from protocol pilot-18.",
+            "enum": [
+              "critical",
+              "major",
+              "minor",
+              "none"
             ]
           },
           "datasets": {
@@ -570,7 +633,7 @@
           }
         },
         "outcomes": {
-          "description": "The claims tested by both attempts whose outcome differs.",
+          "description": "The claims tested by both attempts whose outcome differs, each with why.",
           "type": "array",
           "items": {
             "type": "object",
@@ -595,6 +658,50 @@
               "note": {
                 "type": "string",
                 "minLength": 1
+              },
+              "cause": {
+                "description": "The main reason the two outcomes differ (docs/protocol.md, \"Repeat attempts\").",
+                "enum": [
+                  "dataset_changed",
+                  "protocol_changed",
+                  "claims_changed",
+                  "reading",
+                  "error",
+                  "label",
+                  "random",
+                  "data_used",
+                  "unclear"
+                ]
+              },
+              "error_in": {
+                "description": "For `error`: which attempt's code or record has the mistake.",
+                "enum": [
+                  "this",
+                  "earlier",
+                  "both"
+                ]
+              },
+              "choice": {
+                "description": "For `reading`: the method choice the paper or the criterion leaves open, and what each attempt chose.",
+                "type": "string",
+                "minLength": 1
+              },
+              "supports": {
+                "description": "The outcome the evidence best supports, when it supports one.",
+                "enum": [
+                  "reproduced",
+                  "partially_reproduced",
+                  "not_reproduced",
+                  "blocked"
+                ]
+              },
+              "confidence": {
+                "description": "How sure the diagnosis is.",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low"
+                ]
               }
             }
           }

@@ -1,26 +1,25 @@
-No outcome changed. For fig5d-lag I kept the verified outcome and proposed a change from partially reproduced to not reproduced, which a third verification round now has to review. The entry ran twice from a clean environment (about 18 minutes each) and passes the check. The numbers did not change, and every conclusion matches the final run.
+No outcome changed and none is proposed, so no third verification round is needed. The verifier agreed with all 39 outcomes. The entry was re-run with `python tools/entry.py all entries/tingley-2019`: the checks report 0 errors and all four notebooks pass. Every number I quote below comes from that run.
 
-**The fig5d-lag proposal.** The verifier is right. The criterion has no partial outcome and requires the lag to be within 6.4 ± 4.2 ms under one reading. The measured lag is 0.00 ms on the detection channel, and 0.00 or 0.80 ms on the re-referenced channel. The analysis behind this was already in the notebook, and I added the lag by animal with same-sample pairs removed: it runs from -3.2 to 8.0 ms, and LS leads CA1 in three animals.
-
-**Outputs added**
-- **fig1c-hfo-each-animal:** I added the test the verifier described, comparing firing at each event with each neuron's own firing 50 to 100 ms before and after it. It does not bear out the verifier's reading that 4 of 6 animals show locked firing. Firing is higher than this baseline in DT1, DT2, DT5 and DT9, but above 3 SEM only in DT1 (5.2 SEM). I replaced every sentence calling the events "non-bursts" (cell 19, Summary, README, notes) with what the tests show.
-- **fig7e-ca1-depth:** a new cell lists the wide-band data. 27 of the 98 files hold 20 kHz series, 1.15 TB in total. Twelve of them hold hippocampal units, and streaming them within the 30-minute limit would need about 556 MB/s, so the block there is run time (`not_runnable`, now in the notes). I kept `data_missing` as the main reason because 1579 of 2778 hippocampal units, including all of DT5 and DT7, have no wide-band data.
-- **fig6-optogenetic-hfos:** a new cell searches the archive for "Tingley" and "lateral septum" and finds only 000213, 000218 and 000233. It also confirms that no file holds an optogenetic series.
-- **Data check:** the unsorted spike times are in 10 files, not 9. The finding and the notebook text are corrected.
-- **figs1-participation:** the notebook now prints the ratios to the paper's values, which replace "a fifth to a third".
+**Outcomes and flags**
+- **dataset-composition:** now marked `assumed: true`. Two of the four counts within tolerance only count under choices I made: units labelled `hpc` counted as CA1 (38 recordings; the `ca3_channel` flag gives 29), and `ripplesALL` counted as CA1 ripples (55; `CA1Ripples` alone gives 47). The record, the LFP notebook's result and the Summary now say that without either choice only 3 of 6 counts are within tolerance, which would be not reproduced.
+- **fig4b-hfo-above-behav:** kept as reproduced and assumed. The text now says it fails only in the 4 of 16 readings with raw counts and maze-traversal (BEHAV) time taken over the whole span. With raw counts and BEHAV inside trials, both parts also hold.
 
 **Text corrected**
-- fig5d: the 3.8 ms is now described as DT9's median over all pairs, and inside the tolerance.
-- fig1f: the means are now 6.9 and 7.3 ms above the paper's.
-- The README runtime is now 18 minutes (it said 23), and `entry.yaml` matches.
-- The Summary now says neither the detection channel nor the re-referenced one is shown to capture the paper's HFOs.
+- **Main notebook, Figure 4 result:** the false "BEHAV medians are 10 to 100 times" sentence is replaced. The Figure 4 table now prints means as well as medians: the means are 13.1 to 83.0 for BEHAV against 0.60 to 0.85 for the pre-maze epoch (PRE), while the medians are comparable.
+- **fig7e-state:** the bound is now "binomial p at most 1.23e-8" in the notebook and the record.
+- **"one waveform per unit":** corrected in the Summary, the fig7e-ca1-depth notes, the finding and the round-1 response. In the one file listed per animal, units in the DT1, DT2 and DT8 files hold one 32-sample `raw_waveform`; those in the DT5, DT7 and DT9 files hold none.
+- **Run times:** updated in the README and `entry.yaml`. The Figure 7E notebook took 24 minutes before and 30 minutes in this run; the README says about 25. I left it there because editing the README would invalidate the run stamp, and a second full run (about 110 minutes) would not have finished before the 01:47 cut-off.
 
-To support the wide-band inventory, `ls_hfo.py` now also records the `acquisition` series.
-
-**Round 2 is recorded** under `verifications`: 31 claims, with agreement on 30 and disagreement on fig5d-lag.
+**Added**
+- **Whole-epoch inclusion variant for Figure 4:** a new cell in the main notebook applies the pair-inclusion rule to all spikes of the pre- and post-maze epochs, keeping the cross-correlograms from spikes during HFOs.
+  - It keeps 10,159 to 15,732 pairs in 54 sessions, against 361 to 503 under the claims file's readings and 7,172 in 53 in the paper.
+  - The pre-maze and post-maze epochs then differ in 4 of the 8 normalized readings, all with the 5 ms SD kernel (p 0.00047 to 0.0082, r about -0.02).
+  - Under this variant fig4b-pre-post-unchanged would not hold in every reading. It is not one of the claims file's readings, so the outcome stays as tested and the variant is reported in the notes and conclusions of the Figure 4 claims.
+- **Two questions for a reader** in `questions/tingley-2019.yaml`:
+  - whether the inclusion rule should also be read over the whole epoch;
+  - that the Figure 7E criterion ("within tolerance under one of 16 combinations") can hardly fail.
+- **Round 2 in `verifications`:** all 39 claims, with the verifier's reasons in its own words and my responses.
 
 **Not done**
-- The verifier's remaining problem 1 (which channel captures the paper's HFOs) and problem 3 (low participation, which leaves too few pairs for the fig4 per-session claims) are acknowledged in the record but not fixed. Neither the paper nor its code says which channels were used, so there is no further choice to test.
-- Some untracked files I did not create appeared in the repository root (`.bashrc`, `.idea`, `scripts` and others). I left them alone.
-
-Nothing is committed, as instructed.
+- The jitter test was not run under the whole-epoch variant, as the notebook says.
+- Nothing has been committed or pushed.

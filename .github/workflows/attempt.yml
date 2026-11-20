@@ -148,10 +148,26 @@ jobs:
             # The registry's tools as the workflow has them, not as the branch had them when its attempt began: a
             # branch made before a fix would otherwise run without it. Working files only, so they are never committed.
             git restore --worktree --source "$GITHUB_SHA" -- tools
+            # The reconcile run's instructions too: it compares attempts and is not part of the blind one, so it
+            # follows the instructions as they are now (asari-2009's ran those of four days before, 2026-11-17).
+            [ "$ROLE" != reconcile ] || git restore --worktree --source "$GITHUB_SHA" -- docs/agents/reconcile.md docs/protocol.md schemas
           elif [ "$ROLE" != author ]; then
             echo "::error::No branch $BRANCH; run the author first"; exit 1
           fi
           git log --oneline -1
+
+      # The reconcile run compares this attempt's code with the earlier attempt's (docs/protocol.md, "Repeat
+      # attempts"). The new entry replaced the earlier one on the branch, and the checkout has no history, so the
+      # earlier entry is copied from main, where it stays until this attempt is merged. It is outside the folders
+      # whose changes are collected, so it is never committed.
+      - name: Put the earlier attempt's entry under earlier-entry/, for the reconcile run
+        if: inputs.role == 'reconcile'
+        run: |
+          mkdir -p earlier-entry
+          git fetch --depth 1 origin main
+          git archive FETCH_HEAD "entries/$FOLDER" | tar -x --strip-components=2 -C earlier-entry \
+            || echo "::warning::main has no entries/$FOLDER; the reconcile run has only the earlier record"
+          ls earlier-entry
 
       - uses: actions/setup-python@v5
         with:
@@ -349,6 +365,18 @@ jobs:
           [[ "$result" =~ (^|[^0-9])0:shell-ok ]] || { echo "::error::The token is visible to the agent's commands"; exit 1; }
           [ "$mode" = default ] || { echo "::error::Claude Code started in permission mode $mode, not default"; exit 1; }
 
+      - name: Guard the runner's memory
+        # A command of the agent's that exhausts the memory ends the whole job with nothing saved (docs/protocol.md,
+        # "Keep it within memory": nine times on 2026-11-06, three on 2026-11-19 on rozsa-2023). earlyoom ends the
+        # largest Python process when under 6% of the memory is free, before the runner itself is starved, so the
+        # agent sees its command killed and can read less at once. It never chooses the agent or the runner. A
+        # runner where it cannot be installed goes on without it.
+        run: |
+          sudo apt-get install -y -q earlyoom > /dev/null 2>&1 || { echo "earlyoom could not be installed; no guard"; exit 0; }
+          echo "EARLYOOM_ARGS=\"-m 6 -s 100 -r 3600 --prefer '^(python|jupyter|ipykernel)' --avoid '^(node|claude|Runner|provjobd|hosted-compute)'\"" \
+            | sudo tee /etc/default/earlyoom
+          sudo systemctl restart earlyoom && systemctl is-active earlyoom || echo "earlyoom did not start; no guard"
+
       - name: Run the agent
         id: agent
         # Shorter than the job's limit, so that the transcript is still exported when it is reached.
@@ -440,6 +468,14 @@ jobs:
             # Only the registry's own files: the sandbox leaves placeholder files for the paths it
             # protects (.bashrc, .gitconfig, ...) in the working directory.
             paths=(attempts claims entries README.md); [ ! -d questions ] || paths+=(questions)
+            # A new file over 20 MB is the author's scratch (a cache of loaded data), not part of an entry: on
+            # 2026-11-15 two pickles of 1.4 and 2.6 GB left in entries/petersen-2020 made a patch git could not
+            # apply ("patch too large"), and the role's work was lost. They are left out, and the log says so.
+            git ls-files --others --exclude-standard -z -- "${paths[@]}" | while IFS= read -r -d '' f; do
+              if [ "$(stat -c %s "$f")" -gt 20000000 ]; then
+                echo "::warning::Left out of the changes, over 20 MB: $f ($(stat -c %s "$f") bytes)"; rm -f "$f"
+              fi
+            done
             git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           elif [ "$ROLE" = recorder ]; then
@@ -501,7 +537,11 @@ jobs:
           [ -z "$others" ] || { echo "::error::Transcripts for other datasets: $others"; exit 1; }
           # An attempt's first run moves the earlier attempt's transcripts aside before this one's land.
           # That is the claims run (papers.yml) when there was one: then its transcripts stay.
-          if [ "$ROLE" = author ] && [ ! -e "transcripts/$FOLDER/claims.md" ]; then
+          # Also when the claims were not read again for this attempt (main had them, checked): the folder then still
+          # holds the whole earlier attempt, told by its recorder's transcript, which only a finished attempt has.
+          # Until 2026-11-18 those were left in place, and a blind author's revision runs could read the earlier
+          # verifiers' reports: three of twelve replicates did (asari-2009 r1 and r3, martinez-conde-2019 r1).
+          if [ "$ROLE" = author ] && { [ ! -e "transcripts/$FOLDER/claims.md" ] || [ -e "transcripts/$FOLDER/recorder.md" ]; }; then
             "$RUNNER_TEMP/archive_transcripts.sh" "$FOLDER"
           fi
           if [ -s out/changes.patch ]; then

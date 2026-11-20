@@ -1,22 +1,35 @@
 schema_version: 1
 name: tingley-2019
 type: reproduction
-title: Lateral septum HFOs and hippocampal ripples (Tingley and Buzsaki 2019)
-description: Tests the findings of Tingley and Buzsaki (2019) on dandiset 000218, which holds LFP,
-  sorted units, sleep states and trials from simultaneous recordings of the lateral septum and
-  hippocampus in 6 rats. LS high-frequency oscillations and CA1 ripples are detected from the LFP,
-  as the files hold no detected events, and the notebook tests their properties, their coupling
-  and state dependence, the phase locking and co-activation of LS neurons, and which ripple
-  features predict LS firing. The optogenetic experiments are not in the dandiset.
+title: Routing of hippocampal ripples to subcortical structures via the lateral septum (Tingley and Buzsaki 2019)
+description: Tests the findings of Tingley and Buzsaki (2019) on dandiset 000218, which holds 98 recordings of lateral
+  septum (LS) and hippocampus in six rats, with the lab's ripple and LS HFO detections, sleep states and maze trials.
+  The main notebook uses spikes and event tables (HFO and ripple properties, state dependence, coupling, pair
+  co-activation, reactivation); a second notebook the LFP (phase locking, coherence, HFO power by site); a third
+  the Figure 7E regressions of LS firing on ripple features; a fourth the phase locking of every LS neuron to a site on its own shank. The optogenetic rats, electrode positions and
+  per-recording depths in LS are not in the dandiset.
 license: Apache-2.0
+python: "3.13"
 notebooks:
 - path: reproduce_tingley_2019.ipynb
-  title: Reproducing Tingley and Buzsaki (2019) from dandiset 000218
-  runtime_minutes: 18
+  title: Spikes and events
+  runtime_minutes: 20
+- path: lfp_tingley_2019.ipynb
+  title: LFP analyses
+  runtime_minutes: 52
+- path: fig7e_tingley_2019.ipynb
+  title: Figure 7E regressions
+  runtime_minutes: 25
+- path: shanks_tingley_2019.ipynb
+  title: Phase locking to each neuron's own shank
+  runtime_minutes: 15
+- path: earlier_findings.ipynb
+  title: Findings of tingley-2019-01 checked on this version
+  runtime_minutes: 8
 helpers:
-- ls_hfo.py
+- tingley2019.py
 related:
-- id: dandi:000218/0.250624.0439
+- id: dandi:000218/0.261110.1911
   relation: uses_data
 - id: doi:10.1016/j.neuron.2019.10.012
   relation: reproduces

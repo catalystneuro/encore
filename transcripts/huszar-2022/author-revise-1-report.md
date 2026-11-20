@@ -1,24 +1,20 @@
-I've revised the attempt for every point in the round-1 report, re-run the entry (`python tools/entry.py all`: check passes, notebook runs in 6.6 min), and made every conclusion match the new numbers. Nothing is committed.
+I've finished the round-1 revision. Two outcomes changed, the final run passed (`tools/entry.py all`, 49.7 min) and `check` reports 0 errors. Nothing is committed. The record now has 17 reproduced, 10 partially reproduced, 7 not reproduced and 10 blocked.
 
-**Outcome changes**
-- **cohort-birthdates: not reproduced → reproduced**, as the verifier argued. The sex field differs between files of the same mouse (e13_1f1 is Female in 3 files and Male in 2; e13_1m1 is Male in 9 and Female in 3). Taking each mouse's sex from most of its files gives the paper's 12 males and 5 females. That rule was chosen after seeing the per-file values, so it is recorded as a deviation. The finding is rewritten to describe the inconsistency.
-- **fig6d-rate-lower-novel: partially reproduced → reproduced.** The bug the verifier found in `running_rate` was real: a running stretch could span the gap between trials, counting the gap's spikes but not its time. After the fix both medians are within tolerance (familiar 0.794 Hz, novel 0.714 Hz) and the rank-sum test gives p = 0.041. The effect is weak: the paired test gives p = 0.19, the variants give p = 0.075 to 0.11, and one of the three mice is slightly higher on the novel maze. The notes say so. Round 2 will review this change, since the verifier had given partially reproduced.
-- **fig7fg-convergence-cofiring: still blocked, reason changed to `methods_underspecified`.** I implemented the Methods' connection test and ran it on one session, as the verifier asked. It flags 44.8% of possible pyramidal-interneuron pairs as connected, against the paper's 17.3%, and finds 96.7% of pyramidal pairs sharing a target, against 65.27%. With that gap, this procedure is not the paper's; the paper's connections come from the lab's CellExplorer files, which are not public.
-- **fig6c-theta-rate-preserved** moved from rho = 0.734 to 0.726 after the fix and stays reproduced. All other outcomes are unchanged.
+**What changed in the outcomes**
+- **fig2c-theta-cofiring: reproduced → partially reproduced (assumed).** I redid the theta channel choice (verifier point 1). The sharp wave is now measured against a pre-ripple baseline and in µV; the conversion factor was missing before. 76 of 104 sessions now follow the Methods' rule, against 42 before. On these channels both medians fall just below tolerance (0.0169 and 0.0071). On the layer-centre channel they fall within it.
+- **ed3-depth-control: blocked → not reproduced (assumed).** It is now tested. The depth matching holds, but the burst, spatial-information and coverage fractions (0.976, 0.980, 0.992) are above the paper's (0.71 to 0.74) by more than the tolerance. The criterion's partial case needs the burst fraction within tolerance. In plain terms, the birthdate differences survive depth matching more often than the paper found.
+- **Not changed:** fig1f is still not reproduced. No channel reading gives a significant slope.
 
-**Added or corrected**
-- **Bug fix and test:** `running_rate` now ends a stretch at each trial boundary. A synthetic check in the notebook fails on the old version (1.5 Hz) and passes on the new one (1.000 Hz). I also added the inter-trial gaps the verifier asked for: in 371 of 698 pairs of consecutive trials the animal was running on both sides of the gap.
-- **Data check:**
-  - Sex tabulated per file for each mouse.
-  - Example `unit_name` and `clu_id` values; neither codes a cell type or a light response.
-  - A full listing of one raw file: only the voltage series and the electrodes table.
-  - A scan of ten short windows over the last 30 min of that raw file finds no clipped or zeroed stretches, and its signal ends 2 s after the processed session. This suggests the stimulation period is not in the deposited data, but only one file was checked.
-- **fig5e:** added a variant using a 2.59 Hz cutoff, which classes the paper's share of units (78.3%) as pyramidal. All four medians then fall within tolerance. The criterion fixed 5 Hz before the analysis, so the outcome stays partially reproduced.
-- **fig6c ratemap correlations:** added a sign test over sessions (novel higher in 9 of 9, p = 0.0039) and the rank-sum test within each session (p < 0.05 in 7 of 9). The outcome stays not reproduced because the criterion names the pooled test.
-- **novel-explorations:** the count is now stated as 9. The 7 epochs without position are described as picked after seeing the data and not counted, and an added output shows the files hold no other position or video for them.
-- **Records:** round 1 is recorded under `verifications` for all 35 claims. The notebook header and summary, the README, and the findings are updated. The paper text is saved under `paper/`.
+**What I added or corrected**
+- **Open fields (point 2):** they are now in the novel-environment analyses, binned on the assumption that one lab unit is 1 cm, with 2 and 0.5 cm per unit as variants. fig6c-novel stays not reproduced (p = 0.78), but the result rests on that scale: at 2 or 0.5 cm per unit it would be partially reproduced. The notebook now explains why the e16_3m2_211211 linear track is left out.
+- **Connection detector (point 3):** each assumed detail is now varied in turn. Every variant still finds 38,402 to 50,756 connections, against the paper's 31,932, and the transmission peak stays in the same bin.
+- **Front/Back electrodes:** I first read these as two separate probes. Counting both faces as one shank is the only reading that gives the paper's pair counts exactly (2,561; 1,205; 1,743/15,996; 347/3,588), so fig5d keeps its earlier numbers. This is a new finding about the data.
+- **Partly testable blocked claims (point 4):** ed5's rate-matched half, ed7's part (e) and all of ed10's own parts are now computed and in the notes. They stay blocked: ed5 needs the L-ratio, which the files lack; ed7 and ed10 depend on blocked claims.
+- **Smaller points:** the trials-table counts per session confirm maze-task. The ACG binning is fixed. fig6f's tercile edges now count each pair once, with a one-value-per-pair variant. I showed that Tukey over the six groups is the same test as the post hoc on the two-way model. All the outputs the verifier asked for are printed.
+- **Questions and findings:** `questions/huszar-2022.yaml` asks a reader about the sessions-durations criterion's missing case and the Fig. 1f legend's n. I added a paper-inconsistency finding for the latter.
+- The record's `verifications` holds round 1 for all 44 claims, with the verifier's reasons and my responses.
 
-**Not done**
-- I did not run the connection analysis on all 65 sessions. The one-session result already shows the procedure does not give the paper's connection rate.
-- I left B6, B8 and B9 unchanged, as the verifier marked them as not affecting a conclusion: the first follows the paper, the second follows the Methods' definition, and the third changes rates by under 0.1%.
-- Only one of the 11 wideband raw files was scanned for stimulation.
+**What I did not do**
+- **sessions-durations:** I kept not reproduced, as the criterion reads literally, and recorded the verifier's disagreement (it would give partially reproduced).
+- **fig4d and the assembly claims (fig3c, fig3e, ed6):** not run. They are a heavy computation not attempted in this revision.
+- **entry.yaml:** it still says the notebook takes 35 minutes; it now takes about 50. Editing it would have forced another 50-minute run, and no tool reads that field. The README and notebook header give the correct time.

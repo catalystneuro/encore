@@ -194,7 +194,10 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
       fi
       tls_fails=0
       id=""
-      for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
+      # GitHub can take minutes to list a run it has started: on 2026-11-16 two runs that were going (kalogriopoulos-2024's
+      # recorder, prakash-2022's author-answers) were not listed in the 5 minutes the chain then looked for, and it
+      # stopped for a person. It looks for 20 minutes now.
+      for _ in $(seq 1 240); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
       [ -n "$id" ] || { last_why="the run of $role was not found"; log "STOPPED: $last_why"; return 1; }
       log "$role started: run $id"
     fi
@@ -348,6 +351,19 @@ case "$match" in
   *) end "$d STOPPED: the paper match left a paper without a verdict; see papers/match/$d.yaml"; exit 1;;
 esac
 
+# The paper's other datasets. A paper is listed on a dataset by that dataset's paper match, so a paper whose data
+# are in several datasets was tested on the one a chain happened to start from, and read the others as outside data
+# (pelot-2020, on one of its seven: 26 of its 34 claims were counted apart). Every target that names the paper and
+# has no verdict yet has its paper match now, before the claims are read; one that matches is listed for the paper,
+# and the claims are then read again for all of them (describe.py, claims-cover). Not for a replicate, which
+# repeats an attempt as it was, nor from inside such a match.
+if [ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]; then
+  for sib in $(python "$here/describe.py" siblings "$d" 2>/dev/null); do
+    log "the paper is also named by $sib: its paper match first"
+    SIBLINGS=0 MATCH_ONLY=1 RUNNER_NOTIFY=none "$here/chain.sh" "$sib" 2>&1 | tail -n 1 | while read -r line; do log "$line"; done
+  done
+  fetch
+fi
 deprecated=$(python "$here/describe.py" deprecated "$d")
 on_main=$(python "$here/describe.py" claims-ready "$d")
 if [ -n "$REPLICATE" ]; then

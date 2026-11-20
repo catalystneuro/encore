@@ -1,0 +1,729 @@
+# Claims for Xia, Yang, Mu, Micovic, Poskanzer, Monaghan & Clark (2021), PNAS 118:e2023807118,
+# doi:10.1073/pnas.2023807118, tested on SPARC:75 (folder sparc-75) and SPARC:108 (folder sparc-108).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-18,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read. The version of record (PDF supplied by a person; text by PyMuPDF in
+# paper/10.1073-pnas.2023807118.txt): main text, figure legends, Materials and Methods, Data
+# Availability, and the SI Appendix (legends of Figures S1 to S16, and Table S1). Movies S1 to S4 were not available and were not read. No PDF page was opened;
+# the text gives every number used here. The paper links no analysis code. It names the AQuA
+# program (its ref. 32, Wang et al. 2019) as the tool of Figure 7 and Figures S9, S11 and S12 but
+# gives no repository or version, so no code was read; AQuA is third-party software, not the
+# paper's analysis code.
+#
+# The datasets, by their archive titles and descriptions only. SPARC:108 ("Imaging in vivo
+# acetylcholine release in the peripheral nervous system with a fluorescent nanosensor in mice",
+# doi 10.26275/w027-cisv) is the deposit the paper's Data Availability names; its description
+# says it holds in vitro, ex vivo and in vivo results of the sensor's development. SPARC:75
+# ("Submandibular ganglion stained by bungarotoxin and nanosensors in mouse", doi
+# 10.26275/prjd-jhoc) describes staining of the submandibular ganglion (SMG) with
+# alpha-bungarotoxin (BTX) and the nanosensor, BTX staining being the reference for the
+# nanosensor's localization; it bears on Figure 3D and Figure S5 only. Claims on staining rest on
+# both; all others on sparc-108.
+#
+# Data the paper used, as it reports them. Adult male and female C57BL/6J and ChAT(BAC)-eGFP
+# mice, 4 to 8 weeks old, under 1.5 to 2% isoflurane. Nanosensors (DNA scaffold of five strands
+# L1 to L5, AChE, four pHAb fluorophores, BTX-AF647) microinjected into the SMG, incubated 5 min,
+# washed 10 min. Widefield imaging on an Olympus BX61WI with a 60x water-immersion objective, the
+# pHAb and AF647 channels split by a W-VIEW GEMINI; the sampling interval is 0.55 s (Results, Ex
+# vivo calibration). Every trace is corrected for photobleaching by a monoexponential decay curve:
+# each value is divided by the curve's value (Methods, Animal preparation and imaging).
+# In vitro: size-exclusion HPLC chromatograms (260, 280, 652 nm absorbance; pHAb fluorescence),
+# native PAGE, UV-Vis spectra, AFM images, a dialysis-fiber reversibility test (five 100 uM ACh
+# injections, confocal), two-photon images of pHAb oligos.
+# Ex vivo calibration (Fig. 4): SMG excised after injection, ACh 0.71 nM to 7.14 mM final (stock
+# 0.001 uM to 10 mM diluted by 1.4), initial rate of pHAb change per concentration, triplicate
+# (n = 3 mice); control nanosensor (no AChE) over pH 3.5 to 9, n = 3 mice.
+# In vivo (Fig. 5, 6): lingual nerve stimulation by a bipolar electrode on the salivary duct,
+# 3 to 10 V, 10 Hz, 10 ms pulses, 10 to 100 pulses. Fig. 5B averages three mice (ACh and control
+# nanosensors, 3 V, 100 pulses), one ganglion cell ROI; Fig. 5C (3, 5, 10 V), 5D (100, 50, 10
+# pulses) and 5E (three repeats, 10 V, 10 pulses) are each one animal and one ROI. Vesamicol
+# (100 uM, 10 min) then washout, 3 V, 100 pulses, four independent experiments (Fig. 6).
+# AQuA analysis (Fig. 7, S9 to S12): three mice, one stimulated at 3 V and 8 V (Fig. 7, 8 V),
+# two at 3 V only (Fig. S12); stimulation starts at 10.45 s and ends at 20.35 s in Fig. 7.
+#
+# Method details the paper leaves open, used by several claims below:
+# - Initial rate (Vsensor, %/s). Neither the text nor the legends say over which frames the
+#   initial slope of dF/F is taken. Readings: (a) a linear fit over the rising phase from the
+#   first frame after the onset (stimulus or ACh addition) to the peak; (b) the slope over the
+#   first few frames after onset (the first 2 to 5 frames, 1.1 to 2.75 s).
+# - dF/F baseline. Not stated. Readings: (a) the mean of the frames before the onset; (b) the
+#   first frame.
+# - Photobleaching curve. Monoexponential (Methods), fit to (a) the frames outside the response
+#   (before onset and after recovery), or (b) the whole trace.
+# - ROIs of Fig. 5 and 6 are drawn by hand on a ganglion cell (Fig. 5B legend, Fig. 6A); their
+#   coordinates are not given.
+# - AQuA parameters (intensity threshold scaling factor, Gaussian smoothing, temporal cut
+#   threshold, super-event grouping) are named in Methods without values; readings are AQuA's
+#   default preset, or settings tuned until events like those of Fig. 7A appear.
+schema_version: 2
+paper: doi:10.1073/pnas.2023807118
+claims:
+- id: fig2d-hplc-yield
+  statement: In size-exclusion HPLC the assembled nanosensors elute first (main peak near 7.5 mL),
+    followed by a second peak at 9.1 to 9.2 mL of unreacted material, and the nanosensors are
+    about 77% of the reaction mixture by area under all peaks of the pHAb channel.
+  source: Results, Fabrication and in vitro characterization, paragraph 2 (beginning "Fully
+    assembled ACh nanosensors were purified"); Figure 2D
+  quote: ACh nanosensors represent ∼77% of the reaction mixture based on the integration of areas
+    under all detectable peaks from the pHAb channel chromatogram
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: nanosensor share of pHAb-channel peak area
+    value: 77
+    tolerance: 7.7
+    unit: "%"
+  - quantity: main peak retention volume
+    value: 7.5
+    tolerance: 0.75
+    unit: mL
+  criterion: On the pHAb fluorescence chromatogram of the reaction mixture (Figure 2D, top), the
+    area of the first peak over the summed area of all detectable peaks. The baseline and the
+    peak limits are not given; readings are (a) limits at the minima between peaks with a flat
+    baseline at the pre-injection level, (b) the same with a linear baseline under each peak.
+    Reproduced when the share and the main peak volume are within tolerance under one reading
+    and the second peak falls between 8.19 and 10.12 mL (9.1 to 9.2 mL widened by 10% of each
+    bound).
+- id: fig2g-conjugation-ratios
+  statement: By Beer-Lambert estimates at 260, 280 and 652 nm, the nanosensor carries 2.86 AChE,
+    1.70 BTX and 3.85 pHAb per DNA scaffold, conjugation efficiencies of 71%, 85% and 96%.
+  source: Results, Fabrication and in vitro characterization, the text around and after
+    Equations 1 and 2; Figure 2F and 2G
+  quote: the conju-gation ratios of AChE, BTX, and pHAb to DNA scaffold were determined to be 2.86,
+    1.70, and 3.85 (Fig. 2G). The conjugation efficiency of BTX and pHAb reached 85 and 96%,
+    respectively.
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: AChE per scaffold
+    value: 2.86
+    tolerance: 0.286
+  - quantity: BTX per scaffold
+    value: 1.70
+    tolerance: 0.17
+  - quantity: pHAb per scaffold
+    value: 3.85
+    tolerance: 0.385
+  criterion: "[BTX] from the absorbance at 652 nm; [DNA] and [AChE] by solving Equations 1 and 2
+    with extinction coefficients at 260 and 280 nm measured on pure DNA scaffold, AChE and BTX
+    (Results, paragraph 4). The extinction coefficients of AF647 at 652 nm and of pHAb are not
+    given in the paper; the dye makers' published values are the only reading, and are an
+    assumption. How the pHAb concentration is measured is not stated either; the reading is its
+    absorbance peak at 532 nm (Figure 2F), an assumption. Efficiencies are the ratios over the designed 4 AChE, 2 BTX and 4 pHAb
+    (Methods, Design and fabrication). Reproduced when all three ratios are within tolerance.
+    Not testable if the pure-component spectra are not deposited."
+- id: fig2e-page-bands
+  statement: In native PAGE the purified nanosensor runs as several bands of lower mobility than
+    the DNA scaffold (likely 1 to 4 AChE per scaffold), and these bands carry both pHAb and AF647
+    fluorescence.
+  source: Results, Fabrication and in vitro characterization, paragraph 2 (beginning "Fully
+    assembled ACh nanosensors were purified"); Figure 2E; Figure S2C
+  quote: several bands with lower mo-bility were identified likely due to variable numbers of AChE
+    (from 1 to 4) conjugated to the DNA scaffold (Fig. 2E). Bands that presumptively contain ACh
+    nanosensors displayed overlapping fluorescence of pHAb and AF647
+  datasets:
+  - sparc-108
+  criterion: On the gel images (ethidium bromide, Figure 2E; pHAb and AF647 channels, Figure
+    S2C), lane 3 (main peak) shows at least two bands (the reading of "several") above the
+    scaffold band of lane 1 of Figure 2E, and those bands have signal above
+    the lane background in both the pHAb and the AF647 images. Judged by eye with lane profiles,
+    as the paper gives no quantification. Figure S2C calls itself the same gel as Figure 2E but
+    labels lane 1 as unpurified nanosensor, where Figure 2E has the DNA scaffold; lane 3 is the
+    main peak in both.
+- id: figs3-size
+  statement: The nanosensor is 10 to 20 nm across, by structural simulation and atomic force
+    microscopy, against about 130 nm for the earlier version.
+  source: Results, Fabrication and in vitro characterization, the text after Equations 1 and 2;
+    Figure S3
+  quote: the current ACh nanosensor had an overall size of 10 to 20 nm confirmed by both
+    structural simulations and atomic force microscopy (SI Appendix, Fig. S3)
+  datasets:
+  - sparc-108
+  expected:
+    quantity: nanosensor size in AFM
+    value: 15.5
+    tolerance: 6.5
+    unit: nm
+  criterion: The range 10 to 20 nm widened by 10% of each bound is 9 to 22 nm. The paper does not
+    say how size is measured on the AFM images (Figure S3B, scale bars 50 and 10 nm) or how
+    particles are segmented. Readings of the size are (a) the largest lateral dimension and (b)
+    the equivalent-circle diameter of each isolated particle, segmented by a height threshold
+    above the mica background with particles touching the image border excluded (a choice made
+    here). Reproduced when the median size lies in 9 to 22 nm under one reading. The structural
+    simulation is not tested.
+- id: figs5-btx-staining
+  statement: Ex vivo staining of freshly isolated SMG with BTX-AF647 shows a punctate pattern
+    across the ganglion, confirming nicotinic ACh receptors on SMG neurons.
+  source: Results, ACh nanosensors in SMG, paragraph 1; Figure S5
+  quote: Ex vivo staining of freshly isolated SMG with BTX-AF647 showed the expected punctate
+    staining pattern across the ganglion, confirming expres-sion of nicotinic ACh receptors in SMG
+    neurons
+  datasets:
+  - sparc-75
+  criterion: In the confocal z-stacks of a ChAT(BAC)-eGFP SMG (Figure S5), the AF647 channel shows
+    discrete puncta distributed over the ganglion and lying on or next to GFP-positive cell
+    bodies. Judged by eye on maximum projections and single slices; the paper gives no
+    quantification.
+- id: fig3d-sensor-on-soma
+  statement: Confocal imaging of a nanosensor-stained SMG shows punctate AF647 and pHAb staining
+    that overlaps and lies mainly on the neuronal cell soma, consistent with the BTX staining.
+  source: Results, ACh nanosensors in SMG, paragraph 2; Figure 3D
+  quote: Confocal microscopy further confirmed that the punctate staining pattern of AF647 and pHAb
+    were primarily localized on the neuronal cell soma (Fig. 3D).
+  datasets:
+  - sparc-75
+  - sparc-108
+  criterion: In the confocal stacks of a nanosensor-injected, fixed ChAT(BAC)-eGFP SMG, puncta
+    above background in the AF647 and pHAb channels coincide (yellow in the merge, Figure 3D) and
+    most of them lie on GFP-positive somata. The paper gives no colocalization measure or
+    threshold. Readings are (a) judged by eye, as the paper does, and (b) as a check, more than
+    half of the AF647 puncta (by a threshold at mean plus 3 SD of the background) overlap pHAb
+    puncta and lie within the GFP soma mask. Reproduced when (a) holds; (b) is shown.
+- id: fig3bc-retention
+  statement: After rinsing, a substantial amount of nanosensor stays in the SMG, while DNA
+    structures lacking AChE and BTX are barely visible in the tissue.
+  source: Results, ACh nanosensors in SMG, paragraph 2; Figure 3B and 3C
+  quote: In contrast, DNA structures that did not have the AChE and tar-geting ligands (i.e., BTX)
+    were barely visible inside the tissue (Fig. 3C).
+  datasets:
+  - sparc-108
+  criterion: After washing, the mean pHAb (and AF647, where present) intensity inside the SMG,
+    above the background outside it, is clearly higher with the nanosensor (Figure 3B) than with
+    the bare DNA structures (Figure 3C). The paper gives no number; reproduced when the
+    nanosensor's background-subtracted signal is at least twice that of the bare structure.
+    The factor two is this file's choice, as the paper says only "barely visible".
+- id: figs4-stability
+  statement: Nanosensors in the harvested SMG keep their structure and AChE activity for 5 h;
+    after 5 h, adding 100 uM ACh raises the pHAb fluorescence of three ROIs by 20 to 45%.
+  source: Results, ACh nanosensors in SMG, paragraph 2; Figure S4D to F
+  quote: The fluorescence intensity of three ROIs increased by 20-45% after the addition of ACh,
+    indicating that the AChE was still functional and remained conjugated on the DNA scaffold.
+  datasets:
+  - sparc-108
+  criterion: The ROIs are not given; three ROIs are drawn on stained cells chosen on the AF647
+    image before the response is looked at (the three brightest, an assumption). The legend does
+    not say whether the ACh test of Figure S4F was made on the sample right after harvesting
+    (S4D), after 5 h (S4E), or both; readings are (a) the 5 h sample, (b) both, each tested.
+    Reproduced when all three ROIs give pHAb increases after ACh addition within 18 to 49.5% (20
+    to 45% widened by 10% of each bound) under one reading, and AF647 and pHAb still overlap in
+    the 5 h image.
+- id: figs6a-response-time
+  statement: The ex vivo nanosensor response to added ACh begins within 0.55 s, the shortest
+    sampling interval used.
+  source: Results, Ex vivo calibration of the ACh nanosensors, paragraph 1; Figure S6A
+  quote: the initial nanosensor response to ACh addition was within 0.55 s, the minimum sampling
+    time used in our experiment
+  datasets:
+  - sparc-108
+  criterion: In the ex vivo kinetic traces (Figure S6A), the pHAb signal rises in the first frame
+    after the ACh addition frame, by more than three SD of the pre-addition frames (the three SD is
+    this file's choice; the paper gives no measure). The addition frame is the red arrow of Figure
+    S6A. If the addition time is not recorded in the data the claim cannot be tested, as an onset
+    taken from the response itself would make the test circular. Reproduced when this holds at
+    the concentrations shown.
+- id: fig4b-michaelis-menten
+  statement: The initial rate of the ex vivo nanosensor response follows a Michaelis-Menten curve
+    in ACh concentration with EC50 (Km) 49.24 ± 5.84 uM and Vmax 281.00 ± 7.14 %/s (R2 0.9811);
+    the upper limit of detection is 358.01 uM.
+  source: Results, Ex vivo calibration of the ACh nanosensors, paragraph 2; Figure 4B legend
+  quote: the half-maximum response (EC50) to ACh was 49.24 ± 5.84 μM and upper limit of detection
+    was 358.01 μM
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: Km (EC50)
+    value: 49.24
+    tolerance: 5.84
+    unit: uM
+  - quantity: Vmax
+    value: 281.00
+    tolerance: 7.14
+    unit: "%/s"
+  - quantity: R2 of the fit
+    value: 0.9811
+    tolerance: 0.098
+  - quantity: upper limit of detection
+    value: 358.01
+    tolerance: 35.8
+    unit: uM
+  criterion: "Initial rates of pHAb dF/F per ACh concentration (0.71 nM to 7.14 mM final, Methods,
+    Ex vivo ACh calibration), three mice, fit by V = Vmax [ACh] / (Km + [ACh]) (Figure 4B legend).
+    Open: the initial-rate window and baseline (opening comment); whether the fit is to (a) the
+    means over mice or (b) all points; the fit's ± is read as the standard error of the
+    parameter. The tolerances on Km and Vmax are the paper's ±. The upper limit of detection has
+    no definition in the paper; readings are (a) the concentration at which the curve reaches a
+    fixed fraction of Vmax (358.01 uM is 88% of Vmax for Km 49.24), (b) the upper end of the
+    linear region from the tangent at EC50 (Methods give 14.71 to 164.82 uM). Reproduced when Km
+    and Vmax are within tolerance under one reading; the upper limit is reported under each
+    reading."
+- id: fig4b-lod
+  statement: The lower limit of detection is 228 nM, where two regression lines through the
+    low-concentration data (0.71 nM to 14.28 uM) cross; the theoretical response there from the
+    Michaelis-Menten equation (1.3 %/s, 0.72% per 0.55 s frame) is 8.18 times the background
+    noise of 0.088 ± 0.039%.
+  source: Results, Ex vivo calibration of the ACh nanosensors, paragraph 2; Figure 4B(ii) legend;
+    Methods, Ex vivo ACh calibration
+  quote: experimental data in the lower con-centration range (i.e., 0.71 nM to 14.28 μM) was
+    grouped into two linear regions with the two regression lines crossing at a value of [ACh] =
+    228 nM
+  datasets:
+  - sparc-108
+  depends_on:
+  - fig4b-michaelis-menten
+  expected:
+  - quantity: lower limit of detection
+    value: 228
+    tolerance: 22.8
+    unit: nM
+  - quantity: background noise
+    value: 0.088
+    tolerance: 0.039
+    unit: "%"
+  - quantity: signal-to-noise ratio at LLOD
+    value: 8.18
+    tolerance: 0.818
+  criterion: The paper does not say how the points are split into the two linear regions, nor
+    whether the axis is linear or logarithmic in concentration. Readings are (a) the split that
+    minimises the summed squared residuals of the two lines, on linear concentration, (b) the same
+    on log10 concentration, (c) the split of Figure 4B(ii) as read from its green and blue
+    lines. Background noise is not defined; readings are (a) the SD of the photobleaching-corrected
+    dF/F of the baseline frames, (b) the mean absolute frame-to-frame change of that dF/F (per
+    0.55 s, the unit in which the paper states the signal). Reproduced when the crossing is
+    within tolerance under one reading; the noise and the signal-to-noise ratio are reported
+    under each.
+- id: figs6b-unit-calibration
+  statement: Normalising the initial rate by the local nanosensor concentration (from AF647
+    intensity) gives an almost identical Michaelis-Menten curve, EC50 50.35 ± 6.76 uM and Vmax
+    0.3991 %/(s nM), whose double reciprocal form is Equation 3, 1/V = 126.41/[ACh] + 2.499.
+  source: Results, Ex vivo calibration of the ACh nanosensors, paragraph 2; Equation 3; Figure
+    S6B to D
+  quote: The Vunit sensor–[ACh] relationship was further analyzed by the Michaelis–Menten equation
+    (SI Appendix, Fig. S6B), which showed an almost identical curve to Fig. 4B with an EC50 value
+    of 50.35 ± 6.76 μM.
+  datasets:
+  - sparc-108
+  depends_on:
+  - fig4b-michaelis-menten
+  expected:
+  - quantity: EC50 of the unit-rate curve
+    value: 50.35
+    tolerance: 6.76
+    unit: uM
+  - quantity: Vmax of the unit-rate curve
+    value: 0.3991
+    tolerance: 0.0399
+    unit: "%/(s nM)"
+  - quantity: slope of Equation 3
+    value: 126.41
+    tolerance: 12.64
+  - quantity: intercept of Equation 3
+    value: 2.499
+    tolerance: 0.25
+  criterion: Each initial rate divided by the nanosensor concentration in its ROI, read from the
+    AF647 intensity by a linear calibration on nanosensors of known concentration on the same
+    microscope (Results; Figure S6B legend), then fit as in fig4b-michaelis-menten. Equation 3 is
+    the reciprocal of the fit (slope Km/Vmax, intercept 1/Vmax). If the AF647 calibration data
+    are not deposited the claim cannot be tested.
+- id: fig4c-control-ph
+  statement: The control nanosensor (pHAb and BTX, no AChE) in tissue rises from 18.50 ± 9.74% at
+    pH 7 to 180.43 ± 17.67% at pH 5, with a pKa of 6.10, close to the 6.2 of free pHAb.
+  source: Results, Ex vivo calibration of the ACh nanosensors, paragraph 3; Figure 4C; Figure S7A
+  quote: The signal change from pH 7 to 5 ranged from 18.50 ± 9.74% to 180.43 ± 17.67% with a pKa
+    of 6.10 (Fig. 4C), in accordance with the pKa value of 6.2 represent-ing free pHAb
+    fluorophores
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: control nanosensor signal change at pH 7
+    value: 18.50
+    tolerance: 9.74
+    unit: "%"
+  - quantity: control nanosensor signal change at pH 5
+    value: 180.43
+    tolerance: 17.67
+    unit: "%"
+  - quantity: pKa of control nanosensor
+    value: 6.10
+    tolerance: 0.61
+  - quantity: pKa of free pHAb
+    value: 6.2
+    tolerance: 0.62
+  criterion: Means over three mice of dF/F per pH (3.5 to 9), tolerances the paper's SD (Figure
+    4C legend). Which value of each trace is the "fluorescence change" is not said; readings are
+    (a) the plateau dF/F after the buffer change, (b) the peak dF/F. The pKa fit is not named.
+    Readings are (a) a Henderson-Hasselbalch sigmoid (four-parameter logistic in pH) with pKa its
+    midpoint, (b) the pH at half the maximal change by interpolation. Reproduced when the pH 7
+    and pH 5 values and the pKa are within tolerance under one reading. The free pHAb pKa is
+    tested the same way on the normalized curve of Figure S7A (pH 2.5 to 7), where those data
+    are deposited.
+- id: fig5b-in-vivo-response
+  statement: In vivo, lingual nerve stimulation (3 V, 10 Hz, 10 ms, 100 pulses) raises nanosensor
+    fluorescence by 3.7% by 15 s with initial rate 0.294 ± 0.116 %/s, recovering to baseline
+    within 2 min (three mice).
+  source: Results, In vivo imaging of ACh release, paragraph 1; Figure 5B
+  quote: Upon the stimulation of the lingual nerve, fluorescence intensity increased 3.7% by 15 s
+    with initial velocity of Vsensor = 0.294 ± 0.116%/s, which slowly recovered to baseline within
+    2 min (Fig. 5B).
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: peak dF/F by 15 s
+    value: 3.7
+    tolerance: 0.37
+    unit: "%"
+  - quantity: initial rate Vsensor
+    value: 0.294
+    tolerance: 0.116
+    unit: "%/s"
+  criterion: pHAb dF/F of one ganglion cell ROI per mouse, photobleaching corrected, averaged over
+    three mice (Figure 5B legend). Initial rate, baseline and ROI are open (opening comment). The
+    3.7% is read (a) as the mean dF/F at 15 s after stimulation onset, (b) as the peak of the mean
+    trace within the first 15 s. Reproduced when the dF/F and the rate are within tolerance under
+    one reading and the mean trace returns to within the baseline noise (mean plus 2 SD of
+    pre-stimulus frames, a choice made here as the paper does not define baseline) by 120 s after
+    onset.
+- id: fig5b-control-minimal
+  statement: Control nanosensors (no AChE) show a minimal response to the same 3 V stimulation,
+    so intrinsic pH fluctuation is negligible.
+  source: Results, In vivo imaging of ACh release, paragraph 1; Figure 5B
+  quote: In contrast, we observed a minimal response when control nanosensors were tested,
+    dem-onstrating that the influence of intrinsic pH fluctuation is negli-gible.
+  datasets:
+  - sparc-108
+  criterion: With the method of fig5b-in-vivo-response, the peak of the mean control trace within
+    30 s of onset is less than a quarter of the ACh nanosensor peak. The paper gives no number
+    for "minimal"; one quarter is this file's choice, set below the ~50% the paper reports at
+    10 V as a non-negligible response (figs8-control-10v). The ratio is reported.
+- id: figs8-control-10v
+  statement: At 10 V stimulation the control nanosensor responds with about 50% of the ACh
+    nanosensor's signal, suggesting a pH change at higher stimulation.
+  source: Results, In vivo imaging of ACh release, paragraph 1; Figure S8
+  quote: upon stimulation with a higher 10 V voltage, control nanosensors responded to ∼50% of the
+    ACh nanosensor signal intensity (SI Appendix, Fig. S8)
+  datasets:
+  - sparc-108
+  expected:
+    quantity: control over ACh nanosensor peak dF/F at 10 V
+    value: 50
+    tolerance: 5
+    unit: "%"
+  criterion: Ratio of the peak pHAb dF/F of the control nanosensor to that of the ACh nanosensor,
+    10 V, 10 Hz, 10 ms, 100 pulses (Figure S8). Readings are the ratio of (a) peaks, (b) initial
+    rates. Reproduced when one reading is within tolerance.
+- id: fig5c-voltage-dose
+  statement: In one ROI of one animal the initial rate grows with stimulation voltage, 0.1886 %/s
+    at 3 V, 3.24 %/s at 5 V and 11.35 %/s at 10 V.
+  source: Results, In vivo imaging of ACh release, paragraph 1; Figure 5C
+  quote: with 3 V stimulation increasing 0.1886%/s, 5 V increasing 3.24%/s, and 10 V increasing
+    11.35%/s, all collected at the same ROI in the ganglia (Fig. 5C)
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: Vsensor at 3 V
+    value: 0.1886
+    tolerance: 0.01886
+    unit: "%/s"
+  - quantity: Vsensor at 5 V
+    value: 3.24
+    tolerance: 0.324
+    unit: "%/s"
+  - quantity: Vsensor at 10 V
+    value: 11.35
+    tolerance: 1.135
+    unit: "%/s"
+  criterion: Initial rate of pHAb dF/F in the same ROI for 3, 5 and 10 V (10 Hz, 10 ms, 100
+    pulses), one animal (Figure 5C legend). Rate window, baseline and ROI are open (opening
+    comment). Reproduced when the rates increase with voltage and all three are within tolerance
+    under one reading; partially reproduced when they increase with voltage but are not all
+    within tolerance.
+- id: fig5c-ach-concentration
+  statement: Through Equation 3, the unit rates at 3, 5 and 10 V (0.0214, 0.0711 and 0.2448 %/(nM
+    s)) give endogenous ACh concentrations of 2.75, 10.49 and 76.51 uM.
+  source: Results, In vivo imaging of ACh release, paragraph 2; Figure 5C; Equation 3
+  quote: we estimated the endogenous ACh concentrations to be 2.75 μM at 3 V, 10.49 μM at 5 V, and
+    76.51 μM at 10 V
+  datasets:
+  - sparc-108
+  depends_on:
+  - fig5c-voltage-dose
+  - figs6b-unit-calibration
+  expected:
+  - quantity: ACh at 3 V
+    value: 2.75
+    tolerance: 0.275
+    unit: uM
+  - quantity: ACh at 5 V
+    value: 10.49
+    tolerance: 1.049
+    unit: uM
+  - quantity: ACh at 10 V
+    value: 76.51
+    tolerance: 7.651
+    unit: uM
+  - quantity: Vunit at 3 V
+    value: 0.0214
+    tolerance: 0.00214
+    unit: "%/(nM s)"
+  - quantity: Vunit at 5 V
+    value: 0.0711
+    tolerance: 0.00711
+    unit: "%/(nM s)"
+  - quantity: Vunit at 10 V
+    value: 0.2448
+    tolerance: 0.02448
+    unit: "%/(nM s)"
+  criterion: Vsensor of fig5c-voltage-dose divided by the nanosensor concentration of the ROI from
+    its AF647 intensity, then ACh from Equation 3. Applied to the printed unit rates, Equation 3
+    gives 2.86, 10.93 and 79.7 uM, each within 4.2% of the printed concentrations; the
+    difference is not explained. Readings are (a) Equation 3 as printed, (b) the Michaelis-Menten
+    fit of Figure S6B (same curve). The printed rates also imply different nanosensor
+    concentrations in the one ROI (Vsensor over Vunit is 8.8 nM at 3 V, 45.6 nM at 5 V and 46.4 nM
+    at 10 V); the paper does not explain this either. Reproduced when the three concentrations are
+    within tolerance under one reading. If the AF647 calibration data are not deposited the
+    claim cannot be tested.
+- id: fig5d-pulse-dose
+  statement: Increasing the number of pulses (10, 50, 100 at 3 V) increases the nanosensor
+    response in the same ROI.
+  source: Results, In vivo imaging of ACh release, paragraph 1; Figure 5D
+  quote: Similarly, increasing the number of pulses also led to a higher ACh nanosensor response
+    (Fig. 5D).
+  datasets:
+  - sparc-108
+  criterion: In the same ROI of one animal (Figure 5D legend), the response is ordered 10 < 50 <
+    100 pulses. "Response" is read as (a) the initial rate, (b) the peak dF/F, as the Results use
+    both. Reproduced when the order holds under one reading; the paper gives no test.
+- id: fig5e-reversibility
+  statement: Three repeated stimulations (10 V, 10 Hz, 10 ms, 10 pulses) in the same ROI give
+    repeatable initial rates of 0.436, 0.417 and 0.431 %/s (0.428 ± 0.010 %/s).
+  source: Results, In vivo imaging of ACh release, paragraph 1; Figure 5E
+  quote: showing repeatable rates of 0.436%/s, 0.417%/s, and 0.431%/s in sequence (0.428 ±
+    0.010%/s, Fig. 5E)
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: rate, stimulation 1
+    value: 0.436
+    tolerance: 0.0436
+    unit: "%/s"
+  - quantity: rate, stimulation 2
+    value: 0.417
+    tolerance: 0.0417
+    unit: "%/s"
+  - quantity: rate, stimulation 3
+    value: 0.431
+    tolerance: 0.0431
+    unit: "%/s"
+  - quantity: mean rate
+    value: 0.428
+    tolerance: 0.010
+    unit: "%/s"
+  criterion: Initial rate per stimulation as in fig5c-voltage-dose. Reproduced when the three rates
+    are within tolerance under one reading of the rate window, or, failing the values, partially
+    reproduced when the three rates differ from their mean by less than 10% (the default
+    tolerance, a choice made here).
+- id: figs7b-in-vitro-reversibility
+  statement: In vitro, in a dialysis fiber, the nanosensor responds repeatedly to five
+    injections of 100 uM ACh, recovering after each washout.
+  source: Results, In vivo imaging of ACh release, paragraph 1; Figure S7B; Methods,
+    Characterization of ACh nanosensors
+  quote: Reversibility of the sensor was demonstrated by three repeated stimulations ... which was
+    confirmed with in vitro experiments (SI Appendix, Fig. S7B).
+  datasets:
+  - sparc-108
+  criterion: In the confocal pHAb trace of the fiber, each of the five ACh injections gives a
+    rise, and the signal returns after each wash (Methods, 2 min of imaging per injection, then
+    washout). The paper gives no measure; reproduced when all five peak rises are within 10% of
+    their mean and the signal before each injection is back within 10% of the first peak rise
+    above the first baseline (the 10% is this file's choice).
+- id: fig6-vesamicol
+  statement: Vesamicol cuts the nanosensor response to 3 V stimulation; in the example the
+    response with the drug is 17% of that after washout, and over four experiments the reduction
+    averages 76.59 ± 11.34%, significant in each by a paired t test (P < 0.01).
+  source: Results, In vivo imaging of ACh release, paragraph 3; Figure 6A to C
+  quote: Four independent inhibitor treatments affirmed that vesamicol can considerably suppress
+    ACh nanosensors' readout by an average of 76.59 ± 11.34% (Fig. 6C)
+  datasets:
+  - sparc-108
+  statistics:
+  - test: paired t test, vesamicol treated against untreated
+    p: 0.01
+    p_relation: "<"
+    n: four independent inhibitor experiments
+  expected:
+  - quantity: mean reduction of peak response by vesamicol
+    value: 76.59
+    tolerance: 11.34
+    unit: "%"
+  - quantity: response with drug over response after washout, Figure 6B example
+    value: 17
+    tolerance: 1.7
+    unit: "%"
+  criterion: "Peak pHAb dF/F with vesamicol and after washout, same ROI and stimulation (3 V, 10
+    Hz, 10 ms, 100 pulses), normalised to the maximum (Figure 6 legend); reduction is 1 minus
+    the ratio, averaged over four experiments. The legend's test is open: \"a significant
+    difference (**P < 0.01) was found between the vesamicol treated and untreated groups for all
+    four trials\". Readings are (a) one paired t test over the four experiments' peak values
+    (n = 4 pairs), (b) a paired t test within each experiment over the matched time points of
+    the two traces (frames from stimulation onset to the end of the response). Reproduced when
+    the mean reduction is within tolerance and the test gives P < 0.01 under one reading (for
+    (b), in all four experiments)."
+- id: figs9-aqua-vs-roi
+  statement: dF/F traces from AQuA events and from conventional ROI analysis of the same regions
+    show similar dynamics.
+  source: Results, ACh nanosensor response reflects physiological ACh propagation, paragraph 1;
+    Figure S9
+  quote: we compared the fluorescence dynamics derived from AQuA software to the ROI-based analysis
+    at the same regions that were automatically defined by AQuA software and found that they
+    reported similar dynamics (SI Appendix, Fig. S9)
+  datasets:
+  - sparc-108
+  criterion: For the two events R1 and R2 of Figure S9 (8 V), the AQuA dF/F curve and the ROI dF/F
+    over the event's footprint. The paper gives no similarity measure; reproduced when their
+    Pearson correlation over the recording is at least 0.9 and their peak times differ by at most
+    two frames (1.1 s), thresholds chosen here. AQuA parameters are open (opening comment).
+- id: figs10-control-8v
+  statement: Control nanosensors change by less than 4% under 8 V stimulation (three mice), so
+    physiological pH changes are small.
+  source: Results, ACh nanosensor response reflects physiological ACh propagation, paragraph 1;
+    Figure S10
+  quote: It is worth noting that control nanosensors change less than 4% under 8 V stimulation
+  datasets:
+  - sparc-108
+  expected:
+    quantity: peak dF/F of control nanosensor at 8 V
+    value: 4
+    tolerance: 0.4
+    unit: "%"
+  criterion: Peak of the mean pHAb dF/F over three mice (whole SMG or ROI, as Figure S10 does not
+    say; both are read) after 8 V, 10 Hz, 10 ms, 100 pulses. Reproduced when the peak is below
+    4.4% under one reading.
+- id: fig7-rostral-caudal
+  statement: At 8 V, AQuA shows the nanosensor signal spreading from rostral to caudal across
+    the SMG. The rostral-most region rises at 13.20 s (2.75 s after stimulation onset) and peaks
+    at 22.0 s; the signal reaches caudal regions by 13.75 and 15.40 s and lateral at 15.95 s; the
+    most caudal region peaks at 44.55 s.
+  source: Results, ACh nanosensor response reflects physiological ACh propagation, paragraph 1;
+    Figure 7A and 7B; Figure S11
+  quote: The spatiotemporal AQuA analysis of nanosensor response following 8 V stimulation across
+    the SMG validated our prediction (Fig. 7A and Movie S3). The rostral-most region started to
+    increase fluorescence at 13.20 and 2.75 s after the start of 10 s stimulation and peaked at
+    t = 22.0 s
+  datasets:
+  - sparc-108
+  expected:
+  - quantity: onset of region 1 (rostral-most)
+    value: 13.20
+    tolerance: 0.55
+    unit: s
+  - quantity: onset of region 2
+    value: 13.75
+    tolerance: 0.55
+    unit: s
+  - quantity: onset of region 3
+    value: 15.40
+    tolerance: 0.55
+    unit: s
+  - quantity: onset of region 4 (lateral)
+    value: 15.95
+    tolerance: 0.55
+    unit: s
+  - quantity: peak of rostral-most region
+    value: 22.0
+    tolerance: 0.55
+    unit: s
+  - quantity: peak of most caudal region
+    value: 44.55
+    tolerance: 4.455
+    unit: s
+  criterion: "AQuA on the 8 V recording of Figure 7 (stimulation 10.45 to 20.35 s), area bounded
+    by a line around the whole SMG (Methods, AQuA analysis); AQuA parameters are open (opening
+    comment). The onset tolerances are one frame (0.55 s), the sampling interval, as 10% (1.3 s)
+    would not separate the reported order; the late caudal peak keeps the 10% default. The text
+    says the caudal decay \"begins at t = 44.55\" and Figure 7B calls 44.55 the time of maximum;
+    both name the peak. The anatomical axis is read from Figure 7B (rostral, caudal, lateral as
+    marked). Reproduced when the event onsets are ordered rostral before caudal before lateral
+    and the times are within tolerance; partially reproduced when the order holds but times do
+    not."
+- id: fig7-peak-timing
+  statement: All evoked nanosensor responses in Figure 7A climb to their peak around 10 to 15 s
+    after stimulation onset, as in Figure 5B to E.
+  source: Results, ACh nanosensor response reflects physiological ACh propagation, paragraph 1;
+    Figure 7A
+  quote: All evoked nanosensor responses in Fig. 7A climbed to the peak around ∼10 to 15 s, an
+    observation consistent with Fig. 5 B–E.
+  datasets:
+  - sparc-108
+  depends_on:
+  - fig7-rostral-caudal
+  criterion: For the AQuA events of Figure 7A, the time from stimulation onset (10.45 s) to each
+    event's peak. Whether "10 to 15 s" counts from stimulation onset or from event onset is not
+    said; both are read. Reproduced when, under one reading, all four numbered events of Figure
+    7A peak within 9 to 16.5 s (10 to 15 s widened by 10% of each bound). The paper contradicts
+    itself here, as Figure 7B puts the maximum of the most caudal region at 44.55 s (34 s after
+    stimulation onset); partially reproduced when all events but that one peak within 9 to 16.5
+    s.
+- id: figs12-3v-propagation
+  statement: At 3 V, in three independent experiments, AQuA shows the same rostral-to-caudal
+    direction of propagation, with lower amplitude than at 8 V.
+  source: Results, ACh nanosensor response reflects physiological ACh propagation, paragraph 1;
+    Figure S12; Methods, AQuA analysis
+  quote: We also conducted the same analysis with a lower stimulation voltage of 3 V for three
+    independent experiments and observed similar rostral-to-caudal propagation directionality
+  datasets:
+  - sparc-108
+  depends_on:
+  - fig7-rostral-caudal
+  criterion: AQuA as in fig7-rostral-caudal on the 3 V recordings of three mice (one also used at
+    8 V, two at 3 V only; Methods). Reproduced when in each the earliest event lies rostral of
+    the later ones, and in the mouse stimulated at both voltages the peak dF/F at 3 V is below
+    that at 8 V. Partially reproduced when two of three show the order. Rostral is read from the
+    electrode side (Methods, Electrical stimulation, electrode closer to the lingual nerve)
+    where the images do not mark it.
+- id: figs16-af647-stable
+  statement: The AF647 channel recorded with the pHAb signal of Figure 7 shows no visible
+    fluorescence increase during stimulation, so the internal standard does not respond.
+  source: Methods, Animal preparation and imaging; Figure S16
+  quote: SI Appendix, Fig. S16 exhibited a panel of time-lapse images from AF647 channel which were
+    simultaneously recorded with the pHAb fluorescence in Fig. 7 and confirmed that there was no
+    visible fluorescent increase during recording in AF647 channel.
+  datasets:
+  - sparc-108
+  criterion: Whole-SMG mean AF647 intensity, photobleaching corrected, over the 8 V recording.
+    Reproduced when its largest rise after stimulation onset is below the largest rise of the
+    pHAb channel by at least a factor of five and within the pre-stimulus noise (mean plus 3 SD),
+    thresholds chosen here as the paper says only "no visible increase".
+- id: figs13-two-photon
+  statement: pHAb fluorophores can be excited by two-photon microscopy, and a whole SMG injected
+    with control nanosensors can be imaged under two-photon excitation at 837 nm.
+  source: Discussion, paragraph 1; Figure S13
+  quote: pHAb fluorophores are also compatible with two-photon imaging (SI Appendix, Fig. S13)
+  datasets:
+  - sparc-108
+  criterion: In the two-photon images of pHAb oligos (Figure S13A, B), the mean intensity of the
+    boxed area is above background at one or more excitation wavelengths, and the 837 nm SMG
+    image (S13C) shows stained cells. Judged from the images; the paper gives no number.
+checks:
+- date: 2026-11-18
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment. Table S1 is in the extracted text (supplement page 18); the comment said it was not.
+  - fig2d-hplc-yield. The second-peak window widened by 10% of each bound starts at 8.19 mL (9.1 times 0.9), not 8.28 mL; corrected. Source now names the paragraph by its opening words.
+  - fig2g-conjugation-ratios. How the pHAb concentration is measured is not stated; named as open, with the 532 nm absorbance peak of Figure 2F as the reading. Source paragraph number replaced by its place relative to Equations 1 and 2.
+  - fig2e-page-bands. Source paragraph corrected to the HPLC paragraph (the PAGE sentences sit in it); "at least two bands" marked as the reading of "several"; the lane-1 label conflict between Figure 2E and Figure S2C is noted.
+  - figs3-size. The size measure (largest dimension) and the segmentation were this file's choices presented as standard; both are now named as open with two readings. Source paragraph number replaced.
+  - figs4-stability. The rule "two of three ROIs" was looser than the paper's three ROIs that all increased by 20-45%; now all three. The legend does not say whether the ACh test was at 0 h or 5 h; named as open with two readings. ROI choice made before looking at the response.
+  - figs6a-response-time. Taking the onset from the steepest rise when the addition time is unknown made the test circular; the claim is now untestable in that case. The three SD threshold is marked as this file's choice.
+  - fig4b-lod. Statement now says the 0.72% at the LLOD is the theoretical response from the Michaelis-Menten equation, as the paper does. Background noise gets a second reading (frame-to-frame change, the unit of the 0.72%).
+  - fig4c-control-ph. Which value of each trace is the fluorescence change is not stated; named as open. The free pHAb pKa (an expected value) had no test in the criterion; added from Figure S7A.
+  - fig5b-in-vivo-response. The 2 SD return-to-baseline threshold was called standard; it is the file's choice, as the paper defines no baseline, and now says so.
+  - fig5c-ach-concentration. Noted that the printed Vsensor and Vunit imply different nanosensor concentrations (8.8, 45.6, 46.4 nM) in the same ROI, and that the claim needs the AF647 calibration data.
+  - fig5e-reversibility. The 10% of the partial rule is marked as a choice made here.
+  - figs7b-in-vitro-reversibility. The return-to-baseline rule was garbled; rewritten, and the 2 min imaging per injection from Methods cited.
+  - fig7-peak-timing. "Most events" weakened the paper's "all evoked responses"; now all four numbered events, with partial reproduction when only the most caudal one (peak at 44.55 s by Figure 7B, which contradicts the sentence) falls outside.
+  - Open. The paragraph numbers of the Fabrication section could not be checked against the PDF layout (no PDF renderer here); sources there now point by opening words and equations.
+  - Open. Equation 3 applied to the printed unit rates gives concentrations 4.2% above the printed ones (fig5c-ach-concentration); not explained by the paper.
+  - Open. Figure legends cite wrong figures (S6B says Figure 4C for Figure 4B; S11 says Fig. 6 for Fig. 7); read as typos, no claim changed.
+  - Open. Minor observations without a claim (BTX attachment does not change HPLC retention, Figure S2; fewer nanosensors than free BTX bind, Discussion); judged not main findings.

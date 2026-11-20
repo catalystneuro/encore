@@ -1,0 +1,905 @@
+# Claims for Lesica, Jin, Weng, Yeh, Butts, Stanley & Alonso (2007), Neuron 55:479-491, on
+# DANDI:002028.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-19,
+# protocol as stated in docs/protocol.md (Reader, version pilot-16).
+#
+# Text read: the version of record (PyMuPDF text of the journal PDF, supplied by a person),
+# with its Results, figure legends, Discussion and Experimental Procedures, and its Supplemental
+# Data (one PDF, the legend of Supplementary Figure 1). The PDF pages could not be rendered in
+# this run (no PDF renderer was installed), so values shown only in figures (the bar heights of
+# Figures 3, 4 and 6, the contrasts of Figure 7C, the per-pair correlation coefficients of
+# Supplementary Figure 1, and which bars of Figure 6 carry ** and which ***) were not read; no
+# claim rests on them. The paper links no analysis code, so none was read.
+#
+# Data the paper used. Anesthetized (ketamine, then thiopental) and paralyzed cats; the number
+# of cats is not given. Extracellular single units recorded with a multielectrode array in
+# layer A of the LGN, spike sorted offline; cells classed X or Y from counterphased sine wave
+# gratings (Hochstein and Shapley 1976) and ON or OFF center; all nonlagged. Stimuli, on a
+# 120 Hz monitor updated every other refresh (50 Hz frames), 0.2 degree pixels, 48 x 48
+# pixel section: natural scene movies (cat-mounted camera, Kayser et al. 2003, 8 bit gray,
+# interpolated to 50 Hz) at RMS contrast 0.40 (HC) and 0.15 (LC), and spatiotemporal binary
+# white noise at RMS contrast 0.55 (HC) and 0.20 (LC). Sessions per cell: a single 15 min movie
+# segment at HC and LC (68 cells passing inclusion: 44 ON-center, 19 X, 19 Y, 6 unclassified;
+# 24 OFF-center, 11 X, 8 Y, 5 unclassified); for 26 of them, 24 repeats of a different 90 s
+# movie segment at HC and LC (cross-validation); for 31 of them, a 6 min white noise segment at
+# HC and LC plus 120 repeats of different 12 s segments of movie and white noise at HC and LC
+# (reliability and sparseness). Measured variables are spike times; all analyses also need
+# the stimulus frames and the animal of each cell. The archive's description says the dataset
+# holds cat LGN recordings to natural movies and noise at two contrasts that supported four
+# studies, this one among them. The movies come from the laboratory of Peter Konig (Kayser et
+# al. 2003); the paper gives no other location for them, so if the dataset lacks the frames
+# they are outside data with no stated source.
+#
+# Method, from the Experimental Procedures unless stated. Stimuli are scaled to zero mean, with
+# values between -106 and 106. Spikes binned at 128 Hz (8 ms). RFs by recursive least squares
+# (Lesica and Stanley 2006) with initial conditions g = 0 and K = D x I, D = 0.001; 21 x 21
+# pixels and 24 lags of 8 ms; the same number of spikes for HC and LC; each response cut into
+# nine segments, an RF per segment, the mean of the nine used. Inclusion for the 15 min movie
+# analyses: RF peak at least ten times the noise (SD of the RF estimated from shuffled
+# responses). Center: pixels at the latency of the RF's largest-amplitude point, contiguous
+# with it, of its sign and above the error level (the SD of the shuffled-response estimate);
+# surround: a ring around the center at most four pixels wide (Lesica and Stanley 2004).
+# Spatial width: full width at half peak of a symmetric 2D difference of Gaussians fitted to the
+# spatial RF at peak latency. Surround/center ratio: absolute peak of the surround temporal
+# profile over the peak of the center temporal profile, from the raw RF. Temporal width: width
+# of the primary phase of the center temporal profile at half its peak. NLs: the stimulus (zero
+# mean) convolved with the unit-variance RF, filtered values sorted and grouped by 250, the
+# mean filtered value and mean firing rate (8 ms bins) of each group; one NL per segment, the
+# mean of nine. Gain a and offset q from a fit of f(x) = a(x - q) for x >= q, 0 otherwise; q
+# adjusted per stimulus condition to have the same mean in each animal; normalized offset is q
+# over the SD of the filtered stimulus. Reliability: signal to noise ratio of the 8 ms firing
+# rate after Borst and Theunissen (1999), the total power of the trial-averaged response over
+# the mean over trials of the power of each trial minus the average. Sparseness: (1 - m^2/(m^2 +
+# s^2)) / (1 - 1/n), m and s the mean and SD of the firing rate over n time bins (Vinje and
+# Gallant 2000), of the trial-averaged response. Comparisons across conditions are paired t tests
+# across cells (Figures 3, 4 and 6 legends). A change of contrast compares HC with LC of one
+# stimulus; a change of correlations compares LC NS with LC WN (Results, first section).
+#
+# Details the paper leaves open, used by several claims (each claim names those it rests on):
+# (P1) How a reported percent change is formed; readings (a) the change of the sample means
+# over the first condition's mean, (b) the mean over cells of each cell's percent change. For
+# increases above 100% (gain, 148% and 296%) the paper's "increased by X%" also allows (c)
+# the ratio of the means taken as X/100. (P2) Which responses give the mean firing rate and the
+# RF and NL claims' cells for white noise; readings (a) the long segments used for RF
+# estimation (15 min movie, 6 min noise), (b) the 12 s repeated trials. (P3) The significance
+# level for "no significant effect"; the paper states none, so a paired t test at p < 0.05,
+# the usual level, with p < 0.001 (the only level in the Figures 3 and 4 legends) shown as a
+# variant. (P4) How the half-wave rectifier is fitted to the NL points; least squares on the
+# nine-segment mean NL is the standard choice. (P5) How the per-animal adjustment of q is
+# made; subtracting each animal's mean q for that condition and adding the grand mean is the
+# standard reading. (P6) The temporal profile's peak and widths are read on the 8 ms lag grid;
+# linear interpolation between lags for the half-height crossings is a standard choice. (P7)
+# Whether the SD in the sparseness formula is the population or sample SD, a standard choice
+# that cannot change any outcome (population). (P8) Whether the signal spectrum in the
+# reliability measure includes the mean (DC) term; readings (a) it does, as written, (b) the
+# mean is removed before the spectra.
+schema_version: 2
+paper: doi:10.1016/j.neuron.2007.07.013
+claims:
+- id: sample-composition
+  statement: The 15 min movie analyses include 68 LGN cells whose RF peak is at least ten times
+    the noise, 44 ON-center (19 X, 19 Y, 6 unclassified) and 24 OFF-center (11 X, 8 Y, 5
+    unclassified); 26 of them have the 90 s repeats and 31 have white noise and the 12 s repeats.
+  source: Experimental Procedures, Natural Scene Movie and White Noise Stimuli, paragraph 2
+  quote: This sample included 68 cells... 44 cells that were ON-center (19 X cells, 19 Y cells,
+    and 6 cells that were not classified ... and 24 cells that were OFF-center (11 X cells, 8 Y
+    cells, and 5 cells that were not classified). For a subset of 26 cells ... For a subset of
+    31 cells
+  expected:
+  - quantity: cells passing inclusion with HC and LC 15 min movie
+    value: 68
+    tolerance: 6.8
+  - quantity: cells with HC and LC white noise and 12 s repeats
+    value: 31
+    tolerance: 3.1
+  - quantity: cells with 90 s cross-validation repeats
+    value: 26
+    tolerance: 2.6
+  criterion: Inclusion as the Methods give it, the RF peak (largest absolute value of the HC and
+    of the LC movie RF) at least ten times the SD of an RF estimated from shuffled responses.
+    Open is whether a cell must pass at both contrasts or at either; readings (a) both, (b)
+    either. The counts are reported by ON/OFF and X/Y where the dataset labels them.
+- id: firing-rate-contrast
+  statement: Across the 31 cells with all four stimuli, mean firing rates are higher at high
+    than at low contrast for both natural movies (10.5 against 6.5 Hz) and white noise (8.2
+    against 5.7 Hz).
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 1
+  quote: the mean firing rates during HC stimulation (NS, 10.5 ± 4.8 Hz; WN, 8.2 ± 3.7 Hz) were
+    significantly higher than those during LC stimulation (NS, 6.5 ± 3.4 Hz; WN, 5.7 ± 3.1 Hz) for
+    both NS and WN (paired t tests, p < 0.001)
+  statistics:
+  - test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: 31 cells
+  expected:
+  - quantity: mean firing rate, HC NS
+    value: 10.5
+    tolerance: 4.8
+    unit: Hz
+  - quantity: mean firing rate, LC NS
+    value: 6.5
+    tolerance: 3.4
+    unit: Hz
+  - quantity: mean firing rate, HC WN
+    value: 8.2
+    tolerance: 3.7
+    unit: Hz
+  - quantity: mean firing rate, LC WN
+    value: 5.7
+    tolerance: 3.1
+    unit: Hz
+  criterion: Tolerances are the across-cell SDs the paper gives. Mean rate per cell and
+    stimulus over its whole presentation, under readings P2 (a) and (b). Reproduced when, under
+    one reading, all four means are within tolerance and paired t tests of HC against LC give p
+    < 0.001 with HC higher for NS and for WN.
+- id: firing-rate-lc-ns-wn-similar
+  statement: Mean firing rates to low-contrast natural movies and low-contrast white noise do
+    not differ across the 31 cells.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 2
+  quote: the mean firing rates for these stimuli across the sample of 31 cells were not
+    significantly different (paired t tests, p > 0.2)
+  statistics:
+  - test: paired t test
+    p: 0.2
+    p_relation: ">"
+    n: 31 cells
+  criterion: A claim of absence. Paired t test of LC NS against LC WN mean rates over the 31
+    cells, rates as in firing-rate-contrast. Reproduced when p > 0.05 (P3); the p-value and the
+    mean difference are reported, and whether p > 0.2.
+  depends_on:
+  - firing-rate-contrast
+- id: ln-prediction-accuracy
+  statement: LN models fitted from the 15 min movie predict responses to a novel 90 s movie
+    segment with correlation coefficients of 0.70 at high and 0.76 at low contrast (26 cells,
+    8 ms bins).
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 3
+  quote: the LN model provided accurate predictions of the LGN ... responses to novel natural
+    stimuli, with correlation coefficients of 0.7 ± 0.07 for HC and 0.76 ± 0.07 for LC (for firing
+    rate in 8 ms bins)
+  expected:
+  - quantity: mean prediction correlation, HC
+    value: 0.70
+    tolerance: 0.07
+  - quantity: mean prediction correlation, LC
+    value: 0.76
+    tolerance: 0.07
+  criterion: Tolerances are the across-cell SDs given. RF and NL of each contrast from the 15
+    min movie as in the Methods; the prediction is the NL applied to the filtered 90 s
+    stimulus. The paper does not say what the prediction is correlated with; readings (a) the
+    response averaged over the 24 repeats, (b) each repeat, averaged over repeats. Reproduced
+    when, under one reading, both means are within tolerance.
+- id: fig3b-spatial-width-contrast
+  statement: A decrease in contrast has no significant effect on the width of the spatial RF
+    center, for natural movies (68 cells) or white noise (31 cells).
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 6; Figure 3B
+  quote: decreases in contrast had no significant effect on the width of the spatial RF, as
+    shown in Figure 3B
+  criterion: A claim of absence. Spatial width as in the Methods (DoG fit at peak latency, full
+    width at half peak). Paired t tests of HC against LC, NS over the 68 cells and WN over the
+    31. Reproduced when neither gives p < 0.05 (P3); the mean change is reported, and the 31-cell
+    NS test is shown as a variant.
+  depends_on:
+  - sample-composition
+- id: fig3b-spatial-width-correlations
+  statement: A decrease in correlations (low-contrast natural movie to low-contrast white
+    noise) decreases the width of the spatial RF center by 20% on average (31 cells).
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 6; Figure 3B
+  quote: a decrease in correlations caused an average decrease of 20% in the width of the
+    spatial RF center
+  statistics:
+  - test: paired t test
+    p: 0.001
+    p_relation: "<"
+    n: 31 cells
+  expected:
+    quantity: decrease in spatial RF center width, LC NS to LC WN
+    value: 20
+    tolerance: 2
+    unit: "%"
+  criterion: The statistics entry is read from the Figure 3 legend, whose only marked level is
+    ***p < 0.001; the panel itself was not read. Paired t test of LC NS against LC WN widths over
+    the 31 cells. Reproduced when p < 0.001 with WN narrower and the decrease is within tolerance
+    under reading P1 (a) or (b); partially reproduced when the test holds and the decrease is
+    outside tolerance.
+- id: fig3c-surround-contrast
+  statement: A decrease in contrast decreases the relative strength of the RF surround by 17%
+    for natural movies and 18% for white noise.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 7; Figure 3C
+  quote: The relative strength of the surround was decreased by a decrease in contrast during
+    both NS (17%) and WN (18%) stimulation
+  statistics:
+  - test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: 68 cells (NS) and 31 cells (WN)
+  expected:
+  - quantity: decrease in surround/center ratio, HC to LC NS
+    value: 17
+    tolerance: 1.7
+    unit: "%"
+  - quantity: decrease in surround/center ratio, HC to LC WN
+    value: 18
+    tolerance: 1.8
+    unit: "%"
+  criterion: Surround/center ratio as in the Methods. The surround profile's peak is open;
+    readings (a) its largest absolute value, (b) its extreme of the sign opposite to the center.
+    Paired t tests of HC against LC, NS over 68 cells, WN over 31 (Figure 3 legend, ***p <
+    0.001). Reproduced when both tests give p < 0.001 with LC lower and both decreases are within
+    tolerance under one reading of P1 and of the peak; partially reproduced when the tests hold
+    and the sizes do not.
+  depends_on:
+  - sample-composition
+- id: fig3c-surround-correlations
+  statement: A decrease in correlations decreases the relative strength of the RF surround by
+    34%.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 7; Figure 3C
+  quote: as well as by ... a decrease in correlations (34%)
+  statistics:
+  - test: paired t test
+    p: 0.001
+    p_relation: "<"
+    n: 31 cells
+  expected:
+    quantity: decrease in surround/center ratio, LC NS to LC WN
+    value: 34
+    tolerance: 3.4
+    unit: "%"
+  criterion: As fig3c-surround-contrast, for LC NS against LC WN over the 31 cells.
+- id: fig3d-temporal-width-contrast
+  statement: A decrease in contrast widens the temporal profile of the RF center (slower
+    dynamics) by 16% for natural movies and 15% for white noise.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 7; Figure 3D
+  quote: the width of the temporal profile of the RF center was increased by a decrease in
+    contrast during both NS (16%) and WN (15%) stimulation
+  statistics:
+  - test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: 68 cells (NS) and 31 cells (WN)
+  expected:
+  - quantity: increase in temporal width, HC to LC NS
+    value: 16
+    tolerance: 1.6
+    unit: "%"
+  - quantity: increase in temporal width, HC to LC WN
+    value: 15
+    tolerance: 1.5
+    unit: "%"
+  criterion: Temporal width as in the Methods, on the 8 ms grid (P6). Paired t tests of HC
+    against LC (Figure 3 legend, ***p < 0.001). Reproduced when both give p < 0.001 with LC wider
+    and both increases are within tolerance under reading P1 (a) or (b); partially reproduced
+    when the tests hold and the sizes do not.
+  depends_on:
+  - sample-composition
+- id: fig3d-temporal-width-correlations
+  statement: A decrease in correlations widens the temporal profile of the RF center by 15%.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 7; Figure 3D
+  quote: as well as by a decrease in correlations (15%)
+  statistics:
+  - test: paired t test
+    p: 0.001
+    p_relation: "<"
+    n: 31 cells
+  expected:
+    quantity: increase in temporal width, LC NS to LC WN
+    value: 15
+    tolerance: 1.5
+    unit: "%"
+  criterion: As fig3d-temporal-width-contrast, for LC NS against LC WN over the 31 cells.
+- id: surround-temporal-correlation
+  statement: Across cells and the HC and LC natural movie conditions, the relative surround
+    strength and the temporal width of the RF center are negatively correlated (r = -0.5, p <
+    0.001).
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 7
+  quote: the correlation coefficient between the relative strength of the surround and the width
+    of the temporal profile of the RF center during HC and LC natural stimulation was
+  statistics:
+  - test: correlation coefficient
+    statistic: r = -0.5
+    p: 0.001
+    p_relation: "<"
+  expected:
+    quantity: correlation coefficient, surround/center ratio against temporal width, HC and LC NS
+    value: -0.5
+    tolerance: 0.05
+  criterion: The sign of -0.5 is printed as a garbled glyph in the text; the context (stronger
+    surround with faster dynamics) and the Discussion fix it as negative. Pearson correlation of
+    the two properties over all cell and condition values pooled (the 68 cells at HC and at LC),
+    as the Supplementary Figure 1 legend describes for pooled values. Reproduced when r is
+    within tolerance and p < 0.001.
+  depends_on:
+  - fig3c-surround-contrast
+  - fig3d-temporal-width-contrast
+- id: figs1-property-correlations
+  statement: Changes in RF and NL properties are correlated with each other across stimulus
+    conditions; every pairwise correlation of the properties that adapt significantly has p <
+    0.001, except surround/center ratio against temporal width for contrast during white noise
+    (p = 0.06).
+  source: Supplementary Figure 1 legend
+  quote: All correlation coefficients had p < 0.001, except for that between surround/center
+    ratio and temporal width for contrast adaptation during WN stimulation, which has p = 0.06
+  statistics:
+  - about: all pairs but one
+    test: correlation coefficient
+    p: 0.001
+    p_relation: "<"
+  - about: surround/center ratio against temporal width, contrast during WN
+    test: correlation coefficient
+    p: 0.06
+  criterion: Pearson correlation for each pair of the properties with significant adaptation
+    (surround/center ratio, temporal width, gain, normalized offset, plus spatial width and
+    offset in the comparisons where they adapt), within each comparison (contrast in NS,
+    contrast in WN, correlations), values from both conditions of the comparison pooled, as the
+    legend says. Which pairs and comparisons the figure plots could not be read from the text;
+    readings (a) the four properties that adapt in all three comparisons, (b) every property
+    with a significant change in that comparison. Reproduced when, under one reading, all pairs
+    but the named one have p < 0.001 and the named one has p > 0.001; partially reproduced when
+    at least three quarters do.
+  depends_on:
+  - fig3c-surround-contrast
+  - fig3d-temporal-width-contrast
+  - fig4b-gain-contrast
+  - fig4d-normalized-offset-contrast
+- id: fig4b-gain-contrast
+  statement: A decrease in contrast increases the gain of the nonlinearity by 89% for natural
+    movies and 148% for white noise.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 8; Figure 4B
+  quote: The gain was increased by a decrease in contrast during both NS (89%) and WN (148%)
+    stimulation
+  statistics:
+  - test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: 68 cells (NS) and 31 cells (WN)
+  expected:
+  - quantity: increase in gain, HC to LC NS
+    value: 89
+    tolerance: 8.9
+    unit: "%"
+  - quantity: increase in gain, HC to LC WN
+    value: 148
+    tolerance: 14.8
+    unit: "%"
+  criterion: Gain from the half-wave rectifier fit (P4) of the NL estimated as in the Methods.
+    Paired t tests of HC against LC (Figure 4 legend, ***p < 0.001). Reproduced when both give
+    p < 0.001 with LC higher and both increases are within tolerance under one reading of P1
+    (a or b, and for WN also c); partially reproduced when the tests hold and the sizes do not.
+  depends_on:
+  - sample-composition
+- id: fig4b-gain-correlations
+  statement: A decrease in correlations increases the gain of the nonlinearity by 296%.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 8; Figure 4B
+  quote: as well as by a decrease in correlations (296%), as shown in Figure 4B
+  statistics:
+  - test: paired t test
+    p: 0.001
+    p_relation: "<"
+    n: 31 cells
+  expected:
+    quantity: increase in gain, LC NS to LC WN
+    value: 296
+    tolerance: 29.6
+    unit: "%"
+  criterion: As fig4b-gain-contrast, for LC NS against LC WN over the 31 cells, under P1 (a), (b)
+    or (c).
+- id: fig4c-offset-contrast
+  statement: A decrease in contrast decreases the (absolute) offset of the nonlinearity by 56%
+    for natural movies and 59% for white noise.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 8; Figure 4C
+  quote: the offset was decreased by a decrease in contrast during both NS (56%) and WN (59%)
+    stimulation
+  statistics:
+  - test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: 68 cells (NS) and 31 cells (WN)
+  expected:
+  - quantity: decrease in offset, HC to LC NS
+    value: 56
+    tolerance: 5.6
+    unit: "%"
+  - quantity: decrease in offset, HC to LC WN
+    value: 59
+    tolerance: 5.9
+    unit: "%"
+  criterion: Offset q from the half-wave rectifier fit (P4), adjusted per animal (P5). Paired t
+    tests of HC against LC (Figure 4 legend, ***p < 0.001). Reproduced when both give p < 0.001
+    with LC lower and both decreases are within tolerance under reading P1 (a) or (b);
+    partially reproduced when the tests hold and the sizes do not. The unadjusted q is shown as
+    a variant.
+  depends_on:
+  - sample-composition
+- id: fig4c-offset-correlations-none
+  statement: A decrease in correlations has no effect on the (absolute) offset of the
+    nonlinearity.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 8; Figure 4C
+  quote: The offset adapted to a change in contrast, but not to a change in correlations
+  criterion: A claim of absence. Paired t test of LC NS against LC WN offsets (adjusted per
+    animal, P5) over the 31 cells. Reproduced when p >= 0.05 (P3); the mean change is reported.
+- id: fig4d-normalized-offset-contrast
+  statement: A decrease in contrast increases the normalized offset (selectivity) by 14% for
+    natural movies and 24% for white noise.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 9; Figure 4D
+  quote: the normalized offset was increased by a decrease in contrast during both NS (14%) and
+    WN (24%) stimulation
+  statistics:
+  - test: paired t tests
+    p: 0.001
+    p_relation: "<"
+    n: 68 cells (NS) and 31 cells (WN)
+  expected:
+  - quantity: increase in normalized offset, HC to LC NS
+    value: 14
+    tolerance: 1.4
+    unit: "%"
+  - quantity: increase in normalized offset, HC to LC WN
+    value: 24
+    tolerance: 2.4
+    unit: "%"
+  criterion: Normalized offset is the adjusted q over the SD of the filtered stimulus of the
+    same segment. Paired t tests of HC against LC (Figure 4 legend, ***p < 0.001). Reproduced
+    when both give p < 0.001 with LC higher and both increases are within tolerance under
+    reading P1 (a) or (b); partially reproduced when the tests hold and the sizes do not.
+  depends_on:
+  - fig4c-offset-contrast
+- id: fig4d-normalized-offset-correlations
+  statement: A decrease in correlations increases the normalized offset by 90%.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraph 9; Figure 4D
+  quote: as well as by a decrease in correlations (90%)
+  statistics:
+  - test: paired t test
+    p: 0.001
+    p_relation: "<"
+    n: 31 cells
+  expected:
+    quantity: increase in normalized offset, LC NS to LC WN
+    value: 90
+    tolerance: 9
+    unit: "%"
+  criterion: As fig4d-normalized-offset-contrast, for LC NS against LC WN over the 31 cells,
+    under P1 (a) or (b).
+- id: fig5-within-trial-contrast
+  statement: Within a single presentation of the high-contrast movie, the contrast inside a
+    cell's RF varies over time (0.27 to 0.43 over a 150 s segment for an example OFF-center Y
+    cell), and RFs and NLs estimated from the periods in the top and bottom thirds of all its
+    values show the same changes in surround, temporal dynamics, gain and offset as the HC and LC
+    comparison; for a second cell (OFF-center X) whose RF contrast is higher and varies over a
+    smaller range, they are nearly identical.
+  source: Results, The Functional Properties of LGN Neurons Adapt, paragraphs 10 and 11; Figure 5
+  quote: We estimated separate RFs and NLs for those periods during which the contrast within the
+    RF was within either the top or bottom third of all values for this cell ... the changes
+    evident in the surround strength and temporal dynamics of the RF and gain and offset of the
+    NL are similar to those described above
+  expected:
+  - quantity: highest contrast within the RF, example cell
+    value: 0.43
+    tolerance: 0.043
+  - quantity: lowest contrast within the RF, example cell
+    value: 0.27
+    tolerance: 0.027
+  criterion: The paper shows two example cells and no sample statistic; the example cells
+    cannot be identified from the text. The measure is "the temporal contrast averaged over the
+    spatial RF" (Figure 5A legend); how it is computed is open, readings (a) per frame, the RMS
+    contrast over the pixels of the spatial RF, (b) per RF pixel, the RMS contrast of its
+    intensity over time in a sliding window (length not given), averaged over the RF pixels;
+    under each, with and without weighting by the RF's spatial profile. The range is read over a
+    150 s segment of the HC movie and the thirds over the whole 15 min movie (Figure 5A legend).
+    RFs and NLs of the top and bottom thirds as in the Methods. Reproduced when at least one
+    OFF-center Y cell has a 150 s segment whose contrast range is within tolerance and its top-third RF and NL show a higher surround/center
+    ratio, a narrower temporal width, a lower gain and a higher offset than its bottom-third
+    ones. The share of all cells showing these four directions is reported.
+  depends_on:
+  - sample-composition
+- id: fig6a-reliability-contrast
+  statement: A decrease in contrast decreases response reliability by 54% for natural movies and
+    74% for white noise (31 cells).
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 2; Figure 6A
+  quote: a decrease in contrast during natural stimulation caused an average decrease of 54% in
+    reliability, as shown in Figure 6A. Similar decreases in reliability were caused by a decrease
+    in contrast during white noise stimulation (74%)
+  statistics:
+  - test: paired t tests
+    p: 0.01
+    p_relation: "<"
+    n: 31 cells
+  expected:
+  - quantity: decrease in reliability, HC to LC NS
+    value: 54
+    tolerance: 5.4
+    unit: "%"
+  - quantity: decrease in reliability, HC to LC WN
+    value: 74
+    tolerance: 7.4
+    unit: "%"
+  criterion: Reliability as in the Methods from the 120 repeats of each 12 s segment, 8 ms bins,
+    under readings P8 (a) and (b). The Figure 6 legend marks differences at **p < 0.01 or ***p <
+    0.001 and which bar carries which was not read, so p < 0.01 is the level judged. Reproduced
+    when paired t tests of HC against LC give p < 0.01 with LC lower for NS and WN and both
+    decreases are within tolerance under one reading of P1 and P8; partially reproduced when the
+    tests hold and the sizes do not.
+  depends_on:
+  - sample-composition
+- id: fig6a-reliability-correlations
+  statement: A decrease in correlations decreases response reliability by 68%.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 2; Figure 6A
+  quote: and by a decrease in correlations (68%)
+  statistics:
+  - test: paired t test
+    p: 0.01
+    p_relation: "<"
+    n: 31 cells
+  expected:
+    quantity: decrease in reliability, LC NS to LC WN
+    value: 68
+    tolerance: 6.8
+    unit: "%"
+  criterion: As fig6a-reliability-contrast, for LC NS against LC WN.
+- id: fig6b-sparseness-contrast
+  statement: A decrease in contrast causes only a small decrease in sparseness for natural movies
+    (4%) and a larger one for white noise (16%).
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 2; Figure 6B
+  quote: a decrease in contrast during natural stimulation caused only a small decrease in
+    sparseness (4%), but larger decreases in sparseness were evident for a decrease in contrast
+    during white noise stimulation (16%)
+  expected:
+  - quantity: decrease in sparseness, HC to LC NS
+    value: 4
+    tolerance: 0.4
+    unit: "%"
+  - quantity: decrease in sparseness, HC to LC WN
+    value: 16
+    tolerance: 1.6
+    unit: "%"
+  criterion: Sparseness as in the Methods, of the trial-averaged 8 ms firing rate over the 120
+    repeats of each 12 s segment (P7). Reproduced when both decreases are within tolerance under
+    reading P1 (a) or (b), and the WN decrease exceeds the NS decrease; partially reproduced when
+    the ordering holds and the sizes do not. Paired t tests are reported; the significance marks
+    of Figure 6B could not be read, so none is required.
+  depends_on:
+  - sample-composition
+- id: fig6b-sparseness-correlations
+  statement: A decrease in correlations decreases sparseness by 14%.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 2; Figure 6B
+  quote: and for a decrease in correlations (14%)
+  expected:
+    quantity: decrease in sparseness, LC NS to LC WN
+    value: 14
+    tolerance: 1.4
+    unit: "%"
+  criterion: As fig6b-sparseness-contrast, for LC NS against LC WN; reproduced when the decrease
+    is within tolerance under P1 (a) or (b). The paired t test is reported.
+- id: fig7c-effective-contrast
+  statement: Filtering by the RF raises the effective contrast of the natural movies relative to
+    white noise, so that low-contrast natural movies and high-contrast white noise have similar
+    effective contrasts despite different RMS contrasts.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 4; Figure 7C; Discussion, The Effects of Contrast and Correlations on Reliability
+    and Sparseness, paragraphs 1 and 2
+  quote: spatiotemporal integration in the RF results in an increase in the effective contrasts
+    of the NS stimuli relative to those of the WN stimuli, indicating that the NS stimuli contain
+    more of the features to which the RF is sensitive
+  criterion: Generic RFs per stimulus as the mean of the cells' RFs with OFF-center RFs sign
+    reversed (Results, Contrast- and Correlation-Induced Changes, paragraph 3; Figure 7A
+    legend), normalized to unit variance (Figure 7B legend); effective contrast is the SD
+    of the stimulus filtered by the generic RF, RMS contrast the SD of the stimulus (Figure 7C
+    text). Open are the cells averaged, readings (a) the 31 with all four stimuli, (b) all cells
+    with each stimulus, and the stimulus filtered, readings (a) the long segments, (b) the 12 s
+    repeated segments. Reproduced when, under one reading, the ratio of effective to RMS
+    contrast is higher for each NS stimulus than for each WN stimulus, and the LC NS effective
+    contrast is closer to the HC WN value than to that of any other stimulus.
+  depends_on:
+  - fig3c-surround-contrast
+- id: fig7d-reliability-tracks-effective-contrast
+  statement: Normalized to high-contrast natural movies, the effective contrasts of the four
+    stimuli correspond closely to the observed reliability of LGN responses.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 4; Figure 7D
+  quote: a comparison of the effective contrasts of the four stimuli (line) with the
+    experimentally observed reliability in the LGN responses (circles) reveals a strong
+    correspondence
+  criterion: Effective contrast as in fig7c-effective-contrast; reliability the mean over the 31
+    cells per stimulus; both divided by their HC NS value, the across-cell SD of reliability
+    divided likewise (Figure 7D legend). Reproduced when the four stimuli rank the same on both
+    and each normalized effective contrast lies within one normalized SD of the normalized mean
+    reliability; partially reproduced when the ranks agree only.
+  depends_on:
+  - fig7c-effective-contrast
+  - fig6a-reliability-contrast
+- id: fig8a-filtered-kurtosis
+  statement: The natural movies filtered by the generic RFs have heavy-tailed distributions
+    (kurtosis 4.06) while filtered white noise is Gaussian (kurtosis 3.01), and shuffling the
+    movie frames before filtering removes the excess kurtosis.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 5; Figure 8A
+  quote: The distributions of the filtered NS stimuli (red and blue) have relatively heavy tails
+    ... indicated by a high kurtosis (k = 4.06), while those of the filtered WN stimuli (black
+    and gray) are Gaussian (k = 3.01). The high kurtosis in the distributions of the filtered NS
+    stimuli disappears when the frames of the stimuli are shuffled
+  expected:
+  - quantity: kurtosis of filtered NS
+    value: 4.06
+    tolerance: 0.41
+  - quantity: kurtosis of filtered WN
+    value: 3.01
+    tolerance: 0.30
+  criterion: Kurtosis (non-excess, Gaussian = 3) of each stimulus filtered by its generic RF, as
+    in fig7c-effective-contrast. Which NS stimulus gives 4.06 is open; readings (a) HC NS, (b)
+    LC NS, (c) both. Reproduced when, under one reading, the NS and WN values are within
+    tolerance and the frame-shuffled HC NS stimulus filtered by the HC NS generic RF has a
+    kurtosis within 0.30 of 3 (the WN tolerance).
+  depends_on:
+  - fig7c-effective-contrast
+- id: fig8-model-sparseness-shuffle
+  statement: The generic LN model with the high-contrast natural movie RF and NL gives a response
+    sparseness of 0.86 to the movie and 0.83 when the movie frames are shuffled.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 5
+  quote: the sparseness of the response of the generic LN model (with high-contrast natural
+    scene RF and NL) to the original high-contrast NS stimulus is 0.86, and shuffling the frames
+    of the stimulus decreases this value to 0.83
+  expected:
+  - quantity: model sparseness, HC NS
+    value: 0.86
+    tolerance: 0.086
+  - quantity: model sparseness, frame-shuffled HC NS
+    value: 0.83
+    tolerance: 0.083
+  criterion: The generic NL is a perfect half-wave rectifier with the sample-mean gain and
+    offset (Results, paragraph 3); open is whether the offset used is (a) the mean normalized
+    offset times the SD of the filtered stimulus or (b) the mean absolute offset. Sparseness of
+    the model rate in 8 ms bins. Reproduced when, under one reading, both values are within
+    tolerance and the shuffled value is the lower.
+  depends_on:
+  - fig8a-filtered-kurtosis
+  - fig4d-normalized-offset-contrast
+- id: fig8b-model-vs-experiment-sparseness
+  statement: The sparseness of the noiseless generic LN model increases as contrast and
+    correlations decrease, the opposite of the experimental responses, matching the
+    experiment only for high-contrast natural movies.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 6; Figure 8B
+  quote: the sparseness of the model responses (line) increases as contrast and correlations are
+    decreased. However, this is the opposite of what is observed in the experimental responses
+    (circles)
+  criterion: Model as in fig8-model-sparseness-shuffle, one generic model per stimulus.
+    Reproduced when model sparseness is lowest for HC NS and highest for LC WN, the mean
+    experimental sparseness is higher for HC NS than for LC WN, and the model HC NS value lies
+    within one across-cell SD of the experimental HC NS mean (Figure 8B legend).
+  depends_on:
+  - fig8-model-sparseness-shuffle
+  - fig6b-sparseness-contrast
+- id: fig8de-noise-reconciles
+  statement: Adding Gaussian white noise to the filtered stimulus before the nonlinearity lowers
+    model sparseness most for low-contrast white noise, and at one noise level the model and
+    experimental sparseness agree closely for all four stimuli.
+  source: Results, Contrast- and Correlation-Induced Changes in the Reliability and Sparseness,
+    paragraph 7; Figure 8C to 8E
+  quote: as the noise level is increased, the sparseness of the model responses is decreased,
+    with the strongest decreases for the low-contrast WN responses ... there is a certain noise
+    level (Figure 8D, green bar) at which the sparseness of the model and experimental responses
+    are in close agreement
+  criterion: The noise level is not given; its SD is scanned from zero upward. Sparseness of the
+    trial-averaged model response is open; readings (a) the model rate with noise, one
+    realization, (b) the mean over 120 noisy trials as in the experiment. Reproduced when, under
+    one reading, the decrease in sparseness with noise is largest for LC WN, and at some level
+    the model value for each stimulus lies within one across-cell SD of the experimental mean
+    (Figure 8E legend).
+  depends_on:
+  - fig8b-model-vs-experiment-sparseness
+- id: disc-lcns-hcwn-reliability-sparseness
+  statement: Low-contrast natural movies and high-contrast white noise, which have similar
+    effective contrasts, evoke responses of similar reliability and sparseness, those to white
+    noise slightly higher, so the decreases seen with a decrease in correlations disappear.
+  source: Discussion, The Effects of Contrast and Correlations on Reliability and Sparseness,
+    paragraph 2; Figure 6A and 6B
+  quote: when comparing responses to lowcontrast NS and high-contrast WN stimuli, the decreases
+    in reliability and sparseness corresponding to the decrease in correlations are no longer
+    evident ... In fact, the reliability and sparseness of the high-contrast WN responses are
+    slightly higher than those of the low-contrast NS responses
+  criterion: A claim of absence, judged with the Figure 6 test, paired t tests over the 31 cells
+    of LC NS against HC WN, reliability and sparseness as in fig6a and fig6b. Reproduced when
+    neither shows HC WN significantly lower at p < 0.05 (P3) and both HC WN means are above the
+    LC NS means; the differences are reported.
+  depends_on:
+  - fig6a-reliability-contrast
+  - fig6b-sparseness-contrast
+- id: disc-lcns-hcwn-rf-nl-differences
+  statement: The differences in spatial width, surround strength, gain and normalized offset
+    between low-contrast natural movies and low-contrast white noise remain significant when
+    low-contrast natural movies are compared with high-contrast white noise.
+  source: Discussion, Adaptation to Stimulus Correlations, paragraph 1
+  quote: nearly all of the observed differences between low-contrast natural scene and white
+    noise RFs and NLs (spatial width, surround strength, gain, and normalized offset) are still
+    significant when RFs and NLs are compared across low-contrast NS and high-contrast WN
+  criterion: Paired t tests over the 31 cells of LC NS against HC WN for the four properties.
+    The level is not stated; readings (a) p < 0.05, (b) p < 0.001 as in the Figures 3 and 4
+    legends. Each difference must be in the direction of the LC NS against LC WN change (WN
+    narrower, weaker surround, higher gain, higher normalized offset). "Nearly all" is read as at
+    least three of the four. Reproduced when, under one reading, at least three are significant
+    in that direction.
+  depends_on:
+  - fig3b-spatial-width-correlations
+  - fig3c-surround-correlations
+  - fig4b-gain-correlations
+  - fig4d-normalized-offset-correlations
+- id: methods-latency-biphasic
+  statement: Changes in contrast and correlations significantly change the latency (time to
+    peak) of the RF center's temporal profile but not its biphasic ratio.
+  source: Experimental Procedures, Measurement of Receptive Field and Nonlinearity Properties,
+    paragraph 1
+  quote: Changes in contrast and correlations also had significant effects on the latency (time
+    to peak) of the temporal profile of the RF center, but not on the biphasic ratio
+  criterion: Latency is the lag of the peak of the center temporal profile; biphasic ratio the
+    absolute peak of the primary phase over the peak of the secondary phase (Methods). Paired t
+    tests for the three comparisons (HC against LC NS, HC against LC WN, LC NS against LC WN).
+    The level for latency is open, readings p < 0.05 and p < 0.001; the absence for the biphasic
+    ratio is judged at p < 0.05 (P3). Reproduced when, under one reading, latency changes in all
+    three comparisons and the biphasic ratio in none; partially reproduced when latency changes
+    in at least two and the biphasic ratio in none.
+- id: methods-offset-varies-across-animals
+  statement: Of the RF and NL parameters, only the offset q differs significantly across animals
+    within a stimulus condition.
+  source: Experimental Procedures, Measurement of Receptive Field and Nonlinearity Properties,
+    paragraph 2
+  quote: The only RF or NL parameter value that was significantly different across animals for a
+    given stimulus condition was q
+  criterion: The test is not named. Readings (a) a one-way ANOVA of each parameter on animal,
+    per stimulus condition, (b) a Kruskal-Wallis test. Parameters are spatial width,
+    surround/center ratio, temporal width, gain, offset and normalized offset, unadjusted. The
+    level is open, readings p < 0.05 and p < 0.001. Reproduced when, under one reading, q
+    differs across animals in at least one condition and no other parameter does in any. Needs
+    the animal of each cell.
+- id: celltype-y-wider-than-x
+  statement: The spatial RF center is wider for Y than X cells during high-contrast (0.75 against
+    0.63 deg) and low-contrast (0.73 against 0.63 deg) natural movies.
+  source: Experimental Procedures, Measurement of Receptive Field and Nonlinearity Properties,
+    paragraph 3
+  quote: The width of the spatial RF was significantly larger for Y cells than for X cells during
+    both high-contrast (X, 0.63 ± 0.16 deg.; Y, 0.75 ± 0.18 deg.) and low-contrast (X, 0.63 ± 0.14
+    deg ... natural stimulation (t tests, p < 0.01)
+  statistics:
+  - test: t tests
+    p: 0.01
+    p_relation: "<"
+    n: 30 X and 27 Y cells
+  expected:
+  - quantity: spatial width, X, HC NS
+    value: 0.63
+    tolerance: 0.16
+    unit: deg
+  - quantity: spatial width, Y, HC NS
+    value: 0.75
+    tolerance: 0.18
+    unit: deg
+  - quantity: spatial width, X, LC NS
+    value: 0.63
+    tolerance: 0.14
+    unit: deg
+  - quantity: spatial width, Y, LC NS
+    value: 0.73
+    tolerance: 0.15
+    unit: deg
+  criterion: Tolerances are the SDs given. The counts of X and Y cells are from the 68-cell
+    sample (19 + 11 X, 19 + 8 Y). Unpaired t tests of X against Y per contrast; reproduced when
+    all four means are within tolerance and both tests give p < 0.01 with Y wider.
+  depends_on:
+  - fig3b-spatial-width-contrast
+- id: celltype-y-stronger-surround
+  statement: The relative surround strength is larger for Y than X cells during high-contrast
+    natural movies (0.16 against 0.13).
+  source: Experimental Procedures, Measurement of Receptive Field and Nonlinearity Properties,
+    paragraph 3
+  quote: the relative strength of the surround was significantly larger for Y cells than for X
+    cells during high-contrast natural stimulation (X, 0.13 ± 0.04, Y, 0.16 ± 0.06; t test, p <
+    0.05)
+  statistics:
+  - test: t test
+    p: 0.05
+    p_relation: "<"
+    n: 30 X and 27 Y cells
+  expected:
+  - quantity: surround/center ratio, X, HC NS
+    value: 0.13
+    tolerance: 0.04
+  - quantity: surround/center ratio, Y, HC NS
+    value: 0.16
+    tolerance: 0.06
+  criterion: Tolerances are the SDs given. Unpaired t test of X against Y, surround/center ratio
+    as in fig3c-surround-contrast; reproduced when both means are within tolerance and p < 0.05
+    with Y larger.
+  depends_on:
+  - fig3c-surround-contrast
+- id: celltype-off-wider-temporal
+  statement: During low-contrast white noise the temporal profile of the RF center is wider for
+    OFF than ON cells (29 against 25 ms).
+  source: Experimental Procedures, Measurement of Receptive Field and Nonlinearity Properties,
+    paragraph 3
+  quote: the temporal profile of the RF center was significantly larger for OFF
+    cells than for ON cells during low-contrast white noise stimulation (ON, 25 ± 0.4 ms; OFF, 29
+    ± 0.4 ms; t test, p < 0.01)
+  statistics:
+  - test: t test
+    p: 0.01
+    p_relation: "<"
+  expected:
+  - quantity: temporal width, ON, LC WN
+    value: 25
+    tolerance: 2.5
+    unit: ms
+  - quantity: temporal width, OFF, LC WN
+    value: 29
+    tolerance: 2.9
+    unit: ms
+  criterion: The paper's spread (0.4 ms) is smaller than the 8 ms lag grid and is probably a
+    standard error, so 10% of each value is used as tolerance. Unpaired t test of ON against OFF
+    over the 31 cells with white noise; reproduced when both means are within tolerance and p <
+    0.01 with OFF wider.
+  depends_on:
+  - fig3d-temporal-width-contrast
+- id: celltype-prediction-x-y
+  statement: LN model predictions are slightly more accurate for X than Y cells at high (0.73
+    against 0.69) and low (0.78 against 0.75) contrast, but the differences are not significant.
+  source: Experimental Procedures, Measurement of Receptive Field and Nonlinearity Properties,
+    paragraph 3
+  quote: the correlation coefficients between LN model predictions and experimental responses to
+    repeated identical segments of novel NS stimuli (for firing rate in 8 ms bins) were higher
+    for X cells than for Y cells at both HC (X, 0.73; Y, 0.69) and LC (X, 0.78; Y, 0.75), but these
+    differences were not significant (t tests, p > 0.1)
+  statistics:
+  - test: t tests
+    p: 0.1
+    p_relation: ">"
+  expected:
+  - quantity: prediction correlation, X, HC
+    value: 0.73
+    tolerance: 0.073
+  - quantity: prediction correlation, Y, HC
+    value: 0.69
+    tolerance: 0.069
+  - quantity: prediction correlation, X, LC
+    value: 0.78
+    tolerance: 0.078
+  - quantity: prediction correlation, Y, LC
+    value: 0.75
+    tolerance: 0.075
+  criterion: Prediction correlations as in ln-prediction-accuracy, over the classified cells of
+    the 26. A claim of absence for the difference; unpaired t tests of X against Y per contrast.
+    Reproduced when neither gives p < 0.05 (P3) and the four means are within tolerance under
+    one reading of ln-prediction-accuracy; the p-values are reported, and whether they exceed 0.1.
+  depends_on:
+  - ln-prediction-accuracy
+- id: methods-spherical-asymmetry
+  statement: RFs estimated by the paper's least-squares method from simulated LN responses to the
+    movies do not differ significantly from those estimated from simulated responses to Gaussian
+    white noise, so the movies' spherical asymmetry does not bias the RF estimates much.
+  source: Experimental Procedures, Estimation of Receptive Fields, paragraph 3
+  quote: We estimated the RF from simulated responses to both Gaussian white noise stimuli and
+    the movie stimuli used in this study and found that the estimates were not significantly
+    different
+  criterion: A simulation that uses the stimuli only. The known RF, the NL, the simulation length
+    and the test are not given; readings for the RF (a) the generic HC NS RF, (b) a cell's
+    estimated RF. Reproduced when the RLS estimates from movie-driven and white-noise-driven
+    simulated responses agree within the spread of the nine segment estimates at every RF point
+    under one reading. This claim needs no recorded spikes.
+  depends_on:
+  - fig7c-effective-contrast
+checks:
+- date: 2026-11-19
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Sources of fig3c-surround-correlations, fig3d-temporal-width-contrast, fig3d-temporal-width-correlations and surround-temporal-correlation set to paragraph 7, and of the fig4b, fig4c and fig4d claims to paragraphs 8 and 9; the file had split paragraph 7 at the page break, where the sentence runs on, and counted every later paragraph one too high.
+  - fig5-within-trial-contrast source set to paragraphs 10 and 11, for the same reason.
+  - fig5-within-trial-contrast statement and criterion now say the 0.27 to 0.43 range is over a 150 s segment and the thirds over the whole movie (Figure 5A legend), and that the second cell is OFF-center X (Figure 5 legend); the readings of the contrast measure now start from the legend's "temporal contrast averaged over the spatial RF", which the old readings (spatial SD per frame only) did not cover.
+  - Reading P1 (c), the ratio of means taken as X/100, now applies only to increases above 100% (gain 148% and 296%); for 89% and 90% it would mean a decrease, against the text. fig4b-gain-contrast, fig4b-gain-correlations and fig4d-normalized-offset-correlations changed to match.
+  - fig7c-effective-contrast source names the Discussion section in full and its paragraph 1, which cites Figure 7C; criterion cites the Figure 7A and 7B legends for the generic RF and its normalization.
+  - Open, not settled. The figures could not be rendered in this run either, so which Figure 6 bars carry ** or *** (fig6a claims judged at p < 0.01), whether Figure 6B marks any sparseness change, and whether Figure 3B marks the correlation change in spatial width (its p < 0.001 is inferred from the legend's only level) remain unread.
+  - Open, not settled. The significance level for the claims of absence is not stated; the file uses p < 0.05 with the legends' p < 0.001 as a variant, which the legends allow but do not fix.
+  - Open, not settled. celltype-off-wider-temporal uses 10% tolerances in place of the paper's stated spread of 0.4 ms, on the file's own reading that it is a standard error; the paper does not say which it is.
+  - Not a claim. The Discussion's remark that the absolute offsets for LC NS and HC WN are dramatically different has no claim; it is a supporting remark, not a main finding.

@@ -1,51 +1,64 @@
-Everything for steps 1 to 6 is in place: the claims file, the entry, the attempt record, a clean locked run, and the verifier's handover package. The paper's full text was open access (the author manuscript, PMC10807234), but the Supplementary Tables could not be read. I pinned version 0.230630.2304, the only published version. The draft adds only three BIDS files.
+The attempt is complete: the entry is at `entries/huszar-2022`, the record is `attempts/huszar-2022-02.yaml`, and the handover package is built. `check` passes with 0 errors, and the last clean `run` passed in 35.8 min with 1.05 GB peak memory. Of the 44 claims, 18 are reproduced, 9 partially reproduced, 6 not reproduced and 11 blocked.
 
-### 1. Outcome per claim
+**Earlier attempt seen by accident.** The release notes of dandiset version 0.261113.1035, which I read to choose the version, say the conversion "fixes problems found by a reproduction attempt (issue #83)". They list the fixes: left and right arms were swapped, ripple maps were shifted by a row, the `light_responsive` column was added, and others. I did not look up the issue or anything else.
+
+## 1. Outcomes
 
 | Claim | Outcome |
 |---|---|
-| cohort-birthdates (17 mice by birthdate, 12 M / 5 F) | not reproduced: the files give 13 M / 4 F because e13_1f1 is stored as male |
-| sessions-durations (92 sessions, 113.7 to 475.6 min, median 309.1) | partially reproduced: 104 files, median 319.6; two files have no scored sleep |
-| spwr-duration (median 36.4 ms) | reproduced: 36.0 ms |
-| unit-count (9,471 units) | not reproduced: 8,201 |
-| maze-cohort (9 maze mice by birthdate, 3 novel-environment mice) | reproduced, under the paper code's reading |
-| maze-task (205 cm trials, 30 Hz, at least 10 trials per arm) | not reproduced: only 38 of 65 sessions have 10 or more trials per arm |
-| novel-explorations (16) | partially reproduced: 9 have position |
-| fig5e population-vector decorrelation | partially reproduced: stem 0.937 matches; the other three segments come out more correlated than reported (0.547, 0.492, 0.465) |
-| fig6c firing rates preserved familiar vs novel | reproduced: rho 0.734 |
-| fig6c ratemap correlations higher in novel mazes | not reproduced: p = 0.67, though the novel median is higher in all 9 sessions |
-| fig6d spatial information lower in novel mazes | partially reproduced: direction holds, both medians lower than the paper's |
-| fig6d firing rates lower in novel mazes | partially reproduced: direction holds, both medians higher than the paper's |
-| 22 claims comparing same- and different-birthdate neurons, birthdate profiles, the model, histology | blocked: data missing |
-| fig7fg convergence onto interneurons | blocked: metadata insufficient |
+| cohort-birthdates, st1-animal-sessions, unit-count, ed2-light-responsive-count, spwr-duration | reproduced (counts exact: 17 mice, 96/104 sessions, 7,411 pyramidal cells, 664 light-responsive) |
+| sessions-durations | not reproduced: two sessions have no sleep states; median 309.9 min and range 113.7–475.6 min hold |
+| fig1e, fig1g, fig2b, fig2f, fig2g | reproduced |
+| fig1h (burst index) | partially reproduced: shape and test hold, medians about 25% low |
+| fig2c, fig2d, fig6c-theta-rate, fig6d-rate | reproduced, resting on an assumed theta channel |
+| fig1f (REM shift) | not reproduced (slope −2.05 %/day, p = 0.16), assumed theta channel |
+| maze-cohort, novel-explorations, fig5f, fig6f | reproduced |
+| maze-task | not reproduced (30 of 57 sessions have ≥10 trials of each type) |
+| fig5b, fig5c, fig5d, fig5e | partially reproduced |
+| fig6d-info, fig6e | partially reproduced (open fields left out) |
+| fig6c-novel-ratemap | not reproduced (p = 0.75; open fields left out) |
+| fig7b, fig7ce | partially reproduced, assumed connection detector |
+| fig7d, fig7fg | not reproduced, assumed connection detector |
+| ed1, fig1c (histology), ed2-waveform, ed10 (via its dependency), ed5 (no L-ratio) | blocked: data_missing |
+| fig3c, fig3e, ed6, ed7, fig4d | blocked: too_large (1 ms ICA matrix about 9 GB for a median session; not attempted in chunks) |
+| ed3-depth-control | blocked: other (not reached in the time) |
 
-### 2. What was found about the dandiset
-- **Light-responsive labels are missing.** No unit is marked light-responsive, and no cell type, waveform or optogenetic pulse time is stored, in the processed or the raw files. This blocks the paper's central findings. The labels exist in the lab's CellExplorer files, which are only reachable through the lab databank via Globus, with no DOI or commit.
-- **Units are missing for 6 of the 17 mice** (39 files hold only sleep states and ripples).
-- **7 of the 16 novel explorations have no position**, likely the three open fields. Five novel recordings give x and y between 0 and 1 even though the unit is stated as cm.
-- **Metadata errors:**
-  - `is_familiar_maze` is wrong in sessions with only the familiar maze.
-  - e13_1f1's sex field says male.
-  - 12 of the 13 raw files give a session start of 2011-08-18.
-  - One processed file holds a copy of the LFP labelled 30 kHz with a wrong conversion factor.
-  - Unit `group_id` values don't match the electrode group names in 64 of 65 files, and units have no link to electrodes.
-  - The electroporation day is stored only in the subject id.
-- **The paper contradicts itself on session count.** The Methods say 92 sessions; Figure 1e says 96. The files of the 15 homecage mice are exactly 96, and they match Figure 1e by birthdate and the Methods' duration bounds.
-- **No duplicate recordings were found.**
+## 2. Dataset, assumptions and questions
 
-### 3. Where the protocol was unclear, wrong or missing something
-1. Outside data must be "public and pinned", but the paper's own data link reaches only an unpinned lab server behind Globus. I treated this as not usable and blocked those claims as data missing.
-2. For a label that exists in the lab's derived files but not in the dandiset, it is unclear whether the block reason is data missing or metadata insufficient. I used data missing, because the pulse times needed to derive the label are also absent.
-3. There is no guidance on when to stop trying to recover missing data from raw files (pulse artefacts in 54 to 184 GB files). I made one quick look at the LFP while preparing, mentioned it as not run here, and blocked.
-4. Using the paper's code to choose subsets (which mice to exclude, which sessions to include) is somewhere between "following the code" and an outside input. I listed the code under `inputs` as parameters only and kept those claims as using the dandiset alone.
-5. My sessions criterion named a condition (each session holds sleep) without saying which outcome its failure gives. I chose partially reproduced and recorded it as a deviation. The protocol could require every condition to map to an outcome.
-6. The default 10% tolerance doesn't work for values near zero (median correlations around ±0.05). I used ±0.03 and gave the reason.
-7. The protocol doesn't say what to do when a criterion's literal reading gives a result that is probably a metadata typo (the sex field). I followed the criterion and recorded a finding.
-8. Data-description claims (counts, durations) aren't addressed by the protocol. I included them because they speak directly to whether the dandiset is complete.
+**Pinned version.** I pinned 0.261113.1035, the latest published version. The paper cites none, and the earlier version lacks the light-responsive labels, the pulses and LFP for most sessions.
 
-### 4. Runtime and failures
-- The notebook takes 356 s in the clean environment (about 2.5 min of that is streaming). `entry.py check`, `all` and `handover` all passed.
-- The Europe PMC full-text API returned a server error, so I got the text through PMC's OAI service instead.
-- **Left behind, needs your attention:** an empty `.claude/` directory inside `entries/000552-huszar-2022/`. I couldn't delete it because the removal needed a permission approval this session can't give. It holds no files, so git won't commit it.
-- **Untracked files I didn't create:** dotfiles (`.bashrc` and others) and `scripts` appear untracked at the repo root. I left them alone.
-- Nothing was committed.
+**What matches the paper.** The files give the paper's counts exactly:
+- mice, sex and birthdate;
+- every row of Supplementary Table 1;
+- 7,411 / 1,556 / 504 cell types and 664 light-responsive cells;
+- the per-session labelled fractions;
+- all pair counts (3,751 / 50,461 and 2,609 / 39,965) and 184,230 possible pyramidal-interneuron pairs.
+
+**Problems found in the files:**
+- Sessions e13_1f1_200305 and e13_1f1_200307 have wake only in their sleep states.
+- In e16_3m2_211211, the position series named for the `linear_manu` subsession lies inside the `openField_thomas` subsession.
+- Open-field positions have no spatial scale.
+- The units table has no L-ratio.
+- Two mice the paper says had one light-responsive cell per session have 1 and 2 same-birthdate pairs.
+- 27 of 57 familiar-maze sessions have fewer than ten trials of one arm.
+- The paper's "92 sessions" disagrees with its own 96 (recorded as a finding about the paper).
+
+**Assumptions**, each recorded with a question for the paper's authors:
+- **Theta channel.** I used the channel with a positive sharp wave and the most ripple power. None qualified in 62 of 104 sessions, so the pyramidal-layer channel was used there.
+- **Connection detector.** The tested lags, hollow fraction and Bonferroni count are my choices. It finds 50,618 connections against the paper's 31,932.
+- **Burst index.** The ACG the paper used is not fully given, which may explain the 25% gap.
+
+No questions were put to a reader.
+
+## 3. Protocol points
+
+1. In the claims file, the per-mouse numbers of `st1-animal-sessions` are in the table's row order, while the mice are named in birthdate order. I read the row order from the table image and recorded it as a deviation.
+2. The criterion of `sessions-durations` has no partial outcome for "all holds but the sleep condition". I applied it literally (not reproduced) and explained in the notes.
+3. Claims skipped for time but not stopped by computation (ed3) have no fitting `blocked_by`. I used `other`.
+4. The rule "a claim depending on a blocked claim is blocked for the same reason" made ed10 `data_missing`, although part of it could be computed from the stored waveforms. I said so in the notes.
+5. There was no rule for a monosynaptic count far from the paper's. The chance-level rule covers only false-positive rates, so I tested the claims under a stated assumption.
+6. Each edit to the entry forces a full 35-minute re-run, even for text-only edits. I ran it three times; the outputs were identical each time.
+
+## 4. Runtime and failures
+
+The run took about 4 h 10 min, 04:31 to 08:39 UTC; the notebook alone takes about 36 min. Nothing failed.

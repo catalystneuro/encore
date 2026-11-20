@@ -172,6 +172,24 @@ def test_a_repeat_authors_commit_may_remove_the_questions_filed_by_dataset():
     assert not ok("claims/silkuniene-2025.yaml")
 
 
+def test_the_agents_job_guards_the_runners_memory_before_the_agent_starts():
+    # rozsa-2023, 2026-11-19: three author runs ended with the runner starved by the agent's own scripts and nothing
+    # saved. The guard ends the largest Python process first, never the agent or the runner, and a runner without
+    # it goes on.
+    import re
+    import yaml
+    workflow = yaml.safe_load((REPO / ".github" / "workflows" / "attempt.yml").read_text())
+    steps = next(j["steps"] for j in workflow["jobs"].values() if any(s.get("name") == "Run the agent" for s in j["steps"]))
+    names = [s.get("name") for s in steps]
+    assert names.index("Guard the runner's memory") < names.index("Run the agent")
+    run = steps[names.index("Guard the runner's memory")]["run"]
+    assert "exit 0" in run and run.rstrip().endswith('|| echo "earlyoom did not start; no guard"')
+    prefer, avoid = (re.search(rf"--{k} '([^']+)'", run).group(1) for k in ("prefer", "avoid"))
+    for name, spared in (("python3.12", False), ("python", False), ("jupyter-nbconvert", False), ("node", True),
+                         ("claude", True), ("Runner.Worker", True), ("Runner.Listener", True)):
+        assert bool(re.search(avoid, name)) == spared and bool(re.search(prefer, name)) != spared, name
+
+
 def test_a_run_flagged_on_the_unverified_account_is_queued_on_the_verified_one(tmp_path):
     # RUNNER_FALLBACK=queue:<file>: the paper goes first in the verified lanes' queue file (once), the rest of its
     # roles are marked for the verified account, and the chain ends QUEUED ON VERIFIED (exit 0), not STOPPED.
@@ -205,6 +223,88 @@ def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
     # A replicate's answer run goes to the papers workflow with its name, and commits to the replicate's branch.
     papers = (REPO / ".github" / "workflows" / "papers.yml").read_text()
     assert 'BRANCH="replicate/$FOLDER/$REPLICATE"' in papers and "format('-{0}', inputs.replicate)" in papers
+
+
+def test_an_authors_large_scratch_files_are_left_out_of_its_changes():
+    # petersen-2020, 2026-11-15: two pickles of 1.4 and 2.6 GB in the entry made a patch git refused to apply. New
+    # files over 20 MB are removed before the changes are collected, with a warning.
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    drop = workflow.index('git ls-files --others --exclude-standard -z -- "${paths[@]}"')
+    assert '-gt 20000000' in workflow[drop:drop + 400] and "::warning::Left out of the changes" in workflow[drop:drop + 400]
+    assert drop < workflow.index('git add -A -- "${paths[@]}" && git diff --cached --binary')
+
+
+def test_the_claims_checkpoint_waits_when_it_would_drop_a_claim_the_attempt_on_main_records(tmp_path):
+    # 2026-11-16: a new reading of tingley-2018 renamed a claim; put on main ahead of its attempt, it broke the check
+    # of the attempt already there, and with it every attempt's pull request. The checkpoint runs this script in a
+    # checkout of main that has the new claims file, and waits when it prints anything.
+    script_file = (REPO / "tools" / "runner" / "merge_claims.sh").read_text()
+    start = script_file.index("dropped=$(cd")
+    code = script_file[script_file.index("<<'PY'\n", start) + 6:script_file.index("\nPY\n)", start)]
+    (tmp_path / "attempts").mkdir(); (tmp_path / "claims").mkdir()
+    (tmp_path / "attempts" / "x-2018-01.yaml").write_text("outcomes:\n- {claim: old-only}\n")
+    (tmp_path / "attempts" / "x-2018-02.yaml").write_text("outcomes:\n- {claim: kept}\n- {claim: renamed}\n")
+    (tmp_path / "attempts" / "x-2018-phase-01.yaml").write_text("outcomes:\n- {claim: another-papers}\n")
+    def dropped(ids):
+        (tmp_path / "claims" / "x-2018.yaml").write_text("claims:\n" + "".join(f"- {{id: {i}}}\n" for i in ids))
+        return subprocess.run([sys.executable, "-c", code, "x-2018"], cwd=tmp_path, capture_output=True, text=True).stdout.strip()
+    assert dropped(["kept", "renamed", "new"]) == ""            # claims added: fine; an earlier record does not count
+    assert dropped(["kept", "renamed-differently"]) == "renamed"
+    assert 'if [ -n "$dropped" ]; then' in script_file and "left for the attempt's merge" in script_file
+
+
+def test_a_repeat_authors_commit_moves_a_finished_earlier_attempts_transcripts_aside(tmp_path):
+    # A repeat attempt that does not read the claims again found the earlier attempt's transcripts still in the
+    # folder, and its blind author's revision runs could read the earlier verifiers' reports (three replicates did).
+    # The author's commit now archives them whenever a finished attempt's are there (its recorder's transcript).
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    line = next(x.strip() for x in workflow.splitlines() if 'if [ "$ROLE" = author ] && {' in x)
+    def archives(role, files):
+        d = tmp_path / f"{role}-{len(files)}-{'-'.join(sorted(files))[:40]}"; (d / "transcripts" / "x").mkdir(parents=True)
+        for f in files: (d / "transcripts" / "x" / f).write_text("t")
+        script = f'ROLE={role}; FOLDER=x\n{line} echo yes; else echo no; fi'
+        return subprocess.run(["bash", "-c", script], cwd=d, capture_output=True, text=True).stdout.strip()
+    assert archives("author", ["claims.md", "author.md", "verifier-2-report.md", "recorder.md"]) == "yes"   # the hole
+    assert archives("author", ["author.md", "recorder.md"]) == "yes"
+    assert archives("author", ["claims.md", "claims-check.md"]) == "no"       # this attempt's own claims runs stay
+    assert archives("author", ["claims.md", "author.md"]) == "no"             # its own failed first author run stays
+    assert archives("author-revise-1", ["claims.md", "recorder.md"]) == "no"
+    # The reconcile run follows the instructions as they are now, not as the branch had them when its attempt began.
+    assert '[ "$ROLE" != reconcile ] || git restore --worktree --source "$GITHUB_SHA" -- docs/agents/reconcile.md' in workflow
+
+
+def test_the_reconcile_run_is_given_the_earlier_attempts_entry():
+    # It reads both attempts' code to say why an outcome differs; the earlier entry is copied from main, outside the
+    # folders whose changes are collected.
+    workflow = (REPO / ".github" / "workflows" / "attempt.yml").read_text()
+    step = workflow[workflow.index("name: Put the earlier attempt's entry under earlier-entry/"):]
+    assert "if: inputs.role == 'reconcile'" in step[:200] and 'git archive FETCH_HEAD "entries/$FOLDER"' in step[:500]
+    assert "earlier-entry" not in workflow[workflow.index("paths=(attempts claims entries README.md)"):][:300]
+    assert "`earlier-entry/`" in (REPO / "docs" / "agents" / "reconcile.md").read_text()
+
+
+def test_a_papers_other_datasets_have_their_paper_match_before_its_claims_are_read():
+    # pelot-2020 was listed on one of its seven datasets, and its attempt read the others as outside data. A chain
+    # now runs the paper match of every target that names the paper and has no verdict, before the claims.
+    targets = [
+        {"key": "sparc:60", "folder": "sparc-60", "archive": "sparc", "papers": [{"doi": "10.1/P", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:64", "folder": "sparc-64", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:65", "folder": "sparc-65", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+        {"key": "sparc:70", "folder": "sparc-70", "archive": "sparc", "papers": [{"doi": "10.1/p", "relation": "References"}]},
+        {"key": "sparc:71", "folder": "sparc-71", "archive": "sparc", "papers": [{"doi": "10.1/other", "relation": "IsDescribedBy"}]},
+        {"key": "dandi:000001", "folder": "000001", "archive": "dandi", "published_version": None,
+         "papers": [{"doi": "10.1/p", "relation": "IsDescribedBy"}]},
+    ]
+    status = lambda t: "no_match" if t["folder"] == "sparc-65" else "unchecked"
+    found = describe.siblings("p-2020", targets=targets, listed={"p-2020": ["sparc:60"]}, doi="doi:10.1/P", status=status)
+    # Not the one it is listed on, one already judged, one that only cites the paper, another paper's, or a draft.
+    assert found == ["sparc-64"]
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    body = chain[chain.index("set -uo pipefail"):]
+    step = body.index('python "$here/describe.py" siblings "$d"')
+    assert body.index("esac", body.index('case "$match" in')) < step < body.index('deprecated=$(python "$here/describe.py" deprecated "$d")')
+    assert 'SIBLINGS=0 MATCH_ONLY=1 RUNNER_NOTIFY=none "$here/chain.sh" "$sib"' in body
+    assert '[ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]' in body
 
 
 def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges():

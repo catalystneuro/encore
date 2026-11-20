@@ -1,0 +1,1331 @@
+schema_version: 3
+id: tingley-2019-02
+datasets:
+- archive: dandi
+  id: 000218
+  version: 0.261110.1911
+  doi: 10.48324/dandi.000218/0.261110.1911
+  relation: primary
+paper: doi:10.1016/j.neuron.2019.10.012
+date: '2026-11-18'
+entry: tingley-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44280379678
+outcomes:
+- claim: dataset-composition
+  outcome: partially_reproduced
+  notebook: lfp_tingley_2019.ipynb
+  output: claim:dataset-composition
+  measured:
+  - 6
+  - 1996
+  - 38
+  - 10
+  - 77
+  - 47
+  - 31.1
+  assumed: true
+  notes: Animals 6 (DT1, DT2, DT5, DT7, DT8, DT9). LS neurons with more than 50 spikes in high-power epochs (reading a) 1996,
+    within 1989 +- 198.9; all LS units 2551 (reading b). Of 48 recordings with LS and hippocampal units, 38 are CA1 and 10
+    CA3 by the units' label (CA1 within 37 +- 3.7, CA3 outside 25 +- 2.5); by the ca3_channel flag 29 and 19. LS HFO rates
+    come from 77 recordings with LSRipples and sleep states (80 with any LS table; outside 89 +- 8.9). CA1 ripple rates come
+    from 47 recordings with CA1Ripples (outside 53 +- 5.3), or 55 with ripplesALL too (within). LS units per recording 8 to
+    74, mean 31.1 +- 15.5 (within). Four of the six counts other than animals are within tolerance under one reading each,
+    the partial bound. Two of the four rest on choices adopted as assumptions (38 CA1 recordings with hpc units as CA1, 29
+    by the flag; 55 CA1 ripple rate recordings with ripplesALL, 47 with CA1Ripples alone); without either, 3 of 6 are within
+    tolerance, which would be not reproduced. The counts by recording are in the main notebook (claim:dataset-composition).
+  deviations:
+  - 'Assumed: units labelled hpc are CA1 units, so a recording with LS units and hpc or ca1 units is a CA1 recording. Most
+    hippocampal units are labelled only hpc, while the units of 10 recordings are labelled ca3, so hpc is read as the label
+    of the units not in CA3. The ca3_channel flag, shown as a variant, gives 29 CA1 recordings. The outcome rests on this
+    choice.'
+  - 'Assumed: CA1 ripple rates come from recordings with CA1Ripples or, where it is missing, the hippocampal ripplesALL
+    table, the lab''s ripple detection on the same electrodes. CA1Ripples alone gives 47 recordings, outside tolerance;
+    the outcome rests on this choice.'
+  - LS HFO rate recordings are those with LSRipples and scored sleep; the earlier LS tables are counted as a variant.
+- claim: fig1c-hfo-each-animal
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1c-hfo-each-animal
+  notes: Median LS HFO frequency 142.9 to 149.2 Hz, inside 120-180 Hz in all 6 animals. The HFO-triggered LS spike probability
+    exceeds the random-time mean by more than 3 SEM at the event bin in 4 of 6 animals (DT1, DT2, DT8, DT9) and over +-5 ms
+    in 5 of 6 (all but DT5). Under the five seeds of the random times, 4, 4, 5, 4 and 5 animals at the event bin; the outcome
+    is partial under all. Pooled over 2327 neurons, 0.0072 against 0.0016 spikes per ms per event.
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+  - The triggered histogram's 1 ms bins over +-100 ms and the comparison windows are those set in the claims file; the random
+    times are uniform over each recording.
+- claim: fig1c-post-burst-suppression
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1c-post-burst-suppression
+  assumed: true
+  notes: From each event's stop to 50 ms after its time, the pooled probability is 0.001517 against 0.001593 at random times,
+    a difference of 0.000076, less than 3 SEM (0.000201). From 20 to 50 ms after the event time it is 0.001399, below random
+    by 0.000200, more than 3 SEM (0.000178) under the claim's seed; over the five seeds this reading gives suppression under
+    3 and none under 2, while the window from the stop gives none under all five. Per animal, only DT5 shows suppression,
+    under both windows.
+  deviations:
+  - 'Assumed: the window from each event''s stop to 50 ms after its time, as the reading of the Results'' ''immediately following
+    the population burst''. The paper gives no window or test; the claims file names this window and one from 20 to 50 ms,
+    which differ in outcome.'
+- claim: fig1c-event-count
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1c-event-count
+  measured: 27014
+  notes: LSRipples holds 27014 events in 77 recordings with LS electrodes, in 6 animals (reading a), within 29955 +- 2995.5.
+    Recordings with LS units (reading b) hold 25690. With the earlier LS tables where LSRipples is missing, 28978.
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+- claim: figs1-participation
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:figs1-participation
+  measured:
+  - 0.057
+  - 0.079
+  notes: 'Window start to stop, pooled events: 5.7% of LS neurons fire in an HFO, 0.079 spikes per neuron per event; mean
+    over 73 recordings 6.9% and 0.096. Window +-25 ms: 8.7% and 0.125 pooled, 10.7% and 0.155 over recordings. No combination
+    reaches 16% +- 1.6% or 0.23 +- 0.023. Per animal (start to stop) 3.3% (DT7) to 12.4% (DT1).'
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+- claim: fig1d-phase-locking
+  outcome: partially_reproduced
+  notebook: lfp_tingley_2019.ipynb
+  output: claim:fig1d-phase-locking
+  measured: 0.606
+  notes: 'Detection channel, 120-200 Hz: 1209 of 1996 LS neurons with more than 50 spikes in high-power epochs are locked
+    (60.6%; 52.0% of all 2327). Own shank''s channel: 883 of 1129 (78.2%). 120-180 Hz: 61.3%. All outside 92.5% +- 9.25%.
+    The null of 10 circular shifts gives 5.2%. Significant neurons prefer -167.0 degrees, 13.0 from the trough, Rayleigh over
+    neurons p < 1e-300, so the trough preference holds. Per animal 39.3% (DT9) to 76.8% (DT1). Own-shank reading for every
+    neuron: the shanks outside the detection block (own-shank notebook) give 732 of 863 locked (84.8%); with the 883 of 1129
+    in-block neurons, 1615 of 1992 (81.1%), still below 83.25%.'
+  deviations:
+  - The own-shank reading uses the middle site of the neuron's shank; shanks inside the detection channel's 16-channel storage
+    block are read in the LFP notebook (1299 neurons) and the other shanks in the own-shank notebook (1028 neurons).
+  - Filtering is zero-phase (forward and backward), a standard choice; the Rayleigh p-value is the CircStat approximation.
+- claim: fig1f-shorter-than-ripples
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1f-shorter-than-ripples
+  measured:
+  - 27.8
+  - 31.2
+  notes: LS HFOs 27.8 +- 9.5 ms and CA1 ripples 31.2 +- 13.7 ms in the 4 animals with both tables (DT2, DT5, DT7, DT9), rank-sum
+    p = 1.2e-199; reading (2) gives the same means. Shorter in each animal.
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+- claim: fig1g-slower-than-ripples
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1g-slower-than-ripples
+  measured:
+  - 147.6
+  - 158.3
+  notes: LS HFOs 147.6 +- 5.8 Hz and CA1 ripples 158.3 +- 7.4 Hz, rank-sum p below 1e-300 (printed as 0); slower in each of
+    the 4 animals.
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+  - Frequencies are the deposited peak_frequency values, the lab's instantaneous frequency at the event peak, read as Hz.
+- claim: fig1h-no-amplitude-frequency-correlation
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1h-no-amplitude-frequency-correlation
+  assumed: true
+  notes: 'Over 27014 LS HFOs, the deposited maximum NSS (peak_normed_power) against peak_frequency: Pearson r = -0.000 (p
+    = 0.96), Spearman rho = 0.006 (p = 0.36), so neither test finds a correlation. The variant peak_amplitude gives Pearson
+    r = 0.006 (p = 0.3) and Spearman rho = 0.020 (p = 0.00095). Within animals peak_normed_power correlates by at least one
+    test in 4 of 6 animals (r -0.087 to 0.124), with signs that differ. The maximum NSS recomputed from the detection channel
+    (LFP notebook, 25690 HFOs) ranks events as peak_normed_power does within recordings (median Spearman 0.877) and correlates
+    weakly but significantly with frequency (Pearson r = 0.081, p = 1.3e-38; Spearman rho = 0.116, p = 3.2e-77).'
+  deviations:
+  - 'Assumed: the amplitude is the deposited peak_normed_power, bz_FindRipples'' peakNormedPower, the lab''s maximum NSS of
+    each event (claims file, open detail i, reading a, deposited parameters). The maximum NSS recomputed with the Methods''
+    filter (120-200 Hz, order 3) gives a weak significant correlation, so the outcome rests on this choice.'
+  - peak_amplitude is shown as a variant.
+- claim: fig2-confined-to-ls
+  outcome: not_reproduced
+  notebook: lfp_tingley_2019.ipynb
+  output: claim:fig2-confined-to-ls
+  notes: Eight recordings (all DT7) have LS sites and sites of another non-hippocampal structure (acg, cc, ms, sfi). The criterion
+    holds in none. The LS median power ratio exceeds the acg median in all 6 recordings with acg sites, but medial septal
+    sites exceed the LS median in 3 recordings (12.32 against 4.97 in 20170320), and in every recording some site outside
+    LS has a ratio above 1.5 (the largest per recording 3.49 to 44.33). Each recording's ratios rest on 17 to 113 LS HFOs.
+    On the septal shank of every DT7 recording the site labels ls, ms, acg and cc alternate along the channel order, and sites
+    labelled acg or ms between LS sites have LS-like ratios (16.2, 13.3, 16.4 in 20170320) while the acg sites at the shank's
+    end are near 1; without site positions it cannot be told whether the labels or the channel order are wrong, so the outcome
+    rests on the labels. In 20170325 the LS sites' own median is 0.97.
+  deviations:
+  - Power ratios are computed in the two storage chunks (about 14 min each) of each recording with the most LS HFOs, to bound
+    the data streamed.
+  - Sites are placed by the electrodes' region labels; the dataset holds no depth estimate.
+- claim: fig2ef-intermediate-ls
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion needs each recording's estimated relative depth in LS (STAR Methods, Relative anatomical depth within
+    LS). The dandiset does not store it; its release notes say the relative depth is not in the source files. Session names
+    carry drive depths in um, which are not the paper's depth estimate (implantation depth, daily turns and histology). The
+    per-recording phase-locking percentages it would use are computed in the LFP notebook.
+- claim: fig3-travelling-waves
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The speeds need the distance between sites along AP, ML and DV. The dandiset stores no electrode positions (release
+    notes: every .prb file places sites by list position with one template), and the probe model of each recording is not
+    stored.'
+- claim: fig4b-pre-post-unchanged
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4b-pre-post-unchanged
+  measured: 462
+  assumed: true
+  notes: 'Under the 8 normalized readings, the rank-sum test of PRE against POST finds no difference (p 0.50 to 0.89; effect
+    r -0.013 to 0.025). Under the 8 raw-count readings it does (p 0.0036 to 0.0065, POST higher; r -0.10 to -0.12). Only 361
+    to 503 pairs in 21 to 23 sessions pass the inclusion rule (462 under inclusion a with BEHAV in trials), against 7172 pairs
+    in 53 sessions; no DT8 pair passes. The absence holds under the adopted reading, on 6% of the paper''s pairs. The pairs
+    are lost in the HFO epochs: of 20182 candidate cross-shank pairs in 54 recordings, 10823 pass inclusion (a) in BEHAV,
+    795 in PRE and 954 in POST, 462 in all three; the LS HFOs last 252 s in PRE and 355 s in POST in all. DT8 has 1886 candidate
+    pairs, 3 passing in PRE and 10 in POST. Of the recordings with LS units, 17 have no trials, 7 no LSRipples and 4 LS units
+    on one shank. A variant the claims file does not name, asked of a reader, applies the inclusion rule to all spikes of
+    PRE and POST (CCGs still from spikes during HFOs): 10159 to 15732 pairs in 54 sessions pass, and PRE and POST differ
+    at p < 0.05 in 8 of 16 readings, 4 of the 8 normalized ones (5 ms SD kernel, p 0.00047 to 0.0082; full-width kernel
+    p 0.15 to 0.29), with small effects (r -0.016 to -0.023, POST higher); 73.8% to 76.6% of these pairs have an excess
+    of exactly 0 in PRE. The outcome is judged on the claims file''s readings.'
+  deviations:
+  - 'Assumed: the CCG divided by the square root of the product of the two neurons'' spike counts in the epoch (claims reading
+    iii). The paper does not say how the CCG is normalized; the normalized reading is adopted because the paper compares excess
+    correlations across epochs with very different spike counts (BEHAV and HFO epochs), which raw counts do not allow. The
+    raw-count readings are shown.'
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+  - The inclusion rule is applied to the spikes of each epoch (claims reading i); spikes during HFOs are those between each
+    LS HFO's start and stop.
+- claim: fig4b-hfo-above-behav
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4b-hfo-above-behav
+  assumed: true
+  notes: Under the 8 normalized readings PRE and POST exceed BEHAV (rank-sum p 7e-69 to 3e-129) and PRE, POST and BEHAV each
+    exceed their jittered values (p <= 2.1e-6). Under raw counts every epoch exceeds its jitter; with BEHAV inside trials
+    (reading iv-a) PRE and POST also exceed BEHAV (p <= 4.9e-13), but with BEHAV from the first to the last trial they do
+    not (p 0.13 to 0.87). So only raw counts with BEHAV over the whole span give partially reproduced (4 of 16 readings).
+    Under the four other jitter seeds all 16 readings keep every epoch above its jitter. Under the whole-epoch inclusion
+    variant (not in the claims file, asked of a reader) PRE and POST exceed BEHAV at p < 0.001 in 10 of 16 readings, not
+    in the 4 raw readings with the 5 ms SD kernel (p 0.95 to 1) and for PRE not in 2 full-width readings (p 0.0015 and
+    0.0021); its jitter part was not run.
+  deviations:
+  - 'Assumed: the CCG divided by the square root of the product of the two neurons'' spike counts in the epoch (claims reading
+    iii). The paper does not say how the CCG is normalized; the normalized reading is adopted because the paper compares excess
+    correlations across epochs with very different spike counts (BEHAV and HFO epochs), which raw counts do not allow. The
+    raw-count readings are shown. For this claim the outcome differs only under raw counts with BEHAV over the whole span
+    (reading iv-b); raw counts with BEHAV inside trials also give reproduced.'
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - The jitter moves every spike of the whole train by a uniform amount in +-200 ms before the epochs and HFO windows are
+    applied; one jitter per pair.
+- claim: fig4-sessions-few-change
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4-sessions-few-change
+  measured:
+  - 23
+  - 0.0
+  notes: 21 to 23 sessions have included pairs, against 53 +- 5.3. Under the adopted normalized readings 0 or 1 session differs
+    at p < 0.01 (fraction 0 to 0.043); under raw counts 0 or 1 (up to 0.048). No reading has both directions. Under the whole-epoch
+    inclusion variant (not in the claims file, asked of a reader), 54 sessions have pairs and 0 to 10 differ (fraction up
+    to 0.185), none with PRE above POST.
+  deviations:
+  - 'Assumed: the CCG divided by the square root of the product of the two neurons'' spike counts in the epoch (claims reading
+    iii). The paper does not say how the CCG is normalized; the normalized reading is adopted because the paper compares excess
+    correlations across epochs with very different spike counts (BEHAV and HFO epochs), which raw counts do not allow. The
+    raw-count readings are shown.'
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+- claim: fig4c-temporal-bias
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4c-temporal-bias
+  notes: 'No reading finds the PRE-BEHAV and BEHAV-POST correlations different: paired p 0.060 to 0.90, two-sample 0.13 to
+    0.91; mean BEHAV-POST minus PRE-BEHAV -0.017 to 0.194. 16 to 19 recordings have at least 3 included pairs, against 53.'
+  deviations:
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - Recordings need at least 3 included pairs for a correlation (a minimum set here).
+- claim: fig4d-compression
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4d-compression
+  measured: 6
+  notes: At factor 1 the HFO CCGs correlate with BEHAV above chance in every reading. Every factor up to 5 to 8 (PRE) and
+    8 to 11 (POST) is above chance at p < 0.01, against ~20 (18 to 22); with inclusion a and BEHAV in trials, PRE 6 and POST
+    8 by signed-rank, so 6 for both. Under four other seeds of the circular shift the largest factor is 5 to 12; the outcome
+    is partial under all. PRE and POST do not differ at p < 0.01 at any factor (smallest p 0.055).
+  deviations:
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - Chance shifts the BEHAV CCG circularly by a random amount, one shift per pair and factor.
+- claim: figs3d-hpc-compression-post
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:figs3d-hpc-compression-post
+  notes: Over 9366 to 15066 hippocampal pairs in 42 recordings, POST exceeds PRE at p < 0.01 at 1 to 3 of the factors 1 to
+    7 (factor 3 in every reading, p <= 0.0012), not at most. POST medians are at or above PRE medians at every factor 1 to
+    7.
+  deviations:
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - Hippocampal pairs are pairs with the same region label (hpc or ca3); CA1 ripples are CA1Ripples, so the DT9 CA3 recordings
+    without that table are left out.
+- claim: figs2-post-rate-increase
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:figs2-post-rate-increase
+  measured:
+  - 1570
+  - 2597
+  - 466
+  notes: Relative to the session average, LS rates are higher in POST NREM than PRE NREM (1.334 against 1.265; paired p =
+    0.032, two-sample p = 0.036). CA1 rates (units labelled hpc) are lower (1.293 against 1.347; paired p = 0.043), CA3 rates
+    unchanged (p = 0.59). By the ca3_channel flag, CA1 lower (p = 0.018) and CA3 unchanged (p = 0.94). Counts 1570, 2597 and
+    466 against 1754, 2315 and 1373; LS is 9 short of the lower bound.
+  deviations:
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - CA1 is read as units labelled hpc or ca1 and CA3 as ca3, with the ca3_channel flag as a variant.
+  - Recordings need at least 60 s of NREM in both PRE and POST (a minimum set here).
+- claim: figs2c-no-ls-reactivation
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:figs2c-no-ls-reactivation
+  notes: 'With 25 ms bins after rate matching EV does not exceed REV: LS-LS in CA1 ripple epochs 0.128 against 0.094 (paired
+    p = 0.23), in LS HFO epochs 0.042 against 0.052 (p = 0.57); HPC-HPC 0.028 against 0.010 (p = 0.18); HPC-LS p = 0.33. The
+    same under four other seeds. The Methods'' increase of EV over REV with 1 s bins appears only for HPC-HPC pairs without
+    rate matching (paired p = 0.049). The positive control is weak: without rate matching HPC-HPC EV exceeds REV at 1 s only
+    by the paired test (p = 0.049), so the absence for LS-LS pairs has little power behind it.'
+  deviations:
+  - The dataset does not mark PRE, BEHAV and POST. PRE is taken as the recording before the first trial's start, BEHAV from
+    the first trial's start to the last trial's stop, and POST after the last trial's stop (an assumption; the STAR Methods
+    say each recording has the three periods in that order).
+  - Bins are laid over the ripple epochs concatenated end to end.
+  - Rate matching removes spikes at random from the faster of PRE and POST NREM ripple epochs per neuron, 10 repetitions averaged.
+- claim: fig5b-nrem-and-rates
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5b-nrem-and-rates
+  notes: 72.9% of 27014 LS HFOs fall in NREM; NREM rate above WAKE in 66 of 73 recordings (signed-rank p = 2.9e-12); DT7 has
+    29.6% in NREM. LS rates are lower than CA1 rates in NREM (medians 0.024 and 0.320 per s; rank-sum p = 1.5e-13; signed-rank
+    over 42 recordings p = 2.9e-10) and over all scored time (rank-sum p = 1.3e-12). 77 LS and 47 CA1 recordings, against
+    89 and 53.
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+- claim: fig5d-lag
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5d-lag
+  measured: 6.2
+  notes: 'Deposited peak times, nearest CA1 ripple within +-50 ms: median of recording medians 6.20 ms, pooled 6.40 ms (6572
+    pairs, 40 recordings), CA1 leading in 63.9%; within +-25 ms 4.80 ms. Maximum-NSS times (LFP notebook): 6.00 and 6.40 ms
+    within +-50 ms, 3.40 and 4.00 ms within +-25 ms. The pooled CCG peaks at 0 ms, 37.1 SD above its 100-200 ms flanks. Per
+    animal the pooled median ranges from -7.2 ms (DT7) to 8.0 ms (DT9).'
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+- claim: fig5e-state-coupling
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5e-state-coupling
+  measured:
+  - 0.302
+  - 0.091
+  - 42
+  notes: '42 recordings. Fraction of LS HFOs with a CA1 ripple within +-25 ms: pooled over HFOs 0.302 in NREM (15605 HFOs,
+    within 0.3 +- 0.03) and 0.091 in WAKE (4163 HFOs, outside 0.15 +- 0.015); mean over recordings 0.213 and 0.118. Pooled,
+    NREM is higher at t-test p = 3.1e-171 (two-proportion z p = 5.8e-168), below 6.6e-6. Over recordings NREM is higher in
+    30 of 42, t-test p = 0.0025 paired and 0.014 two-sample, above 0.001. No CCG bin within +-25 ms differs at Bonferroni
+    p < 0.001 (smallest 0.026). So the pooled reading gives partially reproduced (bins and WAKE value fail) and the per-recording
+    reading not reproduced. WAKE outside trials gives the same (pooled WAKE 0.092, p = 3.7e-169).'
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+  - The state of an event is the state at its peak time; CCG bins of 5 ms over +-200 ms normalized by the number of CA1 ripples
+    (the claims file's standard choice).
+  - 'Assumed: the inset fraction and its test over all HFOs pooled (claims reading b). The paper''s NREM fraction of 0.3 matches
+    the pooled 0.302 and not the mean over recordings (0.213); the readings differ in outcome.'
+  assumed: true
+- claim: fig5f-ripple-triggered-firing
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5f-ripple-triggered-firing
+  measured: 1266
+  notes: '1266 LS neurons in 38 recordings (within 1313 +- 131.3). At zero lag 2.14 Hz in NREM and 2.03 Hz in WAKE; no bin
+    within +-25 ms has NREM higher at corrected p < 0.001 under any reading (smallest corrected p 0.18). Normalized by the
+    state''s mean rate the WAKE response is larger (1.73 against 1.48). With WAKE outside trials (1264 neurons): 2.14 against
+    2.04 Hz raw and 1.48 against 1.75 normalized at zero lag; no bin with NREM higher at corrected p < 0.001 (smallest 0.59).'
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+- claim: fig5f-no-phase-coherence
+  outcome: not_reproduced
+  notebook: lfp_tingley_2019.ipynb
+  output: claim:fig5f-no-phase-coherence
+  notes: 41 recordings, 91316 CA1 ripples. The CA1-LS 120-180 Hz phase-locking value at the ripple time is 0.186 against 0.104
+    +- 0.0072 (mean and SD of 100 jittered sets); 14 of 101 lags lie above the +3 SD bound, the largest 14.7 SD at 4 ms. The
+    jittered sets are drawn per recording from the claim's seed; the variation over five seeds was not run (the bound is 11
+    SD below the value).
+  deviations:
+  - Coherence is read as the phase-locking value across ripples of the CA1 minus LS phase (claims file); channels are the
+    CA1 and LS detection channels.
+- claim: ls-spikes-not-locked-to-ca1-ripples
+  outcome: not_reproduced
+  notebook: lfp_tingley_2019.ipynb
+  output: claim:ls-spikes-not-locked-to-ca1-ripples
+  assumed: true
+  notes: Inside CA1 ripples (reading a) 43 of 599 LS neurons with more than 50 spikes (7.2%) are locked to the CA1 channel's
+    120-200 Hz phase, above 5% (one-sided binomial p = 0.012); median resultant length 0.068, against 0.136 for the LS channel;
+    10 circular shifts give 4.9%. In the CA1 channel's high-power epochs (reading b) 61 of 1218 (5.0%, p = 0.51). The fraction
+    locked to the LS channel is 60.6%.
+  deviations:
+  - 'Assumed: reading (a), spikes inside CA1 ripples, as the reading of ''individual waves of hippocampal SPW-Rs''. The paper
+    shows no method; the two readings of the claims file differ in outcome.'
+- claim: fig6-optogenetic-hfos
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The two optogenetically injected rats, their light stimulation times and waveforms are not in the dandiset: its
+    98 files are the six rats DT1, DT2, DT5, DT7, DT8 and DT9, with no stimulus or optogenetic series in any file. The paper
+    names no other archive for them.'
+- claim: fig7e-ca1-spikes
+  outcome: partially_reproduced
+  notebook: fig7e_tingley_2019.ipynb
+  output: claim:fig7e-ca1-spikes
+  measured: 64.4
+  notes: '1288 LS neurons in 42 recordings. Over 16 combinations the hippocampal spike count predicts 47.0% to 80.0% of neurons
+    (64.4% with a cross-validated linear model, start-stop window, no minimum, the first combination); none within 38% +-
+    3.8%. Every combination exceeds its chance rate (25.4% to 44.3%; binomial p <= 2.4e-7). Linear models under four other
+    seeds give 46.6% to 64.2%. The claims file''s t-test calls 42.2% of neurons significant on synthetic null data. Under
+    the z reading of the Figure 7E axis (actual MSE more than 1.96 shuffle SD below the shuffle mean, 2.5% on null data):
+    15.2% to 64.6%, within tolerance in 3 of 16 combinations, chance 2.3% to 7.4%. Whether the criterion should use the z
+    reading is asked of a reader (questions/tingley-2019.yaml).'
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+  - The shuffles are repeated under five seeds for the linear models only; the Poisson fits were run under the claim's seed
+    alone, for time.
+  - CA3 recordings use the CA1Ripples table; the DT9 CA3 recordings, which lack it, are left out (42 recordings against 62).
+- claim: fig7e-state
+  outcome: partially_reproduced
+  notebook: fig7e_tingley_2019.ipynb
+  output: claim:fig7e-state
+  measured: 52.9
+  notes: 'The state predicts 44.4% to 63.9% of 1238 LS neurons over 16 combinations (52.9% for the first), against 26% +-
+    2.6%; above chance in all (binomial p at most 1.23e-8). Linear models under four other seeds give 44.5% to 58.2%. The claims
+    file''s t-test calls 42.2% of neurons significant on synthetic null data. Under the z reading of the Figure 7E axis (actual
+    MSE more than 1.96 shuffle SD below the shuffle mean, 2.5% on null data): 16.8% to 39.5%, within tolerance in 4 of 16,
+    chance 2.1% to 5.8%. Whether the criterion should use the z reading is asked of a reader (questions/tingley-2019.yaml).'
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+  - As fig7e-ca1-spikes.
+- claim: fig7e-duration
+  outcome: partially_reproduced
+  notebook: fig7e_tingley_2019.ipynb
+  output: claim:fig7e-duration
+  measured: 69.0
+  notes: 'The SPW-R duration predicts 41.1% to 89.0% of 1288 LS neurons (69.0% for the first combination), against 20% +-
+    2%; above chance in all 16 combinations (binomial p <= 6.3e-4). Linear models under four other seeds give 40.1% to 72.0%.
+    The claims file''s t-test calls 42.2% of neurons significant on synthetic null data. Under the z reading of the Figure
+    7E axis (actual MSE more than 1.96 shuffle SD below the shuffle mean, 2.5% on null data): 11.1% to 79.2%, within tolerance
+    in 2 of 16, chance 1.9% to 6.2%. Whether the criterion should use the z reading is asked of a reader (questions/tingley-2019.yaml).'
+  deviations:
+  - Events are the lab's deposited detections (claims file, open detail i, reading a), LSRipples and CA1Ripples, whose stored
+    parameters differ from the Methods (LS 120-180 Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files;
+    CA1 130-200 Hz).
+  - As fig7e-ca1-spikes.
+- claim: fig7e-ca1-depth
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Ripple depth needs each CA1 neuron's waveform on its three largest sites and the site spacing, and the 120-200 Hz
+    power profile across a shank's sites. The dandiset stores no electrode positions, and the units hold at most one waveform
+    each (raw_waveform, 32 samples, in the DT1, DT2 and DT8 files listed; none in those of DT5, DT7 and DT9).
+- claim: fig7e-replay
+  outcome: blocked
+  blocked_by: other
+  notes: 'Not attempted within the run''s five hours: the three replay scores need place fields from the linearized position
+    and Bayesian decoding of every SPW-R in each of the readings the claims file names. The dataset holds the trials, linearized
+    position and spikes the analysis would need.'
+- claim: fig7e-seqnmf
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted within the run's five hours (seqNMF with 40 templates on every recording, then the Figure 7E regressions).
+    Depends also on figs5-seqnmf-variance.
+- claim: figs5-seqnmf-variance
+  outcome: blocked
+  blocked_by: other
+  notes: 'Not attempted within the run''s five hours: seqNMF (Mackevicius et al. 2019) would have to be ported or installed
+    and run with 40 templates on the hippocampal spiking of 44 recordings under several readings.'
+- claim: fig7e-content-independent
+  outcome: blocked
+  blocked_by: other
+  notes: 'Not attempted within the run''s time: the partial bound needs three of the four content-based features (three replay
+    scores, fig7e-replay, and seqNMF, fig7e-seqnmf), which were not attempted. Five of the six named content-independent features
+    are computable (all but ripple depth, fig7e-ca1-depth); the three tested (spike count, state, duration) are each above
+    chance in every combination (Figure 7E notebook).'
+- claim: fig7e-coupled-only
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig7e-content-independent, which was not attempted (blocked, other).
+- claim: discussion-medial-septum
+  outcome: not_reproduced
+  notebook: lfp_tingley_2019.ipynb
+  output: claim:discussion-medial-septum
+  notes: 'Part (a): in the 6 recordings with medial septal sites, their median HFO power ratio lies below the LS sites'' in
+    3 (20170318, 20170325, 20170401) and above it in 3 (e.g. 12.32 against 4.97). Part (b) (main notebook): the 25 ms units
+    in 2 recordings fire more within +-50 ms of CA1 ripples than on average (median ratio 1.43; below the mean in 6 of 25;
+    signed-rank p = 0.0046). Neither part holds. Part (a) rests on the site labels, which alternate along the channel order
+    of the septal shank (see fig2-confined-to-ls).'
+  deviations:
+  - Medial septal sites and units are those the dataset labels ms; power ratios use two chunks of each recording, as for fig2-confined-to-ls.
+- claim: discussion-cingulate-down-state
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:discussion-cingulate-down-state
+  measured: 105
+  notes: 'Reading (a): the 31 acg units (2 recordings) reach their minimum triggered rate at 105 ms after CA1 ripples (0.62
+    of the mean rate); per recording 105 and 130 ms. Reading (b) (LFP notebook): the extremum of the acg ripple-triggered
+    LFP lies at 2.4 to 7.2 ms in 5 of 6 recordings and at 81.6 ms in one. Neither is within 50 +- 5 ms.'
+  deviations:
+  - Anterior cingulate units and sites are those labelled acg; the LFP reading uses CA1 ripples in two chunks of each recording.
+- claim: fig8-model
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted within the run's five hours. The model is in github.com/DavidTingley/papers at commit 9f4cd48 (pyNN
+    with NEURON), not in the dandiset; installing NEURON and pyNN in a locked environment and running 200 runs per sequence
+    type was not tried.
+findings:
+- kind: data_missing
+  statement: The two rats of the optogenetic experiments (Figure 6, Figure S4), with their light stimulation times and waveforms,
+    are not in the dandiset; its 98 files hold six rats (DT1, DT2, DT5, DT7, DT8, DT9) and no stimulus or optogenetic series.
+- kind: metadata_insufficient
+  statement: Electrode positions are not stored, nor the probe model of each recording, so distances between sites, travelling-wave
+    speeds (Figure 3) and CA1 neuron depths (Figure 7D, E) cannot be computed.
+- kind: metadata_insufficient
+  statement: The estimated relative depth of each recording within LS (STAR Methods), on which Figure 2E, F and Figure S1C,
+    D rest, is not stored; session names carry drive depths only.
+- kind: metadata_insufficient
+  statement: The pre-behavior home cage, maze and post-behavior home cage periods of each recording are not marked; they can
+    be inferred only from the first and last trials.
+- kind: metadata_insufficient
+  statement: 'Most hippocampal units are labelled hpc, not CA1 or CA3, so CA1 and CA3 populations cannot be told apart reliably:
+    10 recordings have units labelled ca3 and 19 have a ca3_channel flag, against the paper''s 25 CA3 recordings.'
+- kind: metadata_error
+  statement: The 36 units of sub-DT7 session 20170407-936um-1152um-merge have an empty region label.
+- kind: other
+  about: data
+  statement: In three files less than half of the trial time is scored WAKE (DT2 3540um-1288um 20160227, 12.5%; DT5 20161014-1296um-1476um,
+    20.3%; DT8 20170201-72um-432um, 31.6%), against 100% in the median file; either the sleep scoring or the trial times of
+    these files are doubtful.
+- kind: data_missing
+  statement: The DT9 CA3 recordings (20170518, 20170519, 20170521, 20170525, 20170526) have no CA1 ripple table, although
+    the paper detected SPW-Rs on a CA1 reference electrode for CA3 recordings; DT7 20170410 has 61 LS units but no LS HFO
+    table, and DT2 20160215-122710 has 37 LS units and no event table at all.
+- kind: other
+  about: data
+  statement: The deposited LS HFO detections (LSRipples) were made with parameters that differ from the paper's Methods (120-180
+    Hz, durations up to 100 ms, peak thresholds of 4 to 6 SD in some files, against 120-200 Hz, 15-250 ms and 5 SD), and CA1Ripples
+    with 130-200 Hz; the files' descriptions say so. Their event counts, durations and frequencies match the paper's (27014
+    LS HFOs, 27.8 ms, 147.6 Hz).
+- kind: methods_unavailable
+  statement: 'Excess correlation (Figure 4B): how is each CCG normalized before smoothing? Raw counts make POST differ from
+    PRE (rank-sum p 0.004); counts divided by the square root of the two spike counts do not (p 0.5 to 0.9). The normalized
+    CCG was assumed. Which pairs passed inclusion (7172), given that the dataset yields 361 to 503 under the stated rule applied
+    to HFO spikes, and 10159 to 15732 when it is applied to all spikes of each epoch?'
+- kind: methods_unavailable
+  statement: Which test and window show the suppression of LS firing after the HFO population burst (Figures 1C, 5F)? From
+    the event stop to 50 ms no suppression is found; from 20 to 50 ms a marginal one depending on the random baseline. The
+    window from the stop was assumed.
+- kind: methods_unavailable
+  statement: How was the absence of LS spike locking to individual SPW-R waves tested (no figure or method is given)? Inside
+    CA1 ripples 7.2% of LS neurons are locked (binomial p = 0.012 against 5%); in the CA1 channel's high-power epochs 5.0%.
+    Spikes inside ripples were assumed.
+- kind: methods_unavailable
+  statement: Where do the pre-behavior, behavior and post-behavior periods begin and end in each recording? The first trial's
+    start and the last trial's stop were assumed as the boundaries.
+- kind: methods_unavailable
+  statement: Which amplitude does Figure 1H use? The deposited maximum NSS (peak_normed_power) shows no correlation with peak
+    frequency (Pearson p = 0.96, Spearman p = 0.36); the maximum NSS recomputed with the Methods' filter shows a weak one
+    (r = 0.081, p = 1.3e-38). The deposited value was assumed.
+- kind: methods_unavailable
+  statement: Is the Figure 5E inset fraction, and its P < 6.6e-6, taken over all HFOs pooled or over recordings? Pooled, NREM
+    0.302 against WAKE 0.091 (p = 3.1e-171); over recordings 0.213 against 0.118 (p = 0.0025). The pooled reading was assumed.
+- kind: metadata_insufficient
+  statement: The electrode table holds no site positions, and the units table at most one waveform per unit (raw_waveform,
+    32 samples, with max_waveform_channel, in the DT1, DT2 and DT8 files listed; no waveform in the DT5, DT7 and DT9 files).
+    On the septal shank of the DT7 recordings the sites' region labels (ls, ms, acg, cc) alternate along the LFP's channel
+    order, so the labels cannot be checked against the sites' geometry.
+- kind: metadata_insufficient
+  found: on_prompt
+  statement: >-
+    Four DT7 files label all 128 electrodes "unknown" (20170327-864um-360um, 20170406-864um-1152um-merge,
+    20170407-936um-1152um-merge, 20170408-936um-1152um-merge), so their channels cannot be assigned to LS,
+    hippocampus or the other recorded regions.
+- kind: methods_unavailable
+  found: on_prompt
+  statement: >-
+    The Key Resources point to github.com/DavidTingley/papers for the scripts that recreate the figures, but the
+    repository (head commit 9f4cd48) holds the scripts of Tingley and Buzsaki (2018) and the network model of
+    Figure 8; the analyses of Figures 1 to 7 are not published.
+- kind: paper_inconsistency
+  found: on_prompt
+  statement: >-
+    The HFO band is 120-180 Hz in the Summary and the legends of Figures 1, 2 and 5 and 120-200 Hz in the Results
+    and STAR Methods. The STAR Methods call the 62 recordings with CA1 or CA3 and LS the dataset of Figure 6, which
+    shows the optogenetic experiments, and cite Figure 3B for the state of the phase-locking epochs and Figure 3A
+    for the jitter control of the excess correlation, where Figure 3 shows travelling waves.
+- kind: other
+  about: data
+  found: on_prompt
+  statement: >-
+    The lab's LS and CA1 detection channels share a 120-200 Hz signal outside any event: at 2000 random times in
+    45 recordings the phase-locking value of their phase difference has a median of 0.177 (0.060 to 0.311),
+    against 0.024 with the CA1 phase taken 1 s later and about 0.020 for random phases, and their band-passed
+    signals correlate with a median r of 0.245. The files do not say how the channels are referenced; ref_channel
+    marks the detector's noise channel, not a re-reference.
+verifications:
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The first executed notebooks (main, LFP and Figure 7E) with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper's full text. The verifier tested rayleigh, ccg_all, gauss_smooth, in_intervals,
+    intersect and triggered_counts on synthetic inputs, tested the Figure 7E significance test on synthetic draws, and read
+    the archive's metadata for the blocked claims. It had no attempt record.
+  results:
+  - claim: dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Within tolerance: 6 animals, 1996 LS neurons with more than 50 spikes (reading a, LFP nb cell 13), 38 CA1+LS
+      recordings (by unit label), 55 CA1-rate recordings (with the ripplesALL fallback), mean 31.1 neurons per recording.
+      Out: CA3+LS is 10 or 19 (expected 25 +- 2.5) and LS-HFO-rate recordings 77 or 80 (expected 89, lower bound 80.1). That
+      is 4 of 6 counts.'
+    response: No change.
+  - claim: fig1c-hfo-each-animal
+    agrees: true
+    outcome: partially_reproduced
+    reason: Median frequency is in 120-180 Hz in 6 of 6 animals. Firing at the event exceeds random by more than 3 SEM in
+      4 of 6 animals at the event bin and 5 of 6 at +-5 ms (cell 17).
+    response: No change.
+  - claim: fig1c-post-burst-suppression
+    agrees: false
+    outcome: reproduced
+    reason: 'Reproduced (fragile). Pooled over neurons at +20..50 ms, random minus HFO is 0.000200 against 3 SEM of 0.000178.
+      It fails with stop..+50 ms, fails at 2 of 5 seeds (cell 19), and holds in only 1 of 6 animals. Problem 8: the outcome
+      depends on the seed of the random-time baseline; the more stable comparison, against the pre-event baseline (0.00166
+      against 0.00140), is not the criterion.'
+    response: Outcome kept, with the disagreement recorded. The criterion leaves the window open and names both; the window
+      from each event's stop is kept as the reading of 'immediately following the population burst', and under it no seed
+      gives suppression, while the +20..50 ms window passes under 3 of 5 seeds and in 1 of 6 animals. The pre-event baseline
+      is printed beside it, as before.
+  - claim: fig1c-event-count
+    agrees: true
+    outcome: reproduced
+    reason: 27,014 deposited LSRipples events against 29,955 +- 2,995 (cell 11).
+    response: No change.
+  - claim: figs1-participation
+    agrees: true
+    outcome: not_reproduced
+    reason: Fraction is 0.057-0.107 against 0.16; spikes per event 0.079-0.155 against 0.23, under every window and averaging
+      (cell 21).
+    response: No change.
+  - claim: fig1d-phase-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Trough preference holds: circular mean -167 deg, Rayleigh p ~ 0. The locked fraction is 0.606 (detection channel)
+      or 0.782 (own shank), below the 0.8325 floor under every reading (LFP cell 13). Problem 5: the own-shank reading covers
+      only shanks inside the detection channel''s 16-channel block, 1,299 of 2,327 neurons; that reading''s 0.782 is the one
+      nearest tolerance.'
+    response: 'Outcome kept. A new notebook (shanks_tingley_2019.ipynb) reads the shanks outside the detection block: 732
+      of 863 neurons locked (84.8%); with the in-block neurons, 1615 of 1992 (81.1%), still below 83.25%.'
+  - claim: fig1f-shorter-than-ripples
+    agrees: true
+    outcome: reproduced
+    reason: 27.8 +- 9.5 against 31.2 +- 13.7 ms, rank-sum p = 1e-199 (cell 13).
+    response: No change.
+  - claim: fig1g-slower-than-ripples
+    agrees: true
+    outcome: reproduced
+    reason: 147.6 against 158.3 Hz, both within tolerance, p ~ 0 (cell 13).
+    response: No change.
+  - claim: fig1h-no-amplitude-frequency-correlation
+    agrees: true
+    outcome: reproduced
+    reason: 'Under the Methods'' amplitude (maximum NSS, i.e. peak_normed_power): Pearson p = 0.96, Spearman p = 0.36, r ~
+      0. The notebook''s primary column peak_amplitude gives Spearman p = 0.00095 with rho = 0.02. Problem 3: the Methods
+      define amplitude as the maximum NSS, which is peak_normed_power (buzcode''s peakNormedPower); the notebook takes peak_amplitude
+      as primary. Asked whether peak_normed_power really is the per-event maximum NSS.'
+    response: 'Outcome kept. peak_normed_power is now the primary amplitude, so both tests agree and the Pearson assumption
+      is dropped. As asked, the LFP notebook recomputes the maximum NSS on the detection channel: it ranks events like peak_normed_power
+      within recordings (median Spearman 0.877) but correlates weakly and significantly with frequency (r = 0.081, p = 1.3e-38),
+      so the outcome is marked as resting on the deposited value.'
+  - claim: fig2-confined-to-ls
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The criterion holds in 0 of 8 recordings. Medial-septum medians exceed LS in 3 recordings, and sites in every
+      other structure have ratios above 1.5 (LFP cell 21). Problem 6: only the 2 storage chunks with the most HFOs are read;
+      in one recording the LS sites show no HFO power at their own HFO times (median ratio 0.97), which suggests label or
+      channel problems; this was not investigated. Asked for per-site ratios against channel order on each shank.'
+    response: 'Outcome kept. The per-site ratios in channel order are now printed for each shank: on the septal shank the
+      labels ls, ms, acg and cc alternate site by site, and acg or ms sites between LS sites have LS-like ratios. With no
+      site positions this cannot tell a label error from a channel-order one; recorded in the notes and as a finding. The
+      two-chunk limit is unchanged.'
+  - claim: fig2ef-intermediate-ls
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: the dataset description says it does not store electrode positions or each recording''s
+      relative depth in LS, nor which probe each depth in a session name belongs to. A rough check inside DT1 alone (single
+      depth in each session name, 12 recordings) is the only part that could be tried, and only without LS borders.'
+    response: No change.
+  - claim: fig3-travelling-waves
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed on the archive: no electrode positions or relative depths are stored.'
+    response: No change.
+  - claim: fig4b-pre-post-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'PRE and POST differ at p < 0.05 in all 8 raw-count readings (p ~ 0.004-0.007) and in none of the 8 normalized
+      readings. There are 361-503 pairs against 7,172 +- 717 and 21-23 sessions against 53 (cell 33). Problem 2: DT8 contributes
+      0 pairs from 17 recordings; pairs before inclusion, and which epoch excludes them, are never shown; raw counts carry
+      a confound from differing HFO time in PRE and POST.'
+    response: 'Outcome kept. A new cell shows, per recording, the candidate pairs, the pairs passing inclusion in each epoch
+      and the HFO counts and durations: of 20182 candidate pairs, 795 pass in PRE and 954 in POST (252 s and 355 s of HFOs
+      in all), against 10823 in BEHAV; DT8 has 3 and 10. The notes give this.'
+  - claim: fig4b-hfo-above-behav
+    agrees: true
+    outcome: reproduced
+    reason: Both parts hold in 12 of 16 readings; the jitter part holds in 16 of 16 at all 5 seeds (cells 35-36). This rests
+      on about 6% of the paper's pairs.
+    response: No change; the pair shortfall is shown as for fig4b-pre-post-unchanged.
+  - claim: fig4-sessions-few-change
+    agrees: true
+    outcome: not_reproduced
+    reason: 21-23 sessions against 53; fraction 0-0.048 against 0.132; both directions never occur together (cell 38).
+    response: No change.
+  - claim: fig4c-temporal-bias
+    agrees: true
+    outcome: reproduced
+    reason: No difference in any of 16 readings (smallest p = 0.06). This uses 16-19 recordings against 53, and PRE-BEHAV
+      r ~ 0 (cell 40).
+    response: No change.
+  - claim: fig4d-compression
+    agrees: true
+    outcome: partially_reproduced
+    reason: PRE and POST exceed chance at factor 1, and PRE and POST never differ at p < 0.01. The largest factor is 5-12,
+      against 20 +- 2 (cells 42-43).
+    response: No change.
+  - claim: figs3d-hpc-compression-post
+    agrees: true
+    outcome: partially_reproduced
+    reason: POST exceeds PRE at p < 0.01 at only 1-3 of factors 1-7 (cell 45).
+    response: No change.
+  - claim: figs2-post-rate-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: LS POST > PRE (p = 0.032). CA1 is significantly lower in POST (t = -2.0), and CA3 is not significant. Neuron counts
+      are 1570, 2597 (or 2254) and 466 (or 809), mostly out of tolerance (cell 47).
+    response: No change.
+  - claim: figs2c-no-ls-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'At 25 ms after rate matching, EV does not exceed REV for any pair set at any seed (cells 49-50). Problem 9: the
+      positive control fails; without rate matching HPC-HPC EV > REV does not reach p < 0.05 at 25 ms (paired p = 0.055),
+      and reaches it at 1 s only by the paired test (p = 0.049); so the absence for LS-LS has weak sensitivity.'
+    response: Outcome kept; the conclusion and the notes now say that the positive control is weak and the absence has little
+      power behind it.
+  - claim: fig5b-nrem-and-rates
+    agrees: true
+    outcome: reproduced
+    reason: 72.9% of HFOs fall in NREM; NREM rate exceeds WAKE in 66 of 73 recordings (p = 3e-12); LS rates are below CA1
+      under both tests (p <= 1e-10) (cell 23).
+    response: No change.
+  - claim: fig5d-lag
+    agrees: true
+    outcome: reproduced
+    reason: Median lag 6.2-6.4 ms with deposited peak times and 6.0-6.4 ms with maximum-NSS times; CCG peak is 37 SD above
+      the flanks (cell 25; LFP cell 17).
+    response: No change.
+  - claim: fig5e-state-coupling
+    agrees: true
+    outcome: not_reproduced
+    reason: '0 bins pass (smallest corrected p = 0.026). The NREM > WAKE fraction test gives p = 0.0025, not below 0.001.
+      Pooled NREM 0.302 is within tolerance; WAKE 0.091 is not (cell 27). Problem 4: the inset fraction test is run only over
+      recordings; a test over pooled HFOs was not run, and it could move the outcome to partially_reproduced.'
+    response: 'Changed from not_reproduced to partially_reproduced, resting on an assumption. The pooled-HFO test is now run:
+      NREM 0.302 against WAKE 0.091, t-test p = 3.1e-171, so the NREM fraction is higher at p < 0.001 under the claims file''s
+      reading (b), while the bins and the WAKE value fail. The pooled reading is adopted because the paper''s NREM 0.3 matches
+      the pooled 0.302, not the mean over recordings (0.213); the per-recording reading (not reproduced) is still shown.'
+  - claim: fig5f-ripple-triggered-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: 'No bin within +-25 ms shows NREM higher (smallest corrected p = 0.18-1). There are 1,266 neurons against 1,313
+      (cell 29). Problem 7: the ''WAKE outside trials'' reading was not run here.'
+    response: 'Outcome kept. The WAKE outside trials reading is now run: 1264 neurons, no bin with NREM higher at corrected
+      p < 0.001 (smallest 0.59).'
+  - claim: fig5f-no-phase-coherence
+    agrees: true
+    outcome: not_reproduced
+    reason: PLV at the ripple time is 0.186, against a jittered mean of 0.104 and an upper bound of 0.126; 14 lags lie above
+      +3 SD (LFP cell 19).
+    response: No change.
+  - claim: ls-spikes-not-locked-to-ca1-ripples
+    agrees: false
+    outcome: partially_reproduced
+    reason: Inside CA1 ripples, 7.2% are locked (binomial p = 0.012), so locking is present. In the CA1 high-power epochs,
+      5.0% (p = 0.51), so it is absent. The two readings disagree (LFP cell 15).
+    response: Outcome kept, with the disagreement recorded. The criterion gives only reproduced or not reproduced; where its
+      readings differ, the reading inside CA1 ripples is kept as the one that tests the individual waves of SPW-Rs, and under
+      it the fraction is above 5% (p = 0.012).
+  - claim: fig6-optogenetic-hfos
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the archive has 6 subjects (DT1, 2, 5, 7, 8, 9), all LS/HPC rats, and no optogenetic sessions.'
+    response: No change.
+  - claim: fig7e-ca1-spikes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced (unreliable). 47-80% against 38 +- 3.8; above the notebook''s chance in every combination;
+      the chance level used is 25-44%. Problem 1: sig_from_mse is a one-sample t-test of the shuffled MSEs against the actual
+      MSE, using the standard error of the shuffle mean; on synthetic normal draws this gives a 41% chance rate, a z-score
+      against the shuffle SD 3%. The Figure 7E y-axis supports the z reading, which was not run. This is the claims file''s
+      literal reading; its misreading is reported, not corrected.'
+    response: Outcome kept, tested on the claims file's reading. The z reading is now run beside it (15.2% to 64.6%, within
+      tolerance in 3 of 16 combinations, chance 2.3% to 7.4%), with both tests' rates on synthetic null data (42.2% and 2.5%),
+      and the reading is asked of a reader in questions/tingley-2019.yaml.
+  - claim: fig7e-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced (unreliable). 44-64% against 26; same problem as fig7e-ca1-spikes.
+    response: As fig7e-ca1-spikes; under the z reading 16.8% to 39.5%, within tolerance in 4 of 16.
+  - claim: fig7e-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced (unreliable). 41-89% against 20; same problem as fig7e-ca1-spikes.
+    response: As fig7e-ca1-spikes; under the z reading 11.1% to 79.2%, within tolerance in 2 of 16.
+  - claim: fig7e-ca1-depth
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the dataset description says electrode positions are not stored, and each unit has only its largest-waveform
+      channel and waveform.'
+    response: 'No change; the data check now lists every electrode and units column in one file per animal: no position column,
+      and at most one raw_waveform per unit (none in the DT5, DT7 and DT9 files; corrected in round 2).'
+  - claim: fig7e-replay
+    agrees: true
+    outcome: blocked
+    reason: 'Not data-blocked: position is present in 74 files (SpatialSeries/Position) along with trials and spikes. It was
+      simply not attempted.'
+    response: No change; the notes already say it was not attempted for time and that the data are there.
+  - claim: fig7e-seqnmf
+    agrees: true
+    outcome: blocked
+    reason: 'Not data-blocked: it needs only hippocampal spikes and CA1Ripples, which are loaded. Not attempted.'
+    response: No change; not attempted for time, as the notes say.
+  - claim: figs5-seqnmf-variance
+    agrees: true
+    outcome: blocked
+    reason: Not data-blocked, same as fig7e-seqnmf. Not attempted.
+    response: No change; not attempted for time, as the notes say.
+  - claim: fig7e-content-independent
+    agrees: true
+    outcome: blocked
+    reason: The notebook's reason (it depends on fig7e-ca1-depth) is wrong. The partial criterion needs only 4 of 6 content-independent
+      features, and 5 are computable; the real blocker is the unattempted content features.
+    response: 'Changed blocked_by from metadata_insufficient to other, as the verifier gave: the notes now name the unattempted
+      content features as the blocker.'
+  - claim: fig7e-coupled-only
+    agrees: true
+    outcome: blocked
+    reason: Same as fig7e-content-independent.
+    response: Changed blocked_by to other, as for fig7e-content-independent.
+  - claim: discussion-medial-septum
+    agrees: true
+    outcome: not_reproduced
+    reason: (a) The MS site ratio is below LS in only 3 of 6 recordings. (b) MS rate around ripples is above the mean (median
+      ratio 1.43; below the mean in only 6 of 25 units) (cell 31; LFP cell 21).
+    response: Outcome kept; the notes add that part (a) rests on the site labels, which alternate along the septal shank's
+      channel order.
+  - claim: discussion-cingulate-down-state
+    agrees: true
+    outcome: not_reproduced
+    reason: '(a) The minimum is at 105 ms. (b) The LFP extremum is at 2-82 ms per recording; none falls in 45-55 ms (cell
+      31; LFP cell 23). Problem 6: cingulate reading (b) is not pooled across recordings.'
+    response: Outcome kept; reading (b) is still per recording, and no recording's extremum is near 50 ms.
+  - claim: fig8-model
+    agrees: true
+    outcome: blocked
+    reason: 'Testable: the model notebook is on GitHub (DavidTingley/papers 9f4cd48). Not attempted.'
+    response: No change; not attempted for time, as the notes say.
+- date: '2026-11-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of round 1's revision (main, LFP, Figure 7E and own-shank), the helper module, the
+    claims file, the questions file and the attempt record, with the paper's full text. The verifier checked each stated outcome
+    and assumption, every sentence of the conclusions, the Summary, the README and the record's notes against the printed
+    outputs, and its round-1 points.
+  results:
+  - claim: dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The partial bound needs 4 of the 6 counts to be within tolerance. Two of the four count only under choices the
+      attempt made: CA1 recordings = 38 only if units labelled hpc count as CA1 (the ca3_channel flag reading gives 29), and
+      CA1-rate recordings = 55 only if ripplesALL counts as CA1 ripples (CA1Ripples alone gives 47, below the lower bound
+      of 47.7). Dropping either choice leaves 3 of 6, which is not_reproduced. Both choices are listed as deviations and are
+      reasonable, but the outcome should carry assumed: true.'
+    response: 'Outcome kept, now with assumed: true. The two choices are written as assumptions in the deviations, with why,
+      and the notes, the LFP notebook''s result and the Summary say that without either 3 of 6 counts are within tolerance.'
+  - claim: fig1c-hfo-each-animal
+    agrees: true
+    outcome: partially_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig1c-post-burst-suppression
+    agrees: true
+    outcome: not_reproduced
+    reason: In round 1 I disagreed. I now agree. The claims file names both windows and does not say which decides. Taking
+      the window from each event's stop as 'immediately following the population burst' is stated and reasonable. Under that
+      window no seed shows suppression (main cell 24). The +20..50 ms window passes under 3 of 5 seeds and in 1 of 6 animals.
+    response: No change.
+  - claim: fig1c-event-count
+    agrees: true
+    outcome: reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: figs1-participation
+    agrees: true
+    outcome: not_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig1d-phase-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'B5 resolved: the own-shank reading now covers every neuron (81.1%, still below 83.25%). The remaining outcomes
+      are unchanged from round 1 and still match the printed outputs.'
+    response: No change.
+  - claim: fig1f-shorter-than-ripples
+    agrees: true
+    outcome: reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig1g-slower-than-ripples
+    agrees: true
+    outcome: reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig1h-no-amplitude-frequency-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Stated and reasonable. The recomputed maximum NSS differs in scale (median 4.69 against 8.03) and gives r = 0.081,
+      p = 1.3e-38. So the outcome rests on using the deposited peak_normed_power, which is the lab's own value.
+    response: No change.
+  - claim: fig2-confined-to-ls
+    agrees: true
+    outcome: not_reproduced
+    reason: B6, does not change the outcome. The septal-shank labels alternate along channel order, so whether the labels
+      are reliable cannot be settled. The two-chunk limit is unchanged. The outcome rests on the labels, as the record states.
+    response: No change.
+  - claim: fig2ef-intermediate-ls
+    agrees: true
+    outcome: blocked
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig3-travelling-waves
+    agrees: true
+    outcome: blocked
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig4b-pre-post-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Using the normalized CCG is reasonable. Raw counts carry the extra HFO time in POST (355 s against 252 s). Part
+      of the justification is misstated: main cell 47 says BEHAV medians are 10 to 100 times the HFO ones in raw counts, but
+      the printed raw medians are comparable (BEHAV 0.088-0.66 against PRE 0.32-0.44); only the means differ that much (13.1-83
+      against 0.60-0.85). Remaining (B2): every Figure 4 claim rests on 361-503 pairs, about 6% of the paper''s 7,172; the
+      claims file applies the inclusion rule to HFO-only spikes in every epoch and names no reading that applies it over the
+      whole epoch, which would probably retain far more pairs. Reported as a gap in the claims file, not a correction.'
+    response: 'Outcome kept. The sentence is corrected: the raw means and medians of each epoch are now printed in the Figure
+      4 table and the conclusion quotes both. The whole-epoch reading is run as a variant and asked of a reader (questions/tingley-2019.yaml):
+      10159 to 15732 pairs in 54 sessions pass, and PRE and POST differ at p < 0.05 in 4 of 8 normalized readings (5 ms SD
+      kernel, p 0.00047 to 0.0082, r about -0.02). The outcome stays as tested on the claims file''s readings; the notes and
+      the methods_unavailable finding give the variant.'
+  - claim: fig4b-hfo-above-behav
+    agrees: true
+    outcome: reproduced
+    reason: The flag overstates the dependence. Under raw counts with BEHAV inside trials (the claims file's reading iv-a),
+      both parts also hold (main cell 49, rows 1, 5, 9 and 13).
+    response: 'Outcome and assumed: true kept, as the outcome still differs under raw counts with BEHAV over the whole span;
+      the conclusion, the notes and the deviation now say that only that combination (4 of 16 readings) fails. The whole-epoch
+      inclusion variant is reported for part 1.'
+  - claim: fig4-sessions-few-change
+    agrees: true
+    outcome: not_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change; the notes add the whole-epoch inclusion variant (54 sessions, still no reading with both directions).
+  - claim: fig4c-temporal-bias
+    agrees: true
+    outcome: reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig4d-compression
+    agrees: true
+    outcome: partially_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: figs3d-hpc-compression-post
+    agrees: true
+    outcome: partially_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: figs2-post-rate-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: figs2c-no-ls-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'B9 resolved: the conclusion now says the positive control is weak. The remaining outcomes are unchanged from
+      round 1 and still match the printed outputs.'
+    response: No change.
+  - claim: fig5b-nrem-and-rates
+    agrees: true
+    outcome: reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig5d-lag
+    agrees: true
+    outcome: reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig5e-state-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Pooling all HFOs is stated and reasonable: the paper''s NREM fraction of 0.3 matches the pooled 0.302. The pooled
+      test treats HFOs as independent, and DT9 supplies 9,783 of the 15,605 NREM HFOs. In DT5 the gap is small (0.160 against
+      0.131).'
+    response: No change.
+  - claim: fig5f-ripple-triggered-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: 'B7 resolved: ''WAKE outside trials'' was run. The remaining outcomes are unchanged from round 1 and still match
+      the printed outputs.'
+    response: No change.
+  - claim: fig5f-no-phase-coherence
+    agrees: true
+    outcome: not_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: ls-spikes-not-locked-to-ca1-ripples
+    agrees: true
+    outcome: not_reproduced
+    reason: 'In round 1 I said partially_reproduced, but the criterion only allows reproduced or not reproduced. I now agree
+      with not_reproduced. Using spikes inside CA1 ripples is stated and the closer reading of ''individual waves''. The result
+      is marginal: 43 of 599 neurons are locked (7.2%), binomial p = 0.012, against a 4.9% shuffle null (LFP cell 16).'
+    response: No change.
+  - claim: fig6-optogenetic-hfos
+    agrees: true
+    outcome: blocked
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig7e-ca1-spikes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'These follow from the claims file''s t-test reading, judged against that test''s own chance rate. They are open:
+      under the z reading, each claim is within tolerance in 3, 4 and 2 of 16 combinations, which the criterion would score
+      as reproduced. That question is now with a reader. A further claims-file issue: the criterion ''within tolerance under
+      one combination'', applied to 16 combinations spanning 11-79%, is nearly impossible to fail.'
+    response: Outcome kept. The criterion's dependence on one of 16 combinations is added to questions/tingley-2019.yaml as
+      a second question for a reader.
+  - claim: fig7e-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: As fig7e-ca1-spikes. Fig. 7E cell 11 and the record's notes say binomial p <= 3.2e-9, but cell 9, row 46 (state,
+      start-stop, Poisson, cross-validated) prints 1.23e-08; the largest p is about 1.2e-8. The outcome does not change.
+    response: Outcome kept; the bound is corrected to p at most 1.23e-8 in the notebook and the notes. The criterion question
+      is asked as for fig7e-ca1-spikes.
+  - claim: fig7e-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: As fig7e-ca1-spikes.
+    response: As fig7e-ca1-spikes.
+  - claim: fig7e-ca1-depth
+    agrees: true
+    outcome: blocked
+    reason: Main cell 72 (Summary), the record's last metadata_insufficient finding and its fig7e-ca1-depth response say each
+      unit has one waveform, one raw_waveform per unit. Main cell 8 shows no raw_waveform column at all in the units tables
+      of DT5, DT7 and DT9. The block still stands.
+    response: Block kept. The Summary, the notes, the finding and the round-1 response now say the units hold at most one
+      32-sample raw_waveform, in the DT1, DT2 and DT8 files listed, and none in those of DT5, DT7 and DT9.
+  - claim: fig7e-replay
+    agrees: true
+    outcome: blocked
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig7e-seqnmf
+    agrees: true
+    outcome: blocked
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: figs5-seqnmf-variance
+    agrees: true
+    outcome: blocked
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig7e-content-independent
+    agrees: true
+    outcome: blocked
+    reason: 'B11 resolved: blocked_by changed to ''other'' with the correct reason. The remaining outcomes are unchanged from
+      round 1 and still match the printed outputs.'
+    response: No change.
+  - claim: fig7e-coupled-only
+    agrees: true
+    outcome: blocked
+    reason: 'B11 resolved: blocked_by changed to ''other'' with the correct reason. The remaining outcomes are unchanged from
+      round 1 and still match the printed outputs.'
+    response: No change.
+  - claim: discussion-medial-septum
+    agrees: true
+    outcome: not_reproduced
+    reason: B6, does not change the outcome. The septal-shank labels alternate along channel order, so whether the labels
+      are reliable cannot be settled. The two-chunk limit is unchanged. The outcome rests on the labels, as the record states.
+    response: No change.
+  - claim: discussion-cingulate-down-state
+    agrees: true
+    outcome: not_reproduced
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+  - claim: fig8-model
+    agrees: true
+    outcome: blocked
+    reason: The remaining outcomes are unchanged from round 1 and still match the printed outputs.
+    response: No change.
+reconciliation:
+  earlier: tingley-2019-01
+  date: 2026-11-19
+  blind: true
+  findings:
+  - finding: 1
+    status: partly_fixed
+    now: 8
+    note: >-
+      This version holds the lab's detections, LSRipples in 77 files (27014 events) and CA1Ripples in 47 (101217),
+      each described with its detection channel and stored parameters, and 89 files mark detection channels
+      (earlier_findings.ipynb). Finding 8 reports what remains, recordings with LS units or CA3 sites and no table;
+      8 files hold no event table at all.
+  - finding: 2
+    status: partly_fixed
+    now: 6
+    note: >-
+      Eight of the nine files now give each unit a region (for example DT7 20170410, 61 ls units); the 36 units of
+      DT7 20170407-936um-1152um-merge still have an empty region, which finding 6 reports.
+  - finding: 3
+    status: still_present
+    now: 5
+    note: >-
+      Finding 5 reports the hpc labels (2907 hpc, 566 ca3 units on this version). The four DT7 files with every
+      electrode "unknown" are still so (128 of 128 in 20170327, 20170406, 20170407 and 20170408), which
+      tingley-2019-02 did not report; that part is added as finding 17.
+  - finding: 4
+    status: partly_fixed
+    now: 8
+    note: >-
+      Of the 10 files with ca3 electrodes (64 ca3 and 32 ls), the six DT5 files now flag a CA1 channel (a ca3-labelled
+      site) and hold CA1Ripples; the four DT9 files still flag none and hold no CA1 ripples, which finding 8 reports.
+      Finding 5 gives 10 recordings with ca3 units against the paper's 25.
+  - finding: 5
+    status: still_present
+    now: 2
+    note: >-
+      No file's electrode table has x, y or z columns on this version (98 of 98). Finding 2 reports the missing
+      positions and probe models, and finding 3 the missing relative depth in LS.
+  - finding: 6
+    status: partly_fixed
+    now: 16
+    note: >-
+      5968 of 6236 units now have a 32-sample raw_waveform with its max_waveform_channel (81 of 90 files with units,
+      including 19 DT5, 7 DT7 and 14 DT9 files) and 4519 an isolation distance; positions are still absent, so CA1
+      depth cannot be estimated, as finding 16 reports. Finding 16 says the DT5, DT7 and DT9 files have no waveform,
+      which the check in earlier_findings.ipynb does not bear out.
+  - finding: 7
+    status: still_present
+    now: 1
+    note: >-
+      The files hold the same six rats (DT1, DT2, DT5, DT7, DT8, DT9), and finding 1 reports the two optogenetic rats
+      as missing.
+  - finding: 8
+    status: fixed
+    note: >-
+      In the stored spike times of all 6236 units none is out of order (earlier_findings.ipynb), and the units
+      description of 10 files says their source spike times were unsorted and are sorted here.
+  - finding: 9
+    status: still_present
+    now: 18
+    note: >-
+      The repository's head is still commit 9f4cd48 (2020-03-16), whose 39 files are the 2018 paper's
+      LS_phasecoding scripts and the Figure 8 model notebooks, with nothing for Figures 1 to 7. This concerns the
+      paper's code and does not depend on the dataset version.
+  - finding: 10
+    status: still_present
+    now: 19
+    note: >-
+      The paper is unchanged; its text still gives 120-180 Hz in the Summary and legends and 120-200 Hz in the Results
+      and Methods, names Figure 6 for the 62 recordings, and cites Figure 3B and 3A in the Methods as the earlier
+      finding says. The rewritten claims file names the band as an open reading.
+  - finding: 11
+    status: still_present
+    now: 20
+    note: >-
+      The same-sample share belonged to the earlier attempt's own detection; for the lab's LSRipples and CA1Ripples
+      only 0.026 of 6572 coupled pairs fall within 0.5 ms. The shared signal remains in the LFP, which is the earlier
+      version's data: on the lab's detection channels the phase-locking value at random times has a median of 0.177
+      against 0.024 with a 1 s offset (45 recordings), added as finding 20.
+  outcomes:
+  - claim: fig1c-hfo-each-animal
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      Version 0.250624.0439 held no events, so tingley-2019-01 detected its own on one LS channel per recording, and
+      LS firing at them exceeded random times by more than 3 SEM only in DT1 (6.0 SEM; DT7, DT8 and DT9 below random).
+      This attempt used the lab's LSRipples, new in 0.261110.1911, and finds 4 of 6 animals at the event bin and 5 of
+      6 over +-5 ms. The criterion's window also changed (+-10 ms summed before, the event bin and +-5 ms now).
+    supports: partially_reproduced
+    confidence: medium
+  - claim: fig1g-slower-than-ripples
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      tingley-2019-01 measured its own events with a 120-200 Hz filter for both regions, LS 153.6 against CA1 150.8 Hz;
+      this attempt took the deposited peak_frequency of the lab's detections, LS 147.6 against CA1 158.3 Hz, matching
+      the paper's 147 and 159. The lab's LS events were detected at 120-180 Hz and its CA1 ripples at 130-200 Hz, which
+      by itself moves the two means apart in the paper's direction.
+    supports: reproduced
+    confidence: medium
+  - claim: fig1h-no-amplitude-frequency-correlation
+    earlier: not_reproduced
+    cause: reading
+    choice: >-
+      Whether the amplitude of Figure 1H is the lab's stored peak normalized power of each event or the maximum NSS
+      recomputed with the Methods' 120-200 Hz filter; tingley-2019-01 recomputed it on its own events, this attempt
+      took the stored value.
+    note: >-
+      tingley-2019-01 found Pearson r = 0.056 (p = 2.4e-47) over 67,186 events. This attempt finds r = -0.000
+      (p = 0.96) with the deposited peak_normed_power, but r = 0.081 (p = 1.3e-38) with the maximum NSS it recomputed on
+      the same lab events, which would give not reproduced, so the outcome follows the amplitude measure.
+    confidence: high
+  - claim: fig4b-pre-post-unchanged
+    earlier: reproduced
+    cause: claims_changed
+    note: >-
+      Both find no PRE-POST difference with the normalized CCG (tingley-2019-01 p = 0.81 on 106 pairs; this attempt p
+      0.50 to 0.89 on 361 to 503 pairs). The rewritten claims file adds the paper's 7172 pairs +- 717.2 as an expected
+      value, which 462 pairs miss, so the outcome is partial; the old criterion had no pair count.
+    confidence: high
+  - claim: fig4-sessions-few-change
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      The old criterion tested only recordings with at least 5 pairs; tingley-2019-01 had 7, none with p < 0.01, and
+      blocked the claim as untestable. The rewritten criterion drops the minimum and adds 53 +- 5.3 sessions as an
+      expected value, so this attempt's 21 to 23 sessions with 0 or 1 significant give not reproduced. Neither attempt
+      finds both directions.
+    supports: not_reproduced
+    confidence: medium
+  - claim: fig4c-temporal-bias
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      The old criterion needed at least 10 pairs per recording; tingley-2019-01 had 4 such recordings and blocked the
+      claim (t-test p = 0.81, for the record). The rewritten criterion sets no minimum, and this attempt, with at least 3
+      pairs, tests 16 to 19 recordings and finds no difference (paired p 0.060 to 0.90). More pairs from the lab's
+      events (462 against 106) also helped.
+    supports: reproduced
+    confidence: medium
+  - claim: fig4d-compression
+    earlier: not_reproduced
+    cause: claims_changed
+    note: >-
+      The old criterion was partial only if PRE and POST exceeded chance up to at least factor 5; tingley-2019-01's PRE
+      did so at factors 1 and 2 only, so not reproduced. The rewritten criterion is partial when both exceed chance at
+      factor 1, which tingley-2019-01's numbers also meet; this attempt's largest factor is 6, partial under either.
+    supports: partially_reproduced
+    confidence: medium
+  - claim: fig5b-nrem-and-rates
+    earlier: partially_reproduced
+    cause: dataset_changed
+    note: >-
+      tingley-2019-01's own events were not more frequent in NREM than in WAKE (NREM higher in 18 of 49 recordings,
+      p = 0.44), though below CA1 ripple rates. With the lab's LSRipples, new in this version, 72.9% of 27014 HFOs fall
+      in NREM and the NREM rate exceeds WAKE in 66 of 73 recordings (p = 2.9e-12).
+    supports: reproduced
+    confidence: high
+  - claim: fig5d-lag
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: >-
+      tingley-2019-01's detection put 35% of coupled LS events on the same sample as the CA1 ripple, so its median lag
+      was 0.00 ms. The lab's LSRipples and CA1Ripples give 6.20 ms (median of recording medians) and 6.40 ms pooled,
+      with 0.026 of pairs on the same sample (earlier_findings.ipynb).
+    supports: reproduced
+    confidence: high
+  - claim: fig5e-state-coupling
+    earlier: not_reproduced
+    cause: claims_changed
+    note: >-
+      The old criterion fixed a t-test over recordings, and tingley-2019-01's 0.199 against 0.116 (25 recordings,
+      p = 0.089) failed it. The rewritten criterion also allows the fraction and test over all HFOs pooled, which this
+      attempt adopted (0.302 against 0.091, p = 3.1e-171); over recordings it gets 0.213 against 0.118 (p = 0.0025),
+      which also fails p < 0.001.
+    confidence: high
+  protocol: >-
+    pilot-8 added the paper's quote and its statistics to each claim. pilot-9 required the full text and that every
+    method come from the paper, with every open reading run. pilot-10 had a reader who never sees the data write the
+    claims and barred the author from changing them. pilot-12 made repeat attempts blind and added this comparison,
+    pilot-13 let a notebook run for 60 minutes, and pilot-14 filed records by paper. Here a reader wrote the claims file
+    again under these rules (39 claims against 31): the old file's header listed data outputs its author had seen, and
+    the new one names open details as readings and adds the paper's sample sizes (7172 pairs, 53 sessions, 42
+    recordings) as expected values. That rewrite, not the data, accounts for the changed outcomes of
+    fig4b-pre-post-unchanged, fig4-sessions-few-change, fig4c-temporal-bias, fig4d-compression and
+    fig5e-state-coupling; the run-every-reading rule is why fig1h-no-amplitude-frequency-correlation and
+    fig4b-pre-post-unchanged carry assumptions. The 52-minute LFP notebook needed pilot-13's limit. docs/pilot-notes.md
+    has no section for pilot-11, pilot-15 or pilot-16.

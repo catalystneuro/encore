@@ -1,38 +1,26 @@
-There were no questions to act on, so nothing in the entry changed and all 21 outcomes are the same as before.
+The reader answered the one question, and I re-ran the affected claim on the amended claims file. Its outcome stays reproduced, but now rests on a recorded assumption about how the example cell is matched. Lock, check and the full run all passed (0 errors, notebook ran in 1817 s), and the handover is built in `executed/asari-2009/handover/`. Nothing was committed or pushed, and I did not verify my own work.
 
-**No questions were answered.** `questions/asari-2009.yaml` does not exist, either in the working tree or anywhere in the git history. My earlier author run asked the readers nothing. The open points it found went into the attempt as findings: three `methods_unavailable` questions for the paper's authors, one `paper_inconsistency` and one `code_mismatch`. The reader's answer run (`transcripts/asari-2009/answer-report.md`) reached the same conclusion and left `claims/asari-2009.yaml` unedited, which `git diff` confirms.
+**Question (fig2-example-long-context): does the Figure 2 legend identify the example cell and probe?**
 
-**What I changed:** nothing. With no answers there was no claim to re-run and no notes to add, so the notebook, the conclusions and `attempts/asari-2009-01.yaml` are untouched.
+The reader amended the claim, which changed two things:
+- **Which probe is tested:** the claim used to accept any of the candidate probes. It now tests only the probe of the cell whose reliability values match the Figure 2 legend within 10%: 0.61 ± 0.07 over the cell's seven fragments and 0.74 ± 0.08 for the probe.
+- **The time windows:** these now allow 10%. The probe passes if it has significant periods before 2 s, none between 2.2 and 3.6 s, and one starting after 3.6 s.
 
-**Outcomes per claim, unchanged from the earlier run:**
-
-| Claim | Earlier | Now |
+| claim | earlier outcome | outcome now |
 |---|---|---|
-| methods-recording-counts | partially_reproduced | same |
-| a1-mgb-firing-rates | partially_reproduced | same |
-| fig2-example-reliability | reproduced | same |
-| fig2-example-long-context | partially_reproduced | same |
-| fig3a-proportion-significant | reproduced | same |
-| fig3a-significance-decay | partially_reproduced | same |
-| fig3b-fractional-power-decay | partially_reproduced | same |
-| timescale-longer-than-membrane | reproduced | same |
-| fig4-predictability-upper-bound | partially_reproduced | same |
-| fig4-strf-performance-low | blocked (other, not attempted in the time limit) | same |
-| fig5-example-conductances | blocked (data_missing) | same |
-| fig6-conductance-decay | blocked (data_missing) | same |
-| fig7-example-frequency-context | blocked (data_missing) | same |
-| fig8a-proportion-by-property | partially_reproduced (assumed) | same |
-| fig8a-significance-fits | not_reproduced (assumed) | same |
-| fig8b-decay-by-property | partially_reproduced (assumed) | same |
-| fig8c-relative-effects | partially_reproduced (assumed) | same |
-| fig8-natural-synthetic-probes-alike | reproduced (assumed) | same |
-| fig9-mgb-fast-decay | reproduced | same |
-| fig9-example-first-bin | reproduced | same |
-| figs1-silence-probe | reproduced | same |
+| fig2-example-long-context | reproduced | reproduced (`assumed: true`) |
 
-**Entry commands:**
-- `python tools/entry.py lock entries/asari-2009` rewrote `requirements.lock.txt` with the same contents.
-- `python tools/entry.py all entries/asari-2009` found 0 errors and passed. It reused the executed copy from 19:26 UTC (hash ae9290c2663a) because nothing the run reads had changed, so the notebook was not executed again. That copy had taken 1405 s.
-- `python tools/entry.py handover entries/asari-2009` rebuilt `executed/asari-2009/handover/`.
+- **Earlier:** I had already tested the same probe, 20051222-ha1-001 probe 4. It passed only because I counted a significant period starting at 3.97 s as the paper's "after about 4 s". Read strictly, that period overlaps the 2 to 4 s window by 30 ms and the probe fails.
+- **Now:** of the 40 candidate probes with six or more trials per context, only that one matches: the cell averages 0.611 ± 0.081 and the probe 0.737 ± 0.075. Its significant periods run to 1.60 s, there are none from 1.60 to 3.97 s, and they resume from 3.97 to 4.60 s. That meets the amended windows directly, so the 30 ms question no longer arises.
+- **Why it is marked assumed:** I matched on the two mean correlations, since the criterion asks for "the closest to both". Two other readings find no matching cell, which would make the claim not testable:
+  - the leave-one-out correlation (the cell's mean is 0.732);
+  - also requiring the SDs to match within 10% (the cell's SD is 0.081 against 0.07, 16% above).
 
-I did not verify the attempt, commit or push.
+  I chose the pairwise mean because it is the reading that reproduces the population value in fig2-example-reliability (0.310 against 0.31; leave-one-out gives 0.437). The deviation explains this, and a new `methods_unavailable` finding asks the authors to confirm the example recording and the correlation measure.
+
+What I changed:
+- **Notebook:** the section now picks the matched probe, applies the amended windows, and shows both alternative readings. The old strict windows are printed for reference.
+- **`asari.py`:** it also reports the spread of the pairwise trial correlations, so the probe's SD can be printed. No other claim's numbers changed; for example, fig3a still finds 183 of 305 probes significant.
+- **Attempt record:** the claim's notes say what the answer changed, and the summary table marks the assumption.
+
+The entry ran in full twice, because the first run used a placeholder conclusion.

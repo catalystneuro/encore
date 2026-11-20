@@ -63,6 +63,24 @@ add the label `disputed`.
 
 Remove `disputed` when the new attempt is merged.
 
+### Notes for the next attempt
+
+A response often holds what an attempt lacked: how something was computed, a link to the paper's code, or where
+some data are. To give that to the next attempt:
+
+1. Confirm the writer (step 1). Only a confirmed response is taken.
+2. Run `python tools/author_notes.py add <issue number>`. It copies the response's text, its links and the claims
+   it names into `papers/author-notes/<paper>.yaml`. Read the file before you commit it.
+3. Commit the file to `main`.
+4. Queue the paper again with a run request (`docs/queue.md`).
+
+The next attempt's author reads the notes with the paper (`docs/protocol.md`, "Notes from the paper's authors").
+The author stays blind to the earlier attempts, so take out of the notes anything that says what an earlier attempt
+found. The new attempt's record lists the notes it used, and the paper's page links to them.
+
+A note can settle a method the paper leaves open, and it can point to code or data. It cannot set an outcome: the
+claim is tested all the same, against the same criterion.
+
 **The dataset differs from what the paper used.** Treat this as a finding about the data. Open an issue on the
 conversion or notify the archive, and link to it from the response's issue.
 
