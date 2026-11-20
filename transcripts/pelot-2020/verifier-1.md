@@ -1,4 +1,4 @@
-# pelot-2020 · verifier-1 · run 44232974272
+# pelot-2020 · verifier-1 · run 44674177130
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
@@ -10,26 +10,26 @@ cd  ls -la; ls paper docs 2>/dev/null; wc -c *
 
 ```
 Exit code 1
-total 336
-drwxr-xr-x 6 runner runner    4096 Nov 18 03:55 .
-drwxr-xr-x 8 runner runner    4096 Nov 18 03:55 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 03:48 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 03:48 .bashrc
-drwxr-xr-x 5 runner runner    4096 Nov 18 03:55 .claude
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env.development
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env.development.local
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env.local
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env.production
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env.production.local
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env.test
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .env.test.local
-drwx------ 2 runner runner    4096 Nov 18 03:55 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 03:48 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 03:48 .github
--rw-r--r-- 1 runner runner       0 Nov 18 03:55 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 03:48 .idea
-[... 36 more lines not kept]
+total 9440
+drwxr-xr-x 6 runner runner     4096 Nov 20 04:38 .
+drwxr-xr-x 8 runner runner     4096 Nov 20 04:38 ..
+crw-rw-rw- 1 nobody nogroup    1, 3 Nov 20 04:24 .bash_profile
+crw-rw-rw- 1 nobody nogroup    1, 3 Nov 20 04:24 .bashrc
+drwxr-xr-x 5 runner runner     4096 Nov 20 04:38 .claude
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env.development
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env.development.local
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env.local
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env.production
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env.production.local
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env.test
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .env.test.local
+drwx------ 2 runner runner     4096 Nov 20 04:38 .git
+crw-rw-rw- 1 nobody nogroup    1, 3 Nov 20 04:24 .gitconfig
+crw-rw-rw- 1 nobody nogroup    1, 3 Nov 20 04:24 .github
+-rw-r--r-- 1 runner runner        0 Nov 20 04:38 .gitmodules
+crw-rw-rw- 1 nobody nogroup    1, 3 Nov 20 04:24 .idea
+[... 38 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -43,58 +43,123 @@ crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 03:48 .idea
 ```
 1	# Claims for Pelot, Goldhagen, Cariello, Musselman, Clissold, Ezzell & Grill (2020), "Quantified
 2	# Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat", Front.
-3	# Neurosci. 14, 601479, on SPARC:60.
-4	#
-5	# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
-6	# Actions"), 2026-11-18, protocol pilot-16 as stated in docs/protocol.md (Reader, steps 1 to 4).
-7	#
-8	# Text read: the version of record, from Europe PMC (PMC7672126, JATS XML flattened;
-9	# paper/10.3389-fnins.2020.601479.txt), the abstract, Introduction, Materials and Methods,
-10	# Results, figure legends and Discussion. No PDF was supplied, so no figure was read; Figures
-11	# 6, 7 and 9 are known here only from their legends and the Results. Three parts are missing
-12	# from the text read. (1) Eqs. 1 to 4, the perineurium thickness fits, were dropped in the
-13	# flattening; only their R2 values and fascicle counts survive, so the fit coefficients are
-14	# not available as expected values. (2) The supplement (Supplements 1 to 6, Supplementary
-15	# Tables 1 to 6 and Supplementary Figures 13 to 18) is not under paper/; the paper's numbers
-16	# are all in the main text, but Supplement 4 (literature values) and Supplement 6 (age
-17	# trends) are what two claims rest on. (3) The reference list is empty, so the identifiers of
-18	# the SPARC datasets Pelot et al. (2020a to g) are not in the text read.
-19	#
-20	# Code read: none. The paper links no code repository. The archive's file listing for SPARC:60
-[... 913 more lines not kept]
+3	# Neurosci. 14, 601479, on SPARC:60, SPARC:64, SPARC:65, SPARC:89, SPARC:16, SPARC:61 and
+4	# SPARC:82.
+5	#
+6	# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+7	# Actions"), 2026-11-20, protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+8	# It revises the file of 2026-11-18 (protocol pilot-16), which was read for SPARC:60 alone.
+9	#
+10	# Text read: the version of record, from Europe PMC (PMC7672126, JATS XML flattened;
+11	# paper/10.3389-fnins.2020.601479.txt), the abstract, Introduction, Materials and Methods,
+12	# Results, figure legends and Discussion. No PDF was supplied, so no figure was read; Figures
+13	# 6, 7 and 9 are known here only from their legends and the Results. Three parts are missing
+14	# from the text read. (1) Eqs. 1 to 4, the perineurium thickness fits, were dropped in the
+15	# flattening; only their R2 values and fascicle counts survive, so the fit form and
+16	# coefficients are open. (2) The supplement (Supplements 1 to 6, Supplementary Tables 1 to 6
+17	# and Supplementary Figures 13 to 18) is not under paper/. The paper's own numbers are all in
+18	# the main text; Supplement 4 (literature values) and Supplement 6 (age trends) are what three
+19	# claims rest on. (3) The reference list is empty, so the dataset identifiers of Pelot et al.
+20	# (2020a to g) are not in the text read; the mapping below is read from the dataset titles
+[... 922 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "vagus.py"
+ "file_path": "pelot-2020.yaml",
+ "offset": 942
 }
 ```
 
 ```
-1	"""Loading and morphometry for Pelot et al. (2020) on SPARC:60 and its sister datasets.
-2	
-3	Every file is streamed from the public SPARC bucket at a pinned object version, taken
-4	from the pinned version's manifest.json (docs/archives.md, "SPARC"). Nothing is written
-5	to disk.
-6	
-7	The morphometry repeats the paper's MATLAB code, which is in the dataset
-8	(files/code/HumanRatSegmentationAnalysis_v2.m, PerineuriumComplexMatch_v2.m and
-9	DataPlotting_v4.m of SPARC:60), as the Methods describe it ("Imaging and Image Analysis",
-10	last paragraph): boundaries by bwboundaries, areas by polyarea, effective diameter as the
-11	diameter of the circle of equal area, perineurium thickness as half the difference of the
-12	outer and inner effective diameters. Where this module differs from the code it says so.
-13	"""
-14	import hashlib
-15	import io
-16	import json
-17	import base64
-18	
-19	import cv2
-20	import fsspec
-[... 580 more lines not kept]
+942	    value: 0.75
+943	    tolerance: 0.075
+944	  criterion: Both levels pooled (the Results give one fit per species). Thickness and diameter
+945	    as in rat-perineurium-fit, with the same fit-form readings. The count tolerance is 0, as it
+946	    is a count of traces. Eq. 1's coefficients are missing from the text read.
+947	- id: pig-perineurium-fit
+948	  statement: The fit of perineurium thickness against fascicle diameter for 284 pig non-peanut
+949	    fascicles (IF) has R2 = 0.30.
+950	  source: Results, paragraphs 11 and 12 (Eq. 2)
+951	  quote: We fit the data from 284 pig non-peanut fascicles as ... with d fasc in microns, yielding
+952	    R 2 = 0.30.
+953	  datasets:
+954	  - sparc-89
+955	  expected:
+956	  - quantity: number of pig non-peanut fascicles fitted
+957	    value: 284
+958	    tolerance: 0
+959	  - quantity: R2 of the pig fit
+960	    value: 0.3
+961	    tolerance: 0.03
+[... 247 more lines not kept]
 ```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "^- id:" pelot-2020.yaml; cat pelot.py
+```
+
+```
+43
+"""Loading and morphometry for Pelot et al. (2020), Front. Neurosci. 14, 601479.
+
+The data are seven SPARC datasets, streamed from the public bucket at pinned
+versions (manifest object versions below). Nothing is written to disk.
+
+Measures follow the paper's Methods (Imaging and Image Analysis, last
+paragraph: boundaries by bwboundaries, areas by polyarea, effective diameter of
+the circle of equal area, perineurium thickness half the difference of the outer
+and inner effective diameters) and, where the Methods are silent, the paper's
+own MATLAB code deposited in the datasets (files/code of sparc-60, sparc-64,
+sparc-65 and sparc-89: HumanRatSegmentationAnalysis_v2.m,
+PigSegmentationAnalysis_v2.m, SegmentationAnalysis_v2.m,
+PerineuriumComplexMatch_v2.m, DataExtraction_v3.m, DataPlotting_v4.m). Each
+parameter below says which.
+
+Boundary convention. MATLAB's bwboundaries traces the centres of the boundary
+pixels and polyarea gives the area of that polygon. By Pick's theorem that area
+is N - B/2 - 1 for a simply connected region of N pixels with B boundary pixels.
+This module computes areas that way (`matlab_area`), which reproduces the
+[... 577 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat mixed.py
+```
+
+```
+"""Linear mixed models fitted by REML, with type III F tests and Tukey's HSD on
+least squares means, for the mixed model ANOVAs of Pelot et al. (2020).
+
+The paper's model (Methods, Statistics and Data Analyses): fixed effects
+species, level and their interaction, a random effect of subject, and for
+fascicle diameter a further random effect of sample, fitted in JMP Pro 14.3.0,
+followed by Tukey's HSD. Details the paper does not state, and the choices made
+here:
+
+- Estimation by REML, JMP's method for models with random effects.
+- Variance components either unbounded (JMP's Fit Model default, which
+  allows a negative estimate) or bounded at zero; the claims file asks for both
+  readings (nerve-diameter-anova), and `fit(..., bounded=)` selects one.
+- Effect (sum-to-zero) coding of the fixed effects, as JMP codes nominal
+  effects, so that the type III tests of main effects are those JMP prints.
+- Denominator degrees of freedom by Satterthwaite's approximation (Fai and
+  Cornelius 1996 for multi-df tests), from the numerical Hessian of the REML
+  likelihood. JMP uses Kenward-Roger, which no Python package available here
+  implements; the two coincide for balanced designs and differ little
+  otherwise. This is an assumption, stated in the notebook.
+[... 258 more lines not kept]
+```
+
+**Agent**
+
+I've read the claims file (43 claims) and both helper modules. Next I'm reading the notebook's cells and outputs.
 
 **Agent calls Bash**
 
@@ -103,153 +168,55 @@ cd  python3 -c "
 import json
 nb=json.load(open('reproduce_pelot_2020.ipynb'))
 for i,c in enumerate(nb['cells']):
-    print('='*20,i,c['cell_type'])
-    print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:6000])
-        elif 'data' in o:
-            d=o['data']
-            if 'text/plain' in d: print('--OUT--');print(''.join(d['text/plain'])[:6000])
-        if o.get('output_type')=='error': print('ERR',o['ename'],o['evalue'])
-"
+    src=''.join(c['source'])
+    print(f'===== [{i}] {c[\"cell_type\"]}')
+    print(src)
+    if c['cell_type']=='code':
+        for o in c.get('outputs',[]):
+            if 'text' in o: t=''.join(o['text'])
+            elif 'data' in o:
+                t=''.join(o['data'].get('text/plain',''))
+                if 'image/png' in o['data']: t+=' [IMAGE]'
+            elif o.get('output_type')=='error': t='ERROR '+o['ename']+': '+o['evalue']
+            else: t=''
+            print('--- out:'); print(t[:6000])
+" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
 ```
 
 ```
-<persisted-output>
-Output too large (136.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/cb0eec2e-5a19-447f-ba77-7e552111d650/tool-results/bpt0yakjr.txt
-
-Preview (first 2KB):
-==================== 0 markdown
-# Pelot et al. (2020), vagus nerve morphology of human, pig and rat, on SPARC:60
-
-**Paper.** Pelot, Goldhagen, Cariello, Musselman, Clissold, Ezzell and Grill (2020),
-"Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig,
-and Rat", Front. Neurosci. 14, 601479, doi:10.3389/fnins.2020.601479. The claims file
-(`claims/pelot-2020.yaml`) was written from the version of record (Europe PMC, PMC7672126),
-without the supplement and with Eqs. 1 to 4 lost in the text.
-
-**Dataset.** SPARC:60, "Quantified morphology of the rat vagus nerve", version 5
-(doi:10.26275/lg3c-1kjf, published 2025-02-24), read from the public SPARC bucket at the
-object versions its manifest gives. Version 5 is the latest and the version the run was
-given; the paper cites none. Versions 1 to 4 date from 2020; the data check below compares
-the files the analysis reads in version 5 with version 4 (2020-09-30), the version current
-when the paper was published.
-
-[... 15 more lines not kept]
+1619 /tmp/claude-1001/nb.txt
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/cb0eec2e-5a19-447f-ba77-7e552111d650/tool-results/bpt0yakjr.txt",
- "limit": 700
-}
-```
-
-```
-1	==================== 0 markdown
-2	# Pelot et al. (2020), vagus nerve morphology of human, pig and rat, on SPARC:60
-3	
-4	**Paper.** Pelot, Goldhagen, Cariello, Musselman, Clissold, Ezzell and Grill (2020),
-5	"Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig,
-6	and Rat", Front. Neurosci. 14, 601479, doi:10.3389/fnins.2020.601479. The claims file
-7	(`claims/pelot-2020.yaml`) was written from the version of record (Europe PMC, PMC7672126),
-8	without the supplement and with Eqs. 1 to 4 lost in the text.
-9	
-10	**Dataset.** SPARC:60, "Quantified morphology of the rat vagus nerve", version 5
-11	(doi:10.26275/lg3c-1kjf, published 2025-02-24), read from the public SPARC bucket at the
-12	object versions its manifest gives. Version 5 is the latest and the version the run was
-13	given; the paper cites none. Versions 1 to 4 date from 2020; the data check below compares
-14	the files the analysis reads in version 5 with version 4 (2020-09-30), the version current
-15	when the paper was published.
-16	
-17	**Sister datasets.** The paper's human and pig data are in three other SPARC datasets that
-18	list the paper as `IsDescribedBy`: SPARC:65 (human anti-claudin-1 IHC), SPARC:64 (pig
-19	Masson's trichrome) and SPARC:89 (pig anti-fibronectin IF), the paper's Pelot et al. (2020a,
-20	f and b). They are used for the claims the claims file marks `with_inputs` or `elsewhere`.
-[... 680 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/cb0eec2e-5a19-447f-ba77-7e552111d650/tool-results/bpt0yakjr.txt",
- "offset": 700,
- "limit": 800
-}
-```
-
-```
-File content (26485 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/cb0eec2e-5a19-447f-ba77-7e552111d650/tool-results/bpt0yakjr.txt",
- "offset": 700,
- "limit": 500
-}
-```
-
-```
-700	7   R21-1  subdiaphragmatic       1   146.02        146.02      146.02
-701	8   R21-3          cervical       1   241.51        241.51      241.51
-702	9   R22-1  subdiaphragmatic       3   110.27        110.27      219.59
-703	10  R22-3          cervical       1   236.73        236.73      236.73
-704	11  R23-1  subdiaphragmatic       2   154.59        154.59      321.23
-705	12  R23-3          cervical       1   293.06        293.06      293.06
-706	13  R24-1  subdiaphragmatic       1   131.30        131.30      131.30
-707	14  R24-3          cervical       1   224.71        224.71      224.71
-708	15  R25-1  subdiaphragmatic       1   154.47        154.47      154.47
-709	16  R25-3          cervical       1   263.22        263.22      263.22
-710	17  R26-1  subdiaphragmatic       1   136.22        136.22      136.22
-711	cervical largest fascicle's outer perineurium: mean 0.2577 mm, SD 0.0249 mm, range 0.2247 to 0.2931
-712	subdiaphragmatic largest fascicle's outer perineurium: mean 0.1352 mm, SD 0.0148 mm, range 0.1103 to 0.1546
-713	variant, connective tissue boundary for the multifascicular samples: mean 0.1748, SD 0.0660 mm
-714	
-715	--OUT--
-716	R17-1 has one fascicle but a NerveMask: its diameter 126.85 um (not used by the code)
-717	
-718	==================== 21 markdown
-719	## rat-subdiaphragmatic-multifascicular
-[... 480 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/cb0eec2e-5a19-447f-ba77-7e552111d650/tool-results/bpt0yakjr.txt",
- "offset": 1199,
+ "file_path": "/tmp/claude-1001/nb.txt",
  "limit": 450
 }
 ```
 
 ```
-1199	
-1200	==================== 49 markdown
-1201	## rat-level-ratios
-1202	
-1203	> In rats the ratio of mean subdiaphragmatic to mean cervical endoneurial area is 0.32 and
-1204	> the ratio of mean nerve diameters is 0.68.
-1205	==================== 50 code
-1206	ra = R.set_index("label")
-1207	def ratio(col_a, col_c):
-1208	    return ra[ra.level == "subdiaphragmatic"][col_a].mean() / ra[ra.level == "cervical"][col_c].mean()
-1209	rd_a = ratio("endo_area", "endo_area"), ratio("d_nerve", "d_nerve")
-1210	rd_b = ratio("endo_area_all", "endo_area_all"), ratio("d_nerve_ct", "d_nerve_ct")
-1211	print("(a) largest fascicle: endoneurial area ratio %.3f, nerve diameter ratio %.3f" % rd_a)
-1212	print("(b) all fascicles and connective tissue boundary: endoneurial area ratio %.3f, nerve diameter ratio %.3f" % rd_b)
-1213	print("expected 0.32 +/- 0.032 and 0.68 +/- 0.068; the Results' means give 0.135/0.260 = %.3f" % (0.135 / 0.260))
-1214	print("within: (a) %s, %s | (b) %s, %s" % (abs(rd_a[0] - 0.32) <= 0.032, abs(rd_a[1] - 0.68) <= 0.068, abs(rd_b[0] - 0.32) <= 0.032, abs(rd_b[1] - 0.68) <= 0.068))
-1215	print("other ratios: mean nerve area (a) %.3f, (b) %.3f; mean fascicle diameter %.3f" % (
-1216	    ratio("nerve_area", "nerve_area"), ratio("nerve_area_ct", "nerve_area_ct"), ratio("d_fasc_largest", "d_fasc_largest")))
-1217	--OUT--
-1218	(a) largest fascicle: endoneurial area ratio 0.270, nerve diameter ratio 0.525
+1	===== [0] markdown
+2	# Reproducing Pelot et al. (2020), quantified morphology of the human, pig and rat vagus nerves
+3	
+4	Paper. Pelot NA, Goldhagen GB, Cariello JE, Musselman ER, Clissold KA, Ezzell JA, Grill WM (2020).
+5	"Quantified Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat".
+6	*Front. Neurosci.* 14:601479, doi:10.3389/fnins.2020.601479.
+7	
+8	Claims. `claims/pelot-2020.yaml`, written from the version of record (Europe PMC full text,
+9	PMC7672126: main text, Methods, legends; no supplement, Eqs. 1 to 4 missing from the text).
+10	
+11	Datasets and versions. Seven SPARC datasets, each read anonymously from the public bucket at the
+12	object versions listed by the version's `manifest.json`:
+13	
+14	| Folder | SPARC id | Version | DOI | What it holds |
+15	|---|---|---|---|---|
+16	| sparc-60 | 60 | 5 | 10.26275/lg3c-1kjf | rat MT traces (binary masks), code, output metrics |
+17	| sparc-64 | 64 | 4 | 10.26275/maq2-eii4 | pig MT traces and micrographs, code |
+18	| sparc-65 | 65 | 8 | 10.26275/qgja-q7zd | human anti-claudin-1 micrographs and traces, code, output metrics, Sunderland data |
+19	| sparc-89 | 89 | 1 | 10.26275/8pc2-rhu2 | pig anti-fibronectin micrographs and traces, code |
+20	| sparc-16 | 16 | 5 | 10.26275/z3ab-7j9y | rat MT micrographs |
 [... 430 more lines not kept]
 ```
 
@@ -257,126 +224,242 @@ File content (26485 tokens) exceeds maximum allowed tokens (25000). Use offset a
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/cb0eec2e-5a19-447f-ba77-7e552111d650/tool-results/bpt0yakjr.txt",
- "offset": 1648,
- "limit": 500
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 450,
+ "limit": 450
 }
 ```
 
 ```
-1648	## perineurium-no-level-difference
-1649	
-1650	> The relationship between perineurium thickness and fascicle diameter does not differ
-1651	> between cervical and subdiaphragmatic nerves in any of the three species.
-1652	==================== 75 code
-1653	import statsmodels.formula.api as smf
-1654	from statsmodels.stats.anova import anova_lm
-1655	nld = {}
-1656	for sp in ["human", "pig", "rat"]:
-1657	    sub = PR[PR.species == sp]
-1658	    fc = v.fit_poly1(sub[sub.level == "cervical"].d, sub[sub.level == "cervical"].thk)
-1659	    fa = v.fit_poly1(sub[sub.level == "subdiaphragmatic"].d, sub[sub.level == "subdiaphragmatic"].thk)
-1660	    overlap = [bool(fc["ci"][i, 0] <= fa["ci"][i, 1] and fa["ci"][i, 0] <= fc["ci"][i, 1]) for i in range(2)]
-1661	    m0 = smf.ols("thk ~ d", sub).fit()
-1662	    m1 = smf.ols("thk ~ d * C(level)", sub).fit()
-1663	    ft = anova_lm(m0, m1)
-1664	    nld[sp] = (all(overlap), float(ft["Pr(>F)"].iloc[1]))
-1665	    print("%s: cervical n = %d p1 %.4f [%.4f, %.4f] p2 %.3f [%.3f, %.3f] | subdiaphragmatic n = %d p1 %.4f [%.4f, %.4f] p2 %.3f [%.3f, %.3f]" %
-1666	          (sp, fc["n"], fc["p1"], *fc["ci"][0], fc["p2"], *fc["ci"][1], fa["n"], fa["p1"], *fa["ci"][0], fa["p2"], *fa["ci"][1]))
-1667	    print("    (a) bounds overlap, slope %s, intercept %s | (b) F test of level terms F = %.3f, p = %.3g" %
-[... 272 more lines not kept]
+450	sparc-61 analysed samples present: 18 of 18
+451	
+452	--- out:
+453	sparc-82 analysed samples present: 18 of 18
+454	sparc-16 analysed samples present: 18 of 18
+455	
+456	===== [20] markdown
+457	## nerve-diameter-anova
+458	
+459	> Effective nerve diameter differs across species and across nerve levels, with no detected
+460	> interaction of species and level.
+461	
+462	Mixed model of effective nerve diameter (um), fixed species, level and interaction, random subject,
+463	REML; readings (a) variance component unbounded (JMP default), (b) bounded at zero. Rat nerve
+464	diameter is the outer perineurium of the largest fascicle (Methods). Denominator degrees of freedom
+465	by Satterthwaite (assumption, see `mixed.py`).
+466	===== [21] code
+467	D3 = mixed.Design(MAIN, "species", "level", ["human", "pig", "rat"], ["C", "S"])
+468	nd_fit = {}
+469	for reading, bounded in [("a unbounded", False), ("b bounded", True)]:
+[... 430 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 899,
+ "limit": 400
+}
+```
+
+```
+899	===== [45] code
+900	sel = TK_FD[[a[0] == b[0] for a, b in zip(TK_FD["first"], TK_FD["second"])]]
+901	print("Satterthwaite df:"); print(sel[["first", "second", "diff", "df", "p"]].round(5).to_string(index=False))
+902	n_sub, n_sam = FASC.subject.nunique(), FASC["sample"].nunique()
+903	df_cont = n_sam - n_sub - 3
+904	tk2 = mixed.tukey(fd_fit["a unbounded"], "ab", df=df_cont)
+905	sel2 = tk2[[a[0] == b[0] for a, b in zip(tk2["first"], tk2["second"])]]
+906	print(f"\nvariant, containment df for the within-subject stratum ({n_sam} samples - {n_sub} subjects - 3 = {df_cont}):")
+907	print(sel2[["first", "second", "p"]].round(5).to_string(index=False))
+908	print("\npaper: humans p < 0.0001, pigs p = 0.0009, rats p = 0.0234")
+909	--- out:
+910	Satterthwaite df:
+911	     first     second    diff        df       p
+912	(human, C) (human, S) 0.36945  25.06612 0.00001
+913	  (pig, C)   (pig, S) 0.16044   3.75574 0.04783
+914	  (rat, C)   (rat, S) 0.28600 346.65419 0.04425
+915	
+916	variant, containment df for the within-subject stratum (54 samples - 35 subjects - 3 = 16):
+917	     first     second       p
+918	(human, C) (human, S) 0.00008
+[... 380 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1298,
+ "limit": 330
+}
+```
+
+```
+1298	> of fascicle diameter for perineurium thickness, with R2 = 0.51.
+1299	
+1300	The 777 values are in sparc-65 (`files/code/Sunderland1984.mat`, "Data from Tables 1 to 4 in
+1301	Sunderland, S., Bradley, K.C., 1952", per `Sunderland1984_Plotting.m`).
+1302	===== [77] code
+1303	sund = pelot.read_mat("sparc-65", "files/code/Sunderland1984.mat")
+1304	x, y = sund["dfasc_um"].astype(float), sund["thk_peri_um"].astype(float)
+1305	f = pelot.line_fit(x, y, zero=True)
+1306	print(f"n = {len(x)}; d {x.min():.0f} to {x.max():.0f} um; thickness {y.min()} to {y.max()} um")
+1307	print(f"zero-intercept slope = {100 * f['slope']:.3f}%; R2 about the mean = {f['r2']:.3f}; uncentred R2 = {f['r2_uncentred']:.3f}")
+1308	--- out:
+1309	n = 777; d 36 to 1884 um; thickness 1.25 to 100.0 um
+1310	zero-intercept slope = 2.750%; R2 about the mean = 0.510; uncentred R2 = 0.853
+1311	
+1312	===== [78] markdown
+1313	## rat-perineurium-near-3-percent
+1314	
+1315	> Rat perineurium thickness is close to the published 3% of fascicle diameter, slightly thicker for
+1316	> smaller fascicles and thinner for larger ones.
+1317	===== [79] code
+[... 303 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 -c "
-import json
-nb=json.load(open('reproduce_pelot_2020.ipynb'))
-print(len(nb['cells']))
-for i in [58]+list(range(90,len(nb['cells']))):
-    c=nb['cells'][i]
-    print('='*20,i,c['cell_type'])
-    if i>58: print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text'])[5000:] if i==58 else ''.join(o['text'])[:3000])
-"
+cd $TMPDIR; for ds in 60:5 64:4 65:8 89:1; do id=${ds%%:*}; v=${ds##*:}; echo "== $id v$v"; curl -s "https://api.pennsieve.io/discover/datasets/$id/versions/$v/files/browse?path=files/code&limit=500" | python3 -c "
+import json,sys; d=json.load(sys.stdin)
+for f in d.get('files',[]): print(f.get('path'), f.get('size'))
+"; done
 ```
 
-```
-90
-==================== 58 code
-    True             NaN
-31  Stakenborg et al. 2020  5 R + 1 L     ??   6    2.0170    0.347       SD     1.9217   0.4601    1.0255    2.5469            True        True             1.0
-===== human subdiaphragmatic nerve area
-                 reference     laterality  sex                                                 n  lit_mean  lit_var var_kind  here_mean  here_sd  here_min  here_max  within_mean_sd  here_below  ranges_overlap
-7              Tailai 1980            Ant   ??  100 cadavers; 139 samples due to multiple trunks    1.9113      NaN      NaN     2.2786   0.8889    1.4385    3.9288            True       False             NaN
-8              Tailai 1980           Post  NaN  100 cadavers; 129 samples due to multiple trunks    3.8013      NaN      NaN     2.2786   0.8889    1.4385    3.9288           False        True             NaN
-9           Gravgaard 1968   Ant (i.e. L)    M                        See note on nerve diameter    3.0172      NaN      NaN     2.2786   0.8889    1.4385    3.9288            True        True             NaN
-10          Gravgaard 1968   Ant (i.e. L)    F                                               NaN    2.3779      NaN      NaN     2.2786   0.8889    1.4385    3.9288            True        True             NaN
-11          Gravgaard 1968  Post (i.e. R)    M                                               NaN    6.4692      NaN      NaN     2.2786   0.8889    1.4385    3.9288           False        True             NaN
-12          Gravgaard 1968  Post (i.e. R)    F                                               NaN    3.5633      NaN      NaN     2.2786   0.8889    1.4385    3.9288           False        True             NaN
-13  Stakenborg et al. 2020           Post   ??                                                 6    2.8832      NaN      NaN     2.2786   0.8889    1.4385    3.9288            True        True             NaN
-===== human subdiaphragmatic nerve diameter
-                 reference
-[... 34 more lines not kept]
-```
+Result: the fetched text is not kept.
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 -c "
-import numpy as np, vagus as v
-# square 10x10
-bw=np.zeros((30,30),bool); bw[5:15,5:15]=True
-o,h=v.bwboundaries(bw); print('square', len(o),len(h), v.polyarea(o[0]))
-# ring
-bw2=np.zeros((40,40),bool); bw2[5:35,5:35]=True; bw2[10:30,10:30]=False
-o,h=v.bwboundaries(bw2); print('ring', len(o),len(h), v.polyarea(o[0]), v.polyarea(h[0]))
-# two rings, one with two holes (peanut)
-bw3=np.zeros((60,100),bool); bw3[5:55,5:55]=True; bw3[10:25,10:50]=False; bw3[30:50,10:50]=False
-bw3[5:30,60:90]=True; bw3[10:25,65:85]=False
-o,h=v.bwboundaries(bw3)
-r=v.analyze(o,h,o[0],1.0); print({k:r[k] for k in ['n_fasc','n_nonpeanut','n_peanut_outer','n_peanut_inner','n_unmatched']})
-x=np.random.rand(50); y=2*x+1+0.1*np.random.randn(50)
-f=v.fit_poly1(x,y); print(f['p1'],f['p2'],f['r2'], np.polyfit(x,y,1), np.corrcoef(x,y)[0,1]**2)
-print(v.scale_um_per_px(np.pad(np.ones((3,50),bool),((2,2),(10,10))),100))
-"
+cd $TMPDIR; curl -s "https://api.pennsieve.io/discover/datasets/65/versions/8/files/browse?path=files/code&limit=500" | python3 -c "
+import json,sys; d=json.load(sys.stdin)
+print(json.dumps([f for f in d['files'] if 'DataPlotting' in f['path'] or 'README' in f['path']],indent=1))"; curl -s "https://api.pennsieve.io/discover/datasets/65/versions/8/metadata" | head -c 3000
+```
+
+Result: the fetched text is not kept.
+
+**Agent**
+
+I won't fetch code contents (the instructions allow file lists and metadata only). Now testing `mixed.py` on synthetic designs where the exact answers are known.
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/t.py <<'EOF'
+import numpy as np, pandas as pd, mixed, pelot
+from scipy import stats
+rng=np.random.default_rng(1)
+# balanced split-plot: 3 species x 6 subjects each, both levels per subject
+rows=[]
+for sp in ["h","p","r"]:
+    for s in range(6):
+        u=rng.normal(0,1.0)
+        for lv in "CS":
+            rows.append(dict(species=sp,level=lv,subject=f"{sp}{s}",y=u+rng.normal(0,1)+(lv=="C")*0.8+{"h":0,"p":1,"r":3}[sp]))
+df=pd.DataFrame(rows)
+D=mixed.Design(df,"species","level",["h","p","r"],["C","S"])
+f=mixed.fit(df,"y",D,["subject"],bounded=False)
+print(mixed.anova(f))
+import statsmodels.formula.api as smf
+# classical split-plot: species tested vs subject(species) df=15; level, interaction vs residual df=15
+import statsmodels.api as sm
+m=smf.ols("y~C(species,Sum)*C(level,Sum)+C(subject)",df).fit()
+print("expected ddf: species 15, level 15, inter 15")
+# Wald F for level within-subject should equal classical F
+# check classical
+a=sm.stats.anova_lm(m,typ=1); print(a)
+# nested: subject > sample > fascicles, like fascicle model; design: species between subject, level between sample within subject
+rows=[]
+for sp in ["h","p","r"]:
+    for s in range(6):
+        u=rng.normal(0,0.1)
+        for lv in "CS":
+            v=rng.normal(0,0.05)
+            nf = 1 if sp=="r" else rng.integers(5,40)
+            for k in range(nf):
+                rows.append(dict(species=sp,level=lv,subject=f"{sp}{s}",sample=f"{sp}{s}{lv}",y=u+v+rng.normal(0,0.2)+(lv=="C")*0.1))
+df2=pd.DataFrame(rows)
+D2=mixed.Design(df2,"species","level",["h","p","r"],["C","S"])
+f2=mixed.fit(df2,"y",D2,["subject","sample"],bounded=False)
+print(f2.tau2,f2.sigma2); print(mixed.anova(f2))
+tk=mixed.tukey(f2,"ab"); print(tk[[a[0]==b[0] for a,b in zip(tk["first"],tk["second"])]])
+EOF
+python3 $TMPDIR/t.py
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import numpy as np, vagus as v
+  File "/tmp/claude-1001/t.py", line 1, in <module>
+    import numpy as np, pandas as pd, mixed, pelot
 ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls node_modules; which -a python3 python; ls ~/.local/bin 2>/dev/null; pip --version 2>&1; uv --version 2>&1
+cd  ls /usr/bin/python3* ; which -a python python3; ls ~/.venv* /opt 2>/dev/null | head; pip list 2>/dev/null | grep -i -E "numpy|scipy|pandas|statsmodels"
 ```
 
 ```
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
 /usr/bin/python3
-/bin/python3
+/usr/bin/python3-config
+/usr/bin/python3.14
+/usr/bin/python3.14-config
 /opt/hostedtoolcache/Python/3.13.18/x64/bin/python
 /opt/hostedtoolcache/Python/3.13.18/x64/python
 /usr/bin/python
 /bin/python
-pip 26.3 from /opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/pip (python 3.13)
-uv 0.13.9 (x86_64-unknown-linux-gnu)
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
+/usr/bin/python3
+/bin/python3
+/opt:
+actionarchivecache
+az
+containerd
+google
+hca
+hostedtoolcache
+microsoft
+pipelinesagent-cache
+[... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && uv venv -q venv 2>&1 | tail -2; . venv/bin/activate && uv pip install -q numpy scipy pandas opencv-python-headless matplotlib fsspec tifffile statsmodels patsy 2>&1 | tail -3; python -c "import numpy, cv2, statsmodels; print('ok')"
+cd  for p in /opt/hostedtoolcache/Python/*/x64/bin/python3 /usr/bin/python3.14; do echo $p; $p -c "import numpy,scipy,pandas;print('ok')" 2>&1|tail -1; done
 ```
 
 ```
+/opt/hostedtoolcache/Python/3.11.18/x64/bin/python3
+ModuleNotFoundError: No module named 'numpy'
+/opt/hostedtoolcache/Python/3.12.16/x64/bin/python3
+ModuleNotFoundError: No module named 'numpy'
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
+ModuleNotFoundError: No module named 'numpy'
+/opt/hostedtoolcache/Python/3.14.10/x64/bin/python3
+ModuleNotFoundError: No module named 'numpy'
+/opt/hostedtoolcache/Python/3.15.2/x64/bin/python3
+ModuleNotFoundError: No module named 'numpy'. Did you mean: 'runpy'?
+/usr/bin/python3.14
+ModuleNotFoundError: No module named 'numpy'
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 -m venv v && v/bin/pip install -q numpy scipy pandas statsmodels 2>&1 | tail -2; v/bin/python -c "import numpy,scipy,pandas,statsmodels;print('ok')"
+```
+
+```
+[notice] A new release of pip is available: 26.2.2 -> 26.3
+[notice] To update, run: /tmp/claude-1001/v/bin/python3 -m pip install --upgrade pip
 ok
 Shell cwd was reset to
 ```
@@ -384,217 +467,238 @@ Shell cwd was reset to
 **Agent calls Bash**
 
 ```bash
-cd  $TMPDIR/venv/bin/python -c "
-import numpy as np, pandas as pd, vagus as v
-bw=np.zeros((30,30),bool); bw[5:15,5:15]=True
-o,h=v.bwboundaries(bw); print('square', len(o),len(h), v.polyarea(o[0]))
-bw2=np.zeros((40,40),bool); bw2[5:35,5:35]=True; bw2[10:30,10:30]=False
-o,h=v.bwboundaries(bw2); print('ring', len(o),len(h), v.polyarea(o[0]), v.polyarea(h[0]))
-bw3=np.zeros((60,100),bool); bw3[5:55,5:55]=True; bw3[10:25,10:50]=False; bw3[30:50,10:50]=False
-bw3[5:30,60:90]=True; bw3[10:25,65:85]=False
-o,h=v.bwboundaries(bw3)
-r=v.analyze(o,h,o[0],1.0); print({k:r[k] for k in ['n_fasc','n_nonpeanut','n_peanut_outer','n_peanut_inner','n_unmatched']})
-rng=np.random.default_rng(0)
-x=rng.random(50); y=2*x+1+0.1*rng.standard_normal(50)
-f=v.fit_poly1(x,y); print(f['p1'],f['p2'],f['r2'], np.polyfit(x,y,1), np.corrcoef(x,y)[0,1]**2)
-print(v.scale_um_per_px(np.pad(np.ones((3,50),bool),((2,2),(10,10))),100))
-# tukey / reml on a design with no subject effect, compare with OLS
-rows=[]
-for sp,mu in [('a',0),('b',0.5),('c',1.0)]:
-  for lv,dl in [('x',0),('y',0.3)]:
-    for i in range(9):
-      rows.append(dict(species=sp,level=lv,subject=f'{sp}{i}{lv}',y=mu+dl+rng.standard_normal()))
-df=pd.DataFrame(rows)
-tab,vc,fit=v.reml_unbounded(df,'y','subject')
-print(tab.round(4)); print(vc)
-tk,m=v.tukey(dict(fit,satt=True),df,[('a','b'),('a','c'),('b','c')],'a'); print(tk.round(4))
-from statsmodels.formula.api import ols
-from statsmodels.stats.anova import anova_lm
-print(anova_lm(ols('y~C(species,Sum)*C(level,Sum)',df).fit(),typ=3).round(4))
-"
+cd  sed -i 's/, pelot$//' $TMPDIR/t.py; sed -i '1s/, pelot//' $TMPDIR/t.py; timeout 3000 $TMPDIR/v/bin/python $TMPDIR/t.py 2>&1 | grep -v Warning
 ```
 
 ```
-square 1 0 81.0
-ring 1 1 841.0 361.0
-{'n_fasc': 3, 'n_nonpeanut': 1, 'n_peanut_outer': 1, 'n_peanut_inner': 2, 'n_unmatched': 0}
-2.0523362018372664 0.9757471145959166 0.9729863955726895 [2.0523362  0.97574711] 0.9729863955726892
-2.0
-            term  df       F  p_resid_df  p_subject_df  df_satt  p_satt
-0        species   2  5.0948      0.0099        0.0099  48.0001  0.0099
-1          level   1  0.8698      0.3557        0.3557  48.0001  0.3557
-2  species:level   2  2.1569      0.1268        0.1268  48.0001  0.1268
-{'residual': 0.5774936646190053, 'subject': 0.30573914871009816}
-    pair    diff      se       t       df  p_tukey
-0  a - b -0.5516  0.3133 -1.7608  48.0001   0.1937
-1  a - c -0.9981  0.3133 -3.1862  48.0001   0.0070
-2  b - c -0.4465  0.3133 -1.4254  48.0001   0.3361
-                                sum_sq    df        F  PR(>F)
-Intercept                      22.5272   1.0  25.5054  0.0000
-C(species, Sum)                 8.9997   2.0   5.0948  0.0099
-C(level, Sum)                   0.7682   1.0   0.8698  0.3557
-C(species, Sum):C(level, Sum)   3.8102   2.0   2.1569  0.1268
-Residual                       42.3952  48.0      NaN     NaN
-```
-
-**Agent**
-
-Helpers check out on synthetic inputs. Next I'm checking the archive file list for the blocked carotid-sheath claim.
-
-**Agent calls Bash**
-
-```bash
-cd  $TMPDIR/venv/bin/python -c "
-import vagus as v
-fs=v.files('60')
-for p,f in sorted(fs.items()):
-    if not p.startswith('metadata') and ('primary' in p and 'sub-16' in p or 'derivative' in p and ('sub-16' in p or 'sub-17/sam-3' in p) or 'docs' in p or 'code' in p or 'protocol' in p):
-        print(f['size'], p)
-"
-```
-
-```
-Exit code 1
 Traceback (most recent call last):
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/fsspec/registry.py", line 268, in get_filesystem_class
-    register_implementation(protocol, _import_class(bit["class"]))
-                                      ~~~~~~~~~~~~~^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/fsspec/registry.py", line 303, in _import_class
-    mod = importlib.import_module(mod)
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/importlib/__init__.py", line 88, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
-  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/fsspec/implementations/http.py", line 9, in <module>
-    import aiohttp
-ModuleNotFoundError: No module named 'aiohttp'
-
-[... 35 more lines not kept]
+  File "/tmp/claude-1001/t.py", line 1, in <module>
+    import numpy as np, pandas as pd, mixed
+ModuleNotFoundError: No module named 'mixed'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; curl -s "https://api.pennsieve.io/discover/datasets/60/versions/5/files/browse?limit=100&path=files/derivative/sub-16/sam-3" | head -c 3000; echo; curl -s "https://api.pennsieve.io/discover/datasets/60/versions/5/files/browse?limit=100&path=files/primary/sub-16/sam-3" | $TMPDIR/venv/bin/python -c "import json,sys; d=json.load(sys.stdin); [print(f['path'],f['size']) for f in d['files']]"; curl -s "https://api.pennsieve.io/discover/datasets/60/versions/5/files/browse?limit=100&path=files/docs" | $TMPDIR/venv/bin/python -c "import json,sys; d=json.load(sys.stdin); [print(f['path'],f['size']) for f in d['files']]"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; for s in 16/sam-3 17/sam-3 18/sam-1 20/sam-3 21/sam-3 22/sam-3 23/sam-3 24/sam-3 25/sam-3; do curl -s "https://api.pennsieve.io/discover/datasets/60/versions/5/files/browse?limit=100&path=files/derivative/sub-$s" | $TMPDIR/venv/bin/python -c "import json,sys; d=json.load(sys.stdin); [print(f['path'],f['size']) for f in d['files'] if f['path'].endswith('jp2')]"; done
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Grep**
-
-```json
-{
- "pattern": "Stakenborg|5 to 399|largest fascicle|six fascicles|Supplement 6|trended larger|compared well",
- "path": "paper/10.3389-fnins.2020.601479.txt",
- "output_mode": "content"
-}
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd paper; grep -o -E ".{300}(Stakenborg et al., 2020\)|subdiaphragmatic VNs? (were|was|compared)|human subdiaphragmatic).{300}" 10.3389-fnins.2020.601479.txt | head -8; echo ----; grep -o -E ".{200}(Supplement 6|six fascicles).{200}" 10.3389-fnins.2020.601479.txt
+cd  PYTHONPATH=. timeout 3000 $TMPDIR/v/bin/python $TMPDIR/t.py 2>&1 | grep -v Warning
 ```
 
 ```
-cicle diameters were more consistent across samples for the pig nerves than for the humans nerves ( Figure 6 ), as expected given the variability in age, weight, height, lifestyle, health status, etc. across the human subjects. Further, pig nerves had consistent collagenous epineurium, whereas many human subdiaphragmatic nerves had fatty extrafascicular tissue ( Supplement 3 ), and pig nerves were consistently oblong in shape, whereas the human samples were more circular at the cervical level ( Figures 2 , 3 , Supplement 3 ). The human endoneurium occupied a larger proportion of the nerve at the cervical level (32 
-cal VNs were comparable to previous reports, but the nerve cross-sectional areas and effective diameters were generally smaller, albeit with overlapping ranges. Consequently, we estimated a larger proportion of endoneurium over the cross section. The cross-sectional areas and effective diameters of human subdiaphragmatic VNs compared well to literature, particularly comparing to the published measurements for the anterior VN; we counted fewer fascicles than one prior study that examined the posterior branch. Our numbers of fascicles for the pig VN were consistent with literature, although the published data were fo
- into three anterior branches (hepatic, accessory celiac, and anterior gastric) and two posterior branches (celiac and posterior gastric), although variations are common (double trunks, additional branches, and different branching order) ( Legros and Griffith, 1969 ; Prechtl and Powley, 1985 ). The human subdiaphragmatic vagal trunks most commonly include a single anterior trunk passing through the esophageal hiatus that splits into the hepatic and anterior gastric branches, as well as a single posterior trunk that splits into the celiac and posterior gastric branches ( Tailai et al., 1980 ; Skandalakis et al., 198
-t al., 1973 ), with some indication of decreased unmyelinated axon diameter ( Ochoa and Mair, 1969 )], and electrophysiology [inclu
+m=smf.ols("y~C(species,Sum)*C(level,Sum)+C(subject)",df).fit()
+            term          F  df_num     df_den         p
+0        species   4.833531       2  15.000002  0.023977
+1          level  13.252830       1  15.000001  0.002417
+2  species*level   0.915618       2  15.000001  0.421516
+expected ddf: species 15, level 15, inter 15
+                                 df     sum_sq  ...          F        PR(>F)
+C(species, Sum)                 2.0  40.482313  ...  62.884799  5.091760e-08
+C(level, Sum)                   1.0   4.265778  ...  13.252830  2.416722e-03
+C(subject)                     17.0  63.657290  ...  11.633478  9.439684e-06
+C(species, Sum):C(level, Sum)   2.0   0.151036  ...   0.234617  7.937217e-01
+Residual                       15.0   4.828152  ...        NaN           NaN
+
+[5 rows x 5 columns]
+{'subject': 0.007808799566791382, 'sample': 0.0021466819876154878} 0.0368740982475696
+            term         F  df_num      df_den         p
+0        species  4.436682       2   14.001259  0.032178
+1          level  0.086928       1  131.023534  0.768586
+2  species*level  0.856868       2   18.541515  0.440629
+     first  second      diff        se          df         p
 [... 3 more lines not kept]
 ```
 
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/t2.py <<'EOF'
+import numpy as np, pandas as pd, mixed
+from scipy import stats
+rng=np.random.default_rng(1)
+rows=[]
+for sp in ["h","p","r"]:
+    for s in range(6):
+        u=rng.normal(0,1.0)
+        for lv in "CS":
+            rows.append(dict(species=sp,level=lv,subject=f"{sp}{s}",y=u+rng.normal(0,1)+(lv=="C")*0.8+{"h":0,"p":1,"r":3}[sp]))
+df=pd.DataFrame(rows)
+w=df.pivot(index="subject",columns="level",values="y"); w["sp"]=w.index.str[0]; w["d"]=w.C-w.S; w["m"]=(w.C+w.S)/2
+print("interaction (oneway on diffs):", stats.f_oneway(*[g.d for _,g in w.groupby("sp")]))
+print("species (oneway on means):", stats.f_oneway(*[g.m for _,g in w.groupby("sp")]))
+d=w.d; print("level: t^2 vs grand mean of d with pooled", )
+for b in [False, True]:
+    D=mixed.Design(df,"species","level",["h","p","r"],["C","S"])
+    f=mixed.fit(df,"y",D,["subject"],bounded=b); print(b, f.tau2, f.sigma2); print(mixed.anova(f))
+EOF
+PYTHONPATH=. $TMPDIR/v/bin/python $TMPDIR/t2.py 2>&1 | grep -v Warn
+```
+
+```
+interaction (oneway on diffs): F_onewayResult(statistic=np.float64(0.9156183113093859), pvalue=np.float64(0.4215161812458406))
+species (oneway on means): F_onewayResult(statistic=np.float64(4.833531259336812), pvalue=np.float64(0.023977488087178606))
+level: t^2 vs grand mean of d with pooled
+False {'subject': 1.9328885644459426} 0.3218767726598688
+            term          F  df_num     df_den         p
+0        species   4.833531       2  15.000002  0.023977
+1          level  13.252830       1  15.000001  0.002417
+2  species*level   0.915618       2  15.000001  0.421516
+True {'subject': 1.9328889259236302} 0.3218767767282168
+            term          F  df_num     df_den         p
+0        species   4.833530       2  14.999997  0.023978
+1          level  13.252830       1  15.000000  0.002417
+2  species*level   0.915618       2  15.000000  0.421516
+```
+
 **Agent**
 
-**A. Outcomes** (35 claims in the claims file, all of them addressed in the notebook)
+`mixed.py` matches the classical split-plot ANOVA exactly on a balanced synthetic design (F and df). Now looking at the micrograph images in the notebook to check the by-eye readings.
+
+**Agent calls Bash**
+
+```bash
+cd  $TMPDIR/v/bin/python -c "
+import json,base64
+nb=json.load(open('reproduce_pelot_2020.ipynb'))
+for i in [61,91,93,95]:
+    k=0
+    for o in nb['cells'][i].get('outputs',[]):
+        if 'data' in o and 'image/png' in o['data']:
+            open(f'$TMPDIR/img{i}_{k}.png','wb').write(base64.b64decode(o['data']['image/png'])); k+=1
+"; ls -la $TMPDIR/*.png
+```
+
+```
+-rw-r--r-- 1 runner runner   73920 Nov 20 04:43 /tmp/claude-1001/img61_0.png
+-rw-r--r-- 1 runner runner  525784 Nov 20 04:43 /tmp/claude-1001/img91_0.png
+-rw-r--r-- 1 runner runner  487257 Nov 20 04:43 /tmp/claude-1001/img91_1.png
+-rw-r--r-- 1 runner runner 1378451 Nov 20 04:43 /tmp/claude-1001/img93_0.png
+-rw-r--r-- 1 runner runner 2263090 Nov 20 04:43 /tmp/claude-1001/img93_1.png
+-rw-r--r-- 1 runner runner 2272112 Nov 20 04:43 /tmp/claude-1001/img95_0.png
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/img93_1.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/img91_0.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/img95_0.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -o -i ".\{300\}largest fascicle.\{300\}" *.txt | head; grep -o -i ".\{200\}Kenward.\{100\}\|.\{200\}Tukey.\{100\}" *.txt | head -3; grep -o -i ".\{300\}ages\b.\{200\}" *.txt | head -3
+```
+
+```
+Inc.). For the rat MT micrographs ( Figure 5 ), we used the manual segmentation tools in NIS-Elements. For the rat cervical VN samples, we identified the vagus as the largest nerve in the carotid sheath (also see Discussion). For the rat subdiaphragmatic VN samples, we identified and segmented the largest fascicle on the anterior surface of the esophagus; we also segmented smaller fascicles nearby if they were within a distance of approximately twice the diameter of the largest fascicle from the edge of the largest fascicle, as well as an associated nerve boundary where denser connective tissue transitioned 
+cluded fixed effects of species (human, pig, and rat for nerve diameter; only human and pig for number of fascicles) and nerve level (cervical, subdiaphragmatic), as well as the random effect of subject number; we excluded rats from the analysis of number of fascicles because we only considered the largest fascicle in each sample. For fascicle diameters, we took the common logarithm of the data, and we also included the random effect of sample number, since there were multiple fascicle measurements per nerve in the cases of multifascicular samples. We followed the ANOVAs with Tukey’s HSD test for post hoc ana
+Insets are provided for the rat data with more constrained y -axes. First row: Effective nerve diameter, i.e., diameter of a circle with the same cross-sectional area as the original nerve trace. For the three multifascicular rat subdiaphragmatic VNs, the red square is the effective diameter of the largest fascicle (outer perineurium boundary); the open triangle is the effective diameter of the connective tissue identified surrounding the fascicles. Second row: Effective fascicle diameters, i.e., diameter of circles with the same cross-sectional areas as the original inner perineurial traces. These diameters 
+numbers include fiber bundles within peanut fascicles, i.e., total number of inner perineurial traces. Fourth row: Proportion of nerve cross-sectional
+[... 10 more lines not kept]
+```
+
+**Agent**
+
+**Verifier report: Pelot et al. 2020, round 1**
+
+The claims file has 43 claims. My outcomes: 36 reproduced, 2 partially reproduced, 3 not reproduced, 2 blocked.
+
+### A. Outcomes
 
 | Claim | Outcome | Reason |
 |---|---|---|
-| rat-sample-set | reproduced | Cell 18: 9 cervical and 9 subdiaphragmatic samples, 4F/5M at each level, 10 Sprague-Dawley rats, 75–268 days, 381.1 ± 118.4 g. |
-| nerve-diameter-anova | reproduced | Cell 28, unbounded REML: species F = 599.6 (p < 1e-4), level F = 11.05 (p = 0.0029), interaction F = 2.455 (p = 0.107). The paper has 577.1, 11.01 and 2.445. The bounded REML variant makes the interaction significant (p = 0.024); see B4. |
-| human-pig-nerve-diameter-similar | reproduced | Cell 30: the four means are within the paper's SDs (1.922, 2.195, 1.677, 1.638 mm). Tukey human vs pig main effect p = 0.157 (paper 0.183); effect size −0.32. |
-| rat-nerve-diameter | reproduced | Cell 20: 0.2577 ± 0.0249 and 0.1352 ± 0.0148 mm. Both means and both SDs are within tolerance. |
-| rat-ten-times-smaller | reproduced | Cell 32: rat vs human and rat vs pig p ≈ 1e-12 to 1e-14, rat smaller. Ratios 0.134, 0.117, 0.081 and 0.082, all inside 0.05–0.2. |
-| nerve-cervical-larger | reproduced | Cell 34: level p = 0.0029, cervical least squares mean 1.425 > 1.131 mm. Relative difference human 0.127 < pig 0.254 and rat 0.475. This rests on the claims file's own reading of "clearest". |
-| fascicle-number-human-pig | reproduced | Cell 36: means within the SDs. Species p < 1e-4, level p = 0.026, interaction p = 0.12 (F = 216.7, 5.79, 2.61 against the paper's 213.8, 5.486, 2.481). |
-| rat-subdiaphragmatic-multifascicular | reproduced | Cell 22: all 9 cervical samples have one fascicle. Exactly R16-1, R22-1 and R23-1 are multifascicular (2, 3 and 2 fascicles). |
-| rat-multifascicular-proportions | reproduced | Cell 24: 9 of 9 values within 10%, essentially exact. |
-| fascicle-diameter-anova | reproduced | Cell 38: species p = 0.0011, level p < 1e-4, interaction p = 0.0085. Same result in the code-rule and bounded variants. |
-| rat-fascicle-diameter | reproduced | Cell 26: 0.2486 and 0.1291 mm, within the paper's SDs. The code's first-trace rule gives 0.1211 ± 0.0323, the paper's numbers exactly (B1). |
-| cervical-fascicle-diameter-species | reproduced | Cells 40–41: human vs pig p = 0.00024, human larger. Rat vs human p = 0.716, rat vs pig p = 0.137. Means 0.3548 and 0.1545 mm. |
-| subdiaphragmatic-fascicle-diameter-comparable | reproduced | Cell 42: p = 0.283, 0.995 and 0.883, means within the SDs. The code-rule variant gives 0.289, 0.896 and 0.995; the paper has 0.3049, 0.896 and 0.9947. |
-| fascicles-larger-cervical | reproduced (fragile) | Cell 44: human p = 1e-5, pig p = 0.048, rat p = 0.044, all with cervical larger. The pig and rat results depend on the degrees-of-freedom method and on which rat fascicle is used (B2). |
-| rat-diameter-like-fascicle | reproduced | Cell 46: reading (a) holds at both levels (257.7 µm between 154.5 and 354.8; 135.2 µm between 110.1 and 163.5). |
-| human-pig-tissue-proportions | reproduced | Cell 48: all 8 values are within the stated SDs. |
-| rat-level-ratios | reproduced | Cell 50: reading (b) gives 0.317 and 0.678, both within 10%. Reading (a) gives 0.270 and 0.525, both outside. The criterion accepts either reading. |
-| human-pig-level-ratios | reproduced | Cell 52: 0.198, 0.421, 0.873 and 0.746, all within 10%. |
-| human-variability | reproduced | Cell 54: human CV is above pig and rat for nerve diameter and mean fascicle diameter at both levels. Reading (b) also holds for human against pig. |
-| literature-comparison-human-pig | partially_reproduced | Cell 58: 9 of 11 parts hold. Human cervical endoneurial area fails: Seki L 1.32 mm² is above the paper's 0.922 + 0.337. "Ranges overlap" fails only because right-side reports are included (B5). |
-| rat-literature-comparison | partially_reproduced | Cell 59: the subdiaphragmatic means are above every published mean, so that part holds. Only 1 of 4 published cervical diameters, and 1 of 4 areas, fall within the paper's mean ± SD. The claims file defines no partial outcome; this is my call for one part out of two (B5). |
-| perineurium-species-order | reproduced | Cell 69: human > pig > rat across 32–284 µm and at 250 µm. |
-| perineurium-ratio-decreases | reproduced | Cell 71: the fitted ratio decreases for all three species. Spearman ρ = −0.92 (human), −0.60 (pig), −0.78 (rat). |
-| human-perineurium-fit | reproduced | Cell 65: n = 73, R² = 0.7488 with a linear fit with intercept. |
-| pig-perineurium-fit | reproduced | Cell 67: n = 284, R² = 0.2984, the same value as the fit stored in the author's file. |
-| rat-perineurium-fit | reproduced | Cell 63: all fascicles, linear with intercept, n = 22, R² = 0.7652. |
-| perineurium-thicker-larger-fascicles | reproduced | Cell 73: positive slopes with CIs above zero; Spearman ρ = 0.92 (human) and 0.55 (pig). |
-| perineurium-no-level-difference | not_reproduced | Cell 75, reading (a): the human slope CIs do not overlap ([0.025, 0.039] vs [0.049, 0.062]) and the pig intercept CIs do not overlap. Reading (b): human p = 2e-7, pig p = 3e-9. Only the rat part holds (p = 0.87). |
-| sunderland-reanalysis | reproduced | Cell 77: n = 777, slope 2.750%, R² = 0.510. |
-| rat-perineurium-near-3-percent | reproduced | Cell 79: against the 3% line the fit/reference ratio runs 1.86 to 0.59 and crosses at 80 µm. Against 2.75% it reaches 2.02 at 32 µm, just outside the factor of two. |
-| human-pig-perineurium-thicker | reproduced | Cell 81: median ratio human 0.095, pig 0.053; the excess over 3% is larger for small fascicles in both. |
-| pig-if-mt-consistent | reproduced | Cell 83: all 10 checks pass. The MT minimum is 23.7 µm against the paper's 5 µm; the check only tests containment (B7). |
-| peanut-fascicle-counts | partially_reproduced | Cell 85: the human counts and pig totals match (210 and 179, counted the way the IF code counts). Pig cervical peanut fascicles are 24 against the paper's 25 under both counting methods; the tolerance is 0. |
-| no-age-trend | not_reproduced | Cell 87, Pearson reading (a): 3 of 26 tests have p < 0.05, all in pig; chance expectation is 1.3. The rat part shows no trend. The test is the claims file's assumption, and Supplement 6 was not read (B3). |
-| rat-carotid-sheath-bundles | blocked (other) | The notebook says only the vagus is traced (cell 89). However, the archive holds the 20x MT micrographs of all 9 cervical samples, and the paper says the whole carotid sheath was sectioned (B6). |
+| rat-sample-set | reproduced | Cell 11: 4F/5M at each level, 10 rats (5M/5F), Sprague-Dawley, 75–268 days, 381.1 ± 118.4 g. |
+| human-sample-set | reproduced | Cell 13: 4F/5M at each level; all named samples present; 18 samples with all three masks and an nd2. |
+| pig-mt-sample-set | reproduced | Cell 15: 6F/3M at each level, 11 pigs (12 or fewer), P11-1 and P13-1 present. |
+| pig-if-sample-set | reproduced | Cell 17: 2F/2M at each level, all among the MT samples at the same level, P12-1 present. |
+| mt-micrograph-collections | reproduced | Cell 19: human 37/32 samples from 30 subjects (one cervical nd2 is in the sub-48/sam-2 folder); pig 21/24 from 12; rat 18/9 from 10. Rat has 36 nd2 files because each subdiaphragmatic sample has two. Counted per sample, every count matches. |
+| nerve-diameter-anova | reproduced | Cell 21, reading (a): F = 599.6 / 11.05 / 2.455, p = 0.0029 for level and 0.108 for the interaction (paper 577.1 / 11.01 / 2.445). Reading (b) makes the interaction significant (p = 0.035), but one reading is enough under the criterion. |
+| human-pig-nerve-diameter-similar | reproduced | Cell 23: means 1.92 / 2.20 / 1.68 / 1.64 mm, all within the SDs. Human vs pig Tukey p = 0.157 (a) and 0.345 (b); the paper has 0.183. |
+| rat-nerve-diameter | reproduced | Cell 25: 257.7 ± 24.9 and 135.2 ± 14.8 µm; both means and both SDs within tolerance. |
+| rat-ten-times-smaller | reproduced | Cell 27: all rat contrasts p < 1e-11; ratios 7.5–12.4, inside the 5–20 band. |
+| nerve-cervical-larger | reproduced | Cell 29: level p = 0.0029 with cervical larger. Pig (0.254, 3.11) and rat (0.475, 5.97) both exceed human (0.127, 0.62) under each reading. |
+| fascicle-number-human-pig | reproduced | Cell 31: means 46.9 / 38.2 / 6.67 / 4.89. F = 216.7 / 5.79 / 2.61, with p < 0.0001 / 0.026 / 0.12; cervical least-squares mean is larger. |
+| rat-subdiaphragmatic-multifascicular | reproduced | Cell 33: all 9 cervical samples have 1 fascicle; only R16-1 (2), R22-1 (3) and R23-1 (2) have more. |
+| rat-multifascicular-proportions | reproduced | Cell 35, version 5: all 9 values within 10%. Version 1 gets only 6 of 9. |
+| fascicle-diameter-anova | reproduced | Cell 37: F = 9.74 / 48.0 / 5.46, with p = 0.0011 / < 0.0001 / 0.0099. |
+| rat-fascicle-diameter | reproduced | Cell 39: 248.7 and 129.2 µm, both within tolerance. The subdiaphragmatic SD is 14.0 against the paper's 32 (problem 2). |
+| cervical-fascicle-diameter-species | reproduced | Cell 41: human vs pig p = 0.0002 (paper 0.0002); rat vs human 0.717 (paper 0.727); rat vs pig 0.137 (paper 0.171). Means hold under both readings. |
+| subdiaphragmatic-fascicle-diameter-comparable | reproduced | Cell 43: no pair has p < 0.05 (0.283, 0.996, 0.881); human mean is above pig. The two rat p values are in reverse order to the paper's 0.896 / 0.995 (problem 2). |
+| fascicles-larger-cervical | reproduced (fragile) | Cell 45, Satterthwaite: human p = 1e-5, pig 0.048, rat 0.044. With containment df the rat comparison fails (0.089). See problem 1. |
+| rat-diameter-like-fascicle | reproduced | Cell 47: both readings hold at both levels. |
+| human-pig-tissue-proportions | reproduced | Cell 49: all 8 values within their SDs, and the pig vs human ordering holds. |
+| pig-if-endoneurium-lower | reproduced | Cell 51: 1.74 and 2.21 points (within 1.5–2.5) on the criterion's main comparison. The same-four-samples reading gives 3.48 and 5.37. |
+| rat-level-ratios | reproduced | Cell 53, reading (b): 0.317 and 0.678. Reading (a) gives 0.271 and 0.525. |
+| human-pig-level-ratios | reproduced | Cell 55: 0.198 / 0.873 / 0.421 / 0.746. |
+| human-variability | reproduced | Cell 57: the human CV exceeds pig and rat on every measure at both levels. |
+| pig-oblong-human-round | reproduced | Cell 59: both rules hold under aspect ratio and under circularity. |
+| human-subdiaphragmatic-fatty-tissue | not_reproduced | Cell 93: human 29 of 32 have fat, but 13 of 45 pig micrographs are read as having adipose tissue in the epineurium; the criterion allows at most 1. Several pig sections in cell 95 (P5-1, P8-7, P9-3) do show vacuolated extrafascicular tissue. |
+| pig-cervical-cell-bodies | reproduced | Cell 95: P11-1 and P13-1 marked yes, the other 7 no. These are the author's by-eye readings, which I could not confirm at the displayed resolution (problem 9). |
+| literature-comparison-human-pig | blocked (data_missing) | Supplement 4 is not supplied. Only the "below 3.0 mm" part is testable from the main text and holds (1.92 mm, cell 97). Archive check: see item 4 note below. |
+| rat-literature-comparison | blocked (data_missing) | Literature values are not in the text read. Same archive note as above. |
+| perineurium-species-order | reproduced | Cell 69: human > pig > rat over 32–284 µm and at 250 µm (19.8 / 9.8 / 4.6 µm). |
+| perineurium-ratio-decreases | reproduced | Cell 71: all three decrease under both readings; human and pig decreases exceed the rat's. |
+| human-perineurium-fit | reproduced | Cells 61/63: n = 73, R² = 0.749 with an intercept. |
+| pig-perineurium-fit | reproduced | Cell 65: n = 284, R² = 0.298. |
+| rat-perineurium-fit | reproduced | Cell 67: all fascicles, with intercept: n = 22, R² = 0.767. This holds on version 5 only; version 1 gives 0.573. |
+| perineurium-thicker-larger-fascicles | reproduced | Cell 73: positive slopes (confidence intervals exclude 0) and Spearman ρ = 0.92 and 0.54. |
+| perineurium-no-level-difference | not_reproduced | Cell 75: under reading (a) the human and pig slope intervals do not overlap (human 0.025–0.039 vs 0.049–0.062). F-test p < 1e-4 for both; rat shows no difference. See problem 4. |
+| sunderland-reanalysis | reproduced | Cell 77: n = 777, slope 2.750%, R² about the mean 0.510. |
+| rat-perineurium-near-3-percent | reproduced | Cell 79, version 5: fit over the 3% line runs from 1.77 to 0.59 and crosses once; the 2.75% line also passes. Version 1 fails the factor-of-two rule. |
+| human-pig-perineurium-thicker | reproduced | Cell 81: median ratio 0.095 (human) and 0.053 (pig); the excess over 3% is larger below the median diameter for both. |
+| pig-if-mt-consistent | reproduced | Cell 83: IF mean/median 123.3/123.1 µm, MT 134.6/129.5 µm, all within 10%. The MT minimum is 23.7 µm against the paper's 5 µm and passes only on the literal criterion (problem 6). |
+| peanut-fascicle-counts | partially_reproduced | Cell 85: all four totals match (60, 44, 210, 179), but pig IF cervical has 57 bundles in 24 peanut fascicles, not 25. |
+| no-age-trend | not_reproduced | Cell 87: 3 of 27 Pearson tests have p < 0.05, all in pig (cervical endoneurium; subdiaphragmatic nerve diameter and fascicle diameter). See problem 5. |
+| rat-carotid-sheath-bundles | partially_reproduced | Cell 91: the largest count by eye is 5, not 6, which the criterion grades as partial. Every sample has more than one bundle, and the traced vagus is judged the largest. |
 
-**B. Problems**
+**Archive check for the blocked claims (item 4).** The API file lists show `files/code/DataPlotting_v4.m` (about 65 KB) in sparc-60, 64 and 65. It is the plotting code for the paper's figures, so it probably hard-codes the Figure 7 literature means. I did not read it, because the instructions allow file lists and metadata only. The notebook does not say whether it looked. If the values are there, both claims could be tested at least in part.
 
-1. [affects a conclusion] Cells 15, 16 and 26, `largest_fascicle`: the main analysis uses each rat sample's largest fascicle (the Methods text). The paper's numbers were produced by the code's first-trace rule instead. That rule reproduces the paper's 0.121 ± 0.032 mm exactly, the subdiaphragmatic rat Tukey p values (0.896 and 0.995 against 0.896 and 0.9947), and the species p (0.00154 against 0.0015). The code-rule variant is therefore the paper's actual procedure and should be the primary run for the fascicle-diameter claims. The claims file follows the Methods text and does not notice this; I am reporting that, not correcting it.
-2. [affects a conclusion] Cell 44, `satterthwaite_df`, fascicles-larger-cervical:
-   - The pig cervical vs subdiaphragmatic contrast gets a Satterthwaite df of 3.74, which is implausible: the more conservative subjects-minus-parameters df (29) gives p = 0.00036, against 0.048 with Satterthwaite.
-   - Under the code-rule rat values, the pig Satterthwaite p is 0.0526, so pig fails.
-   - Under the largest-fascicle values with subject df, rat fails (p = 0.068).
-   - The "reproduced" outcome therefore holds only under some combinations. The rat-only variant's p = 1e-64 is a degenerate fit and should be dropped.
-3. [affects a conclusion] Cell 87, no-age-trend: the notebook downloads the paper's supplementary zip for Supplement 4 (`supplement4`) but never opens Supplement 6. Supplement 6 holds the age analysis and would fix the test. As run, the outcome rests on an uncorrected test at p < 0.05 across 26 tests, and the hits (3 of 26 against 1.3 expected) are about chance level.
-4. [does not affect a conclusion] Cell 28: the interaction result depends on the estimation choice: unbounded REML gives p = 0.107, the bounded statsmodels fit gives 0.024. The unbounded fit matches the paper's F values closely (599.6/11.05/2.455 against 577.1/11.01/2.445; bounded gives 283.8/21.1/3.71), which supports it as what JMP did.
-5. [affects a conclusion] Cells 58 and 59, `lit_table`:
-   - The paper's samples are all left cervical, but the comparison also includes right-side literature rows, which the criterion does not ask for. With left-only rows, "human cervical ranges overlap" would become True.
-   - The rat cervical row "Fazan and Lachat 1997" with no laterality or n (0.2843 mm, 0.0400 mm²) is a continuation row whose meaning the `supplement4` parser does not establish, yet it counts against the claim.
-   - The extra part "fewer fascicles than the posterior study" is from the Results text but is not in the claim statement.
-6. [affects a conclusion] Cell 89, rat-carotid-sheath-bundles: the archive (Pennsieve browse of SPARC:60 v5) has `files/derivative/sub-*/sam-3|sam-1/*MT20x.jp2` for all 9 cervical samples, 12–35 MB each. The Discussion says the entire carotid sheath was embedded and sectioned. By the claim's own criterion ("testable only if the dataset holds the cervical micrographs"), the claim is at least partly testable: count the bundles in the sheath and check that the traced one is the largest. Supplementary Figure 16 is presumably in the same Europe PMC zip.
-7. [does not affect a conclusion] Cell 83: the min/max checks only test that each value lies inside the widened reported range. Under a per-bound reading the MT minimum fails (23.7 against 5 µm). That 5 µm fascicle is not in `PigVNMorphology_OutputMetrics.mat`, and the notebook does not mention the gap.
-8. [does not affect a conclusion] `reml_unbounded` gives multi-df effects the mean of the per-coefficient Satterthwaite df, which is not a standard method. The conclusions are unchanged under the residual-df and subject-df alternatives, which the notebook also prints.
-9. [does not affect a conclusion] Cell 75: the fascicles are treated as independent observations, with no clustering by sample. Both readings belong to the claims file, and the human slope gap is large, so the outcome does not change.
-10. [does not affect a conclusion] The pig MT values come from the author's output files, not recomputed from the traces (this is stated). Pig IF levels are inferred from list membership, which agrees with the trace-based counts by level (153/131 against 153/132).
-11. [does not affect a conclusion] Cell 0 promises a final cell printing every file's SHA-256; that cell is missing. Also, the SPARC:60 readme says the rats were 65–268 days old, but subjects.xlsx and the paper say 75; and "anterior" for the subdiaphragmatic samples comes only from the readme and the code's file lists.
-12. [does not affect a conclusion] Helper checks on synthetic inputs, all of which passed:
-    - `bwboundaries` and `polyarea` give MATLAB's areas for a square (81), a ring (841/361) and a peanut fascicle (correct grouping).
-    - `fit_poly1` matches `polyfit` and the R² from the correlation.
-    - `reml_unbounded` and `tukey` match OLS type III F tests on a design with one sample per subject.
-    - The rat and human recomputations match the author's code outputs to 0.00 µm (cells 10 and 12).
+### B. Problems
 
-**C. What I could not check**
+1. **[affects a conclusion]** `mixed._df_contrast` / cell 45. The pig cervical vs subdiaphragmatic Tukey contrast gets a Satterthwaite df of 3.76, so p = 0.048 against the paper's 0.0009. The rat contrast gets df = 347, so p = 0.044 against 0.0234. With containment df (16), pig gives 0.0016 and rat 0.089. The claims file names Kenward–Roger, which was not run. So fascicles-larger-cervical passes only narrowly and depends on the df method. On a balanced synthetic split-plot, `mixed.fit`/`anova` match the classical F and df exactly, so the model code is sound; it is the df for these nested, unbalanced contrasts that is unverified.
+2. **[does not affect a conclusion]** Choice of rat fascicle (cell 36 vs `pelot.sample_summary`). Cell 36 says DataPlotting_v4.m keeps the *first* fascicle per rat sample. The helper takes the *largest* by outer area and says that is the boundary "the code sorts on", but nothing shows this. The paper's rat subdiaphragmatic fascicle diameter, 0.121 ± 0.032 mm, has twice the SD found here (129.2 ± 14.0 µm). The subdiaphragmatic Tukey p values involving rat are also in reverse order to the paper's, and the rat level p is 0.044 against 0.0234. Together this suggests the paper used a different fascicle in at least one multifascicular sample. Outcomes still pass on the criteria's "largest" reading.
+3. **[does not affect a conclusion]** Cell 21. Reading (a) estimates a negative subject variance (−52,012 µm²). This is allowed under JMP's unbounded default, and it gives F values very close to the paper's, which supports reading (a).
+4. **[affects a conclusion]** perineurium-no-level-difference, cell 75; the issue is in the claims file's test, not the notebook. Both readings treat fascicles as independent: 73 and 284 fascicles from 18 and 8 samples, with no sample-level clustering. That makes the confidence intervals too narrow, and the not-reproduced outcome rests on that. The notebook follows the criterion correctly.
+5. **[affects a conclusion]** no-age-trend, cell 87; again a claims-file issue. The criterion counts any uncorrected p < 0.05 across 27 tests, where about 1.4 are expected by chance. The smallest p is 0.019, so no test survives any multiplicity correction. Pig ages also take only 4 distinct values. The outcome rests on this assumption.
+6. **[does not affect a conclusion]** Cell 83. The check `exp[0]*0.9 <= got[0]` passes an MT minimum of 23.7 µm against the paper's 5 µm. Read strictly as "each bound within 10%", the MT range fails.
+7. **[does not affect a conclusion]** `pelot.match`. The pig IF cervical peanut count (24 vs 25) was not diagnosed. A possible cause is nested outer traces, where an inner trace is assigned to the first filled region that contains its centroid.
+8. **[does not affect a conclusion]** `pelot.matlab_area` on hole regions (the rat inner perineurium). bwboundaries traces holes 4-connected, so B should count pixels that have any 8-neighbour outside; 4-neighbour erosion is used instead. The error is a few px² per fascicle, and the rat fascicle diameters match the deposited file to within 0.02% (median ratio 0.9998).
+9. **[affects a conclusion]** By-eye readings are constants in `pelot.py` (`RAT_SHEATH_BUNDLES`, `PIG_FAT`, `PIG_CELL_BODIES`). The images shown in cells 91, 93 and 95 are too small to resolve somata or small bundles, so a reader cannot check them. The author notes that small profiles may be missed, which could explain 5 instead of 6 bundles (the difference between partial and reproduced for rat-carotid-sheath-bundles).
+10. **[does not affect a conclusion]** Claims-file misreading. sunderland-reanalysis is marked `data: elsewhere`, but the 777 values are deposited in sparc-65 (`files/code/Sunderland1984.mat`).
+11. **[does not affect a conclusion]** Cell 6. The deposited pig MT fascicle diameters are about 1.40× the mask values, and no explanation is given. The paper's pig values (mean 135, median 130 µm; 0.155 and 0.110 mm) match the masks. Deposited counts match the version 1 masks, but the version 4 means (46.9 / 38.2) fit the paper (47 / 38) better than the deposited counts do (45.6 / 36.9).
+12. **[does not affect a conclusion]** human-pig-nerve-diameter-similar asks for the inner nerve trace. sparc-65 also holds `*NerveMask_AllTissue.tif`; the notebook uses `NerveMask.tif` without saying it is the inner trace. It reproduces the deposited human diameters exactly, so this is very likely correct.
 
-- Why the pig Satterthwaite df is 3.7. The per-species variance components and the Hessian of the fascicle model (`fit_fd["H"]`), plus a Kenward–Roger fit (for example lme4/pbkrtest on the exported table FA), would settle this.
-- What the Fazan and Lachat no-laterality rows mean. Printing the raw Supplement 4 rows, including their notes column, would settle it.
-- The Supplement 6 method and values. An output listing the supplementary zip and Supplement 6's contents would settle it.
-- Whether the cervical jp2 micrographs show the carotid-sheath bundles. A downsampled image of each cervical micrograph with the trace overlaid would settle it.
-- Where the paper's MT 5 µm minimum and the 25th pig cervical peanut fascicle come from. Per-sample pig IF peanut counts alongside the paper code's own `Nouterperi_peanut` output would settle the second.
+### C. What I could not check, and the output that would settle it
+
+- **Kenward–Roger df for the fascicle model (problem 1).** Needed: KR df and p for the three within-species Tukey contrasts, e.g. from R `lmerTest`/`pbkrtest` on the exported `FASC` table.
+- **Which rat fascicle the paper used (problem 2).** Needed: a per-fascicle table for the 9 rat subdiaphragmatic samples (bwlabel order, d_in, d_out), plus the mean ± SD under "first boundary" selection, compared with 0.121 ± 0.032.
+- **Literature values for the blocked claims.** Needed: the lines of `DataPlotting_v4.m` that plot Figure 7, or a statement that it holds no literature values.
+- **The by-eye readings (problem 9).** Needed: full-resolution crops of the fascicles called as having cell bodies in P11-1 and P13-1, of a few pig "adipose" regions, and of each rat sheath with the counted bundles marked.
+- **The pig IF peanut count (problem 7).** Needed: per-sample peanut fascicle counts for the four cervical IF samples.
+- **Pig counts on version 1 (problem 11).** Needed: fascicle counts on the version 1 masks of sparc-64 for all 18 pig samples, not just four.
 
 ## End of run
 
-20 turns, 5 minutes, $1.96 at API prices, result: success.
+25 turns, 7 minutes, $2.24 at API prices, result: success.
