@@ -248,6 +248,38 @@ def pooled_map_and_null(task, f, trial_idx, rng, nshuf=N_SHUFFLE_FIELD):
     return fr[0], fr[1:]
 
 
+def trialavg_map_and_null(task, f, trial_idx, rng, nshuf=N_SHUFFLE_FIELD):
+    """Variant of pooled_map_and_null with the map averaged over per-trial rate maps (each
+    trial's smoothed counts over its smoothed occupancy, as trial_maps), for the data and for
+    each circular shift of the spike train (Methods, Place field detection: "the
+    trial-averaged ratemap"; the code pools counts over trials, the main reading)."""
+    nb, ft, fw, pb, dt = task["nbins"], task["frame_trial"], task["forward"], task["pbin"], task["dt"]
+    frames = np.nonzero(np.isin(ft, trial_idx))[0]
+    N = len(frames)
+    pos = {tr: k for k, tr in enumerate(trial_idx)}
+    ntr = len(trial_idx)
+    tpos = np.array([pos[x] for x in ft[frames]])
+    loc = np.full(len(ft), -1)
+    loc[frames] = np.arange(N)
+    k = loc[f]
+    k = k[k >= 0]
+    fwd = fw[frames]
+    pbf = pb[frames]
+    occ = np.zeros((ntr, nb))
+    np.add.at(occ, (tpos[fwd], pbf[fwd]), 1)
+    occ_s = gaussian_filter1d(occ, SMOOTH_BINS, axis=1)
+    shifts = np.concatenate([[0], rng.integers(50, N - 50, size=nshuf)])
+    kk = (k[None, :] + shifts[:, None]) % N
+    ok = fwd[kk]
+    rows = np.broadcast_to(np.arange(nshuf + 1)[:, None], kk.shape)[ok]
+    flat = (rows * ntr + tpos[kk[ok]]) * nb + pbf[kk[ok]]
+    cnt = np.bincount(flat, minlength=(nshuf + 1) * ntr * nb).reshape(nshuf + 1, ntr, nb).astype(float)
+    cnt_s = gaussian_filter1d(cnt, SMOOTH_BINS, axis=2)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        fr = np.where(occ_s[None] > 0, cnt_s / (occ_s[None] * dt), 0.0).mean(1)
+    return fr[0], fr[1:]
+
+
 def detect_fields(avg, null):
     """Contiguous bins above the 95th percentile of the null, end - start from 4 to 30 bins,
     peak of the average map above 1 Hz (Methods, Place field detection; code
@@ -321,14 +353,17 @@ def detect_switch(x, rng, nshuf=N_SHUFFLE_SWITCH):
     """Switch detection of one field's per-trial peak rates (Methods, Detection of discrete
     switching): trial order permuted 1000 times, K = 1 .. min(5, floor(n/4)); p for each K the
     fraction of shuffles with a lower cost than the data; significant when the smallest p is
-    below 0.05 / number of K (Bonferroni); best K the lowest percentile (ties to the smaller K,
-    standard). Switches: steps of the fitted step function divided by its maximum, ON above
-    +0.4, OFF below -0.4 (code change_point_analysis.detect_switch_pwc); the variant divides by
-    the maximum of the raw per-trial rates."""
+    at most 0.05 / number of K (Bonferroni); best K the lowest percentile (ties to the smaller K;
+    code test_change_point.get_n_cpd: pval <= 0.05 / number of K, and pval.idxmin(), which on a
+    tie takes the first, smaller K). Switches: steps of the fitted step function divided by its
+    maximum, ON above +0.4, OFF below -0.4 (code change_point_analysis.detect_switch_pwc); the
+    variant divides by the maximum of the raw per-trial rates. A second variant breaks ties of
+    the smallest p toward the larger K (keys K_tieL, on_tieL, off_tieL)."""
     x = np.asarray(x, float)
     n = len(x)
     kmax = min(5, n // 4)
-    res = dict(n=n, kmax=kmax, sig=False, K=0, cps=[], on=[], off=[], on_raw=[], off_raw=[])
+    res = dict(n=n, kmax=kmax, sig=False, K=0, cps=[], on=[], off=[], on_raw=[], off_raw=[],
+               K_tieL=0, on_tieL=[], off_tieL=[])
     if kmax < 1 or np.all(x == x[0]):
         return res
     perms = np.array([rng.permutation(x) for _ in range(nshuf)])
@@ -337,15 +372,19 @@ def detect_switch(x, rng, nshuf=N_SHUFFLE_SWITCH):
     p = (costs[1:] < costs[0][None]).mean(0)
     res["p"] = p
     res["costs"] = costs[0]
-    if p.min() < 0.05 / kmax:
+    if p.min() <= 0.05 / kmax:
         K = int(np.argmin(p)) + 1
+        KL = int(np.nonzero(p == p.min())[0][-1]) + 1
         fit = step_fit(x, cps[K])
-        res.update(sig=True, K=K, cps=cps[K], fit=fit)
-        for norm, (kon, koff) in ((fit.max(), ("on", "off")), (x.max(), ("on_raw", "off_raw"))):
+        fitL = step_fit(x, cps[KL])
+        res.update(sig=True, K=K, cps=cps[K], fit=fit, K_tieL=KL)
+        for f_, cp_, norm, (kon, koff) in ((fit, cps[K], fit.max(), ("on", "off")),
+                                           (fit, cps[K], x.max(), ("on_raw", "off_raw")),
+                                           (fitL, cps[KL], fitL.max(), ("on_tieL", "off_tieL"))):
             if norm <= 0:
                 continue
-            for c in cps[K]:
-                d = (fit[c] - fit[c - 1]) / norm
+            for c in cp_:
+                d = (f_[c] - f_[c - 1]) / norm
                 if d > STEP_FRAC:
                     res[kon].append(c)
                 elif d < -STEP_FRAC:
@@ -376,7 +415,7 @@ def r2_poly(x, K):
 
 # ---------------------------------------------------------------- one task
 
-def analyse_task(sess, task, rng_field, rng_switch, pyr_mask):
+def analyse_task(sess, task, rng_field, rng_switch, pyr_mask, field_map="pooled"):
     """Rate maps, place fields and switches for one maze task of one session.
 
     Returns a dict: per trial type the trial indices, per-trial maps of place cells, and a
@@ -394,7 +433,8 @@ def analyse_task(sess, task, rng_field, rng_switch, pyr_mask):
         out["trial_types"][tt] = tidx
         out["maps"][tt] = fr.astype(np.float32)
         for c, i in enumerate(pyr):
-            avg, null = pooled_map_and_null(task, sf[c], tidx, rng_field)
+            mapper = pooled_map_and_null if field_map == "pooled" else trialavg_map_and_null
+            avg, null = mapper(task, sf[c], tidx, rng_field)
             flds, thr = detect_fields(avg, null)
             for (s, e, pk) in flds:
                 sub = fr[c][:, s:e + 1]
@@ -532,13 +572,14 @@ def clock_check(sess, task, pyr, shifts=(0.0, 1.0, 5.0, 30.0)):
     return out
 
 
-def run_session(session, claim_seed=None):
+def run_session(session, claim_seed=None, field_map="pooled"):
     """Load one session and run the place-field and switch pipeline on each maze task.
 
     Seeds: the field shuffles and the switch permutations use the seed of the claim
     fig2d-switch-fractions (the claim that defines fields and switches for all the others),
     plus a per-session offset from the session name so that sessions are independent (the
-    seed of a later session does not depend on how many draws an earlier one made)."""
+    seed of a later session does not depend on how many draws an earlier one made).
+    field_map: "pooled" (the code's map, main) or "trialavg" (the Methods' wording, variant)."""
     base = seed("fig2d-switch-fractions") if claim_seed is None else claim_seed
     off = zlib.crc32(session.encode())
     sess = load_session(session)
@@ -549,7 +590,7 @@ def run_session(session, claim_seed=None):
     for ti, task in enumerate(sess["tasks"]):
         rf = np.random.default_rng([base, off, ti, 0])
         rs = np.random.default_rng([base, off, ti, 1])
-        o = analyse_task(sess, task, rf, rs, pyr)
+        o = analyse_task(sess, task, rf, rs, pyr, field_map=field_map)
         for f in o["fields"]:
             f["sw"] = detect_switch(f["rate"], rs)
         o.update(env=task["env"], kind=task["kind"], familiar=task["familiar"],
@@ -566,11 +607,15 @@ def run_session(session, claim_seed=None):
         o["task_index"] = ti
         o["clock_check"] = clock_check(sess, task, pyr)
         res["tasks"].append(o)
+        # per-frame behaviour of every task (speed analyses and head scans)
+        o["t"] = task["t"]
+        o["lin"] = task["lin"].astype(np.float32)
+        o["frame_trial"] = task["frame_trial"]
+        o["forward"] = task["forward"]
+        o["v"] = task["v"].astype(np.float32)
+        o["pbin"] = task["pbin"].astype(np.int16)
         if task["xy"] is not None and task["familiar"]:
             o["xy"] = task["xy"].astype(np.float32)
-            o["t"] = task["t"]
-            o["lin"] = task["lin"].astype(np.float32)
-            o["frame_trial"] = task["frame_trial"]
     return res
 
 
@@ -580,12 +625,12 @@ def all_sessions():
     return [s for s in fam if session_path(s)], [s for s in fam if not session_path(s)]
 
 
-def run_all(sessions, workers=4, claim_seed=None):
+def run_all(sessions, workers=4, claim_seed=None, field_map="pooled"):
     """Run run_session over sessions in a pool of processes."""
     from functools import partial
     from multiprocessing import get_context
     with get_context("spawn").Pool(workers) as p:
-        return p.map(partial(run_session, claim_seed=claim_seed), sessions)
+        return p.map(partial(run_session, claim_seed=claim_seed, field_map=field_map), sessions)
 
 
 # ---------------------------------------------------------------- tables over sessions

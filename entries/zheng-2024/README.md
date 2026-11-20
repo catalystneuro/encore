@@ -4,7 +4,8 @@ Tests the electrophysiology findings of [Zheng et al. (2024)](https://doi.org/10
 on [DANDI:000552](https://dandiarchive.org/dandiset/000552/0.261113.1035), the CA1 silicon-probe
 recordings of mice running a spontaneous alternation task on a figure-8 maze, three of which also ran
 in novel mazes. It detects place fields and their step-like switches in 45 familiar and 8 novel
-sessions. The two-photon imaging of Figure 7 is not deposited.
+sessions, and tests electrode drift on the wide-band signal of one session. The two-photon imaging of
+Figure 7 is not deposited.
 
 | Claim | Outcome |
 |---|---|
@@ -25,8 +26,8 @@ sessions. The two-photon imaging of Figure 7 is not deposited.
 | More switching in the delay zone (Fig. 4) | Not reproduced |
 | Choice and speed do not predict switching (Fig. 4) | Not reproduced |
 | Switching decreases with trial (Fig. 4D, 4I) | Partially reproduced, on an assumption |
-| Speed does not change with trial (Fig. S8) | Not reproduced |
-| Head scans are not related to switching (Fig. 4L to O) | Not reproduced |
+| Speed does not change with trial (Fig. S8) | Reproduced, on an assumption |
+| Head scans are not related to switching (Fig. 4L to O) | Partially reproduced, on an assumption |
 | Splitter fields switch too (Fig. S9) | Reproduced |
 | Signatures of BTSP (Fig. S13) | Partially reproduced |
 | Switchiness is not a neuron property (Fig. 5C) | Reproduced |
@@ -38,7 +39,7 @@ sessions. The two-photon imaging of Figure 7 is not deposited.
 | Pre-existing fields before ON and after OFF (Fig. S14) | Partially reproduced |
 | ChR2 expression does not affect switching (Fig. S2) | Reproduced |
 | Imaging across days (Fig. 7, Fig. S15), two claims | Blocked: data missing |
-| Neighbouring waveforms do not change across a switch (Fig. S1) | Blocked: too large |
+| Neighbouring waveforms do not change across a switch (Fig. S1) | Not reproduced, on one session and an assumption |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -48,8 +49,9 @@ attempt pins 0.261113.1035, a re-conversion of the same sessions with the same s
 labels. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/zheng-2024-01.yaml`](../../attempts/zheng-2024-01.yaml).
 
-- `reproduce_zheng_2024.ipynb`: the analysis. It takes about 30 minutes, 25 of them running the
-  field and switch pipeline under five seeds in four processes.
+- `reproduce_zheng_2024.ipynb`: the analysis. It takes about 32 minutes: 23 of them run the field
+  and switch pipeline under five seeds and once more with trial-averaged maps, in four processes, and
+  8 stream the wide-band signal of one session for the electrode-drift test.
 - `switching.py`: loading the files, rate maps, place-field detection, optimal partitioning and
   switch detection, and head-scan detection, with the source of every parameter. Other notebooks on
   this dandiset can import it.
