@@ -688,35 +688,31 @@ outcomes:
   - The paper's MATLAB code was not run; it needs preprocessed files that are available only on request.
     Methods follow the claims file and the Methods.
 - claim: fig6e-kinematics-predict-location
-  outcome: reproduced
-  notebook: reproduce_sabatini_2024.ipynb
+  outcome: partially_reproduced
+  notebook: reproduce_sabatini_2024_stable_units.ipynb
   output: claim:fig6e-kinematics-predict-location
   assumed: true
-  proposed:
-    outcome: partially_reproduced
-    reason: The paper used single-units and stable multi-units (Methods, Subjects, behavior and data pre-processing).
-      Leaving out the three units of the dandiset that are not one stable unit's, found after round 2
-      in answer to the verifier's point on segment 3, M1-N's OU kernel value rises to 90.9% (SVD basis)
-      and 91.2% (skew-normal basis), above 62.1 to 89.1%, under all five seeds (89.2 to 90.9%), while the
-      Gaussian kernel stays below its range; no reading then has every dataset in range. The effect is
-      present and the other values are in range, so the claim holds in part. The analysis is the companion
-      notebook reproduce_sabatini_2024_stable_units.ipynb, cell tagged claim:fig6e-kinematics-predict-location.
-  notes: Kinematic reading (a) (SVD basis), linear 55.5, 55.5, 70.5, 41.5% (in 33.3 to 78.1%); OU kernel
-    73.0, 68.5, 88.7, 77.9% (in 62.1 to 89.1%); both above all 1000 permutations (p = 0.001). Reading
-    (b) (skew-normal basis) gives linear 41.6 to 70.5% and OU 69.3 to 89.1%, also all in range. The Gaussian
-    kernel (kernel reading b) gives 32.1 to 54.6%, below the range. Five seeds give OU 71.8 to 73.8 (M1-J),
-    65.5 to 69.1, 86.7 to 88.7 and 74.0 to 77.9%, all in range. OU length scales of 1e2 and 1e4 change
-    the kernel values by at most 0.002, so the unpublished scale of the kinematic basis does not matter
-    here. Without the three units that are not one stable unit's (reproduce_sabatini_2024_stable_units.ipynb),
-    M1-N's OU kernel value is 90.9% under the SVD basis (89.2 to 90.9% over the five seeds) and 91.2%
-    under the skew-normal basis (89.3 to 91.2%), above 89.1%; the other values stay in range (linear 41.5
-    to 71.5%, OU 68.7 to 77.9% elsewhere).
+  notes: The outcome rests on the units that are one stable unit's (reproduce_sabatini_2024_stable_units.ipynb),
+    as the paper used single-units and stable multi-units (Methods, Subjects, behavior and data pre-processing).
+    There, kinematic reading (a) (SVD basis) gives OU kernel values of 73.0, 68.7 and 77.9% for M1-J, PMd-J
+    and PMd-N (65.7 to 78.6% over both bases and the five seeds, in 62.1 to 89.1%) but 90.9% for M1-N (89.2
+    to 90.9% over the five seeds), and reading (b) (skew-normal basis) gives M1-N 91.2% (89.3 to 91.2%).
+    The Gaussian kernel (kernel reading b) is below the range in every dataset (32.1 to 55.4% under the
+    claim's seed). So no reading has every dataset in range. Every linear value lies in 33.3 to 78.1%
+    (38.4 to 71.5% over both bases and the five seeds), and linear and kernel values are above all 1000 permutations (p = 0.001)
+    in every dataset, so the effect holds and the claim holds in part. M1-N misses the bound by 1.8 to 2.1
+    points, in the direction of a stronger effect. With all units (reproduce_sabatini_2024.ipynb), every
+    value is in range under the OU kernel, so the outcome depends on leaving out the unstable units; the
+    SVD basis gives linear 55.5, 55.5, 70.5, 41.5% and OU 73.0, 68.5, 88.7, 77.9%, the skew-normal basis
+    linear 41.6 to 70.5% and OU 69.3 to 89.1%, and five seeds OU 65.5 to 88.7%. OU length scales of 1e2
+    and 1e4 change the kernel values by at most 0.002, so the unpublished scale of the kinematic basis
+    does not matter here.
   deviations:
   - Units are the dandiset's 96 per-electrode units per array, with no single or multi-unit label, where
     the paper used 79 to 118 sorted single and stable multi-units. All are kept, including three that
     are not one stable unit's (Jenkins units 0 and 1, whose train is split between their rows, and Nitschke
     unit 170, above 100 spikes/s on 229 trials of segment 3); reproduce_sabatini_2024_stable_units.ipynb
-    leaves them out, and there M1-N's kernel value lies above its range (see proposed).
+    leaves them out, and the outcome is taken from it (see notes).
   - Trials are all successful trials of the 72 conditions (trial reading (a) of the claims file), an assumption.
     The paper gives no trial selection; the Methods describe the task with "a brief delay (0-1000 ms)"
     and name no exclusion (Methods, Subjects, behavior and data pre-processing), and the analyses are
@@ -1631,3 +1627,33 @@ verifications:
       stops at 4259.0 s, 55 ms before the first run begins, with the same sharing (27.9%). Unit 1's row holds what
       appears to be the rest of unit 0's train, so the finding is rewritten and rated critical, as the verifier's
       condition gives. The companion notebook leaves units 0 and 1 out.
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the one change of outcome proposed after round 2 (fig6e-kinematics-predict-location),
+    with the executed main notebook, the companion notebook without the unstable units, the helper module,
+    the claims file and the attempt record, with the paper under paper/. Report in transcripts/sabatini-2024/verifier-3-report.md.
+  results:
+  - claim: fig6e-kinematics-predict-location
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The numbers come from the data. Stable-units notebook, cell 74: M1-N''s OU kernel value is
+      0.909 under the SVD basis and 0.892 to 0.896 under the four other seeds, 0.912 under the skew-normal
+      basis and 0.893 to 0.898 under the other seeds, all above 89.1%. The other 15 values stay in range,
+      every real value is above all 1000 permutations, and the Gaussian kernel is below the range in every
+      dataset (0.321 to 0.554). With all units M1-N''s OU value is 0.887 and 0.891, just inside the bound.
+      The unit exclusion was not chosen to reach the result: cell 11 sets the rule before any claim cell
+      runs; unit 170 has a block rate ratio of 13.69 against a next largest of 2.53 and a median of 1.14,
+      and averages 175 spikes/s in segment 3 against 28 to 40 elsewhere; dropping it raises decoding within
+      segment 3 from 0.179 to 0.425. The paper included "Both single-units and stable multi-units", so
+      the stable-units set is closer to its method, and the change moves away from the author''s earlier
+      reproduced. Applied as written, neither kernel reading passes for every dataset, while the effect
+      holds everywhere and the linear values are in range, so partially_reproduced fits. Caveats: M1-N
+      misses by 1.8 to 2.1 points, in the direction of a stronger effect, and with all units it is 0.2
+      to 0.4 points inside; the outcome''s notebook and output fields, stable-units cell 0 and the README
+      would need updating.'
+    response: Outcome changed to partially_reproduced and the proposal removed. The outcome's notebook now
+      names reproduce_sabatini_2024_stable_units.ipynb, whose cell tagged claim:fig6e-kinematics-predict-location
+      gives the values; the notes give the margin and the values with all units. The stable-units notebook
+      now states that this claim's outcome is taken from it and carries a result cell, and the main notebook's
+      result cell, its summary and the README give the new outcome.
