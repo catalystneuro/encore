@@ -1,0 +1,493 @@
+schema_version: 3
+id: wang-2025-01
+datasets:
+- archive: dandi
+  id: '000363'
+  version: 0.230822.0128
+  doi: 10.48324/dandi.000363/0.230822.0128
+  relation: reuses
+paper: doi:10.1038/s41593-025-02114-x
+date: '2026-11-20'
+entry: wang-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44785187177
+inputs:
+- what: area2anno.json, the code's grouping of CCF annotation names into 16 areas, used to count areas
+    for data-scale and tested by link-authors-deposit.
+  source: doi:10.5281/zenodo.16740783 (MapVideoAnalysisProcessedData.zip)
+- what: The session names (dictionary keys only) of cal4cat-delay.pickle, the authors' Fig. 6 and 7 file,
+    used for the variant on the paper's 106 sessions and tested by link-authors-deposit.
+  source: doi:10.5281/zenodo.16740783 (MapVideoAnalysisProcessedData.zip)
+outcomes:
+- claim: link-authors-deposit
+  outcome: reproduced
+  notebook: reproduce_wang_2025.ipynb
+  output: claim:link-authors-deposit
+  notes: All 16 areas of area2anno.json have annotation names found among the dataset's anno_name values
+    once commas are removed; 162 of the dataset's 294 distinct annotations fall in the map, the others
+    being structures outside its 16 areas. All 106 session names of cal4cat-delay.pickle match a dataset
+    session by mouse and date; the five SC038 days with two named sessions each have two dataset files.
+    The 106 sessions come from 21 of the 28 mice; SC011, SC013, SC015, SC016, SC017, SC022 and SC023 have
+    none.
+  deviations:
+  - The link claim was added by this attempt (protocol, author step 1.4); its criterion was written before
+    the full run.
+- claim: data-scale
+  outcome: reproduced
+  notebook: reproduce_wang_2025.ipynb
+  output: claim:data-scale
+  measured:
+  - 154948
+  - 17
+  notes: Over the 174 sessions, all with video markers, 272,227 units; unit_quality good 154,948 and classification
+    good 69,453. With the 2 Hz filter on avg_firing_rate, 88,647 and 46,658, so after the filter the count
+    is above 50,000 under unit_quality and below it under classification; the criterion holds when either
+    count exceeds 50,000 and the count before the filter does under both. Units fall in all 17 areas (the
+    16 of the authors' grouping and ALM by probe target). Only units with classification good carry a
+    CCF annotation. Over the authors' 106 sessions, 90,324 unit_quality good and 42,259 classification
+    good units. measured gives the unit_quality good count and the number of areas.
+  deviations:
+  - The 2 Hz filter uses the dataset's whole-session avg_firing_rate, not the rate over the included trials
+    (Methods, Prediction of neural activity, 'Neurons with low firing rates (below 2 Hz) were excluded');
+    the count before the filter already decides the claim.
+  - The paper names no quality label; both of the dataset's (unit_quality and classification) are reported,
+    as the criterion allows.
+  - Areas are the 16 of the authors' area2anno.json (Zenodo deposit) and ALM by probe target (code, get_single_area_inds);
+    they overlap (for example Thalamus contains VM), as the paper's own list of structures does.
+- claim: fig2b-medulla-vs-midbrain
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The end-to-end networks (Methods, End-to-end learning) are trained on the frames
+    themselves and would cost more still. The criterion's filter needs explained variance under all three
+    methods.
+- claim: fig2b-area-ordering
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The end-to-end networks (Methods, End-to-end learning) are trained on the frames
+    themselves and would cost more still. Depends on fig2b-medulla-vs-midbrain.
+- claim: edfig3-epochs
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig2b-area-ordering.
+- claim: fig2e-method-improvement
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The end-to-end networks (Methods, End-to-end learning) are trained on the frames
+    themselves and would cost more still. The marker-based prediction alone could be run, but the claim
+    compares it with the other two methods.
+- claim: fig2-ordering-across-methods
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The end-to-end networks (Methods, End-to-end learning) are trained on the frames
+    themselves and would cost more still. Depends on fig2b-area-ordering.
+- claim: edfig1-reliable-unpredicted
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The selection uses the embedding-based explained variance.
+- claim: fig3-thalamus-nonuniform
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig3f-thalamic-nuclei.
+- claim: fig3e-nearest-neighbor
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig3f-thalamic-nuclei.
+- claim: fig3f-thalamic-nuclei
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The neuron filter uses the fivefold cross-validated embedding explained variance.
+- claim: thalamus-ev-not-rate
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig3f-thalamic-nuclei.
+- claim: supfig2-noise-injection
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig3e-nearest-neighbor.
+- claim: fig4b-medulla-leads
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The time-offset analysis runs the embedding ridge regression at 31 shifts with fivefold
+    cross-validation.
+- claim: edfig6-offset-ev-correlation
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig4b-medulla-leads.
+- claim: fig5a-somatosensory-vs-alm
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig4b-medulla-leads.
+- claim: fig5b-po-vs-vm
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig5a-somatosensory-vs-alm.
+- claim: fig5c-pretectal-vs-scm
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig5a-somatosensory-vs-alm.
+- claim: fig5-significant-offsets
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig5a-somatosensory-vs-alm.
+- claim: fig4e-alm-depth
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig5a-somatosensory-vs-alm.
+- claim: fig6a-choice-from-video
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The choice decoder of Figs. 6 and 7 runs on the embedding, and its code is not public.
+- claim: fig6d-mouse-clustering
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig6a-choice-from-video. The marker-based clustering of fig6e-marker-clustering
+    was tested.
+- claim: fig6-marker-vs-embedding-decoding
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig6a-choice-from-video. The marker side alone could be computed, but
+    the claim compares it with the embedding.
+- claim: fig6e-marker-clustering
+  outcome: partially_reproduced
+  notebook: reproduce_wang_2025.ipynb
+  output: claim:fig6e-marker-clustering
+  measured:
+  - 5.92
+  - 1.02
+  seed_sensitive: false
+  notes: Main set, the 167 sessions that pass the clock check (166 decoded). 55 sessions of 15 mice pass
+    the filter (jaw or nose AUC of at least 0.65, mice with two or more such sessions). Calinski-Harabasz
+    score 5.92 against a null of 1.02 +/- 0.33 s.d. (paper 12.57 against 1.05 +/- 0.54); no shuffled score
+    reaches it (p < 0.001). 3 mice have the nose above the jaw in most of their kept sessions and 11 the
+    jaw above the nose, so both kinds occur. The score is outside the tolerance (11.31 to 13.83); the
+    null mean is within it. Over the authors' 106 sessions the score is 7.63 (36 sessions, 11 mice). Over
+    every variant printed (decoder reading a or b, full or trimmed delay epoch, three session sets, thresholds
+    0.6, 0.65 and 0.7) the score is 3.61 to 7.90 with p at most 0.003. Under the five seeds the score
+    is 5.92, 6.09, 6.53, 6.16 and 6.10 (authors' 106, 7.63 to 9.22), p < 0.001 under all; the outcome
+    is the same under each. The criterion gives no partial rule; the outcome is partially reproduced because
+    the clustering and both kinds of mice are there and significant but the score is about half the paper's.
+    Mean session AUCs in the main set are 0.614 for the jaw and 0.584 for the nose.
+  deviations:
+  - The marker decoder is not described in the paper and its code is not public; the claims file's readings
+    (a) five-frame window, 10 features, and (b) single frame, 2 features, were run with L2 logistic regression,
+    the penalty chosen by inner fivefold cross-validation from C in 0.01 to 100 (the grid of the paper's
+    code, functions_for_r2.calculate_auc). Both give the same outcome.
+  - Correct trials only with 20-fold stratified cross-validation (Methods, Trial selection and cross-validation).
+    The AUC is computed once per time bin over the pooled out-of-fold predictions, every 20th frame (68
+    ms) from -1.2 s to the go cue, and averaged over the 17 bins; the paper does not say how the delay-epoch
+    AUC is formed. The trimmed epoch (-1.05 to -0.15 s) is a variant.
+  - Marker outliers above five standard deviations of the frame-to-frame velocity are replaced by linear
+    interpolation (Methods, 'We identified outliers by a five-sigma threshold on velocity across frames
+    and imputed outliers from nearby frames').
+  - The main set is every session that passes the clock check, not the paper's 106 sessions, which the
+    paper does not name; the authors' 106 (from their deposit) and all decoded sessions are variants and
+    give the same outcome. Seven sessions fail the clock check (see findings).
+  - Two sessions are not decoded, SC032_121719 (8 correct left trials) and SC066_041321 (markers for 7
+    trial videos only; the notebook's label for this list says fewer than 20 correct trials of a side,
+    which is the case only after the trials without marker frames are dropped).
+- claim: edfig7-performance-correlation
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig6a-choice-from-video.
+- claim: fig7b-jaw-differs
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The choice decoder of Figs. 6 and 7 runs on the embedding, and its code is not public.
+    The single-trial video prediction that forms the vL and vR groups comes from that decoder (depends
+    on fig6a-choice-from-video).
+- claim: fig7c-modulation-nonuniform
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig7d-alm-midbrain-vs-medulla.
+- claim: fig7d-alm-midbrain-vs-medulla
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). Depends on fig7b-jaw-differs, whose trial groups come from the embedding decoder.
+- claim: edfig10-subtraction-consistent
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). The subtraction uses the embedding-predicted rates; depends on fig7d-alm-midbrain-vs-medulla.
+- claim: supp-session-independent-autoencoder
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's 16-dimensional embedding comes from a convolutional autoencoder trained on each session's
+    side-view video (Methods, Convolutional autoencoder). The version the paper cites, 0.230822.0128,
+    has no video; the later version 0.231012.2129 has it, in 71 files named +image (28.9 TB of its 65.7
+    TB). The notebook reads 300 frames of one session at 190 frames per second; that session has 680,502
+    side-view frames, so reading the video alone takes about 1 h per session and about 100 h for the paper's
+    106 sessions, before training about 100 autoencoders on four CPUs. The authors' per-frame embeddings
+    are not in their Zenodo deposit (session_latents.pkl holds 16 images of 120 by 112 pixels per session)
+    and the Google Drive folder the code's README links is not pinned, so it cannot be used (protocol,
+    author step 1.4). This claim trains a shared encoder on 40 sessions' video and compares it with the
+    session-specific autoencoders and the markers.
+findings:
+- kind: other
+  about: data
+  severity: critical
+  statement: In five sessions, sub-440959 (SC011) on 2019-02-24, 2019-02-25 and 2019-02-26 and sub-442571
+    (SC022) on 2019-02-27 and 2019-02-28, the DeepLabCut marker timestamps advance 3.4 ms per frame but
+    the video frames are 6.8 ms apart. As deposited, the tongue is visible at 6 to 13% of the lick events,
+    and no shift of the lick times within 1 s brings this above 0.49; stretching each trial's marker timestamps
+    by 2 from its first frame puts the tongue at 99.9 to 100% of the licks. Their trial videos hold about
+    940 frames, against a median of 1904. The markers of these sessions are on a time base half as long
+    as the trial table's, and nothing in the files shows it; any analysis of movement around task events
+    in them comes out wrong.
+- kind: other
+  about: data
+  severity: major
+  statement: 'In sub-455219 on 2019-08-07 (SC026_080719) the tongue is visible at 60% of lick events:
+    214 trial videos match the licks and 117 do not, and the session has 539 trial videos for 630 trials,
+    so some videos are probably attached to the wrong trials. The cause was not established.'
+- kind: data_missing
+  severity: major
+  statement: 'Marker frames are missing for whole trials in two sessions: sub-484676 on 2021-04-13 (SC066_041321)
+    has markers for 7 trial videos (49 s) of 550 trials, and sub-484674 on 2021-05-05 (SC065_050521) lacks
+    them for 140 of its 354 correct trials. The files do not say so.'
+- kind: other
+  about: data
+  severity: major
+  statement: The version the paper cites (0.230822.0128) holds no video and no autoencoder embedding,
+    the input of most of the paper's analyses. The raw video is only in the later version 0.231012.2129
+    (65.7 TB, in 71 files renamed +image); units, trials and markers of four sessions drawn at random
+    are identical in both versions. The authors' per-frame embeddings are in no pinned deposit.
+- kind: metadata_error
+  severity: minor
+  statement: The marker timestamps step by exactly 3.4 ms within a trial (99.9% of intervals to the microsecond),
+    a frame rate of 294 Hz, where the paper states 300 Hz; they look written from a nominal rate, not
+    measured.
+- kind: metadata_insufficient
+  severity: minor
+  statement: Units carry two quality labels, unit_quality (good or multi, no description) and classification
+    (good or unlabelled, 1,852 NaN), and only units with classification good have a CCF annotation (anno_name
+    is empty for all 200,922 unlabelled units). Which label the paper's 50,000 neurons use is not said.
+- kind: selection_undocumented
+  about: paper
+  statement: The dataset holds 174 sessions of 28 mice; the authors' Fig. 6 and 7 file names 106 sessions
+    of 21 mice, and seven mice (SC011, SC013, SC015, SC016, SC017, SC022, SC023) have none. The Methods
+    say 28 mice and give 105 and 106 sessions for Figs. 2 and 6 without saying which sessions were used
+    or why the others were left out.
+- kind: methods_unavailable
+  statement: Question for the authors. The choice decoder of Fig. 6 (from the embedding and from single
+    markers) is not described in the Methods and its code is in neither public repository. Which classifier,
+    features (single frame or the five-frame window), penalty selection and time resolution were used,
+    and how was the delay-epoch AUC of Fig. 6e formed? This attempt used L2 logistic regression with a
+    nested choice of penalty on one or five frames of one marker, an AUC per 68 ms bin averaged over the
+    delay epoch; both feature readings give a Calinski-Harabasz score of about 6 (7.6 to 7.9 on the authors'
+    106 sessions) against the paper's 12.57.

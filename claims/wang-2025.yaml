@@ -88,6 +88,21 @@
 schema_version: 2
 paper: doi:10.1038/s41593-025-02114-x
 claims:
+- id: link-authors-deposit
+  kind: link
+  statement: The authors' processed-data deposit can be linked to the dataset; the CCF annotation
+    names of its area grouping are the dataset's unit annotations, and the sessions of its Fig. 6
+    and 7 file are sessions of the dataset.
+  source: Zenodo doi:10.5281/zenodo.16740783, members area2anno.json and cal4cat-delay.pickle; code
+    github.com/druckmann-lab/MapVideoAnalysis at commit 7d27624 (area grouping, get_single_area_inds)
+  data: with_labels
+  criterion: Annotation names are matched after removing commas (the deposit's names have none),
+    sessions by mouse (the files' subject description, for example SC026) and date (MMDDYY), a
+    suffix _s<n> naming one of two sessions on a day. Reproduced when each of the 16 areas of
+    area2anno.json has at least one name found among the dataset's anno_name values, and at least
+    95% of the 106 session names match a dataset session, with as many dataset files as named
+    sessions on each day; partially reproduced when one of the two holds. The number of matched
+    annotations and the mice of the matched sessions are reported.
 - id: data-scale
   statement: The analysis covers more than 50,000 neurons recorded in more than a dozen cortical and
     subcortical structures, simultaneously with high-speed video of orofacial movements.
@@ -100,6 +115,9 @@ claims:
     paper names (for example ALM, other isocortex, striatum, thalamus, midbrain, medulla, pons,
     cerebellum). The paper does not say whether the count is before or after the 2 Hz filter; both
     counts are reported, and the claim holds if either exceeds 50,000.
+  data: with_labels
+  depends_on:
+  - link-authors-deposit
 - id: fig2b-medulla-vs-midbrain
   statement: In the response epoch, variance explained by the embedding-based video prediction is
     larger in medulla than in midbrain (0.176 against 0.104, insertion averages).
