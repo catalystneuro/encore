@@ -1,0 +1,447 @@
+schema_version: 3
+id: masset-2025-01
+datasets:
+- archive: dandi
+  id: "000251"
+  version: draft
+  modified: "2023-06-20T00:56:22.602125Z"
+  relation: reuses
+paper: doi:10.1038/s41586-025-08929-9
+date: 2026-11-20
+entry: masset-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44735305383
+inputs:
+- what: The paper's own deposit, version 1 (2025-04-09). DA_SU_ODOR_NEW_W_OL.h5 holds the cued
+    delay task single units (spike, lick and event times, mouse, ML position), which DANDI:000251
+    does not hold; the cued delay claims are tested on it (data elsewhere). FinalAverageArray.mat,
+    the paper's per-neuron table, is used only to pair each neuron's VR and cued delay units (link
+    claim); Valid_S.mat gives the paper's flags of the neurons recorded in each task. Files are
+    streamed into memory; their SHA-256 sums from the deposit's file list are in the helper. The
+    deposit is in Mendeley Data, which the registry does not read, so the paper cannot be listed
+    on it there.
+  source: doi:10.17632/tc43t3s7c5.1
+outcomes:
+- claim: fig1f-multi-timescale-advantage
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run. The claim rests on simulations made by the paper's public
+    code (github.com/pablotano8/multi_timescale_RL at 37f11c6), not on any recorded data. The run's
+    five hours went to the 23 claims on recorded data, which needed about 70 minutes of computing
+    in their final run alone. A later attempt can run the simulation code.
+- claim: mixing-model-accuracy
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The sharing parameter of the mixing model (Methods eq. 32-33) is lost from the text, and
+    the modification is not in the simulation repository at 37f11c6 nor in the Mendeley scripts,
+    as the claims file records. No value of the parameter has a basis in the paper, so the
+    reported accuracies cannot be checked. The question is in the findings.
+- claim: ed2e-branching-myopic-bias
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, for the reason given for fig1f-multi-timescale-advantage
+    (a simulation, Fig_2_f_myopic_mdp.py at 37f11c6).
+- claim: ed2-myopic-bias-maze-lunar
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted in this run, for the reason given for fig1f-multi-timescale-advantage. The
+    Lunar Lander part trains 10 DQNs, which would not fit the time left in any case.
+- claim: link-units-across-tasks
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:link-units-across-tasks
+  notes: All 101 DANDI open-loop units and all 67 Mendeley cued delay units match one distinct row
+    each of FinalAverageArray.mat, 0.00 to 0.32 spikes per trial apart, with the next best row 3.8
+    or more apart, and the matched rows carry the files' ML positions. The table has 78 cued delay
+    rows (all flagged Valid.OdorNew); 11 have no unit in the Mendeley file (4 of mouse 3044, 4 of
+    3049, 1 each of 3050, 3053 and 3054; 5 at ML above 900 um). Every one of the 67 rows with a cued
+    delay unit also has a DANDI VR unit; 66 of these pairs were recorded on the same day. All 101
+    matched VR rows are flagged Valid.VR (121 rows flagged). Matching also shows that the cued delay
+    trials are aligned on the VSTIM_ON column, the odor onset.
+- claim: cued-delay-neurons
+  outcome: not_reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:cued-delay-neurons
+  measured:
+  - 67
+  - 43
+  notes: The Mendeley file holds 67 cued delay units (78 expected, tolerance 7.8). Under the
+    claim's seed 43 pass M3 (50 +- 5); 17 have a mean held-out R2 at or below 0, 10 a mean cue
+    response at or below 2 spikes/s (3 both), none an ML at or above 900 um. Over the five seeds
+    43 to 45 are selected. The paper's table flags 78 units, so 11 were not deposited; 5 of them
+    are at ML above 900 um and the paper excludes them, which leaves 73 against the 67 here. The
+    exclusion counts here (17, 10, 0) compare with the paper's 17, 11 and 4.
+  deviations:
+  - Tested on the paper's Mendeley deposit, as DANDI:000251 holds no cued delay recordings.
+  - The units are taken as the identified dopamine neurons; the file has no identification flag,
+    and the link shows each unit is a row the paper flags Valid.OdorNew.
+  - Cue responses are computed from the spike times (0.1 to 0.4 s after VSTIM_ON); the code reads
+    precomputed per-trial rates (CellValuesArray.mat).
+  - Fits use scipy's bounded least squares (least_squares) with the code's start points and
+    bounds, where the code uses MATLAB fit; half splits are disjoint, where the code's two halves
+    share one trial (Olfaction_Script.m, FirstHalf and SecondHalf).
+- claim: session-trial-counts
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:session-trial-counts
+  measured:
+  - 39
+  - 81.4
+  - 66
+  - 58.8
+  notes: Reading (a), every session with a unit. Cued delay 39 sessions (36 +- 3.6) with 81.4 +-
+    12.7 trials; VR 66 sessions (60 +- 6, at the edge of the tolerance) with 58.8 +- 19.5 trials.
+    Reading (b), sessions with an analysed unit, gives 62 VR sessions with 59.2 trials and 30 cued
+    delay sessions with 82.6 trials, the latter outside tolerance. The VR files hold only the
+    open-loop trials of the standard track and the cued delay file only the four odor trial types,
+    so the two trial readings give the same counts. Sessions are a mouse and a start time.
+  deviations:
+  - The cued delay half of the claim is tested on the Mendeley deposit (data with_inputs).
+- claim: fig2b-anticipatory-licking
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig2b-anticipatory-licking
+  notes: Under onset reading (a) the onset is at 0.3, 0.5, 2.3 and 7.9 s after the odor for the
+    0.6, 1.5, 3.75 and 9.375 s cues, over all 67 units and over the 43 selected, increasing with
+    delay. Reading (b) (2 s.d. above the pre-cue bins) gives no order, as pre-cue licking is near
+    zero (0.10 licks/s) and is crossed in the first bins. No random draws.
+  deviations:
+  - 67 units in place of the paper's 78 recorded neurons.
+- claim: fig2c-mean-cue-response-decreases
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig2c-mean-cue-response-decreases
+  notes: Over the 43 selected neurons the population mean falls monotonically, 11.68, 8.63, 3.70
+    and 2.86 spikes/s in 0.1 to 0.4 s and 8.77, 6.72, 3.30 and 2.71 in 0 to 0.5 s. It falls
+    monotonically under all five seeds (43 to 45 neurons) and over all 67 units.
+- claim: fig2f-exponential-better-than-hyperbolic
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig2f-exponential-better-than-hyperbolic
+  notes: Mean held-out R2 difference 0.0197 (exponential 0.456, hyperbolic 0.436), 34 of 43 neurons
+    favour the exponential, t = 4.78, p = 2.2e-5 (paper 2.2 x 10-5). Over the five seeds p = 1.5e-5
+    to 4.6e-5.
+- claim: fig2g-discount-factor-distribution
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig2g-discount-factor-distribution
+  measured:
+  - 0.532
+  - 0.227
+  notes: Mean 0.532 and s.d. 0.227 over 43 neurons under the claim's seed; over the five seeds the
+    mean is 0.532 to 0.538 and the s.d. 0.223 to 0.227, all within tolerance. Mouse 3054 (19
+    neurons) has a mean of 0.658, mouse 3044 (16) 0.454, the other mice (8) 0.386.
+- claim: ed3f-discount-factor-reliable
+  outcome: partially_reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:ed3f-discount-factor-reliable
+  measured:
+  - 0.735
+  - 0.877
+  - 0.815
+  notes: Reading (a), the 43 selected neurons, gives mean split-half correlations of 0.735 (gain),
+    0.877 (baseline) and 0.815 (discount factor); reading (b), all 67 units, 0.555, 0.876 and
+    0.759. The baseline is within tolerance, the gain and the discount factor are below it under
+    both readings and all five seeds (gain 0.671 to 0.752, discount factor 0.717 to 0.817 under
+    reading a). All correlations are positive and significant in every bootstrap (largest p 0.017).
+    The parameters agree between halves, less closely than reported.
+- claim: fig2k-reward-timing-decoded
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig2k-reward-timing-decoded
+  notes: Under every reading (all components or the first 12; the Methods' or the code's baseline)
+    and all five seeds, data beat shuffle at all four delays (largest p 0.012, at 0.6 s under seed
+    plus 2000). Claim's seed, all components and the Methods' baseline, median distances 0.40, 0.84,
+    2.48 and 3.55 s against 1.15, 1.93, 3.45 and 7.13 s for the shuffle; p = 1.2e-11, 1.1e-34,
+    4.0e-18 and 8.5e-32.
+  deviations:
+  - The Wasserstein distance to the true delay is computed exactly (expected absolute distance);
+    the code samples 100,000 points.
+  - The number of singular components is open (DecodeTime is not in the deposit); both readings
+    of the criterion are run and give the same outcome.
+- claim: fig2k-better-than-single-discount
+  outcome: partially_reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig2k-better-than-single-discount
+  notes: The population decoder is closer than the single-discount decoder at 1.5 s (p = 3.9e-32)
+    and 9.375 s (p = 7.1e-25) but not at 3.75 s (p = 1; medians 2.48 against 1.89 s), under every
+    reading and all five seeds (3.75 s p at least 0.997). At 0.6 s p = 0.69 (0.18 to 1 over seeds),
+    no advantage, as in the paper. Two of the three delays the criterion names.
+- claim: ed6e-exponential-decoding-better-than-hyperbolic
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:ed6e-exponential-decoding-better-than-hyperbolic
+  notes: With the Methods' baseline the exponential matrix is better at 1.5, 3.75 and 9.375 s under
+    all five seeds (p at most 1.1e-8) and not at 0.6 s. With the code's baseline the 9.375 s
+    result varies with the seed (p = 0.0095 under the claim's seed, 0.98 under seed plus 2000), so
+    the outcome rests on the Methods' baseline, which the claims file names as the main reading.
+- claim: ed5-behavioral-neural-discount-uncorrelated
+  outcome: reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:ed5-behavioral-neural-discount-uncorrelated
+  notes: Methods window (0 to 0.6 s) and M3 neurons, r = -0.473 (p = 0.064, 16 neurons) in m3044
+    and r = -0.095 (p = 0.70, 19 neurons) in m3054. The code's window (0.2 to 0.8 s) and neuron set
+    give p from 0.14 to 0.92. No reading and no seed gives p < 0.05 (smallest 0.064). The paper
+    reports r = -0.29 and -0.029.
+- claim: ed5g-single-animal-decoding
+  outcome: partially_reproduced
+  seed_sensitive: true
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:ed5g-single-animal-decoding
+  notes: m3054 (19 neurons) beats shuffle at all four delays under all seeds and readings. m3044
+    (16 neurons) beats shuffle at 0.6, 1.5 and 3.75 s, and at 9.375 s under the claim's seed p =
+    0.33 (all components) and 0.074 (12); its median distance there is 8.3 s against 3.55 s for the
+    population. At 9.375 s m3044 reaches p < 0.05 under seeds plus 2000 (p = 0.016, 12 components)
+    and plus 3000 (p = 0.018, all components), which would make the claim reproduced; not under
+    plus 1000 and plus 4000.
+- claim: ed6g-decoding-matches-simulation
+  outcome: not_reproduced
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:ed6g-decoding-matches-simulation
+  notes: Data against simulation, claim's seed, p = 2e-8 (0.6 s), 1.5e-10 (1.5 s), 0.021 (3.75 s)
+    and 1 (9.375 s), against the paper's 0.002, 0.999, < 1e-12 and 0.027; the test agrees with the
+    paper at two of the four delays. Over the five seeds it agrees at 0 to 2 delays, and the
+    simulated distances move a great deal between seeds (at 3.75 s, median 1.68 to 2.70 s), so
+    the comparison is dominated by the draw of one simulated data set.
+  deviations:
+  - Simulated responses are Poisson counts with the predicted rate (spikes/s) as mean, as the code
+    does (SimulationForRecovery_Olf.m); fitted and decoded as the data (all components, Methods
+    baseline only).
+- claim: fig3b-vr-ramp-population
+  outcome: partially_reproduced
+  notebook: vr_population.ipynb
+  output: claim:fig3b-vr-ramp-population
+  measured:
+  - 91
+  - 0.0836
+  - 51
+  - 34
+  - 6
+  notes: 91 neurons pass M6 (31 of mouse 3044, 23 of 3054, 37 of eight other mice). Mean slope 0.084
+    (p = 0.018), below 0.097 +- 0.0097; 51 positive, 34 negative and 6 non-significant slopes. The
+    population slope is positive and significant and the neuron count within tolerance, while the
+    non-significant count (and the mean slope) are not, which is the criterion's partial case. The
+    same under all five seeds (mean slope 0.0833 to 0.0837, counts unchanged).
+  deviations:
+  - PSTHs are spike counts in 43 bins of 0.1 s from 3.05 to 7.35 s after scene motion onset
+    (Methods); the code averages 10 ms rates in 43 bins that share their edge samples, ending at
+    the reward time of its table.
+  - Half splits are disjoint; the code's halves share one trial.
+- claim: fig3-common-value-fit
+  outcome: reproduced
+  assumed: true
+  notebook: vr_population.ipynb
+  output: claim:fig3-common-value-fit
+  measured:
+  - 0.446
+  - 0.237
+  notes: Mean 0.446 and s.d. 0.237 of the per-neuron discount factors under the claims' seeds (0.437
+    to 0.447 and 0.231 to 0.243 over the five), within tolerance. The mean value function is convex
+    under both readings (second difference positive at 66 to 68% of bins; at or below the chord at
+    every interior bin). Percentiles 20, 70 and 90 are 0.220, 0.555 and 0.731 (paper 0.25, 0.56,
+    0.88). Few fits reach the optimiser's tolerance (9 to 16 of 200 per seed). On 20 fits the
+    iteration cap moves the mean from 0.479 (3000 iterations) to 0.443 (10,000) and 0.442 (30,000).
+  deviations:
+  - Assumption. The fit is capped at 10,000 iterations of L-BFGS-B, with gains and baselines solved
+    exactly at each step (variable projection, same bounds), where the code runs fmincon (interior
+    point, MaxIter 2000, TolFun 1e-5). The cap is chosen because 30,000 iterations change the
+    result little on a subset while 3000 change it; the paper does not say how far its fits
+    converged.
+- claim: ed8b-slope-correlates-with-discount
+  outcome: partially_reproduced
+  assumed: true
+  seed_sensitive: true
+  notebook: vr_population.ipynb
+  output: claim:ed8b-slope-correlates-with-discount
+  measured: 0.709
+  notes: Spearman r = 0.709 (p = 3.6e-15, 91 neurons) under the claims' seeds, below 0.81 +- 0.081.
+    Over the five seeds r = 0.708 to 0.753; under seeds plus 2000 (0.753) and plus 3000 (0.744) it
+    is within tolerance. On 20 fits r rises with the iteration cap (0.618 at 3000, 0.718 at
+    10,000, 0.732 at 30,000), so the value depends on how far the fits converge.
+  deviations:
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+- claim: ed7c-discount-not-related-to-ml-position
+  outcome: reproduced
+  assumed: true
+  notebook: vr_population.ipynb
+  output: claim:ed7c-discount-not-related-to-ml-position
+  notes: Pearson r = -0.031, p = 0.77 (paper r = 0.015, P = 0.89); over the five seeds r = -0.038 to
+    -0.027, p at least 0.72. The 91 neurons come from 10 implants, with 10 distinct ML values
+    (320 to 846 um).
+  deviations:
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+- claim: ed9g-models-agree
+  outcome: blocked
+  blocked_by: too_large
+  notebook: vr_population.ipynb
+  output: claim:ed9g-models-agree
+  notes: The common reward expectation model needs a constrained fit (the code's ValueConstraint.m)
+    of 316 parameters for each of 200 halves. In the notebook, 20 SLSQP iterations on one half take
+    2.6 s, which at the code's 2000 iterations gives about 4 minutes per fit and 3.6 hours for 200
+    fits on 4 processes, beyond the notebook limit. Nothing was fitted.
+- claim: fig4a-discount-correlated-across-tasks
+  outcome: reproduced
+  assumed: true
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig4a-discount-correlated-across-tasks
+  measured:
+  - 40
+  - 0.462
+  notes: 40 neurons pass both selections (16 of m3044, 18 of m3054, 4 of m3045, 2 of m3053);
+    Spearman r = 0.462, one-tailed p = 0.0013 (paper 0.45, 0.0013). Over the five cued delay seeds
+    40 to 42 neurons, r = 0.461 to 0.471. The 39 pairs recorded on the same day give r = 0.439
+    (p = 0.0026). The VR fit is the one at the claims' seeds.
+  deviations:
+  - Neurons are paired through the paper's per-neuron table (link-units-across-tasks).
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+- claim: fig4b-bootstrap-correlation
+  outcome: reproduced
+  assumed: true
+  seed_sensitive: true
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:fig4b-bootstrap-correlation
+  measured:
+  - 0.364
+  - 0.104
+  notes: Reading (a), the code's draw from the first halves, gives mean 0.364 and s.d. 0.104 under
+    the claim's seed (10,000 pairs); reading (b), all 200 half-fits, 0.342 and 0.107. Both are
+    within tolerance; p is printed as 0. Under seed plus 3000 neither reading has the s.d. within
+    tolerance (0.115 and 0.116 against 0.104 +- 0.0104); under the other seeds at least one reading
+    does. 100,000 pairs give the same values.
+  deviations:
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+- claim: ed10-cross-task-decoding
+  outcome: partially_reproduced
+  assumed: true
+  seed_sensitive: true
+  notebook: cued_delay_and_cross_task.ipynb
+  output: claim:ed10-cross-task-decoding
+  notes: Data beat shuffle at 1.5 and 3.75 s under every reading and seed (p at most 3.6e-12 under
+    the claim's seed), but under the claim's seed not at 9.375 s (p = 0.098 to 0.70 over the
+    readings). At 0.6 s p is at least 0.95, as in the paper. Under seeds plus 2000 (all readings)
+    and plus 3000 (12 components, Methods baseline) 9.375 s reaches p < 0.05 (0.0026 to 0.017),
+    which would make the claim reproduced.
+  deviations:
+  - The test responses are shuffled, as M4 says; the code (Tuning_Figures_Revision.m) shuffles the
+    training responses.
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+- claim: ed7de-gain-baseline-not-related-to-ml-position
+  outcome: reproduced
+  assumed: true
+  notebook: vr_population.ipynb
+  output: claim:ed7de-gain-baseline-not-related-to-ml-position
+  notes: Baseline r = 0.026 (p = 0.81), gain r = -0.175 (p = 0.097) under the claims' seeds (paper
+    -0.011 and -0.19); over the five seeds the gain's p is 0.093 to 0.104, the baseline's at least
+    0.77. The gain is the code's stored a / gamma^0.1.
+  deviations:
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+- claim: ed8cd-vr-licking-not-related-to-discount
+  outcome: reproduced
+  assumed: true
+  notebook: vr_population.ipynb
+  output: claim:ed8cd-vr-licking-not-related-to-discount
+  notes: With the Methods windows (before each trial's reward) none of the six correlations has
+    p < 0.05 under any seed (smallest 0.315, m3044 middle against early); under the claims' seeds
+    r ranges from -0.064 to 0.173. The code's windows (aligned on scene motion) give the same under
+    the claims' seeds (smallest p 0.27). Neurons are the M6 neurons of each mouse (31 and 23).
+  deviations:
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+- claim: ed8ej-single-animal-vr-fits
+  outcome: partially_reproduced
+  assumed: true
+  seed_sensitive: true
+  notebook: vr_single_mouse.ipynb
+  output: claim:ed8ej-single-animal-vr-fits
+  measured:
+  - 31
+  - 23
+  - 0.700
+  - 0.796
+  - 0.775
+  - 0.964
+  - 0.997
+  - 0.857
+  notes: Under the claim's seed five of the six r are within tolerance, and the m3044 gain (0.700)
+    is just below 0.702; all p < 1e-4. Under the other four seeds all six are within tolerance
+    (m3044 gain 0.703 to 0.759), which would make the claim reproduced. Neuron counts 31 (29 +-
+    2.9) and 23 (24 +- 2.4).
+  deviations:
+  - Each mouse is fitted with new splits and initial values, as the code's per-mouse scripts do,
+    and compared with the population fit at the claims' seeds.
+  - Rests on the iteration cap of the common value fit (see fig3-common-value-fit).
+findings:
+- kind: other
+  about: data
+  severity: critical
+  statement: 78 open-loop units are deposited twice. Each SU-VR-ALL-OL file holds the same spike
+    train as an SU-VR-OL file of the same subject, under another session number (for example
+    sub-3014 SU-VR-ALL-OL-1 and SU-VR-OL-2), and nothing in the files or the dandiset's description
+    says so. An analysis of all single-unit files counts these units twice.
+- kind: metadata_error
+  severity: major
+  statement: sub-3015/sub-3015_ses-SU-VR-OL-4.nwb, named as an open-loop session, holds a teleport
+    session; its trial table has the four teleport trial types, and its spike train is the same as
+    that of SU-VR-ALL-TP-3 and SU-VR-ALL-OL-3.
+- kind: data_missing
+  severity: major
+  statement: The dandiset holds no cued delay (odor) task recordings, although the paper's
+    deposit (doi:10.17632/tc43t3s7c5.1) says its raw electrophysiological data are in
+    DANDI:000251. Only the VR task single units are there; the cued delay units are in the
+    Mendeley deposit.
+- kind: metadata_insufficient
+  severity: major
+  statement: The single-unit files have no description of their units and no flag for optogenetic
+    identification, and the dandiset's description does not say which units are identified
+    dopamine neurons. The paper's own flags (Valid_S.mat in its Mendeley deposit) mark all 101
+    open-loop units as analysed, so the units can be taken as identified only through that deposit.
+- kind: other
+  about: data
+  severity: minor
+  statement: The dandiset has no published version; it exists only as a draft (last modified
+    2023-06-20), which can change and has no DOI.
+- kind: other
+  about: data
+  severity: none
+  statement: Checks that passed. All 101 open-loop units match the paper's per-neuron table trial by
+    trial, and the spikes, licks and trial events share one clock (reward responses at the trial
+    table's reward times, none at times shifted by 5 s). The reward comes a median 7.31 s after
+    scene motion onset in the files, where the paper gives 7.35 s.
+- kind: other
+  about: paper
+  statement: The paper's Mendeley deposit holds 67 of the 78 cued delay units of its own table
+    (Valid.OdorNew); 11 are missing, 5 of them at ML above 900 um. Its HDF5 file does not say that
+    the VSTIM_ON event column is the odor onset (the alignment of the paper's table and the
+    reward times show that it is).
+- kind: methods_unavailable
+  statement: Question for the authors. How far did the common value model fits converge? The code
+    caps fmincon at 2000 iterations; here few fits reach a tolerance even at 10,000 L-BFGS-B
+    iterations, and the population's discount factors and their correlation with the ramp slope
+    change with the cap (on 20 fits, mean 0.479 at 3000 iterations, 0.443 at 10,000; Spearman with
+    the slope 0.62 and 0.72). This attempt assumes 10,000 iterations.
+- kind: methods_unavailable
+  statement: Question for the authors. DecodeTime, the decoder of Fig. 2k, is not in the deposit.
+    Does it use every singular component of the discount matrix (Eq. 21-22) or the first 12, as the
+    single-discount SVD in the code does? Both were run here and give the same outcomes.
+- kind: methods_unavailable
+  statement: Question for the authors. The sharing parameter of the mixing model (Methods, Mixing in
+    distributed RL models) is lost from the text, and the code that adds sharing to the agents is in
+    neither deposit. What value gives the reported 82, 94, 92 and 93% accuracies?
+- kind: paper_inconsistency
+  statement: The Methods exclude 17 neurons for negative held-out R2, 11 for a low cue response and
+    4 for ML above 900 um from 78, which leaves 46, not the 50 analysed; Extended Data Fig. 3b shows
+    23 non-selected neurons and Fig. 3c 13 with negative R2. On the deposited units this attempt
+    finds 17, 10 (3 overlapping) and 0.
+- kind: code_mismatch
+  statement: The code's half splits (Olfaction_Script.m and Master_Script_SingleValue_All_gain.m,
+    PermutedOrder(1 to floor(n/2)) and PermutedOrder(ceil(n/2) to n)) give two halves that share one
+    trial, where the Methods describe a split of the trials in halves. This attempt uses disjoint
+    halves.
