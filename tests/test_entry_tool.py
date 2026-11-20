@@ -505,3 +505,12 @@ def test_a_finding_that_can_be_about_either_says_which_from_pilot_15(repo):
                "findings": [{"finding": number, "agrees": True}]}
         (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "findings": critical, "verifications": [rnd]}))
         assert any("reviews finding 2" in e for e in errors(repo)) == wrong
+    # A later review rates an earlier attempt's findings, each once, by number; not one the attempt rated itself.
+    def reviewed(findings, items):
+        review = {"date": "2026-11-19", "basis": "The statements.", "findings": items}
+        (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "findings": findings, "findings_review": review}))
+        return [e for e in errors(repo) if "findings_review" in e]
+    assert reviewed([wrong_age], [{"finding": 1, "severity": "minor"}]) == []
+    assert any("has 1 findings" in e for e in reviewed([wrong_age], [{"finding": 2, "severity": "minor"}]))
+    assert any("twice" in e for e in reviewed([wrong_age], [{"finding": 1, "severity": "minor"}] * 2))
+    assert any("rated itself" in e for e in reviewed(critical, [{"finding": 1, "severity": "minor"}]))
