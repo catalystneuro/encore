@@ -9,8 +9,8 @@ task units the dandiset lacks. The dandiset has no published version; the draft 
 | Claim | Outcome |
 |---|---|
 | The units of both tasks link to the paper's per-neuron table (added check) | Reproduced |
-| 78 neurons recorded in the cued delay task, 50 selected | Not reproduced (67 deposited, 43 selected) |
-| Trials and sessions per task | Reproduced |
+| 78 neurons recorded in the cued delay task, 50 selected | Reproduced on the paper's 78 flagged neurons, 48 selected (the spike file holds 67, of which 43 are selected) |
+| Trials and sessions per task | Partially reproduced (cued delay sessions 44 or 32 on the 78 neurons) |
 | Anticipatory licking starts later for longer delays | Reproduced |
 | Mean cue response falls with delay | Reproduced |
 | Exponential fits better than hyperbolic | Reproduced |
@@ -31,7 +31,7 @@ task units the dandiset lacks. The dandiset has no published version; the draft 
 | Discount factors correlated across tasks (r = 0.45) | Reproduced |
 | Bootstrap correlations across tasks (0.34 +- 0.104) | Reproduced |
 | Decoding with the VR discount factors | Partially reproduced |
-| Common reward expectation model agrees | Blocked: too large |
+| Common reward expectation model agrees (rho = 0.93) | Partially reproduced (rho = 0.74) |
 | Simulations of Fig. 1 and Extended Data Figs 1 and 2 (four claims) | Blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -41,9 +41,10 @@ In the dandiset, 78 open-loop units are deposited twice under different session 
 open-loop file holds a teleport session. The attempt record, with the reasons and the differences
 from the paper's method, is [`attempts/masset-2025-01.yaml`](../../attempts/masset-2025-01.yaml).
 
-- `vr_population.ipynb`: the VR claims on the population (about 25 minutes, most of it fitting).
-- `vr_single_mouse.ipynb`: the single-mouse VR fits (about 32 minutes).
+- `vr_population.ipynb`: the VR claims on the population (about 28 minutes, most of it fitting).
+- `vr_single_mouse.ipynb`: the single-mouse VR fits (about 34 minutes).
+- `vr_reward_expectation.ipynb`: the common reward expectation model (about 27 minutes).
 - `cued_delay_and_cross_task.ipynb`: the link, the cued delay claims and the cross-task claims
-  (about 11 minutes).
+  (about 16 minutes).
 - `multiscale.py`: loading both sources, the link to the paper's table, the PSTHs, the common
-  value model fit, the cued delay fits and the decoder.
+  value model fit, the cued delay fits, the reward expectation model and the decoder.

@@ -9,7 +9,8 @@ Data sources
 - Mendeley Data doi:10.17632/tc43t3s7c5.1, the paper's own deposit. ``DA_SU_ODOR_NEW_W_OL.h5``
   holds the cued delay task single units, which DANDI:000251 does not hold, and
   ``FinalAverageArray.mat`` holds the paper's per-neuron table (one row per neuron, with both tasks),
-  used only to link the two tasks' units (link claim). Files are streamed into memory.
+  used to link the two tasks' units (link claim) and to give the cue responses of the 11 cued delay
+  neurons the HDF5 file lacks (``table_cue_responses``). Files are streamed into memory.
 
 Where each parameter comes from is given at its definition: "claim" for the claims file's
 criterion or its shared methods M1 to M8 (which cite the paper and its code), "paper" with the
@@ -154,6 +155,15 @@ def odor_units():
     return out
 
 
+def table_cue_responses(row, win=CUE_WIN):
+    """Per-trial cue response of a row of the paper's table, the mean of its 10 ms rates (time
+    axis from odor onset) in ``win``, and the trial's delay. Used only for the cued delay units the
+    Mendeley spike file lacks; the notebook compares it with the spike counts of the linked units."""
+    o = row["odor"]
+    k = (o["x"] >= win[0] - 1e-9) & (o["x"] < win[1] - 1e-9)
+    return np.nanmean(o["rate"][:, k], 1), DELAYS[np.asarray(o["grp"]).astype(int) - 1]
+
+
 def average_array():
     """The paper's per-neuron table, FinalAverageArray.mat (version 5 MAT file, read in memory).
     For each row: mouse, ML position, and for the cued delay (OdorNew) and VR columns the unit name,
@@ -243,8 +253,9 @@ def vr_trial_rates(u):
 
 def split_halves(n, rng):
     """A random split of n trials in two halves (claim, M2 and M6, "random split of the trials in
-    halves"). The code's split (first floor(n/2) and from ceil(n/2)) shares one trial between the
-    halves; disjoint halves are used here (standard, as the Methods describe)."""
+    halves"). The code's split (PermutedOrder(1:floor(n/2)) and PermutedOrder(ceil(n/2):n)) shares
+    one trial between the halves when n is odd; disjoint halves are used here, as the Methods
+    describe. This is a deviation from the code (one trial of 25 to 125)."""
     p = rng.permutation(n)
     return p[: n // 2], p[n // 2:]
 
@@ -411,45 +422,86 @@ def cv_fit_bootstraps(psths, x0, workers=4):
 # ValueConstraint.m)
 
 HORIZON = np.linspace(0, 10, int(round(10 / VR_DT)))  # code: reward horizon 10 s, nrh points
+_C_FOLDED = np.sqrt(2 / np.pi)
 
 
 def _folded(x, mu, s):
-    return (np.sqrt(2 / (np.pi * s ** 2)) * np.exp(-(x ** 2 + mu ** 2) / (2 * s ** 2))
-            * np.cosh(x * mu / s ** 2))
+    """Folded normal density (code FoldedNormal.m) and its derivative in s. Written as the sum of
+    two Gaussians, which equals the code's exp(-(x^2 + mu^2) / 2s^2) cosh(x mu / s^2) but does not
+    overflow at small s (the code sets the resulting non-finite values to 1e-4)."""
+    A = np.exp(-(x - mu) ** 2 / (2 * s ** 2))
+    B = np.exp(-(x + mu) ** 2 / (2 * s ** 2))
+    F = _C_FOLDED / s * 0.5 * (A + B)
+    dF = -F / s + _C_FOLDED / s * 0.5 * (A * (x - mu) ** 2 + B * (x + mu) ** 2) / s ** 3
+    return F, dF
 
 
 def fr_value(g, sig):
+    """Value V (neurons x 43) and its derivatives in each neuron's gamma and in each bin's sigma."""
     times = np.linspace(VR_NBINS * VR_DT, 0, VR_NBINS)  # code: Time = linspace(T, 0, Nspace)
-    F = _folded(HORIZON[:, None], times[None, :], sig[None, :])  # (nrh, T)
+    F, dF = _folded(HORIZON[:, None], times[None, :], sig[None, :])  # (nrh, T)
     D = g[:, None] ** HORIZON[None, :]
-    V = D @ F
-    V[~np.isfinite(V)] = 1e-4
-    return V, F, D, times
+    Dg = HORIZON[None, :] * g[:, None] ** (HORIZON[None, :] - 1)
+    return D @ F, Dg @ F, D @ dF
 
 
 def fr_sse(x, R, dt=VR_DT):
+    """Sum of squared errors of the common reward expectation model on bins 1 to 42, and its
+    analytic gradient (checked against finite differences in the notebook)."""
     n = R.shape[0]
     g, b, a, sig = _cv_unpack(x, n)
-    V, F, D, times = fr_value(g, sig)
+    V, Vg, Vs = fr_value(g, sig)
     gd = g ** dt
     lg = np.log(g)
-    dV = np.diff(V, axis=1) / dt
-    inner = gd[:, None] * (dV + lg[:, None] * V[:, :-1])
+    q = np.diff(V, axis=1) / dt + lg[:, None] * V[:, :-1]
+    inner = gd[:, None] * q
     E = b[:, None] + a[:, None] * inner - R[:, :-1]
-    return (E ** 2).sum()
+    W = 2 * E * a[:, None]
+    GV = np.zeros_like(V)
+    GV[:, :-1] += W * gd[:, None] * (lg[:, None] - 1 / dt)
+    GV[:, 1:] += W * gd[:, None] / dt
+    gg = ((W * (dt * g[:, None] ** (dt - 1) * q + gd[:, None] * V[:, :-1] / g[:, None])).sum(1)
+          + (GV * Vg).sum(1))
+    return (E ** 2).sum(), np.concatenate([gg, 2 * E.sum(1), 2 * (E * inner).sum(1), (GV * Vs).sum(0)])
+
+
+def fr_constraint(x, n):
+    """Code ValueConstraint.m: the mean value over neurons is at most 2 at every bin (>= 0 here)."""
+    return 2 - fr_value(x[:n], x[3 * n:])[0].mean(0)
+
+
+def fr_constraint_jac(x, n):
+    _, Vg, Vs = fr_value(x[:n], x[3 * n:])
+    J = np.zeros((VR_NBINS, len(x)))
+    J[:, :n] = -Vg.T / n
+    J[np.arange(VR_NBINS), 3 * n + np.arange(VR_NBINS)] = -Vs.mean(0)
+    return J
 
 
 def fr_fit(R, x0):
-    """Constrained fit (mean value over neurons at most 2 at every bin, code ValueConstraint.m) by
-    SLSQP with numerical gradients (the code uses fmincon, interior point)."""
+    """Constrained fit by SLSQP with analytic gradients, at most 2000 iterations as the code's
+    fmincon (interior point); the optimiser is a substitute (deviation)."""
     n = R.shape[0]
     bounds = ([(0.05, 0.999999)] * n + [(0.05, 12)] * n + [(0.05, 50)] * n
               + [(0.1, 10)] * VR_NBINS)
-    cons = dict(type="ineq", fun=lambda x: 2 - fr_value(x[:n], x[3 * n:])[0].mean(0))
-    res = optimize.minimize(fr_sse, x0, args=(R,), method="SLSQP", bounds=bounds,
+    cons = dict(type="ineq", fun=fr_constraint, jac=fr_constraint_jac, args=(n,))
+    res = optimize.minimize(fr_sse, x0, args=(R,), jac=True, method="SLSQP", bounds=bounds,
                             constraints=[cons], options=dict(maxiter=2000, ftol=1e-9))
     g, b, a, sig = _cv_unpack(res.x, n)
-    return dict(gamma=g, base=b, gain=a, sigma=sig, sse=res.fun, ok=res.success)
+    return dict(gamma=g, base=b, gain=a, sigma=sig, sse=res.fun, ok=res.success, nit=res.nit,
+                cmin=fr_constraint(res.x, n).min())
+
+
+def _fr_job(args):
+    return fr_fit(*args)
+
+
+def fr_fit_halves(halves, x0, workers=4):
+    """Fit each half PSTH (list of neurons x 43 arrays) from the same initial values."""
+    from concurrent.futures import ProcessPoolExecutor
+    with ProcessPoolExecutor(workers) as ex:
+        fits = list(ex.map(_fr_job, [(R, x0) for R in halves]))
+    return {k: np.array([f[k] for f in fits]) for k in fits[0]}
 
 
 def fr_initial(n, rng):
@@ -492,8 +544,10 @@ def fit_hyp(t, r):
 
 
 def rsquare(y, f):
-    """1 - residual over total sum of squares (claim, fig2f criterion)."""
-    return 1 - ((y - f) ** 2).sum() / ((y - y.mean()) ** 2).sum()
+    """1 - residual over total sum of squares (claim, fig2f criterion). Undefined (NaN) when the
+    held-out responses are all equal; a neuron's mean R2 is then taken over the other half-fits."""
+    tot = ((y - y.mean()) ** 2).sum()
+    return 1 - ((y - f) ** 2).sum() / tot if tot > 0 else np.nan
 
 
 def draw_splits(n_trials, rng, n_boot=N_BOOT):
@@ -584,26 +638,31 @@ def single_discount_decode(resp_scaled, gamma_mean):
 
 
 def run_decoding(gam, base_for_resp, firing_test, rng, n_comp=None, matrix=None,
-                 alpha=ALPHA_TIKHONOV):
+                 alpha=ALPHA_TIKHONOV, n_shuffle=1):
     """For each of the 2 n_boot decodings: discount matrix from ``gam`` (fits x neurons), test
     responses ``firing_test`` (fits x neurons x 4) minus ``base_for_resp`` (fits x neurons), each
-    neuron scaled to its maximum over delays. Returns Wasserstein distances (fits x 4) for data and
-    for neurons shuffled in the test responses. ``matrix`` may give the discount matrices directly
-    (fits x neurons x time), for the hyperbolic decoder."""
+    neuron scaled to its maximum over delays. Returns Wasserstein distances (fits x 4) for data and,
+    for neurons shuffled in the test responses, (n_shuffle x fits x 4). Shuffle draw j takes one
+    permutation per decoding, as the code (claim, M4); draw 0 is the test, the others show how much
+    the draw matters. ``matrix`` may give the discount matrices directly (fits x neurons x time),
+    for the hyperbolic decoder."""
     nf = gam.shape[0]
     W = np.zeros((nf, 4))
-    WS = np.zeros((nf, 4))
+    WS = np.zeros((n_shuffle, nf, 4))
+    perms = [[rng.permutation(gam.shape[1]) for _ in range(nf)] for _ in range(n_shuffle)]
     for k in range(nf):
         M = matrix[k] if matrix is not None else gam[k][:, None] ** T_GRID[None, :]
         x = firing_test[k] - base_for_resp[k][:, None]
         x = x / x.max(1, keepdims=True)
         P = decode(M, x, alpha, n_comp)
         W[k] = wasserstein_to_point(P, TRUE_IDX)
-        Ps = decode(M, x[rng.permutation(len(x))], alpha, n_comp)
-        WS[k] = wasserstein_to_point(Ps, TRUE_IDX)
+        for j in range(n_shuffle):
+            WS[j, k] = wasserstein_to_point(decode(M, x[perms[j][k]], alpha, n_comp), TRUE_IDX)
     return W, WS
 
 
 def signrank_less(x, y):
-    """One-tailed Wilcoxon signed-rank test that x < y (MATLAB signrank, tail left)."""
-    return stats.wilcoxon(x, y, alternative="less").pvalue
+    """One-tailed Wilcoxon signed-rank test that x < y (MATLAB signrank, tail left), over the pairs
+    where both are defined (a decoding whose predictions are all clipped to 0 has no distance)."""
+    ok = np.isfinite(x) & np.isfinite(y)
+    return stats.wilcoxon(x[ok], y[ok], alternative="less").pvalue
