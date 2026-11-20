@@ -426,7 +426,9 @@ module.
   that exhausts the memory ends the whole job, with nothing saved: on
   2026-11-06 an author run was killed nine times this way, each time on its
   full run, by a helper that read four sequencing libraries at once into
-  lists of lines.
+  lists of lines. The runner now ends the largest Python process when
+  almost no memory is free: a command that stops with `Terminated` or
+  `Killed` was using too much, so read less at once before running it again.
 - **Develop on a subset.** Build and debug each analysis on one or two
   sessions, or a few units, and run it on the whole dataset once, when it
   works; do not re-run whole notebooks to test a change. Time the subset and

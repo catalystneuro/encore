@@ -172,6 +172,24 @@ def test_a_repeat_authors_commit_may_remove_the_questions_filed_by_dataset():
     assert not ok("claims/silkuniene-2025.yaml")
 
 
+def test_the_agents_job_guards_the_runners_memory_before_the_agent_starts():
+    # rozsa-2023, 2026-11-19: three author runs ended with the runner starved by the agent's own scripts and nothing
+    # saved. The guard ends the largest Python process first, never the agent or the runner, and a runner without
+    # it goes on.
+    import re
+    import yaml
+    workflow = yaml.safe_load((REPO / ".github" / "workflows" / "attempt.yml").read_text())
+    steps = next(j["steps"] for j in workflow["jobs"].values() if any(s.get("name") == "Run the agent" for s in j["steps"]))
+    names = [s.get("name") for s in steps]
+    assert names.index("Guard the runner's memory") < names.index("Run the agent")
+    run = steps[names.index("Guard the runner's memory")]["run"]
+    assert "exit 0" in run and run.rstrip().endswith('|| echo "earlyoom did not start; no guard"')
+    prefer, avoid = (re.search(rf"--{k} '([^']+)'", run).group(1) for k in ("prefer", "avoid"))
+    for name, spared in (("python3.12", False), ("python", False), ("jupyter-nbconvert", False), ("node", True),
+                         ("claude", True), ("Runner.Worker", True), ("Runner.Listener", True)):
+        assert bool(re.search(avoid, name)) == spared and bool(re.search(prefer, name)) != spared, name
+
+
 def test_a_run_flagged_on_the_unverified_account_is_queued_on_the_verified_one(tmp_path):
     # RUNNER_FALLBACK=queue:<file>: the paper goes first in the verified lanes' queue file (once), the rest of its
     # roles are marked for the verified account, and the chain ends QUEUED ON VERIFIED (exit 0), not STOPPED.
