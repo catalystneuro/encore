@@ -1,0 +1,25 @@
+**Round 3 verification of lee-2023 (doi:10.1126/science.adf6484) on DANDI:000636 0.241120.0510**
+
+The attempt record proposes a change of outcome for four claims. I count four `proposed:` entries in the record, and each matches a claim id in the claims file. I agree with all four proposed outcomes.
+
+| Claim | Proposed outcome | Agree | My outcome if different | Reason |
+|---|---|---|---|---|
+| fig2b-ephys-umap-subclasses | blocked (methods_underspecified) | yes | — | The only part that fails is the feature space with the 65 computed features, where VIP is 0.195 above its share against the 0.2 required (reproduce notebook, cell 68). With the paper's values for the 19 features public IPFX cannot compute, all four subclasses pass in both spaces (cell 68: smallest margin 0.222 in feature space, 0.224 in UMAP). They also pass on the paper's 84-feature table (0.211 and 0.256). The criterion asks for reading (a), the 84 features, and only 65 can be computed from the dataset, so the outcome cannot be decided on the data. figs2b-wfdc2-ephys-43-of-84 is blocked for the same reason, so this is consistent. The blocked outcome removes a failure; it does not create a pass, so it does not favour a result. |
+| figs8b-firing-differs-pvalb2-only | blocked (methods_underspecified) | yes | — | The criterion names two readings of the firing rate and requires the claim to hold "under every reading". Cell 16 of the species notebook shows the two readings disagree. With the rate at rheobase + 40 pA the claim holds under both layer readings. With the rate at rheobase, Sst 5 differs between species (FDR p 7.3e-04 and 5.7e-04), so that reading fails. The claims file's check records the convention that a claim names its sweep readings and is blocked when they disagree, and fig1l is handled the same way. The proposed reason quotes the printed numbers correctly. |
+| figs9-species-differences-not-culture | blocked (methods_underspecified) | yes | — | The claim takes its features from figs8b. If figs8b is blocked, the rule for dependent claims gives blocked, and the record applies that rule the same way to figs1de and figs2c. Caveat: the cause of failure here does not depend on the rate reading. In species-notebook cell 19, under all four readings, Pvalb 2 AP width also differs with acute human cells (FDR p 0.011 to 4.1e-10). The criterion requires that difference for culture cells only, and it has no partial case, so without the dependency rule it would give not_reproduced. The reason quotes the numbers correctly. |
+| fig5d-dbc-morph-umap | not_reproduced (`assumed: true`) | yes | — | The criterion requires both spaces and has no partial case. It does not fix how the SST subclass is read. The revised label is supported by the paper, which says of moving SST FRZB to PVALB that "This assignment has been applied for subclass-level analyses". Under that label the feature space passes (2.55) and the UMAP fails under all five seeds (cell 121: ratios 1.62 to 1.85 against 2), so not_reproduced follows. Under `subclass_label` the claim passes at the claim's seed (3.48 and 2.27) but fails the UMAP under two of five seeds (1.78, 1.70), so it is not a clean pass either. The revised label leads to the negative outcome, so it was not chosen to reach a pass. The outcome is correctly flagged `assumed: true`. |
+
+**Numbers in the proposals that differ from what the notebook prints.** None of these changes an outcome, but in each case the notes, the proposed reason and the Result cell give numbers the re-executed notebook does not show. The printed outputs agree with the numbers I saw in round 2.
+
+- **fig2b** (notes, proposed reason and cell 69, against cell 68):
+  - UMAP at the claim's seed: the text says the smallest margin is SST at 0.202; cell 68 prints 0.209.
+  - Seed misses: the text says SST misses only under seed +1000 (0.200). Cell 68 shows misses under +1000 (0.197) and +4000 (0.199). The notes describe those two values as coming from the earlier run.
+  - With the 19 features added: the text says the smallest margin is "0.222 in both" spaces. Cell 68 prints 0.222 in feature space and 0.224 in UMAP.
+- **fig5d-dbc-morph-umap** (notes, proposed reason and cell 122, against cell 121):
+  - Revised label, UMAP: the text says ratios 1.27 to 1.68 (fractions 0.40 to 0.53). Cell 121 prints 1.62 to 1.85 (fractions 0.509 to 0.582).
+  - `subclass_label`, claim's seed: the text says the UMAP ratio is 2.02. Cell 121 prints 2.27.
+  - `subclass_label`, failing seeds: the text says 1.54 and 1.62. Cell 121 prints 1.78 and 1.70.
+
+**Possible misreadings in the claims file (reported, not corrected).**
+- **figs9:** the criterion reads "driven primarily by the culture condition" as "differs for culture but not for acute". "Primarily" also allows a weaker acute difference, which is what cell 19 shows.
+- **figs8b:** the second reading, the rate at rheobase, is about one spike per second by construction. Cell 16 shows medians of 1 against 1 for Sst 5, so this reading hardly measures "average firing rate".

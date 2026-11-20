@@ -1,46 +1,98 @@
-# Verifier report, round 1: Huszar et al. 2022 (doi:10.1038/s41593-022-01138-x), DANDI 000552 v0.230630.2304
+**Verification report, round 1: Huszár et al. 2022 on DANDI:000552 (0.261113.1035)**
 
-The claims file has 35 claims. The notebook tests 12 and blocks 23. Of the 12 tested, I find 4 reproduced, 5 partially reproduced and 3 not reproduced. I accept 22 of the 23 blocks; I disagree with the reason given for fig7fg. Paper text: PMC10807234 (author manuscript), saved in `paper/`. No claim involves decoding, so no chance level applies.
+The claims file has 44 claims. The notebook tests 33 and treats 11 as blocked. My outcomes: 18 reproduced, 10 partially reproduced, 5 not reproduced, 11 blocked.
 
-## A. Outcomes
+### A. Outcomes
 
-| Claim | My outcome | Reason |
+| Claim | Outcome | Reason |
 |---|---|---|
-| cohort-birthdates | reproduced | 17 mice and the birthdate counts 4/3/6/4 match (cell 22). The notebook's 13 M / 4 F comes from taking each mouse's first file. The sex field differs between files of the same mouse: e13_1f1 is Male in 2 files and Female in 3; e13_1m1 is Male in 9 and Female in 3 (cell 7, and the DANDI asset metadata I queried). Taking each mouse's majority gives 12 M / 5 F, which matches. |
-| sessions-durations | partially_reproduced | Count, median and range all pass: 104 files is within 10% of the 96 in Fig. 7f, the median is 319.6 min (309.1 ± 30.9), and all durations lie in 102.3–523.2 min (cell 24). Leaving out e15_13f1 and e16_3m2 gives exactly 96 sessions, the Fig. 1e per-birthdate counts, and the paper's range of 113.7–475.6 min. It is partial because the criterion also requires non-REM sleep in every session, and two files (e13_1f1_200305 and _200307) hold a single Awake interval. |
-| spwr-duration | reproduced | The median is 36.0 ms under both readings, against 36.4 ± 3.64, and every ripple lies within 20–199.2 ms (cell 26). |
-| unit-count | not_reproduced | 8,201 units against a lower bound of 8,524 (cell 28). The cause is missing data: 6 mice (39 files) have no units in the archive, while Fig. 7f reports pyramidal pairs from 96 sessions of 15 mice. |
-| maze-cohort | reproduced | Reading (b) matches exactly: 11 maze mice, minus e15_13f1 and e16_3m2, gives 9 mice at E13.5–E16.5 = 2/2/2/3, and 3 mice have novel recordings (cell 30). |
-| maze-task | not_reproduced | Trial length (median 204.1 cm) and tracking rate (30 Hz) pass. Only 38/65 sessions (visited arm) or 22/65 (expected arm) have at least 10 trials per arm, and only 59/65 have at least 20 trials, the fewest being 12 (cell 32). That also fails the partial condition. |
-| novel-explorations | partially_reproduced | 3 mice but only 9 novel recordings with trials and position: 3 recordings of about 164 cm and 6 linear tracks of 100 or 110 cm (cell 34). The notebook's "9 + 7 = 16" counts epochs without position, which the criterion excludes. No open field has position, and the paper used three open fields. |
-| fig5e-pv-decorrelation | partially_reproduced | Stem 0.937 is within tolerance. Turn 1 0.547, arm 0.492 and turn 2 0.465 are all above tolerance. Kruskal–Wallis H = 7632.7, p ≈ 0, with the stem highest (cell 36). The bin counts (4218/2109/4218/1140) equal the paper's exactly, so the session set matches. |
-| fig6c-theta-rate-preserved | reproduced | Spearman rho = 0.734 ≥ 0.664, p ≈ 0, n = 2,038 (cell 41). Each mouse gives 0.72–0.76 and the variants 0.76–0.81. The rate is a running-speed proxy for the paper's theta-cycle rate. |
-| fig6c-novel-ratemap-corr-higher | not_reproduced | Familiar −0.053 is within tolerance. Novel −0.036 falls outside 0.018–0.078, and the rank-sum p = 0.67 (cell 43). Within each session the novel median is higher in 9 of 9, but it stays negative and far below 0.048. Open-field explorations are missing from the data. |
-| fig6d-info-lower-novel | partially_reproduced | Novel is lower (0.270 against 0.631 bits/s, p = 1.5e-59), but both medians fall below tolerance (cell 45). |
-| fig6d-rate-lower-novel | partially_reproduced | Novel is lower (0.799 against 0.958 Hz, p = 7e-6), but both medians are above tolerance (cell 47). This may be partly the `running_rate` bug in B1. |
-| ed2, fig1e, fig1f, fig1g, fig1h, fig2b, fig2c, fig2d, fig2f, fig2g, fig3c, fig3e, fig5b, fig5c, fig5f, fig6e, fig6f | blocked (data_missing) | Confirmed against the archive. The units tables hold only clu_id, group_id, spike_times and unit_name (cell 8). The archive's variableMeasured lists no optogenetic or stimulus type for any asset (my API query), and stimulus/acquisition groups are empty in the processed files. |
-| fig5d, fig7b, fig7ce | blocked (data_missing) | Need light-responsive labels; fig5d also needs shank positions, which the unit group_id does not reliably give. |
-| fig4d-model-fit | blocked (depends on fig3e) | Agreed. |
-| fig1c-radial-depth | blocked (data_missing) | Agreed. The depths come from tdTomato histology (Methods, "Quantification of normalized cell depth"), which is not in the archive. |
-| fig7fg-convergence-cofiring | blocked, but partly testable | The stated reason (no cell types) is inconsistent with the rest of the notebook, which classifies pyramidal cells by rate alone. Using the same rule, units above 5 Hz as interneurons, plus CCG monosynaptic detection on spike times, the share of pyramidal pairs with nonzero convergence and the trend of ratemap overlap with convergence could be computed on 65 of 96 sessions. |
+| cohort-birthdates | reproduced | 17 mice, 12 M and 5 F, birthdate counts 4/3/6/4 (cell 8). |
+| st1-animal-sessions | reproduced | All 17 mice match the table row by row. Sessions are 96 and 104; light-responsive cells are 664 (cell 10). |
+| sessions-durations | partially_reproduced | On the 96 sessions the count is within 92 ± 9.2 and the median is 309.9 min. The range is 113.7 to 475.6 min, exactly the paper's. Two sessions (e13_1f1_200305 and _200307) have no non-REM sleep, so "every session holds non-REM" fails (cell 12). Read literally, the criterion gives not_reproduced, because it has no category for this case (see B14). |
+| spwr-duration | reproduced | The median is 36.0 to 36.8 ms under every combination of readings, and no ripple lies outside 20 to 200 ms (cell 18). |
+| unit-count | reproduced | On the 96 sessions: 9,472 units, 7,411 pyramidal cells, 2,060 interneurons (1,556 narrow, 504 wide) (cell 14). |
+| ed2-light-responsive-count | reproduced | 664 of 7,411 (8.96%) under both readings (cell 16). |
+| ed2-waveform-validation | blocked (too_large / data_missing) | The light-evoked waveforms need wide-band data. On the archive the 11 raw files include only 5 homecage-mouse sessions (3 of e13_26m1, 2 of e16_3m1; 52 to 141 GB each). The trough-to-peak part was computed and matches the paper: 0.696 against 0.700 ms, p = 0.134 (cell 86). |
+| ed1-brdu-specificity | blocked (data_missing) | The archive holds only 115 ecephys NWB files and no histology. |
+| fig1c-radial-depth | blocked (data_missing) | Same reason as ed1. |
+| fig1e-labelled-fraction | reproduced | Means and s.d. equal the paper's. F = 8.525, bootstrap p < 0.0002 (cell 20). |
+| fig1f-rem-shift | not_reproduced | Fractions 27.96/20.99/19.74/21.54%; the E14.5 and E15.5 fractions are outside tolerance. Slope −2.05 %/day, p ≈ 0.16 across seeds, and p = 0.162 with the 0.05 variant (cell 37). This depends on the theta-channel choice (B1). |
+| fig1g-rate-by-birthdate | reproduced | Medians 1.52/1.62/1.54/1.15 Hz, all within tolerance. E16.5 is lowest, p = 0.034 to 0.041 (cell 25). |
+| fig1h-burst-by-birthdate | partially_reproduced | p ≤ 0.0004 and the inverted-U holds. All four medians (0.088 to 0.104) are about 25% below the paper's (cell 27). |
+| ed3-depth-control | blocked (other) | The analysis was not run ("not reached in the run's time"). The data it needs is in the files, so it is testable (B4). |
+| fig2b-synchrony-per-animal | reproduced | Among the 13 animals: reading (a) gives 10, reading (b) gives 12, both within 10 to 12 (cell 33). |
+| fig2c-theta-cofiring | reproduced | SBD 0.0180 against DBD 0.0078, p = 1e-41, pair counts exact. The DBD median sits at the edge of its tolerance. The theta channel does not follow the Methods' rule in 62 of 104 sessions. On the sessions where it does, the SBD median is 0.0145, outside tolerance (cell 41, B1). |
+| fig2d-theta-depth | reproduced | Wake medians 0.120/0.097/0.090/0.107, all within tolerance and in the claimed order, p ≈ 0. REM p ≈ 0.74 (cell 39). |
+| fig2f-ripple-firing-by-birthdate | reproduced | For both measures all medians are within tolerance, the inverted-U holds and p ≤ 0.001 (cell 29). |
+| fig2g-ripple-cofiring | reproduced | SBD 0.0385 against DBD 0.0226, p = 5e-98 (cell 31). |
+| ed5-matched-controls | blocked (data_missing, for L-ratio only) | The rate-matched parts (a) and (b) could have been tested with data the notebook already holds (B4). |
+| fig3c-assembly-cofiring | blocked (other: compute) | The data is present; the analysis was not run. |
+| fig3e-assembly-expression | blocked (other: compute) | Same as fig3c. |
+| ed6-heldout-assemblies | blocked (other: compute) | Same as fig3c. |
+| ed7-sbd-coactivation | blocked (other) | It needs only the SPW-R count matrices that `homecage_session` already builds, so it was cheap to test (B4). |
+| fig4d-model-fit | blocked (other: compute) | A simulation; it needs no data beyond published values. |
+| maze-cohort | reproduced | 9 familiar-maze mice (2/2/2/3) and 3 novel-environment mice (cell 48). |
+| maze-task | not_reproduced | Trial extent 202.8 cm and tracking at 30 Hz both hold. Only 30 of 57 sessions have ≥10 trials of each type, and only 51 of 57 have ≥20 trials (cell 51). The trial counts are not checked against the trials table (B5). |
+| novel-explorations | reproduced | 16 explorations in 6 environments: 2 linear tracks, 3 open fields, 1 figure-eight (cell 53). |
+| fig5b-spatial-info-by-birthdate | partially_reproduced | Both tests give p < 0.001 and the inverted-U holds under every reading. Information medians are 0.56 to 0.92 bits/s, about 30% low, and the coverage medians are outside tolerance (cell 55). |
+| fig5c-sbd-ratemap-overlap | partially_reproduced | SBD 0.0189 is outside tolerance; DBD −0.0239 is within. p = 6e-9 (cell 57). |
+| fig5d-overlap-by-distance | partially_reproduced | Birthdate main effect p = 1e-4. The post hoc comparison is significant at 0 and 250 µm and not at 500 µm. Five of the six means are outside tolerance (cell 59). |
+| fig5e-pv-decorrelation | partially_reproduced | The stem is highest and p = 0. The turn 1 median, 0.488, is outside tolerance (cell 61). |
+| fig5f-remap-together | reproduced | Main effect p = 9e-7, and SBD is above DBD in all three terciles (cell 63). |
+| fig6c-theta-rate-preserved | reproduced | ρ = 0.741, n = 2,544 exactly (cell 43). |
+| fig6d-rate-lower-novel | reproduced | Familiar 0.755 Hz against novel 0.675 Hz, rank-sum p = 0.0013 (cell 45). |
+| fig6d-info-lower-novel | partially_reproduced | Novel is lower, p = 1e-35. The familiar median, 0.661, is outside tolerance. This uses only 8 of the 16 explorations (B2). |
+| fig6c-novel-ratemap-corr-higher | not_reproduced | Novel −0.032 against familiar −0.045, p = 0.75 (cell 70). This is not decisive: 8 of 16 explorations are missing, including every open field, and the novel position units are unverified (B2). |
+| fig6e-sbd-novel-overlap | partially_reproduced | SBD is above DBD, p = 0.002, but both medians (0.030 and −0.034) are far from the paper's 0.117 and 0.046. Same subset caveat (cell 72, B2). |
+| fig6f-remap-together-novel | reproduced | Main effect p = 0.016 under reading (a) and 0.013 under (b), SBD higher. This holds on the subset only (cell 74). |
+| fig7b-sbd-convergence | partially_reproduced | SBD is above DBD, p = 1e-79. The medians, 0.45 and 0.36, are far above 0.27 and 0.20 (cell 78, B3). |
+| fig7ce-convergence-by-birthdate | partially_reproduced | Both tests give p ≈ 0 and both shapes hold. 7 of the 8 medians are outside tolerance (cell 80). |
+| fig7d-transmission-gamma | not_reproduced | The peak bin is 29 to 42 ms, not 13.5 to 25.3 ms. The curve is nearly flat from 20 to 60 ms (cell 82). |
+| fig7fg-convergence-cofiring | not_reproduced | 50,618 connections against 31,932 ± 3,193, and 86.2% of pairs share a target against 65.27%; both counts fail. All six slopes are positive with p < 0.001 (cell 84, B3). |
+| ed10-waveform-matched-controls | blocked (other) | The notebook blocks it only through its dependency on ed2. Its cofiring and ratemap comparisons for same-shank pairs more than 60 µm apart need no light-evoked waveforms (B4). |
 
-## B. Problems
+### B. Problems
 
-1. [affects a conclusion] `huszar.running_rate`: running stretches are built from consecutive samples of `pos`, and `pos` is the trial samples concatenated. If the animal is running at the end of one trial and the start of the next, the stretch spans the gap between them. Spikes in the gap are counted, but the gap's time is not. On synthetic data with a 1 Hz cell and 10 s gaps the function returns 3.5 Hz. The 5 s start-area delay between figure-eight trials makes this likely in the real data. It can inflate both medians in fig6d-rate (and possibly the familiar median beyond tolerance); rho in fig6c is probably robust.
-2. [affects a conclusion] Cells 3 and 22: sex is taken from each mouse's first file. The notebook flags the e13_1f1 name mismatch but misses that the sex field varies between files within e13_1f1 and e13_1m1. A majority over files gives 12 M / 5 F.
-3. [affects a conclusion] Cell 34: the count of 16 explorations includes position-less epochs picked post hoc (10–50 min, not the last epoch). The criterion counts only recordings with trials and position, which gives 9.
-4. [affects a conclusion] `PYR_MAX_RATE_HZ` (cells 36, 39): 87.8% of units pass the ≤5 Hz rule, against 78.3% pyramidal in the paper, so some interneurons are included. The PV medians move strongly with the threshold: all units give 0.94 on the arm, ≤2 Hz gives 0.29. The outcome of fig5e depends on this unvalidated choice.
-5. [affects a conclusion] Cell 43: the rank-sum test pools about 570k pairs across sessions, so sessions with many pairs (e15_13f1) dominate. Per session the novel median is higher in 9 of 9, yet the pooled test gives p = 0.67. The criterion fixes the test, so the outcome stands, but the pooled test hides the per-session direction.
-6. [does not affect a conclusion] Cells 36 and 45: Kruskal–Wallis on smoothed, adjacent bins and rank-sum on pooled cells treat dependent values as independent. The paper does the same.
-7. [does not affect a conclusion] Cell 15 says no raw file has a stimulation or TTL channel. `raw_file_info` only reads two fixed keys and never lists the contents of the raw files. The asset metadata and the 64/128 channel counts (equal to the probe sizes) support the statement, but the notebook does not show it. The paper says raw data were clipped around pulses. Pulse times might therefore be recoverable from the 11 wideband files (4 mice, about 1.5 TB), which would make a partial ed2 test possible but too_large.
-8. [does not affect a conclusion] `skaggs_information` weights by unsmoothed occupancy but divides by smoothed occupancy. On synthetic maps it is otherwise correct (a uniform map gives 0; a single bin gives log2(1/p)·λ). The 9-cm FWHM smoothing is also correct.
-9. [does not affect a conclusion] `mean_rates` divides by `end_s`, which is 1–5 s short of the last spike in 57 files. This is negligible.
+1. **[affects a conclusion]** `pick_theta_channel`, cells 35, 37, 39, 41. In 62 of 104 sessions no channel with a positive sharp wave was found, so the pyramidal-layer channel was used. The median sharp wave at the chosen channel is negative (−218.7). That breaks the Methods' rule (a channel above the layer centre, "to ensure consistency of extracted phases"). fig1f classifies cells by absolute phase (120 to 300°), so it depends directly on the reference channel, and no fig1f or fig2d variant was run on the 35 sessions that follow the rule. For fig2c, the conforming subset moves the SBD median out of tolerance. Separately, the sharp-wave amplitude is printed as µV but is computed on raw values without the conversion factor.
+2. **[affects a conclusion]** `novel_session`, cells 64 to 74.
+   - All 7 open-field explorations were dropped, plus the linear track of e16_3m2_211211, whose omission is never explained.
+   - The archive's release notes say positions are in cm only for the familiar figure-8 maze, "in the source's own units elsewhere". The linear tracks and the novel figure-eight were nevertheless binned as 1 cm (`nbins = ceil(xmax)`, the 1.5 cm/s speed threshold, bins 51 to 164). Their units and bin counts are never printed.
+   - Pearson correlations of open-field maps can be computed with bins chosen from the arena's geometry; the claims file allows this.
+   - This affects fig6c-novel, fig6e, fig6d-info and fig6f. Novel pairs number 22,373, against the paper's 41,991.
+3. **[affects a conclusion]** `mono_test`/`mono_p`, cell 76. The detector finds 58% more connections than the paper.
+   - The test window is fixed at 0.8 to 2.4 ms, whereas the Methods' reliability test uses "3 bins surrounding [the] peak".
+   - The hollow fraction of 0.6, and the minimums of 50 CCG counts and 100 presynaptic spikes, are assumptions; the two minimums are not stated as such.
+   - Only alpha was varied. This drives the fig7b, fig7ce, fig7d and fig7fg outcomes.
+4. **[affects a conclusion]** Cells 85 to 87, blocked claims that were partly testable:
+   - ed5's rate-matched parts.
+   - ed10's comparisons for pairs more than 60 µm apart (electrode positions and `max_electrode` are in the files).
+   - ed7, which needs only SPW-R spike counts.
+   - ed3: depth from the sharp-wave profile and the electrode positions; "not reached in time" is not a data limit.
+5. **[affects a conclusion]** Cell 51 / `linear_maps`. Trials are counted only after the mapping filters: inside the epoch, at least 5 position samples, arm left or right. Some trials have an extent of 1.8 cm. The counts are never compared with the trials table, even though `S.trials` is computed, so the maze-task failure may be an artefact of the filters.
+6. **[does not affect a conclusion]** `acg_counts`: `(d/binsize).astype(int)` truncates floating-point values. In a synthetic test, a lag of exactly 2 ms fell into the 1 ms bin. The effect is small and cannot explain the roughly 25% burst-index offset.
+7. **[does not affect a conclusion]** Cell 59: Tukey is run on a six-group one-way model rather than on the two-way model. Shank distance is taken as |Δshank| × 250 µm, which assumes consecutive shank ids on one probe. 1,394 pairs at 750 µm are dropped.
+8. **[does not affect a conclusion]** Cell 74, reading (a): the tercile edges are computed on the merged table. Familiar correlations of sessions with two novel environments are counted twice.
+9. **[does not affect a conclusion]** Cell 84: 371,756 pyramidal pairs, against the legend's 315,722 (108,468 + 207,254). The pair set differs and the notebook does not say why.
+10. **[does not affect a conclusion]** Cell 37: the both-locked counts (93/81/76/65) are not compared with the paper's. The paper's legend n (123/106/143/76) exceed its own REM-locked counts in fig2d, while Fig. 1f (top) gives n = 95 for E13.5, so the paper is internally inconsistent here. This is a point the claims file does not address.
 
-## C. What I could not check
+Helper functions I checked on synthetic inputs and found correct:
+- interval handling (`subtract`, `in_intervals`) and `ripple_measures`;
+- `skaggs_info` (0 for a uniform map, log2(10) for one active bin of ten);
+- `rayleigh`, which matches CircStat;
+- `boot_kw` and `boot_anova`: about 5% of p values fall below 0.05 when there is no effect;
+- `convergence`, theta phase (0° at the peak) and cycle length;
+- `ccg_sync`;
+- the monosynaptic test: it detects an injected 1.5 ms connection and gave no false positives in 200 independent Poisson pairs.
 
-- How large B1 is: an output of the gaps between consecutive trials and the speed at the first and last sample of each trial, or the fig6c/6d rates recomputed with stretches cut at trial boundaries.
-- Whether `unit_name` or `clu_id` encode a cell type or an opto tag: printing example values from a few files would settle it.
-- Whether the raw files hold any stimulation channel or clipped (zeroed) segments: a listing of all groups in one raw file, and a scan of one channel near the session end for zero runs.
-- fig7fg feasibility: a per-session count of units above 5 Hz and a CCG-based connection count on one session.
-- Whether the 7 position-less epochs are the open-field explorations: any position or video series in those epochs; the asset metadata suggests there is none.
-- Per-file sex values: an output tabulating sex per file for each mouse would have shown problem B2 directly.
+**Claims-file issues (reported, not corrected):**
+11. **[affects a conclusion]** The sessions-durations criterion has no category for "all numbers hold, but some sessions lack non-REM". Read literally it gives not_reproduced, below its own partial case.
+
+### C. What I could not check, and the output that would settle it
+
+- **Units of the novel-environment positions:** print each novel epoch's series unit and description (`META[s]["series"]`) together with `nbins`.
+- **Theta channel:** print each session's chosen channel position relative to the pyramidal-layer channel (`rel_y`), and rerun fig1f and fig2d on the 35 sessions that follow the Methods' rule.
+- **Maze trial counts:** print the trials table's left and right counts per session next to the counted trials.
+- **Units table:** print its column names and the shape of `waveform_mean`. That shows whether an L-ratio exists and whether multi-channel waveforms (needed for ed10's profile distance) are present.
+- **The two Awake-only sessions:** print their sleep-state table and durations, to tell "no sleep" from "no scoring".
+- **Monosynaptic counts:** give the connection count and fig7d peak under the "3 bins around the CCG peak" reading and under other hollow and s.d. settings.
+- **Probe layout:** state whether any session has more than one probe (the `probe side` column), which matters for the shank distances in fig5d.

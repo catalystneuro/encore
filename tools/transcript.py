@@ -58,7 +58,14 @@ def messages(path: Path):
     for line in path.read_text().splitlines():
         if not line.strip():
             continue
-        event = json.loads(line)
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            # A line cut short: the run was stopped while it was being written (sohn-2019's verifier-2, 2026-11-15,
+            # whose transcript and report were lost with it). The rest of the transcript stands.
+            continue
+        if not isinstance(event, dict):
+            continue
         if event.get("type") in ("user", "assistant") and isinstance(event.get("message"), dict):
             subagent = bool(event.get("parent_tool_use_id"))
             yield event["type"], event["message"], subagent

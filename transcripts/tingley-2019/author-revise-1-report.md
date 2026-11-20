@@ -1,33 +1,25 @@
-No outcome changed. I kept fig5d-lag at partially reproduced, and the verifier would give not reproduced; that disagreement is now in the record. The entry passes `check` and ran cleanly twice in about 22.5 minutes, and both runs gave identical numbers.
+I've finished the round-1 revision. The four notebooks ran from a clean environment with `tools/entry.py all` (main 20 min, LFP 51, Figure 7E 24, the new shanks notebook 14), and the entry checks pass with 0 errors. Nothing is committed.
 
-**What changed in the outcomes**
-- **fig5d-lag:** kept partially reproduced. The criterion defines no partial case, but the claim has two parts. The coupling holds and the lag does not, which is partial under the protocol's general definition.
-- **fig7e-content-independent:** the verifier gave blocked for reason "other". I kept `methods_underspecified`, because the protocol says a claim that depends on blocked claims takes their reason, and both claims it depends on are blocked that way.
-- **Totals in the record:** 5 reproduced, 9 partially reproduced, 9 not reproduced, 8 blocked.
+**Outcomes changed**
+- **fig5e-state-coupling:** not_reproduced → **partially_reproduced**, resting on an assumption. As the verifier suggested, I ran the inset test over all HFOs pooled: NREM 0.302 against WAKE 0.091, p = 3.1e-171. The CCG bins and the WAKE value still fail, so it is partial. Averaged over recordings it is still not reproduced (p = 0.0025). I adopted the pooled reading because the paper's NREM 0.3 matches the pooled 0.302 and not the per-recording mean of 0.213.
+- **fig7e-content-independent and fig7e-coupled-only:** the block reason is now `other` instead of `metadata_insufficient`, as the verifier said. What blocks them is the content features, which were not attempted.
 
-**What I added or corrected**
-- **Re-referenced LS channel (problem 1):** I re-detected events on the LS channel minus another LS channel on the same shank. It shows how far each HFO result depends on a signal shared with the hippocampal channel.
-  - Coupled events landing on the same sample as the CA1 ripple fall from 35% to 4.1%.
-  - Nothing else moves towards the paper. The lag is 0 to 0.8 ms (paper 6.4). No animal shows raised LS firing at the events. Coherence at ripples is 0.164 against 0.074 jittered, still 24 SD above chance. NREM rates are not above WAKE.
-  - fig2 gets a shank-referenced variant: LS is highest in 2 of 4 recordings.
-- **Phase locking from another shank (problem 5):** taking each unit's phase on another shank, 52.3% of 2003 units still lock, centred near the trough (190°). So the trough preference does not come from the units' own spikes.
-- **Outputs the verifier asked for:**
-  - units-table columns (only `clu_id`, `group_id`, `location`)
-  - electrode groups and devices
-  - LFP start time (0 s in every file)
-  - ripple counts and the random-phase baseline for the coherence
-  - which files hold position data (74) and how much of the trials they cover
-  - fig2ef depth profiles (fig2ef stays blocked)
-- **Corrections:**
-  - The fig1c spike window was −10 to +11 ms and is now −10 to +10 ms; its numbers moved slightly.
-  - The clock check now names the 10 recordings that peak off zero. The 7 hippocampal ones are all DT5.
-  - The fig7e conclusions now explain how the start-to-stop counting window inflates the duration and CA1-spike results, and say reading (b) is unusable (about 41% by chance).
-  - The fig4 blocks now say the shortfall comes from this attempt's detection, not from the archive.
-- The shared-signal finding is updated with the re-referencing result. Some files list a device described as "reference sites a few millimeters dorsal" without saying which channels use it.
-- `verifications` round 1 is recorded for all 31 claims. The README, the runtime (23 min) and the conclusions match the new outputs.
+**Outcomes kept, with the disagreement recorded**
+- **fig1c-post-burst-suppression:** stays not_reproduced; the verifier gave reproduced (fragile). I kept the window from each event's stop as the reading of "immediately following": it shows no suppression under any of the five seeds. The +20..50 ms window passes under 3 of 5 seeds.
+- **ls-spikes-not-locked-to-ca1-ripples:** stays not_reproduced; the verifier gave partial. The criterion has no partial outcome, and the reading inside CA1 ripples finds 7.2% locked (p = 0.012).
 
-**What I did not do**
-- I did not test replay score 1 alone (fig7e-replay). It would need a criterion written before running it, so it belongs in a new attempt.
-- I did not repeat the verifier's synthetic test of the frequency estimator. Its finding is recorded as a deviation on fig1g, credited to the verifier.
-- I downloaded no paper text, so `paper/` is empty in this checkout.
-- `git status` lists sandbox placeholder files (`.bashrc`, `.idea`, `scripts` and others) that I did not create. They should not be committed.
+**Added or corrected**
+- **fig1h:** `peak_normed_power` (the lab's maximum NSS) is now the primary amplitude. Both tests are not significant, so the Pearson assumption is gone. The verifier asked whether that column really is the maximum NSS, so I recomputed it from the LFP. It ranks events the same way within each recording (median Spearman 0.877), but it gives a weak, significant correlation with frequency (r = 0.081). So the outcome is still reproduced but now rests on the deposited value.
+- **Figure 7E:** the z reading the verifier described now runs beside the claims file's t-test, and both are tested on synthetic null data: the t-test calls 42.2% of neurons significant, the z reading 2.5%. Under the z reading 2 to 4 of 16 combinations are within tolerance, which would make these claims reproduced. The outcomes stay partial under the claims file, and I added the question to the new `questions/tingley-2019.yaml`.
+- **fig1d own-shank locking:** a new notebook, `shanks_tingley_2019.ipynb`, reads the shanks outside the detection block. Together with the in-block shanks, 1615 of 1992 neurons are locked (81.1%), still below the 83.25% floor, so the outcome stays partial.
+- **Figure 4 pair shortfall:** a new cell shows that the pairs are lost in the HFO epochs. Of 20182 candidate pairs, 795 pass inclusion in PRE and 954 in POST, against 10823 in BEHAV; the HFOs last 252 s and 355 s in all. DT8 has 3 and 10.
+- **fig5f:** the "WAKE outside trials" reading is now run and gives the same result.
+- **Site labels (fig2, medial septum):** the per-site profiles show that on the septal shank the labels ls, ms, acg and cc alternate along the channel order. With no site positions stored, I can't tell whether the labels or the channel order are wrong. This is now in the notes and recorded as a finding.
+- **Data check:** it now lists every electrode and units column in one file per animal. There is no position column and one waveform per unit.
+- **figs2c:** the notes now say the positive control is weak.
+- **Record:** the round is under `verifications` for all 39 claims, and I added two `methods_unavailable` findings (Figure 1H amplitude, Figure 5E pooling) and one data finding (the site labels).
+
+**Not done**
+- The Figure 2 site ratios still use only two storage chunks per recording, and cingulate reading (b) is still not pooled across recordings.
+- Replay, seqNMF and the Figure 8 model are still not attempted, for lack of time.
+- To keep under the time limit, the shanks notebook reads only the out-of-block shanks. The 81.1% total therefore adds the counts from two notebooks, and the notes say so.

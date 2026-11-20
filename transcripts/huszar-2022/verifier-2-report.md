@@ -1,57 +1,85 @@
-# Verifier report, round 2: Huszar et al. 2022 (doi:10.1038/s41593-022-01138-x), DANDI 000552 v0.230630.2304
+**Verification report, round 2: Huszár et al. 2022 on DANDI:000552 (0.261113.1035)**
 
-The claims file has 35 claims and the attempt record has 35 outcomes, with the same ids. The record gives 5 reproduced, 4 partially reproduced, 3 not reproduced, 22 blocked as data_missing and 1 blocked as methods_underspecified. The notebook cell numbers below are 0-based indices in the re-executed notebook. They differ from the numbers in my round-1 report. I saved the paper text (the PMC10807234 author manuscript, BioC JSON and plain text) under `paper/`.
+The claims file has 44 claims, and the attempt record gives an outcome for each of them. The record has 17 reproduced, 10 partially reproduced, 7 not reproduced and 10 blocked (5 data_missing, 5 too_large). Twelve outcomes are marked `assumed: true`.
 
-## 1. Outcomes
+### 1. Outcomes
 
-I agree with 34 of the 35 outcomes as stated. For fig7fg-convergence-cofiring I agree it is blocked, but its notes rest on a wrong session count; see below.
+**I agree with 38 of the 44 outcomes as recorded.** The six I don't fully accept:
 
-- **cohort-birthdates, reproduced:** I agree. This is the change I asked for in round 1.
-- **sessions-durations, partially_reproduced:** I agree.
-- **spwr-duration, reproduced:** I agree.
-- **unit-count, not_reproduced:** I agree.
-- **maze-cohort, reproduced:** I agree.
-- **maze-task, not_reproduced:** I agree.
-- **novel-explorations, partially_reproduced:** I agree.
-- **fig5e-pv-decorrelation, partially_reproduced:** I agree under the fixed 5 Hz rule. The 2.59 Hz variant was chosen after the results were seen, and its turn-2 median of 0.357 sits just inside the lower bound of 0.355. The record correctly does not let the variant change the outcome.
-- **fig6c-theta-rate-preserved, reproduced:** I agree. rho is 0.726.
-- **fig6c-novel-ratemap-corr-higher, not_reproduced:** I agree.
-- **fig6d-info-lower-novel, partially_reproduced:** I agree.
-- **fig6d-rate-lower-novel, reproduced:** I agree, because the criterion is met (0.794 and 0.714 Hz, both within tolerance; rank-sum p = 0.041). The outcome is fragile: the paired test gives p = 0.19, every variant gives p ≥ 0.075, and one of the three mice goes the other way. The record says so.
-- **The 22 data_missing blocks:** I agree.
-- **fig7fg-convergence-cofiring, blocked (methods_underspecified):** I accept the block. The detector here gives 0.448 connections per possible pair against the paper's 0.173, so this is not the paper's procedure. Two parts of the reasoning are weak:
-  - The Methods do name a test. It uses "3× bins surrounding that of peak", while `is_monosynaptic` uses fixed lags of 0.8 to 3.2 ms. So the gap is at least partly in this implementation, not only in what the paper leaves out.
-  - The one test session, e15_13f1_220117, belongs to a mouse that by the attempt's own matching is not among the 15 mice of Fig. 7f.
+- **sessions-durations (not_reproduced):** I still read this as partially reproduced, as in round 1.
+  - On the 96 homecage sessions the count, median and range all hold (cell 14).
+  - The only failure is "every session holds non-REM", and the criterion has no category for that case.
+  - The record states my disagreement and refers the gap to a reader. That is acceptable, but the gap is in the claims file and is still open.
+- **ed10-waveform-matched-controls (blocked, data_missing):** I disagree, and this is a claims-file issue.
+  - `depends_on` lists ed2-waveform-validation. Yet the criterion computes the waveform distance "on spontaneous spikes", so it needs none of the light-evoked waveforms that block ed2.
+  - The claim's own parts were computed (cell 127). Under its criterion they give **not reproduced**: "Not reproduced when an SBD-DBD comparison fails at p < 0.05", and the ratemap comparison at > 60 µm gives p = 0.0779.
+  - The block therefore hides a failing result.
+- **fig3c, fig3e, ed6, fig4d (blocked, too_large):** I don't accept "too_large".
+  - The 9 to 12 GB figure is for a dense double-precision matrix. The record itself says a chunked covariance "was not attempted".
+  - fig4d is a simulation, and the record gives no size for it at all.
+  - These four, and ed7 through its dependency, are "not attempted", not too large.
+- **fig6c-novel-ratemap-corr-higher (not_reproduced, assumed):** the assumption is stated, but it is weakly supported and it decides the outcome.
+  - At the assumed 1 cm per unit, p = 0.784. At 2 cm and at 0.5 cm per unit, p = 2.1e-6 and 0.0104, both of which would give partially reproduced (cell 99).
+  - The evidence offered for 1 cm per unit is not in any printed output: neither the "116 units for 110 cm" track nor the open-field sizes in lab units. Only the bin counts (1188, 576, 2332/2376; cell 93) hint at the sizes.
+  - At 1 cm per unit, openField_coolbox would be 22.5 × 22.5 cm, which is small for an open field.
+  - I accept the outcome only as conditional on the scale. The data do not decide it.
 
-## 2. Sentences the printed outputs do not support
+**The other assumptions are stated and reasonable:**
 
-I checked every Result conclusion and the Summary sentence by sentence. All their numbers match the outputs except the following.
+- **Theta channel** (fig1f, fig2c, fig2d, fig6c-theta, fig6d-rate, fig7fg): stated, with layer-centre and "rule-only" variants. fig2c's SBD median, 0.0169, misses tolerance by 0.0001 and is within it on the centre channel (cell 55), so "partially" rests on the channel. That is stated.
+- **Depth reference** (ed3): stated. Not reproduced follows from the criterion, and it matches the paper's "weakens bursting differences", which this attempt does not find. The fallback depth is used for 376 of 664 cells.
+- **Connection detector** (fig7b, fig7ce, fig7d, fig7fg): stated, and every assumed detail is varied (cell 109).
+- **fig7d:** the peak bin (0.0269) beats the 20 to 29 ms bin (0.0266, centre 24.5 ms, inside 13.5 to 25.3 ms) by 0.0003, with no uncertainty given (cell 117). Not reproduced is right as a literal reading, but fragile.
+- **fig6f (assumed):** the scale variants were not run, as the record says. The interaction is significant (p = 0.0073), SBD is below DBD in the lowest tercile, and the Supplementary Table 5 means that the criterion says to report are not compared (cell 105). None of this changes the outcome.
+- **fig6d-info and fig6e:** both carry the open-field-scale deviation without `assumed: true`. That is acceptable, because both outcomes are the same under every scale reading (cells 96, 102).
 
-- **"The units of 31 of the paper's 96 sessions are also not in the dandiset."** This is in cell 62. Cell 63 also prints "Files with units: 65 of the paper's 96 sessions". The record's fig7fg notes repeat it as "include 31 whose units are not in the dandiset".
-  - The attempt itself identifies the paper's 96 sessions as the files without e15_13f1 and e16_3m2 (cell 26, and the paper_inconsistency finding).
-  - Those two mice account for 8 of the 65 files with units. That leaves 57 of the 96 sessions with units, so 39 lack them, not 31.
-  - My round-1 phrase "65 of 96 sessions" made the same error.
-- **"neither the processed nor the raw files have a stimulation channel".** This is in cell 62. The same generalisation appears in the record's ed2 notes ("the raw files hold only the ElectricalSeries and LFP"), the first Summary bullet ("in the processed or the raw files") and the README ("no optogenetic pulse times … are stored"). Only one of the 13 raw files was listed in full (cell 15). The other 12 were probed for two fixed keys only (cell 14). Cell 16 itself states this limit correctly.
-- **"where clipping around pulses given every 200 ms would leave several in each window"** (cell 16). The paper (Methods, Stimulation protocol) gives blocks of five pulses at 200 ms intervals, with no interval stated between blocks. It also says data were "clipped out", which does not say the samples were zeroed or held flat. "Several in each window" is therefore an assumption, though the sentence that follows is suitably hedged.
-- **"Pairs per session (familiar, novel)"** (cell 54). The columns are actually (novel, familiar): the novel column sums to 242,655, and the sessions with no novel maze show 0 in the first column. This does not change any conclusion.
-- **"match the paper's figure-eight and two linear tracks"** (cell 42). Reading the 164 cm T-maze as the paper's novel figure-eight is an interpretation and should be stated as one. This is minor.
+### 2. Statements the outputs do not support
 
-Everything else checks against the outputs. That includes the README table, the 22-claim count, the run time of about 7 minutes, and the record's notes on cohort, sessions, ripples, units, maze, novel explorations, fig5e, fig6c, fig6d and the LFP being in 8 of the 9 novel sessions.
+- **Attempt record, ed5 notes and response:** it says "1.000 … 1.000 … 0.998 for familiar ratemap correlations … and 0.598 for novel". Cell 125 prints familiar 1.000 and novel 0.604.
+- **Attempt record, ed10 notes:** it says "0.132 for ratemap correlations". Cell 127 prints "familiar ratemap 0.106".
+- **Attempt record, fig6f notes:** it says "the earlier run without them gave p = 0.016 and 0.013". This notebook has no such output.
+- **Attempt record, fig6c-novel, fig6d-info, fig6e and fig6f deviations, and the metadata_insufficient finding:** they cite "116 units for 110 cm of linearized track", the open-field sizes in lab units, and "0 to 1 in some". None of these is printed (cells 93 and 94).
+- **Cell 132, Summary:**
+  - "finds about 60% more connections than the paper under every variant of them": at alpha 1e-5 the count is 38,402, 20% more (cell 109).
+  - "Every theta claim is also shown … on the 76 sessions alone": fig6c-theta and fig6d-rate have no 76-session variant, only "6 of 12" is printed (cells 58 and 61), and fig7fg has neither variant.
+  - "follows the Methods' rule … in 76 of 104 sessions": see the next point.
+- **Cell 47 and its uses (cells 46, 132; record fig2c and fig1f):** the 76 sessions counted as following the rule include 6 whose channel lies *below* the layer centre (`dy_theta` −300, −300, −260, −260, −20, −20 µm). By the notebook's own check, larger rel_y is above (320 of 327 positive channels). At most 70 sessions follow "above the centre".
+  - e13_1f1_200305 and _200307 have no non-REM sleep. For them `pick_theta_channel` falls back to all ripples, which is not stated.
+- **Cell 121:** it says slopes "0.0040, 0.0029 and 0.0017 for nonresponsive pairs", but the theta slope for reading (a) is 0.0028. "all rise with convergence": for ratemaps the (a) quintile means are 0.0111, 0.0115, 0.0109, 0.0096 and 0.0206, so they rise only in the top quintile.
+- **Cell 112:** "medians above the paper's (0.385 to 0.455 against 0.278 to 0.368)". The second range is this attempt's DBD medians across variants, not the paper's values.
+- **README:**
+  - "Cohort, sessions, units and light-responsive counts (5 claims)": only 4 claims fit that row (cohort-birthdates, st1-animal-sessions, unit-count, ed2-light-responsive-count), and the README's rows sum to 45.
+  - "two sessions without sleep states": they have sleep states, one Awake row each; they have no sleep (cells 5 and 14).
+- **Cell 76 and the record's fig5b notes:**
+  - "no reading brings the medians within tolerance": under reading (b), coverage at E13.5 (34.5) is within tolerance (cell 75).
+  - "25 to 40% below": the concatenated-map medians are 29.5 to 40% below.
 
-The record's verification entries state my round-1 reasons faithfully and in substance in my words. The "34 of 35" agreement count is correct for round 1. The one outcome that changed since then is fig6d-rate, which moved from partial to reproduced after the `running_rate` fix.
+Everything else in the Result cells, the Summary, the README and the record's notes matches the printed outputs.
 
-## 3. Status of round-1 points
+**My round-1 reasons** are given faithfully, mostly in my own words, with problem numbers kept and the smaller points folded into the claims they concern. One misstatement: for ed3 the record shows `agrees: true`, but my reason said the claim was testable and that "not reached in time" is not a data limit. I disagreed with the block; that should not read as agreement. The same applies, less strongly, to ed5, ed7 and ed10 (problem 4).
+
+### 3. Round-1 points
 
 **Resolved:**
-- **B1:** `running_rate` now cuts stretches at trial changes and gaps; I read the code at `huszar.py:373`. There is a synthetic test with an assert (cell 49) and the requested output on gaps and running across trial edges.
-- **B2:** sex is now tabulated per file and taken by majority, with both readings printed.
-- **B3:** the count is 9, and the 7 epochs without position are excluded and described as picked after seeing the data.
-- **B5:** a sign test across sessions and per-session rank-sum tests were added (cell 54).
-- **Unit names and fig7fg feasibility:** the questions about `unit_name`/`clu_id` and the per-session interneuron and connection counts were answered with outputs.
-- **B6, B8, B9:** these do not affect any conclusion and the responses are acceptable.
 
-**Remaining points that bear on a conclusion:**
-1. **fig5e still depends on the cell-rate rule (B4).** The difference is now disclosed: at 2.59 Hz all four medians fall within tolerance, at 2 Hz the arm median falls below. The outcome rests on an unvalidated 5 Hz choice that the criterion fixed in advance.
-2. **fig6d-rate is reproduced only by the pooled test the criterion names (p = 0.041).** Every robustness check gives p > 0.05.
-3. **fig7fg rests on one session from a mouse outside Fig. 7f's cohort.** The session count in its notes should read 39, not 31. The block reason relies on a detector that departs from the Methods' peak-centred bins.
-4. **The "no stimulation channel in raw files" statement covers 1 of 13 files (B7, partly resolved).** It is stated generally in cell 62, the record, the Summary and the README. It bears on ed2 and the other label-dependent blocks only through whether pulse times could be recovered. The scan of that one file also suggests the stimulation period is not in the deposited recording.
+- **Problem 1 (theta channel):** pre-ripple baseline, µV conversion, positions printed, variants run. A residual remains, below.
+- **Problem 2 (novel environments):** open fields included, e16_3m2_211211 explained, units and bin counts printed.
+- **Problem 3 (detector):** all assumed details stated and varied.
+- **Problem 4 for ed3:** now tested.
+- **Problem 5 (maze trials):** the trials table gives the same counts.
+- **Problem 6:** ACG rounding fixed.
+- **Problem 7:** the two-way model has the same residual mean square, and the Front/Back faces are explained.
+- **Problem 8:** tercile edges fixed.
+- **Problem 10:** recorded as a finding.
+- **Section C:** all items printed.
+
+**What remains that bears on a conclusion:**
+
+1. **ed10** is blocked by a dependency its criterion doesn't use, and its computed parts give not reproduced (p = 0.078). This is a claims-file issue; it is the rest of problem 4.
+2. **fig6c-novel** depends on an open-field scale whose evidence is not printed and that both alternative scales contradict.
+3. **Theta channel:** 6 sessions use a channel below the centre but are counted as following the rule, and the two sessions without non-REM use wake ripples, unstated. fig2c sits 0.0001 from tolerance, so even this could change its outcome.
+4. **Blocked as too_large without an attempt:** fig3c, fig3e, ed6, fig4d, and ed7 through its dependency.
+5. **sessions-durations:** the criterion still has no category for this case (problem 11). It is with a reader.
+6. **Wrong numbers to correct:** ed5 and ed10 in the record (no outcome changes), the "60% under every variant" sentence in the Summary, and the README's count of 5 claims.
+
+Problem 9 (the paper's pair set of 315,722) is stated but still unexplained. It does not change an outcome, because the counts fail either way.

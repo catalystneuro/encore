@@ -11,6 +11,7 @@ You record a finished attempt in the reproduction registry, checked out in the c
    - Name the main findings in the paper's own terms, not as claim numbers. A claim on a main figure or in the abstract is central; one on a supplementary figure, a control or a methods detail is minor. Group the minor claims in one sentence, or leave them out when they do not change the picture.
    - For a central finding that did not reproduce or could not be tested, give the one most likely reason the records give (a method the paper does not describe, data missing from the dataset, a difference the verifiers confirmed), in a few words.
    - Give at most two numbers, and only where they make the point. Do not call the paper right or wrong; the agent's own limits count among the reasons.
+   - The file holds the paragraph and nothing else: no note before or after it about the file, saving it, your tools or what you could not do. The site shows the file as it is.
 
 Write prose plainly: no em dashes, never the word "rather", no bold, no bullet lists. Add nothing that the sources do not state. Do not commit or push: the workflow commits your changes.
 

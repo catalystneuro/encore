@@ -1,0 +1,794 @@
+schema_version: 3
+id: jacobsen-2022-01
+datasets:
+- archive: dandi
+  id: "000230"
+  version: 0.220506.1516
+  doi: 10.48324/dandi.000230/0.220506.1516
+  relation: primary
+paper: doi:10.1016/j.crmeth.2022.100221
+date: 2026-11-15
+entry: jacobsen-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43670641390
+inputs:
+- what: Definitions of the gridness score, mean vector length (head-direction score), border score, the
+    head-direction stability criterion and the shuffle used to classify cells, from the Materials and
+    methods of Rowland et al. (2018), which the STAR Methods cite for all analysis of the
+    electrophysiology. Methods only, no data.
+  source: doi:10.7554/eLife.36664
+- what: Analysis details Rowland et al. (2018) leave out of their text (position and speed smoothing,
+    5 cm/s speed cutoff, rate map smoothing of 2 bins, head-direction tuning in 180 bins smoothed with
+    2 bins), from the analysis code that paper links, files analysis_helpers/tracking.py,
+    analysis_helpers/spatial_maps.py and analysis_helpers/parameters/params_ragnihiij. Parameters only,
+    no data.
+  source: https://github.com/davidcrowland/archdata at commit 945226315bafe6ce68fcbd4c75a589fba0a8eca1
+outcomes:
+- claim: fig5c-functional-cell-types
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:fig5c-functional-cell-types
+  notes: Under the standard shuffle the 12 units include 2 grid cells (T1 C89 and T1 C50 of 58313, day
+    19, gridness 0.854 and 0.996), 2 head direction cells (T4 C16, day 17, mean vector length 0.912 and
+    half-session stability 0.97; and the 70375 unit of day 15 session 2, 0.123 and 0.675) and 1 border
+    cell (T4 C50, day 18, border score 0.656 against a shuffle threshold of 0.555). Under the literal
+    shuffle T4 C50 falls short (0.656 against 0.663), giving 2 grid, 1 head direction and 0 border
+    cells, so the outcome rests on the shuffle reading. Under the standard shuffle each unit the figures
+    name is classed as the paper names it. For T4 C16 the literal shuffle's 95th percentile of the mean
+    vector length is 0.762 and its largest value 0.912, the observed score, against 0.225 and 0.272
+    under the standard shuffle. The standard shuffle is lenient for a weakly tuned cell, as the day 15
+    session 2 unit of 70375 passes at 0.123 against 0.082. Taking the open field as its first 1800 s
+    changes no class. The part of the statement about the network as a whole cannot be tested, as the
+    dandiset holds only the 12 curated units shown in the figures, so finding one unit of each type
+    partly reflects what was deposited.
+  deviations:
+  - Rowland et al. (2018), Materials and methods, classification into functional classes, shift spikes
+    "by a random interval between ± 20 s, with the end of the session wrapped to the beginning"; the
+    archdata code has no spatial shuffle. Read literally (uniform within 20 s) and as the
+    standard shuffle of the papers Rowland et al. cite for the scores (Langston et al. 2010; Solstad et
+    al. 2008, a shift of at least 20 s). The readings differ for the border cell; the standard shuffle
+    is adopted as an assumption, since a shift of under 20 s leaves the spike train nearly in place and
+    gives a null distribution close to the observed map.
+  - Rate map bin of 2.5 cm from Rowland et al. (2018), Methods, gridness score ("steps of 1 bin (2.5
+    cm)"); the linked code's parameter file gives 2 cm. The text was followed.
+  - Smoothing, speed cutoff and tuning bins from the archdata code (see inputs), as neither paper's
+    text gives them.
+  - The open field is taken as the whole position series, an assumption, as the files have no
+    open-field epoch and the Methods give its length only as "approximately 30 min". The other reading,
+    the first 1800 s, was run for all 12 units and changes no class.
+- claim: fig5c-responsive-grid-cell
+  outcome: reproduced
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:fig5c-responsive-grid-cell
+  notes: Under reading (a), TTL onset, 9 unit-sessions are responsive (latency 1.8 to 4.4 ms, fidelity
+    at least 11.64%), among them the grid cell T1 C89 (day 19) at 2.75 ms and 40.73%, with no spike in
+    the 10 ms before any pulse. Under reading (b), TTL offset, latencies are about 1.06 ms shorter and
+    T1 C89 (1.70 ms) is not responsive; 3 unit-sessions are, none a grid cell. T1 C89 is a grid cell
+    under both shuffle readings.
+  deviations:
+  - The first TTL event of each laser epoch starts at the epoch start and lasts 45 ms to 1.9 s; it is not
+    a pulse onset and is left out, leaving 275 pulses in a 120 s epoch.
+- claim: fig5c-example-cells
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:fig5c-example-cells
+  measured:
+  - 1.098
+  - 2.752
+  - 40.727
+  - 12.670
+  - 3.895
+  - 35.636
+  - 0.303
+  - 2.646
+  - 11.636
+  notes: The files keep the tetrode and cluster labels, and each day of 58313 has one session, so the
+    units are found by label. Under reading (a) all nine values are within tolerance with T1 C57 from
+    the second laser epoch of day 17 and T1 C52 from the first. Pooling both epochs, T1 C57 still matches
+    (4.237 ms, 32.545%) but T1 C52's latency (2.358 ms) falls 0.03 ms below its tolerance. In epoch 1
+    T1 C57 gives 4.651 ms and 29.455%, and in epoch 2 T1 C52 gives 2.109 ms and 13.455%, so no single
+    epoch fits both. The file does not tell the epochs apart, as both carry "N/A" for the power and have
+    the same pulses (median width 1.0625 ms, as in the other files). The units fire at different rates in
+    the two epochs (T1 C57 12.72 against 9.93 Hz, T4 C16 2.32 against 0.37 Hz), which does not establish
+    the laser power of either. The criterion allows trying each of
+    a day's sessions; taking a laser epoch per cell within one session goes beyond it, and the outcome
+    rests on that choice. Under reading (b) no unit has all three values within tolerance.
+  deviations:
+  - The day-17 file holds two laser epochs with no power label, and the paper does not say which
+    Figure 5C uses. Each epoch and both together were run; the outcome takes the epoch per cell, an
+    assumption. This is asked of the paper's authors (findings).
+- claim: figs3-stable-input-cell
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:figs3-stable-input-cell
+  measured:
+  - 0.885
+  - 0.899
+  - 0.279
+  - 1.613
+  - 0.950
+  - 1.841
+  - 2.834
+  - 3.050
+  - 2.769
+  - 2.771
+  - 2.578
+  - 2.497
+  - 27.64
+  - 46.49
+  - 68.71
+  - 64.36
+  - 76.73
+  - 81.82
+  notes: Each 70375 file holds one unit on tetrode 3 with a different cluster id per session (C43, C20,
+    C17, C24, C9, C31); their mean waveforms correlate 0.918 to 0.998, but correlations with the units
+    of 58313 reach 0.965, so the waveform does not identify the cell. With the open field as the whole
+    position series, under reading (a) the unit is responsive in all six sessions, latencies 2.50 to
+    3.05 ms, and 17 of 18 values are within tolerance; the open-field rate of day 14 session 2 is 0.899
+    Hz against 1.06 ± 0.106. That file holds 2722 s of open field and 413 pulses. Under the other
+    reading of the open field, its first 1800 s, run for every session, with the first 275 pulses of
+    each session, all 18 values are within tolerance (day 14 session 2 at 1.064 Hz, 2.951 ms and
+    48.00%; the last 1800 s give 0.780 Hz). The first 275 pulses are not a rule the paper applied to
+    every session, as day 15 session 1 has 278 pulses and its printed fidelity (68.71%) is what all 278
+    give, where the first 275 give 69.09%; the selection that matches day 14 session 2 is specific to
+    that session. The outcome follows the whole series, the stated
+    assumption, as the paper does not say part of a session was left out. Under reading (b) latencies
+    are 1.44 to 1.99 ms and 11 of 18 values are within tolerance.
+  deviations:
+  - No cluster label is shared across sessions. The unit is taken as the same cell because each file
+    holds this single curated unit on tetrode 3 and the Methods say the tetrodes were not turned down
+    between these sessions ("except when trying to record from the same cell across multiple sessions,
+    Figure S3"); the stored waveform (one channel) is consistent with this but does not separate it from
+    the units of the other mouse.
+  - The open field is taken as the whole position series, an assumption (see
+    fig5c-functional-cell-types). The first 1800 s, the reading of the Methods' "approximately 30 min",
+    was run for every session and changes the outcome to a match on all 18 values; it is not adopted,
+    because the cut is stated nowhere and was identified from the expected values.
+- claim: figs4-nonresponsive-cells
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:figs4-nonresponsive-cells
+  measured:
+  - 0.912
+  - 0.912
+  - 10.62
+  - 1.047
+  - 1.692
+  - 0.776
+  notes: None of T4 C16, T4 C50 and T1 C50 is responsive under either reading or any epoch (fidelity
+    0.00 to 1.82%), and their open-field rates match. For T4 C16 the mean vector length of the smoothed
+    tuning map, which Rowland et al. (2018) call the head-direction score, is 0.912 with the archdata
+    parameters, within tolerance of the mean vector length of 0.90 and outside that of the head
+    direction score of 0.81; it is given as measured for both. The peak rate there is 10.62 Hz against
+    9.02 ± 0.90 Hz. Over 48 tuning settings (bins of 2 to 10 degrees, smoothing sigma 0 to 20 degrees,
+    with and without the speed filter) the mean vector length runs from 0.857 to 0.931; the peak is in
+    tolerance in 15 settings, all with sigma 4 to 14 degrees, and no setting puts both the peak and the
+    mean vector length within tolerance of 9.02 Hz and 0.81. The vector length of the head directions
+    at spikes (0.880 over all spikes, 0.923 above 5 cm/s) is within tolerance of both 0.81 and 0.90, so
+    it does not identify the score. Two of six values miss under the cited method.
+  deviations:
+  - Rowland et al. (2018) define one quantity, "Mean vector length (head-direction score)"; the paper
+    reported a head direction score and a mean vector length with different values. Both are taken as
+    the mean vector length of the tuning map, as Rowland et al. define it, with the archdata tuning curve
+    (2 degree bins, sigma 2 bins, no speed filter), an assumption; other bin widths, smoothing and speed
+    filtering are shown. Asked of the paper's authors (findings).
+- claim: responsive-cells-at-19-days
+  outcome: reproduced
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:responsive-cells-at-19-days
+  notes: The one session at 19 days or more (58313, day 19) holds T1 C89, responsive under reading (a)
+    (2.75 ms, 40.73%, within 2 to 4 ms) and a grid cell under both shuffle readings. Under reading (b)
+    its latency is 1.70 ms and no unit of that session qualifies.
+- claim: mec-inputs-from-two-weeks
+  outcome: reproduced
+  notebook: reproduce_jacobsen_2022.ipynb
+  output: claim:mec-inputs-from-two-weeks
+  measured: 14
+  notes: Under reading (a) the earliest session with a responsive unit is on day 14 (70375, both
+    sessions, 2.83 ms and 27.64%, 3.05 ms and 46.49%), within 12.6 to 15.4 days. Under reading (b),
+    with the 2 to 4 ms window, it is day 17. The dandiset holds no session before day 14 and only the
+    curated units the figures show, so the test cannot fail on the early side and cannot show that
+    responsive cells were absent earlier; the result is consistent with the statement.
+- claim: fig2a-four-or-fewer-starters
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the histology of the 31 single-cell animals. The dandiset holds only nine optrode
+    sessions of two mice; the paper's Data and code availability section deposits only the
+    electrophysiology and names no other archive. The counts printed in Table S1 are the paper, not
+    data.
+- claim: fig2a-starter-count-distribution
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: fig2a-single-starter-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: no-starter-cells-in-mec
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: fig2b-rabies-cells-increase-with-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology counts not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: fig2b-conclusive-more-than-control
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology counts not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: figs2a-spread-increases-with-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: figs2a-conclusive-spread-more-than-control
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: figs2b-mec-inputs-increase-with-time
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology not in the dandiset nor deposited elsewhere (see fig2a-four-or-fewer-starters).
+- claim: controls-no-mec-spread
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of the control animals not in the dandiset nor deposited elsewhere.
+- claim: figs1a-no-expression-without-tva
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of mouse 72359 not in the dandiset nor deposited elsewhere.
+- claim: figs1b-sparse-cre
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of mice 58482 and 58483 not in the dandiset nor deposited elsewhere.
+- claim: fig3-inputs-reflect-starter-identity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animals 59457 and 60219 not in the dandiset nor deposited elsewhere.
+- claim: fig4a-distant-granule-input
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animal 60047 not in the dandiset nor deposited elsewhere.
+- claim: fig4b-granule-inputs-dominate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animal 60652 not in the dandiset nor deposited elsewhere.
+- claim: fig4-subgranular-inputs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animals 60047 and 60652 not in the dandiset nor deposited elsewhere.
+- claim: fig4c-dg-starter-local-and-mec-inputs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of animal 60259 not in the dandiset nor deposited elsewhere.
+- claim: cytotoxicity-after-30-days
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology of mouse 60388 and the single-cell animals not in the dandiset nor deposited
+    elsewhere.
+- claim: population-targeting-mec-labelling
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the histology of mice 58313, 58253, 58695 and 70375. The dandiset holds recordings of
+    58313 and 70375 but no histology; nothing is deposited elsewhere.
+- claim: fig6b-imaged-input-cells
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two-photon imaging of mouse 58253 is not in the dandiset, and the paper names no deposit
+    for it.
+- claim: fig7b-dual-labelled-input-cell
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The miniscope imaging of mouse 60388 is not in the dandiset, and the paper names no deposit
+    for it.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the optrode recordings of two mice (58313, 70375), and of these only
+    the 12 curated units shown in Figures 5C, S3 and S4 (the files say "Only a curated subset of tasks
+    and/or units are exported"). The histology of the single-cell tracing (Figures 2 to 4, S1, S2,
+    Tables S1, S2) and the two-photon imaging (Figures 6 and 7) are not in it, and the paper names no
+    other deposit, so 21 of the paper's 28 claims cannot be tested.
+- kind: metadata_insufficient
+  statement: The open field part of each session is not an epoch; the epochs table holds only the
+    PhotoStim epochs. Its span can only be inferred from the position series.
+- kind: metadata_insufficient
+  statement: The two laser epochs of the day-17 session of mouse 58313 carry "N/A" for the power label
+    that the dandiset description says sessions carry; the other eight files carry "10Hz20mW". Which
+    epoch Figure 5C uses cannot be told from the files, as both epochs have the same pulse widths and
+    intervals.
+- kind: format_error
+  statement: The first laser TTL event of every PhotoStim epoch has its onset at exactly the epoch start
+    time and lasts 45 ms to 1.9 s (ten such events in nine files), where every other event lasts 1.0 to
+    1.1 ms.
+- kind: other
+  statement: The STAR Methods describe 1 ms light pulses "at 10 Hz continuously"; the TTL events show
+    trains of 6 pulses at 10 Hz every 2.6 s (275 pulses in a 120 s epoch).
+- kind: format_error
+  statement: The LFP timestamps run backwards 2 to 4 times within each file and end at 120 to 180 s,
+    although each LFP series has 510,250 to 815,750 samples 4 ms apart (over 2000 s).
+- kind: metadata_error
+  statement: Units waveform_mean is labelled volts but its values have a peak-to-trough of 31 to 41 for
+    the 70375 unit and 34 to 243 for the units of 58313, which cannot be volts; the scale is not stated.
+- kind: selection_undocumented
+  statement: For day 14 session 2 of mouse 70375 the file holds 2722 s of open field and 413 pulses. The
+    paper's printed rate, latency and fidelity for that session (1.06 Hz, 2.95 ms, 48.00%) are what the
+    first 1800 s and the first 275 pulses give (1.064 Hz, 2.95 ms, 48.00%); over the whole file the
+    values are 0.899 Hz, 3.05 ms and 46.49%. The paper does not say part of the session was left out.
+    The first 275 pulses are not a rule applied to every session, as for day 15 session 1 (278 pulses)
+    the printed fidelity of 68.71% is what all 278 pulses give.
+- kind: other
+  statement: Version 0.220426.0814 of the dandiset holds 18 assets, the nine sessions under the subject
+    ids 58313 and 70375 and again under the hashed ids of version 0.220422.0713. The pinned version
+    0.220506.1516 holds each session once.
+- kind: other
+  statement: The positions of the day-17 session of mouse 58313 span 76 x 75 cm, where the other eight
+    sessions span about 94 x 95 cm, consistent with the 1 x 1 m open field of the Methods. The files do
+    not say whether a different box was used.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Figure S4 gives T4 C16 a head direction score of 0.81
+    and a mean vector length of 0.90, but Rowland et al. (2018), which the STAR Methods cite for both,
+    define one quantity, "Mean vector length (head-direction score)". How is the head direction score
+    computed, and what binning and smoothing give the tuning curve's peak rate of 9.02 Hz? Here the
+    tuning-map mean vector length is 0.912 and the peak rate 10.62 Hz with the archdata parameters; the
+    peak reaches 9.02 ± 0.90 Hz only with smoothing sigmas of 4 to 14 degrees, where the mean vector
+    length is 0.897 to 0.912.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The day-17 session of mouse 58313 has two laser epochs.
+    Which epoch, at which power, gives the latency and fidelity of T1 C57 and T1 C52 in Figure 5C? Here
+    T1 C57 matches the second epoch (3.90 ms, 35.64%) and T1 C52 the first (2.65 ms, 11.64%).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Rowland et al. (2018), cited for the cell classification,
+    shift spike trains "by a random interval between ± 20 s". Was the shift within 20 s, or at least 20 s
+    as in the papers they cite? The border cell T4 C50 passes the second (0.656 against 0.555) and not
+    the first (0.656 against 0.663).
+verifications:
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper; the verifier checked the archive for the blocked claims and
+    tested the helper functions on synthetic data. Report in transcripts/jacobsen-2022/verifier-1-report.md. Points
+    without a claim of their own, with the response. B1 (cell 0 said earlier versions hold the same 9 assets; 0.220426.0814
+    holds 18), the header is corrected and a cell lists the assets of every version. B8 (border score walls are
+    the edges of the tracked extent; a uniformly firing cell scores 0.48), stated in the helper docstring; the shuffle
+    thresholds take in that baseline, so no change to the method. B9 (latency_fidelity uses side="right", immaterial
+    at a 48 kHz spike clock), no change. Cell numbers in the reasons below refer to the round-1 notebook;
+    in the current notebook cells 11, 14, 16, 19, 21, 23 and 25 are cells 13, 18, 21, 26, 29, 32 and 35.
+  results:
+  - claim: fig5c-functional-cell-types
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 11, standard shuffle: grid cells T1 C89 and T1 C50, a head direction cell T4 C16 (MVL 0.912, stability
+      0.97) and a border cell T4 C50 (0.656 against a threshold of 0.555). Under the literal ±20 s shuffle, T4 C50
+      narrowly fails (0.656 against 0.663), so no border cell is found under that reading. The literal reading includes
+      near-zero shifts that leave tuning intact, which inflates thresholds; it is not field practice, and the verifier
+      treats standard as the operative reading. The standard shuffle is lenient for MVL (the 70375 unit is a head
+      direction cell in one of six sessions with MVL 0.123 against 0.082), which does not change the outcome. The
+      curated deposit means "at least one of each type" partly reflects what was deposited (B2, B7).'
+    response: Outcome kept. Quoted the shuffle sentence of Rowland et al. (2018) in the notebook and helper and
+      noted that the archdata code has no spatial shuffle. Added the shuffled MVL distribution of T4 C16 under both
+      readings (literal 95th percentile 0.762, maximum 0.912; standard 0.225 and 0.272), the leniency of the standard
+      shuffle for the 70375 unit, and the curated deposit to the conclusion and notes. Ran the classification for
+      all 12 units on the first 1800 s of the open field; no class changes.
+  - claim: fig5c-responsive-grid-cell
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 14, onset reading: T1 C89 has latency 2.75 ms and fidelity 40.73%, and is a grid cell under both
+      shuffles. Under onset, 9 unit-sessions are responsive; 6 of them are the single unit of 70375.'
+    response: No change needed.
+  - claim: fig5c-example-cells
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16, onset: all nine values are within tolerance. C57 matches on laser epoch 2 and C52 on epoch
+      1; no single epoch choice fits both. With both epochs pooled, C52''s latency is 2.358 ms against a floor of
+      2.385, which would make this partial. The criterion allows trying each of a day''s sessions, not each laser
+      epoch within one session; the verifier accepts the per-epoch choice given the exact matches, but the outcome
+      depends on it (B3).'
+    response: Outcome kept, marked as resting on the per-epoch choice. Added a cell listing what the file holds
+      for each day-17 epoch (power "N/A" in both, the same pulse widths and intervals as each other and the other
+      files), the spikes of each unit per epoch, and the latency and fidelity of each unit in each epoch; nothing
+      in the file tells the epochs apart. The conclusion and notes now say the per-epoch choice goes beyond the
+      criterion.
+  - claim: figs3-stable-input-cell
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 19, onset: 17 of 18 values match and the unit is responsive in 6 of 6 sessions. The miss is the
+      day 14 session 2 rate, 0.899 Hz against 1.06 ± 0.106. Over the first 1800 s it is 1.064 Hz, and the first
+      275 pulses give 2.95 ms and 48.00% exactly, but that variant was not a declared reading. The open field as
+      the full span of the position series is the author''s choice and not stated as an assumption (B4). The waveform
+      test does not identify the cell, as correlations with the other mouse reach 0.965, above the within-cell minimum
+      of 0.918 (B6).'
+    response: Outcome kept. The open field as the whole position series is now stated as an assumption in the notebook,
+      helper and record, and the first 1800 s reading is run for every unit (rates and classes) with the first 275
+      pulses of each session; under it all 18 values match, and it moves no other rate by more than 0.001 Hz and
+      changes no class. It is not adopted, as the paper states no cut and the reading was found from the expected
+      values. The conclusion now says the waveform does not identify the cell and that the identity rests on the
+      single curated unit per file and the Methods' statement that the tetrodes were not turned down.
+  - claim: figs4-nonresponsive-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 21: none of the three units is responsive in any reading or epoch. All three open-field rates
+      match and the MVL matches (0.912). The peak rate of 9.02 Hz misses in all four tuning readings (10.62 to 13.92).
+      No computed quantity can be identified as the "head direction score" of 0.81; the vector length at spikes
+      (0.880) falls within tolerance of both 0.81 and 0.90, so it does not identify the score. Bin and smoothing
+      variants that lower the peak were not run, so the miss may come from the tuning parameters (B5).'
+    response: Outcome kept. Added mean vector length and peak rate over 48 tuning settings (bins of 2 to 10 degrees,
+      smoothing sigma 0 to 20 degrees, with and without the speed filter) and the speed-filtered vector length at
+      spikes from a commented-out line of the archdata code. The peak is in tolerance in 15 settings, all with sigma
+      4 to 14 degrees (MVL 0.897 to 0.912); no setting gives both the peak and a value within 0.81 ± 0.081. The
+      measured head direction score is now the tuning-map MVL (0.912), as Rowland et al. define it, in place of
+      the vector length at spikes; the question to the paper's authors is updated.
+  - claim: responsive-cells-at-19-days
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: T1 C89 at day 19, onset, 2.75 ms and 40.73%, grid under both shuffles. Under the offset reading
+      its latency is 1.70 ms, below the 2 to 4 ms range.'
+    response: No change needed.
+  - claim: mec-inputs-from-two-weeks
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25, onset: the earliest day with a responsive unit is 14 (70375, T3 C43 at 2.83 ms and 27.64%),
+      inside 12.6 to 15.4. Under offset it is day 17, outside the range. The test cannot fail on the early side,
+      because day 14 is the earliest session deposited, and the deposit is curated (B7).'
+    response: Outcome kept. The conclusion and notes now say the test cannot fail on the early side and that the
+      deposit holds only the curated units.
+  - claim: fig2a-four-or-fewer-starters
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig2a-starter-count-distribution
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig2a-single-starter-rate
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: no-starter-cells-in-mec
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig2b-rabies-cells-increase-with-time
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig2b-conclusive-more-than-control
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: figs2a-spread-increases-with-time
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: figs2a-conclusive-spread-more-than-control
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: figs2b-mec-inputs-increase-with-time
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: controls-no-mec-spread
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: figs1a-no-expression-without-tva
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: figs1b-sparse-cre
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig3-inputs-reflect-starter-identity
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig4a-distant-granule-input
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig4b-granule-inputs-dominate
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig4-subgranular-inputs
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig4c-dg-starter-local-and-mec-inputs
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: cytotoxicity-after-30-days
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: population-targeting-mec-labelling
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive API. Version 0.220506.1516 has 9 NWB files, all optrode ecephys/behavior
+      of subjects 58313 and 70375, and the paper's Data availability section deposits only "Electrophysiology data";
+      a DANDI search finds no other Jacobsen dandiset. No part can be tested; recomputing statistics from the Table
+      S1 counts printed in the supplement would not use deposited data.
+    response: No change needed.
+  - claim: fig6b-imaged-input-cells
+    agrees: true
+    outcome: blocked
+    reason: No imaging files exist in any version. Version 0.220426.0814 has 18 assets, but these are the same 9
+      ephys sessions duplicated under hashed subject IDs.
+    response: No change needed.
+  - claim: fig7b-dual-labelled-input-cell
+    agrees: true
+    outcome: blocked
+    reason: No imaging files exist in any version. Version 0.220426.0814 has 18 assets, but these are the same 9
+      ephys sessions duplicated under hashed subject IDs.
+    response: No change needed.
+- date: '2026-11-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run (39 cells), with its conclusions and summary,
+    the helper module, the README, the attempt record and the claims file, with the paper. Report in transcripts/jacobsen-2022/verifier-2-report.md.
+    The verifier found no place where the claims file misreads the paper, so no question was added. Points without
+    a claim of their own, with the response. Cell 6 said the LFP timestamps run backwards 3 or 4 times within each
+    file, where cell 5 prints 2 for both day-15 files; corrected to 2 to 4. The Summary said waveform_mean holds
+    peak-to-trough 31 to 41, printed only for the 70375 unit; cell 25 now prints it for the units of 58313 too (34
+    to 243) and the Summary and finding give both. The README said the notebook takes about four minutes where it
+    printed 106 s; this run printed 181 s, of which the two shuffle runs take 83 s each, and the README now says
+    about three minutes. The round-1 reasons cite the round-1 cell numbers; the round-1 entry now maps them to the
+    current cells, and the reasons are left in the verifier's words. The verifier still cannot view the rendered
+    rate maps; the grid and border calls rest on the printed scores, so no change.
+  results:
+  - claim: fig5c-functional-cell-types
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The standard shuffle (shifts of at least 20 s) is stated and reasonable. Cell 14 shows that
+      the literal shuffle''s 95th percentile for T4 C16 is 0.762, against an observed 0.912. The outcome rests on
+      this choice: under the literal shuffle T4 C50 scores 0.656 against a threshold of 0.663 (cell 13). B2 is documented
+      but still open: the border class still depends on the shuffle reading, and the question goes to the paper''s
+      authors.'
+    response: Outcome kept. No change; the question on the shuffle interval stays with the paper's authors (findings).
+  - claim: fig5c-responsive-grid-cell
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; no assumption needed. T1 C89 is a grid cell under both shuffles and is responsive under reading
+      (a) (cell 18). The first TTL event lasting "0.6 to 1.9 s" is not supported by any printed output; cell 22
+      prints only the two day-17 events and cell 3 only how many events per file are longer than 5 ms.
+    response: Outcome kept. Cell 3 now prints the duration of every TTL event over 5 ms and how far its onset lies
+      from an epoch start. The ten events last 44.8 to 1872.9 ms (the 44.8 ms event is in day 15 session 1 of 70375)
+      and all start at an epoch start, so the range is corrected to 45 ms to 1.9 s in cell 4, the Summary, this
+      outcome's deviation, the format_error finding and the helper docstring.
+  - claim: fig5c-example-cells
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, with the caveat already given. Choosing a laser epoch per cell on day 17 is stated, and the
+      record says plainly that this goes beyond the criterion. With the epochs pooled, T1 C52''s latency is 2.358
+      ms against a floor of 2.385, which would make the outcome partial; the verifier accepts it because of the
+      four-digit matches. B3 is still open: nothing in the file distinguishes the epochs except the firing rates
+      per epoch (cell 22, T1 C57 12.72 against 9.93 Hz, T4 C16 2.32 against 0.37 Hz); the conclusion does not mention
+      these rates, and they do not establish laser power.'
+    response: Outcome kept. The conclusion (cell 23) and the notes now give the per-epoch firing rates and say they
+      do not establish the laser power of either epoch.
+  - claim: figs3-stable-input-cell
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Two assumptions, the six units are the same cell and the open field is the whole position series,
+      are stated and reasonable. Under the first-1800 s reading all 18 values match (cell 26); not adopting that
+      reading is defensible, since it was found from the expected values. Cell 27, the record's notes and the response
+      to round 1 present the "first 275 pulses of each session" variant as matching, but cell 26 shows that for
+      day 15 session 1 (278 pulses) it moves the fidelity off the exact printed value (68.71% with all pulses, 69.09%
+      with the first 275), so the paper did not apply a uniform first-275 rule; the day 14 session 2 selection remains
+      a one-off and the outcome is unchanged. The README table lacks "(resting on an assumption)".
+    response: Outcome kept. Cell 27, the notes and the selection_undocumented finding now say the first 275 pulses
+      are not a rule the paper applied to every session, with the day 15 session 1 values, and that the selection
+      matching day 14 session 2 is specific to that session. The round-1 response is left as written, and this response
+      corrects it. The README table now marks the outcome as resting on an assumption.
+  - claim: figs4-nonresponsive-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. The head direction score taken as the tuning-map mean vector length with the archdata parameters
+      is stated and reasonable. Cell 29 shows the result does not depend on that choice: no tuning setting puts
+      both the peak rate and the MVL within tolerance of 9.02 Hz and 0.81. Still open is what quantity the paper''s
+      head direction score of 0.81 is, and what gives the 9.02 Hz peak rate. The README table lacks "(resting on
+      an assumption)".'
+    response: Outcome kept. The README table now marks the outcome as resting on an assumption; the question stays
+      with the paper's authors (findings).
+  - claim: responsive-cells-at-19-days
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; no assumption needed.
+    response: No change needed.
+  - claim: mec-inputs-from-two-weeks
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; no assumption needed. The record states that the test cannot fail on the early side.
+    response: No change needed.
+  - claim: fig2a-four-or-fewer-starters
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig2a-starter-count-distribution
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig2a-single-starter-rate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: no-starter-cells-in-mec
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig2b-rabies-cells-increase-with-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig2b-conclusive-more-than-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: figs2a-spread-increases-with-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: figs2a-conclusive-spread-more-than-control
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: figs2b-mec-inputs-increase-with-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: controls-no-mec-spread
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: figs1a-no-expression-without-tva
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: figs1b-sparse-cre
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig3-inputs-reflect-starter-identity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig4a-distant-granule-input
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig4b-granule-inputs-dominate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig4-subgranular-inputs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig4c-dg-starter-local-and-mec-inputs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: cytotoxicity-after-30-days
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: population-targeting-mec-labelling
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 19 histology claims; no assumption.
+    response: No change needed.
+  - claim: fig6b-imaged-input-cells
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 2 imaging claims; no assumption.
+    response: No change needed.
+  - claim: fig7b-dual-labelled-input-cell
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing) for the 2 imaging claims; no assumption.
+    response: No change needed.

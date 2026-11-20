@@ -1,553 +1,530 @@
 """Loading and measures for dandiset 001538 (Zhai et al. 2025, Science Advances).
 
-Zhai S, Cui Q, Wokosin D, Sun L, Tkatch T, Crittenden JR, Graybiel AM, Surmeier DJ (2025).
-State-dependent modulation of spiny projection neurons controls levodopa-induced dyskinesia in a
-mouse model of Parkinson's disease. Sci Adv 11:eadv8224. doi:10.1126/sciadv.adv8224.
+Every file is streamed from the DANDI archive with remfile and h5py; nothing is
+written to disk. The parameters below say where they come from:
 
-The dandiset holds, among others, these kinds of NWB file, all streamed from the archive at the
-pinned version (nothing is written to disk):
-
-- patch-clamp files (`*_icephys+ophys.nwb`, `*_icephys.nwb`), one per mouse and day: somatic
-  current steps (`CurrentClampSeries_CellN_Somatic`, 21 sweeps of 1 s from -120 to +300 pA) and,
-  for most, the dendritic back-propagation assay (`CurrentClampSeries_CellN_Dendritic`, 4 s sweeps
-  with three brief current injections) with two-photon line scans of Alexa 568 (red, channel 1) and
-  Fluo-4 (green, channel 2) at proximal and distal dendritic sites;
-- Sr2+-oEPSC files (`*_icephys+ogen.nwb`), one cell each, 10 voltage-clamp sweeps;
-- GRAB-ACh3.0 imaging files (`*_ophys.nwb`), one slice region per mouse, with Prairie View region
-  traces per trial and treatment, and ACh and TTX calibration trials;
-- AIM score tables (`ses-pan++ON...` files without `_image`), one file per mouse and session.
-
-Where the parameters come from:
-
-- Somatic excitability follows the paper's script (Zenodo doi:10.5281/zenodo.14145776,
-  "Input_output analysis--ver2024.11.ipynb"): action potentials are upward crossings of 0 mV over
-  the whole sweep; the rheobase is the first current step with at least one action potential.
-- The dendritic excitability index follows the Methods and the paper's script (Zenodo
-  doi:10.5281/zenodo.14163502, "PVAnalysis-ver 2024.11.ipynb"): PMT background subtracted (the
-  script's constants, 55 for the red and 161 for the green channel; the files carry no per-session
-  background), a 6-sample running mean, the three trials of a site averaged, R0 and G0 the means
-  from 0.5 to 0.95 s, and the area of (G - G0)/R0 from 0.95 to 1.5 s; the index is the distal area
-  over the proximal area. The Methods keep only pairs "with similar baseline levels (G0/R0)" and
-  give no threshold; `BASAL_RATIO_RANGE` is a choice made here. Splitting the three series that
-  hold two sites under one name (see `dendritic_sites`) is a choice made here from the data.
-- Sr2+-oEPSC events: the Methods detect events 40 to 400 ms after the light pulse at five standard
-  deviations above the noise (TaroTools in Igor Pro, with visual verification, which cannot be
-  repeated). `detect_events` is a common threshold detector written here: low-pass filter, noise
-  as the robust standard deviation of the trace outside the detection window, and the local
-  baseline just before each event.
-- GRAB-ACh follows the Methods and the paper's script (Zenodo doi:10.5281/zenodo.14163731,
-  "PVAnalysis-BOT for GRAB Ver 2024.11.ipynb"): PMT background subtracted (the script's 162, and a
-  variant from the file's zero-laser reference images), the two repetitions averaged, F0 the mean of
-  the 1 s before stimulation, the area of (F - F0)/(Fmax - Fmin) over the 2 s after it, Fmax and
-  Fmin the means from 2 to 4 s of the ACh and TTX calibration trials.
+- [code-somatic] the paper's somatic script, "Input_output analysis ver2024.11"
+  (doi:10.5281/zenodo.14145776): spikes are upward crossings of 0 mV over the
+  whole sweep (count_events, threshold 0), and the rheobase is the first
+  positive step that evokes a spike (rheobaseCal).
+- [code-dendritic] the paper's dendritic script, "PVAnalysis ver 2024.11"
+  (doi:10.5281/zenodo.14163502): line profiles minus PMT backgrounds of 55
+  (red) and 161 (green), smoothed with a 6-sample running mean, the three
+  trials of a site averaged, R0 and G0 the means from 0.5 to 0.95 s, the
+  Ca2+ signal the sum of dG/R0 from 0.95 to 1.5 s times the sample interval,
+  and the basal ratio (G0/R0 distal)/(G0/R0 proximal), "about 1".
+- [methods-dendritic] Methods, "Imaging of spines and dendritic Ca2+
+  transients": "Only data with similar baseline levels (G0/R0) for proximal and
+  distal locations were included." The claims file fixes "similar" as a basal
+  ratio between 0.5 and 2, pairs proximal and distal sites by their number and
+  averages pairs within a cell.
+- [code-grab] the paper's GRAB-ACh script, "PVAnalysis-BOT for GRAB Ver
+  2024.11" (doi:10.5281/zenodo.14163731): F0 the mean over the 1 s before the
+  stimulus, the AUC the sum of (F - F0)/(Fmax - Fmin) over the 2 s from the
+  stimulus times the frame interval, the two trials of a condition averaged,
+  Fmax and Fmin the means from 2 to 4 s of the acetylcholine and tetrodotoxin
+  trials. [methods-grab] Methods, "Two-photon imaging of ACh sensor": Fmin is
+  the TTX value "or from quinpirole-treated baselines, whichever was smaller",
+  and the ROI is "a circle with a diameter of 50 um in the center of the
+  imaging field". The PMT background the paper subtracts is not in the
+  dandiset; it cancels in F - F0 and in Fmax - Fmin, so it does not change
+  the normalised AUC.
+- [methods-sr] Methods, "Data acquisition and statistical analysis": events
+  "measured between 40 and 400 ms after photostimulation" and "greater than
+  five SD above the noise". The paper used TaroTools in Igor Pro with visual
+  verification; the detector here (detect_events) is a stand-in, and its
+  filtering, noise estimate and event separation are assumptions (see its
+  docstring). The frequency is the number of events over the 360 ms windows of
+  all sweeps, which reproduces the paper's values such as 12.5 Hz (45 events in
+  10 sweeps).
 """
-
-from __future__ import annotations
-
-import hashlib
 import io
+import json
 import re
+import urllib.error
 import urllib.request
 import zipfile
-from concurrent.futures import ThreadPoolExecutor
 
 import h5py
 import numpy as np
 import pandas as pd
 import remfile
-from dandi.dandiapi import DandiAPIClient
-from scipy.signal import butter, sosfiltfilt
 
-DANDISET_ID = "001538"
-DANDISET_VERSION = "0.260527.1302"
+DANDISET = "001538"
+VERSION = "draft"
+API = "https://api.dandiarchive.org/api"
 
-# The paper's per-cell and per-animal tables ("Zhai et al. 2025 Datasets", Zenodo record 17307059,
-# doi:10.5281/zenodo.17307059, the version the paper's key resources table resolves to).
-TIDY_URL = ("https://zenodo.org/api/records/17307059/files/"
-            "Zhai%20et%20al.%202025%20Datasets.zip/content")
+# Outside inputs the claims file names (data: with_inputs and elsewhere claims).
+TABLES_URL = ("https://zenodo.org/api/records/17307059/files/"
+              "Zhai%20et%20al.%202025%20Datasets.zip/content")
 
-STEP_CURRENTS = [-120, -100, -80, -60, -40, -20] + list(range(20, 301, 20))
-DEND_BG_RED, DEND_BG_GREEN = 55.0, 161.0     # the dendritic script's PMT backgrounds
-DEND_SMOOTH = 6
-DEND_BASE = (0.5, 0.95)                      # s, R0 and G0
-DEND_AREA = (0.95, 1.5)                      # s, area of dG/R0
-BASAL_RATIO_RANGE = (0.5, 2.0)               # choice made here: (G0/R0 distal)/(G0/R0 proximal)
-SR_WINDOW = (0.040, 0.400)                   # s after the light pulse (Methods)
-SR_THRESHOLD_SD = 5.0                        # Methods
-SR_LOWPASS_HZ = 1000.0                       # choice made here
-GRAB_BG = 162.0                              # the GRAB script's PMT background
-GRAB_BASE_S, GRAB_AREA_S = 1.0, 2.0          # s before and after the stimulus
-GRAB_CAL = (2.0, 4.0)                        # s, window of the calibration trials
-
-
-def asset_urls() -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at the pinned version."""
-    with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
-        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))
-                      for a in dandiset.get_assets() if a.path.endswith(".nwb"))
+RED_BG, GREEN_BG = 55.0, 161.0          # [code-dendritic]
+SMOOTH = 6                              # [code-dendritic]
+BASE_WIN = (0.5, 0.95)                  # [code-dendritic]
+AUC_WIN = (0.95, 1.5)                   # [code-dendritic]
+BASAL_RATIO_RANGE = (0.5, 2.0)          # claims file, from [methods-dendritic]
+FI_STEPS = list(range(20, 301, 20))     # claims file: sum of spike counts 20 to 300 pA
+SR_WIN = (0.040, 0.400)                 # [methods-sr], after the flash onset
+SR_SD = 5.0                             # [methods-sr]
+SR_LATE = (0.480, 0.840)                # clock check only, a standard choice
+GRAB_F0 = 1.0                           # [code-grab], s before the stimulus
+GRAB_AUC = 2.0                          # [code-grab], s from the stimulus
+GRAB_FLIM = (2.0, 4.0)                  # [code-grab], s from the start of the ACh/TTX trial
+GRAB_ROI_UM = 50.0                      # [methods-grab]
 
 
-def parse_session(path: str) -> dict:
-    """The fields of a session name: cell type, state, drug, genotype and the rest."""
-    ses = path.split("_ses-", 1)[1][:-4]
-    head, _, kind = ses.rpartition("_") if ses.endswith(("_icephys", "_icephys+ophys", "_icephys+ogen",
-                                                          "_ophys", "_image")) else (ses, "", "")
-    parts = head.split("++")
-    return {"cell_type": parts[0], "state": parts[1], "drug": parts[2], "genotype": parts[3],
-            "date": parts[4], "kind": kind}
+def _get(url):
+    with urllib.request.urlopen(url) as r:
+        return r.read()
 
 
-def _text(x) -> str:
-    x = x[()] if hasattr(x, "shape") else x
-    return x.decode() if isinstance(x, bytes) else str(x)
+def version_info():
+    """The pinned version's metadata (name, modified time, asset count)."""
+    return json.loads(_get(f"{API}/dandisets/{DANDISET}/versions/{VERSION}/info/"))
 
 
-def _strings(ds) -> list[str]:
-    return [v.decode() if isinstance(v, bytes) else str(v) for v in ds[:]]
-
-
-def _spike_count(v: np.ndarray, threshold: float = 0.0) -> int:
-    above = v > threshold
-    return int(np.sum(above[1:] & ~above[:-1]) + int(above[0]))
-
-
-def _smooth(x: np.ndarray, n: int) -> np.ndarray:
-    """pandas rolling(n).mean(): NaN for the first n-1 samples."""
-    out = np.full(len(x), np.nan)
-    c = np.cumsum(np.insert(x.astype(float), 0, 0.0))
-    out[n - 1:] = (c[n:] - c[:-n]) / n
-    return out
-
-
-# ---------------------------------------------------------------- patch-clamp files
-
-def load_patch(path: str, url: str) -> dict:
-    """One mouse-day: per cell, the somatic current steps (spike counts) and the dendritic sweeps.
-
-    Sweeps are found through the file's RecordingsIndexTable, which gives per sweep the cell,
-    compartment, commanded current and slices into the concatenated series.
-    """
-    out = {"path": path, **parse_session(path), "somatic": [], "dendritic": []}
-    with h5py.File(remfile.File(url), "r") as f:
-        out["subject_id"] = _text(f["general/subject/subject_id"])
-        out["subject_genotype"] = _text(f["general/subject/genotype"]) if "genotype" in f["general/subject"] else ""
-        out["subject_description"] = _text(f["general/subject/description"])
-        out["session_description"] = _text(f["session_description"])
-        t = f["processing/recordings_index/RecordingsIndexTable"]
-        ir = f["general/intracellular_ephys/intracellular_recordings"]
-        cell = t["cell_id"][:]
-        comp = _strings(t["dendrite_type"])
-        cond = _strings(t["condition_subfolder"])
-        current = t["stimulus_current_pA"][:]
-        resp = ir["responses/response"][:]
-        stim = ir["stimuli/stimulus"][:]
-        cache: dict[str, np.ndarray] = {}
-
-        def series(ref):
-            name = f[ref].name
-            if name not in cache:
-                cache[name] = f[ref]["data"][:]
-            return cache[name], f[ref]["starting_time"].attrs["rate"]
-
-        for c in sorted(set(cell)):
-            for cd in sorted({cond[i] for i in range(len(cell)) if cell[i] == c and comp[i] == "Soma"}):
-                rows = [i for i in range(len(cell)) if cell[i] == c and comp[i] == "Soma" and cond[i] == cd]
-                counts, counts_last, vrest, duplicates, in_step, out_step, stim_err = {}, {}, [], 0, 0, 0, []
-                digest = hashlib.md5()
-                for i in rows:
-                    data, rate = series(resp[i]["timeseries"])
-                    v = data[resp[i]["idx_start"]:resp[i]["idx_start"] + resp[i]["count"]] * 1e3
-                    amp = int(round(current[i]))
-                    counts_last[amp] = _spike_count(v)
-                    if amp in counts:          # a repeated step: keep the first (counts_last keeps the last)
-                        duplicates += 1
-                        continue
-                    counts[amp] = _spike_count(v)
-                    sd, srate = series(stim[i]["timeseries"])
-                    sv = sd[stim[i]["idx_start"]:stim[i]["idx_start"] + stim[i]["count"]] * 1e12
-                    stim_err.append(abs(np.median(sv[int(0.25 * srate):int(0.65 * srate)]) - current[i]))
-                    digest.update(np.ascontiguousarray(v).tobytes())
-                    vrest.append(np.median(v[: int(0.15 * rate)]))
-                    above = v > 0
-                    up = np.where(above[1:] & ~above[:-1])[0] / rate
-                    in_step += int(np.sum((up >= 0.2) & (up < 0.7)))
-                    out_step += int(np.sum((up < 0.2) | (up >= 0.7)))
-                out["somatic"].append({"cell": int(c), "condition": cd, "counts": counts, "counts_last": counts_last,
-                                       "n_sweeps": len(rows),
-                                       "duplicates": duplicates, "vrest_mV": float(np.median(vrest)),
-                                       "md5": digest.hexdigest(), "stim_error_pA": float(np.max(stim_err)),
-                                       "spikes_in_step": in_step, "spikes_outside_step": out_step,
-                                       "sweep_samples": int(resp[rows[0]]["count"]), "rate": float(rate)})
-            drows = [i for i in range(len(cell)) if cell[i] == c and comp[i] != "Soma"]
-            for i in drows:
-                data, rate = series(resp[i]["timeseries"])
-                v = data[resp[i]["idx_start"]:resp[i]["idx_start"] + resp[i]["count"]] * 1e3
-                above = v > 0
-                spikes = np.where(above[1:] & ~above[:-1])[0] / rate
-                sd, _ = series(stim[i]["timeseries"])
-                sv = sd[stim[i]["idx_start"]:stim[i]["idx_start"] + stim[i]["count"]]
-                rec = {"cell": int(c), "compartment": comp[i], "condition": cond[i], "spike_times": spikes,
-                       "stim_max_abs_A": float(np.max(np.abs(sv))) if len(sv) else np.nan,
-                       "md5": hashlib.md5(np.ascontiguousarray(v).tobytes()).hexdigest()}
-                for ch in ("1", "2"):
-                    a, n, ref = t[f"roi_response_ch{ch}"][i]
-                    d, r = series(ref)
-                    rec[f"ch{ch}"] = d[a:a + n].astype(float).ravel()
-                    rec[f"ch{ch}_rate"] = float(r)
-                    rec[f"ch{ch}_series"] = f[ref].name.split("/")[-1]
-                    la, ln, lref = t[f"line_scan_ch{ch}"][i]
-                    rec[f"ls{ch}_ok"] = bool(la >= 0 and la + ln <= f[lref]["data"].shape[0])
-                out["dendritic"].append(rec)
-    return out
-
-
-# Groups by cell type and the file's condition_subfolder, with the paper's figure, sheet and group.
-GROUPS = {
-    ("dSPN", "LID off-state"): "dSPN off", ("dSPN", "LID on-state"): "dSPN on",
-    ("dSPN", "LID on-state with SCH"): "dSPN on+SCH",
-    ("iSPN", "LID off-state"): "iSPN off", ("iSPN", "LID on-state"): "iSPN on",
-    ("iSPN", "LID on-state with sul (iSPN)"): "iSPN on+sul", ("iSPN", "LID on-state with sul"): "iSPN on+sul",
-    ("iSPN", "control"): "Fig6 vehicle", ("iSPN", "M1R antagonist"): "Fig6 M1R antagonist",
-    ("iSPN", "KO off-state"): "KO off", ("iSPN", "KO on-state"): "KO on",
-    ("iSPN", "interleaved control"): "Fig9 control", ("iSPN", "M1R CRISPR"): "Fig9 M1R CRISPR",
-}
-TIDY_SOMATIC = {
-    "dSPN off": ("Fig 1", "Fig 1E_dSPN somatic excitabilit", "LID off"),
-    "dSPN on": ("Fig 1", "Fig 1E_dSPN somatic excitabilit", "LID on"),
-    "dSPN on+SCH": ("Fig 1", "Fig 1E_dSPN somatic excitabilit", "LID on + SCH"),
-    "iSPN off": ("Fig 3", "Fig 3C_iSPN somatic excitabilit", "LID off"),
-    "iSPN on": ("Fig 3", "Fig 3C_iSPN somatic excitabilit", "LID on"),
-    "iSPN on+sul": ("Fig 3", "Fig 3C_iSPN somatic excitabilit", "LID on + sul"),
-    "Fig6 vehicle": ("Fig 6", "Fig 6C_M1R antagonist SE", "control"),
-    "Fig6 M1R antagonist": ("Fig 6", "Fig 6C_M1R antagonist SE", "M1R antagonist"),
-    "KO off": ("Fig 7", "Fig 7C_KO somatic excitability", "KO off"),
-    "KO on": ("Fig 7", "Fig 7C_KO somatic excitability", "KO on"),
-    "Fig9 control": ("Fig 9", "Fig 9D_M1R CRISPR SE", "control"),
-    "Fig9 M1R CRISPR": ("Fig 9", "Fig 9D_M1R CRISPR SE", '"M1R"'),
-}
-TIDY_DENDRITIC = {
-    "dSPN off": ("Fig 1", "Fig 1I_dSPN dendritic excitabil", "LID off"),
-    "dSPN on": ("Fig 1", "Fig 1I_dSPN dendritic excitabil", "LID on"),
-    "dSPN on+SCH": ("Fig 1", "Fig 1I_dSPN dendritic excitabil", "LID on + SCH"),
-    "iSPN off": ("Fig 3", "Fig 3F_iSPN dendritic excitabil", "LID off"),
-    "iSPN on": ("Fig 3", "Fig 3F_iSPN dendritic excitabil", "LID on"),
-    "iSPN on+sul": ("Fig 3", "Fig 3F_iSPN dendritic excitabil", "LID on + sul"),
-    "Fig6 vehicle": ("Fig 6", "Fig 6D_M1R antagonist DE", "control"),
-    "Fig6 M1R antagonist": ("Fig 6", "Fig 6D_M1R antagonist DE", "M1R antagonist"),
-    "KO off": ("Fig 7", "Fig 7F_KO dendritic excitabilit", "KO|LID off"),
-    "KO on": ("Fig 7", "Fig 7F_KO dendritic excitabilit", "KO|LID on"),
-}
-
-
-def tidy_group(tidy: dict, spec: tuple) -> pd.DataFrame:
-    """The rows of one group of a paper sheet; the last column is the value."""
-    fig, sheet, group = spec
-    x = tidy[fig][sheet].copy()
-    x.columns = [str(c).strip() for c in x.columns]
-    if "|" in group:
-        gt, state = group.split("|")
-        return x[(x["Genotype"].astype(str).str.strip() == gt) & (x["LID state"].astype(str).str.strip() == state)]
-    col = [c for c in x.columns if c.lower() == "group"][0]
-    return x[x[col].astype(str).str.strip() == group]
-
-
-def load_subject(path: str, url: str) -> dict:
-    with h5py.File(remfile.File(url), "r") as f:
-        s = f["general/subject"]
-        return {"path": path, **{k: _text(s[k]) for k in s if isinstance(s[k], h5py.Dataset)},
-                "session_description": _text(f["session_description"])}
-
-
-def rheobase(counts: dict[int, int]) -> float:
-    """First positive step with at least one action potential (pA); NaN if none."""
-    for i in sorted(k for k in counts if k > 0):
-        if counts[i] >= 1:
-            return float(i)
-    return np.nan
-
-
-def somatic_table(days: list[dict]) -> pd.DataFrame:
-    """One row per cell and condition: the spike count at each step from 20 to 300 pA (NaN where the
-    step is missing), the rheobase, and the identifiers. `condition` is the file's
-    condition_subfolder, which, unlike the session name, tells drug from baseline sweeps."""
+def list_assets():
+    """All assets of the pinned version, as a DataFrame with the session fields parsed."""
+    url = f"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/?page_size=1000"
     rows = []
-    for d in days:
-        for s in d["somatic"]:
-            row = {"path": d["path"], "date": d["date"], "group": GROUPS.get((d["cell_type"], s["condition"]), "?"), "subject_id": d["subject_id"], "cell_type": d["cell_type"],
-                   "session_state": d["state"], "session_drug": d["drug"], "genotype": d["genotype"],
-                   "cell": s["cell"], "condition": s["condition"], "n_sweeps": s["n_sweeps"],
-                   "duplicates": s["duplicates"], "vrest_mV": s["vrest_mV"], "rheobase": rheobase(s["counts"]),
-                   "spikes_in_step": s["spikes_in_step"], "spikes_outside_step": s["spikes_outside_step"],
-                   "md5": s["md5"], "stim_error_pA": s["stim_error_pA"],
-                   "counts_last": [s["counts_last"].get(a, np.nan) for a in range(20, 301, 20)]}
-            for amp in range(20, 301, 20):
-                row[amp] = s["counts"].get(amp, np.nan)
-            rows.append(row)
-    return pd.DataFrame(rows)
+    while url:
+        page = json.loads(_get(url))
+        rows += page["results"]
+        url = page["next"]
+    df = pd.DataFrame(rows)[["asset_id", "path", "size"]]
+    df = df[df.path.str.endswith(".nwb")].copy()
+    ses = df.path.str.extract(r"_ses-([^/]+)\.nwb$")[0]
+    parts = ses.str.split("_", n=1, expand=True)
+    fields = parts[0].str.split(r"\+\+", expand=True)
+    df["cell_type"], df["state"], df["drug"], df["genotype"], df["date"] = (
+        fields[0], fields[1], fields[2], fields[3], fields[4])
+    df["kind"] = parts[1].fillna("")
+    df["subject"] = df.path.str.split("/").str[0].str.replace("sub-", "", regex=False)
+    return df.reset_index(drop=True)
 
 
-def _site_measures(recs: list, bg_red: float, bg_green: float) -> dict:
-    """R0, G0 and the area of dG/R0 of the trials of one site, averaged after background
-    subtraction and smoothing, as in the paper's script."""
-    n = min(min(len(r["ch1"]), len(r["ch2"])) for r in recs)
-    red = np.nanmean([_smooth(r["ch1"][:n] - bg_red, DEND_SMOOTH) for r in recs], axis=0)
-    green = np.nanmean([_smooth(r["ch2"][:n] - bg_green, DEND_SMOOTH) for r in recs], axis=0)
-    rate = recs[0]["ch2_rate"]
-    dt = 1.0 / rate
-    a, b = int(DEND_BASE[0] / dt), int(DEND_BASE[1] / dt)
-    c, d = b, int(DEND_AREA[1] / dt)
-    r0, g0 = np.nanmean(red[a:b]), np.nanmean(green[a:b])
-    # contrast for the clock check: the same window shifted 1.5 s later, after the transient
-    late = np.nansum((green[c + int(1.5 / dt):d + int(1.5 / dt)] - g0) / r0) * dt
-    return {"n_trials": len(recs), "R0": r0, "G0": g0, "area": np.nansum((green[c:d] - g0) / r0) * dt,
-            "late_area": late, "rate": rate,
-            "first_spike_s": float(np.median([r["spike_times"][0] if len(r["spike_times"]) else np.nan for r in recs])),
-            "n_spikes": float(np.median([len(r["spike_times"]) for r in recs]))}
+def open_asset(asset_id):
+    """Open an asset as an h5py file, streamed from S3."""
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, *args, **kwargs):
+            return None
+    opener = urllib.request.build_opener(NoRedirect)
+    try:
+        opener.open(f"{API}/assets/{asset_id}/download/")
+        raise RuntimeError(f"no redirect for asset {asset_id}")
+    except urllib.error.HTTPError as e:
+        if e.code not in (301, 302, 303, 307):
+            raise
+        s3 = e.headers["Location"]
+    return h5py.File(remfile.File(s3), "r")
 
 
-def dendritic_sites(day: dict, bg_red: float = DEND_BG_RED, bg_green: float = DEND_BG_GREEN,
-                    split_merged: bool = True) -> pd.DataFrame:
-    """Per dendritic site (cell, compartment, site series): R0, G0 and the area of dG/R0.
+def _str(a):
+    return np.array([x.decode() if isinstance(x, bytes) else x for x in a], dtype=object)
 
-    Time is the sample index over the series' rate. A site is recorded in three trials. Three
-    series hold six trials under one name while the cell has no series of the other compartment
-    with that number; their first and last three trials differ in baseline and area, so each holds
-    two sites. With `split_merged` such a series is split into its first and last three trials,
-    and the half with the smaller area is taken as the distal site (bAP-evoked Ca2+ signals fall
-    with distance; an assumption made here, flagged in the column `split`).
+
+def count_spikes(v_mv, threshold=0.0):
+    """Upward crossings of the threshold over the whole sweep [code-somatic]."""
+    above = v_mv > threshold
+    return int(np.sum(above[1:] & ~above[:-1]) + (1 if above[0] else 0))
+
+
+def _series_values(f, ref_row, cache):
+    """Data of one row of a TimeSeriesReference column, in the series' units."""
+    start, count, ref = ref_row
+    ds = f[ref]
+    name = ds.name
+    if name not in cache:
+        data = ds["data"]
+        values = data[:] * float(data.attrs.get("conversion", 1.0))
+        if values.ndim == 2 and values.shape[1] == 1:
+            values = values[:, 0]
+        cache[name] = (values, _timestamps(ds))
+    data, ts = cache[name]
+    return data[start:start + count], ts[start:start + count]
+
+
+def _timestamps(ds):
+    if "timestamps" in ds:
+        return ds["timestamps"][:]
+    n = ds["data"].shape[0]
+    st = ds["starting_time"]
+    return st[()] + np.arange(n) / float(st.attrs["rate"])
+
+
+def load_patch_file(asset):
+    """Read one patch-clamp (current clamp) file.
+
+    Returns (somatic, dendritic): one row per somatic sweep with its spike count,
+    and one row per dendritic trial with its red and green profiles (arrays) and
+    their time from the trial start.
     """
-    rows = []
-    groups: dict[tuple, list] = {}
-    for rec in day["dendritic"]:
-        key = (rec["cell"], rec["compartment"], rec["ch2_series"], rec["condition"])
-        groups.setdefault(key, []).append(rec)
-    for (cell, comp, name, cond), recs in groups.items():
-        m = re.search(r"(Proximal|Distal)(\d+)$", name)
-        site = int(m.group(2)) if m else 0
-        other = "Distal" if comp == "Proximal" else "Proximal"
-        has_other = any(k[0] == cell and k[3] == cond and re.search(rf"{other}{site}$", k[2]) for k in groups)
-        if split_merged and len(recs) == 6 and not has_other:
-            halves = [_site_measures(recs[:3], bg_red, bg_green), _site_measures(recs[3:], bg_red, bg_green)]
-            halves.sort(key=lambda h: h["area"])
-            for comp_h, h in zip(("Distal", "Proximal"), halves):
-                rows.append({"cell": cell, "compartment": comp_h, "site": site, "condition": cond,
-                             "series": name, "split": True, **h})
-        else:
-            rows.append({"cell": cell, "compartment": comp, "site": site, "condition": cond,
-                         "series": name, "split": False, **_site_measures(recs, bg_red, bg_green)})
-    return pd.DataFrame(rows)
+    f = open_asset(asset.asset_id)
+    t = f["processing/icephys/RecordingsIndexTable"]
+    irt = f["general/intracellular_ephys/intracellular_recordings"]
+    resp = irt["responses/response"][:]
+    stim = irt["stimuli/stimulus"][:]
+    cols = {k: t[k][:] for k in ["cell_id", "dendrite_type", "site", "condition",
+                                 "stimulus_current_pA", "sweep_start_time_s", "irt_row"]}
+    for k in ["dendrite_type", "site", "condition"]:
+        cols[k] = _str(cols[k])
+    drug = _str(irt["drug"][:])
+    cache = {}
+    som, den = [], []
+    has_roi = "roi_response_fluo4" in t
+    red_col = t["roi_response_alexa568"][:] if has_roi else None
+    grn_col = t["roi_response_fluo4"][:] if has_roi else None
+    base = dict(path=asset.path, subject=asset.subject, date=asset.date,
+                cell_type=asset.cell_type, file_state=asset.state)
+    for i in range(len(cols["cell_id"])):
+        row = dict(base, cell=int(cols["cell_id"][i]), condition=cols["condition"][i],
+                   drug=drug[cols["irt_row"][i]], site=cols["site"][i],
+                   current_pA=float(cols["stimulus_current_pA"][i]),
+                   sweep_start=float(cols["sweep_start_time_s"][i]))
+        if cols["dendrite_type"][i] == "Soma":
+            v, ts = _series_values(f, resp[cols["irt_row"][i]], cache)
+            row["n_samples"] = len(v)
+            row["fs"] = 1.0 / float(np.median(np.diff(ts)))
+            row["n_spikes"] = count_spikes(v * 1000.0)
+            up = np.where((v[1:] > 0) & (v[:-1] <= 0))[0] + 1
+            row["spike_times"] = ts[up] - ts[0]
+            c, cts = _series_values(f, stim[cols["irt_row"][i]], cache)
+            on = np.where(np.abs(c) > 0)[0]
+            row["step_on"] = float(cts[on[0]] - ts[0]) if len(on) else np.nan
+            row["step_off"] = float(cts[on[-1]] - ts[0]) if len(on) else np.nan
+            row["v_min"], row["v_max"] = float(v.min() * 1000), float(v.max() * 1000)
+            som.append(row)
+        elif has_roi and grn_col[i][0] >= 0:
+            g, ts = _series_values(f, grn_col[i], cache)
+            r, _ = _series_values(f, red_col[i], cache)
+            row["green"], row["red"], row["t"] = g, r, ts - ts[0]
+            row["region"] = cols["dendrite_type"][i]
+            row["t_offset"] = float(ts[0] - cols["sweep_start_time_s"][i])
+            den.append(row)
+    f.close()
+    return pd.DataFrame(som), pd.DataFrame(den)
 
 
-def dendritic_index(sites: pd.DataFrame, basal_range=BASAL_RATIO_RANGE) -> pd.DataFrame:
-    """Per cell (and condition): distal area over proximal area, by site pairs of the same number.
+def cell_fi(somatic, keep="first"):
+    """Per cell and condition: spikes per step, rheobase and the 20-300 pA sum.
 
-    Sites are paired by their number (Proximal1 with Distal1); a cell's index is the mean over
-    its pairs whose basal ratio (G0/R0 distal over G0/R0 proximal) is inside `basal_range`
-    (pass None to keep every pair). Unpaired sites are counted as dropped.
+    A step recorded twice keeps its first sweep (keep="first", an assumption: the
+    paper's script does not say) or its last (keep="last", a variant); the count
+    of such repeats is kept.
+    The rheobase is the smallest positive step with a spike [code-somatic].
     """
-    rows = []
-    for (cell, cond), g in sites.groupby(["cell", "condition"]):
-        prox = g[g.compartment == "Proximal"].set_index("site")
-        dist = g[g.compartment == "Distal"].set_index("site")
-        pairs = sorted(set(prox.index) & set(dist.index))
-        ratios, basal, kept = [], [], 0
-        for s in pairs:
-            br = (dist.G0[s] / dist.R0[s]) / (prox.G0[s] / prox.R0[s])
-            basal.append(br)
-            if basal_range is None or basal_range[0] <= br <= basal_range[1]:
-                ratios.append(dist.area[s] / prox.area[s])
-                kept += 1
-        rows.append({"cell": cell, "condition": cond, "pairs": len(pairs), "pairs_kept": kept,
-                     "unpaired_sites": len(set(prox.index) ^ set(dist.index)),
-                     "sites": " ".join(f"{c[0]}{s}" for c, s in sorted(zip(g.compartment, g.site), key=lambda x: (x[1], x[0]))),
-                     "split": bool(g.split.any()),
-                     "basal_ratios": np.round(basal, 2).tolist(),
-                     "index": float(np.mean(ratios)) if ratios else np.nan})
-    return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------- Sr2+-oEPSC files
-
-def load_sr(path: str, url: str) -> dict:
-    """One cell: its sweeps (pA), the light-pulse onset per sweep, and identifiers."""
-    out = {"path": path, **parse_session(path), "sweeps": []}
-    with h5py.File(remfile.File(url), "r") as f:
-        ir = f["general/intracellular_ephys/intracellular_recordings"]
-        out["cell_number"] = sorted(set(_strings(ir["cell_number"])))
-        out["session_letter"] = sorted(set(_strings(ir["session_letter"])))
-        out["led"] = sorted(set(_strings(ir["led_intensity"])))
-        ep = f["intervals/optogenetic_epochs_table"]
-        stages = _strings(ep["stage_name"])
-        out["epoch_stim_s"] = float(ep["start_time"][stages.index("stimulation")])
-        out["epoch_detect"] = (float(ep["start_time"][stages.index("detection")]),
-                               float(ep["stop_time"][stages.index("detection")]))
-        vc = sorted(k for k in f["acquisition"] if k.startswith("VoltageClampSeries"))
-        og = sorted(k for k in f["stimulus/presentation"] if k.startswith("OptogeneticSeries"))
-        for k, o in zip(vc, og):
-            g = f["acquisition"][k]
-            i = g["data"][:] * 1e12
-            led = f["stimulus/presentation"][o]["data"][:]
-            orate = f["stimulus/presentation"][o]["starting_time"].attrs["rate"]
-            on = np.where(led > 0)[0]
-            out["sweeps"].append({"name": k, "current": i, "md5": hashlib.md5(i.tobytes()).hexdigest(), "rate": float(g["starting_time"].attrs["rate"]),
-                                  "led_onset_s": float(on[0] / orate) if len(on) else np.nan,
-                                  "led_trace_nonzero": bool(len(on))})
-        out["n_vc"], out["n_og"] = len(vc), len(og)
-    return out
-
-
-def detect_events(i: np.ndarray, rate: float, onset: float, window=SR_WINDOW,
-                  threshold_sd: float = SR_THRESHOLD_SD, lowpass: float = SR_LOWPASS_HZ) -> pd.DataFrame:
-    """Inward (negative) events between onset+window[0] and onset+window[1].
-
-    The trace is low-pass filtered; the noise is the robust SD (1.4826 x median absolute
-    deviation) of the filtered trace outside 0 to 450 ms after the pulse; an event starts where
-    the trace falls below the local baseline (median of the 5 ms before) by threshold_sd x noise;
-    its amplitude is the baseline minus the minimum within 10 ms; events closer than 5 ms to the
-    previous one are merged.
-    """
-    sos = butter(4, lowpass, fs=rate, output="sos")
-    x = sosfiltfilt(sos, i - np.median(i))
-    t = np.arange(len(x)) / rate
-    quiet = (t < onset) | (t > onset + 0.45)
-    noise = 1.4826 * np.median(np.abs(x[quiet] - np.median(x[quiet])))
-    nb, nw, gap = int(0.005 * rate), int(0.010 * rate), int(0.005 * rate)
-    a, b = int((onset + window[0]) * rate), int((onset + window[1]) * rate)
-    events, k = [], a
-    while k < b:
-        base = np.median(x[max(k - nb, 0):k])
-        if base - x[k] > threshold_sd * noise:
-            seg = x[k:k + nw]
-            j = k + int(np.argmin(seg))
-            events.append({"t": t[k] - onset, "amp": float(base - x[j])})
-            k = j + gap
-        else:
-            k += 1
-    df = pd.DataFrame(events, columns=["t", "amp"])
-    df.attrs["noise"] = float(noise)
-    return df
-
-
-# ---------------------------------------------------------------- GRAB-ACh files
-
-def load_grab(path: str, url: str) -> dict:
-    """One mouse: the region trace of every trial, its treatment and stimulus time, and the PMT
-    background of the zero-laser reference images (16-bit, channel 2)."""
-    out = {"path": path, **parse_session(path), "trials": []}
-    with h5py.File(remfile.File(url), "r") as f:
-        tr = f["intervals/trials"]
-        flu = f["processing/ophys/Fluorescence"]
-        refs = f["acquisition/ImagesBackgroundReferences"]
-        bgs = [float(np.mean(refs[k][:])) for k in refs if "Ch216Bit" in k]
-        out["bg_reference"] = float(np.median(bgs)) if bgs else np.nan
-        out["n_regions"] = int(f["processing/ophys/ImageSegmentation/PlaneSegmentationGRABCh/id"].shape[0])
-        out["frame_rate_2p"] = sorted({round(float(f["acquisition"][k]["starting_time"].attrs["rate"]), 3)
-                                       for k in f["acquisition"] if k.startswith("TwoPhotonSeriesGRABCh")})
-        for j in range(tr["id"].shape[0]):
-            name = _text(tr["roi_series_name"][j])
-            s = flu[name]
-            out["trials"].append({
-                "treatment": _text(tr["treatment"][j]), "stimulation": _text(tr["stimulation"][j]),
-                "repetition": int(tr["repetition_number"][j]), "start": float(tr["start_time"][j]),
-                "stop": float(tr["stop_time"][j]), "stim": float(tr["stimulus_start_time"][j]),
-                "series_start": float(s["starting_time"][()]), "rate": float(s["starting_time"].attrs["rate"]),
-                "trace": s["data"][:].astype(float).ravel()})
-    return out
-
-
-def grab_measures(m: dict, bg: float = GRAB_BG, fmin_rule: str = "ttx_or_quinpirole") -> pd.DataFrame:
-    """Per treatment and stimulation: area of (F - F0)/(Fmax - Fmin) over 2 s after the stimulus,
-    and the unnormalised area of dF/F0, from the mean of the repetitions."""
-    cal = {}
-    for kind in ("acetylcholine_calibration", "TTX_calibration"):
-        trs = [t for t in m["trials"] if t["treatment"] == kind]
-        if trs:
-            vals = []
-            for t in trs:
-                tt = np.arange(len(t["trace"])) / t["rate"]
-                vals.append(np.mean(t["trace"][(tt >= GRAB_CAL[0]) & (tt < GRAB_CAL[1])] - bg))
-            cal[kind] = float(np.mean(vals))
-    rows = []
-    stims = {}
-    for t in m["trials"]:
-        if t["treatment"].endswith("calibration"):
-            continue
-        stims.setdefault((t["treatment"], t["stimulation"]), []).append(t)
-    f0s = {}
-    for (treat, stim), trs in stims.items():
-        n = min(len(t["trace"]) for t in trs)
-        rel = [t["stim"] - t["series_start"] for t in trs]
-        rate = trs[0]["rate"]
-        avg = np.mean([t["trace"][:n] - bg for t in trs], axis=0)
-        k = int(round(np.mean(rel) * rate))
-        f0 = avg[max(k - int(GRAB_BASE_S * rate), 0):k].mean()
-        f0s[(treat, stim)] = f0
-        rows.append({"treatment": treat, "stimulation": stim, "n_reps": len(trs), "stim_rel_s": float(np.mean(rel)),
-                     "F0": f0, "avg": avg, "k": k, "rate": rate})
-    fmax = cal.get("acetylcholine_calibration", np.nan)
-    fmin_ttx = cal.get("TTX_calibration", np.nan)
     out = []
-    for r in rows:
-        quin = f0s.get(("quinpirole", r["stimulation"]), np.nan)
-        fmin = np.nanmin([fmin_ttx, quin]) if fmin_rule == "ttx_or_quinpirole" else fmin_ttx
-        k, rate, avg = r["k"], r["rate"], r["avg"]
-        win = avg[k:k + int(GRAB_AREA_S * rate)]
-        pre = avg[max(k - int(GRAB_AREA_S * rate), 0):k]
-        dt = 1.0 / rate
-        out.append({"treatment": r["treatment"], "stimulation": r["stimulation"], "n_reps": r["n_reps"],
-                    "stim_rel_s": r["stim_rel_s"], "F0": r["F0"], "Fmax": fmax, "Fmin": fmin, "Fmin_ttx": fmin_ttx,
-                    "auc_norm": float(np.sum(win - r["F0"]) * dt / (fmax - fmin)),
-                    "auc_dff0": float(np.sum((win - r["F0"]) / r["F0"]) * dt),
-                    "auc_norm_pre": float(np.sum(pre - r["F0"]) * dt / (fmax - fmin))})
+    keys = ["path", "subject", "date", "cell_type", "file_state", "cell", "condition", "drug"]
+    for k, g in somatic.groupby(keys, sort=False):
+        g = g.sort_values("sweep_start")
+        first = g.drop_duplicates("current_pA", keep=keep).set_index("current_pA")
+        spikes = first.n_spikes
+        pos = spikes[(spikes.index > 0) & (spikes > 0)]
+        rec = dict(zip(keys, k))
+        rec["rheobase"] = float(pos.index.min()) if len(pos) else np.nan
+        steps = [s for s in FI_STEPS if s in spikes.index]
+        rec["fi_sum"] = float(spikes.loc[steps].sum())
+        rec["n_steps_20_300"] = len(steps)
+        rec["n_repeated_steps"] = int(len(g) - len(first))
+        for s in FI_STEPS:
+            rec[f"s{s}"] = float(spikes.loc[s]) if s in spikes.index else np.nan
+        out.append(rec)
     return pd.DataFrame(out)
 
 
-# ---------------------------------------------------------------- AIM files
+def _smooth(x, n=SMOOTH):
+    return pd.Series(x).rolling(n).mean().to_numpy()
 
-def load_aim(path: str, url: str) -> pd.DataFrame:
-    with h5py.File(remfile.File(url), "r") as f:
-        t = f["processing/behavior/DynamicTableAIMScore"]
-        df = pd.DataFrame({k: (_strings(t[k]) if t[k].dtype.kind == "O" else t[k][:]) for k in t if k != "id"})
-        df["subject_id"] = _text(f["general/subject/subject_id"])
-        df["subject_genotype"] = _text(f["general/subject/genotype"])
-        df["path"] = path
+
+def site_signal(trials):
+    """Ca2+ signal of one dendritic site from its trials [code-dendritic].
+
+    Returns (area dG/R0, G0, R0, n_trials). Trials are cut to the shortest one
+    and averaged after background subtraction and smoothing.
+    """
+    n = min(len(x) for x in trials.green)
+    if n < 10:
+        return np.nan, np.nan, np.nan, 0
+    t = trials.t.iloc[0][:n]
+    g = np.mean([_smooth(x[:n] - GREEN_BG) for x in trials.green], axis=0)
+    r = np.mean([_smooth(x[:n] - RED_BG) for x in trials.red], axis=0)
+    dt = float(np.median(np.diff(t)))
+    ia, ic, idd = int(BASE_WIN[0] / dt), int(BASE_WIN[1] / dt), int(AUC_WIN[1] / dt)
+    r0, g0 = np.nanmean(r[ia:ic]), np.nanmean(g[ia:ic])
+    area = np.nansum((g[ic:idd] - g0) / r0) * dt
+    return float(area), float(g0), float(r0), len(trials)
+
+
+def _site_key(site):
+    """'Proximal1Spot2' -> ('Proximal', 1, 'Spot2')."""
+    m = re.match(r"(Proximal|Distal)(\d+)(Spot\d)?", site)
+    return m.group(1), int(m.group(2)), m.group(3) or ""
+
+
+def dendritic_index(dendritic, basal_range=BASAL_RATIO_RANGE, pairing="number"):
+    """Per cell and condition: the dendritic excitability index.
+
+    Sites imaged at two spots keep the second ('Spot2', which the lab marked
+    'real'). Proximal and distal sites are paired by number (pairing='number',
+    the claims file) or every proximal with every distal site
+    (pairing='all', a variant); pairs with a basal ratio outside basal_range are
+    dropped, and the remaining distal/proximal ratios averaged within the cell.
+    Returns (cells, pairs).
+    """
+    keys = ["path", "subject", "date", "cell_type", "file_state", "cell", "condition", "drug"]
+    sites = []
+    for k, g in dendritic.groupby(keys + ["site"], sort=False):
+        area, g0, r0, n = site_signal(g)
+        region, num, spot = _site_key(k[-1])
+        sites.append(dict(zip(keys, k[:-1]), site=k[-1], region=region, num=num, spot=spot,
+                          area=area, g0r0=g0 / r0 if r0 else np.nan, n_trials=n))
+    sites = pd.DataFrame(sites)
+    pairs = []
+    for k, g in sites.groupby(keys, sort=False):
+        g = g[(g.spot == "") | (g.spot == "Spot2") |
+              ~g.duplicated(["region", "num"], keep=False)]
+        prox = g[g.region == "Proximal"]
+        dist = g[g.region == "Distal"]
+        for _, d in dist.iterrows():
+            cands = prox[prox.num == d.num] if pairing == "number" else prox
+            for _, p in cands.iterrows():
+                pairs.append(dict(zip(keys, k), prox=p.site, dist=d.site,
+                                  ratio=d.area / p.area, basal=d.g0r0 / p.g0r0,
+                                  prox_area=p.area, dist_area=d.area))
+    pairs = pd.DataFrame(pairs)
+    if pairs.empty:
+        return pd.DataFrame(), pairs, sites
+    pairs["kept"] = pairs.basal.between(*basal_range)
+    cells = (pairs[pairs.kept].groupby(keys, sort=False)
+             .agg(index=("ratio", "mean"), n_pairs=("ratio", "size")).reset_index())
+    return cells, pairs, sites
+
+
+# ---------------------------------------------------------------- Sr2+-oEPSCs
+
+def smooth_sweep(i_pa, fs, smooth_ms=1.0):
+    """1 ms running mean of a current sweep (an assumption, see detect_events)."""
+    k = max(1, int(round(smooth_ms * 1e-3 * fs)))
+    return np.convolve(i_pa, np.ones(k) / k, mode="same")
+
+
+def baseline_sd(x, fs, flash_t):
+    """SD of the smoothed current from 2 ms after the sweep start to 1 ms before the flash."""
+    return float(np.std(x[int(0.002 * fs):int((flash_t - 0.001) * fs)]))
+
+
+def detect_events(x, fs, flash_t, sd, n_sd=SR_SD, win=SR_WIN, min_sep_ms=3.0, base_ms=2.0):
+    """Asynchronous EPSCs in one smoothed voltage-clamp sweep [methods-sr], a stand-in for TaroTools.
+
+    Assumptions (the paper does not give them): the sweep is smoothed with a 1 ms
+    running mean (smooth_sweep); the noise SD is the cell's median, over its
+    sweeps, of the SD of the smoothed current before the flash (baseline_sd);
+    an event is a local minimum of the smoothed current more than n_sd noise SDs
+    below the local baseline (the mean over base_ms ending 1 ms before the
+    point where the threshold is crossed), with peaks at least min_sep_ms
+    apart; its amplitude is the local baseline minus the minimum, in pA.
+    Events whose threshold crossing falls between 40 and 400 ms after the
+    flash onset are kept. Returns an array of amplitudes (pA, positive for inward currents).
+    """
+    a, b = int((flash_t + win[0]) * fs), int((flash_t + win[1]) * fs)
+    nb, lag, sep = int(base_ms * 1e-3 * fs), int(1e-3 * fs), int(min_sep_ms * 1e-3 * fs)
+    amps = []
+    i = a
+    while i < b:
+        base = x[max(0, i - lag - nb):i - lag].mean()
+        if base - x[i] > n_sd * sd:
+            j = i
+            while j + 1 < len(x) and x[j + 1] <= x[j]:
+                j += 1
+            amps.append(base - x[j])
+            i = j + sep
+        else:
+            i += 1
+    return np.array(amps)
+
+
+def load_sr_file(asset, n_sd_list=(SR_SD,)):
+    """Sweeps of an Sr2+-oEPSC file, with the events found at each threshold in n_sd_list.
+
+    Returns one row per cell: the number of sweeps, the noise SD, and for each
+    threshold the event amplitudes, their count, mean and median, and the frequency.
+    """
+    f = open_asset(asset.asset_id)
+    irt = f["general/intracellular_ephys/intracellular_recordings"]
+    resp = irt["responses/response"][:]
+    cell = irt["cell_id"][:]
+    cond = _str(irt["condition"][:])
+    pulses = f["intervals/optogenetic_pulses_table"]
+    p_start, p_cell = pulses["start_time"][:], pulses["cell_id"][:]
+    cache, sweeps = {}, {}
+    for i in range(len(resp)):
+        v, ts = _series_values(f, resp[i], cache)
+        fs = 1.0 / float(np.median(np.diff(ts)))
+        mine = p_start[(p_cell == cell[i]) & (p_start >= ts[0]) & (p_start <= ts[-1])]
+        if len(mine) == 0:
+            continue
+        x = smooth_sweep(v * 1e12, fs)
+        sweeps.setdefault((int(cell[i]), cond[i]), []).append((x, fs, float(mine[0] - ts[0])))
+    f.close()
+    rows = []
+    for (c, cnd), sw in sweeps.items():
+        sd = float(np.median([baseline_sd(x, fs, ft) for x, fs, ft in sw]))
+        r = dict(path=asset.path, subject=asset.subject, date=asset.date,
+                 cell_type=asset.cell_type, cell=c, condition=cnd, n_sweeps=len(sw),
+                 noise_sd=sd, fs=sw[0][1], flash_t=float(np.median([s[2] for s in sw])))
+        for n_sd in n_sd_list:
+            amps = np.concatenate([detect_events(x, fs, ft, sd, n_sd=n_sd) for x, fs, ft in sw])
+            r[f"amps_{n_sd:g}"] = amps
+            r[f"n_events_{n_sd:g}"] = len(amps)
+            r[f"mean_amp_{n_sd:g}"] = float(np.mean(amps)) if len(amps) else np.nan
+            r[f"median_amp_{n_sd:g}"] = float(np.median(amps)) if len(amps) else np.nan
+            r[f"freq_{n_sd:g}"] = len(amps) / (len(sw) * (SR_WIN[1] - SR_WIN[0]))
+        # Clock check: the same detector over a 360 ms window late in the sweep,
+        # 480 to 840 ms after the flash, before the test step at 920 ms.
+        late = np.concatenate([detect_events(x, fs, ft, sd, win=SR_LATE) for x, fs, ft in sw])
+        r["n_events_late"] = len(late)
+        rows.append(r)
+    return pd.DataFrame(rows)
+
+
+# ---------------------------------------------------------------- GRAB-ACh3.0
+
+def _circle_mask(shape, spacing_um, diam_um=GRAB_ROI_UM):
+    ny, nx = shape
+    yy, xx = np.mgrid[:ny, :nx]
+    r = diam_um / 2.0
+    return ((yy - (ny - 1) / 2) * spacing_um[0]) ** 2 + ((xx - (nx - 1) / 2) * spacing_um[1]) ** 2 <= r ** 2
+
+
+def load_grab_file(asset):
+    """Per trial of a GRAB-ACh3.0 file: the 50 um circle trace and the whole-frame botData trace."""
+    f = open_asset(asset.asset_id)
+    tr = f["intervals/trials"]
+    n = len(tr["id"][:])
+    col = {k: tr[k][:] for k in ["start_time", "stop_time", "stimulus_start_time"]}
+    for k in ["region", "drug", "stimulation"]:
+        col[k] = _str(tr[k][:])
+    mov = tr["two_photon_grabach3"][:]
+    bot = tr["roi_response_grabach3"][:]
+    rows = []
+    masks = {}
+    for i in range(n):
+        start, count, ref = mov[i]
+        ds = f[ref]
+        if ds.name not in masks:
+            plane = ds["imaging_plane"]
+            sp = plane["grid_spacing"][:] if "grid_spacing" in plane else np.array([0.388, 0.388])
+            masks[ds.name] = (_circle_mask(ds["data"].shape[1:], sp), sp)
+        mask, sp = masks[ds.name]
+        frames = ds["data"][start:start + count].astype(float)
+        trace = frames[:, mask].mean(axis=1)
+        ts = _timestamps(ds)[start:start + count]
+        b, _ = _series_values(f, bot[i], {})
+        rows.append(dict(path=asset.path, subject=asset.subject, date=asset.date,
+                         state=asset.state, region=col["region"][i], drug=col["drug"][i],
+                         stimulation=col["stimulation"][i], start=col["start_time"][i],
+                         stim=col["stimulus_start_time"][i], t=ts, circle=trace, whole=b,
+                         spacing=float(sp[0]), mask_px=int(mask.sum())))
+    f.close()
+    return pd.DataFrame(rows)
+
+
+def grab_auc(trials, signal="circle", fmin_rule="min"):
+    """Normalised single-pulse AUC per region and drug [code-grab, methods-grab].
+
+    fmin_rule: 'min' (TTX or the quinpirole baseline, whichever is smaller,
+    the Methods), 'ttx' (TTX only, as the script), 'quin' (quinpirole baseline only).
+    Returns one row per region and drug, with Fmax, Fmin and the number of trials averaged.
+    """
+    out = []
+    for (path, region), g in trials.groupby(["path", "region"], sort=False):
+        def plateau(drug):
+            h = g[g.drug.str.contains(drug)]
+            if h.empty:
+                return np.nan
+            vals = []
+            for _, r in h.iterrows():
+                tt = r.t - r.start
+                sel = (tt >= GRAB_FLIM[0]) & (tt < GRAB_FLIM[1])
+                vals.append(np.mean(r[signal][sel]))
+            return float(np.mean(vals))
+        fmax = plateau("acetylcholine")
+        fttx = plateau("tetrodotoxin")
+        fmax_from = "region"
+        if np.isnan(fmax):
+            # No acetylcholine trial at this region: use the other regions of the
+            # same slice (an assumption; the paper does not say).
+            sl = region.split("Roi")[0]
+            others = trials[(trials.path == path) & (trials.region.str.startswith(sl + "Roi")) &
+                            (trials.region != region) & trials.drug.str.contains("acetylcholine")]
+            vals = [np.mean(r[signal][((r.t - r.start) >= GRAB_FLIM[0]) & ((r.t - r.start) < GRAB_FLIM[1])])
+                    for _, r in others.iterrows()]
+            fmax = float(np.mean(vals)) if vals else np.nan
+            fmax_from = "same slice" if vals else "none"
+        single = g[g.stimulation.str.startswith("single")]
+        quin = single[single.drug.str.contains("quinpirole")]
+        fq = np.nan
+        if len(quin):
+            fq = float(np.mean([np.mean(r[signal][(r.t >= r.stim - GRAB_F0) & (r.t < r.stim)])
+                                for _, r in quin.iterrows()]))
+        fmin = {"min": np.nanmin([fttx, fq]) if not (np.isnan(fttx) and np.isnan(fq)) else np.nan,
+                "ttx": fttx, "quin": fq}[fmin_rule]
+        for drug, h in single[~single.drug.str.contains("tetrodotoxin")].groupby("drug", sort=False):
+            aucs = []
+            for _, r in h.iterrows():
+                x, t = r[signal], r.t
+                dt = float(np.median(np.diff(t)))
+                f0 = np.mean(x[(t >= r.stim - GRAB_F0) & (t < r.stim)])
+                sel = (t >= r.stim) & (t < r.stim + GRAB_AUC)
+                aucs.append(np.sum(x[sel] - f0) * dt)
+            out.append(dict(path=path, subject=g.subject.iloc[0], state=g.state.iloc[0],
+                            region=region, drug=drug, n_trials=len(h), fmax=fmax, fmax_from=fmax_from, fttx=fttx,
+                            fquin=fq, fmin=fmin, raw_auc=float(np.mean(aucs)),
+                            auc=float(np.mean(aucs)) / (fmax - fmin)))
+    return pd.DataFrame(out)
+
+
+# ---------------------------------------------------------------- AIM scores
+
+def load_aim_file(asset):
+    """AIM scores of one session file: one row per time point and category."""
+    f = open_asset(asset.asset_id)
+    g = f["events/aim_scores"]
+    df = pd.DataFrame(dict(time=g["timestamp"][:], behavior=_str(g["behavior"][:]),
+                           score=g["score"][:]))
+    desc = f["session_description"][()]
+    desc = desc.decode() if isinstance(desc, bytes) else desc
+    sd = f["general/subject/description"][()]
+    sd = sd.decode() if isinstance(sd, bytes) else sd
+    f.close()
+    m = re.search(r"session (\d) of (\d) of mouse (\d+) \(([^,]+), Figure (\d+)\)", desc)
+    df["session"] = int(m.group(1)) if m else np.nan
+    df["mouse"] = int(m.group(3)) if m else np.nan
+    df["group"] = m.group(4) if m else ""
+    df["figure"] = int(m.group(5)) if m else np.nan
+    df["path"], df["subject"], df["genotype"] = asset.path, asset.subject, asset.genotype
+    df["subject_description"] = sd
     return df
 
 
-def file_contents(path: str, url: str) -> dict:
-    """What a file holds outside its metadata: the acquisition objects with their types and
-    number of members, and the names in processing and analysis."""
-    with h5py.File(remfile.File(url), "r") as f:
-        acq = {k: (_text(f["acquisition"][k].attrs.get("neurodata_type", "")), len(f["acquisition"][k]))
-               for k in f.get("acquisition", {})}
-        return {"path": path, "acquisition_types": sorted({t for t, _ in acq.values()}),
-                "acquisition_objects": len(acq), "images": sum(n for _, n in acq.values()),
-                "processing": sorted(f.get("processing", {})), "analysis": sorted(f.get("analysis", {}))}
+# ---------------------------------------------------------------- paper tables
 
-
-def load_many(fn, items, workers: int = 8):
-    with ThreadPoolExecutor(workers) as ex:
-        return list(ex.map(lambda pu: fn(*pu), items))
-
-
-# ---------------------------------------------------------------- the paper's tables
-
-def tidy_tables() -> dict[str, dict[str, pd.DataFrame]]:
-    """Every sheet of the paper's per-cell tables, by workbook name ('Fig 1', ..., 'SupFigs')."""
-    with urllib.request.urlopen(TIDY_URL) as r:
-        z = zipfile.ZipFile(io.BytesIO(r.read()))
+def paper_tables():
+    """The paper's per-cell and per-mouse tables (Zenodo doi:10.5281/zenodo.17307059), read in memory."""
+    z = zipfile.ZipFile(io.BytesIO(_get(TABLES_URL)))
     out = {}
     for name in z.namelist():
-        m = re.search(r"/(Fig \d+|SupFigs) datasets\.xlsx$", name)
-        if m and "__MACOSX" not in name:
-            out[m.group(1)] = pd.read_excel(io.BytesIO(z.read(name)), sheet_name=None)
+        if name.endswith(".xlsx") and "__MACOSX" not in name and "~$" not in name:
+            key = name.split("/")[-1].replace(" datasets.xlsx", "")
+            out[key] = pd.read_excel(io.BytesIO(z.read(name)), sheet_name=None)
     return out
 
 
-def tidy_fi(sheet: pd.DataFrame) -> pd.DataFrame:
-    """A somatic-excitability sheet as rows of spike counts by current (columns 0 to 300 pA)."""
-    cols = {c: int(re.match(r"\s*(\d+)\s*pA", str(c)).group(1)) for c in sheet.columns if re.match(r"\s*\d+\s*pA", str(c))}
-    out = sheet.rename(columns=cols)
-    out.columns = [c if isinstance(c, int) else str(c).strip().lower() for c in out.columns]
-    return out
+# ---------------------------------------------------------------- file descriptions
+
+def session_description(asset_id):
+    """The session description of one file, read from its header only."""
+    f = open_asset(asset_id)
+    d = f["session_description"][()]
+    f.close()
+    return d.decode() if isinstance(d, bytes) else d

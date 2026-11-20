@@ -1,76 +1,50 @@
-I've finished steps 1 to 6 for dandiset 000218 (Tingley and Buzsaki 2019). The entry passes `check` and ran cleanly from a fresh environment in 17.7 min, and the handover package is built in `executed/000218-tingley-2019/handover/`. I did not verify my own work, commit or push.
+I tested all 39 claims of `claims/tingley-2019.yaml` on DANDI:000218 version 0.261110.1911. Of the 39, 30 were tested and 9 blocked: 8 reproduced, 11 partially reproduced and 11 not reproduced. The entry is at `entries/tingley-2019`, with three notebooks (spikes and events, LFP, Figure 7E) and a helper module, and the record is `attempts/tingley-2019-02.yaml`. `tools/entry.py all` passes with 0 errors, and the handover is built. Nothing was committed.
 
-I used the full text: the accepted author manuscript in PMC (PMC6952543), saved under `paper/`. Its supplementary figures were not included, so claims on Figures S1 to S5 rest on the main text. The pinned version is 0.250624.0439: the paper cites no version, and the older published version 0.220131.1608 holds the same 98 files with identical blobs (the notebook shows this).
+**Blindness.** The dandiset's own release notes, which I had to read to choose the version, say the files were re-converted to fix "problems found by a reproduction attempt (issue #82)", and list the fixes. That is the only trace of an earlier attempt I met. I did not open the issue, and I saw none of that attempt's outcomes.
 
-The files contain no detected HFOs or ripples, and the paper does not name its channels. So every event-based outcome tests my own detector (Methods parameters, gaps filled from buzcode `bz_FindRipples`) as much as the data. Many detected LS events are not followed by LS firing, which drives most of the HFO outcomes.
-
-**(1) Outcomes (31 claims)**
+## 1. Outcomes
 
 | Claim | Outcome |
 |---|---|
-| dataset-composition | partially reproduced |
-| fig1c-hfo-each-animal | not reproduced (1 of 6 animals) |
-| fig1c-event-count | reproduced (31,984 vs 29,955) |
-| figs1-participation | not reproduced (2.7% vs 16%) |
-| fig1d-phase-locking | partially reproduced (56% locked vs 92%; trough preference holds) |
-| fig1f-shorter-than-ripples | reproduced |
-| fig1g-slower-than-ripples | not reproduced (LS faster) |
-| fig1h-no-amplitude-frequency-correlation | not reproduced (r = 0.056, significant) |
-| fig2-confined-to-ls | not reproduced |
-| fig4b-pre-post-unchanged | reproduced (only 106 pairs) |
-| fig4b-hfo-above-behav | reproduced |
-| fig4d-compression | not reproduced |
-| figs2-post-rate-increase | partially reproduced (LS only) |
-| fig5b-nrem-and-rates | partially reproduced |
-| fig5d-lag | partially reproduced (coupling holds, lag 0 ms vs 6.4) |
-| fig5e-state-coupling | not reproduced (p = 0.089) |
-| fig5f-ripple-triggered-firing | not reproduced |
-| fig5f-no-phase-coherence | not reproduced (31 SD above jitter) |
-| fig7e-ca1-spikes, fig7e-state, fig7e-duration | partially reproduced (above chance, out of tolerance) |
-| fig2ef-intermediate-ls, fig3-travelling-waves | blocked: metadata insufficient |
-| fig4-sessions-few-change, fig4c-temporal-bias | blocked: other (too few recordings after selection) |
-| fig6-optogenetic-hfos, fig7e-ca1-depth | blocked: data missing |
-| fig7e-replay, fig7e-seqnmf, fig7e-content-independent | blocked: methods underspecified |
-| fig8-model | blocked: other (a simulation) |
+| fig1c-event-count, fig1f-shorter-than-ripples, fig1g-slower-than-ripples, fig4c-temporal-bias, figs2c-no-ls-reactivation, fig5b-nrem-and-rates, fig5d-lag | reproduced |
+| fig1h-no-amplitude-frequency-correlation, fig4b-hfo-above-behav | reproduced, resting on an assumption |
+| dataset-composition, fig1c-hfo-each-animal, fig1d-phase-locking, fig4d-compression, figs3d-hpc-compression-post, figs2-post-rate-increase, fig7e-ca1-spikes, fig7e-state, fig7e-duration | partially reproduced |
+| fig4b-pre-post-unchanged | partially reproduced, resting on an assumption |
+| figs1-participation, fig2-confined-to-ls, fig4-sessions-few-change, fig5e-state-coupling, fig5f-ripple-triggered-firing, fig5f-no-phase-coherence, discussion-medial-septum, discussion-cingulate-down-state | not reproduced |
+| fig1c-post-burst-suppression, ls-spikes-not-locked-to-ca1-ripples | not reproduced, resting on an assumption |
+| fig2ef-intermediate-ls, fig3-travelling-waves, fig7e-ca1-depth | blocked: metadata_insufficient |
+| fig7e-content-independent, fig7e-coupled-only | blocked: metadata_insufficient (they depend on fig7e-ca1-depth) |
+| fig6-optogenetic-hfos | blocked: data_missing |
+| fig7e-replay, fig7e-seqnmf, figs5-seqnmf-variance, fig8-model | blocked: other (not attempted within the run's time) |
 
-Totals: 5 reproduced, 9 partially reproduced, 9 not reproduced, 8 blocked.
+## 2. The dataset, assumptions and questions
 
-**(2) What was found about the dandiset**
-- **What is there:** 98 files from 6 rats, matching the paper. Files with both LS and hippocampal units number 37, as in the paper; LS-and-CA3 files number 10 against the paper's 25.
-- **Missing data:**
-  - No detected events and no detection channels.
-  - No unit waveforms, unit channels or quality metrics.
-  - The CA3 recordings have no CA1 reference channel.
-  - The optogenetics rats are absent.
-- **Missing metadata:**
-  - Electrode coordinates are NaN in every file.
-  - 268 units in 9 files have no region label.
-  - The `hpc` label does not say whether a site is in CA1.
-  - Four DT7 files label every electrode `unknown`.
-- **Format error:** 25 units have spike times out of order.
-- **Clock and duplicates:** spikes, LFP, sleep states and trials are consistent with one clock, and no recording is deposited twice.
-- **Shared signal:** 35% of LS HFOs coupled to a CA1 ripple fall on the same sample as the ripple (71% in DT8). This points to a 120–200 Hz signal shared by LS and hippocampal channels.
-- **Code:** the paper's linked repository holds no analysis code for this paper, only the Figure 8 model.
-- **Paper inconsistencies:** the band is given as both 120–180 and 120–200 Hz, and the Methods cite the wrong figure numbers in places.
+**What was found about the dataset:**
+- **Composition:** six rats with 2551 LS units in 98 files, and no recording deposited twice.
+- **Missing from the files:** the two optogenetic rats, electrode positions, each recording's depth within LS, and marked PRE / BEHAV / POST periods.
+- **Hippocampal labels:** most hippocampal units are labelled only `hpc`, so CA1 and CA3 cannot be told apart reliably (10 or 19 CA3 recordings depending on the label used, against the paper's 25).
+- **Labels and scoring:** 36 units in DT7 20170407 have an empty region label. In 3 files, less than half of the trial time is scored WAKE.
+- **Missing event tables:** the DT9 CA3 recordings have no CA1 ripple table. DT7 20170410 has LS units but no LS HFO table.
+- **Detection parameters:** the deposited LS HFO and CA1 ripple detections use parameters that differ from the Methods. Even so, their counts, durations and frequencies match the paper.
 
-**(3) Where the protocol was unclear, wrong or missing something**
-1. It has no guidance for when the dandiset lacks the intermediate products the results depend on (here the events and channels). I detected events with a fixed rule written into the claims file and recorded the detector as a deviation and a finding.
-2. Using the paper's stated spread as tolerance gives very wide bounds when the spread is an SD (27 ± 9 ms). I followed the rule and noted that the bounds are wide.
-3. There is no threshold for "too few units under the claim's own rule". After selection I blocked two per-session claims (7 and 4 recordings, against 53 in the paper) as `other` and kept the pair-level claims tested. Their numbers are in the notes.
-4. The clock-check examples (decoding a task variable) do not fit continuous sleep recordings. I used three contrasts instead:
-   - spike phase-locking to the ripple band at shifted spike times;
-   - ripple rate by state with the state table shifted;
-   - the share of trial time scored as NREM, with trials shifted.
-5. `inputs` is framed around data. I listed buzcode and the paper's repository there although only their parameters were used.
-6. A model or simulation claim fits no block reason; I used `other`.
-7. When different counts match under different readings, it is unclear whether `measured` should use one reading for all. I recorded the matching reading per quantity.
-8. Step 5 assumes linked code exists. Here it does not, which I recorded as `methods_unavailable`.
-9. A two-part criterion (fig5d: coupling plus lag) did not define partial. I applied the protocol's general "holds only in part".
-10. Runtime cannot meet the 10-minute aim for a 1.5 TB dandiset. Loading each file's chunk index takes about 33 s, so the run takes about 18 min, which is recorded in `entry.yaml`.
-11. The date rolled over to 2026-10-17 during the run; I kept 2026-10-16 as you specified.
+**Assumptions**, each recorded with a question for the paper's authors (`methods_unavailable`):
+- **Epoch boundaries:** PRE, BEHAV and POST are split at the first trial's start and the last trial's stop.
+- **Figure 4 CCGs:** normalized by the spike counts. Raw counts make PRE and POST differ.
+- **Figure 1H:** Pearson correlation. Spearman finds a negligible but significant correlation.
+- **Post-burst window:** starts at the event stop. The other window passes only under some seeds.
+- **Locking to CA1:** spikes inside CA1 ripples. In the CA1 high-power epochs the fraction is at chance.
 
-**(4) Runtime and failures**
-- Each full run took 17.7 min, of which 16.1 min was streaming all 98 files with 6 workers.
-- No file failed. The 4 DT7 files with only `unknown` electrodes were skipped for LFP analysis.
-- One bug (an empty interval list) was found and fixed during development.
-- `git status` lists sandbox placeholder files (`.bashrc`, `.idea`, `scripts` and others). They are device nodes created by the sandbox, not files I wrote, and the workflow should not commit them.
+**Questions to a reader:** none.
+
+## 3. Where the protocol was unclear or did not fit
+
+1. **Time.** The time rule only names `too_large` for claims the computation stopped. Claims I chose not to attempt because of the five-hour limit had no named reason, so I used `other` and said so.
+2. **Notebook time limit.** The 60-minute limit applies per notebook, so analyses that need the whole dataset had to be split across notebooks. Each one reloads the data (about 2.5 minutes).
+3. **Seeds.** Repeating everything under five seeds did not fit for the Figure 7E Poisson fits or for the fig5f jitter. I repeated the linear Figure 7E models only, and gave the reasons in the deviations.
+4. **Conclusions and run order.** Result cells must be backed by printed numbers, but the long notebooks' numbers exist only after the run. I added those cells as markdown after the first full run, then re-ran `entry.py all` so the executed copies and stamp match.
+5. **Expected values beside an absence criterion.** fig4b-pre-post-unchanged has an expected pair count (7172) that the criterion does not use. I recorded partially reproduced: the absence holds, but only 462 pairs pass inclusion.
+6. **Absence claims with no test named.** The rule to judge absence on the paper's test alone has nothing to apply when the paper names no test (fig1h, ls-spikes-not-locked). I treated those claims under step 1.6.
+
+## 4. Runtime and failures
+
+The final run took about 76 minutes: 15 for the main notebook, 45 for the LFP one and 16 for Figure 7E. Peak memory was about 7.4 GB, in the LFP notebook. No job failed in either full run. During development, one site analysis reached 10.7 GB; I bounded it before the full runs.

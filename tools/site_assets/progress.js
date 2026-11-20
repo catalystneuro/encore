@@ -13,8 +13,10 @@
       return row;
     });
   });
-  var state = { subset: "all", metric: "datasets" };
   var root = document.querySelector(".progress");
+  // The measure shown first is the tile the page marks pressed (build_site.py, PROGRESS_DEFAULT).
+  var pressed = root.querySelector('.tile.metric[aria-pressed="true"]');
+  var state = { subset: "all", metric: pressed ? pressed.dataset.metric : "papers" };
   var line = document.getElementById("progress-line"), cols = document.getElementById("progress-outcomes");
   var outcomeKeys = Object.keys(P.outcomes), protocols = P.protocols || [], archives = P.archives || [];
   // Two measures are stacked: claims by outcome, and attempts by the protocol version they followed, shaded in
@@ -89,8 +91,13 @@
         "text-anchor": i === 0 ? "start" : i === n - 1 ? "end" : "middle" }, f.svg).textContent = day(P.days[i]);
     }
   }
-  function place(f, x, y, text) {
-    f.tip.textContent = text; f.tip.hidden = false;
+  // The tooltip: a heading line (the day and the total), then one line for each series, so that a day with many
+  // series (attempts by protocol version) stacks down the chart, not across and off it.
+  function place(f, x, y, head, lines) {
+    f.tip.textContent = "";
+    var h = document.createElement("div"); h.className = "tip-head"; h.textContent = head; f.tip.appendChild(h);
+    (lines || []).forEach(function (t) { var d = document.createElement("div"); d.textContent = t; f.tip.appendChild(d); });
+    f.tip.hidden = false;
     f.tip.style.left = Math.min(Math.max(x - f.tip.offsetWidth / 2, 0), f.w - f.tip.offsetWidth) + "px";
     f.tip.style.top = Math.max(y - f.tip.offsetHeight - 12, 0) + "px";
   }
@@ -127,8 +134,7 @@
         cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
         var parts = keys.filter(function (k) { return c[k]; })
           .map(function (k) { return c[k].toLocaleString() + " " + S.label(k); });
-        place(f, x(i), y(totals[i]), day(P.days[i], true) + ": " + totals[i].toLocaleString() + " in all" +
-          (parts.length ? " (" + parts.join(", ") + ")" : ""));
+        place(f, x(i), y(totals[i]), day(P.days[i], true) + ": " + totals[i].toLocaleString() + " in all", parts);
       };
       hit.addEventListener("mouseenter", show); hit.addEventListener("touchstart", show, { passive: true });
     });
@@ -206,8 +212,13 @@
       var show = function () {
         var parts = keys.filter(function (k) { return r[k]; })
           .map(function (k) { return r[k].toLocaleString() + " " + label(k); });
-        place(f, x(i), y(sums[i]), day(P.days[i], true) + ": " + (parts.length ? parts.join(", ") : "none") +
-          (stacked || !parts.length ? "" : " new"));
+        // A single series fits on the heading line; several get a line each.
+        if (parts.length > 1)
+          place(f, x(i), y(sums[i]), day(P.days[i], true) + ": " + keys.reduce(function (t, k) { return t + (r[k] || 0); }, 0)
+            .toLocaleString() + " new", parts);
+        else
+          place(f, x(i), y(sums[i]), day(P.days[i], true) + ": " + (parts.length ? parts[0] : "none") +
+            (stacked || !parts.length ? "" : " new"));
       };
       hit.addEventListener("mouseenter", show); hit.addEventListener("touchstart", show, { passive: true });
     });

@@ -1,643 +1,750 @@
-# 000218 · verifier-1 · run 38988583794
+# tingley-2019 · verifier-1 · run 44316440935
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls docs 2>/dev/null; find . -maxdepth 2 -type f | head -50
+cd  ls -la; ls paper docs 2>/dev/null
 ```
 
 ```
-total 684
-drwxr-xr-x 5 runner runner    4096 Oct 17 01:15 .
-drwxr-xr-x 7 runner runner    4096 Oct 17 01:15 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 17 00:54 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 17 00:54 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 17 01:15 .claude
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env.development
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env.local
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env.production
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env.test
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .env.test.local
-drwx------ 2 runner runner    4096 Oct 17 01:15 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 17 00:54 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 17 00:54 .github
--rw-r--r-- 1 runner runner       0 Oct 17 01:15 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 17 00:54 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 17 00:54 .mcp.json
-[... 50 more lines not kept]
+Exit code 2
+total 812
+drwxr-xr-x 6 runner runner    4096 Nov 18 15:02 .
+drwxr-xr-x 8 runner runner    4096 Nov 18 15:02 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 13:42 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 13:42 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 18 15:02 .claude
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .env.test.local
+drwx------ 2 runner runner    4096 Nov 18 15:02 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 13:42 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 13:42 .github
+-rw-r--r-- 1 runner runner       0 Nov 18 15:02 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 18 13:42 .idea
+[... 25 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat 10.1016-j.neuron.2019.10.012.yaml
+cd  cat tingley-2019.yaml | head -400
 ```
 
 ```
 # Claims for Tingley and Buzsaki (2019), Routing of hippocampal ripples to subcortical
-# structures via the lateral septum, Neuron 105, 138-149, on dandiset 000218.
-# Source: the accepted author manuscript in PubMed Central (PMC6952543), full text, read from
-# its Results, figure legends and STAR Methods. The supplementary figures were not available,
-# so claims on Figures S1 to S5 rest on the main text that cites them.
+# structures via the lateral septum, Neuron 105, 138-149, tested on dandiset 000218.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-18,
+# protocol pilot-16 as stated in docs/protocol.md. The writer did not look at the dandiset's data or
+# files; only its title on the archive was read. This file replaces the version of 2026-10-19,
+# whose opening comment recorded outputs of the data and fixed method choices from them; those
+# are removed, and every method detail below is taken from the paper or its code, or named as open.
 #
-# What the author had seen when writing the criteria. The data check: the file list, the
-# metadata, electrodes, units and their region labels, sleep states, epochs and trials of every
-# file, and the per-file counts of LS HFOs and hippocampal ripples from the detector below.
-# While building the detector, a few outputs of single sessions: in DT9 2017-05-02 the
-# hippocampal units lock to the ripple band at zero time shift (resultant 0.13) and not at
-# +-20 ms (the clock check); mean LS HFO and ripple durations and frequencies in two sessions
-# (DT9 2017-05-02 LS 28.8 ms and 156 Hz, ripples 37.7 ms and 151 Hz; DT7 2017-03-25 LS 21.0 ms
-# and 156 Hz, ripples 32.2 ms and 159 Hz); HFO-triggered LS firing by state in eight sessions
-# (an increase before the HFO peak and a dip after it in the DT5 sessions, little or none in
-# the others); the count of phase-locked LS units in two sessions (27 of 49, 0 of 10); the
-# CA1-LS phase coherence at the ripple peak in two sessions (0.12 and 0.14, jittered 0.04 and
-# 0.07); and the HFO-triggered band power by region in DT7 2017-03-25 (6 events; medial septum
-# channels higher than LS). No claim's analysis had been run over all sessions.
+# Text read: the accepted author manuscript in PubMed Central (PMC6952543, NIHMS1545124), full
+# text as served by NCBI PMC: Summary, Introduction, Results, Discussion, STAR Methods, figure
+# legends and Key Resources Table, with its one supplement (NIHMS1545124-supplement-1.pdf, Figures
+# S1 to S5 and their legends). The main figures were not available as images, so values printed
+# only inside main figure panels (axis labels of Figure 7E among them) could not be read.
 #
+# Code read. (1) github.com/DavidTingley/papers, commit 9f4cd48 (2020-03-16), the repository the
+# Methods link for "code specific to figures/analyses in this manuscript". It holds the figure
+# scripts of Tingley and Buzsaki (2018), not of this paper, and the network model of Figure 8
+# (LS_phasecoding/modeling/dynamicWeightingModel-ripple.ipynb, pyNN with NEURON). No analysis code
+# of Figures 1 to 7 is there. (2) github.com/buzsakilab/buzcode, commit e615663 (the current head,
+# not a version dated to the paper), analysis/SharpWaveRipples/bz_FindRipples.m, the detector the
 [... 380 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 -c "
-import json
-nb=json.load(open('reproduce_tingley_2019.ipynb'))
-print(nb.get('metadata'))
+cd  cat tingley2019.py
+```
+
+```
+"""Loading and shared measures for Tingley and Buzsaki (2019) on dandiset 000218.
+
+Everything is streamed from the DANDI Archive (remfile + h5py); nothing is written to disk.
+
+Where each parameter comes from:
+- Event tables. The lab's own detections stored in each file (processing/ecephys): LS HFOs in
+  `LSRipples`, CA1 ripples in `CA1Ripples`. The claims file's opening comment, open detail (i),
+  reading (a): "where the dataset holds the events or their parameters, they are used". The
+  earlier LS detections (`ls_ripples`, `ripples_ls`) and the hippocampal `ripplesALL` are used
+  only as variants, where a recording lacks the main table (stated in the notebook).
+- Event time. `peak_time` of the tables, which is bz_FindRipples' peak: the trough of the
+  filtered signal (claims file, opening comment, open detail iv).
+- Epochs. The dataset does not mark PRE, BEHAV and POST. The paper says "Each recording
+  consisted of three periods of time recorded continuously; 1) pre-behavior home cage, 2) maze
+  traversal, and 3) post-behavior home cage" (STAR Methods, Experimental model). Assumption:
+  PRE is the recording before the first trial's start, BEHAV from the first trial's start to
+  the last trial's stop, POST after the last trial's stop. Maze traversal in the narrow sense
+  is inside trials (the claims' reading iv of fig4b).
+- CCG bins and windows: 1 ms bins, +-200 ms (STAR Methods, Excess correlation analysis);
+  +-120 ms and 241 points for compression (STAR Methods, Temporal compression analysis).
+[... 373 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 400,2000p tingley-2019.yaml
+```
+
+```
+<persisted-output>
+Output too large (34.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/5916677e-d151-40f1-97ec-c9e30d17a21b/tool-results/bnarp1fts.txt
+
+Preview (first 2KB):
+  - quantity: sessions with pairs
+    value: 53
+    tolerance: 5.3
+  - quantity: fraction of sessions with PRE different from POST
+    value: 0.132
+    tolerance: 0.0132
+  criterion: Per session, a rank-sum test of PRE against POST excess correlations over its pairs
+    at p < 0.01, under the readings of fig4b-pre-post-unchanged. The paper sets no minimum of
+    pairs per session; every session with pairs is tested. Reproduced when the session count and
+    the fraction are within tolerance and both directions occur; partially reproduced when the
+    fraction is below 0.25 and both directions occur.
+- id: fig4c-temporal-bias
+  statement: The temporal ordering of LS spike pairs during HFOs before and after the maze
+    correlates with the ordering during traversal to a similar degree (P = 0.85).
+  source: Results, paragraph 4; Figure 4C and legend; STAR Methods, Temporal bias analysis
+  quote: the spiking structure during HFOs prior to and after maze performance showed correlations
+[... 18 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/5916677e-d151-40f1-97ec-c9e30d17a21b/tool-results/bnarp1fts.txt"
+}
+```
+
+```
+1	  - quantity: sessions with pairs
+2	    value: 53
+3	    tolerance: 5.3
+4	  - quantity: fraction of sessions with PRE different from POST
+5	    value: 0.132
+6	    tolerance: 0.0132
+7	  criterion: Per session, a rank-sum test of PRE against POST excess correlations over its pairs
+8	    at p < 0.01, under the readings of fig4b-pre-post-unchanged. The paper sets no minimum of
+9	    pairs per session; every session with pairs is tested. Reproduced when the session count and
+10	    the fraction are within tolerance and both directions occur; partially reproduced when the
+11	    fraction is below 0.25 and both directions occur.
+12	- id: fig4c-temporal-bias
+13	  statement: The temporal ordering of LS spike pairs during HFOs before and after the maze
+14	    correlates with the ordering during traversal to a similar degree (P = 0.85).
+15	  source: Results, paragraph 4; Figure 4C and legend; STAR Methods, Temporal bias analysis
+16	  quote: the spiking structure during HFOs prior to and after maze performance showed correlations
+17	    with the spike ordering during maze traversal that were similar (Figure 4C; N = 53 recordings;
+18	    Two-way T-test; P = 0.85)
+19	  statistics:
+20	  - test: Two-way T-test
+[... 521 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/dump.py <<'EOF'
+import json,sys
+nb=json.load(open(sys.argv[1]))
 for i,c in enumerate(nb['cells']):
-    print('='*20,i,c['cell_type'])
+    print(f"\n======== CELL {i} [{c['cell_type']}] ========")
     print(''.join(c['source']))
     for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--'); print(''.join(o['text'])[:6000])
+        if 'text' in o: t=''.join(o['text'])
         elif 'data' in o:
-            d=o['data']
-            if 'text/plain' in d: print('--OUT--'); print(''.join(d['text/plain'])[:6000])
-            if 'image/png' in d: print('[image]')
-        elif o.get('output_type')=='error': print('ERROR',o['ename'],o['evalue'])
-" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
-```
-
-```
-1519 /tmp/claude-1001/nb.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt"
-}
-```
-
-```
-1	{'kernelspec': {'display_name': 'Python 3', 'language': 'python', 'name': 'python3'}, 'language_info': {'codemirror_mode': {'name': 'ipython', 'version': 3}, 'file_extension': '.py', 'mimetype': 'text/x-python', 'name': 'python', 'nbconvert_exporter': 'python', 'pygments_lexer': 'ipython3', 'version': '3.13.16'}}
-2	==================== 0 markdown
-3	# Reproducing Tingley and Buzsaki (2019) from dandiset 000218
-4	
-5	Paper: Tingley D, Buzsaki G (2019). Routing of hippocampal ripples to subcortical structures via the
-6	lateral septum. Neuron 105, 138-149. [doi:10.1016/j.neuron.2019.10.012](https://doi.org/10.1016/j.neuron.2019.10.012).
-7	The full text was used: the accepted author manuscript in PubMed Central (PMC6952543). Its
-8	supplementary figures were not available, so claims on Figures S1 to S5 rest on the main text.
-9	
-10	Dandiset: [DANDI:000218 version 0.250624.0439](https://dandiarchive.org/dandiset/000218/0.250624.0439),
-11	98 NWB files (1.5 TB) from 6 rats, streamed from the archive. The paper cites no version (it says
-12	the data would go to CRCNS). There are two published versions, 0.220131.1608 and 0.250624.0439;
-13	they hold the same 98 files with the same blob ids (checked below) and differ only in contributor
-14	metadata, so the most recent one is pinned.
-15	
-16	The files hold the LFP at 1250 Hz on every channel, sorted units with a region label in most files,
-17	sleep states, epochs and trials. They hold no detected events. LS high-frequency oscillations
-18	(HFOs) and CA1 ripples are detected here from the LFP, following the Methods and the buzcode
-19	detector they name (see `ls_hfo.py`). The paper's own code repository holds no analysis of this
-20	paper apart from the network model of Figure 8.
-[... 713 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 734,
- "limit": 400
-}
-```
-
-```
-734	      f" frequencies outside 100-220 Hz LS {((ls_f < 100) | (ls_f > 220)).sum()}, CA1 {((ca_f < 100) | (ca_f > 220)).sum()}")
-735	
-736	--OUT--
-737	72 recordings with both channels, animals ['DT2', 'DT5', 'DT7', 'DT8', 'DT9']
-738	duration: LS 33.9 +- 25.0 ms (median 23.2, n = 56871); CA1 38.3 +- 23.7 (median 32.0, n = 230161); rank-sum p = 0  [paper 27 +- 9 against 31 +- 14]
-739	
-740	--OUT--
-741	frequency: LS 153.6 +- 8.3 Hz (median 154.1, n = 56871); CA1 150.8 +- 9.2 (median 149.8, n = 230161); rank-sum p = 0  [paper 147 +- 5.7 against 159 +- 8]
-742	variant, all recordings with LS electrodes: LS duration 34.4 ms, frequency 153.9 Hz
-743	animal  LS dur  CA1 dur         p dur  LS freq  CA1 freq       p freq
-744	   DT2    25.6     38.5 7.598951e-201    156.8     154.8 1.745084e-22
-745	   DT5    22.5     35.1 3.447988e-201    156.1     147.8 0.000000e+00
-746	   DT7    35.2     40.2  0.000000e+00    151.8     150.3 0.000000e+00
-747	   DT8    27.5     28.0  8.320209e-01    155.6     156.2 4.893006e-02
-748	   DT9    33.8     37.4 1.204100e-304    157.8     150.9 0.000000e+00
-749	variant, NREM events only: duration LS 38.0 +- 25.7, CA1 38.4 +- 22.3 ms (p = 8.3e-103); frequency LS 150.3 +- 8.0, CA1 151.1 +- 9.0 Hz (p = 5.4e-12)
-750	
-751	--OUT--
-752	<Figure size 900x300 with 2 Axes>
-753	[image]
-[... 380 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1133,
- "limit": 400
-}
-```
-
-```
-1133	region  units  median PRE (Hz)  median POST (Hz)  median POST/PRE   Wilcoxon p
-1134	   hpc   2552            0.228             0.227            0.998 5.212872e-01
-1135	   ca3    466            0.233             0.232            1.030 2.224666e-01
-1136	    ls   1326            0.618             0.642            1.060 8.355372e-07
-1137	by animal, median POST/PRE:
-1138	                count  median
-1139	region subject               
-1140	acg    DT7          6   1.050
-1141	ca3    DT5        236   1.075
-1142	       DT9        230   0.973
-1143	cc     DT7          1   1.509
-1144	hpc    DT2       1024   0.994
-1145	       DT5        284   1.027
-1146	       DT7        424   0.881
-1147	       DT9        820   1.027
-1148	ls     DT2        395   1.027
-1149	       DT5        402   1.101
-1150	       DT7         51   1.504
-1151	       DT9        478   1.028
-1152	ms     DT7         25   0.755
-[... 368 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "ls_hfo.py"
-}
-```
-
-```
-1	"""Loading and measures for dandiset 000218 (Tingley and Buzsaki 2019, lateral septum HFOs).
-2	
-3	The files hold LFP at 1250 Hz on every channel, sorted units with a region label (in most
-4	files), sleep states, epochs and trials. They hold no detected events, so LS high-frequency
-5	oscillations (HFOs) and CA1 ripples are detected here from the LFP.
-6	
-7	Where the parameters come from:
-8	
-9	- Event detection follows the paper's Methods (Ripple detection): 120-200 Hz Butterworth
-10	  band-pass of order 3, normalized squared signal, peak threshold 5 SD, start and stop at
-11	  2 SD, durations 15 to 250 ms. What the Methods leave open is taken from the code they
-12	  name, bz_FindRipples.m of buzcode at commit 5981194ee764436383269d5fbe09980ae852c6fe
-13	  (15 October 2019): zero-phase filtering (filtfilt), an 11-sample moving average of the
-14	  squared signal, z-scoring over the whole recording, merging events less than 30 ms
-15	  apart, the event time taken at the trough of the filtered signal, amplitude as the
-16	  peak normalized squared signal, and exclusion of events whose LFP-derived EMG at the
-17	  event start exceeds 0.9.
-18	- The EMG is computed as in bz_EMGFromLFP.m (same commit): the mean pairwise zero-lag
-19	  correlation of the 300-600 Hz band between channels on different shanks, in windows of
-20	  +-0.1 s every 0.1 s (the sampling bz_FindRipples asks for). One channel per shank is
-[... 618 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python3 -c "
-import json
-nb=json.load(open('reproduce_tingley_2019.ipynb'))
-c=nb['cells'][4]
-for o in c['outputs']:
-    if 'text' in o: print(''.join(o['text'])[5500:])
-print(len(nb['cells']))
-"
-```
-
-```
-: 32}     82                      {'hpc': 48, 'ls': 34}    True    True     151
-29          sub-DT5_ses-20161015-1368um-1476um-merge     DT5   4.84                       {'hpc': 64, 'ls': 32}     67                      {'hpc': 27, 'ls': 40}    True    True     115
-30          sub-DT5_ses-20161016-1368um-1476um-merge     DT5   0.89                       {'hpc': 64, 'ls': 32}     32                      {'hpc': 13, 'ls': 19}    True    True      33
-31          sub-DT5_ses-20161017-1440um-2016um-merge     DT5   6.33                       {'hpc': 64, 'ls': 32}     83                      {'hpc': 49, 'ls': 34}   False   False       0
-32          sub-DT5_ses-20161018-1552um-2304um-merge     DT5   8.53                       {'ca3': 64, 'ls': 32}    100                      {'ca3': 56, 'ls': 44}    True    True     213
-33  sub-DT5_ses-20161019-1624um-2340um-161019-095311     DT5   6.52                       {'ca3': 64, 'ls': 32}     97                      {'ca3': 49, 'ls': 48}    True    True     238
-34  sub-DT5_ses-20161020-1768um-2376um-161020-102642     DT5   7.33                       {'hpc': 64, 'ls': 32}    102                      {'hpc': 62, 'ls': 40}    True    True     245
-35          sub-DT5_ses-20161021-1840um-2412um-merge     DT5   7.95                       {'ca3': 64, 'ls': 32}     93                      {'ca3': 40, 'ls': 53}    True    True      54
-36  sub-DT5_ses-20161023-1872um-2448um-161023-123504     DT5   1.25                       {'hpc': 64, 'ls': 32}     33                       {'hpc': 8, 'ls': 25}    True    True     138
-37          sub-DT5_ses-20161025-1944um-2232um-merge     DT5   7.37                       {'hpc': 64, 'ls': 32}     68                      {'hpc': 40, 'ls': 28}    True    True     117
-38          sub-DT5_ses-20161026-1944um-2232um-merge     DT5   7.68                       {'hpc': 64, 'ls': 32}     67                      {'hpc': 36, 'ls': 31}    True    True      57
-39  sub-DT5_ses-20161027-1944um-2232um-161027-194125     DT5
-[... 66 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  mkdir -p paper; curl -sL -A "Mozilla/5.0" "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_json/PMC6952543/unicode" -o paper/PMC6952543_bioc.json; ls -la paper; head -c 500 paper/PMC6952543_bioc.json
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  sleep 5; curl -sL -A "Mozilla/5.0" "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6952543/fullTextXML" -o paper/PMC6952543.xml; ls -la paper; head -c 300 paper/PMC6952543.xml
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  rm paper/*; for u in "https://pmc.ncbi.nlm.nih.gov/articles/PMC6952543/" "https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:6952543&metadataPrefix=pmc"; do curl -sL -A "Mozilla/5.0 (X11; Linux x86_64)" "$u" -o $TMPDIR/p.out; ls -la $TMPDIR/p.out; head -c 200 $TMPDIR/p.out; echo; done
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-for u in "https://pmc.ncbi.nlm.nih.gov/articles/PMC6952543/" "https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:6952543&metadataPrefix=pmc"; do curl -sL -A "Mozilla/5.0 (X11; Linux x86_64)" "$u" -o $TMPDIR/p.out; ls -la $TMPDIR/p.out; head -c 200 $TMPDIR/p.out; echo; done
-```
-
-```
--rw-r--r-- 1 runner runner 297050 Oct 17 01:17 /tmp/claude-1001/p.out
-
-<!DOCTYPE html>
-<html lang="en" >
-    <head >
-
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="HandheldFriendly" content="True" />
--rw-r--r-- 1 runner runner 184365 Oct 17 01:17 /tmp/claude-1001/p.out
-
-
-
-<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cp $TMPDIR/p.out paper/PMC6952543_oai.xml; python3 - <<'EOF'
-import re,html
-x=open('paper/PMC6952543_oai.xml').read()
-x=re.sub(r'<xref[^>]*>.*?</xref>','',x,flags=re.S)
-x=re.sub(r'</(p|title|sec)>','\n\n',x)
-t=html.unescape(re.sub(r'<[^>]+>','',x))
-t=re.sub(r'\n\s*\n+','\n\n',t)
-open('paper/PMC6952543.txt','w').write(t)
-print(len(t))
+            d=o['data']; t=''.join(d.get('text/plain',''))
+            if 'image/png' in d: t+=' [IMAGE]'
+        elif o.get('output_type')=='error': t='ERROR '+o['ename']+': '+o['evalue']
+        else: t=''
+        if len(t)>6000: t=t[:3000]+'\n...[trunc]...\n'+t[-3000:]
+        print('--- out:'); print(t)
 EOF
-grep -n -i -E "ripple detection|phase lock|1989|29,955|0.23|lag|coheren|jitter|depth|probe|optogen|replay|seqNMF|excess|compress|Methods|STAR" paper/PMC6952543.txt | head -80
+for f in *.ipynb; do python3 $TMPDIR/dump.py $f > $TMPDIR/${f%.ipynb}.txt; wc -c $TMPDIR/${f%.ipynb}.txt; done
 ```
 
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  awk 'NR>=17' paper/PMC6952543.txt | grep -v '^\s*$' | cut -c1-3000 | head -c 45000
 ```
-
-Result: not kept, because it reads the paper's text.
+35336 /tmp/claude-1001/fig7e_tingley_2019.txt
+50739 /tmp/claude-1001/lfp_tingley_2019.txt
+111865 /tmp/claude-1001/reproduce_tingley_2019.txt
+```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/787be3c1-c902-4849-92b8-b2ccaba02825/tool-results/btd8f3yjc.txt"
+ "file_path": "/tmp/claude-1001/reproduce_tingley_2019.txt"
 }
 ```
 
 ```
-1	The mnemonic functions of hippocampal sharp wave ripples (SPW-Rs) have been studied extensively. Because hippocampal outputs affect not only cortical but also subcortical targets, we examined the impact of SPW-Rs on the firing patterns of lateral septal (LS) neurons in behaving rats. A large fraction of SPW-Rs were temporally locked to high frequency oscillations (HFOs; 120–180 Hz) in LS, with strongest coupling during NREM sleep, followed by waking immobility. However, coherence and spike-LFP coupling between the two structures were low, suggesting that HFOs are generated locally within the LS GABAergic population. This hypothesis was supported by optogenetic induction of HFOs in LS. Spiking of LS neurons was largely independent from the sequential order of spiking in SPW-Rs but, instead, correlated with the magnitude of excitatory synchrony of the hippocampal output. Thus, LS is strongly activated by SPW-Rs and may convey hippocampal population events to its hypothalamic and brainstem targets.
-2	eTOC blurb
-3	Tingley and Buzsaki 2019 describe that hippocampal sharp wave ripple-related bursts are routed to subcortical structures through the lateral septum.
-4	pmc-status-qastatus0pmc-status-liveyespmc-status-embargonopmc-status-releasedyespmc-prop-open-accessnopmc-prop-olfnopmc-prop-manuscriptyespmc-prop-open-manuscriptyespmc-prop-legally-suppressednopmc-prop-has-pdfyespmc-prop-has-supplementyespmc-prop-pdf-onlynopmc-prop-suppress-copyrightnopmc-prop-is-real-versionnopmc-prop-is-scanned-articlenopmc-prop-preprintnopmc-prop-in-epmcyesIntroduction
-5	Current theories on the function of hippocampal sharp-wave ripples (SPW-Rs) relate mainly to the consolidation of recent experiences and planning of future actions (; ; ; ; ). Specifically, sequential firing patterns within SPW-Rs are thought to ‘replay’ recently experienced episodes and planning of routes (; ; ; ; ). Both of these ideas tacitly assume that the main function of the SPW-R is to convey content-specific hippo
-[... 74 more lines not kept]
+1	
+2	======== CELL 0 [markdown] ========
+3	# Reproducing Tingley and Buzsaki (2019) from DANDI:000218: spikes and events
+4	
+5	Tingley D. and Buzsaki G. (2019). Routing of hippocampal ripples to subcortical structures via the lateral septum. Neuron 105, 138-149. doi:10.1016/j.neuron.2019.10.012.
+6	
+7	Dataset: DANDI:000218, version 0.261110.1911 (doi:10.48324/dandi.000218/0.261110.1911), streamed from the archive.
+8	
+9	Version. The paper cites no version of the dandiset (it predates it). The most recent published version, 0.261110.1911, is pinned: its files were re-converted with trial labels sorted with their rows, the lab's ripple and LS HFO detections, sleep states for every session with them, units with shank and region, and electrode flags, all of which the claims use; the earlier versions (0.220131.1608, 0.250624.0439) lack the event tables and sleep states, so they match the claims file's description less well. The LFP is the earlier version's data, stored again in channel order (release notes).
+10	
+11	Claims file: `claims/tingley-2019.yaml`, written from the accepted manuscript in PubMed Central (PMC6952543) with its supplement. The paper's full text and supplement were read here.
+12	
+13	This notebook tests the claims that use spikes, the lab's event tables, sleep states and trials. The LFP analyses are in `lfp_tingley_2019.ipynb` and the Figure 7E regressions in `fig7e_tingley_2019.ipynb`.
+14	
+15	Claims and where they are tested (all notebooks of this entry):
+16	
+17	| Claim | Where tested |
+18	|---|---|
+19	| dataset-composition | main notebook (counts); LFP notebook (LS neurons with more than 50 spikes) |
+20	| fig1c-hfo-each-animal, fig1c-post-burst-suppression, fig1c-event-count, figs1-participation | main notebook |
+[... 596 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/reproduce_tingley_2019.txt",
+ "offset": 617,
+ "limit": 460
+}
+```
+
+```
+617	print(f"Units per recording: {P.n_units.min()} to {P.n_units.max()}")
+618	--- out:
+619	window (a): (i) pooled events: fraction 0.057, spikes per neuron per event 0.079; (ii) mean of 73 recordings: fraction 0.069, spikes 0.096
+620	window (b): (i) pooled events: fraction 0.087, spikes per neuron per event 0.125; (ii) mean of 73 recordings: fraction 0.107, spikes 0.155
+621	Paper: 0.16 (tolerance 0.016) and 0.23 (0.023)
+622	
+623	Per animal, window (a), pooled events:
+624	         fraction  spikes  recordings
+625	subject                              
+626	DT1         0.124   0.150          12
+627	DT2         0.089   0.136          10
+628	DT5         0.077   0.134          17
+629	DT7         0.033   0.035           4
+630	DT8         0.044   0.046          17
+631	DT9         0.040   0.044          13
+632	Units per recording: 8 to 74
+633	
+634	
+635	======== CELL 22 [markdown] ========
+636	## fig5b-nrem-and-rates
+[... 440 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/reproduce_tingley_2019.txt",
+ "offset": 1077,
+ "limit": 460
+}
+```
+
+```
+1077	
+1078	
+1079	======== CELL 36 [code] ========
+1080	# The same under four more seeds (jitter only).
+1081	for k in range(1, 5):
+1082	    sd = seed_of("fig4b-hfo-above-behav") + 1000 * k
+1083	    D = above_table(jittered_excess(sd))
+1084	    print(f"seed {sd}: readings with part 2 (each epoch above its jitter at p < 0.01) {int(D.part2.sum())} of {len(D)}; "
+1085	          f"BEHAV above jitter in {int(D['BEHAV>jit'].sum())}; PRE in {int(D['PRE>jit'].sum())}; POST in {int(D['POST>jit'].sum())}")
+1086	--- out:
+1087	seed 3611125032: readings with part 2 (each epoch above its jitter at p < 0.01) 16 of 16; BEHAV above jitter in 16; PRE in 16; POST in 16
+1088	
+1089	--- out:
+1090	seed 3611126032: readings with part 2 (each epoch above its jitter at p < 0.01) 16 of 16; BEHAV above jitter in 16; PRE in 16; POST in 16
+1091	
+1092	--- out:
+1093	seed 3611127032: readings with part 2 (each epoch above its jitter at p < 0.01) 16 of 16; BEHAV above jitter in 16; PRE in 16; POST in 16
+1094	
+1095	--- out:
+1096	seed 3611128032: readings with part 2 (each epoch above its jitter at p < 0.01) 16 of 16; BEHAV above jitter in 16; PRE in 16; POST in 16
+[... 438 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/lfp_tingley_2019.txt"
+}
+```
+
+```
+1	
+2	======== CELL 0 [markdown] ========
+3	# Reproducing Tingley and Buzsaki (2019) from DANDI:000218: LFP analyses
+4	
+5	Tingley D. and Buzsaki G. (2019). Routing of hippocampal ripples to subcortical structures via the lateral septum. Neuron 105, 138-149. doi:10.1016/j.neuron.2019.10.012.
+6	
+7	Dataset: DANDI:000218, version 0.261110.1911 (doi:10.48324/dandi.000218/0.261110.1911), streamed from the archive.
+8	
+9	Version. The paper cites no version of the dandiset (it predates it). The most recent published version, 0.261110.1911, is pinned: its files were re-converted with trial labels sorted with their rows, the lab's ripple and LS HFO detections, sleep states for every session with them, units with shank and region, and electrode flags, all of which the claims use; the earlier versions (0.220131.1608, 0.250624.0439) lack the event tables and sleep states, so they match the claims file's description less well. The LFP is the earlier version's data, stored again in channel order (release notes).
+10	
+11	Claims file: `claims/tingley-2019.yaml`, written from the accepted manuscript in PubMed Central (PMC6952543) with its supplement. The paper's full text and supplement were read here.
+12	
+13	This notebook tests the claims that need the LFP: phase locking of LS spikes, locking to the CA1 ripple band, event times at the maximum NSS, CA1-LS phase coherence, and HFO power by recording site.
+14	
+15	Claims and where they are tested (all notebooks of this entry):
+16	
+17	| Claim | Where tested |
+18	|---|---|
+19	| dataset-composition | main notebook (counts); LFP notebook (LS neurons with more than 50 spikes) |
+20	| fig1c-hfo-each-animal, fig1c-post-burst-suppression, fig1c-event-count, figs1-participation | main notebook |
+[... 640 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  awk 'NR>=17' paper/PMC6952543.txt | grep -v '^\s*$' | cut -c1-3000 | tail -c +45000 | grep -v -E "^\s*(.{0,80})$" | head -c 30000
+sed -n 1,40p /tmp/claude-1001/fig7e_tingley_2019.txt | head -5; grep -n "CELL" /tmp/claude-1001/fig7e_tingley_2019.txt
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+======== CELL 0 [markdown] ========
+# Reproducing Tingley and Buzsaki (2019) from DANDI:000218: Figure 7E
+
+Tingley D. and Buzsaki G. (2019). Routing of hippocampal ripples to subcortical structures via the lateral septum. Neuron 105, 138-149. doi:10.1016/j.neuron.2019.10.012.
+2:======== CELL 0 [markdown] ========
+40:======== CELL 1 [markdown] ========
+45:======== CELL 2 [code] ========
+64:======== CELL 3 [markdown] ========
+69:======== CELL 4 [code] ========
+141:======== CELL 5 [code] ========
+175:======== CELL 6 [code] ========
+211:======== CELL 7 [code] ========
+250:======== CELL 8 [markdown] ========
+261:======== CELL 9 [code] ========
+428:======== CELL 10 [code] ========
+```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 -c "import numpy, scipy, h5py, remfile, requests; print('ok')" 2>&1
+sed -n 250,600p /tmp/claude-1001/fig7e_tingley_2019.txt
+```
+
+```
+======== CELL 8 [markdown] ========
+## Figure 7E: LS spike counts predicted from SPW-R features
+Common to fig7e-ca1-spikes, fig7e-state and fig7e-duration. Recordings with LS units, hippocampal units and CA1Ripples. For each LS
+neuron and feature, the error (MSE) of predicting the neuron's spike count in each SPW-R from the feature, against the MSEs of 100
+shuffles of the feature across SPW-Rs (the claim's seed); the neuron counts when a two-sided one-sample t-test of the shuffled MSEs
+against the actual MSE gives p < 0.05 with the actual lower. Chance: one shuffle tested against the other 99 the same way.
+Readings (claims file): model (a) linear regression, (b) Poisson GLM; MSE in-sample or 5-fold cross-validated (contiguous folds,
+a standard choice); LS window SPW-R start to stop or +-50 ms of the ripple time; no minimum firing, or 20 spikes in SPW-Rs.
+Features: hippocampal spike count (all hippocampal units, start to stop); state (NREM 1, WAKE 0, SPW-Rs in those states);
+duration (stop minus start).
+
+======== CELL 9 [code] ========
+NSHUF = 100
+def fit_mse(Y, X, model, cv):
+    """Y [neurons, n], X [perms, n] (feature standardized). Returns MSE [neurons, perms]."""
+    n = Y.shape[1]
+    folds = [np.arange(n)] if not cv else np.array_split(np.arange(n), 5)
+    sse = np.zeros((Y.shape[0], X.shape[0]))
+    for f in folds:
+        tr = np.setdiff1d(np.arange(n), f) if cv else f
+[... 177 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n -i -E "chance|shuffl|red points|MSE|mean squared" 10.1016-j.neuron.2019.10.012.txt | head -40
+```
+
+```
+<persisted-output>
+Output too large (87.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/5916677e-d151-40f1-97ec-c9e30d17a21b/tool-results/bpg1n0cv2.txt
+
+Preview (first 2KB):
+7:Neuron Neuron 319 nihpa 8809320 Neuron 0896-6273 1097-4199 pmc-is-collection-domain yes pmc-collection-title NIHPA Author Manuscripts PMC6952543 PMC6952543.1 6952543 6952543 NIHMS1545124 31784288 10.1016/j.neuron.2019.10.012 NIHMS1545124 NIHPA1545124 1 Article Routing of hippocampal ripples to subcortical structures via the lateral septum Tingley David 1 Buzsáki György 1 2 3 4 1 Neuroscience Institute, New York University, New York, NY 10016, USA 2 Department of Neurology, Langone Medical Center, New York University, New York, NY 10016, USA 3 Center for Neural Science, New York University, New York, NY 10003, USA 4 Lead Contact Author Contributions D.T. and G.B. conceived the project. D.T. conducted the experiments and analysis. D.T. and G.B. wrote the manuscript. * Correspondence: [removed: an e-mail address] 26 11 2019 08 1 2020 105 1 349554 138 149.e5 04 12 2019 08 01 2021 08 01 2021 11 01 2020 16 06 2024 This file is available for text mining. It may also be used consistent with the principles of fair use under the copyright law. Summary The mnemonic functions of hippocampal sharp wave ripples (SPW-Rs) have been studied extensively. Because hippocampal outputs affect not only cortical but also subcortical targets, we examined the impact of SPW-Rs on the firing patterns of lateral septal (LS) neurons in behaving rats. A large fraction of SPW-Rs were temporally locked to high frequency oscillations (HFOs; 120–180 Hz) in LS, with strongest coupling during NREM sleep, followed by waking immobility. However, coherence and spike-LFP coupling between the two structures were low, suggesting that HFOs are generated locally within the LS GABAergic population. This hypothesis was supported by optogenetic induction of HFOs in LS. Spiking of LS neurons was largely ind
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; python3 - <<'EOF'
+import re
+t=open('10.1016-j.neuron.2019.10.012.txt').read()
+for kw in ['Figure 7. ','red points','mean squared','chance','jitter','Phase locking analysis','phase coherence','Excess correlation analysis','Ripple detection','ballistic','medial septum','Rayleigh']:
+    for m in re.finditer(re.escape(kw),t):
+        print('##',kw, m.start(),':',t[max(0,m.start()-300):m.start()+600].replace('\n',' '))
+        print()
+EOF
+```
+
+```
+<persisted-output>
+Output too large (32.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/5916677e-d151-40f1-97ec-c9e30d17a21b/tool-results/ba5uuox5h.txt
+
+Preview (first 2KB):
+## Figure 7.  85620 : on control, where an equal number of time windows were selected one second after each stimulation. Bounds are ±1 standard deviation. Bottom: Black traces are P-values for two-way T-tests conducted at each frequency band between the stimulation and no-stimulation power spectra. Red trace is P < 0.01 Figure 7. LS neuron firing is predicted by the magnitude and anatomical location of HPC SPW-Rs, but not ripple ‘content’. (A) Example diagram of experimental paradigm for all recordings. (B) LFP traces of a single HPC SPW-R. (C) Spiking activity from 17 CA1 neurons during the ripple shown in C and their summed (Z-scored) firing. (D) Four example LS neurons showing the relationship between LS firing (X-axis) and number of CA1 spikes, recording depth, and replay scores, respectively (Y-axes). Examples were selected from neurons within ± 5% of the mean for each distribution. (E) Ripple features e
+
+## Figure 7.  109082 : explained % variance explained % variance explained 0 5 10 15 count (recordings) 0 5 10 15 20 25 30 CA1 population bursts template # 100 0 0.001 0.01 0.1 1 0.001 0.01 0.1 1 100 0 5 10 15 20 25 30 35 40 template # total % variance explained A B N=44 recordings N=44 recordings 9 Figure S5. Related to Figure 7. Variability in CA1 firing patterns is captured by seqNMF (A)  Left: For all recordings (individual lines), each template derived from ripple events (X-axis) and the  percent variance it explained from the data (Y-axis) is shown.  Right: Histogram of the total percent  variance explained across all 40 templates. Mean is 96%. (B) Left: For all recordings (individual  lines), each template derived from population burst events (X-axis) and the percent variance it  explained from the data (Y-axis) is shown.  Right: Histogram of t
+[... 3 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; python3 - <<'EOF'
+t=open('10.1016-j.neuron.2019.10.012.txt').read()
+i=t.find('(E) Ripple features e'); print(t[i:i+1500]); print('-----')
+i=t.find('Excess correlation analysis'); 
+import re
+for m in re.finditer('Excess correlation analysis|Phase locking analysis|Ripple detection|Experimental model and subject',t): print(m.start())
+EOF
+```
+
+```
+(E) Ripple features examined to predict LS neuron firing (X-axis). Y-axis is the number of standard deviations that the mean squared error (MSE) was from a distribution of MSE values calculated from shuffled data for the same neuron. For every feature, each neuron is shown twice, as a black dot (actual data vs shuffled distribution) and as a red dot (one shuffled iteration vs shuffled distribution). The percentage of neurons surpassing P < 0.05 (two-way T-test) are shown above for each ripple feature. Figure 8. Temporal compression disrupts sequence reading in model HPC-LS circuit. (A) Biophysical model of CA1/CA3 place field populations that provide convergent input to a LS neuron. Colors indicate the location of place fields along a simulated track. (B) The HPC-LS circuit transforms a population theta sequence code into a rate-independent phase code. Model and figure are adapted from ( Tingley and Buzsáki, 2018 ). (C) Forward, reverse, and scrambled ‘replay’ sequences were created in the presynaptic CA1/CA3 populations and the output LS neuron was examined. (D) Across trials with different jittered noise (Y-axis), the firing dynamics of the postsynaptic LS neuron (X-axis) were indistinguishable for different compressed spiking sequences KEY RESOURCES TABLE Resource Source Identifier/Location Description REAGENTS AAV-DLX-ChR2-mCherry Addgene https://www.addaene.ora/browse/article/22659/ DAPI antibody Sigma-Aldrich Cat#: D8417 SIGMA SUBJECTS Rat: Long-Evans Charles River Cat#
+-----
+36219
+39041
+47887
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; python3 - <<'EOF'
+t=open('10.1016-j.neuron.2019.10.012.txt').read()
+for a in [36219,39041,47887]:
+    print(t[a:a+3500]); print('=========')
+EOF
+```
+
+```
+Ripple detection A modified version of a previously reported detection algorithm was used for both hippocampus and LS HFO detection ( Csicsvari et al., 1999 ). Input parameters for the algorithm are stored in each of the MATLAB data structures storing ripple events. The code is available at https://github.com/buzsakilab/buzcode (bz_FindRipples.m). Ripples were detected by filtering (120–200Hz; Butterworth; order = 3) the raw LFP (1.25 kHz) and calculating the normalized squared signal (NSS). The NSS was then used to identify peaks above a threshold merging neighboring events and discarding events with excessive duration. Thresholds are computed as multiples of the standard deviation of the NSS. The peak power threshold was set to five standard deviations and the beginning/end cutoff was set to two standard deviations above the mean NSS. The duration limits were set to 15 and 250 milliseconds. An additional ‘noise’ channel was provided to the algorithm that was not anatomically near CA1 (and did not have ripples in the LFP signal). This channel was used to exclude EMG related artifact that had power in the 120–200 Hz range. High power 120–200 Hz events occurring on this ‘noise’ channel were used to identify and exclude simultaneously occurring 120–200 Hz high power events on the ‘ripple’ channel. The same 5 standard deviation threshold was applied to the NSS of this channel for detecting events. If such noise events occurred within the start/stop times for an event detected on the ripple channel, it was excluded as noise. For recordings without a ‘non-ripple’ channel, the estimated EMG was used for this exclusion criteria ( Schomburg et al., 2014 ). The same detection algorithm was used for both LS and HPC. Start and stop times for each ripple were considered the first timestamp where the 120–200 Hz power dropped below 2 standard deviations prior to, and following, the ripple peak (max power value > 5 standard deviations). Ripple duration was calculated as the differ
+[... 5 more lines not kept]
+```
+
+**Agent**
+
+Read all three notebooks and the claims file. Now testing the helper functions on synthetic inputs.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF'
+import numpy as np, tingley2019 as T
+rng=np.random.default_rng(0)
+# rayleigh vs pycircstat-like formula; uniform -> p uniform
+ps=[T.rayleigh(rng.uniform(-np.pi,np.pi,100))[0] for _ in range(2000)]
+print('rayleigh null frac<0.05', np.mean(np.array(ps)<0.05))
+ph=rng.vonmises(np.pi,1,200); print('vm angle',np.degrees(T.rayleigh(ph)[2]))
+# ccg_all brute force
+sp=[np.sort(rng.uniform(0,10,50)) for _ in range(3)]
+C=T.ccg_all(sp,0.02,0.001)
+d=sp[1][None,:]-sp[0][:,None]; d=d[np.abs(d)<=0.0205]
+b=np.rint(d/0.001).astype(int)+20; b=b[(b>=0)&(b<41)]
+print('ccg match', np.array_equal(np.bincount(b,minlength=41),C[0,1]), C[0,0].sum())
+# gauss smooth on constant -> constant
+c=np.ones((1,401)); print('gauss const', np.allclose(T.gauss_smooth(c,200)[0],1), np.allclose(T.gauss_smooth(c,5)[0],1))
+# intervals
+iv=np.array([[0,1],[2,3]]); print(T.in_intervals(np.array([0.5,1.5,2.5,3.5]),iv), T.intersect(iv,np.array([[0.5,2.5]])))
+# triggered counts
+tc=T.triggered_counts(np.array([1.0,1.0015,2.0]),np.array([1.0]),0.005,0.001); print(tc)
+# high_power_epochs & nss
+x=rng.normal(size=12500).astype(np.float32); print(T.high_power_epochs(T.bandpass(x,120,200,4)).mean())
+# rate of in_intervals w/ point at boundaries
+print(T.count_in(np.array([1.0,2.0,3.0]),np.array([1.0]),np.array([2.0])))
+EOF
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import numpy, scipy, h5py, remfile, requests; print('ok')
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<stdin>", line 1, in <module>
 ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls; which python3 pip pip3 uv conda 2>&1; python3 -m pip --version 2>&1 | head -2
+cd  ls /usr/bin/python3* ; which -a python3 python; for p in $(which -a python3 python 2>/dev/null); do $p -c "import numpy,scipy;print('$p ok')" 2>/dev/null; done; ls ~/.venv* /opt 2>/dev/null | head
 ```
 
 ```
-10.1016-j.neuron.2019.10.012.yaml
-bunfig.toml
-ls_hfo.py
-node_modules
-package-lock.json
-package.json
-paper
-pnpm-lock.yaml
-reproduce_tingley_2019.ipynb
-scripts
-yarn.lock
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python3
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/pip
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/pip3
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
-/usr/bin/conda
-pip 26.2.1 from /opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/pip (python 3.13)
-```
-
-**Agent calls Bash**
-
-```bash
-cd  uv venv -q $TMPDIR/venv && uv pip install -q --python $TMPDIR/venv/bin/python numpy scipy h5py remfile requests 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "import numpy,scipy;print(numpy.__version__,scipy.__version__)"
-```
-
-```
-2.5.4 1.18.1
+/usr/bin/python3
+/usr/bin/python3-config
+/usr/bin/python3.14
+/usr/bin/python3.14-config
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
+/usr/bin/python3
+/bin/python3
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
+/opt/hostedtoolcache/Python/3.13.18/x64/python
+/usr/bin/python
+/bin/python
+/opt:
+actionarchivecache
+az
+containerd
+google
+hca
+hostedtoolcache
+microsoft
+pipelinesagent-cache
+[... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat > $TMPDIR/t.py <<'EOF'
-import sys; sys.path.insert(0,'.')
-import numpy as np, ls_hfo as L
-from scipy import signal
+cd $TMPDIR && python3 -m venv v >/dev/null 2>&1 && ./v/bin/pip -q install numpy scipy pandas h5py 2>&1 | tail -2; ./v/bin/python -c "import numpy,scipy,pandas,h5py;print('ok')"
+```
+
+```
+[notice] A new release of pip is available: 26.2.2 -> 26.3
+[notice] To update, run: /tmp/claude-1001/v/bin/python3 -m pip install --upgrade pip
+ok
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd  $TMPDIR/v/bin/pip -q install remfile 2>&1|tail -1; $TMPDIR/v/bin/python - <<'EOF'
+import numpy as np, tingley2019 as T
+from scipy import stats
 rng=np.random.default_rng(0)
-fs=1250.
-# 1. detect_events: noise + bursts of 150 Hz with Gaussian envelope (sd 8 ms), known times
-n=int(600*fs); x=rng.normal(0,1,n)
-times=np.arange(5,595,3.0); t=np.arange(n)/fs
-for tc,f in zip(times, np.where(np.arange(len(times))%2,140,170)):
-    seg=(np.abs(t-tc)<0.06)
-    x[seg]+=6*np.exp(-0.5*((t[seg]-tc)/0.008)**2)*np.cos(2*np.pi*f*(t[seg]-tc)+np.pi)  # trough at tc
-e=L.detect_events(x)
-print('detected',len(e['peak']),'of',len(times),e['counts'])
-d=e['peak'][:,None]-times[None,:]; k=np.abs(d).argmin(1); err=d[np.arange(len(k)),k]*1000
-print('peak time error ms median/max',np.median(np.abs(err)),np.abs(err).max())
-f_true=np.where(np.arange(len(times))%2,140,170)[k]
-print('freq est: 140 ->',np.median(e['frequency'][f_true==140]),' 170 ->',np.median(e['frequency'][f_true==170]))
-print('durations ms median',np.median(e['duration'])*1000)
-# 2. phase convention: spikes at troughs of a 150 Hz signal
-y=np.cos(2*np.pi*150*t)*(1+ (np.sin(2*np.pi*0.2*t)>0.9)*5)+rng.normal(0,0.3,n)
-tro=np.where((np.diff(np.sign(np.diff(y)))>0))[0]+1
-sp=np.sort(rng.choice(tro,3000,replace=False)/fs)
-out,_=L.phase_locking(y,[sp],rng)
-print('phase-locking trough spikes: phase deg',np.degrees(out[0]['phase']),'r',out[0]['r'],'n',out[0]['n'])
-# 3. ccg sign and peth bins
-a=np.sort(rng.uniform(0,100,2000)); b=np.sort(a+0.010)
-c=L.ccg(a,b,half=0.05); print('ccg peak lag (ms) for b=a+10ms:', np.argmax(c)-50)
-p=L.peth(np.array([0.0105]),np.array([0.0])); print('peth bin of +10.5 ms spike:',np.argmax(p),'; slice 90:111 covers lags',-100+90,'to',-100+111,'ms')
-# 4. excess correlation: synchronous pairs vs independent
-s1=np.sort(rng.uniform(0,1000,5000)); s2=np.sort(np.r_[s1[:1000]+rng.normal(0,0.002,1000),rng.uniform(0,1000,4000)])
-cn=L.ccg(s1,s2)/np.sqrt(len(s1)*len(s2)); print('excess sync',L.excess_correlation(cn))
-s3=np.sort(rng.uniform(0,1000,5000)); cn=L.ccg(s1,s3)/np.sqrt(len(s1)*len(s3)); print('excess indep',L.excess_correlation(cn))
-# 5. cv_mse vs sklearn-like manual
-X=rng.normal(size=(200,3)); y=(2*X[:,[0]]+rng.normal(size=(200,1)))
-folds=rng.permutation(np.arange(200)%5)
-m=L.cv_mse(y,X,folds)
-man=0
-for kf in range(5):
-    tr,te=folds!=kf,folds==kf
-    A=np.c_[np.ones(tr.sum()),X[tr,0]]; coef=np.linalg.lstsq(A,y[tr,0],rcond=None)[0]
-    man+=((y[te,0]-(coef[0]+coef[1]*X[te,0]))**2).sum()
-print('cv_mse',m[0,0],'manual',man/200, 'shuffled-feature mse', m[0,1:])
-# 6. counts_in, in_intervals, state_of
-s=np.array([0.5,1.0,1.5,2.0,3.0]); print('counts_in',L.counts_in(s,np.array([0.9,2.5]),np.array([2.0,2.9])))
-print('in_intervals',L.in_intervals(s,np.array([0.9,2.9]),np.array([1.5,3.1])))
-st={'start':np.array([0.,10.]),'stop':np.array([5.,20.]),'label':np.array(['Awake','Non-REM'])}
-print('state_of',L.state_of(np.array([1,7,15,25.]),st))
-# 7. emg: identical channels -> 1, independent -> ~0
-Z=rng.normal(size=(int(20*fs),1)); E=L.emg_from_lfp(np.c_[Z,Z,Z])[1]; I=L.emg_from_lfp(rng.normal(size=(int(20*fs),3)))[1]
-print('emg identical',E.mean().round(3),'indep',I.mean().round(3))
+ps=[T.rayleigh(rng.uniform(-np.pi,np.pi,100))[0] for _ in range(2000)]
+print('rayleigh null frac<0.05', np.mean(np.array(ps)<0.05))
+ph=rng.vonmises(np.pi,1,200); print('vm angle',np.degrees(T.rayleigh(ph)[2]))
+sp=[np.sort(rng.uniform(0,10,50)) for _ in range(3)]
+C=T.ccg_all(sp,0.02,0.001)
+d=sp[1][None,:]-sp[0][:,None]; d=d.ravel(); 
+b=np.rint(d/0.001).astype(int)+20; b=b[(b>=0)&(b<41)]
+print('ccg match', np.array_equal(np.bincount(b,minlength=41),C[0,1]), 'auto sum',C[0,0].sum())
+c=np.ones((1,401)); print('gauss const', np.allclose(T.gauss_smooth(c,200)[0],1), np.allclose(T.gauss_smooth(c,5)[0],1))
+iv=np.array([[0,1],[2,3]]); print(T.in_intervals(np.array([0.5,1.5,2.5,3.5]),iv), T.intersect(iv,np.array([[0.5,2.5]])))
+print(T.triggered_counts(np.array([1.0,1.0015,2.0]),np.array([1.0]),0.005,0.001))
+x=rng.normal(size=125000).astype(np.float32); print('hp frac', T.high_power_epochs(T.bandpass(x,120,200,4)).mean())
+# t-test chance level used in fig7e: one draw vs 99 others
+m=rng.normal(size=(5000,100)); t=stats.ttest_1samp(m[:,1:],m[:,:1],axis=1)
+print('fig7e chance by SEM t-test:', np.mean((t.pvalue<0.05)&(m[:,0]<m[:,1:].mean(1))))
+z=(m[:,0]-m[:,1:].mean(1))/m[:,1:].std(1,ddof=1); print('z-reading chance', np.mean(z<-1.96))
 EOF
-$TMPDIR/venv/bin/python $TMPDIR/t.py
 ```
 
 ```
-detected 197 of 197 {'threshold': 203, 'merged': 197, 'peak': 197, 'duration': 197, 'emg': 197}
-peak time error ms median/max 0.0 0.0
-freq est: 140 -> 145.39007745172472  170 -> 167.37933944919524
-durations ms median 28.8
-phase-locking trough spikes: phase deg -179.41380346839543 r 0.9706601716782328 n 326
-ccg peak lag (ms) for b=a+10ms: 10
-peth bin of +10.5 ms spike: 110 ; slice 90:111 covers lags -10 to 11 ms
-excess sync 0.014377618451071725
-excess indep 0.0004894777953079596
-cv_mse 0.9419734667260329 manual 0.941973466726033 shuffled-feature mse [5.12352293 5.18460653]
-counts_in [3 0]
-in_intervals [1.  1.5 3. ]
-state_of ['Awake' '' 'Non-REM' '']
-emg identical 1.0 indep 0.006
+[notice] To update, run: /tmp/claude-1001/v/bin/python3 -m pip install --upgrade pip
+rayleigh null frac<0.05 0.048
+vm angle 177.08668991902482
+ccg match True auto sum 10
+gauss const True True
+[ True False  True False] [[0.5 1. ]
+ [2.  2.5]]
+[[0 0 0 0 0 1 0 1 0 0 0]]
+hp frac 0.039616
+fig7e chance by SEM t-test: 0.4148
+z-reading chance 0.0304
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; B=https://api.dandiarchive.org/api/dandisets/000218/versions/0.250624.0439; curl -s "$B/" -o ver.json; curl -s "$B/assets/?page_size=200" -o assets.json; $TMPDIR/venv/bin/python - <<'EOF'
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/000218/versions/0.261110.1911/" > ver.json; $TMPDIR/v/bin/python - <<'EOF'
 import json
-v=json.load(open('ver.json'))
-print(json.dumps(v.get('assetsSummary'),indent=0)[:1500])
-print(v.get('description','')[:1500])
-a=json.load(open('assets.json')); print(a['count']); print(a['results'][0])
+d=json.load(open('ver.json'))
+print(d.get('name')); print(d.get('description','')[:3000])
+a=d.get('assetsSummary',{}); print(json.dumps(a,indent=0)[:2000])
+for k in ['species','approach','measurementTechnique','variableMeasured']: print(k, a.get(k))
 EOF
 ```
 
-```
-{
-"species": [
-{
-"name": "Rattus norvegicus - Norway rat",
-"schemaKey": "SpeciesType",
-"identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10116"
-}
-],
-"approach": [
-{
-"name": "electrophysiological approach",
-"schemaKey": "ApproachType"
-},
-{
-"name": "behavioral approach",
-"schemaKey": "ApproachType"
-}
-],
-"schemaKey": "AssetsSummary",
-"dataStandard": [
-[... 45 more lines not kept]
-```
+Result: the fetched text is not kept.
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; $TMPDIR/venv/bin/python - <<'EOF'
-import json,requests,collections
-a=json.load(open('assets.json'))['results']
-B='https://api.dandiarchive.org/api/dandisets/000218/versions/0.250624.0439/assets/'
-vm=collections.Counter(); pos=[]
-for x in a:
-    m=requests.get(B+x['asset_id']+'/').json()
-    v=tuple(sorted(m.get('variableMeasured',[]) if isinstance(m.get('variableMeasured'),list) and m.get('variableMeasured') and isinstance(m['variableMeasured'][0],str) else [d.get('value') for d in m.get('variableMeasured',[])]))
-    vm[v]+=1
-    if any('Position' in s or 'Spatial' in s for s in v): pos.append(x['path'].split('/')[0])
-print(vm); print(collections.Counter(pos))
-m=requests.get(B+a[30]['asset_id']+'/').json()
-print(json.dumps({k:m[k] for k in m if k not in ('contentUrl','digest')},indent=0)[:3000])
+cd $TMPDIR; $TMPDIR/v/bin/python - <<'EOF'
+import json,urllib.request,collections
+url="https://api.dandiarchive.org/api/dandisets/000218/versions/0.261110.1911/assets/?page_size=200&metadata=1"
+rows=[]
+while url:
+    p=json.load(urllib.request.urlopen(url))
+    rows+=p['results']; url=p['next']
+print(len(rows))
+vm=collections.Counter(); subj=collections.Counter()
+for a in rows:
+    m=a['metadata']
+    for v in m.get('variableMeasured',[]): vm[v.get('value')]+=1
+    subj[a['path'].split('/')[0]]+=1
+print(vm); print(subj)
+m=rows[50]['metadata']; print(rows[50]['path']); print(json.dumps({k:m[k] for k in m if k not in ('digest','contentUrl')},indent=0)[:2500])
+print([a['path'] for a in rows if 'opto' in a['path'].lower() or 'stim' in a['path'].lower()])
 EOF
 ```
 
 ```
-Counter({('CompassDirection', 'ElectricalSeries', 'LFP', 'Position', 'Units'): 56, ('LFP', 'ProcessingModule', 'Units'): 12, ('LFP', 'Position', 'SpatialSeries', 'Units'): 12, ('ElectricalSeries', 'LFP', 'ProcessingModule', 'Units'): 8, ('CompassDirection', 'ElectricalSeries', 'LFP', 'Position'): 4, ('ElectricalSeries', 'LFP', 'ProcessingModule'): 3, ('CompassDirection', 'LFP', 'Position', 'Units'): 2, ('LFP', 'ProcessingModule'): 1})
-Counter({'sub-DT8': 17, 'sub-DT5': 16, 'sub-DT9': 15, 'sub-DT7': 14, 'sub-DT2': 12})
+98
+Counter({'ElectricalSeries': 98, 'ElectrodeGroup': 98, 'ProcessingModule': 98, 'LFP': 98, 'Units': 90, 'SpatialSeries': 74, 'Position': 74, 'CompassDirection': 12})
+Counter({'sub-DT7': 20, 'sub-DT5': 20, 'sub-DT8': 17, 'sub-DT9': 16, 'sub-DT2': 13, 'sub-DT1': 12})
+sub-DT5/sub-DT5_ses-20161026-1944um-2232um-merge_behavior+ecephys.nwb
 {
-"id": "dandiasset:83accc7c-8b68-4ced-b6e2-27072ef6518f",
-"path": "sub-DT5/sub-DT5_ses-20161015-1368um-1476um-merge_behavior+ecephys.nwb",
+"id": "dandiasset:477b3d01-0e71-466e-a0e2-3458bdb92ebe",
+"path": "sub-DT5/sub-DT5_ses-20161026-1944um-2232um-merge_behavior+ecephys.nwb",
 "access": [
 {
 "schemaKey": "AccessRequirements",
 "status": "dandi:OpenAccess"
 }
 ],
-"@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.2/context.json",
+"@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.7.0/context.json",
 "approach": [
 {
 "name": "behavioral approach",
 "schemaKey": "ApproachType"
 },
 {
-"name": "electrophysiological approach",
-"schemaKey": "ApproachType"
-[... 59 more lines not kept]
+[... 65 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -c "^- id:" 10.1016-j.neuron.2019.10.012.yaml; grep "^- id:" 10.1016-j.neuron.2019.10.012.yaml | tr '\n' ' '
+cd $TMPDIR; $TMPDIR/v/bin/python - <<'EOF'
+import json
+d=json.load(open('ver.json'))
+s=json.dumps(d)
+import re
+for kw in ['waveform','position','x, y','rel_','depth','opto','release','channel order','electrode']:
+    for m in re.finditer(kw,s,flags=re.I):
+        print(kw,':',s[max(0,m.start()-200):m.start()+300]); print()
+        break
+print(d.keys())
+EOF
 ```
 
 ```
-31
-- id: dataset-composition - id: fig1c-hfo-each-animal - id: fig1c-event-count - id: figs1-participation - id: fig1d-phase-locking - id: fig1f-shorter-than-ripples - id: fig1g-slower-than-ripples - id: fig1h-no-amplitude-frequency-correlation - id: fig2-confined-to-ls - id: fig2ef-intermediate-ls - id: fig3-travelling-waves - id: fig4b-pre-post-unchanged - id: fig4b-hfo-above-behav - id: fig4-sessions-few-change - id: fig4c-temporal-bias - id: fig4d-compression - id: figs2-post-rate-increase - id: fig5b-nrem-and-rates - id: fig5d-lag - id: fig5e-state-coupling - id: fig5f-ripple-triggered-firing - id: fig5f-no-phase-coherence - id: fig6-optogenetic-hfos - id: fig7e-ca1-spikes - id: fig7e-state - id: fig7e-duration - id: fig7e-ca1-depth - id: fig7e-replay - id: fig7e-seqnmf - id: fig7e-content-independent - id: fig8-model
+waveform : earized_position_timestamps`).\n- **Units.** Spike times are sorted (the source has unsorted spikes; the units description lists the units affected). Each unit has its shank, cluster, region, largest-waveform channel and waveform, and isolation metrics where the lab computed them for the same sorting. Resolution 1/20,000 s.\n- **Electrodes.** Regions come from the lab's sessionInfo (DT2's electrodes were \"unknown\"); `hpc` is written as hippocampal formation and the lab's label is kept in a `re
+
+position : ial's `direction` and `trial_type` (DT2 0221: 117 of 121 rows). Rows and labels are now sorted together; repeated and overlapping trials are kept as in the source and counted in the description.\n- **Position.** x, y and z from the source (z was a copy of y; DT2 has no z). OptiTrack positions are in metres, with `conversion` 0.001 where the lab stored millimetres (the earlier conversion was NaN, and DT8 0217 had metre values labelled mm). DT2's LED tracking is in camera pixels, with no scale to 
+
+x, y : tion` and `trial_type` (DT2 0221: 117 of 121 rows). Rows and labels are now sorted together; repeated and overlapping trials are kept as in the source and counted in the description.\n- **Position.** x, y and z from the source (z was a copy of y; DT2 has no z). OptiTrack positions are in metres, with `conversion` 0.001 where the lab stored millimetres (the earlier conversion was NaN, and DT8 0217 had metre values labelled mm). DT2's LED tracking is in camera pixels, with no scale to metres in th
+
+depth :  ages are not in the papers or the source.\n- Electrode positions are not stored: every `.prb` file places sites by list position with one template, so they do not give the geometry. Which probe each depth in a session name belongs to is not stored either.\n- Most hippocampal units are labelled `hpc`, not CA1 or CA3, as in the source.\n- The relative depth of each recording within the lateral septum, and the pre-sleep, maze and post-sleep periods, are n
+[... 11 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "^- id:" tingley-2019.yaml; grep "^- id:" tingley-2019.yaml | tr '\n' ' '
+```
+
+```
+39
+- id: dataset-composition - id: fig1c-hfo-each-animal - id: fig1c-post-burst-suppression - id: fig1c-event-count - id: figs1-participation - id: fig1d-phase-locking - id: fig1f-shorter-than-ripples - id: fig1g-slower-than-ripples - id: fig1h-no-amplitude-frequency-correlation - id: fig2-confined-to-ls - id: fig2ef-intermediate-ls - id: fig3-travelling-waves - id: fig4b-pre-post-unchanged - id: fig4b-hfo-above-behav - id: fig4-sessions-few-change - id: fig4c-temporal-bias - id: fig4d-compression - id: figs3d-hpc-compression-post - id: figs2-post-rate-increase - id: figs2c-no-ls-reactivation - id: fig5b-nrem-and-rates - id: fig5d-lag - id: fig5e-state-coupling - id: fig5f-ripple-triggered-firing - id: fig5f-no-phase-coherence - id: ls-spikes-not-locked-to-ca1-ripples - id: fig6-optogenetic-hfos - id: fig7e-ca1-spikes - id: fig7e-state - id: fig7e-duration - id: fig7e-ca1-depth - id: fig7e-replay - id: fig7e-seqnmf - id: figs5-seqnmf-variance - id: fig7e-content-independent - id: fig7e-coupled-only - id: discussion-medial-septum - id: discussion-cingulate-down-state - id: fig8-model
 ```
 
 **Agent**
 
-**Verifier report, round 1: Tingley and Buzsáki 2019 (doi:10.1016/j.neuron.2019.10.012) on DANDI 000218, version 0.250624.0439**
+**Verifier report, round 1: Tingley & Buzsáki 2019 on DANDI:000218 (0.261110.1911)**
 
-I read the paper from the PMC author manuscript, saved under `paper/`. The attempt record was not among my materials, so the claim count comes from the claims file (31 claims) and the outcomes below are mine. Two leftover files in `paper/` are error pages from failed downloads (`PMC6952543_bioc.json`, `PMC6952543.xml`). Deleting them needed approval, which this session could not give, so they are still there.
-
-My tally: 4 reproduced, 7 partially reproduced, 10 not reproduced, 10 blocked.
+There are 39 claims in the claims file. The notebooks test 30 of them and treat 9 as blocked.
 
 ### A. Outcomes
 
-| Claim | Outcome | Reason |
+| Claim | My outcome | Reason |
 |---|---|---|
-| dataset-composition | partially_reproduced | Cell 13: 6 animals. Three counts are within tolerance: LS neurons with more than 50 spikes in high-power epochs, 2046; CA1+LS recordings by units, 37; recordings with LS electrodes, 94. Two are out: CA3+LS is 10 under both readings (the archive holds only 10 files with `ca3` electrodes), and CA1-rate recordings are 40, 72 or 43, against 53±5.3. That is 3 of 5. |
-| fig1c-hfo-each-animal | not_reproduced | Cell 15: median frequency is between 152 and 158 Hz in all 6 animals. LS firing at HFOs exceeds random times by more than 3 SEM only in DT1; it is lower than at random times in DT7, DT8 and DT9. NREM-only events: 2 animals pass. |
-| fig1c-event-count | reproduced | Cell 19: reading (b), recordings with LS units, gives 31,984, within 29,955±2,996. Reading (a) gives 67,186. DT7 contributes most events, so the agreement on the total is probably coincidental. |
-| figs1-participation | not_reproduced | Cell 21: fraction of neurons firing 0.027 and spikes per event 0.051 (pooled), or 0.035 and 0.068 (per recording), against 0.16 and 0.23. |
-| fig1d-phase-locking | partially_reproduced | Cell 23: 56.3% of tested neurons, or 47.0% of all, are phase-locked, against 92.5±9.25%. The trough preference holds: mean phase 189°, Rayleigh p≈0. DT7 has only 5.7% locked. |
-| fig1f-shorter-than-ripples | reproduced | Cell 25: LS 33.9 ms against CA1 38.3 ms; both within the paper's SDs; rank-sum p≈0. Two caveats: in DT8 there is no difference (p=0.83), and with NREM events only the means are 38.0 and 38.4 ms. |
-| fig1g-slower-than-ripples | not_reproduced | Cell 25: LS HFOs are faster than CA1 ripples, 153.6 against 150.8 Hz (opposite direction), in 4 of 5 animals; both means are out of tolerance. |
-| fig1h-no-amplitude-frequency-correlation | not_reproduced | Cell 27: Pearson r=0.056, p=2.4e-47 over 67,186 events. This verdict follows the criterion; the effect is negligible and 2 of 6 animals are not significant. |
-| fig2-confined-to-ls | not_reproduced | Cell 29: LS has the highest ratio in 2 of 5 eligible recordings, all from DT7. Medial septum, corpus callosum and fimbria ratios are about as high as LS (for example cc 50.1 against LS 42.0; sFi 72.1 against LS 64.8). |
-| fig2ef-intermediate-ls | blocked (metadata_insufficient) | Electrode x, y and z are NaN in every file (cell 4), and the LS borders come from histology, which is not in the files. Partly testable: each session name carries the drive depth (for example DT1 1584 to 2736 µm), so HFO power and phase-locked fraction could be plotted against depth within each animal. Not done. |
-| fig3-travelling-waves | blocked (metadata_insufficient) | No site coordinates, probe model or probe orientation in the files. I agree. |
-| fig4b-pre-post-unchanged | reproduced | Cell 33: rank-sum p=0.81, POST−PRE median −0.0001. Low power: 106 pairs in 3 animals, against 7,172 in the paper. |
-| fig4b-hfo-above-behav | reproduced | Cell 33: PRE>BEHAV p=9e-24, POST>BEHAV p=4e-25, PRE and POST above jitter p<1e-30. Same 106 pairs. |
-| fig4-sessions-few-change | blocked (other: too few recordings after the pair selection) | Cell 34: 7 recordings with at least 5 pairs, 0 significant. The archive has the spikes, epochs and trials; the shortfall comes from the reproduction's own HFO detection (problems 1 and 2). |
-| fig4c-temporal-bias | blocked (other: same as above) | Cell 35: 4 recordings, p=0.805. A claim of absence tested on n=4 tells us nothing. |
-| fig4d-compression | not_reproduced | Cell 36: PRE exceeds chance only at factors 1 and 2 (factor 4: p=0.18 on 24 pairs). The criterion needs every factor up to 20, or up to 5 for partial. Low power. |
-| figs2-post-rate-increase | partially_reproduced | Cell 38: LS rates rise (median POST/PRE 1.06, p=8e-7). `hpc` (0.998, p=0.52) and `ca3` (1.03, p=0.22) do not. |
-| fig5b-nrem-and-rates | partially_reproduced | Cell 40: the LS HFO rate is below the CA1 ripple rate in NREM (p=3e-6). But NREM is not above WAKE: medians 0.006 and 0.010/s, NREM lower in 29 of 47 recordings, p=0.44. |
-| fig5d-lag | not_reproduced | Cell 42: the median lag is 0.00 ms under both readings, against 6.4±4.2. 35% of pairs fall on the same sample. The CCG peak criterion holds (166 SD above the flanks, at 0 ms). |
-| fig5e-state-coupling | not_reproduced | Cell 42: NREM 0.199 against WAKE 0.116, t-test p=0.089, short of p<0.001. Pooled values are 0.088 and 0.041. |
-| fig5f-ripple-triggered-firing | not_reproduced | Cell 44: 1.39 against 1.33 Hz, paired p=0.24. The variant normalized by state rate goes the other way (WAKE higher). |
-| fig5f-no-phase-coherence | not_reproduced | Cell 44: PLV at the ripple time is 0.405 against a jittered 0.202±0.007, 30.7 SD above. See problem 1: the jittered baseline itself is abnormally high. |
-| fig6-optogenetic-hfos | blocked (data_missing) | Agree. Archive metadata lists 6 subjects and no optogenetic series (variableMeasured holds LFP, Units, Position, ElectricalSeries, SpatialSeries, CompassDirection). The 2 optogenetics rats are absent. |
-| fig7e-ca1-spikes | partially_reproduced | Cell 46, reading (a): 79.4% against 38±3.8, chance 4.7%, binomial p≈0. |
-| fig7e-state | partially_reproduced | Reading (a): 34.3% against 26±2.6, chance 5.4%. |
-| fig7e-duration | partially_reproduced | Reading (a): 86.0% against 20±2, chance 5.9%. This size comes largely from the counting window (problem 3). |
-| fig7e-ca1-depth | blocked (data_missing), not verified | It needs per-unit waveform amplitudes across sites. The notebook never lists the units-table columns, so I cannot confirm they are absent. |
-| fig7e-replay | blocked (methods_underspecified) | Defensible for the two Bayesian scores, but partly testable: asset metadata shows Position in 74 files (DT2, DT5, DT7, DT8, DT9), and replay score 1 (rank-order correlation against maze rate maps) is reasonably well defined. The notebook does not mention the position data. |
-| fig7e-seqnmf | blocked (methods_underspecified) | Agree; the Methods give only the 40 templates. |
-| fig7e-content-independent | blocked (other: depends on blocked claims) | The content-independent half shows all features above chance under (a); the content-based half is untested. |
-| fig8-model | blocked (other) | A simulation, with no recorded data involved. I agree. |
+| dataset-composition | partially_reproduced | Within tolerance: 6 animals, 1996 LS neurons with more than 50 spikes (reading a, LFP nb cell 13), 38 CA1+LS recordings (by unit label), 55 CA1-rate recordings (with the ripplesALL fallback), mean 31.1 neurons per recording. Out: CA3+LS is 10 or 19 (expected 25 ± 2.5) and LS-HFO-rate recordings 77 or 80 (expected 89, lower bound 80.1). That is 4 of 6 counts. |
+| fig1c-hfo-each-animal | partially_reproduced | Median frequency is in 120–180 Hz in 6 of 6 animals. Firing at the event exceeds random by more than 3 SEM in 4 of 6 animals at the event bin and 5 of 6 at ±5 ms (cell 17). |
+| fig1c-post-burst-suppression | reproduced (fragile) | Pooled over neurons at +20..50 ms, random minus HFO is 0.000200 against 3 SEM of 0.000178. It fails with stop..+50 ms, fails at 2 of 5 seeds (cell 19), and holds in only 1 of 6 animals. |
+| fig1c-event-count | reproduced | 27,014 deposited LSRipples events against 29,955 ± 2,995 (cell 11). |
+| figs1-participation | not_reproduced | Fraction is 0.057–0.107 against 0.16; spikes per event 0.079–0.155 against 0.23, under every window and averaging (cell 21). |
+| fig1d-phase-locking | partially_reproduced | Trough preference holds: circular mean −167°, Rayleigh p ≈ 0. The locked fraction is 0.606 (detection channel) or 0.782 (own shank), below the 0.8325 floor under every reading (LFP cell 13). |
+| fig1f-shorter-than-ripples | reproduced | 27.8 ± 9.5 against 31.2 ± 13.7 ms, rank-sum p = 1e-199 (cell 13). |
+| fig1g-slower-than-ripples | reproduced | 147.6 against 158.3 Hz, both within tolerance, p ≈ 0 (cell 13). |
+| fig1h-no-amplitude-frequency-correlation | reproduced | Under the Methods' amplitude (maximum NSS, i.e. `peak_normed_power`): Pearson p = 0.96, Spearman p = 0.36, r ≈ 0. The notebook's primary column `peak_amplitude` gives Spearman p = 0.00095 with rho = 0.02 (see B3). |
+| fig2-confined-to-ls | not_reproduced | The criterion holds in 0 of 8 recordings. Medial-septum medians exceed LS in 3 recordings, and sites in every other structure have ratios above 1.5 (LFP cell 21). |
+| fig2ef-intermediate-ls | blocked (metadata_insufficient) | Confirmed on the archive (see the paragraph after this table). |
+| fig3-travelling-waves | blocked (metadata_insufficient) | Confirmed on the archive (see the paragraph after this table). |
+| fig4b-pre-post-unchanged | partially_reproduced | PRE and POST differ at p < 0.05 in all 8 raw-count readings (p ≈ 0.004–0.007) and in none of the 8 normalized readings. There are 361–503 pairs against 7,172 ± 717 and 21–23 sessions against 53 (cell 33). |
+| fig4b-hfo-above-behav | reproduced | Both parts hold in 12 of 16 readings; the jitter part holds in 16 of 16 at all 5 seeds (cells 35–36). This rests on about 6% of the paper's pairs. |
+| fig4-sessions-few-change | not_reproduced | 21–23 sessions against 53; fraction 0–0.048 against 0.132; both directions never occur together (cell 38). |
+| fig4c-temporal-bias | reproduced | No difference in any of 16 readings (smallest p = 0.06). This uses 16–19 recordings against 53, and PRE–BEHAV r ≈ 0 (cell 40). |
+| fig4d-compression | partially_reproduced | PRE and POST exceed chance at factor 1, and PRE and POST never differ at p < 0.01. The largest factor is 5–12, against 20 ± 2 (cells 42–43). |
+| figs3d-hpc-compression-post | partially_reproduced | POST exceeds PRE at p < 0.01 at only 1–3 of factors 1–7 (cell 45). |
+| figs2-post-rate-increase | partially_reproduced | LS POST > PRE (p = 0.032). CA1 is significantly lower in POST (t = −2.0), and CA3 is not significant. Neuron counts are 1570, 2597 (or 2254) and 466 (or 809), mostly out of tolerance (cell 47). |
+| figs2c-no-ls-reactivation | reproduced | At 25 ms after rate matching, EV does not exceed REV for any pair set at any seed (cells 49–50). The positive control fails, though (see B9). |
+| fig5b-nrem-and-rates | reproduced | 72.9% of HFOs fall in NREM; NREM rate exceeds WAKE in 66 of 73 recordings (p = 3e-12); LS rates are below CA1 under both tests (p ≤ 1e-10) (cell 23). |
+| fig5d-lag | reproduced | Median lag 6.2–6.4 ms with deposited peak times and 6.0–6.4 ms with maximum-NSS times; CCG peak is 37 SD above the flanks (cell 25; LFP cell 17). |
+| fig5e-state-coupling | not_reproduced | 0 bins pass (smallest corrected p = 0.026). The NREM > WAKE fraction test gives p = 0.0025, not below 0.001. Pooled NREM 0.302 is within tolerance; WAKE 0.091 is not (cell 27). |
+| fig5f-ripple-triggered-firing | not_reproduced | No bin within ±25 ms shows NREM higher (smallest corrected p = 0.18–1). There are 1,266 neurons against 1,313 (cell 29). |
+| fig5f-no-phase-coherence | not_reproduced | PLV at the ripple time is 0.186, against a jittered mean of 0.104 and an upper bound of 0.126; 14 lags lie above +3 SD (LFP cell 19). |
+| ls-spikes-not-locked-to-ca1-ripples | partially_reproduced | Inside CA1 ripples, 7.2% are locked (binomial p = 0.012), so locking is present. In the CA1 high-power epochs, 5.0% (p = 0.51), so it is absent. The two readings disagree (LFP cell 15). |
+| fig6-optogenetic-hfos | blocked (data_missing) | Confirmed: the archive has 6 subjects (DT1, 2, 5, 7, 8, 9), all LS/HPC rats, and no optogenetic sessions. |
+| fig7e-ca1-spikes | partially_reproduced (unreliable) | 47–80% against 38 ± 3.8; above the notebook's chance in every combination. The chance level used is 25–44% (see B1). |
+| fig7e-state | partially_reproduced (unreliable) | 44–64% against 26; same problem as fig7e-ca1-spikes. |
+| fig7e-duration | partially_reproduced (unreliable) | 41–89% against 20; same problem as fig7e-ca1-spikes. |
+| fig7e-ca1-depth | blocked (metadata_insufficient) | Confirmed: the dataset description says electrode positions are not stored, and each unit has only its largest-waveform channel and waveform. |
+| fig7e-replay | blocked (other) | Not data-blocked: position is present in 74 files (`SpatialSeries`/`Position`) along with trials and spikes. It was simply not attempted. |
+| fig7e-seqnmf | blocked (other) | Not data-blocked: it needs only hippocampal spikes and CA1Ripples, which are loaded. Not attempted. |
+| figs5-seqnmf-variance | blocked (other) | Not data-blocked, same as fig7e-seqnmf. Not attempted. |
+| fig7e-content-independent | blocked (other) | The notebook's reason (it depends on fig7e-ca1-depth) is wrong. The partial criterion needs only 4 of 6 content-independent features, and 5 are computable; the real blocker is the unattempted content features. |
+| fig7e-coupled-only | blocked (other) | Same as fig7e-content-independent. |
+| discussion-medial-septum | not_reproduced | (a) The MS site ratio is below LS in only 3 of 6 recordings. (b) MS rate around ripples is *above* the mean (median ratio 1.43; below the mean in only 6 of 25 units) (cell 31; LFP cell 21). |
+| discussion-cingulate-down-state | not_reproduced | (a) The minimum is at 105 ms. (b) The LFP extremum is at 2–82 ms per recording; none falls in 45–55 ms (cell 31; LFP cell 23). |
+| fig8-model | blocked (other) | Testable: the model notebook is on GitHub (DavidTingley/papers 9f4cd48). Not attempted. |
 
-Chance levels against the paper: Fig 7E's content-based features (6.6 to 8.1%) put the paper's effective chance near 5 to 8%. That matches reading (a) (4.7 to 5.9%) and not reading (b) (40.5 to 41.7%). For phase locking, the shifted-phase null median resultant is 0.048 against 0.124 in the data, which is qualitatively like Fig 1E.
+On the two depth/geometry blocks (fig2ef, fig3): the dataset description says it does not store electrode positions or each recording's relative depth in LS. It also says it does not record which probe each depth in a session name belongs to. A rough check of fig2ef inside DT1 alone (one tetrode drive, single depth in each session name, 12 recordings) is the only part that could be tried, and only without LS borders.
 
 ### B. Problems
 
-1. **[affects a conclusion]** The LS detection channel carries the hippocampal or a common-reference 120 to 180 Hz signal (`session_job`, `detect_events`). Three signs:
-   - 35% of LS–CA1 event pairs share the same trough sample (DT8 71%, DT2 62%; cell 42).
-   - The median lag is 0 ms.
-   - The CA1–LS PLV at jittered times is 0.20 (cell 44), while windows with random phase would give roughly 0.02 at about 3,000 ripples per recording.
+1. **[affects a conclusion]** Figure 7E notebook, `sig_from_mse`. The test is a one-sample t-test of 99–100 shuffled MSEs against the actual MSE, so it uses the standard error of the shuffle mean. Any value about 0.2 SD below the shuffle mean passes.
+   - On synthetic normal draws this gives a 41% chance rate; a z-score against the shuffle SD gives 3%.
+   - The notebook's own chance column is 22–44%. The paper's content features (6.6–8.1%) are "not different from chance", which implies a chance level of a few percent.
+   - The Figure 7E y-axis is "number of standard deviations … from a distribution of MSE", which supports the z reading. That reading was not run.
+   - This is the claims file's literal reading; I report its misreading here rather than correcting it. The percentages for fig7e-ca1-spikes, fig7e-state and fig7e-duration are not comparable to the paper's.
+2. **[affects a conclusion]** Main notebook cell 33 (Figure 4 pairs). There are 361–503 pairs and 21–23 sessions against 7,172 and 53, and DT8 contributes 0 pairs from 17 recordings. Pairs before inclusion, and which epoch excludes them, are never shown. Every Figure 4 claim rests on about 6% of the paper's population. The PRE-vs-POST result flips with normalization: raw counts carry a confound from differing HFO time in PRE and POST.
+3. **[does not affect a conclusion]** Cell 15 (fig1h). The Methods define amplitude as the maximum NSS, which is `peak_normed_power` (buzcode's `peakNormedPower`). The notebook takes `peak_amplitude` as primary and `peak_normed_power` as the variant. Under the correct column, both tests are not significant.
+4. **[affects a conclusion]** Cell 27 (fig5e). The inset fraction test is run only over recordings. A test over pooled HFOs (pooled fractions 0.302 against 0.091, about 20,000 HFOs) was not run. It could move the outcome to partially_reproduced.
+5. **[could affect a conclusion]** LFP cell 11, `lock_near`. The own-shank reading covers only shanks inside the detection channel's 16-channel block: 1,299 of 2,327 neurons. That reading's 0.782 is the one nearest tolerance.
+6. **[does not affect a conclusion]** LFP cells 21 and 23 (fig2, cingulate b). Only the 2 storage chunks with the most HFOs are read (17–113 HFOs and 8–591 ripples per recording). Cingulate reading (b) is not pooled across recordings. In one recording the LS sites show no HFO power at their own HFO times (median ratio 0.97), which suggests label or channel problems; this was not investigated.
+7. **[does not affect a conclusion]** Cell 29 (fig5f). The "WAKE outside trials" reading from the opening comment was not run here (it was run for fig5e). With WAKE already higher after normalization, it is unlikely to flip the result.
+8. **[does not affect a conclusion]** Cells 17 and 19 (fig1c suppression). The outcome depends on the seed of the random-time baseline. The more stable comparison, against the pre-event baseline (0.00166 against 0.00140), is not the criterion.
+9. **[affects interpretation]** Cell 49 (figs2c). The positive control fails. Without rate matching, HPC–HPC EV > REV does not reach p < 0.05 at 25 ms (paired p = 0.055), and reaches it at 1 s only by the paired test (p = 0.049; two-sample p = 0.055) and not after rate matching. The Methods report EV > REV at 1 s for every pair set; here it holds for none. So the absence for LS–LS has weak sensitivity.
+10. **[does not affect a conclusion]** Helper module, `Session.epochs`. PRE, BEHAV and POST are taken from the first and last trial. The dataset description confirms the epochs are not marked, so this is a reasonable, stated assumption.
+11. **[does not affect a conclusion]** Blocked rows. fig7e-content-independent and fig7e-coupled-only are attributed to fig7e-ca1-depth, but the actual blocker is the unattempted content features. fig7e-replay, fig7e-seqnmf, figs5-seqnmf-variance and fig8-model are "not attempted", not unavailable data.
 
-   No local re-referencing, for example a bipolar LS derivation, was tried. This undermines fig5d, fig5e, fig5f-no-phase-coherence, fig2 and fig1g, and probably fig1c and figs1. The notebook prints the same-sample fraction but draws no consequence from it.
-2. **[affects a conclusion]** In 5 of 6 animals the detected events do not raise LS firing (cell 15), and participation is a sixth of the paper's (cell 21). The detector is not capturing the paper's LS HFOs. This is why only 106 pairs survive (cell 31), and it is the real cause of the "too few recordings" blocks on fig4-sessions-few-change and fig4c, not a limit of the archive.
-3. **[affects a conclusion]** `fig7_rows` counts spikes between ripple start and stop, so the count grows with duration. That makes duration and CA1 spike count trivially predictive (86%, 79%). With a fixed ±25 ms window the figures are 24.7, 17.8 and 34.9% (cell 46), close to the paper's. Reading (b) is miscalibrated by construction: a one-sample t-test of 99 shuffles against one draw flags about 42%. It should not be used.
-4. **[affects a conclusion]** fig2 (cell 29) rests on 5 recordings from 1 animal, and the ratios in other regions are as high as in LS, which fits problem 1.
-5. **[affects a conclusion]** fig1d's trough preference may come from each unit's own spike waveform leaking into the 120 to 200 Hz band of the LS channel. The channel is chosen for maximal band SD on the same probe (`choose_channels`), and 82 units have resultant above 0.6 against none in the null. This was never checked, for example by taking the phase from another shank. The partial outcome rests on this part.
-6. **[does not affect a conclusion]** The instantaneous-frequency estimator pulls toward the band centre. On synthetic bursts (`detect_events`), 140 Hz reads as 145 and 170 Hz as 167. This compresses differences but cannot reverse the order in fig1g.
-7. **[does not affect a conclusion]** `metadata` never reads the LFP `starting_time` value. The clock check (cell 10) supports alignment, except in 7 of 39 hippocampal and 3 of 78 LS recordings, which peak off zero.
-8. **[does not affect a conclusion]** fig1f and fig1h pool 57k to 230k events, so p-values are trivially small. The fig1h verdict is driven by n (r=0.056).
-9. **[does not affect a conclusion]** Minor points:
-   - The PETH slice `[90:111]` covers −10 to +11 ms.
-   - The CCG half-width is ±400 ms against the Methods' ±200 ms; the criterion chose this.
-   - fig4d uses one circular shift per pair for all factors, and the pair counts shrink to 5 to 16 at high factors.
-10. **[does not affect a conclusion]** I tested `ccg`, `peth`, `counts_in`, `in_intervals`, `state_of`, `excess_correlation`, `cv_mse` (it matches a least-squares fit to 1e-15), `emg_from_lfp`, the phase convention (trough is ±180°) and event timing on synthetic inputs. All behave correctly.
+The helpers I tested on synthetic inputs all behave correctly: `rayleigh` (null rate 0.048 at p < 0.05, correct mean angle), `ccg_all` (matches a brute-force count), `gauss_smooth` (edge normalisation), `in_intervals`/`intersect` and `triggered_counts`.
 
 ### C. What I could not check, and the output that would settle it
 
-- **Whether `group_id` is the shank, and whether the units table has waveforms or peak channels** (this decides the fig4 pair selection and the fig7e-ca1-depth block). Needed: units-table column names and one row per animal.
-- **Probe model, site pitch and electrode-group or device descriptions** (fig3). Needed: printed `electrode_groups` and `devices`.
-- **Whether problem 1 is volume conduction or a shared reference.** Needed: the same-sample fraction and the jittered PLV recomputed on a bipolar LS derivation, and the per-recording ripple count `n` used in the coherence.
-- **fig2ef.** Needed: per-recording HFO power and phase-locked fraction against the drive depth in the session name.
-- **fig7e-replay.** Needed: which files hold Position or SpatialSeries, and their coverage of the trials.
-- **The figures themselves.** I did not view the plots; I relied on the printed ranges.
+- **Figure 4 pair shortfall:** I could not find its cause. Needed: per session, candidate cross-shank pairs, the pairs failing inclusion in each epoch, and the PRE and POST HFO counts and durations.
+- **Figure 7E under the z reading:** Needed: the percentage with z = (actual − shuffle mean) / shuffle SD below −1.96, with its chance rate.
+- **fig5e with pooled events:** Needed: the pooled-HFO test of the NREM against WAKE fraction.
+- **Own-shank phase locking for all neurons:** Needed: that reading for every shank, not only those inside the detection block.
+- **Electrode-table and units columns:** whether any per-site waveform or position field exists. I used only the archive's API metadata, as allowed.
+- **Whether `peak_normed_power` really is the per-event maximum NSS:** Needed: its range or a check against `T.nss` on one recording.
+- **Region-label sanity for the fig2 and MS recordings:** Needed: per-site HFO ratio plotted against channel order on each shank.
 
 ## End of run
 
-24 turns, 7 minutes, result: success.
+25 turns, 5 minutes, $2.42 at API prices, result: success.

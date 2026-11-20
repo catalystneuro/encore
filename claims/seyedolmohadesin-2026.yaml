@@ -484,11 +484,29 @@ claims:
     pairs"). "Almost all" is read as (a) at least 95% or (b) at least 99% of pairs. Reproduced when
     one reading holds under CORRELATION reading (b); the fraction is reported under both CORRELATION
     readings, (a) as a variant.
+- id: connectome-link
+  kind: link
+  statement: The neuron names of the dandiset's traces can be matched to the cells of the four connectomes
+    the paper compares with (White et al. 1986 as annotated by Cook et al. 2019, the male of Cook et al.
+    2019, and Witvliet et al. 2021 datasets 7 and 8).
+  source: STAR Methods, Normalization of connectome data and Selecting neuron pairs with the highest
+    dimorphism in synaptic and functional connectivity
+  quote: Pairs not measured in the connectome data (e.g., the pharyngeal neurons and ventral nerve cord
+    motor neurons) were also excluded
+  data: with_inputs
+  criterion: Added by the author (protocol, Author, step 1.4). Cells are matched by name, the dandiset's
+    NeuroPAL labels against the connectomes' cell names, read from the supplements of Cook et al. 2019
+    (doi 10.1038/s41586-019-1352-7) and Witvliet et al. 2021 (doi 10.1038/s41586-021-03778-8). The paper
+    says pharyngeal and ventral nerve cord neurons are not in the connectome data. Reproduced when at
+    least 90% of the sex-shared subclasses outside the pharynx and the ventral cord have neurons in all
+    four connectomes; partially reproduced when at least 50% do.
 - id: fig4d-functional-synaptic-uncorrelated
   statement: Functional and synaptic dimorphisms are uncorrelated.
   source: Results, Functional and synaptic sexual dimorphisms are distinct, paragraph 3; Figure 4D
   quote: We found no clear relationship between synaptic and functional dimorphism
   data: with_inputs
+  depends_on:
+  - connectome-link
   criterion: Functional dimorphism (CORRELATION) and synaptic dimorphism degree (CONNECTOME) per pair
     of subclasses present in the connectome, pairs without synapses set to 0 (code Fig4.ipynb). A
     claim of absence. The test is the code's linear regression (scipy linregress); the paper reports
@@ -502,6 +520,8 @@ claims:
     Figure S4B
   quote: These pairs were functionally uncorrelated in both sexes
   data: with_inputs
+  depends_on:
+  - connectome-link
   criterion: The top 36 pairs by dimorphism degree after removing pairs with combined SEM >= 5
     (Methods, Selecting neuron pairs...), and the six of Figure 4F (code, RIM-SAAD, AIB-AIM,
     URYD-RMDV, AVK-RMF, URX-RIR, ASH-AVA). Functional dimorphism p from CORRELATION. Readings of "no
@@ -518,6 +538,8 @@ claims:
   quote: We found that these pairs were mostly not synaptically connected. When they were connected,
     the connectivity was essentially not dimorphic
   data: with_inputs
+  depends_on:
+  - connectome-link
   criterion: The top 36 pairs by functional dimorphism with p < 0.01 (Methods; the code's p < 0.001 is
     a variant), stimulus pairs, sensory-sensory pairs and pairs absent from the connectome left out
     (Methods, Selecting neuron pairs...). The order of these exclusions is OPEN. The Methods name
@@ -537,6 +559,7 @@ claims:
   data: with_inputs
   depends_on:
   - fig4d-functional-synaptic-uncorrelated
+  - connectome-link
   criterion: Figure S20 legend, a weighted graph per sex with edge cost 1 / synaptic strength
     (CONNECTOME sums), Dijkstra shortest paths, indirect strength 1 / path cost; dimorphism degree as
     CONNECTOME on the indirect strengths. Judged as fig4d-functional-synaptic-uncorrelated
@@ -548,6 +571,8 @@ claims:
   quote: This average SEM was 1.14 with a standard deviation of 2.07 ... the average SEM decreased to
     0.62 (down from the initial 1.14), and the standard deviation of the SEM decreased to 0.87
   data: with_inputs
+  depends_on:
+  - connectome-link
   expected:
   - quantity: mean SEM before normalization
     value: 1.14

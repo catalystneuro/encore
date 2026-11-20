@@ -1,0 +1,44 @@
+I re-checked the claims on the mouse images and agree with the notebook's numbers. All four mouse metrics fall within tolerance for every possible set of 3 test mice, so not knowing which mice the paper tested doesn't change the outcome. On the macaque images from OSF, the paper's numbers are not reproduced.
+
+**A. Outcomes**
+
+Counts from the claims file: 15 claims. My outcomes: 6 reproduced, 1 not reproduced, 8 blocked.
+
+| Claim | Outcome | Reason |
+|---|---|---|
+| osf-group-labels-link | reproduced | Cell 14: 20 of 20 dandiset mice each sit in exactly one group folder, and no folder holds more than 3. Cell 15: 16 OSF micrographs (from 8 mice) have a counterpart above r = 0.5, and all 16 are images of the same mouse; the best match to any other mouse is r = 0.487. All three conditions of the criterion are met. |
+| table3-tem-mice-accuracy | reproduced | Cell 19: mean accuracy 0.9416 for (a) all images and 0.9349 for (b) control mice; the allowed range is 0.8506 to 1.0396. Every one of the 1140 possible sets of 3 mice gives 0.9226 to 0.9683, so the paper's real test set, whichever it was, also passes. |
+| table3-tem-mice-dice-detection | reproduced | Cell 22: all 4 metrics are within tolerance under both readings. (a) axon Dice 0.9500, myelin Dice 0.8489, sensitivity 0.9863, precision 0.9707; (b) 0.9543, 0.8571, 0.9878, 0.9819. The ranges over all 1140 sets of 3 mice are also inside every tolerance. |
+| myelin-dice-below-axon-dice | reproduced (mouse only) | Cell 24: myelin Dice is below axon Dice in the means for both readings and in 158 of 158 single images. The macaque readings in cell 30 keep the same order (all 7), though the criterion does not ask for them. |
+| sensitivity-above-93 | reproduced (mouse only) | Cell 26: mean sensitivity is 0.9863 for (a) and 0.9878 for (b), both above 0.93. The lowest mean over any set of 3 mice is 0.9722. |
+| table3-tem-macaque-accuracy | not_reproduced | Cell 30: only 1 of 7 matched images is within 0.7594 to 0.9282 (sample3 at 0.7634, just inside); the mean is 0.6723. Every reading also misses the other macaque metrics by far, e.g. sensitivity 0.29 to 0.61 against 0.9429. It is uncertain whether the OSF masks are the paper's ground truth (problem 3). |
+| macaque-myelin-underestimated | reproduced (by the criterion's direction rule) | Cell 32: predicted myelin area is below the ground truth in 7 of 7 readings. But the ratio is 0.35 to 0.51, which is not "slightly" (problem 4). |
+| table3-other-samples-dice-detection | blocked (data_missing) | There are no SEM images in the dandiset (cell 34; I confirmed with the archive API). The macaque quarter could be tested and fails on all 4 values in cell 30, e.g. axon Dice at most 0.807 against a lower bound of 0.816. |
+| table3-sem-rat-accuracy | blocked (data_missing) | No SEM images in the dandiset (archive: 660 assets, all mouse TEM PNGs, masks and sidecars). |
+| table3-sem-human-accuracy | blocked (data_missing) | As above. |
+| full-slice-processing-time | blocked (data_missing) | No SEM slice in the dandiset; the timing would also depend on the machine. |
+| fig7-corticospinal-tract | blocked (data_missing) | No rat spinal cord in the dandiset. A candidate SEM panorama on OSF was not run (problem 6). |
+| fig7-larger-axons-periphery | blocked (data_missing) | As above. |
+| fig7-tract-diameters | blocked (data_missing) | As above. |
+| fig7-gratio-range | blocked (data_missing) | As above. |
+
+For every blocked claim, the archive itself (asset list, metadata with no related resources, the one published version plus a draft of the same 660 assets) confirms there is no non-mouse data. No part of them can be tested on DANDI:001436. There is no chance level for any selection, so there was nothing to compare.
+
+**B. Problems**
+
+1. **Leakage between training and test data.** [does not affect a conclusion] Cells 16–22. Both test-set readings contain the model's training mice (17 of the 20). The claims file names this. The notebook's sweep over all 1140 sets of 3 mice covers it: the real test set is one of those sets, and all of them pass. Still, a mean taken mostly over training images is weak evidence of how well the model generalises.
+2. **The ground truth is not the paper's.** [does not affect a conclusion] Cells 3 and 12. The dandiset's CHANGES file says the 2025 release "Modify the masks of 155 images to separate all fibers with a 2px delineation", and one mask was corrected in 2022. The notebook scores against these newer masks and never mentions it. The margins are wide, so the outcomes don't depend on it.
+3. **Macaque test image and ground truth are uncertain.** [affects a conclusion] Cells 28–30, `macaque_ground_truth`. The paper does not name which image was tested. The OSF masks give a myelin fraction of 0.32 to 0.49, against a predicted 0.14 to 0.22. With predicted myelin about 0.45 of the ground truth, myelin Dice cannot exceed about 0.62, yet the paper reports 0.7519. So either these masks or this image are not what the paper used, or the pipeline differs. The "not reproduced" outcome rests on taking the OSF masks as the paper's ground truth, which the notebook does not show.
+4. **The claims file drops "slightly".** [affects a conclusion] Claims file, macaque-myelin-underestimated. Its criterion tests direction only, but the claim says "slightly". The observed underestimate is about 50–65%. The direction result comes from the same setup that fails the accuracy claim, so it carries little weight. I am reporting this, not correcting it.
+5. **Inference reimplementation is only partly verified.** [does not affect a conclusion] Cell 8; `segment`, `legacy_equalize_hist`. Only the network was checked against the original graph (largest difference 1.2e-5, 100% of pixels in the same class, on 4 patches). The equalisation, rescaling and resize-back steps reimplement 2018 library behaviour and were never compared with the original `segment.py` output. Resizing the class map back bilinearly and then casting to uint8 rounds down, which shifts boundaries toward myelin: a pixel between axon (2) and background (0) becomes myelin (1), as my synthetic test showed. The helper says this matches the original code, but I could not confirm it. The mouse margins are wide enough that it doesn't matter there; it could matter for the macaque.
+6. **A candidate slice for the blocked Fig. 7 claims was not run.** [could affect conclusions now marked blocked] Cell 33. A rat cervical SEM panorama on OSF (RatSpinalCordNov2016, 0.095 µm) was found but not run as a candidate reading, even though the paper leaves the slice unidentified. The notebook's reason, that it cannot be shown to be the paper's slice, is reasonable. Even so, running it as a labelled reading would have tested part of these claims.
+7. **The label link rests on mouse number alone for most mice.** [does not affect a conclusion] Cell 15. Only 8 of 20 mice were confirmed by image content, and only 3 of the 8 control labels (mice 25, 26 and 27). Separately, the dandiset's 20 mice include 12 cuprizone mice. If they are the paper's 20 mice, the paper's training set held cuprizone tissue, which undercuts the Discussion's "healthy tissues" premise behind reading (b). Neither point matters, because every set of 3 mice passes.
+8. **Code comment disagrees with the code.** [does not affect a conclusion] Cell 15. The comment says "up to two" micrographs per mouse, but the code uses up to 4 (`max_files=4`), which is what the criterion asks for and what the output shows.
+9. **Synthetic tests of the helpers passed.** [no problem] `score_analysis` (TP/FP, the area cut-off of 2, two predictions in one axon counting once), `pw_dice`, `pixel_accuracy`, and the exact round trip of `im2patches_overlap` and `patches2im_overlap` all behave as described.
+
+**C. What I could not check**
+
+- **OSF contents.** I queried only the DANDI API, as instructed, so I could not see the OSF group folders, the macaque files or the SEM panorama. A notebook output that prints any OSF description saying which macaque image, and which masks, the 2018 paper used would settle problem 3.
+- **End-to-end pipeline match.** I could not confirm that the reimplementation matches the original `segment.py` from input to output. An output comparing class maps on one image between the original TensorFlow 1 pipeline and the helper would settle problem 5. Failing that, a printed copy of the original resize-back and cast step from `apply_model.py` at commit 7f60132.
+- **Where the macaque errors come from.** The notebook gives no per-class confusion matrix or overlay for the macaque images. One would show whether the errors are boundary shifts or missed axons.
+- **The 2018 masks.** The dandiset has only one published version, so I could not compare the masks before and after the 2025 change. An output scoring the masks of the 3 images left unchanged in 2025 apart from the rest would bound problem 2.

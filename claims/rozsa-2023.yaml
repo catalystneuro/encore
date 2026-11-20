@@ -1,0 +1,786 @@
+# Claims for Rozsa, Toth, Olah, Baka, Lakovics, Barzo & Tamas (2023), Sci. Adv. 9, eade4511, on
+# dandiset 000341.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-19,
+# protocol pilot-16 as stated in docs/protocol.md. The writer did not look at the dandiset's data or
+# files; only its title and the species it lists (human, rat, mouse) were read.
+#
+# Text read: the version of record (open access), full text as served by Europe PMC (PMC10569705,
+# JATS XML flattened), with its one supplement, sciadv.ade4511_sm.pdf (Figures S1 to S6 with legends,
+# Table S1). The main figures were not available as images; their values were read from the Results
+# and the legends. The reference list is not in the text read, so the cited sources for the sag
+# fraction (ref. 28) and for the cellular state definition (ref. 38) could not be read.
+#
+# Code read: none. The paper links no code; the Methods say the data were analysed with Fitmaster
+# (HEKA) and custom MATLAB scripts, and phases with the MATLAB Circular Statistics Toolbox (ref. 49).
+#
+# Data the paper used. All recordings are somatic whole-cell current clamp of layer 1 interneurons,
+# filtered at 10 kHz (Bessel) and sampled at 50 kHz in Patchmaster.
+# - Human slices: neocortex resected from 71 patients (41 female, 30 male, 50 +- 20 years; Table S1),
+#   frontal, temporal, occipital and parietal. Rat slices: somatosensory cortex of Wistar rats, P18
+#   to P44. About 36 degrees C, conventional or dual-superfusion chamber.
+# - RAF induction (Figures 1, S1): 100 ms suprathreshold square pulses (50 to 500 pA, at least four
+#   APs per pulse) every 300 ms, stopped when APs appear between pulses, then continuous recording.
+#   Human 385 cells (87 with RAF), rat 259 cells (102 with RAF). Post hoc biocytin morphology: NGFC,
+#   non-NGFC, rosehip.
+# - Dual soma and axonal bleb recordings (Figures 1H-K, 2F-H, S6): human 2 NGFCs and 3 unidentified,
+#   rat 3 NGFCs and 3 unidentified; hyperpolarizing steps alternately in soma and bleb, depolarizing
+#   steps in soma only.
+# - ZD7288 30 uM (Figures 2A-C, S2): human 4 and rat 3 cells. Sag fraction (Figure 2E): human 358,
+#   rat 254 cells. Local puff of ACSF with 5 mM KCl (Figure 2I-L): human 4, rat 7 cells.
+# - Active slices (Figure 3): in vivo-like ACSF (1.2 mM Ca, 1 mM Mg), dual superfusion, 2 uM
+#   carbachol and 10 uM SCH23390. Human 26 cells without LFP; rat 40 cells with a layer 5 LFP. Rat
+#   without carbachol and SCH23390, 90 cells (Figure S3).
+# - In vivo (Figure 4, S4, S5): head-fixed mice, P35 to P180, GAD67-GFP (37), Ai9 (5), C57BL/6J (3)
+#   and vGAT-Ai9 (75), awake or under chloral hydrate or ketamine-xylazine; 242 layer 1 interneurons
+#   at 20 to 120 um depth with a deep layer LFP within about 1000 um.
+#
+# Method shared by the claims, from the Methods ("Analysis of RAF patterns", "Analysis of AP timing
+# related to network oscillations", "Statistics"):
+# - APs detected on unfiltered traces; the threshold is the point where dV/dt first exceeds 5 mV/ms;
+#   the pre-AP ramp slope is the slope of a linear fit to the last 1 ms before threshold. Threshold
+#   and slope separate AIS-APs (higher threshold, steeper ramp) from RA-APs.
+# - An RAF epoch is sporadic when its RAF frequency is below 5 Hz and persistent (tonic) above;
+#   number of RA-APs, RAF duration (first to last RA-AP in the continuous recording), RAF frequency
+#   (RA-APs over duration).
+# - Phase: a 4 s AP-triggered LFP segment per AP, FFT power multiplied by frequency; an AP is kept
+#   when the corrected power in 0.5 to 4 Hz over that in 0.5 to 45 Hz exceeds 0.1. The LFP is
+#   Butterworth band-passed 0.5 to 4 Hz, Hilbert phase on 0 to 360 degrees with the LFP trough at 0
+#   and 360 degrees (up state) and the peak at 180 degrees (down state); the phase at the AP peak is
+#   used. Mean vector direction and length, Rayleigh test, on the APs pooled across cells.
+# - Values are median +- SD unless stated. Each comparison is preceded by a Kolmogorov-Smirnov test
+#   of normality; normal data get a paired or two-sample t test, others a Mann-Whitney U test.
+#   Significance at P < 0.05.
+#
+# Details these sources leave open, with the readings allowed, used by several claims:
+# - AP detection apart from the 5 mV/ms threshold. A standard choice is used, an upstroke crossing
+#   5 mV/ms followed by a peak above 0 mV; a peak at least 30 mV above threshold is the variant. It
+#   is shown both ways where a claim counts APs.
+# - The boundary between AIS-APs and RA-APs. No numbers are given. Readings: (a) labels the
+#   dandiset carries, when it has them; (b) a two-component Gaussian mixture on threshold and pre-AP
+#   slope fitted to the APs of each preparation pooled (human slice, rat slice, mouse in vivo), RA-APs
+#   the component with the lower threshold; (c) in induction recordings only, APs during the current
+#   pulses are AIS-APs and APs in the interstimulus intervals and the continuous recording are
+#   RA-APs. Every claim that classifies APs states which readings apply.
+# - Tolerances. The paper gives medians with the SD of the cells or APs. The SD is the spread of the
+#   sample, not an uncertainty of the median (88 +- 1828 RA-APs), so it is not used as a tolerance;
+#   medians and means get 10% of the value, and the SDs are reported beside them, not judged.
+# - Counts that disagree inside the paper. Human RAF cells are 87 of 385 in the Results and 83 of
+#   358 in the sag analysis; rat RAF cells are 102 of 259 in Figure S1B and 97 of 254 in the sag
+#   analysis. Each claim uses the counts its own passage gives.
+# - Phase method. Butterworth order and whether the filter is zero phase are not given; MATLAB
+#   filtfilt with order 2 is the standard choice, order 4 the variant. Whether the 4 s segment is
+#   centred on the AP is not given; centred (2 s each side) is the standard choice. The Methods say
+#   the power was "corrected ... with the frequency values" without the formula; power times
+#   frequency is the standard choice, the reading used above.
+schema_version: 2
+paper: doi:10.1126/sciadv.ade4511
+claims:
+- id: fig1ab-raf-patterns
+  statement: Human layer 1 interneurons show two forms of retroaxonal firing (RAF) after induction,
+    persistent RAF with barrages of RA-APs at high frequency (median 88 RA-APs, 13.9 Hz; duration
+    median 17.1 s, mean 68.4 s, from 0.18 to 2809 s) and sporadic RAF with a few RA-APs at low
+    frequency (median 8 RA-APs, 0.31 Hz).
+  source: Results, paragraph 1; Figure 1A and 1B
+  quote: 'persistent RAF showed barrages of 88 ± 1828 RA-APs with high frequencies (13.9 ± 17.3 Hz),
+    (RAF duration: min: 0.18 s, max: 2809 s, mean: 68.4 s, and median: 17.1 ± 202.9 s); however,
+    only a few (8 ± 6) individual RA-APs emerged at low frequencies (0.31 ± 1.5 Hz) during sporadic
+    RAF'
+  expected:
+  - quantity: persistent RAF, median number of RA-APs
+    value: 88
+    tolerance: 8.8
+  - quantity: persistent RAF, median RAF frequency
+    value: 13.9
+    tolerance: 1.39
+    unit: Hz
+  - quantity: persistent RAF, median duration
+    value: 17.1
+    tolerance: 1.71
+    unit: s
+  - quantity: persistent RAF, mean duration
+    value: 68.4
+    tolerance: 6.84
+    unit: s
+  - quantity: persistent RAF, minimum duration
+    value: 0.18
+    tolerance: 0.018
+    unit: s
+  - quantity: persistent RAF, maximum duration
+    value: 2809
+    tolerance: 280.9
+    unit: s
+  - quantity: sporadic RAF, median number of RA-APs
+    value: 8
+    tolerance: 0.8
+  - quantity: sporadic RAF, median RAF frequency
+    value: 0.31
+    tolerance: 0.031
+    unit: Hz
+  criterion: Human induction recordings only. RA-APs are the APs of the continuous recording after
+    induction, classed by readings (a) to (c) of the header. Per the Methods, an RAF epoch's
+    duration runs from its first to its last RA-AP, its frequency is RA-APs over duration, and an
+    epoch is persistent above 5 Hz and sporadic below. The Methods do not say how a recording is
+    cut into epochs, nor what duration an epoch of one RA-AP has. Readings are (i) one epoch per
+    cell, all RA-APs after induction; (ii) one epoch per induction run, when a cell was induced
+    more than once (Figure 1E has cells with both patterns). Epochs of a single RA-AP are left
+    out, as their frequency is undefined. The sentence places the duration values (minimum,
+    maximum, mean, median) under persistent RAF; whether they cover all RAF epochs is not certain,
+    so they are also shown over all epochs. Reproduced when, under one reading, at least six of the
+    eight values are within tolerance and the two groups both occur; partially reproduced for four
+    or five. The SDs are reported beside the medians.
+- id: fig1c-ra-lower-threshold-slope
+  statement: RA-APs have a lower somatic threshold potential and a lower pre-AP depolarization
+    slope than AIS-APs, during persistent and during sporadic RAF.
+  source: Results, paragraph 1; Figure 1C
+  quote: RA-APs during persistent RAF had lower somatic AP threshold and lower pre-AP depolarization
+    slope values compared to AIS-APs ( 19 – 22 , 25 ). We confirmed this during sporadic RAF
+  criterion: Human induction recordings, under reading (c) of the header (APs during the current
+    pulses are AIS-APs, APs after induction are RA-APs) and under reading (a) when the dandiset
+    labels APs. Reading (b) is left out here, as it separates the classes by these very measures.
+    Threshold and slope as in the Methods. The paper reports no test for this panel; its general
+    rule is used, a Kolmogorov-Smirnov normality test, then a two-sample t test or a Mann-Whitney U
+    test on the APs pooled, within persistent and within sporadic epochs. Reproduced when the RA-AP
+    median threshold and median slope are both lower than those of AIS-APs with P < 0.05 in both
+    patterns; partially reproduced when this holds in one. The per-cell comparison (each cell's
+    medians) is shown as a variant.
+- id: fig1d-human-raf-proportion
+  statement: About one-fourth of tested human layer 1 interneurons (87 of 385) show RAF.
+  source: Results, paragraph 1; Figure 1D
+  quote: One-fourth of the tested interneurons (87 of 385 cells; Fig. 1D ) in layer 1 of the human
+    neocortex showed RAF
+  expected:
+  - quantity: fraction of human layer 1 interneurons with RAF
+    value: 0.226
+    tolerance: 0.0226
+  criterion: A cell shows RAF when at least one RA-AP occurs after induction, RA-APs classed by
+    readings (a) to (c) of the header. The counts of cells tested and with RAF are reported. The
+    fraction 83 of 358 (0.232) from the sag analysis is the other count the paper gives.
+- id: fig1f-human-raf-ngfc
+  statement: In human layer 1, RAF is predominant in neurogliaform cells (21 of 44 NGFCs) and rarer
+    in other interneurons (9 of 90 non-NGFCs), and cannot be evoked in rosehip cells (0 of 15).
+  source: Results, paragraph 1; Figure 1F
+  quote: We could trigger RAF in 21 of 44 NGFCs and 9 of 90 non-NGFCs ( Fig. 1F ) and found that
+    RAF could not be evoked in rosehip cells ( n = 15)
+  expected:
+  - quantity: fraction of human NGFCs with RAF
+    value: 0.477
+    tolerance: 0.0477
+  - quantity: fraction of human non-NGFCs with RAF
+    value: 0.1
+    tolerance: 0.01
+  - quantity: human rosehip cells with RAF
+    value: 0
+    tolerance: 0
+  depends_on:
+  - fig1d-human-raf-proportion
+  criterion: Needs the post hoc morphological class of each cell (NGFC, non-NGFC, rosehip) as the
+    Methods define it from biocytin fills; the class is taken as the dandiset records it. RAF as in
+    fig1d-human-raf-proportion. The Results give 30 RAF-positive and 104 RAF-negative classified
+    cells, 134 in all, which is 44 NGFCs plus 90 non-NGFCs; so the 15 rosehip cells are counted
+    among the 90 non-NGFCs, and this is the main reading. Non-NGFCs without rosehip cells are shown
+    as a variant. Reproduced when the
+    three values hold under one reading; partially reproduced when NGFCs have the higher fraction
+    but a value is outside tolerance.
+- id: figs1b-rat-raf-proportion
+  statement: About a third of tested rat layer 1 interneurons (102 of 259) show RAF.
+  source: Figure S1B
+  quote: Approximately a third of the tested cells (102 out of 259) showed RAF.
+  expected:
+    quantity: fraction of rat layer 1 interneurons with RAF
+    value: 0.394
+    tolerance: 0.0394
+  criterion: As in fig1d-human-raf-proportion, on the rat induction recordings. The fraction 97 of
+    254 (0.382) from the sag analysis is the other count the paper gives.
+- id: figs1d-rat-raf-values
+  statement: Rat interneurons show both sporadic RAF (frequency 1 Hz, 7 RA-APs) and tonic RAF
+    (frequency 6.9 Hz, 100 RA-APs).
+  source: Figure S1D
+  quote: 'We observed both sporadic RAF (RAF frequency: 1 ± 1.8 Hz, Number of RA-AP: 7± 2.2) and
+    tonic RAF (RAF Frequency: 6.9 ± 14 Hz, Number of RA-AP: 100 ± 241) in the rodent brain slice
+    preparation.'
+  expected:
+  - quantity: sporadic RAF, median frequency
+    value: 1
+    tolerance: 0.1
+    unit: Hz
+  - quantity: sporadic RAF, median number of RA-APs
+    value: 7
+    tolerance: 0.7
+  - quantity: tonic RAF, median frequency
+    value: 6.9
+    tolerance: 0.69
+    unit: Hz
+  - quantity: tonic RAF, median number of RA-APs
+    value: 100
+    tolerance: 10
+  criterion: As in fig1ab-raf-patterns, on the rat induction recordings, with the same epoch
+    readings. A sporadic median of 1 Hz under a 5 Hz split is allowed by the Methods. Reproduced
+    when, under one reading, at least three of the four values are within tolerance.
+- id: fig1g-rat-raf-ngfc
+  statement: In rat neocortex, RAF is found predominantly in NGFCs (22 NGFC and 10 non-NGFC RAF
+    cells).
+  source: Figure 1G legend; Results, paragraph 1
+  quote: We repeated these experiments in the rat neocortex and confirmed the presence of both
+    sporadic and persistent RAF in interneurons predominantly identified as NGFCs
+  expected:
+  - quantity: rat RAF cells classified as NGFC
+    value: 22
+    tolerance: 2.2
+  - quantity: rat RAF cells classified as non-NGFC
+    value: 10
+    tolerance: 1
+  depends_on:
+  - figs1b-rat-raf-proportion
+  criterion: Counts of rat RAF cells by morphological class as the dandiset records it. The legend
+    gives no RAF-negative counts, so whether the counts are of RAF cells only is a reading; the
+    fractions with RAF in each class are shown as well.
+- id: fig1hk-bleb-initiation-order
+  statement: In dual soma and axonal bleb recordings of human NGFCs, AIS-APs reach the soma first
+    and the bleb second, while RA-APs reach the bleb first, and RA-APs have lower somatic threshold
+    and pre-AP slope.
+  source: Results, paragraph 1; Figure 1H to 1K
+  quote: In response to somatic depolarizing current pulses, AIS-APs were detected first on the
+    somatic electrode and then at the axonal recording site, the order was reversed for RA-APs
+  criterion: Human NGFC dual recordings (n = 2). For each somatic AP, the soma-to-bleb latency is
+    the bleb AP time minus the somatic AP time; the time point is not given, and readings are the
+    threshold crossing (5 mV/ms) and the peak. AIS-APs and RA-APs by readings (a) or (b) of the
+    header, the classes taken on the somatic trace. Reading (c) does not apply, as the RA-APs here
+    occur during somatic current pulses (Figure 1H and 1I legends). Under reading (b) the lower
+    threshold and slope of RA-APs follow from the classification, so they are reported and only the
+    latency is judged. Reproduced when in each cell the AIS-APs have a positive median latency and
+    the RA-APs a negative one, and (under reading (a)) RA-APs have the lower median threshold and
+    slope; partially reproduced when this holds in one of the two cells.
+- id: fig2c-zd7288-reduces-raf
+  statement: Blocking HCN channels with ZD7288 (30 uM) reduces the duration of RAF (47.2 to 10.1 s)
+    and the number of RA-APs (624 to 48) in human and rat layer 1 interneurons.
+  source: Results, paragraph 2; Figure 2A to 2C
+  quote: the duration of RAF [from 47.2 ± 36.1 to 10.1 ± 16 (s), paired sample t test, P = 0.008]
+    and the number of RA-APs (from 624 ± 412 to 48 ± 71, paired sample t test, P = 0.007) decreased
+    both in human ( n = 4) and in rodent ( n = 3) layer 1 interneurons
+  statistics:
+  - about: RAF duration, control against ZD7288
+    test: paired-sample t test
+    p: 0.0081
+    n: 7 cells, 4 human and 3 rat
+  - about: number of RA-APs, control against ZD7288
+    test: paired-sample t test
+    p: 0.00706
+    n: 7 cells, 4 human and 3 rat
+  expected:
+  - quantity: RAF duration, control
+    value: 47.2
+    tolerance: 4.72
+    unit: s
+  - quantity: RAF duration, ZD7288
+    value: 10.1
+    tolerance: 1.01
+    unit: s
+  - quantity: number of RA-APs, control
+    value: 624
+    tolerance: 62.4
+  - quantity: number of RA-APs, ZD7288
+    value: 48
+    tolerance: 4.8
+  criterion: Per cell, RAF duration and RA-AP count after induction in control and after ZD7288, as
+    in fig1ab-raf-patterns, the 7 cells pooled. Paired t test as in the legend. Whether the values
+    are medians (the Statistics section) or means (usual with a t test) is not said; both are
+    shown. Reproduced when both decreases hold with P < 0.05 and, under one of the two readings, at
+    least three of the four values are within tolerance; partially reproduced when the decreases
+    hold with P < 0.05 but fewer values match.
+- id: figs2-zd7288-passive-properties
+  statement: ZD7288 increases input resistance (70 to 98 MOhm, P = 0.01), and hyperpolarizes the
+    resting potential (-60 to -67 mV, P = 0.075) and decreases sag fraction (0.04 to 0.017, P =
+    0.057) without reaching significance.
+  source: Figure S2A to S2C
+  quote: '(A) Input resistance (control: 70 ± 96 MOhm, ZD7288: 98 ± 132 MOhm, paired-sample t-test
+    p=0.01).'
+  statistics:
+  - about: input resistance
+    test: paired-sample t-test
+    p: 0.01
+  - about: resting membrane potential
+    test: paired sample t-test
+    p: 0.075
+  - about: sag fraction
+    test: paired sample t-test
+    p: 0.057
+  expected:
+  - quantity: input resistance, control
+    value: 70
+    tolerance: 7
+    unit: MOhm
+  - quantity: input resistance, ZD7288
+    value: 98
+    tolerance: 9.8
+    unit: MOhm
+  - quantity: resting membrane potential, control
+    value: -60
+    tolerance: 6
+    unit: mV
+  - quantity: resting membrane potential, ZD7288
+    value: -67
+    tolerance: 6.7
+    unit: mV
+  - quantity: sag fraction, control
+    value: 0.04
+    tolerance: 0.004
+  - quantity: sag fraction, ZD7288
+    value: 0.017
+    tolerance: 0.0017
+  criterion: The ZD7288 cells of fig2c-zd7288-reduces-raf; the legend gives no n. Input resistance
+    and the current step it is measured from are not defined; the standard choice is the steady
+    voltage deflection over the current of a small hyperpolarizing step. Sag fraction as in
+    fig2e-sag-species. Paired t tests. Reproduced when input resistance rises with P < 0.05 and at
+    least four of the six values are within tolerance.
+- id: fig2e-sag-species
+  statement: Human layer 1 interneurons have a higher somatic sag fraction than rat ones (0.15
+    against 0.04).
+  source: Results, paragraph 2; Figure 2E
+  quote: layer 1 human interneurons ( n = 358, 0.15 ± 0.29, Mann-Whitney test, P < 0.001) showed
+    higher sag fractions compared to those in rat ( n = 254, 0.04 ± 0.4)
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.001
+    p_relation: <
+    n: 358 human and 254 rat cells
+  expected:
+  - quantity: human sag fraction, median
+    value: 0.15
+    tolerance: 0.015
+  - quantity: rat sag fraction, median
+    value: 0.04
+    tolerance: 0.004
+  criterion: The sag fraction is not defined in the text; it cites ref. 28 and Figure 2D marks its
+    components on a hyperpolarizing step. Readings are (a) (peak deflection minus steady-state
+    deflection) over the peak deflection from rest; (b) the same difference over the steady-state
+    deflection. The step used is not given; readings are the most hyperpolarizing step and the
+    step whose peak is nearest -90 mV. Reproduced when, under one reading, both medians are within
+    tolerance and the Mann-Whitney test gives P < 0.001 with human higher; partially reproduced
+    when the test holds and the medians do not.
+- id: fig2e-sag-raf-smaller
+  statement: In both species, interneurons with RAF have smaller somatic sag fractions than those
+    without (human 0.11 against 0.16; rat 0.02 against 0.06).
+  source: Results, paragraph 2; Figure 2E
+  quote: 'human and rat interneurons with RAF showed smaller sag fractions compared to interneurons
+    without RAF ( Fig. 2E ; human RAF: n = 83, 0.11 ± 0.08; no-RAF: n = 275, 0.16 ± 0.16,
+    Mann-Whitney test, P < 0.001; rat RAF: n = 97, 0.02 ± 0.07; no-RAF: n = 157, 0.06 ± 0.11,
+    Mann-Whitney test, P < 0.001'
+  statistics:
+  - about: human, RAF against no-RAF
+    test: Mann-Whitney test
+    p: 0.001
+    p_relation: <
+    n: 83 RAF and 275 no-RAF human cells
+  - about: rat, RAF against no-RAF
+    test: Mann-Whitney test
+    p: 0.001
+    p_relation: <
+    n: 97 RAF and 157 no-RAF rat cells
+  expected:
+  - quantity: human RAF sag fraction
+    value: 0.11
+    tolerance: 0.011
+  - quantity: human no-RAF sag fraction
+    value: 0.16
+    tolerance: 0.016
+  - quantity: rat RAF sag fraction
+    value: 0.02
+    tolerance: 0.002
+  - quantity: rat no-RAF sag fraction
+    value: 0.06
+    tolerance: 0.006
+  depends_on:
+  - fig2e-sag-species
+  - fig1d-human-raf-proportion
+  - figs1b-rat-raf-proportion
+  criterion: Sag fraction readings as in fig2e-sag-species; RAF status as in
+    fig1d-human-raf-proportion. Reproduced when in both species the RAF group is lower with
+    Mann-Whitney P < 0.001 and, under one reading, at least three of the four medians are within
+    tolerance; partially reproduced when this holds in one species.
+- id: fig2h-bleb-sag-higher
+  statement: Axonal blebs show about four times the sag fraction of the soma of the same layer 1
+    interneurons (0.4 against 0.1), at 106 um Euclidean soma-bleb distance.
+  source: Results, paragraph 2; Figure 2F to 2H
+  quote: 'found approximately four times higher sag fractions on the axon (somatic: 0.1 ± 0.05,
+    bleb: 0.4 ± 0.14, two-sample t test, P < 0.001)'
+  statistics:
+  - test: two-sample t test
+    p: 0.001
+    p_relation: <
+    n: 11 cells, human 2 NGFCs and 3 unidentified, rat 3 NGFCs and 3 unidentified
+  expected:
+  - quantity: somatic sag fraction
+    value: 0.1
+    tolerance: 0.01
+  - quantity: bleb sag fraction
+    value: 0.4
+    tolerance: 0.04
+  - quantity: Euclidean soma-bleb distance
+    value: 106
+    tolerance: 10.6
+    unit: um
+  criterion: Sag fraction readings as in fig2e-sag-species, each compartment from the
+    hyperpolarizing step injected into it (the Methods say steps were injected alternately into
+    soma and bleb, but not which trace and step give the bleb value; the bleb trace during a
+    somatic step is the variant). A two-sample t test as the
+    paper names it, with a paired t test as a variant. Reproduced when the bleb is higher with P <
+    0.001 and both sag values are within tolerance under one reading; partially reproduced when
+    the bleb is higher with P < 0.05. The distance is reported if the dandiset records it.
+- id: fig2il-kcl-induces-ra-aps
+  statement: Local application of ACSF with 5 mM K+ more than 40 um from the cell transiently
+    induces sporadic RA-APs in human (n = 4) and rat (n = 7) layer 1 interneurons.
+  source: Results, paragraph 2; Figure 2I to 2L
+  quote: we injected artificial cerebrospinal fluid (ACSF) with elevated physiological K +
+    concentration (5 mM) ( 32 ) while monitoring the membrane potential of layer 1 interneurons of
+    >40 μm from the injection site and successfully induced sporadic RA-APs transiently in human (
+    n = 4) and rat ( n = 7) layer 1 interneurons
+  criterion: In each KCl recording, APs classed by readings (a) or (b) of the header. Reproduced when
+    RA-APs occur in at least 4 human and 7 rat recordings, their RAF frequency is below 5 Hz, and,
+    where the application time is marked, they fall after it; partially reproduced when this holds
+    in most of them.
+- id: fig3-human-ap-states
+  statement: In active human slices (n = 26 cells), AIS-APs occur only in depolarized up states in
+    all 7 cells with AIS-APs, while spontaneous RA-APs, seen in 6 cells, also occur in hyperpolarized
+    down and transition states.
+  source: Results, paragraph 3; Figure 3B to 3D and 3G
+  quote: 'AIS-APs were restricted to plateaus of depolarized membrane potential (up states) in all
+    recorded cells with AIS-APs ( n = 7); however, when occurred (in n = 6 cells), spontaneous
+    RA-APs were detected when the membrane potential dropped to hyperpolarized down and transition
+    states in addition to up states'
+  expected:
+  - quantity: human active-slice cells with AIS-APs
+    value: 7
+    tolerance: 0
+  - quantity: human active-slice cells with RA-APs
+    value: 6
+    tolerance: 0
+  criterion: Human active-slice recordings without current injection, APs classed by readings (a) or
+    (b) of the header. How up, transition and down states are separated is not given (ref. 38,
+    dashed lines in Figure 3B). Readings are (i) a two-Gaussian fit to each cell's subthreshold
+    membrane potential histogram, down and up states within one SD of each mean and transition
+    between; (ii) the range between the two modes cut in thirds. Which potential places an AP in a
+    state is not given either; readings are the mean membrane potential 0 to 50 ms before threshold
+    (the window of Figure 3F) and the threshold potential itself, the latter partly circular since
+    AIS-APs have the higher threshold. Counts are exact, as the paper reports whole cells.
+    Reproduced when, under one reading, every cell with AIS-APs has all of them in up states and
+    the RA-APs fall in down or transition states in at least half of the cells with RA-APs;
+    partially reproduced when this holds with at most one exception.
+- id: fig3f-human-pre-ap-fluctuation
+  statement: In active human slices, membrane potential fluctuations (SD) 0 to 50 ms before AIS-APs
+    are larger than before RA-APs (1.49 against 0.78 mV).
+  source: Results, paragraph 3; Figure 3F
+  quote: Membrane potential fluctuations were increased 0 to 50 ms before AIS-APs (1.49 ± 1.76 mV)
+    compared to RA-APs (0.78 ± 1.7 mV, Mann-Whitney test, P < 0.001)
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.001
+    p_relation: <
+  expected:
+  - quantity: SD before AIS-APs
+    value: 1.49
+    tolerance: 0.149
+    unit: mV
+  - quantity: SD before RA-APs
+    value: 0.78
+    tolerance: 0.078
+    unit: mV
+  depends_on:
+  - fig3-human-ap-states
+  criterion: For each AP, the SD of the membrane potential in the 50 ms window before it. Where the
+    window ends is not given; readings are at the threshold and at the AP peak. APs are pooled
+    across cells (the paper gives no n, and P < 0.001 is not reachable with 6 or 7 cells); per-cell
+    medians are a variant. Reproduced when AIS-APs are higher with Mann-Whitney P < 0.001 and both
+    medians are within tolerance under one reading; partially reproduced when the test holds alone.
+- id: fig3i-rat-lfp-rhythm
+  statement: In active rat slices, layer 5 LFP shows rhythmic low-frequency deflections at 1.1 Hz,
+    synchronized to up states of the layer 1 interneurons.
+  source: Results, paragraph 3; Figure 3H and 3I
+  quote: In rat slices, somatic recordings in layer 1 interneurons ( n = 40) were accompanied by
+    layer 5 local field potential (LFP) recordings revealing rhythmic low-frequency (1.1 ± 0.55 Hz)
+    LFP deflections synchronized to single-cell up states
+  expected:
+    quantity: median LFP deflection frequency
+    value: 1.1
+    tolerance: 0.11
+    unit: Hz
+  criterion: How the deflection frequency is measured is not given. Readings are (i) the peak of the
+    LFP power spectrum in 0.5 to 4 Hz per recording; (ii) the rate of LFP troughs found on the 0.5
+    to 4 Hz Butterworth-filtered trace (the Methods' filter). The median over recordings is
+    compared. Reproduced when one reading is within tolerance. The synchronization to up states is
+    shown only in an example trace (Figure 3I) with no measure; it is not judged.
+- id: fig3l-rat-spontaneous-ra-proportion
+  statement: In active rat slices, 13 of 40 layer 1 interneurons fire spontaneous RA-APs, and all
+    recovered ones (n = 5) are NGFCs.
+  source: Results, paragraph 3; Figure 3L
+  quote: Spontaneous RA-APs were observed in 13 interneurons (all recovered cells were NGFCs, n = 5).
+  expected:
+    quantity: rat active-slice cells with spontaneous RA-APs
+    value: 13
+    tolerance: 1.3
+  criterion: Rat active-slice recordings with LFP, APs classed by readings (a) or (b) of the header.
+    The morphology of the recovered cells is reported if the dandiset records it.
+- id: fig3k-rat-pre-ap-fluctuation
+  statement: In active rat slices, AIS-APs occur during up states with larger membrane potential
+    fluctuations before them, and RA-APs during down states with smaller ones.
+  source: Results, paragraph 3; Figure 3J and 3K
+  quote: AIS-APs and RA-APs of rat interneurons were detected with different threshold potentials
+    and pre-AP slopes and occurred during up and down states with higher and lower membrane
+    potential fluctuations, respectively
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.001
+    p_relation: <
+  depends_on:
+  - fig3l-rat-spontaneous-ra-proportion
+  criterion: As in fig3f-human-pre-ap-fluctuation, on the rat active-slice recordings. Reproduced
+    when the AIS-AP SD is higher with Mann-Whitney P < 0.001 under one reading. The paper gives no
+    measure for the up and down state part in rat; the state of each AP, by the readings of
+    fig3-human-ap-states, is reported and not judged.
+- id: fig3m-rat-ais-phase-coupling
+  statement: In active rat slices, AIS-APs are coupled near the trough of the slow LFP oscillation
+    (mean vector length 0.093, angle 314 degrees).
+  source: Results, paragraph 3; Figure 3M
+  quote: 'we found temporal coupling of AIS-APs to near the trough of slow oscillation (average
+    vector length: 0.093, angle: 314°, P < 0.001, Rayleigh test)'
+  statistics:
+  - test: Rayleigh test
+    p: 0.001
+    p_relation: <
+    n: 534 AIS-APs from 22 cells
+  expected:
+  - quantity: mean vector length, AIS-APs
+    value: 0.093
+    tolerance: 0.0093
+  - quantity: mean phase, AIS-APs
+    value: 314
+    tolerance: 31.4
+    unit: degrees
+  criterion: The phase method of the header, on the rat active-slice recordings with LFP; APs
+    pooled across cells. Which 22 cells form the population (all with both AP types, or all with
+    usable LFP) and whether 534 counts the APs before or after the delta power selection is not
+    said; the counts are reported under each. A 10% tolerance on an angle has no meaning near 0, so
+    the angle is within tolerance when it is within 31.4 degrees of 314 on the circle. Reproduced
+    when the Rayleigh test gives P < 0.001 and the mean phase is within tolerance; the vector
+    length is reported and judged within tolerance as well.
+- id: fig3m-rat-ra-no-phase
+  statement: In active rat slices, RA-APs show no phase preference to the slow LFP oscillation.
+  source: Results, paragraph 3; Figure 3M
+  quote: RA-APs showed no phase preference to network oscillations ( P = 0.07, Rayleigh test; Fig.
+    3M )
+  statistics:
+  - test: Rayleigh test
+    p: 0.071
+    n: 76 RA-APs from 22 cells
+  depends_on:
+  - fig3m-rat-ais-phase-coupling
+  criterion: A claim of absence, judged on the paper's Rayleigh test at P < 0.05 on the RA-APs
+    pooled, phases as in fig3m-rat-ais-phase-coupling. Reproduced when P >= 0.05; not reproduced
+    when P < 0.05. The mean vector length, angle and count of RA-APs are reported either way.
+- id: figs3-no-modulators
+  statement: In rat slices in in vivo-like ACSF without carbachol and SCH23390 (n = 90), elevated
+    network activity with low-frequency up states (0.11 Hz) appears and layer 1 interneurons fire
+    spontaneous RA-APs (4 NGFCs and 5 non-NGFCs).
+  source: Results, paragraph 3; Figure S3A to S3C
+  quote: Recordings from interneurons ( n = 90) in slices maintained without external cholinergic
+    and dopaminergic modulators provided similar results (fig. S3).
+  expected:
+  - quantity: up state frequency on the LFP
+    value: 0.11
+    tolerance: 0.011
+    unit: Hz
+  - quantity: cells with spontaneous RA-APs
+    value: 9
+    tolerance: 0.9
+  criterion: Rat slices without modulators. Up state frequency by the readings of
+    fig3i-rat-lfp-rhythm, in 0.05 to 4 Hz since 0.11 Hz is below the Methods' delta band (an
+    extension made here, the legend giving no method). Cells with RA-APs by readings (a) or (b) of
+    the header; 9 is the sum of the NGFC and non-NGFC counts of Figure S3C, which may count only
+    recovered cells, so the total count is reported as well. Reproduced when both values are within
+    tolerance under one reading; partially reproduced when RA-APs occur but a value is outside.
+- id: fig4b-invivo-ra-proportion
+  statement: In vivo, 75 of 242 (31%) mouse layer 1 interneurons fire spontaneous APs from
+    relatively hyperpolarized potentials, identified as RA-APs.
+  source: Results, paragraph 4; Figure 4B
+  quote: However, in 75 (31%) of the 242 recorded cells, we detected spontaneously occurring APs
+    rising from relatively hyperpolarized membrane potential
+  expected:
+    quantity: fraction of in vivo cells with RA-APs
+    value: 0.31
+    tolerance: 0.031
+  criterion: In vivo recordings, APs classed by readings (a) or (b) of the header; a cell has RAF
+    when it has at least one RA-AP. The counts are reported.
+- id: fig4i-invivo-frequencies
+  statement: In vivo layer 1 interneurons fire sporadically, with AIS-APs at 0.65 Hz and RA-APs at
+    0.004 Hz, AIS-APs being more frequent.
+  source: Results, paragraph 4; Figure 4I
+  quote: Overall, layer 1 interneurons fired sporadically (frequency of AIS-APs, 0.65 ± 2.4 Hz;
+    RA-APs, 0.004 ± 0.4 Hz; Mann-Whitney U test, P < 0.001)
+  statistics:
+  - test: Mann-Whitney U test
+    p: 0.001
+    p_relation: <
+    n: 242 cells
+  expected:
+  - quantity: median AIS-AP frequency
+    value: 0.65
+    tolerance: 0.065
+    unit: Hz
+  - quantity: median RA-AP frequency
+    value: 0.004
+    tolerance: 0.0004
+    unit: Hz
+  depends_on:
+  - fig4b-invivo-ra-proportion
+  criterion: Per cell, APs of each class over the recording duration. A median RA-AP frequency
+    above 0 means the median is not taken over all 242 cells (162 have none); readings are (i) all
+    242 cells; (ii) cells with RA-APs for the RA-AP value and all cells for the AIS-AP value; (iii)
+    cells with any APs. Reproduced when, under one reading, both medians are within tolerance and
+    AIS-APs are higher with Mann-Whitney P < 0.001; partially reproduced when the test holds alone.
+- id: fig4g-invivo-ra-share
+  statement: RA-APs make up 3.4% of all APs recorded in vivo; the RA-AP share ranges from 0 (162
+    cells) to 100% (6 cells), and averages 17% in the 75 cells with RAF.
+  source: Results, paragraph 4; Figure 4G and 4H
+  quote: the proportion of RA-APs represented 3.4% of all in vivo recorded APs in layer 1
+    interneurons. The ratio of RA-APs varied considerably in individual cells from 0 ( n = 162
+    cells) to 100% ( n = 6 cells), and the average contribution of RA-APs in interneurons with RAF
+    ( n = 75) was 17 ± 30%.
+  expected:
+  - quantity: RA-APs as a share of all in vivo APs
+    value: 3.4
+    tolerance: 0.34
+    unit: '%'
+  - quantity: cells with no RA-APs
+    value: 162
+    tolerance: 16.2
+  - quantity: cells with only RA-APs
+    value: 6
+    tolerance: 0.6
+  - quantity: average RA-AP share in cells with RAF
+    value: 17
+    tolerance: 1.7
+    unit: '%'
+  depends_on:
+  - fig4b-invivo-ra-proportion
+  criterion: Classes as in fig4b-invivo-ra-proportion. 242 minus 75 is 167, not 162; one reading is
+    that 5 cells fired no APs and have no ratio, the other that the counts come from different
+    selections; the count of cells with no APs is reported. "Average" may be the mean or the median
+    (the Statistics section); both are shown. Reproduced when, under one reading, at least three of
+    the four values are within tolerance.
+- id: fig4f-invivo-pre-ap-fluctuation
+  statement: In vivo, membrane potential fluctuations (SD) 0 to 50 ms before AIS-APs are larger than
+    before RA-APs.
+  source: Figure 4F
+  quote: ( F ) SD of membrane potential 0 to 50 ms before APs (Mann-Whitney test, P < 0.001).
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.001
+    p_relation: <
+  depends_on:
+  - fig4b-invivo-ra-proportion
+  criterion: As in fig3f-human-pre-ap-fluctuation, on the in vivo recordings. The direction is read
+    from the Results, which say AIS-APs fire from up states with barrages of inputs. Reproduced
+    when the AIS-AP SD is higher with Mann-Whitney P < 0.001 under one reading.
+- id: fig4j-invivo-ais-phase-coupling
+  statement: In vivo, AIS-APs are coupled to the trough of the slow (0.5 to 4 Hz) LFP oscillation
+    (mean vector length 0.019, angle 330 degrees).
+  source: Results, paragraph 4; Figure 4J
+  quote: in vivo recorded AIS-APs were coupled to the trough (average vector length = 0.019, angle =
+    330°; P < 0.001, Rayleigh test) of population LFP
+  statistics:
+  - test: Rayleigh test
+    p: 0.001
+    p_relation: <
+  expected:
+  - quantity: mean vector length, AIS-APs
+    value: 0.019
+    tolerance: 0.0019
+  - quantity: mean phase, AIS-APs
+    value: 330
+    tolerance: 33
+    unit: degrees
+  depends_on:
+  - fig4b-invivo-ra-proportion
+  criterion: As in fig3m-rat-ais-phase-coupling, on the in vivo recordings, all cells with LFP and
+    all states (awake and anesthetized) pooled, as the paper reports one population. Reproduced
+    when the Rayleigh test gives P < 0.001 and the mean phase is within 33 degrees of 330 on the
+    circle; the vector length is reported and judged within tolerance as well.
+- id: fig4j-invivo-ra-no-phase
+  statement: In vivo, RA-APs are not significantly coupled to any phase of the slow oscillation.
+  source: Results, paragraph 4; Figure 4J
+  quote: as opposed to RA-APs, which were not significantly coupled to any phase of the slow
+    oscillation ( P = 0.15, Rayleigh test; Fig. 4J )
+  statistics:
+  - test: Rayleigh test
+    p: 0.15
+  depends_on:
+  - fig4j-invivo-ais-phase-coupling
+  criterion: A claim of absence, judged on the paper's Rayleigh test at P < 0.05 on the RA-APs
+    pooled. Reproduced when P >= 0.05; not reproduced when P < 0.05. The mean vector, the angle and
+    the count of RA-APs are reported either way.
+- id: fig4-invivo-up-down-balance
+  statement: In vivo, AIS-APs dominate during up states and RA-APs during down states, so the ratio
+    of the two swings over the slow oscillation.
+  source: Results, paragraph 4; Figure 4D and 4J
+  quote: The ratio of AIS-APs and RA-APs swings during slow population oscillations with dominating
+    AIS-APs and RA-APs in up states and down states, respectively.
+  depends_on:
+  - fig4j-invivo-ais-phase-coupling
+  criterion: The paper reports no measure or test for this sentence. With the Methods' phase
+    convention (trough 0 degrees is the up state, peak 180 degrees the down state), APs are split
+    by phase; readings are (i) halves of the cycle, up from 270 to 90 degrees and down from 90 to
+    270; (ii) quarters centred on 0 and 180 degrees. Reproduced when, under one reading, the share
+    of RA-APs among the APs in the down part exceeds that in the up part and AIS-APs outnumber
+    RA-APs in the up part. The paper's own test for two groups, here a Fisher exact test of the two
+    shares, is reported as support, not judged, as the paper does not name one for this.
+- id: figs4i-ais-ra-frequency-correlation
+  statement: Across in vivo cells, AIS-AP and RA-AP frequencies are weakly positively correlated (R
+    = 0.29).
+  source: Figure S4I and S4J
+  quote: (I) Frequency of AIS-APs and RA-APs (R=0.29, p<0.001)
+  statistics:
+  - test: correlation (type not named)
+    statistic: R = 0.29
+    p: 0.001
+    p_relation: <
+  expected:
+    quantity: correlation of AIS-AP and RA-AP frequency
+    value: 0.29
+    tolerance: 0.029
+  depends_on:
+  - fig4i-invivo-frequencies
+  criterion: Per-cell frequencies as in fig4i-invivo-frequencies. The correlation type and the cells
+    used are not named; readings are Pearson and Spearman, over all 242 cells and over the 75 cells
+    with RA-APs. Reproduced when, under one reading, R is within tolerance with P < 0.001;
+    partially reproduced when R is positive with P < 0.05.
+- id: figs5-not-genotype-or-anesthesia
+  statement: RA-AP occurrence in vivo cannot be explained by mouse genotype or by anesthesia
+    condition.
+  source: Figure S5A to S5D
+  quote: Fig. S5. RA-AP occurrence cannot be explained by genotype or anesthesia.
+  depends_on:
+  - fig4i-invivo-frequencies
+  criterion: A claim of absence for which the paper names no test; it shows per-cell RA-AP and
+    AIS-AP frequencies by genotype (GAD67-GFP, Ai9, C57BL/6J, vGAT-Ai9) and by condition (awake
+    after isoflurane, awake after ketamine-xylazine, under chloral hydrate, under
+    ketamine-xylazine). The paper's general rule names only two-group tests, so readings are (i)
+    Mann-Whitney U tests between every pair of groups, Bonferroni corrected; (ii) a Kruskal-Wallis
+    test across groups. Reproduced when neither reading finds a difference in RA-AP frequency at
+    P < 0.05 for genotype or for condition; not reproduced when both do; otherwise the outcome
+    rests on the reading. Group medians and the fraction of cells with RA-APs per group are
+    reported. Needs genotype and condition per cell from the dandiset's metadata.
+checks:
+- date: 2026-11-19
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1f-human-raf-ngfc. The criterion called it open whether the 15 rosehip cells are among the 90 non-NGFCs. The Results give 30 RAF-positive and 104 RAF-negative classified cells (134), which equals 44 NGFCs plus 90 non-NGFCs, so they are included; that is now the main reading and the other a variant.
+  - fig1hk-bleb-initiation-order. Said that reading (c) does not apply, since the RA-APs in these recordings occur during somatic pulses (Figure 1H and 1I legends), and that under reading (b) the threshold and slope difference follows from the classification and is reported, not judged.
+  - fig3-human-ap-states. The criterion fixed the AP's state at its threshold potential without saying the paper does not; this is partly circular, as AIS-APs have the higher threshold. Now open, with the mean potential 0 to 50 ms before threshold (the Figure 3F window) and the threshold as readings.
+  - fig2h-bleb-sag-higher. Said the Methods do not fix which trace and step give the bleb sag value; the bleb trace during a somatic step is named as the variant.
+  - fig3i-rat-lfp-rhythm, fig3k-rat-pre-ap-fluctuation. Each statement has a part the criterion did not test (synchronization to up states; AIS-APs in up and RA-APs in down states in rat). The paper gives no measure for these; the criteria now say they are reported and not judged.
+  - fig1ab-raf-patterns. The duration values sit in the persistent RAF clause but may cover all epochs; both are now shown.
+  - Header, phase method. The Methods say only that power was "corrected ... with the frequency values"; power times frequency is now named as the standard choice for an open detail.
+  - Checked, unchanged. Every quote, p-value, count and expected value against the text and supplement (checker, 0 problems); tolerances are 10% except the exact cell counts in fig3-human-ap-states and the circular angle rule, both with reasons. Each main finding (RAF patterns and prevalence by species and cell class, bleb initiation order, ZD7288, sag, KCl, active slices in human and rat, in vivo prevalence, frequencies, fluctuations and phase coupling, Figures S1 to S5) has a claim.
+  - Open. The AIS-AP and RA-AP boundary, the sag fraction formula (ref. 28 not in the text read), the state definition (ref. 38), the LFP rhythm frequency measure, the correlation type in Figure S4I and the test for Figure S5 are not given by the paper; the claims name the readings. No code is linked.
+  - Open. fig4-invivo-up-down-balance and figs5-not-genotype-or-anesthesia have no measure or test in the paper; their criteria rest on readings chosen here and their outcomes will rest on assumptions.

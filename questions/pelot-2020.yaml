@@ -1,0 +1,68 @@
+paper: doi:10.3389/fnins.2020.601479
+questions:
+- claim: sunderland-reanalysis
+  asked: 2026-11-20
+  question: The claims file marks this claim as data elsewhere, Sunderland and Bradley (1952) with no
+    archive identifier. The paper's authors deposited the 777 values with this paper's data, in
+    sparc-65 (files/code/Sunderland1984.mat, read by Sunderland1984_Plotting.m, "Data from Tables 1
+    to 4 in Sunderland, S., Bradley, K.C., 1952"). Should the claim be data from the dataset (sparc-65)
+    in place of elsewhere?
+  passage: Results, paragraphs 13 and 14 ("We re-analyzed the original (Sunderland and Bradley, 1952)
+    data, including all 777 fascicles"); the data availability of the paper names the SPARC datasets.
+  why: The outcome does not change (slope 2.750%, R2 = 0.510, n = 777, reproduced), but the claim is
+    counted with the claims on outside data, not with those on the paper's datasets.
+- claim: perineurium-no-level-difference
+  asked: 2026-11-20
+  question: Both readings of the criterion treat every fascicle as an independent point (73 human
+    fascicles from 16 samples, 284 pig fascicles from 8). Does the paper's "did not suggest a
+    difference" support a test with fascicles nested in samples (for example a mixed model with a
+    random intercept per sample, or errors clustered by sample), or a judgement from Figure 9 as
+    plotted, in place of the confidence bounds and F test of independent fascicles?
+  passage: Results, paragraph 13, "The data did not suggest a difference in the relationship between
+    perineurium thickness and fascicle diameter for cervical versus subdiaphragmatic nerves for any of
+    the three species."
+  why: Under the criterion's tests the human and pig levels differ (F = 19.2 and 21.0, p < 0.0001),
+    so the claim is not reproduced. With sample clustering the pig difference goes away (mixed model
+    p = 0.58, clustered F p = 0.26) but the human one remains (p < 0.0001 and p = 0.0013), so the
+    outcome would still be not reproduced unless the reading is a visual one.
+- claim: no-age-trend
+  asked: 2026-11-20
+  question: The criterion counts any of the 27 per-species, per-level correlations with p < 0.05,
+    uncorrected. Does the paper's "did not show trends with age" allow a correction for multiple
+    tests (for example Holm or Benjamini-Hochberg over the tests), or should the claim be judged as
+    Supplement 6 plots it, which was not read?
+  passage: Discussion, paragraph 5, "Our morphology metrics did not show trends with age for any
+    species (Supplement 6)"; DataPlotting_v4.m only plots the metrics against age and runs no test.
+  why: Uncorrected, 3 of 27 Pearson tests have p < 0.05 (all pig, smallest p = 0.019; 1.4 expected
+    by chance), so the claim is not reproduced; corrected over the 27 tests none is below 0.05
+    (smallest Holm-adjusted p 0.52), which would make it reproduced. Pig ages also take only four
+    values.
+- claim: rat-fascicle-diameter
+  asked: 2026-11-20
+  question: The criterion takes the inner trace of the largest rat fascicle, as the Methods say. The
+    paper's values (0.249 +/- 0.024 and 0.121 +/- 0.032 mm) are those of the fascicle its code keeps,
+    the first ring in bwboundaries order (DataPlotting_v4.m keeps FascicleIn{1} while it sorts only
+    the outer diameters), which is not the largest in R22-1 and R23-1. Should the criterion, and those
+    of the claims that use the rat fascicle (fascicle-diameter-anova and the Tukey claims), name the
+    code's fascicle?
+  passage: Materials and Methods, Imaging and Image Analysis, paragraph 3 (the largest fascicle of
+    each rat sample); Results, paragraph 5 (0.121 +/- 0.032 mm); DataPlotting_v4.m in sparc-60, 64 and
+    65.
+  why: No outcome changes (both selections are reproduced), but the largest fascicle gives
+    129.1 +/- 14.0 um subdiaphragmatically and the code's gives 121.1 +/- 32.3 um, and the code's
+    choice moves the subdiaphragmatic Tukey p values with rats to the paper's (0.898 and 0.995 against
+    0.896 and 0.9947) and the rat cervical against subdiaphragmatic p from 0.044 to 0.0089.
+- claim: human-subdiaphragmatic-fatty-tissue
+  asked: 2026-11-20
+  question: The criterion requires that no more than one of the 45 pig micrographs has adipose
+    tissue within the epineurium. The paper's sentence is comparative (pig epineurium consistently
+    collagenous, many human subdiaphragmatic nerves with fatty extrafascicular tissue). Does the paper
+    support a rule that allows almost no fat in any pig section, or should the claim be judged on the
+    contrast between the species (for example a smaller share of pig sections with fat, or less fat
+    per section, than in human subdiaphragmatic sections)?
+  passage: Results, paragraph 7, "pig nerves had consistent collagenous epineurium, whereas many
+    human subdiaphragmatic nerves had fatty extrafascicular tissue (Supplement 3)".
+  why: Adipose tissue is read in 29 of 32 human subdiaphragmatic micrographs and in 13 of 45 pig
+    micrographs (in P11-1, P13-1, P5-1, P9-3 and P8-7 inside the authors' own nerve traces), so the
+    claim is not reproduced under the criterion's pig rule. Judged as a contrast (29 of 32 against
+    13 of 45), it would be reproduced. Raised by the round 2 verifier as a possible misreading.

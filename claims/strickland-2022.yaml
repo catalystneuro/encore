@@ -1,0 +1,887 @@
+# Claims for Strickland & McDannald (2022), Nat Commun 13:6192, "Brainstem networks construct
+# threat probability and prediction error from neuronal building blocks", on CRCNS data set bst-3
+# (doi:10.6080/K0Q23XGR).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14.
+#
+# Text read: the version of record (PMC9582012, open access, Europe PMC JATS XML flattened), with
+# Results, Discussion, figure legends and Methods, and its Supplementary Information
+# (41467_2022_34021_MOESM1_ESM.pdf as extracted text, publisher's site): Supplementary Methods
+# (head cap, surgery, acquisition, sorting, z-score normalization, heat plots, k-means, PCA,
+# latency, correlations, hubs, regression, lesion PCA, anatomy, chi-square), Supplementary
+# Figures 1 to 7 (legends; the panels are garbled in the extraction) and Supplementary Tables 1
+# and 2 (read from the extracted cells; Table 2's column layout is garbled, its row and subject
+# totals are not). The Source Data workbook (41467_2022_34021_MOESM4_ESM.xlsx) was read with a
+# small XML parser; numbers marked "Source Data" below come from it. The supplement PDF could not
+# be rendered (no poppler), so no panel was read as an image. The CRCNS data descriptor
+# (paper/bst-3.data-description.txt) was read only to know what the data set holds; no claim or
+# method comes from it.
+#
+# Code. The paper's Code availability says "Code for single-unit analyses is available at
+# https://crcns.org/", which puts it inside the data set (by its descriptor the scripts folder,
+# cubeAnalysis, cueAnalysis, cueRegression, outcomeAnalysis, outcomeRegression, MATLAB). Being
+# among the data set's files, it was not read in this run, and no commit is recorded. Every method
+# below is from the Methods, the Supplementary Methods, the legends or the Source Data. Where those
+# scripts settle a detail named as open below, the author may follow them (protocol, Reader step 2)
+# and should say so.
+#
+# Data the paper used. Ten Long-Evans rats (six male, four female; subjects 1 to 3 and 10 female,
+# Supplementary Table 1), shaped to nose poke for pellets on VI-60 independent of cues and shock,
+# then 12 sessions of probabilistic fear discrimination before a single Neuropixels 1.0 probe was
+# implanted through the brainstem (AP -8.00, ML -2.80, DV -7 to -7.5, 15 degree angle). Each
+# recording session (1 to 10 per rat) has 16 trials, 10-s auditory cues, mean ITI 3 min, random
+# order. 4 danger (shock p = 1), 2 uncertainty shock and 6 uncertainty omission (p = 0.25),
+# 4 safety (p = 0). Shock is 0.5 mA, 0.5 s, starting 2 s after cue offset, so shock offset falls
+# 2.5 s after cue offset (the same time is used on omission and safety trials). Measured variables
+# are spike times of sorted single units (Kilosort 2 or 2.5, Phy, a MATLAB stability screen), cue,
+# shock, pellet and nose-poke times, and each unit's brain region (21 regions, from histology and
+# the Paxinos and Watson atlas). 1812 units from 73 sessions; 965 from females. Supplementary
+# Table 1 lists 8, 9, 10, 2, 8, 1, 10, 7, 10 and 10 sessions for subjects 1 to 10 (75 in total),
+# against 73 in the Results and in Source Data Fig. 1c; the paper does not say which two sessions
+# are not counted. By its title and description the data set holds the 1812 units as one MATLAB
+# file each, with per-trial firing, z-normalized firing, nose pokes, suppression ratios and
+# anatomy (region, coordinates) per unit.
+#
+# Shared method, used by the claims below and cited there as "shared method".
+#  - Suppression ratio (Methods, Calculating suppression ratios). Per trial, baseline rate = pokes
+#    in the 20 s before cue onset x 3, cue rate = pokes in the 10-s cue x 6, ratio = (baseline -
+#    cue) / (baseline + cue). Open, (sr-a) a trial with no pokes in either period set to 0, or
+#    (sr-b) left out of means. A session's value for a cue is the mean over its trials of that
+#    cue (uncertainty pooling its 8 trials).
+#  - Normalized firing (Supplementary Methods, Z-score normalization). Per unit and trial, firing
+#    rate in 250-ms bins; the trial's baseline (mean rate over the 2 s before cue onset) is
+#    subtracted; the differential firing is z-scored across all trials and bins of the unit.
+#    Open, (n-a) baseline per trial, or (n-b) the mean baseline of that trial type ("baseline
+#    firing rate (2 s prior to cue onset) specific to that trial type"). Open, the epoch is given
+#    both as "from 20 s prior to cue onset to 20 s following cue offset" (w-a, 200 bins) and as
+#    "a total of 240 bins" (w-b, 60 s from 20 s before cue onset). Mean over trials per trial type,
+#    then 250-ms bins averaged into 1-s intervals (cue) or 500-ms intervals (outcome).
+#  - Cue matrix (Supplementary Methods, K-means clustering and PCA). 1812 x 42, per cue 14 1-s
+#    intervals from 2 s before cue onset to 2 s after cue offset, columns 1-14 danger, 15-28
+#    uncertainty (all 8 trials), 29-42 safety.
+#  - Outcome matrix. 1812 x 80, per trial type 20 500-ms intervals over the 10 s from shock offset,
+#    columns 1-20 danger, 21-40 uncertainty shock, 41-60 uncertainty omission, 61-80 safety.
+#  - K-means (Supplementary Methods, K-means clustering). MATLAB kmeans, number of clusters 21
+#    (cue) and 11 (outcome), chosen by the paper by inspecting solutions for 1 to 25 and 1 to 20
+#    clusters. No option, replicate count or seed is given. Standard choice, MATLAB's defaults
+#    (squared Euclidean distance, k-means++ seeding, one replicate); since one replicate depends
+#    on the seed, a solution's result is reported as the median over 20 seeds, and the best of
+#    20 replicates (lowest summed distance) is shown as a variant.
+#  - Cluster labels, two readings. (L1) The paper's own membership. Source Data sheets
+#    "Figure 2b k1" to "k21" hold the 42-value cue row of every member unit and "Figure 4b k1" to
+#    "k11" the 80-value outcome row; each dataset unit is assigned to the sheet whose row it
+#    matches (claim source-data-cluster-link). Their row counts give cue cluster sizes 24, 43, 26,
+#    44, 44, 72, 92, 57, 103, 105, 74, 46, 83, 202, 55, 137, 219, 89, 110, 94, 93 (k1 to k21; k1-k9
+#    sum to 505) and outcome sizes 77, 46, 142, 169, 245, 142, 111, 171, 189, 198, 322 (k1 to k11;
+#    k1-k3 sum to 265, k6-k9 to 613, as the Results give). (L2) The author's own k-means. Cue
+#    clusters are numbered by decreasing PC1 contribution per unit, as the paper's are (Source
+#    Data Fig. 2c falls from 0.121 for k1 to -0.0026 for k21); outcome clusters are matched to the
+#    paper's by largest member overlap with L1 (Hungarian assignment), or, when L1 fails, by
+#    correlation of cluster-mean 80-value profiles with the means of the Source Data Fig. 4b
+#    sheets. Claims that name a cluster need L1 or this matching.
+#  - Networks. Cue subnetwork k1-k9 and supranetwork k10-k21 (Results; Source Data Fig. 3e rows
+#    "k1_k9" and "k10_k21", Fig. 2f with 505 units). The Supplementary Methods name "clusters 1-8"
+#    (hubs, lesion); that is shown as a variant. Phasic outcome network k1-k3 (n = 265) and tonic
+#    k6-k9 (n = 613) (Results). The Supplementary Methods name phasic "clusters 1-5" and tonic
+#    "clusters 7-10" for the hubs. Source Data use k1-k9 for the cue hubs (Fig. 2f, 505 rows),
+#    k1-k3 and k6-k9 for the outcome hubs (Fig. 4f, 265 and 613 rows) and for the lesions (see
+#    Shuffle, lesion), and the Methods' sets are variants there. Source Data Fig. 5e's row "1_3"
+#    holds 679 units, the size of k1-k5, so for Fig. 5e alone phasic is read as (p-a) k1-k3 or
+#    (p-b) k1-k5.
+#  - PCA. MATLAB pca with its defaults (columns centred, not scaled), units or clusters as rows;
+#    percent variance explained as the paper's "% firing variance" or "% signaling variance".
+#    A PC's sign is arbitrary; each criterion fixes the orientation it uses.
+#  - Shuffle, PC1 contribution (Supplementary Methods, PCA). 1000 iterations. The paper does not
+#    say what is permuted. Open, (s-a) each row of the shuffled clusters permuted independently
+#    across its columns, or (s-b) all entries of the shuffled block permuted together.
+#  - Shuffle, lesion (Results, paragraph 7; Supplementary Methods, 'Lesion' x PCA x linear
+#    regression). 1000 iterations. The Results shuffle cluster firing and then regress; the
+#    Supplementary Methods shuffle beta coefficients. Source Data Fig. 3c, 3d, 5c and 5d middle
+#    hold the matrices the paper ran PCA on, and they settle three points. (1) The shuffled
+#    clusters are k1-k9 (Fig. 3c), k10-k21 (3d), k1-k3 (5c) and k6-k9 (5d); every other row equals
+#    the intact matrix. (2) Cue lesion: each shuffled row's values are close to that row's mean
+#    over the 14 intervals of the same regressor, so (s-c) each shuffled cluster's values are
+#    permuted across the 14 intervals (betas, or firing before regression; both give this),
+#    averaged over the 1000 iterations. Outcome lesion: the shuffled rows are close to 0 (k1 to k3
+#    within 0.05), which a permutation of betas (s-a, s-b) cannot give (they keep the row or block
+#    mean, 0.17 for k1-k3). They fit (s-d) each shuffled cluster's firing permuted across its 16
+#    trial rows before regression, betas averaged over the 1000 iterations; whether intervals are
+#    permuted too is open. (3) PCA (MATLAB defaults) of these averaged matrices gives 79.95% and
+#    16.82% (Fig. 5c) and 61.27% and 29.77% (Fig. 5d), the paper's 80.0, 16.8, 61.3 and 29.8; so
+#    the reported percentages are (v-a) from one PCA of the averaged shuffled matrix. The
+#    Supplementary Methods' (v-b), PCA per iteration with weights averaged, is shown as a variant;
+#    for it each iteration's PC is sign-aligned to the intact PC (positive dot product), a choice
+#    the paper does not state. s-a and s-b are shown as variants.
+#  - Regression (Supplementary Methods, Linear regression). Per cluster and interval, MATLAB
+#    regress of firing on two regressors over the 16 trial rows. Cue, threat probability (1 for
+#    the 4 danger rows, 0.25 for the 8 uncertainty rows, 0 for the 4 safety rows) and behaviour
+#    ("the trial-specific, mean suppression ratio for the cluster"), 14 1-s intervals. Outcome,
+#    shock (1, 1, 0, 0 for danger, uncertainty shock, uncertainty omission, safety) and prediction
+#    error (0, 0.75, -0.25, 0), 20 500-ms intervals. Open, (r-a) one regression on the cluster's
+#    mean normalized firing per trial row, with behaviour the mean over member units of that row's
+#    suppression ratio, or (r-b) one regression per unit on its own trials and its session's
+#    ratios, betas then averaged within the cluster (the legends call them "Mean cluster beta
+#    weights", with SEM); and (i-a) with an intercept column or (i-b) without. Source Data Fig. 3b
+#    middle holds the paper's 21 x 28 cue beta matrix and Fig. 5b middle the outcome matrix; the
+#    reading whose matrix matches them is to be adopted where the readings disagree.
+#  - Mapping (Supplementary Methods, Mapping cluster and network membership). The Methods
+#    subtract "the proportion contributing to each network ... from the overall proportion". The
+#    paper's own values follow a different formula: Source Data Fig. 3e right is, per region, its
+#    share of subnetwork units minus its share of supranetwork units, in percentage points (DPG,
+#    62/505 - 83/1307 = 5.93; LPAG, 61/505 - 61/1307 = 7.41), and Fig. 5e right is the region's
+#    share of tonic units minus its share of phasic units (MnR, 24/613 - 57/679 = -4.48). That
+#    formula is used; the region's proportion in a network minus the network's overall proportion
+#    (the Methods' wording) is shown as a variant.
+#
+# Not claimed. The sex splits (Supplementary Figs. 3, 5, 6, 7) carry no stated finding; Fig. 2a and
+# 4a heat maps and Supplementary Fig. 4 (rat x cluster counts) are descriptive.
+schema_version: 2
+paper: doi:10.1038/s41467-022-34021-1
+claims:
+- id: source-data-cluster-link
+  kind: link
+  statement: The data set's units can be matched to the rows of the paper's Source Data cluster
+    sheets, which gives the paper's own cue and outcome cluster membership.
+  source: Source Data, sheets Figure 2b k1 to k21 and Figure 4b k1 to k11; Supplementary Methods,
+    Z-score normalization and K-means clustering
+  criterion: For each unit, the 42-value cue row and 80-value outcome row are computed with the
+    shared method, under each normalization reading (n-a, n-b, w-a, w-b), and compared with the
+    rows of the Source Data sheets. A unit matches a row when the largest absolute difference is
+    below 0.01 (a standard tolerance for rounding). The link holds (reproduced) when, under one
+    reading, at least 95% of the 1812 Source Data cue rows and of the 1812 outcome rows each match
+    exactly one unit; partially reproduced for 50% to 95%, using the best Pearson correlation
+    above 0.99 as the match; not reproduced below. The reading that matches is reported, as it
+    settles the normalization readings for the other claims.
+- id: fig1c-suppression-order
+  statement: During recording sessions suppression of rewarded nose poking was high to danger,
+    intermediate to uncertainty and low to safety, with a main effect of cue (F(2,142) = 149.2,
+    p = 1.26 x 10^-35) over 73 sessions.
+  source: Results, paragraph 1; Figure 1c; Source Data Fig. 1c
+  quote: Suppression of rewarded nose poking was high to danger, intermediate to uncertainty, and
+    low to safety (Fig. 1c ; ANOVA main effect of cue [ F (2,142) = 149.2, p = 1.26 × 10 –35 ]
+  statistics:
+  - test: ANOVA, main effect of cue
+    statistic: F(2,142) = 149.2
+    p: 1.26e-35
+    n: 73 recording sessions
+  expected:
+  - quantity: F for the main effect of cue
+    value: 149.2
+    tolerance: 14.92
+  - quantity: mean danger suppression ratio over sessions (Source Data Fig. 1c)
+    value: 0.914
+    tolerance: 0.091
+  - quantity: mean uncertainty suppression ratio over sessions (Source Data Fig. 1c)
+    value: 0.709
+    tolerance: 0.071
+  - quantity: mean safety suppression ratio over sessions (Source Data Fig. 1c)
+    value: 0.230
+    tolerance: 0.023
+  criterion: Session values per cue as in the shared method (suppression ratio). The ANOVA design
+    is not given. Its degrees of freedom, 2 and 142 with 73 sessions, fit (a-a) a cue (within) x
+    sex (between, sessions as subjects) mixed ANOVA, error df 2 x (73 - 2); (a-b) a one-way
+    repeated-measures ANOVA over sessions has df 2 and 144 and is shown as well. On the paper's
+    own Source Data Fig. 1c values (a-b) gives F(2,144) = 116.2, so (a-a) is the leading reading.
+    Reproduced when the session means are ordered danger > uncertainty > safety, each within
+    tolerance, and the cue effect has p < 0.05 with F within tolerance under one reading;
+    partially reproduced when the order and p < 0.05 hold but F or a mean is out of tolerance.
+- id: figs2-each-rat-discriminates
+  statement: Rats showed complete discrimination during the recording sessions, shown rat by rat
+    with 95% bootstrap confidence intervals over sessions.
+  source: Results, paragraph 1; Supplementary Fig. 2 legend
+  quote: Rats showed complete discrimination during recording sessions
+  criterion: Per rat, session suppression ratios per cue (shared method). Supplementary Fig. 2 marks
+    "+" where a "95% bootstrap confidence interval does not contain zero" but does not say of
+    which quantity, and its marks are not readable in the extracted text. Bootstrap, 10,000
+    resamples of sessions, percentile interval (a standard choice). Readings, (c-a) the intervals
+    of danger minus safety and uncertainty minus safety exclude zero; (c-b) the intervals of danger
+    minus uncertainty and uncertainty minus safety exclude zero; (c-c) the interval of each cue's
+    suppression ratio excludes zero for danger and uncertainty. Rats 4 and 6 (2 and 1 sessions)
+    give no usable interval and are reported by their means. Reproduced when, under one reading,
+    every rat with at least 3 sessions meets it; partially reproduced for at least 6 of those 8.
+- id: units-sessions-subjects
+  statement: 1812 single units were isolated and held over 73 one-hour sessions from ten rats,
+    965 of them from the four females, with per-subject totals of 192, 328, 141, 32, 52, 43, 116,
+    195, 409 and 304 units (subjects 1 to 10).
+  source: Results, paragraph 1; Supplementary Tables 1 and 2
+  quote: We isolated and held 1812 neurons during 73, 1-h recording sessions (965 neurons from the 4
+    females, Supplementary Table S1 )
+  expected:
+  - quantity: single units
+    value: 1812
+    tolerance: 0
+  - quantity: units from female rats
+    value: 965
+    tolerance: 0
+  - quantity: recording sessions
+    value: 73
+    tolerance: 0
+  - quantity: units from subject 1
+    value: 192
+    tolerance: 0
+  - quantity: units from subject 2
+    value: 328
+    tolerance: 0
+  - quantity: units from subject 3
+    value: 141
+    tolerance: 0
+  - quantity: units from subject 4
+    value: 32
+    tolerance: 0
+  - quantity: units from subject 5
+    value: 52
+    tolerance: 0
+  - quantity: units from subject 6
+    value: 43
+    tolerance: 0
+  - quantity: units from subject 7
+    value: 116
+    tolerance: 0
+  - quantity: units from subject 8
+    value: 195
+    tolerance: 0
+  - quantity: units from subject 9
+    value: 409
+    tolerance: 0
+  - quantity: units from subject 10
+    value: 304
+    tolerance: 0
+  criterion: Counts of units, of distinct recording sessions (animal and date in the unit
+    identifier) and of units per animal, with animal sex from Supplementary Table 1. Tolerance 0, as
+    these are counts of a deposited set. How the data set's animal identifiers map to subjects 1 to
+    10 is not given; per-subject totals are compared as a multiset when they cannot be mapped.
+    Sessions are counted both as 73 (Results) and against Supplementary Table 1's 75.
+- id: fig1e-regions
+  statement: The units spanned 21 brainstem regions, from the deep gray layer of the superior
+    colliculus to the median raphe, with the largest counts in the paramedian raphe (236),
+    ventral dorsal raphe (208) and dorsolateral periaqueductal gray (179).
+  source: Results, paragraph 1; Figure 1d and 1e; Supplementary Table 2; Source Data Fig. 3e left
+  quote: Neurons spanned 21 brainstem regions 13 (Fig. 1d ), including subregions and neighboring
+    regions of the superior colliculus, periaqueductal gray, dorsal raphe, and median raphe
+  expected:
+  - quantity: regions with units
+    value: 21
+    tolerance: 0
+  - quantity: units in PMnR (Source Data Fig. 3e left, sum of rows)
+    value: 236
+    tolerance: 23.6
+  - quantity: units in DRV
+    value: 208
+    tolerance: 20.8
+  - quantity: units in DLPAG
+    value: 179
+    tolerance: 17.9
+  - quantity: units in VLPAG
+    value: 147
+    tolerance: 14.7
+  - quantity: units in DPG
+    value: 145
+    tolerance: 14.5
+  criterion: Count of units per region label. Per-region counts are the sums of the two rows of
+    Source Data Fig. 3e left, which agree with the row totals of Supplementary Table 2 except Pa4
+    and x/scp (17 and 38 there, 21 and 34 in the table's extracted cells). Reproduced when 21
+    regions hold units and the five counts are within tolerance.
+- id: fig2b-cue-clusters
+  statement: K-means clustering of cue firing organized brainstem neurons into at least 21
+    functional clusters, of sizes from 24 to 219 (median 83).
+  source: Results, paragraph 2; Figure 2b; Supplementary Methods, K-means
+    clustering
+  quote: K-means clustering for mean, single-unit firing in 1-s bins from 2-s prior to 2-s
+    following cue presentation (danger, uncertainty, and safety) revealed neurons could be organized
+    into at least 21 functional clusters ... Cluster size varied (min size = 24, max = 219, and
+    median = 83)
+  expected:
+  - quantity: smallest cue cluster
+    value: 24
+    tolerance: 2.4
+  - quantity: largest cue cluster
+    value: 219
+    tolerance: 21.9
+  - quantity: median cue cluster size
+    value: 83
+    tolerance: 8.3
+  criterion: Shared method (cue matrix, k-means, L2) with 21 clusters. The paper's choice of 21 was
+    by inspection and is taken as given; the mean squared distance for 1 to 25 clusters is
+    reported. Reproduced when the median over seeds of the smallest, largest and median cluster
+    sizes are all within tolerance; partially reproduced when two are.
+- id: fig2c-cue-pc1-ordered
+  statement: Across all 1812 neurons, the first principal component of cue firing (29.7% of firing
+    variance) was ordered cue firing, danger > uncertainty > safety.
+  source: Results, paragraph 2; Figure 2c inset
+  quote: Principal component analysis (PCA) revealed ordered cue firing (danger > uncertainty >
+    safety) to be the primary low-dimensional feature across all brainstem neurons (PC1, explaining
+    29.7% of firing variance
+  expected:
+    quantity: variance explained by PC1 of cue firing
+    value: 29.7
+    tolerance: 2.97
+    unit: percent
+  criterion: PCA of the 1812 x 42 cue matrix (shared method). PC1 oriented so its mean weight over
+    the 10 danger cue intervals is positive. Reproduced when the variance explained is within
+    tolerance and the mean PC1 weight over the 10 cue intervals is ordered danger > uncertainty >
+    safety; partially reproduced when the order holds and the variance is out of tolerance.
+    Open, how 29.7% was computed. On the paper's own matrix (Source Data Fig. 2c inset, 1812 x
+    42) PCA with MATLAB's defaults gives 47.1% for PC1; with columns scaled 39.2%, uncentred
+    50.2%, with intervals as observations 25.8%; none gives 29.7%. The network PCAs of Fig. 4e
+    do reproduce from Source Data with the defaults (37.0% and 29.2%), so the defaults stay the
+    method, and the author reports the value on the Source Data matrix beside the recomputed one.
+- id: fig2c-pc1-contribution
+  statement: PC1 firing information originated from nine clusters (k1 to k9), a minority of
+    neurons (505 of 1812, 27.9%), with k1 and k2 contributing most per unit.
+  source: Results, paragraphs 3 and 4; Figure 2c; Source Data Fig. 2c
+  quote: PC1 firing information originated from nine clusters (k1–k9; Fig. 2c and Supplementary
+    Fig. S5 ) composed of a minority of neurons (505/1812, 27.9%)
+  depends_on:
+  - fig2c-cue-pc1-ordered
+  expected:
+  - quantity: neurons in the nine clusters contributing most to PC1
+    value: 505
+    tolerance: 50.5
+  - quantity: PC1 contribution per unit of k1 (Source Data Fig. 2c)
+    value: 0.121
+    tolerance: 0.012
+    unit: percent variance per neuron
+  - quantity: PC1 contribution per unit of k2 (Source Data Fig. 2c)
+    value: 0.113
+    tolerance: 0.011
+    unit: percent variance per neuron
+  criterion: Per cluster, its members' rows of the cue matrix shuffled (readings s-a, s-b), PCA,
+    and the drop in PC1 variance explained from the intact 29.7% averaged over 1000 iterations,
+    divided by the cluster's size (Results; Supplementary Methods, PCA). Under L1, reproduced when
+    the nine largest contributions per unit are those of k1 to k9 and k1 and k2 are the two
+    largest, and the k1 and k2 values are within tolerance; partially reproduced when at most two
+    clusters are out of place. Under L2, the nine clusters with the largest contributions must
+    hold a total within the tolerance of 505. The reading that reproduces the Source Data values
+    is reported.
+- id: fig2d-danger-latency
+  statement: Clusters k1 to k9 showed shorter firing latencies after danger onset, and across all
+    21 clusters danger firing latency correlated negatively with the magnitude of PC1 contribution
+    (R2 = 0.41, p = 0.0017).
+  source: Results, paragraph 4; Figure 2d; Supplementary Methods, Danger
+    firing latency
+  quote: Clusters k1–k9 showed shorter firing latencies following danger onset, and across all
+    clusters, danger firing latency negatively correlated with the magnitude of PC1 contribution (
+    R 2 = 0.41, p = 0.0017; Fig. 2d )
+  depends_on:
+  - fig2c-pc1-contribution
+  statistics:
+  - test: linear correlation across clusters
+    statistic: R2 = 0.41
+    p: 0.0017
+    n: 21 cue clusters
+  expected:
+    quantity: R2 between cluster mean danger latency and PC1 contribution
+    value: 0.41
+    tolerance: 0.041
+  criterion: Per unit, mean normalized danger firing over the 10-s cue in 10,000 1-ms bins, latency
+    = the bin of greatest change found by MATLAB findchangepts with its defaults (one change point
+    in the mean); the cluster's latency is the mean over its units (Supplementary Methods). Open,
+    (l-a) normalized 1-ms firing built from spike times with the unit's z-score parameters, or (l-b)
+    the 250-ms normalized firing repeated into 1-ms bins; and which units carry no latency (Source
+    Data Fig. 2d lists 1498 of 1812 units; a unit with no change point, such as one silent during
+    danger, is left out). The contribution is read as (c-a) per unit (Results) or (c-b) the
+    cluster total; on the paper's Source Data values (c-a) gives R2 = 0.51 and (c-b) 0.39.
+    Reproduced when, under one reading, the correlation is negative with p < 0.05, R2 within
+    tolerance, and the mean latency of k1 to k9 units is below that of k10 to k21 units; partially
+    reproduced when negative and significant with R2 out of tolerance.
+- id: fig2e-cue-subnetwork
+  statement: Clusters k1 to k9 separated from the rest by cluster-cluster cue firing correlations,
+    forming a functional subnetwork within the larger brainstem network, with k3 the exception
+    showing weak correlations with its fellow clusters.
+  source: Results, paragraph 4; Figure 2e; Supplementary Methods, Correlated
+    cluster firing
+  quote: Clusters k1–k9 further separated themselves based on cluster-cluster cue firing
+    correlations (Fig. 2e and Supplementary Fig. S5 ), forming a functional subnetwork within the
+    larger brainstem network. An exception was k3, which showed weak firing correlations with fellow
+    clusters.
+  depends_on:
+  - fig2c-pc1-contribution
+  criterion: Pearson correlation between every pair of cluster mean cue profiles. The Methods give
+    36 columns (12 1-s intervals per cue, 2 s pre-cue through the 10-s cue) and Source Data Fig. 2e
+    holds 42 (14 per cue); both are run, and r and r squared both reported (the Methods write
+    "Pearson's correlation coefficient (R2)"). No test is given. Reproduced when the mean
+    correlation among the 36 pairs of k1 to k9 exceeds the mean correlation of k1 to k9 with k10
+    to k21, and k3 has the lowest mean correlation with the other eight subnetwork clusters;
+    partially reproduced when only the first holds.
+- id: fig2f-cue-hubs
+  statement: K1 and k2 were hubs of the cue subnetwork, with the greatest PC1 contributions, short
+    danger latencies, and single-unit firing that correlated most strongly with the mean cue firing
+    of their fellow subnetwork clusters.
+  source: Results, paragraph 4; Figure 2f; Supplementary Methods, Hub
+    identification with single unit x cluster correlations; Source Data Fig. 2f
+  quote: K1 and k2 neurons showed indicators of a subnetwork hub ... Furthermore, k1 and k2
+    single-unit firing correlated most strongly with mean cue firing of their fellow subnetwork
+    clusters
+  depends_on:
+  - fig2c-pc1-contribution
+  statistics:
+  - test: two-tailed independent samples t-test (means) and Levene's test (variances), between
+      clusters
+    p: 0.007
+    p_relation: "<"
+    corrected: Bonferroni (0.05/7)
+    n: 505 cue subnetwork units
+  expected:
+  - quantity: mean unit x cluster correlation of k1 (Source Data Fig. 2f)
+    value: 0.424
+    tolerance: 0.042
+  - quantity: mean unit x cluster correlation of k2 (Source Data Fig. 2f)
+    value: 0.466
+    tolerance: 0.047
+  criterion: For each unit of k1 to k9, its danger firing over 14 1-s intervals (from 2 s pre-cue)
+    correlated with the mean danger firing of each other subnetwork cluster, and the coefficients
+    averaged (Supplementary Methods). The Methods say seven other clusters and a threshold of
+    0.05/7; with nine clusters there are eight, so thresholds 0.05/7 and 0.05/8 are both run, and
+    the Methods' eight-cluster subnetwork is a variant. Reproduced when k1 and k2 have the two
+    highest mean coefficients, each within tolerance, and each exceeds every one of k3 to k9 by
+    t-test at the threshold; partially reproduced when they are the two highest and not all tests
+    pass. Levene's tests for lower variance are reported.
+- id: fig2g-cue-anatomy
+  statement: Neurons of every cue cluster were found in at least six brainstem regions, and
+    subnetwork neurons, including the k1 and k2 hubs, were concentrated in the deep layer of the
+    superior colliculus and the subdivisions of the periaqueductal gray.
+  source: Results, paragraph 4; Figure 2g
+  quote: Neurons from each cluster were observed in at least six brainstem regions (Fig. 2g ).
+    Subnetwork neurons ... were concentrated in the deep layer of the superior colliculus and
+    subdivisions of the periaqueductal gray.
+  depends_on:
+  - fig2c-pc1-contribution
+  criterion: Count of regions holding at least one unit, per cluster. "Concentrated" has no measure
+    in the paper; it is read as the proportion of units in DPG, DpWh, DLPAG, LPAG and VLPAG being
+    higher for the subnetwork than for the supranetwork (on Source Data Fig. 3e left, 220/505 =
+    43.6% against 445/1307 = 34.0%), and the same for k1 and k2 together. Reproduced when all 21 clusters span at least six
+    regions and both proportions are higher; partially reproduced when one part holds.
+- id: fig3a-cluster-signals
+  statement: Linear regression revealed distinct threat probability and fear behaviour signals
+    across the 21 cue clusters, varying in time, with greatest signaling at onset (k5), at offset
+    (k15), sustained over the cue (k10), or peaking mid cue (k6).
+  source: Results, paragraph 5; Figure 3a
+  quote: Linear regression revealed unique fear behavior and threat probability signaling across
+    the 21 clusters (Fig. 3a ). Clusters showed considerable temporal variation in signaling prior
+    to and following cue presentation, characterized by greatest signaling at onset (e.g., k5),
+    offset (e.g., k15), sustained over cue presentation (e.g., k10), or even U-shaped signaling
+    peaking mid cue (e.g., k6).
+  data: with_labels
+  depends_on:
+  - source-data-cluster-link
+  criterion: Regression as in the shared method (readings r-a, r-b, i-a, i-b), under L1. The shapes
+    have no measure in the paper; read on the larger of the two betas in absolute value per 1-s
+    interval. Onset (k5), the maximum in the first cue second; offset (k15), the maximum in the
+    last cue second or the first second after the cue; sustained (k10), every cue second at least
+    half of the maximum; mid-cue peak (k6), the maximum in cue seconds 3 to 8 and both the first
+    and the last cue second below it by at least half. Reproduced when all four hold under one
+    reading; partially reproduced for two or three. Source Data's "Figure 3a" sheets repeat the
+    Fig. 2b firing rows and give no betas.
+- id: fig3b-signal-pca
+  statement: PCA of cluster beta weights showed PC1 (62.7% of signaling variance) to be a sustained
+    behaviour signal peaking mid cue with lesser, opposing threat probability signaling, and PC2
+    (26.12%) a sustained threat probability signal peaking early in the cue with lesser behaviour
+    signaling.
+  source: Results, paragraph 6; Figure 3b;
+    Source Data Fig. 3b
+  quote: PC1 reflected a sustained behavior signal that peaked mid cue presentation, with lesser and
+    opposing threat probability signaling (62.7% of signaling variance; Fig. 3b , middle). PC2
+    reflected a sustained threat probability signal that peaked during early cue presentation, with
+    lesser behavior signaling (26.12% of signaling variance
+  expected:
+  - quantity: variance explained by PC1 of cue beta weights
+    value: 62.7
+    tolerance: 6.27
+    unit: percent
+  - quantity: variance explained by PC2 of cue beta weights
+    value: 26.12
+    tolerance: 2.61
+    unit: percent
+  criterion: PCA of the 21 x 28 matrix of cluster betas (columns 1-14 probability, 15-28 behaviour;
+    shared method, regression and PCA), first on the paper's own matrix in Source Data Fig. 3b
+    middle, then on the recomputed one (L1 and L2). PC1 oriented so its mean behaviour weight over
+    the 10 cue seconds is positive, PC2 so its mean probability weight is positive. Reproduced when
+    both percentages are within tolerance and the shapes hold; PC1 mean absolute behaviour weight
+    over the cue above the probability weight, its behaviour maximum in cue seconds 3 to 8, and
+    its mean probability weight negative; PC2 mean absolute probability weight above the
+    behaviour weight, with its probability maximum in cue seconds 1 to 3. Partially reproduced
+    when the shapes hold and a percentage is out of tolerance.
+- id: fig3c-subnetwork-lesion
+  statement: Lesioning (shuffling) the cue subnetwork left the sustained behaviour signal intact
+    but reduced threat probability signaling, most at cue onset, so sustained threat probability
+    signaling depended more on the subnetwork.
+  source: Results, paragraph 8; Figure 3c
+  quote: Lesioning the subnetwork left sustained behavior signaling intact (Fig. 3c , PC1, middle),
+    but reduced threat probability signaling, most apparent at cue onset (Fig. 3c , PC2, bottom).
+  depends_on:
+  - fig3b-signal-pca
+  criterion: K1 to k9 shuffled as in the shared method (Shuffle, lesion; s-c, with s-a and s-b as
+    variants), PCA of the averaged matrix (v-a; v-b a variant), first on the paper's matrix in
+    Source Data Fig. 3c middle, then recomputed; the Methods' clusters 1-8 is not used, as
+    Source Data shuffle k1 to k9. The paper gives no measure. Reproduced when the mean PC1 behaviour weight over the 10 cue seconds
+    after this lesion is at least 75% of the intact value (a choice, for "intact") and above that
+    after the supranetwork lesion, and the PC2 probability weight in the first cue second is below
+    the intact PC2 value; partially reproduced when one of the two holds.
+- id: fig3d-supranetwork-lesion
+  statement: Lesioning the cue supranetwork diminished the sustained behaviour signal and turned the
+    sustained threat probability signal into a dynamic probability-to-behaviour signal, so
+    sustained behaviour signaling depended more on the supranetwork.
+  source: Results, paragraph 8; Figure 3d
+  quote: By contrast, lesioning the supranetwork diminished sustained behavior signaling (Fig. 3d ,
+    PC1, middle), and shifted sustained threat probability signaling to dynamic,
+    probability-to-behavior signaling (Fig. 3d , PC2, bottom).
+  depends_on:
+  - fig3b-signal-pca
+  criterion: As fig3c-subnetwork-lesion, with k10 to k21 shuffled (paper's matrix, Source Data
+    Fig. 3d middle). The paper gives no measure.
+    Reproduced when the mean PC1 behaviour weight over the 10 cue seconds is below the intact value
+    and PC2's probability weights peak (in absolute value) in the first half of the cue while its
+    behaviour weights peak in the second half; partially reproduced when one holds.
+- id: fig3e-network-anatomy
+  statement: Subnetwork and supranetwork neurons were distributed throughout the brainstem, with
+    subtle biases only for the subnetwork, to which the deep layer of the superior colliculus and
+    the lateral periaqueductal gray contributed more.
+  source: Results, paragraph 8; Figure 3e;
+    Source Data Fig. 3e right
+  quote: Subtle anatomical biases were only apparent for the cue subnetwork (Fig. 3e ), with the
+    deep layer of the superior colliculus and the lateral subdivision of the periaqueductal gray
+    (also sources of hub neurons) contributing more to the cue subnetwork.
+  depends_on:
+  - fig2c-pc1-contribution
+  expected:
+  - quantity: differential subnetwork composition of DPG (Source Data Fig. 3e right)
+    value: 5.93
+    tolerance: 0.59
+    unit: percentage points
+  - quantity: differential subnetwork composition of LPAG (Source Data Fig. 3e right)
+    value: 7.41
+    tolerance: 0.74
+    unit: percentage points
+  criterion: Differential composition per region (shared method, mapping), the region's share of
+    k1 to k9 units minus its share of k10 to k21 units. No test is given. Reproduced when DPG and LPAG have the two largest positive
+    differentials and both are within tolerance (L1) or, under L2, both are the two largest;
+    partially reproduced when both are positive and among the four largest.
+- id: fig4b-outcome-clusters
+  statement: K-means clustering of mean post-shock firing for the four trial types organized
+    brainstem neurons into at least 11 functional clusters, of sizes from 46 to 322 (median 169).
+  source: Results, paragraph 9; Figure 4b;
+    Supplementary Methods, K-means clustering
+  quote: K-means clustering for mean post-shock firing (4 trial types ... revealed brainstem neurons
+    could be organized into at least 11 functional clusters (min size = 46, max = 322, and median =
+    169
+  expected:
+  - quantity: smallest outcome cluster
+    value: 46
+    tolerance: 4.6
+  - quantity: largest outcome cluster
+    value: 322
+    tolerance: 32.2
+  - quantity: median outcome cluster size
+    value: 169
+    tolerance: 16.9
+  criterion: Shared method (outcome matrix, k-means, L2) with 11 clusters; the mean squared distance
+    for 1 to 20 clusters is reported. Reproduced when the median over seeds of the smallest,
+    largest and median sizes are all within tolerance; partially reproduced when two are.
+- id: fig4c-positive-prediction-error
+  statement: PCA of post-shock firing of all 1812 neurons showed positive prediction error on top
+    of shock responding as PC1 (17.7% of firing variance), with a larger weight for surprising shock
+    on uncertainty trials than for predicted shock on danger trials, and no opposing negative error
+    for surprising omission.
+  source: Results, paragraph 9; Figure 4c
+  quote: PCA for mean post-shock firing of all 1812 brainstem neurons revealed positive prediction
+    error, on top of shock responding, to be the primary low-dimensional feature (PC1 explains 17.7%
+    of firing variance ... The prediction error is "positive" because the PC1 weight for surprising
+    shock delivery (on uncertainty trials) exceeded the PC1 weight for predicted shock (on danger
+    trials). The prediction error is not "signed" because it did not include an opposing, negative
+    error
+  expected:
+    quantity: variance explained by PC1 of outcome firing
+    value: 17.7
+    tolerance: 1.77
+    unit: percent
+  criterion: PCA of the 1812 x 80 outcome matrix (shared method), PC1 oriented so its mean
+    uncertainty shock weight is positive. Weights compared as means over the 20 intervals.
+    Reproduced when the variance is within tolerance, the uncertainty shock weight exceeds the
+    danger weight, the danger weight exceeds the safety weight (shock responding), and the
+    uncertainty omission weight is not below the safety weight; partially reproduced when the
+    weight relations hold and the variance is out of tolerance. Open, how 17.7% was computed. On
+    the paper's own matrix (Source Data Fig. 4c, 1812 x 80) PCA with MATLAB's defaults gives 24.2%
+    for PC1; with columns scaled 21.2%, uncentred 25.7%, with intervals as observations 15.2%;
+    none gives 17.7%. The author reports the value on the Source Data matrix beside the recomputed
+    one.
+- id: fig4b-phasic-network
+  statement: Outcome clusters k1 to k3 showed phasic firing changes after shock (k1 the greatest
+    increases to surprising shock, k2 to predicted shock, k3 suppressed regardless of trial type)
+    and by their correlations formed a phasic outcome network.
+  source: Results, paragraph 10; Figure 4b and 4d
+  quote: K1 neurons showed the greatest, phasic firing increases to surprising shock, and k2
+    neurons greatest, phasic firing increases to predicted shock, while k3 neurons physically
+    suppressed firing following shock irrespective of trial type (Fig. 4b , left column).
+    Cluster-cluster firing correlations revealed k1–k3 formed a phasic outcome network
+  data: with_labels
+  depends_on:
+  - source-data-cluster-link
+  criterion: Under L1 (and L2 matched to it), cluster mean outcome profiles. Phasic, the Methods'
+    temporal index, |mean normalized firing 1 s following shock offset minus mean normalized
+    firing 5 s following shock offset|, on firing averaged over danger and uncertainty shock
+    (Supplementary Methods, Determining temporal firing pattern). Open, the second term read as
+    (t-a) the mean over the first 5 s or (t-b) the mean over the 1 s ending 5 s after shock
+    offset. K1 to k3 must each have a higher index than every one of k6 to k9 (the paper
+    contrasts phasic with tonic clusters only, and the Methods' phasic network is clusters 1-5,
+    so k4 and k5 are not required to be lower). Profiles, in the
+    first 1 s, k1 uncertainty shock > danger > 0; k2 danger > uncertainty shock > 0; k3 below 0 on
+    both. Network, the mean pairwise Pearson correlation of 80-value cluster profiles among k1 to
+    k3 above their mean correlation with k4 to k11. Reproduced when all hold; partially
+    reproduced when the profiles hold and one other part fails.
+- id: fig4b-tonic-network
+  statement: Outcome clusters k6 to k9 showed sustained firing changes after surprising shock (k6
+    selectively inhibited, k7 and k8 sustained increases maximal to surprising shock) and by their
+    correlations formed a tonic outcome network.
+  source: Results, paragraph 10; Figure 4b and 4d
+  quote: K6–k9 neurons showed sustained firing changes following surprising shock (Fig. 4b , right
+    column). K6 neurons selectively inhibited firing to surprising shock, while k7 and k8 neurons
+    showed sustained firing increases that were maximal to surprising shock. Cluster-cluster firing
+    correlations revealed k6–k9 formed a tonic outcome network
+  data: with_labels
+  depends_on:
+  - source-data-cluster-link
+  criterion: Under L1, means over the 10 s after shock offset. K6, uncertainty shock below 0 and
+    below each other trial type; k7 and k8, uncertainty shock above 0 and above each other trial
+    type, with the mean over seconds 5 to 10 above half of the mean over the first second
+    (sustained, a choice); network, the mean pairwise correlation among k6 to k9 above their mean
+    correlation with the other seven clusters. Reproduced when all hold; partially reproduced when
+    the k6 to k8 profiles hold and the network part fails.
+- id: fig4e-network-pca
+  statement: Within the phasic outcome network, PC1 (37.0% of firing variance) was equivalent phasic
+    shock firing on danger and uncertainty trials; within the tonic outcome network, PC1 (29.2%)
+    was selective firing to surprising shock with opposing firing to safety.
+  source: Results, paragraph 10; Figure 4e
+  quote: Network-specific PCA for post-shock firing revealed equivalent and phasic shock firing on
+    danger and uncertainty trials to be the primary low-dimensional feature of the phasic outcome
+    network (explaining 37.0% of firing variance; Fig. 4e , left). PCA further revealed selective
+    firing to surprising shock, and opposing firing to safety, to be the primary low-dimensional
+    feature of the tonic outcome network (explaining 29.2% of firing variance
+  depends_on:
+  - fig4b-phasic-network
+  - fig4b-tonic-network
+  expected:
+  - quantity: variance explained by PC1 of the phasic network
+    value: 37.0
+    tolerance: 3.7
+    unit: percent
+  - quantity: variance explained by PC1 of the tonic network
+    value: 29.2
+    tolerance: 2.92
+    unit: percent
+  criterion: PCA of the outcome rows of the 265 phasic (k1 to k3; Source Data Fig. 4e left has 265
+    rows) and the 613 tonic units. Phasic PC1, oriented so its danger weight in the first second
+    is positive; its danger and uncertainty shock weights in the first second both exceed twice
+    their means over seconds 5 to 10, and differ from each other by less than either differs from
+    safety. Tonic PC1, oriented so its uncertainty shock mean is positive; uncertainty shock has
+    the largest mean of the four types and safety a negative mean. The factors (twice, means) are
+    choices, as the paper gives none. Reproduced when both percentages are within tolerance and
+    both shapes hold; partially reproduced when the shapes hold.
+- id: fig4f-outcome-hubs
+  statement: In the phasic outcome network, k1 and k2 single-unit firing correlated better with the
+    population firing of their fellow clusters than k3 did; in the tonic network, k6, the cluster
+    decreasing firing to surprising shock, was the hub, correlating most strongly with its fellow
+    clusters.
+  source: Results, paragraph 11; Figure 4f; Supplementary Methods, Hub
+    identification
+  quote: Within the phasic outcome network, k1 and k2 single-unit firing was better correlated with
+    population firing of their fellow network clusters than were k3 neurons (Fig. 4f , left) ...
+    K6 neurons were a hub for the tonic outcome network. K6 neuron firing, the cluster decreasing
+    firing to surprising shock, correlated most strongly with population firing of their fellow
+    tonic outcome clusters
+  data: with_labels
+  depends_on:
+  - fig4b-phasic-network
+  - fig4b-tonic-network
+  statistics:
+  - test: two-tailed independent samples t-test and Levene's test, between clusters
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 265 phasic and 613 tonic units
+  criterion: Per unit, its 80-value outcome row correlated with the mean rows of each other cluster
+    of its network, averaged (Supplementary Methods). Networks k1 to k3 and k6 to k9, as in the
+    Results and Source Data Fig. 4f (265 and 613 units); the Methods' phasic clusters 1-5 and
+    tonic 7-10 are variants. Bonferroni threshold 0.05 divided by the number of between-cluster tests
+    within the network (the paper gives 0.05/7 only for the cue). Reproduced when k1 and k2 each
+    exceed k3 by t-test, and k6 has the highest mean, above each of k7 to k9 by t-test; partially
+    reproduced when the orderings hold without all tests passing. Levene's tests reported.
+- id: fig4g-outcome-anatomy
+  statement: Phasic outcome neurons were more common at the axis extremes (periaqueductal gray
+    subregions, dorsal raphe and paramedian raphe), while tonic outcome neurons, most strikingly the
+    k6 hub, were distributed throughout the brainstem.
+  source: Results, paragraph 11; Figure 4g
+  quote: Phasic outcome neurons were more common at axis extremes ... Tonic outcome neurons were
+    distributed throughout the brainstem, a pattern most striking for k6 hub neurons.
+  depends_on:
+  - fig4b-phasic-network
+  - fig4b-tonic-network
+  criterion: The paper gives no measure or test. Read as, the fraction of phasic units in DLPAG,
+    LPAG, VLPAG, DRL, DRD, DRV, PDR and PMnR exceeds the tonic fraction (on Source Data Fig. 4g
+    and the L1 sizes, 0.600 against 0.594), and the tonic network spans at least as many regions
+    as the phasic network. The number of regions holding k6 units is reported beside the other
+    clusters' (17, against 10 to 19, on Source Data Fig. 4g). Reproduced when both conditions
+    hold; not reproduced otherwise. As the paper's own values differ little, the effect size is
+    reported in any case.
+- id: fig5a-outcome-cluster-signals
+  statement: Regression revealed distinct shock and prediction error signals across the 11 outcome
+    clusters; k1 neurons transiently signaled both sensory shock and prediction error, while k6
+    neurons signaled only error.
+  source: Results, paragraph 12; Figure 5a
+  quote: First, cluster-specific linear regression revealed unique shock and prediction error
+    signals across the 11 outcome clusters (Fig. 5a ). For example, k1 neurons transiently signaled
+    both sensory shock and prediction error, while k6 neurons exclusively signaled error.
+  data: with_labels
+  depends_on:
+  - source-data-cluster-link
+  criterion: Outcome regression (shared method, readings r-a, r-b, i-a, i-b) under L1. K1, both
+    betas reach their largest absolute values in the first 2 s after shock offset and fall below
+    half of that by seconds 5 to 10 (transient, a choice); k6, the mean absolute prediction error
+    beta over the 10 s at least twice the mean absolute shock beta (exclusive, a choice).
+    Reproduced when both hold under one reading; partially reproduced when one does.
+- id: fig5b-outcome-signal-pca
+  statement: PCA of outcome cluster beta weights showed opposing sensory shock and prediction error
+    signals as PC1 (53.7% of signaling variance) and dynamic sensory shock to prediction error
+    signaling as PC2 (33.4%).
+  source: Results, paragraph 12; Figure 5b; Source Data Fig. 5b
+  quote: PCA for shock and prediction error beta coefficients across all clusters (therefore all
+    brainstem neurons) revealed opposing sensory shock and prediction error signals to be the
+    primary low-dimensional feature (PC1, 53.7% of signaling variance; Fig. 5b , middle). PC2
+    reflected dynamic, sensory shock to prediction error signaling (33.4% of signaling variance
+  expected:
+  - quantity: variance explained by PC1 of outcome beta weights
+    value: 53.7
+    tolerance: 5.37
+    unit: percent
+  - quantity: variance explained by PC2 of outcome beta weights
+    value: 33.4
+    tolerance: 3.34
+    unit: percent
+  criterion: PCA of the 11 x 40 matrix of outcome cluster betas (columns 1-20 shock, 21-40
+    prediction error; the Methods' "21-cluster" is a slip for 11), first on the paper's matrix
+    from Source Data Fig. 5b middle, then recomputed (L1, L2). PC1 opposing, its mean shock weight
+    and mean prediction error weight over the 20 intervals of opposite sign. PC2 dynamic, its
+    shock weights peak (in absolute value) in the first 2 s and its prediction error weights after
+    the first 2 s. Reproduced when both percentages are within tolerance and both shapes hold;
+    partially reproduced when the shapes hold.
+- id: fig5c-phasic-lesion
+  statement: Lesioning the phasic outcome network left signaling dominated by sustained prediction
+    error (80.0% of signaling variance), with residual sustained shock (16.8%), so rapid sensory
+    shock signaling depended on the phasic network.
+  source: Results, paragraph 13; Figure 5c
+  quote: Lesioning the phasic outcome network (using a PCA lesion approach identical to the cue
+    networks) left signaling dominated by sustained prediction error (80.0% of signaling variance;
+    Fig. 5c , middle), while the residual reflected sustained shock (16.8% of signaling variance
+  depends_on:
+  - fig5b-outcome-signal-pca
+  expected:
+  - quantity: variance explained by PC1 after the phasic lesion
+    value: 80.0
+    tolerance: 8.0
+    unit: percent
+  - quantity: variance explained by PC2 after the phasic lesion
+    value: 16.8
+    tolerance: 1.68
+    unit: percent
+  criterion: K1 to k3 shuffled as in the shared method (Shuffle, lesion; s-d, with s-a and s-b
+    as variants), PCA of the averaged beta matrix (v-a; v-b a variant), first on the paper's
+    matrix in Source Data Fig. 5c middle (it gives 79.95% and 16.82%), then recomputed. K1 to k3
+    are the clusters Source Data shuffle; k1 to k5 is not used. PC1, mean absolute
+    prediction error weight above the shock weight, with every interval from 1 to 10 s at least
+    half its maximum (sustained, a choice); PC2, mean absolute shock weight above the prediction
+    error weight. Reproduced when both percentages are within tolerance and both shapes hold under
+    one reading; partially reproduced when the shapes hold.
+- id: fig5d-tonic-lesion
+  statement: Lesioning the tonic outcome network left opposing, phasic sensory shock and prediction
+    error signaling as PC1 (61.3% of signaling variance) and dynamic sensory shock to prediction
+    error as PC2 (29.8%), similar to that of all neurons.
+  source: Results, paragraph 13; Figure 5d
+  quote: By contrast, lesioning the tonic outcome network emphasized opposing, phasic sensory shock
+    and prediction error signaling (61.3% of signaling variance; Fig. 5d , middle). Residual
+    signaling reflected dynamic, sensory shock to prediction error (29.8% of signaling variance
+  depends_on:
+  - fig5b-outcome-signal-pca
+  expected:
+  - quantity: variance explained by PC1 after the tonic lesion
+    value: 61.3
+    tolerance: 6.13
+    unit: percent
+  - quantity: variance explained by PC2 after the tonic lesion
+    value: 29.8
+    tolerance: 2.98
+    unit: percent
+  criterion: K6 to k9 shuffled as in fig5c-phasic-lesion (s-d, v-a; Source Data Fig. 5d middle,
+    which gives 61.27% and 29.77%, shuffles k6 to k9, so the Methods' 7-10 is not used). PC1, mean shock and
+    prediction error weights of opposite sign, both with their largest absolute values in the first
+    2 s (phasic); PC2, as fig5b's PC2 shape, and its Pearson correlation with the intact PC2 above
+    0.5 (similar, a choice). Reproduced when both percentages are within tolerance and the shapes
+    hold; partially reproduced when the shapes hold.
+- id: fig5e-no-anatomical-bias
+  statement: Anatomical biases for phasic and tonic outcome network neurons were absent.
+  source: Results, paragraph 13; Figure 5e; Source
+    Data Fig. 5e
+  quote: Anatomical biases for phasic and tonic outcome network neurons were absent (Fig. 5e ).
+  depends_on:
+  - fig4b-phasic-network
+  - fig4b-tonic-network
+  criterion: A claim of absence with no test in the paper. Differential composition per region
+    (shared method, mapping), the region's share of tonic units minus its share of phasic units
+    (p-a, p-b; Source Data use p-b). With no paper threshold, the claim is judged against the
+    paper's own figures; reproduced when no region differs by more than the largest absolute
+    differential of Source Data Fig. 5e right (4.48 percentage points, MnR), not reproduced when
+    any does by more than 1.5 times that, and partially reproduced in between. A chi-square test of
+    region x network is shown as a variant, not as the judge.
+- id: cue-outcome-membership-independent
+  statement: Membership in cue networks did not influence membership in outcome networks; neither
+    the phasic (85/265, 32.1%) nor the tonic (159/613, 25.9%) outcome neurons differed from the
+    27.9% expected in the cue subnetwork.
+  source: Results, paragraph 14; Supplementary
+    Methods, Relationship between cue network and outcome network membership
+  quote: Chi-squared testing found neither the phasic outcome neurons (85/265, 32.1%; χ 2 = 2.27, p
+    = 0.13) nor the tonic outcome neurons (159/613, 25.9%; χ 2 = 1.17, p = 0.28) differed from the
+    expected proportion of 27.9%.
+  depends_on:
+  - fig2c-pc1-contribution
+  - fig4b-phasic-network
+  - fig4b-tonic-network
+  statistics:
+  - about: phasic outcome units in the cue subnetwork against 27.9%
+    test: chi-squared test
+    statistic: chi2 = 2.27
+    p: 0.13
+    n: 265 phasic outcome units
+  - about: tonic outcome units in the cue subnetwork against 27.9%
+    test: chi-squared test
+    statistic: chi2 = 1.17
+    p: 0.28
+    n: 613 tonic outcome units
+  expected:
+  - quantity: phasic outcome units in the cue subnetwork
+    value: 85
+    tolerance: 8.5
+  - quantity: tonic outcome units in the cue subnetwork
+    value: 159
+    tolerance: 15.9
+  criterion: A claim of absence, judged on the paper's test. A chi-square goodness-of-fit test,
+    1 df, no continuity correction, of the network's count in the cue subnetwork against the
+    proportion 0.279 (from the reported counts this gives 2.30 and 1.17, against the reported 2.27
+    and 1.17, and p 0.13 and 0.28; with 505/1812 it gives 2.33 and 1.14). A 2 x 2 test of network
+    by cue network over all 1812 units (2.73 and 1.72) is shown as a variant. Reproduced when neither test has p < 0.05; not reproduced when either
+    does. Counts, proportions and statistics are reported under L1 and L2.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Shared method, lesion shuffle. Source Data Fig. 3c, 3d, 5c and 5d middle show the shuffled clusters (k1-k9, k10-k21, k1-k3, k6-k9) and the shuffle. Cue rows sit at each row's per-regressor mean over intervals (new reading s-c). Outcome rows sit near 0, which no permutation of betas gives (new reading s-d, firing permuted across trials before regression, as the Results say). s-a and s-b are kept as variants.
+  - Shared method, lesion PCA. PCA of the averaged Source Data matrices gives the paper's 80.0, 16.8, 61.3 and 29.8%, so one PCA of the averaged shuffled matrix (v-a) is the reading. The Supplementary Methods' per-iteration average (v-b) is a variant. fig5c-phasic-lesion and fig5d-tonic-lesion said percentages averaged over iterations; corrected.
+  - Shared method, networks. Source Data Fig. 2f and 4f (505, 265, 613 rows) and the lesion sheets use k1-k9, k1-k3 and k6-k9. The phasic reading p-b (k1-k5) is now kept for Fig. 5e only, the one sheet that uses it. Removed from fig5c-phasic-lesion. In fig4f-outcome-hubs the Results' networks are now the method, with the Methods' 1-5 and 7-10 as variants.
+  - Shared method, mapping. The file had region proportion minus the network's overall proportion. Source Data Fig. 3e right and 5e right are the region's share of one network's units minus its share of the other's (DPG 62/505 - 83/1307 = 5.93; MnR 24/613 - 57/679 = -4.48). Corrected there and in fig3e-network-anatomy and fig5e-no-anatomical-bias. The Methods' wording is kept as a variant.
+  - fig2g-cue-anatomy. The subnetwork share of DPG, DpWh, DLPAG, LPAG and VLPAG on Source Data Fig. 3e left is 220/505 = 43.6%, not 46%; corrected.
+  - fig4b-phasic-network. The file required k1-k3 to have the three highest phasic indices of all 11 clusters. The paper contrasts phasic with tonic clusters only, and its Methods put clusters 1-5 in the phasic network, so this is now k1-k3 above each of k6-k9. The Methods' "5s following shock offset" is now named as open (t-a, mean over the first 5 s; t-b, the 1 s ending at 5 s).
+  - fig5e-no-anatomical-bias. Differentials between 1 and 1.5 times the paper's largest had no outcome; now partially reproduced.
+  - cue-outcome-membership-independent. The file said the goodness-of-fit test reproduces 2.27 and 1.17 exactly. With p0 = 0.279 it gives 2.30 and 1.17 (2.33 and 1.14 with 505/1812); the text now says so. A 2 x 2 test (2.73, 1.72) is added as a variant.
+  - Open, not settled. fig2c-cue-pc1-ordered and fig4c-positive-prediction-error. PCA with MATLAB defaults on the paper's own Source Data matrices gives 47.1% (cue, Fig. 2c inset) and 24.2% (outcome, Fig. 4c). The paper reports 29.7% and 17.7%. No variant tried (scaled, uncentred, transposed, 36 or 30 columns, rows z-scored) gives the reported values. The network PCAs (Fig. 4e, 37.0 and 29.2%) and the beta PCAs (Fig. 3b 62.7 and 26.2%, Fig. 5b 53.7 and 33.4%) do reproduce. The method behind 29.7% and 17.7% is unknown, and fig2c-pc1-contribution measures its drops from that 29.7%. Noted in both criteria; the code in the data set may settle it.
+  - Open, not settled. fig2f-cue-hubs and fig4f-outcome-hubs record Bonferroni-corrected t-tests as results. Which comparisons were significant is shown only by asterisks in Fig. 2f and 4f, and no main-figure image is available to read them.
+  - Open, not settled. fig1c-suppression-order. The ANOVA design is not stated. The cue x sex mixed design fits df 142, but the paper never names sex as a factor. The repeated-measures reading gives F(2,144) = 116.2 on Source Data Fig. 1c (checked).
+  - Checked, no change. Every Source Data number cited in the file, namely Fig. 1c means; cluster sizes; Fig. 2c values and their order; Fig. 2d R2 of 0.51 and 0.39 over 1498 units; Fig. 2f means; Fig. 3e left counts; Fig. 4g fractions (0.600, 0.594) and region counts; every cue cluster in at least six regions. Supplementary Table 1 and 2 totals also checked.
