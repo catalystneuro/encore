@@ -20,10 +20,10 @@ four-electrode array. Dye uptake is measured in ROIs along the diagonals of the 
 | Zones of Fig. 5C | Partially reproduced (high-resolution images not deposited) |
 | 900-ns peak highest, not significantly | Reproduced |
 | Normalized decline similar across durations | Not reproduced |
-| FWHM falls with pulse duration | Reproduced (on an assumption) |
+| FWHM falls with pulse duration | Reproduced (on an assumption); a change to not reproduced is proposed, as the result rests on leaving out a 600-ns well whose only difference is its broad profile |
 | 600 and 900 ns each narrower than 300 ns | Partially reproduced |
 | 900-ns FWHM 1.7 mm | Reproduced |
-| Centre YP linear in burst number | Partially reproduced (on an assumption) |
+| Centre YP linear in burst number | Partially reproduced |
 | CT26 saturation at 6 bursts | Partially reproduced |
 | FWHM grows with bursts in CT26, not CHO | Reproduced (on an assumption) |
 | Sharpest peak, 1 burst in CT26, 1.1 mm | Reproduced |
@@ -36,7 +36,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/silkuniene-2025-04.yaml`](../../attempts/silkuniene-2025-04.yaml).
 
-- `reproduce_silkuniene_2025.ipynb`: the analysis. It takes about 40 minutes, most of it streaming
-  about 45 GB of images.
+- `reproduce_silkuniene_2025.ipynb`: the analysis. It takes about 39 minutes (printed at its end), most of it
+  streaming the 121 image files it reads (46.7 GB, printed in the notebook).
 - `cancan.py`: listing and reading the files, locating the electrode array, ROI profiles and the
   Lorentzian and Gaussian fits. Other notebooks on these dandisets can import it.

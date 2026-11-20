@@ -108,6 +108,7 @@ def read_metadata(asset: dict) -> dict:
              channel=channel, phase=first(r"Phase: (\w+)"),
              protocol="/".join(proto), packet_rate=first(r"at ([\d.]+ ?[kKM]?Hz) frequency"),
              repeats=first(r"repeated (\d+|Unknown) ?time"), pulse_ns=first(r"Pulse duration - (\d+) ns"),
+             packets=first(r"consisted of (\d+) packets"),
              elevation_mm=first(r"(\d) mm electrode elevation"),
              sham="SHAM" in spec,
              spacing_mm=first(r"(?:distance|spacing)[^.]*?([\d.]+) mm", gen),
