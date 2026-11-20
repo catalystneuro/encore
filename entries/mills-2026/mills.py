@@ -170,10 +170,14 @@ def behaviour_frames(xy, ppc, freeze_cm=0.08, dart_cms=45.0, fps=30.0, freeze_ru
     displacement of all body points" has two readings: freeze_rule "max", every point moved less
     than 0.08 cm; "sum", the summed displacement of the points is below 0.08 cm. Frames with a
     missing point count as not freezing under either rule. Darting speed is taken over one frame.
+    A third rule, "median" (the median displacement over points below 0.08 cm), is not the
+    paper's: it is a variant that is not decided by the largest single-point jitter.
     """
     disp = np.linalg.norm(np.diff(xy, axis=0), axis=2) / ppc  # cm per frame, frames-1 x nodes
     if freeze_rule == "max":
         frz = np.nanmax(np.where(np.isnan(disp), np.inf, disp), axis=1) < freeze_cm
+    elif freeze_rule == "median":
+        frz = np.where(np.isnan(disp).any(axis=1), np.inf, np.median(disp, axis=1)) < freeze_cm
     else:
         frz = np.where(np.isnan(disp).any(axis=1), np.inf, np.nansum(disp, axis=1)) < freeze_cm
     sp = disp[:, NODES.index("Haunch")] * fps
@@ -181,6 +185,13 @@ def behaviour_frames(xy, ppc, freeze_cm=0.08, dart_cms=45.0, fps=30.0, freeze_ru
     frz = np.concatenate([[False], frz])
     dart = np.concatenate([[False], dart])
     return frz, dart
+
+
+def max_displacement_px(xy):
+    """Largest displacement over body points from each frame to the next, in pixels (NaN when a
+    point is missing)."""
+    d = np.linalg.norm(np.diff(xy, axis=0), axis=2)
+    return np.where(np.isnan(d).any(axis=1), np.nan, np.nanmax(np.nan_to_num(d), axis=1))
 
 
 def window_fraction(t, flag, onsets, dur):
@@ -232,8 +243,9 @@ def load_ophys(path, pose=True):
     """One imaging session: traces (frames x ROIs), timestamps, CS onsets of imaged trials.
 
     F is processing/ophys/Fluorescence/RoiResponseSeries (raw CNMF-E fluorescence) and D the
-    Deconvolved series. CS onsets are stimulus_events start times that fall inside an imaged
-    trial of intervals/trials, with the type of the event.
+    Deconvolved series. CS onsets are stimulus_events start times, with the type of the event;
+    cs_imaged marks those whose imaged clip (a trial of intervals/trials) runs from before the
+    onset to 10 s after it. clip_start and clip_stop are the clips' times.
     """
     f = open_nwb(path)
     g = f["processing/ophys/Fluorescence/RoiResponseSeries"]
@@ -251,6 +263,7 @@ def load_ophys(path, pose=True):
         ts, te = tr["start_time"][:], tr["stop_time"][:]
         imaged = np.array([((ts <= o) & (te >= o + 10)).any() for o in on])
         d["cs_on"], d["cs_type"], d["cs_imaged"] = on, typ, imaged
+        d["clip_start"], d["clip_stop"] = ts, te
         pe = f["processing/behavior/port_entries"]
         d["port_on"] = pe["start_time"][:]
     if pose and "processing/behavior/PoseEstimationTrack0" in f:
@@ -286,6 +299,26 @@ def ca_cue_z(F, t, onsets, pre=10.0, post=10.0):
         sd = np.nanstd(base, axis=1, ddof=1, keepdims=True)
         z = (m - mu) / sd
     return z, grid
+
+
+def baseline_detrend(z, grid):
+    """Variant of ca_cue_z output with a linear trend over the baseline removed.
+
+    Assumption, shown as a variant only: a slow decay of fluorescence within each clip would make
+    every post-cue window negative. Per ROI, a line is fitted to the baseline bins (grid < 0), its
+    extrapolation is subtracted from the whole trace, and the result is divided by the SD of the
+    baseline residuals. The paper does not do this.
+    """
+    out = np.full_like(z, np.nan)
+    b = grid < 0
+    for i, r in enumerate(z):
+        ok = b & np.isfinite(r)
+        if ok.sum() < 3:
+            continue
+        k, c = np.polyfit(grid[ok], r[ok], 1)
+        res = r - (k * grid + c)
+        out[i] = res / np.std(res[ok], ddof=2)
+    return out
 
 
 SHORT = (0.0, 1.0)  # paper: short window 0-1 s

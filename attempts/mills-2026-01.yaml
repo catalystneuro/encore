@@ -30,18 +30,17 @@ outcomes:
   - 0
   - 885
   - 633
-  notes: Units below 50 Hz by the region and group the files give. Paired ASt 1515 units in 15 mice (paper
-    193 in 15), paired TS 0 (paper 212 in 7), paired CeA 885 in 6 mice (paper 145 in 8), unpaired ASt
-    633 in 4 mice (paper 71 in 4). The Neuropixels units carry no region, and each probe's units span
-    the structures it passes through, so the paper's per-region counts cannot be formed. Only the Open
-    Ephys sessions have trial events, giving 112 paired ASt units in 10 mice and 22 CeA units in 2 mice.
-    The link holds in part for paired ASt units with events, and the claims that need only them are tested
-    on that part.
+  notes: Units below 50 Hz by the region and group the files give. Paired ASt 1515 units in 15 mice (paper 193 in
+    15), paired TS 0 (paper 212 in 7), paired CeA 885 in 6 mice (paper 145 in 8), unpaired ASt 633 in 4 mice (paper
+    71 in 4). The Neuropixels units carry no region, and each probe's units span the structures it passes through,
+    so the paper's per-region counts cannot be formed. Only the Open Ephys sessions have trial events, giving 112
+    paired ASt units in 10 mice and 22 CeA units in 2 mice. The link holds in part for paired ASt units with events,
+    and the claims that need only them are tested on that part.
   deviations:
-  - The Open Ephys files do not state the group; their 12 mice are taken as paired because the paper's
-    4 unpaired ASt mice match the 4 Neuropixels files marked unpaired.
-  - Open Ephys rates are spike counts over the recording span; Neuropixels rates are the files' firing_rate
-    column. The paper's code (discall.py) computes rate as count over duration.
+  - The Open Ephys files do not state the group; their 12 mice are taken as paired because the paper's 4 unpaired
+    ASt mice match the 4 Neuropixels files marked unpaired.
+  - Open Ephys rates are spike counts over the recording span; Neuropixels rates are the files' firing_rate column.
+    The paper's code (discall.py) computes rate as count over duration.
 - claim: figs9-sustained-only-cs-shock
   outcome: partially_reproduced
   notebook: reproduce_mills_2026.ipynb
@@ -49,51 +48,55 @@ outcomes:
   measured:
   - 10
   - 112
-  notes: Under both bin sizes (100 and 10 ms) and both readings of the 1 s and 2 s timepoints, the phasic
-    ANOVA is not significant (F(2,333) = 1.42 and 1.49, p 0.24 and 0.23), every sustained ANOVA gives
-    p < 0.001 (100 ms bin at 1 s F = 18.79, p = 1.9e-8; at 2 s F = 15.42, p = 4.0e-7), and Tukey's test
-    puts CS-shock above CS-reward and above the slow CS-reward trials (p < 0.006) with the two CS-reward
-    groups equal (p > 0.95). The slow-trial group does not match the paper's. All 10 mice have CS-reward
-    trials with port latency over 2 s (22 to 85 per mouse), giving 112 neurons against the paper's 96
-    from only 10 of its 15 mice, so the paper selected these trials or neurons in a way it does not state.
-    By mouse, CS-shock sustained z exceeds both CS-reward groups in 7 of 10 mice. The paired ASt units
-    are those of the 10 Open Ephys mice (112 units below 50 Hz); the 5 paired Neuropixels ASt mice have
-    no trial events. The link claim fig2-recorded-neurons fails on its counts but holds in part (10 of
-    the 15 paired ASt mice can be used), so this claim is tested on that part, as the protocol says for
-    a partial link.
+  notes: Port latency is taken as the tone duration, since collecting the reward ends the tone; the first port entry
+    after onset is the other reading. With the tone duration, under both bin sizes (100 and 10 ms) the phasic ANOVA
+    is not significant (F(2,333) = 0.98 and 1.09, p 0.38 and 0.34). Under reading (b) of the 1 s and 2 s timepoints
+    every sustained ANOVA gives p < 0.001 (100 ms at 1 s F = 17.04, p = 9.0e-8; at 2 s F = 18.10, p = 3.5e-8; 10
+    ms p 2.3e-7 and 1.1e-7), and Tukey's test puts CS-shock above CS-reward and above the slow CS-reward trials
+    (p < 2e-5) with the two CS-reward groups equal (p > 0.89). Under reading (a) the 10 ms bin at 2 s gives p =
+    0.0013. The first-entry latency gives the same outcome (phasic p 0.24 and 0.23, all eight sustained ANOVAs p
+    < 0.001). The slow-trial group does not match the paper's. All 10 mice have CS-reward trials with latency over
+    2 s (26 to 86 per mouse), giving 112 neurons against the paper's 96 from only 10 of its 15 mice, so the paper
+    selected these trials or neurons in a way it does not state. By mouse, CS-shock sustained z exceeds both CS-reward
+    groups in 7 of 10 mice. The paired ASt units are those of the 10 Open Ephys mice (112 units below 50 Hz); the
+    5 paired Neuropixels ASt mice have no trial events. The link claim fig2-recorded-neurons fails on its counts
+    but holds in part (10 of the 15 paired ASt mice can be used), so this claim is tested on that part, as the protocol
+    says for a partial link.
   deviations:
   - 10 of the paper's 15 paired ASt mice (Open Ephys only); df 333 against the paper's 479.
-  - Port latency is the first port entry of the trial table at or after CS-reward onset (STAR Methods,
-    port latency is the time from tone onset to port entry); a trial is slow when it is over 2 s.
+  - 'Port latency is the tone duration (STAR Methods, Two-tone discrimination tasks: ''Collection of the reward
+    prior to the end of the tone resulted in termination of the tone''); the first port entry at or after onset
+    is run as the other reading and gives the same outcome. A trial is slow when it is over 2 s.'
   - Units are the files' curated units below 50 Hz (code, discall.py).
 - claim: fig2q-trajectories-diverge
   outcome: reproduced
   notebook: reproduce_mills_2026.ipynb
   output: claim:fig2q-trajectories-diverge
-  notes: The mean CS-shock to CS-reward distance over 0 to 18 s is 7.36 in the complete PC space against
-    a largest baseline distance of 2.87 (mean 2.05), and 7.16 against 1.94 in the 41 components that explain
-    90% of the variance. Within single mice the cue mean exceeds the baseline maximum in 3 of 10 (the
-    mice with the most units responding to CS-shock). The paired ASt units are those of the 10 Open Ephys
-    mice (112 units below 50 Hz); the 5 paired Neuropixels ASt mice have no trial events. The link claim
-    fig2-recorded-neurons fails on its counts but holds in part (10 of the 15 paired ASt mice can be used),
-    so this claim is tested on that part, as the protocol says for a partial link.
+  notes: The mean CS-shock to CS-reward distance over 0 to 18 s is 7.36 in the complete PC space against a largest
+    baseline distance of 2.87 (mean 2.05), and 7.16 against 1.94 in the 41 components that explain 90% of the variance.
+    Within single mice the cue mean exceeds the baseline maximum in 3 of 10 (the mice with the most units responding
+    to CS-shock). The paired ASt units are those of the 10 Open Ephys mice (112 units below 50 Hz); the 5 paired
+    Neuropixels ASt mice have no trial events. The link claim fig2-recorded-neurons fails on its counts but holds
+    in part (10 of the 15 paired ASt mice can be used), so this claim is tested on that part, as the protocol says
+    for a partial link.
   deviations:
-  - The PCA is fitted on paired animals only, the code's variant; the Methods' single PCA over paired
-    and unpaired animals cannot be run, as no unpaired animal has trial events. With all components kept
-    the PCA is a rotation of the centred neuron space, so the complete-space distance between the paired
-    trajectories does not depend on which rows the PCA is fitted on; the 90% variant does.
+  - The PCA is fitted on paired animals only; the Methods' single PCA over paired and unpaired animals cannot be
+    run, as no unpaired animal has trial events. With all components kept the PCA is a rotation of the centred neuron
+    space, so the complete-space distance is the same whatever rows the PCA is fitted on and is the Methods' reading;
+    the 90% variant depends on the fit.
   - 112 neurons from 10 of the paper's 15 paired ASt mice.
 - claim: figs8-single-trial-divergence
   outcome: partially_reproduced
   notebook: reproduce_mills_2026.ipynb
   output: claim:figs8-single-trial-divergence
-  notes: Five paired animals meet the code's selection (at least 10 units and 30 trials per CS; 3024 has
-    29 CS-shock trials). Shock-reward cosine similarity over 0 to 18 s (pooled mean -0.009) is below shock-shock
-    (0.074) and reward-reward (0.066). Reading (c), iterations pooled, gives p = 8.0e-53 (W = 13181, n
-    = 500) under the claim's seed and p 1.4e-54 to 1.9e-48 under the four others. Readings (a) and (b)
-    cannot reach p < 0.01 with five animals (p 0.0625 to 0.125). The unpaired half of the claim cannot
-    be tested. The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes
-    but no trial events and no behavior, and their units carry no region, so no TS unit can be found.
+  notes: 'Five paired animals meet the code''s selection (at least 10 units and 30 trials per CS; 3024 has 29 CS-shock
+    trials). Shock-reward cosine similarity over 0 to 18 s (pooled mean -0.009) is below shock-shock (0.074) and
+    reward-reward (0.066). Reading (c), iterations pooled, gives p = 8.0e-53 (W = 13181, n = 500) under the claim''s
+    seed and p 1.4e-54 to 1.9e-48 under the four others. Reading (c) treats 100 resamples of the same trials as
+    independent, so its p overstates the evidence. Readings (a) and (b) cannot reach p < 0.01 with five animals:
+    the smallest two-sided Wilcoxon p for five pairs is 0.0625, and they give p 0.0625 to 0.125. The unpaired half
+    of the claim cannot be tested. The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice)
+    hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found.'
   deviations:
   - Paired part only; 5 Open Ephys animals against the 8 paired animals of the code's printout.
   - 100 ms bins, as the code that plots the example pairs (standard choice; the Methods give none).
@@ -101,32 +104,39 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_mills_2026.ipynb
   output: claim:fig3h-cs-decoded-paired-only
-  notes: Six paired mice have more than 10 units. Accuracy over 0 to 18 s under the claim's seed is 0.825,
-    0.892, 0.494, 0.531, 0.677 and 0.702 against shuffled chance 0.48 to 0.51; two mice (3026, 6197) are
-    at chance. The Mann-Whitney U test of accuracies against chance gives U = 32, p = 0.026 two-sided
-    (one-sided 0.013), above the criterion's 0.01; under the four other seeds p is 0.015 to 0.065 two-sided.
-    The code's Wilcoxon variant gives W = 1, p = 0.0625. The unpaired half cannot be tested. The Neuropixels
-    files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and
-    no behavior, and their units carry no region, so no TS unit can be found.
+  notes: Six paired mice have more than 10 units. Accuracy over 0 to 18 s under the claim's seed is 0.825, 0.892,
+    0.494, 0.531, 0.677 and 0.702 against shuffled chance 0.48 to 0.51; two mice (3026, 6197) are at chance. The
+    Mann-Whitney U test of accuracies against chance gives U = 32, p = 0.026 two-sided (one-sided 0.013), above
+    the criterion's 0.01; under the four other seeds p is 0.015 to 0.065 two-sided. The code's Wilcoxon variant
+    gives W = 1, p = 0.0625. The unpaired half cannot be tested. The Neuropixels files (all 4 unpaired ASt mice,
+    5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region,
+    so no TS unit can be found.
   deviations:
   - Paired part only; 6 Open Ephys mice against the code's 9 paired mice.
-  - The two-sided Mann-Whitney U test is used as the main reading as the legend does not say one-sided;
-    the one-sided p (0.0076 to 0.033) is below 0.01 under one of five seeds only.
+  - The two-sided Mann-Whitney U test is used as the main reading as the legend does not say one-sided; the one-sided
+    p (0.0076 to 0.033) is below 0.01 under one of five seeds only.
 - claim: figs13-imaging-mice-discriminate
   outcome: reproduced
   notebook: reproduce_mills_2026.ipynb
   output: claim:figs13-imaging-mice-discriminate
-  notes: Defensive behavior (share of the 10 s tone freezing plus share darting, all 60 cues per session).
-    Paired Drd1a-Cre, 10 mice, CS-shock 0.191 against CS-reward 0.153, t(9) = 3.61, p = 0.0057; paired
-    Drd2-Cre, 9 mice, 0.183 against 0.133, t(8) = 2.37, p = 0.046; unpaired Drd1a-Cre, 8 mice, p = 0.80;
-    unpaired Drd2-Cre, 6 mice, p = 0.51. The summed-displacement rule gives the same (p 0.0054, 0.045,
-    0.80, 0.52). Mouse counts match the paper's (10, 9, 8, 6).
+  notes: Defensive behavior (share of the 10 s tone freezing plus share darting, all 60 cues per session). Paired
+    Drd1a-Cre, 10 mice, CS-shock 0.191 against CS-reward 0.153, t(9) = 3.61, p = 0.0057; paired Drd2-Cre, 9 mice,
+    0.183 against 0.133, t(8) = 2.37, p = 0.046; unpaired Drd1a-Cre, 8 mice, p = 0.80; unpaired Drd2-Cre, 6 mice,
+    p = 0.51. The summed-displacement rule gives the same (p 0.0054, 0.045, 0.80, 0.52). Mouse counts match the
+    paper's (10, 9, 8, 6). The difference comes from darting (paired Drd1a-Cre 0.032 against 0.007, p < 0.0001;
+    Drd2-Cre 0.031 against 0.001, p = 0.0016); freezing alone does not differ between the cues in paired mice (p
+    = 0.14 and 0.37). The largest point displacement per frame is below 0.5 px in 19.6% of frames and above 1.6
+    px in the rest, so the paper's rule (0.08 cm, about 1.6 px) counts only frames whose pose repeats the previous
+    one, whatever the scale; whether these are still frames or repeated video frames the files do not say. The median-displacement
+    variant, not the paper's rule, finds no cue difference in any group (p 0.105 to 0.71).
   deviations:
-  - Assumed the pixel scale from the extent of the body points (0.5th to 99.5th percentile) against the
-    30 x 40 cm chamber the Methods give, as the poses are in pixels with no scale; 18.8 to 20.7 px/cm.
+  - Assumed the pixel scale from the extent of the body points (0.5th to 99.5th percentile) against the 30 x 40
+    cm chamber the Methods give, as the poses are in pixels with no scale; 18.8 to 20.7 px/cm.
   - Assumed the haunch as the rear body centre for darting; the skeleton has no node of that name.
-  - The freezing rule ('total displacement of ALL mouse body points less than 0.08 cm per frame') is run
-    as every point below 0.08 cm and as the sum below 0.08 cm; both give the outcome.
+  - The freezing rule ('total displacement of ALL mouse body points less than 0.08 cm per frame') is run as every
+    point below 0.08 cm and as the sum below 0.08 cm; both give the outcome.
+  - Freezing measured by the paper's rule counts only frames whose pose repeats the previous one within 0.5 px (no
+    frame falls between 0.5 and 1.6 px); a median-displacement rule is shown as a variant.
   assumed: true
 - claim: fig5j-drd2-cs-shock-responses
   outcome: partially_reproduced
@@ -135,16 +145,18 @@ outcomes:
   measured:
   - 1189
   - 625
-  notes: Drd2+ paired ROIs respond more to CS-shock than unpaired ones, short window mean z 0.275 against
-    -0.425, t(1812) = 6.23, p = 5.6e-10; long -0.241 against -0.819, t(1812) = 5.03, p = 5.3e-7. The deconvolved
-    variant agrees (p 4.9e-8 and 1.0e-6). The counts are outside tolerance, 1189 paired and 625 unpaired
-    ROIs against 296 and 257, because the files hold every CNMF-E ROI and the paper's manual curation
-    is not recorded. Across mice (9 and 6) the difference is not significant (p 0.17 and 0.16). Mouse
-    counts match.
+  notes: Drd2+ paired ROIs respond more to CS-shock than unpaired ones, short window mean z 0.275 against -0.425,
+    t(1812) = 6.23, p = 5.6e-10; long -0.241 against -0.819, t(1812) = 5.03, p = 5.3e-7. The deconvolved variant
+    agrees (p 4.9e-8 and 1.0e-6). The counts are outside tolerance, 1189 paired and 625 unpaired ROIs against 296
+    and 257, because the files hold every CNMF-E ROI and the paper's manual curation is not recorded. Across mice
+    (9 and 6) the difference is not significant (p 0.17 and 0.16). Mouse counts match. With a linear trend over
+    the baseline removed (variant) the difference remains (p = 4.9e-9 and 0.0044). Fluorescence decays within the
+    clips in every group alike (mean baseline z 0.27 to 0.36 at -10 to -7 s, -0.19 to -0.28 at -3 to 0 s), so the
+    decay does not explain the group difference.
   deviations:
   - All CNMF-E ROIs in the files; the paper used manually curated neurons, about a quarter of them.
-  - Imaged trials only (15 per CS per session), the cue onsets of processing/behavior/stimulus_events
-    that fall in an imaged trial.
+  - Imaged trials only (15 per CS per session), the cue onsets of processing/behavior/stimulus_events that fall
+    in an imaged trial.
 - claim: fig5h-drd1-no-difference
   outcome: not_reproduced
   notebook: reproduce_mills_2026.ipynb
@@ -152,154 +164,195 @@ outcomes:
   measured:
   - 847
   - 608
-  notes: All four of the paper's t-tests find a difference on the deposited ROIs (847 paired, 608 unpaired).
-    CS-shock short, paired -0.078 against unpaired -0.336, t(1453) = 3.16, p = 0.0016; long -0.347 against
-    -0.727, p = 3.5e-5; CS-reward short -0.147 against -0.347, p = 0.0018; long -0.238 against -0.449,
-    p = 0.0032. The effects are small (mean z differences 0.20 to 0.38). With the deconvolved trace three
-    of four differ. Across mice (10 and 8) no difference (p 0.89 and 0.90 for CS-shock).
+  notes: All four of the paper's t-tests find a difference on the deposited ROIs (847 paired, 608 unpaired). CS-shock
+    short, paired -0.078 against unpaired -0.336, t(1453) = 3.16, p = 0.0016; long -0.347 against -0.727, p = 3.5e-5;
+    CS-reward short -0.147 against -0.347, p = 0.0018; long -0.238 against -0.449, p = 0.0032. The effects are small
+    (mean z differences 0.20 to 0.38). With the deconvolved trace three of four differ. Without the two thin unpaired
+    sessions (G4B2-C8-6860, 1 imaged CS-shock trial; G2B1-C4-6886, 1 ROI) all four remain (p 0.0015 to 3.8e-6);
+    with a linear baseline trend removed three of four remain (p 0.0092 to 0.038; CS-reward long p = 0.16). Across
+    mice (10 and 8) nothing differs (CS-shock p 0.89 and 0.90, CS-reward p 0.73 and 0.50). The test is judged at
+    the neuron level as the paper ran it, on about 2.6 times the paper's neurons.
   deviations:
   - All CNMF-E ROIs in the files; the paper used 320 and 237 curated neurons.
 - claim: fig5k-drd2-cs-reward-no-difference
   outcome: not_reproduced
   notebook: reproduce_mills_2026.ipynb
   output: claim:fig5k-drd2-cs-reward-no-difference
-  notes: The short-window test finds a difference, paired -0.269 against unpaired -0.398, t(1812) = 2.12,
-    p = 0.034; the long window does not, -0.579 against -0.538, t(1812) = -0.51, p = 0.61. With the deconvolved
-    trace neither differs (p 0.31 and 0.15).
+  notes: The short-window test finds a difference, paired -0.269 against unpaired -0.398, t(1812) = 2.12, p = 0.034;
+    the long window does not, -0.579 against -0.538, t(1812) = -0.51, p = 0.61. With the deconvolved trace neither
+    differs (p 0.31 and 0.15). With a linear baseline trend removed the short window differs (p = 0.0023), the long
+    does not (p = 0.54). Across mice (9 and 6) neither window differs (p 0.36 and 0.33). The effect is small (0.13
+    in mean z) on 1814 ROIs against the paper's 553 neurons.
   deviations:
   - All CNMF-E ROIs in the files; the paper used 296 and 257 curated neurons.
 - claim: fig5m-drd2-rich-clusters-cs-shock
   outcome: not_reproduced
   notebook: reproduce_mills_2026.ipynb
   output: claim:fig5m-drd2-rich-clusters-cs-shock
-  notes: 2036 paired ROIs (1189 Drd2, 847 Drd1a), nine clusters. Under none of the eight readings (average
-    or Ward linkage; the 10 s cue or the imaged window; soft normalization as z/(max|z|+10) or as clipping
-    at 10) is the Spearman correlation across clusters between the normalized Drd2 share and the mean
-    CS-shock z positive at p < 0.05; rho -0.12 to 0.47, p 0.20 to 0.97. Average linkage puts most ROIs
-    in one or two clusters. While preparing, a version of the window reading that dropped the 233 ROIs
-    whose clips start late gave rho 0.76, p = 0.017; it was not run here and does not decide the outcome.
+  notes: 2036 paired ROIs (1189 Drd2, 847 Drd1a), nine clusters. Under none of the eight readings (average or Ward
+    linkage; the 10 s cue or the imaged window; soft normalization as z/(max|z|+10) or as clipping at 10) is the
+    Spearman correlation across clusters between the normalized Drd2 share and the mean CS-shock z positive at p
+    < 0.05; rho -0.12 to 0.47, p 0.20 to 0.97. Average linkage puts most ROIs in one or two clusters. While preparing,
+    a version of the window reading that dropped the 233 ROIs whose clips start late gave rho 0.76, p = 0.017; it
+    was not run here and does not decide the outcome.
   deviations:
   - All CNMF-E ROIs in the files; the paper used 616 curated neurons of paired mice.
-  - The imaged window starts at -8.67 s, the latest clip start over sessions, and bins before it are dropped
-    so that every ROI is kept.
-  - Soft normalization 'to a maximum z-score of 10' (STAR Methods) is run under two readings, as the paper
-    does not define it.
+  - The imaged window starts at -8.67 s, the latest clip start over sessions, and bins before it are dropped so
+    that every ROI is kept.
+  - Soft normalization 'to a maximum z-score of 10' (STAR Methods) is run under two readings, as the paper does
+    not define it.
 - claim: figs15-no-context-encoding
   outcome: not_reproduced
   notebook: reproduce_mills_2026.ipynb
   output: claim:figs15-no-context-encoding
-  notes: Per mouse, Context A against B, paired t-tests. Drd1a+ (6 mice) shows no change in raw fluorescence
-    (p = 0.81), peak rate (p = 0.56) or deconvolved event rate (p = 0.56). Drd2+ (5 mice) shows none in
-    raw fluorescence (p = 0.29) or deconvolved event rate (p = 0.81), but its peak rate is higher in Context
-    A, 0.179 against 0.170 per s, t(4) = 2.95, p = 0.042. Freezing is higher in Context A for Drd1a-Cre
-    mice (0.186 against 0.072, t(5) = 3.92, p = 0.011) but not for Drd2-Cre mice (0.094 against 0.075,
-    p = 0.63). The deconvolved mean, a variant, shows no change for either type (p 0.45, 0.69).
+  notes: Per mouse, Context A against B, paired t-tests. Drd1a+ (6 mice) shows no change in raw fluorescence (p
+    = 0.81), peak rate (p = 0.56) or deconvolved event rate (p = 0.56). Drd2+ (5 mice) shows none in raw fluorescence
+    (p = 0.29) or deconvolved event rate (p = 0.81), but its peak rate is higher in Context A, 0.179 against 0.170
+    per s, t(4) = 2.95, p = 0.042. Freezing is higher in Context A for Drd1a-Cre mice (0.186 against 0.072, t(5)
+    = 3.92, p = 0.011) but not for Drd2-Cre mice (0.094 against 0.075, p = 0.63). The deconvolved mean, a variant,
+    shows no change for either type (p 0.45, 0.69). Freezing counts frames whose pose repeats the previous one within
+    0.5 px (at most 0.1% of frames fall between 0.5 and 1.6 px), which is why the scale does not change it; the
+    median-displacement variant gives the same pattern (Drd1a-Cre p = 0.017, Drd2-Cre p = 0.33). The Drd2+ peak-rate
+    test fails the activity part whatever freezing measures.
   deviations:
-  - Assumed the pixel scale from the extent of the body points against a 30 x 40 cm floor; the context
-    chambers are in other rooms and the scale ranges from 7.5 to 32.8 px/cm. A fixed 14 px/cm (the median)
-    gives the same freezing results.
+  - Assumed the pixel scale from the extent of the body points against a 30 x 40 cm floor; the context chambers
+    are in other rooms and the scale ranges from 7.5 to 32.8 px/cm. A fixed 14 px/cm (the median) gives the same
+    freezing results.
   - All CNMF-E ROIs; the paper had 157 to 165 Drd1a+ and 136 to 137 Drd2+ neurons per context.
-  - Peaks are local maxima above the trace's mean plus 2 SD; spike rate is frames with a nonzero deconvolved
-    value per second (readings named by the criterion).
+  - Peaks are local maxima above the trace's mean plus 2 SD; spike rate is frames with a nonzero deconvolved value
+    per second (readings named by the criterion).
   assumed: true
 - claim: figs5-ephys-mice-discriminate
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The poses of the Open Ephys sessions are not on the trial clock (data check; best lags from -110.6
-    to +287.4 s, none within 5 s of zero), so behavior cannot be placed in the cues or against spikes.
-    The port-entry half uses only trial-table events and is shown in the notebook, not deciding the claim.
-    In the 12 Open Ephys mice time in the port is 9.0 s per CS-reward against 2.1 s per CS-shock (t(11)
-    = 8.31, p = 4.6e-6) and entries 2.9 against 1.5 (p = 0.001). The 4 unpaired mice are Neuropixels mice
-    without events or behavior, and 9 of the 21 paired mice are Neuropixels mice.
+  notes: 'The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of
+    the session, the port-entry lag is constant within 0.6 s in four 2018 sessions (3012, 3016, 3024, 3029) and
+    changes by up to 200 s in the other eight; the shock check agrees with the constant lag in 3012, 3016 and 3024
+    only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.6 s. The claim
+    needs 21 paired and 4 unpaired mice; the 4 unpaired mice are Neuropixels mice without events or behavior. The
+    port-entry half uses only trial-table events and is shown in the notebook, not deciding the claim: in the 12
+    Open Ephys mice time in the port is 9.0 s per CS-reward against 2.1 s per CS-shock (t(11) = 8.31, p = 4.6e-6)
+    and entries 2.9 against 1.5 (p = 0.001).'
 - claim: figs10lm-defensive-trials-greater-responses
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The poses of the Open Ephys sessions are not on the trial clock (data check; best lags from -110.6
-    to +287.4 s, none within 5 s of zero), so behavior cannot be placed in the cues or against spikes.
-    The unpaired half also needs Neuropixels events. The Neuropixels files (all 4 unpaired ASt mice, 5
-    paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry
-    no region, so no TS unit can be found.
+  notes: The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of
+    the session, the port-entry lag is constant within 0.6 s in four 2018 sessions (3012, 3016, 3024, 3029) and
+    changes by up to 200 s in the other eight; the shock check agrees with the constant lag in 3012, 3016 and 3024
+    only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.6 s. The unpaired
+    half also needs Neuropixels events, which the files do not hold, and the paired half would rest on 2 of the
+    paper's 15 mice with an inferred clock.
 - claim: fig3fg-no-motor-onset-response
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The poses of the Open Ephys sessions are not on the trial clock (data check; best lags from -110.6
-    to +287.4 s, none within 5 s of zero), so behavior cannot be placed in the cues or against spikes.
-    Bout onsets cannot be aligned to the spikes.
+  notes: The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of
+    the session, the port-entry lag is constant within 0.6 s in four 2018 sessions (3012, 3016, 3024, 3029) and
+    changes by up to 200 s in the other eight; the shock check agrees with the constant lag in 3012, 3016 and 3024
+    only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.6 s. The claim
+    judges activity 0 to 1 s after bout onsets; a clock error of 0.6 s would blur a response and bias the test toward
+    the claim of no response, so the 2 mice are not used.
 - claim: fig2e-ast-sustained-clusters
   outcome: blocked
   blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. The
-    clustering pools ASt, TS and CeA neurons; no TS neuron and only 22 CeA units in 2 mice have events.
+  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial
+    events and no behavior, and their units carry no region, so no TS unit can be found. The clustering pools ASt,
+    TS and CeA neurons; no TS neuron and only 22 CeA units in 2 mice have events.
 - claim: fig2o-ast-greater-cs-shock-responses
   outcome: blocked
   blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. The
-    comparison needs TS and CeA neurons with cue events.
+  notes: 'No unit in any file is labeled TS, and the Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice,
+    4 CeA mice) hold no trial events; the comparison needs TS and CeA neurons with cue events. For the record (notebook,
+    blocked section), ASt (112 units) against the 22 CeA units of the 2 Open Ephys CeA mice does not differ for
+    CS-shock: phasic 5.94 against 5.15, p = 0.72; sustained 2.38 against 2.45, p = 0.95 (100 ms; 10 ms p 0.68 and
+    0.84). With 22 units from 2 of the paper''s 8 CeA mice this is not the paper''s test and does not decide the
+    claim.'
 - claim: fig2o-region-differs-cs-reward
-  outcome: blocked
-  blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. The
-    comparison needs TS and CeA neurons with cue events.
+  outcome: partially_reproduced
+  notebook: reproduce_mills_2026.ipynb
+  output: claim:fig2o-region-differs-cs-reward
+  notes: 'The ASt part holds: the phasic CS-reward z of the 112 paired ASt units is above 0 (mean 7.09, one-sample
+    t(111) = 7.79, p = 3.9e-12 at 100 ms; mean 2.56, p = 7.4e-12 at 10 ms), and the mouse means are above 0 in all
+    10 mice (0.12 to 13.04). The region ANOVAs cannot be run as the paper''s test: no unit is labeled TS, and the
+    CeA units with trial events are 22 from 2 of the paper''s 8 CeA mice (145 neurons). For the record, ASt against
+    these CeA units gives F(1,132) = 3.58, p = 0.061 (phasic) and 1.65, p = 0.20 (sustained) at 100 ms, and p =
+    0.039 and 0.27 at 10 ms, none near the criterion''s p < 0.0001. The claim holds in part: the ASt response is
+    shown, the region difference is not tested.'
+  deviations:
+  - ASt part only, on the 112 paired ASt units of the 10 Open Ephys mice; the three-region ANOVAs are not run (no
+    TS units, 22 CeA units in 2 mice).
 - claim: fig2p-ast-more-responsive
   outcome: blocked
   blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. The
-    proportions need TS and CeA neurons with cue events.
+  notes: No unit in any file is labeled TS, and the Neuropixels files hold no trial events; the proportions need
+    TS and CeA neurons with cue events. For the record, against the 22 Open Ephys CeA units (reading (a), 100 ms)
+    the ASt share of responsive units is 0.29 against 0.32 for CS-shock phasic (chi-square p = 0.077), 0.41 against
+    0.14 for CS-reward phasic (p = 0.049) and 0.27 against 0.32 for CS-shock sustained (p = 0.82); reading (b) and
+    10 ms bins give p 0.15 to 1. With 22 units from 2 of the paper's 8 CeA mice this does not decide the claim.
 - claim: figs7-paired-greater-than-unpaired
   outcome: blocked
   blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired
-    neuron has cue events.
+  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial
+    events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired neuron has
+    cue events.
 - claim: figs7-cs-reward-sustained-no-difference
   outcome: blocked
   blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired
-    neuron has cue events.
+  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial
+    events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired neuron has
+    cue events.
 - claim: figs7d-paired-more-responsive
   outcome: blocked
   blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired
-    neuron has cue events.
+  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial
+    events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired neuron has
+    cue events.
 - claim: figs7f-baseline-rate-no-difference
   outcome: blocked
   blocked_by: data_missing
-  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but
-    no trial events and no behavior, and their units carry no region, so no TS unit can be found. The
-    pre-cue windows of unpaired neurons cannot be found.
+  notes: The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial
+    events and no behavior, and their units carry no region, so no TS unit can be found. The pre-cue windows of
+    unpaired neurons cannot be found.
 - claim: figs10b-paired-more-defensive
   outcome: blocked
   blocked_by: data_missing
-  notes: The 4 unpaired mice are Neuropixels mice with no behavior in the files. The poses of the Open
-    Ephys sessions are not on the trial clock (data check; best lags from -110.6 to +287.4 s, none within
-    5 s of zero), so behavior cannot be placed in the cues or against spikes.
+  notes: The 4 unpaired mice are Neuropixels mice with no behavior in the files. The poses of the Open Ephys sessions
+    are not on the trial clock (data check; best lags from -110.6 to +287.4 s, none within 5 s of zero), so behavior
+    cannot be placed in the cues or against spikes.
 - claim: figs10-high-defensive-mice-greater-responses
   outcome: blocked
   blocked_by: data_missing
-  notes: Depends on figs10b-paired-more-defensive, blocked for the same reason; the one-way ANOVA also
-    needs the unpaired mice.
+  notes: Depends on figs10b-paired-more-defensive, blocked for the same reason; the one-way ANOVA also needs the
+    unpaired mice.
 - claim: figs10-no-reward-relationship
-  outcome: blocked
-  blocked_by: data_missing
-  notes: The across-mice test is an ANOVA over unpaired, low and high mice, and no unpaired mouse has
-    events. The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes
-    but no trial events and no behavior, and their units carry no region, so no TS unit can be found.
+  outcome: partially_reproduced
+  notebook: reproduce_mills_2026.ipynb
+  output: claim:figs10-no-reward-relationship
+  notes: 'The across-trials test is run on the 10 paired Open Ephys ASt mice: CS-reward trials split per mouse into
+    latency quartiles, phasic z per neuron and quartile, repeated measures ANOVA with neurons as subjects (111 neurons;
+    1 dropped for no baseline variance in a quartile). With the tone-duration latency (adopted) and 100 ms bins,
+    F(3,330) = 1.81, p = 0.14 (quartile means 3.42, 3.73, 3.54, 4.06); with the first-entry latency p = 0.185 (100
+    ms) and 0.18 (10 ms). With the tone-duration latency and 10 ms bins p = 0.047, the slowest quartile highest
+    (1.47 against 1.21 to 1.31). The paper''s F(3,570) = 0.576, p = 0.631. The across-mice one-way ANOVA over unpaired,
+    low and high mice cannot be run, as no unpaired mouse has trial events; among the paired mice the low-latency
+    and high-latency clusters (7 and 3 mice, average and Ward linkage alike) do not differ in phasic CS-reward z
+    (t = 0.55, p = 0.60), a variant only. The claim holds in part: one of its two tests cannot be run, and the other
+    finds no relationship under three of its four readings.'
+  deviations:
+  - Paired part only; 10 Open Ephys mice and 111 neurons against the paper's 15 mice and 191 neurons.
+  - 'Port latency is the tone duration (STAR Methods: collection of the reward ends the tone); the first port entry
+    is the other reading.'
+  - The bin size is open (claims file opening comment); both 100 and 10 ms are run and differ at the threshold.
+  assumed: true
 - claim: fig3h-behavior-not-decoded
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs behavior aligned to spikes in both groups; no unpaired mouse has events or behavior, and
-    the Open Ephys poses are not on the spike clock.
+  notes: Needs behavior aligned to spikes in both groups; no unpaired mouse has events or behavior, and the Open
+    Ephys poses are not on the spike clock.
 - claim: fig3j-cs-encoding-glm
   outcome: blocked
   blocked_by: data_missing
-  notes: The GLM compares paired and unpaired neurons and uses freezing, darting and speed aligned to
-    spikes. No unpaired mouse has events or behavior, and the Open Ephys poses are not on the spike clock.
+  notes: The GLM compares paired and unpaired neurons and uses freezing, darting and speed aligned to spikes. No
+    unpaired mouse has events or behavior, and the Open Ephys poses are not on the spike clock.
 - claim: fig3k-cs-improves-prediction
   outcome: blocked
   blocked_by: data_missing
@@ -315,185 +368,571 @@ outcomes:
 - claim: figs14-us-shock-scaling
   outcome: blocked
   blocked_by: data_missing
-  notes: No file holds the unpredicted-US session; the discrimination files list only CS-reward and CS-shock
-    events (plus one 'undefined' trial in some), and the context files hold no US.
+  notes: No file holds the unpredicted-US session; the discrimination files list only CS-reward and CS-shock events
+    (plus one 'undefined' trial in some), and the context files hold no US.
 - claim: figs14q-few-salience-neurons
   outcome: blocked
   blocked_by: data_missing
-  notes: The criterion takes the neurons of the US session (5 mice, 348 neurons), which is not in the
-    dandiset.
+  notes: The criterion takes the neurons of the US session (5 mice, 348 neurons), which is not in the dandiset.
 - claim: fig1l-rnascope-drd2-enriched
   outcome: blocked
   blocked_by: data_missing
-  notes: No RNAscope images or CellProfiler tables in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No RNAscope images or CellProfiler tables in the dandiset, whose files are electrophysiology and calcium
+    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset
+    for data, and its code repository holds no data files (claims file opening comment).
 - claim: figs4-cdh6-slit2-gradient
   outcome: blocked
   blocked_by: data_missing
-  notes: No RNAscope images or CellProfiler tables in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No RNAscope images or CellProfiler tables in the dandiset, whose files are electrophysiology and calcium
+    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset
+    for data, and its code repository holds no data files (claims file opening comment).
 - claim: fig3b-ast-activation-freezing
   outcome: blocked
   blocked_by: data_missing
-  notes: No optogenetic open field data in the dandiset, whose files are electrophysiology and calcium
-    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this
-    dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No optogenetic open field data in the dandiset, whose files are electrophysiology and calcium imaging only.
+    The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and
+    its code repository holds no data files (claims file opening comment).
 - claim: fig3c-ast-activation-avoidance
   outcome: blocked
   blocked_by: data_missing
-  notes: No real-time place preference data in the dandiset, whose files are electrophysiology and calcium
-    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this
-    dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No real-time place preference data in the dandiset, whose files are electrophysiology and calcium imaging
+    only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data,
+    and its code repository holds no data files (claims file opening comment).
 - claim: fig4eg-drd2-activation-freezing-avoidance
   outcome: blocked
   blocked_by: data_missing
   notes: No optogenetic open field and place preference data in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this
+    dandiset for data, and its code repository holds no data files (claims file opening comment).
 - claim: fig4df-drd1-activation-no-effect
   outcome: blocked
   blocked_by: data_missing
   notes: No optogenetic open field and place preference data in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this
+    dandiset for data, and its code repository holds no data files (claims file opening comment).
 - claim: fig4hi-rotarod-no-effect
   outcome: blocked
   blocked_by: data_missing
-  notes: No rotarod data in the dandiset, whose files are electrophysiology and calcium imaging only.
-    The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for
-    data, and its code repository holds no data files (claims file opening comment).
+  notes: No rotarod data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's
+    Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository
+    holds no data files (claims file opening comment).
 - claim: fig6e-drd2-inhibition-reduces-defense
   outcome: blocked
   blocked_by: data_missing
-  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium
+    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset
+    for data, and its code repository holds no data files (claims file opening comment).
 - claim: figs16-drd2-inhibition-freezing-darting
   outcome: blocked
   blocked_by: data_missing
-  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium
+    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset
+    for data, and its code repository holds no data files (claims file opening comment).
 - claim: fig6f-drd2-inhibition-no-reward-effect
   outcome: blocked
   blocked_by: data_missing
-  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium
+    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset
+    for data, and its code repository holds no data files (claims file opening comment).
 - claim: fig6g-j-drd2-inhibition-no-other-effects
   outcome: blocked
   blocked_by: data_missing
-  notes: No open field, place preference, plus maze and contextual fear data in the dandiset, whose files
-    are electrophysiology and calcium imaging only. The paper's Data and code availability names only
-    GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files
-    (claims file opening comment).
+  notes: No open field, place preference, plus maze and contextual fear data in the dandiset, whose files are electrophysiology
+    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this
+    dandiset for data, and its code repository holds no data files (claims file opening comment).
 - claim: figs17-drd1-inhibition-no-effect
   outcome: blocked
   blocked_by: data_missing
-  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology
-    and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq)
-    and this dandiset for data, and its code repository holds no data files (claims file opening comment).
+  notes: No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium
+    imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset
+    for data, and its code repository holds no data files (claims file opening comment).
 - claim: figs12gh-activation-no-epm-effect
   outcome: blocked
   blocked_by: data_missing
-  notes: No elevated plus maze data in the dandiset, whose files are electrophysiology and calcium imaging
-    only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset
-    for data, and its code repository holds no data files (claims file opening comment).
+  notes: No elevated plus maze data in the dandiset, whose files are electrophysiology and calcium imaging only.
+    The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and
+    its code repository holds no data files (claims file opening comment).
 - claim: fig1b-ast-distinct-subclusters
   outcome: blocked
   blocked_by: not_runnable
-  notes: The snRNA-seq data are public at GEO GSE211437 as 12 raw 10x count matrices (GSE211437_RAW.tar,
-    2.7 GB). The claim rests on the paper's R pipeline (Seurat SCTransform v2 with 25 PCs and graph clustering
-    into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which the entry's locked Python environment
-    cannot install; a Python substitute would form different clusters, on which the proportions and DEG
-    counts rest. The matrices were listed, not fetched.
+  notes: 'The claim''s data are the snRNA-seq data at GEO GSE211437 (data: elsewhere), public as 12 raw 10x count
+    matrices (GSE211437_RAW.tar, 2.7 GB). The claim rests on the paper''s R pipeline (Seurat SCTransform v2 with
+    25 PCs and graph clustering into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which cannot be
+    installed in the entry''s locked Python environment; a Python substitute would form different clusters, on which
+    the proportions and DEG counts rest. The matrices were listed, not fetched.'
 - claim: fig1j-ast-drd2-enriched
   outcome: blocked
   blocked_by: not_runnable
-  notes: The snRNA-seq data are public at GEO GSE211437 as 12 raw 10x count matrices (GSE211437_RAW.tar,
-    2.7 GB). The claim rests on the paper's R pipeline (Seurat SCTransform v2 with 25 PCs and graph clustering
-    into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which the entry's locked Python environment
-    cannot install; a Python substitute would form different clusters, on which the proportions and DEG
-    counts rest. The matrices were listed, not fetched.
+  notes: 'The claim''s data are the snRNA-seq data at GEO GSE211437 (data: elsewhere), public as 12 raw 10x count
+    matrices (GSE211437_RAW.tar, 2.7 GB). The claim rests on the paper''s R pipeline (Seurat SCTransform v2 with
+    25 PCs and graph clustering into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which cannot be
+    installed in the entry''s locked Python environment; a Python substitute would form different clusters, on which
+    the proportions and DEG counts rest. The matrices were listed, not fetched.'
 - claim: figs2-ast-many-degs
   outcome: blocked
   blocked_by: not_runnable
-  notes: The snRNA-seq data are public at GEO GSE211437 as 12 raw 10x count matrices (GSE211437_RAW.tar,
-    2.7 GB). The claim rests on the paper's R pipeline (Seurat SCTransform v2 with 25 PCs and graph clustering
-    into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which the entry's locked Python environment
-    cannot install; a Python substitute would form different clusters, on which the proportions and DEG
-    counts rest. The matrices were listed, not fetched.
+  notes: 'The claim''s data are the snRNA-seq data at GEO GSE211437 (data: elsewhere), public as 12 raw 10x count
+    matrices (GSE211437_RAW.tar, 2.7 GB). The claim rests on the paper''s R pipeline (Seurat SCTransform v2 with
+    25 PCs and graph clustering into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which cannot be
+    installed in the entry''s locked Python environment; a Python substitute would form different clusters, on which
+    the proportions and DEG counts rest. The matrices were listed, not fetched.'
 findings:
 - kind: other
   about: data
   severity: critical
-  statement: In the Open Ephys files the SLEAP poses are not on the clock of the spikes and the trial
-    table, and nothing in the files says so. The nose position at the trial table's port entries clusters
-    at a lag of -10.6 to +6.6 s in five of the six 2018 sessions and at +287 s in the sixth (the shock-evoked
-    speed peak agrees within 0.6 s in three of them), and at no lag in the six 2019 sessions (spread at
-    best 81 to 117 px), whose poses are at 15 frames/s and span 150 to 190 s less than the recording.
-    In the imaging files the same check finds lags of 0.2 to 4 s (spread 2.5 to 14 px) in 32 of 34 files.
-    An analysis that takes the pose timestamps as given places freezing and darting in the wrong trials
-    and against the wrong spikes.
+  statement: In the Open Ephys files the SLEAP poses are not on the clock of the spikes and the trial table, and
+    nothing in the files says so. The nose position at the trial table's port entries clusters at a lag of -10.6
+    to +6.6 s in five of the six 2018 sessions and at +287 s in the sixth (the shock-evoked speed peak agrees within
+    0.6 s in three of them), and at no lag in the six 2019 sessions (spread at best 81 to 117 px), whose poses are
+    at 15 frames/s and span 150 to 190 s less than the recording. Fitted per quarter of the session, the lag is
+    constant in four 2018 sessions and changes by up to 200 s in the other eight. In the imaging files the same
+    check finds lags of 0.2 to 4 s (spread 2.5 to 14 px) in 32 of 34 files. An analysis that takes the pose timestamps
+    as given places freezing and darting in the wrong trials and against the wrong spikes.
 - kind: data_missing
   severity: major
-  statement: The 13 Neuropixels files (5 paired and 4 unpaired ASt mice, 4 CeA mice) hold spikes but no
-    trial events and no behavior; the Methods say events were recorded by TTL at 10 kHz. No cue response
-    can be computed for them, so all unpaired ephys mice, all TS neurons and most CeA neurons of the paper
-    cannot be analysed.
+  statement: The 13 Neuropixels files (5 paired and 4 unpaired ASt mice, 4 CeA mice) hold spikes but no trial events
+    and no behavior; the Methods say events were recorded by TTL at 10 kHz. No cue response can be computed for
+    them, so all unpaired ephys mice, all TS neurons and most CeA neurons of the paper cannot be analysed.
 - kind: metadata_insufficient
   severity: major
-  statement: Neuropixels units have no region, channel or electrode column, and every electrode of a probe
-    carries one label (ASt or CeA) although the probes span 3.8 mm. The paper's TS units cannot be found,
-    and the files give 1515 paired ASt units, 885 CeA and 633 unpaired against the paper's 193, 145 and
-    71.
+  statement: Neuropixels units have no region or electrode column, and every electrode of a probe carries one label
+    (ASt or CeA) although the probes span 3.8 mm. The units do carry probe_depth (micrometers from the tip) and
+    a good or mua label, and the files hold histology images of the probe track, but nothing maps depth to region.
+    The paper's TS units cannot be found, and the files give 1515 paired ASt units, 885 CeA and 633 unpaired against
+    the paper's 193, 145 and 71 (574, 155 and 410 Neuropixels units labeled good, with 112 and 22 more from Open
+    Ephys).
 - kind: selection_undocumented
   about: data
   severity: major
-  statement: The imaging files hold every CNMF-E ROI (2036 in paired and 1233 in unpaired discrimination
-    sessions) with no column marking the manually curated neurons the paper analysed (1110 in total),
-    so counts are 2.4 to 4.0 times the paper's and results on the files can differ from the paper's (three
-    claims of no difference fail here).
+  statement: The imaging files hold every CNMF-E ROI (2036 in paired and 1233 in unpaired discrimination sessions)
+    with no column marking the manually curated neurons the paper analysed (1110 in total), so counts are 2.4 to
+    4.0 times the paper's and results on the files can differ from the paper's (three claims of no difference fail
+    here).
 - kind: data_missing
   severity: major
-  statement: The paper says raw and processed data are at this dandiset, but it holds no RNAscope data,
-    no optogenetic activation or inhibition behavior, and no unpredicted-US imaging session. Fifteen claims
-    cannot be tested for this reason.
+  statement: The paper says raw and processed data are at this dandiset, but it holds no RNAscope data, no optogenetic
+    activation or inhibition behavior, and no unpredicted-US imaging session. Fifteen claims cannot be tested for
+    this reason.
 - kind: other
   about: data
   severity: critical
-  statement: Two recordings are deposited twice. sub-6197 has two Open Ephys files with identical spikes
-    and events. sub-J933 has two imaging files with identical traces, and in the one named sub-J933-Disc4_ses-J933-Disc4
-    the port entries are 55 in place of 193 and sit 236 s off the video's clock. The duplication shows
-    in the shared subject names; the wrong port entries do not.
+  statement: Two recordings are deposited twice. sub-6197 has two Open Ephys files with identical spikes and events.
+    sub-J933 has two imaging files with identical traces, and in the one named sub-J933-Disc4_ses-J933-Disc4 the
+    port entries are 55 in place of 193 and sit 236 s off the video's clock. The duplication shows in the shared
+    subject names; the wrong port entries do not.
 - kind: metadata_insufficient
   severity: minor
-  statement: The Open Ephys files do not say whether a mouse was in the paired or unpaired group (the
-    Neuropixels and imaging files do); they are taken as paired from the paper's mouse counts.
+  statement: The Open Ephys files do not say whether a mouse was in the paired or unpaired group (the Neuropixels
+    and imaging files do); they are taken as paired from the paper's mouse counts.
 - kind: metadata_insufficient
   severity: minor
-  statement: Poses are in pixels with no scale; the paper's freezing and darting thresholds are in cm.
-    The scale was inferred from the chamber size (about 20 px/cm in discrimination sessions, 7.5 to 33
-    in context sessions).
+  statement: Poses are in pixels with no scale; the paper's freezing and darting thresholds are in cm. The scale
+    was inferred from the chamber size (about 20 px/cm in discrimination sessions, 7.5 to 33 in context sessions).
 - kind: other
   about: data
   severity: minor
-  statement: Imaging frames are 1/15 s apart in every file, where the Methods say 15 frames/s downsampled
-    by two, and each discrimination session has 15 imaged CS-reward trials, where the Methods say every
-    other reward trial of 45. Imaged clips begin about 9.6 s before the cue, so the 10 s baseline is not
-    complete.
+  statement: Imaging frames are 1/15 s apart in every file, where the Methods say 15 frames/s downsampled by two,
+    and each discrimination session has 15 imaged CS-reward trials, where the Methods say every other reward trial
+    of 45. Imaged clips begin about 9.6 s before the cue, so the 10 s baseline is not complete.
 - kind: other
   about: data
   severity: none
-  statement: Open Ephys spikes respond at the trial table's CS onsets and not at onsets shifted 45 s,
-    CS-shock tones last 20 s, and CS-reward tones end 0.4 s after the first port entry (median), as the
-    Methods describe. Imaging mouse counts per genotype and group match the paper's.
+  statement: Open Ephys spikes respond at the trial table's CS onsets and not at onsets shifted 45 s, CS-shock tones
+    last 20 s, and CS-reward tones end 0.4 s after the first port entry (median), as the Methods describe. Imaging
+    mouse counts per genotype and group match the paper's.
 - kind: methods_unavailable
-  statement: Questions for the authors. (1) Figure S9, how were the CS-reward trials with port latency
-    over 2 s and their 96 neurons in 9 mice selected? Here all 10 Open Ephys mice have 22 to 85 such trials.
-    (2) Figure 5L-M, what is the soft normalization 'to a maximum z-score of 10', and which linkage and
-    trace span were used? (3) How is 'total displacement of ALL mouse body points' computed (sum or each
-    point), with what pixel scale, and which node is the rear body centre for darting? (4) Is there a
-    record of the curated imaging neurons and of the Neuropixels units' regions and trial events?
+  statement: Questions for the authors. (1) Figure S9, how were the CS-reward trials with port latency over 2 s
+    and their 96 neurons in 9 mice selected? Here all 10 Open Ephys mice have 26 to 86 such trials (latency as tone
+    duration). (2) Figure 5L-M, what is the soft normalization 'to a maximum z-score of 10', and which linkage and
+    trace span were used? (3) How is 'total displacement of ALL mouse body points' computed (sum or each point),
+    with what pixel scale, and which node is the rear body centre for darting? (4) Is there a record of the curated
+    imaging neurons and of the Neuropixels units' regions and trial events?
+- kind: other
+  about: data
+  severity: minor
+  statement: In the imaging poses the largest frame-to-frame displacement over the 14 body points is below 0.5 px
+    in 19.6% of the discrimination-session frames and above 1.6 px in the rest, with none in between, and the same
+    holds in the context sessions. These frames repeat the previous pose almost exactly. The paper's freezing rule
+    (all points below 0.08 cm per frame, about 1.6 px) counts only them, whatever the pixel scale, and the files
+    do not say whether they are still frames or repeated video frames. Freezing so measured does not differ between
+    the cues in paired mice; the defensive difference comes from darting.
+verifications:
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1. The executed notebook of the first run with the conclusion cells and the summary removed,
+    the helper module and the claims file, with the paper. The verifier checked the archive''s asset list (706 assets)
+    and the API metadata of the 13 Neuropixels files, streamed the structure of sub-Ast-NPX-10, and tested the helper
+    functions on synthetic inputs. It gave its own outcome for each of the 11 tested claims, all agreeing with the
+    record as it then stood, and found 10 problems, 4 affecting a conclusion. It reported no place where the claims
+    file misreads the paper, so no question was added for a reader. Its note that pixels_per_cm underestimates the
+    scale by about 18% if body points stay 3 cm from the walls is answered by the frame structure now shown: freezing
+    does not depend on the scale, and darting keeps the assumption, stated on the outcome. Report in transcripts/mills-2026/verifier-1-report.md.'
+  results:
+  - claim: fig2-recorded-neurons
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 12: units below 50 Hz are 1515 paired ASt, 0 TS, 885 CeA and 633 unpaired ASt, against the paper''s
+      193, 212, 145 and 71. Mouse counts are 15, 0, 6 and 4 against 15, 7, 8 and 4. The Neuropixels units have no
+      region label, so the paper''s ASt subset can''t be counted. Problem 7: in NPX-10 the units have probe_depth,
+      a label column (good or mua), and acquisition/NeuropixelsHistologyImages; that could support region assignment,
+      but with no events nothing becomes testable.'
+    response: Outcome kept. The inventory now lists probe_depth, the label column and the histology images, the
+      data check and finding 3 no longer say the units lack a channel column, and the fig2 cell prints the counts
+      of units labeled good (574 paired ASt, 155 CeA, 410 unpaired, still above the paper's).
+  - claim: figs9-sustained-only-cs-shock
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 14: the phasic ANOVA is not significant (p 0.24 and 0.23). All four sustained ANOVAs give p <
+      0.001, and Tukey puts CS-shock above both CS-reward groups, under both bin sizes and both timepoint readings.
+      But the run covers 10 of the paper''s 15 mice: the slow group has 112 neurons (expected 96 ± 10) and df is
+      333, not 479. Problem 5: latency is the first port entry at or after onset, while the tone ending more than
+      8 s before that entry in at least 5% of trials means the mouse was already in the port; the Methods say collection
+      ends the tone, so the tone duration is the collection latency, and the slow group is contaminated. It asked
+      for figs9 rerun with tone duration as the latency.'
+    response: Outcome kept. Port latency is now the tone duration, citing the Methods, with the first entry as the
+      other reading; the data check prints the trials with the mouse in the port at onset (0 to 28 per session)
+      and slow-trial counts under both readings. With the tone duration the phasic ANOVA gives p 0.38 and 0.34 and
+      the sustained ANOVAs under reading (b) p < 1e-6; all 10 mice still have slow trials (26 to 86), so the neuron
+      count stays 112.
+  - claim: fig2q-trajectories-diverge
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16: mean distance over 0 to 18 s is 7.36, against a baseline maximum of 2.87 in the complete PC
+      space (7.16 against 1.94 with 41 PCs). This uses 112 neurons from 10 of 15 mice. Problem 8: in the complete
+      PC space the distance equals the neuron-space distance whatever the PCA is fitted on, so the printed value
+      is also the Methods'' main reading, not only the code''s variant.'
+    response: Outcome kept. The header, the section text, the conclusion and the deviation now say that the complete-space
+      distance is the Methods' reading, and that only the 90% variant depends on fitting the PCA on paired mice.
+  - claim: figs8-single-trial-divergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 18: with the iterations pooled (reading c), shock-reward similarity is lower at p ≈ 1e-50 for
+      all five seeds. The per-animal readings (a, b) give p 0.0625 to 0.125, and with 5 animals they cannot reach
+      p < 0.01. The unpaired part can''t be tested. Problem 6: the notebook doesn''t say that (a) and (b) cannot
+      reach p < 0.01, and reading (c) treats 100 resamples of the same trials as independent, so its p is inflated.'
+    response: Outcome kept. The cell prints the smallest attainable two-sided Wilcoxon p for five animals (0.0625),
+      and the conclusion and notes say so and that reading (c) overstates the evidence.
+  - claim: fig3h-cs-decoded-paired-only
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 20: the paired part misses the claim''s p < 0.01. Two-sided Mann-Whitney p is 0.015 to 0.065 across
+      five seeds; one-sided p is below 0.01 in only 1 of 5 seeds. Accuracy is above chance in 4 of 6 mice, from
+      6 of the code''s 9 paired mice. The unpaired part can''t be tested. Chance is 0.476 to 0.528, which agrees
+      with the shuffle chance the paper describes.'
+    response: Outcome kept; nothing changed.
+  - claim: figs13-imaging-mice-discriminate
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 22: both paired groups show more defensive behavior to CS-shock (Drd1a t(9) = 3.61, p 0.006; Drd2
+      t(8) = 2.37, p 0.046) and neither unpaired group does, under both freezing rules. Mouse counts are 10, 9,
+      8 and 6, matching the paper. The Drd2 result is near the threshold and rests on an assumed pixel scale. Problem
+      4: freezing hardly changes with a fixed scale or with the max or sum rule, which points to many frames with
+      near-zero displacement (possibly duplicated pose frames), not checked; it asked for the per-frame displacement
+      distribution and freezing and darting reported separately.'
+    response: 'Outcome kept, still marked assumed. The cell now prints the displacement distribution: the largest
+      point displacement is below 0.5 px in 19.6% of frames and above 1.6 px in the rest, none between, so the paper''s
+      rule counts only frames that repeat the previous pose, whatever the scale. Freezing alone does not differ
+      between the cues (p 0.14 and 0.37); darting does (p < 0.0001 and 0.0016). A median-displacement variant finds
+      no difference. The notes say this, and a new finding (12) records the frame structure.'
+  - claim: fig5j-drd2-cs-shock-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 25: paired is higher in both windows (t 6.23 and 5.03, p < 1e-6). But the neuron counts are 1189
+      and 625, far outside 296 ± 30 and 257 ± 26, because every CNMF-E ROI is used. Mouse-level tests give p 0.17
+      and 0.16. Problem 3: the long-window mean z is negative in every group, suggesting fluorescence decays within
+      each clip, which could differ between cohorts, and it was not examined.'
+    response: 'Outcome kept. The notebook now prints mean z by window for each genotype, group and CS: the baseline
+      falls from about +0.3 to -0.2 in every group alike, so a decay is present but does not differ between groups.
+      A variant with a linear baseline trend removed keeps the difference (p = 4.9e-9 and 0.0044).'
+  - claim: fig5h-drd1-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 26: all four tests are significant with paired higher (p 0.0016 to 3.5e-5), and 3 of 4 with the
+      deconvolved trace. The paper''s t-values for CS-shock are negative. Scaled to the paper''s n, the long-window
+      effect (d ≈ 0.22) would still give p ≈ 0.01. The ROI set is uncurated (847 and 608 against 320 and 237). Problem
+      3: the significance is mainly due to the larger n, and mouse-level tests are not significant. Problem 10:
+      the Drd1a unpaired group includes G4B2-C8-6860 (1 imaged CS-shock trial, 4 CS-reward, truncated session) and
+      G2B1-C4-6886 (1 ROI). It asked for mouse-level results for the Drd1a CS-reward windows.'
+    response: 'Outcome kept: the claim of absence is judged on the paper''s neuron-level test. Added the mouse-level
+      CS-reward test (p 0.73 and 0.50), a variant without 6860 and 6886 (all four still differ, p 0.0015 to 3.8e-6),
+      the detrended variant (three of four differ) and the decay table.'
+  - claim: fig5k-drd2-cs-reward-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 27: the short-window test on raw fluorescence gives p = 0.034, and the criterion needs neither
+      test to be significant. The effect is small (d ≈ 0.1, same direction as the paper''s t = 1.85) and would not
+      be significant at the paper''s n. The deconvolved variant has neither test significant. It asked for mouse-level
+      results for fig5k, and how many CS-reward events are imaged to 3 s but not 10 s, as cs_imaged needs 10 s and
+      only 15 of an expected ~22 reward trials are kept.'
+    response: 'Outcome kept. Added the mouse-level test (p 0.36 and 0.33) and the detrended variant (short p = 0.0023).
+      The data check now prints clip coverage: each session has 30 clips (15 CS-shock, 15 CS-reward; 17 to 19 CS-reward
+      in the DISC6+TONES sessions), and every event covered to 1 s is covered to 10 s except one CS-reward event
+      of G4B2-C8-6860, so the 10 s rule drops no trial elsewhere; the files hold 15 reward clips, not about 22 (finding
+      9).'
+  - claim: fig5m-drd2-rich-clusters-cs-shock
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 29: none of the 8 readings gives a positive Spearman correlation at p < 0.05 (lowest p is 0.197).
+      Average linkage gives one giant cluster (1864 to 1968 of 2036 ROIs).'
+    response: Outcome kept; nothing changed.
+  - claim: figs15-no-context-encoding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 31: the Drd2 peak rate differs between contexts (p 0.042), and Drd2 freezing is not higher in
+      context A (p 0.63). The Drd1a results do match: no activity difference and more freezing in A (p 0.011). Problem
+      4: the scale assumption gives 7.5 to 32.8 px/cm in the context chambers, and freezing hardly changes with
+      a fixed 14 px/cm or with the max or sum rule, which points to many frames with near-zero displacement (possibly
+      duplicated pose frames), not checked.'
+    response: Outcome kept. The cell now prints, per session, the share of frames below 0.5 px and between 0.5 and
+      1.6 px (at most 0.1%), the darting share and a median-displacement variant (same pattern). The activity part
+      fails on the Drd2 peak rate whatever freezing measures.
+  - claim: figs5-ephys-mice-discriminate
+    agrees: true
+    outcome: blocked
+    reason: 'Parts of some blocked claims could be tested: the port-entry half (paired only) is tested in cell 33
+      and passes (t(11) = 8.31, p 4.6e-6). Problem 9 and section C: cell 7 finds a pose offset that the two methods
+      agree on within 0.6 s for 3012, 3016 and 3024 but doesn''t use it; pose and ephys spans also differ by up
+      to 183 s in the 2019 sessions, so a constant offset can''t fix those; a per-session fit of offset plus drift
+      between pose and port entries would show whether the pose can be mapped.'
+    response: 'Kept blocked. A per-quarter lag fit is added to the data check: the lag is constant in four 2018
+      sessions and changes by up to 200 s in the other eight, and the shock check agrees in 3012, 3016 and 3024
+      only. The claim needs 21 paired and 4 unpaired mice.'
+  - claim: figs10lm-defensive-trials-greater-responses
+    agrees: true
+    reason: Possibly testable in 2 ASt mice (3016, 3024), where the port and shock checks agree on a pose offset
+      (cell 7).
+    response: Kept blocked. The per-quarter fit confirms a fixed offset in 3016 and 3024 (32 units), but the claim's
+      unpaired half has no data and the paired half would rest on 2 of 15 mice with a clock inferred from behavior;
+      the notes say so.
+  - claim: fig3fg-no-motor-onset-response
+    agrees: true
+    reason: Possibly testable in 2 ASt mice (3016, 3024), where the port and shock checks agree on a pose offset
+      (cell 7).
+    response: Kept blocked. The offset is known to within about 0.6 s, and the claim judges a 0 to 1 s window after
+      bout onsets, so a clock error of that size would blur a response and bias the test toward the claim of no
+      response; the notes say so.
+  - claim: fig2e-ast-sustained-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: TS units are absent.'
+    response: Kept blocked.
+  - claim: fig2o-ast-greater-cs-shock-responses
+    agrees: false
+    reason: 'Problem 2: marked fully blocked, but an ASt against CeA comparison on Open Ephys data was possible,
+      though there are only 22 CeA units from 2 mice.'
+    response: Kept blocked, as the claim compares ASt with TS and CeA and no unit is labeled TS. The ASt against
+      CeA comparison is now run and printed for the record (CS-shock phasic p = 0.72, sustained p = 0.95), and the
+      notes give it; with 22 units from 2 of 8 CeA mice it does not decide the claim.
+  - claim: fig2o-region-differs-cs-reward
+    agrees: false
+    reason: 'Problem 2: marked fully blocked, but the one-sample t-test of ASt phasic CS-reward z against 0 could
+      be run on 112 units; cell 14 already shows a mean of 7.09.'
+    response: Changed from blocked to partially_reproduced. The one-sample test is run (t(111) = 7.79, p = 3.9e-12;
+      10 ms p = 7.4e-12); the region ANOVAs cannot be run as the paper's (no TS units), and ASt against CeA is printed
+      for the record (p 0.061 and 0.20).
+  - claim: fig2p-ast-more-responsive
+    agrees: false
+    reason: 'Problem 2: marked fully blocked, but an ASt against CeA comparison is possible, though there are only
+      22 CeA units from 2 mice.'
+    response: Kept blocked, as no unit is labeled TS. The responsive classes under both readings are now computed
+      and the ASt against CeA chi-square tests printed for the record (CS-shock phasic share 0.29 against 0.32);
+      with 22 units from 2 of 8 CeA mice they do not decide the claim.
+  - claim: figs7-paired-greater-than-unpaired
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: figs7-cs-reward-sustained-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: figs7d-paired-more-responsive
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: figs7f-baseline-rate-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: figs10b-paired-more-defensive
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: figs10-high-defensive-mice-greater-responses
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: fig3h-behavior-not-decoded
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: fig3j-cs-encoding-glm
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: fig3k-cs-improves-prediction
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: fig3l-behavior-encoding-low
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: fig3m-behavior-no-prediction-gain
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: API metadata for all 13 Neuropixels files lists only ElectricalSeries, Units and
+      ElectrodeGroup, and streaming sub-Ast-NPX-10 shows empty stimulus/presentation, no intervals and no processing,
+      so no unpaired ephys mouse has trial events.'
+    response: Kept blocked.
+  - claim: figs10-no-reward-relationship
+    agrees: false
+    reason: 'Problem 1: the cell 0 table and cell 32 group it with the claims blocked for lack of unpaired data.
+      The paired repeated-measures ANOVA over latency quartiles needs only trial-table port entries and spikes,
+      which share a clock (cell 5). It was not run.'
+    response: 'Changed from blocked to partially_reproduced. The repeated measures ANOVA is run under both latency
+      readings and both bin sizes: p = 0.14, 0.185 and 0.18, and p = 0.047 with the tone-duration latency and 10
+      ms bins; the across-mice ANOVA needs the unpaired mice and cannot be run. Marked assumed, as the latency reading
+      is adopted and the bin readings differ at the threshold.'
+  - claim: figs14-us-shock-scaling
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: no NWB file is an unpredicted-US session.'
+    response: Kept blocked.
+  - claim: figs14q-few-salience-neurons
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: no NWB file is an unpredicted-US session.'
+    response: Kept blocked.
+  - claim: fig1l-rnascope-drd2-enriched
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: figs4-cdh6-slit2-gradient
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig3b-ast-activation-freezing
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig3c-ast-activation-avoidance
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig4eg-drd2-activation-freezing-avoidance
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig4df-drd1-activation-no-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig4hi-rotarod-no-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig6e-drd2-inhibition-reduces-defense
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: figs16-drd2-inhibition-freezing-darting
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig6f-drd2-inhibition-no-reward-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig6g-j-drd2-inhibition-no-other-effects
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: figs17-drd1-inhibition-no-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: figs12gh-activation-no-epm-effect
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked: the RNAscope and optogenetic data are not in the dandiset; no such files exist (706
+      assets: 83 NWB files, 541 avi and 82 mp4).'
+    response: Kept blocked.
+  - claim: fig1b-ast-distinct-subclusters
+    agrees: true
+    reason: The data is at GEO, which the claims file says. The notebook's reason, 'pipeline in R', is not a data
+      reason. The GEO data is outside this round's access.
+    response: Kept blocked as not_runnable, the reason the protocol gives for a claim on data elsewhere that cannot
+      be run here. The header now says the data are at GEO GSE211437, outside the dandiset, and that the paper's
+      pipeline (Seurat, Libra, edgeR in R) cannot be installed in the entry's locked Python environment; the notes
+      say the same.
+  - claim: fig1j-ast-drd2-enriched
+    agrees: true
+    reason: The data is at GEO, which the claims file says. The notebook's reason, 'pipeline in R', is not a data
+      reason. The GEO data is outside this round's access.
+    response: Kept blocked as not_runnable, the reason the protocol gives for a claim on data elsewhere that cannot
+      be run here. The header now says the data are at GEO GSE211437, outside the dandiset, and that the paper's
+      pipeline (Seurat, Libra, edgeR in R) cannot be installed in the entry's locked Python environment; the notes
+      say the same.
+  - claim: figs2-ast-many-degs
+    agrees: true
+    reason: The data is at GEO, which the claims file says. The notebook's reason, 'pipeline in R', is not a data
+      reason. The GEO data is outside this round's access.
+    response: Kept blocked as not_runnable, the reason the protocol gives for a claim on data elsewhere that cannot
+      be run here. The header now says the data are at GEO GSE211437, outside the dandiset, and that the paper's
+      pipeline (Seurat, Libra, edgeR in R) cannot be installed in the entry's locked Python environment; the notes
+      say the same.

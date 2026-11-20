@@ -9,6 +9,8 @@ its Drd1a+ and Drd2+ neurons during a two-tone discrimination task and contextua
 |---|---|
 | The dandiset holds the paper's ephys units, with its counts per region and group | Not reproduced |
 | Sustained ASt responses to CS-shock, not CS-reward (Figure S9) | Partially reproduced |
+| ASt CS-reward responses unrelated to reward behavior (Figure S10N-U) | Partially reproduced |
+| Regions differ for CS-reward; robust ASt phasic CS-reward response (Figure 2O) | Partially reproduced |
 | ASt trajectories for the two cues diverge from onset (Figure 2Q) | Reproduced |
 | Single-trial shock-reward trajectories less similar than same-cue pairs (Figure S8) | Partially reproduced |
 | CS identity decoded from ASt activity in paired mice (Figure 3H) | Not reproduced |
@@ -19,17 +21,18 @@ its Drd1a+ and Drd2+ neurons during a two-tone discrimination task and contextua
 | Drd2-rich clusters respond to CS-shock (Figure 5M) | Not reproduced |
 | No change in activity between contexts (Figure S15) | Not reproduced |
 | Ephys behavior claims (three) | Blocked: metadata insufficient |
-| Region comparisons, unpaired controls, GLM, unpredicted US (eighteen) | Blocked: data missing |
+| Region comparisons, unpaired controls, GLM, unpredicted US (sixteen) | Blocked: data missing |
 | RNAscope and optogenetics (thirteen) | Blocked: data missing |
 | snRNA-seq (three) | Blocked: not runnable |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The Neuropixels files have no trial events, no behavior and no region per unit, so the ephys claims
-are tested on the 10 paired ASt mice recorded with Open Ephys, and claims on TS, CeA or unpaired
-neurons are blocked. The poses of the Open Ephys sessions are on a different clock from their spikes
-and trial events. The imaging files hold every CNMF-E ROI, not the paper's curated neurons, and the
+The Neuropixels files have no trial events, no behavior and no region per unit (they give a probe
+depth), so the ephys claims are tested on the 10 paired ASt mice recorded with Open Ephys, and claims
+on TS, CeA or unpaired neurons are blocked or tested on their paired ASt part only. The poses of the
+Open Ephys sessions are on a different clock from their spikes and trial events. In the imaging
+poses the paper's freezing rule counts only frames that repeat the previous pose. The imaging files hold every CNMF-E ROI, not the paper's curated neurons, and the
 three imaging claims of no difference fail on them. The attempt record, with the reasons and the
 differences from the paper's method, is [`attempts/mills-2026-01.yaml`](../../attempts/mills-2026-01.yaml).
 
