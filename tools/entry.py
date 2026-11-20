@@ -365,6 +365,17 @@ def check(entry_dir: Path) -> Report:
             for d in f.get("datasets") or []:
                 if str(d) not in used:
                     report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
+        # A later review of an earlier attempt's findings (`findings_review`) rates those about the data, each once,
+        # by its number in the record; an attempt that rates its own findings (pilot-18 on) has no such review.
+        seen = set()
+        for item in (attempt.get("findings_review") or {}).get("findings") or []:
+            number, its = item["finding"], attempt.get("findings") or []
+            if number > len(its) or number in seen:
+                report.error(where, f"`findings_review` names finding {number} " + ("twice" if number in seen else
+                                    f"and the record has {len(its)} findings"))
+            elif its[number - 1].get("severity"):
+                report.error(where, f"`findings_review` rates finding {number}, which the attempt rated itself")
+            seen.add(number)
         # A verification round's review of a finding points at the finding by its number in the record.
         for r, rnd in enumerate(attempt.get("verifications") or [], 1):
             for item in rnd.get("findings") or []:

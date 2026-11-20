@@ -1708,3 +1708,38 @@ verifications:
     response: Outcome set to reproduced and the proposal removed; the notebooks' summaries and the README now give
       reproduced. The notes now give the time the notebook printed, 40.4 min, and that of the round 3 re-run (72.1
       min, the same results, on a machine with other load).
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: major
+  - finding: 2
+    severity: major
+  - finding: 3
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_mallory_2021.ipynb cell 15 prints the repairs index_was 5852 to 71388 (npI3 20190420) and 12175 to 77711 (npI4 20190421 obj-1h2xem6), each moving 65536 spikes, and cell 11 prints that unit 0 as stored differs from the figshare train in exactly these two files and equals it after repair. Only the 11 files matched to the paper were tested, and only unit 0 was compared with figshare."
+  - finding: 4
+    severity: minor
+  - finding: 5
+    severity: major
+  - finding: 6
+    severity: major
+    confirmed: false
+    checked: 2026-11-19
+    note: "reproduce_mallory_2021.ipynb cells 7 and 8 print ten behaviour-only files with the frame count and identical positions (first 2000 samples) of an ecephys file, and the npI4 20190421 and npJ5 20190505 pairs with equal unit counts (254, 389), identical trial start times, different frame counts and no shared spike times. That each pair is one insertion converted twice is an inference, not shown, and the duplication is visible from the file names; the outputs do not test which file of a pair has a trial table that fits its span."
+  - finding: 7
+    severity: minor
+  - finding: 8
+    severity: minor
+  - finding: 10
+    severity: minor
+  - finding: 11
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "freely_moving_mallory_2021.ipynb cell 5 prints Fuschia_052001 and Daisy_052001 as the only pair with identical x, with y, speed and head direction also identical and pitch and roll different; cell 3 lists both at 133.3 min in the 70 cm arena. The count of 400,050 samples is not printed (133.3 min at 20 ms is consistent with it), and this concerns the figshare deposit, not the dandiset."
