@@ -146,17 +146,21 @@ def read_mask(ds, path, version=None):
 
 # ---------------------------------------------------------------- geometry
 EIGHT = np.ones((3, 3), bool)
+HOLE8 = True  # hole traces 4-connected (see matlab_area); False gives the earlier 8-connected count
 FOUR = ndi.generate_binary_structure(2, 1)
 
 
-def matlab_area(region):
+def matlab_area(region, hole=False):
     """Area (px^2) of the polygon through the centres of the boundary pixels of
     a simply connected region, as bwboundaries + polyarea give it: N - B/2 - 1
-    (Pick's theorem). B counts region pixels with a 4-neighbour outside."""
+    (Pick's theorem). bwboundaries traces objects 8-connected, so the trace
+    visits the pixels with a 4-neighbour outside; it traces holes
+    4-connected, so a hole's trace visits the pixels with any 8-neighbour
+    outside (`hole=True`). B counts those pixels."""
     n = int(region.sum())
     if n == 0:
         return 0.0
-    er = ndi.binary_erosion(region, structure=FOUR, border_value=0)
+    er = ndi.binary_erosion(region, structure=EIGHT if hole else FOUR, border_value=0)
     b = n - int(er.sum())
     return max(n - b / 2 - 1, 0.0)
 
@@ -191,7 +195,7 @@ def objects(mask, with_holes=False):
                     continue
                 h = hl[hs] == j
                 hr, hc = np.nonzero(h)
-                holes.append(dict(n=int(h.sum()), area=matlab_area(h),
+                holes.append(dict(n=int(h.sum()), area=matlab_area(h, hole=HOLE8),
                                   centroid=(hr.mean() + hs[0].start + sl[0].start,
                                             hc.mean() + hs[1].start + sl[1].start),
                                   slice=(slice(hs[0].start + sl[0].start, hs[0].stop + sl[0].start),
@@ -372,8 +376,12 @@ def sample_summary(r, species):
     """Per-sample metrics. For rats, the statistics use the largest fascicle
     only, its outer perineurium as the nerve boundary (Methods, Imaging and
     Image Analysis, paragraph 3; DataPlotting_v4.m). 'Largest' is the largest
-    outer perineurium area, the boundary the code sorts on; the inner trace of
-    that fascicle gives the fascicle diameter."""
+    outer perineurium area: DataPlotting_v4.m sorts the outer diameters and
+    takes the largest as the nerve diameter. The inner trace of that fascicle
+    gives the fascicle diameter here, as the criteria say; the code itself
+    keeps FascicleIn{1}, the inner trace of the first ring in bwboundaries
+    order, which is not the largest in R22-1 and R23-1 (shown in the notebook
+    as a variant, `fasc` rows with outer == 0)."""
     t = r["fasc"]
     out = dict(sample=r["sample"], sub=r["sub"], sam=r["sam"], species=species,
                n_fasc=len(t), endo_area=t["a_in"].sum())
@@ -545,6 +553,53 @@ def thumbnail(ds, path, step=8):
     return a[::step, ::step]
 
 
+def crop(ds, path, box, step=1):
+    """Decode a JPEG 2000 micrograph at full resolution and return the region
+    box = (row0, row1, col0, col1), keeping every `step`-th pixel."""
+    import imagecodecs
+    a = imagecodecs.jpeg2k_decode(read_bytes(ds, path))
+    r0, r1, c0, c1 = box
+    return a[r0:r1:step, c0:c1:step].copy()
+
+
+# --------------------------------------------------------- literature values
+# Figure 7 compares the paper's summary statistics with published means and
+# SDs (Supplement 4, not supplied with the text read). The paper's plotting
+# code, DataPlotting_v4.m (files/code of sparc-60, 64 and 65), hard-codes
+# those values ('Stats in lit (see Supplementary Excel spreadsheet)') in the
+# order of the Figure 7 legend, with a reference number for each. They are
+# parsed from the deposited file, not copied here.
+LIT_STATS = {1: "A_nerve_mm2", 2: "d_nerve_mm", 3: "n_fasc", 4: "d_fasc_um", 5: "A_endo_mm2",
+             8: "A_endo_pct"}
+LIT_SPECIES = {1: "human", 2: "pig", 3: "rat"}
+# Reference numbers of the code, matched to the studies of the Figure 7 legend
+# by their order there (e.g. the human cervical diameters: Hammer 2015 left and
+# right, Verlinden 2016 left and right, Hammer 2018 left and right, Stakenborg
+# 2020; the code's references 2, 2, 7, 7, 8, 8, 9).
+LIT_REFS = {1: "Fazan and Lachat 1997", 2: "Hammer et al. 2015", 3: "Licursi de Alcantara et al. 2008",
+            4: "Prechtl and Powley 1985", 5: "Seki et al. 2014", 6: "Tailai et al. 1980",
+            7: "Verlinden et al. 2016", 8: "Hammer et al. 2018", 9: "Stakenborg et al. 2020",
+            10: "Gravgaard 1968"}
+
+
+def literature_values(ds="sparc-65"):
+    """The literature means and SDs of Figure 7, from DataPlotting_v4.m: one row
+    per published value with species, level, statistic, mean, SD (0 where the
+    study gave none), the code's reference number and the study."""
+    import re
+    txt = read_bytes(ds, "files/code/DataPlotting_v4.m").decode("latin1")
+    vals = {}
+    for sp, lev, st, field, i, v in re.findall(
+            r"stats_lit\{(\d),(\d),(\d+),(\d)\}\((\d+)\)\s*=\s*([-0-9.eE]+);", txt):
+        vals.setdefault((int(sp), int(lev), int(st), int(i)), {})[int(field)] = float(v)
+    rows = []
+    for (sp, lev, st, i), d in sorted(vals.items()):
+        rows.append(dict(species=LIT_SPECIES[sp], level="CS"[lev - 1], stat=LIT_STATS.get(st, str(st)),
+                         index=i, mean=d.get(2), sd=d.get(3), ref=int(d.get(1)),
+                         study=LIT_REFS.get(int(d.get(1)), "")))
+    return pd.DataFrame(rows)
+
+
 # Readings made by eye by the author of this attempt on the micrographs the
 # notebook displays (claims human-subdiaphragmatic-fatty-tissue,
 # pig-cervical-cell-bodies, rat-carotid-sheath-bundles, whose criteria are
@@ -556,10 +611,43 @@ def thumbnail(ds, path, step=8):
 # JPEG 2000 derivatives (about 1 um per pixel); the smallest profiles may be
 # missed at that scale. Muscle and vessels are not counted.
 RAT_SHEATH_BUNDLES = {
-    "R16-3": 2, "R17-3": 5, "R18-1": 4, "R20-3": 2, "R21-3": 3, "R22-3": 4,
-    "R23-3": 3, "R24-3": 5, "R25-3": 2,                      # left (analysed)
+    "R16-3": 2, "R17-3": 5, "R18-1": 5, "R20-3": 2, "R21-3": 3, "R22-3": 5,
+    "R23-3": 4, "R24-3": 6, "R25-3": 2,                      # left (analysed), full resolution
     "R16-2": 2, "R17-2": 4, "R18-2": 5, "R20-2": 4, "R21-2": 4, "R22-2": 2,
-    "R23-2": 4, "R24-2": 4, "R25-2": 2,                      # right
+    "R23-2": 4, "R24-2": 4, "R25-2": 2,                      # right, thumbnails only
+}
+# The nine analysed left sections were read again at full resolution (round 1
+# of verification asked for the counted bundles to be shown): the region shown
+# (row0, row1, col0, col1, in pixels of the derivative), the centre (row, col)
+# of each bundle counted, the traced vagus first, and profiles seen but not
+# counted because they could not be told from a vessel at this resolution.
+# The counts above for the left side are the lengths of these lists. The
+# right sections keep the counts made on the thumbnails.
+RAT_SHEATH_FULLRES = {
+    "R16-3": dict(box=(300, 4500, 500, 2700), bundles=[(1060, 1050), (4000, 1850)],
+                  unsure=[(3912, 1592), (4060, 1450)]),
+    "R17-3": dict(box=(100, 1450, 1250, 3250),
+                  bundles=[(1050, 2500), (320, 2350), (500, 1450), (220, 1870), (880, 1850)],
+                  unsure=[(510, 1766)]),
+    "R18-1": dict(box=(1700, 3400, 300, 1900),
+                  bundles=[(2900, 1050), (2300, 1250), (2050, 1620), (2450, 1630), (2750, 850)],
+                  unsure=[(3000, 650)]),
+    "R20-3": dict(box=(400, 2500, 200, 3600), bundles=[(1200, 2200), (1050, 400)],
+                  unsure=[(1650, 850), (680, 400)]),
+    "R21-3": dict(box=(500, 2900, 600, 3400), bundles=[(2050, 1600), (1900, 2000), (700, 2000)],
+                  unsure=[]),
+    "R22-3": dict(box=(500, 2650, 450, 3900),
+                  bundles=[(2150, 1000), (2400, 1600), (2100, 2100), (1750, 2580), (750, 3600)],
+                  unsure=[]),
+    "R23-3": dict(box=(1500, 3700, 900, 4900),
+                  bundles=[(1900, 1450), (2650, 1300), (2500, 2420), (2220, 1830)],
+                  unsure=[(2040, 2040)]),
+    "R24-3": dict(box=(1600, 4200, 300, 4100),
+                  bundles=[(3150, 3300), (2550, 2450), (3470, 3090), (3650, 3100), (1950, 800),
+                           (3370, 1470)],
+                  unsure=[]),
+    "R25-3": dict(box=(200, 3600, 300, 2000), bundles=[(1100, 750), (2800, 450)],
+                  unsure=[(2450, 950)]),
 }
 # Whether the traced vagus is the largest bundle in each analysed sample, by eye.
 RAT_VAGUS_LARGEST = {k: True for k in ["R16-3", "R17-3", "R18-1", "R20-3", "R21-3",
@@ -589,8 +677,23 @@ PIG_FAT = {("sub-5", "sam-3"), ("sub-6", "sam-1"), ("sub-6", "sam-5"), ("sub-7",
            ("sub-11", "sam-1"), ("sub-13", "sam-1")}
 # Fascicles holding neuronal cell bodies (large round somata with a nucleus),
 # analysed pig cervical samples, on half-resolution views of the derivatives.
-# P14-2 has one pale fascicle (lower right) that could not be called either
-# way at this resolution and is counted as without.
+# P14-2 has pale fascicles (lower right) that could not be called on the
+# half-resolution view; at full resolution (PIG_CROPS) they hold fibre
+# profiles and no somata, so P14-2 is without.
 PIG_CELL_BODIES = {"P11-1": True, "P13-1": True, "P12-1": False, "P5-1": False,
                    "P6-7": False, "P8-7": False, "P9-3": False, "P14-2": False,
                    "P15-2": False}
+
+# Full-resolution regions of the pig MT derivatives (sparc-82) shown for the
+# readings above, as (row0, row1, col0, col1): the fascicles with cell bodies,
+# a pale fascicle of P14-2, and regions read as adipose tissue, which are shown
+# with the nerve trace of sparc-64 drawn over them (the masks of sparc-64 have
+# the size of these micrographs), so that whether the fat lies inside the
+# traced nerve, in the epineurium as the paper segmented it, can be seen.
+PIG_CROPS = {
+    "cell_bodies": {"P11-1": (880, 1380, 3000, 4250), "P13-1": (600, 1300, 250, 1050),
+                    "P14-2": (1350, 1850, 4050, 4750)},
+    "fat": {"P11-1": (1000, 1700, 1150, 2100), "P13-1": (1150, 1950, 5150, 5900),
+            "P5-1": (700, 1900, 400, 2800), "P9-3": (950, 2600, 340, 1300),
+            "P8-7": (400, 1700, 100, 900)},
+}

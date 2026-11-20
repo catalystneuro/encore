@@ -13,14 +13,19 @@ here:
   readings (nerve-diameter-anova), and `fit(..., bounded=)` selects one.
 - Effect (sum-to-zero) coding of the fixed effects, as JMP codes nominal
   effects, so that the type III tests of main effects are those JMP prints.
-- Denominator degrees of freedom by Satterthwaite's approximation (Fai and
-  Cornelius 1996 for multi-df tests), from the numerical Hessian of the REML
-  likelihood. JMP uses Kenward-Roger, which no Python package available here
-  implements; the two coincide for balanced designs and differ little
-  otherwise. This is an assumption, stated in the notebook.
+- Denominator degrees of freedom by Kenward and Roger (1997), JMP's method for
+  mixed models and the one the claims file names: the covariance of the fixed
+  effects adjusted for the estimation of the variance components, a scaled F
+  and its df, computed as pbkrtest's KRmodcomp does (`kr_test`). No Python
+  package implements it, so it is implemented here and checked on balanced
+  designs, where it must give the classical split-plot tests (notebook, data
+  check); it has not been checked against JMP itself. Satterthwaite's
+  approximation (Fai and Cornelius 1996 for multi-df tests), from the
+  numerical Hessian of the REML likelihood, is kept as a variant
+  (`method="satterthwaite"`).
 - Tukey's HSD on least squares means: each pairwise difference over its
-  standard error, referred to the studentized range for the number of means
-  compared, with that difference's Satterthwaite degrees of freedom.
+  standard error (Kenward-Roger adjusted), referred to the studentized range
+  for the number of means compared, with that difference's degrees of freedom.
 """
 import itertools
 
@@ -180,7 +185,70 @@ def fit(df, y, design, random, bounded=True):
         return nll(th)
     W[np.ix_(keep, keep)] = _theta_cov(nll_free, theta[keep])
     f.W = W
+    # for Kenward-Roger: the covariance matrix, its derivatives with respect
+    # to the variance components on their natural scale (residual variance,
+    # then each random-effect variance), and which components are free
+    f.V, f.X = V_of(theta), X
+    f.dV = [np.eye(n)] + G
+    f.keep = keep
     return f
+
+
+def _kr(f):
+    """Kenward and Roger (1997) quantities of a fit, cached: the adjusted
+    covariance of the fixed effects Phi_A, and P_i and W for the test.
+    Variance components are on their natural (linear) scale, so the second
+    derivatives of V vanish (R_ij = 0). Components held at the bound are left
+    out, as in the Satterthwaite approximation."""
+    if getattr(f, "_krc", None) is not None:
+        return f._krc
+    X, Phi = f.X, f.C
+    Vi = np.linalg.inv(f.V)
+    ViX = Vi @ X
+    dV = [f.dV[i] for i in f.keep]
+    Pm = Vi - ViX @ Phi @ ViX.T
+    PmdV = [Pm @ d for d in dV]
+    k = len(dV)
+    info = np.array([[0.5 * np.sum(PmdV[i] * PmdV[j].T) for j in range(k)] for i in range(k)])
+    W = np.linalg.inv(info)
+    P = [-ViX.T @ d @ ViX for d in dV]
+    ViXd = [Vi @ (d @ ViX) for d in dV]
+    S = np.zeros_like(Phi)
+    for i in range(k):
+        for j in range(k):
+            Q = (dV[i] @ ViX).T @ ViXd[j]
+            S += W[i, j] * (Q - P[i] @ Phi @ P[j])
+    PhiA = Phi + 2 * Phi @ S @ Phi
+    f._krc = dict(PhiA=PhiA, P=P, W=W)
+    return f._krc
+
+
+def kr_test(f, L):
+    """Kenward-Roger F test of L beta = 0 (L: q x p, full row rank), as
+    pbkrtest's KRmodcomp computes it. Returns F (scaled), q, the denominator
+    df and p."""
+    L = np.atleast_2d(L)
+    c = _kr(f)
+    Phi, PhiA, P, W = f.C, c["PhiA"], c["P"], c["W"]
+    q = np.linalg.matrix_rank(L)
+    Theta = L.T @ np.linalg.solve(L @ Phi @ L.T, L)
+    U = [Theta @ Phi @ Pi @ Phi for Pi in P]
+    k = len(P)
+    A1 = sum(W[i, j] * np.trace(U[i]) * np.trace(U[j]) for i in range(k) for j in range(k))
+    A2 = sum(W[i, j] * np.sum(U[i] * U[j].T) for i in range(k) for j in range(k))
+    B = (A1 + 6 * A2) / (2 * q)
+    g = ((q + 1) * A1 - (q + 4) * A2) / ((q + 2) * A2)
+    d = 3 * q + 2 * (1 - g)
+    c1, c2, c3 = g / d, (q - g) / d, (q + 2 - g) / d
+    Es = 1 / (1 - A2 / q)
+    Vs = (2 / q) * (1 + c1 * B) / ((1 - c2 * B) ** 2 * (1 - c3 * B))
+    rho = Vs / (2 * Es ** 2)
+    m = 4 + (q + 2) / (q * rho - 1)
+    lam = m / (Es * (m - 2))
+    b = L @ f.beta
+    Fw = float(b @ np.linalg.solve(L @ PhiA @ L.T, b)) / q
+    F = lam * Fw
+    return dict(F=F, df_num=q, df_den=m, p=float(stats.f.sf(F, q, m)), scale=lam)
 
 
 def _gls(V, X, y):
@@ -238,9 +306,22 @@ def ftest(f, term):
     return dict(term=term, F=F, df_num=q, df_den=ddf, p=float(stats.f.sf(F, q, ddf)))
 
 
-def anova(f):
-    rows = [ftest(f, t) for t in f.design.terms if t != "Intercept"]
-    return pd.DataFrame(rows)
+def ftest_kr(f, term):
+    """Type III F test of a term with Kenward-Roger's adjusted covariance,
+    scaling and denominator df."""
+    idx = f.design.terms[term]
+    L = np.zeros((len(idx), len(f.beta)))
+    for r, c in enumerate(idx):
+        L[r, c] = 1
+    return dict(term=term, **kr_test(f, L))
+
+
+def anova(f, method="kr"):
+    """Type III tests of every fixed term; method 'kr' (Kenward-Roger, JMP's
+    method) or 'satterthwaite'."""
+    test = ftest_kr if method == "kr" else ftest
+    rows = [test(f, t) for t in f.design.terms if t != "Intercept"]
+    return pd.DataFrame(rows)[["term", "F", "df_num", "df_den", "p"]]
 
 
 def lsmeans(f, by):
@@ -259,18 +340,27 @@ def lsmeans(f, by):
     return out
 
 
-def tukey(f, by, df=None):
+def tukey(f, by, df=None, method="kr"):
     """Tukey's HSD over the least squares means of `by` ('a', 'b' or 'ab').
-    `df` replaces the Satterthwaite degrees of freedom by a fixed value (a
-    variant, e.g. containment degrees of freedom)."""
+    method 'kr': each difference over its Kenward-Roger adjusted standard
+    error (with the KR scaling), referred to the studentized range with that
+    difference's KR df; 'satterthwaite': unadjusted standard error and
+    Satterthwaite df. `df` replaces the degrees of freedom by a fixed value
+    (a variant, e.g. containment degrees of freedom, with the unadjusted
+    standard error)."""
     m = lsmeans(f, by)
     k = len(m)
     rows = []
     for i, j in itertools.combinations(range(k), 2):
         l = m[i]["l"] - m[j]["l"]
         diff = float(l @ f.beta)
-        se = float(np.sqrt(l @ f.C @ l))
-        nu = _df_contrast(f, l) if df is None else df
+        if method == "kr" and df is None:
+            t = kr_test(f, l[None, :])
+            nu = t["df_den"]
+            se = abs(diff) / np.sqrt(t["F"]) if t["F"] > 0 else float(np.sqrt(l @ _kr(f)["PhiA"] @ l))
+        else:
+            se = float(np.sqrt(l @ f.C @ l))
+            nu = _df_contrast(f, l) if df is None else df
         q = abs(diff) / se * np.sqrt(2)
         p = float(stats.studentized_range.sf(q, k, min(nu, 1e4)))
         rows.append(dict(first=(m[i]["a"], m[i]["b"]), second=(m[j]["a"], m[j]["b"]),

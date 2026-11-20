@@ -10,11 +10,12 @@ version 1). Everything is streamed from the public SPARC bucket at pinned object
 - `reproduce_pelot_2020.ipynb`: data check, one section per claim, summary.
 - `pelot.py`: reading the datasets, morphometry as the paper's deposited MATLAB code does, and the
   readings made by eye for the three claims judged on micrographs.
-- `mixed.py`: REML mixed models, type III F tests with Satterthwaite degrees of freedom, and
-  Tukey's HSD on least squares means.
+- `mixed.py`: REML mixed models, type III F tests with Kenward-Roger (and, as a variant,
+  Satterthwaite) degrees of freedom, and Tukey's HSD on least squares means.
 
-Of 43 claims, 36 are reproduced, 2 partially reproduced, 3 not reproduced and 2 blocked (the
-literature values of Supplement 4 are not available). A failure to reproduce here may be a failure
+Of 43 claims, 37 are reproduced, 3 partially reproduced and 3 not reproduced. The literature
+values of Figure 7 (Supplement 4, not supplied) are read from the paper's plotting code deposited
+in the datasets. A failure to reproduce here may be a failure
 of this attempt, not of the paper: see the reasoning and the differences from the paper's method.
 
-Run with `python tools/entry.py all entries/pelot-2020`; about 7 minutes, 1.5 GB of memory.
+Run with `python tools/entry.py all entries/pelot-2020`; about 8 minutes, 1.5 GB of memory.
