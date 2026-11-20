@@ -234,9 +234,13 @@ outcomes:
     27.3 to 29.3. The same rule on the paper's own Fig. 7d series (Supplementary Data 7, each
     contact's group mean over mice in 1 s steps) counts 25 of 25 contacts above baseline in Opsin (+)
     and 20 of 25 in Opsin (-), 19 with 10 s blocks; the paper's Opsin (-) group mean rises by up to
-    0.34 dB after onset. These are group means, not single mice, but they suggest that the paper's 2.7
-    contacts per mouse came from a rule other than the one the Methods describe. Measured values are
-    for the union set, (o1a), 30 to 100 Hz and the two-sided bound.
+    0.34 dB after onset. These are group means over three mice, which count more contacts than single
+    mice would (25 of 25 in Opsin (+) against the paper's 15.7 per mouse), so they make the paper's 2.7
+    contacts per mouse hard to reconcile with the rule the Methods describe but do not rule it out.
+    The claims file fixes the resampled baseline values as the 1 s steps, as a standard choice, where
+    the Methods do not say which values are resampled; whether this should be an open reading is
+    asked of a reader in questions/prakash-2022.yaml, and of the authors as a methods_unavailable
+    finding. Measured values are for the union set, (o1a), 30 to 100 Hz and the two-sided bound.
   proposed:
     outcome: blocked
     blocked_by: methods_underspecified
@@ -246,7 +250,14 @@ outcomes:
       per-mouse mean of 2.7 is hard to reconcile with 20 of 25 contacts rising in the group mean. As
       with a selection whose false-positive rate differs from the paper's, the rule as described
       cannot give the paper's numbers on the paper's data, so the procedure differs and the result
-      here says more about the rule than about the recordings.
+      here says more about the rule than about the recordings. The round-3 verifier did not agree.
+      The criterion blocks the claim only when its readings differ, and all 16 give the same result,
+      so as written it gives not_reproduced. The group-mean series are means over three mice, which
+      narrows the baseline interval and counts more contacts than single mice would (the paper's
+      Opsin (+) group mean gives 25 of 25 against 15.7 per mouse), so they make 2.7 per mouse hard
+      to reconcile with the rule but do not rule it out. Which baseline values are resampled is
+      fixed by the claims file as a standard choice and not listed as an open reading; if it were,
+      blocked would be right. This is now asked of a reader in questions/prakash-2022.yaml.
   deviations:
   - Onsets from the whole-frame bioluminescence; kept sets as for fig7c-gamma-emerges-opsin-plus.
   - The bootstrap resamples the 180 baseline steps as independent values, as the claims file says,
@@ -858,3 +869,33 @@ verifications:
       electrodes it depends on the onset of interlum_ctrl_4, which cannot be determined from the
       files.
     response: No change.
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3, run 44638141436; same harness, separate
+    context, did not write the notebook)
+  reviewed: Round 3. Only the proposed change of outcome of fig7d-contacts-exceeding-baseline and the
+    analysis behind it in the executed notebook (cells 20, 29, 30 and 31), with the claims file and the
+    paper. The verifier did not agree with the change. Report in
+    transcripts/prakash-2022/verifier-3-report.md.
+  results:
+  - claim: fig7d-contacts-exceeding-baseline
+    agrees: false
+    outcome: not_reproduced
+    reason: The numbers come from the data, and the new cell applies the criterion's own rule, unchanged,
+      to the paper's series; cell 20 adds independent support that the data are the paper's, so the gap
+      to 2.7 contacts per mouse more likely lies in the counting rule than in the recordings. But the
+      claims file says the outcome "is the one all readings give; when they differ the claim is blocked
+      as methods_underspecified". Every reading agrees, 0 of 16 hold, so as written the criterion gives
+      not_reproduced. The evidence is also weaker than the proposal's reason says. The sheets are means
+      over three mice; averaging narrows the baseline bootstrap interval, so a group-mean series counts
+      more contacts than single mice would, as the paper's own Opsin (+) panel shows (25 of 25 against
+      15.7 per mouse). The evidence makes 2.7 per mouse hard to reconcile with the described rule but
+      does not rule it out. The Methods do not say which baseline values are resampled, and the claims
+      file fixes the 1 s steps as a standard choice without listing it as an open reading; if it were
+      listed, blocked as methods_underspecified would be right. Keep the methods_unavailable finding
+      and the cell 30 numbers in the notes.
+    response: Outcome kept as not_reproduced, and the proposal stays with the verifier's view added to
+      its reason. The notes, cell 31, the summary and the README now say that the group-mean counts
+      make 2.7 per mouse hard to reconcile with the rule without ruling it out. The resampled unit is
+      added as a question for a reader in questions/prakash-2022.yaml; the methods_unavailable finding
+      and the cell 30 numbers are kept.
