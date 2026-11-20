@@ -1260,3 +1260,38 @@ verifications:
     response: Outcome changed to blocked, methods_underspecified, and `proposed` removed; the notes now give the per-step
       Rayleigh p of 0.15 to 0.17 that cell 60 prints. The notebook's conclusion and summary, the README and the notes
       follow.
+findings_review:
+  date: 2026-11-19
+  basis: Each finding about the data was rated from its statement alone, against the definitions of docs/protocol.md
+    (the attempt record), and every critical rating was then read a second time. The attempt did not rate
+    them.
+  findings:
+  - finding: 1
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_kaku_2025.ipynb cell 6 prints that spike_times_index read as start offsets matches the per-trial spike counts in 335 of 335 files and read as end offsets in 0. The test runs in a helper module, so only the summary count is printed, and the pynwb behaviour is stated in markdown and follows from the index layout; it was not run."
+  - finding: 2
+    severity: major
+  - finding: 3
+    severity: minor
+  - finding: 4
+    severity: major
+    confirmed: false
+    checked: 2026-11-19
+    note: "reproduce_kaku_2025.ipynb cell 8 prints that the left/right unit_location text agrees with ccf_x below 5700 um in a fraction 0.007 of units, so 99.3% are opposite. The same comparison for recordable_brain_regions is not printed (only its value counts in cell 5), and a consistent flip fits an unstated axis direction, so the outputs show an ambiguity that changes hemisphere analyses, not a proven mislabel."
+  - finding: 5
+    severity: critical
+    confirmed: true
+    checked: 2026-11-19
+    note: "reproduce_kaku_2025.ipynb cell 11 prints offset 0 as best in 154 sessions and offset -1 in 19 sessions, with 15 subjects listed for -1 and a median correlation of 0.983 at the offset used. The evidence is a summary of 2D against 3D track correlations with a minimum of 0.354 at the chosen offset, so a few sessions are assigned with weak support, but a reader who takes idx as the trial number pairs the 3D tracks with the wrong trial in one of the two groups."
+  - finding: 6
+    severity: major
+  - finding: 7
+    severity: major
+  - finding: 8
+    severity: minor
+  - finding: 9
+    severity: minor
+  - finding: 10
+    severity: major

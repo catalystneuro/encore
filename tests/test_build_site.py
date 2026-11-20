@@ -242,7 +242,9 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
         row = next(r for r in rows if r["id"] == dandiset)
         attempts = [a for a in attempts if not a.get("deprecated")]
         assert row["findings"] == sum(len(a["findings"]) for a in attempts)
-        assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
+        kinds = sorted({f["kind"] for a in attempts for f in a["findings"]})
+        # Beside the kinds, the lists' filter has the datasets with a problem that changes results.
+        assert [k for k in row["found"] if k != site.CHANGES_RESULTS] == kinds
         page = (out / row["page"] / "index.html").read_text()
         assert "Open findings about the data" in page and "Papers tested on this dataset" in page
         for a in attempts:
@@ -252,7 +254,7 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
         # reads: the versions tested, the open findings by kind, and the papers tested.
         assert page.count('<h3 class="vhead">') == len({site.version_text(a) for a in attempts})
         assert all(site.version_text(a) in page for a in attempts)
-        assert sum(row["found_counts"].values()) == row["findings"] and sorted(row["found_counts"]) == row["found"]
+        assert sum(row["found_counts"].values()) == row["findings"] and sorted(row["found_counts"]) == kinds
         assert row["versions"] == list(dict.fromkeys(
             site.version_plain(a) for a in sorted(attempts, key=site.version_order, reverse=True)))
         assert row["n_tested"] == len({a["paper"].lower() for a in attempts})
@@ -1383,6 +1385,56 @@ def test_a_finding_that_names_its_datasets_is_on_those_datasets_only():
             continue
         raise AssertionError(bad)
 
+
+
+def test_a_critical_finding_is_presented_as_one_only_when_someone_else_checked_it():
+    # The attempt's own rating (pilot-18 on), which the verifier reviews in round 2.
+    f = {"kind": "other", "statement": "Two sessions are one.", "about": "data", "severity": "critical"}
+    rounds = lambda agrees: [{"results": []}, {"results": [], "findings": [{"finding": 1, "agrees": agrees, "reason": "Cell 4 shows it."}]}]
+    assert site.finding_severity({"findings": [f]}, f, 1) == {"severity": "critical", "changes_results": False, "checked": None}
+    assert site.finding_severity({"verifications": rounds(True)}, f, 1) == {
+        "severity": "critical", "changes_results": True, "checked": "Cell 4 shows it."}
+    assert not site.finding_severity({"verifications": rounds(False)}, f, 1)["changes_results"]
+    assert not site.finding_severity({"verifications": rounds(True)}, {**f, "severity": "major"}, 1)["changes_results"]
+    assert not site.finding_severity({"verifications": rounds(True)}, f, 2)["changes_results"]   # another finding's review
+    # An earlier attempt's finding, rated by a later review (`findings_review`), and checked in it or not.
+    old = {"kind": "other", "statement": "Two sessions are one.", "about": "data"}
+    review = lambda **more: {"findings_review": {"findings": [{"finding": 1, "severity": "critical", **more}]}}
+    assert site.finding_severity(review(), old, 1) == {"severity": "critical", "changes_results": False, "checked": None}
+    assert site.finding_severity(review(confirmed=True, note="Cell 9."), old, 1) == {
+        "severity": "critical", "changes_results": True, "checked": "Cell 9."}
+    assert not site.finding_severity(review(confirmed=False, note="Not shown."), old, 1)["changes_results"]
+    assert site.finding_severity({}, old, 1) == {"severity": None, "changes_results": False, "checked": None}
+
+
+def test_problems_that_change_results_come_first_under_their_version_on_a_datasets_page(built):
+    data, out = built
+    rows = {r["id"]: r for r in json.loads((out / "data" / "datasets.json").read_text())}
+    overview = (out / "index.html").read_text()
+    hit = set()
+    for key, atts in site.current_attempts(data).items():
+        live = [a for a in atts if not a.get("deprecated")]
+        if not live:
+            continue
+        worst = [f for a in live for f in a["findings"] if f["changes_results"]]
+        page = (out / site.page_of(key) / "index.html").read_text()
+        # The heading is there only with such a finding; each is listed once, under it, with what the check found.
+        rest = [f for a in live for f in a["findings"] if not f["changes_results"]]
+        for f in worst[:1]:
+            for g in rest[:1]:
+                assert page.index(site.e(f["statement"])) < page.index("Other findings") < page.index(site.e(g["statement"])) \
+                    or len({site.version_text(a) for a in live}) > 1
+        assert ("Problems that change results" in page) == bool(worst)
+        assert (site.CHANGES_RESULTS in rows[key]["found"]) == bool(worst)
+        for f in worst:
+            assert f["severity"] == "critical" and f["checked"]
+            assert page.count(site.e(f["statement"])) == 1 and f"Checked: {site.e(f['checked'])}" in page
+            # Under the version of the dataset it was found on, before that version's other findings.
+            assert page.index('<h3 class="vhead">Dataset') < page.index("Problems that change results") < page.index(site.e(f["statement"]))
+        if worst:
+            hit.add(key)
+    # The Overview does not count them.
+    assert hit and "changes results" not in overview and site.CHANGES_RESULTS not in overview
 
 
 def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_their_papers(built):
