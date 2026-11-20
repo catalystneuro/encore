@@ -164,8 +164,9 @@ claims:
     tolerance: 0.002
   criterion: The 5 keypoint mice. 2D velocity from the x-y centroid of the spine keypoints, the
     difference over 2 frames divided by 2 (Methods, Computing 2D and 3D velocity); forelimb velocity
-    the mean 3D velocity of the forepaw keypoints. dLight processed as in the fig_s03 notebook (cell
-    15). Forelimb r after regressing 2D velocity, 3D velocity and height out of dLight (Methods,
+    the mean 3D velocity of the forepaw keypoints. dLight processed as in the Definitions, with the
+    Methods' RANSAC fit with slope and bias; the fig_s03 notebook's fit without intercept (cell 15)
+    is a variant. Forelimb r after regressing 2D velocity, 3D velocity and height out of dLight (Methods,
     Partialing kinematic parameters). Bins of 400 ms, non-overlapping; whether r is pooled over all
     bins of all mice (the legend's single scatter) or averaged per mouse is open, both readings
     shown. Shuffle test with 1,000 shuffles. The 10% tolerance on -0.02 is below the precision the
@@ -380,10 +381,15 @@ claims:
   criterion: As in dlight_04 and the fig_2e panel, with the same instances, segments, n and
     shuffles as fig2e-dlight-predicts-future-usage. Autocorrelation is the correlation of an
     instance's dLight with the mean dLight of the following n - 1 instances; the velocity curve uses
-    the mean 2D velocity over instances 0 to n - 1. Reproduced when both z-scored curves fall inside
-    the shuffle band (95th percentile of shuffled |z|) at some n at which the usage correlation is
-    still significant; not reproduced when either stays as high as the usage correlation over the
-    range where that one is significant.
+    the mean 2D velocity over instances 0 to n - 1. Significance as the Fig. 2e legend states for all
+    three curves, one-sided P < 0.05 against the shuffles; a curve has declined at n when it is not
+    significantly positive there, so a curve below the shuffle band counts as declined, as it cannot
+    account for a positive usage correlation. Reproduced when both curves have declined at some n at
+    which the usage correlation is significant; not reproduced when either curve is significantly
+    positive at every n at which the usage correlation is significant; partially reproduced
+    otherwise. The bins are those of Fig. 2e, in syllables (shortest 10 in the code, 5 in the
+    Methods, both several seconds); no bin of the paper's analysis is a few hundred milliseconds, and
+    the claim is judged at the bins the figure shows.
 - id: fig2g-usage-crosscorrelation
   statement: Binned syllable counts and syllable-associated dLight are cross-correlated across lags,
     above shuffles (P < 0.001).
@@ -441,8 +447,11 @@ claims:
     row-normalised summed matrix with a Perks prior (dm_entropy). The binning is open; readings are
     (a) the Methods' 20 equally spaced bins per syllable, (b) the code's 20 equal-count bins per
     mouse pooled over syllables. Correlation of dLight bin with entropy per segment and n (Pearson as
-    the Methods say, Spearman as dlight_06; both shown), z-scored against 1,000 shuffles that permute
-    destinations within each row of the transition counts, averaged over segments. Reproduced when,
+    the Methods say, Spearman as dlight_06; both shown), z-scored against 1,000 shuffles of the
+    instances' dLight peak values within mouse and segment before binning, as the Methods say
+    ("Pearson coefficients estimated after shuffling dLight peak values"), averaged over segments.
+    The code's null (dlight_06, randomize_cols), which permutes destinations within each row of the
+    transition counts, is a variant. Reproduced when,
     under a reading, the correlation is significantly positive (one-sided P < 0.05) at n = 5 and at
     every n up to at least 10 syllables (about 6 s at the mean syllable duration).
 - id: ed6b-encoding-model-average
@@ -894,12 +903,17 @@ claims:
     statistic: U = 114, f = 0.48
     p: 0.41
     n: 32 mice
-  criterion: A claim of absence, judged on the paper's test. Jensen-Shannon divergence between 10 x 10
-    occupancy histograms of target-onset centroids on stimulation days and on other days, per mouse
-    and target (fig_s10h, s10i notebook), on a shared spatial grid (the code computes bin edges
-    separately for each histogram; shown as a variant). Two-sided Mann-Whitney U test of Opto-DA
-    against controls, by pairs and by mice. Reproduced when both P >= 0.05; not reproduced when
-    either is below.
+  criterion: A claim of absence, judged on the paper's two tests (fig_s10h, s10i notebook). Opto-DA
+    mice against no-opsin controls; stimulation days are code session numbers 1 and 2, other days -1,
+    0, 3 and 4. Jensen-Shannon divergence between 10 x 10 centroid occupancy histograms of
+    stimulation days and other days, on a shared spatial grid (the code computes bin edges separately
+    for each histogram; shown as a variant). Target performance (n = 192) uses the centroids at the
+    onsets of the target syllable, per mouse and target. Experiment-wide (n = 32) uses one JSD per
+    mouse; the legend says "experiment-wide centroid locations for each mouse" and the code (cells 33
+    and 34, "compute JSDs for all locations, not just during the target") takes the centroids at the
+    onsets of all syllables, the main reading; centroids of all frames are a variant. Two-sided
+    Mann-Whitney U test of Opto-DA against controls for each. Reproduced when both P >= 0.05 under
+    the main reading; not reproduced when either is below.
 - id: fig3l-no-kinematic-effect
   statement: Brief (250 ms) Opto-DA does not change movement at the moment of stimulation; no
     comparison between stimulation and catch trials is significant.
