@@ -19,8 +19,26 @@ Where each parameter comes from:
 - L2 logistic regression with the penalty chosen by nested 5-fold cross-validation from
   C in 0.01, 0.1, 1, 10, 100: claims file, fig6a reading of the decoder and the grid of
   the paper's code (functions_for_r2.calculate_auc, cited in edfig10-subtraction-consistent).
-- Decoding every 10th frame (34 ms) inside the epoch: a standard subsampling to keep the run
-  short; the epoch AUC is a mean over time bins and cannot depend on it beyond noise.
+- Decoding every 20th frame (68 ms, STRIDE) inside the epoch: an assumption made to keep the
+  run short (the paper decodes at each time bin); the epoch AUC is a mean over time bins, so
+  subsampling the bins changes it by noise only.
+- The session AUC of an epoch: the paper does not say how it is formed. Two readings are
+  computed. (1) One ROC AUC per time bin over the pooled out-of-fold decision values of the 20
+  outer folds, then the mean over bins. (2) The ROC AUC of each test fold, averaged over the
+  folds, then over bins, as the Methods do for the other cross-validated measures ("Defining
+  choice- and uninstructed movement-modulated neurons using video-based choice decoder": "The
+  final AUC for each neuron is the average of the test AUC across all test-folds"; "Epoch-averaged
+  explained variance": "After this, the folds were averaged"). Reading (2) is the main one.
+- Response epoch 0 to 1.5 s from the go cue, second half 0.75 to 1.5 s: claims file opening
+  comment and fig6-marker-vs-embedding-decoding readings (a) and (b).
+- Tongue position set to its mean while the tongue is not visible (DeepLabCut likelihood of 0.9
+  or less): Methods ("When the tongue was occluded ... we set the tongue position to its mean
+  value"); the 0.9 likelihood cut is a standard choice, the one used for the clock check.
+- Major divisions of the Allen CCF (Isocortex, olfactory areas, hippocampal formation, cortical
+  subplate, striatum, pallidum, thalamus, hypothalamus, midbrain, pons, medulla, cerebellum), with
+  isocortex split into ALM and other isocortex: the level of the areas the data-scale criterion
+  names. The structure tree is the authors' (mousebrainontology_2.csv for ids and names,
+  mousebrainontology_heirarchy_cortexMaskExclusions21_sc.xlsx for the paths), from the deposit.
 - Calinski-Harabasz score with a null of 1,000 random reassignments of the mouse labels:
   Methods, "Calinski-Harabasz clustering score".
 - Area grouping of CCF annotations (area2anno.json) from the authors' processed-data deposit,
@@ -44,6 +62,7 @@ ZENODO_ZIP = ("https://zenodo.org/api/records/16740783/files/"
               "MapVideoAnalysisProcessedData.zip/content")
 FRAME_DT = 0.0034          # frame step of the marker timestamps (s), checked in the notebook
 DELAY = (-1.2, 0.0)        # delay epoch relative to the go cue (s)
+RESPONSE = (0.0, 1.5)      # response epoch relative to the go cue (s)
 CS = [0.01, 0.1, 1, 10, 100]
 
 
@@ -116,11 +135,18 @@ def trials_table(f):
     return d
 
 
-def clean_marker(xy):
-    """Five-sigma velocity outliers replaced by linear interpolation (Methods)."""
+def clean_marker(xy, ts=None):
+    """Five-sigma velocity outliers replaced by linear interpolation (Methods). With the
+    timestamps ts, no velocity is taken across the gap between two trial videos (> 10 ms).
+    A frame is flagged when the velocity into it is an outlier, so a single bad frame also
+    flags the frame after it, which is then interpolated too: a conservative choice that
+    touches about one frame in 10,000."""
     xy = xy.astype(float).copy()
-    v = np.r_[0.0, np.hypot(*np.diff(xy, axis=0).T)]
-    bad = np.abs(v - v.mean()) > 5 * v.std()
+    v = np.r_[np.nan, np.hypot(*np.diff(xy, axis=0).T)]
+    if ts is not None:
+        v[1:][np.diff(ts) > 0.01] = np.nan
+    with np.errstate(invalid="ignore"):
+        bad = np.abs(v - np.nanmean(v)) > 5 * np.nanstd(v)
     good = ~bad
     idx = np.arange(len(xy))
     for c in range(xy.shape[1]):
@@ -208,15 +234,15 @@ def _fit_batch(X, y, W, C, iters=30):
     p = Z.shape[2]
     w = np.zeros((B, p))
     pen = np.ones(p)
-    pen[0] = 0
+    pen[0] = 1e-8 * C.max()  # a negligible ridge on the intercept keeps H invertible under separation
     P = (1.0 / C)[:, None] * pen[None]
     Zt = Z.transpose(0, 2, 1)
     for _ in range(iters):
         eta = (Z @ w[..., None])[..., 0]
-        m = 1 / (1 + np.exp(-eta))
+        m = 1 / (1 + np.exp(-np.clip(eta, -35, 35)))
         g = (Zt @ (W * (m - y[None]))[..., None])[..., 0] + P * w
         h = W * m * (1 - m)
-        H = Zt @ (Z * h[..., None]) + P[:, :, None] * np.eye(p)[None]
+        H = Zt @ (Z * h[..., None]) + P[:, :, None] * np.eye(p)[None] + 1e-10 * np.eye(p)[None]
         step = np.linalg.solve(H, g[..., None])[..., 0]
         w -= step
         if np.abs(step).max() < 1e-8:
@@ -226,8 +252,9 @@ def _fit_batch(X, y, W, C, iters=30):
 
 def decode_auc_fast(X, y, seed, n_splits=20, cs=CS, n_inner=5):
     """Same procedure as decode_auc (nested choice of C by mean inner-fold ROC AUC, refit
-    on the outer training set, one AUC over the pooled out-of-fold predictions per bin),
-    fitted in batches by _fit_batch. Returns the AUC per bin."""
+    on the outer training set), fitted in batches by _fit_batch. Returns two arrays of one
+    AUC per bin: (pooled) one ROC AUC over the pooled out-of-fold decision values, and
+    (fold mean) the ROC AUC of each outer test fold, averaged over the folds."""
     from sklearn.model_selection import StratifiedKFold
     n = len(y)
     outer = list(StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed).split(np.zeros(n), y))
@@ -249,6 +276,7 @@ def decode_auc_fast(X, y, seed, n_splits=20, cs=CS, n_inner=5):
     W = np.array([p[3] for p in probs])
     Cs = np.array(Cs, float)
     aucs = np.zeros(X.shape[1])
+    folds = np.zeros(X.shape[1])
     for b in range(X.shape[1]):
         D = _fit_batch(X[:, b], y.astype(float), W, Cs)
         score = {}
@@ -263,7 +291,8 @@ def decode_auc_fast(X, y, seed, n_splits=20, cs=CS, n_inner=5):
                 if Cs[i] == best:
                     pred[idx] = D[i, idx]
         aucs[b] = _auc(y, pred)
-    return aucs
+        folds[b] = np.mean([_auc(y[te], pred[te]) for _, te in outer])
+    return aucs, folds
 
 
 def ch_null(X, labels, rng, n=1000):
@@ -290,7 +319,7 @@ def area_map():
 
 
 SEED_OFFSETS = (0, 1000, 2000, 3000, 4000)
-STRIDE = 20   # decode every 20th frame (68 ms) in the delay epoch: a standard subsampling
+STRIDE = 20   # decode every 20th frame (68 ms) in an epoch: an assumption (see the docstring)
 
 
 def bin_times(window=DELAY, stride=STRIDE):
@@ -303,10 +332,28 @@ def _fingerprint(a):
     return hashlib.md5(np.ascontiguousarray(a).tobytes()).hexdigest()[:12]
 
 
-def session_summary(asset, seed):
+def tongue_filled(f, ts_cut=0.9):
+    """Tongue position, outliers cleaned among the visible frames, and set to its mean value
+    while not visible (likelihood <= 0.9; Methods)."""
+    xy, ts, lk = load_marker(f, "Tongue")
+    xy = xy.astype(float)
+    vis = lk > ts_cut
+    out = np.empty_like(xy)
+    if vis.sum() > 10:
+        cv, _ = clean_marker(xy[vis], ts[vis])
+        out[vis] = cv
+        out[~vis] = cv.mean(0)
+    else:
+        out[:] = 0.0
+    return out, ts
+
+
+def session_summary(asset, seed, seed_resp=None):
     """Everything the notebook uses from one session, read in one pass.
-    seed: the claim's seed for the choice decoders; the decoders are also run under
-    seed + 1000 ... 4000 (reading (a) only) for the seed check."""
+    seed: the fig6e claim's seed for the delay-epoch choice decoders; they are also run under
+    seed + 1000 ... 4000 (reading (a) only) for the seed check. seed_resp: the seed of
+    fig6-marker-vs-embedding-decoding, for the response-epoch decoders (jaw, nose, all three
+    markers; reading (a) only)."""
     import os
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     f = open_asset(asset["asset_id"])
@@ -356,15 +403,19 @@ def session_summary(asset, seed):
     out["tongue_at_licks"] = lk_out
     out["n_licks"] = len(licks)
     # choice decoding from the jaw and the nose
-    out["auc"] = {}
+    out["auc"], out["auc_fold"] = {}, {}
+    out["auc_resp"], out["auc_resp_fold"] = {}, {}
     out["outliers"] = {}
+    out["n_resp_trials"] = {}
     enough = out["n_left"] >= 20 and out["n_right"] >= 20
     out["decoded"] = enough
+    cleaned = {}
     for name in ("Jaw", "Nose"):
         xy, ts, _ = load_marker(f, name)
         if name == "Jaw":
             out["fp_jaw"] = _fingerprint(xy[:5000])
-        xy, nbad = clean_marker(xy)
+        xy, nbad = clean_marker(xy, ts)
+        cleaned[name] = (xy, ts)
         out["outliers"][name] = (nbad, len(xy))
         X = marker_epoch(xy, ts, go, stride=STRIDE)
         ok = ~np.isnan(X).any(axis=(1, 2))
@@ -373,8 +424,22 @@ def session_summary(asset, seed):
             continue
         Xo, yo = X[ok], y[ok]
         for off in SEED_OFFSETS:
-            out["auc"][(name, "a", off)] = decode_auc_fast(Xo, yo, seed + off)
-        out["auc"][(name, "b", 0)] = decode_auc_fast(Xo[:, :, 4:6], yo, seed)
+            out["auc"][(name, "a", off)], out["auc_fold"][(name, "a", off)] = decode_auc_fast(Xo, yo, seed + off)
+        out["auc"][(name, "b", 0)], out["auc_fold"][(name, "b", 0)] = decode_auc_fast(Xo[:, :, 4:6], yo, seed)
+    if seed_resp is not None and enough:
+        txy, tts2 = tongue_filled(f)
+        feats = {}
+        for name in ("Jaw", "Nose"):
+            xy, ts = cleaned[name]
+            feats[name] = marker_epoch(xy, ts, go, window=RESPONSE, stride=STRIDE)
+        tX = marker_epoch(txy, tts2, go, window=RESPONSE, stride=STRIDE)
+        feats["All"] = np.concatenate([feats["Jaw"], feats["Nose"], tX], axis=2)
+        for name, X in feats.items():
+            ok = ~np.isnan(X).any(axis=(1, 2))
+            out["n_resp_trials"][name] = int(ok.sum())
+            if y[ok].sum() < 20 or (1 - y[ok]).sum() < 20:
+                continue
+            out["auc_resp"][name], out["auc_resp_fold"][name] = decode_auc_fast(X[ok], y[ok], seed_resp)
     f.close()
     return out
 
@@ -382,10 +447,10 @@ def session_summary(asset, seed):
 def session_summary_retry(args, tries=3):
     """session_summary with retries on network errors (the archive is read over HTTP)."""
     import time
-    asset, seed = args
+    asset, seed, seed_resp = args
     for i in range(tries):
         try:
-            return session_summary(asset, seed)
+            return session_summary(asset, seed, seed_resp)
         except Exception as e:  # noqa: BLE001
             err = repr(e)
             time.sleep(5 * (i + 1))
@@ -485,3 +550,75 @@ def version_fingerprints(asset, version=VERSION):
                fp_jaw=_fingerprint(f["acquisition/BehavioralTimeSeries/Camera0_side_JawTracking/data"][:5000]))
     f.close()
     return out
+
+
+def zenodo_listing():
+    """Members of the authors' deposit zip, with their uncompressed sizes in bytes."""
+    z = zipfile.ZipFile(remfile.File(ZENODO_ZIP))
+    return [(i.filename, i.file_size) for i in z.infolist()]
+
+
+DIVISIONS = {315: "Isocortex", 698: "Olfactory areas", 1089: "Hippocampal formation",
+             703: "Cortical subplate", 477: "Striatum", 803: "Pallidum", 549: "Thalamus",
+             1097: "Hypothalamus", 313: "Midbrain", 771: "Pons", 354: "Medulla", 512: "Cerebellum"}
+
+
+def division_map():
+    """CCF annotation name -> major division of the Allen CCF (DIVISIONS), or a label saying
+    why it has none ('fiber tracts', 'ventricular systems', 'above division level', 'not in
+    tree'). Ids and names from the deposit's mousebrainontology_2.csv, structure paths from its
+    mousebrainontology_heirarchy_cortexMaskExclusions21_sc.xlsx (names there use '/' for ', ')."""
+    import pandas as pd
+    names = pd.read_csv(io.BytesIO(zenodo_member("mousebrainontology_2.csv")), header=None, names=["id", "name"])
+    tree = pd.read_excel(io.BytesIO(zenodo_member("mousebrainontology_heirarchy_cortexMaskExclusions21_sc.xlsx")),
+                         header=None, names=["id", "name", "path"])
+    path_by_id = dict(zip(tree.id, tree.path))
+    path_by_name = dict(zip(tree.name.str.replace("/", ", ", regex=False), tree.path))
+
+    def division(path):
+        ids = [int(x) for x in path.strip("/").split("/")]
+        for i in ids:
+            if i in DIVISIONS:
+                return DIVISIONS[i]
+        if 1009 in ids:
+            return "fiber tracts"
+        if 73 in ids:
+            return "ventricular systems"
+        return "above division level"
+
+    def by_prefix(n):
+        # a layer missing from the tree ("Frontal pole, layer 6a") takes the path of its area
+        base = n.split(", layer")[0]
+        hits = [q for k, q in path_by_name.items() if k == base or k.startswith(base + ", ")]
+        return hits[0] if hits else None
+
+    out = {}
+    for i, n in zip(names.id, names.name):
+        p = path_by_id.get(i, path_by_name.get(n)) or by_prefix(n)
+        out[n] = division(p) if isinstance(p, str) else "not in tree"
+    return out
+
+
+def later_version_files(version="0.231012.2129"):
+    """The later version's files: path, size, whether the path carries '+image' (the raw video),
+    and the archive's variableMeasured for each."""
+    rows = []
+    for a in list_assets(version):
+        r = requests.get(f"{API}/dandisets/{DANDISET}/versions/{version}/assets/{a['asset_id']}/").json()
+        rows.append(dict(path=a["path"], size=a["size"], image="+image" in a["path"],
+                         measured=sorted(v.get("value") for v in r.get("variableMeasured", []))))
+    return rows
+
+
+def acquisition_listing(path, version="0.231012.2129"):
+    """Number of objects of each neurodata type in the acquisition group of one file."""
+    a = [x for x in list_assets(version) if x["path"] == path][0]
+    r = requests.get(f"{API}/dandisets/{DANDISET}/versions/{version}/assets/{a['asset_id']}/").json()
+    f = h5py.File(remfile.File([u for u in r["contentUrl"] if "s3" in u][0]), "r")
+    import collections
+    types = []
+    for k in f["acquisition"]:
+        t = f[f"acquisition/{k}"].attrs.get("neurodata_type", "")
+        types.append(t.decode() if isinstance(t, bytes) else str(t))
+    f.close()
+    return dict(collections.Counter(types))
