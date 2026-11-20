@@ -24,9 +24,14 @@
 # - 001047, "Optimizing NG-CanCan Protocol Delivery with MHz Compression to Minimize Near-Electrode
 #   Ablation"; packets at 0.2 MHz against 1 Hz, YP and propidium. The packet-rate series of Figs. 3
 #   and 4 rest on it. Its description also names propidium two hours after delivery, which in the
-#   paper is measured only in the Fig. 5 series, so the 0-mm Fig. 5 claims list it as well.
+#   paper is measured only in the Fig. 5 series, so the 0-mm Fig. 5 claims list it as well. An
+#   author reports (question of 2026-11-19) that its files state a 3.8-mm electrode distance and a
+#   3.2-kV first pulse, not the paper's array (Methods 2.2).
 # - 001276, "... Impact of Burst Number Variation ..."; 0.2 MHz, 600 ns, 1, 2, 4 or 6 bursts,
-#   Hoechst and YP. The Fig. 7 series.
+#   Hoechst and YP. The Fig. 7 series. Its CT26 wells at 2 bursts (x4) and 0.2 MHz are the 0.2-MHz
+#   condition of S1 as the paper describes it (CT26, 600 ns, 2 bursts (x4)), and an author reports
+#   that it also holds 1-Hz wells and controls at 2 bursts (x4), so the S1 claims that can be
+#   tested with 1 Hz, 0.2 MHz and controls list it too.
 # - 001277, "... Impact of Pulse Duration and Protocol Delivery Frequency"; 300, 600 and 900 ns, 18,
 #   9 or 6 packets, repeated twice, Hoechst and YP. The Fig. 6 series.
 # - 001284, "... Focused Cell Electroporation and Ablation in a Pseudo-3D Model"; electrodes 0, 1 or
@@ -100,8 +105,10 @@
 #      (a) ROIs centred at whole-mm distances, 0 to 7 mm each way; (b) contiguous ROIs from the
 #      centre outward, one ROI length per step. Which side of the ROI (325 or 406 um) lies along the
 #      diagonal is not given; 406 um along the diagonal is a standard choice that moves a centre by
-#      under 0.05 mm. Which footprint holds the background ROIs is not given; any one, a standard
-#      choice.
+#      under 0.05 mm. Which footprint holds the background ROIs is not given ("within a footprint of
+#      an electrode"), and near the electrodes, where YP is close to background, it can change
+#      ratios to the centre by a factor of 2 or more; readings (i) to (iv) the footprint of each of
+#      the four electrodes, at the same position in every well.
 # (O2) Pooling of diagonals. Readings (a) the two diagonals averaged at each signed distance (the
 #      profiles run from -x to x in Figs. 3B, 5B, 6B); (b) all four half-diagonals averaged at each
 #      distance (Fig. 4A legend, "measurements in 4 diagonal directions from the center were pooled"),
@@ -185,6 +192,7 @@ claims:
     contrast to its gradual decrease toward the center in the control ( Fig. 3A ).
   datasets:
   - "001047"
+  - "001276"
   criterion: Set S1, diagonal profiles by F1 to F3, under O1 and O2. The field at the centre is the
     same in CANCAN and control (Methods 2.2), so enhanced at the centre is read as a central peak.
     For each CANCAN rate, mean YP at x = 0 exceeds mean YP at 4 mm by a gap larger than the error
@@ -193,7 +201,9 @@ claims:
     hold for every rate under every reading; YP at 6 and 7 mm against x = 0 for each CANCAN rate is
     reported and judged in fig4b-near-electrode-decline. The sentence also allows reading "enhanced"
     as centre YP above the control's centre YP; that comparison is reported for each rate. The
-    t-tests of F7 are reported.
+    t-tests of F7 are reported. Rates no dataset holds are reported as missing; when only some
+    rates are held (001276 holds 1 Hz and 0.2 MHz), the claim is judged on those and is at most
+    partially reproduced.
 - id: fig3bc-rate-suppresses-off-target
   statement: Raising the packet rate from 1 Hz to 0.2 MHz suppressed electroporation better both near
     the electrodes (diagonal profile) and at the perimeter between electrodes (profile parallel to
@@ -204,6 +214,7 @@ claims:
     both near electrodes ( Fig. 3B ) and at the perimeter between electrodes ( Fig. 3C ).
   datasets:
   - "001047"
+  - "001276"
   criterion: Set S1, F1 to F3, F8, F9, O1, O2. Near electrodes is YP at 6 and 7 mm on the diagonals.
     The perimeter between electrodes is the end of the parallel profile, which meets the side of the
     square about 6.4 mm from the centre (half the 12.8-mm side between electrode centres, from the
@@ -219,6 +230,7 @@ claims:
   quote: The fit correlation with data in the −4 to 4 mm radius was nearly perfect (R>0.9, p<0.001).
   datasets:
   - "001047"
+  - "001276"
   statistics:
   - about: correlation of the Lorentzian fit with the data, -4 to 4 mm
     statistic: R > 0.9
@@ -237,7 +249,8 @@ claims:
     Pearson correlation of fitted and measured values over the fitted points, with its t test; (b)
     the square root of R2 = 1 - SSres/SStot, with the F test of the fit. Reproduced when R exceeds
     0.9 with p < 0.001 for every rate and direction under every reading; 0.9 is the paper's bound,
-    so the tolerance is zero.
+    so the tolerance is zero. When only some rates are held, the claim is judged on those and is at
+    most partially reproduced.
 - id: fig3-tail-deviation-falls-with-rate
   statement: Beyond the fitted range, the data deviated from the Lorentzian fit less as the packet
     rate increased.
@@ -265,13 +278,15 @@ claims:
     electrodes to the center.
   datasets:
   - "001047"
+  - "001276"
   expected:
     quantity: ratio of centre YP to near-electrode YP, CT26, 2 bursts (x4), 0.2 MHz
     value: 40
     tolerance: 4
-  criterion: Set S1 at 0.2 MHz, F1 to F3, F9, O2, O5. Background-subtracted YP at x = 0 over YP at
-    the near-electrode distance. Reproduced when the ratio is within 36 to 44 under one combination
-    of the readings of O2 and O5; every combination is shown. The fields are from the simulation
+  criterion: Set S1 at 0.2 MHz, F1 to F3, F9, O1, O2, O5. Background-subtracted YP at x = 0 over YP
+    at the near-electrode distance. Reproduced when the ratio is within 36 to 44 under one
+    combination of the readings of O1 (the background footprint), O2 and O5; every combination is
+    shown, and the outcome rests on the footprint that gives it, as an assumption. The fields are from the simulation
     (F10) and are not tested here.
 - id: fig4b-centre-no-rate-effect
   statement: YP uptake at the array centre showed no significant effect of packet rate.
@@ -743,13 +758,15 @@ claims:
     quantity: ratio of centre YP to near-electrode YP, Fig. 7 series
     value: 45.5
     tolerance: 9.5
-  criterion: Set S4, F1 to F3, F9, O2, O5. The reported range 40 to 50, widened by 10% of each bound,
+  criterion: Set S4, F1 to F3, F9, O1, O2, O5. The reported range 40 to 50, widened by 10% of each bound,
     is 36 to 55, which the value and tolerance give. The group is not named; readings (A) CT26 at 1
     burst (x4) only, as the sentence follows the 1-burst result; (B) every CT26 burst number below
     saturation (1, 2 and 4 bursts (x4)), as the sentence closes a paragraph on all of them and a
     range can be the span over groups; (C) every CHO burst number, as the paragraph covers both cell
-    lines and the sentence names none. Reproduced when the ratio lies in 36 to 55 under one
-    combination of readings (for B and C, for each of those groups); every combination is shown.
+    lines and the sentence names none. The background footprint is read as in O1 (i) to (iv), the
+    same footprint for every group of a reading. Reproduced when the ratio lies in 36 to 55 under
+    one combination of readings (for B and C, for each of those groups); every combination is
+    shown, and the outcome rests on the footprint that gives it, as an assumption.
 - id: fig7-cho-replicates-ct26
   statement: Remote focusing of electroporation was consistent across the two cell types; in CHO cells
     as in CT26 cells the YP uptake peaked at the centre of the array.
