@@ -1,0 +1,1954 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001203",
+  "label": "DANDI:001203"
+ },
+ "page": "datasets/dandi/001203/",
+ "generated": "2026-11-20T23:45:43+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 5,
+  "not_reproduced": 5,
+  "blocked": 32
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 3
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 1,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "mills-2026-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001203",
+    "version": "0.261103.1719",
+    "doi": "10.48324/dandi.001203/0.261103.1719",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001203"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001203",
+   "label": "DANDI:001203",
+   "dataset_version": "0.261103.1719",
+   "paper": "10.1016/j.neuron.2026.08.012",
+   "paper_title": "Amygdalostriatal transition zone neurons encode sustained cue response to guide defensive behaviors",
+   "date": "2026-11-20",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-18"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/44707435782"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "mills-2026",
+   "inputs": [],
+   "entry_title": "Amygdalostriatal transition zone responses to threat cues (Mills et al. 2026)",
+   "summary": "Most of the paper's main findings could not be tested in this data, and only one held up fully. Population trajectories of amygdalostriatal neurons to shock and reward cues diverged as reported, but comparisons with other regions and unpaired mice could not be run, as the Neuropixels files hold no trial events or unit regions. In imaging, Drd2+ neurons of paired mice responded more to the shock cue across neurons but not across mice. The reported lack of a Drd1a+ difference, the Drd2-rich clusters and cue decoding did not reproduce, the imaging tests using uncurated ROIs 2.4 to 4 times the paper's counts. The transcriptomic, RNAscope and optogenetic data are not in the dandiset.",
+   "description": "Tests the findings of Mills, Lee, Howe, Li et al. (2026) on dandiset 001203, which holds Open Ephys and Neuropixels recordings of the amygdalostriatal transition zone and calcium imaging of its Drd1a+ and Drd2+ neurons during a two-tone discrimination task and contextual fear. It tests the sustained responses to shock-predicting cues, population trajectories and decoding in the Open Ephys mice, and the imaging responses, clusters, behavior and context comparisons. The Neuropixels files lack trial events, the Open Ephys poses are on another clock, and the snRNA-seq, RNAscope and optogenetic data are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_mills_2026.ipynb",
+     "title": "Reproducing Mills et al. (2026) from dandiset 001203",
+     "cells": {
+      "sanity": "8f93e102",
+      "claim:fig2-recorded-neurons": "02c4453e",
+      "claim:figs9-sustained-only-cs-shock": "bceec34c",
+      "claim:figs10-no-reward-relationship": "da328f2f",
+      "claim:fig2o-region-differs-cs-reward": "84123891",
+      "claim:fig2q-trajectories-diverge": "507bda30",
+      "claim:figs8-single-trial-divergence": "cedfc4ca",
+      "claim:fig3h-cs-decoded-paired-only": "694b60ba",
+      "claim:figs13-imaging-mice-discriminate": "7512e099",
+      "claim:fig5j-drd2-cs-shock-responses": "6622bf64",
+      "claim:fig5h-drd1-no-difference": "064de9e6",
+      "claim:fig5k-drd2-cs-reward-no-difference": "a33dea57",
+      "claim:fig5m-drd2-rich-clusters-cs-shock": "49a03674",
+      "claim:figs15-no-context-encoding": "8e02a213"
+     },
+     "executed": "notebooks/mills-2026/reproduce_mills_2026.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig2-recorded-neurons",
+     "statement": "The dandiset holds the electrophysiology units the paper analyses, with the counts per region and group it reports.",
+     "source": "Figure 2 legend (ASt 15 mice, 193 neurons; TS 7 mice, 212; CeA 8 mice, 145); Figure S7 legend (unpaired 4 mice, 71); code scripts/utils/discall.py",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig2-recorded-neurons",
+     "notes": "Units below 50 Hz by the region and group the files give. Paired ASt 1515 units in 15 mice (paper 193 in 15), paired TS 0 (paper 212 in 7), paired CeA 885 in 6 mice (paper 145 in 8), unpaired ASt 633 in 4 mice (paper 71 in 4). The Neuropixels units carry no region, and each probe's units span the structures it passes through, so the paper's per-region counts cannot be formed. Only the Open Ephys sessions have trial events, giving 112 paired ASt units in 10 mice and 22 CeA units in 2 mice. The link holds in part for paired ASt units with events, and the claims that need only them are tested on that part.",
+     "deviations": [
+      "The Open Ephys files do not state the group; their 12 mice are taken as paired because the paper's 4 unpaired ASt mice match the 4 Neuropixels files marked unpaired.",
+      "Open Ephys rates are spike counts over the recording span; Neuropixels rates are the files' firing_rate column. The paper's code (discall.py) computes rate as count over duration."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs9-sustained-only-cs-shock",
+     "statement": "Sustained ASt responses occur to CS-shock but not to CS-reward, including CS-reward trials in which the reward was not collected for at least 2 s; phasic responses do not differ.",
+     "source": "Figure S9A-B; Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 4",
+     "quote": "Robust sustained responses were only seen in response to CS-shock and were not present during CS-reward cues prior to US-reward collection",
+     "statistics": [
+      {
+       "about": "phasic",
+       "test": "one-way ANOVA",
+       "statistic": "F(2,479) = 0.05",
+       "p": 0.95
+      },
+      {
+       "about": "sustained, 1 s timepoint",
+       "test": "one-way ANOVA, Tukey's multiple comparison",
+       "statistic": "F(2,479) = 17.38",
+       "p": 5.2e-08
+      },
+      {
+       "about": "sustained, 2 s timepoint",
+       "test": "one-way ANOVA, Tukey's multiple comparison",
+       "statistic": "F(2,479) = 17.40",
+       "p": 5.1e-08
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:figs9-sustained-only-cs-shock",
+     "notes": "Port latency is taken as the tone duration, since collecting the reward ends the tone; the first port entry after onset is the other reading. With the tone duration, under both bin sizes (100 and 10 ms) the phasic ANOVA is not significant (F(2,333) = 0.98 and 1.09, p 0.38 and 0.34). Under reading (b) of the 1 s and 2 s timepoints every sustained ANOVA gives p < 0.001 (100 ms at 1 s F = 17.04, p = 9.0e-8; at 2 s F = 18.10, p = 3.5e-8; 10 ms p 2.3e-7 and 1.1e-7), and Tukey's test puts CS-shock above CS-reward and above the slow CS-reward trials (p < 2e-5) with the two CS-reward groups equal (p > 0.89). Under reading (a) the 10 ms bin at 2 s gives p = 0.0013. The first-entry latency gives the same outcome (phasic p 0.24 and 0.23, all eight sustained ANOVAs p < 0.001). The slow-trial group does not match the paper's. All 10 mice have CS-reward trials with latency over 2 s (26 to 86 per mouse), giving 112 neurons against the paper's 96 from only 10 of its 15 mice, so the paper selected these trials or neurons in a way it does not state. By mouse, CS-shock sustained z exceeds both CS-reward groups in 7 of 10 mice. The paired ASt units are those of the 10 Open Ephys mice (112 units below 50 Hz); the 5 paired Neuropixels ASt mice have no trial events. The link claim fig2-recorded-neurons fails on its counts but holds in part (10 of the 15 paired ASt mice can be used), so this claim is tested on that part, as the protocol says for a partial link.",
+     "deviations": [
+      "10 of the paper's 15 paired ASt mice (Open Ephys only); df 333 against the paper's 479.",
+      "Port latency is the tone duration (STAR Methods, Two-tone discrimination tasks: 'Collection of the reward prior to the end of the tone resulted in termination of the tone'); the first port entry at or after onset is run as the other reading and gives the same outcome. A trial is slow when it is over 2 s.",
+      "Units are the files' curated units below 50 Hz (code, discall.py)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2q-trajectories-diverge",
+     "statement": "ASt population trajectories for CS-shock and CS-reward diverge from cue onset.",
+     "source": "Figure 2Q; Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 4",
+     "quote": "of ASt responses to CS-shock and CS-reward and found that they diverged in orthogonal directions from cue onset both at the population level",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig2q-trajectories-diverge",
+     "notes": "The mean CS-shock to CS-reward distance over 0 to 18 s is 7.36 in the complete PC space against a largest baseline distance of 2.87 (mean 2.05), and 7.16 against 1.94 in the 41 components that explain 90% of the variance. Within single mice the cue mean exceeds the baseline maximum in 3 of 10 (3016, 3024 and 7008). The paired ASt units are those of the 10 Open Ephys mice (112 units below 50 Hz); the 5 paired Neuropixels ASt mice have no trial events. The link claim fig2-recorded-neurons fails on its counts but holds in part (10 of the 15 paired ASt mice can be used), so this claim is tested on that part, as the protocol says for a partial link.",
+     "deviations": [
+      "The PCA is fitted on paired animals only; the Methods' single PCA over paired and unpaired animals cannot be run, as no unpaired animal has trial events. With all components kept the PCA is a rotation of the centred neuron space, so the complete-space distance is the same whatever rows the PCA is fitted on and is the Methods' reading; the 90% variant depends on the fit.",
+      "112 neurons from 10 of the paper's 15 paired ASt mice."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs8-single-trial-divergence",
+     "statement": "In single trial pairs from paired mice, CS-shock and CS-reward population trajectories are less similar during the cue than pairs of the same CS; unpaired mice do not show this.",
+     "source": "Figure S8C-F; STAR Methods, Neural trajectory analysis",
+     "quote": "Paired animals show significantly reduced similarity between CS-shock and CS-reward trajectories",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:figs8-single-trial-divergence",
+     "notes": "Five paired animals meet the code's selection (at least 10 units and 30 trials per CS; 3024 has 29 CS-shock trials). Shock-reward cosine similarity over 0 to 18 s (pooled mean -0.009) is below shock-shock (0.074) and reward-reward (0.066). Reading (c), iterations pooled, gives p = 8.0e-53 (W = 13181, n = 500) under the claim's seed and p 1.4e-54 to 1.9e-48 under the four others. Reading (c) treats 100 resamples of the same trials as independent, so its p overstates the evidence. Readings (a) and (b) cannot reach p < 0.01 with five animals: the smallest two-sided Wilcoxon p for five pairs is 0.0625, and they give p 0.0625 to 0.125. The unpaired half of the claim cannot be tested. The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found.",
+     "deviations": [
+      "Paired part only; 5 Open Ephys animals against the 8 paired animals of the code's printout.",
+      "100 ms bins, as the code that plots the example pairs (standard choice; the Methods give none)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-cs-decoded-paired-only",
+     "statement": "CS identity can be decoded from ASt activity above chance during the cue in paired but not unpaired mice.",
+     "source": "Figure 3H; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 2",
+     "quote": "showed that CS identity could be decoded from ASt activity above chance in paired but not unpaired mice",
+     "statistics": [
+      {
+       "about": "paired, CS window against chance",
+       "test": "Mann-Whitney U test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig3h-cs-decoded-paired-only",
+     "notes": "Six paired mice have more than 10 units. Accuracy over 0 to 18 s under the claim's seed is 0.825, 0.892, 0.494, 0.531, 0.677 and 0.702 against shuffled chance 0.48 to 0.51; two mice are near chance, 3026 (0.47 to 0.49 over the five seeds) and 6197 (0.53 to 0.60), against shuffled chance of 0.49 to 0.50 in both; no per-mouse test was run. The Mann-Whitney U test of accuracies against chance gives U = 32, p = 0.026 two-sided (one-sided 0.013), above the criterion's 0.01; under the four other seeds p is 0.015 to 0.065 two-sided. The code's Wilcoxon variant gives W = 1, p = 0.0625. The unpaired half cannot be tested. The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found.",
+     "deviations": [
+      "Paired part only; 6 Open Ephys mice against the code's 9 paired mice.",
+      "The two-sided Mann-Whitney U test is used as the main reading as the legend does not say one-sided; the one-sided p (0.0076 to 0.033) is below 0.01 under one of five seeds only."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs13-imaging-mice-discriminate",
+     "statement": "Paired Drd1a-Cre and Drd2-Cre mice in the imaging experiments show more defensive behavior to CS-shock than to CS-reward, and unpaired mice do not.",
+     "source": "Figure S13D and S13G",
+     "quote": "consistent with successful discrimination between the two tones",
+     "statistics": [
+      {
+       "about": "Drd1a-Cre paired, defensive behavior",
+       "test": "two-tailed paired t-test",
+       "statistic": "t9 = 5.418",
+       "p": 0.0004,
+       "n": "10 mice"
+      },
+      {
+       "about": "Drd2-Cre paired, defensive behavior",
+       "test": "two-tailed paired t-test",
+       "statistic": "t8 = 3.381",
+       "p": 0.0096,
+       "n": "9 mice"
+      },
+      {
+       "about": "Drd1a-Cre unpaired, defensive behavior",
+       "test": "two-tailed paired t-test",
+       "statistic": "t7 = 0.300",
+       "p": 0.773,
+       "n": "8 mice"
+      },
+      {
+       "about": "Drd2-Cre unpaired, defensive behavior",
+       "test": "two-tailed paired t-test",
+       "statistic": "t5 = 0.110",
+       "p": 0.917,
+       "n": "6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:figs13-imaging-mice-discriminate",
+     "notes": "Defensive behavior (share of the 10 s tone freezing plus share darting, all 60 cues per session). Paired Drd1a-Cre, 10 mice, CS-shock 0.191 against CS-reward 0.153, t(9) = 3.61, p = 0.0057; paired Drd2-Cre, 9 mice, 0.183 against 0.133, t(8) = 2.37, p = 0.046; unpaired Drd1a-Cre, 8 mice, p = 0.80; unpaired Drd2-Cre, 6 mice, p = 0.51. The summed-displacement rule gives the same (p 0.0054, 0.045, 0.80, 0.52). Mouse counts match the paper's (10, 9, 8, 6). The difference comes from darting (paired Drd1a-Cre 0.032 against 0.007, p < 0.0001; Drd2-Cre 0.031 against 0.001, p = 0.0016); freezing alone does not differ between the cues in paired mice (p = 0.14 and 0.37). The largest point displacement per frame is below 0.5 px in 19.6% of frames and above 1.6 px in the rest, so the paper's rule (0.08 cm, about 1.6 px) counts only frames whose pose repeats the previous one, whatever the scale; whether these are still frames or repeated video frames the files do not say. The median-displacement variant, not the paper's rule, finds no cue difference in any group (p 0.105 to 0.71).",
+     "deviations": [
+      "Assumed the pixel scale from the extent of the body points (0.5th to 99.5th percentile) against the 30 x 40 cm chamber the Methods give, as the poses are in pixels with no scale; 18.8 to 20.7 px/cm.",
+      "Assumed the haunch as the rear body centre for darting; the skeleton has no node of that name.",
+      "The freezing rule ('total displacement of ALL mouse body points less than 0.08 cm per frame') is run as every point below 0.08 cm and as the sum below 0.08 cm; both give the outcome.",
+      "Freezing measured by the paper's rule counts only frames whose pose repeats the previous one within 0.5 px (no frame falls between 0.5 and 1.6 px); a median-displacement rule is shown as a variant."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5j-drd2-cs-shock-responses",
+     "statement": "Drd2+ ASt neurons of paired mice respond to CS-shock more than those of unpaired controls, over both the short (0 to 1 s) and long (1 to 10 s) windows.",
+     "source": "Figure 5J; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli predicting shocks, paragraph 1",
+     "quote": "Drd2 + ASt neurons showed robust responses to CS-shock over both short (0\u20131 s) and long (1\u201310 s) timescales that were significantly greater than unpaired controls",
+     "statistics": [
+      {
+       "about": "short window",
+       "test": "t-test",
+       "statistic": "t 551 = 6.21",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "296 paired neurons (9 mice), 257 unpaired neurons (6 mice)"
+      },
+      {
+       "about": "long window",
+       "test": "t-test",
+       "statistic": "t 551 = 3.16",
+       "p": 0.00163,
+       "n": "296 paired neurons (9 mice), 257 unpaired neurons (6 mice)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig5j-drd2-cs-shock-responses",
+     "notes": "Drd2+ paired ROIs respond more to CS-shock than unpaired ones, short window mean z 0.275 against -0.425, t(1812) = 6.23, p = 5.6e-10; long -0.241 against -0.819, t(1812) = 5.03, p = 5.3e-7. The deconvolved variant agrees (p 4.9e-8 and 1.0e-6). The counts are outside tolerance, 1189 paired and 625 unpaired ROIs against 296 and 257, because the files hold every CNMF-E ROI and the paper's manual curation is not recorded. Across mice (9 and 6) the difference is not significant (p 0.17 and 0.16). Mouse counts match. With a linear trend over the baseline removed (variant) the difference remains (p = 4.9e-9 and 0.0044). Fluorescence decays within the clips in every group alike (mean baseline z 0.27 to 0.36 at -10 to -7 s, -0.19 to -0.28 at -3 to 0 s), so the decay does not explain the group difference.",
+     "deviations": [
+      "All CNMF-E ROIs in the files; the paper used manually curated neurons, about a quarter of them.",
+      "Imaged trials only (15 per CS per session), the cue onsets of processing/behavior/stimulus_events that fall in an imaged trial."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5h-drd1-no-difference",
+     "statement": "Drd1a+ ASt neuron responses to CS-shock and CS-reward do not differ between paired and unpaired mice.",
+     "source": "Figure 5H-I; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli predicting shocks, paragraph 1",
+     "quote": "Drd1a + ASt neuron population average responses to CS-shock were not significantly different from unpaired controls",
+     "statistics": [
+      {
+       "about": "CS-shock short",
+       "test": "t-test",
+       "statistic": "t 555 = -1.07",
+       "p": 0.286,
+       "n": "320 paired neurons (10 mice), 237 unpaired neurons (8 mice)"
+      },
+      {
+       "about": "CS-shock long",
+       "test": "t-test",
+       "statistic": "t 555 = -1.58",
+       "p": 0.116
+      },
+      {
+       "about": "CS-reward short",
+       "test": "t-test",
+       "statistic": "t 555 = 1.86",
+       "p": 0.064
+      },
+      {
+       "about": "CS-reward long",
+       "test": "t-test",
+       "statistic": "t 555 = 0.70",
+       "p": 0.482
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig5h-drd1-no-difference",
+     "notes": "All four of the paper's t-tests find a difference on the deposited ROIs (847 paired, 608 unpaired). CS-shock short, paired -0.078 against unpaired -0.336, t(1453) = 3.16, p = 0.0016; long -0.347 against -0.727, p = 3.5e-5; CS-reward short -0.147 against -0.347, p = 0.0018; long -0.238 against -0.449, p = 0.0032. The effects are small (mean z differences 0.20 to 0.38). With the deconvolved trace three of four differ. Without the two thin unpaired sessions (G4B2-C8-6860, 1 imaged CS-shock trial; G2B1-C4-6886, 1 ROI) all four remain (p 0.0015 to 3.8e-6); with a linear baseline trend removed three of four remain (p 0.0092 to 0.038; CS-reward long p = 0.16). Across mice (10 and 8) nothing differs (CS-shock p 0.89 and 0.90, CS-reward p 0.73 and 0.50). The test is judged at the neuron level as the paper ran it, on about 2.6 times the paper's neurons.",
+     "deviations": [
+      "All CNMF-E ROIs in the files; the paper used 320 and 237 curated neurons."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5k-drd2-cs-reward-no-difference",
+     "statement": "Drd2+ ASt neuron responses to CS-reward do not differ between paired and unpaired mice.",
+     "source": "Figure 5K",
+     "quote": "Drd2 + ASt neuron responses to CS-reward were not significantly different from unpaired controls",
+     "statistics": [
+      {
+       "about": "short",
+       "test": "t-test",
+       "statistic": "t 551 = 1.85",
+       "p": 0.065
+      },
+      {
+       "about": "long",
+       "test": "t-test",
+       "statistic": "t 551 = -1.68",
+       "p": 0.094
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig5k-drd2-cs-reward-no-difference",
+     "notes": "The short-window test finds a difference, paired -0.269 against unpaired -0.398, t(1812) = 2.12, p = 0.034; the long window does not, -0.579 against -0.538, t(1812) = -0.51, p = 0.61. With the deconvolved trace neither differs (p 0.31 and 0.15). With a linear baseline trend removed the short window differs (p = 0.0023), the long does not (p = 0.54). Across mice (9 and 6) neither window differs (p 0.36 and 0.33). The effect is small (0.13 in mean z) on 1814 ROIs against the paper's 553 neurons.",
+     "deviations": [
+      "All CNMF-E ROIs in the files; the paper used 296 and 257 curated neurons."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5m-drd2-rich-clusters-cs-shock",
+     "statement": "Clustering imaged neurons of paired Drd1a-Cre and Drd2-Cre mice, the clusters richest in Drd2+ neurons respond to CS-shock or are inhibited by CS-reward, while those richest in Drd1a+ neurons prefer CS-reward or are inhibited by CS-shock; Drd2+ neurons are the main contributors to CS-shock responses.",
+     "source": "Figure 5L-M; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli predicting shocks, paragraph 1",
+     "quote": "We found that the clusters with more Drd2 + neurons had greater responses to CS-shock",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig5m-drd2-rich-clusters-cs-shock",
+     "notes": "2036 paired ROIs (1189 Drd2, 847 Drd1a), nine clusters. Under none of the eight readings (average or Ward linkage; the 10 s cue or the imaged window; soft normalization as z/(max|z|+10) or as clipping at 10) is the Spearman correlation across clusters between the normalized Drd2 share and the mean CS-shock z positive at p < 0.05; rho -0.12 to 0.47, p 0.20 to 0.97. Average linkage puts most ROIs in one or two clusters. A variant keeps the window from -9.5 s and drops the ROIs whose clips start later; it gives rho 0.76, p = 0.017 with z/(max|z|+10) and average linkage, and p 0.29 to 0.58 with the other three. It is not taken as a reading of the criterion, which asks for every neuron of paired mice; it drops 233 of the 847 Drd1a+ ROIs (C5-6933 and K008, 2 of the 10 Drd1a-Cre mice), which changes the Drd2+ share that ranks the clusters. With the same ROIs dropped and the window from -9.4 s, the same combination gives p = 0.22, and from -9.2 or -9.0 s (only K008 dropped) the lowest p is 0.16.",
+     "deviations": [
+      "All CNMF-E ROIs in the files; the paper used 616 curated neurons of paired mice.",
+      "The imaged window starts at -8.67 s, the latest clip start over sessions, and bins before it are dropped so that every ROI is kept.",
+      "Soft normalization 'to a maximum z-score of 10' (STAR Methods) is run under two readings, as the paper does not define it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs15-no-context-encoding",
+     "statement": "After contextual fear conditioning, neither Drd1a+ nor Drd2+ ASt neurons change their activity in the conditioned context compared with an unconditioned one, although the mice freeze more in the conditioned context.",
+     "source": "Figure S15D-K; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli predicting shocks, paragraph 3",
+     "quote": "neither Drd1a + nor Drd2 + ASt neurons showed any changes in neural activity in the conditioned context compared with an unconditioned one",
+     "statistics": [
+      {
+       "about": "freezing, Context A against B",
+       "test": "paired t-test",
+       "p": 0.05,
+       "p_relation": "<"
+      },
+      {
+       "about": "activity measures, Context A against B",
+       "test": "paired t-test across mice",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "Drd1a 6 mice, Drd2 5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:figs15-no-context-encoding",
+     "notes": "Per mouse, Context A against B, paired t-tests. Drd1a+ (6 mice) shows no change in raw fluorescence (p = 0.81), peak rate (p = 0.56) or deconvolved event rate (p = 0.56). Drd2+ (5 mice) shows none in raw fluorescence (p = 0.29) or deconvolved event rate (p = 0.81), but its peak rate is higher in Context A, 0.179 against 0.170 per s, t(4) = 2.95, p = 0.042. Freezing is higher in Context A for Drd1a-Cre mice (0.186 against 0.072, t(5) = 3.92, p = 0.011) but not for Drd2-Cre mice (0.094 against 0.075, p = 0.63). The deconvolved mean, a variant, shows no change for either type (p 0.45, 0.69). Freezing counts frames whose pose repeats the previous one within 0.5 px (at most 0.1% of frames fall between 0.5 and 1.6 px), which is why the scale does not change it; the median-displacement variant gives the same pattern (Drd1a-Cre p = 0.017, Drd2-Cre p = 0.33). The Drd2+ peak-rate test fails the activity part whatever freezing measures.",
+     "deviations": [
+      "Assumed the pixel scale from the extent of the body points against a 30 x 40 cm floor; the context chambers are in other rooms and the scale ranges from 7.5 to 32.8 px/cm. A fixed 14 px/cm (the median) gives the same freezing results.",
+      "All CNMF-E ROIs; the paper had 157 to 165 Drd1a+ and 136 to 137 Drd2+ neurons per context.",
+      "Peaks are local maxima above the trace's mean plus 2 SD; spike rate is frames with a nonzero deconvolved value per second (readings named by the criterion)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5-ephys-mice-discriminate",
+     "statement": "Paired mice in the electrophysiology experiments discriminate the cues, with more port entry to CS-reward and more defensive behavior to CS-shock, while unpaired mice do not.",
+     "source": "Figure S5D-E",
+     "quote": "Paired group mice showed distinct responses to the CS-shock and CS-reward tones in reward port entry behavior (Two-tailed paired t-test, t20 = 12.469, ****p < 0.0001) (D) and defensive responses",
+     "statistics": [
+      {
+       "about": "paired mice, port entry, CS-reward against CS-shock",
+       "test": "two-tailed paired t-test",
+       "statistic": "t20 = 12.469",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "21 paired mice"
+      },
+      {
+       "about": "paired mice, defensive behavior, CS-shock against CS-reward",
+       "test": "two-tailed paired t-test",
+       "statistic": "t20 = 6.711",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "21 paired mice"
+      },
+      {
+       "about": "unpaired mice, port entry",
+       "test": "two-tailed paired t-test",
+       "statistic": "t3 = 0.672",
+       "p": 0.55,
+       "n": "4 unpaired mice"
+      },
+      {
+       "about": "unpaired mice, defensive behavior",
+       "test": "two-tailed paired t-test",
+       "statistic": "t3 = 0.658",
+       "p": 0.557,
+       "n": "4 unpaired mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "output": null,
+     "notes": "The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of the session, the port-entry lag is constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and changes by 22 to 529 s in the other eight; the shock check agrees with the constant lag within 0.6 s in 3012, 3016 and 3024 only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.8 s. The claim needs 21 paired and 4 unpaired mice; the 4 unpaired mice are Neuropixels mice without events or behavior. The port-entry half uses only trial-table events and is shown in the notebook, not deciding the claim: in the 12 Open Ephys mice time in the port is 9.0 s per CS-reward against 2.1 s per CS-shock (t(11) = 8.31, p = 4.6e-6) and entries 2.9 against 1.5 (p = 0.001).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs10lm-defensive-trials-greater-responses",
+     "statement": "Within paired mice, CS-shock trials with the most defensive behavior (top quartile) have 26% greater phasic and 60% greater sustained ASt responses than those with the least; unpaired mice show no such change.",
+     "source": "Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 5; Figure S10I-M",
+     "quote": "Trials with the most defensive behavior (top quartile) showed 26% greater phasic and 60% greater sustained ASt responses than trials with the least defensive behavior",
+     "statistics": [
+      {
+       "about": "phasic, paired",
+       "test": "repeated measures ANOVA, Tukey's multiple comparison",
+       "statistic": "F(3, 570) = 5.46",
+       "p": 0.001,
+       "n": "15 mice, 191 neurons"
+      },
+      {
+       "about": "sustained, paired",
+       "test": "repeated measures ANOVA, Tukey's multiple comparison",
+       "statistic": "F(3, 570) = 10.26",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "15 mice, 191 neurons"
+      },
+      {
+       "about": "phasic, unpaired",
+       "test": "repeated measures ANOVA",
+       "statistic": "F(3, 210) = 0.521",
+       "p": 0.668,
+       "n": "4 mice, 71 neurons"
+      },
+      {
+       "about": "sustained, unpaired",
+       "test": "repeated measures ANOVA",
+       "statistic": "F(3, 210) = 0.424",
+       "p": 0.736,
+       "n": "4 mice, 71 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "output": null,
+     "notes": "The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of the session, the port-entry lag is constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and changes by 22 to 529 s in the other eight; the shock check agrees with the constant lag within 0.6 s in 3012, 3016 and 3024 only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.8 s. The unpaired half also needs Neuropixels events, which the files do not hold, and the paired half would rest on 2 of the paper's 15 mice with an inferred clock.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3fg-no-motor-onset-response",
+     "statement": "Average ASt activity does not change at the onset of freezing or darting bouts, and few ASt neurons are excited at those onsets, unlike at CS-shock onset.",
+     "source": "Figure 3F-G; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 2",
+     "quote": "No net change in average ASt activity was observed at motor bout onsets, and few individual ASt neurons showed excitatory motor-aligned responses",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "output": null,
+     "notes": "The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of the session, the port-entry lag is constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and changes by 22 to 529 s in the other eight; the shock check agrees with the constant lag within 0.6 s in 3012, 3016 and 3024 only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.8 s. The claim judges activity 0 to 1 s after bout onsets; a clock error of 0.8 s would blur a response and bias the test toward the claim of no response, so the 2 mice are not used.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-ast-sustained-clusters",
+     "statement": "Clustering all recorded neurons by their CS-shock and CS-reward responses, ASt neurons make up the largest share of the two clusters with robust responses sustained over the full 20 s of CS-shock; TS neurons dominate a slowly rising CS-shock cluster and a CS-reward inhibited one, and CeA neurons the CS-reward excited clusters.",
+     "source": "Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 2; Figure 2D-E",
+     "quote": "Remarkably, however, ASt neurons were the dominant representative in two clusters (clusters 1 and 2) that showed robust and sustained responses to CS-shock lasting the full 20 s of the cue",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found. The clustering pools ASt, TS and CeA neurons; no TS neuron and only 22 CeA units in 2 mice have events.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2o-ast-greater-cs-shock-responses",
+     "statement": "ASt neurons have greater phasic (0 to 100 ms) and sustained (0.1 to 19 s) responses to CS-shock than TS or CeA neurons.",
+     "source": "Figure 2O; Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 3",
+     "quote": "ASt neurons show greater phasic and sustained responses to CS-shock than neurons in the TS or CeA",
+     "statistics": [
+      {
+       "about": "CS-shock phasic, region",
+       "test": "one-way ANOVA with region as factor, Tukey's multiple comparison",
+       "statistic": "F (2, 547) = 38.46",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "193 ASt, 212 TS and 145 CeA neurons"
+      },
+      {
+       "about": "CS-shock sustained, region",
+       "test": "one-way ANOVA with region as factor, Tukey's multiple comparison",
+       "statistic": "F (2, 547) = 9.41",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "193 ASt, 212 TS and 145 CeA neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No unit in any file is labeled TS, and the Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold no trial events; the comparison needs TS and CeA neurons with cue events. For the record (notebook, blocked section), ASt (112 units) against the 22 CeA units of the 2 Open Ephys CeA mice does not differ for CS-shock: phasic 5.94 against 5.15, p = 0.72; sustained 2.38 against 2.45, p = 0.95 (100 ms; 10 ms p 0.68 and 0.84). With 22 units from 2 of the paper's 8 CeA mice this is not the paper's test and does not decide the claim.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2o-region-differs-cs-reward",
+     "statement": "Responses to CS-reward also differ between regions, and the ASt has robust phasic responses to CS-reward as well as to CS-shock.",
+     "source": "Figure 2O; Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 3",
+     "quote": "The ASt had robust phasic responses to both CS types",
+     "statistics": [
+      {
+       "about": "CS-reward phasic, region",
+       "test": "one-way ANOVA with region as factor",
+       "statistic": "F (2, 547) = 15.57",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "193 ASt, 212 TS and 145 CeA neurons"
+      },
+      {
+       "about": "CS-reward sustained, region",
+       "test": "one-way ANOVA with region as factor",
+       "statistic": "F (2, 547) = 16.38",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "193 ASt, 212 TS and 145 CeA neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:fig2o-region-differs-cs-reward",
+     "notes": "The ASt part holds: the phasic CS-reward z of the 112 paired ASt units is above 0 (mean 7.09, one-sample t(111) = 7.79, p = 3.9e-12 at 100 ms; mean 2.56, p = 7.4e-12 at 10 ms), and the mouse means are above 0 in all 10 mice (0.12 to 13.04). The region ANOVAs cannot be run as the paper's test: no unit is labeled TS, and the CeA units with trial events are 22 from 2 of the paper's 8 CeA mice (145 neurons). For the record, ASt against these CeA units gives F(1,132) = 3.58, p = 0.061 (phasic) and 1.65, p = 0.20 (sustained) at 100 ms, and p = 0.039 and 0.27 at 10 ms, none near the criterion's p < 0.0001. The claim holds in part: the ASt response is shown, the region difference is not tested.",
+     "deviations": [
+      "ASt part only, on the 112 paired ASt units of the 10 Open Ephys mice; the three-region ANOVAs are not run (no TS units, 22 CeA units in 2 mice)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2p-ast-more-responsive",
+     "statement": "A greater proportion of ASt neurons than of TS or CeA neurons respond phasically to each CS and in a sustained way to CS-shock.",
+     "source": "Figure 2P; Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 3",
+     "quote": "A greater proportion of ASt neurons also showed phasic responses to each CS and sustained responses to CS-shock",
+     "statistics": [
+      {
+       "test": "chi-squared test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No unit in any file is labeled TS, and the Neuropixels files hold no trial events; the proportions need TS and CeA neurons with cue events. For the record, against the 22 Open Ephys CeA units (reading (a), 100 ms) the ASt share of responsive units is 0.29 against 0.32 for CS-shock phasic (chi-square p = 0.077), 0.41 against 0.14 for CS-reward phasic (p = 0.049) and 0.27 against 0.32 for CS-shock sustained (p = 0.82); reading (b) and 10 ms bins give p 0.099 to 1. With 22 units from 2 of the paper's 8 CeA mice this does not decide the claim.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7-paired-greater-than-unpaired",
+     "statement": "ASt neurons of paired mice have greater phasic and sustained responses to CS-shock and greater phasic responses to CS-reward than those of unpaired controls.",
+     "source": "Figure S7C; Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 3",
+     "quote": "ASt neurons in paired group mice showed greater phasic responses to CS-shock (two-tailed t-test, t262 = 4.332",
+     "statistics": [
+      {
+       "about": "CS-shock phasic",
+       "test": "two-tailed t-test",
+       "statistic": "t262 = 4.332",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "193 paired and 71 unpaired ASt neurons"
+      },
+      {
+       "about": "CS-shock sustained",
+       "test": "two-tailed t-test",
+       "statistic": "t262 = 3.109",
+       "p": 0.0021,
+       "n": "193 paired and 71 unpaired ASt neurons"
+      },
+      {
+       "about": "CS-reward phasic",
+       "test": "two-tailed t-test",
+       "statistic": "t262 = 4.511",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "193 paired and 71 unpaired ASt neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired neuron has cue events.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7-cs-reward-sustained-no-difference",
+     "statement": "Sustained ASt responses to CS-reward do not differ between paired and unpaired mice.",
+     "source": "Figure S7C",
+     "quote": "Sustained responses to CS-reward did not differ between groups (t262 = 0.460, p = 0.646)",
+     "statistics": [
+      {
+       "test": "two-tailed t-test",
+       "statistic": "t262 = 0.460",
+       "p": 0.646,
+       "n": "193 paired and 71 unpaired ASt neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired neuron has cue events.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7d-paired-more-responsive",
+     "statement": "Proportions of ASt neurons excited or inhibited differ between paired and unpaired mice for CS-shock phasic and sustained and CS-reward phasic responses, but not for CS-reward sustained responses.",
+     "source": "Figure S7D",
+     "quote": "Proportions of ASt neurons in the paired and unpaired groups that were significantly excited or inhibited",
+     "statistics": [
+      {
+       "about": "CS-shock phasic",
+       "test": "chi-square test with Holm-Bonferroni correction",
+       "statistic": "\u03c72(2, N = 264) = 15.31",
+       "p": 0.0014,
+       "corrected": "Holm-Bonferroni"
+      },
+      {
+       "about": "CS-shock sustained",
+       "test": "chi-square test with Holm-Bonferroni correction",
+       "statistic": "\u03c72(2, N = 264) = 18.04",
+       "p": 0.0005,
+       "corrected": "Holm-Bonferroni"
+      },
+      {
+       "about": "CS-reward phasic",
+       "test": "chi-square test with Holm-Bonferroni correction",
+       "statistic": "\u03c72(2, N = 264) = 13.86",
+       "p": 0.002,
+       "corrected": "Holm-Bonferroni"
+      },
+      {
+       "about": "CS-reward sustained",
+       "test": "chi-square test with Holm-Bonferroni correction",
+       "statistic": "\u03c72(2, N = 264) = 1.76",
+       "p": 0.415,
+       "corrected": "Holm-Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found. No unpaired neuron has cue events.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7f-baseline-rate-no-difference",
+     "statement": "Basal firing rates before the cue do not differ between paired and unpaired ASt neurons or between CS-shock and CS-reward windows.",
+     "source": "Figure S7E-F",
+     "quote": "No significant differences in basal firing rate were seen between paired and unpaired group ASt neurons, or between CS-shock and CS-reward windows",
+     "statistics": [
+      {
+       "about": "group main effect",
+       "test": "two-way mixed ANOVA, group (between-neuron) by cue window (within-neuron)",
+       "statistic": "F(1,262)=0.51",
+       "p": 0.476
+      },
+      {
+       "about": "cue main effect",
+       "test": "two-way mixed ANOVA",
+       "statistic": "F(1,262)=0.01",
+       "p": 0.926
+      },
+      {
+       "about": "group by cue interaction",
+       "test": "two-way mixed ANOVA",
+       "statistic": "F(1,262)=0.12",
+       "p": 0.728
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The Neuropixels files (all 4 unpaired ASt mice, 5 paired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior, and their units carry no region, so no TS unit can be found. The pre-cue windows of unpaired neurons cannot be found.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs10b-paired-more-defensive",
+     "statement": "Paired mice in the electrophysiology experiments show more defensive behavior during CS-shock than unpaired mice.",
+     "source": "Figure S10B",
+     "quote": "Group average and individual mouse defensive behaviors during CS-shock was higher in paired group mice than unpaired",
+     "statistics": [
+      {
+       "test": "Student's t-test",
+       "statistic": "t17 = 2.671",
+       "p": 0.0161,
+       "n": "15 paired and 4 unpaired mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 4 unpaired mice are Neuropixels mice with no behavior in the files. The poses of the Open Ephys sessions are not on the trial clock (data check; best lags from -110.6 to +287.4 s, none within 5 s of zero), so behavior cannot be placed in the cues or against spikes.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs10-high-defensive-mice-greater-responses",
+     "statement": "In paired mice clustered into high and low defensive groups, ASt phasic and sustained responses to CS-shock are over 3-fold greater in the high group; the phasic difference is significant and the sustained one is not.",
+     "source": "Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 5; Figure S10C-F",
+     "quote": "In the high defensive group, ASt neuron phasic and sustained responses were over 3-fold greater than in the low defensive group",
+     "statistics": [
+      {
+       "about": "phasic, high, low and unpaired groups",
+       "test": "one-way ANOVA, Tukey's multiple comparison",
+       "statistic": "F(2,16) = 6.023",
+       "p": 0.011,
+       "n": "4 unpaired, 7 low and 8 high mice"
+      },
+      {
+       "about": "sustained, high, low and unpaired groups",
+       "test": "one-way ANOVA",
+       "statistic": "F(2,16) = 1.793",
+       "p": 0.198
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Depends on figs10b-paired-more-defensive, blocked for the same reason; the one-way ANOVA also needs the unpaired mice.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs10-no-reward-relationship",
+     "statement": "ASt responses to CS-reward are not related to reward behavior, across mice or across trials grouped by port latency.",
+     "source": "Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 5; Figure S10N-U",
+     "quote": "We also performed similar analyses of reward responses but found there was no relationship between ASt neuron activity and reward behavior",
+     "statistics": [
+      {
+       "about": "phasic CS-reward response, unpaired, low and high reward mice",
+       "test": "one-way ANOVA",
+       "statistic": "F(2,16) = 2.178",
+       "p": 0.1457
+      },
+      {
+       "about": "phasic CS-reward response across latency quartiles, paired",
+       "test": "repeated measures ANOVA",
+       "statistic": "F(3, 570) = 0.576",
+       "p": 0.631
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mills_2026.ipynb",
+     "output": "claim:figs10-no-reward-relationship",
+     "notes": "The across-trials test is run on the 10 paired Open Ephys ASt mice: CS-reward trials split per mouse into latency quartiles, phasic z per neuron and quartile, repeated measures ANOVA with neurons as subjects (111 neurons; 1 dropped for no baseline variance in a quartile). With the tone-duration latency (adopted) and 100 ms bins, F(3,330) = 1.81, p = 0.14 (quartile means 3.42, 3.73, 3.54, 4.06); with the first-entry latency p = 0.185 (100 ms) and 0.18 (10 ms). With the tone-duration latency and 10 ms bins p = 0.047, the slowest quartile highest (1.47 against 1.21 to 1.31). The paper's F(3,570) = 0.576, p = 0.631. The across-mice one-way ANOVA over unpaired, low and high mice cannot be run, as no unpaired mouse has trial events; among the paired mice the low-latency and high-latency clusters (7 and 3 mice, average and Ward linkage alike) do not differ in phasic CS-reward z (t = 0.55, p = 0.60), a variant only. The claim holds in part: one of its two tests cannot be run, and the other finds no relationship under three of its four readings.",
+     "deviations": [
+      "Paired part only; 10 Open Ephys mice and 111 neurons against the paper's 15 mice and 191 neurons.",
+      "Port latency is the tone duration (STAR Methods: collection of the reward ends the tone); the first port entry is the other reading.",
+      "The bin size is open (claims file opening comment); both 100 and 10 ms are run and differ at the threshold."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-behavior-not-decoded",
+     "statement": "Freezing and darting cannot be decoded from ASt activity in either paired or unpaired mice.",
+     "source": "Figure 3H; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 2",
+     "quote": "while freezing and darting could not be decoded in either group",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Needs behavior aligned to spikes in both groups; no unpaired mouse has events or behavior, and the Open Ephys poses are not on the spike clock.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3j-cs-encoding-glm",
+     "statement": "After controlling for freezing, darting and locomotion speed, 56% of ASt neurons in paired mice encode CS identity (70 of 125), against 10.6% in unpaired controls (7 of 66).",
+     "source": "Figure 3J; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 3",
+     "quote": "a significantly larger proportion of neurons in paired mice showed CS encoding (70/125; 56.0%) compared with unpaired controls (7/66; 10.6%; Fisher's exact test, *** p < 0.001)",
+     "statistics": [
+      {
+       "test": "Fisher's exact test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "125 paired and 66 unpaired neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The GLM compares paired and unpaired neurons and uses freezing, darting and speed aligned to spikes. No unpaired mouse has events or behavior, and the Open Ephys poses are not on the spike clock.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3k-cs-improves-prediction",
+     "statement": "Adding CS identity improves cross-validated spike count prediction beyond behavioral covariates more in paired than in unpaired mice.",
+     "source": "Figure 3K",
+     "quote": "This improvement was significantly greater in paired than in unpaired mice (animal-level Mann-Whitney U, p = 0.029)",
+     "statistics": [
+      {
+       "test": "animal-level Mann-Whitney U, one-sided",
+       "p": 0.029,
+       "n": "12 paired and 4 unpaired mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Depends on fig3j-cs-encoding-glm, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3l-behavior-encoding-low",
+     "statement": "Few ASt neurons encode freezing, darting and speed after controlling for CS identity (20 of 125 paired, 13 of 66 unpaired), and the proportion does not differ between groups.",
+     "source": "Figure 3L; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 3",
+     "quote": "The proportion of neurons whose firing was significantly predicted by freezing, darting, and locomotion speed was low and did not differ between groups (paired 20/125; unpaired 13/66; Fisher's exact test, p = 0.549)",
+     "statistics": [
+      {
+       "test": "Fisher's exact test",
+       "p": 0.549,
+       "n": "125 paired and 66 unpaired neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Depends on fig3j-cs-encoding-glm, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3m-behavior-no-prediction-gain",
+     "statement": "Adding freezing and darting does not improve out-of-sample prediction in either group, and paired and unpaired mice do not differ.",
+     "source": "Figure 3M; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 3",
+     "quote": "the effect did not differ between paired and unpaired mice (animal-level Mann-Whitney U, p = 0.953)",
+     "statistics": [
+      {
+       "test": "animal-level Mann-Whitney U",
+       "p": 0.953,
+       "n": "12 paired and 4 unpaired mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Depends on fig3j-cs-encoding-glm, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs14-us-shock-scaling",
+     "statement": "Drd1a+ and Drd2+ ASt neuron responses scale with the intensity of unpredicted shocks but not with the size of unpredicted rewards.",
+     "source": "Figure S14F-I; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli predicting shocks, paragraph 2",
+     "quote": "both Drd1a + and Drd2 + neurons showed scaling of responses to US-shock intensity, though not US-reward",
+     "statistics": [
+      {
+       "about": "Drd1a+, US-shock",
+       "test": "one-way ANOVA, Bonferroni-corrected post hoc t-tests",
+       "statistic": "F(2,960) = 4.53",
+       "p": 0.011,
+       "n": "7 mice, 321 neurons"
+      },
+      {
+       "about": "Drd1a+, US-reward",
+       "test": "one-way ANOVA",
+       "statistic": "F(2,960) = 1.77",
+       "p": 0.17
+      },
+      {
+       "about": "Drd2+, US-shock",
+       "test": "one-way ANOVA, Bonferroni-corrected post hoc t-tests",
+       "statistic": "F(2,1437) = 23.12",
+       "p": 1.3e-10,
+       "n": "8 mice, 480 neurons"
+      },
+      {
+       "about": "Drd2+, US-reward",
+       "test": "one-way ANOVA",
+       "statistic": "F(2,1437) = 0.86",
+       "p": 0.42
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No file holds the unpredicted-US session; the discrimination files list only CS-reward and CS-shock events (45 and 15 in each of the 33 files, data check), and the context files hold no US.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs14q-few-salience-neurons",
+     "statement": "Among Drd2+ ASt neurons, only 2.4% respond in the same direction to CS-shock and CS-reward (salience-like), while 38% respond to only one CS or in opposite directions.",
+     "source": "Figure S14Q; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli predicting shocks, paragraph 2",
+     "quote": "only 2.4% of neurons exhibited responses consistent with salience (excited or inhibited to both CS-shock and CS-reward), while 38% of neurons significantly responded to only one CS type",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The criterion takes the neurons of the US session (5 mice, 348 neurons), which is not in the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1l-rnascope-drd2-enriched",
+     "statement": "RNAscope confirms the Drd2+ enrichment of the ASt (68% Drd2+, 27% Drd1a+), with the Drd1a to Drd2 balance of the ASt differing from TS and DS.",
+     "source": "Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 2; Figure 1L",
+     "quote": "which confirmed the enrichment of Drd2 + neurons in the ASt relative to other regions of the striatum (68% Drd2 +/27% Drd1a +;",
+     "statistics": [
+      {
+       "about": "ASt against TS",
+       "test": "paired t test on per-animal log-ratios, Holm-corrected",
+       "statistic": "t(6) = 5.51",
+       "p": 0.0039,
+       "corrected": "Holm",
+       "n": "7 mice"
+      },
+      {
+       "about": "ASt against DS",
+       "test": "paired t test on per-animal log-ratios, Holm-corrected",
+       "statistic": "t(7) = 5.17",
+       "p": 0.0039,
+       "corrected": "Holm",
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No RNAscope images or CellProfiler tables in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4-cdh6-slit2-gradient",
+     "statement": "Cdh6 and Slit2 are expressed most in the ASt, more than in dorsal TS and CeA, decrease in a dorsoventral gradient through the TS to the DS, and are expressed as highly in the LA as in the ASt.",
+     "source": "Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 3; Figure S4B-C",
+     "quote": "For both genes, expression was highest in the ASt and decreasing in a dorsoventral gradient through the TS, reaching its lowest levels in the DS",
+     "statistics": [
+      {
+       "about": "Cdh6, regions",
+       "test": "one-way ANOVA, Tukey post hoc",
+       "statistic": "F(7, 16) = 6.320",
+       "p": 0.0011,
+       "n": "3 mice"
+      },
+      {
+       "about": "Slit2, regions",
+       "test": "one-way ANOVA, Tukey post hoc",
+       "statistic": "F(7, 16) = 22.65",
+       "p": 3.6e-07,
+       "n": "3 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No RNAscope images or CellProfiler tables in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-ast-activation-freezing",
+     "statement": "Optogenetic activation of GABAergic (VGAT-Cre) ASt neurons increases freezing in an open field.",
+     "source": "Figure 3B; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 1",
+     "quote": "produced a striking increase in freezing during",
+     "statistics": [
+      {
+       "test": "two-way ANOVA, group x laser interaction, Bonferroni post hoc",
+       "statistic": "F (1,32) = 10.48",
+       "p": 0.0028,
+       "n": "8 ChR2 and 10 eYFP mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No optogenetic open field data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-ast-activation-avoidance",
+     "statement": "ChR2 mice avoid the side of a real-time place preference arena paired with ASt stimulation; eYFP mice do not.",
+     "source": "Figure 3C",
+     "quote": "ChR2 group mice showed avoidance of the arena side paired with ASt stimulation",
+     "statistics": [
+      {
+       "about": "ChR2, effect of side",
+       "test": "two-way RM ANOVA",
+       "statistic": "F(1,14) = 8.187",
+       "p": 0.0126,
+       "n": "8 ChR2 mice"
+      },
+      {
+       "about": "eYFP, effect of side",
+       "test": "two-way RM ANOVA",
+       "statistic": "F(1,18) = 0.2911",
+       "p": 0.5961,
+       "n": "10 eYFP mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No real-time place preference data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4eg-drd2-activation-freezing-avoidance",
+     "statement": "Activating Drd2+ ASt neurons drives freezing in an open field and avoidance of the stimulation side in real-time place preference.",
+     "source": "Figure 4E and 4G; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 4",
+     "quote": "Photostimulation of Drd2 + ASt neurons drove robust freezing",
+     "statistics": [
+      {
+       "about": "open field freezing",
+       "test": "two-way ANOVA, group x laser interaction, Bonferroni post hoc",
+       "statistic": "F (1,40) = 8.152",
+       "p": 0.0068,
+       "n": "6 ChR2 and 16 eYFP Drd2-Cre mice"
+      },
+      {
+       "about": "real-time place preference, ChR2 effect of side",
+       "test": "two-way RM ANOVA",
+       "statistic": "F (1,10) = 9.117",
+       "p": 0.0129,
+       "n": "6 ChR2 Drd2-Cre mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No optogenetic open field and place preference data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4df-drd1-activation-no-effect",
+     "statement": "Activating Drd1a+ ASt neurons affects neither freezing nor place preference.",
+     "source": "Figure 4D and 4F",
+     "quote": "while activation of Drd1a + ASt neurons had no effect on either behavior",
+     "statistics": [
+      {
+       "about": "open field freezing",
+       "test": "two-way ANOVA, group x laser interaction",
+       "statistic": "F (1,22) = 0.1124",
+       "p": 0.7406,
+       "n": "5 ChR2 and 8 eYFP Drd1a-Cre mice"
+      },
+      {
+       "about": "real-time place preference, ChR2 effect of side",
+       "test": "two-way RM ANOVA",
+       "statistic": "F (1,8) = 0.6705",
+       "p": 0.4366,
+       "n": "5 ChR2 Drd1a-Cre mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No optogenetic open field and place preference data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4hi-rotarod-no-effect",
+     "statement": "Activating Drd1a+ or Drd2+ ASt neurons does not change latency to fall on an accelerating rotarod.",
+     "source": "Figure 4H-I",
+     "quote": "found that activation of Drd1a + or Drd2 + neurons did not affect performance on this task",
+     "statistics": [
+      {
+       "about": "Drd1a-Cre",
+       "test": "two-way ANOVA, group x laser interaction",
+       "statistic": "F (1,18) = 0.0160",
+       "p": 0.9007
+      },
+      {
+       "about": "Drd2-Cre",
+       "test": "two-way ANOVA, group x laser interaction",
+       "statistic": "F (1,38) = 0.00295",
+       "p": 0.957
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No rotarod data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-drd2-inhibition-reduces-defense",
+     "statement": "Inhibiting Drd2+ ASt neurons reduces conditioned defensive behavior to CS-shock compared with eYFP controls, by nearly 50%.",
+     "source": "Figure 6C and 6E; Results, Drd2+ ASt neurons are necessary for the expression of conditioned fear behaviors, paragraph 1; Discussion, paragraph 2",
+     "quote": "Inhibition of Drd2 + ASt neurons significantly reduced conditioned defensive behaviors to CS-shock compared with eYFP controls (t 19 = 2.235, * p = 0.038, Student's t test",
+     "statistics": [
+      {
+       "test": "Student's t test",
+       "statistic": "t 19 = 2.235",
+       "p": 0.038,
+       "n": "8 NpHR and 13 eYFP mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs16-drd2-inhibition-freezing-darting",
+     "statement": "Inhibiting Drd2+ ASt neurons reduces both freezing (-40.4% against -16.3% in eYFP) and darting (-48.9% against 3.7%) to CS-shock.",
+     "source": "Figure S16H and S16J",
+     "quote": "Inhibition of Drd2+ ASt neurons resulted in a significantly greater reduction in conditioned freezing behaviors",
+     "statistics": [
+      {
+       "about": "freezing",
+       "test": "Student's t-test",
+       "statistic": "t19 = 2.120",
+       "p": 0.047,
+       "n": "8 NpHR and 13 eYFP mice"
+      },
+      {
+       "about": "darting",
+       "test": "Student's t-test",
+       "statistic": "t19 = 2.097",
+       "p": 0.0496,
+       "n": "8 NpHR and 13 eYFP mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6f-drd2-inhibition-no-reward-effect",
+     "statement": "Inhibiting Drd2+ ASt neurons does not change port entry during CS-reward.",
+     "source": "Figure 6F",
+     "quote": "Inhibition of Drd2 + ASt neurons had no effect on responses to CS-reward",
+     "statistics": [
+      {
+       "test": "Student's t test",
+       "statistic": "t 19 = 0.809",
+       "p": 0.428,
+       "n": "8 NpHR and 13 eYFP mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6g-j-drd2-inhibition-no-other-effects",
+     "statement": "Inhibiting Drd2+ ASt neurons does not change locomotion in an open field, place preference, open arm exploration, or freezing to a conditioned context.",
+     "source": "Figure 6G-J",
+     "quote": "Inhibition of Drd2 + ASt neurons had no effect on overall locomotion or unconditioned freezing behavior in an open field task",
+     "statistics": [
+      {
+       "about": "open field locomotion",
+       "test": "two-way ANOVA, group x laser interaction",
+       "statistic": "F (1,32) = 0.011",
+       "p": 0.9167,
+       "n": "5 NpHR and 13 eYFP mice"
+      },
+      {
+       "about": "real-time place preference, NpHR effect of side",
+       "test": "two-way RM ANOVA",
+       "statistic": "F(1,8) = 0.6896",
+       "p": 0.4304,
+       "n": "5 NpHR mice"
+      },
+      {
+       "about": "elevated plus maze",
+       "test": "two-way ANOVA, group x laser interaction",
+       "statistic": "F (1,32) = 0.011",
+       "p": 0.9177,
+       "n": "5 NpHR and 13 eYFP mice"
+      },
+      {
+       "about": "contextual fear, day 2",
+       "test": "Student's t test",
+       "statistic": "t 16 = 0.395",
+       "p": 0.6984,
+       "n": "5 NpHR and 13 eYFP mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No open field, place preference, plus maze and contextual fear data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs17-drd1-inhibition-no-effect",
+     "statement": "Inhibiting Drd1a+ ASt neurons affects neither defensive behavior to CS-shock nor port entry to CS-reward.",
+     "source": "Figure S17E-F; Results, Drd2+ ASt neurons are necessary for the expression of conditioned fear behaviors, paragraph 2",
+     "quote": "Inhibition of Drd1a + ASt neurons had no effect on responses to either CS type or other behaviors examined",
+     "statistics": [
+      {
+       "about": "defensive behavior to CS-shock",
+       "test": "Student's t-test",
+       "statistic": "t13 = 0.137",
+       "p": 0.893,
+       "n": "6 NpHR and 9 eYFP Drd1a-Cre mice"
+      },
+      {
+       "about": "port entry during CS-reward",
+       "test": "Student's t-test",
+       "statistic": "t13 = 0.493",
+       "p": 0.63,
+       "n": "6 NpHR and 9 eYFP Drd1a-Cre mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No optogenetic inhibition discrimination data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs12gh-activation-no-epm-effect",
+     "statement": "Activating Drd1a+ or Drd2+ ASt neurons does not change time spent in the open arms of an elevated plus maze.",
+     "source": "Figure S12G-H; Results, ASt neuron activity is sufficient to drive freezing and avoidance behavior, paragraph 4",
+     "quote": "Activation of Drd1a + and Drd2 + ASt neurons did not have a significant effect on time spent in open arms of an elevated plus maze",
+     "statistics": [
+      {
+       "about": "Drd1a-Cre",
+       "test": "two-way ANOVA, group x laser interaction",
+       "statistic": "F(1,20) = 0.4057",
+       "p": 0.5314,
+       "n": "5 ChR2 and 7 eYFP mice"
+      },
+      {
+       "about": "Drd2-Cre",
+       "test": "two-way ANOVA, group x laser interaction",
+       "statistic": "F(1,40) = 0.9907",
+       "p": 0.3256,
+       "n": "6 ChR2 and 16 eYFP mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "No elevated plus maze data in the dandiset, whose files are electrophysiology and calcium imaging only. The paper's Data and code availability names only GEO GSE211437 (snRNA-seq) and this dandiset for data, and its code repository holds no data files (claims file opening comment).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-ast-distinct-subclusters",
+     "statement": "In snRNA-seq of ASt, CeA, TS and DS, ASt nuclei form distinct subclusters within the Drd1a+ and Drd2+ medium spiny neuron clusters.",
+     "source": "Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 1; Figure 1B",
+     "quote": "Most strikingly, ASt nuclei formed visibly distinct subclusters within the Drd1a + and Drd2 + clusters",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "output": null,
+     "notes": "The claim's data are the snRNA-seq data at GEO GSE211437 (data: elsewhere), public as 12 raw 10x count matrices (GSE211437_RAW.tar, 2.7 GB). The claim rests on the paper's R pipeline (Seurat SCTransform v2 with 25 PCs and graph clustering into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which cannot be installed in the entry's locked Python environment; a Python substitute would form different clusters, on which the proportions and DEG counts rest. The matrices were listed, not fetched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE211437",
+     "proposed": null
+    },
+    {
+     "claim": "fig1j-ast-drd2-enriched",
+     "statement": "In the snRNA-seq data the ASt is enriched for Drd2+ MSNs (71% Drd2+ against 26% Drd1a+), and its Drd1a+ to Drd2+ proportions differ from those of TS and DS.",
+     "source": "Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 2; Figure 1J",
+     "quote": "but the ASt was markedly enriched for Drd2 + MSNs (71% Drd2 + vs. 26% Drd1a +;",
+     "statistics": [
+      {
+       "about": "ASt against TS",
+       "test": "chi-squared test, Holm-corrected",
+       "statistic": "\u03c72(1) = 1,329, V = 0.26",
+       "p": 1.4e-290,
+       "corrected": "Holm",
+       "n": "7,941 ASt and 13,214 TS nuclei"
+      },
+      {
+       "about": "ASt against DS",
+       "test": "chi-squared test, Holm-corrected",
+       "statistic": "\u03c72(1) = 1,866, V = 0.24; printed p = 3.6 \u00d7 10^-407, below what a double holds, so recorded as 0",
+       "p": 0,
+       "corrected": "Holm",
+       "n": "7,941 ASt and 25,791 DS nuclei"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "output": null,
+     "notes": "The claim's data are the snRNA-seq data at GEO GSE211437 (data: elsewhere), public as 12 raw 10x count matrices (GSE211437_RAW.tar, 2.7 GB). The claim rests on the paper's R pipeline (Seurat SCTransform v2 with 25 PCs and graph clustering into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which cannot be installed in the entry's locked Python environment; a Python substitute would form different clusters, on which the proportions and DEG counts rest. The matrices were listed, not fetched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE211437",
+     "proposed": null
+    },
+    {
+     "claim": "figs2-ast-many-degs",
+     "statement": "ASt neurons in both the Drd1a+ and Drd2+ clusters have large numbers of differentially expressed genes compared with neurons from the other regions, hundreds in the Discussion's words.",
+     "source": "Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 3; Figures S2B and S3; Discussion, ASt neurons have distinct genetic identities, paragraph 1",
+     "quote": "ASt neurons within both the Drd1a + and Drd2 + clusters had large numbers of differentially expressed genes (DEGs) compared with neurons from other regions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "output": null,
+     "notes": "The claim's data are the snRNA-seq data at GEO GSE211437 (data: elsewhere), public as 12 raw 10x count matrices (GSE211437_RAW.tar, 2.7 GB). The claim rests on the paper's R pipeline (Seurat SCTransform v2 with 25 PCs and graph clustering into Drd1a+ and Drd2+ MSN clusters; Libra and edgeR for figs2), which cannot be installed in the entry's locked Python environment; a Python substitute would form different clusters, on which the proportions and DEG counts rest. The matrices were listed, not fetched.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE211437",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "other",
+     "statement": "In the Open Ephys files the SLEAP poses are not on the clock of the spikes and the trial table, and nothing in the files says so. The nose position at the trial table's port entries clusters (spread 7 to 15 px) at a lag of -9.8 to +6.6 s in four of the six 2018 sessions (the shock-evoked speed peak agrees within 0.6 s in three of them), less tightly in the other two (best spread 39 and 60 px), and at no lag in the six 2019 sessions (spread at best 81 to 117 px), whose poses are at 15 frames/s and span 150 to 190 s less than the recording. Fitted per quarter of the session, the lag is constant within 0.8 s in the four 2018 sessions and changes by 22 to 529 s in the other eight. In the imaging files the same check finds lags of 0.2 to 4 s (spread 2.5 to 14 px) in 32 of 34 files. An analysis that takes the pose timestamps as given places freezing and darting in the wrong trials and against the wrong spikes.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "severity": "critical",
+     "changes_results": true,
+     "checked": "Shown. Cell 5 shows spikes and trial events share a clock. Cell 7 shows the nose clustering at port entries at nonzero lags, with the shock-speed check agreeing within 0.6 s in 3012, 3016 and 3024, and no clustering in the 2019 sessions. Cell 8 shows the drift; cell 9 is the imaging control. Critical is right: these are signals on different clocks, and the files don't say so. The 'up to 200 s' and 'five of six' wording should be corrected.",
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The 13 Neuropixels files (5 paired and 4 unpaired ASt mice, 4 CeA mice) hold spikes but no trial events and no behavior; the Methods say events were recorded by TTL at 10 kHz. No cue response can be computed for them, so all unpaired ephys mice, all TS neurons and most CeA neurons of the paper cannot be analysed.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Neuropixels units have no region or electrode column, and every electrode of a probe carries one label (ASt or CeA) although the probes span 3.8 mm. The units do carry probe_depth (micrometers from the tip) and a good or mua label, and the files hold histology images of the probe track, but nothing maps depth to region. The paper's TS units cannot be found, and the files give 1515 paired ASt units, 885 CeA and 633 unpaired against the paper's 193, 145 and 71 (574, 155 and 410 Neuropixels units labeled good, with 112 and 22 more from Open Ephys).",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The imaging files hold every CNMF-E ROI (2036 in paired and 1233 in unpaired discrimination sessions) with no column marking the manually curated neurons the paper analysed (1110 in total), so counts are 2.4 to 4.0 times the paper's and results on the files can differ from the paper's (three claims of no difference fail here).",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The paper says raw and processed data are at this dandiset, but it holds no RNAscope data, no optogenetic activation or inhibition behavior, and no unpredicted-US imaging session. Fifteen claims cannot be tested for this reason.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Two recordings are deposited twice. sub-6197 has two Open Ephys files with identical spikes and events. sub-J933 has two imaging files with identical traces, and in the one named sub-J933-Disc4_ses-J933-Disc4 the port entries are 55 in place of 193 and sit 236 s off the video's clock.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "severity": "critical",
+     "changes_results": true,
+     "checked": "Shown. Cell 4: the two 6197 files have identical spike trains and CS onsets. Cell 9: the two J933 files have identical traces; the _ses- copy has 55 port entries against 193, with best lag -236.4 s and spread 27.0 px, against 1.6 s and 2.8 px for the other copy. Critical is right: one recording deposited as two, plus port entries that are silently wrong. The finding's last sentence, 'The duplication shows in the shared subject names', should be dropped. It is inaccurate, since many subjects legitimately have several files (J895, K008 and others, cell 3), and it contradicts the critical rating.",
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The Open Ephys files do not say whether a mouse was in the paired or unpaired group (the Neuropixels and imaging files do); they are taken as paired from the paper's mouse counts.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Poses are in pixels with no scale; the paper's freezing and darting thresholds are in cm. The scale was inferred from the chamber size (about 20 px/cm in discrimination sessions, 7.5 to 33 in context sessions).",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Imaging frames are 1/15 s apart in every file, where the Methods say 15 frames/s downsampled by two, and each discrimination session has 15 imaged CS-reward trials (17 to 19 in seven sessions), where the Methods say every other reward trial of 45. Imaged clips begin about 9.6 s before the cue, so the 10 s baseline is not complete.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Open Ephys spikes respond at the trial table's CS onsets and not at onsets shifted 45 s, CS-shock tones last 20 s, and CS-reward tones end 0.4 s after the first port entry (median), as the Methods describe. Imaging mouse counts per genotype and group match the paper's.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "severity": "none",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In the imaging poses the largest frame-to-frame displacement over the 14 body points is below 0.5 px in 19.6% of the discrimination-session frames and above 1.6 px in the rest, with none in between, and the same holds in the context sessions. These frames repeat the previous pose almost exactly. The paper's freezing rule (all points below 0.08 cm per frame, about 1.6 px) counts only them, whatever the pixel scale, and the files do not say whether they are still frames or repeated video frames. Freezing so measured does not differ between the cues in paired mice; the defensive difference comes from darting.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-20",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier checked the archive's asset list (706 assets) and the API metadata of the 13 Neuropixels files, streamed the structure of sub-Ast-NPX-10, and tested the helper functions on synthetic inputs. It gave its own outcome for each of the 11 tested claims, all agreeing with the record as it then stood, and found 10 problems, 4 affecting a conclusion. It reported no place where the claims file misreads the paper, so no question was added for a reader. Its note that pixels_per_cm underestimates the scale by about 18% if body points stay 3 cm from the walls is answered by the frame structure now shown: freezing does not depend on the scale, and darting keeps the assumption, stated on the outcome. Report in transcripts/mills-2026/verifier-1-report.md.",
+     "agreed": 44,
+     "of": 48,
+     "disagreements": [
+      {
+       "claim": "fig2o-ast-greater-cs-shock-responses",
+       "outcome": null,
+       "reason": "Problem 2: marked fully blocked, but an ASt against CeA comparison on Open Ephys data was possible, though there are only 22 CeA units from 2 mice."
+      },
+      {
+       "claim": "fig2o-region-differs-cs-reward",
+       "outcome": null,
+       "reason": "Problem 2: marked fully blocked, but the one-sample t-test of ASt phasic CS-reward z against 0 could be run on 112 units; cell 14 already shows a mean of 7.09."
+      },
+      {
+       "claim": "fig2p-ast-more-responsive",
+       "outcome": null,
+       "reason": "Problem 2: marked fully blocked, but an ASt against CeA comparison is possible, though there are only 22 CeA units from 2 mice."
+      },
+      {
+       "claim": "figs10-no-reward-relationship",
+       "outcome": null,
+       "reason": "Problem 1: the cell 0 table and cell 32 group it with the claims blocked for lack of unpaired data. The paired repeated-measures ANOVA over latency quartiles needs only trial-table port entries and spikes, which share a clock (cell 5). It was not run."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-20",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the revised entry (54 cells), the attempt record, the README, the helper module and the claims file, with the paper. The verifier agreed with all 13 tested and all 35 blocked outcomes, found no new place where the claims file misreads the paper (so no question was added for a reader), judged all ten round-1 points resolved, and quoted sentences the outputs did not support. Besides those recorded on the claims: cell 0 said 31 imaging discrimination sessions in 30 mice where cells 9 and 10 show 34 files and 33 mice; the summary said the pose clock is offset 'by a different amount in each session' where 3016 and 3024 share -9.8 s; finding 9 said each session has 15 imaged CS-reward trials where seven have 17 to 19; and the README said about 20 minutes where cell 53 printed 25.1. These are corrected (34 files, 33 mice; a constant -9.8 to +6.6 s in 4 sessions; 17 to 19 in seven; 19 to 25 minutes). Report in transcripts/mills-2026/verifier-2-report.md.",
+     "agreed": 48,
+     "of": 48,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Questions for the authors. (1) Figure S9, how were the CS-reward trials with port latency over 2 s and their 96 neurons in 9 mice selected? Here all 10 Open Ephys mice have 26 to 86 such trials (latency as tone duration). (2) Figure 5L-M, what is the soft normalization 'to a maximum z-score of 10', and which linkage and trace span were used? (3) How is 'total displacement of ALL mouse body points' computed (sum or each point), with what pixel scale, and which node is the rear body centre for darting? (4) Is there a record of the curated imaging neurons and of the Neuropixels units' regions and trial events?",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "mills-2026",
+   "type": "reproduction",
+   "title": "Amygdalostriatal transition zone responses to threat cues (Mills et al. 2026)",
+   "description": "Tests the findings of Mills, Lee, Howe, Li et al. (2026) on dandiset 001203, which holds Open Ephys and Neuropixels recordings of the amygdalostriatal transition zone and calcium imaging of its Drd1a+ and Drd2+ neurons during a two-tone discrimination task and contextual fear. It tests the sustained responses to shock-predicting cues, population trajectories and decoding in the Open Ephys mice, and the imaging responses, clusters, behavior and context comparisons. The Neuropixels files lack trial events, the Open Ephys poses are on another clock, and the snRNA-seq, RNAscope and optogenetic data are not in the dandiset.",
+   "datasets": [
+    "dandi:001203"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2026.08.012"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mills_2026.ipynb",
+     "title": "Reproducing Mills et al. (2026) from dandiset 001203",
+     "cells": {
+      "sanity": "8f93e102",
+      "claim:fig2-recorded-neurons": "02c4453e",
+      "claim:figs9-sustained-only-cs-shock": "bceec34c",
+      "claim:figs10-no-reward-relationship": "da328f2f",
+      "claim:fig2o-region-differs-cs-reward": "84123891",
+      "claim:fig2q-trajectories-diverge": "507bda30",
+      "claim:figs8-single-trial-divergence": "cedfc4ca",
+      "claim:fig3h-cs-decoded-paired-only": "694b60ba",
+      "claim:figs13-imaging-mice-discriminate": "7512e099",
+      "claim:fig5j-drd2-cs-shock-responses": "6622bf64",
+      "claim:fig5h-drd1-no-difference": "064de9e6",
+      "claim:fig5k-drd2-cs-reward-no-difference": "a33dea57",
+      "claim:fig5m-drd2-rich-clusters-cs-shock": "49a03674",
+      "claim:figs15-no-context-encoding": "8e02a213"
+     },
+     "executed": "notebooks/mills-2026/reproduce_mills_2026.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 31,
+   "hashed": true
+  }
+ ],
+ "badge": {
+  "text": "2 findings reproduced",
+  "reproduced": 2,
+  "papers": [
+   {
+    "doi": "10.1016/j.neuron.2026.08.012",
+    "key": "mills-2026",
+    "byline": "Mills et al. 2026",
+    "title": "Amygdalostriatal transition zone neurons encode sustained cue response to guide defensive behaviors",
+    "relation": "primary",
+    "reproduced": 2,
+    "url": "https://encorescience.org/papers/mills-2026/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/dandi/001203/",
+  "svg": "https://encorescience.org/badge/dandi/001203.svg",
+  "alt": "Encore: 2 findings reproduced, from DANDI:001203"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/dandi/001203.svg",
+  "outcomes": "https://encorescience.org/badge/dandi/001203-outcomes.svg",
+  "card": "https://encorescience.org/badge/dandi/001203-card.svg"
+ }
+}
