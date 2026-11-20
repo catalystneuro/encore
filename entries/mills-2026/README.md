@@ -36,6 +36,6 @@ poses the paper's freezing rule counts only frames that repeat the previous pose
 three imaging claims of no difference fail on them. The attempt record, with the reasons and the
 differences from the paper's method, is [`attempts/mills-2026-01.yaml`](../../attempts/mills-2026-01.yaml).
 
-- `reproduce_mills_2026.ipynb`: the analysis. It takes about 20 minutes, most of it streaming the files.
+- `reproduce_mills_2026.ipynb`: the analysis. It takes 19 to 25 minutes, most of it streaming the files.
 - `mills.py`: loading the files, cue responses for spikes and calcium, and freezing and darting from
   the poses. Other notebooks on this dandiset can import it.

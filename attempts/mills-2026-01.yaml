@@ -74,8 +74,7 @@ outcomes:
   output: claim:fig2q-trajectories-diverge
   notes: The mean CS-shock to CS-reward distance over 0 to 18 s is 7.36 in the complete PC space against a largest
     baseline distance of 2.87 (mean 2.05), and 7.16 against 1.94 in the 41 components that explain 90% of the variance.
-    Within single mice the cue mean exceeds the baseline maximum in 3 of 10 (the mice with the most units responding
-    to CS-shock). The paired ASt units are those of the 10 Open Ephys mice (112 units below 50 Hz); the 5 paired
+    Within single mice the cue mean exceeds the baseline maximum in 3 of 10 (3016, 3024 and 7008). The paired ASt units are those of the 10 Open Ephys mice (112 units below 50 Hz); the 5 paired
     Neuropixels ASt mice have no trial events. The link claim fig2-recorded-neurons fails on its counts but holds
     in part (10 of the 15 paired ASt mice can be used), so this claim is tested on that part, as the protocol says
     for a partial link.
@@ -105,7 +104,8 @@ outcomes:
   notebook: reproduce_mills_2026.ipynb
   output: claim:fig3h-cs-decoded-paired-only
   notes: Six paired mice have more than 10 units. Accuracy over 0 to 18 s under the claim's seed is 0.825, 0.892,
-    0.494, 0.531, 0.677 and 0.702 against shuffled chance 0.48 to 0.51; two mice (3026, 6197) are at chance. The
+    0.494, 0.531, 0.677 and 0.702 against shuffled chance 0.48 to 0.51; two mice are near chance, 3026 (0.47 to 0.49 over the five seeds) and 6197
+    (0.53 to 0.60), against shuffled chance of 0.49 to 0.50 in both; no per-mouse test was run. The
     Mann-Whitney U test of accuracies against chance gives U = 32, p = 0.026 two-sided (one-sided 0.013), above
     the criterion's 0.01; under the four other seeds p is 0.015 to 0.065 two-sided. The code's Wilcoxon variant
     gives W = 1, p = 0.0625. The unpaired half cannot be tested. The Neuropixels files (all 4 unpaired ASt mice,
@@ -192,9 +192,12 @@ outcomes:
   notes: 2036 paired ROIs (1189 Drd2, 847 Drd1a), nine clusters. Under none of the eight readings (average or Ward
     linkage; the 10 s cue or the imaged window; soft normalization as z/(max|z|+10) or as clipping at 10) is the
     Spearman correlation across clusters between the normalized Drd2 share and the mean CS-shock z positive at p
-    < 0.05; rho -0.12 to 0.47, p 0.20 to 0.97. Average linkage puts most ROIs in one or two clusters. While preparing,
-    a version of the window reading that dropped the 233 ROIs whose clips start late gave rho 0.76, p = 0.017; it
-    was not run here and does not decide the outcome.
+    < 0.05; rho -0.12 to 0.47, p 0.20 to 0.97. Average linkage puts most ROIs in one or two clusters. A variant
+    keeps the window from -9.5 s and drops the ROIs whose clips start later; it gives rho 0.76, p = 0.017 with z/(max|z|+10)
+    and average linkage, and p 0.29 to 0.58 with the other three. It is not taken as a reading of the criterion, which
+    asks for every neuron of paired mice; it drops 233 of the 847 Drd1a+ ROIs (C5-6933 and K008, 2 of the 10 Drd1a-Cre
+    mice), which changes the Drd2+ share that ranks the clusters. With the same ROIs dropped and the window from
+    -9.4 s, the same combination gives p = 0.22, and from -9.2 or -9.0 s (only K008 dropped) the lowest p is 0.16.
   deviations:
   - All CNMF-E ROIs in the files; the paper used 616 curated neurons of paired mice.
   - The imaged window starts at -8.67 s, the latest clip start over sessions, and bins before it are dropped so
@@ -226,9 +229,10 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: 'The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of
-    the session, the port-entry lag is constant within 0.6 s in four 2018 sessions (3012, 3016, 3024, 3029) and
-    changes by up to 200 s in the other eight; the shock check agrees with the constant lag in 3012, 3016 and 3024
-    only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.6 s. The claim
+    the session, the port-entry lag is constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and
+    changes by 22 to 529 s in the other eight; the shock check agrees with the constant lag within 0.6 s in 3012,
+    3016 and 3024 only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about
+    0.8 s. The claim
     needs 21 paired and 4 unpaired mice; the 4 unpaired mice are Neuropixels mice without events or behavior. The
     port-entry half uses only trial-table events and is shown in the notebook, not deciding the claim: in the 12
     Open Ephys mice time in the port is 9.0 s per CS-reward against 2.1 s per CS-shock (t(11) = 8.31, p = 4.6e-6)
@@ -237,19 +241,21 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of
-    the session, the port-entry lag is constant within 0.6 s in four 2018 sessions (3012, 3016, 3024, 3029) and
-    changes by up to 200 s in the other eight; the shock check agrees with the constant lag in 3012, 3016 and 3024
-    only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.6 s. The unpaired
+    the session, the port-entry lag is constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and
+    changes by 22 to 529 s in the other eight; the shock check agrees with the constant lag within 0.6 s in 3012,
+    3016 and 3024 only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about
+    0.8 s. The unpaired
     half also needs Neuropixels events, which the files do not hold, and the paired half would rest on 2 of the
     paper's 15 mice with an inferred clock.
 - claim: fig3fg-no-motor-onset-response
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: The poses of the Open Ephys sessions are not on the trial clock (data check). Fitted in each quarter of
-    the session, the port-entry lag is constant within 0.6 s in four 2018 sessions (3012, 3016, 3024, 3029) and
-    changes by up to 200 s in the other eight; the shock check agrees with the constant lag in 3012, 3016 and 3024
-    only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about 0.6 s. The claim
-    judges activity 0 to 1 s after bout onsets; a clock error of 0.6 s would blur a response and bias the test toward
+    the session, the port-entry lag is constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and
+    changes by 22 to 529 s in the other eight; the shock check agrees with the constant lag within 0.6 s in 3012,
+    3016 and 3024 only, so a fixed offset is supported in 2 paired ASt mice (32 units), and only to within about
+    0.8 s. The claim
+    judges activity 0 to 1 s after bout onsets; a clock error of 0.8 s would blur a response and bias the test toward
     the claim of no response, so the 2 mice are not used.
 - claim: fig2e-ast-sustained-clusters
   outcome: blocked
@@ -287,7 +293,7 @@ outcomes:
     TS and CeA neurons with cue events. For the record, against the 22 Open Ephys CeA units (reading (a), 100 ms)
     the ASt share of responsive units is 0.29 against 0.32 for CS-shock phasic (chi-square p = 0.077), 0.41 against
     0.14 for CS-reward phasic (p = 0.049) and 0.27 against 0.32 for CS-shock sustained (p = 0.82); reading (b) and
-    10 ms bins give p 0.15 to 1. With 22 units from 2 of the paper's 8 CeA mice this does not decide the claim.
+    10 ms bins give p 0.099 to 1. With 22 units from 2 of the paper's 8 CeA mice this does not decide the claim.
 - claim: figs7-paired-greater-than-unpaired
   outcome: blocked
   blocked_by: data_missing
@@ -369,7 +375,7 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: No file holds the unpredicted-US session; the discrimination files list only CS-reward and CS-shock events
-    (plus one 'undefined' trial in some), and the context files hold no US.
+    (45 and 15 in each of the 33 files, data check), and the context files hold no US.
 - claim: figs14q-few-salience-neurons
   outcome: blocked
   blocked_by: data_missing
@@ -481,11 +487,12 @@ findings:
   about: data
   severity: critical
   statement: In the Open Ephys files the SLEAP poses are not on the clock of the spikes and the trial table, and
-    nothing in the files says so. The nose position at the trial table's port entries clusters at a lag of -10.6
-    to +6.6 s in five of the six 2018 sessions and at +287 s in the sixth (the shock-evoked speed peak agrees within
-    0.6 s in three of them), and at no lag in the six 2019 sessions (spread at best 81 to 117 px), whose poses are
-    at 15 frames/s and span 150 to 190 s less than the recording. Fitted per quarter of the session, the lag is
-    constant in four 2018 sessions and changes by up to 200 s in the other eight. In the imaging files the same
+    nothing in the files says so. The nose position at the trial table's port entries clusters (spread 7 to 15
+    px) at a lag of -9.8 to +6.6 s in four of the six 2018 sessions (the shock-evoked speed peak agrees within 0.6
+    s in three of them), less tightly in the other two (best spread 39 and 60 px), and at no lag in the six 2019
+    sessions (spread at best 81 to 117 px), whose poses are at 15 frames/s and span 150 to 190 s less than the recording.
+    Fitted per quarter of the session, the lag is constant within 0.8 s in the four 2018 sessions and changes by
+    22 to 529 s in the other eight. In the imaging files the same
     check finds lags of 0.2 to 4 s (spread 2.5 to 14 px) in 32 of 34 files. An analysis that takes the pose timestamps
     as given places freezing and darting in the wrong trials and against the wrong spikes.
 - kind: data_missing
@@ -518,8 +525,7 @@ findings:
   severity: critical
   statement: Two recordings are deposited twice. sub-6197 has two Open Ephys files with identical spikes and events.
     sub-J933 has two imaging files with identical traces, and in the one named sub-J933-Disc4_ses-J933-Disc4 the
-    port entries are 55 in place of 193 and sit 236 s off the video's clock. The duplication shows in the shared
-    subject names; the wrong port entries do not.
+    port entries are 55 in place of 193 and sit 236 s off the video's clock.
 - kind: metadata_insufficient
   severity: minor
   statement: The Open Ephys files do not say whether a mouse was in the paired or unpaired group (the Neuropixels
@@ -532,7 +538,7 @@ findings:
   about: data
   severity: minor
   statement: Imaging frames are 1/15 s apart in every file, where the Methods say 15 frames/s downsampled by two,
-    and each discrimination session has 15 imaged CS-reward trials, where the Methods say every other reward trial
+    and each discrimination session has 15 imaged CS-reward trials (17 to 19 in seven sessions), where the Methods say every other reward trial
     of 45. Imaged clips begin about 9.6 s before the cue, so the 10 s baseline is not complete.
 - kind: other
   about: data
@@ -936,3 +942,330 @@ verifications:
       be run here. The header now says the data are at GEO GSE211437, outside the dandiset, and that the paper's
       pipeline (Seurat, Libra, edgeR in R) cannot be installed in the entry's locked Python environment; the notes
       say the same.
+- date: '2026-11-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the revised entry (54 cells), the attempt record, the README, the
+    helper module and the claims file, with the paper. The verifier agreed with all 13 tested and all 35 blocked outcomes,
+    found no new place where the claims file misreads the paper (so no question was added for a reader), judged all ten
+    round-1 points resolved, and quoted sentences the outputs did not support. Besides those recorded on the claims:
+    cell 0 said 31 imaging discrimination sessions in 30 mice where cells 9 and 10 show 34 files and 33 mice; the summary
+    said the pose clock is offset ''by a different amount in each session'' where 3016 and 3024 share -9.8 s; finding
+    9 said each session has 15 imaged CS-reward trials where seven have 17 to 19; and the README said about 20 minutes
+    where cell 53 printed 25.1. These are corrected (34 files, 33 mice; a constant -9.8 to +6.6 s in 4 sessions; 17 to
+    19 in seven; 19 to 25 minutes). Report in transcripts/mills-2026/verifier-2-report.md.'
+  results:
+  - claim: fig2-recorded-neurons
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs9-sustained-only-cs-shock
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig2q-trajectories-diverge
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones. Cell 26 says the 3 mice are 'the mice with the
+      most responsive units', and the note says 'the mice with the most units responding to CS-shock'. One of the 3 is
+      7008, which has 0.00 CS-shock-responsive units in cell 5 and a sustained CS-shock z of -0.04 in cell 16.
+    response: Outcome kept. The conclusion cell and the note now name the three mice (3016, 3024 and 7008) without the
+      description.
+  - claim: figs8-single-trial-divergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig3h-cs-decoded-paired-only
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 13 tested outcomes and all 35 blocked ones. Note and cell 32: ''two mice (3026, 6197) are
+      at chance''. 6197 scores 0.53 to 0.60 against chance near 0.49 (cell 31), and no per-mouse test was run.'
+    response: Outcome kept. The conclusion cell and the note now say the two mice are near chance, give 3026 (0.47 to
+      0.49) and 6197 (0.53 to 0.60) against shuffled chance of 0.49 to 0.50, and say no per-mouse test was run.
+  - claim: figs13-imaging-mice-discriminate
+    agrees: true
+    outcome: reproduced
+    reason: I agree. The assumptions (pixel scale, haunch as the rear body centre) are stated and reasonable. The whole
+      difference comes from darting (cell 34), so the result rests on the darting threshold, which depends on the assumed
+      scale. Drd2 p = 0.046 is near the threshold. The paper's freezing rule, applied to these poses, counts only frames
+      that nearly repeat the previous pose (finding 12); figs13 therefore passes on darting alone, under the haunch and
+      pixel-scale assumptions.
+    response: Outcome kept, still marked assumed; the notes already say the difference comes from darting and that freezing
+      so measured does not differ between the cues.
+  - claim: fig5j-drd2-cs-shock-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig5h-drd1-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the criterion. Both fig5h and fig5k still rest on uncurated ROIs, 2.6 and 3.3 times the paper's
+      n, with mouse-level and deconvolved tests not significant. This is stated as a deviation. The significant results
+      come from the uncurated ROI count; this is inherent in the data and stated.
+    response: Outcome kept; nothing changed.
+  - claim: fig5k-drd2-cs-reward-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the criterion. Both fig5h and fig5k still rest on uncurated ROIs, 2.6 and 3.3 times the paper's
+      n, with mouse-level and deconvolved tests not significant. This is stated as a deviation. The significant results
+      come from the uncurated ROI count; this is inherent in the data and stated.
+    response: Outcome kept; nothing changed.
+  - claim: fig5m-drd2-rich-clusters-cs-shock
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, but one reading that is not shown in the notebook may decide this outcome. The note says
+      'While preparing, a version of the window reading that dropped the 233 ROIs whose clips start late gave rho 0.76,
+      p = 0.017; it was not run here', and no cell prints this. The criterion says reproduced 'under one reading'; if
+      so, the outcome would change. That reading should be run and printed in the notebook, or the reason for excluding
+      it argued there.
+    response: 'Outcome kept, with no change proposed. The variant is now run and printed (new cell after the fig5m readings):
+      from -9.5 s with the ROIs of C5-6933 and K008 dropped (233 of 847 Drd1a+ ROIs), z/(max|z|+10) with average linkage
+      gives rho 0.76, p = 0.017, and the other three combinations p 0.29 to 0.58. The conclusion cell argues why it is
+      not taken as a reading of the criterion: the criterion asks for every neuron of paired mice, and dropping 2 of
+      the 10 Drd1a-Cre mice changes the Drd2+ share that ranks the clusters; the result also depends on the window start,
+      as with the same ROIs dropped and the window from -9.4 s the same combination gives p = 0.22, and from -9.2 or
+      -9.0 s the lowest p is 0.16. The note says the same.'
+  - claim: figs15-no-context-encoding
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. Drd2 peak rate gives p = 0.042, and Drd2 freezing is not higher in Context A whatever the scale
+      (cell 48). The assumption is stated and does not decide the outcome.
+    response: Outcome kept; nothing changed.
+  - claim: figs5-ephys-mice-discriminate
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 13 tested outcomes and all 35 blocked ones. Cell 11, finding 1 and the figs5, figs10lm
+      and fig3fg notes: ''changes by up to 200 s between quarters'', but cell 8 shows 7001 going from +288.0 to -241.2
+      s and 7049 from +242.2 to -228.0 s; ''constant (within 0.6 s)'' includes 3024, whose quarter lags run from -10.0
+      to -9.2 s (0.8 s); ''clusters ... in five of the six 2018 sessions'', but 3014''s best spread is 60.4 px and its
+      quarter lags drift, so four sessions is supported.'
+    response: Outcome kept. The notes, cell 11, the blocked-claims cell, the summary and finding 1 now say the lag is
+      constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and changes by 22 to 529 s between quarters
+      in the other eight, that the nose clusters in four of the six 2018 sessions (best spread 39 and 60 px in 3026 and
+      3014), that 3016 and 3024 share a lag of -9.8 s, and that the offset in 3016 and 3024 is known to within about
+      0.8 s.
+  - claim: figs10lm-defensive-trials-greater-responses
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 13 tested outcomes and all 35 blocked ones. Cell 11, finding 1 and the figs5, figs10lm
+      and fig3fg notes: ''changes by up to 200 s between quarters'', but cell 8 shows 7001 going from +288.0 to -241.2
+      s and 7049 from +242.2 to -228.0 s; ''constant (within 0.6 s)'' includes 3024, whose quarter lags run from -10.0
+      to -9.2 s (0.8 s); ''clusters ... in five of the six 2018 sessions'', but 3014''s best spread is 60.4 px and its
+      quarter lags drift, so four sessions is supported.'
+    response: Outcome kept. The notes, cell 11, the blocked-claims cell, the summary and finding 1 now say the lag is
+      constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and changes by 22 to 529 s between quarters
+      in the other eight, that the nose clusters in four of the six 2018 sessions (best spread 39 and 60 px in 3026 and
+      3014), that 3016 and 3024 share a lag of -9.8 s, and that the offset in 3016 and 3024 is known to within about
+      0.8 s.
+  - claim: fig3fg-no-motor-onset-response
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 13 tested outcomes and all 35 blocked ones. Cell 11, finding 1 and the figs5, figs10lm
+      and fig3fg notes: ''changes by up to 200 s between quarters'', but cell 8 shows 7001 going from +288.0 to -241.2
+      s and 7049 from +242.2 to -228.0 s; ''constant (within 0.6 s)'' includes 3024, whose quarter lags run from -10.0
+      to -9.2 s (0.8 s); ''clusters ... in five of the six 2018 sessions'', but 3014''s best spread is 60.4 px and its
+      quarter lags drift, so four sessions is supported.'
+    response: Outcome kept. The notes, cell 11, the blocked-claims cell, the summary and finding 1 now say the lag is
+      constant within 0.8 s in four 2018 sessions (3012, 3016, 3024, 3029) and changes by 22 to 529 s between quarters
+      in the other eight, that the nose clusters in four of the six 2018 sessions (best spread 39 and 60 px in 3026 and
+      3014), that 3016 and 3024 share a lag of -9.8 s, and that the offset in 3016 and 3024 is known to within about
+      0.8 s. The fig3fg note now speaks of a clock error of 0.8 s.
+  - claim: fig2e-ast-sustained-clusters
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig2o-ast-greater-cs-shock-responses
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 13 tested outcomes and all 35 blocked ones. Recording ''agrees: false'' for round 1 is
+      a fair reading of my problem 2.'
+    response: Outcome kept; nothing changed.
+  - claim: fig2o-region-differs-cs-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig2p-ast-more-responsive
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 13 tested outcomes and all 35 blocked ones. fig2p note: ''reading (b) and 10 ms bins give
+      p 0.15 to 1''. Cell 51 shows p = 0.0986 (10 ms, reading (a), CS-reward phasic). Recording ''agrees: false'' for
+      round 1 is a fair reading of my problem 2.'
+    response: Outcome kept. The note now gives p 0.099 to 1 for reading (b) and the 10 ms bins.
+  - claim: figs7-paired-greater-than-unpaired
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs7-cs-reward-sustained-no-difference
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs7d-paired-more-responsive
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs7f-baseline-rate-no-difference
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs10b-paired-more-defensive
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs10-high-defensive-mice-greater-responses
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs10-no-reward-relationship
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. Using the tone duration as the latency follows the Methods and is stated. But with that latency,
+      the 10 ms bin gives p = 0.047 (cell 19), and the claims file names 10 ms as the bin Figure S6 shows. So the across-trials
+      half of this claim of absence holds under 3 of 4 readings, not cleanly. The notes say this.
+    response: Outcome kept, still marked assumed; nothing changed.
+  - claim: fig3h-behavior-not-decoded
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig3j-cs-encoding-glm
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig3k-cs-improves-prediction
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig3l-behavior-encoding-low
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig3m-behavior-no-prediction-gain
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs14-us-shock-scaling
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 13 tested outcomes and all 35 blocked ones. figs14 note: ''plus one ''undefined'' trial
+      in some''. No cell prints this.'
+    response: Outcome kept. The data check now prints the CS event types of every discrimination file (45 CS-reward and
+      15 CS-shock in each of the 33), and the note says so in place of the 'undefined' trial, which no output supports.
+  - claim: figs14q-few-salience-neurons
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig1l-rnascope-drd2-enriched
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs4-cdh6-slit2-gradient
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig3b-ast-activation-freezing
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig3c-ast-activation-avoidance
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig4eg-drd2-activation-freezing-avoidance
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig4df-drd1-activation-no-effect
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig4hi-rotarod-no-effect
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig6e-drd2-inhibition-reduces-defense
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs16-drd2-inhibition-freezing-darting
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig6f-drd2-inhibition-no-reward-effect
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig6g-j-drd2-inhibition-no-other-effects
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs17-drd1-inhibition-no-effect
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs12gh-activation-no-epm-effect
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig1b-ast-distinct-subclusters
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: fig1j-ast-drd2-enriched
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  - claim: figs2-ast-many-degs
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 13 tested outcomes and all 35 blocked ones.
+    response: Outcome kept; nothing changed.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: 'Shown. Cell 5 shows spikes and trial events share a clock. Cell 7 shows the nose clustering at port entries
+      at nonzero lags, with the shock-speed check agreeing within 0.6 s in 3012, 3016 and 3024, and no clustering in
+      the 2019 sessions. Cell 8 shows the drift; cell 9 is the imaging control. Critical is right: these are signals
+      on different clocks, and the files don''t say so. The ''up to 200 s'' and ''five of six'' wording should be corrected.'
+    response: Kept critical. The statement now says the nose clusters in four of the six 2018 sessions (best spread 39
+      and 60 px in the other two) and that the quarter lag changes by 22 to 529 s in the other eight sessions.
+  - finding: 6
+    agrees: true
+    reason: 'Shown. Cell 4: the two 6197 files have identical spike trains and CS onsets. Cell 9: the two J933 files
+      have identical traces; the _ses- copy has 55 port entries against 193, with best lag -236.4 s and spread 27.0 px,
+      against 1.6 s and 2.8 px for the other copy. Critical is right: one recording deposited as two, plus port entries
+      that are silently wrong. The finding''s last sentence, ''The duplication shows in the shared subject names'', should
+      be dropped. It is inaccurate, since many subjects legitimately have several files (J895, K008 and others, cell
+      3), and it contradicts the critical rating.'
+    response: Kept critical. The last sentence is dropped.
