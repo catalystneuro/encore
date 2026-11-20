@@ -1,0 +1,1136 @@
+# Claims for Mills, Lee, Howe, Li et al. (2026), "Amygdalostriatal transition zone neurons encode
+# sustained cue responses to guide defensive behaviors", Neuron, doi:10.1016/j.neuron.2026.08.012,
+# tested on DANDI:001203.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-20, protocol pilot-18 as stated in docs/protocol.md.
+#
+# Text read. paper/10.1016-j.neuron.2026.08.012.txt, from Europe PMC (PMC13592531, NIHMS2206276):
+# the author-accepted manuscript under CC BY, which its header says is the publisher's accepted
+# version, with the Summary, Results with figure legends 1 to 6, Discussion, Resource
+# availability, STAR Methods and Key resources table. The supplement read is MMC1 (the legends of
+# Figures S1 to S17, as text extracted from its PDF). MMC2 (Data S1, 46 pages) is image only: per
+# mouse histology of electrode, probe, fiber and virus placements, with the mice left out for
+# poor targeting or CeA expression. Its first pages were looked at to identify it; no claim rests
+# on it, but an author can use it to match exclusions. Figures themselves were not looked at.
+#
+# Code read. https://github.com/Tyelab/Mills-et-al-2026 at commit
+# 1fee26d1a5bb8179c44b02b24632d3d872e0b801 (2026-09-08), linked in Data and code availability. It
+# holds five Python analyses of the electrophysiology, all reading one MATLAB file (discAll.mat,
+# not in the repository): the CS decoding of Figure 3H (named "fig4H" in the code), freezing and
+# darting decoding, the GLM of Figures 3I to 3M (named "fig4G"), the average trajectories of
+# Figure 2Q, example single-trial trajectory pairs of Figure S8B, and the 10 ms trajectories of
+# Figure S9C. Executed notebooks print outputs, and results/cache holds the GLM tables
+# (paired_vs_unpaired_summary.csv gives 125 paired and 66 unpaired neurons from 12 and 4 mice,
+# one-sided Mann-Whitney p = 0.029 for CV delta deviance, as the paper). The MATLAB code for
+# Figure 2 (z-scores, clustering, ANOVAs, chi-square), Figures S5 to S10, all calcium imaging,
+# behavior scoring and snRNA-seq is not in the repository. The cosine-similarity statistics of
+# Figure S8E-F (100 iterations, Wilcoxon) are not in it either; the code only plots example pairs.
+#
+# Data the paper used.
+# - snRNA-seq (Figure 1A-J, S1 to S3) of ASt, CeA, TS and DS from wild-type C57BL/6J mice, 97,434
+#   nuclei, deposited at GEO GSE211437, not in the dandiset.
+# - RNAscope (Figure 1K-L, S4) of Drd1a, Drd2, Cdh6, Slit2, VGlut1; optogenetics with open field,
+#   real-time place preference, elevated plus maze, rotarod (Figures 3A-C, 4, 6, S11, S12, S16,
+#   S17). The dandiset description names neither; these claims are marked as using the paper's
+#   own recordings, and the author is to find whether they exist anywhere.
+# - Electrophysiology (Figures 2, 3D-M, S5 to S10). Freely moving mice with 16-wire arrays
+#   (Open Ephys, 30 kHz, Offline Sorter) or Neuropixels 1.0 (SpikeGLX, Kilosort 2.5, phy) in the
+#   ASt; Neuropixels also recorded TS and CeA. Two-tone discrimination session: 20 s tones (3.5 or
+#   20 kHz, counterbalanced), 90 CS-reward trials (7.5 uL chocolate Ensure; collecting the reward
+#   ends the tone) and 30 CS-shock trials (0.1 s, 0.7 mA shock co-terminating with the tone), ITI
+#   90 +/- 20 s. Unpaired controls received the same CS and US unpaired. Mice: 21 paired and 4
+#   unpaired (Figure S5). Neurons: ASt 15 mice, 193 neurons; TS 7 mice, 212; CeA 8 mice, 145
+#   (paired, Figure 2); unpaired ASt 4 mice, 71 neurons (Figure S7). In the code's file, animals
+#   carry group "paired" or "unpaired", ephysType "NPX" or "OE", units a region label ("ASt",
+#   "TS", "CeA", "BLA"), and IDs such as NPX03 or 3016_donkey; events are CSrew and CSshk onsets.
+# - Behavior during these sessions: SLEAP poses (14-point skeleton) from a top camera; freezing
+#   when the displacement of all body points is below 0.08 cm per frame; darting when the rear
+#   body center reaches 45 cm/s; total defensive behavior is freezing plus darting; reward
+#   seeking from port beam breaks (Med-PC). Port latency is the time from tone onset to port entry.
+# - Calcium imaging (Figures 5, S13 to S15). Miniscopes v3.2 and v4 through GRIN lenses over ASt
+#   Drd1a-Cre or Drd2-Cre neurons expressing GCaMP7f, 15 frames/s, downsampled by two, NoRMCorre,
+#   CNMF-E, manual curation. Discrimination session with 10 s tones, 45 CS-reward (reward 3 s
+#   after tone onset) and 15 CS-shock trials, imaging on every shock trial and every other reward
+#   trial, 10 s before the CS to 3 s or 10 s after it. Drd1a: paired 10 mice, 320 neurons,
+#   unpaired 8 mice, 237; Drd2: paired 9 mice, 296, unpaired 6 mice, 257. A US session added
+#   unpredicted shocks (0.1, 0.7, 1.4 mA, 250 ms) and rewards (1.875, 3.75, 7.5 uL). A contextual
+#   fear session recorded in conditioned Context A and unconditioned Context B.
+#
+# Method fixed from the paper, used by several claims.
+# - Ephys cue response (STAR Methods, Analysis of neural responses to cue delivery): per neuron,
+#   the firing rate averaged over all trials of a CS type, z-scored by the mean and SD of that
+#   average over the 20 s before cue onset. Phasic is the mean z over 0 to 100 ms after onset,
+#   sustained over 0.1 to 19 s.
+# - Ephys unit selection (code, scripts/utils/discall.py derive_metadata): units of the region
+#   with mean firing rate (spike count over recording duration) below 50 Hz. The Methods do not
+#   state it; the code's printout gives 193 paired ASt units after it, the paper's number.
+# - Responsive neurons (STAR Methods, Statistical analysis): Wilcoxon signed-rank test at alpha
+#   0.01 and mean z above +2 (excited) or below -2 (inhibited). Proportions compared by
+#   chi-square tests, Holm-Bonferroni within each family.
+# - Calcium response (STAR Methods, Statistical analysis of calcium recordings): per neuron, mean
+#   fluorescence over trials of a CS type, z-scored by the mean and SD of the 10 s before cue
+#   onset; short window 0 to 1 s, long 1 to 10 s.
+#
+# Details the paper leaves open, named where they bear on a claim.
+# - Bin size of the ephys z-scored traces for Figure 2 and S6 to S10: the Methods give none.
+#   Figure S6 shows 10 ms bins; the code uses 100 ms bins. Readings, 10 ms or 100 ms (with 100 ms
+#   the phasic window is one bin).
+# - Inputs of the signed-rank test for responsive neurons: readings, (a) each trial's mean rate in
+#   the response window against the same trial's mean rate in the 20 s baseline; (b) against an
+#   equal-length window just before cue onset.
+# - Defensive behavior per trial: the share of CS time spent freezing plus the share spent
+#   darting (reading a), or the summed seconds (reading b). The two give the same ordering
+#   within a session of fixed-length tones.
+# Further open details are named in the claims they concern.
+schema_version: 2
+paper: doi:10.1016/j.neuron.2026.08.012
+claims:
+- id: fig1b-ast-distinct-subclusters
+  statement: In snRNA-seq of ASt, CeA, TS and DS, ASt nuclei form distinct subclusters within the
+    Drd1a+ and Drd2+ medium spiny neuron clusters.
+  source: Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 1;
+    Figure 1B
+  quote: Most strikingly, ASt nuclei formed visibly distinct subclusters within the Drd1a + and Drd2 +
+    clusters
+  data: elsewhere
+  where: GEO GSE211437
+  criterion: Following the STAR Methods (Quality control; Data processing; SCTransform v2, 25 PCs
+    for all nuclei, UMAP), reproduced when the filtered data hold about 97,434 nuclei (within 10%)
+    and, within the Drd1a+ and Drd2+ clusters, the ASt nuclei fall in subclusters of their own,
+    judged by graph-based subclustering in which at least one subcluster per MSN type is made
+    mostly (over half) of ASt nuclei. The figure shows this as a visual pattern; the half
+    threshold is a choice made here, as the paper gives none.
+  expected:
+  - quantity: nuclei passing quality filters
+    value: 97434
+    tolerance: 9743
+- id: fig1j-ast-drd2-enriched
+  statement: In the snRNA-seq data the ASt is enriched for Drd2+ MSNs (71% Drd2+ against 26%
+    Drd1a+), and its Drd1a+ to Drd2+ proportions differ from those of TS and DS.
+  source: Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 2;
+    Figure 1J
+  quote: but the ASt was markedly enriched for Drd2 + MSNs (71% Drd2 + vs. 26% Drd1a +;
+  data: elsewhere
+  where: GEO GSE211437
+  statistics:
+  - about: ASt against TS
+    test: chi-squared test, Holm-corrected
+    statistic: χ2(1) = 1,329, V = 0.26
+    p: 1.4e-290
+    corrected: Holm
+    n: 7,941 ASt and 13,214 TS nuclei
+  - about: ASt against DS
+    test: chi-squared test, Holm-corrected
+    statistic: χ2(1) = 1,866, V = 0.24; printed p = 3.6 × 10^-407, below what a double holds, so
+      recorded as 0
+    p: 0
+    corrected: Holm
+    n: 7,941 ASt and 25,791 DS nuclei
+  expected:
+  - quantity: share of ASt MSN-cluster nuclei in the Drd2+ cluster
+    value: 71
+    tolerance: 7.1
+    unit: percent
+  - quantity: share of ASt MSN-cluster nuclei in the Drd1a+ cluster
+    value: 26
+    tolerance: 2.6
+    unit: percent
+  criterion: Proportions as in the Figure 1J legend, nuclei of the Drd1a+ or Drd2+ cluster, with
+    those expressing the other receptor counted as dual expressing. The denominator is open;
+    readings, (a) all nuclei in the two MSN clusters, (b) those clusters without the dual
+    expressing nuclei. Reproduced when under one reading both values are within tolerance and
+    the chi-squared tests of ASt against TS and against DS (Holm-corrected) give p < 0.001.
+- id: fig1l-rnascope-drd2-enriched
+  statement: RNAscope confirms the Drd2+ enrichment of the ASt (68% Drd2+, 27% Drd1a+), with the
+    Drd1a to Drd2 balance of the ASt differing from TS and DS.
+  source: Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 2;
+    Figure 1L
+  quote: which confirmed the enrichment of Drd2 + neurons in the ASt relative to other regions of the
+    striatum (68% Drd2 +/27% Drd1a +;
+  statistics:
+  - about: ASt against TS
+    test: paired t test on per-animal log-ratios, Holm-corrected
+    statistic: t(6) = 5.51
+    p: 0.0039
+    corrected: Holm
+    n: 7 mice
+  - about: ASt against DS
+    test: paired t test on per-animal log-ratios, Holm-corrected
+    statistic: t(7) = 5.17
+    p: 0.0039
+    corrected: Holm
+    n: 8 mice
+  expected:
+  - quantity: ASt cells labeled Drd2
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  - quantity: ASt cells labeled Drd1a
+    value: 27
+    tolerance: 2.7
+    unit: percent
+- id: figs4-cdh6-slit2-gradient
+  statement: Cdh6 and Slit2 are expressed most in the ASt, more than in dorsal TS and CeA, decrease
+    in a dorsoventral gradient through the TS to the DS, and are expressed as highly in the LA as in
+    the ASt.
+  source: Results, The ASt has a distinct transcriptomic identity from the TS or CeA, paragraph 3;
+    Figure S4B-C
+  quote: For both genes, expression was highest in the ASt and decreasing in a dorsoventral gradient
+    through the TS, reaching its lowest levels in the DS
+  statistics:
+  - about: Cdh6, regions
+    test: one-way ANOVA, Tukey post hoc
+    statistic: F(7, 16) = 6.320
+    p: 0.0011
+    n: 3 mice
+  - about: Slit2, regions
+    test: one-way ANOVA, Tukey post hoc
+    statistic: F(7, 16) = 22.65
+    p: 3.6e-7
+    n: 3 mice
+- id: figs5-ephys-mice-discriminate
+  statement: Paired mice in the electrophysiology experiments discriminate the cues, with more
+    port entry to CS-reward and more defensive behavior to CS-shock, while unpaired mice do not.
+  source: Figure S5D-E
+  quote: Paired group mice showed distinct responses to the CS-shock and CS-reward tones in reward port
+    entry behavior (Two-tailed paired t-test, t20 = 12.469, ****p < 0.0001) (D) and defensive responses
+  statistics:
+  - about: paired mice, port entry, CS-reward against CS-shock
+    test: two-tailed paired t-test
+    statistic: t20 = 12.469
+    p: 0.0001
+    p_relation: "<"
+    n: 21 paired mice
+  - about: paired mice, defensive behavior, CS-shock against CS-reward
+    test: two-tailed paired t-test
+    statistic: t20 = 6.711
+    p: 0.0001
+    p_relation: "<"
+    n: 21 paired mice
+  - about: unpaired mice, port entry
+    test: two-tailed paired t-test
+    statistic: t3 = 0.672
+    p: 0.55
+    n: 4 unpaired mice
+  - about: unpaired mice, defensive behavior
+    test: two-tailed paired t-test
+    statistic: t3 = 0.658
+    p: 0.557
+    n: 4 unpaired mice
+  criterion: Per mouse and CS type, port entry and total defensive behavior (STAR Methods,
+    Behavioral analysis of two-tone discrimination task) during the CS. Port entry as time in the
+    port or as entry count is open; both readings are run, and defensive behavior under the two
+    readings of the opening comment. Reproduced when in paired mice both two-tailed paired t-tests
+    give p < 0.05 in the stated directions and in unpaired mice neither does.
+- id: fig2-recorded-neurons
+  kind: link
+  statement: The dandiset holds the electrophysiology units the paper analyses, with the counts per
+    region and group it reports.
+  source: Figure 2 legend (ASt 15 mice, 193 neurons; TS 7 mice, 212; CeA 8 mice, 145); Figure S7
+    legend (unpaired 4 mice, 71); code scripts/utils/discall.py
+  expected:
+  - quantity: paired ASt neurons
+    value: 193
+    tolerance: 19
+  - quantity: paired TS neurons
+    value: 212
+    tolerance: 21
+  - quantity: paired CeA neurons
+    value: 145
+    tolerance: 14
+  - quantity: unpaired ASt neurons
+    value: 71
+    tolerance: 7
+  criterion: Units labeled with each region, in paired or unpaired mice, kept by the code's mean
+    rate filter (below 50 Hz). Reproduced when all four counts are within tolerance and the mouse
+    counts (15, 7, 8, 4) match exactly; partially reproduced when the neuron counts match but not
+    the mouse counts.
+- id: fig2e-ast-sustained-clusters
+  statement: Clustering all recorded neurons by their CS-shock and CS-reward responses, ASt neurons
+    make up the largest share of the two clusters with robust responses sustained over the full 20 s
+    of CS-shock; TS neurons dominate a slowly rising CS-shock cluster and a CS-reward inhibited one,
+    and CeA neurons the CS-reward excited clusters.
+  source: Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 2;
+    Figure 2D-E
+  quote: Remarkably, however, ASt neurons were the dominant representative in two clusters (clusters 1
+    and 2) that showed robust and sustained responses to CS-shock lasting the full 20 s of the cue
+  depends_on:
+  - fig2-recorded-neurons
+  criterion: Per neuron, the CS-shock and CS-reward z-scored traces (ephys cue response, opening
+    comment) concatenated and clustered by agglomerative hierarchical clustering on Euclidean
+    distance (STAR Methods). The paper names seven clusters (clusters 1 to 7 in the Results) and
+    the pie charts give each region's share normalized for region size. Open, with readings run
+    together, the linkage ((a) average, (b) Ward, (c) MATLAB's default, single), the traces'
+    span ((a) the 20 s cue, (b) 20 s before to 20 s after onset) and the bin size (10 or 100 ms).
+    The tree is cut into seven clusters. A cluster is sustained when its mean CS-shock z over
+    0.1 to 19 s is above 1 and its mean over the last 5 s of the cue is above half its mean
+    over the first 5 s. Reproduced when under one reading the two sustained clusters with the
+    largest mean CS-shock z each have ASt as the region with the largest normalized share.
+- id: fig2o-ast-greater-cs-shock-responses
+  statement: ASt neurons have greater phasic (0 to 100 ms) and sustained (0.1 to 19 s) responses to
+    CS-shock than TS or CeA neurons.
+  source: Figure 2O; Results, ASt neurons encode sustained conditioned responses to threat cues,
+    paragraph 3
+  quote: ASt neurons show greater phasic and sustained responses to CS-shock than neurons in the TS or
+    CeA
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: CS-shock phasic, region
+    test: one-way ANOVA with region as factor, Tukey's multiple comparison
+    statistic: F (2, 547) = 38.46
+    p: 0.0001
+    p_relation: "<"
+    n: 193 ASt, 212 TS and 145 CeA neurons
+  - about: CS-shock sustained, region
+    test: one-way ANOVA with region as factor, Tukey's multiple comparison
+    statistic: F (2, 547) = 9.41
+    p: 0.0001
+    p_relation: "<"
+    n: 193 ASt, 212 TS and 145 CeA neurons
+  criterion: Phasic and sustained z per neuron (ephys cue response, opening comment) under both bin
+    sizes. Reproduced when, for both windows, the one-way ANOVA over the three regions gives
+    p < 0.0001 and Tukey's test has ASt above TS and above CeA at p < 0.05; partially reproduced
+    when this holds for one window only.
+- id: fig2o-region-differs-cs-reward
+  statement: Responses to CS-reward also differ between regions, and the ASt has robust phasic
+    responses to CS-reward as well as to CS-shock.
+  source: Figure 2O; Results, ASt neurons encode sustained conditioned responses to threat cues,
+    paragraph 3
+  quote: The ASt had robust phasic responses to both CS types
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: CS-reward phasic, region
+    test: one-way ANOVA with region as factor
+    statistic: F (2, 547) = 15.57
+    p: 0.0001
+    p_relation: "<"
+  - about: CS-reward sustained, region
+    test: one-way ANOVA with region as factor
+    statistic: F (2, 547) = 16.38
+    p: 0.0001
+    p_relation: "<"
+  criterion: As fig2o-ast-greater-cs-shock-responses, for CS-reward. Reproduced when both ANOVAs
+    give p < 0.0001 and the mean ASt phasic z to CS-reward is above 0 by a one-sample t-test at
+    p < 0.05. The paper does not name the direction of the Tukey comparisons for CS-reward, so
+    they are reported, not judged.
+- id: fig2p-ast-more-responsive
+  statement: A greater proportion of ASt neurons than of TS or CeA neurons respond phasically to
+    each CS and in a sustained way to CS-shock.
+  source: Figure 2P; Results, ASt neurons encode sustained conditioned responses to threat cues,
+    paragraph 3
+  quote: A greater proportion of ASt neurons also showed phasic responses to each CS and sustained
+    responses to CS-shock
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - test: chi-squared test
+    p: 0.01
+    p_relation: "<"
+  criterion: Neurons classed excited, inhibited or not responsive per CS and window (responsive
+    neurons, opening comment, with both readings of the signed-rank inputs). The chi-square table
+    is open; readings, (a) ASt against TS and ASt against CeA, each a 2 x 3 table of region by
+    class, Holm-corrected within the family, as Figure S7D does for groups; (b) one 3 x 3 table
+    of the three regions. Reproduced when under one reading, for CS-shock phasic, CS-reward
+    phasic and CS-shock sustained, the ASt has the largest share of responsive neurons and its
+    comparisons give p < 0.01.
+- id: fig2q-trajectories-diverge
+  statement: ASt population trajectories for CS-shock and CS-reward diverge from cue onset.
+  source: Figure 2Q; Results, ASt neurons encode sustained conditioned responses to threat cues,
+    paragraph 4
+  quote: of ASt responses to CS-shock and CS-reward and found that they diverged in orthogonal
+    directions from cue onset both at the population level
+  depends_on:
+  - fig2-recorded-neurons
+  criterion: As the code does (scripts/trajectories/trajectories_rev_2025.py at the commit read),
+    following the STAR Methods (Neural trajectory analysis). Paired ASt units, 100 ms bins, -20 to
+    40 s around each CS onset; per animal, each neuron z-scored over all its trials and bins,
+    averaged per CS type, all animals' neurons stacked; PCA on the concatenated averages, keeping
+    the components that explain 90% of variance; Euclidean distance between the CS-shock and
+    CS-reward projections per bin. The paper gives no test. Reproduced when the mean distance over
+    0 to 18 s exceeds the largest distance in the -20 to 0 s baseline. The Methods say the PCA
+    includes paired and unpaired animals; the code's version for Figure 2Q is shown, and a PCA
+    over both groups is a variant.
+- id: figs7-paired-greater-than-unpaired
+  statement: ASt neurons of paired mice have greater phasic and sustained responses to CS-shock and
+    greater phasic responses to CS-reward than those of unpaired controls.
+  source: Figure S7C; Results, ASt neurons encode sustained conditioned responses to threat cues,
+    paragraph 3
+  quote: ASt neurons in paired group mice showed greater phasic responses to CS-shock (two-tailed
+    t-test, t262 = 4.332
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: CS-shock phasic
+    test: two-tailed t-test
+    statistic: t262 = 4.332
+    p: 0.0001
+    p_relation: "<"
+    n: 193 paired and 71 unpaired ASt neurons
+  - about: CS-shock sustained
+    test: two-tailed t-test
+    statistic: t262 = 3.109
+    p: 0.0021
+    n: 193 paired and 71 unpaired ASt neurons
+  - about: CS-reward phasic
+    test: two-tailed t-test
+    statistic: t262 = 4.511
+    p: 0.0001
+    p_relation: "<"
+    n: 193 paired and 71 unpaired ASt neurons
+  criterion: Phasic and sustained z per ASt neuron, two-tailed two-sample t-tests of paired against
+    unpaired neurons (df 262). Reproduced when all three give p < 0.05 with paired higher;
+    partially reproduced for one or two.
+- id: figs7-cs-reward-sustained-no-difference
+  statement: Sustained ASt responses to CS-reward do not differ between paired and unpaired mice.
+  source: Figure S7C
+  quote: Sustained responses to CS-reward did not differ between groups (t262 = 0.460, p = 0.646)
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - test: two-tailed t-test
+    statistic: t262 = 0.460
+    p: 0.646
+    n: 193 paired and 71 unpaired ASt neurons
+  criterion: A claim of absence. The paper's test, a two-tailed t-test of sustained CS-reward z of
+    paired against unpaired ASt neurons at p < 0.05. Reproduced when it is not significant.
+- id: figs7d-paired-more-responsive
+  statement: Proportions of ASt neurons excited or inhibited differ between paired and unpaired
+    mice for CS-shock phasic and sustained and CS-reward phasic responses, but not for CS-reward
+    sustained responses.
+  source: Figure S7D
+  quote: Proportions of ASt neurons in the paired and unpaired groups that were significantly excited
+    or inhibited
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: CS-shock phasic
+    test: chi-square test with Holm-Bonferroni correction
+    statistic: χ2(2, N = 264) = 15.31
+    p: 0.0014
+    corrected: Holm-Bonferroni
+  - about: CS-shock sustained
+    test: chi-square test with Holm-Bonferroni correction
+    statistic: χ2(2, N = 264) = 18.04
+    p: 0.0005
+    corrected: Holm-Bonferroni
+  - about: CS-reward phasic
+    test: chi-square test with Holm-Bonferroni correction
+    statistic: χ2(2, N = 264) = 13.86
+    p: 0.002
+    corrected: Holm-Bonferroni
+  - about: CS-reward sustained
+    test: chi-square test with Holm-Bonferroni correction
+    statistic: χ2(2, N = 264) = 1.76
+    p: 0.415
+    corrected: Holm-Bonferroni
+  criterion: Per window and CS, a 2 x 3 table of group by class (excited, inhibited, neither) over
+    264 ASt neurons, chi-square, Holm-corrected over the four tests (Figure S7D legend), with both
+    readings of the signed-rank inputs. Reproduced when the first three give p < 0.05 and the
+    CS-reward sustained test does not; partially reproduced when two of the first three do.
+- id: figs7f-baseline-rate-no-difference
+  statement: Basal firing rates before the cue do not differ between paired and unpaired ASt
+    neurons or between CS-shock and CS-reward windows.
+  source: Figure S7E-F
+  quote: No significant differences in basal firing rate were seen between paired and unpaired group
+    ASt neurons, or between CS-shock and CS-reward windows
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: group main effect
+    test: two-way mixed ANOVA, group (between-neuron) by cue window (within-neuron)
+    statistic: F(1,262)=0.51
+    p: 0.476
+  - about: cue main effect
+    test: two-way mixed ANOVA
+    statistic: F(1,262)=0.01
+    p: 0.926
+  - about: group by cue interaction
+    test: two-way mixed ANOVA
+    statistic: F(1,262)=0.12
+    p: 0.728
+  criterion: A claim of absence. Per neuron the mean firing rate in the 20 s before CS-shock and
+    before CS-reward onsets, averaged over trials; the paper's two-way mixed ANOVA. Reproduced
+    when neither main effect nor the interaction is significant at p < 0.05.
+- id: figs8-single-trial-divergence
+  statement: In single trial pairs from paired mice, CS-shock and CS-reward population trajectories
+    are less similar during the cue than pairs of the same CS; unpaired mice do not show this.
+  source: Figure S8C-F; STAR Methods, Neural trajectory analysis
+  quote: Paired animals show significantly reduced similarity between CS-shock and CS-reward
+    trajectories
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.01
+    p_relation: "<"
+  criterion: From the STAR Methods. Per animal, 100 random draws of trial pairs (shock-shock,
+    reward-reward, shock-reward); each trial's population vector minus its mean over -20 to 0 s;
+    cosine similarity per bin; averaged over 0 to 18 s. Animals as in the code (ASt, at least 10
+    units, at least 30 trials per CS; 8 paired and 3 unpaired animals in its printout). Open, the
+    unit of the Wilcoxon test; readings, (a) per-animal means, shock-reward against the mean of
+    the two same-CS comparisons; (b) per-animal means against each same-CS comparison separately;
+    (c) the iterations pooled. Reproduced when under one reading the paired group gives
+    shock-reward lower at p < 0.01 and the unpaired group does not show it at p < 0.05. Vectors
+    are in neuron space as the Methods say; the code's 3-PC velocity vectors
+    (trajectory_comparison_plots_v3.py) are a variant.
+- id: figs9-sustained-only-cs-shock
+  statement: Sustained ASt responses occur to CS-shock but not to CS-reward, including CS-reward
+    trials in which the reward was not collected for at least 2 s; phasic responses do not differ.
+  source: Figure S9A-B; Results, ASt neurons encode sustained conditioned responses to threat cues,
+    paragraph 4
+  quote: Robust sustained responses were only seen in response to CS-shock and were not present
+    during CS-reward cues prior to US-reward collection
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: phasic
+    test: one-way ANOVA
+    statistic: F(2,479) = 0.05
+    p: 0.95
+  - about: sustained, 1 s timepoint
+    test: one-way ANOVA, Tukey's multiple comparison
+    statistic: F(2,479) = 17.38
+    p: 5.2e-8
+  - about: sustained, 2 s timepoint
+    test: one-way ANOVA, Tukey's multiple comparison
+    statistic: F(2,479) = 17.40
+    p: 5.1e-8
+  expected:
+  - quantity: mice with CS-reward trials of port latency over 2 s
+    value: 9
+    tolerance: 1
+  - quantity: neurons in those mice
+    value: 96
+    tolerance: 10
+  criterion: Three groups of ASt neuron z values, CS-shock (193), CS-reward (193) and CS-reward
+    trials with port latency over 2 s (96 neurons, 9 mice), compared by one-way ANOVA (df 2, 479)
+    and Tukey. Open, what the 1 s and 2 s timepoints are; readings, (a) the z in the bin at 1 s
+    and at 2 s, (b) the mean z from 0.1 s to 1 s and to 2 s. Reproduced when under one reading the
+    phasic ANOVA is not significant at p < 0.05, both sustained ANOVAs give p < 0.001, and Tukey
+    puts CS-shock above both CS-reward groups at p < 0.05.
+- id: figs10b-paired-more-defensive
+  statement: Paired mice in the electrophysiology experiments show more defensive behavior during
+    CS-shock than unpaired mice.
+  source: Figure S10B
+  quote: Group average and individual mouse defensive behaviors during CS-shock was higher in paired
+    group mice than unpaired
+  statistics:
+  - test: Student's t-test
+    statistic: t17 = 2.671
+    p: 0.0161
+    n: 15 paired and 4 unpaired mice
+  criterion: Per mouse, total defensive behavior during CS-shock (both readings of the opening
+    comment), over the 15 paired and 4 unpaired mice with ASt units. Reproduced when Student's
+    t-test gives p < 0.05 with paired higher.
+- id: figs10-high-defensive-mice-greater-responses
+  statement: In paired mice clustered into high and low defensive groups, ASt phasic and sustained
+    responses to CS-shock are over 3-fold greater in the high group; the phasic difference is
+    significant and the sustained one is not.
+  source: Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 5;
+    Figure S10C-F
+  quote: In the high defensive group, ASt neuron phasic and sustained responses were over 3-fold
+    greater than in the low defensive group
+  depends_on:
+  - figs10b-paired-more-defensive
+  statistics:
+  - about: phasic, high, low and unpaired groups
+    test: one-way ANOVA, Tukey's multiple comparison
+    statistic: F(2,16) = 6.023
+    p: 0.011
+    n: 4 unpaired, 7 low and 8 high mice
+  - about: sustained, high, low and unpaired groups
+    test: one-way ANOVA
+    statistic: F(2,16) = 1.793
+    p: 0.198
+  expected:
+  - quantity: mice in the high group
+    value: 8
+    tolerance: 0
+  - quantity: mice in the low group
+    value: 7
+    tolerance: 0
+  criterion: Paired mice clustered on their CS-shock defensive behavior by hierarchical clustering
+    into two clusters (Figure S10C); the linkage is open, readings average and Ward. Per mouse, the
+    mean phasic and sustained CS-shock z of its ASt neurons. Reproduced when under one reading the
+    clusters hold 8 and 7 mice, the high group's mean phasic and mean sustained values are each
+    more than 3 times the low group's, and the one-way ANOVA over unpaired, low and high mice
+    gives p < 0.05 for phasic. The sustained ANOVA is reported.
+- id: figs10lm-defensive-trials-greater-responses
+  statement: Within paired mice, CS-shock trials with the most defensive behavior (top quartile)
+    have 26% greater phasic and 60% greater sustained ASt responses than those with the least;
+    unpaired mice show no such change.
+  source: Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 5;
+    Figure S10I-M
+  quote: Trials with the most defensive behavior (top quartile) showed 26% greater phasic and 60%
+    greater sustained ASt responses than trials with the least defensive behavior
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: phasic, paired
+    test: repeated measures ANOVA, Tukey's multiple comparison
+    statistic: F(3, 570) = 5.46
+    p: 0.001
+    n: 15 mice, 191 neurons
+  - about: sustained, paired
+    test: repeated measures ANOVA, Tukey's multiple comparison
+    statistic: F(3, 570) = 10.26
+    p: 0.0001
+    p_relation: "<"
+    n: 15 mice, 191 neurons
+  - about: phasic, unpaired
+    test: repeated measures ANOVA
+    statistic: F(3, 210) = 0.521
+    p: 0.668
+    n: 4 mice, 71 neurons
+  - about: sustained, unpaired
+    test: repeated measures ANOVA
+    statistic: F(3, 210) = 0.424
+    p: 0.736
+    n: 4 mice, 71 neurons
+  expected:
+  - quantity: phasic response, top against bottom quartile, increase
+    value: 26
+    tolerance: 2.6
+    unit: percent
+  - quantity: sustained response, top against bottom quartile, increase
+    value: 60
+    tolerance: 6
+    unit: percent
+  criterion: Each mouse's CS-shock trials split into quartiles by defensive behavior (Q1 the most);
+    per neuron and quartile, phasic and sustained z from the trials of that quartile; repeated
+    measures ANOVA over quartiles with neurons as subjects (df 3, 570 for 191 paired neurons; the
+    two neurons left out are not identified). The percentage is open; readings, (a) the ratio of
+    the Q1 to Q4 means over neurons, minus 1; (b) the median over neurons of each neuron's
+    ratio. Reproduced when under one reading both percentages are within tolerance, both paired
+    ANOVAs give p < 0.01, and neither unpaired ANOVA gives p < 0.05.
+- id: figs10-no-reward-relationship
+  statement: ASt responses to CS-reward are not related to reward behavior, across mice or across
+    trials grouped by port latency.
+  source: Results, ASt neurons encode sustained conditioned responses to threat cues, paragraph 5;
+    Figure S10N-U
+  quote: We also performed similar analyses of reward responses but found there was no relationship
+    between ASt neuron activity and reward behavior
+  statistics:
+  - about: phasic CS-reward response, unpaired, low and high reward mice
+    test: one-way ANOVA
+    statistic: F(2,16) = 2.178
+    p: 0.1457
+  - about: phasic CS-reward response across latency quartiles, paired
+    test: repeated measures ANOVA
+    statistic: F(3, 570) = 0.576
+    p: 0.631
+  criterion: A claim of absence, on the paper's two tests at p < 0.05. Mice clustered into low and
+    high by mean port latency during CS-reward (hierarchical clustering into two clusters, readings
+    average and Ward linkage; the paper has 4 low and 11 high); trials split into quartiles by
+    latency. Reproduced when neither the one-way ANOVA nor the repeated measures ANOVA is
+    significant.
+- id: fig3b-ast-activation-freezing
+  statement: Optogenetic activation of GABAergic (VGAT-Cre) ASt neurons increases freezing in an
+    open field.
+  source: Figure 3B; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 1
+  quote: produced a striking increase in freezing during
+  statistics:
+  - test: two-way ANOVA, group x laser interaction, Bonferroni post hoc
+    statistic: F (1,32) = 10.48
+    p: 0.0028
+    n: 8 ChR2 and 10 eYFP mice
+- id: fig3c-ast-activation-avoidance
+  statement: ChR2 mice avoid the side of a real-time place preference arena paired with ASt
+    stimulation; eYFP mice do not.
+  source: Figure 3C
+  quote: ChR2 group mice showed avoidance of the arena side paired with ASt stimulation
+  statistics:
+  - about: ChR2, effect of side
+    test: two-way RM ANOVA
+    statistic: F(1,14) = 8.187
+    p: 0.0126
+    n: 8 ChR2 mice
+  - about: eYFP, effect of side
+    test: two-way RM ANOVA
+    statistic: F(1,18) = 0.2911
+    p: 0.5961
+    n: 10 eYFP mice
+- id: fig3fg-no-motor-onset-response
+  statement: Average ASt activity does not change at the onset of freezing or darting bouts, and few
+    ASt neurons are excited at those onsets, unlike at CS-shock onset.
+  source: Figure 3F-G; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 2
+  quote: No net change in average ASt activity was observed at motor bout onsets, and few individual
+    ASt neurons showed excitatory motor-aligned responses
+  depends_on:
+  - fig2-recorded-neurons
+  criterion: Bouts as in the STAR Methods (freezing, darting); per ASt neuron of paired mice, the
+    trial-averaged z trace aligned to all CS-shock onsets, and to all freezing and all darting bout
+    onsets in the session. The paper gives no window or baseline for bout onsets; readings, (a)
+    baseline the 20 s before onset as for cues, response 0 to 1 s; (b) baseline 2 s before onset,
+    response 0 to 1 s. Neurons classed as in the opening comment. Reproduced when under one reading
+    the population mean z over 0 to 1 s after freezing onsets and after darting onsets is within
+    plus or minus 0.5 and the share of neurons excited at either bout onset is less than half the
+    share excited at CS-shock onset. The 0.5 bound and the half are choices made here; the paper
+    states neither.
+- id: fig3h-cs-decoded-paired-only
+  statement: CS identity can be decoded from ASt activity above chance during the cue in paired but
+    not unpaired mice.
+  source: Figure 3H; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 2
+  quote: showed that CS identity could be decoded from ASt activity above chance in paired but not
+    unpaired mice
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - about: paired, CS window against chance
+    test: Mann-Whitney U test
+    p: 0.01
+    p_relation: "<"
+  criterion: As the code does (scripts/notebook_utils/fig4h_decoding_workflow.py at the commit
+    read), following the STAR Methods (Logistic regression classifier). Mice with more than 10 ASt
+    units below 50 Hz (12 in the code's printout, 9 paired and 3 unpaired); spikes in 100 ms bins
+    from -20 to 40 s around each CS onset; at most 29 trials per CS, equal numbers of each by
+    random draw; stratified 5-fold cross-validation over trials; per fold a standard-scaled
+    liblinear logistic regression trained on all bins of the training trials and tested bin by
+    bin on held-out trials; chance from 20 label shuffles per fold. Accuracy averaged over 0 to
+    18 s per mouse. The legend names a Mann-Whitney U test against chance; the code runs a
+    Wilcoxon signed-rank test of each mouse's accuracy against its own chance (printed W = 0,
+    p = 0.0039 for paired, p = 0.5 for unpaired), shown as a variant. Reproduced when the paired
+    mice's accuracies exceed chance by the Mann-Whitney U test at p < 0.01 and the unpaired
+    mice's do not at p < 0.05.
+- id: fig3h-behavior-not-decoded
+  statement: Freezing and darting cannot be decoded from ASt activity in either paired or unpaired
+    mice.
+  source: Figure 3H; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 2
+  quote: while freezing and darting could not be decoded in either group
+  depends_on:
+  - fig2-recorded-neurons
+  criterion: A claim of absence. As the code does (fig4h_all_decoding_workflow.py) within CS-shock
+    trials, 5-fold over trials, neurons z-scored by the training trials, freezing (or darting)
+    bins against an equal number of other bins, liblinear logistic regression, accuracy per bin
+    against 20 label shuffles. The paper's test is the legend's Mann-Whitney U test of CS window
+    accuracy against chance. Reproduced when it does not give accuracy above chance at p < 0.05
+    for freezing or for darting in either group. The code prints no statistics for these decoders.
+- id: fig3j-cs-encoding-glm
+  statement: After controlling for freezing, darting and locomotion speed, 56% of ASt neurons in
+    paired mice encode CS identity (70 of 125), against 10.6% in unpaired controls (7 of 66).
+  source: Figure 3J; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 3
+  quote: a significantly larger proportion of neurons in paired mice showed CS encoding (70/125;
+    56.0%) compared with unpaired controls (7/66; 10.6%; Fisher's exact test, *** p < 0.001)
+  depends_on:
+  - fig2-recorded-neurons
+  statistics:
+  - test: Fisher's exact test
+    p: 0.001
+    p_relation: "<"
+    n: 125 paired and 66 unpaired neurons
+  expected:
+  - quantity: paired ASt neurons in the GLM
+    value: 125
+    tolerance: 12
+  - quantity: unpaired ASt neurons in the GLM
+    value: 66
+    tolerance: 7
+  - quantity: paired neurons with significant CS encoding
+    value: 56.0
+    tolerance: 5.6
+    unit: percent
+  - quantity: unpaired neurons with significant CS encoding
+    value: 10.6
+    tolerance: 1.1
+    unit: percent
+  criterion: As the STAR Methods (Generalized linear model) and the code
+    (scripts/fig4G/glm_variance_partitioning_paired_vs_unpaired_parallel.py) do. ASt units below
+    50 Hz in animals with at least 6 of them; 0 to 18 s after each CS onset, 100 ms bins taken
+    every fifth bin (500 ms); GEE Poisson, log link, AR(1) within trial; full model with CS,
+    freeze, dart, z-scored speed and normalized time; neurons where any model fails to converge
+    dropped; CS p-value from 1,000 trial-level shuffles of CS labels, Benjamini-Hochberg at 0.05
+    within group. Fisher's exact test, one-sided as in the code. Reproduced when all four values
+    are within tolerance and the test gives p < 0.001.
+- id: fig3k-cs-improves-prediction
+  statement: Adding CS identity improves cross-validated spike count prediction beyond behavioral
+    covariates more in paired than in unpaired mice.
+  source: Figure 3K
+  quote: This improvement was significantly greater in paired than in unpaired mice (animal-level
+    Mann-Whitney U, p = 0.029)
+  depends_on:
+  - fig3j-cs-encoding-glm
+  statistics:
+  - test: animal-level Mann-Whitney U, one-sided
+    p: 0.029
+    n: 12 paired and 4 unpaired mice
+  criterion: Per neuron, the held-out Poisson deviance of the behavior-only model minus that of the
+    full model, 5-fold over trials; per animal the median; one-sided Mann-Whitney U of paired
+    against unpaired animals (STAR Methods; code). Reproduced when p < 0.05 with paired greater.
+- id: fig3l-behavior-encoding-low
+  statement: Few ASt neurons encode freezing, darting and speed after controlling for CS identity
+    (20 of 125 paired, 13 of 66 unpaired), and the proportion does not differ between groups.
+  source: Figure 3L; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 3
+  quote: The proportion of neurons whose firing was significantly predicted by freezing, darting, and
+    locomotion speed was low and did not differ between groups (paired 20/125; unpaired 13/66;
+    Fisher's exact test, p = 0.549)
+  depends_on:
+  - fig3j-cs-encoding-glm
+  statistics:
+  - test: Fisher's exact test
+    p: 0.549
+    n: 125 paired and 66 unpaired neurons
+  expected:
+  - quantity: paired neurons with significant behavior encoding
+    value: 20
+    tolerance: 2
+  - quantity: unpaired neurons with significant behavior encoding
+    value: 13
+    tolerance: 1.3
+  criterion: A claim of absence for the group difference, on the paper's test, Fisher's exact test
+    (two-sided in the code) at p < 0.05; behavior significance from 1,000 joint trial shuffles of
+    freezing, darting and speed, statistic the sum of their squared coefficients, one-sided,
+    Benjamini-Hochberg within group. Reproduced when the test is not significant, both counts are
+    within tolerance and both shares are below 20%.
+- id: fig3m-behavior-no-prediction-gain
+  statement: Adding freezing and darting does not improve out-of-sample prediction in either
+    group, and paired and unpaired mice do not differ.
+  source: Figure 3M; Results, ASt neuron activity is sufficient to drive freezing and avoidance
+    behavior, paragraph 3
+  quote: the effect did not differ between paired and unpaired mice (animal-level Mann-Whitney U, p =
+    0.953)
+  depends_on:
+  - fig3j-cs-encoding-glm
+  statistics:
+  - test: animal-level Mann-Whitney U
+    p: 0.953
+    n: 12 paired and 4 unpaired mice
+  criterion: A claim of absence. Per neuron the held-out deviance of the CS-only model minus that of
+    the full model, per animal the median; the paper's animal-level Mann-Whitney U. The Methods
+    say between-group tests are one-sided; the code runs this one two-sided. Reproduced when the
+    test is not significant at p < 0.05 under the Methods' one-sided reading; the two-sided result
+    is shown. The animal medians are reported against zero.
+- id: fig4eg-drd2-activation-freezing-avoidance
+  statement: Activating Drd2+ ASt neurons drives freezing in an open field and avoidance of the
+    stimulation side in real-time place preference.
+  source: Figure 4E and 4G; Results, ASt neuron activity is sufficient to drive freezing and
+    avoidance behavior, paragraph 4
+  quote: Photostimulation of Drd2 + ASt neurons drove robust freezing
+  statistics:
+  - about: open field freezing
+    test: two-way ANOVA, group x laser interaction, Bonferroni post hoc
+    statistic: F (1,40) = 8.152
+    p: 0.0068
+    n: 6 ChR2 and 16 eYFP Drd2-Cre mice
+  - about: real-time place preference, ChR2 effect of side
+    test: two-way RM ANOVA
+    statistic: F (1,10) = 9.117
+    p: 0.0129
+    n: 6 ChR2 Drd2-Cre mice
+- id: fig4df-drd1-activation-no-effect
+  statement: Activating Drd1a+ ASt neurons affects neither freezing nor place preference.
+  source: Figure 4D and 4F
+  quote: while activation of Drd1a + ASt neurons had no effect on either behavior
+  statistics:
+  - about: open field freezing
+    test: two-way ANOVA, group x laser interaction
+    statistic: F (1,22) = 0.1124
+    p: 0.7406
+    n: 5 ChR2 and 8 eYFP Drd1a-Cre mice
+  - about: real-time place preference, ChR2 effect of side
+    test: two-way RM ANOVA
+    statistic: F (1,8) = 0.6705
+    p: 0.4366
+    n: 5 ChR2 Drd1a-Cre mice
+  criterion: A claim of absence, on the paper's two tests at p < 0.05.
+- id: fig4hi-rotarod-no-effect
+  statement: Activating Drd1a+ or Drd2+ ASt neurons does not change latency to fall on an
+    accelerating rotarod.
+  source: Figure 4H-I
+  quote: found that activation of Drd1a + or Drd2 + neurons did not affect performance on this task
+  statistics:
+  - about: Drd1a-Cre
+    test: two-way ANOVA, group x laser interaction
+    statistic: F (1,18) = 0.0160
+    p: 0.9007
+  - about: Drd2-Cre
+    test: two-way ANOVA, group x laser interaction
+    statistic: F (1,38) = 0.00295
+    p: 0.957
+  criterion: A claim of absence, on the paper's two tests at p < 0.05.
+- id: figs13-imaging-mice-discriminate
+  statement: Paired Drd1a-Cre and Drd2-Cre mice in the imaging experiments show more defensive
+    behavior to CS-shock than to CS-reward, and unpaired mice do not.
+  source: Figure S13D and S13G
+  quote: consistent with successful discrimination between the two tones
+  statistics:
+  - about: Drd1a-Cre paired, defensive behavior
+    test: two-tailed paired t-test
+    statistic: t9 = 5.418
+    p: 0.0004
+    n: 10 mice
+  - about: Drd2-Cre paired, defensive behavior
+    test: two-tailed paired t-test
+    statistic: t8 = 3.381
+    p: 0.0096
+    n: 9 mice
+  - about: Drd1a-Cre unpaired, defensive behavior
+    test: two-tailed paired t-test
+    statistic: t7 = 0.300
+    p: 0.773
+    n: 8 mice
+  - about: Drd2-Cre unpaired, defensive behavior
+    test: two-tailed paired t-test
+    statistic: t5 = 0.110
+    p: 0.917
+    n: 6 mice
+  criterion: Per mouse total defensive behavior during CS-shock and during CS-reward (both readings
+    of the opening comment), two-tailed paired t-tests. Reproduced when both paired groups give
+    p < 0.05 with CS-shock higher and neither unpaired group does.
+- id: fig5j-drd2-cs-shock-responses
+  statement: Drd2+ ASt neurons of paired mice respond to CS-shock more than those of unpaired
+    controls, over both the short (0 to 1 s) and long (1 to 10 s) windows.
+  source: Figure 5J; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli
+    predicting shocks, paragraph 1
+  quote: Drd2 + ASt neurons showed robust responses to CS-shock over both short (0–1 s) and long
+    (1–10 s) timescales that were significantly greater than unpaired controls
+  statistics:
+  - about: short window
+    test: t-test
+    statistic: t 551 = 6.21
+    p: 0.0001
+    p_relation: "<"
+    n: 296 paired neurons (9 mice), 257 unpaired neurons (6 mice)
+  - about: long window
+    test: t-test
+    statistic: t 551 = 3.16
+    p: 0.00163
+    n: 296 paired neurons (9 mice), 257 unpaired neurons (6 mice)
+  expected:
+  - quantity: Drd2 paired neurons
+    value: 296
+    tolerance: 30
+  - quantity: Drd2 unpaired neurons
+    value: 257
+    tolerance: 26
+  criterion: Calcium response per neuron (opening comment), short and long windows, two-sample
+    t-tests of paired against unpaired neurons (df 551). Reproduced when both give p < 0.01 with
+    paired higher and the neuron counts are within tolerance.
+- id: fig5h-drd1-no-difference
+  statement: Drd1a+ ASt neuron responses to CS-shock and CS-reward do not differ between paired and
+    unpaired mice.
+  source: Figure 5H-I; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli
+    predicting shocks, paragraph 1
+  quote: Drd1a + ASt neuron population average responses to CS-shock were not significantly
+    different from unpaired controls
+  statistics:
+  - about: CS-shock short
+    test: t-test
+    statistic: t 555 = -1.07
+    p: 0.286
+    n: 320 paired neurons (10 mice), 237 unpaired neurons (8 mice)
+  - about: CS-shock long
+    test: t-test
+    statistic: t 555 = -1.58
+    p: 0.116
+  - about: CS-reward short
+    test: t-test
+    statistic: t 555 = 1.86
+    p: 0.064
+  - about: CS-reward long
+    test: t-test
+    statistic: t 555 = 0.70
+    p: 0.482
+  expected:
+  - quantity: Drd1a paired neurons
+    value: 320
+    tolerance: 32
+  - quantity: Drd1a unpaired neurons
+    value: 237
+    tolerance: 24
+  criterion: A claim of absence, on the paper's four two-sample t-tests (df 555) at p < 0.05.
+    Reproduced when none is significant.
+- id: fig5k-drd2-cs-reward-no-difference
+  statement: Drd2+ ASt neuron responses to CS-reward do not differ between paired and unpaired
+    mice.
+  source: Figure 5K
+  quote: Drd2 + ASt neuron responses to CS-reward were not significantly different from unpaired
+    controls
+  statistics:
+  - about: short
+    test: t-test
+    statistic: t 551 = 1.85
+    p: 0.065
+  - about: long
+    test: t-test
+    statistic: t 551 = -1.68
+    p: 0.094
+  criterion: A claim of absence, on the paper's two two-sample t-tests (df 551) at p < 0.05.
+- id: fig5m-drd2-rich-clusters-cs-shock
+  statement: Clustering imaged neurons of paired Drd1a-Cre and Drd2-Cre mice, the clusters richest
+    in Drd2+ neurons respond to CS-shock or are inhibited by CS-reward, while those richest in
+    Drd1a+ neurons prefer CS-reward or are inhibited by CS-shock; Drd2+ neurons are the main
+    contributors to CS-shock responses.
+  source: Figure 5L-M; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli
+    predicting shocks, paragraph 1
+  quote: We found that the clusters with more Drd2 + neurons had greater responses to CS-shock
+  depends_on:
+  - fig5j-drd2-cs-shock-responses
+  criterion: Per neuron of paired mice, CS-shock and CS-reward z traces concatenated, soft
+    normalized to a maximum z of 10, agglomerative hierarchical clustering on Euclidean distance,
+    cut into nine clusters as the figure names (STAR Methods; Figure 5M legend). Linkage and trace
+    span are open; readings average and Ward linkage, spans the 10 s cue or the full imaged
+    window. Clusters ranked by the share of Drd2+ neurons normalized for the number of each type.
+    Reproduced when under one reading the Spearman correlation across clusters between that share
+    and the cluster's mean CS-shock z over 0 to 10 s is positive at p < 0.05.
+- id: figs14-us-shock-scaling
+  statement: Drd1a+ and Drd2+ ASt neuron responses scale with the intensity of unpredicted shocks
+    but not with the size of unpredicted rewards.
+  source: Figure S14F-I; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli
+    predicting shocks, paragraph 2
+  quote: both Drd1a + and Drd2 + neurons showed scaling of responses to US-shock intensity, though not
+    US-reward
+  statistics:
+  - about: Drd1a+, US-shock
+    test: one-way ANOVA, Bonferroni-corrected post hoc t-tests
+    statistic: F(2,960) = 4.53
+    p: 0.011
+    n: 7 mice, 321 neurons
+  - about: Drd1a+, US-reward
+    test: one-way ANOVA
+    statistic: F(2,960) = 1.77
+    p: 0.17
+  - about: Drd2+, US-shock
+    test: one-way ANOVA, Bonferroni-corrected post hoc t-tests
+    statistic: F(2,1437) = 23.12
+    p: 1.3e-10
+    n: 8 mice, 480 neurons
+  - about: Drd2+, US-reward
+    test: one-way ANOVA
+    statistic: F(2,1437) = 0.86
+    p: 0.42
+  criterion: Per neuron and US magnitude, mean z over 0 to 3 s after US onset, baselined on the 5 s
+    before shock delivery or reward consumption (STAR Methods; Figure S14). One-way ANOVA over
+    the three magnitudes with neurons as independent observations (df as printed). Reward
+    consumption onset is open; readings, the first port entry after delivery, or the delivery
+    itself. Reproduced when both US-shock ANOVAs give p < 0.05 with the mean rising from 0.1 to
+    1.4 mA, and neither US-reward ANOVA does.
+- id: figs14q-few-salience-neurons
+  statement: Among Drd2+ ASt neurons, only 2.4% respond in the same direction to CS-shock and
+    CS-reward (salience-like), while 38% respond to only one CS or in opposite directions.
+  source: Figure S14Q; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli
+    predicting shocks, paragraph 2
+  quote: only 2.4% of neurons exhibited responses consistent with salience (excited or inhibited to
+    both CS-shock and CS-reward), while 38% of neurons significantly responded to only one CS type
+  expected:
+  - quantity: Drd2+ neurons with same-direction responses to both CS
+    value: 2.4
+    tolerance: 0.24
+    unit: percent
+  - quantity: Drd2+ neurons responding to one CS only or in opposite directions
+    value: 38
+    tolerance: 3.8
+    unit: percent
+  criterion: Drd2+ neurons of paired mice from the US session (5 mice, 348 neurons, Figure S14
+    legend), classed excited when the mean z over 0 to 3 s after CS onset exceeds 2.58 and
+    inhibited when below -2.58. Reproduced when both shares are within tolerance.
+- id: figs15-no-context-encoding
+  statement: After contextual fear conditioning, neither Drd1a+ nor Drd2+ ASt neurons change their
+    activity in the conditioned context compared with an unconditioned one, although the mice
+    freeze more in the conditioned context.
+  source: Figure S15D-K; Results, Drd2+ ASt neurons show robust responses to conditioned stimuli
+    predicting shocks, paragraph 3
+  quote: neither Drd1a + nor Drd2 + ASt neurons showed any changes in neural activity in the
+    conditioned context compared with an unconditioned one
+  statistics:
+  - about: freezing, Context A against B
+    test: paired t-test
+    p: 0.05
+    p_relation: "<"
+  - about: activity measures, Context A against B
+    test: paired t-test across mice
+    p: 0.05
+    p_relation: ">"
+    n: Drd1a 6 mice, Drd2 5 mice
+  criterion: A claim of absence for activity. Per mouse, mean raw fluorescence, calcium transient
+    peak rate and estimated spike rate of its neurons in Context A and in Context B; the paper's
+    paired t-tests across mice, for each measure and cell type. Peak detection and spike
+    estimation are not given (CNMF-E outputs); readings, the CNMF-E deconvolved trace for
+    spikes, and peaks above 2 SD of the trace. Reproduced when none of the six tests gives
+    p < 0.05 and freezing is higher in Context A at p < 0.05 for both cell types.
+- id: fig6e-drd2-inhibition-reduces-defense
+  statement: Inhibiting Drd2+ ASt neurons reduces conditioned defensive behavior to CS-shock
+    compared with eYFP controls, by nearly 50%.
+  source: Figure 6C and 6E; Results, Drd2+ ASt neurons are necessary for the expression of
+    conditioned fear behaviors, paragraph 1; Discussion, paragraph 2
+  quote: Inhibition of Drd2 + ASt neurons significantly reduced conditioned defensive behaviors to
+    CS-shock compared with eYFP controls (t 19 = 2.235, * p = 0.038, Student's t test
+  statistics:
+  - test: Student's t test
+    statistic: t 19 = 2.235
+    p: 0.038
+    n: 8 NpHR and 13 eYFP mice
+- id: figs16-drd2-inhibition-freezing-darting
+  statement: Inhibiting Drd2+ ASt neurons reduces both freezing (-40.4% against -16.3% in eYFP)
+    and darting (-48.9% against 3.7%) to CS-shock.
+  source: Figure S16H and S16J
+  quote: Inhibition of Drd2+ ASt neurons resulted in a significantly greater reduction in conditioned
+    freezing behaviors
+  statistics:
+  - about: freezing
+    test: Student's t-test
+    statistic: t19 = 2.120
+    p: 0.047
+    n: 8 NpHR and 13 eYFP mice
+  - about: darting
+    test: Student's t-test
+    statistic: t19 = 2.097
+    p: 0.0496
+    n: 8 NpHR and 13 eYFP mice
+- id: fig6f-drd2-inhibition-no-reward-effect
+  statement: Inhibiting Drd2+ ASt neurons does not change port entry during CS-reward.
+  source: Figure 6F
+  quote: Inhibition of Drd2 + ASt neurons had no effect on responses to CS-reward
+  statistics:
+  - test: Student's t test
+    statistic: t 19 = 0.809
+    p: 0.428
+  criterion: A claim of absence, on the paper's Student's t test at p < 0.05.
+- id: fig6g-j-drd2-inhibition-no-other-effects
+  statement: Inhibiting Drd2+ ASt neurons does not change locomotion in an open field, place
+    preference, open arm exploration, or freezing to a conditioned context.
+  source: Figure 6G-J
+  quote: Inhibition of Drd2 + ASt neurons had no effect on overall locomotion or unconditioned
+    freezing behavior in an open field task
+  statistics:
+  - about: open field locomotion
+    test: two-way ANOVA, group x laser interaction
+    statistic: F (1,32) = 0.011
+    p: 0.9167
+  - about: real-time place preference, NpHR effect of side
+    test: two-way RM ANOVA
+    statistic: F(1,8) = 0.6896
+    p: 0.4304
+  - about: elevated plus maze
+    test: two-way ANOVA, group x laser interaction
+    statistic: F (1,32) = 0.011
+    p: 0.9177
+  - about: contextual fear, day 2
+    test: Student's t test
+    statistic: t 16 = 0.395
+    p: 0.6984
+  criterion: A claim of absence, on the paper's four tests at p < 0.05.
+- id: figs17-drd1-inhibition-no-effect
+  statement: Inhibiting Drd1a+ ASt neurons affects neither defensive behavior to CS-shock nor port
+    entry to CS-reward.
+  source: Figure S17E-F; Results, Drd2+ ASt neurons are necessary for the expression of conditioned
+    fear behaviors, paragraph 2
+  quote: Inhibition of Drd1a + ASt neurons had no effect on responses to either CS type or other
+    behaviors examined
+  statistics:
+  - about: defensive behavior to CS-shock
+    test: Student's t-test
+    statistic: t13 = 0.137
+    p: 0.893
+  - about: port entry during CS-reward
+    test: Student's t-test
+    statistic: t13 = 0.493
+    p: 0.63
+  criterion: A claim of absence, on the paper's two Student's t-tests at p < 0.05.
