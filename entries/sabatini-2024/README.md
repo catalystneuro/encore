@@ -17,11 +17,16 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 the differences from the paper's method.
 
 The dandiset's units are one per electrode, with no single- or multi-unit label, where the paper used
-sorted units; the Nitschke file joins five recording segments whose clocks overlap. The main notebook
+sorted units; the Nitschke file joins five recording segments whose clocks overlap, and in the Jenkins
+file one unit's spike train continues in the next unit's row. The main notebook
 uses all successful trials; `reproduce_sabatini_2024_trials_b.ipynb` runs the same analyses on trials
-with a delay above 400 ms, the claims file's other reading, and every outcome is the same. The attempt record,
+with a delay above 400 ms, the claims file's other reading, and every outcome is the same.
+`reproduce_sabatini_2024_stable_units.ipynb` leaves out three units whose spike trains are not one stable
+unit's (in the Jenkins file, unit 0's train continues in unit 1's row; in the Nitschke file, unit 170 fires
+above 100 spikes/s on 229 trials of one segment), and every outcome is the same except
+fig6e-kinematics-predict-location, for which the record proposes a change. The attempt record,
 with the reasons, the differences from the paper's method and the findings about the dataset, is
 [`attempts/sabatini-2024-01.yaml`](../../attempts/sabatini-2024-01.yaml).
 
 Run with `python tools/entry.py run entries/sabatini-2024`; it streams about 1 GB of spike times and hand
-position and the two notebooks take about 25 and 15 minutes.
+position and the three notebooks take about 25, 15 and 25 minutes.

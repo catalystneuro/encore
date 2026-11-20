@@ -103,7 +103,7 @@ def select_trials(d, reading="b"):
     return keep
 
 
-def load_session(monkey, shuffle_seeds=(), progress=False):
+def load_session(monkey, shuffle_seeds=(), shuffle_window_seeds=(), progress=False):
     """Stream one session; return single-trial smoothed rates and hand position.
 
     For every successful trial of the 72 conditions (reading (a); reading (b) is a subset), returns
@@ -113,6 +113,11 @@ def load_session(monkey, shuffle_seeds=(), progress=False):
       C10 (trials, units, 121) spike counts summed in 10 ms bins [t, t+10), times 100 (spikes/s);
       RS  {seed: array} as R, with the 1 ms bins of each trial permuted in time before
           smoothing (tbf-shuffle-control), one array per seed;
+      RSW {seed: array} as RS, with only the 1201 bins of the analysis window (-350 to +850 ms)
+          permuted and smoothed with symmetric padding at its edges: the span of the paper's code,
+          which permutes all columns of a trial's 1 ms matrix (scrambleTrials.m) and then smooths
+          with symmetric padding and keeps every tenth column of the same matrix (preprocessTrials.m),
+          so that the matrix spans the analysis window;
       RW  as R, time-warped so that the reach lasts 600 ms, post-reach truncated at 850 ms;
       RW2 as R, warped to 600 ms with the post-reach part warped to last 250 ms.
     Hand position (trials, 1201, 2) at 1 ms over -350..+850 ms.
@@ -194,6 +199,9 @@ def load_session(monkey, shuffle_seeds=(), progress=False):
     R = np.zeros((ntr, nunits, len(GRID_MS)), np.float32)
     RS = {sd: np.zeros_like(R) for sd in shuffle_seeds}
     rngs = {sd: np.random.default_rng(sd) for sd in shuffle_seeds}
+    RSW = {sd: np.zeros_like(R) for sd in shuffle_window_seeds}
+    rngs_w = {sd: np.random.default_rng(sd) for sd in shuffle_window_seeds}
+    aw = slice(gi[0], gi[-1] + 1)  # the 1201 bins of -350..+850 ms
     RW = np.zeros_like(R)
     RW2 = np.zeros_like(R)
     C10 = np.zeros_like(R)
@@ -211,6 +219,10 @@ def load_session(monkey, shuffle_seeds=(), progress=False):
             # variance explained, a shorter one raise it)
             cs = c[:, rngs[sd].permutation(nwin)]
             RS[sd][i] = gaussian_filter1d(cs, SMOOTH_SD_MS, axis=1, mode="reflect")[:, gi] * 1000
+        for sd in shuffle_window_seeds:
+            cw = c[:, aw]
+            cw = cw[:, rngs_w[sd].permutation(cw.shape[1])]
+            RSW[sd][i] = gaussian_filter1d(cw, SMOOTH_SD_MS, axis=1, mode="reflect")[:, ::10] * 1000
         cc = c[:, gi[0]:gi[0] + 1210].reshape(nunits, 121, 10).sum(2)
         C10[i] = cc * 100
         if np.isfinite(dur[i]):
@@ -228,8 +240,58 @@ def load_session(monkey, shuffle_seeds=(), progress=False):
                 electrode_columns=electrode_cols, unit_electrode=el, n_electrodes=len(loc))
     tr = {k: v[idx] for k, v in d.items()}
     tr["duration_ms"] = dur
-    return dict(trials=tr, all_trials=d, R=R, RS=RS, RW=RW, RW2=RW2, C10=C10, hand=hand,
+    return dict(trials=tr, all_trials=d, R=R, RS=RS, RSW=RSW, RW=RW, RW2=RW2, C10=C10, hand=hand,
                 area=area, info=info)
+
+
+def spike_run_report(monkey, unit):
+    """The runs of one unit whose spike train restarts: for each run its size and first and last
+    time, the spike times the runs share, the fraction of the merged train's intervals under 1 ms
+    (and of each run's), for each run the largest fraction of its times found exactly in another
+    unit's train, with that unit, and the other units whose train ends within 1 s before a run
+    starts (unit, spikes, first and last time, and the largest fraction of its times found exactly
+    in a third unit's train, with that unit)."""
+    f, _ = open_nwb(monkey)
+    u = f["units"]
+    sidx = u["spike_times_index"][:]
+    a0 = np.r_[0, sidx[:-1]]
+    s = u["spike_times"][a0[unit]:sidx[unit]]
+    runs = [s[a:b] for a, b in _segments(s)]
+    out = dict(runs=[(len(r), float(r[0]), float(r[-1])) for r in runs],
+               shared=len(np.intersect1d(runs[0], runs[1])) if len(runs) > 1 else 0,
+               isi_below_1ms_merged=float((np.diff(np.sort(s)) < 1e-3).mean()),
+               isi_below_1ms_runs=[float((np.diff(r) < 1e-3).mean()) for r in runs])
+    best = [(0.0, -1)] * len(runs)
+    ends = []
+    for other in range(len(sidx)):
+        if other == unit:
+            continue
+        so = u["spike_times"][a0[other]:sidx[other]]
+        best = [max(b, (float(np.isin(r, so).mean()), other)) for b, r in zip(best, runs)]
+        if len(so) and any(0 <= r[0] - so.max() < 1 for r in runs):
+            ends.append((other, len(so), float(so.min()), float(so.max())))
+    # for a unit that ends just before a run, the same measure of sharing as for the runs
+    for k, (e, n, a, b) in enumerate(ends):
+        se = u["spike_times"][a0[e]:sidx[e]]
+        top = max((float(np.isin(se, u["spike_times"][a0[o]:sidx[o]]).mean()), o)
+                  for o in range(len(sidx)) if o not in (e, unit))
+        ends[k] = (e, n, a, b, top)
+    f.close()
+    out["most_shared_with_other_unit"] = best
+    out["ends_before_a_run"] = ends
+    return out
+
+
+def block_rate_ratio(R, block=50):
+    """Per unit: the largest mean rate over blocks of `block` successive trials (file order) divided
+    by the median block mean. A stable unit stays near 1. The paper used 'single-units and stable
+    multi-units' (Methods, Subjects, behavior and data pre-processing) without a rule; the block size
+    is a standard choice, and the notebook shows the ratios so that any threshold can be read off."""
+    F = R.mean(2)
+    nb = len(F) // block
+    B = np.array([F[i * block:(i + 1) * block].mean(0) for i in range(nb)])
+    with np.errstate(divide="ignore"):  # a unit silent in most blocks gets an infinite ratio
+        return B.max(0) / np.median(B, 0)
 
 
 def reach_duration(hand):
