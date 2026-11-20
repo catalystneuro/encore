@@ -5258,7 +5258,7 @@
    },
    "dandi:000552": {
     "ready": true,
-    "date": "2026-11-19"
+    "date": "2026-11-20"
    },
    "dandi:000045": {
     "ready": true,
@@ -12938,6 +12938,10 @@
    "zheng-2022": {
     "ready": null,
     "date": null
+   },
+   "zheng-2024": {
+    "ready": true,
+    "date": "2026-11-20"
    },
    "zhong-2026": {
     "ready": true,
@@ -36063,6 +36067,240 @@
       "source": "Extended Data Figure 10a-f; Extended Data Figure 2f, right",
       "quote": "Same-shank SBD and DBD pairs recorded >60 \u03bcm apart were less differentially affected by spike sorting errors, as evidenced by similar waveform profile distances.",
       "criterion": "Extended Data Figure 10 legend. Pairs of fig2g-ripple-cofiring and fig2c-theta-cofiring (homecage) and of fig5c-sbd-ratemap-overlap (maze) recorded on the same shank; distance is that between the two maximum-waveform channels on the probe layout, and the subset is the pairs > 60 um apart. Waveform profile distance as in ed2-waveform-validation, on spontaneous spikes; the legend gives the L2 norm of the concatenated waveforms, the code (get_corrBeh_v3.m, wf_overlap) divides it by the number of good channels; the legend's form is used and the code's shown as a variant (the test of absence does not depend on a common scale). The absence of a waveform difference at > 60 um is judged on the paper's two-sided Wilcoxon at 0.05. Waveform-matched resampling (panels c and f), 500 times, DBD pairs drawn to the SBD waveform-distance mass function at the size of the full same-shank SBD group, as ed5-matched-controls describes the resampling. Reproduced when the > 60 um waveform test gives p >= 0.05, SBD exceeds DBD with p < 0.05 for SPW-R, theta and ratemap correlations, the medians are within tolerance, every homecage resampling gives p < 0.05 and the ratemap fraction is within tolerance. Partially reproduced when the waveform test and the three directions with p < 0.05 hold and another part does not. Not reproduced when an SBD-DBD comparison fails at p < 0.05."
+     }
+    ]
+   },
+   {
+    "path": "claims/zheng-2024.yaml",
+    "paper": "10.1016/j.celrep.2024.114702",
+    "check": {
+     "ready": true,
+     "date": "2026-11-20"
+    },
+    "claims": [
+     {
+      "id": "fig1d-pv-decorrelation",
+      "statement": "The correlation between population vectors of place cells decreases with the lag between trials, in both familiar and novel environments (within-session drift).",
+      "source": "Results, Within-session representational drift, paragraph 1; Figure 1C and 1D",
+      "quote": "The correlation decreased as a function of the lag between trials, suggesting drift within both the familiar and the novel environment",
+      "criterion": "Per session and turn (figure-8) or direction (linear maze), the population vector of a trial is the concatenation of the place cells' trial rate maps (Figure 1C legend; code compare amplitude change and location drift notebook, raw rates, place cells only); Pearson correlation between every pair of trials. The slope of correlation on lag is fitted by linear regression over all trial pairs with lags 1 to 10 (code pv_corr_analysis.py, get_decay_slope_linregress). The paper reports no test of the decrease itself; its default one-sample test is the two-sided Wilcoxon signed-rank test (STAR Methods, Quantification and statistical analysis). Reproduced when the slopes are below zero by that test at p < 0.05 in familiar and in novel units separately; partially reproduced when this holds in one environment only."
+     },
+     {
+      "id": "fig1e-novel-drift-faster",
+      "statement": "Over trial lags 1 to 10, population vectors decorrelate faster (a more negative slope) in novel than in familiar environments.",
+      "source": "Results, Within-session representational drift, paragraph 1; Figure 1E",
+      "quote": "Linear regression revealed that drift was significantly faster in novel environments (larger negative slope) within the first 1-10 trial lags",
+      "criterion": "Slopes as in fig1d-pv-decorrelation, one per session and turn or direction, from lags 1 to 10 (the code requires at least 5 lags in the window). Familiar against novel slopes by a two-sided Wilcoxon rank-sum test (Figure 1E legend). Reproduced when p < 0.05 with the novel slopes more negative; Cohen's d is reported against the expected value, signed so that a more negative novel slope gives a positive d (the legend does not give the order of the groups; this is the order that matches the text)."
+     },
+     {
+      "id": "fig1e-later-lags-no-difference",
+      "statement": "Over trial lags 11 to 20 and 21 to 30 no significant difference in decorrelation slope between novel and familiar environments was detected.",
+      "source": "Results, Within-session representational drift, paragraph 1; Figure 1E",
+      "quote": "we failed to detect a significant difference between novel and familiar environments over a range of 11-20 or 21-30 trial lags",
+      "criterion": "A claim of absence. Slopes as in fig1e-novel-drift-faster over lags 11 to 20 and 21 to 30 (units with at least 5 lags in the window, as in the code), familiar against novel by a two-sided Wilcoxon rank-sum test. Reproduced when p >= 0.05 for both windows; not reproduced when either is significant. The numbers of units and Cohen's d are reported."
+     },
+     {
+      "id": "fig1h-rate-decorrelates-location-stable",
+      "statement": "The vector of within-field peak firing rates of all place fields decorrelates with trial lag, whereas the vector of field peak locations stays correlated.",
+      "source": "Results, Within-session representational drift, paragraph 2; Figure 1G and 1H",
+      "quote": "We found the vector of the peak firing rate of all place fields decorrelated as a function of trial lag, whereas the vector of the field locations remained stable",
+      "criterion": "Per session and environment, the vector over place fields of each trial's peak rate, and of each trial's peak location, correlated (Pearson) between trial pairs and averaged per lag (Figure 1G legend; code compare amplitude change and location drift notebook, get_plot_pf_param_population_corr_vs_lag, which concatenates the two turns aligned by within-turn trial index). The paper reports no test; the slope of correlation on lag per session is fitted by linear regression, as for Figure 1E, and slopes are tested against zero by the two-sided Wilcoxon signed-rank test (STAR Methods default). Reproduced when the peak-rate slopes are negative at p < 0.05 and the median peak-rate slope is at least twice as steep as the median location slope; the threshold of two is chosen here, as the paper states the contrast in words only, and both medians are reported."
+     },
+     {
+      "id": "fig1i-location-mse-increases",
+      "statement": "The mean squared distance between field-location vectors still increases significantly with trial lag, so field locations do change.",
+      "source": "Results, Within-session representational drift, paragraph 2; Figure 1I",
+      "quote": "In fact, the average squared Euclidean distance as a function of trial lag increased significantly",
+      "criterion": "Squared Euclidean distance between the field-location vectors of two trials divided by the number of fields (Figure 1I legend; code nan_euclidean_distances squared over n_fields), averaged per lag. The paper names no test and the code has none. Readings; (a) per session, the slope of the distance on lag (lags 1 to 10) by linear regression, tested against zero by the two-sided Wilcoxon signed-rank test (STAR Methods default); (b) an ordinary least squares regression of the median over sessions on lag, as in the code's tentative statistics cell. Reproduced when the increase is significant at p < 0.05 under a reading."
+     },
+     {
+      "id": "switch-step-size-filter",
+      "statement": "Requiring change points to change the firing rate by at least 40% of the maximum removes only 7% of putative switching fields (212 of 3,184).",
+      "source": "Results, Within-session representational drift, paragraph 3",
+      "quote": "This restriction ruled out only 7% of the putative switching fields (n = 212/3,184)",
+      "criterion": "Switch detection as in the opening comment, over familiar and novel sessions together (the paper does not say; readings (a) both environments, (b) familiar only). A putative switching field has a significant change point by the shuffle test; it is removed when no change point passes the 40% step filter. Reproduced when both counts are within tolerance under a reading and under either normalisation of the step (code, fitted maximum; or raw maximum)."
+     },
+     {
+      "id": "fig2d-switch-fractions",
+      "statement": "In the familiar environment 19% of place fields (2,310 of 12,311) switch significantly (14% ON, 9% OFF); in the novel environment 31% (662 of 2,127; 25% ON, 18% OFF).",
+      "source": "Results, Within-session representational drift, paragraph 3; Figure 2D",
+      "quote": "Overall, 19% (2,310/12,311) of the place fields showed significant switching (14% ON, 9% OFF) in the familiar environment (Figure 2D) and 31% (662/2,127; 25% ON, 18% OFF) in the novel environment",
+      "criterion": "Fields are the place fields after merging of turn-common central-arm fields, over the 46 familiar and 8 novel sessions; a switching field has at least one switch ON or OFF (code fig1 notebook, has_sw). Reproduced when all values are within tolerance; partially reproduced when the ON and OFF fractions of both environments (four values) are within tolerance but the field counts are not."
+     },
+     {
+      "id": "fig2e-switch-fraction-by-experience",
+      "statement": "The fraction of switching fields per session is lowest in animals that experienced only the familiar maze (median 0.15), higher in familiar sessions of animals that also experienced a novel environment that day (0.22) and highest in novel sessions (0.3).",
+      "source": "Results, Within-session representational drift, paragraph 3; Figure 2E",
+      "quote": "These animals had higher fractions of switching fields (\"Familiar\" in Figure 2E) than the \"Familiar only\" animals",
+      "criterion": "Per session and maze task, the fraction of its place fields with at least one switch, turns pooled (code fig1 notebook). \"Familiar\" sessions are the familiar-maze sessions of the three mice that also ran a novel environment (e13_26m1, e15_13f1, e16_3m2; 12 sessions in the code's list), \"Familiar only\" the other 34. Groups compared by two-sided Wilcoxon rank-sum tests (Figure 2E legend). Reproduced when the three medians are within tolerance and the three tests give p < 0.05 in the stated directions; partially reproduced when the ordering and at least two tests hold."
+     },
+     {
+      "id": "fig3df-step-beats-polynomial-fields",
+      "statement": "For more than 96% of place fields, a change-point model explains more variance of the per-trial peak rate than a polynomial regression with the same number of parameters, at every model complexity.",
+      "source": "Results, Within-session representational drift, paragraph 5; Figure 3D to 3F, left",
+      "quote": "The change-point models explained more variance for more than 96% of the place fields across all model complexities",
+      "criterion": "For each place field, the change-point model with K change points (K + 1 segments, fitted by optimal partitioning, minimum segment 2) against an ordinary least squares polynomial of order K in trial number, K = 1, 2, 3 (Figures 3D to 3F; Methods, Continuous model of trial-dependent change). Explained variance ratio of each as 1 minus residual variance over total variance (code step_vs_gradual_analysis.py, fit_cpd_get_r2, and statsmodels rsquared). All place fields after merging (code). Reproduced when the fraction with the change-point ratio higher exceeds 0.96 for each K (the paper states a bound, so no tolerance); partially reproduced when it exceeds 0.90 for each K."
+     },
+     {
+      "id": "fig3df-polynomial-beats-step-population",
+      "statement": "For the decay of population-vector correlation with trial lag, a polynomial regression explains more variance than the change-point model.",
+      "source": "Results, Within-session representational drift, paragraph 5; Figure 3D to 3F, right, and Figure 3G",
+      "quote": "In contrast, polynomial regression explained more variance than the change-point model for the population vector decorrelation",
+      "criterion": "Per session and turn or direction, the mean PV correlation per lag (Figure 3 legend, \"averaged across trial pairs\") fitted against lag by the change-point model with K change points and by a polynomial of order K, K = 1 to 3. The paper gives no fraction or test; reproduced when, for each K, more than half of the units are better explained by the polynomial and the paired difference of explained variance ratios is below zero by a two-sided Wilcoxon signed-rank test at p < 0.05 (STAR Methods default for paired samples). Partially reproduced when the majority holds without the test."
+     },
+     {
+      "id": "figs4g-population-vectors-gradual",
+      "statement": "Fitted to the population vectors themselves (after PCA), the gradual and step models are comparable, with 60% to 70% of sessions better explained by the gradual model and the distribution of R2 differences significantly biased toward the polynomial model.",
+      "source": "Results, Within-session representational drift, paragraph 6; Figure S4G",
+      "quote": "We found that the two models were largely comparable at explaining the data, with more sessions (60%-70%) better explained by the gradual model and the distribution of R2 significantly biased toward continuous models",
+      "criterion": "Per session and turn, the matrix of trial population vectors (place cells x position) reduced by PCA to the components holding just above 95% of the variance; a vector-valued change-point model with shared change points (cost summed over components) against polynomials fitted to each component (Methods, Model comparison applied to the population vectors), orders 1 to 3. Reproduced when, for each order, the fraction better explained by the polynomial lies in 0.54 to 0.77 and R2(CPM) minus R2(regression) is below zero by a two-sided Wilcoxon signed-rank test at p < 0.05."
+     },
+     {
+      "id": "fig3k-switch-abrupt",
+      "statement": "75% to 77% of first passage times after a change point are under two trials, and the distribution of switch durations resembles a negative binomial with two successes and p = 0.5, as expected for an instantaneous step.",
+      "source": "Results, Within-session representational drift, paragraph 7; Figure 3H to 3K",
+      "quote": "Empirically, we found that 75%-77% of first passage times happened in fewer than two trials, and the distribution of passage times resembled the expected negative binomial distribution",
+      "criterion": "For each detected switch, thresholds are the rates predicted by the step model; for a switch ON the post-switch passage time is the number of trials from the change point to the first trial with rate above the post-switch prediction, the pre-switch passage time the number back from the trial before it to the first trial below the pre-switch prediction; mirrored for OFF; the switch duration is their sum (Methods, Switch duration quantification; code get_peri_switch_peak_valley_span). The text says \"first passage times\" while Figure 3K plots durations, so the readings are (a) individual passage times (expected under a step to follow a negative binomial with k = 1, p = 0.5, giving 0.75 under two) and (b) switch durations (k = 2). Reproduced when, under a reading, the fraction under two trials is within tolerance for ON and OFF; the durations are compared with the negative binomial (k = 2, p = 0.5) by their histograms and a chi-squared goodness of fit, reported (the code's exploratory test; the paper reports none)."
+     },
+     {
+      "id": "figs5-switchers-drive-drift",
+      "statement": "Population vectors of switching place cells decorrelate faster with trial lag than those of size-matched non-switching cells, in familiar and novel environments.",
+      "source": "Results, Within-session representational drift, paragraph 8; Figure S5",
+      "quote": "The population vector of the switching population decorrelated faster than that of the non-switching population in both familiar and novel environments",
+      "criterion": "Switchers are place cells with at least one switching field, non-switchers those with none, sampled ten times to the switchers' number and averaged (Methods, Contribution of switching neurons to drift). Per session, the median PV correlation over trial pairs at each lag, and the slope of a linear regression on lag. The code pools turns per session and task; per session and turn is the other reading. Paired switcher against non-switcher slopes by the Wilcoxon signed-rank test (Figure S5B). Reproduced when p < 0.05 with switchers steeper in both environments; partially reproduced in one. Median differences are reported against the expected values."
+     },
+     {
+      "id": "fig4-glm-deviance",
+      "statement": "A Poisson GLM of switch counts per arm and trial explains 20% of the deviance for switching ON and 14% for switching OFF, with animal identity, maze segment and the number of place fields the most important predictors.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4A and 4F",
+      "quote": "The model explained 20% of the deviance for switching ON and 14% for switching OFF ... We found that the variables that explained most of the variance were the animal labels (i.e., individual differences), the maze corridors, and the number of place fields",
+      "criterion": "Familiar sessions only. Rows are trial by maze segment (delay zone, central arm, choice arm, return side arm, pre-delay zone; Figure 4K; the code cuts linearised position at 0, 15, 74, 111, 185, 202, 222 cm and merges the last piece into the delay zone, trials from the fourth on). Model y ~ C(Animal) + C(Position) + N_field + Trial + Speed + CV_speed + C(Correct) + C(Prev_correct), Poisson, Trial and Speed z-scored within session (Methods, Generalized linear model of switching). Explained deviance read as (a) the cross-validated held-out fraction of deviance, repeated 5-fold cross-validation stratified by animal, 10 repeats (Methods; the code uses StratifiedShuffleSplit with 5 splits and 10% held out, shown as a variant), or (b) in-sample on all rows. Importance is the drop in held-out explained deviance when one predictor is left out. Reproduced when both values are within tolerance under a reading and the three largest drops (ON and OFF each) are animal, position and number of fields; partially reproduced when only the ranking holds."
+     },
+     {
+      "id": "fig4-delay-zone-more-switching",
+      "statement": "Consistently more switching ON and OFF occurs in the delay zone than in other parts of the maze.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4B, 4E, 4G and 4J",
+      "quote": "consistently more ON/OFF switching occurred in the delay zone",
+      "criterion": "In the full GLM of fig4-glm-deviance fitted on all rows, the position coefficients of the four other segments relative to the delay zone, with 95% confidence intervals from the Fisher information (Figure 4B legend). Reproduced when all four coefficients are negative with intervals excluding zero, for ON and for OFF; partially reproduced when this holds for one of the two or for three of four segments in both. The per-session number of switches normalised by fields per arm (Figure 4E, 4J) is reported."
+     },
+     {
+      "id": "fig4di-switching-decreases-with-trial",
+      "statement": "The number of switches normalised by the number of fields decreases with trial number, for ON and OFF, in familiar and novel environments.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4D and 4I",
+      "quote": "As expected, switching probability decreased as a function of the trial number",
+      "criterion": "Per trial, the number of switch-ON (OFF) occurrences divided by the number of fields, against trial number z-scored within session, pooled over sessions (Figure 4D legend). Pearson correlation (legend); the code computes a Spearman correlation, shown as a variant. Reproduced when all four correlations are negative at p < 0.05; values compared with the expected r. Partially reproduced when three of four hold."
+     },
+     {
+      "id": "fig4-behavior-not-predictive",
+      "statement": "Correct or incorrect choice on the current or previous trial does not predict switching, and leaving out speed or the CV of speed does not reduce the model's prediction of held-out data.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4A, 4C, 4F, 4H",
+      "quote": "Correct or incorrect arm choice on the current or previous trial did not predict the occurrence of switching (Figures 4C and 4H). Leaving out locomotion speed or coefficient of variation (CV) of speed did not reduce the model's ability to predict held-out data",
+      "criterion": "A claim of absence, on the paper's measures. For choice, the 95% confidence intervals (Fisher information) of the Correct and Prev_correct coefficients in the full GLM (Figure 4C, 4H). For speed, the drop in held-out explained deviance when Speed or CV_speed is left out, over the cross-validation splits (Figure 4A, 4F). Reproduced when, for ON and OFF, both choice intervals include zero and the median drop for speed and for CV of speed is not above zero; not reproduced when any choice interval excludes zero or any median drop is above zero by more than the spread (standard deviation) of drops over splits, a threshold chosen here as the paper shows the splits without a test."
+     },
+     {
+      "id": "figs8-speed-no-trend",
+      "statement": "Average locomotion speed does not change as a function of trial, and there is no clear linear relationship between speed and the normalised switching count.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure S8A to S8C",
+      "quote": "By contrast, average locomotion speed did not change as a function of trial (Figure S8C) ... Nor did we find a clear linear relationship between speed and the normalized (i.e., divided by the number of fields) switching count",
+      "criterion": "Speed z-scored within session against trial, Pearson correlation (Figure S8C legend); the tolerance on r is 0.05 absolute, as 10% of values near zero is below sampling noise. The paper's own familiar p (3 x 10-11) is significant though r is 0.01, so the absence for speed is judged on r. For Figure S8A and S8B, the normalised switch count per arm and trial against the average speed in the arm, Pearson correlation (STAR Methods default for linear correlation); the paper reports no value, and r and p are reported. A clear linear relationship is taken as |r| above 0.1 with p < 0.05, a threshold chosen here. Reproduced when both speed-trial r are within tolerance and neither speed-switching correlation (ON, OFF) is clear; partially reproduced when only the speed-trial part holds."
+     },
+     {
+      "id": "fig4no-head-scans-not-related",
+      "statement": "Most head scans occur in the reward area and few in the central arm, and there is no reliable relationship between field switching and the incidence of head scanning.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 2; Figure 4L to 4O",
+      "quote": "most head scans were detected in the reward area (position 50, between green and red sections), while head scans in the central arm were rare (Figures 4N and 4O). We found no reliable relationship between field switching and incidence of head scanning",
+      "criterion": "Head scans detected as in Methods, Behavior segmentation (head more than 3 cm from the track, extended until within 1 cm, at least 0.4 s, start and end within 20 bins, merged when within 0.4 s; the track sampled from times with speed above 10 cm/s). Per position bin, the number of trials with a head scan and with a switch ON (OFF), and their ratio (Figure 4N, 4O). The paper reports no test. Reproduced when the bin with most head-scan trials lies in the reward area at the end of the choice arms and the central arm has fewer head-scan trials than each other segment, and the per-bin counts of head-scan trials and switch trials are not positively correlated (Pearson, p >= 0.05, STAR Methods default). Partially reproduced when only the spatial distribution holds."
+     },
+     {
+      "id": "figs9-splitter-switching",
+      "statement": "Choice-predicting (splitter) fields on the central arm also switch ON and OFF.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 3; Figure S9",
+      "quote": "We found that the splitter feature of hippocampal neurons could also switch ON and OFF at any trial of the session, similar to place fields",
+      "criterion": "Splitter fields are central-arm fields not merged across turns (peaks 5 bins or more apart or per-trial peak rates different by t-test; Methods, Place field detection). Reproduced when switches ON and OFF are both detected among splitter fields, on trials spread over the session (switch trials in each third of the session). The fraction of splitter fields that switch is reported beside that of other fields."
+     },
+     {
+      "id": "figs13-btsp-signatures",
+      "statement": "On the switch-ON trial, place field width correlates with running speed; the field peak on the following trial shifts backward in the familiar but not significantly in the novel environment; peak rate on the switch trial is not higher than on the next trial; and a significant ramp in rate precedes switch ON.",
+      "source": "Results, Switching exhibits signatures of BTSP, paragraphs 1 and 2; Figure S13A to S13D",
+      "quote": "We observed a significant correlation between the place field width and the running speed on the trial when the field switched ON (Figure S13A) ... the distribution skewed toward backward (Figure S13C), although it is not significant in the novel environment",
+      "criterion": "Switch-ON fields, first switch of each field only (Figure S13A). (1) Field width on the switch trial against mean speed in that trial, linear regression (Pearson), familiar and novel; the paper gives no width definition for a single trial, so readings are (a) the detected field's width and (b) the width of the trial rate map above half its peak within the field. The Results add that the correlation holds after controlling for position (Figure S13B, the same regression within each of ten spatial bins, familiar only); these per-bin results are reported. (2) Shift of the field peak from the switch trial to the next, two-sided Wilcoxon signed-rank test against zero; backward is against running direction. (3) Normalised within-field peak rate around the switch (trial 0), averaged over fields, paired Wilcoxon signed-rank tests between neighbouring trials (Figure S13D). The paper does not say how the rate is normalised; readings (a) divided by the field's maximum over trials, (b) divided by its mean over trials. Reproduced when the width-speed correlation is significant in familiar, the familiar shift is backward at p < 0.05 and the novel shift is not significant, trial 0 against 1 is not significant and trials -3 to -1 rise significantly; partially reproduced when at least three of these hold."
+     },
+     {
+      "id": "fig5c-switchiness-not-intrinsic",
+      "statement": "Across familiar and novel environments, a neuron's switchiness is not correlated, whereas its CV of within-field peak rate and its lap-to-lap rate map correlation are, after regressing out NREM firing rate.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 1; Figure 5C",
+      "quote": "The residuals are significantly correlated across environments for CV of within-field peak firing rate (left, standardized linear regression coefficients t = 4.8, R2 = 0.02, p < 10-5) and lap-lap rate map correlation (middle, t = 7.9, R2 = 0.06; p < 10-14), but not for the explained variance ratio from the change-point model (right, t = 0.9, R2 = 0.0008, p = 0.37)",
+      "criterion": "Metrics per Methods, Metrics of variability; noisiness is std over mean of the per-trial within-field peak rate, shiftiness the trial-pair rate map correlation averaged (the code takes the median), switchiness the variance explained by the one-change-point model. Each metric, familiar and novel, regressed on log NREM firing rate; the novel residual regressed on the familiar residual, standardised (Figure 5C legend; code metric across fam novel notebook, resid_regression). Units are neurons with each metric averaged over fields (Methods; Figure 5C legend, per dot a neuron, n = 955); fields matched across environments by the code's field index are shown as a variant only. For the switchiness, a claim of absence on the paper's test; reproduced when it is not significant at p < 0.05 while CV and lap correlation are significant and positive; partially reproduced when the switchiness part holds and one of the other two does."
+     },
+     {
+      "id": "fig5d-nrem-rate-relations",
+      "statement": "Noisiness decreases with log NREM firing rate in both environments, shiftiness is related to it in the novel environment only, and switchiness is not related to it.",
+      "source": "Figure 5D",
+      "quote": "noisy: familiar, t = -11.1, p = 3.6 \u00d7 10-27; novel, t = -12.6, p = 1.5 \u00d7 10-33; shifty: familiar, t = -0.8, p = 0.4; novel, t = -3.6, p = 0.000326; switchy: familiar, t = 0.9, p = 0.4; novel, t = -0.6, p = 0.5",
+      "criterion": "Each metric regressed on log NREM firing rate per environment, as in fig5c-switchiness-not-intrinsic. Reproduced when the significance at p < 0.05 and the sign of each of the six regressions match the paper; partially reproduced when five of six match."
+     },
+     {
+      "id": "multifield-independent-switching",
+      "statement": "Of 781 pairs of switching place fields belonging to the same place cell, only 41 (5%) switched on the same trial.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 2; Figure 5E",
+      "quote": "Of 781 place field pairs that belonged to the same place cell and both switched, only 41 (5%) switched on the same trial",
+      "criterion": "Pairs of switching fields of the same neuron within a session and turn, familiar and novel pooled (the paper does not say; the other reading is familiar only, as in Figure S11); same trial means a switch of each field on the same trial (ON or OFF; the paper does not say whether the switch types must match, so readings are any switch and same type). Reproduced when both counts are within tolerance under a reading."
+     },
+     {
+      "id": "figs12-stability-after-switch-on",
+      "statement": "Fields that switched ON have a lower CV of peak rate over the five trials after the switch than non-switching fields over five trials from the start or middle of the session, in familiar and novel environments; their peak location is also less jittery, except against the middle window in the novel environment (p = 0.4).",
+      "source": "Results, Switching, neuron or circuit property, paragraph 2; Figure S12A, S12B, S12D, S12E",
+      "quote": "Specifically, switch-ON fields had lower CV of firing rates within the five trials after the switch, relative to trial-to-trial variability in non-switching fields over five trials taken either from the beginning or from the middle of the session",
+      "criterion": "Fields that switched ON once against non-switching fields; place cells with spatial information above 0.5 bit/spike and fields with peak rate above 1 Hz on 90% of trials (Figure S12 legend). CV of per-trial peak rate and SD of peak location over the five trials after the switch, or over the first five trials or five middle trials for non-switching fields; two-sided Wilcoxon rank-sum tests (Figure S12 legend). The paper does not say which five trials are the middle, and with novel p = 0.019 the choice could change the outcome; readings (a) the five centred on the session midpoint, (b) the five starting at the midpoint. Reproduced when, under a reading, switch-ON CV is lower at p < 0.05 for both windows in familiar and in novel, switch-ON location SD is lower at p < 0.05 in familiar (both windows) and in novel (start window), and the medians are within tolerance; the novel middle-window location test is expected not significant and is reported. Partially reproduced when the CV directions and significance hold in familiar only."
+     },
+     {
+      "id": "fig6-co-switching",
+      "statement": "Place fields co-switch on the same trial more than expected by chance in a subset of sessions, 17% (ON) and 20% (OFF) of familiar and 57% (ON) and 29% (OFF) of novel sessions.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 3; Figure 6D and 6E",
+      "quote": "found that 17% (20%) of the familiar sessions and 57% (29%) of the novel sessions showed at least one trial with significant co-switching ON (OFF)",
+      "criterion": "46 familiar and 7 novel sessions (one novel session left out for too few trials; Methods, Datasets), and sessions need at least 7 trials per turn (code ntrials_mask). Null by circularly shifting each field's switch trials independently, 1000 times (Results; code gen_circular_shuffle, which leaves out the first two trials and the last). The statistic is the number of field pairs that co-switch ON (OFF). Readings of \"at least one trial with significant co-switching\"; (a) per session, the number of co-switching pairs over all trials exceeds the shuffle at p < 0.05 (fraction of shuffles at or above the data; code test_co_switch.py, Figure 6E); (b) per trial, the number of pairs switching on that trial exceeds its shuffle distribution at p < 0.05, the session counting when any trial does. Co-switching means the same trial (Results); the code's figure uses a window of lag 1, shown as a variant. Novel fractions are of 7 sessions (4 and 2). Reproduced when the four fractions are within tolerance, or within one session of the expected count, under a reading."
+     },
+     {
+      "id": "fig6f-switching-asynchronous",
+      "statement": "On each trial only a small subset of place fields, up to 5%, switch ON or OFF, so switching is largely asynchronous.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 3; Figure 6F",
+      "quote": "We found that in each trial, a small subset of the place fields (up to 5%) switched ON/OFF",
+      "criterion": "Per session and trial, the fraction of the session's place fields that switch ON (OFF), leaving out the first and last two trials (Figure 6F legend). Reproduced when the 95th percentile over trials of these fractions is at most 0.055, for ON and OFF and in both environments; the maximum is reported, as \"up to\" may mean the extreme or the bulk."
+     },
+     {
+      "id": "figs14-preexisting-fields-ephys",
+      "statement": "For fields whose rate before switching ON (after switching OFF) is below the detection threshold (60% of ON and 20% of OFF switches), within-field firing is already elevated over the surrounding rate before emergence and stays elevated after disappearance, for most neurons.",
+      "source": "Results, Pre-existing dynamics bias switching, paragraph 2; Figure S14",
+      "quote": "Indeed, we found that, even before the emergence of the new place field, the firing rates within the future place fields were already elevated relative to the mean rate recorded outside of the future place field for the majority of the neurons ... Similarly, the firing rates remained elevated within the previous place field after the field had switched OFF",
+      "criterion": "Selection as in Figure S14 legend (mean within-field rate before the first ON, or after the last OFF, below the shuffle threshold of field detection); the Results describe the selected quantity as the average within-field peak firing rate, which is the other reading. Outside region extends the field by 10% of track length on each side until the track end or another field (Methods, Quantification of pre-existing constraint). Within minus outside mean rate over the pre-ON (post-OFF) trials. The paper reports no test here; the code's notebook tests session averages by a two-sided Wilcoxon signed-rank test. Reproduced when the two fractions are within tolerance, more than half of the fields have within above outside, for ON and OFF and in familiar and novel, and the session-level test gives p < 0.05 in familiar; partially reproduced when the majorities hold without the fractions."
+     },
+     {
+      "id": "fig7-preexisting-across-days",
+      "statement": "In two-photon imaging over two days, fields that switch ON on day 2 already show elevated activity within the future field on day 1, and fields that switch OFF on day 1 stay elevated on day 2.",
+      "source": "Results, Pre-existing dynamics bias switching, paragraph 3; Figure 7E to 7H",
+      "quote": "Overall, we found that even on the day before the emergence of the new place field, the firing rates within the future place fields were already significantly elevated relative to the mean rate recorded outside of the future place field (Figures 7E and 7G)",
+      "criterion": "Not testable on dandiset 000552, which holds the electrophysiology only; the imaging data (14 experiments, 11 mice) are available from M. Bartos on request and not deposited. Were they available, the test is the Wilcoxon rank-sum test of within against outside dF/F with Cohen's d (Figure 7 legend), at p < 0.05."
+     },
+     {
+      "id": "figs15-imaging-not-artifact",
+      "statement": "Trial-to-trial changes of baseline fluorescence are not correlated with the fraction of fields switching, so image-plane drift does not explain switching in the imaging data.",
+      "source": "Results, Pre-existing dynamics bias switching, paragraph 4; Figure S15",
+      "quote": "We therefore correlated the average absolute change in baseline fluorescence ... across cells in a given image field with the number of switching fields per trial but did not observe a significant correlation",
+      "criterion": "Not testable on dandiset 000552; the imaging data are not deposited (available on request). Were they available, a claim of absence judged by the Pearson correlation of the z-scored absolute baseline change against the fraction of switching fields per trial (n = 73 ON and 81 OFF trials from 10 sessions), at p < 0.05."
+     },
+     {
+      "id": "figs1-not-electrode-drift",
+      "statement": "Spike amplitudes of neighbouring neurons recorded on the same shank as a switching neuron do not change across its switch, arguing against electrode drift.",
+      "source": "Results, Within-session representational drift, paragraph 4; Figure S1H",
+      "quote": "Finally, neurons recorded on the same site with a switching neuron had unchanged waveforms before and after the switch",
+      "criterion": "A claim of absence. For each switch of a reference neuron, the mean waveform amplitude of each other neuron on the same shank from spikes in the 20 s before and 20 s after the switch time (Figure S1 legend); post minus pre amplitude pooled over neighbours, two-sided Wilcoxon signed-rank test against zero, for ON and OFF. The switch time is the time of the switch trial; the paper does not say which moment of the trial (readings; its start, or the animal's entry into the field). Reproduced when neither test gives p < 0.05; the median change is reported. Needs spike waveforms per spike or amplitudes in the dandiset."
+     },
+     {
+      "id": "figs2-chr2-no-effect",
+      "statement": "The proportions of neurons with different switching properties do not differ between opto-tagged (ChR2-expressing) and non-tagged neurons.",
+      "source": "Results, Within-session representational drift, paragraph 4; Figure S2",
+      "quote": "Furthermore, switching was not related to the expression of channelrhodopsin (ChR) in a small subset of the neurons in the dataset",
+      "criterion": "A claim of absence. Neurons classed by switching property (no switch, switch ON only, OFF only, both; the paper's categories are shown only in the pie charts, so this is the reading taken, with switching against not switching as the other), tagged against not tagged from the dandiset's light-responsive labels; chi-squared test of independence. Reproduced when p >= 0.05 under the readings; not reproduced when any gives p < 0.05."
      }
     ]
    }
@@ -165831,6 +166069,242 @@
     ]
    }
   ],
+  "zheng-2024": [
+   {
+    "path": "claims/zheng-2024.yaml",
+    "paper": "10.1016/j.celrep.2024.114702",
+    "check": {
+     "ready": true,
+     "date": "2026-11-20"
+    },
+    "claims": [
+     {
+      "id": "fig1d-pv-decorrelation",
+      "statement": "The correlation between population vectors of place cells decreases with the lag between trials, in both familiar and novel environments (within-session drift).",
+      "source": "Results, Within-session representational drift, paragraph 1; Figure 1C and 1D",
+      "quote": "The correlation decreased as a function of the lag between trials, suggesting drift within both the familiar and the novel environment",
+      "criterion": "Per session and turn (figure-8) or direction (linear maze), the population vector of a trial is the concatenation of the place cells' trial rate maps (Figure 1C legend; code compare amplitude change and location drift notebook, raw rates, place cells only); Pearson correlation between every pair of trials. The slope of correlation on lag is fitted by linear regression over all trial pairs with lags 1 to 10 (code pv_corr_analysis.py, get_decay_slope_linregress). The paper reports no test of the decrease itself; its default one-sample test is the two-sided Wilcoxon signed-rank test (STAR Methods, Quantification and statistical analysis). Reproduced when the slopes are below zero by that test at p < 0.05 in familiar and in novel units separately; partially reproduced when this holds in one environment only."
+     },
+     {
+      "id": "fig1e-novel-drift-faster",
+      "statement": "Over trial lags 1 to 10, population vectors decorrelate faster (a more negative slope) in novel than in familiar environments.",
+      "source": "Results, Within-session representational drift, paragraph 1; Figure 1E",
+      "quote": "Linear regression revealed that drift was significantly faster in novel environments (larger negative slope) within the first 1-10 trial lags",
+      "criterion": "Slopes as in fig1d-pv-decorrelation, one per session and turn or direction, from lags 1 to 10 (the code requires at least 5 lags in the window). Familiar against novel slopes by a two-sided Wilcoxon rank-sum test (Figure 1E legend). Reproduced when p < 0.05 with the novel slopes more negative; Cohen's d is reported against the expected value, signed so that a more negative novel slope gives a positive d (the legend does not give the order of the groups; this is the order that matches the text)."
+     },
+     {
+      "id": "fig1e-later-lags-no-difference",
+      "statement": "Over trial lags 11 to 20 and 21 to 30 no significant difference in decorrelation slope between novel and familiar environments was detected.",
+      "source": "Results, Within-session representational drift, paragraph 1; Figure 1E",
+      "quote": "we failed to detect a significant difference between novel and familiar environments over a range of 11-20 or 21-30 trial lags",
+      "criterion": "A claim of absence. Slopes as in fig1e-novel-drift-faster over lags 11 to 20 and 21 to 30 (units with at least 5 lags in the window, as in the code), familiar against novel by a two-sided Wilcoxon rank-sum test. Reproduced when p >= 0.05 for both windows; not reproduced when either is significant. The numbers of units and Cohen's d are reported."
+     },
+     {
+      "id": "fig1h-rate-decorrelates-location-stable",
+      "statement": "The vector of within-field peak firing rates of all place fields decorrelates with trial lag, whereas the vector of field peak locations stays correlated.",
+      "source": "Results, Within-session representational drift, paragraph 2; Figure 1G and 1H",
+      "quote": "We found the vector of the peak firing rate of all place fields decorrelated as a function of trial lag, whereas the vector of the field locations remained stable",
+      "criterion": "Per session and environment, the vector over place fields of each trial's peak rate, and of each trial's peak location, correlated (Pearson) between trial pairs and averaged per lag (Figure 1G legend; code compare amplitude change and location drift notebook, get_plot_pf_param_population_corr_vs_lag, which concatenates the two turns aligned by within-turn trial index). The paper reports no test; the slope of correlation on lag per session is fitted by linear regression, as for Figure 1E, and slopes are tested against zero by the two-sided Wilcoxon signed-rank test (STAR Methods default). Reproduced when the peak-rate slopes are negative at p < 0.05 and the median peak-rate slope is at least twice as steep as the median location slope; the threshold of two is chosen here, as the paper states the contrast in words only, and both medians are reported."
+     },
+     {
+      "id": "fig1i-location-mse-increases",
+      "statement": "The mean squared distance between field-location vectors still increases significantly with trial lag, so field locations do change.",
+      "source": "Results, Within-session representational drift, paragraph 2; Figure 1I",
+      "quote": "In fact, the average squared Euclidean distance as a function of trial lag increased significantly",
+      "criterion": "Squared Euclidean distance between the field-location vectors of two trials divided by the number of fields (Figure 1I legend; code nan_euclidean_distances squared over n_fields), averaged per lag. The paper names no test and the code has none. Readings; (a) per session, the slope of the distance on lag (lags 1 to 10) by linear regression, tested against zero by the two-sided Wilcoxon signed-rank test (STAR Methods default); (b) an ordinary least squares regression of the median over sessions on lag, as in the code's tentative statistics cell. Reproduced when the increase is significant at p < 0.05 under a reading."
+     },
+     {
+      "id": "switch-step-size-filter",
+      "statement": "Requiring change points to change the firing rate by at least 40% of the maximum removes only 7% of putative switching fields (212 of 3,184).",
+      "source": "Results, Within-session representational drift, paragraph 3",
+      "quote": "This restriction ruled out only 7% of the putative switching fields (n = 212/3,184)",
+      "criterion": "Switch detection as in the opening comment, over familiar and novel sessions together (the paper does not say; readings (a) both environments, (b) familiar only). A putative switching field has a significant change point by the shuffle test; it is removed when no change point passes the 40% step filter. Reproduced when both counts are within tolerance under a reading and under either normalisation of the step (code, fitted maximum; or raw maximum)."
+     },
+     {
+      "id": "fig2d-switch-fractions",
+      "statement": "In the familiar environment 19% of place fields (2,310 of 12,311) switch significantly (14% ON, 9% OFF); in the novel environment 31% (662 of 2,127; 25% ON, 18% OFF).",
+      "source": "Results, Within-session representational drift, paragraph 3; Figure 2D",
+      "quote": "Overall, 19% (2,310/12,311) of the place fields showed significant switching (14% ON, 9% OFF) in the familiar environment (Figure 2D) and 31% (662/2,127; 25% ON, 18% OFF) in the novel environment",
+      "criterion": "Fields are the place fields after merging of turn-common central-arm fields, over the 46 familiar and 8 novel sessions; a switching field has at least one switch ON or OFF (code fig1 notebook, has_sw). Reproduced when all values are within tolerance; partially reproduced when the ON and OFF fractions of both environments (four values) are within tolerance but the field counts are not."
+     },
+     {
+      "id": "fig2e-switch-fraction-by-experience",
+      "statement": "The fraction of switching fields per session is lowest in animals that experienced only the familiar maze (median 0.15), higher in familiar sessions of animals that also experienced a novel environment that day (0.22) and highest in novel sessions (0.3).",
+      "source": "Results, Within-session representational drift, paragraph 3; Figure 2E",
+      "quote": "These animals had higher fractions of switching fields (\"Familiar\" in Figure 2E) than the \"Familiar only\" animals",
+      "criterion": "Per session and maze task, the fraction of its place fields with at least one switch, turns pooled (code fig1 notebook). \"Familiar\" sessions are the familiar-maze sessions of the three mice that also ran a novel environment (e13_26m1, e15_13f1, e16_3m2; 12 sessions in the code's list), \"Familiar only\" the other 34. Groups compared by two-sided Wilcoxon rank-sum tests (Figure 2E legend). Reproduced when the three medians are within tolerance and the three tests give p < 0.05 in the stated directions; partially reproduced when the ordering and at least two tests hold."
+     },
+     {
+      "id": "fig3df-step-beats-polynomial-fields",
+      "statement": "For more than 96% of place fields, a change-point model explains more variance of the per-trial peak rate than a polynomial regression with the same number of parameters, at every model complexity.",
+      "source": "Results, Within-session representational drift, paragraph 5; Figure 3D to 3F, left",
+      "quote": "The change-point models explained more variance for more than 96% of the place fields across all model complexities",
+      "criterion": "For each place field, the change-point model with K change points (K + 1 segments, fitted by optimal partitioning, minimum segment 2) against an ordinary least squares polynomial of order K in trial number, K = 1, 2, 3 (Figures 3D to 3F; Methods, Continuous model of trial-dependent change). Explained variance ratio of each as 1 minus residual variance over total variance (code step_vs_gradual_analysis.py, fit_cpd_get_r2, and statsmodels rsquared). All place fields after merging (code). Reproduced when the fraction with the change-point ratio higher exceeds 0.96 for each K (the paper states a bound, so no tolerance); partially reproduced when it exceeds 0.90 for each K."
+     },
+     {
+      "id": "fig3df-polynomial-beats-step-population",
+      "statement": "For the decay of population-vector correlation with trial lag, a polynomial regression explains more variance than the change-point model.",
+      "source": "Results, Within-session representational drift, paragraph 5; Figure 3D to 3F, right, and Figure 3G",
+      "quote": "In contrast, polynomial regression explained more variance than the change-point model for the population vector decorrelation",
+      "criterion": "Per session and turn or direction, the mean PV correlation per lag (Figure 3 legend, \"averaged across trial pairs\") fitted against lag by the change-point model with K change points and by a polynomial of order K, K = 1 to 3. The paper gives no fraction or test; reproduced when, for each K, more than half of the units are better explained by the polynomial and the paired difference of explained variance ratios is below zero by a two-sided Wilcoxon signed-rank test at p < 0.05 (STAR Methods default for paired samples). Partially reproduced when the majority holds without the test."
+     },
+     {
+      "id": "figs4g-population-vectors-gradual",
+      "statement": "Fitted to the population vectors themselves (after PCA), the gradual and step models are comparable, with 60% to 70% of sessions better explained by the gradual model and the distribution of R2 differences significantly biased toward the polynomial model.",
+      "source": "Results, Within-session representational drift, paragraph 6; Figure S4G",
+      "quote": "We found that the two models were largely comparable at explaining the data, with more sessions (60%-70%) better explained by the gradual model and the distribution of R2 significantly biased toward continuous models",
+      "criterion": "Per session and turn, the matrix of trial population vectors (place cells x position) reduced by PCA to the components holding just above 95% of the variance; a vector-valued change-point model with shared change points (cost summed over components) against polynomials fitted to each component (Methods, Model comparison applied to the population vectors), orders 1 to 3. Reproduced when, for each order, the fraction better explained by the polynomial lies in 0.54 to 0.77 and R2(CPM) minus R2(regression) is below zero by a two-sided Wilcoxon signed-rank test at p < 0.05."
+     },
+     {
+      "id": "fig3k-switch-abrupt",
+      "statement": "75% to 77% of first passage times after a change point are under two trials, and the distribution of switch durations resembles a negative binomial with two successes and p = 0.5, as expected for an instantaneous step.",
+      "source": "Results, Within-session representational drift, paragraph 7; Figure 3H to 3K",
+      "quote": "Empirically, we found that 75%-77% of first passage times happened in fewer than two trials, and the distribution of passage times resembled the expected negative binomial distribution",
+      "criterion": "For each detected switch, thresholds are the rates predicted by the step model; for a switch ON the post-switch passage time is the number of trials from the change point to the first trial with rate above the post-switch prediction, the pre-switch passage time the number back from the trial before it to the first trial below the pre-switch prediction; mirrored for OFF; the switch duration is their sum (Methods, Switch duration quantification; code get_peri_switch_peak_valley_span). The text says \"first passage times\" while Figure 3K plots durations, so the readings are (a) individual passage times (expected under a step to follow a negative binomial with k = 1, p = 0.5, giving 0.75 under two) and (b) switch durations (k = 2). Reproduced when, under a reading, the fraction under two trials is within tolerance for ON and OFF; the durations are compared with the negative binomial (k = 2, p = 0.5) by their histograms and a chi-squared goodness of fit, reported (the code's exploratory test; the paper reports none)."
+     },
+     {
+      "id": "figs5-switchers-drive-drift",
+      "statement": "Population vectors of switching place cells decorrelate faster with trial lag than those of size-matched non-switching cells, in familiar and novel environments.",
+      "source": "Results, Within-session representational drift, paragraph 8; Figure S5",
+      "quote": "The population vector of the switching population decorrelated faster than that of the non-switching population in both familiar and novel environments",
+      "criterion": "Switchers are place cells with at least one switching field, non-switchers those with none, sampled ten times to the switchers' number and averaged (Methods, Contribution of switching neurons to drift). Per session, the median PV correlation over trial pairs at each lag, and the slope of a linear regression on lag. The code pools turns per session and task; per session and turn is the other reading. Paired switcher against non-switcher slopes by the Wilcoxon signed-rank test (Figure S5B). Reproduced when p < 0.05 with switchers steeper in both environments; partially reproduced in one. Median differences are reported against the expected values."
+     },
+     {
+      "id": "fig4-glm-deviance",
+      "statement": "A Poisson GLM of switch counts per arm and trial explains 20% of the deviance for switching ON and 14% for switching OFF, with animal identity, maze segment and the number of place fields the most important predictors.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4A and 4F",
+      "quote": "The model explained 20% of the deviance for switching ON and 14% for switching OFF ... We found that the variables that explained most of the variance were the animal labels (i.e., individual differences), the maze corridors, and the number of place fields",
+      "criterion": "Familiar sessions only. Rows are trial by maze segment (delay zone, central arm, choice arm, return side arm, pre-delay zone; Figure 4K; the code cuts linearised position at 0, 15, 74, 111, 185, 202, 222 cm and merges the last piece into the delay zone, trials from the fourth on). Model y ~ C(Animal) + C(Position) + N_field + Trial + Speed + CV_speed + C(Correct) + C(Prev_correct), Poisson, Trial and Speed z-scored within session (Methods, Generalized linear model of switching). Explained deviance read as (a) the cross-validated held-out fraction of deviance, repeated 5-fold cross-validation stratified by animal, 10 repeats (Methods; the code uses StratifiedShuffleSplit with 5 splits and 10% held out, shown as a variant), or (b) in-sample on all rows. Importance is the drop in held-out explained deviance when one predictor is left out. Reproduced when both values are within tolerance under a reading and the three largest drops (ON and OFF each) are animal, position and number of fields; partially reproduced when only the ranking holds."
+     },
+     {
+      "id": "fig4-delay-zone-more-switching",
+      "statement": "Consistently more switching ON and OFF occurs in the delay zone than in other parts of the maze.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4B, 4E, 4G and 4J",
+      "quote": "consistently more ON/OFF switching occurred in the delay zone",
+      "criterion": "In the full GLM of fig4-glm-deviance fitted on all rows, the position coefficients of the four other segments relative to the delay zone, with 95% confidence intervals from the Fisher information (Figure 4B legend). Reproduced when all four coefficients are negative with intervals excluding zero, for ON and for OFF; partially reproduced when this holds for one of the two or for three of four segments in both. The per-session number of switches normalised by fields per arm (Figure 4E, 4J) is reported."
+     },
+     {
+      "id": "fig4di-switching-decreases-with-trial",
+      "statement": "The number of switches normalised by the number of fields decreases with trial number, for ON and OFF, in familiar and novel environments.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4D and 4I",
+      "quote": "As expected, switching probability decreased as a function of the trial number",
+      "criterion": "Per trial, the number of switch-ON (OFF) occurrences divided by the number of fields, against trial number z-scored within session, pooled over sessions (Figure 4D legend). Pearson correlation (legend); the code computes a Spearman correlation, shown as a variant. Reproduced when all four correlations are negative at p < 0.05; values compared with the expected r. Partially reproduced when three of four hold."
+     },
+     {
+      "id": "fig4-behavior-not-predictive",
+      "statement": "Correct or incorrect choice on the current or previous trial does not predict switching, and leaving out speed or the CV of speed does not reduce the model's prediction of held-out data.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure 4A, 4C, 4F, 4H",
+      "quote": "Correct or incorrect arm choice on the current or previous trial did not predict the occurrence of switching (Figures 4C and 4H). Leaving out locomotion speed or coefficient of variation (CV) of speed did not reduce the model's ability to predict held-out data",
+      "criterion": "A claim of absence, on the paper's measures. For choice, the 95% confidence intervals (Fisher information) of the Correct and Prev_correct coefficients in the full GLM (Figure 4C, 4H). For speed, the drop in held-out explained deviance when Speed or CV_speed is left out, over the cross-validation splits (Figure 4A, 4F). Reproduced when, for ON and OFF, both choice intervals include zero and the median drop for speed and for CV of speed is not above zero; not reproduced when any choice interval excludes zero or any median drop is above zero by more than the spread (standard deviation) of drops over splits, a threshold chosen here as the paper shows the splits without a test."
+     },
+     {
+      "id": "figs8-speed-no-trend",
+      "statement": "Average locomotion speed does not change as a function of trial, and there is no clear linear relationship between speed and the normalised switching count.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 1; Figure S8A to S8C",
+      "quote": "By contrast, average locomotion speed did not change as a function of trial (Figure S8C) ... Nor did we find a clear linear relationship between speed and the normalized (i.e., divided by the number of fields) switching count",
+      "criterion": "Speed z-scored within session against trial, Pearson correlation (Figure S8C legend); the tolerance on r is 0.05 absolute, as 10% of values near zero is below sampling noise. The paper's own familiar p (3 x 10-11) is significant though r is 0.01, so the absence for speed is judged on r. For Figure S8A and S8B, the normalised switch count per arm and trial against the average speed in the arm, Pearson correlation (STAR Methods default for linear correlation); the paper reports no value, and r and p are reported. A clear linear relationship is taken as |r| above 0.1 with p < 0.05, a threshold chosen here. Reproduced when both speed-trial r are within tolerance and neither speed-switching correlation (ON, OFF) is clear; partially reproduced when only the speed-trial part holds."
+     },
+     {
+      "id": "fig4no-head-scans-not-related",
+      "statement": "Most head scans occur in the reward area and few in the central arm, and there is no reliable relationship between field switching and the incidence of head scanning.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 2; Figure 4L to 4O",
+      "quote": "most head scans were detected in the reward area (position 50, between green and red sections), while head scans in the central arm were rare (Figures 4N and 4O). We found no reliable relationship between field switching and incidence of head scanning",
+      "criterion": "Head scans detected as in Methods, Behavior segmentation (head more than 3 cm from the track, extended until within 1 cm, at least 0.4 s, start and end within 20 bins, merged when within 0.4 s; the track sampled from times with speed above 10 cm/s). Per position bin, the number of trials with a head scan and with a switch ON (OFF), and their ratio (Figure 4N, 4O). The paper reports no test. Reproduced when the bin with most head-scan trials lies in the reward area at the end of the choice arms and the central arm has fewer head-scan trials than each other segment, and the per-bin counts of head-scan trials and switch trials are not positively correlated (Pearson, p >= 0.05, STAR Methods default). Partially reproduced when only the spatial distribution holds."
+     },
+     {
+      "id": "figs9-splitter-switching",
+      "statement": "Choice-predicting (splitter) fields on the central arm also switch ON and OFF.",
+      "source": "Results, Factors that affect the rate of switching, paragraph 3; Figure S9",
+      "quote": "We found that the splitter feature of hippocampal neurons could also switch ON and OFF at any trial of the session, similar to place fields",
+      "criterion": "Splitter fields are central-arm fields not merged across turns (peaks 5 bins or more apart or per-trial peak rates different by t-test; Methods, Place field detection). Reproduced when switches ON and OFF are both detected among splitter fields, on trials spread over the session (switch trials in each third of the session). The fraction of splitter fields that switch is reported beside that of other fields."
+     },
+     {
+      "id": "figs13-btsp-signatures",
+      "statement": "On the switch-ON trial, place field width correlates with running speed; the field peak on the following trial shifts backward in the familiar but not significantly in the novel environment; peak rate on the switch trial is not higher than on the next trial; and a significant ramp in rate precedes switch ON.",
+      "source": "Results, Switching exhibits signatures of BTSP, paragraphs 1 and 2; Figure S13A to S13D",
+      "quote": "We observed a significant correlation between the place field width and the running speed on the trial when the field switched ON (Figure S13A) ... the distribution skewed toward backward (Figure S13C), although it is not significant in the novel environment",
+      "criterion": "Switch-ON fields, first switch of each field only (Figure S13A). (1) Field width on the switch trial against mean speed in that trial, linear regression (Pearson), familiar and novel; the paper gives no width definition for a single trial, so readings are (a) the detected field's width and (b) the width of the trial rate map above half its peak within the field. The Results add that the correlation holds after controlling for position (Figure S13B, the same regression within each of ten spatial bins, familiar only); these per-bin results are reported. (2) Shift of the field peak from the switch trial to the next, two-sided Wilcoxon signed-rank test against zero; backward is against running direction. (3) Normalised within-field peak rate around the switch (trial 0), averaged over fields, paired Wilcoxon signed-rank tests between neighbouring trials (Figure S13D). The paper does not say how the rate is normalised; readings (a) divided by the field's maximum over trials, (b) divided by its mean over trials. Reproduced when the width-speed correlation is significant in familiar, the familiar shift is backward at p < 0.05 and the novel shift is not significant, trial 0 against 1 is not significant and trials -3 to -1 rise significantly; partially reproduced when at least three of these hold."
+     },
+     {
+      "id": "fig5c-switchiness-not-intrinsic",
+      "statement": "Across familiar and novel environments, a neuron's switchiness is not correlated, whereas its CV of within-field peak rate and its lap-to-lap rate map correlation are, after regressing out NREM firing rate.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 1; Figure 5C",
+      "quote": "The residuals are significantly correlated across environments for CV of within-field peak firing rate (left, standardized linear regression coefficients t = 4.8, R2 = 0.02, p < 10-5) and lap-lap rate map correlation (middle, t = 7.9, R2 = 0.06; p < 10-14), but not for the explained variance ratio from the change-point model (right, t = 0.9, R2 = 0.0008, p = 0.37)",
+      "criterion": "Metrics per Methods, Metrics of variability; noisiness is std over mean of the per-trial within-field peak rate, shiftiness the trial-pair rate map correlation averaged (the code takes the median), switchiness the variance explained by the one-change-point model. Each metric, familiar and novel, regressed on log NREM firing rate; the novel residual regressed on the familiar residual, standardised (Figure 5C legend; code metric across fam novel notebook, resid_regression). Units are neurons with each metric averaged over fields (Methods; Figure 5C legend, per dot a neuron, n = 955); fields matched across environments by the code's field index are shown as a variant only. For the switchiness, a claim of absence on the paper's test; reproduced when it is not significant at p < 0.05 while CV and lap correlation are significant and positive; partially reproduced when the switchiness part holds and one of the other two does."
+     },
+     {
+      "id": "fig5d-nrem-rate-relations",
+      "statement": "Noisiness decreases with log NREM firing rate in both environments, shiftiness is related to it in the novel environment only, and switchiness is not related to it.",
+      "source": "Figure 5D",
+      "quote": "noisy: familiar, t = -11.1, p = 3.6 \u00d7 10-27; novel, t = -12.6, p = 1.5 \u00d7 10-33; shifty: familiar, t = -0.8, p = 0.4; novel, t = -3.6, p = 0.000326; switchy: familiar, t = 0.9, p = 0.4; novel, t = -0.6, p = 0.5",
+      "criterion": "Each metric regressed on log NREM firing rate per environment, as in fig5c-switchiness-not-intrinsic. Reproduced when the significance at p < 0.05 and the sign of each of the six regressions match the paper; partially reproduced when five of six match."
+     },
+     {
+      "id": "multifield-independent-switching",
+      "statement": "Of 781 pairs of switching place fields belonging to the same place cell, only 41 (5%) switched on the same trial.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 2; Figure 5E",
+      "quote": "Of 781 place field pairs that belonged to the same place cell and both switched, only 41 (5%) switched on the same trial",
+      "criterion": "Pairs of switching fields of the same neuron within a session and turn, familiar and novel pooled (the paper does not say; the other reading is familiar only, as in Figure S11); same trial means a switch of each field on the same trial (ON or OFF; the paper does not say whether the switch types must match, so readings are any switch and same type). Reproduced when both counts are within tolerance under a reading."
+     },
+     {
+      "id": "figs12-stability-after-switch-on",
+      "statement": "Fields that switched ON have a lower CV of peak rate over the five trials after the switch than non-switching fields over five trials from the start or middle of the session, in familiar and novel environments; their peak location is also less jittery, except against the middle window in the novel environment (p = 0.4).",
+      "source": "Results, Switching, neuron or circuit property, paragraph 2; Figure S12A, S12B, S12D, S12E",
+      "quote": "Specifically, switch-ON fields had lower CV of firing rates within the five trials after the switch, relative to trial-to-trial variability in non-switching fields over five trials taken either from the beginning or from the middle of the session",
+      "criterion": "Fields that switched ON once against non-switching fields; place cells with spatial information above 0.5 bit/spike and fields with peak rate above 1 Hz on 90% of trials (Figure S12 legend). CV of per-trial peak rate and SD of peak location over the five trials after the switch, or over the first five trials or five middle trials for non-switching fields; two-sided Wilcoxon rank-sum tests (Figure S12 legend). The paper does not say which five trials are the middle, and with novel p = 0.019 the choice could change the outcome; readings (a) the five centred on the session midpoint, (b) the five starting at the midpoint. Reproduced when, under a reading, switch-ON CV is lower at p < 0.05 for both windows in familiar and in novel, switch-ON location SD is lower at p < 0.05 in familiar (both windows) and in novel (start window), and the medians are within tolerance; the novel middle-window location test is expected not significant and is reported. Partially reproduced when the CV directions and significance hold in familiar only."
+     },
+     {
+      "id": "fig6-co-switching",
+      "statement": "Place fields co-switch on the same trial more than expected by chance in a subset of sessions, 17% (ON) and 20% (OFF) of familiar and 57% (ON) and 29% (OFF) of novel sessions.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 3; Figure 6D and 6E",
+      "quote": "found that 17% (20%) of the familiar sessions and 57% (29%) of the novel sessions showed at least one trial with significant co-switching ON (OFF)",
+      "criterion": "46 familiar and 7 novel sessions (one novel session left out for too few trials; Methods, Datasets), and sessions need at least 7 trials per turn (code ntrials_mask). Null by circularly shifting each field's switch trials independently, 1000 times (Results; code gen_circular_shuffle, which leaves out the first two trials and the last). The statistic is the number of field pairs that co-switch ON (OFF). Readings of \"at least one trial with significant co-switching\"; (a) per session, the number of co-switching pairs over all trials exceeds the shuffle at p < 0.05 (fraction of shuffles at or above the data; code test_co_switch.py, Figure 6E); (b) per trial, the number of pairs switching on that trial exceeds its shuffle distribution at p < 0.05, the session counting when any trial does. Co-switching means the same trial (Results); the code's figure uses a window of lag 1, shown as a variant. Novel fractions are of 7 sessions (4 and 2). Reproduced when the four fractions are within tolerance, or within one session of the expected count, under a reading."
+     },
+     {
+      "id": "fig6f-switching-asynchronous",
+      "statement": "On each trial only a small subset of place fields, up to 5%, switch ON or OFF, so switching is largely asynchronous.",
+      "source": "Results, Switching, neuron or circuit property, paragraph 3; Figure 6F",
+      "quote": "We found that in each trial, a small subset of the place fields (up to 5%) switched ON/OFF",
+      "criterion": "Per session and trial, the fraction of the session's place fields that switch ON (OFF), leaving out the first and last two trials (Figure 6F legend). Reproduced when the 95th percentile over trials of these fractions is at most 0.055, for ON and OFF and in both environments; the maximum is reported, as \"up to\" may mean the extreme or the bulk."
+     },
+     {
+      "id": "figs14-preexisting-fields-ephys",
+      "statement": "For fields whose rate before switching ON (after switching OFF) is below the detection threshold (60% of ON and 20% of OFF switches), within-field firing is already elevated over the surrounding rate before emergence and stays elevated after disappearance, for most neurons.",
+      "source": "Results, Pre-existing dynamics bias switching, paragraph 2; Figure S14",
+      "quote": "Indeed, we found that, even before the emergence of the new place field, the firing rates within the future place fields were already elevated relative to the mean rate recorded outside of the future place field for the majority of the neurons ... Similarly, the firing rates remained elevated within the previous place field after the field had switched OFF",
+      "criterion": "Selection as in Figure S14 legend (mean within-field rate before the first ON, or after the last OFF, below the shuffle threshold of field detection); the Results describe the selected quantity as the average within-field peak firing rate, which is the other reading. Outside region extends the field by 10% of track length on each side until the track end or another field (Methods, Quantification of pre-existing constraint). Within minus outside mean rate over the pre-ON (post-OFF) trials. The paper reports no test here; the code's notebook tests session averages by a two-sided Wilcoxon signed-rank test. Reproduced when the two fractions are within tolerance, more than half of the fields have within above outside, for ON and OFF and in familiar and novel, and the session-level test gives p < 0.05 in familiar; partially reproduced when the majorities hold without the fractions."
+     },
+     {
+      "id": "fig7-preexisting-across-days",
+      "statement": "In two-photon imaging over two days, fields that switch ON on day 2 already show elevated activity within the future field on day 1, and fields that switch OFF on day 1 stay elevated on day 2.",
+      "source": "Results, Pre-existing dynamics bias switching, paragraph 3; Figure 7E to 7H",
+      "quote": "Overall, we found that even on the day before the emergence of the new place field, the firing rates within the future place fields were already significantly elevated relative to the mean rate recorded outside of the future place field (Figures 7E and 7G)",
+      "criterion": "Not testable on dandiset 000552, which holds the electrophysiology only; the imaging data (14 experiments, 11 mice) are available from M. Bartos on request and not deposited. Were they available, the test is the Wilcoxon rank-sum test of within against outside dF/F with Cohen's d (Figure 7 legend), at p < 0.05."
+     },
+     {
+      "id": "figs15-imaging-not-artifact",
+      "statement": "Trial-to-trial changes of baseline fluorescence are not correlated with the fraction of fields switching, so image-plane drift does not explain switching in the imaging data.",
+      "source": "Results, Pre-existing dynamics bias switching, paragraph 4; Figure S15",
+      "quote": "We therefore correlated the average absolute change in baseline fluorescence ... across cells in a given image field with the number of switching fields per trial but did not observe a significant correlation",
+      "criterion": "Not testable on dandiset 000552; the imaging data are not deposited (available on request). Were they available, a claim of absence judged by the Pearson correlation of the z-scored absolute baseline change against the fraction of switching fields per trial (n = 73 ON and 81 OFF trials from 10 sessions), at p < 0.05."
+     },
+     {
+      "id": "figs1-not-electrode-drift",
+      "statement": "Spike amplitudes of neighbouring neurons recorded on the same shank as a switching neuron do not change across its switch, arguing against electrode drift.",
+      "source": "Results, Within-session representational drift, paragraph 4; Figure S1H",
+      "quote": "Finally, neurons recorded on the same site with a switching neuron had unchanged waveforms before and after the switch",
+      "criterion": "A claim of absence. For each switch of a reference neuron, the mean waveform amplitude of each other neuron on the same shank from spikes in the 20 s before and 20 s after the switch time (Figure S1 legend); post minus pre amplitude pooled over neighbours, two-sided Wilcoxon signed-rank test against zero, for ON and OFF. The switch time is the time of the switch trial; the paper does not say which moment of the trial (readings; its start, or the animal's entry into the field). Reproduced when neither test gives p < 0.05; the median change is reported. Needs spike waveforms per spike or amplitudes in the dandiset."
+     },
+     {
+      "id": "figs2-chr2-no-effect",
+      "statement": "The proportions of neurons with different switching properties do not differ between opto-tagged (ChR2-expressing) and non-tagged neurons.",
+      "source": "Results, Within-session representational drift, paragraph 4; Figure S2",
+      "quote": "Furthermore, switching was not related to the expression of channelrhodopsin (ChR) in a small subset of the neurons in the dataset",
+      "criterion": "A claim of absence. Neurons classed by switching property (no switch, switch ON only, OFF only, both; the paper's categories are shown only in the pie charts, so this is the reading taken, with switching against not switching as the other), tagged against not tagged from the dandiset's light-responsive labels; chi-squared test of independence. Reproduced when p >= 0.05 under the readings; not reproduced when any gives p < 0.05."
+     }
+    ]
+   }
+  ],
   "zhong-2026": [
    {
     "path": "claims/zhong-2026.yaml",
@@ -222430,7 +222904,7 @@
   "dandi:001193": "zhu-2022",
   "dandi:001177": "zhuang-2025"
  },
- "generated": "2026-11-20T07:49:54+00:00",
+ "generated": "2026-11-20T07:57:52+00:00",
  "queue_generated": "2026-11-17T15:59:44+00:00",
  "queue_counts": {
   "public_dandisets": 678,
@@ -651172,7 +651646,7 @@
   },
   "hours": {
    "full": 6.663611111111111,
-   "claims": 0.41444444444444445
+   "claims": 0.41708333333333336
   },
   "running": {
    "002028": {
@@ -651197,11 +651671,11 @@
    },
    "000559": {
     "kind": "full",
-    "hours": 0.5804836391666667
+    "hours": 0.4467639219444445
    },
    "000552": {
-    "kind": "claims",
-    "hours": 0.08062252805555556
+    "kind": "full",
+    "hours": 6.623013921944445
    }
   },
   "papers": {
@@ -651330,11 +651804,11 @@
     },
     "markowitz-2023": {
      "kind": "full",
-     "hours": 0.5804836391666667
+     "hours": 0.4467639219444445
     },
     "zheng-2024": {
-     "kind": "claims",
-     "hours": 0.08062252805555556
+     "kind": "full",
+     "hours": 6.623013921944445
     }
    }
   }
