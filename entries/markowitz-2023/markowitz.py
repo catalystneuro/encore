@@ -23,6 +23,9 @@ Parameters and where they come from:
 - Syllables: run-length instances of the per-frame labels; offline labels for
   photometry, online labels for the Opto-DA experiments (Methods, Offline
   variant, as the claims file reads it).
+- Opto-DA centroids: the arena position at each syllable onset (`inst` x, y),
+  and the position of every frame (`pos_all`), from the files'
+  moseq_extract_group position series.
 - Opto-DA session numbers (claims file, definitions; the files' TargetSessions
   table): -1 and 0 baseline, 1 and 2 stimulation, 3 and 4 post.
 - The number of worker processes is a standard choice that does not change a
@@ -254,6 +257,9 @@ def load_opto(row):
             inst[name] = (c[np.maximum(ie_off, ie_on + 1)] - c[ie_on]) / n
         inst["x"] = pos[ie_on, 0]
         inst["y"] = pos[ie_on, 1]
+        # centroids of all frames, for the all-frames variant of ed10i's experiment-wide test
+        xy = pos[:, :2]
+        d["pos_all"] = xy[np.all(np.isfinite(xy), 1)].astype(np.float32)
     d["inst"] = inst
     d["t_first"] = float(ot[0])
     d["t_last"] = float(ot[-1])

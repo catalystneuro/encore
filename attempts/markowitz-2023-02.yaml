@@ -62,24 +62,29 @@ outcomes:
   notebook: photometry.ipynb
   output: claim:ed3c-keypoint-velocity
   measured:
-  - -0.167
-  - -0.019
-  notes: Five keypoint mice, 25-min sessions, 400-ms bins, dLight processed as the criterion's fig_s03 notebook
-    (reference fitted without intercept). 2D velocity and dLight r = -0.167 pooled (per-mouse mean -0.165, mice
-    -0.113 to -0.205; one-sided shuffle P = 0.001), within -0.16 +- 0.016. Forelimb velocity and partialled dLight
-    r = -0.019 pooled (per-mouse mean -0.020; P = 0.006), within -0.02 +- 0.002. With the Methods' fit with intercept
-    the values are -0.170 and -0.026, the latter outside tolerance. Photometry and keypoint series start at 0 s,
-    have equal lengths in every session and share the 30-Hz rate. Seed range not computed; the 2D P is at its floor.
+  - -0.170
+  - -0.026
+  notes: Five keypoint mice, 25-min sessions, 400-ms bins. The reader's answer (questions/markowitz-2023.yaml) amended
+    the criterion to process dLight with the Methods' RANSAC fit with slope and bias, the main reading of the claims
+    file's definitions, and made the fig_s03 notebook's fit without intercept a variant. Under the amended criterion
+    2D velocity and dLight correlate at r = -0.170 pooled (per-mouse mean -0.169, mice -0.128 to -0.220; one-sided
+    shuffle P = 0.001 under all five seeds), within -0.16 +- 0.016, and forelimb velocity and partialled dLight at
+    r = -0.026 pooled (per-mouse mean -0.027; P = 0.001, 0.001 to 0.002 over the five seeds), outside -0.02 +- 0.002
+    under both readings and rounding to -0.03, so one expected value of two is met. With the fit without intercept,
+    on which the verified outcome rested, the values are -0.167 and -0.019 (P = 0.001 and 0.002), both within tolerance.
+    The outcome is kept as verified and the change to partially reproduced is proposed. Photometry and keypoint series
+    start at 0 s, have equal lengths in every session and share the 30-Hz rate.
   deviations:
   - dF/F0 computed from the files' raw SignalF and UVReferenceF with a centred 5-s 10th-percentile F0 (Methods,
-    Photometry pre-processing), then processed as the fig_s03 notebook (claims file); spine centroid from the
+    Photometry pre-processing), then processed as the claims file's definitions give it; spine centroid from the
     rostral, medial and caudal spine keypoints.
   - Keypoints and photometry are paired by sample index; the files give both series a start at 0 s, equal lengths
     and a 30-Hz rate, and no other alignment.
-  - The outcome rests on the criterion's fig_s03 processing (fit without intercept). The claims file's definitions
-    make the Methods' fit with intercept the main reading, under which the forelimb r (-0.026) misses; this inconsistency
-    within the claims file is asked of a reader (questions/markowitz-2023.yaml).
-  assumed: true
+  proposed:
+    outcome: partially_reproduced
+    reason: The reader's answer made the Methods' fit with slope and bias decide this claim. Under it the 2D velocity
+      r (-0.170) is within tolerance and the forelimb r (-0.026, per mouse -0.027) is not and rounds to -0.03, so the
+      claim holds in part. The verified outcome rested on the fit without intercept, now a variant.
 - claim: fig1f-syllable-vs-movement-onset
   outcome: reproduced
   notebook: photometry.ipynb
@@ -230,17 +235,22 @@ outcomes:
   outcome: partially_reproduced
   notebook: photometry.ipynb
   output: claim:fig2e-not-autocorrelation
-  notes: Autocorrelation z 5.63 at n = 10, then -3.66 at n = 30 and between -1.16 and -4.34 to n = 390, outside
-    the shuffle band (about 1) throughout; velocity z -11.74 at n = 10, then 0.85 to 2.18, inside the band only
-    at n = 370 and 390. At no n are both inside the band, so the criterion's reproduced case fails; neither curve
-    stays as high as the usage curve (z 7.00 to 2.07), so its not-reproduced case fails too. Both decline sharply
-    after the first bin, which is what the statement says; the persistent negative autocorrelation is the part
-    that does not fit. Whether the criterion should cover this case is asked of a reader (questions/markowitz-2023.yaml).
-    Seed range not computed.
+  notes: The reader's answer (questions/markowitz-2023.yaml) amended the criterion to the Fig. 2e legend's one-sided
+    test for all three curves, a curve counting as declined at n when it is not significantly positive there, and
+    added a partially reproduced case; the bins stay those of the figure. The usage correlation is significant at
+    every n from 10 to 390 (P = 0.001). The autocorrelation is significantly positive at n = 10 (z 5.63, P = 0.001)
+    and declined from n = 30 on (z -1.16 to -4.34). The velocity curve is declined at n = 10 (z -11.73) and significantly
+    positive at every n from 30 to 390 (z 0.85 to 2.18, P 0.001 to 0.046). No n has both declined and neither curve
+    is significantly positive at every n, so the criterion's partial case applies. Under the seeds plus 1000 and 2000
+    the outcome is the same (velocity P at n = 390 0.049 and 0.038); under the seeds plus 3000 and 4000 the velocity
+    curve is not significant at n = 390 (P 0.079 and 0.054), both curves are declined there and the outcome would
+    be reproduced. Before the answer the outcome was the same, as a judgment between two cases that did not cover
+    the result; the answer makes it the criterion's own case, so it no longer rests on an assumption.
   deviations:
   - As fig2e-dlight-predicts-future-usage.
-  - The criterion's two cases do not cover this result; the outcome is a judgment between them (assumption).
-  assumed: true
+  - The seed range reruns the shuffles of fig2e-dlight-predicts-future-usage, whose generator the criterion shares,
+    under its seed plus 1000 to 4000.
+  seed_sensitive: true
 - claim: fig2g-usage-crosscorrelation
   outcome: not_reproduced
   notebook: photometry.ipynb
@@ -275,24 +285,25 @@ outcomes:
   outcome: reproduced
   notebook: photometry.ipynb
   output: claim:fig2k-dlight-predicts-sequence-variability
-  notes: 464,570 index instances of 14 mice. The dLight bin's correlation with the entropy of the following transitions,
-    z-scored against shuffles of destinations within rows (the criterion's null) and averaged over segments, is
-    significantly positive at n = 5 and 10 under both binnings and both correlations, reading (b) Spearman z 2.63
-    and 3.53, Pearson 3.18 and 2.99, reading (a) Spearman 3.71 and 5.15, Pearson 6.11 and 4.44, one-sided P = 0.001
-    each; under reading (b) also at every n to 50 (P <= 0.005, 200 shuffles). The raw correlations are negative
-    (Pearson -0.064 and -0.056 under (b), -0.380 and -0.517 under (a)). Under the Methods' null, dLight values
-    permuted among a mouse's instances (200 shuffles), reading (a) stays significantly positive (Pearson z 0.99
-    and 1.87, P = 0.025 and 0.005; Spearman the same P) and reading (b) turns significantly negative (Pearson z
-    -2.68 and -2.07, P = 0.005 for a negative correlation). Which null the criterion should use is asked of a reader
-    (questions/markowitz-2023.yaml). Seed range not computed; P is at its floor.
+  notes: 464,570 index instances of 14 mice. The reader's answer (questions/markowitz-2023.yaml) amended the criterion's
+    null to the Methods' shuffle of dLight peak values, 1,000 shuffles within mouse and segment before binning, and
+    made the code's null (randomize_cols) a variant. Against it the dLight bin's correlation with the entropy of the
+    following transitions is significantly positive at n = 5 and 10 under reading (a), the Methods' bins per mouse
+    and syllable (Pearson z 1.24 and 1.93, P = 0.003 and 0.001; Spearman z 1.21 and 2.11, P = 0.006 and 0.001), and
+    so under all four other seeds (Pearson P 0.005 to 0.020, 200 shuffles each). Under reading (b), the code's equal-count
+    bins per mouse, it is significantly negative (Pearson z -2.45 and -1.57, P = 0.001 and 0.002 for a negative correlation),
+    under all five seeds. The criterion takes a result under either reading. The raw correlations are negative under
+    both readings (Pearson -0.380 and -0.517 under (a), -0.064 and -0.056 under (b)); under (a) they are less negative
+    than the shuffles' mean (-0.427 and -0.554). Against the code's null, now a variant (200 shuffles), both readings
+    are significantly positive (Pearson z 2.99 to 6.02, P = 0.005). The outcome is the one verified, which rested
+    on the code's null under both readings; it now rests on reading (a) alone.
   deviations:
   - Details the claims file leaves to the code are taken from dlight_06 and the fig_2k notebook at commit 14ed714
     (sequences of n syllables from the index instance, the matrix truncated to the 37 syllables, aggregation per
-    experiment and then per mouse, segment and bin, dm_entropy with the Perks prior and rows normalised, correlation
-    over mice and bins per segment and n, randomize_cols as the shuffle).
-  - Index instances need 49 following syllables in the experiment at every n.
-  - 1,000 shuffles at n = 5 and 10, 200 at n = 15 to 50 and for the Methods' null; reading (a) and the Methods'
-    null only at n = 5 and 10.
+    mouse, segment and bin, dm_entropy with the Perks prior and rows normalised, correlation over mice and bins per
+    segment and n).
+  - Index instances need 49 following syllables in the experiment.
+  - Only n = 5 and 10 are run, where the criterion decides; the seed range and the code's null use 200 shuffles.
   - The DLS baseline set is the code's reading, 164 experiments of 14 mice.
 - claim: ed6b-encoding-model-average
   outcome: blocked
@@ -497,15 +508,26 @@ outcomes:
   outcome: reproduced
   notebook: optoda.ipynb
   output: claim:ed10i-no-place-preference
-  notes: 'Target-onset locations, stimulation days against other days, 120 Opto-DA and 72 control pairs (192, as
-    the paper), median JSD 0.149 against 0.176, U = 3813, f = 0.44, P = 0.174; by mouse U = 99, P = 0.425; with
-    each histogram''s own edges P = 0.216 and 0.861. Two pairs with an empty histogram are left out. The comparison
-    over all instance onsets by mouse, which the Extended Data Fig. 10i legend may mean by experiment-wide, gives
-    U = 48, f = 0.20, P = 0.005, Opto-DA lower; whether the criterion should test it is asked of a reader
-    (questions/markowitz-2023.yaml). Arena coordinates have the same ranges in every lab group.'
+  notes: 'The reader''s answer (questions/markowitz-2023.yaml) amended the criterion''s experiment-wide test from the
+    per-mouse mean of the target-onset JSD to one JSD per mouse over the centroids at the onsets of all syllables
+    (the fig_s10h, s10i notebook, cells 33 and 34), with the centroids of all frames as a variant; both tests must
+    give P >= 0.05. Target performance, stimulation days against other days, 120 Opto-DA and 72 control pairs (192,
+    as the paper), median JSD 0.149 against 0.176, U = 3813, f = 0.44, P = 0.174; by mouse U = 99, P = 0.425; with
+    each histogram''s own edges P = 0.216 and 0.861. Experiment-wide, 20 Opto-DA and 12 control mice, median JSD
+    0.0073 against 0.0120, U = 48, f = 0.20, P = 0.005, Opto-DA lower; own edges P = 0.025 (f = 0.26); all frames
+    P = 0.003 (f = 0.18), with own edges P = 0.007 (f = 0.21). Under the amended criterion the claim is not reproduced;
+    the effect found is the opposite of a place preference (Opto-DA mice''s positions on stimulation days closer to
+    those on other days than the controls''). The verified outcome rested on the earlier experiment-wide test (P
+    = 0.425); it is kept and the change is proposed. Two pairs with an empty histogram are left out. Arena coordinates
+    have the same ranges in every lab group.'
   deviations:
-  - The shared grid spans the 0.5 to 99.5 percentiles of all positions.
+  - The shared grid spans the 0.5 to 99.5 percentiles of all positions at syllable onsets.
   - Other days are every non-stimulation 250-ms session of the target (-1, 0, 3, 4).
+  proposed:
+    outcome: not_reproduced
+    reason: The reader's answer made the experiment-wide test one JSD per mouse over the centroids at all syllable
+      onsets. That test differs between Opto-DA mice and controls (U = 48, f = 0.20, P = 0.005), as do its variants
+      (all frames P = 0.003), so the claim of absence fails its second test.
 - claim: fig3l-no-kinematic-effect
   outcome: reproduced
   notebook: optoda.ipynb
