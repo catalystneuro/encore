@@ -1315,3 +1315,177 @@ findings:
     experiment recorded? This attempt read the direction from the stimulated instances' velocities where the files
     do not state it, and took as baseline the mouse's velocity-modulation files without stimulation; with these
     choices up does not exceed down significantly (11 up and 6 down experiments, P = 0.180).
+- kind: other
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: The re-referenced, z-scored dLight trace that the paper's photometry analyses use is not stored, nor the
+    fit of the reference behind it. The 376 files with a dLight dF/F series hold the dLight and reference dF/F, the
+    smoothed references and, in 363, the raw photometry, so the trace has to be recomputed from the Methods.
+reconciliation:
+  earlier: markowitz-2023-01
+  date: '2026-11-20'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: Version 0.261113.1911 adds a TargetDetections table with a stimulated column. Of the 604 stimulation files
+      that hold it, 601 have catch detections, 21740 of 77405 detections in all (earlier_findings.ipynb, finding 1).
+  - finding: 2
+    status: fixed
+    note: Every mouse's files now state a genotype (DAT-IRES-Cre::Ai32 for the Opto-DA mice, DAT-IRES-Cre for the
+      controls and dLight+ChrimsonR mice, wild type C57BL/6J for the dLight-only mice), and the subject description
+      names the opsin or its absence. The one snc-eyfp mouse (3155) says its genotype is not given in the source.
+  - finding: 3
+    status: fixed
+    note: All 1934 mouse files other than the 5 keypoint sessions hold a TargetSessions table with session_number and
+      experiment_type, and the 5 stimulated files described as recording sessions are numbered 1 or 2 there. 23
+      files without light pulses also carry a stimulation number (10 dLight+ChrimsonR habituation files, 7
+      velocity-modulation files and 6 reinforcement files that are a baseline day of another target).
+  - finding: 4
+    status: fixed
+    note: The 1434 files of the Ai32 and no-opsin control mice now state 470 nm and a 470-nm light source; only the
+      236 dLight+ChrimsonR files state 635 nm and the Opto Engine MRL-III-635.
+  - finding: 5
+    status: fixed
+    note: The 23 dLight-only mice (269 files) are described as C57BL/6J, wild type, with no opsin, and none of their
+      files names Ai32.
+  - finding: 6
+    status: fixed
+    note: No offline (1840 files) or online (1934 files) syllable series of this version has a non-ascending step,
+      and every one has a median interval of 0.03337 s.
+  - finding: 7
+    status: fixed
+    note: None of the 36 files of mouse 3155 has repeated or non-ascending syllable timestamps. Two of them hold 53822
+      and 53862 rows, the numbers of repeats the earlier attempt counted, which fits the duplicate rows having been
+      removed.
+  - finding: 8
+    status: fixed
+    note: All 236 dLight+ChrimsonR files hold offline and online syllable series of 35545 to 53902 rows, and no file
+      of the dandiset has an empty one.
+  - finding: 9
+    status: still_present
+    now: 1
+    note: The new attempt's finding 1 reports the dLight+ChrimsonR closed-loop sessions with 2-s and 3-s stimulation
+      missing (two 2-s excitation sessions are present), and its finding 3 counts 164 or 204 DLS experiments without
+      stimulation against 216 in Fig. 1b and 378 in the Methods.
+  - finding: 10
+    status: still_present
+    now: 1
+    note: The new attempt's finding 1 reports the food-reward photometry experiments missing, as the release notes of
+      0.261113.1911 also say.
+  - finding: 11
+    status: still_present
+    now: 2
+    note: The new attempt's finding 2 reports the behaviour-only photometry files (92 DMS, 22 dLight-only DLS and 10
+      dLight+ChrimsonR files, all files of dls-dlight-6, dls-dlight-8, dms-dlight-7 and dms-dlight-9) with no note
+      saying why, and its finding 6 a session that fails quality control and is not marked excluded.
+  - finding: 12
+    status: still_present
+    now: 15
+    note: The 376 files with a dLight dF/F series hold the dLight and reference dF/F, the smoothed references and, in
+      363, the raw photometry, and no re-referenced or z-scored trace or fit (earlier_findings.ipynb, finding 12).
+  outcomes:
+  - claim: fig1l-identity-not-decodable
+    earlier: reproduced
+    cause: claims_changed
+    note: The earlier criterion, written by that attempt's author, used a 100-tree forest and called identity not
+      decodable below twice chance (0.0541), which 0.0271 and 0.0323 met. The new criterion asks for the paper's
+      forest of 1,000 trees and 100 label shuffles, which this attempt estimated at about 83 h and 238 h and blocked
+      as too_large without running.
+    confidence: high
+  - claim: fig2e-dlight-predicts-future-usage
+    earlier: partially_reproduced
+    cause: claims_changed
+    note: The earlier criterion used five equal 360-s segments, r per experiment and syllable, and raw r against
+      shuffles, and failed at n = 110 to 170 (P = 0.09, 0.15, 0.18 and 0.05). The new criterion takes the paper's
+      segments, pools a mouse's experiments and z-scores r against shuffles per segment, and is significant at every
+      n from 10 to 390 (z 7.00 at n = 10, 2.25 at 170).
+    confidence: medium
+  - claim: ed7-dms-no-usage-prediction
+    earlier: not_reproduced
+    cause: claims_changed
+    note: The earlier criterion applied the Fig. 2e lagged test to DMS, which was significant at 9 of 10 values of n.
+      The new criterion is the encoding-model comparison of Extended Data Fig. 7e and depends on
+      ed6b-encoding-model-average, which this attempt did not run, so it is blocked with it.
+    confidence: high
+  - claim: fig3e-optoda-learning
+    earlier: reproduced
+    cause: claims_changed
+    note: The earlier criterion took the latest Monday baseline day up to five days before stimulation, as the paper's
+      code does (U = 198, P = 0.0013); the new one takes the most recent previous baseline day, with the Monday rule
+      as a variant (U = 152, P = 0.110). The new attempt's Monday variant (optoda.ipynb, cell 4, target_table) looks
+      for a Monday only among the target's own baseline rows, so it changed none of the 191 baselines and does not
+      test the code's rule.
+    confidence: high
+  - claim: fig3f-cumulative-counts
+    earlier: reproduced
+    cause: claims_changed
+    note: The same change of baseline day as for fig3e-optoda-learning. With the Monday baseline the earlier attempt
+      found U = 182, P = 0.0083 (control median -2.3); with the day before, this attempt found U = 160, P = 0.062
+      (control median 23.2).
+    confidence: high
+  - claim: fig3h-stim-post-correlation
+    earlier: reproduced
+    cause: claims_changed
+    note: Both attempts find the learners correlated (r = 0.891 and 0.868, n = 7) and the controls correlated too (r =
+      0.591, P = 0.017 and r = 0.633, P = 0.025, where the paper reports P = 0.082). The new criterion adds that the
+      controls must not be significant, so the same result is partially reproduced under it.
+    supports: partially_reproduced
+    confidence: high
+  - claim: fig3i-optoda-entropy
+    earlier: blocked
+    cause: dataset_changed
+    note: Version 0.260528.0858 did not mark catch trials, so the earlier attempt could not run the test; 0.261113.1911
+      marks them in TargetDetections, and this attempt ran it on 377 experiments. Its outcome rests on an assumption,
+      stimulation trials drawn down to the catch count (Opto-DA first bin Holm P = 0.86); with all trials the Opto-DA
+      first bin has Holm P = 0.017.
+    confidence: high
+  - claim: fig3l-no-kinematic-effect
+    earlier: blocked
+    cause: dataset_changed
+    note: Without catch trials in 0.260528.0858 the earlier attempt used substitute ones, which differed from
+      stimulation trials in 9 of 12 no-opsin controls, and blocked the claim. With the catch trials of 0.261113.1911
+      this attempt finds no Opto-DA bin significant for any variable (Holm P 1.0, f 0.46 to 0.53).
+    supports: reproduced
+    confidence: high
+  - claim: fig3m-long-stim-velocity
+    earlier: blocked
+    cause: dataset_changed
+    note: As for fig3l-no-kinematic-effect, the earlier substitute catch trials gave significant differences in both
+      controls and the claim was blocked. With the catch trials of 0.261113.1911 every Opto-DA bin has Holm P 1.0 in
+      36 experiments of 3 mice; the earlier variant with catch trials at least 2 s from any pulse also found 0 of 3
+      Opto-DA mice significant.
+    supports: not_reproduced
+    confidence: high
+  - claim: fig1f-syllable-vs-movement-onset
+    earlier: blocked
+    cause: claims_changed
+    note: The earlier claims file gave this claim no criterion, and that attempt did not run it, for time, though the
+      data were in its version. The new claims file gives two readings, and this attempt found they disagree (with
+      all detections, 13 of 14 mice favour syllable onsets under one and 3 of 14 under the other).
+    confidence: medium
+  - claim: fig2k-dlight-predicts-sequence-variability
+    earlier: blocked
+    cause: claims_changed
+    note: The earlier claims file gave this claim no criterion, and that attempt did not run it, for time. This
+      attempt tested it under the new criterion after its first verification round, positive under reading (a)
+      (Pearson z 1.24 and 1.93, P = 0.003 and 0.001 at n = 5 and 10) and negative under reading (b).
+    confidence: medium
+  - claim: ed10d-optoda-vigour
+    earlier: blocked
+    cause: claims_changed
+    note: The earlier claims file gave this claim no criterion, and that attempt did not run it, for time; the light
+      onsets of the velocity-modulation files and the missing up or down labels are the same in both versions. This
+      attempt ran the new criterion with the direction read from velocity where the files do not state it (11 up and
+      6 down experiments, P = 0.180).
+    confidence: medium
+  protocol: The earlier attempt was made under pilot-7, when the author wrote its own claims file. From pilot-9 every
+    part of a criterion's method comes from the paper and its code, with every plausible reading run, and from
+    pilot-10 a separate reader writes the claims file from the full text and the author may not change it. So this
+    attempt was tested on a new claims file with 44 claims where the earlier had 24, and the changed criteria explain
+    nine of the twelve outcomes that differ. pilot-12 made the repeat blind and added this reconciliation, pilot-13
+    raised the notebook limit to 60 minutes (the photometry notebook takes about 45), and pilot-14 files claims and
+    records by paper, which moved them from claims/000559 to claims/markowitz-2023.yaml. pilot-8 (quotes and
+    statistics in the claims) changed no outcome. docs/pilot-notes.md has no notes for pilot-11, pilot-15 or
+    pilot-16.
