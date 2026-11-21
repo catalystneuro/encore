@@ -26,7 +26,7 @@ with the reasons and the differences from the paper's method, is
 
 Files:
 
-- `reproduce_souza_2026.ipynb`: the analysis. It takes about 55 minutes, most of it streaming the
+- `reproduce_souza_2026.ipynb`: the analysis. It takes about 45 minutes, most of it streaming the
   spike times of 104 sessions in six processes.
 - `vbn.py`: loading the session files, the per-session reduction (peri-reward histograms, the
   split-half test and its null, the cross-condition tests, population counts, waveform measures),

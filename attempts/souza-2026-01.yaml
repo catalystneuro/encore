@@ -28,9 +28,11 @@ inputs:
 - what: The same CCFv3 2017 annotation volume at 25 um from the Allen Institute's download (annotation_25.nrrd,
     Last-Modified 2025-02-19, SHA-256 c620cbcc562183e4dcd40250d440130501781f74b41de35b1c1bdabace290c42) and
     the Allen structure ontology (structure_graph_download/1.json, SHA-256 b5f0d024d1df09ee18aef15093f55240f4a70b3924ee9689add612dadff80386),
-    both checked in the notebook. Used in the revision's runs because GIN answered 403 Forbidden to the runner;
-    the layer counts are identical to those of the first run, made with BrainGlobe's file. The paths carry
-    no version, so the files are pinned by their hashes only.
+    both checked in the notebook. Used in place of BrainGlobe's file when GIN refuses the request (it answered
+    403 Forbidden to the runner during the first revision), and loaded beside it when GIN answers, as in
+    the final run, where the notebook shows that the two volumes (77,045,760 voxels) and structure lists
+    are identical and give each of the 54,045 units the same area, layer and boundary distance. The paths
+    carry no version, so the files are pinned by their hashes only.
   source: https://download.alleninstitute.org/informatics-archive/current-release/mouse_ccf/annotation/ccf_2017/annotation_25.nrrd
     and http://api.brain-map.org/api/v2/structure_graph_download/1.json
 outcomes:
@@ -136,8 +138,9 @@ outcomes:
     of the null was not computed under the four further seeds (it needs the spike times again). With 1,000
     permutations on 300 units of three sessions, 229 units have p at most 0.05 against 225 with 100 (224
     under both). Reading (1b) of the null, over the whole recording, run on 12 of the 104 sessions (6,553
-    units, BH per area over them); cohort 1,268 against 1,272 under (1a), 1,266 in both, 19 discordant under
-    each, suppressed 66.6% against 66.5%, so the outcome is the same under both readings.
+    units, BH per area over them); cohort 1,268 against 1,272 under (1a), 1,266 in both (6 only under 1a,
+    2 only under 1b), 74 and 63 units split-half positive under only one reading, 19 discordant under each,
+    suppressed 66.6% against 66.5%, so the outcome is the same under both readings.
   deviations:
   - The analysis uses the 104 sessions of the Sst-Cre and Vip-Cre mice and their units of quality good
     with presence ratio at least 0.95 in the six areas, the selection that fits the paper's counts (claim
@@ -300,7 +303,7 @@ outcomes:
   output: claim:fig1gi-waveform-separation
   notes: Stored duration; half-width median narrow 0.149 ms, broad 0.204 ms, median ISI 42.2 against 88.0
     ms. Duration from the mean waveform; 0.170 against 0.203 ms and 54.7 against 89.5 ms. Mann-Whitney
-    p from 2.8e-264 to 1.6e-221 (and p printed as 0), as a variant. Half-width is measured on the 30 kHz
+    p from 2.8e-264 to 2.3e-198 (and p printed as 0), as a variant. Half-width is measured on the 30 kHz
     mean waveform. The autocorrelogram rise time is not defined in the paper and was not computed, so
     that part of the statement is not tested.
   deviations:
@@ -405,8 +408,8 @@ outcomes:
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   - The annotation volume is the CCFv3 2017 annotation at 25 um (Wang et al. 2020), as BrainGlobe's allen_mouse_25um
-    v1.2 packages it or, when GIN refuses the request, from the Allen Institute's download; both give identical
-    layers here. The paper names no release. Unit coordinates are the electrodes table's x, y, z of the peak channel, rounded to the
+    v1.2 packages it or, when GIN refuses the request, from the Allen Institute's download; in the final
+    run both were loaded, and their volumes, structure lists and the layers of all 54,045 units are identical. The paper names no release. Unit coordinates are the electrodes table's x, y, z of the peak channel, rounded to the
     nearest 25 um voxel.
   assumed: true
 - claim: layer4-suppression
@@ -437,8 +440,8 @@ outcomes:
   - 14.7
   notes: Stored duration, reading (a); broad +0.102 (81 sessions, p = 6.1e-07), narrow +0.078 (57 sessions,
     p = 5.7e-07). Duration from the mean waveform; broad +0.124 (p = 1.0e-07), narrow +0.086 (p = 1.1e-05).
-    Both excesses are positive under every reading, below the paper's +0.137 and +0.114 except the broad
-    one of reading (a); p < 1e-6 holds for broad and narrow only with the stored duration. Narrow percentage
+    Both excesses are positive under every reading and all are below the paper's +0.137 and +0.114; only
+    the broad one of reading (a), +0.124, is within tolerance; p < 1e-6 holds for broad and narrow only with the stored duration. Narrow percentage
     of tested units with a class (stored duration); layer 4 15.3%, 6a 18.1% (outside 18.6 to 22.8%), 2/3
     14.7%. With cohort units as a variant 30.3%, 20.0% and 25.5%.
   deviations:
@@ -470,8 +473,10 @@ outcomes:
     outside tolerance, and the 50 um count, 63 of 72 in the paper, is not met; 67 is within tolerance of
     63 but the 80 sessions are outside 72 plus or minus 7 (reading b of the comparison gives 63 of 80).
     The criterion's partial clause needs the 50 um count, so the claim is not reproduced (changed from
-    partially reproduced after verification round 1). The unmatched value does not rise above +0.116 as
-    the paper's +0.148 does, under either of the criterion's readings (median +0.122, mean +0.115). With
+    partially reproduced after verification round 1). In the paper the unmatched excess of the rate-matching
+    control (+0.148) is above that of the preceding comparison (+0.116); here the unmatched excess in
+    the 85 rate-matched sessions (median +0.122, mean +0.115) is close to that over all sessions of claim
+    layer4-suppression (median +0.118, mean +0.115), so it does not rise as the paper's does. With
     layers only in CCF visual areas (a variant), at least 50 um, +0.113 in 55 of 65 sessions.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
@@ -557,9 +562,15 @@ outcomes:
     of 66 pairs at least 15), against the block null 18.9 to 34.5. Largest p_FDR of the concatenated series
     1.4e-113. The nulls use the claim's seed only. RW- is the mean CV(t) of 20 count-matched draws (fig2c
     reading a); with a single draw (a variant) the means are 0.300 within RW-, 0.318 across and 0.354 within
-    RW+, so the order depends on that averaging.
+    RW+, and with the correlations formed on each of the 20 draws and averaged over them (a second variant)
+    0.304, 0.322 and 0.354, so the order depends on correlating the averaged series.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The RW- CV(t) series is the mean of the 20 count-matched draws, and the correlations are formed on
+    that averaged series, as Materials and methods 2.6 reads (RW- "repeatedly sampled without replacement
+    (20 draws, averaged)", the curves then averaged across sessions); whether the paper correlated the
+    averaged series or each draw is not stated. An assumption, on which the outcome rests; under a single
+    draw or per-draw correlations the paper's order is lost.
   assumed: true
 - claim: cv-correlation-block-excess
   outcome: partially_reproduced
@@ -571,9 +582,16 @@ outcomes:
   notes: Over 100 sessions with at least two areas with both groups, the median excess of the RW- block
     over the RW+ block is +0.158 (outside 0.189 to 0.231), positive in 83.0%, Wilcoxon p = 1.76e-12 (not
     below 1e-13). With a single RW- draw in place of the mean of 20 (a variant) the median excess is -0.050,
-    positive in 43.0%, p = 0.036, so the excess comes from averaging the RW- draws.
+    positive in 43.0%, p = 0.036, and with the correlations formed on each of the 20 draws and averaged
+    over them it is -0.038, positive in 39.0%, p = 0.014, so the excess comes from correlating the averaged
+    RW- series.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The RW- CV(t) series is the mean of the 20 count-matched draws, and the correlations are formed on
+    that averaged series, as Materials and methods 2.6 reads (RW- "repeatedly sampled without replacement
+    (20 draws, averaged)"); whether the paper correlated the averaged series or each draw is not stated.
+    An assumption, on which the outcome rests; under a single draw or per-draw correlations the median
+    excess is negative.
   assumed: true
 - claim: fig2f-pre-post-cv
   outcome: not_reproduced
@@ -1057,4 +1075,290 @@ verifications:
     outcome: partially_reproduced
     reason: Cell 93, 500 ms gap, baseline (b); 438 bouts per session and every area at 71 to 88%, within range. VISp
       median SI -0.13 against -0.50 is outside under every reading.
+    response: No change.
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper module, the claims file and the
+    attempt record, with the paper. The verifier agreed with 37 of the 38 outcomes and disputed data-sessions-units.
+    It found no place where the claims file misreads the paper, so no question was added for a reader. No finding
+    is rated critical, so none was reviewed as one; it found the two minor ratings and the none rating right. Report
+    in transcripts/souza-2026/verifier-2-report.md.
+  results:
+  - claim: data-sessions-units
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion allows the 10% partial outcome for its own readings (a) and (b). Under both, the counts
+      are more than 10% off (cell 5; 153 sessions / 81 mice / 110,563 or 45,354 units). The Sst/Vip, good, presence
+      ratio at least 0.95 selection is not one of those readings. If protocol step 1.6 says what the response quotes,
+      the author's choice is defensible. The disagreement is recorded and changes no other outcome. The assumption
+      is stated and reasonable.
+    response: Outcome kept, as round 2 allows no change, and the disagreement recorded. Protocol step 1.6 does say
+      this; when the paper does not settle a detail, the author may adopt the choice best supported by the paper,
+      recorded as an assumption (assumed true), and the outcome stands marked as resting on it. No change is proposed.
+  - claim: blocks-no-reward-in-replay
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: reward-interval-min
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: latency-change-to-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: Round-1 disagreement now accepted. The criterion has no partial clause, so the protocol's general definition
+      (holds only in part) applies. With change_time_no_display_delay, three of the four values are within tolerance,
+      and 4.20% misses by 0.02 points (cell 20). The outcome rests on a different change time from the one the cohort's
+      pseudo-reward latencies use (change-presentation start). The deviations state this.
+    response: No change.
+  - claim: lick-reward-coincide
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig1e-cohort-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; 100 permutations and ISI-null reading 1a are stated, reasonable assumptions. Still bearing
+      on a conclusion: the claim fails only on the discordant count (286), which has not been tested under null
+      1b on all sessions or with 1,000 permutations; 43,025 of 54,045 units sit at the p floor of 1/101 (cell 26),
+      so the BH gate at 100 permutations is coarse. Cell 29''s "so the reading does not change the counts" is not
+      supported; cell 26 shows small changes (cohort 1,268 against 1,272, with 6 + 2 units in only one cohort, and
+      74 / 63 split-half-positive units differing). The Summary''s "changes the cohort by 4 of 1,272 units" is the
+      net change; 8 units differ.'
+    response: Cell 29, the Summary and the notes now give the 8 units in only one cohort and the 74 and 63 split-half
+      positive under only one reading. The wider checks were not run; reading (1b) took 342 s for 12 sessions in
+      the final run, so all 104 would add about 50 minutes to a notebook that runs 41, over the 60-minute limit, and
+      1,000 permutations for all units is about nine CPU hours. The deviations say so.
+  - claim: fig1d-split-half-above-null
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; 100 permutations and ISI-null reading 1a are stated, reasonable assumptions.
+    response: No change.
+  - claim: fig1c-example-cells
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig1e-suppressed-fraction-by-area
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig1l-session-gradient
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: latency-jitter-control
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: waveform-ambiguous-band
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Trivial; cell 48 gives log-likelihood 24,671 for the claim's seed and the seed plus 1000; the
+      seed plus 1000 is 24,661.5 (cell 46). The "82 samples" of the waveform finding is not printed but consistent
+      with the code.
+    response: Cell 48 now gives both log-likelihoods (24,671 and 24,662). The number of samples per waveform row
+      is now printed in cell 47 (82).
+  - claim: fig1jk-narrow-fraction-by-area
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; duration reading (b) for all waveform-class claims is a stated, reasonable assumption. Still
+      bearing on a conclusion: all waveform-class outcomes rest on the stored waveform_duration, and the Methods''
+      own reading (a) does not give two classes.'
+    response: No change; the deviations say that the outcome rests on the stored duration, and the data finding
+      on waveform_duration says why reading (a) does not give two classes.
+  - claim: fig1h-median-isi-narrow-broad
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; duration reading (b) for all waveform-class claims is a stated, reasonable assumption. Still
+      bearing on a conclusion: all waveform-class outcomes rest on the stored waveform_duration, and the Methods''
+      own reading (a) does not give two classes.'
+    response: No change; the deviations say that the outcome rests on the stored duration, and the data finding
+      on waveform_duration says why reading (a) does not give two classes.
+  - claim: fig1gi-waveform-separation
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; duration reading (b) for all waveform-class claims is a stated, reasonable assumption. Still
+      bearing on a conclusion: all waveform-class outcomes rest on the stored waveform_duration, and the Methods''
+      own reading (a) does not give two classes. The record''s "Mann-Whitney p from 2.8e-264 to 1.6e-221" is not
+      supported; cell 57 also has p = 2.3e-198 (median ISI, reading a). Cell 58''s "p < 1e-190" is correct.'
+    response: The notes now give p from 2.8e-264 to 2.3e-198. No change; the deviations say that the outcome rests
+      on the stored duration, and the data finding on waveform_duration says why reading (a) does not give two classes.
+  - claim: narrow-more-suppressed
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; duration reading (b) for all waveform-class claims is a stated, reasonable assumption. Still
+      bearing on a conclusion: all waveform-class outcomes rest on the stored waveform_duration, and the Methods''
+      own reading (a) does not give two classes.'
+    response: No change; the deviations say that the outcome rests on the stored duration, and the data finding
+      on waveform_duration says why reading (a) does not give two classes.
+  - claim: narrow-more-suppressed-within-layer
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; duration reading (b) for all waveform-class claims is a stated, reasonable assumption. Still
+      bearing on a conclusion: all waveform-class outcomes rest on the stored waveform_duration, and the Methods''
+      own reading (a) does not give two classes.'
+    response: No change; the deviations say that the outcome rests on the stored duration, and the data finding
+      on waveform_duration says why reading (a) does not give two classes.
+  - claim: fig1mn-modulation-index-negative
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig1m-narrow-stronger-m
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; duration reading (b) for all waveform-class claims is a stated, reasonable assumption. Still
+      bearing on a conclusion: all waveform-class outcomes rest on the stored waveform_duration, and the Methods''
+      own reading (a) does not give two classes.'
+    response: No change; the deviations say that the outcome rests on the stored duration, and the data finding
+      on waveform_duration says why reading (a) does not give two classes.
+  - claim: m-baseline-sensitivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Round-1 disagreement now accepted; the criterion has no partial clause, so the protocol's general definition
+      (holds only in part) applies (cell 69).
+    response: No change.
+  - claim: layer-assignment-coverage
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The atlas-provenance statements are not supported. Cell 72 of this executed notebook prints
+      the BrainGlobe file (allen_mouse 1.2, sha256 696276...) and no "GIN answered" line, so this run used BrainGlobe's
+      file, and nothing printed shows the Allen path or that the two give identical layers. The "1,508 ... have
+      no layer" is not printed but consistent with the code (unit_layers drops non-positive coordinates). The stricter
+      visual-area rule fits the paper's coverage (87.0%, 45.5% in VISrl).
+    response: Cell 72 now loads the Allen files beside BrainGlobe's when GIN answers and prints the comparison;
+      in the final run the volumes (77,045,760 voxels) and the structure lists (672 ids) are identical and all 54,045
+      units get the same area, layer and boundary distance. Cell 71, the inputs and the deviation now say what this
+      run printed. Cell 72 also prints that all 1,508 units with a non-positive coordinate have no layer. The stricter
+      rule stays a variant asked of the authors (finding 9).
+  - claim: layer4-suppression
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Still bearing on a conclusion: under the stricter visual-area rule, layer4-suppression''s median
+      is +0.089 (cell 77), outside +0.116 plus or minus 0.0116. If the paper used that rule, layer4-suppression
+      would be partially reproduced, not reproduced.'
+    response: No change. The stricter rule is in neither the Methods nor the criterion; it is asked of the authors
+      (finding 9), and the notes give the variant's median. No change of outcome is proposed, since the rule the
+      outcome uses is the one Materials and methods 2.5 describes.
+  - claim: layer4-within-waveform
+    agrees: true
+    outcome: partially_reproduced
+    reason: Round-1 disagreement now accepted; with the stored duration both excesses are positive at p < 1e-6 (cell
+      80). The record's "below the paper's +0.137 and +0.114 except the broad one of reading (a)" is not supported;
+      that value is +0.124, which is also below 0.137. It is the one value within tolerance, as cell 81 says correctly.
+    response: The notes now say that every excess is below the paper's and that only the broad one of reading (a),
+      +0.124, is within tolerance.
+  - claim: layer4-controls
+    agrees: true
+    outcome: not_reproduced
+    reason: Now not_reproduced, which agrees with me. The record's "The unmatched value does not rise above +0.116
+      ... (median +0.122, mean +0.115)" is not supported; the median of +0.122 is above +0.116 (cell 83).
+    response: The sentence is rewritten; the unmatched excess in the 85 rate-matched sessions (median +0.122, mean
+      +0.115) is compared with that over all sessions of layer4-suppression (median +0.118, mean +0.115, printed
+      in cell 83), so it does not rise as the paper's +0.148 does over its +0.116.
+  - claim: fig2c-cv-lower
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: cohort-faster-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: cv-rate-matched
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: cv-unmatched-reverses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig2d-cv-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. One assumption is missing; fig2d-cv-correlations and cv-correlation-block-excess rest on averaging
+      20 RW- draws. With a single draw the order is lost (cell 103; 0.300 / 0.318 / 0.354), and the excess becomes
+      -0.050 (cell 106). The notes say this, but the deviations should list it as an assumption the outcome rests
+      on.
+    response: A deviation now states the assumption, citing Materials and methods 2.6. A second variant forms the
+      correlations on each of the 20 draws and averages them; it gives 0.304 / 0.322 / 0.354 and a median excess
+      of -0.038 (39.0% positive), which the notes, the conclusions and the Summary now give. No change of outcome
+      is proposed; the averaged series is the reading the Methods describe.
+  - claim: cv-correlation-block-excess
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. One assumption is missing; fig2d-cv-correlations and cv-correlation-block-excess rest on averaging
+      20 RW- draws. With a single draw the order is lost (cell 103; 0.300 / 0.318 / 0.354), and the excess becomes
+      -0.050 (cell 106). The notes say this, but the deviations should list it as an assumption the outcome rests
+      on.
+    response: A deviation now states the assumption, citing Materials and methods 2.6. A second variant forms the
+      correlations on each of the 20 draws and averages them; it gives 0.304 / 0.322 / 0.354 and a median excess
+      of -0.038 (39.0% positive), which the notes, the conclusions and the Summary now give. No change of outcome
+      is proposed; the averaged series is the reading the Methods describe.
+  - claim: fig2f-pre-post-cv
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig3a-archetypes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; peak reading (b) is a stated, reasonable assumption.
+    response: No change.
+  - claim: fig3b-mixtures
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig3c-area-overlap
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: fig3d-anticipatory-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; ramp reading (a) is a stated, reasonable assumption.
+    response: No change.
+  - claim: anticipatory-direction-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; ramp reading (a) is a stated, reasonable assumption.
+    response: No change.
+  - claim: hits-vs-false-alarms
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Every outcome is assumed true and lists the session selection; the assumption is stated and
+      reasonable.
+    response: No change.
+  - claim: hits-vs-lick-bouts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the 500 ms bout gap is a stated, reasonable assumption.
     response: No change.
