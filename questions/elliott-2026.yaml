@@ -1,0 +1,72 @@
+dandiset: "001132"
+paper: doi:10.1152/jn.00217.2025
+questions:
+- claim: fig1g-ka-synchronized-bursting
+  asked: 2026-11-21
+  question: The criterion's readings merge population-rate peaks only when they are less than 50 ms
+    apart. The paper's code splits the first S1 burst into sub-bursts 170 to 180 ms apart (14.4,
+    14.57, 14.75, 14.91 s), and Figure 2a calls them sub-bursts of one burst. Does the paper's
+    "burst" (6 to 8 per burst epoch; 67 bursts in 11 superbursts) group such sub-bursts into one
+    burst, so that the 50 ms merge counts sub-bursts as bursts? The same reading decides
+    methods-burst-counts and the onset of ext3-onset-spectral-signature.
+  passage: Results, paragraph 1, "synchronized rhythmic bursting activity was observed ...
+    approximately 6–8 bursts grouped within larger burst epochs"; Methods, Classification of
+    Epileptiform-like Events, "Slice S1 contained 67 bursts during its seizure-like event ... grouped
+    into 11 sets of super bursts"; Results, paragraph 5, the first burst of the initiation stage
+    divided into three sub-bursts (Figure 2a, figures/figure_2/burst_peak_comparison.ipynb).
+  why: With the 50 ms merge the median bursts per epoch in the first 150 s is 15 to 40 and S1 has 124
+    to 353 bursts, so both claims fail. Merging peaks closer than 500 ms (a variant outside the
+    criterion) gives a median of 7.5 to 10 bursts per epoch (7.5 and 8.0 under reading b, inside
+    5.4 to 8.8) and 60 to 83 bursts in S1 (67 under reading b with sigma 10), with 12 epochs.
+    67 bursts in 11 superbursts is about 6 per superburst, which agrees with "6 to 8".
+- claim: ext3-onset-spectral-signature
+  asked: 2026-11-21
+  question: The criterion sets the onset at the first burst of the first superburst under the fig1g
+    readings and asks for the 5 s before it as baseline. Under every reading that burst falls at 0.73
+    to 0.90 s of the S1 KA recording, so no 5 s baseline exists, and the 2 s after it lie inside the
+    edge region of the 0.5 Hz wavelet. Is the paper's onset of seizure-like activity the initiation
+    burst its figures and code mark (14.4 s, Extended Data Fig. 4 and figures/figure_2/burst_peak_comparison.ipynb),
+    and should the criterion name it?
+  passage: Results, paragraph 1, "a large upwelling in the delta-band frequency at epileptiform-like
+    onset"; Results, paragraph 3, the initiation stage as the first burst; Figure 1i and Extended
+    Data Fig. 3; Methods, Spectrogram.
+  why: At the criterion's onset the claim fails at all six electrodes, but the run cannot test it
+    (0.73 to 0.90 s of baseline). At 14.4 s it holds at three of three electrodes with the 0.1 to 100
+    Hz amplitude, and the outcome (reproduced) rests on that assumption. At the first epoch with 5 s
+    of recording before it, it holds under burst reading b (onset 14.98 and 15.05 s) and fails under
+    reading a (13.15 and 13.76 s).
+- claim: fig2b-phase-cluster-kuiper
+  asked: 2026-11-21
+  question: Reading b splits the phase-locked units at the median of their angular difference from
+    the polar mode, then tests the same angles with the Kuiper test. Such a split separates the angle
+    distributions by construction (p below 1e-4 whatever the data). Is reading b a reading of the
+    paper's method, which forms two groups that are then shown to sit in two places along the
+    granule cell layer, or should only the spatial splits (readings a and c) count?
+  passage: Methods, Methodology for heatmap of phase locked angles; Results, paragraph 6,
+    "Clustering based on the two modes of significant units yielded two groups with significantly
+    different phase angles"; Figure 2b legend.
+  why: The outcome is reproduced on reading b. Without it, the Methods' spike selection gives p =
+    0.037 (reading a) and 0.11 (reading c), a partial outcome; the code's spike selection, a variant
+    in table2-phase-locking-counts, gives 0.0042 and 0.0014.
+- claim: table2-phase-locking-seizure-vs-not
+  asked: 2026-11-21
+  question: The expected 4% outside the seizure periods of S2, with a tolerance of 0.4, is the
+    paper's rounding of a count. The paper's code saves 8 of 180 units (4.44%), which the tolerance
+    rejects. Should the expected value be the count (8 of 180), or the tolerance cover the rounding?
+  passage: Extended Data Table 2 legend and Extended Data Fig. 8c to 8d, "only 5% and 4%" outside the
+    seizure periods; the code's saved results, 8 of 180 (figures/supplement/phase_locking/sig_counts.ipynb).
+  why: The analysis gives 8 of 180, the paper's own count, and that value fails only through
+    rounding. All four values then match under the Methods' selection with the code's spans if the
+    others' mean is taken over the four recordings available, which would move the outcome from
+    partially reproduced toward reproduced.
+- claim: table1-unit-counts
+  asked: 2026-11-21
+  question: The criterion compares the durations of Extended Data Table 1 with the durations of the
+    dandiset's files. Are the table's durations the spans that were analysed (the sorted spans),
+    which can be parts of longer files? The S4 sorting covers 30 to 160 s of a 160 s file, and the
+    S1 baseline sorting 20 to 293 s of a 313 s file.
+  passage: Extended Data Table 1 (recording lengths 6, 5, 8.5, 5, 7, 2.2, 6.4 and 1.8 min).
+  why: The sorted spans match all eight durations, while the file durations miss for S4 (2.67 min
+    against 2.2), and S5 and S6 have no file. Under the file reading 5 of 8 recordings match and the
+    claim is not reproduced; under the span reading the six linked recordings match and the two
+    missing ones cannot be measured.
