@@ -534,6 +534,41 @@ def lick_alignment(asset, shifts=np.round(np.arange(-1.0, 1.0001, 0.01), 2)):
                 video_span=(float(ts[0]), float(ts[-1])), trial_span=(float(T["start"][0]), float(T["stop"][-1])))
 
 
+def trial_video_timing(asset):
+    """For one session: median frames per trial video, the median span of a trial video by its
+    timestamps, the median trial duration (stop minus start) and the median time from the trial's
+    start to its video's first frame. With the same trial durations, a video that holds half the
+    frames over the same span of the trial was recorded at half the rate."""
+    f = open_asset(asset["asset_id"])
+    T = trials_table(f)
+    _, ts, _ = load_marker(f, "Jaw")
+    f.close()
+    gaps = np.where(np.diff(ts) > 0.01)[0]
+    st, en = np.r_[0, gaps + 1], np.r_[gaps, len(ts) - 1]
+    k = np.clip(np.searchsorted(T["start"], ts[st], side="right") - 1, 0, len(T["start"]) - 1)
+    return dict(path=asset["path"], trial_videos=len(st), frames_per_video=float(np.median(en - st + 1)),
+                video_span_s=float(np.median(ts[en] - ts[st])),
+                trial_duration_s=float(np.median((T["stop"] - T["start"])[k])),
+                video_start_after_trial_start_s=float(np.median(ts[st] - T["start"][k])))
+
+
+def later_video_series(path, version="0.231012.2129"):
+    """The side-view ImageSeries of one file of the later version: how many, the frames of each
+    (median), and the timing they carry (starting_time and its rate, timestamps if any)."""
+    a = [x for x in list_assets(version) if x["path"].replace("+image", "") == path][0]
+    r = requests.get(f"{API}/dandisets/{DANDISET}/versions/{version}/assets/{a['asset_id']}/").json()
+    f = h5py.File(remfile.File([u for u in r["contentUrl"] if "s3" in u][0]), "r")
+    side = [k for k in f["acquisition"] if "side_face" in k]
+    g = f[f"acquisition/{side[0]}"]
+    out = dict(path=a["path"], side_series=len(side),
+               frames_per_series=float(np.median([f[f"acquisition/{k}/data"].shape[0] for k in side])),
+               fields=sorted(g.keys()),
+               rate=float(g["starting_time"].attrs["rate"]) if "starting_time" in g else None,
+               has_timestamps="timestamps" in g)
+    f.close()
+    return out
+
+
 def version_fingerprints(asset, version=VERSION):
     """Counts and fingerprints of the units, trials and jaw marker of one file, for comparing
     the same session across versions."""
