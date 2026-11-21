@@ -1,0 +1,497 @@
+# Claims for Ostadsharif Memar & Dehghani (2026), "Spatially Masked Regression Reveals Local and
+# Distributed Predictability in Electrophysiological Recordings", doi:10.48550/arxiv.2606.11415.
+#
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-21, protocol as stated in docs/protocol.md (pilot-18), Reader role.
+#
+# Text read. The arXiv preprint, version 1 (arXiv:2606.11415v1, dated 11 June 2026), full text as
+# stored under paper/ (paper/10.48550-arxiv.2606.11415.txt, "Version: preprint"): main text,
+# Material and Methods (sections II A to II H, Algorithms 1 to 4), Results, Discussion, and the
+# appendix Tables II (iEEG) and III (EEG) and Figure 6. The paper has no separate supplement and
+# cites none. No version of record was available. The PDF was not needed; the table values were
+# read from the text, row by row in the column order the headers give.
+#
+# Code read. GitHub neurovium/SpatiallyMaskedRegression (linked in the paper's footnote and Code
+# Availability), commit 244dcdbd67f217873c2a52b77485d97c6fa9bf0e (2026-06-24, after the preprint's
+# date). It holds the model (ReconModel.py, model.py), intra-subject training and the EEG
+# cross-subject path (train.py, main.py), the iEEG cross-subject path (similarity.py,
+# generate_adj_matrix_ieeg_unseen.py, Test_new_subject_iEEG.py), the coverage experiment
+# (run_coverage_experiment.py), surrogates (Load_preprocess_data.py), the neighborhood and mask
+# (neighborhood.py), settings (configs/settings.yaml), a METHODS.md map from the paper to the code,
+# and the figure notebooks (notebooks/). Its module docstrings call it a "fixed" version that
+# changes earlier code in places (the mask sweep, the CBEM similarity), so it may not be the code
+# that produced the reported numbers. It does not build the iEEG trials used for training; it loads
+# them from pickled per-subject arrays ("patient_<n>_reformat.pkl", coordinates in
+# "elec_coor_all_move_rest.pkl") made by a pipeline that is not in the repository.
+# utils.extract_data_dandi is a separate DANDI path (one session, sub-01 ses-3, reach events,
+# 0.5 to 100 Hz, Hilbert envelope, decimation to 10 Hz) that does not match the Methods and is
+# not used by the reported runs.
+#
+# Data the paper used.
+# - iEEG. AJILE12 (Peterson et al. 2022), DANDI:000055, which is the dataset for this file.
+#   12 subjects (8 male, 4 female, mean age 29 ± 7 years) under clinical epilepsy monitoring,
+#   electrodes in one hemisphere each (5 right, 7 left), placement varying across subjects
+#   (Figure 6 shows each subject's electrodes and their AAL regions). Video-identified
+#   upper-limb movement events annotate the recordings. Signals were preprocessed (DC removal and
+#   linear detrending, 0.5 to 150 Hz Butterworth band-pass, 60 Hz notch, 120 Hz low-pass, |z| > 5
+#   samples replaced by the channel median, common average reference, per-channel z-scoring
+#   across time) and cut into 2 s trials centred on movement events (Methods II A a). The dataset
+#   description gives 500 Hz recordings from at least 64 electrodes per participant and wrist
+#   movement events. Measured variables used here are the iEEG voltage per electrode, the
+#   electrodes' MNI coordinates (for the neighborhood), and the movement event times.
+# - EEG. Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12 e0182578), from the BNCI
+#   Horizon 2020 database. 15 healthy subjects, 61 scalp electrodes, six right-arm movements and
+#   rest, one session of execution and one of kinesthetic imagery on different days; band-pass and
+#   notch filtered and z-scored per channel, then cut into trials (Methods II A b). It is not in
+#   DANDI:000055. Its claims are data elsewhere; the paper names the database only, with no
+#   accession or version, and does not say which session (execution, imagery or both) or which
+#   trial window was used.
+#
+# Common iEEG pipeline, with its sources. Claims below refer to it.
+# - Model. For each target electrode i, a linear map (weights and a bias) from the unmasked
+#   electrodes to electrode i at each time sample (Eq. 1; ReconModel.py). Loss is the mean absolute
+#   error plus lambda1 = 1e-5 times the L1 norm and lambda2 = 1e-4 times the squared L2 norm of all
+#   trainable parameters, bias included (Eq. 2, Methods II F; train.py). Adam; mini-batches of
+#   trials; no dropout (Methods II C, II F). Learning rate 0.01, batch size 32, patience 200 epochs,
+#   at most 10000 epochs (configs/settings.yaml; the paper says only that these came from a coarse
+#   validation search). Seeds 42 (utils.configure_environment).
+# - Data split. Each subject's trial array is z-scored across trials, then split 64/16/20 into
+#   train, validation and test trials by two nested 80/20 random splits with a fixed seed (Methods
+#   II D 1). The code z-scores each channel and time sample across trials (scipy zscore, axis 0)
+#   and uses random_state 42. Early stopping on the epoch-averaged validation loss; the lowest
+#   validation-loss checkpoint is evaluated on the test trials.
+# - Score. Distance correlation (Eqs. 8 to 14, the standard biased V-statistic, 0 when the
+#   denominator is 0) between the original and reconstructed test trial of electrode i, per trial,
+#   averaged over test trials. A subject's value is the mean over electrodes (Table II legend,
+#   "mean ± SD across electrodes"); an average is the mean over subjects of the subject values,
+#   and its ± is the population SD across subjects (the Average rows of Tables II and III equal
+#   these to the printed precision, checked here by arithmetic on the table).
+# - Neighborhood N(i). The 9 electrodes nearest to i in the (x, z) projection of the MNI
+#   coordinates, i itself excluded (Methods II B). Variant from the code: its default and the
+#   notebooks use method 'atlas', N(i) = electrodes with the same AAL label as i
+#   (neighborhood.py, configs/settings.yaml, README calling it "manuscript-matching"). Methods
+#   first; the atlas neighborhood is to be shown as a variant.
+# - Mask intensity m. ceil(m |N(i)|) electrodes drawn at random from N(i) are masked with i
+#   (Results D). The code masks round(m |N(i)|) (neighborhood.find_index_mask), which differs at
+#   m = 0.25 (2 against 3 of 9) and m = 0.5 (4 against 5). Methods first; round is a variant.
+# - The mask intensity behind the intra-subject, lagged and surrogate columns of Table II and
+#   Figure 2 is not stated in the paper. The code settles it as m = 1.0, the full neighborhood
+#   masked (notebooks/visualization.ipynb, Figure 2 cell, "mask_intensity=1.0 (full local mask,
+#   matching the paper)"; donor matrices for cross-subject transfer come from intensity 100). This
+#   file follows the code; m = 0 (only the target masked) is to be shown as a variant.
+#
+# Details the paper and code leave open for the iEEG trials, with the readings the text allows.
+# Each analysis is to be run under each reading; outcomes resting on one are marked so.
+# - Which movement events. The paper says "2-second trials centered on movement events" and
+#   "upper-limb movement" annotations. Readings: (a) the dataset's wrist movement (reach) events,
+#   2 s centred on each event's start time (the event and alignment extract_data_dandi uses);
+#   (b) movement trials together with rest trials, as the code's coordinate file name
+#   ("all_move_rest") suggests.
+# - Which recording days. Not stated. Reading: all sessions of each subject, pooled per subject.
+# - Where preprocessing is applied. Not stated. Readings: (a) on each session's continuous
+#   recording before epoching; (b) on each 2 s epoch. The steps are those of the Methods; the
+#   code's preprocess_iEEG adds a median filter, a Hilbert envelope and optional decimation that
+#   the Methods do not list, so they are left out, and the envelope may be shown as a variant.
+# - Trial and electrode exclusion. The paper names none beyond the |z| > 5 replacement. Standard
+#   choice, no trial or electrode is excluded; the code's PSD-based trial rejection
+#   (utils.rem_bad_trials_PSD, on the unused DANDI path) may be shown as a variant.
+# - Subject order. Tables II and III list subjects in rows without identifiers. Reading: row n is
+#   AJILE12 participant n (sub-01 to sub-12), checked against the hemisphere and electrode layout
+#   Figure 6 shows for each subject.
+schema_version: 2
+paper: doi:10.48550/arxiv.2606.11415
+claims:
+- id: intra-ieeg-mean
+  statement: In the intra-subject setting, SMR reconstructs held-out iEEG with a mean distance
+    correlation of 0.553 ± 0.068 across the 12 AJILE12 subjects.
+  source: Results, III A, paragraph 1; Table II, Average row, Intra-Subject column
+  quote: Mean Dist ... Corr across subjects was 0.908 ± 0.028 for the EEG dataset and 0.553 ± 0.068
+    for the iEEG dataset
+  data: dataset
+  expected:
+  - quantity: mean over 12 subjects of intra-subject DistCorr, iEEG
+    value: 0.553
+    tolerance: 0.068
+  criterion: The common iEEG pipeline of the opening comment at m = 1.0, scored per test trial
+    and averaged over trials, electrodes and then subjects. Reproduced when the average is within
+    tolerance under one reading of the open trial details; the values under every reading, and
+    under the variants (atlas neighborhood, round instead of ceil, m = 0), are reported.
+- id: table2-ieeg-intra-subjects
+  statement: Intra-subject iEEG DistCorr differs across subjects, from 0.428 to 0.647, with the
+    subject values Table II and Figure 2A give.
+  source: Table II, Intra-Subject column; Figure 2A
+  quote: Subject-wise distance correlation (DistCorr; mean ± SD across electrodes) for iEEG in the
+    intra-subject, lagged, cross-subject, and surrogate conditions
+  data: dataset
+  depends_on:
+  - intra-ieeg-mean
+  expected:
+  - quantity: subject 1 intra-subject DistCorr
+    value: 0.585
+    tolerance: 0.041
+  - quantity: subject 2 intra-subject DistCorr
+    value: 0.647
+    tolerance: 0.038
+  - quantity: subject 3 intra-subject DistCorr
+    value: 0.535
+    tolerance: 0.035
+  - quantity: subject 4 intra-subject DistCorr
+    value: 0.452
+    tolerance: 0.036
+  - quantity: subject 5 intra-subject DistCorr
+    value: 0.524
+    tolerance: 0.034
+  - quantity: subject 6 intra-subject DistCorr
+    value: 0.428
+    tolerance: 0.021
+  - quantity: subject 7 intra-subject DistCorr
+    value: 0.531
+    tolerance: 0.028
+  - quantity: subject 8 intra-subject DistCorr
+    value: 0.487
+    tolerance: 0.025
+  - quantity: subject 9 intra-subject DistCorr
+    value: 0.635
+    tolerance: 0.041
+  - quantity: subject 10 intra-subject DistCorr
+    value: 0.605
+    tolerance: 0.040
+  - quantity: subject 11 intra-subject DistCorr
+    value: 0.612
+    tolerance: 0.032
+  - quantity: subject 12 intra-subject DistCorr
+    value: 0.593
+    tolerance: 0.032
+  criterion: Subject values from intra-ieeg-mean, with tolerance the SD across electrodes the
+    table gives for that subject. Reproduced when all 12 are within tolerance under one reading;
+    partially reproduced when 6 to 11 are; not reproduced below 6. The Spearman rank correlation
+    of the 12 values with the table's is reported. Subject order follows the reading in the
+    opening comment.
+- id: intra-eeg-mean
+  statement: In the intra-subject setting, SMR reconstructs held-out scalp EEG with a mean
+    distance correlation of 0.908 ± 0.028 across the 15 subjects.
+  source: Results, III A, paragraph 1; Table III, Average row, Intra-Subject column
+  quote: Mean Dist ... Corr across subjects was 0.908 ± 0.028 for the EEG dataset
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578); the paper gives no accession or version
+  expected:
+  - quantity: mean over 15 subjects of intra-subject DistCorr, EEG
+    value: 0.908
+    tolerance: 0.028
+  criterion: As intra-ieeg-mean, on the EEG data, with N(i) the 9 electrodes nearest in the (x, y)
+    plane of the montage (Methods II B; the code's variant is the 10-10/10-5 regional groups of
+    neighborhood.py). Which EEG session (execution, imagery or both) and which trials are open;
+    each is a reading.
+- id: intra-eeg-above-ieeg
+  statement: Intra-subject reconstruction is consistently stronger in EEG than in iEEG.
+  source: Discussion, paragraph 5; Tables II and III
+  quote: In the intra-subject setting, reconstruction was consistently stronger in EEG than in iEEG
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578), with DANDI:000055 for the iEEG
+  depends_on:
+  - intra-ieeg-mean
+  - intra-eeg-mean
+  criterion: No test is reported. In Tables II and III the lowest EEG subject (0.864) is above the
+    highest iEEG subject (0.647). Reproduced when the EEG average exceeds the iEEG average and
+    every EEG subject value exceeds every iEEG subject value; partially reproduced when only the
+    averages are ordered.
+- id: cross-ieeg-mean
+  statement: Transferring learned inter-electrode matrices from other subjects, through
+    correlation-based electrode mapping and per-electrode donor selection, reconstructs a target
+    subject's trial-averaged iEEG with a mean DistCorr of 0.389 ± 0.064, without fitting weights
+    on the target.
+  source: Results, III B, paragraph 3; Table II, Average row, Cross-Subject column
+  quote: In this setting, the model achieved an ... DistCorr of 0.389±0.064
+  data: dataset
+  depends_on:
+  - intra-ieeg-mean
+  expected:
+  - quantity: mean over 12 subjects of cross-subject DistCorr, iEEG
+    value: 0.389
+    tolerance: 0.064
+  criterion: Method from Methods II D 2 and Algorithm 2, with the code where they are silent.
+    Donor matrices M_learn are the intra-subject weight matrices at m = 1.0 (code, donor directory
+    intesity_100). For each target and donor, C(i, j) is the Pearson correlation of target
+    electrode i and donor electrode j averaged over paired trials 1 to min(R_s, R_s') with NaN
+    trials left out (Eq. 3); the code instead correlates the trial-concatenated series truncated
+    to a common length (similarity.cross_subject_pearson), to be shown as a variant. A one-to-one
+    assignment maximising summed correlation (Hungarian, scipy linear_sum_assignment); unmatched
+    target electrodes get no row from that donor. M_est = P M_learn P^T. The target's trials are
+    split 50/50 into validation and test (random_state 42); for each electrode, the donor whose
+    row gives the highest DistCorr on the z-scored trial-averaged validation signals is chosen,
+    and DistCorr on the z-scored trial-averaged test signals is its score (Methods II D 2).
+    Electrodes with no matched donor are left out of the mean (the code's nanmean). Reproduced
+    when the average is within tolerance under one reading.
+- id: table2-ieeg-cross-subjects
+  statement: Cross-subject iEEG DistCorr ranges over subjects from 0.285 to 0.509, with the
+    subject values Table II and Figure 2A give.
+  source: Table II, Cross-Subject column; Figure 2A
+  quote: the Cross-Subject column reports DistCorr on trial-averaged signals
+  data: dataset
+  depends_on:
+  - cross-ieeg-mean
+  expected:
+  - quantity: subject 1 cross-subject DistCorr
+    value: 0.331
+    tolerance: 0.007
+  - quantity: subject 2 cross-subject DistCorr
+    value: 0.483
+    tolerance: 0.013
+  - quantity: subject 3 cross-subject DistCorr
+    value: 0.440
+    tolerance: 0.012
+  - quantity: subject 4 cross-subject DistCorr
+    value: 0.325
+    tolerance: 0.006
+  - quantity: subject 5 cross-subject DistCorr
+    value: 0.509
+    tolerance: 0.016
+  - quantity: subject 6 cross-subject DistCorr
+    value: 0.285
+    tolerance: 0.004
+  - quantity: subject 7 cross-subject DistCorr
+    value: 0.415
+    tolerance: 0.010
+  - quantity: subject 8 cross-subject DistCorr
+    value: 0.377
+    tolerance: 0.013
+  - quantity: subject 9 cross-subject DistCorr
+    value: 0.409
+    tolerance: 0.010
+  - quantity: subject 10 cross-subject DistCorr
+    value: 0.363
+    tolerance: 0.007
+  - quantity: subject 11 cross-subject DistCorr
+    value: 0.395
+    tolerance: 0.014
+  - quantity: subject 12 cross-subject DistCorr
+    value: 0.340
+    tolerance: 0.007
+  criterion: Subject values from cross-ieeg-mean, with tolerance the SD across electrodes the
+    table gives. Reproduced when all 12 are within tolerance under one reading; partially
+    reproduced when 6 to 11 are; not reproduced below 6. The Spearman rank correlation with the
+    table's values is reported.
+- id: cross-below-intra-ieeg
+  statement: Cross-subject iEEG performance is lower than intra-subject performance but keeps
+    appreciable predictive power.
+  source: Results, III B, paragraph 1; Table II; Figure 2A
+  quote: As expected, performance decreased relative to the intra-subject setting, but the model
+    retained appreciable predictive power
+  data: dataset
+  depends_on:
+  - intra-ieeg-mean
+  - cross-ieeg-mean
+  criterion: No test is reported. In Table II every subject's cross-subject value is below its
+    intra-subject value. Reproduced when the cross-subject average is below the intra-subject
+    average and above the phase-shuffled surrogate average of surrogate-ieeg, and the
+    cross-subject value is below the intra-subject value in at least 11 of 12 subjects; partially
+    reproduced when only the averages are so ordered. Note that the two settings score different
+    signals (single trials against trial averages; Methods II D 2), as the paper does.
+- id: cross-eeg-mean
+  statement: For EEG, transferring a randomly chosen reference subject's matrix, trained at full
+    local masking, directly to the target gives a mean cross-subject DistCorr of 0.783 ± 0.093.
+  source: Results, III B, paragraph 2; Table III, Average row, Cross-Subject column
+  quote: subject DistCorr of 0.783 ± 0.093, indicating robust transfer of the learned
+    inter-electrode structure
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578); the paper gives no accession or version
+  expected:
+  - quantity: mean over 15 subjects of cross-subject DistCorr, EEG
+    value: 0.783
+    tolerance: 0.093
+  criterion: One reference subject drawn at random for each target (Results III B;
+    train.evaluate_model, random.choice), its m = 1.0 models applied unchanged to all of the
+    target's z-scored trials, scored per trial as in the intra-subject setting
+    (visualize.save_mse_all_trials). The draw is random; the result over several draws is
+    reported.
+- id: transfer-penalty-larger-ieeg
+  statement: The drop from intra-subject to cross-subject performance is much larger in iEEG
+    than in EEG.
+  source: Results, III B, paragraphs 1 and 4; Discussion, paragraph 5
+  quote: with the magnitude of the transfer penalty differing markedly between EEG and iEEG
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578), with DANDI:000055 for the iEEG
+  depends_on:
+  - intra-ieeg-mean
+  - cross-ieeg-mean
+  - intra-eeg-mean
+  - cross-eeg-mean
+  criterion: No test is reported. From the paper's averages, the cross over intra ratio is 0.70
+    for iEEG (0.389 / 0.553) and 0.86 for EEG (0.783 / 0.908). Reproduced when the iEEG ratio is
+    below the EEG ratio; the ratios and the differences are reported.
+- id: lagged-ieeg-no-gain
+  statement: Adding lagged predictors (0, 20, 30, 50 and 60 ms) barely changes iEEG
+    reconstruction (0.554 ± 0.067 against 0.553 ± 0.068).
+  source: Results, III C, paragraph 2; Table II, Lagged column
+  quote: For iEEG, the corresponding values were 0.554±0.067 and 0.553±0.068, respectively. ...
+    adding delayed predictors did not materially improve reconstruction
+  data: dataset
+  depends_on:
+  - intra-ieeg-mean
+  expected:
+  - quantity: mean over 12 subjects of lagged intra-subject DistCorr, iEEG
+    value: 0.554
+    tolerance: 0.067
+  criterion: The lagged model of Eq. 6 with lags {0, 20, 30, 50, 60} ms, each lag its own weight
+    vector, offsets ceil(tau fs / 1000) samples (10, 15, 25 and 30 at 500 Hz, where the code's
+    floor gives the same), predictors shifted within each trial with zeros before the trial start
+    (model.LaggedReconModelConfigurable), all other settings as the instantaneous run at m = 1.0
+    (Methods II E; main.py run_lagged_too). A claim of no material gain; the paper reports no
+    test. Reproduced when the lagged average is within tolerance and differs from the
+    instantaneous average by less than 10% of the instantaneous average; not reproduced when the
+    lagged average exceeds the instantaneous one by 10% or more. The paired per-subject
+    differences and a Wilcoxon signed-rank test over the 12 subjects are reported as context.
+- id: lagged-eeg-no-gain
+  statement: Adding lagged predictors barely changes EEG reconstruction (0.910 ± 0.027 against
+    0.908 ± 0.028).
+  source: Results, III C, paragraph 2; Table III, Lagged column
+  quote: EEG performance was 0.910 ± 0.027, compared with 0.908 ± 0.028
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578); the paper gives no accession or version
+  depends_on:
+  - intra-eeg-mean
+  expected:
+  - quantity: mean over 15 subjects of lagged intra-subject DistCorr, EEG
+    value: 0.910
+    tolerance: 0.027
+  criterion: As lagged-ieeg-no-gain, on the EEG data.
+- id: fig4a-mask-sweep-ieeg
+  statement: In iEEG, DistCorr decreases as more of the target's local neighborhood is masked
+    (mask intensity 0, 25, 50, 75 and 100%).
+  source: Results, III D, paragraph 3; Figure 4A
+  quote: In each case, DistCorr decreased as mask intensity increased
+  data: dataset
+  criterion: The common iEEG pipeline run at each m in {0, 0.25, 0.5, 0.75, 1.0}, with ceil(m
+    |N(i)|) neighbors drawn at random and masked with the target (Results III D). Reproduced when
+    the average over subjects decreases at every step from m = 0 to m = 1.0 under one reading;
+    partially reproduced when the m = 1.0 average is below the m = 0 average but some step does
+    not decrease; not reproduced otherwise. The number of subjects whose own values decrease at
+    every step is reported.
+- id: full-mask-above-zero-ieeg
+  statement: With the whole local neighborhood masked, iEEG reconstruction remains above zero,
+    so the target signal is not determined by its immediate neighborhood alone.
+  source: Results, III D, paragraph 3; Figure 4A
+  quote: At the same time, reconstruction re ... mains above zero even under full local masking
+  data: dataset
+  depends_on:
+  - fig4a-mask-sweep-ieeg
+  criterion: The m = 1.0 values of fig4a-mask-sweep-ieeg. The sample DistCorr is never negative,
+    so the paper's comparison with zero is read with the surrogate floor it reports. Reproduced
+    when every subject's m = 1.0 value exceeds that subject's phase-shuffled surrogate value from
+    surrogate-ieeg; partially reproduced when the average does but some subjects do not.
+- id: fig4b-mask-sweep-eeg
+  statement: In EEG, DistCorr decreases as mask intensity increases, and stays above zero with
+    the whole neighborhood masked.
+  source: Results, III D, paragraph 3; Figure 4B
+  quote: In each case, DistCorr decreased as mask intensity increased
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578); the paper gives no accession or version
+  criterion: As fig4a-mask-sweep-ieeg and full-mask-above-zero-ieeg, on the EEG data.
+- id: fig5a-coverage-ieeg
+  statement: In iEEG, reconstruction is best with all electrodes as predictors, and local
+    electrodes alone consistently outperform non-local electrodes alone.
+  source: Results, III E, paragraph 2; Figure 5A
+  quote: As expected, the best performance was achieved when both local and non-local inputs were
+    available ... Notably, the model trained with only local electrodes consistently outperformed
+    the non-local configuration
+  data: dataset
+  criterion: Three runs of the common iEEG pipeline per subject (Results III E;
+    run_coverage_experiment.py). Local, predictors are N(i) only; Non-local, N(i) and the target
+    masked; All, only the target masked. Reproduced when, under one reading, the subject average
+    is ordered All > Local > Non-local and Local exceeds Non-local in at least 11 of 12 subjects
+    ("consistently"); partially reproduced when the averages are so ordered but fewer subjects
+    are. The per-subject values of the three conditions are reported.
+- id: fig5b-coverage-eeg
+  statement: In EEG, reconstruction is best with all electrodes as predictors, and local
+    electrodes alone consistently outperform non-local electrodes alone.
+  source: Results, III E, paragraph 2; Figure 5B
+  quote: Notably, the model trained with only local electrodes consistently outperformed the
+    non-local configuration
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578); the paper gives no accession or version
+  criterion: As fig5a-coverage-ieeg, on the EEG data, with at least 14 of 15 subjects for
+    "consistently".
+- id: surrogate-ieeg
+  statement: On iEEG surrogates, intra-subject DistCorr falls from 0.553 to 0.181 (phase
+    shuffle), 0.232 (IAAFT) and 0.201 (block shuffle).
+  source: Results, III F, paragraph 3; Table II, Phase Shuffle, IAAFT and Block Shuffle columns
+  quote: For iEEG (Table II), the mean DistCorr decreased from 0.553 ± 0.068 for the origi ... nal
+    data to 0.181 ± 0.029, 0.232 ± 0.060, and 0.201 ± 0.168 for phase-shuffled, IAAFT, and
+    block-shuffled surrogates
+  data: dataset
+  depends_on:
+  - intra-ieeg-mean
+  expected:
+  - quantity: mean over 12 subjects of DistCorr, phase-shuffled iEEG
+    value: 0.181
+    tolerance: 0.029
+  - quantity: mean over 12 subjects of DistCorr, IAAFT iEEG
+    value: 0.232
+    tolerance: 0.060
+  - quantity: mean over 12 subjects of DistCorr, block-shuffled iEEG
+    value: 0.201
+    tolerance: 0.168
+  criterion: Surrogates made per trial and per channel independently from the preprocessed trials
+    (Algorithm 4; Load_preprocess_data.load_per_subject), then put through the common pipeline at
+    m = 1.0 (notebooks/visualization.ipynb). Phase shuffle, the positive-frequency phases of the
+    FFT permuted with Hermitian symmetry and the DC kept (Load_preprocess_data.shuffle_phase).
+    IAAFT, 5 iterations from a random permutation (iaaft_1d). Block shuffle, blocks of 0.5 s
+    permuted with leftover samples appended (block_shuffle_1d; the paper does not give B, the
+    code's default settles it). The Methods say end-matched segmentation was used for the phase
+    surrogates and the code has none; readings (a) as the code, no end matching; (b) each trial
+    trimmed to the sub-segment whose first and last samples and slopes match best before the
+    shuffle. Random draws are a standard choice. Reproduced when all three averages are within
+    tolerance and each is below the original average under one reading. Per-subject values are
+    reported; in Table II subject 3's block-shuffle value (0.698) is above its original (0.535).
+- id: surrogate-eeg
+  statement: On EEG surrogates, intra-subject DistCorr falls from 0.908 to 0.124 (phase shuffle),
+    0.184 (IAAFT) and 0.160 (block shuffle).
+  source: Results, III F, paragraph 3; Table III, Phase Shuffle, IAAFT and Block Shuffle columns
+  quote: For EEG (Table III), the corresponding decrease was from 0.908±0.028 to 0.124±0.049,
+    0.184±0.073, and 0.160±0.078
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578); the paper gives no accession or version
+  depends_on:
+  - intra-eeg-mean
+  expected:
+  - quantity: mean over 15 subjects of DistCorr, phase-shuffled EEG
+    value: 0.124
+    tolerance: 0.049
+  - quantity: mean over 15 subjects of DistCorr, IAAFT EEG
+    value: 0.184
+    tolerance: 0.073
+  - quantity: mean over 15 subjects of DistCorr, block-shuffled EEG
+    value: 0.160
+    tolerance: 0.078
+  criterion: As surrogate-ieeg, on the EEG data.
+- id: surrogate-order-ieeg
+  statement: In iEEG, phase shuffling degrades reconstruction most and IAAFT surrogates keep the
+    most reconstructability of the three surrogates.
+  source: Results, III F, paragraph 4; Table II
+  quote: The strongest average degradation was observed under phase shuffling ... IAAFT surrogates
+    preserved more low ... order properties and therefore retained somewhat more recon
+  data: dataset
+  depends_on:
+  - surrogate-ieeg
+  criterion: The three surrogate averages of surrogate-ieeg. Reproduced when phase shuffle <
+    block shuffle < IAAFT, the order of Table II (0.181, 0.201, 0.232); partially reproduced
+    when phase shuffle is lowest but block shuffle and IAAFT are in the other order.
+- id: surrogate-order-eeg
+  statement: In EEG, phase shuffling degrades reconstruction most and IAAFT surrogates keep the
+    most reconstructability of the three surrogates.
+  source: Results, III F, paragraph 4; Table III
+  quote: The strongest average degradation was observed under phase shuffling
+  data: elsewhere
+  where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
+    e0182578); the paper gives no accession or version
+  depends_on:
+  - surrogate-eeg
+  criterion: As surrogate-order-ieeg, on the EEG averages (Table III order 0.124, 0.160, 0.184).
