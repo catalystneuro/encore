@@ -409,14 +409,28 @@ def mod_index(x, ctrl):
 def mixed(df, formula="y ~ 1", group="session"):
     """Mixed-effects model with a random intercept of session (D8). t from the coefficient and its
     standard error; df = observations - fixed effects, p and 95% CI from the t distribution
-    (Methods, 'Quantification and statistical analysis'). Returns a table of fixed effects."""
+    (Methods, 'Quantification and statistical analysis'). Returns a table of fixed effects.
+
+    A fit that does not converge with the default optimizer (L-BFGS) is refitted with Powell's
+    method, then Nelder-Mead, then BFGS, and the first that converges is kept; `optimizer` names the
+    one used, and `converged` is False only when none converged (the default fit is then kept)."""
     import warnings
     import statsmodels.formula.api as smf
     from scipy import stats
     df = df.dropna(subset=["y"])
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        m = smf.mixedlm(formula, df, groups=df[group]).fit()
+        model = smf.mixedlm(formula, df, groups=df[group])
+        m, used = model.fit(), "lbfgs"
+        if not m.converged:
+            for meth in ["powell", "nm", "bfgs"]:
+                try:
+                    m2 = model.fit(method=meth, maxiter=5000)
+                except Exception:
+                    continue
+                if m2.converged:
+                    m, used = m2, meth
+                    break
     fe = m.fe_params
     se = m.bse_fe
     dof = len(df) - len(fe)
@@ -427,6 +441,7 @@ def mixed(df, formula="y ~ 1", group="session"):
     out["n"] = len(df)
     out["groups"] = df[group].nunique()
     out["converged"] = m.converged
+    out["optimizer"] = used
     return out
 
 

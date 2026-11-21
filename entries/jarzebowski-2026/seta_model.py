@@ -93,3 +93,42 @@ def summarise(spk):
                         lat_mean=float(lat.mean()) if len(lat) else np.nan,
                         single=float((c[c >= 1] == 1).mean()) if (c >= 1).any() else np.nan))
     return out
+
+
+def trace(l4, l5, chc, bc_scale=1.2, e_chc=-58.0, gain=1.0, sigma=0.0, rng=None, dt=0.1, pre=50.0,
+          window=100.0):
+    """One run of one condition with the voltages and conductances at every step, for inspection.
+
+    sigma = 0 gives the noise-free run. Returns a dict of arrays over time (ms from the input onset):
+    t, v_soma, v_ais, g_l4, g_bc, g_l5, g_chc, and the spike times."""
+    n = int(round((pre + window) / dt))
+    vs = va = E_REST
+    ref = 0.0
+    noise_k = sigma * np.sqrt(dt / TAU_NOISE)
+    rec = {k: np.zeros(n) for k in ["t", "v_soma", "v_ais", "g_l4", "g_bc", "g_l5", "g_chc"]}
+    spikes = []
+    for step in range(n):
+        t = step * dt - pre
+        g4 = float(alpha(t, gain * l4, TAU["l4"]))
+        gb = float(alpha(t - BC_DELAY, gain * l4 * bc_scale, TAU["bc"]))
+        g5 = float(alpha(t, gain * l5, TAU["l5"]))
+        gc = float(alpha(t - CHC_DELAY, gain * chc, TAU["chc"]))
+        i_s = GL_S * (E_REST - vs) + g4 * (E["l4"] - vs) + g5 * (E["l5"] - vs) + gb * (E["bc"] - vs) \
+            + G_AX * (va - vs)
+        i_a = GL_A * (E_REST - va) + gc * (e_chc - va) + G_AX * (vs - va)
+        dvs = dt * i_s / C_S + (noise_k * rng.standard_normal() if sigma else 0.0)
+        dva = dt * i_a / C_A + (noise_k * rng.standard_normal() if sigma else 0.0)
+        if ref <= 0:
+            vs, va = vs + dvs, va + dva
+        else:
+            vs = va = V_RESET
+        ref -= dt
+        if ref <= 0 and va >= V_TH:
+            if t >= 0:
+                spikes.append(round(t, 4))
+            vs = va = V_RESET
+            ref = T_REF
+        for k, v in zip(rec, [t, vs, va, g4, gb, g5, gc]):
+            rec[k][step] = v
+    rec["spikes"] = spikes
+    return rec

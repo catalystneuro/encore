@@ -35,11 +35,14 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:model-positive-error-short-latency
-  notes: With L4 at 60 nS and no prediction all 80 runs spike, first spike a median 3.75 ms after L4 onset;
-    half the runs fire doublets from 90 nS and all from 115 nS. Under the claim's seed 1 of 81 spikes
-    at 60 nS (0.012) falls after the basket conductance peak (8.5 ms after L4 onset), so the strict "no
-    spike after the basket peak" fails; seeds plus 1000 to 4000 give latencies 3.7 to 3.8 ms and 0 or
-    0.012 late spikes (criterion met under 3 of 5).
+  notes: 'With L4 at 60 nS and no prediction all 80 runs spike, first spike a median 3.75 ms after L4
+    onset; half the runs fire doublets from 90 nS and all from 115 nS. Under the claim''s seed 1 of 81
+    spikes at 60 nS (0.012) falls after the basket conductance peak (8.5 ms after L4 onset), so the strict
+    "no spike after the basket peak" fails; seeds plus 1000 to 4000 give latencies 3.7 to 3.8 ms and 0
+    or 0.012 late spikes (criterion met under 3 of 5). Over every L4 from 0 to 150 nS, 0.009 of first
+    spikes and 0.046 of all spikes fall after the basket peak under the claim''s seed: single spikes at
+    weak L4 (15 to 30 nS, 18 spikes), second spikes of doublets (75 to 120 nS, 119 spikes) and 1 each
+    at 60, 65 and 70 nS.'
   deviations:
   - The model is integrated in NumPy with the Euler-Maruyama method at dt 0.1 ms from the Methods' equations
     and parameters (Methods, Computational model of L2/3 neuron; Synaptic connectivity and kinetics),
@@ -67,11 +70,15 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig2a-weak-sensory-silenced
-  notes: With L5 IT 12 nS, ChC 25 nS and L4 from 2 to 11.9 nS (basket 1.2 times L4, simultaneous onset),
+  notes: 'With L5 IT 12 nS, ChC 25 nS and L4 from 2 to 11.9 nS (basket 1.2 times L4, simultaneous onset),
     the expected count is 0.90 to 0.975 per run, against 0.975 for the prediction alone; the five seeds
     give 0.89 to 0.99. The neuron is quietest near L4 40 nS (0.15 spikes per run), where L4 conductance
-    exceeds L5 IT's, so the paper's "weaker than the predictive input" may compare the inputs on another
-    scale.
+    exceeds L5 IT''s, so the paper''s "weaker than the predictive input" may compare the inputs on another
+    scale. Without noise the failure is the same: a release spike fires at 18.7 ms for every L4 from 0
+    to 10 nS and none from 12 nS. At L4 10 nS the basket conductance (1.2 times L4) peaks at 12 nS and
+    has fallen to 6.4 nS at 18 ms while L5 IT is still 7.7 nS and ChC 4.5 nS, so the AIS reaches threshold
+    as the clamp decays. In this model the release spike is vetoed only when L4 is at least as strong
+    as L5 IT in conductance; a question to a reader asks how the paper compares the two inputs.'
   deviations:
   - The model is integrated in NumPy with the Euler-Maruyama method at dt 0.1 ms from the Methods' equations
     and parameters (Methods, Computational model of L2/3 neuron; Synaptic connectivity and kinetics),
@@ -111,15 +118,23 @@ outcomes:
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig2d-latency-grows-as-sensation-weakens
   notes: Over 31 L4 conductances (0 to 150 nS) where runs spike, the mean first-spike latency falls from
-    18.4 ms to 2.36 ms, Spearman rho -0.999; the largest step between neighbouring conductances is 3.25
-    ms of a 16.0 ms range. Seeds give rho -0.989 to -0.999 and largest steps 2.8 to 6.3 ms.
+    18.4 ms to 2.36 ms, Spearman rho -0.999. The largest 5 nS step, 3.25 ms between 35 and 40 nS, resampled
+    at 1 nS with 4000 runs per conductance, changes latency by 3.03 ms in five steps of which the largest
+    is 1.30 ms (0.43 of the change), and 0.40 of first spikes in that interval fall between 8 and 12 ms,
+    between the release and breakthrough latencies. Seeds give rho -0.989 to -0.999 and a largest 1 nS
+    share of 0.23 to 0.43. The coarse test against a quarter of the latency range fails under 3 of 5 seeds
+    (steps of 5.25, 6.28 and 6.06 ms); the resampling shows these steps are sampling noise of the 80-run
+    means.
   deviations:
   - The model is integrated in NumPy with the Euler-Maruyama method at dt 0.1 ms from the Methods' equations
     and parameters (Methods, Computational model of L2/3 neuron; Synaptic connectivity and kinetics),
     not in Brian 2, as the paper's code was not public; 50 ms of rest before the inputs and a 100 ms counting
     window are standard choices.
-  - No single jump is read as the largest step between neighbouring conductances being under half the
-    latency range, a choice made here.
+  - Assumption. "Without a single jump" is tested as continuity, a choice made here as the criterion gives
+    no number. The interval of the largest 5 nS step is resampled at 1 nS with 4000 runs; a jump is one
+    1 nS step that carries more than half the latency change across that interval. The earlier test (largest
+    5 nS step below half the latency range) and a stricter one (below a quarter) are printed.
+  assumed: true
 - claim: fig3a-low-gain-suppresses-errors
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -133,22 +148,24 @@ outcomes:
     not in Brian 2, as the paper's code was not public; 50 ms of rest before the inputs and a 100 ms counting
     window are standard choices.
 - claim: fig3b-gain-lowers-burst-threshold
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig3b-gain-lowers-burst-threshold
-  notes: Under reading (b) the burst threshold falls from 515 nS (Low) to 230 (Mid) to 115 (High), and
-    the omission spike probability is 0.0, 0.0 and 0.94, so it rises from Mid to High but not from Low
-    to Mid; the criterion fails under the claim's seed and holds under 3 of 5 seeds (Mid 0.0 to 0.075).
-    Under reading (a) no Low-gain threshold is found up to 600 nS and Mid and High are 350 and 355 nS
-    (the order of Mid and High changes with the seed; criterion met under 2 of 5). The threshold part
-    holds; the omission part holds only from Mid to High.
+  notes: Under reading (b) the burst threshold falls from 515 nS (Low) to 230 (Mid) to 115 (High). With
+    800 prediction-only runs per gain the omission spike probability is 0.0, 0.026 and 0.948, so it rises
+    from Low to Mid to High; all five seeds meet the criterion (Mid 0.013 to 0.040, Low 0 of 800 in every
+    seed). With 80 runs, as in the first run, Mid gave 0.0 under the claim's seed and the strict rise
+    failed; 80 runs cannot resolve a probability near 0.03. Under reading (a) no Low-gain threshold is
+    found up to 600 nS and Mid and High are 350 and 355 nS, so (a) fails. Changed from partially reproduced
+    after verification.
   deviations:
   - The model is integrated in NumPy with the Euler-Maruyama method at dt 0.1 ms from the Methods' equations
     and parameters (Methods, Computational model of L2/3 neuron; Synaptic connectivity and kinetics),
     not in Brian 2, as the paper's code was not public; 50 ms of rest before the inputs and a 100 ms counting
     window are standard choices.
   - Thresholds are searched over L4 0 to 600 nS (a plotting choice) so that one is found at each gain.
-  seed_sensitive: true
+  - 'The omission probability is estimated from 800 runs per gain (80 elsewhere), a precision choice:
+    the Mid-gain probability is about 0.03.'
 - claim: fig3c-gain-keeps-release-delay
   outcome: not_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -157,7 +174,9 @@ outcomes:
     24.0 ms) and 76 at High (median 17.35 ms), so a release delay exists at two gains, 6.65 ms apart,
     above the 5 ms the criterion allows. Seeds give 1 to 4 spiking Mid runs at 22.1 to 34.8 ms against
     17.35 to 18.2 ms at High. The paper's "when it occurred" may refer to a regime where release spikes
-    occur at every gain, which the Methods' parameters do not give.
+    occur at every gain, which the Methods' parameters do not give. With 800 runs per gain, Low gain has
+    no spiking run in any seed, Mid 18 to 24 runs at a median 22.6 to 26.2 ms and High 17.6 to 17.9 ms,
+    5.0 to 8.3 ms apart.
   deviations:
   - The model is integrated in NumPy with the Euler-Maruyama method at dt 0.1 ms from the Methods' equations
     and parameters (Methods, Computational model of L2/3 neuron; Synaptic connectivity and kinetics),
@@ -211,9 +230,11 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig4d-strong-prediction-lowers-burst-threshold
-  notes: ChC 25 nS; burst threshold 355, 360, 330, 0, 0 and 0 nS for L5 IT 12, 16, 20, 24, 28 and 32 nS
-    (rho -0.88). From 24 nS L5 IT alone gives doublets, so the threshold is 0. Seeds give rho -0.88 to
-    -0.94.
+  notes: 'ChC 25 nS; burst threshold 355, 360, 330, 0, 0 and 0 nS for L5 IT 12, 16, 20, 24, 28 and 32
+    nS (rho -0.88). From 24 nS L5 IT alone gives doublets, so the threshold is 0. Seeds give rho -0.88
+    to -0.94. Most of the fall comes from L5 IT alone: from 12 to 20 nS the threshold is 310 to 360 nS,
+    rises from 12 to 16 nS under 2 of the 5 seeds, and is lower at 20 than at 12 nS under all five (by
+    15 to 40 nS).'
   deviations:
   - The model is integrated in NumPy with the Euler-Maruyama method at dt 0.1 ms from the Methods' equations
     and parameters (Methods, Computational model of L2/3 neuron; Synaptic connectivity and kinetics),
@@ -255,56 +276,60 @@ outcomes:
   - 997
   - 100
   notes: The reader's answer named which sessions enter as open detail O9, so the criterion now runs every
-    reading of O1, O2, O3 and O9; before, it ran over all sessions only and was not reproduced. Under O9
-    (b), the 104 sessions of the Sst-Cre and Vip-Cre Ai32 mice, all 16 readings of O1 to O3 put the four
-    counts within tolerance (245 to 270 L2/3 cells from 76 to 81 recordings; 996 to 1101 L5 cells from
-    100 recordings). Under O9 (a), all 153 sessions, none does (363 to 396 L2/3 cells from 113 to 116
-    recordings; 1424 to 1577 L5 cells from 143). The measured values are the first reading that matches
-    (O1 a a, O2 a, O3 a, O9 b).
+    reading of O1, O2, O3 and O9; before, it ran over all sessions only and was not reproduced. Under
+    O9 (b), the 104 sessions of the Sst-Cre and Vip-Cre Ai32 mice, all 16 readings of O1 to O3 put the
+    four counts within tolerance (245 to 270 L2/3 cells from 76 to 81 recordings; 996 to 1101 L5 cells
+    from 100 recordings). Under O9 (a), all 153 sessions, none does (363 to 396 L2/3 cells from 113 to
+    116 recordings; 1424 to 1577 L5 cells from 143). The measured values are the first reading that matches
+    (O1 a a, O2 a, O3 a, O9 b). Optotagging removes 16 to 17 L2/3 or L5 candidates in Sst-Cre and 7 to
+    8 in Vip-Cre mice (108 and 18 to 19 tagged VISp units in all), none in wild-type mice; O3 changes
+    the total by 1. The match under O9 (b) comes from which sessions enter, not from the filter.
   deviations:
   - Layer from the CCF annotation; 351 units without coordinates are left out.
   - The optotagging z-score baseline and the pulses used are open (O3); both readings are run and change
     counts by at most 1.
   - Which sessions enter is open (O9); both readings are run, and the claim matches under (b) only.
 - claim: fig5c-fsb-highest-on-first-repetition
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig5c-fsb-highest-on-first-repetition
   measured:
-  - -0.0444
-  - -0.0448
-  notes: Earlier reproduced, over all sessions. The answer makes the sessions (O9) a reading of this claim,
-    and the two readings differ. Under O9 (b), adopted, all 16 readings give negative intercepts with p
-    below 1e-7 in both layers, but none puts both within tolerance; the first reading gives L2/3 -0.0444
-    and L5 -0.0448 (the measured values), and the closest (O8 a, O4 a, square root, coding k) misses by
-    0.0024. 38 of 49 subjects (L2/3) and 49 of 53 (L5) have a mean drop. Under O9 (a) one reading (O8 b,
-    O4 a, linear, k - 2) puts both within tolerance (L2/3 -0.0505, L5 -0.0473), which would make the claim
-    reproduced. Question for the authors in the findings.
+  - -0.0505
+  - -0.0473
+  notes: Changed from partially reproduced after verification, which asked for the other cell selections.
+    The claim takes its cells from cell-counts, whose 16 readings of O1 to O3 all give the paper's counts
+    under O9 (b), and the criterion asks for one reading. On the first selection (O1 a a, O2 a, O3 a)
+    all 16 analysis readings give both intercepts negative with p below 1e-7 under both O9 readings; under
+    O9 (b) none is within tolerance (closest misses by 0.0024; first reading L2/3 -0.0444, L5 -0.0448).
+    Under O9 (b), on the selections O1 a b, O2 a, O3 a or b, one reading (O8 a, O4 a, square root, coding
+    k) gives L2/3 -0.0524 and L5 -0.0548, inside by 0.0002 to 0.0003; the other 14 selections miss by
+    0.0001 to 0.0025. Under O9 (a) 8 of 16 selections have a reading within tolerance; the measured values
+    are the first, O9 (a), O1 a a, O2 a, O3 a, O8 b, O4 a, linear, k - 2 (L2/3 -0.0505, L5 -0.0473). 38
+    of 49 subjects (L2/3) and 49 of 53 (L5) have a mean drop under O9 (b). The outcome rests on intercepts
+    within 0.0003 of the tolerance edge.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
-  - Assumption. Which sessions enter (O9) is not stated in the Methods, and the two readings give different
-    outcomes here. O9 (b) is adopted, the sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice, as
-    the Methods filter candidates 'by removing putative inhibitory neurons identified in the optotagging
-    data' from those lines (Methods, Identification of pyramidal neurons), and only O9 (b) gives the
-    paper's cell and recording counts (cell-counts). O9 (a) is shown and changes the outcome.
-  - The coding of repetition (k - 2 or k), O4, O6 and O8 are open; all 16 readings are shown under each
-    O9 reading.
-  assumed: true
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
+  - The coding of repetition (k - 2 or k), O4, O6 and O8 are open; all 16 readings are shown on each cell
+    selection.
 - claim: fig5c-l5-fsb-keeps-declining
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig5c-l5-fsb-keeps-declining
   measured: -0.00089
-  notes: Unchanged by the answer; both O9 readings reproduce it. Under O9 (a) the L5 slope is -0.00089 per
-    repetition, t(9973) = -2.91, p = 0.0037, CI -0.0015 to -0.0003 (first readings, the measured value);
+  notes: Unchanged by the answer; both O9 readings reproduce it. Under O9 (a) the L5 slope is -0.00089
+    per repetition, t(9973) = -2.91, p = 0.0037, CI -0.0015 to -0.0003 (first readings, the measured value);
     under O9 (b) it is -0.00099, t(6977) = -2.67, p = 0.0077, also within tolerance. With O4 b the slope
     is -0.00042 and -0.00051 (p 0.04 to 0.05), and 3 of 8 readings under O9 (a) and 4 of 8 under O9 (b)
     have p above 0.05. The printed t of the paper is positive; the sign here is negative, as its CI and
     text.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
 - claim: fig5c-l23-fsb-stable
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -314,7 +339,9 @@ outcomes:
     0.39 to 0.93.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
 - claim: fig5d-firing-rate-dips-then-stable
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -325,7 +352,9 @@ outcomes:
     meet the criterion as well (O9 b, O8 a, -0.394 and -0.207 at Repetition 2).
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
 - claim: figs1-post-omission-bursting
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -333,10 +362,13 @@ outcomes:
   notes: Unchanged by the answer. L5 FSB after omission minus before, 0.0072, t(1424) = 5.32, p = 1.2e-07
     under O9 (a) (difference, O4 a), all six readings positive with p 2.7e-04 to 1.2e-07, 60 of 78 subjects;
     under O9 (b) 0.0059, t(996) = 3.41, p = 6.8e-04, all six positive with p 0.025 to 6.8e-04, 37 of 53
-    subjects. L2/3, a variant, goes the same way (p 0.006 to 0.04 under O9 a, 0.017 to 0.32 under O9 b).
+    subjects. L2/3, a variant, goes the same way (p 0.006 to 0.032 under O9 a, 0.017 to 0.32 under O9
+    b).
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
   - Figure S1 and its legend are not in the text; the test is read from the Methods as the claims file
     says.
 - claim: figs1-novel-image-bursting
@@ -344,85 +376,103 @@ outcomes:
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:figs1-novel-image-bursting
   notes: Unchanged by the answer. 75 novel sessions; under O9 (a) 66 with L5 cells (637 cells, about 80
-    novel and 83 familiar Repetition 1 presentations each), L5 FSB novel minus familiar 0.036, t(636) =
-    6.04, p = 2.6e-09, all six readings positive with p below 1.3e-04, 51 of 66 subjects; under O9 (b) 46
-    sessions and 453 cells, 0.033, t(452) = 5.35, p = 1.4e-07, all six with p below 0.005. L2/3, a variant,
-    207 cells, difference 0.015, p = 0.18 (O9 b, 141 cells, p = 0.96).
+    novel and 83 familiar Repetition 1 presentations each), L5 FSB novel minus familiar 0.036, t(636)
+    = 6.04, p = 2.6e-09, all six readings positive with p below 1.3e-04, 51 of 66 subjects; under O9 (b)
+    46 sessions and 453 cells, 0.033, t(452) = 5.35, p = 1.4e-07, all six with p below 0.005. L2/3, a
+    variant, 207 cells, difference 0.015, p = 0.18 (O9 b, 141 cells, p = 0.96).
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
   - A novel session is one in which some presentations are marked is_image_novel; blocks are counted per
     image within the session (Methods, Allen Brain Observatory data analysis).
 - claim: figs1-novel-firing-rate-unchanged
   outcome: not_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:figs1-novel-firing-rate-unchanged
-  notes: Earlier reproduced, over all sessions. The answer makes the sessions (O9) a reading of this claim,
-    and the two readings differ. Under O9 (b), adopted, the L5 modulation index of rate, novel against
-    familiar, is -0.043, t(452) = -2.61, p = 0.0095, CI -0.075 to -0.010, so the paper's test finds a
-    difference; 30 of 46 subjects have a negative mean. Under O9 (a) it is -0.037, t(636) = -1.89, p =
-    0.059, CI -0.075 to 0.0015, which would reproduce the claim, narrowly. L2/3, a variant, shows none
-    (0.019, p = 0.41; O9 b -0.002, p = 0.94). Question for the authors in the findings.
+  notes: Under O9 (b) the L5 modulation index of rate, novel against familiar, is -0.043, t(452) = -2.61,
+    p = 0.0095, CI -0.075 to -0.010, so the paper's test finds a difference; 30 of 46 subjects have a
+    negative mean. Under O9 (a) it is -0.035, t(636) = -2.44, p = 0.015, CI -0.064 to -0.007. The first
+    run gave p = 0.059 under O9 (a) from a fit that had not converged; refitted with Powell's method it
+    converges. Over all 16 cell selections and both O9 readings the index is -0.035 to -0.068 with p 0.00025
+    to 0.017, so the outcome no longer rests on O9. L2/3, a variant, shows none (0.019, p = 0.41; O9 b
+    -0.002, p = 0.94).
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
-  - Assumption. Which sessions enter (O9) is not stated in the Methods, and the two readings give different
-    outcomes here. O9 (b) is adopted, the sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice, as
-    the Methods filter candidates 'by removing putative inhibitory neurons identified in the optotagging
-    data' from those lines (Methods, Identification of pyramidal neurons), and only O9 (b) gives the
-    paper's cell and recording counts (cell-counts). O9 (a) is shown and changes the outcome.
-  assumed: true
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
+  - Mixed models that do not converge with L-BFGS are refitted with Powell's method, then Nelder-Mead,
+    then BFGS (vbn.mixed), a standard choice.
 - claim: fig6b-omission-firing-below-spontaneous
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig6b-omission-firing-below-spontaneous
   measured:
-  - -0.0117
-  - -0.1402
-  notes: Unchanged by the answer; both O9 readings give the same outcome. Against block 1 (10 s grey screen
-    right after the task; adopted), L2/3 -0.012, t(361) = -0.32, p = 0.75 (4 cells dropped, no spikes in
-    either), and L5 -0.140, p = 2.1e-09, within tolerance, under O9 (a); under O9 (b) L2/3 0.007, p = 0.87,
-    and L5 -0.112, p = 2.5e-08. Against block 3 (289 s spontaneous block), L2/3 -0.243 and L5 -0.248 under
-    O9 (a), -0.219 and -0.226 under O9 (b), p below 1e-8, L5 outside tolerance under both, which would be
-    partially reproduced. With stationary windows only, block 1 has none in most sessions (L2/3 index 0.40
-    from 121 cells). 36 of 72 subjects (L2/3) and 62 of 78 (L5) have a negative mean against block 1 under
-    O9 (a). Question for the authors in the findings.
+  - -0.245
+  - -0.2509
+  notes: 'Changed from not reproduced after verification, with the spontaneous period now both blocks.
+    Against both blocks, all windows (O5 a), omission firing is lower in both layers: under O9 (b) L2/3
+    -0.221, t(246) = -6.04, p = 5.7e-09 (within tolerance) and L5 -0.228, t(996) = -14.1, p = 4.3e-41
+    (outside -0.15 to -0.08); under O9 (a) L2/3 -0.245 and L5 -0.251, p below 1e-15 (the measured values,
+    both outside). Over all 16 cell selections and both O9 readings both layers are negative with p below
+    1e-8 and L5 is -0.227 to -0.274; without the low-AUC sessions L5 is -0.223. 49 of 53 (L5) and 37 of
+    49 (L2/3) subjects have a negative mean under O9 (b). With stationary windows only (O5 b) L2/3 is
+    not significant (p = 0.32 and 0.45). Block 3 alone gives the same outcome; block 1 alone gives L5
+    -0.112 (p = 2.5e-08, O9 b) but L2/3 0.007 (p = 0.87), which would not reproduce the claim. Block 1
+    starts 18 to 29 s after the task in 152 of 153 sessions and block 3 about 940 s after it; mice run
+    in 86% of block 1 windows and 84% of block 3 windows. Questions to a reader and to the authors in
+    the questions file and the findings.'
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
-  - Assumption. The files hold two spontaneous grey-screen blocks, 10 s right after the task (block 1)
-    and 289 s after the receptive-field mapping (block 3). The Methods' 'the period of mouse inactivity
-    immediately following the task' (Methods, Allen Brain Observatory data analysis) is read literally
-    as block 1. Block 3 and both together are shown and change the outcome.
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
+  - 'Assumption. The files hold two spontaneous grey-screen blocks after the task, 10 s starting 18 to
+    29 s after it (block 1) and 289 s after the receptive-field mapping (block 3). Both are adopted: the
+    Methods name one spontaneous period, ''the period of mouse inactivity immediately following the task'',
+    and the Results call it ''spontaneous activity outside the stimulus blocks'' (Results, LTD-favouring
+    conditions); both blocks are such periods and the files list both, and only these, in intervals/spontaneous_presentations;
+    mice run in most windows of both, so ''inactivity'' cannot mean stationary; block 1 alone gives 40
+    windows per cell and a median of 0 stationary windows, so O5 (b) cannot be applied to most cells while
+    the paper''s n is every cell. Block 1 alone, the literal reading of ''immediately following'', is
+    shown and changes the outcome. The first run adopted block 1.'
   assumed: true
 - claim: fig6c-omission-bursting-below-spontaneous
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:fig6c-omission-bursting-below-spontaneous
-  measured: 0.0083
-  notes: 'Unchanged by the answer; both O9 readings give the same outcome. Against block 1 (adopted), L5
-    omission FSB exceeds spontaneous: difference 0.0083, t(1424) = 3.03, p = 0.0025 under O9 (a), 0.0073,
-    p = 0.024 under O9 (b), and no block 1 reading is negative with p < 0.05. Against block 3 the difference
-    is -0.0053, p = 0.034 (O9 a) and -0.0070, p = 0.023 (O9 b), outside the tolerance of -0.0025 +/- 0.0015;
-    under each, 5 of 12 block 3 readings are negative with p < 0.05 and none within tolerance, which would
-    be partially reproduced. Mean L5 omission FSB is 0.041.'
+  measured: -0.005
+  notes: 'Changed from not reproduced after verification, with the spontaneous period now both blocks.
+    Against both blocks, O5 a, O4 a, difference, L5 omission FSB is below spontaneous: -0.0071, t(996)
+    = -2.32, p = 0.020, CI -0.0130 to -0.0011 under O9 (b), and -0.0050, p = 0.021 under O9 (a) (the measured
+    value), both outside the tolerance of -0.004 to -0.001. 7 of 12 readings against both blocks are negative
+    with p < 0.05 under O9 (b) (5 under O9 a) and none is within tolerance. Over all 16 cell selections
+    the first reading is -0.0050 to -0.0104 with p at most 0.021. Block 3 alone gives the same outcome;
+    block 1 alone gives a positive difference (0.0073, p = 0.024 under O9 b) and no negative reading with
+    p < 0.05. Mean L5 omission FSB is 0.041, not near zero.'
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
-  - Assumption on the spontaneous block, as in fig6b-omission-firing-below-spontaneous.
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
+  - Assumption on the spontaneous period, as in fig6b-omission-firing-below-spontaneous.
   assumed: true
 - claim: figs2-l23-l5-activity-correlated
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:figs2-l23-l5-activity-correlated
-  notes: Unchanged by the answer. 28 sessions have at least 10 putative pyramidal cells per layer, 21 of them
-    under O9 (b) (only 1 has 10 responsive cells per layer). With populations of responsive cells,
-    Repetition 1, the L5 rate residual rises with the L2/3 residual (slope 0.119, t(6806) = 16.0 under O9 a;
-    0.106, t(5133) = 12.5 under O9 b) and per-session r has median 0.185, t(27) = 7.19 (O9 b 0.164, t(20) =
-    5.31); post-omission and all-pyramidal populations give the same, all p below 0.001.
+  notes: Unchanged by the answer. 28 sessions have at least 10 putative pyramidal cells per layer, 21
+    of them under O9 (b) (only 1 has 10 responsive cells per layer). With populations of responsive cells,
+    Repetition 1, the L5 rate residual rises with the L2/3 residual (slope 0.119, t(6806) = 16.0 under
+    O9 a; 0.106, t(5133) = 12.5 under O9 b) and per-session r has median 0.185, t(27) = 7.19 (O9 b 0.164,
+    t(20) = 5.31); post-omission and all-pyramidal populations give the same, all p below 0.001.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
   - The session threshold counts putative pyramidal cells without the responsive test, as the Methods
     say; populations of responsive cells and of all putative pyramidal cells are both shown.
   - Reading (b) tests per-session r with a one-sample t test, which an intercept-only mixed model with
@@ -431,15 +481,17 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
   output: claim:figs2-l5-bursting-not-predicted-by-rate
-  notes: Unchanged by the answer. The L5 rate residual predicts the L5 FSB residual in every case under both
-    O9 readings (responsive cells, Repetition 1, slope 0.0103, t(6788) = 26.7, p = 9e-150 under O9 a; t(5116)
-    = 23.1 under O9 b). The L2/3 rate residual predicts it for Repetition 1 (p = 1.5e-05; O9 b 6.3e-05) but
-    not for responsive cells after omissions (p 0.38 to 1.0). 14 of 16 cases under O9 (a) and 13 of 16
-    under O9 (b) have p < 0.05. FSB on a trial with one or two spikes is bounded by the spike count, which
-    ties it to rate.
+  notes: Unchanged by the answer. The L5 rate residual predicts the L5 FSB residual in every case under
+    both O9 readings (responsive cells, Repetition 1, slope 0.0103, t(6788) = 26.7, p = 9e-150 under O9
+    a; t(5116) = 23.1 under O9 b). The L2/3 rate residual predicts it for Repetition 1 (p = 1.5e-05; O9
+    b 6.3e-05) but not for responsive cells after omissions (p 0.38 to 1.0). 14 of 16 cases under O9 (a)
+    and 13 of 16 under O9 (b) have p < 0.05. FSB on a trial with one or two spikes is bounded by the spike
+    count, which ties it to rate.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
 - claim: fig7a-running-raises-first-repetition-bursting
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -448,14 +500,20 @@ outcomes:
   - 0.0709
   - 0.0522
   notes: 'Unchanged by the answer. O7 250 ms, O4 a, difference: L2/3 0.071, t(274) = 4.55, and L5 0.052,
-    t(1119) = 5.97 under O9 (a), both within tolerance (the measured values); under O9 (b) 0.053, t(179) =
-    3.04, and 0.047, t(764) = 4.95, also within; 750 ms gives 0.062 and 0.055 (O9 b 0.059 and 0.058). O4 b
-    differences are smaller (L5 0.014, p = 0.075). 91 L2/3 and 305 L5 cells (O9 b 67 and 232) lack
-    Repetition 1 presentations in one state and are left out, so n is 275 and 1120 (O9 b 180 and 765), not
-    the paper''s 266 and 1075. 51 of 67 subjects (L5) go this way under O9 (a), 33 of 45 under O9 (b).'
+    t(1119) = 5.97 under O9 (a), both within tolerance (the measured values); under O9 (b) 0.053, t(179)
+    = 3.04, and 0.047, t(764) = 4.95, also within; 750 ms gives 0.062 and 0.055 (O9 b 0.059 and 0.058).
+    O4 b differences are smaller (L5 0.015, p = 0.0054; O9 b 0.012, p = 0.10). 91 L2/3 and 305 L5 cells
+    (O9 b 67 and 232) lack Repetition 1 presentations in one state and are left out, so n is 275 and 1120
+    (O9 b 180 and 765), not the paper''s 266 and 1075. 51 of 67 subjects (L5) go this way under O9 (a),
+    33 of 45 under O9 (b). Under D7, 26 of the 104 O9 (b) sessions have no stationary Repetition 1 presentation
+    (80% of active presentations are classed running), so the paper''s degrees of freedom, which imply
+    every cell, cannot be reached; a question to a reader asks about it. Over the 16 cell selections under
+    O9 (b) this reading gives L2/3 0.049 to 0.059 and L5 0.047 to 0.049.'
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
 - claim: fig7b-running-raises-first-repetition-rate
   outcome: partially_reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -466,10 +524,15 @@ outcomes:
   notes: Unchanged by the answer. Modulation index running against stationary at Repetition 1, L2/3 0.220
     (t(274) = 6.77, within tolerance), L5 0.186 (t(1119) = 10.2), above the L5 tolerance of 0.05 to 0.16,
     under O9 (a); under O9 (b) 0.183 (within) and 0.174 (above); 750 ms gives 0.221 and 0.191 (O9 b 0.215
-    and 0.198).
+    and 0.198). Over all 16 cell selections and both O9 readings L5 is 0.170 to 0.199, above the tolerance
+    under every one, and L2/3 0.181 to 0.253; without the low-AUC sessions L5 is 0.173.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
+  - Cells without Repetition 1 presentations in both running states are left out (the modulation index
+    needs both); see fig7a-running-raises-first-repetition-bursting.
 - claim: fig7c-running-leaves-omission-bursting
   outcome: reproduced
   notebook: reproduce_jarzebowski_2026.ipynb
@@ -479,17 +542,19 @@ outcomes:
   - 87
   - 1108
   - 138
-  notes: Under O9 (b), the reading the answer added, no layer, window or O4 reading has p < 0.05 under either
-    cell selection (selection b, 250 ms, O4 a, L2/3 -0.032, p = 0.13, L5 -0.0005, p = 0.91; lowest p 0.059),
-    so the outcome no longer rests on the selection there; counts 143 L2/3 cells from 60 recordings and
-    778 L5 cells from 98 (selection b), against 47 from 35 and 658 from 94. Under O9 (a), as before,
+  notes: Under O9 (b), the reading the answer added, no layer, window or O4 reading has p < 0.05 under
+    either cell selection (selection b, 250 ms, O4 a, L2/3 -0.032, p = 0.13, L5 -0.0005, p = 0.91; lowest
+    p 0.059), so the outcome no longer rests on the selection there; counts 143 L2/3 cells from 60 recordings
+    and 778 L5 cells from 98 (selection b), against 47 from 35 and 658 from 94. Under O9 (a), as before,
     selection (b) is closer to the paper's counts (210 from 87 and 1108 from 138, the measured values,
-    against 365 from 112 and 1407 from 141 under a) and gives no p < 0.05 (L2/3 -0.013, p = 0.41; L5
-    -0.0017, p = 0.66), while selection (a) gives L2/3 omission FSB higher when running with O4 a (0.034,
-    p = 0.0048), which would not reproduce the claim. Question for the authors in the findings.
+    against 365 from 112 and 1407 from 141 under a) and gives no p < 0.05 (L2/3 -0.013, p = 0.41; L5 -0.0017,
+    p = 0.66), while selection (a) gives L2/3 omission FSB higher when running with O4 a (0.034, p = 0.0048),
+    which would not reproduce the claim. Question for the authors in the findings.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
   - Assumption. The criterion leaves the selection of the 47 and 658 cells open between (a) and (b) and
     says the counts inform which matches; (b) is adopted as the closer. Under O9 (b) both selections give
     the same outcome; under O9 (a) they differ. The paper's counts are smaller than either.
@@ -502,13 +567,15 @@ outcomes:
   - -0.1457
   - -0.019
   notes: Unchanged by the answer. Under selection (b), L2/3 omission rate is lower when running (-0.146,
-    t(209) = -3.80, p = 0.0002 under O9 a; -0.156, p = 0.0006 under O9 b; within tolerance) but L5 is not
-    (-0.019, p = 0.29; O9 b -0.003, p = 0.88); 750 ms gives -0.174 and -0.032 (p = 0.12). Under selection (a)
-    both indices are positive (L2/3 0.252, L5 0.148; O9 b 0.229 and 0.144), as 272 of 1407 L5 cells (O9 b
-    187 of 982) have no omission spikes in one state.
+    t(209) = -3.80, p = 0.0002 under O9 a; -0.156, p = 0.0006 under O9 b; within tolerance) but L5 is
+    not (-0.019, p = 0.29; O9 b -0.003, p = 0.88); 750 ms gives -0.174 and -0.032 (p = 0.12). Under selection
+    (a) both indices are positive (L2/3 0.252, L5 0.148; O9 b 0.229 and 0.144), as 272 of 1407 L5 cells
+    (O9 b 187 of 982) have no omission spikes in one state.
   deviations:
   - Cells of cell-counts under its first-listed readings (O1 a a, O2 a, O3 a), under both readings of
-    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (b).
+    O9, all 153 sessions (a) and the 104 sessions of the Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice
+    (b). The deciding test is also run on all 16 readings of O1 to O3 under both O9 readings, and without
+    the 10 sessions whose clock check gave an AUC below 0.8.
   - Cells as in fig7c-running-leaves-omission-bursting, selection (b).
 findings:
 - kind: metadata_error
@@ -524,9 +591,9 @@ findings:
 - kind: other
   about: data
   severity: minor
-  statement: In session 20211111T220915 the 10 s spontaneous block that elsewhere follows the active task
-    by 18 to 29 s starts 3277 s after the last task presentation, and the passive replay follows correspondingly
-    later. The files do not say what happened in the gap.
+  statement: In session 20211111T220915 the 10 s spontaneous block that in the other 152 sessions follows
+    the active task by 18 to 29 s starts 3277 s after the last task presentation, and the later blocks
+    follow correspondingly later. The files do not say what happened in the gap.
 - kind: other
   about: data
   severity: none
@@ -542,16 +609,15 @@ findings:
   statement: The Methods do not say which sessions enter the analysis. Over all 153 sessions the selection
     gives about 35% more cells and 45% more recordings than the paper's 266 L2/3 cells from 78 recordings
     and 1075 L5 cells from 98; over the 104 sessions of the Sst-Cre and Vip-Cre Ai32 mice, whose units
-    can be optotagged, every reading matches. These sessions are adopted here; with all sessions the
-    Figure 5C intercepts fall within the printed CI under one reading and the novel against familiar L5
-    firing rate does not differ (p = 0.059), while with these sessions neither holds (p = 0.0095). Did the
-    analysis use only those sessions?
+    can be optotagged, every reading matches. No outcome here depends on the choice, but the counts do.
+    Did the analysis use only those sessions?
 - kind: methods_unavailable
   statement: The Methods take spontaneous activity from 'the period of mouse inactivity immediately following
-    the task'. The dataset has a 10 s grey screen right after the task and a 289 s spontaneous block after
-    the receptive-field mapping. Against the 10 s block L2/3 omission firing does not differ from spontaneous
-    and L5 omission FSB is higher; against the 289 s block both are lower. Which block, and which windows
-    within it (all, or stationary only), did Figure 6 use?
+    the task'. The dataset has a 10 s grey screen starting 18 to 29 s after the task and a 289 s spontaneous
+    block about 940 s after it, and the mice run in most windows of both. Against the 10 s block alone
+    L2/3 omission firing does not differ from spontaneous and L5 omission FSB is higher; against the 289
+    s block, or both, both are lower. Both blocks are adopted here. Which block, and which windows within
+    it (all, or stationary only), did Figure 6 use?
 - kind: methods_unavailable
   statement: How FSB is formed for a cell (spikes in bursts summed over windows, or a mean of per-window
     fractions), whether burst spikes must fall within the 250 ms window, and how cells without spikes
@@ -566,9 +632,11 @@ findings:
   statement: The model's code is not public, and the Methods do not give the L4 and L5 IT onsets relative
     to each other in Figures 2A and 2B, the conductance ranges of Figures 2 to 4, or the threshold that
     defines a burst or a positive error. With simultaneous onsets and the Methods' parameters, L4 below
-    12 nS with the prediction does not silence the neuron (0.9 spikes per run), and at Low and Mid gain
-    release spikes almost never occur, so Figure 2A and 3C are not reproduced. Which onsets and ranges
-    were used, and how is 'weaker than the predictive input' measured?
+    12 nS with the prediction does not silence the neuron (0.9 spikes per run; without noise a release
+    spike at 18.7 ms for L4 up to 10 nS and none from 12 nS, as basket inhibition at 1.2 times L4 outlasts
+    L5 IT drive only from there), and at Low gain release spikes never occur (0 of 800 runs), so Figure
+    2A and 3C are not reproduced. Which onsets and ranges were used, and how is 'weaker than the predictive
+    input' measured?
 - kind: paper_inconsistency
   statement: The Figure 5C legend prints the L5 slope as t(7523) = 8.1 with CI [-0.0011, -0.0007], a positive
     t with a negative interval, and the L2/3 slope as t(1860) = -0.59 with CI [-0.001, 0.004], whose centre
@@ -577,3 +645,258 @@ findings:
   about: paper
   statement: The text of the preprint has a heading for Supplemental Figures with nothing under it, so
     the legends of Figures S1 and S2, which hold the tests of four findings, could not be read.
+- kind: methods_unavailable
+  statement: The degrees of freedom of Figure 7A and 7B, t(265) and t(1074), imply that all 266 L2/3 and
+    1075 L5 cells have Repetition 1 presentations both running and stationary. With the Methods' locomotion
+    rule, 80% of active presentations are running and 26 of the 104 sessions of the Sst-Cre and Vip-Cre
+    Ai32 mice have no stationary Repetition 1 presentation, so 67 L2/3 and 232 L5 cells cannot enter.
+    How were running and stationary presentations defined for Figure 7, and how were cells without one
+    of them treated?
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the run after the reader's answer (commit c69951d) with
+    the conclusion cells and the summary removed, the helper modules vbn.py and seta_model.py and the
+    claims file, with the paper's text. The verifier checked the version through the DANDI API, tested
+    the helpers on synthetic inputs (_counts, fsb, mod_index, run_state, alpha) and ran the model module
+    with noise switched off. It had no attempt record.
+  results:
+  - claim: model-positive-error-short-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: At 60 nS, p1 = 1.0, latency 3.7 to 3.8 ms, and doublets appear from 90 nS. The criterion's
+      "no spike after the basket peak" fails in 2 of 5 seeds (1.2% of spikes after 8.5 ms), and the notebook
+      checks it only at 60 nS (problem 7, late_all computed and never used).
+    response: 'The late spikes are now counted at every L4 and printed: 0.009 of first spikes and 0.046
+      of all spikes fall after the basket peak, mostly second spikes of doublets. Outcome unchanged.'
+  - claim: model-negative-error-delayed-release
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (a), the median latency is 17.1 to 17.9 ms in all 5 seeds and every spiking
+      run fires exactly once.
+    response: No change.
+  - claim: fig2a-weak-sensory-silenced
+    agrees: true
+    outcome: not_reproduced
+    reason: For L4 below 12 nS the expected count is 0.89 to 0.99 against a threshold of 0.1, in all seeds;
+      with noise switched off L4 = 10 nS still gives a release spike at 18.7 ms, so the failure is deterministic.
+      It asked for noise-free soma and AIS traces at L4 = 10 nS, and noted that "weaker" is read as L4
+      conductance below L5 IT conductance although the time constants differ (problem 12).
+    response: 'Added noise-free runs (seta_model.trace) with soma and AIS voltage and the four conductances:
+      the release spike fires for L4 0 to 10 nS and not from 12 nS, as basket inhibition (1.2 times L4)
+      outlasts L5 IT drive only from there. The reading of "weaker" is now a question to a reader. Outcome
+      unchanged.'
+  - claim: fig2b-breakthrough-doublet-threshold
+    agrees: true
+    outcome: reproduced
+    reason: With prediction the count is 1.0 at 150 nS and there is no doublet within 0 to 150 nS (threshold
+      260 to 345 nS when extended); without prediction 110 to 120 nS under (a) and 90 nS under (b), in
+      all seeds.
+    response: No change.
+  - claim: fig2c-robust-to-input-delay
+    agrees: true
+    outcome: reproduced
+    reason: The count at +-5 ms differs from the count at 0 ms by 0.13 to 0.31, below the 0.5 limit, in
+      all seeds.
+    response: No change.
+  - claim: fig2d-latency-grows-as-sensation-weakens
+    agrees: false
+    outcome: partially_reproduced
+    reason: Rho is -0.989 to -0.999, but the no-jump test uses the author's own threshold of half the
+      latency range, which is lenient; the largest step is 2.8 to 6.3 ms of a 16 ms range, at the switch
+      from release to breakthrough spikes (35 to 40 nS), and a quarter of the range would fail 3 of 5
+      seeds (problem 4).
+    response: Kept as reproduced, with a revised test. The interval of the largest step is resampled at
+      1 nS with 4000 runs; the largest 1 nS step carries 0.23 to 0.43 of the change across the interval
+      over the five seeds, and 0.40 of first spikes there have intermediate latencies (8 to 12 ms), so
+      the 5 nS steps are spread over the interval and their size is sampling noise of the 80-run means.
+      Both coarse tests are printed; the quarter-range test fails under 3 of 5 seeds as the verifier found.
+      The test is marked as an assumption. Disagreement recorded.
+  - claim: fig3a-low-gain-suppresses-errors
+    agrees: true
+    outcome: reproduced
+    reason: At the strong-L4 values, p2 is 0 at Low gain and 1.0 at High gain, and Low-gain omission runs
+      are 100% silent, in all seeds.
+    response: No change.
+  - claim: fig3b-gain-lowers-burst-threshold
+    agrees: false
+    outcome: reproduced
+    reason: Under reading (b) the burst threshold falls from 515 to 565, to 215 to 230, to 110 to 115
+      nS in all seeds, and omission spike probability is 0, then 0 to 0.075, then about 0.94. The strict
+      rise from Low to Mid fails in 2 seeds because both are 0, but pooled over the 5 seeds it is 0/400
+      against 12/400; the per-seed tests rest on very few spiking runs (problem 9).
+    response: 'Changed to reproduced. The omission probability is now estimated from 800 runs per gain:
+      0.0, 0.026 and 0.948 under the claim''s seed, and the rise holds under all five seeds (Mid 0.013
+      to 0.040). seed_sensitive removed.'
+  - claim: fig3c-gain-keeps-release-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: Low gain gives no release spike in 400 runs, so its latency cannot be measured; the Mid latency
+      (22 to 35 ms, from 1 to 4 spiking runs per seed) exceeds the High latency (17.4 to 18.2 ms) by more
+      than 5 ms in 4 of 5 seeds (problem 9).
+    response: 'Added 800 runs per gain: Low 0 spiking runs in every seed, Mid 18 to 24 runs at 22.6 to
+      26.2 ms, High 17.6 to 17.9 ms. Outcome unchanged.'
+  - claim: fig4a-basket-reduction-lowers-burst-threshold
+    agrees: true
+    outcome: reproduced
+    reason: Thresholds rise with basket scaling (55, 65, 75 to 90, 95 to 105 nS) in all seeds.
+    response: No change.
+  - claim: fig4b-chc-reduction-shortens-latency
+    agrees: true
+    outcome: reproduced
+    reason: Latency rho is above 0 at every L4 tested, and the breakthrough-threshold rho is 0.96 to 0.99;
+      this rests on the stated, reasonable threshold definition, as the plain reading gives 5 nS at every
+      ChC level.
+    response: No change.
+  - claim: fig4cd-l5it-shortens-release-and-doublets
+    agrees: true
+    outcome: reproduced
+    reason: Rho is about -1, and the first doublet appears at 22 to 24 nS.
+    response: No change.
+  - claim: fig4d-strong-prediction-lowers-burst-threshold
+    agrees: true
+    outcome: reproduced
+    reason: Rho is -0.88 to -0.94, but it passes mainly because L5 IT at 24 nS or more produces doublets
+      with no L4 input; from 12 to 20 nS the threshold is 310 to 360 nS, non-monotone at 16 nS in 2 seeds,
+      and lower at 20 than at 12 nS in all 5 seeds (problem 8).
+    response: The notes and the conclusion now say this. Outcome unchanged.
+  - claim: fig4ef-compensation-restores-latency
+    agrees: true
+    outcome: reproduced
+    reason: At L5 IT 20 nS, ChC of 52.5 to 95 nS and E_ChC of -65 to -75 mV each bring latency back within
+      1 ms in all seeds; at 24 nS raising ChC does not.
+    response: No change.
+  - claim: ccf-layer-link
+    agrees: true
+    outcome: reproduced
+    reason: 7996 of 7997 units with coordinates fall in a VISp layer voxel; 351 units in 7 sessions have
+      no coordinates and are counted.
+    response: No change.
+  - claim: cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Under O9 (b) all 16 combinations of O1 to O3 put the four counts within tolerance; under O9
+      (a) none do. The opto_tagged function never reports how many units it removes, and the match under
+      O9 (b) comes from which sessions are kept (problem 11). In the clock check 10 sessions have AUC
+      below 0.8 and are kept with no sensitivity check (problem 10).
+    response: The data check now prints the optotagged units per genotype and O3 reading (108 Sst and
+      18 to 19 Vip units, 16 to 17 and 7 to 8 of them L2/3 or L5 candidates, none in wild-type mice).
+      Every intercept claim is rerun without the 10 low-AUC sessions; no outcome changes. Outcome unchanged.
+  - claim: fig5c-fsb-highest-on-first-repetition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under O9 (b) every reading gives both intercepts negative with p < 1e-7, but none is within
+      tolerance (the closest misses by 0.0024); under O9 (a) one reading is. Only the O1 a a, O2 a, O3
+      a cells were analysed, while all 16 O1 to O3 combinations match the counts, so another combination
+      could change the outcome (problem 1).
+    response: Ran every claim on all 16 selections under both O9 readings. Under O9 (b), on O1 a b with
+      O2 a and O3 a or b, one reading puts both intercepts within tolerance (L2/3 -0.0524, L5 -0.0548),
+      inside by 0.0002 to 0.0003; under O9 (a) 8 of 16 selections have such a reading. As the criterion
+      asks for one reading and every selection gives the paper's counts, the outcome is changed to reproduced,
+      with the margin stated.
+  - claim: fig5c-l5-fsb-keeps-declining
+    agrees: true
+    outcome: reproduced
+    reason: 'Under O9 (b), O4 a, linear: slope -0.00099 (p = 0.008) with O8 a and -0.00095 (p = 0.012)
+      with O8 b, both within -0.0009 +- 0.0002. It could not confirm that flashes_since_change does not
+      count omitted flashes, which matters for O8.'
+    response: 'The data check prints the presentations around an omission: the omitted flash keeps flashes_since_change
+      (18) and the next image takes 19, so omissions do not advance the ordinal. Outcome unchanged.'
+  - claim: fig5c-l23-fsb-stable
+    agrees: true
+    outcome: reproduced
+    reason: The L2/3 slope has p >= 0.39 under every reading.
+    response: No change.
+  - claim: fig5d-firing-rate-dips-then-stable
+    agrees: true
+    outcome: reproduced
+    reason: The criterion is met under all four combinations of O9 and O8; the median modulation index
+      at Repetition 2 is -0.39 (L2/3) and -0.21 (L5), and every later repetition is above it.
+    response: No change.
+  - claim: figs1-post-omission-bursting
+    agrees: true
+    outcome: reproduced
+    reason: The L5 intercept is positive with p < 0.05 in 6 of 6 readings, under both O9 readings. The
+      Figure S1 legend is not in the text, so the test could not be checked against the paper.
+    response: No change; the legend is not in the text supplied.
+  - claim: figs1-novel-image-bursting
+    agrees: true
+    outcome: reproduced
+    reason: The L5 intercept is positive with p < 0.005 in 6 of 6 readings, under both O9 readings.
+    response: No change.
+  - claim: figs1-novel-firing-rate-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Under O9 (b), L5 gives -0.043, p = 0.0095; under O9 (a), p = 0.059 from a fit that did not
+      converge, so the outcome depends on O9. Other non-converged fits are reported without a refit or
+      a second optimizer (problem 3).
+    response: vbn.mixed now refits a non-converged model with Powell's method, Nelder-Mead or BFGS and
+      names the optimizer; every fit in the notebook's tables now converges. Under O9 (a) the L5 index
+      is -0.035, p = 0.015, so the outcome holds under both O9 readings and all 16 selections, and no
+      longer rests on an assumption.
+  - claim: fig6b-omission-firing-below-spontaneous
+    agrees: false
+    outcome: partially_reproduced
+    reason: Using spontaneous block 3 or both blocks with O5 a, both layers are negative with p < 1e-8
+      but outside tolerance; with block 1, the reading the notebook adopts, L2/3 is not significant (p
+      = 0.75 or 0.87). Block 1 (10 s, 40 windows, median 0 stationary windows) is adopted as the period
+      immediately following the task, but block 1 starts 17.95 to 3276.62 s after the task and this was
+      never investigated, and the Results' "spontaneous activity outside the stimulus blocks" allows block
+      3 (problem 2). O5 assumes a single block (problem 12).
+    response: 'The data check now prints the timing of every block: block 1 starts 18 to 29 s after the
+      task in 152 sessions (3277 s in one wild-type session) and block 3 about 940 s after it, and mice
+      run in 86% and 84% of their windows. Both blocks are now adopted as an assumption, with the reasons
+      in the deviation, and the outcome is changed to partially reproduced (L5 outside tolerance under
+      every selection). Block 1 alone is shown. The single-block reading of O5 is a question to a reader.'
+  - claim: fig6c-omission-bursting-below-spontaneous
+    agrees: false
+    outcome: partially_reproduced
+    reason: With block 3 or both blocks, O5 a, the difference measure gives -0.0053 to -0.0071 (p of 0.02
+      to 0.03), outside the -0.004 to -0.001 tolerance; with block 1 the sign reverses (+0.007 to +0.008,
+      p < 0.03). The block choice flips the sign (problem 2).
+    response: Both blocks adopted, as for fig6b; changed to partially reproduced (-0.0071, p = 0.020 under
+      O9 b; -0.0050 to -0.0104 over all selections).
+  - claim: figs2-l23-l5-activity-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Positive with p < 0.001 under both test readings, both conditions, both populations and both
+      O9 readings. The Figure S2 legend is not in the text.
+    response: No change.
+  - claim: figs2-l5-bursting-not-predicted-by-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: 13 of 16 cases (O9 b) have p < 0.05; the L5 rate residual predicts L5 FSB with t from 14 to
+      41 in every case.
+    response: No change.
+  - claim: fig7a-running-raises-first-repetition-bursting
+    agrees: true
+    outcome: reproduced
+    reason: 'Under O9 (b), O4 a, difference, both windows: L2/3 0.053 to 0.059 and L5 0.047 to 0.058,
+      all p < 0.01 and within tolerance. Cells lacking Repetition 1 presentations in one running state
+      are dropped (67 L2/3 and 232 L5 under O9 b), while the paper''s t(265) and t(1074) imply all cells
+      were kept; 80% of active presentations are classed running and this was never compared with the
+      paper''s n (problem 5); the claims file does not address it (problem 12).'
+    response: 'The data check prints per-session running fractions: 26 of the 104 O9 (b) sessions have
+      no stationary Repetition 1 presentation, so their cells cannot enter. This is now a question to
+      a reader and a finding for the authors. Outcome unchanged.'
+  - claim: fig7b-running-raises-first-repetition-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both layers are positive with p < 1e-5; L2/3 (0.18 to 0.21) is within tolerance and L5 (0.17
+      to 0.20) is above the 0.05 to 0.16 range. Other cell selections were not run (problem 1).
+    response: 'Run on all 16 selections under both O9 readings: L5 is 0.170 to 0.199, above tolerance
+      under every one. Outcome unchanged.'
+  - claim: fig7c-running-leaves-omission-bursting
+    agrees: true
+    outcome: reproduced
+    reason: Under O9 (b), 0 of 8 cases have p < 0.05. No cell selection matches the paper's 47/35 and
+      658/94 counts; per the criterion, the counts do not decide this claim.
+    response: No change.
+  - claim: fig7d-running-lowers-omission-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading has both layers negative and significant; selection (a) gives positive values,
+      as 272 of 1407 L5 cells have no omission spikes in one state (problem 6), and selection (b) gives
+      L2/3 negative but L5 not significant (p of 0.12 to 0.88).
+    response: No change.

@@ -7,11 +7,11 @@ simulated from its Methods.
 
 | Claims | Outcome |
 |---|---|
-| Model, Figures 1 to 4 (14 claims) | 10 reproduced, 2 partially reproduced, 2 not reproduced |
+| Model, Figures 1 to 4 (14 claims) | 11 reproduced, 1 partially reproduced, 2 not reproduced |
 | Layer link to the CCFv3 annotation | Reproduced |
 | Cell counts | Reproduced over the sessions of the optotagged mice; not over all sessions |
-| Figure 5 and Figure S1 (bursting with repetition, omission and novelty) | 5 reproduced, 1 partially reproduced, 1 not reproduced |
-| Figure 6 (omission against spontaneous activity) | 2 not reproduced, resting on which spontaneous block is meant |
+| Figure 5 and Figure S1 (bursting with repetition, omission and novelty) | 6 reproduced, 1 not reproduced |
+| Figure 6 (omission against spontaneous activity) | 2 partially reproduced, resting on which spontaneous block is meant |
 | Figure S2 (noise correlations) | 1 reproduced, 1 not reproduced |
 | Figure 7 (running) | 2 reproduced, 1 partially reproduced, 1 not reproduced |
 
@@ -23,8 +23,8 @@ CCF coordinates, so the claims on recorded data use this outside input. The atte
 reasons and the differences from the paper's method, is
 [`attempts/jarzebowski-2026-01.yaml`](../../attempts/jarzebowski-2026-01.yaml).
 
-- `reproduce_jarzebowski_2026.ipynb`: the analysis. It takes about 13 minutes, six of them streaming
-  the 153 session files, four at a time.
+- `reproduce_jarzebowski_2026.ipynb`: the analysis. It takes about 25 minutes: four to nine to stream
+  the 153 session files, four at a time, and six to run the claims on all 16 cell selections.
 - `vbn.py`: streaming the sessions, per-window spike and burst counts, the CCF layer lookup, cell
   selection, and the mixed-effects model. Other notebooks on this dandiset can import it.
 - `seta_model.py`: the two-compartment model of the Methods, in NumPy.
