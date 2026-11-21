@@ -75,7 +75,9 @@
 #   (Results D). The code masks round(m |N(i)|) (neighborhood.find_index_mask), which differs at
 #   m = 0.25 (2 against 3 of 9) and m = 0.5 (4 against 5). Methods first; round is a variant.
 # - The mask intensity behind the intra-subject, lagged and surrogate columns of Table II and
-#   Figure 2 is not stated in the paper. The code settles it as m = 1.0, the full neighborhood
+#   Figure 2 is not stated in the Results. The model as defined in Methods II B and II C (Eqs. 1,
+#   2 and 7, w_ij = 0 for every j in N(i)) masks the whole neighborhood, which is m = 1.0, and the
+#   EEG cross-subject transfer uses m = 1.0 checkpoints (Results III B). The code settles it as m = 1.0, the full neighborhood
 #   masked (notebooks/visualization.ipynb, Figure 2 cell, "mask_intensity=1.0 (full local mask,
 #   matching the paper)"; donor matrices for cross-subject transfer come from intensity 100). This
 #   file follows the code; m = 0 (only the target masked) is to be shown as a variant.
@@ -194,9 +196,10 @@ claims:
   - intra-ieeg-mean
   - intra-eeg-mean
   criterion: No test is reported. In Tables II and III the lowest EEG subject (0.864) is above the
-    highest iEEG subject (0.647). Reproduced when the EEG average exceeds the iEEG average and
-    every EEG subject value exceeds every iEEG subject value; partially reproduced when only the
-    averages are ordered.
+    highest iEEG subject (0.647). The paper does not define "consistently"; readings (a) every EEG
+    subject value exceeds every iEEG subject value, as in the tables; (b) the EEG average exceeds
+    the iEEG average. Reproduced when the EEG average exceeds the iEEG average; whether reading (a)
+    also holds is reported.
 - id: cross-ieeg-mean
   statement: Transferring learned inter-electrode matrices from other subjects, through
     correlation-based electrode mapping and per-electrode donor selection, reconstructs a target
@@ -219,7 +222,10 @@ claims:
     to a common length (similarity.cross_subject_pearson), to be shown as a variant. A one-to-one
     assignment maximising summed correlation (Hungarian, scipy linear_sum_assignment); unmatched
     target electrodes get no row from that donor. M_est = P M_learn P^T. The target's trials are
-    split 50/50 into validation and test (random_state 42); for each electrode, the donor whose
+    split 50/50 into validation and test (random_state 42). Which of the target's trials enter C
+    is not stated (Algorithm 2 splits before computing C but does not say which part is used);
+    readings (a) all of the target's trials, as the code does; (b) the validation trials only.
+    For each electrode, the donor whose
     row gives the highest DistCorr on the z-scored trial-averaged validation signals is chosen,
     and DistCorr on the z-scored trial-averaged test signals is its score (Methods II D 2).
     Electrodes with no matched donor are left out of the mean (the code's nanmean). Reproduced
@@ -284,11 +290,13 @@ claims:
   - intra-ieeg-mean
   - cross-ieeg-mean
   criterion: No test is reported. In Table II every subject's cross-subject value is below its
-    intra-subject value. Reproduced when the cross-subject average is below the intra-subject
-    average and above the phase-shuffled surrogate average of surrogate-ieeg, and the
-    cross-subject value is below the intra-subject value in at least 11 of 12 subjects; partially
-    reproduced when only the averages are so ordered. Note that the two settings score different
-    signals (single trials against trial averages; Methods II D 2), as the paper does.
+    intra-subject value. The paper gives no reference level for "appreciable predictive power";
+    its support is the cross-subject average itself (0.389, Results III B). Reproduced when the
+    cross-subject average is below the intra-subject average and cross-ieeg-mean is reproduced;
+    partially reproduced when the average is below the intra-subject average but cross-ieeg-mean
+    is not reproduced. The number of subjects with cross below intra is reported (12 of 12 in
+    Table II). The two settings score different signals (single trials against trial averages;
+    Methods II D 2), as the paper does.
 - id: cross-eeg-mean
   statement: For EEG, transferring a randomly chosen reference subject's matrix, trained at full
     local masking, directly to the target gives a mean cross-subject DistCorr of 0.783 ± 0.093.
@@ -320,9 +328,11 @@ claims:
   - cross-ieeg-mean
   - intra-eeg-mean
   - cross-eeg-mean
-  criterion: No test is reported. From the paper's averages, the cross over intra ratio is 0.70
-    for iEEG (0.389 / 0.553) and 0.86 for EEG (0.783 / 0.908). Reproduced when the iEEG ratio is
-    below the EEG ratio; the ratios and the differences are reported.
+  criterion: No test is reported, and the paper does not say how the penalty is measured.
+    Readings (a) the cross over intra ratio, 0.70 for iEEG (0.389 / 0.553) and 0.86 for EEG
+    (0.783 / 0.908) from the paper's averages; (b) the intra minus cross difference, 0.164 for
+    iEEG and 0.125 for EEG. Reproduced when the iEEG penalty is larger than the EEG penalty under
+    one reading; the ratios and the differences are reported.
 - id: lagged-ieeg-no-gain
   statement: Adding lagged predictors (0, 20, 30, 50 and 60 ms) barely changes iEEG
     reconstruction (0.554 ± 0.067 against 0.553 ± 0.068).
@@ -341,10 +351,12 @@ claims:
     floor gives the same), predictors shifted within each trial with zeros before the trial start
     (model.LaggedReconModelConfigurable), all other settings as the instantaneous run at m = 1.0
     (Methods II E; main.py run_lagged_too). A claim of no material gain; the paper reports no
-    test. Reproduced when the lagged average is within tolerance and differs from the
-    instantaneous average by less than 10% of the instantaneous average; not reproduced when the
-    lagged average exceeds the instantaneous one by 10% or more. The paired per-subject
-    differences and a Wilcoxon signed-rank test over the 12 subjects are reported as context.
+    test and no threshold for "materially" or "minimal changes". The 10% bound below is the
+    protocol's default tolerance applied to the instantaneous average, an assumption and not the
+    paper's. Reproduced when the lagged average is within tolerance and differs from the
+    instantaneous average by less than 10% of the instantaneous average, in either direction;
+    not reproduced otherwise. The paired per-subject differences are reported; a Wilcoxon
+    signed-rank test over the subjects may be shown as context but does not decide the claim.
 - id: lagged-eeg-no-gain
   statement: Adding lagged predictors barely changes EEG reconstruction (0.910 ± 0.027 against
     0.908 ± 0.028).
@@ -380,10 +392,15 @@ claims:
   data: dataset
   depends_on:
   - fig4a-mask-sweep-ieeg
-  criterion: The m = 1.0 values of fig4a-mask-sweep-ieeg. The sample DistCorr is never negative,
-    so the paper's comparison with zero is read with the surrogate floor it reports. Reproduced
-    when every subject's m = 1.0 value exceeds that subject's phase-shuffled surrogate value from
-    surrogate-ieeg; partially reproduced when the average does but some subjects do not.
+  criterion: The m = 1.0 values of fig4a-mask-sweep-ieeg. The paper compares them with zero only
+    and gives no test. Readings (a) as written, the m = 1.0 average is above zero; the sample
+    DistCorr of Eqs. 11 to 14 is never negative and is positive for almost any pair of finite
+    series, so this reading cannot fail and does not decide the claim; (b) the m = 1.0 average
+    exceeds the phase-shuffled surrogate average of surrogate-ieeg, the paper's own control for
+    reconstruction without temporal structure (Results III F), a comparison the paper does not
+    make for Figure 4. The author judges by reading (b), as an assumption, and reports reading
+    (a) and the number of subjects whose m = 1.0 value exceeds their own phase-shuffled value.
+    Reproduced when (b) holds; not reproduced otherwise.
 - id: fig4b-mask-sweep-eeg
   statement: In EEG, DistCorr decreases as mask intensity increases, and stays above zero with
     the whole neighborhood masked.
@@ -403,10 +420,12 @@ claims:
   data: dataset
   criterion: Three runs of the common iEEG pipeline per subject (Results III E;
     run_coverage_experiment.py). Local, predictors are N(i) only; Non-local, N(i) and the target
-    masked; All, only the target masked. Reproduced when, under one reading, the subject average
-    is ordered All > Local > Non-local and Local exceeds Non-local in at least 11 of 12 subjects
-    ("consistently"); partially reproduced when the averages are so ordered but fewer subjects
-    are. The per-subject values of the three conditions are reported.
+    masked; All, only the target masked. The paper does not define "consistently"; readings (a)
+    Local exceeds Non-local in every subject; (b) Local exceeds Non-local in the subject average
+    of each dataset (Figure 5A and 5B). Reproduced when, under one reading of the open trial
+    details, the subject average is ordered All > Local > Non-local (which meets reading b);
+    not reproduced otherwise. The number of subjects with Local above Non-local, and so whether
+    reading (a) holds, and the per-subject values of the three conditions are reported.
 - id: fig5b-coverage-eeg
   statement: In EEG, reconstruction is best with all electrodes as predictors, and local
     electrodes alone consistently outperform non-local electrodes alone.
@@ -416,8 +435,7 @@ claims:
   data: elsewhere
   where: BNCI Horizon 2020 database, Upper Limb Movements EEG (Ofner et al. 2017, PLoS ONE 12
     e0182578); the paper gives no accession or version
-  criterion: As fig5a-coverage-ieeg, on the EEG data, with at least 14 of 15 subjects for
-    "consistently".
+  criterion: As fig5a-coverage-ieeg, on the EEG data (reading a, all 15 subjects).
 - id: surrogate-ieeg
   statement: On iEEG surrogates, intra-subject DistCorr falls from 0.553 to 0.181 (phase
     shuffle), 0.232 (IAAFT) and 0.201 (block shuffle).
@@ -473,20 +491,22 @@ claims:
     tolerance: 0.078
   criterion: As surrogate-ieeg, on the EEG data.
 - id: surrogate-order-ieeg
-  statement: In iEEG, phase shuffling degrades reconstruction most and IAAFT surrogates keep the
-    most reconstructability of the three surrogates.
+  statement: In iEEG, phase shuffling degrades reconstruction most on average, and IAAFT
+    surrogates retain somewhat more reconstructability.
   source: Results, III F, paragraph 4; Table II
   quote: The strongest average degradation was observed under phase shuffling ... IAAFT surrogates
     preserved more low ... order properties and therefore retained somewhat more recon
   data: dataset
   depends_on:
   - surrogate-ieeg
-  criterion: The three surrogate averages of surrogate-ieeg. Reproduced when phase shuffle <
-    block shuffle < IAAFT, the order of Table II (0.181, 0.201, 0.232); partially reproduced
-    when phase shuffle is lowest but block shuffle and IAAFT are in the other order.
+  criterion: The three surrogate averages of surrogate-ieeg. The text does not say what IAAFT
+    retains more than; readings (a) more than phase shuffle; (b) the most of the three, the order
+    of Table II (phase 0.181, block 0.201, IAAFT 0.232). Reproduced when the phase-shuffle
+    average is the lowest of the three (which meets reading a); not reproduced otherwise.
+    Whether the block and IAAFT averages are in the order of Table II (reading b) is reported.
 - id: surrogate-order-eeg
-  statement: In EEG, phase shuffling degrades reconstruction most and IAAFT surrogates keep the
-    most reconstructability of the three surrogates.
+  statement: In EEG, phase shuffling degrades reconstruction most on average, and IAAFT
+    surrogates retain somewhat more reconstructability.
   source: Results, III F, paragraph 4; Table III
   quote: The strongest average degradation was observed under phase shuffling
   data: elsewhere
@@ -495,3 +515,22 @@ claims:
   depends_on:
   - surrogate-eeg
   criterion: As surrogate-order-ieeg, on the EEG averages (Table III order 0.124, 0.160, 0.184).
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, mask intensity. Said the paper does not state m for the intra-subject, lagged and surrogate columns; Methods II B and II C (Eqs. 1, 2 and 7, w_ij = 0 for all j in N(i)) define the model with the whole neighborhood masked, and Results III B uses m = 1.0 for EEG transfer. Added these as support for m = 1.0 alongside the code.
+  - intra-eeg-above-ieeg. The criterion required every EEG subject above every iEEG subject; the paper does not define "consistently". Named the two readings (every subject, the averages) and judged on the averages, with reading (a) reported.
+  - cross-ieeg-mean. Which of the target's trials enter the correlation matrix C is not stated (Algorithm 2 splits the trials before computing C); named the readings, all trials as the code, or the validation trials only.
+  - cross-below-intra-ieeg. Removed the comparison with the phase-shuffled surrogate average and the 11 of 12 subjects rule; the paper makes neither, and the surrogates score single trials while cross-subject scores trial averages. "Appreciable" is now judged by cross-ieeg-mean, the number the paper gives for it; the per-subject count is reported.
+  - lagged-ieeg-no-gain. The 10% bound on the difference is not the paper's; the criterion now says it is the protocol's default tolerance and an assumption. The criterion left a lagged average 10% or more below the instantaneous one undecided; it now fails the claim in either direction ("only minimal changes"). The Wilcoxon test no longer decides anything.
+  - full-mask-above-zero-ieeg. The comparison with the surrogate floor was presented as the paper's reading; the paper compares with zero only. Named reading (a), as written, which the nonnegative DistCorr cannot fail, and reading (b), the phase-shuffled surrogate average, as an assumption the author judges by. Dropped the every-subject requirement, which the paper does not make, and report the subject count.
+  - fig5a-coverage-ieeg, fig5b-coverage-eeg. Removed the 11 of 12 and 14 of 15 thresholds for "consistently", which the paper does not give; named the readings (every subject, the average of each dataset), judge on the averages, and report the subject counts.
+  - transfer-penalty-larger-ieeg. The paper does not say how the penalty is measured; named the ratio and the difference as readings (both give iEEG the larger penalty on the paper's numbers).
+  - surrogate-order-ieeg, surrogate-order-eeg. The statements said IAAFT keeps the most of the three; the paper says IAAFT "retained somewhat more", without saying more than what. Restated as in the paper; the criterion judges phase shuffle lowest and reports the block against IAAFT order as reading (b).
+  - Open. The m = 1.0 intra-subject setting, the iEEG trial definition (which movement events, which days, where preprocessing is applied) and the subject order are readings the file names; the paper and code do not settle them, and the code may not be the version that produced the reported numbers.
+  - Open. Tolerances for subject values and averages are the SDs the tables print (across electrodes, or across subjects for averages); this follows the protocol, but the cross-subject subject SDs are very small (0.004 to 0.016), so those per-subject claims are strict.
+  - Open. How Figure 4 averages over electrodes and subjects is not stated; the criterion uses the subject average, with the per-subject counts reported.
+  - Open. The EEG claims (data elsewhere) have no accession or version for the BNCI dataset, and the session and trial window used are not stated.
