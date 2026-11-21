@@ -10,6 +10,8 @@ Where each parameter comes from:
   250 ms before, Wilcoxon paired test, p < 0.05, spikes on >= 20% of presentations. Readings O1.
 - Putative pyramidal (D3; Methods, "Identification of pyramidal neurons"): waveform_duration > 0.4 ms,
   rate < 10 Hz, not optotagged (rate in 1 to 10 ms after light onset > 50 Hz and z > 2). Readings O2, O3.
+  Which sessions enter is reading O9 of the claims file: all sessions, or only those of the
+  Sst-IRES-Cre;Ai32 and VIP-IRES-Cre;Ai32 mice (select_cells, sessions).
 - Windows and bursts (D4; Methods, "Spiking metrics and burst detection"): 250 ms from onset; a burst
   spike is one whose interval to a neighbouring spike in the same window is <= 10 ms.
 - Locomotion (D7; Methods, "Locomotion detection"): running when mean speed > 5 cm/s and speed > 3 cm/s

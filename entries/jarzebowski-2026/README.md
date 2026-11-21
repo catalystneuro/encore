@@ -9,8 +9,8 @@ simulated from its Methods.
 |---|---|
 | Model, Figures 1 to 4 (14 claims) | 10 reproduced, 2 partially reproduced, 2 not reproduced |
 | Layer link to the CCFv3 annotation | Reproduced |
-| Cell counts | Not reproduced over all sessions; matched by the sessions of optotagged mice |
-| Figure 5 and Figure S1 (bursting with repetition, omission and novelty) | 7 reproduced |
+| Cell counts | Reproduced over the sessions of the optotagged mice; not over all sessions |
+| Figure 5 and Figure S1 (bursting with repetition, omission and novelty) | 5 reproduced, 1 partially reproduced, 1 not reproduced |
 | Figure 6 (omission against spontaneous activity) | 2 not reproduced, resting on which spontaneous block is meant |
 | Figure S2 (noise correlations) | 1 reproduced, 1 not reproduced |
 | Figure 7 (running) | 2 reproduced, 1 partially reproduced, 1 not reproduced |
