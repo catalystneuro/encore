@@ -89,6 +89,23 @@
 schema_version: 2
 paper: doi:10.1152/jn.00217.2025
 claims:
+- id: sorting-dandiset-link
+  kind: link
+  statement: The curated spike sortings of the paper's repository can be linked to the dandiset's raw
+    recordings; each recording's units sit on the electrodes of one dandiset file, and its spike
+    times align with that file's raw voltage.
+  source: Data Availability; github.com/braingeneers/human_hippocampus at commit 0f83f70,
+    data/ephys and the latency notebooks under figures/figure_3/latencies/t_test_try30_try3
+  data: with_inputs
+  criterion: Added by the author (link claim). Each sorting file is assigned to its recording by the
+    paper's latency notebooks, which load one file per recording. Records are matched by electrode
+    layout (the fraction of unit positions that are electrode positions of a file) and then by
+    time; the spike trains of the three most active units are correlated with the high-passed
+    voltage of their electrodes at every offset over each candidate file, and a file is linked when
+    one offset gives a peak more than 10 times the chance level (the 100th most negative value).
+    Reproduced when all eight recordings are linked; partially reproduced when some are; not
+    reproduced when none is. The matched records are compared on unit counts and durations in
+    table1-unit-counts.
 - id: table1-unit-counts
   statement: The eight recordings analysed hold 212, 249, 180, 51, 87, 109, 136 and 100 sorted
     units (recordings 1 to 8) and last 6, 5, 8.5, 5, 7, 2.2, 6.4 and 1.8 minutes.
@@ -96,6 +113,8 @@ claims:
   inferred: Numbers from Extended Data Table 1, an image in the supplement PDF; no sentence states
     them.
   data: with_inputs
+  depends_on:
+  - sorting-dandiset-link
   expected:
   - quantity: units, recording 1 (S1, KA)
     value: 212
@@ -284,6 +303,8 @@ claims:
     frequency at epileptiform-like onset ... These characteristics remained present across
     different electrode sites
   data: with_inputs
+  depends_on:
+  - sorting-dandiset-link
   criterion: Spectrogram as in the Methods (Spectrogram, and Local field potential signal
     processing); raw signal low-passed 0.1 to 100 Hz and downsampled to 1 kHz, complex Morlet
     wavelet cmor1-1, power as the squared magnitude, Gaussian smoothing sigma 2. Onset is the first
@@ -403,6 +424,8 @@ claims:
     unit firing from sub-burst to sub-burst produced heatmaps with similar spatiotemporal
     oscillations to those seen in theta-band propagations.
   data: with_inputs
+  depends_on:
+  - sorting-dandiset-link
   criterion: Sub-bursts of S1 as set in the paper's code, 14.4 to 14.57, 14.57 to 14.75 and 14.75
     to 14.91 s of the KA recording (figures/figure_2/burst_peak_comparison.ipynb); for S2 the
     paper gives no times, and they are taken from figures/supplement/seizure_2/
@@ -422,6 +445,8 @@ claims:
   inferred: Counts from Extended Data Table 2, an image in the supplement PDF; the text states only
     the averages (see table2-phase-locking-seizure-vs-not).
   data: with_inputs
+  depends_on:
+  - sorting-dandiset-link
   expected:
   - quantity: phase-locked units, recording 1 (S1, KA)
     value: 70
