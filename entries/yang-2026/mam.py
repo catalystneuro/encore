@@ -86,8 +86,15 @@ COL_EARLY50 = slice(N_GO + 6, N_GO + 8)
 N_COLS = N_GO + 8
 
 
-def seed(claim: str, k: int = 0) -> int:
-    """The claim's seed (protocol, Author step 3), plus k."""
+PAPER_SEED = 17   # the paper's one seed (Methods, Statistics; claims M8, M9)
+
+
+def seed(claim: str, k: int | str = 0) -> int:
+    """The claim's seed (protocol, Author step 3), plus k. With k = "paper", the paper's seed 17,
+    run as a variant; NumPy's generator and the order of draws differ from the paper's private
+    code, so it does not give the paper's splits, folds or match order."""
+    if k == "paper":
+        return PAPER_SEED
     return zlib.crc32(f"{PAPER_KEY}/{claim}".encode()) + k
 
 
@@ -502,10 +509,12 @@ def control_splits(Z: np.ndarray, ts: dict, rng: np.random.Generator, n_splits: 
 
 
 def decode(X: np.ndarray, y: np.ndarray, instr: np.ndarray, is_ctrl: np.ndarray, seed_: int,
-           Cs=(0.1, 1.0, 10.0), fixed_C: float | None = None) -> float:
+           Cs=(0.1, 1.0, 10.0), fixed_C: float | None = None, precentered: bool = False) -> float:
     """Balanced accuracy of L2 logistic regression under 5-fold CV stratified by instructed
     side and lick direction. Features are X minus the mean of control trials of the same side,
-    that mean estimated in the training fold. With fixed_C None, C is chosen from Cs by an inner
+    that mean estimated in the training fold. With precentered, X is already a deviation from
+    the control mean (laser trials decoded alone, M8 reading a, where no control trial is in a
+    fold) and is used as given. With fixed_C None, C is chosen from Cs by an inner
     stratified 5-fold search on balanced accuracy (a standard choice, claims M8)."""
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import balanced_accuracy_score
@@ -517,6 +526,8 @@ def decode(X: np.ndarray, y: np.ndarray, instr: np.ndarray, is_ctrl: np.ndarray,
 
     def center(Xtr, itr, ctr, Xte, ite):
         Xtr, Xte = Xtr.copy(), Xte.copy()
+        if precentered:
+            return Xtr, Xte
         for sd in (-1, 1):
             m = ctr & (itr == sd)
             mu = Xtr[m].mean(0) if m.any() else Xtr[itr == sd].mean(0)

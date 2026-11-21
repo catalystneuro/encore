@@ -62,8 +62,11 @@ outcomes:
     0.10. All four readings that fill missing keypoints give 5 of 5; the four that drop trials without
     a keypoint from the video fit give 1 or 2 of 5, since the tongue is undetected in the choice window
     on 82% of trials. Thalamus is highest; the lowest is medulla, not ALM (the criterion does not require
-    the order). The likelihood cut (0.5, 0.9, 0.99) changes the fractions by at most 0.0017.
-  deviations: &id001
+    the order). The likelihood cut (0.5, 0.9, 0.99) changes the fractions by at most 0.0017. With laser
+    trials that had an early lick kept (M1 reading a; 19 / 94, 13 / 49, 10 / 31, 16 / 72, 8 / 35 entries)
+    the fractions are 0.054 to 0.087, 5 of 5 within tolerance under the licks reading and 4 of 5 under
+    the outcome reading, all below 0.10.
+  deviations:
   - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
     per frame and no detection flag, and the paper gives no rule. Cuts of 0.5 and 0.99 change no early
     fraction or cosine by more than 0.002 (standard choice, shown in the notebook).
@@ -87,8 +90,16 @@ outcomes:
   - 0.025
   notes: First reading, choice fractions ALM 0.0344, striatum 0.0424, thalamus 0.0615, midbrain 0.0288,
     medulla 0.0308; action fractions 0.0220, 0.0194, 0.0268, 0.0316, 0.0250. 10 of 10 within tolerance
-    under the four readings that fill missing keypoints, 7 of 10 under those that drop such trials.
-  deviations: *id001
+    under the four readings that fill missing keypoints, 7 of 10 under those that drop such trials. With
+    laser trials that had an early lick kept (M1 reading a), 10 of 10 within tolerance under the four
+    readings that fill missing keypoints.
+  deviations:
+  - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
+    per frame and no detection flag, and the paper gives no rule. Cuts of 0.5 and 0.99 change no early
+    fraction or cosine by more than 0.002 (standard choice, shown in the notebook).
+  - Regions are the probe targets the files give for each unit's electrode (claims M2, reading a). Reading
+    b (Allen CCF parents of the per-unit annotation) was not run, as it needs the Allen ontology, an outside
+    input the claims file does not name; the probe labels give exactly the paper's Table 1 counts.
 - claim: axes-cosine
   outcome: reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -99,8 +110,15 @@ outcomes:
   notes: Signed cosine, mean across mice, thalamus 0.297 and ALM 0.523 (SEM 0.045 and 0.025); striatum
     0.342, midbrain 0.348 and medulla 0.406 lie between. The absolute cosine gives the same outcome (5
     sessions of 278 have a negative cosine). The readings that drop trials without a keypoint give 0.20
-    and 0.33, outside tolerance.
-  deviations: *id001
+    and 0.33, outside tolerance. With laser trials that had an early lick kept (M1 reading a), thalamus
+    0.295 to 0.297 and ALM 0.523, also within tolerance.
+  deviations:
+  - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
+    per frame and no detection flag, and the paper gives no rule. Cuts of 0.5 and 0.99 change no early
+    fraction or cosine by more than 0.002 (standard choice, shown in the notebook).
+  - Regions are the probe targets the files give for each unit's electrode (claims M2, reading a). Reading
+    b (Allen CCF parents of the per-unit annotation) was not run, as it needs the Allen ontology, an outside
+    input the claims file does not name; the probe labels give exactly the paper's Table 1 counts.
 - claim: fig1e-laser-vs-control-split
   outcome: partially_reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -117,10 +135,13 @@ outcomes:
     as many controls as laser trials, so the two small-side readings differ only in the draws. Over the
     five seeds (reading a, disjoint) ALM 146.3 to 161.8, lowest other 2.66 to 2.76, highest other 7.90
     to 8.23; over all seeds and readings the lowest other is 2.57 to 2.86, so the outcome holds under
-    every seed.
+    every seed. Under the paper's seed 17, ALM 145.1 to 158.2, lowest other 2.70 to 2.82, highest other
+    7.69 to 8.74 and every mouse above 1 (smallest 1.14), the same outcome.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
 - claim: fig1-1b-corrected-joint-fraction
   outcome: partially_reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -134,10 +155,13 @@ outcomes:
     within tolerance, and the single-mouse extremes (lowest -5.69 to -0.06, highest 0.13 to 1.11) are
     far from them. Every region mean is below 0.15 under all six readings. Over the five seeds no reading
     matches both values, and under seed +3000 one of six readings has a region mean above 0.15, so the
-    partial outcome holds under every seed.
+    partial outcome holds under every seed. Under seed 17 no reading matches both values and every region
+    mean is below 0.15 under all six readings.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
   - The splits are those of fig1e-laser-vs-control-split, drawn with that claim's generator.
 - claim: fig1-1c-fraction-vs-neurons
   outcome: reproduced
@@ -169,11 +193,15 @@ outcomes:
   measured:
   - 130
   - 0.0528
-  notes: Of 44 candidate ALM sessions (early-fraction sessions with matched pairs, at least the median
+  notes: 'Of 44 candidate ALM sessions (early-fraction sessions with matched pairs, at least the median
     117 units), the rule selects ses-20210419T161140 (130 units, joint fraction 0.05292, 0.00200 from
     the ALM mouse mean 0.05492). ses-20200922T135318 is second (130 units, 0.05282, 0.00210 from the mean);
     its count and fraction are within tolerance. Counting good ALM units in place of units entering the
-    fraction gives the same order.
+    fraction gives the same order. Under the other seven readings of M3 to M5 (matched sessions as under
+    the first reading) the rule never selects ses-20200922T135318: the three other readings that fill
+    missing keypoints select ses-20210419T161140 and rank it second or third (distance 0.0031 to 0.0052
+    against 0.0019 to 0.0033), and the four that drop trials without keypoints select ses-20210129T132207
+    and rank it 38th of 43 (its joint fraction is 0.0008 to 0.0009 there).'
 - claim: table1-decoding-early-vs-prelick
   outcome: partially_reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -189,17 +217,25 @@ outcomes:
   - 0.8015
   - 0.8154
   - 0.8562
-  notes: 'Balanced accuracy, mean across mice, early ALM 0.574, striatum 0.584, thalamus 0.574, midbrain
-    0.561, medulla 0.581; pre-lick 0.794, 0.806, 0.802, 0.815, 0.856. The rise holds in every region;
-    all pre-lick values and the thalamus and midbrain early values are within tolerance, 7 of 10 (8 needed).
-    ALM, striatum and medulla early values are 0.010 to 0.030 below the paper''s. Under the other four
-    seeds 6 or 7 of 10 are within and the rise holds, so the outcome holds under all five. Decoding uses
-    laser and control trials together (M8 reading b): with laser trials alone only 26 of 278 entries have
-    the 40 trials and 15 per direction the Methods require. 273 entries pass the rule with both (ALM 19
-    / 91, striatum 13 / 47, thalamus 10 / 30, midbrain 16 / 71, medulla 8 / 34).'
+  notes: 'Laser and control trials decoded together (M8 reading b). Balanced accuracy, mean across mice,
+    early ALM 0.574, striatum 0.584, thalamus 0.574, midbrain 0.561, medulla 0.581; pre-lick 0.794, 0.806,
+    0.802, 0.815, 0.856. The rise holds in every region; all pre-lick values and the thalamus and midbrain
+    early values are within tolerance, 7 of 10 (8 needed). ALM, striatum and medulla early values are
+    0.010 to 0.030 below the paper''s. Under the other four seeds 6 or 7 of 10 are within and the rise
+    holds, and under the paper''s seed 17, 6 of 10, so the outcome holds under all. 273 entries pass the
+    Methods'' rule of 40 trials and 15 per direction with both (ALM 19 / 91, striatum 13 / 47, thalamus
+    10 / 30, midbrain 16 / 71, medulla 8 / 34). Laser trials decoded alone (M8 reading a), each as its
+    deviation from the mean of its side''s control trials, on the 26 entries that pass the rule with laser
+    trials alone (ALM 7 mice / 10 entries, striatum 4 / 4, thalamus 1 / 2, midbrain 4 / 5, medulla 4 /
+    5): early 0.525 to 0.645, pre-lick 0.675 to 0.765, the rise holds in every region, 0 of 10 within
+    tolerance under the claim''s seed and 1 to 4 under the other seeds and seed 17. A late-delay session
+    has a median of 36 bilateral trials (4 to 67) and 26 laser trials without an early lick and with a
+    lick (1 to 58); 12 of 112 sessions have at least 40. Neither reading gives 8 of 10.'
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
   - The penalty is chosen by an inner stratified 5-fold search on balanced accuracy (standard choice named
     in the claims file, M8).
   - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
@@ -216,9 +252,15 @@ outcomes:
     0.753, midbrain 0.721, medulla 0.782 (inside 0.657 to 0.847); every delay bin lies in 0.540 to 0.588
     (inside 0.495 to 0.638); the 250 ms bin exceeds every delay bin in every region. The same holds for
     50 ms and 100 ms steps and under all five seeds (250 ms bin 0.721 to 0.782, delay bins 0.540 to 0.588).
+    Seed 17 gives the same (250 ms bin 0.720 to 0.780, delay bins 0.545 to 0.582). Decoding laser trials
+    alone (M8 reading a, 26 entries) gives a 250 ms bin of 0.628 to 0.780 (thalamus below 0.657), delay
+    bins 0.412 to 0.686 and a 250 ms bin not above every delay bin, so it fails each part; the outcome
+    rests on reading b, which the criterion allows.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
 - claim: matched-reaction-time
   outcome: reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -229,7 +271,8 @@ outcomes:
   - 0.3848
   notes: Reaction time on the matched laser trials (2,667 trials, each session once) quartiles 0.220,
     median 0.289, 0.385 s; counted once per region entry (7,038) 0.218, 0.288, 0.383 s. On average 94%
-    of the 200 ms pre-lick window lies after Go. Unchanged to 0.001 s under the five seeds.
+    of the 200 ms pre-lick window lies after Go. Unchanged to 0.001 s under the five seeds. Seed 17 gives
+    0.220, 0.289, 0.385 s.
 - claim: fig2d-choice-share-flat
   outcome: partially_reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -247,11 +290,20 @@ outcomes:
     the share rises only in medulla. The pre-lick means of ALM, thalamus, midbrain and medulla are within
     tolerance; striatum (0.0248) is not, and the early means (0.031 to 0.053) are not all inside 0.0315
     to 0.0506. The medulla early mean 0.0325 is within 0.036 +- 0.0036. Set b (matched entries) gives
-    the same pattern (pre-lick striatum 0.0253, early 0.033 to 0.068).
+    the same pattern (pre-lick striatum 0.0253, early 0.033 to 0.068). Counting any increase of the mean
+    as a rise, three regions do not rise in each set. On the 26 entries that pass the decoding rule with
+    laser trials alone (M8 reading a) the early means are 0.006 to 0.147 and no pre-lick mean is within
+    tolerance.
   deviations:
   - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
     per frame and no detection flag, and the paper gives no rule. Cuts of 0.5 and 0.99 change no early
     fraction or cosine by more than 0.002 (standard choice, shown in the notebook).
+  - Assumed that the partial clause (the choice fraction does not rise in at least four regions) uses
+    the criterion's own SEM rule, a rise being an increase larger than the pre-lick SEM, as the reproduced
+    clause does. Midbrain's mean rises by 0.006, less than its SEM of 0.006; counting any increase as
+    a rise, three regions do not rise in every session set and the outcome would be not reproduced. The
+    criterion does not say; asked of a reader in questions/yang-2026.yaml.
+  assumed: true
 - claim: fig2e-action-share-rises
   outcome: partially_reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -265,7 +317,9 @@ outcomes:
     thalamus 0.026 to 0.030, midbrain 0.033 to 0.072, medulla 0.026 to 0.128. It rises in every region
     and is largest in medulla (0.128, within 0.122 +- 0.015); the highest early value (0.0329) is within
     tolerance; the lowest pre-lick (thalamus 0.0296) and the lowest early (0.0222) are not. Set b gives
-    medulla 0.125, lowest pre-lick 0.030, lowest early 0.019, highest early 0.028.
+    medulla 0.125, lowest pre-lick 0.030, lowest early 0.019, highest early 0.028. On the 26 entries that
+    pass the decoding rule with laser trials alone the share does not rise in striatum or thalamus and
+    no value is within tolerance.
   deviations:
   - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
     per frame and no detection flag, and the paper gives no rule. Cuts of 0.5 and 0.99 change no early
@@ -320,10 +374,13 @@ outcomes:
     over region entries. A random match within the caliper gives 2,664 pairs with a median of 43.3 ms,
     so the closest match is the reading that fits the paper. Over the five seeds 2,664 to 2,667 pairs,
     median 1.3 ms, largest 95.9 to 99.1 ms. Matched mice / sessions per region 19 / 87, 12 / 41, 10 /
-    29, 15 / 63, 8 / 32 against the paper's 19 / 87, 12 / 42, 10 / 29, 15 / 64, 8 / 32.
+    29, 15 / 63, 8 / 32 against the paper's 19 / 87, 12 / 42, 10 / 29, 15 / 64, 8 / 32. Under seed 17,
+    2,666 pairs, median 1.3 ms, largest 95.4 ms.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
 - claim: table1-prelick-residual
   outcome: reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -339,9 +396,13 @@ outcomes:
     0.520, 0.855, 0.088, 0.125); every mouse positive. Keeping those pairs also gives 5 of 5; the concatenated-bin
     reading roughly doubles the residuals (0 of 5); a random match gives 5 of 5 with one mouse not positive.
     Over the five seeds ALM 1.532 to 1.557, medulla 0.488 to 0.555, 5 of 5 within and every mouse positive.
+    Under seed 17, ALM 1.525, striatum 1.395, thalamus 2.891, midbrain 0.762, medulla 0.516, 5 of 5 within
+    and every mouse positive.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
 - claim: fig3e-residual-ratio
   outcome: reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -354,10 +415,13 @@ outcomes:
   - 0.0416
   notes: Residual over control-control distance, mouse means first (reading a), ALM 0.1128, striatum 0.0919,
     thalamus 0.1359, midbrain 0.0638, medulla 0.0416, all within tolerance; session ratios (reading b)
-    0.1126, 0.0913, 0.1352, 0.0649, 0.0410, also 5 of 5. 5 of 5 under all five seeds.
+    0.1126, 0.0913, 0.1352, 0.0649, 0.0410, also 5 of 5. 5 of 5 under all five seeds. 5 of 5 under seed
+    17 for both ratio readings.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
 - claim: fig3-1ab-distances-scale
   outcome: reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -373,10 +437,14 @@ outcomes:
   notes: After matching, the laser-control distance exceeds the control-control distance in every region
     (mouse means ALM 15.72 against 14.17, striatum 16.63 against 15.27, thalamus 22.91 against 20.00,
     midbrain 12.83 against 12.07, medulla 14.22 against 13.69). Unmatched pairs give laser-control distances
-    0.35 to 0.95 above the matched ones (0.28 to 0.98 over the five seeds).
+    0.35 to 0.95 above the matched ones. Over the five seeds and seed 17 (each with its own matched pairs)
+    the matched laser-control distance exceeds the control-control distance in every region, and unmatched
+    pairs are 0.23 to 0.96 above the matched ones (0.39 to 0.83 under seed 17).
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
   - Unmatched pairs pair each matched laser trial with a random control trial of the same session and
     side that has a lick, without replacement (Methods, Matched distance, which does not give the draw).
 - claim: fig3-1c-alm-early-residual
@@ -391,14 +459,18 @@ outcomes:
     (binned) and 18.31 to 18.36 (one window). Question for the paper's authors, whether the early window
     was divided into 50 ms bins for the matched distance (Methods, Matched distance, "The primary window
     was the 200 ms before the lick, divided into 50 ms bins. The same pairs were scored in the early window";
-    Time courses, "Distance used 50 ms bins").
+    Time courses, "Distance used 50 ms bins"). Seed 17 gives 12.56 (binned) and 18.31 (one window). The
+    claims file reads the window as one 20 to 120 ms window and does not name the binning as open; this
+    is asked of a reader in questions/yang-2026.yaml, and the outcome stays as tested.
   deviations:
   - Assumed that the early window is divided into two 50 ms bins and the per-bin distances averaged, as
     for the pre-lick window. The paper divides the primary window into 50 ms bins, scores the same pairs
     in the early window, and computes every other distance in 50 ms bins (Methods, Matched distance; Time
     courses), so the binned reading is the better supported; the claims file names only the window.
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
   assumed: true
 - claim: fig3c-residual-time-course
   outcome: reproduced
@@ -417,21 +489,27 @@ outcomes:
     after onset and peaks at 11.35 at -25 ms; midbrain peaks at 2.07 at -425 ms; striatum at 2.91 at +25
     ms; medulla at 1.31 (-25 ms). All named bins hold and 7 of 7 values are within tolerance, under all
     five seeds. No entry had fewer than 20 units passing the SD threshold in every bin, so no bins were
-    zero-filled.
+    zero-filled. Seed 17 gives the same, 7 of 7 and every named bin.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
 - claim: fig3c-late-residuals
   outcome: reproduced
   notebook: reproduce_yang_2026.ipynb
   output: claim:fig3c-late-residuals
   notes: Bins centred 225 to 375 ms after Go, ALM 1.33, 0.98, 0.91, 0.79; striatum 0.80, 0.32, 0.29, 0.30;
     thalamus 1.95, 1.55, 1.02, 0.82; midbrain at most 0.42; medulla at most 0.47; all five regions inside
-    their widened ranges under the claim's seed. Under seeds +1000, +3000 and +4000 four of five regions
-    are inside (partially reproduced), under +2000 five of five.
+    their widened ranges under the claim's seed. Under seeds +1000, +3000 and +4000 and the paper's seed
+    17 the thalamus value in the bin centred 375 ms (0.77, 0.76, 0.79 and 0.81 rounded, below the bound
+    of 0.81) is outside, so four of five regions are inside (partially reproduced); under +2000 five of
+    five.
   deviations:
-  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id), not the paper's
-    seed 17 (Methods, Statistics), so splits, folds and match order differ from the paper's.
+  - Random draws use the registry's claim seed (zlib.crc32 of the paper key and claim id). The paper's
+    seed 17 (Methods, Statistics; claims M8, M9) is run as a variant, but NumPy's generator and the order
+    of draws cannot be those of the paper's private code, so splits, folds and match order differ from
+    the paper's.
   seed_sensitive: true
 - claim: fig3b-example-plane
   outcome: partially_reproduced
@@ -497,6 +575,202 @@ findings:
     took the control trial with the closest reaction time within the caliper (a random match gives a median
     difference of 43 ms, not 1.3 ms). (3) A video keypoint was taken as detected at likelihood 0.9 and
     trials without a detection took the control mean; dropping them from the fit gives other fractions
-    and cosines. Please confirm or correct these, and say how the control-split correction of Figure 1-1B,
-    the displayed-plane fraction of Figure 3B (25%, against 70% to 97% here) and the energy per neuron
-    before onset (0.09, Figure 2-1A) were computed.
+    and cosines. (4) Lick direction was decoded from laser and control trials together; with laser trials
+    alone only 26 of 278 region entries have the 40 trials and 15 per direction the Methods require. Please
+    confirm or correct these, and say how the control-split correction of Figure 1-1B, the displayed-plane
+    fraction of Figure 3B (25%, against 70% to 97% here) and the energy per neuron before onset (0.09,
+    Figure 2-1A) were computed.
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module mam.py and the claims file, with the paper's full text (paper/10.21203-rs.3.rs-11447300-v1.txt).
+    The verifier checked the helpers on synthetic inputs (fractions, match, residual, control_splits,
+    mouse_summary, _side_diff, decode) and did not download the data. It also reported that seed 17 was
+    never run (problem 2), affecting every claim with random draws; the response is under each such claim.
+    Cell numbers in the reasons are those of the handover copy.
+  results:
+  - claim: session-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: 168 photoinhibition sessions. With early-lick laser trials dropped, every region
+      count equals Table 1 exactly (19/93, 13/48, 10/31, 16/71, 8/35).'
+    response: 'No change. Point 6 of the report (only the early-lick-dropped reading of M1 carried past
+      the session counts): the early fractions, axis fractions and cosines are now also computed with
+      those trials kept, and give the same outcomes.'
+  - claim: table1-early-joint-fraction
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 15: own,fill,licks gives 0.0549 / 0.0601 / 0.0844 / 0.0587 / 0.0521, 5/5 within tolerance,
+      all below 0.10. Lowest is medulla, not ALM; the claim reports this but does not require it.'
+    response: 'Added a cell with laser trials that had an early lick kept (M1 reading a, the verifier''s
+      point 6): 5 of 5 under the licks reading, 4 of 5 under outcome, all below 0.10. The notebook now
+      says that the drop reading removes about 82% of control trials from the choice-axis fit itself (point
+      10). Outcome unchanged.'
+  - claim: table1-early-axis-fractions
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 18: 10/10 values within tolerance under both "fill" readings.'
+    response: Added the M1 reading a result (10 of 10). Outcome unchanged.
+  - claim: axes-cosine
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20, signed cosine: thalamus 0.297, ALM 0.523, and the other three regions lie between
+      them.'
+    response: Added the M1 reading a result (both values within tolerance). Outcome unchanged.
+  - claim: fig1e-laser-vs-control-split
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 22: every mouse ratio is above 1 (minimum 1.16). ALM 147–156 and highest other 7.6–8.8
+      are within tolerance. Lowest other is 2.73–2.84 (striatum) against 3.3 ± 0.33, out under every reading
+      and seed.'
+    response: Seed 17 is now run as a variant (point 2) and gives the same outcome (lowest other 2.70
+      to 2.82). The notebook now says that, with no small sides, the disjoint and independent columns
+      are the same method on different draws (point 8). Outcome unchanged.
+  - claim: fig1-1b-corrected-joint-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 24: no combination of correction and reading puts both medulla and thalamus in tolerance;
+      the nearest miss is thalamus 0.1094 against an upper bound of 0.1089. All region means are below
+      0.15.'
+    response: Seed 17 added; no reading matches both values. Outcome unchanged.
+  - claim: fig1-1c-fraction-vs-neurons
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: pooled Spearman ρ = −0.366, p = 3e-10, n = 278.'
+    response: No change.
+  - claim: fig1-1d-without-video-regression
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28: thalamus 0.1158, within 0.109 ± 0.0109 and above 0.0844. Every region is below 0.15.'
+    response: No change.
+  - claim: fig1b-example-session
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 64: ses-20200922T135318 has 130 units and joint fraction 0.0528, both within tolerance.
+      The rule picks ses-20210419T161140 instead, by a distance margin of 0.0001 (0.00200 against 0.00210).
+      Selection is run only under the primary reading (own, fill, licks), and it is decided by 0.0001;
+      under the other M3/M5 readings the rule might select ses-20200922T135318 (problem 4).'
+    response: 'The rule is now run under all eight readings of M3 to M5, with the candidate distances.
+      No reading selects ses-20200922T135318: the fill readings select ses-20210419T161140 and rank it
+      second or third, the drop readings select ses-20210129T132207 and rank it 38th. Outcome unchanged.'
+  - claim: table1-decoding-early-vs-prelick
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 52: pre-lick accuracy exceeds early in every region, but only 7/10 values are within
+      tolerance (6–7 across seeds; 8 needed). Early accuracies are low in ALM, striatum and medulla. Only
+      M8 reading (b) was run; the markdown says no entry passes the 40-trial / 15-per-direction rule with
+      laser trials alone, while the cell''s own output says 26 entries do, so reading (a) was never run
+      though it could have been (problem 1).'
+    response: 'Reading (a), laser trials alone, is now run on the 26 entries, under six seeds: the rise
+      holds, but 0 of 10 values are within tolerance under the claim''s seed (1 to 4 under the others).
+      The false sentence is corrected, and the bilateral and laser trials per session are printed (median
+      36 bilateral, 4 to 67; point 9). Seed 17 on reading (b) gives 6 of 10. The notebook now says that
+      z-scoring uses control trials before cross-validation and no labels (point 7). Outcome unchanged.'
+  - claim: fig2a-decoding-rises-after-go
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 54: the 250 ms bin is 0.721–0.782, delay bins 0.540–0.588, and the 250 ms bin is above
+      every delay bin. Holds for both bin steps and all seeds.'
+    response: 'Reading (a), laser trials alone, added: it fails each part of the criterion on 26 entries,
+      so the outcome rests on reading (b), which the criterion allows; said in the notes. Seed 17 gives
+      the same as the claim''s seed. Outcome unchanged.'
+  - claim: matched-reaction-time
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34: median 0.2885 s, quartiles 0.2202 and 0.3848 s.'
+    response: Seed 17 added (0.289 s, 0.220 and 0.385 s). Outcome unchanged.
+  - claim: fig2d-choice-share-flat
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 56: early means fall outside 0.0315–0.0506 (thalamus 0.053 or 0.068, midbrain 0.0309)
+      and striatum pre-lick (0.0248) is out. A rise beyond the SEM appears in medulla only. Midbrain''s
+      raw mean does rise (+0.006, below its SEM), so a literal "does not rise" reading would give not_reproduced.
+      The partial clause does not say whether the SEM line applies; this is an ambiguity in the claims
+      file, not a code error (problem 5).'
+    response: 'The cell now prints both counts (four regions not rising by the SEM rule, three counting
+      any increase). The outcome is kept, marked as resting on the assumption that the partial clause
+      uses the criterion''s own SEM rule (assumed: true, with a deviation), and the ambiguity is asked
+      of a reader in questions/yang-2026.yaml. The laser-only session set of M8 reading (a) is added and
+      matches less well.'
+  - claim: fig2e-action-share-rises
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 58: the rise holds in every region and medulla is largest (0.128, within tolerance).
+      Lowest pre-lick (0.030 in thalamus) and lowest early (0.019–0.022) are out.'
+    response: The laser-only session set (M8 reading a) is added; there the share does not rise in two
+      regions. Outcome unchanged.
+  - claim: fig2b-go-aligned-joint-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 60, early-fraction entries: 5/5 values at 250 ms are within tolerance. Delay bins leave
+      0.036–0.088 (medulla 0.099 at −600 ms, thalamus 0.034–0.035) under both bin steps.'
+    response: No change.
+  - claim: fig2-1-energy-outside-subspace
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 62: ALM peaks in the onset bin and falls after it in both readings. Reading (b) gives
+      an onset bin of 25.8, within tolerance, but thalamus reaches 1.185 (above 1.1). Reading (a) keeps
+      the other regions below 1.1, but its onset bin is 9.8. "Before onset" is 0.03–0.05 against 0.09
+      ± 0.009 in both.'
+    response: No change.
+  - claim: fig3a-matched-pairs
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: 2,667 pairs (each session counted once), median |ΔRT| 1.3 ms, largest 99.1 ms.'
+    response: Seed 17 added (2,666 pairs, 1.3 ms, 95.4 ms). Outcome unchanged.
+  - claim: table1-prelick-residual
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36, closest/drop/mean: 1.552 / 1.358 / 2.912 / 0.762 / 0.528, 5/5 within tolerance,
+      no mouse ≤ 0, for all five seeds.'
+    response: Seed 17 added (5 of 5, every mouse positive). Outcome unchanged.
+  - claim: fig3e-residual-ratio
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 38: 5/5 within tolerance under both ratio readings.'
+    response: Seed 17 added (5 of 5). Outcome unchanged.
+  - claim: fig3-1ab-distances-scale
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 40: thalamus 20.0 above midbrain 12.07; Spearman ρ = 0.99, p ≈ 1e-216.'
+    response: No change.
+  - claim: fig3-1d-matching-keeps-distance
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 42: matched laser-control distance exceeds control-control in every region. Matching
+      lowers the laser-control distance by 0.35–0.95.'
+    response: The unmatched draw now uses each seed's own matched pairs, and seed 17 is added; the result
+      holds under all six. Outcome unchanged.
+  - claim: fig3-1c-alm-early-residual
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 44, on the two-50 ms-bin reading: 12.59 ± 2.00, ratio to pre-lick 8.1. On the single
+      20–120 ms window the claims file implies, it is 18.36, which would be partial. The two-bin reading
+      is the notebook''s own, resting on a Methods passage; the claims file does not list this as open,
+      and its criterion ("M4, M5 window") reads as one 100 ms window. The reading is reasonable, as it
+      matches the paper''s 12.6 ± 2.0 almost exactly, but the outcome turns on it and the claims file
+      misses an open detail here (problem 3).'
+    response: 'Added to questions/yang-2026.yaml as a question for a reader; the claim is not changed.
+      The outcome stays reproduced, resting on the assumption (assumed: true), with both readings in the
+      notebook. Seed 17 added (12.56 and 18.31).'
+  - claim: fig3c-residual-time-course
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46: 7/7 values within tolerance and every named peak bin holds, for all five seeds.'
+    response: Seed 17 added (7 of 7). Outcome unchanged.
+  - claim: fig3c-late-residuals
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 48: 5/5 regions inside the bounds at the claim seed, but only 4/5 at seeds +1000, +3000
+      and +4000; cell 48 prints only the count, not which region fails (problem 2).'
+    response: 'The cell now names the region outside: thalamus, in the bin centred 375 ms (0.76 to 0.79,
+      and 0.81 under seed 17, just below the bound of 0.81). Seed 17 gives 4 of 5. The outcome stays reproduced
+      under the claim''s seed, as the protocol requires, with seed_sensitive: true.'
+  - claim: fig3b-example-plane
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 66: the separation is smaller at Go in every variant. The plane fraction is 0.70–1.00
+      against 0.25 and PC1 is 0.035–0.085 against 0.04 ± 0.004; both are out.'
+    response: No change.
