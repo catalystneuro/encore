@@ -59,8 +59,10 @@
 # - Humans: TMS-EEG in 12 healthy volunteers (left premotor TMS at rest, active squeezing and
 #   passive movement of the right hand; controls with cycling, posterior TMS and median nerve
 #   stimulation), and single-pulse electrical stimulation with intracerebral EEG in 5 epilepsy
-#   patients. The raw human data are not public; the paper gives per-subject processed values in its
-#   Source Data file, so those claims are data elsewhere with the Source Data file as their place.
+#   patients. The raw human data are not public; the Source Data file gives per-subject processed
+#   values for Figures 1A, 1B, S2G, S3A and S3B only, and box-plot summaries (minimum, quartiles,
+#   median, maximum) for Figures S1A, S2A, S2C, S2D and S2E, so those claims are data elsewhere with
+#   the Source Data file as their place.
 # - Simulation: a thalamo-cortical Hodgkin-Huxley network (500 PY, 100 IN, 100 TC, 100 TRN), 15 rest
 #   and 15 active trials; data elsewhere (the model and its analysis code).
 schema_version: 2
@@ -109,8 +111,9 @@ claims:
     p: 0.002
     n: 12 subjects
   data: elsewhere
-  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheets Figure 1 A and Figure
-    S1A (per-subject values); the raw TMS-EEG recordings are not public.
+  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheet Figure 1 A (12
+    per-subject rest and active late amplitudes) and sheet Figure S1A (PLF as a box-plot summary
+    only); the raw TMS-EEG recordings are not public.
   expected:
   - quantity: late rectified amplitude at rest
     value: 1.37
@@ -126,10 +129,13 @@ claims:
   - quantity: late PLF, active
     value: 0.15
     tolerance: 0.05
-  criterion: Tolerances are the paper's reported SDs. Only the per-subject values of the Source
-    Data file are public. Reproduced when the means of its 12 rest and active values are within
-    tolerance and a two-tailed Wilcoxon signed-rank test (Methods, EPs statistical analysis) on the
-    pairs gives p < 0.05 with rest larger, for amplitude and for PLF.
+  criterion: Tolerances are the paper's reported SDs. Only the Source Data values are public.
+    Amplitude, from the 12 pairs of sheet Figure 1 A, holds when the rest and active means are
+    within tolerance and a two-tailed Wilcoxon signed-rank test (Methods, EPs statistical analysis)
+    on the pairs gives p < 0.05 with rest larger. Sheet Figure S1A gives PLF only as minimum,
+    quartiles, median and maximum per state, so the PLF means and test cannot be recomputed; the PLF
+    part holds when the rest median exceeds the active median. Reproduced when both parts hold, the
+    PLF test being recorded as not testable.
 - id: fig1b-ieeg-late-rest-active
   statement: In 5 epilepsy patients, the late (150 to 250 ms) iEEG response to single-pulse
     electrical stimulation of premotor cortex is smaller in rectified amplitude and PLF during
@@ -149,8 +155,9 @@ claims:
     p: 0.033
     n: 5 subjects
   data: elsewhere
-  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheets Figure 1 B and Figure
-    S1A (per-subject values); the raw iEEG recordings are not public.
+  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheet Figure 1 B (5
+    per-subject rest and active late amplitudes) and sheet Figure S1A (PLF as a box-plot summary
+    only); the raw iEEG recordings are not public.
   expected:
   - quantity: late z-scored amplitude at rest
     value: 5.95
@@ -165,10 +172,12 @@ claims:
     value: 0.49
     tolerance: 0.27
   criterion: The paper's test (Methods; StatRestMov_SPES.R) is a mixed model on contacts, log value
-    ~ Condition + (1 | Subj), which needs per-contact values that are not public. With the five
-    per-subject values of the Source Data file, reproduced when active is lower than rest in at
-    least four of five subjects for amplitude and for PLF; the mixed model is not run and this is
-    recorded as a deviation.
+    ~ Condition + (1 | Subj), which needs per-contact values that are not public. The paper's means
+    are over contacts; the five per-subject values of sheet Figure 1 B are not expected to give the
+    same means. Amplitude holds when active is lower than rest in at least four of the five subjects
+    (a rule of this file, not the paper's). PLF is given only as a box-plot summary in sheet Figure
+    S1A; it holds when the rest median exceeds the active median. The mixed model is not run and
+    this is recorded as a deviation.
 - id: figs2-tms-controls
   statement: The TMS late-component modulation is also seen with passive hand movement and with
     leg cycling, is absent for posterior TMS, is absent for median nerve somatosensory evoked
@@ -199,12 +208,16 @@ claims:
     p: 0.57
     n: 12 subjects
   data: elsewhere
-  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheets Figure S2A, S2C, S2D,
-    S2E and S2G (per-subject values); the raw recordings are not public.
-  criterion: On the per-subject Source Data values, two-sided Wilcoxon signed-rank tests as in
-    Figure S2. Reproduced when rest against passive and rest against cycling give p < 0.05 with
-    rest larger, and posterior TMS (rest against active and against passive), SSEP (both) and
-    contraction against relaxation all give p >= 0.05.
+  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheets Figure S2A, S2C, S2D
+    and S2E (box-plot summaries per condition) and Figure S2G (12 per-subject pairs); the raw
+    recordings are not public.
+  criterion: Only sheet Figure S2G has per-subject values; a two-sided Wilcoxon signed-rank test of
+    contraction against relaxation on its 12 pairs must give p >= 0.05 (the paper's test, a claim
+    of absence). Sheets S2A, S2C, S2D and S2E give only minimum, quartiles, median and maximum per
+    condition, so their tests cannot be rerun and are recorded as not testable; for them the claim
+    holds when the late amplitude median at rest exceeds the passive (S2A) and cycling (S2C)
+    medians. Reproduced when the S2G test and the two median comparisons hold; the absence of
+    modulation for posterior TMS and SSEP is not testable from public data.
 - id: figs2a-tms-early-component
   statement: The early (3 to 50 ms) TMS-evoked component is reduced in amplitude during active
     movement but not in phase locking (2.24 +- 0.45 against 1.88 +- 0.32 uV; PLF 0.43 in both), and
@@ -227,8 +240,8 @@ claims:
     p: 0.13
     n: 12 subjects
   data: elsewhere
-  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheet Figure S2A
-    (per-subject values); the raw recordings are not public.
+  where: The paper's Source Data file 41467_2025_58717_MOESM4_ESM.xlsx, sheet Figure S2A (box-plot
+    summaries per condition, no per-subject values); the raw recordings are not public.
   expected:
   - quantity: early amplitude at rest
     value: 2.24
@@ -238,10 +251,11 @@ claims:
     value: 1.88
     tolerance: 0.32
     unit: uV
-  criterion: Reproduced when the Source Data means are within tolerance (the paper's SDs), the
-    early amplitude signed-rank test gives p < 0.05 with rest larger and the early PLF test gives p
-    >= 0.05. The text names the correlation Spearman's and the Figure S2B legend Pearson's; both
-    are run and the absence of correlation (p >= 0.05) is judged on each.
+  criterion: Sheet Figure S2A gives only minimum, quartiles, median and maximum per condition, so
+    the means, the signed-rank tests and the correlation (Spearman's in the text, Pearson's in the
+    Figure S2B legend) cannot be recomputed and are recorded as not testable. The claim holds, as
+    far as the public data allow, when the early amplitude median at rest exceeds the active median
+    and both lie within the tolerances around the paper's means; otherwise not reproduced.
 - id: figs3b-ieeg-early-no-modulation
   statement: The early (3 to 50 ms) iEEG response to electrical stimulation in humans is not
     modulated by state, in monopolar or bipolar derivation.
@@ -265,8 +279,10 @@ claims:
     iEEG recordings are not public.
   criterion: A claim of absence; the paper's test is a mixed model on contacts that the public data
     cannot rerun. On the Source Data values, two-sided Wilcoxon signed-rank tests of rest against
-    active; reproduced when none of the four gives p < 0.05. Recorded as a deviation from the
-    paper's test.
+    active on its five per-subject values; reproduced when none of the four gives p < 0.05.
+    Recorded as a deviation from the paper's test. With five pairs the smallest two-sided exact p
+    of a signed-rank test is 0.0625, so this test cannot find an effect; the per-subject
+    differences are reported with it.
 - id: fig5a-human-mouse-similar
   statement: Evoked responses to cortical stimulation are remarkably similar between humans and
     mice, both for scalp EEG (TMS in humans, electrical stimulation in mice) and for intracranial
@@ -326,7 +342,9 @@ claims:
     averaged over 150 to 250 ms and over MOs channels (code, marked as the method applied in the
     figure). Intensity open, readings (a) high only, (b) high and medium as separate sessions
     (code keeps high, medium and unique). Reproduced when, under a reading, a two-tailed Wilcoxon
-    signed-rank test across sessions or mice gives p < 0.05 with rest larger."
+    signed-rank test across sessions or mice gives p < 0.05 with rest larger. The Source Data
+    sheets Figure 1 D and Figure 1 E list 12 rest and active pairs each, against n = 13 in both
+    legends."
 - id: fig1e-csd-late-rest-larger
   statement: In mice, the late MOs CSD response to MOs stimulation is larger at rest than during
     running, with a current sink between layers 2/3 and 5 at the time of the late response for high
@@ -395,9 +413,21 @@ claims:
   - about: EEG amplitude, low
     test: Wilcoxon signed rank test
     p: 0.28
+  - about: LFP amplitude, high
+    test: Wilcoxon signed rank test
+    p: 0.001
+    p_relation: "<"
+  - about: LFP amplitude, intermediate
+    test: Wilcoxon signed rank test
+    p: 0.001
+    p_relation: "<"
   - about: LFP amplitude, low
     test: Wilcoxon signed rank test
     p: 0.003
+  - about: CSD amplitude, high
+    test: Wilcoxon signed rank test
+    p: 0.001
+    p_relation: "<"
   - about: CSD amplitude, intermediate
     test: Wilcoxon signed rank test
     p: 0.002
@@ -427,11 +457,13 @@ claims:
   criterion: The paper gives no list of thresholds tested; thresholds 0.1, 0.5, 1, 2 and 5 cm/s are
     used here as a standard grid (open; stated as a choice). Reproduced when, at each threshold,
     EEG, LFP and CSD late amplitudes give p < 0.05 with rest larger, with the methods and the
-    reading under which the three base claims were reproduced; a session with fewer than 10 trials
-    in either state at a threshold is left out (a choice; reported).
+    reading under which the three base claims were reproduced; a session enters the test at a
+    threshold when it has at least one trial in each state. The paper sets no minimum trial count;
+    a minimum of 10 trials per state is shown as a variant.
 - id: figs5-early-component-mouse
   statement: In mice the early (3 to 50 ms) EEG component is not modulated by state, while the early
-    LFP and CSD responses are larger during running.
+    LFP amplitude is larger during running and the early CSD amplitude differs between states (the
+    legend gives no direction for the CSD).
   source: Results, Multiscale late EP responses ..., paragraph 5; Figure S5
   quote: The modulation was specific for the late EP component as opposed to the early component
     (Fig. S5 ), and network specific (Fig. S6 ).
@@ -458,7 +490,10 @@ claims:
   - fig1e-csd-late-rest-larger
   criterion: The three amplitude measures over 3 to 50 ms, with the selections under which the late
     claims were reproduced. Reproduced when the EEG early amplitude signed-rank test gives p >= 0.05
-    (the paper's test, a claim of absence) and LFP and CSD give p < 0.05 with active larger.
+    (the paper's test, a claim of absence), LFP gives p < 0.05 with active larger (Figure S5B
+    legend) and CSD gives p < 0.05. The Figure S5C legend gives no direction for the CSD and the
+    Source Data sheet Figure S5C has a higher median at rest (1.8) than active (1.5), so the CSD
+    direction is reported and does not decide the claim.
 - id: figs6-posterior-no-modulation
   statement: Electrical stimulation of posterior areas (visual and retrosplenial cortex,
     hippocampus) evokes EEG responses whose early and late amplitude and PLF are not modulated by
@@ -545,14 +580,18 @@ claims:
   quote: Responses during active state showed shorter latencies than at rest for all the evaluated
     matrices
   statistics:
-  - test: two-way ANOVA, Tukey post-hoc test
+  - about: the significance lines shown in Figure S7A; the legend does not say which comparisons
+      they are
+    test: two-way ANOVA, Tukey post-hoc test
     p: 0.001
     p_relation: "<"
   data: dataset
   depends_on:
   - fig2b-thalamus-leads
-  criterion: In the ANOVA of fig2b-thalamus-leads, reproduced when the mean latency is shorter in
-    active than rest for all five measures and the state factor gives p < 0.05.
+  criterion: In the data of fig2b-thalamus-leads, reproduced when the mean latency is shorter in
+    active than rest for all five measures. The paper reports no test of state alone; the state
+    factor of the two-way ANOVA is reported and does not decide the claim. The Source Data sheet
+    Figure S7A gives box-plot summaries in which every active median is below its rest median.
 - id: figs7b-latency-correlation
   statement: On single trials, the later the SM-TH units rebound, the later the MOs units and the
     CSD, LFP and EEG peaks.
@@ -584,12 +623,15 @@ claims:
   data: dataset
   criterion: "Responsive (+-7 SD, Methods) putative relay units (> 450 us) in the SM-TH nuclei
     (Methods list), high intensity; per unit, spike count in 150 to 250 ms divided by 0.1 s, averaged
-    over rest and over active trials. Open, the unit of the paired test: the legend says across
-    subjects, the Source Data sheet lists over a thousand rest and active pairs, and the code
-    compares per-session medians with a rank-sum test. Readings (a) per unit, two-tailed Wilcoxon
-    signed-rank on the unit pairs; (b) per mouse, the median over its units, signed-rank on 21
-    pairs. Reproduced when, under a reading, p < 0.05 with active larger; the code's rank-sum on
-    per-session medians is shown as a variant."
+    over rest and over active trials. Open, the unit of the test: the legend says across subjects,
+    the Source Data sheet Figure 3 A lists 1439 rest and 952 active values (unequal counts, so not
+    unit pairs; the counts are those of the LF baseline values of sheet Figure 3 E, which are per
+    trial), and the code compares per-session medians with a rank-sum test. Readings (a) per unit,
+    two-tailed Wilcoxon signed-rank on the unit pairs; (b) per mouse, the median over its units,
+    signed-rank on 21 pairs; (c) per trial, the mean rate over the units of the session, rest
+    against active trials pooled over sessions, two-tailed rank-sum (Source Data shape). Reproduced
+    when, under a reading, p < 0.05 with active larger; the code's rank-sum on per-session medians
+    is shown as a variant."
 - id: figs9-mos-rate-no-modulation
   statement: The late evoked firing rate of MOs units is not modulated by state.
   source: Figure S9A
@@ -744,7 +786,11 @@ claims:
     Methods name Wilcoxon signed-rank tests with Bonferroni. Readings (a) per trial as in the code,
     rank-sum; (b) per unit, mean over rest and over active trials, signed-rank on the unit pairs.
     Reproduced when, under a reading, the relay-unit mean rate at rest and active are within
-    tolerance (the paper's SDs) and both HF and LF give corrected p < 0.05 with active larger."
+    tolerance (the paper's SDs) and both HF and LF give corrected p < 0.05 with active larger. The
+    Source Data sheet Figure 3 E supports reading (a): its baseline columns hold unequal numbers of
+    rest and active values (HF 1345 and 808, LF 1440 and 953), and the mean of the HF and LF values
+    pooled is 6.78 Hz at rest and 12.48 Hz active, the paper's numbers, so the paper's mean pools
+    the HF and LF trial values."
 - id: fig3e-lf-synchrony-reduced
   statement: During running the rebound onset variability (ROV) of LF units increases (35.7 +- 11.8
     to 40.7 +- 8.2 ms), a loss of synchrony, while the ROV of HF units does not change.
@@ -777,7 +823,9 @@ claims:
     the two readings of fig3e-baseline-rate-doubles (per trial, rank-sum as in the code; per unit
     is not defined for an across-unit SD, so the Methods' signed-rank is run per mouse, mean ROV of
     its rest and active trials). Reproduced when, under a reading, the LF means are within
-    tolerance, LF gives corrected p < 0.05 with active larger, and HF gives p >= 0.05."
+    tolerance, LF gives corrected p < 0.05 with active larger, and HF gives p >= 0.05. The Source
+    Data sheet Figure 3 E LF ROV column holds 1226 rest and 924 active values with means 35.73 and
+    40.74 ms, the paper's numbers, which supports the per-trial reading."
 - id: fig3e-hf-frequency-reduced
   statement: During running the late response frequency of HF units falls (309 +- 126 to 241 +- 116
     Hz), while that of LF units does not change significantly.
@@ -809,7 +857,11 @@ claims:
     takes the median ISI across the group's units and inverts it. Window and unit of test as in
     fig3e-lf-synchrony-reduced (per unit, mean frequency over rest and over active trials, for the
     signed-rank reading). Reproduced when, under a reading, the HF means are within tolerance, HF
-    gives corrected p < 0.05 with rest larger and LF gives p >= 0.05.
+    gives corrected p < 0.05 with rest larger and LF gives p >= 0.05. In the Source Data sheet
+    Figure 3 E the HF column labelled ROV (ms) holds 1002 rest and 550 active values with means
+    309.65 and 241.75 and SDs 126.7 and 116.6, the paper's HF response frequency, while the HF
+    column labelled Resp Freq (Hz) has means 28.63 and 28.21; the two HF labels appear swapped. The
+    unequal rest and active counts support the per-trial reading.
 - id: figs13-thalamic-features-predict-eeg
   statement: On single trials, baseline thalamic rate predicts HF response frequency and LF onset
     variability, and the late EEG amplitude is predicted by ROV of HF and LF units and by HF
@@ -963,6 +1015,12 @@ claims:
   source: Results, Optogenetic dissection ..., paragraph 3; Figure S8B
   quote: "As opposed to thalamic inhibition, optogenetic stimulation of GABAergic neurons in MOs
     minimally affected the rebound response (Fig. S8B ; MOs: ES Only = 208 ± 39 ms"
+  statistics:
+  - about: unit latencies across the three protocols, MOs and SM-TH
+    test: Wilcoxon signed rank tests
+    p: 0.001
+    p_relation: "<"
+    n: 361 SM-TH and 417 MOs units from 2 mice
   data: elsewhere
   where: figshare article 28440311 version 1 ("Data Mouse Opto", file 52456058)
   expected:
@@ -992,7 +1050,9 @@ claims:
     unit: ms
   criterion: Tolerances are the paper's SDs. Reproduced when all six means are within tolerance and
     the mean shifts are smaller than those of fig2fg-opto-thalamic-inhibition-delays-rebound for the
-    same light window in SM-TH.
+    same light window in SM-TH. The Figure S8B legend reports the small shifts as significant
+    (Wilcoxon signed rank tests, all p < 0.001); the signed-rank tests on the unit latencies are
+    reported and do not decide the claim, which is about the size of the shift.
 - id: fig2h-opto-gaba-suppresses-both
   statement: Optogenetic activation of GABAergic neurons in either the thalamus or MOs suppresses
     firing in both SM-TH and MOs units within the light period.
@@ -1150,3 +1210,31 @@ claims:
     doi:10.6084/m9.figshare.25773501.v1
   criterion: Reproduced when the rerun model gives a lower HF evoked rate and a higher LF ROV in
     active than rest trials, each with rank-sum p < 0.05.
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, human data. The header said the Source Data give per-subject values for the human claims. Only sheets Figure 1 A, 1 B, S2G, S3A and S3B hold per-subject values; S1A, S2A, S2C, S2D and S2E hold box-plot summaries (minimum, quartiles, median, maximum). Corrected.
+  - fig1a-tms-late-rest-active. The PLF part planned a signed-rank test and means on per-subject S1A values that do not exist. The PLF part is now the rest against active median of sheet S1A, with the PLF test recorded as not testable; the amplitude part is unchanged.
+  - fig1b-ieeg-late-rest-active. Same S1A problem for PLF; fixed the same way. Said that the four-of-five-subjects rule is this file's, not the paper's, and that the paper's means are over contacts, so the per-subject means (5.28 and 3.95) are not expected to equal them.
+  - figs2-tms-controls. The criterion ran signed-rank tests on per-subject S2 values; only S2G has them. The S2G test (contraction against relaxation, absence) stays; passive and cycling are judged on the S2A and S2C medians; posterior TMS and SSEP absence are recorded as not testable.
+  - figs2a-tms-early-component. Sheet S2A is a box-plot summary, so the means, tests and correlation cannot be recomputed. Criterion now judges the medians and records the rest as not testable.
+  - figs3b-ieeg-early-no-modulation. Added that a signed-rank test on five pairs cannot reach p below 0.0625, so the substitute test cannot find an effect; the per-subject differences are to be reported.
+  - fig1d-lfp-late-rest-larger. Added that the Source Data sheets Figure 1 D and 1 E have 12 pairs each against n = 13 in the legends.
+  - figs4-intensity-dependence. Added the Figure S4 results the file left out (LFP high and intermediate p < 0.001, CSD high p < 0.001), all of which the criterion uses.
+  - speed-threshold-robust. Removed the minimum of 10 trials per state, which is not in the paper; a session now needs one trial in each state, and the 10-trial cut is a variant.
+  - figs5-early-component-mouse. The statement said the early CSD response is larger during running. The Figure S5C legend gives no direction and the Source Data medians are higher at rest (1.8 against 1.5). The statement and criterion now require only a CSD difference and report its direction.
+  - figs7a-active-shorter-latency. The criterion required the ANOVA state factor at p < 0.05, a test the paper does not report, and the statistics entry implied the legend's p < 0.001 is the state result; the legend applies it to unnamed significance lines. The state factor is now reported and not decisive, and the entry says what the p refers to.
+  - fig3a-thalamic-rate-higher-active. The criterion said the Source Data list over a thousand rest and active pairs; sheet Figure 3 A has 1439 rest and 952 active values, unequal, so not pairs. Corrected, and added a per-trial reading (rank-sum on trial values) that this shape supports.
+  - fig3e-baseline-rate-doubles. Added that the pooled mean of the HF and LF baseline values in sheet Figure 3 E is 6.78 Hz at rest and 12.48 Hz active, the paper's numbers, with unequal counts, which supports the per-trial reading.
+  - fig3e-lf-synchrony-reduced. Added that sheet Figure 3 E gives LF ROV means 35.73 and 40.74 ms on per-trial values.
+  - fig3e-hf-frequency-reduced. Added that in sheet Figure 3 E the HF column labelled ROV holds the paper's HF response frequency (309.65 and 241.75) and the column labelled Resp Freq holds values near 28, so the HF labels appear swapped.
+  - figs8b-opto-cortical-inhibition-minimal. Added the Figure S8B test the file left out (Wilcoxon signed rank tests, all p < 0.001, 361 SM-TH and 417 MOs units from 2 mice); it shows the small shifts are significant. It is reported and does not decide a claim about the size of the shift.
+  - Checker. The one flag, fig4e-model-latencies p 0.000111, is printed as 1.11e-04 in the Figure 4E legend; no change.
+  - Open. triphasic-pattern reading (b) uses a baseline minus 2 SD threshold that is not in the paper, and the paper does not say how the 127.8 ms was measured; both readings are this file's.
+  - Open. figs9-mos-rate-no-modulation restricts MOs units to RS; the Figure S9A legend says MOs units (1009 units). RS follows Figure 2A and the separate FS panel in Figure S10A, but the legend does not fix it.
+  - Open. fig2h-opto-gaba-suppresses-both compares the 0 to 50 ms light window with an equal pre-light baseline; the paper names only the light window, and sheet Figure S8C labels the comparison Baseline without defining it.
+  - Open. fig2b-thalamus-leads judges the Tukey comparisons pooled over state, while the Results say SM-TH leads for both rest and active; whether the post hoc test is on the measure factor or on measure by state is not given.
+  - Open. Minor results without a claim, Figure S1C (high SNR sessions), S2F (SSEP adaptation), S3A (monopolar late iEEG, where the active amplitude mean exceeds rest), S9C and S9D, and S10B. The main findings each have a claim.
