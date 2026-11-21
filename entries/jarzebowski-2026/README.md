@@ -23,8 +23,8 @@ CCF coordinates, so the claims on recorded data use this outside input. The atte
 reasons and the differences from the paper's method, is
 [`attempts/jarzebowski-2026-01.yaml`](../../attempts/jarzebowski-2026-01.yaml).
 
-- `reproduce_jarzebowski_2026.ipynb`: the analysis. It takes about 25 minutes: four to nine to stream
-  the 153 session files, four at a time, and six to run the claims on all 16 cell selections.
+- `reproduce_jarzebowski_2026.ipynb`: the analysis. It takes 15 to 25 minutes: four to nine to stream
+  the 153 session files, four at a time, and four to run the claims on all 16 cell selections.
 - `vbn.py`: streaming the sessions, per-window spike and burst counts, the CCF layer lookup, cell
   selection, and the mixed-effects model. Other notebooks on this dandiset can import it.
 - `seta_model.py`: the two-compartment model of the Methods, in NumPy.
