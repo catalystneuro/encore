@@ -141,7 +141,7 @@ outcomes:
   output: claim:fig3a-v1-long-term
   measured: 8
   notes: Significant (FDR over n = 1 to 10) at every n from 1 to 8, not at 9 or 10; 8-back ratio
-    0.984. Eight of 12 readings of O1 and O3 give 8, the four per-orientation arithmetic readings
+    0.984. Seven of 12 readings of O1 and O3 give 8, the four per-orientation arithmetic readings
     give 2, and one geometric reading 5. In 22 of 32 mice the mean V1 8-back log ratio is below
     zero.
 - claim: fig3a-v1-double-exponential
@@ -200,7 +200,9 @@ outcomes:
     and in the main reading LP is significant at 3-back (ratio 1.03) while RL stops at 5. With the
     presentations inside invalid intervals left out, the across-blocks reading still meets the
     criterion (LGN 1, LP 1, RL 6) and the main reading gives LGN a significant 7-back. With `noise`
-    units kept LGN also gains a significant 7-back. The question of what Figure 3B's borders mark
+    units kept no reading of O1 and O3 meets the criterion or its partial rule; in the
+    across-blocks reading RL stops at 5 (LGN 1, LP 2), and in the main reading LGN gains a
+    significant 7-back. The question of what Figure 3B's borders mark
     is for the paper's authors (finding).
   deviations:
   - Assumed that "significant adaptation" counts only ratios below 1; a two-tailed test also flags
@@ -209,7 +211,9 @@ outcomes:
     adaptation effect", and the Results say adaptation in thalamus "appeared to be limited to the
     1-back (LGN) or 2-back trial (LP)"; both speak of adaptation, a ratio below 1. Read two-sided,
     the outcome would be partially reproduced.
-  - Rests on the `noise` unit filter (see units-responsive-count).
+  - Rests on the `noise` unit filter (see units-responsive-count); with `noise` units kept no
+    reading meets the criterion or its partial rule, as RL stops at 5-back in the across-blocks
+    reading.
 - claim: v1-vs-thalamus-welch
   outcome: reproduced
   notebook: reproduce_fritsche_2022.ipynb
@@ -231,7 +235,7 @@ outcomes:
   notebook: reproduce_fritsche_2022.ipynb
   output: claim:decay-cortex-double-better
   notes: F tests on the region means, V1 p = 0.0015, LM 0.017, AL 8.0e-05, PM 0.0041, AM 0.011, RL
-    0.22 (paper RL 0.072); with all unit values, 4.2e-06 to 0.0021 and RL 0.12. Two of the five p
+    0.22 (paper RL 0.072); with all unit values, 4.5e-09 to 0.0021 and RL 0.12. Two of the five p
     values (LM, AM) are above the paper's bound of 0.006.
 - claim: table1-extrastriate-tau-slow
   outcome: reproduced
@@ -369,8 +373,9 @@ outcomes:
   seed_sensitive: true
   notebook: reproduce_fritsche_2022.ipynb
   output: claim:fig8-no-spurious-long-term
-  notes: The recovered 1-back ratio contains the ground truth in every run (drifting 0.821, static
-    0.897). Claim seed, Poisson noise at the V1 median rate (9.97 Hz drifting, 9.04 Hz static),
+  notes: The recovered 1-back interval contains the ground truth (drifting 0.821, static 0.897) in
+    each of the six named runs (five Poisson seeds and no noise), and in 192 (drifting) and 189
+    (static) of the 200 further Poisson seeds. Claim seed, Poisson noise at the V1 median rate (9.97 Hz drifting, 9.04 Hz static),
     drifting has no n in 2 to 10 whose interval excludes 1, but static 5- and 6-back do (0.986,
     0.987). No noise, static passes and drifting 2- and 6-back exclude 1 (0.996, 1.003). No reading
     meets the criterion or its partial rule under the claim's seed. Of the four other seeds, one
@@ -702,3 +707,212 @@ verifications:
     reason: Cell 83, all 7 variants meet the reading (V1 significant beyond 1-back, double exponential
       better, LGN no later than 2).
     response: No change.
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full re-executed notebook after the round-1 revision, with its conclusion cells and summary,
+    the helper module, the claims file, the attempt record and the paper's full text. Round 2 of verification. No finding in the record is rated critical,
+    so none was reviewed as one; the verifier saw no reason to rate any finding critical, as the checks
+    for duplicate recordings, subjects and clocks pass (cells 8 and 9).
+  results:
+  - claim: units-responsive-count
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. It withdraws
+      its round-1 statement that results are unchanged without the `noise` filter, since cell 17 now shows
+      that the LGN results change, a significant 7-back appears and tau falls to 0.000.
+    response: No change of outcome. The round-1 reason stays quoted as given. The notes and deviations
+      already show the variant with `noise` units kept; the summary now names what changes with them kept
+      (LGN 7-back and tau, and fig3b).
+  - claim: fig1d-v1-1back
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig1d-extrastriate-1back
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig1d-thalamus-1back
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig1e-consistent-across-mice
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. The request
+      for the mice that fail reading (a) was met.
+    response: No change.
+  - claim: fig2-v1-tuning-main-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. Problem 5 is
+      resolved, as drops per tertile and re-formed tertiles were added (cell 41).
+    response: No change.
+  - claim: fig2-v1-tuning-interaction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig2-v1-adaptation-at-all-orientations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig2-thalamus-no-tuning-dependence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig3a-v1-long-term
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. Cell 49 and
+      the record notes are wrong in saying eight of 12 readings give 8. Cell 48 shows 7 readings give
+      8, four give 2 and one gives 5. The record's version (eight, four and one) adds up to 13.
+    response: Corrected to seven of 12 in the cell 49 result and in the notes.
+  - claim: fig3a-v1-double-exponential
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig3a-v1-half-life
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig4-cumulative-adaptation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig4b-linear-accumulation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig3b-thalamus-short-term
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, assumed. The assumption that significant adaptation counts only ratios below 1
+      is stated in the deviations, which also say that a two-sided reading would make the outcome partial,
+      as cell 66 shows. The paper's wording (exerted significant adaptation effect; adaptation appeared
+      to be limited) supports the assumption, so it is reasonable. The pass comes from 1 of 12 readings
+      (pooled ratio, blanks held, pairs across blocks), and RL sits exactly at the threshold of 6 (cell
+      65). The second deviation says the outcome rests on the `noise` unit filter, but the variant with
+      `noise` units kept (cell 17) was run only with pairs within blocks, so its effect on the passing
+      reading is not shown. The summary garbles the dependence. fig3b rests on the direction rule and
+      on the filter; the direction rule does not rest on the filter. Of round-1 problem 1, the problem
+      is disclosed, not removed.
+    response: Outcome kept. Added to cell 66 the fig3b readings with `noise` units kept, for all 12 readings
+      of O1 and O3. No reading meets the criterion or its partial rule. Under the passing reading (pooled,
+      blanks held, pairs across blocks) RL stops at 5-back, with LGN 1 and LP 2. The cell 68 result, the
+      notes and the deviation now say so, and the summary states the two assumptions separately. The verifier
+      found both assumptions reasonable and neither is changed, so no outcome change is proposed.
+  - claim: v1-vs-thalamus-welch
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig3c-mice-long-term
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: decay-cortex-double-better
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. Cell 77 and
+      the record notes give the range with every unit's values as p = 4.2e-06 to 0.0021, but cell 76 gives
+      AL p_F_units = 4.5e-09, so the range is 4.5e-09 to 0.0021.
+    response: Corrected to 4.5e-09 to 0.0021 in the cell 77 result and in the notes.
+  - claim: table1-extrastriate-tau-slow
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. Problem 8 is
+      resolved, as `_boot_task` now passes the sign.
+    response: No change.
+  - claim: decay-thalamus-single
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, assumed. The assumption, the `noise` filter, is stated and reasonable. Cell 17
+      shows the dependence, as with `noise` units kept the LGN tau is 0.000, outside [0.004, 0.63].
+    response: No change of outcome. The summary now states this dependence directly.
+  - claim: fig5-repeat-suppression
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. Problem 3 is
+      resolved, as a session bootstrap was added (cell 87) and fig5 moved to not reproduced.
+    response: No change.
+  - claim: fig6c-static-v1-1back
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig6c-static-other-areas-1back
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. The summary's
+      statement that the main reading gives the paper's 1-back values to within 0.01 holds for drifting
+      gratings and for static cortex. It fails for static thalamus, LGN 0.957 against 0.93 and LP 0.900
+      against 0.85 (cell 93).
+    response: Corrected the summary to say so, giving the two thalamic values.
+  - claim: fig6d-static-consistent-across-mice
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig7a-static-v1-long-term
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. Remaining from
+      round 1 (problem 4), with the 1-to-20 family the 18-to-22 test is partly met by construction, and
+      with 1 to 50 the largest significant n is 46 to 49. This is the claims file's reading, reported.
+      It bears weakly on the conclusion.
+    response: No change. The family is the claims file's reading; the family 1 to 50 results stay in the
+      notes.
+  - claim: fig7b-static-cortex-decay
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig7-static-lgn-single
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig7b-static-areas-long-term
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. Remaining from
+      round 1 (problem 4), with the 1-to-20 family the 18-to-22 test is partly met by construction, and
+      with 1 to 50 the largest significant n is 46 to 49. This is the claims file's reading, reported.
+      It bears weakly on the conclusion.
+    response: No change. The family is the claims file's reading; the family 1 to 50 results stay in the
+      notes.
+  - claim: fig7c-static-long-term-across-mice
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  - claim: fig8-no-spurious-long-term
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome. The statement
+      in cell 116 and the record notes that the 1-back interval contains the ground truth in every run
+      is true for the six named runs, but over the 200-seed sweep it contains the truth in 192 and 189
+      of 200 seeds (cell 115). Remaining from round 1 (problem 2), not reproduced still comes from the
+      claims file asking every CI to contain 1. Cell 115 shows that noise alone breaks that at about the
+      chance rate. Only 38% of seeds pass, against the 39.7% expected if exclusions were independent.
+      This is now a question for a reader, which is the right route, but the outcome still reflects the
+      claims file's misreading and not the data.
+    response: Corrected the sentence in cell 116 and in the notes to the six named runs and 192 and 189
+      of 200 seeds. Outcome kept, as tested on the claims file; the question for a reader stays in questions/fritsche-2022.yaml.
+  - claim: robust-threshold-preferred-window
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, which matches the verifier's round-1 outcome.
+    response: No change.
+  findings: []
