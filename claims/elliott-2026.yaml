@@ -121,6 +121,38 @@ claims:
   - quantity: units, recording 8 (S6)
     value: 100
     tolerance: 10
+  - quantity: duration, recording 1 (S1, KA)
+    value: 6
+    tolerance: 0.6
+    unit: min
+  - quantity: duration, recording 2 (S1, baseline)
+    value: 5
+    tolerance: 0.5
+    unit: min
+  - quantity: duration, recording 3 (S2, KA)
+    value: 8.5
+    tolerance: 0.85
+    unit: min
+  - quantity: duration, recording 4 (S2, baseline)
+    value: 5
+    tolerance: 0.5
+    unit: min
+  - quantity: duration, recording 5 (S3)
+    value: 7
+    tolerance: 0.7
+    unit: min
+  - quantity: duration, recording 6 (S4, KA)
+    value: 2.2
+    tolerance: 0.22
+    unit: min
+  - quantity: duration, recording 7 (S5)
+    value: 6.4
+    tolerance: 0.64
+    unit: min
+  - quantity: duration, recording 8 (S6)
+    value: 1.8
+    tolerance: 0.18
+    unit: min
   criterion: Units are those of the paper's curated sortings (outside input, see the opening
     comment); recording durations are read from the dandiset's raw recordings and compared at 10%
     of each reported length. Reproduced when every unit count and duration is within tolerance;
@@ -134,8 +166,8 @@ claims:
   data: with_inputs
   expected:
   - quantity: bursts per burst epoch, S1
-    value: 7
-    tolerance: 1.8
+    value: 7.1
+    tolerance: 1.7
   criterion: The population rate as the Methods define it (spikes of all units in 1 ms bins,
     Gaussian smoothing with a standard deviation of 10 to 20 ms, divided by the number of units and
     multiplied by 1000). Neither the paper nor its code defines a burst or a burst epoch; the
@@ -144,17 +176,20 @@ claims:
     twice its mean over the pre-KA part of the recording, or (b) its mean plus 3 standard
     deviations over the whole recording, with peaks less than 50 ms apart merged; epochs are runs
     of bursts separated by gaps under 5 s. The expected value is the range 6 to 8 widened by 10%
-    of each bound (5.4 to 8.8). Reproduced when, under one reading, the median number of bursts
-    per epoch in the first 150 s lies in that range and the bursts are synchronous across units
+    of each bound (5.4 to 8.8). The sentence cites Figure 1h, the zoom on the initiation of
+    bursting, so the count is read two ways; the median number of bursts per epoch in the first
+    150 s (Figure 1g), and the number of bursts in the first epoch (Figure 1h). Reproduced when,
+    under one reading, that number lies in the range and the bursts are synchronous across units
     (a burst raises the rate of most units).
 - id: methods-burst-counts
   statement: Slice S1 had 67 bursts grouped into 11 superbursts over about 350 s; S2 had 47
-    bursts, highly synchronized for the first 50 s and sporadic for the next 300 s.
+    bursts, highly synchronized for the first 50 s and sporadic for the next 300 s; in both slices
+    bursts occurred for about 350 s.
   source: Methods, Classification of Epileptiform-like Events, paragraph 1; Extended Data Fig. 13
   quote: Slice S1 contained 67 bursts during its seizure-like event. The bursts were highly
     synchronized and grouped into 11 sets of super bursts over 350 seconds. Slice S2 contained 47
     bursts. The bursts for S2 were highly synchronized for the first 50 seconds, but then were
-    sporadic for the next 300 seconds.
+    sporadic for the next 300 seconds. For both slices, bursts occurred for roughly 350 seconds
   data: with_inputs
   depends_on:
   - fig1g-ka-synchronized-bursting
@@ -176,11 +211,15 @@ claims:
     value: 50
     tolerance: 5
     unit: s
+  - quantity: duration of bursting, S2
+    value: 350
+    tolerance: 35
+    unit: s
   criterion: Bursts and superbursts as in fig1g-ka-synchronized-bursting, under the same readings,
     which are not fixed by the paper or its code. Note that the code's seizure windows for S1 list
     8 superbursts in the first 254 s (opening comment), which bears on reading the count of 11.
-    Reproduced when, under one reading, all five values are within tolerance; partially
-    reproduced when the S1 counts or the S2 values match but not both.
+    Reproduced when, under one reading, all six values are within tolerance; partially
+    reproduced when the S1 values or the S2 values match but not both.
 - id: methods-rate-increase-after-ka
   statement: Neural activity increased after kainic acid; the population firing rate rose by 0.5
     spikes per second per unit in S1 and 0.9 in S2.
@@ -253,8 +292,9 @@ claims:
     electrodes nearest the units with the highest firing rate, and three electrodes spread along
     the granule cell layer. The baseline window is not fixed; the 5 s before the first burst is
     used. Reproduced when, at each of the three electrodes, delta (0.5 to 4 Hz) power in the 2 s
-    after onset is above the baseline mean and the theta (4 to 8 Hz) amplitude exceeds twice the
-    baseline (the Methods' ">2x baseline LFP" criterion); partially reproduced when this holds at
+    after onset is above the baseline mean and the LFP amplitude exceeds twice the baseline (the
+    Methods' ">2x baseline LFP" criterion, which names the LFP amplitude without a band; readings,
+    the theta (4 to 8 Hz) amplitude and the 0.1 to 100 Hz amplitude); partially reproduced when this holds at
     one or two electrodes. The alignment of theta with bursts is tested in
     table2-phase-locking-counts.
 - id: fig1j-theta-propagation-stages
@@ -274,8 +314,13 @@ claims:
     windows are not given. The direction of propagation is not measured in the paper. Readings
     named here; per stage, the direction of the spatial gradient of the pairwise lag (from the
     lag matrix of ext4-electrode-lag-clusters) fitted as a plane over electrode positions.
-    Reproduced when, in S1 and S2, the initiation and seizure directions differ by 60 to 120
-    degrees, the seizure direction runs across the layer (from its hilar side) and the baseline
+    The paper says the initiation wave runs "across the length" of the layer and the seizure wave
+    is orthogonal to it yet moves "along the granule cell layer from the hilar to outer aspect";
+    hilar to outer is read here as across the layer, as orthogonality implies.
+    Reproduced when, in S1 and S2, the initiation direction lies within 45 degrees of the layer's
+    long axis (the degree-2 fit of table3-geometry-test), the initiation and seizure directions
+    differ by 60 to 120 degrees, the seizure direction runs across the layer (from its hilar side)
+    and the baseline
     plane fit explains less of the lag variance than either other stage.
 - id: ext4b-theta-delay
   statement: During seizure-like activity theta waves in S1 reach three electrodes along the
@@ -325,12 +370,15 @@ claims:
     occurred 2–4 times per burst. Thus, over the six minute timespan of recordings from S1 and S2,
     there were approximately 200 stereotypic propagations in S1's seizure stage, and 35 in S2's.
   expected:
+  - quantity: fraction of S1 bursts with a rolling wave
+    value: 1
+    tolerance: 0.1
   - quantity: fraction of S2 bursts with a rolling wave
     value: 0.75
     tolerance: 0.075
   - quantity: rolling waves per burst
-    value: 3
-    tolerance: 1.4
+    value: 3.1
+    tolerance: 1.3
   - quantity: rolling wave propagations, S1 seizure stage
     value: 200
     tolerance: 20
@@ -342,7 +390,7 @@ claims:
     methods_underspecified unless a detector defined in fig1j-theta-propagation-stages (a theta
     cycle whose lag-plane direction matches the seizure direction within 45 degrees and explains
     most of the lag variance) is adopted as an assumption, in which case it is reproduced when all
-    four values are within tolerance (the range 2 to 4 widened by 10% of each bound is 1.8 to
+    five values are within tolerance (the range 2 to 4 widened by 10% of each bound is 1.8 to
     4.4).
 - id: fig2a-subbursts-track-theta
   statement: At the initiation stage of S1 the first burst splits into three sub-bursts whose
@@ -386,19 +434,19 @@ claims:
     tolerance: 10.1
   - quantity: phase-locked units, recording 4 (S2, baseline)
     value: 2
-    tolerance: 0.2
+    tolerance: 1
   - quantity: phase-locked units, recording 5 (S3)
     value: 8
-    tolerance: 0.8
+    tolerance: 1
   - quantity: phase-locked units, recording 6 (S4)
     value: 6
-    tolerance: 0.6
+    tolerance: 1
   - quantity: phase-locked units, recording 7 (S5)
     value: 8
-    tolerance: 0.8
+    tolerance: 1
   - quantity: phase-locked units, recording 8 (S6)
     value: 1
-    tolerance: 0.1
+    tolerance: 1
   criterion: Method from the Methods (Phase locking neurons to theta wave activity) with the
     code's choices (opening comment); theta 4 to 8 Hz from the electrode nearest each unit,
     Hilbert phase, spikes kept while the upper envelope exceeds the RMS of the whole series (the
@@ -408,8 +456,8 @@ claims:
     given; readings are the whole recording, and the spans of the code's get_raw_data notebooks
     (figures/supplement/phase_locking/get_raw_data). Small counts are judged at 10% rounded up to
     one unit, as a tolerance below one unit cannot be met. Reproduced when every count is within
-    tolerance under one reading; partially reproduced when recordings 1 and 3 match and the others
-    stay below 10%.
+    tolerance under one reading (tolerances below one unit are set to 1); partially reproduced
+    when recordings 1 and 3 match and the others stay below 10%.
 - id: table2-phase-locking-seizure-vs-not
   statement: During seizure-like activity on average 45% of units per recording are phase locked,
     against 5% in recordings without seizure-like activity; within S1 and S2, only 5% and 4% are
@@ -460,7 +508,10 @@ claims:
   depends_on:
   - table2-phase-locking-counts
   criterion: The Results print p = 0.01 and the Figure 2b legend p < 0.01; both are accepted. Units
-    are those significant in the seizure windows (table2-phase-locking-counts). Groups per the
+    are those significant in the seizure windows (table2-phase-locking-counts), as the code's
+    heatmap reads the seizure-window results (..._theta_spike_locking_s.pkl); the Results and the
+    Figure 2b legend say "across the entire recording", so units significant over the whole KA
+    recording are run as a variant. Groups per the
     Methods (Methodology for heatmap of phase locked angles); the polar mode of the significant
     units' mean angles, each unit's absolute angular difference from it, and a split into two
     groups. The Methods do not say how the split is made and the code sets position thresholds by
@@ -657,7 +708,33 @@ claims:
     granule cells produced seizure-like bursting events.
   data: elsewhere
   where: GitHub braingeneers/human_hippocampus at commit 0f83f70, figures/supplement/simulation
-  criterion: Run figures/supplement/simulation/simulation.py at its four connectivity levels with
-    1000 granule cells (Extended Data Fig. 12). Bursting measured by the population rate as in
-    fig1g-ka-synchronized-bursting. Reproduced when the number of synchronized bursts increases
-    with connectivity across the four levels and is near zero at the lowest.
+  criterion: Run figures/supplement/simulation/simulation.py as committed. Its first part simulates
+    the four panels of Extended Data Fig. 12 (sprouting fractions 0, 5, 10 and 30% of 1000 granule
+    cells, seed 1234, 11 s, the last 3 s shown); its second part sweeps 11 fractions from 0 to 30%
+    with 25 seeds of 30 s and computes the code's measures, the population rate, the burst rate
+    (the code's np.mean(sd.binned() > 6000) / 0.04, over 40 ms bins) and the
+    burstiness index. Reproduced when the mean burst rate and burstiness index rise with the
+    sprouting fraction across the sweep and the four panels show more synchronized bursting at
+    higher fractions.
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - table1-unit-counts; added the eight recording durations of Extended Data Table 1 as expected values, as the statement and criterion use them and expected lacked them.
+  - fig1g-ka-synchronized-bursting; expected 7 with tolerance 1.8 gave 5.2 to 8.8, not the stated 5.4 to 8.8 (6 to 8 widened by 10% of each bound); set to 7.1 with tolerance 1.7.
+  - fig1g-ka-synchronized-bursting; the quoted sentence cites Figure 1h (the zoom on the initiation of bursting), so the count of bursts in the first epoch is added as a reading beside the median over the first 150 s.
+  - methods-burst-counts; added the next sentence of the same paragraph ("For both slices, bursts occurred for roughly 350 seconds") to the quote, statement and expected (S2 bursting duration 350 s), and adjusted the criterion to six values.
+  - ext3-onset-spectral-signature; the Methods' ">2x baseline LFP" names the LFP amplitude without a band, and the criterion applied it to theta alone; theta and 0.1 to 100 Hz amplitude are now both named as readings.
+  - fig1j-theta-propagation-stages; the statement's initiation wave "across the length of the granule cell layer" was not tested; added that the initiation direction lies within 45 degrees of the layer's long axis, and named the paper's conflicting wording for the seizure wave ("orthogonal" yet "along the granule cell layer") and how it is read.
+  - methods-rolling-wave-counts; expected 3 with tolerance 1.4 gave 1.6 to 4.4, not the stated 1.8 to 4.4; set to 3.1 with tolerance 1.3. Added the S1 fraction (rolling wave in every burst investigated, 1 with tolerance 0.1), which the statement and quote give.
+  - table2-phase-locking-counts; expected tolerances of 0.1 to 0.8 units contradicted the criterion's rule of rounding up to one unit; set to 1.
+  - fig2b-phase-cluster-kuiper; the Results and Figure 2b legend say the units are those phase locked "across the entire recording", while the code's heatmap reads the seizure-window results; the whole-recording units are added as a variant.
+  - ext12-simulation-recurrence; the criterion used burst readings invented for fig1g and required near-zero bursting at the lowest level, which the paper does not state. Replaced with the simulation code's own levels (0, 5, 10, 30% sprouting) and measures (burst rate, burstiness index; figures/supplement/simulation/simulation.py at 0f83f70) and the legend's claim that bursting increases with connectivity.
+  - Open; bursts, superbursts, stages and rolling waves have no definition in the paper or its code, so fig1g-ka-synchronized-bursting, methods-burst-counts, methods-onset-latency, s4-ka-no-epileptiform, ext3-onset-spectral-signature and the stage windows of fig1j and ext4 rest on readings named in the file.
+  - Open; s4-ka-no-epileptiform is a claim of absence whose test (synchronized bursting and LFP activity across channels over ten seconds) the paper states only in words; the burst readings stand in for it, and the LFP part is not tested.
+  - Open; ext4b-theta-delay takes the Methods' lag window of -40 to 40 ms from the clustering method, which puts the expected 40 ms lag at the edge of the window; the paper does not say how the Figure 4b delay was measured.
+  - Open; the simulation code's README attributes it to Andrews, Voitiuk et al. (ref 8); this paper cites the same directory for Extended Data Fig. 12, so the claim keeps it.
+  - Open; Extended Data Fig. 7 (theta propagations align with sub-burst peaks in seizure-stage bursts) and Extended Data Fig. 8e (units phase locked during seizures are mostly inactive outside them) have no claim; both are supporting panels and were left out.
+  - Checked; the counts of Extended Data Tables 1 to 3 and Extended Data Fig. 10 match the supplement PDF; the cited code (seizure windows, Kuiper group thresholds, S1 sub-burst times, simulation levels) matches the repository at 0f83f70.
