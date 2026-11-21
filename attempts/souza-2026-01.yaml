@@ -25,6 +25,14 @@ inputs:
     and its structure list, as packaged by BrainGlobe (allen_mouse_25um_v1.2.tar.gz, SHA-256 696276744cc6552e3be87b236498aebeb2de79be3b66ebffc1a620ee75a9c0a9,
     checked in the notebook), used for cortical layers and the CCF-derived area of the five layer claims.
   source: https://gin.g-node.org/brainglobe/atlases at commit 78272d68aacb9d0b2a7d00806d6305544924df4b
+- what: The same CCFv3 2017 annotation volume at 25 um from the Allen Institute's download (annotation_25.nrrd,
+    Last-Modified 2025-02-19, SHA-256 c620cbcc562183e4dcd40250d440130501781f74b41de35b1c1bdabace290c42) and
+    the Allen structure ontology (structure_graph_download/1.json, SHA-256 b5f0d024d1df09ee18aef15093f55240f4a70b3924ee9689add612dadff80386),
+    both checked in the notebook. Used in the revision's runs because GIN answered 403 Forbidden to the runner;
+    the layer counts are identical to those of the first run, made with BrainGlobe's file. The paths carry
+    no version, so the files are pinned by their hashes only.
+  source: https://download.alleninstitute.org/informatics-archive/current-release/mouse_ccf/annotation/ccf_2017/annotation_25.nrrd
+    and http://api.brain-map.org/api/v2/structure_graph_download/1.json
 outcomes:
 - claim: data-sessions-units
   outcome: partially_reproduced
@@ -39,8 +47,10 @@ outcomes:
     the 54 Sst-Cre and Vip-Cre mice, with units of quality good and presence ratio at least 0.95, give
     104 sessions, 54 mice and 54,045 units (differences of 1, 0 and 6), within 10% but not exact; the
     other selections tried (quality good alone 66,388, Allen thresholds 30,705, all units 76,151 in those
-    sessions) are further off. The files give no reason to leave out one of the 104 sessions. The selection
-    is used by every other claim. Open for the paper's authors, asked as a methods_unavailable finding.
+    sessions) are further off. The files give no reason to leave out one of the 104 sessions; the smallest
+    holds 262 units, so leaving out one session cannot give 54,039 units, and the one with the fewest hits
+    (3) holds 903 units. The selection is used by every other claim. Open for the paper's authors, asked
+    as a methods_unavailable finding.
   deviations:
   - The selection that fits (Sst-Cre and Vip-Cre mice, quality good, presence ratio at least 0.95) is
     not one of the criterion's two readings; it was found by comparing the counts of several selections
@@ -82,7 +92,9 @@ outcomes:
     s (range 0.0464 to 0.1770 s, inside the widened range) are within tolerance, and 4.20% of hits depart
     from their session median by more than 250 ms, outside 3.42 to 4.18%. With the change presentation's
     start time (the displayed change), 0.4065 s and 4.31%, outside tolerance. The 15,592 hits are 738
-    fewer than the paper's 16,330.
+    fewer than the paper's 16,330; they are every hit trial of the 104 sessions (none auto-rewarded, without
+    a reward time or change presentation, or with its window outside the block), and at the mean of 149.9
+    per session 103 sessions would hold 15,442.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   - Which time stands for the trial's image change is not given; the start of the change presentation
@@ -121,18 +133,21 @@ outcomes:
     (cohort 31.0% of it), 37,892 under (b), 45,785 under (c). All counts are within tolerance under reading
     (a) except the 286 discordant units (239, tolerance 24); per the criterion this is partially reproduced.
     43,025 units are at the minimum p of 1/101; the BH threshold per area is 0.0396. The seed sensitivity
-    of the null was not computed under the four further seeds (it needs the spike times again); the 100
-    against 1,000 permutation check on 100 units changes 4 of 80 calls.
+    of the null was not computed under the four further seeds (it needs the spike times again). With 1,000
+    permutations on 300 units of three sessions, 229 units have p at most 0.05 against 225 with 100 (224
+    under both). Reading (1b) of the null, over the whole recording, run on 12 of the 104 sessions (6,553
+    units, BH per area over them); cohort 1,268 against 1,272 under (1a), 1,266 in both, 19 discordant under
+    each, suppressed 66.6% against 66.5%, so the outcome is the same under both readings.
   deviations:
   - The analysis uses the 104 sessions of the Sst-Cre and Vip-Cre mice and their units of quality good
     with presence ratio at least 0.95 in the six areas, the selection that fits the paper's counts (claim
     data-sessions-units); the paper does not say how its sessions and units were chosen, and its 103rd
     session could not be identified.
   - The ISI-shuffle null uses 100 permutations per unit, not the paper's 1,000 (M&M 2.3), as 1,000 for
-    54,045 units is about nine CPU hours, over the notebook limit; on 100 units of session 0, 76 units
-    have p at most 0.05 with 100 permutations and 80 with 1,000 (Spearman of the p values 0.932). The
-    null rebuilds the train over the active block from its first spike (reading 1a of the criterion);
-    the whole-recording reading (1b) was not run.
+    54,045 units is about nine CPU hours, over the notebook limit; on 300 units of three sessions, 225
+    units have p at most 0.05 with 100 permutations and 229 with 1,000 (Spearman of the p values 0.913).
+    The null rebuilds the train over the active block from its first spike (reading 1a of the criterion);
+    the whole-recording reading (1b) takes over an hour for all sessions and was run on 12 of the 104.
   - Responsiveness uses the Wilcoxon signed-rank test with the normal approximation and tie correction
     for every trial count (scipy uses an exact test for 50 trials or fewer without ties or zeros).
   - Miss pseudo-reward time is the change plus the session median latency (reading 3, M&M 2.4). The trial's
@@ -147,15 +162,17 @@ outcomes:
   notes: Per area the cohort's median r_split is 0.853 (VISrl) to 0.902 (VISp) against a pooled null median
     of 0.074 to 0.092 and a 95th percentile of 0.380 to 0.409 (null maximum 0.770 to 0.849); every cohort
     unit's r_split exceeds the median of its own null in every area (minimum r_split 0.255). Both readings
-    hold. The pooled null has 100 values per unit.
+    hold. The pooled null has 100 values per unit. Reading (b) holds by construction, since a cohort unit
+    passed the gate at p_split at most 0.0396, so at most 3 of its 100 null values reach its r_split; reading
+    (a) carries the claim.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   - The paper gives no measure of well above; both readings in the criterion are run and agree.
   - The ISI-shuffle null uses 100 permutations per unit, not the paper's 1,000 (M&M 2.3), as 1,000 for
-    54,045 units is about nine CPU hours, over the notebook limit; on 100 units of session 0, 76 units
-    have p at most 0.05 with 100 permutations and 80 with 1,000 (Spearman of the p values 0.932). The
-    null rebuilds the train over the active block from its first spike (reading 1a of the criterion);
-    the whole-recording reading (1b) was not run.
+    54,045 units is about nine CPU hours, over the notebook limit; on 300 units of three sessions, 225
+    units have p at most 0.05 with 100 permutations and 229 with 1,000 (Spearman of the p values 0.913).
+    The null rebuilds the train over the active block from its first spike (reading 1a of the criterion);
+    the whole-recording reading (1b) takes over an hour for all sessions and was run on 12 of the 104.
   assumed: true
 - claim: fig1c-example-cells
   outcome: reproduced
@@ -231,7 +248,13 @@ outcomes:
     Reading (a), duration on the stored 30 kHz mean waveform (60 distinct values, 1st to 99th percentile
     0.200 to 1.433 ms), components at 0.534 and 0.616 ms under the claim's seed and the seed plus 1000,
     and 0.57 and 1.425 ms under the other three seeds; 1,292 ambiguous, 245 in the cohort, 6,510 with
-    the wide band. The suppressed fractions of the statement are judged in claim narrow-more-suppressed.
+    the wide band. The claim's seed gives the higher log-likelihood (24,671 against 19,781), so the degenerate
+    split is the better fit, not a failed one. The waveform rows are laid out as assumed; every unit has
+    384 rows and in 230 of 300 units checked the largest-amplitude row is the peak channel's (299 within
+    4 channels). Upsampled to 200 points (a variant), 97.5% of durations are within 0.02 ms of the stored
+    ones, but 1,263 units are more than 0.1 ms away (median 1.421 against 0.371 ms) and the mixture again
+    puts a component on that tail (0.571 and 1.491 ms, 34 ambiguous). The suppressed fractions of the statement
+    are judged in claim narrow-more-suppressed.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   - Reading (a) measures trough to the following maximum on the peak channel's mean waveform at its stored
@@ -373,11 +396,17 @@ outcomes:
     of all units (VISam 96.5%, VISrl 97.4%) and 95.8 to 98.1% of the cohort (VISam 95.8%, VISrl 97.5%).
     1,508 units have a CCF coordinate of 0 or below and no layer. The CCF-derived area equals the unit-table
     label for 66.0% of tested units, within tolerance; disagreements are mostly VISli (4,513) and SSp-bfd
-    (3,735). The paper's 48.0% in VISrl is not approached under either reading.
+    (3,735). The paper's 48.0% in VISrl is not approached under either reading. A stricter rule outside
+    the criterion, a layer only where the CCF structure is a visual area, gives 87.0% of tested units, 84.3%
+    of the cohort, 96.5% in VISam and 45.5% in VISrl, all within tolerance, which suggests the paper used
+    such a rule; its Methods do not state it, so it is asked of the authors (methods_unavailable finding)
+    and the outcome stays on the criterion's rule. No unit falls in a CCF structure whose acronym ends in
+    a layer suffix without being laminar (such as CA1), so the guard added for that changes nothing.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
-  - The annotation volume is BrainGlobe's allen_mouse_25um v1.2 (CCFv3, Wang et al. 2020); the paper names
-    no release. Unit coordinates are the electrodes table's x, y, z of the peak channel, rounded to the
+  - The annotation volume is the CCFv3 2017 annotation at 25 um (Wang et al. 2020), as BrainGlobe's allen_mouse_25um
+    v1.2 packages it or, when GIN refuses the request, from the Allen Institute's download; both give identical
+    layers here. The paper names no release. Unit coordinates are the electrodes table's x, y, z of the peak channel, rounded to the
     nearest 25 um voxel.
   assumed: true
 - claim: layer4-suppression
@@ -391,7 +420,8 @@ outcomes:
   notes: Reading (a), other layers pooled, at least five units in each; 86 sessions, layer 4 higher in
     71 (83%), median +0.118 (IQR +0.037 to +0.188), Wilcoxon p = 8.1e-10. Reading (b) 67 of 86, +0.115,
     p = 3.5e-08. Suppressed fraction by layer 0.788 in layer 4 (1,909 units) against 0.600 to 0.699 in
-    layers 2/3, 5 and 6a.
+    layers 2/3, 5 and 6a. With layers only in CCF visual areas (a variant), 79 sessions, 65 higher, median
+    +0.089, p = 2.3e-08, outside tolerance on the median.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   assumed: true
@@ -417,7 +447,7 @@ outcomes:
     the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
   assumed: true
 - claim: layer4-controls
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_souza_2026.ipynb
   output: claim:layer4-controls
   measured:
@@ -432,13 +462,17 @@ outcomes:
   - 80
   notes: Layer 4 is 19.9% of tested units with a layer and 18.1% of the cohort's; split-half detection
     84.0% in layer 4 and 85.8% in the others over all units with a layer (100% under reading b, which
-    holds only split-half positive units). Rate matched (octiles of log10 rate, 20 draws), 85 sessions,
+    holds only split-half positive units, so the revision uses fig1e readings b and c; 91.1% against 92.5%,
+    and 83.9% against 85.8%, all within tolerance). Rate matched (octiles of log10 rate, 20 draws), 85 sessions,
     median excess +0.125 against +0.122 unmatched in the same sessions (means +0.115 and +0.115), p =
     1.1e-08. Units at least 50 um from a boundary; +0.142, higher in 67 of 80 sessions, p = 3.2e-09; at
-    least 75 um, +0.170 in 46 of 50. Every excess is positive and the 67 is within tolerance; the excesses
-    (+0.125, +0.122, +0.142) and the 80 sessions are outside tolerance. The unmatched value does not rise
-    above +0.116 as the paper's +0.148 does, under either of the criterion's readings (median +0.122,
-    mean +0.115).
+    least 75 um, +0.170 in 46 of 50. Every excess is positive; the excesses (+0.125, +0.122, +0.142) are
+    outside tolerance, and the 50 um count, 63 of 72 in the paper, is not met; 67 is within tolerance of
+    63 but the 80 sessions are outside 72 plus or minus 7 (reading b of the comparison gives 63 of 80).
+    The criterion's partial clause needs the 50 um count, so the claim is not reproduced (changed from
+    partially reproduced after verification round 1). The unmatched value does not rise above +0.116 as
+    the paper's +0.148 does, under either of the criterion's readings (median +0.122, mean +0.115). With
+    layers only in CCF visual areas (a variant), at least 50 um, +0.113 in 55 of 65 sessions.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   - Rate matching uses rate r1 (spike count over the span from first to last spike) and pools all non-layer-4
@@ -521,7 +555,9 @@ outcomes:
     RW+ 0.354, all within tolerance, in the paper's order. Concatenated series (b); 0.523, 0.457 and 0.354.
     Null means at most 0.002 (circular) and 0.027 (block); z against the circular null 13.8 to 27.5 (62
     of 66 pairs at least 15), against the block null 18.9 to 34.5. Largest p_FDR of the concatenated series
-    1.4e-113. The nulls use the claim's seed only.
+    1.4e-113. The nulls use the claim's seed only. RW- is the mean CV(t) of 20 count-matched draws (fig2c
+    reading a); with a single draw (a variant) the means are 0.300 within RW-, 0.318 across and 0.354 within
+    RW+, so the order depends on that averaging.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   assumed: true
@@ -534,7 +570,8 @@ outcomes:
   - 83.0
   notes: Over 100 sessions with at least two areas with both groups, the median excess of the RW- block
     over the RW+ block is +0.158 (outside 0.189 to 0.231), positive in 83.0%, Wilcoxon p = 1.76e-12 (not
-    below 1e-13).
+    below 1e-13). With a single RW- draw in place of the mean of 20 (a variant) the median excess is -0.050,
+    positive in 43.0%, p = 0.036, so the excess comes from averaging the RW- draws.
   deviations:
   - Sessions and units as claim data-sessions-units finds them (an assumption).
   assumed: true
@@ -652,7 +689,9 @@ outcomes:
   - 4.5
   - 152.5
   - -0.671
-  notes: 516 false-alarm trials (all with a sham change time) in 102 sessions; median 4.5 per session
+  notes: 516 false-alarm trials in 102 sessions, every one with a sham-change presentation, so all are timed
+    on the clock of the hit trials' change presentations (the fallback to change_time_no_display_delay is
+    removed and was never used); median 4.5 per session
     over the 104 (5.0 over those with any), outside 3.6 to 4.4; median 152.5 hits per session. Cohort
     units differing after BH per area; first lick (a) 2.2 to 7.5% with the responsiveness filter and 2.0
     to 7.3% without; sham change plus median latency (b) 3.8 to 9.9% and 2.9 to 9.7%; expected 14.6 to
@@ -727,7 +766,9 @@ findings:
     mean waveform of the peak channel agree only at r = 0.66 (median difference -0.004 ms). The stored
     mean waveforms are sampled at 30 kHz (82 samples), so their durations take 60 distinct values and
     a two-component mixture on them does not separate narrow from broad units, while the stored waveform_duration
-    (151 values) does; the files do not say how waveform_duration was computed.
+    (151 values) does; the files do not say how waveform_duration was computed. Upsampled to 200 points,
+    the measured durations agree with the stored ones within 0.02 ms for 97.5% of units, but 1,263 units
+    differ by more than 0.1 ms (median 1.421 against 0.371 ms).
 - kind: other
   about: data
   severity: none
@@ -736,3 +777,284 @@ findings:
     the nearest lick by 1.3 to 53.5 ms (median 9.78 ms), so rewards and licks share a clock; and the summed
     spiking of each session's units rises after the image changes of the stimulus table (post to pre ratio
     1.19 to 4.12, against 0.52 to 1.29 with the times shifted 0.25 s), so spikes and stimuli share a clock.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. Were cortical layers assigned only where the CCF structure
+    at the unit's coordinates is a visual area? Assigning a layer in any laminar CCF structure, as Materials
+    and methods 2.5 reads, gives 97.2% of tested units and 97.4% in VISrl; keeping only visual-area structures
+    gives 87.0%, 84.3% of the cohort, 96.5% in VISam and 45.5% in VISrl, close to the paper's 87.5%, 84.9%,
+    96.6% and 48.0%.
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed,
+    the helper module and the claims file, with the paper. The verifier checked the archive's session and
+    subject counts and tested the helpers on synthetic data. It gave its own outcome for all 38 claims (17
+    reproduced, 10 partially reproduced, 11 not reproduced) and disagreed with five. It reported no place
+    where the claims file misreads the paper, so no question was added for a reader. Report in transcripts/souza-2026/verifier-1-report.md.
+  results:
+  - claim: data-sessions-units
+    agrees: false
+    outcome: not_reproduced
+    reason: Under the criterion's readings (a) and (b), cell 5 gives 153 sessions / 81 mice / 110,563 or 45,354 units,
+      more than 10% off all three counts. The archive API agrees; 153 session files, 81 subjects. The notebook's own
+      selection (Sst/Vip mice, good, presence ratio at least 0.95) gives 104 / 54 / 54,045; close, but not exact and
+      not a reading the criterion lists.
+    response: Outcome kept, with the disagreement recorded. The criterion says the paper does not say how the sessions
+      were chosen and that the session set every other claim uses is the one this claim finds, recorded as an assumption;
+      protocol step 1.6 allows adopting the best-supported choice when the listed readings fail, and the verifier
+      found the assumption reasonable (problem 5). Under it the counts are within 10%, the partial clause. The notebook
+      now prints a per-session table with dates, units, areas and hits, and shows that no single session can account
+      for both differences (the smallest holds 262 units).
+  - claim: blocks-no-reward-in-replay
+    agrees: true
+    outcome: reproduced
+    reason: Cell 13, in all 104 sessions; block 0 is active, block 5 passive, same image sequence, every reward in
+      block 0, 0 licks and 0 rewards in block 5.
+    response: No change.
+  - claim: reward-interval-min
+    agrees: true
+    outcome: reproduced
+    reason: Cell 15; minimum 6.972 s against 6.96 plus or minus 0.696.
+    response: No change.
+  - claim: latency-change-to-reward
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 17. Using change-presentation times, median 0.4065 s (outside 0.467 plus or minus 0.047) and 4.31%
+      of hits beyond 250 ms (outside 3.8 plus or minus 0.38). Using change_time_no_display_delay, median 0.451 within,
+      but 4.20% still outside. Hits 15,592 (within tolerance) and SD 0.111 (within) under both.
+    response: Outcome kept, with the disagreement recorded. The criterion has no partial clause, and the protocol's
+      general definition (holds only in part) applies; under one reading three of the four values are within tolerance
+      and the fourth is 0.02 points outside. The notebook now accounts for the hits as asked; all 15,592 hit trials
+      are used, none is excluded by a filter, and 103 sessions at this rate would hold 15,442.
+  - claim: lick-reward-coincide
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 19; median 9.78 ms and 95th percentile 17.32 ms match. The criterion also needs every delay at most
+      22 ms; 5 of 15,592 exceed it (max 53.5 ms).
+    response: No change.
+  - claim: fig1e-cohort-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 21; cohort 10,822, testable (a) 34,959, suppressed 7,378, enhanced 3,444, 68.2% suppressed, 11,108
+      significant in both families, all within tolerance. Discordant signs 286 against 239 plus or minus 24 is outside.
+      Problems 3 and 4; only one reading of the ISI null was run, and the 100 against 1,000 permutation check covered
+      100 units of one session.
+    response: Reading (1b) of the null is now run on 12 of the 104 sessions (all 104 take over an hour; a first revision
+      run stopped at the 60-minute cell limit); it changes the cohort there by 4 of 1,272 units and leaves the discordant
+      count the same. The 1,000-permutation check now covers 300 units of three sessions (225 against 229 pass). Outcome
+      unchanged.
+  - claim: fig1d-split-half-above-null
+    agrees: true
+    outcome: reproduced
+    reason: Cell 25; both readings hold in all six areas. Reading (b) holds by construction (problem 6).
+    response: The notebook and notes now say that reading (b) holds by construction and that reading (a) carries the
+      claim.
+  - claim: fig1c-example-cells
+    agrees: true
+    outcome: reproduced
+    reason: Cell 27; 8 enhanced VISam units with r at least 0.99; 32 suppressed VISrl units with r at least 0.98.
+    response: No change.
+  - claim: fig1e-suppressed-fraction-by-area
+    agrees: true
+    outcome: reproduced
+    reason: Cell 29; all six fractions within tolerance (87.1 to 53.6%); VISp highest, VISam lowest; VISp n = 2,421
+      and 2,108 suppressed, VISam n = 1,637, all within tolerance.
+    response: No change.
+  - claim: fig1l-session-gradient
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 31; VISp 0.911 is within tolerance and Kruskal-Wallis p = 3.8e-17. VISam 0.575 is just above the
+      0.572 bound.
+    response: No change.
+  - claim: latency-jitter-control
+    agrees: true
+    outcome: reproduced
+    reason: Cell 33; 99.14% (range 98.97 to 99.23) against 99.2 plus or minus 0.8; Spearman 0.9959 against 0.996 plus
+      or minus 0.004.
+    response: No change.
+  - claim: waveform-ambiguous-band
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 35. Duration (a); 1,292 and 6,510 ambiguous against 849 and 1,280, and the fit is degenerate (problem
+      1). Duration (b); 405 and 110 against 849 and 227. Only one count (1,205 against 1,280) is in tolerance under
+      any reading. Problem 2; the waveform channel is picked by an unchecked row layout, which may explain problem
+      1.
+    response: The row layout is now checked; every unit has 384 rows, and the largest-amplitude row is the peak channel's
+      in 230 of 300 units (299 within 4 channels), so it does not explain problem 1. The notebook prints a histogram
+      of the durations and each seed's log-likelihood (the claim's seed gives the better fit, 24,671 against 19,781),
+      and a variant on waveforms upsampled to 200 points, which is also split on the long-duration tail. The class
+      labels default to reading (b) in the code, as the outcomes rest on it. Outcome unchanged.
+  - claim: fig1jk-narrow-fraction-by-area
+    agrees: true
+    outcome: reproduced
+    reason: Cell 38, duration (b), whole cohort; VISp 25.0%, VISrl 27.1%; the other four areas at 15.2 to 20.1%, inside
+      12.6 to 20.9%.
+    response: No change.
+  - claim: fig1h-median-isi-narrow-broad
+    agrees: true
+    outcome: reproduced
+    reason: Cell 40, duration (b), ambiguous excluded, whole recording; 42.2 / 88.0 ms with n = 2,245 / 8,467, all
+      within tolerance.
+    response: No change.
+  - claim: fig1gi-waveform-separation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 42; narrow units have lower median half-width and lower median ISI under both durations.
+    response: No change.
+  - claim: narrow-more-suppressed
+    agrees: true
+    outcome: reproduced
+    reason: Cell 44, duration (b); 0.815 / 0.647, and 0.647 with the 0.3 to 0.7 band, all within tolerance. Duration
+      (a) also passes.
+    response: No change.
+  - claim: narrow-more-suppressed-within-layer
+    agrees: true
+    outcome: reproduced
+    reason: Cell 62, duration (b), reading (a); narrow higher in 89.0% of 82 sessions, p = 1.6e-11.
+    response: No change.
+  - claim: fig1mn-modulation-index-negative
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 46; all per-area medians are negative and 75.3% have M < 0 (within tolerance). The median M of -0.174
+      is outside -0.1323 plus or minus 0.013, smoothed or not.
+    response: No change.
+  - claim: fig1m-narrow-stronger-m
+    agrees: true
+    outcome: reproduced
+    reason: Cell 48; narrow median M is below broad under every reading.
+    response: No change.
+  - claim: m-baseline-sensitivity
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 50, baseline -1.5 to -1.0 s; median -0.041 (outside -0.0351 plus or minus 0.0035); enhanced units
+      with M < 0 2.4% (outside 1.9 plus or minus 0.19); VISpm median stays negative (-0.002). VISp is the most negative
+      area under all four baselines.
+    response: Outcome kept, with the disagreement recorded. The criterion has no partial clause; under the protocol's
+      general definition the claim holds in part. Two of the four values are within tolerance, the median rises from
+      -0.174 to -0.041 and the enhanced share with M < 0 falls from 42.7% to 2.4% as the paper describes, VISal and
+      VISam change sign, and VISp is the most negative under every baseline; VISpm does not change sign.
+  - claim: layer-assignment-coverage
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 54; layers assigned to 97.2% of units / 97.3% of the cohort (against 87.5 / 84.9%) and to 97.4% in
+      VISrl (against 48.0%). Only area agreement (66.0% against 63.5%) is within tolerance. Problems 8 and 9; split_layer
+      maps CA1 to layer 1, and layers are assigned to any CCF structure with a laminar suffix; the paper's 48% coverage
+      in VISrl suggests a stricter rule.
+    response: A structure now carries a layer only when its name names one; no analysed unit lies in such a structure,
+      so nothing changes. The stricter rule the verifier asked for (layers only in CCF visual areas) is shown as a
+      variant; it gives 87.0%, 84.3%, 96.5% in VISam and 45.5% in VISrl, all within tolerance. It is not in the Methods
+      or the criterion, so the outcome stays on the criterion's rule and the rule is asked of the authors (new methods_unavailable
+      finding). The atlas now falls back to the Allen Institute's files when GIN refuses the request, with identical
+      layers.
+  - claim: layer4-suppression
+    agrees: true
+    outcome: reproduced
+    reason: Cell 56, reading (a); 86 sessions, 71 with layer 4 higher, median +0.118, p = 8e-10.
+    response: No change; the variant with layers only in visual areas is printed (median +0.089).
+  - claim: layer4-within-waveform
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 58; under every reading, at least one excess and the 6a narrow percentage are outside tolerance.
+      Duration (a) narrow p = 1e-5, which misses p < 1e-6.
+    response: Outcome kept, with the disagreement recorded. The criterion has no partial clause; under the protocol's
+      general definition the effect is present but weaker; with the stored duration both excesses are positive at
+      p < 1e-6 (+0.102, p = 6.1e-07; +0.078, p = 5.7e-07), and the layer 4 and layer 2/3 narrow percentages are within
+      tolerance.
+  - claim: layer4-controls
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 60; rate-matched +0.125 (against 0.178), unmatched +0.122 (against 0.148), at least 50 um +0.142
+      (against 0.176), and 80 sessions (against 72) are all outside tolerance. The partial clause's 50 um count therefore
+      fails as well. Problem 7; denominator (b) uses test_a, which already requires a split-half positive unit, so
+      the detection rate is 100% / 100%.
+    response: Outcome changed to not reproduced, as the verifier gives it; the paper's 50 um count is 63 of 72 sessions,
+      and its 80 sessions are outside tolerance. Denominator (b) now uses fig1e's readings (b) and (c); 91.1% against
+      92.5%, and 83.9% against 85.8%.
+  - claim: fig2c-cv-lower
+    agrees: true
+    outcome: reproduced
+    reason: Cell 66, rate r1, at least 5 RW+ units; RW+ lower in all six areas at p < 1e-7; median CV 0.596 / 0.818;
+      per-area differences -0.139 to -0.247, all inside -0.126 to -0.253.
+    response: No change.
+  - claim: cohort-faster-firing
+    agrees: true
+    outcome: reproduced
+    reason: Cell 68, with the 0.2 Hz filter; 4.75 / 2.83 Hz, per-area ratios 1.49 to 1.89.
+    response: No change.
+  - claim: cv-rate-matched
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 70; the pooled difference shrinks from -0.194 to -0.048 (outside -0.06 plus or minus 0.006). p <
+      0.01 holds only in VISl, VISal and VISam; VISp (p = 0.025) and VISpm (p = 0.12) fail.
+    response: No change.
+  - claim: cv-unmatched-reverses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 72; the pooled median difference is positive (+0.041), but RW+ is the smaller group in only 555 of
+      576 session-area pairs, not all.
+    response: No change.
+  - claim: fig2d-cv-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 74, reading (a); 0.523 / 0.416 / 0.354, in the paper's order and within tolerance. Only 62 of 66
+      pairs reach z at least 15 against the circular null (min 13.8). Problem 11; the averaged RW- series is less
+      noisy than RW+, which may inflate the RW- block correlations.
+    response: Outcome kept. A variant with a single RW- draw is now shown; within RW- falls to 0.300, below RW+ (0.354),
+      so the order depends on averaging the draws. The notes and the summary say so.
+  - claim: cv-correlation-block-excess
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 76; median excess 0.158 (outside 0.21 plus or minus 0.021); 83% of sessions (within tolerance); p
+      = 1.8e-12, which misses p < 1e-13.
+    response: Outcome kept. With a single RW- draw (variant, problem 11) the median excess is -0.050, positive in
+      43% of sessions; the notes and summary say the excess comes from averaging the RW- draws.
+  - claim: fig2f-pre-post-cv
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 78; RW- rises in all 12 cells, but RW+ is significant in all 12 cells; only 7 of 12 match the paper's
+      pattern, below the 8 the partial clause needs.
+    response: No change.
+  - claim: fig3a-archetypes
+    agrees: true
+    outcome: reproduced
+    reason: Cell 81, peaks taken as max absolute value; roles fit under both initialisations (-445, -285, -185; -35;
+      1385 ms). Matrix is 10,822 by 200.
+    response: No change.
+  - claim: fig3b-mixtures
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 83; hard-assignment variance explained 0.53 to 0.55 against 0.36; the mixture-to-hard ratio is 1.3
+      to 1.4, below the 1.5 the partial clause needs; dominated units 0.89 to 1.87% against 1.0 plus or minus 0.1.
+    response: No change.
+  - claim: fig3c-area-overlap
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 85; eta squared 0.011 to 0.021 against 0.004, above the 0.01 the partial clause allows.
+    response: No change.
+  - claim: fig3d-anticipatory-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Cell 87, reading (a); VISp 91.4%, VISl 78.6%, the other four areas 68.8 to 72.8%.
+    response: No change.
+  - claim: anticipatory-direction-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 89, reading (a); agreement, both anticipatory percentages, the gradient (0.227) and the standardised
+      gradient (0.066 / 0.069) are within tolerance. phi = 0.622 is just above the 0.616 bound.
+    response: No change.
+  - claim: hits-vs-false-alarms
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 91; 2 to 10% of the cohort significant against 14.6 to 22.2%; VISp median SI -0.67 / -0.77 against
+      -0.56; median false alarms per session 4.5 (outside 4 plus or minus 0.4). Problem 10; false-alarm change times
+      can mix two clocks, and the number of fallbacks is not printed.
+    response: The fallback to change_time_no_display_delay is removed and the count printed; it is 0, every false-alarm
+      trial has a sham-change presentation, so the numbers are unchanged. Outcome unchanged.
+  - claim: hits-vs-lick-bouts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 93, 500 ms gap, baseline (b); 438 bouts per session and every area at 71 to 88%, within range. VISp
+      median SI -0.13 against -0.50 is outside under every reading.
+    response: No change.

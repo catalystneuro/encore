@@ -60,6 +60,7 @@ def read_meta(asset_id):
     out["genotype"] = _s(f["general/subject/genotype"][()])
     out["session_type"] = _s(f["session_description"][()])
     out["identifier"] = _s(f["identifier"][()])
+    out["session_start_time"] = _s(f["session_start_time"][()])[:10]
     md = f["general/metadata"].attrs
     out["behavior_session_id"] = int(md["behavior_session_id"])
     # units
@@ -207,8 +208,9 @@ def make_lut(ev, nb, step=BIN):
 
 
 def isi_null(st_block, ev, nb, odd, nperm, rng, chunk=2_000_000, lut=None):
-    """r_split of ISI-shuffled spike trains (M&M 2.3): ISIs permuted, the train rebuilt from the
-    first spike of the active block (reading (a) of the claim's criterion, detail 1)."""
+    """r_split of ISI-shuffled spike trains (M&M 2.3): ISIs permuted, the train rebuilt from its
+    first spike. Given the active block's spikes this is reading (1a) of claim fig1e-cohort-size's
+    criterion; given the whole recording's spikes, reading (1b)."""
     n = len(st_block)
     out = np.full(nperm, np.nan)
     if n < 3:
@@ -316,9 +318,16 @@ def session_events(meta):
     miss = tr[tr.miss & np.isfinite(tr.change)]
     ev["miss_change"] = miss.change.values
     fa = tr[tr.false_alarm]
-    fa_t = np.where(np.isfinite(fa.sham), fa.sham, fa.change_time_no_display_delay)
-    ev["fa_change"] = fa_t[np.isfinite(fa_t)]
+    # sham change of each false-alarm trial: the start of its sham-change presentation, the clock of
+    # the hit trials' change presentations. Trials without one are counted and left out, so that no
+    # time comes from change_time_no_display_delay, a clock about 44 ms earlier (verifier round 1).
+    ev["fa_change"] = fa.sham.values[np.isfinite(fa.sham.values)]
     ev["n_fa_trials"] = int(len(fa))
+    ev["n_fa_no_sham"] = int((~np.isfinite(fa.sham.values)).sum())
+    ev["n_hit_all"] = int(tr.hit.sum())
+    ev["n_hit_auto"] = int((tr.hit & tr.auto_rewarded.astype(bool)).sum())
+    ev["n_hit_no_reward"] = int((tr.hit & ~np.isfinite(tr.reward_time)).sum())
+    ev["n_hit_no_change"] = int((tr.hit & ~np.isfinite(tr.change)).sum())
     ev["n_hit_trials"] = int(tr.hit.sum())
     licks = np.sort(meta["licks"])
     ev["licks"] = licks
@@ -417,9 +426,13 @@ def family_tests(X1, X2):
     return p1, p2, pm, si
 
 
+UPS = 200  # samples of the upsampled waveform (variant of reading (a), claim waveform-ambiguous-band)
+
+
 def process_session(meta, nperm, seed_null, seed_jit, n_jit=20):
     """Stream one session's selected units and reduce them. Returns (units DataFrame of scalar
     per-unit results, dict of arrays)."""
+    from scipy.signal import resample
     ev = session_events(meta)
     units = select_units(meta["units"]).copy()
     f = open_nwb(meta["asset_id"])
@@ -519,6 +532,9 @@ def process_session(meta, nperm, seed_null, seed_jit, n_jit=20):
             # waveform on the peak channel (M&M 2.5)
             w = W[int(r.wf_start) + int(r.probe_channel_number)]
             d["wf_dur"], d["wf_hw"] = wf_measures(w)
+            # variant: the waveform resampled to 200 points (Fourier), the upsampling of the Allen
+            # waveform-metrics code (ecephys_spike_sorting, mean_waveforms; an assumption)
+            d["wf_dur_up"], d["wf_hw_up"] = wf_measures(resample(w, UPS), dt=len(w) / UPS / 30000.0)
             res.append(d)
     f.close()
     df = pd.DataFrame(res)
@@ -554,6 +570,52 @@ def _job(args):
     raise err
 
 
+def _rec_job(args):
+    """p_split under reading (1b) of the null (ISIs shuffled over the whole recording, the train rebuilt
+    from the recording's first spike) for the selected units of one session, in the order of
+    process_session. Its generator is the claim seed + 200 + k (reading 1a uses the claim seed + k)."""
+    asset_id, k, nperm, seed_null = args
+    import warnings
+    warnings.filterwarnings("ignore")
+    for attempt in range(3):
+        try:
+            meta = read_meta(asset_id)
+            ev = session_events(meta)
+            units = select_units(meta["units"])
+            f = open_nwb(asset_id)
+            rew = ev["rew"]
+            nb = int(round((WIN[1] - WIN[0]) / BIN))
+            evs = rew + WIN[0]
+            odd = (np.arange(len(rew)) % 2).astype(np.int64)
+            lut = make_lut(evs, nb) if len(evs) else None
+            rng = np.random.default_rng(seed_null + 200 + k)
+            out = []
+            for r in units.itertuples():
+                st = f["units/spike_times"][int(r.st_start):int(r.st_stop)]
+                if np.any(np.diff(st) < 0):
+                    st = np.sort(st)
+                sa = st[(st >= ev["a0"]) & (st <= ev["a1"])]
+                h = split_psth(sa, evs, nb, odd)[0].astype(float)
+                sm = smooth(h)
+                rs = float(rowcorr(sm[0], sm[1]))
+                nl = isi_null(st, evs, nb, odd, nperm, rng, lut=lut)
+                out.append((1 + np.sum(nl >= rs)) / (nperm + 1) if np.isfinite(rs) else np.nan)
+            f.close()
+            return k, np.array(out)
+        except Exception as e:  # network errors: retry
+            err = e
+    raise err
+
+
+def run_rec_null(asset_ids, ks, nperm, seed_null, workers=6):
+    """Reading (1b) of the ISI null for sessions ks (indices into asset_ids); returns {k: p values}."""
+    import multiprocessing as mp
+    ctx = mp.get_context("spawn")
+    jobs = [(asset_ids[k], k, nperm, seed_null) for k in ks]
+    with cf.ProcessPoolExecutor(workers, mp_context=ctx) as ex:
+        return dict(ex.map(_rec_job, jobs))
+
+
 def run_sessions(asset_ids, nperm, seed_null, seed_jit, workers=6):
     """Process sessions in parallel (spawned processes). Session k uses generators seeded seed + k (protocol: a further
     generator for the same claim adds 1 to the seed)."""
@@ -580,7 +642,8 @@ def read_light(asset_id):
                        "isi_violations": u["isi_violations"][:]})
     out = dict(asset_id=asset_id, subject=_s(f["general/subject/subject_id"][()]),
                genotype=_s(f["general/subject/genotype"][()]),
-               session_type=_s(f["session_description"][()]), units=df)
+               session_type=_s(f["session_description"][()]),
+               session_start_time=_s(f["session_start_time"][()])[:10], units=df)
     f.close()
     return out
 
@@ -671,11 +734,58 @@ LAYER_GROUP = {"1": "supragranular", "2/3": "supragranular", "4": "granular", "5
                "6a": "infragranular", "6b": "infragranular"}  # M&M 2.5
 
 
+# The same annotation from the Allen Institute's own download (CCFv3, 2017 release, the volume BrainGlobe
+# packages), with the structure ontology from the Allen API. Their paths carry no version, so each file is
+# pinned by its SHA-256 (Last-Modified 2025-02-19 for the volume). Used when GIN refuses the request: on
+# 2026-11-21 it answered 403 Forbidden to this runner for the whole site.
+ALLEN_ANN_URL = ("https://download.alleninstitute.org/informatics-archive/current-release/mouse_ccf/"
+                 "annotation/ccf_2017/annotation_25.nrrd")
+ALLEN_ANN_SHA256 = "c620cbcc562183e4dcd40250d440130501781f74b41de35b1c1bdabace290c42"
+ALLEN_ONT_URL = "http://api.brain-map.org/api/v2/structure_graph_download/1.json"
+ALLEN_ONT_SHA256 = "b5f0d024d1df09ee18aef15093f55240f4a70b3924ee9689add612dadff80386"
+
+
+def _laminar(name):
+    return ", layer" in name.lower()
+
+
+def _load_atlas_allen():
+    """The Allen Institute's annotation_25.nrrd (gzip-encoded uint32, axes AP, DV, ML with AP fastest)
+    and the structure graph, each checked against its SHA-256."""
+    import gzip, hashlib, json
+    raw = requests.get(ALLEN_ANN_URL, timeout=600).content
+    sha = hashlib.sha256(raw).hexdigest()
+    if sha != ALLEN_ANN_SHA256:
+        raise ValueError(f"Allen annotation file changed: sha256 {sha}")
+    k = raw.index(b"\n\n")
+    head = dict(l.split(": ", 1) for l in raw[:k].decode().splitlines()[1:] if ": " in l)
+    sizes = [int(v) for v in head["sizes"].split()]
+    assert head["type"] == "unsigned int" and head["encoding"] == "gzip" and head["endian"] == "little"
+    vol = np.frombuffer(gzip.decompress(raw[k + 2:]), "<u4").reshape(sizes[::-1]).transpose(2, 1, 0)
+    ont = requests.get(ALLEN_ONT_URL, timeout=600).content
+    sha2 = hashlib.sha256(ont).hexdigest()
+    if sha2 != ALLEN_ONT_SHA256:
+        raise ValueError(f"Allen structure graph changed: sha256 {sha2}")
+    acr, stack = {}, list(json.loads(ont)["msg"])
+    while stack:
+        d = stack.pop()
+        acr[d["id"]] = (d["acronym"], _laminar(d["name"]))
+        stack += d.get("children", [])
+    meta = dict(name="allen_mouse_25um (Allen Institute download, ccf_2017)", version="CCFv3 2017",
+                orientation="AP, DV, ML", shape=list(vol.shape), resolution=[25, 25, 25])
+    return np.ascontiguousarray(vol), acr, meta, sha + " / " + sha2
+
+
 def load_atlas():
-    """Annotation volume (AP, DV, ML at 25 um) and id -> acronym, read in memory."""
+    """Annotation volume (AP, DV, ML at 25 um) and id -> (acronym, laminar), read in memory: BrainGlobe's
+    package from GIN, or the Allen Institute's files when GIN cannot be reached."""
     import hashlib, io, json, tarfile
     import tifffile
-    raw = requests.get(ATLAS_URL, timeout=600).content
+    r = requests.get(ATLAS_URL, timeout=600)
+    if r.status_code != 200:
+        print("GIN answered %d; using the Allen Institute's files" % r.status_code)
+        return _load_atlas_allen()
+    raw = r.content
     sha = hashlib.sha256(raw).hexdigest()
     if sha != ATLAS_SHA256:
         raise ValueError(f"atlas file changed: sha256 {sha}")
@@ -686,7 +796,9 @@ def load_atlas():
                 with tifffile.TiffFile(io.BytesIO(t.extractfile(m).read())) as tf:
                     ann = tf.asarray()  # the annotation volume (data, not a figure)
             elif m.name.endswith("structures.json"):
-                acr = {d["id"]: d["acronym"] for d in json.load(t.extractfile(m))}
+                # a structure is laminar only when its name says so ("Primary visual area, layer 4"),
+                # so that "CA1" or "CA3" never reads as layer 1 or 3 (verifier round 1)
+                acr = {d["id"]: (d["acronym"], _laminar(d["name"])) for d in json.load(t.extractfile(m))}
             elif m.name.endswith("metadata.json"):
                 meta = json.load(t.extractfile(m))
             if ann is not None and acr is not None and meta is not None:
@@ -695,10 +807,13 @@ def load_atlas():
     return ann, acr, meta, sha
 
 
-def split_layer(acronym):
-    """'VISp2/3' -> ('VISp', '2/3'); a structure without a layer suffix -> (acronym, None)."""
+def split_layer(acronym, laminar=True):
+    """'VISp2/3' -> ('VISp', '2/3'); a structure without a layer suffix, or whose name names no
+    layer (laminar False), -> (acronym, None)."""
     if acronym is None:
         return None, None
+    if not laminar:
+        return acronym, None
     for L in sorted(LAYERS, key=len, reverse=True):
         if acronym.endswith(L) and len(acronym) > len(L):
             return acronym[: -len(L)], L
@@ -720,7 +835,8 @@ def unit_layers(ann, acr, x, y, z, max_steps=20):
 
     def lab(v):
         if v not in lab_cache:
-            lab_cache[v] = split_layer(acr.get(int(v)))
+            a_ = acr.get(int(v))
+            lab_cache[v] = split_layer(*a_) if a_ is not None else (None, None)
         return lab_cache[v]
     for i in np.where(ok)[0]:
         a, L = lab(ann[tuple(ijk[i])])
