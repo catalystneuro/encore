@@ -13,7 +13,7 @@ mice), which the paper reuses.
 | Short-term adaptation in thalamus, V1 against thalamus, decay fits per area (5) | Reproduced (two rest on an assumption) |
 | Consistency across mice of long-term drifting adaptation | Reproduced |
 | Consistency across mice of 1-back adaptation (drifting and static) and of long-term static adaptation (3) | Partially reproduced |
-| Repeat and orthogonal suppression against a blank baseline (Figure 5) | Partially reproduced |
+| Repeat and orthogonal suppression against a blank baseline (Figure 5) | Not reproduced |
 | Static gratings, 1-back and long-term adaptation and decay fits (6) | Reproduced |
 | Simulated neuron with only 1-back adaptation (Figure 8) | Not reproduced (depends on the seed) |
 | Robustness to threshold, preferred-orientation trials and window | Reproduced |

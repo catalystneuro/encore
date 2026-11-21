@@ -203,17 +203,20 @@ def pair_masks(ori, blk, n):
     return rep, orth, blank_prev
 
 
-def nback_rates(counts, table, n_max=50, blanks="hold", blocks="within", win=DG_WIN):
+def nback_rates(counts, table, n_max=50, blanks="hold", blocks="within", win=DG_WIN, valid=None):
     """Per unit, n and current orientation: summed counts and trial numbers for repeat and
     orthogonal pairs. Returns arrays (units x n_max x n_ori) of rep_sum, rep_n, orth_sum, orth_n
-    and the orientation list."""
+    and the orientation list. `valid` (one flag per row of `table`) leaves out current trials
+    whose response is not to be used; they still count as the n-back stimulus."""
     ori, blk, order = sequence(table, None, blanks, blocks)
     c = counts[:, order].astype(float)
+    ok_cur = np.ones(len(order), bool) if valid is None else np.asarray(valid)[order]
     oris = np.unique(ori[~np.isnan(ori)])
     U = c.shape[0]
     out = {k: np.zeros((U, n_max, len(oris))) for k in ["rs", "rn", "os", "on"]}
     for n in range(1, n_max + 1):
         rep, orth, _ = pair_masks(ori, blk, n)
+        rep, orth = rep & ok_cur[n:], orth & ok_cur[n:]
         cur_ori = ori[n:]
         cc = c[:, n:]
         for j, o in enumerate(oris):
@@ -456,11 +459,12 @@ def bootstrap_fits(lr, model, seed, n_boot=1000, sign=-1):
 
 
 def _boot_task(args):
-    lr, model, seed = args
-    return bootstrap_fits(lr, model, seed)
+    lr, model, seed, *rest = args
+    return bootstrap_fits(lr, model, seed, sign=rest[0] if rest else -1)
 
 
 def bootstrap_many(tasks, workers=4):
-    """Run several (lr, model, seed) bootstraps in parallel processes."""
+    """Run several (lr, model, seed) or (lr, model, seed, sign) bootstraps in parallel
+    processes; the sign of the double exponential's slow term is -1 (O5a) unless given."""
     with ProcessPoolExecutor(workers) as ex:
         return list(ex.map(_boot_task, tasks))
