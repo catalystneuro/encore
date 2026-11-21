@@ -173,7 +173,9 @@ claims:
     tolerance: 0.03663
     unit: delta R2
   criterion: Replacement and permutation as in Methods 4.7. The tolerance on the seed count is
-    the paper's own prespecified criterion, at least 9 of 10 seeds (Methods 4.8). Reproduced when
+    10% of the reported count, which matches the paper's prespecified criterion for replacement,
+    at least 9 of 10 seeds (Methods 4.8); the paper sets no criterion for the permutation
+    control, and the same count is used for it. Reproduced when
     at least 9 seeds have correct-pair gain above both controls and both means are within
     tolerance.
 - id: link-development-sample
@@ -219,9 +221,11 @@ claims:
     tolerance: 0.0313
   criterion: Neural-only Ridge from X (768 SBP predictors) to Y on the same 70/30 outer split
     (Methods 4.5, "Neural-only Ridge used X to predict Y on the same outer splits"). The paper
-    does not say how the neural-only penalty is chosen; the code (estimators.py,
-    evaluate_decoders_nested, as run by run_link_context_ladder.py) selects it from the grid on
-    an inner 80/20 direction-stratified split of the outer-training trials, and that is followed.
+    does not say how the neural-only penalty is chosen, and no script in the release computes
+    the neural-only R2 (run_link_context_ladder.py calls only evaluate_fully_nested_audit). The
+    release's neural-only Ridge, estimators.py evaluate_decoders_nested, selects the penalty from
+    the grid on an inner 80/20 direction-stratified split of the outer-training trials (random
+    state seed + 11), and that is followed as the code's choice.
     Variance-weighted R2 per session, averaged over the nine sessions of each task. Reproduced
     when both task means are within tolerance.
 - id: link-context-ladder-gain
@@ -308,13 +312,12 @@ claims:
   criterion: Context-only R2 is that of the fully nested final context model on the outer test of
     each session, averaged over the nine sessions of each task. The phase-only values are so
     small that 10% is below the variation one refit could give; reproduced when the two
-    history values are within tolerance, the two phase-only values are below 0.02, and the
-    context-only R2 rises at every rung for both tasks. The phase-only values against their 10%
-    tolerances are reported.
+    history values are within tolerance and the two phase-only values are below 0.02. The paper
+    gives no values for the middle rungs, which are reported. The phase-only values against
+    their 10% tolerances are reported.
 - id: link-phase-only-replacement
-  statement: With phase-only context, nearest-replacement gain in RD stayed positive (0.10498),
-    so replacement does not remove the task-template correction under an under-specified
-    context.
+  statement: With phase-only context, the mean nearest-replacement gain in RD stayed positive
+    (0.10498).
   source: Results 2.3, paragraph 4
   quote: The phase-only RD replacement gain remained positive (0.10498).
   datasets:
@@ -327,7 +330,10 @@ claims:
     tolerance: 0.010498
     unit: delta R2
   criterion: Mean over the nine RD sessions of the replacement gain under phase-only context.
-    Replacement condition is the direction octant (link.py), as in every LINK replacement.
+    The replacement condition is the direction octant ("a different same-direction trial",
+    Results 2.3, paragraph 4; link.py). Under phase only every trial has the same context
+    trajectory, so all source distances tie and the tie rule of Methods 4.7 (integer trial
+    index) picks the source. Reproduced when the mean is positive and within tolerance.
 - id: link-task-contrast-by-context
   statement: The descriptive RD-minus-CO gain contrast changed with the context; it was positive
     under phase only, negative under direction by phase and additive geometry, near zero under
@@ -925,10 +931,13 @@ claims:
     value: 0.00142
     tolerance: 0.000142
     unit: delta R2
-  criterion: As rff-rtt, on the 18 development sessions, SBP only (Figure 5 legend). "Combined" is
-    the mean over the 18 sessions. Reproduced when the CO and RD geometry means are positive under
-    every map and the combined geometry and history means of every map fall inside their ranges
-    widened by 10% of each bound.
+  criterion: As rff-rtt, on the 18 development sessions, SBP only (Figure 5 legend; Methods 4.6).
+    What the "combined range" spans is not stated; readings (a) the range over the three maps of
+    the mean over all 18 sessions, (b) the range over the six task means (CO and RD under each of
+    the three maps, as Figure 6c plots them). The history mean is read as the mean over all 18
+    sessions under each map. Reproduced when the CO and RD geometry means are positive under
+    every map and, under a reading, the geometry values and the history means of every map fall
+    inside their ranges widened by 10% of each bound.
 - id: estimator-family-link
   statement: Separately penalized context and neural blocks and nonlinear context random features
     retained positive LINK task means, with magnitudes that differed between estimator families.
@@ -942,15 +951,20 @@ claims:
   - nested-history-gain
   criterion: Block penalties minimize the objective of Methods 4.5 with lambda_C and lambda_X
     chosen separately from the grid; nonlinear context augments standardized context with
-    random Fourier features (Methods 4.6). The release has no run script for these, and the
-    Methods do not say how the penalties are selected for the block model or which of the
-    nonlinear-context settings (D = 128, 256, 512; three map seeds; g in 0.25, 1, 4) Figure 5
-    shows. Readings for the nonlinear context, (a) every setting, (b) D = 256 and seed 20260726
-    with g chosen per session from the three values by inner validation, as the frozen
-    rff_capacity_sensitivity.csv baseline rows suggest. For the block model, penalties chosen
-    jointly on the inner 80/20 split of the outer-training trials (as for the nuisances). "Task
-    means" are read as the four signal-by-context means of Figure 5a (SBP and TCR, geometry by
-    phase and plus history). Reproduced when all are positive for both families under a reading.
+    random Fourier features (Methods 4.6). The Methods do not say how the block penalties are
+    selected or which nonlinear-context setting (D = 128, 256, 512; three map seeds; g in 0.25,
+    1, 4) Figure 5 shows. The release has no run script for these, but it holds both estimators
+    (specification_estimators.py), and Figure 5a plots the frozen table
+    estimator_sensitivity_link.csv (build_submission_figures.py, figure5_estimator_sensitivity).
+    The code is followed. Block model (evaluate_block_ridge_audit), the pair (lambda_C,
+    lambda_X) searched over the grid squared on an inner 80/20 direction-stratified split of
+    the outer-training trials (random state seed + 11), refit on all outer-training trials.
+    Nonlinear context (evaluate_rff_context_audit), D = 256, g chosen from 0.25, 1, 4 with the
+    penalties on the same inner split, five cross-fitting folds. Readings for the nonlinear
+    context, (a) that code setting, (b) every setting of Methods 4.6. "Task means" is open;
+    readings (a) the CO and RD means of each signal and context, (b) the four means over all 18
+    sessions that Figure 5a plots (SBP and TCR, geometry by phase and plus history). Reproduced
+    when all are positive for both families under a reading.
 - id: estimator-family-nlb
   statement: Under the separate-block and nonlinear-context estimators, MC_RTT gain remained
     positive while MC_Maze remained near zero.
@@ -979,9 +993,14 @@ claims:
   depends_on:
   - nested-history-gain
   criterion: LINK SBP, geometry by phase plus measured-output history, 18 development sessions,
-    fully nested estimator, CO and RD means at offsets 0, 40, 80 and 120 ms (the offset is the
-    gap between the end of both histories and the behavior bin; link.py neural_lead_ms and
-    output_lead_ms). The release has no script for this run. Holding the window fixed is read
+    CO and RD means at offsets 0, 40, 80 and 120 ms (the offset is the gap between the end of
+    both histories and the behavior bin; link.py neural_lead_ms and output_lead_ms). The release
+    has no script for this run, and the paper does not name the estimator (the Figure 7a legend,
+    unlike 7b, does not say fully nested). Figure 7a plots the frozen table robustness.csv
+    (build_submission_figures.py), whose split-seed rows do not match the fully nested values of
+    Figure 7b and whose fields are those of estimators.py evaluate_decoders_nested. Readings (i)
+    the fully nested estimator, (ii) evaluate_decoders_nested, its residual-neural
+    (innovation) gain. Holding the window fixed is read
     as one window start for all offsets, the earliest that the 120 ms offset allows (eight SBP
     bins plus six offset bins, 280 ms after the trial start bin; link.py sample_offset_ms), so
     the gain at offset 0 here differs from nested-history-gain. "Reduced" is read as the gain
@@ -1040,10 +1059,46 @@ claims:
   - nested-geometry-gain
   criterion: Contexts linear geometry by phase (141 features), quadratic (351), linear plus
     history (151), quadratic plus history (361) (Methods 4.4; link.py geometry_quadratic and
-    causal_history_quadratic). The release has no script for this run; the fully nested
-    estimator is assumed, as for the other development results, and the Figure 7c intervals are
-    paired date-bootstrap intervals (as in link-task-contrast-by-context). The paper calls these
+    causal_history_quadratic). The release has no script for this run and the paper does not
+    name the estimator. Figure 7c plots the same frozen robustness.csv as Figure 7a (see
+    temporal-offset), so the readings are (i) the fully nested estimator, (ii) estimators.py
+    evaluate_decoders_nested, its residual-neural (innovation) gain. The Figure 7c intervals are
+    paired date-bootstrap intervals (legend; as in link-task-contrast-by-context). The paper calls these
     exploratory. Reproduced when the quadratic-plus-history mean RD minus CO difference is
     positive for SBP and for TCR, and, for at least one signal, the quadratic-geometry contrast
     differs from the linear-geometry contrast in sign or in whether its 95% interval excludes
     zero (the paper gives no measure of "changed"; these are the two readings).
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - link-neural-only-r2, corrected the code citation. No release script computes neural-only R2;
+    run_link_context_ladder.py calls only evaluate_fully_nested_audit. The penalty rule is now
+    cited to estimators.py evaluate_decoders_nested as the code's choice (commit b042fbe read).
+  - link-context-only-r2, dropped the requirement that context-only R2 rise at every rung. The
+    paper states only the two endpoints, and the middle rungs are not nested (direction by phase
+    and additive geometry hold different features).
+  - link-phase-only-replacement, removed the interpretation added to the statement (the paper
+    says replacement is "not expected to remove every predictive regularity", Results 2.3,
+    paragraph 4); cited the paper for the same-direction condition; noted that under phase only
+    all source distances tie, so the Methods 4.7 tie rule picks the source; added a judging rule.
+  - synthetic-pair-breaking, corrected the reason for the seed-count tolerance. The paper's 9 of
+    10 criterion covers replacement only (Methods 4.8); the permutation control has none.
+  - rff-link, "combined range" was read as the mean over 18 sessions alone. Added the reading of
+    the range over the six CO and RD task means that Figure 6c plots.
+  - estimator-family-link, the block-penalty and nonlinear-context methods were described as
+    unsettled by the release. The release holds both estimators (specification_estimators.py,
+    evaluate_block_ridge_audit and evaluate_rff_context_audit), and Figure 5a plots their frozen
+    table; the criterion now follows that code (joint grid over both penalties and D = 256 with
+    g chosen on the inner 80/20 split). Added the reading of "task means" as CO and RD means.
+  - temporal-offset and context-capacity-contrast, the fully nested estimator was stated as
+    fact. The paper does not name the estimator for Figure 7a or 7c, and both panels plot the
+    frozen robustness.csv, whose split-seed rows differ from the fully nested Figure 7b values
+    and whose fields match estimators.py evaluate_decoders_nested. Both estimators are now named
+    as readings.
+  - Open, temporal-offset. Whether the behavioral window is fixed at the latest warm-up (280 ms)
+    or elsewhere is not stated by the paper or a release script; the file's reading stands.
+  - Open, replacement-ranks-lower. The supplement with the rank and random-source values was not
+    supplied, so the claim is judged by sign only.
