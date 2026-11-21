@@ -1,0 +1,291 @@
+schema_version: 3
+id: hiraoka-2025-01
+datasets:
+- archive: dandi
+  id: "000044"
+  version: 0.210812.1516
+  doi: 10.48324/dandi.000044/0.210812.1516
+  relation: reuses
+paper: doi:10.1063/5.0296506
+date: 2026-11-21
+entry: hiraoka-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44950987917
+inputs:
+- what: Synthetic event sequences for the claims on the model (fig4-model-heavy-tails,
+    fig4-model-iet-shapes, model-decremental-equivalent), not deposited by the paper. They are
+    generated in model.ipynb by Algorithms 1 and 2 of the paper's Section IV, implemented in
+    bursttree.py from the pseudocode and Eqs. 9 to 16, with seeds from the claims.
+  source: doi:10.1063/5.0296506
+outcomes:
+- claim: fig2-neuron-representative-sequence
+  outcome: reproduced
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-neuron-representative-sequence
+  measured: [228356, 1.05, 18229.7]
+  notes: Under reading (b) of O1, row 9 of the units table of Achilles-10252013 counted from 0
+    (unit id 18), the unit has 228 356 spikes, tau_min 1.050 ms and tau_max 18 229.7 ms. It is
+    the only unit of the session within all three tolerances. Readings (a) id 9 (9077 spikes),
+    (c) the ninth unit (36 797 spikes) and (d) shank_id 9 (four units) do not match. The unit is
+    labelled inhibitory in this version and interneuron in the latest; the paper describes its
+    neuronal data as pyramidal cells. Its 228 356 spikes are those of the whole session (96 875,
+    44 099 and 87 382 in the three epochs), which settles O2.
+- claim: fig2-iet-broad
+  outcome: reproduced
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-iet-broad
+  measured: 17362
+  notes: tau_max over tau_min is 17 362, 4.24 decades, against the three decades of the criterion;
+    the paper's labels give the same 4.24 decades.
+- claim: fig2-neuron-burst-size-heavy-tail
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-neuron-burst-size-heavy-tail
+  notes: With xmin chosen by the KS distance, discrete or continuous, the power law is supported
+    (R > 0, p < 0.05) at 8 of 8 timescales of grid (a) and 40 of 40 of grid (b), all of those
+    below 3000 ms included. With xmin = 1 it is supported at 5 of 8 and 29 of 40 (discrete) and
+    7 of 8 and 32 of 40 (continuous), more than half but not every one below 3000 ms, which is
+    partially reproduced on grid (b) for both and on grid (a) for the discrete fit. The outcome
+    rests on the adopted discrete KS fit (see deviations); every KS reading gives it. On the IETs
+    shuffled in time, a renewal reference, no timescale is supported under any of the five seeds
+    (0 of 5 or 6, grid (a)).
+  deviations:
+  - The fit reading is open (claims file, O3) and the readings differ in outcome here, with no
+    rule in the claims file for a claim that counts tests. Assumed the discrete maximum-likelihood
+    fit with xmin chosen by the KS distance, because burst sizes and merging numbers are integers,
+    the method the paper cites for its fits (Clauset et al., ref. 36, through the powerlaw package,
+    ref. 37) gives the discrete estimator for integer data, and this reading gives the paper's beta
+    for the representative unit (median 2.354 against 2.35). The paper does not say which it used.
+  - The grid of delta is open (O4). Grid (b) fits a whole number of log10 steps near 0.052 between
+    the ends of the relevant range (40 steps of 0.0514 for this unit), as the Figure 2 legend says
+    the values shown span the entire range of relevant timescales; every 5th point then gives the
+    delta' labels of Figure 2 and every 8th the delta labels.
+- claim: fig2-neuron-beta-stable
+  outcome: partially_reproduced
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-neuron-beta-stable
+  measured: 2.354
+  notes: Under the discrete KS fit on grid (b) the median beta below 3000 ms is 2.354 and 27 of 34
+    estimates are within 2.35 +/- 0.235, every one from 126.5 ms to 3000 ms (1.4 decades). At the
+    smallest timescales beta is higher (2.907 at 55 ms, up to 2.975 on grid (b)), so the range is
+    0.705 and neither reading of the criterion holds under any fit (ranges 0.552 to 1.350; medians
+    2.316 to 2.433 under the KS fits, 1.521 to 1.750 with xmin = 1). Partially reproduced, because
+    the paper's value holds over most of the range but not at its lower end. The standard errors
+    are at most 0.088.
+  deviations:
+  - Measured is the median under the discrete KS fit on grid (b), the first reading the criterion
+    allows on the fit adopted elsewhere; the other readings are in the notebook.
+- claim: fig2-neuron-beta-decrease-follows-gamma
+  outcome: reproduced
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-neuron-beta-decrease-follows-gamma
+  notes: On grid (b), under both KS fits, beta at delta' is below gamma for 38 (continuous) and 40
+    (discrete) of 57 pairs with delta < 3000 ms; above 3000 ms the 6 grid points give a Spearman
+    rho of -0.829 (p = 0.042) for beta, which falls from 2.064 to 1.867 (discrete), and gamma falls
+    with delta for each ratio (rho -0.714, -0.964 and -0.943). Grid (a) has one point above 3000 ms,
+    so parts (2) and (3) are not judged on it; its part (1) holds (7 and 8 of 12). Under xmin = 1
+    part (1) fails (24 of 57), so the outcome rests on the KS fits, as O3 allows for a claim on
+    exponents. The paper names no test; the claim's "seems to be driven" is not tested beyond
+    these correlations.
+- claim: fig2-neuron-merging-heavy-tail
+  outcome: reproduced
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-neuron-merging-heavy-tail
+  notes: Under the KS fits the power law is supported for 14 (discrete) and 15 (continuous) of 15
+    pairs on grid (a) and 71 and 72 of 76 on grid (b); the gamma of the supported pairs has an
+    interquartile range of 0.383 to 0.426 and a median of 2.633 to 2.752. With xmin = 1 the
+    discrete fit is supported for 6 of 15 and 19 of 76 pairs, and the continuous fit has an
+    interquartile range of 0.673 and 0.597.
+- claim: fig2-neuron-merging-collapse
+  outcome: reproduced
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-neuron-merging-collapse
+  notes: Reproduced by reading (b) under the discrete KS fit alone, with no margin. The gamma of the
+    15 pairs of Figure 2 lie within 0.490 of their median of 2.610 (the band is 0.5); under the
+    other fits the largest deviation is 0.521 to 1.172. Reading (a) fails, as the complementary
+    cumulative distributions of k over its mean differ by up to a factor of 12.54 (median 1.63)
+    where all exceed 10^-3. One pair of Figure 2 (delta' 590 ms, delta 6490 ms) lies above the
+    relevant range.
+  deviations:
+  - The pairs are the labels of Figure 2 as printed (55, 100, 180, 330 and 590 ms), as the
+    criterion gives them. The comparison points for reading (a) are 200 values of k over its mean,
+    log-spaced from 0.01 to 1000, a standard choice.
+- claim: fig2-exponents-above-two
+  outcome: reproduced
+  notebook: reproduce_hiraoka_2025.ipynb
+  output: claim:fig2-exponents-above-two
+  notes: Under the KS fits both gamma and beta at delta' exceed 2 in 15 of 15 pairs (grid a) and 76
+    of 76 (grid b), and beta at delta is within 10% of the smaller of the two in 11 and 12 of 15 and
+    48 and 58 of 76 pairs (median relative error 0.058 to 0.084). Under xmin = 1 both conditions
+    fail (both above 2 in 0 to 17 pairs).
+- claim: fig2-other-neurons-similar
+  outcome: not_reproduced
+  assumed: true
+  notebook: other_neurons.ipynb
+  output: claim:fig2-other-neurons-similar
+  notes: Under the adopted discrete KS fit, 129 of 554 (grid a) and 130 of 562 (grid b) pyramidal
+    units of all sessions show the pattern (0.233 and 0.231), and 14 and 9 of 120 in
+    Achilles-10252013 (0.117 and 0.075). The burst-size part holds in 0.736 and 0.769 of the units
+    of all sessions, the merging-number part in 0.247 and 0.238. The readings of the fit disagree;
+    with the continuous KS fit, the powerlaw package's default, all sessions pass narrowly (303 of
+    554, 0.547; 315 of 562, 0.560) and Achilles-10252013 does not (0.400 and 0.392); with the
+    continuous fit from xmin = 1 both sets pass (0.883 to 0.906); the discrete fit from xmin = 1
+    gives 0.017 to 0.215. Under the discrete KS fit the median over units of each unit's median
+    beta is 2.404 and 2.400 for all sessions (interquartile range 2.156 to 2.648, grid a) and
+    ranges by session from 2.155 to 2.550. 32 units have fewer than three points on grid (a) and
+    are not used there. The fraction showing the pattern varies by session from 0.075 to 0.424
+    under the discrete KS fit. The question of the fit is put to the paper's authors (findings).
+  deviations:
+  - The fit is the adopted discrete KS fit (see fig2-neuron-burst-size-heavy-tail); the outcome
+    would be reproduced under the continuous fits, so it rests on that assumption.
+  - Pyramidal units are read as those with cell_type excitatory, the only label for principal
+    cells in this version (562 of 690 units). The paper's own representative unit is labelled
+    inhibitory, so the paper may have used every unit; that set was not run.
+  - Two of the 562 units have unsorted spike times (data finding); the trains are sorted before the
+    IETs are taken, and leaving them out changes no fraction by more than 0.003.
+- claim: fig2-wikipedia-beta
+  outcome: blocked
+  blocked_by: too_large
+  notes: The paper's preprocessed edit histories were provided privately and are not deposited. The
+    English Wikipedia dump of October 2, 2015 is no longer on dumps.wikimedia.org (the directory
+    answers 404) but is kept on the Internet Archive (item enwiki-20151002), where the smallest
+    file holding every revision's editor and time, the stub-meta-history, is 47.4 GB compressed. Streaming
+    and parsing it to rebuild the editors' sequences, with a preprocessing and a definition of
+    frequent editors the paper does not give, does not fit the run's time.
+- claim: fig2-earthquake-beta
+  outcome: blocked
+  blocked_by: other
+  notes: The Southern California Seismic Network catalog is public (the SCEDC event service
+    answered a query for 1993) but it is revised continuously and has no versioned release, and
+    the paper gives no retrieval date or event identifiers, so it cannot be pinned as the protocol
+    requires for outside data (author, step 1.4). Not tested.
+- claim: fig4-model-heavy-tails
+  outcome: partially_reproduced
+  assumed: true
+  seed_sensitive: true
+  notebook: model.ipynb
+  output: claim:fig4-model-heavy-tails
+  notes: Sequences generated here by Algorithm 2 with the set-up of Section IV. Under the claim's
+    seed and the discrete KS fit the linear and quadratic series hold on both grids; the exponential
+    series has heavy tails (supported at 42 of 52 timescales and 79 of 94 pairs on grid b) but its
+    gamma has an interquartile range of 0.522 (grid a) and 0.502 (grid b), above the 0.5 of the
+    criterion. Under the four other seeds the discrete KS fit holds for all three series (grid a).
+    Each series holds under some reading of the fit under every seed, but under the claim's seed no
+    single reading holds for all three.
+  deviations:
+  - One reading of the fit is applied to all three series alike, the adopted discrete KS fit; taking
+    for each series whichever reading holds would give reproduced.
+  - Under the four further seeds only grid (a) was run, for run time.
+  - No code is linked for Algorithm 2; it is implemented from the pseudocode and Section IV
+    (Eqs. 10, 12 to 14 and 16).
+- claim: fig4-model-iet-shapes
+  outcome: partially_reproduced
+  seed_sensitive: true
+  notebook: model.ipynb
+  output: claim:fig4-model-iet-shapes
+  measured: [1711.4, 21390.9, 61320.3]
+  notes: Under the claim's seed tau_max is 1711.4 (linear, 0.127 below 1960), 21 390.9 (quadratic,
+    within 10% of 20 800) and 61 320.3 (exponential, 0.249 below 81 600), so one of three is within
+    tolerance. tau_max is an IET of the highest level the sequence reaches, which varies with the
+    seed (levels 14 to 18 linear, 14 to 16 quadratic and 13 to 18 exponential, against 19, 14 and
+    16 for the paper's values); over the five seeds the values are within 10% in 2, 2 and 0 of 5.
+    tau_min is 1.000 or 1.001 throughout, as in Figure 4. The comparison of shapes with the
+    earthquake and Wikipedia sequences is not judged and cannot be made here; the model's P(tau)
+    falls with log-log slopes of -2.27, -1.98 and -2.15 above tau = 10.
+- claim: model-decremental-equivalent
+  outcome: not_reproduced
+  seed_sensitive: true
+  notebook: model.ipynb
+  output: claim:model-decremental-equivalent
+  notes: Under the literal set-up of Section IV (Algorithm 1 with the zeta distribution of Eq. 15,
+    Algorithm 2 with the memory function of Eq. 16) the burst sizes differ at every relevant
+    timescale of the three series under the claim's seed (23 of 23 on grid a, 113 of 113 on grid
+    b; 22 to 25 and 105 to 114 over the five seeds), with KS D up to 0.4487, and the decremental
+    sequence has more bursts at the lowest timescale (566 721 against 414 726, linear). Eq. 16 is
+    not the memory function Eq. 9 gives for the zeta distribution (q(1) is 0.354 against 0.255;
+    mean merging number 2.59 against 1.93). With both algorithms on one distribution (readings Z
+    and Q) the differences are small (D at most 0.1874), but the criterion still rejects at 3 and
+    11 (Z) and 4 and 11 (Q) timescales under the claim's seed, as it does for two runs of the same
+    algorithm (reference N, 4 and 11), so the KS criterion rejects even identical algorithms on
+    these correlated sequences. Every reading is not reproduced under the claim's seed; reading Z
+    passes under seed + 4000 (0 and 0 rejections), hence seed_sensitive. The literal reading is not
+    reproduced under all five seeds.
+  deviations:
+  - The paper's "statistically equivalent" holds by construction when the decremental algorithm
+    draws from the distribution whose memory function the incremental one uses. The three
+    readings of the set-up (L literal, Z both zeta, Q both from Eq. 16) are all run, with two runs
+    of Algorithm 2 as the reference of the test.
+  - The relevant timescales of each comparison are those of the incremental sequence.
+findings:
+- kind: format_error
+  severity: major
+  datasets: ["000044"]
+  statement: In Buddy-06272013, Cicero-09012014 and Gatsby-08022013 the spike train of unit id 2 is
+    not sorted in time. Each is two sorted runs, the first of exactly 65 536 spikes (131 072 in
+    Gatsby-08022013) starting in mid-session and running to the end of the recording, the second starting near the
+    session's start. The power-of-two length suggests a fault in the conversion; whether the train
+    holds one unit's spikes could not be told.
+- kind: other
+  about: data
+  severity: minor
+  datasets: ["000044"]
+  statement: In Gatsby-08022013, 263 976 spikes (4.7%) fall after the end of the last epoch
+    (30 413.6 s), up to 32 002.4 s, in no epoch.
+- kind: metadata_error
+  severity: minor
+  datasets: ["000044"]
+  statement: The position series of the maze stores its sampling interval (0.0256 s) in the
+    attribute rate of starting_time, which NWB defines in Hz. Read as a rate the series would last
+    3 154 777 s; read as an interval it lasts the 2067.5 s of the maze epoch.
+- kind: identifier_missing
+  severity: minor
+  datasets: ["000044"]
+  statement: The units table ids of the cited version (id 18 for the paper's "unit 9") differ from
+    those of the latest version (id 119 for the same row, with a cluster_id of 19), and neither holds
+    the number the paper uses. The paper's unit can be found only as a row position, and only
+    because its spike count and IETs match the paper's figure.
+- kind: other
+  about: data
+  severity: none
+  datasets: ["000044"]
+  statement: No spike train is deposited twice (no two units share their spike count and first and
+    last spike, within or across the eight sessions), and the spikes and the maze position share a
+    clock (the excitatory population rate correlates with running speed at r = 0.618 at zero shift
+    and at a median absolute r of 0.043 beyond 60 s). The epochs differ from the paper's
+    description of 45 minutes of maze and four hours of rest each, with maze epochs of 0.57 to
+    1.54 h and first rest periods of 2.98 to 5.37 h.
+- kind: other
+  about: paper
+  statement: The paper describes its neuronal data as recordings of pyramidal cells, but its
+    representative unit (row 9 of Achilles-10252013) is labelled inhibitory in the cited version
+    and interneuron in the latest. Which units
+    the paper analysed, and whether it used the cell types, is not said.
+- kind: paper_inconsistency
+  statement: Section IV gives the zeta distribution (Eq. 15) as P(k) and calls Eq. 16 the memory
+    function that Eq. 9 gives for it, but Eq. 9 applied to the zeta distribution gives q(1) = 0.255,
+    not the 0.354 of Eq. 16. The incremental algorithm with Eq. 16 therefore draws merging numbers
+    with P(K >= k) = k^-(gamma-1) (mean 2.59), and the decremental one with Eq. 15 draws zeta
+    numbers (mean 1.93), so the two are not statistically equivalent as set up.
+- kind: methods_unavailable
+  statement: Question for the authors. Which power-law fit was used for burst sizes and merging
+    numbers, discrete or continuous, and with xmin chosen by the KS distance or fixed? The paper
+    cites Clauset et al. and the powerlaw package without its options or version. On this
+    dataset the discrete fit with xmin by the KS distance gives the paper's beta of 2.35 for unit 9,
+    and the choice decides whether other neurons show the pattern (23% of pyramidal units under
+    it, 56% under the package's continuous default). This attempt assumed the former.
+- kind: methods_unavailable
+  statement: Question for the authors. Which grid of timescales was used, and which units were
+    meant by "other sequences in the datasets"? The Figure 2 labels fit 41 log-spaced points over
+    the relevant range, which this attempt used; whether all units or the pyramidal ones were
+    analysed is not said. Which merging-number distribution did the decremental algorithm draw
+    from, given that Eq. 16 is not the memory function of the zeta distribution?
