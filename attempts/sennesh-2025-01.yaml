@@ -36,8 +36,10 @@ outcomes:
     habituation count matches (700); the others differ by -3 (XXXY), +5 (xxxX), -4 (xxxx), +3 (xxxY) and
     -1 (yyyy) trials, at most 0.6%, inside the criterion's 5% bound for a partial result. The paper's
     code reads its conditions from passiveglo_task_data.mat, which is not in the dandiset, so the selection
-    cannot be matched trial by trial. A likely cause is the handling of the 0 to 2 main-block sequences
-    per mouse that match neither the habituated pattern nor its global oddball, which are left out here.
+    cannot be matched trial by trial. The 0 to 2 main-block sequences per mouse that match neither the
+    habituated pattern nor its global oddball, which are left out here, can affect only the main-block
+    counts (xxxX, xxxY); the differences in XXXY (random block), xxxx and yyyy come from the other blocks,
+    and their cause is not known.
     Sub-621890 has a different schedule (807 main-block and 100 sequence-control sequences) and is counted
     as it is. The table's first block holds 25 pure 'xxxy' sequences, so the 50 lonaive trials are those
     25 and the first 25 of the main block; no other interval table holds a habituation block, and invalid_times
@@ -72,7 +74,9 @@ outcomes:
     3.98 dB from its -10 ms level to a peak at 250 ms and falls 2.76 dB. Values out of range: the xxxy
     alpha/beta maximum (2.36 and 2.12 dB against at least 4.5) and, under reading a, the XXXY gamma maximum
     (6.27 above 5.5). Under the trial mean of per-trial dB values the printed values are 3.2 to 4.8 dB
-    lower (XXXY gamma 1.58 and 0.72 dB) and the gamma does not last past 250 ms, which would be not reproduced.
+    lower: the XXXY gamma maximum (1.58 and 0.72 dB) is reached after 250 ms, so the gamma lasts, but it
+    is below 2.25 dB, and the xxxy alpha/beta maximum stays below 0 dB; the shapes hold and the values do
+    not, partially reproduced under that reading too.
     measured is S3 reading a.'
   deviations:
   - S6 condition panels as the code draws them (epych cee2e6f, notebooks/passiveglo/oscillatory_eyeballs.ipynb,
@@ -129,7 +133,8 @@ outcomes:
   notes: 'The desynchronization is in range (-2.04 dB under S3 reading a, -2.12 dB under b) and starts
     in L2/3 at 20 ms, with L4 (20 ms) and before L5/6 (30 ms). The kept L1 row has a significant alpha/beta
     increase and no decrease: 0.74 dB under reading a, below 0.9 to 1.65 dB, and 1.07 dB under reading
-    b, in range (reproduced). Reading a, the code''s range, is adopted. The value rests on one kept L1
+    b, in range. By reading, partially reproduced under a and reproduced under b (printed); reading
+    a, the code''s range, is adopted. The value rests on one kept L1
     row: with the start moved up by 3 rows (the other L1 row) the increase is 2.30 and 2.44 dB; with the
     start moved up by 1 row no L1 row is kept. In the round-1 analysis (top row kept) L1 had no increase.'
   deviations:
@@ -164,14 +169,19 @@ outcomes:
   output: claim:fig2g-dd-gamma-csd-feedforward
   measured: 120
   notes: S7's first-sink times tie at the first lag in both readings, as every layer group holds a displayed
-    sink there (the display threshold passes 89% of points in reading a). With the tie-break the L4 sink
-    starts before the L2/3 and L5/6 sinks under both bands (L4 -8.0, L2/3 -3.2, L5/6 -0.8 ms in reading
-    a; -16.0, -4.0 and 4.8 ms in reading b). 120 windows (reading a, within 10%) and 110 (reading b) against
-    125.
+    sink there (the display threshold passes 89% of points in reading a). With the tie-break (sustained,
+    displayed sink onset) the L4 sink starts before the L2/3 and L5/6 sinks under both bands (L4 -8.0,
+    L2/3 -3.2, L5/6 1.6 ms in reading a; -12.0, -4.0 and 4.8 ms in reading b), and also at 1/16 and 1/4
+    of a cycle and with single-sample onsets. 120 windows (reading a, within 10%) and 110 (reading b)
+    against 125.
   deviations: &id001
   - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
-    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink. S7''s
-    rule is shown beside it, and the sign of each group''s mean CSD is printed at every lag.'
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
   - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
     at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
   - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
@@ -186,15 +196,20 @@ outcomes:
   notebook: v1_laminar.ipynb
   output: claim:fig2h-dd-alphabeta-csd-feedback
   measured: 138
-  notes: With the tie-break, the Methods' band (10-30 Hz, reading a) gives the L1 sink onset (-33.6 ms)
-    after L2/3 (-35.2 ms) and L4 (-36.0 ms); the code's band (12-24 Hz, reading b) gives L1 first (-32.0
-    against -26.4 and -28.0 ms). The readings disagree; the Methods' band is adopted (protocol, reader
-    step 2). S7's own rule fails in both (tied in a; in b the first L1 sink, -31.2 ms, is after L2/3,
+  notes: With the tie-break, the Methods' band (10-30 Hz, reading a) has no L1 sink onset in the window,
+    and the L5/6 sink (-14.4 ms) starts before L4 (12.0 ms) and L2/3 (19.2 ms); the code's band (12-24
+    Hz, reading b) gives L1 first (-31.2 ms against L2/3 -13.6 ms, no L4 onset). The readings disagree;
+    the Methods' band is adopted (protocol, reader step 2). The split is the same at 1/16 and 1/4 of a
+    cycle and with single-sample onsets. S7's own rule fails in both (tied in a; in b the first L1 sink, -31.2 ms, is after L2/3,
     -41.6 ms). 138 and 148 windows against 189.
   deviations:
   - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
-    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink. S7''s
-    rule is shown beside it, and the sign of each group''s mean CSD is printed at every lag.'
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
   - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
     at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
   - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
@@ -210,9 +225,11 @@ outcomes:
   notebook: v1_laminar.ipynb
   output: claim:fig2i-dd-theta-csd-mixed
   measured: 163
-  notes: Under both bands an L5/6 sink starts before the L4 sink (-56.0 against 82.4 ms in reading a;
-    -124.0 against -108.0 ms in reading b) but the L2/3 sink starts before L4 too (-52.0 and -112.0 ms).
-    S7's own rule also fails in both readings. 163 and 117 windows against 77.
+  notes: With the tie-break, in reading a L2/3 and L4 are sinks from the window start (-124.8 ms), L5/6
+    starts at 65.6 ms and L1 and L6 have no onset; in reading b L4 is a sink from the window start, L5/6
+    and L6 start at 57.6 and 73.6 ms, and L1 and L2/3 have no onset. No L1, L5/6 or L6 sink comes before
+    L4 in either reading, also at 1/16 and 1/4 of a cycle and with single-sample onsets. S7's own rule
+    also fails in both readings. 163 and 117 windows against 77.
   deviations: *id001
 - claim: dd-aperiodic-no-difference
   outcome: reproduced
@@ -372,8 +389,12 @@ outcomes:
     L5/6 have significant positive gamma in the first 100 ms (50, 30 and 89 points), the largest value
     in the last 100 ms is 0.634 dB (in 0.54 to 0.66) and L1 has a decrease (down to -0.51 dB). With the
     30-50 Hz band the late value is 0.94 dB (partial); under reading (b) L5/6 has no early increase and
-    the late value is 0.74 dB (30-90 Hz) and 1.22 dB (30-50 Hz). The other L1 row (start moved up by 3
-    rows) also has a decrease (down to -1.00 dB).
+    the late value is 0.74 dB (30-90 Hz) and 1.22 dB (30-50 Hz). By reading (printed), reproduced only
+    under S3 (a) with 30-90 Hz, partially reproduced under S3 (a) with 30-50 Hz, and not reproduced under
+    S3 (b) with either band, where L5/6 has no onset increase (0 points); the outcome rests on the code''s
+    fitting range taken with the Methods'' band. The onset values (0.57 to 0.75 dB) are above the paper''s
+    0.2 to 0.4 dB, which the criterion does not test. The other L1 row (start moved up by 3 rows) also
+    has a decrease (down to -1.00 dB).
   deviations:
   - S3 fitting range of the spectrograms adopted from the code (5-150 Hz, reading a). The Methods' sentence
     'Power spectra were parameterized across the frequency range 2 to 90 Hz with a frequency resolution
@@ -419,7 +440,8 @@ outcomes:
   output: claim:fig3g-go-gamma-csd-feedforward
   measured: 471
   notes: With the tie-break, the L4 sink starts before the L2/3 and L5/6 sinks under both bands (L4 -8.0,
-    L2/3 -2.4, L5/6 4.0 ms in reading a; -12.0, -3.2 and 6.4 ms in reading b). S7's own rule ties in reading
+    L2/3 -2.4, L5/6 4.0 ms in reading a; -12.0, -3.2 and 6.4 ms in reading b), also at 1/16 and 1/4 of
+    a cycle. S7's own rule ties in reading
     a and in reading b puts the first L4 sink (-13.6 ms) after the others, which sit at the window start.
     471 and 476 windows against 496.
   deviations: *id001
@@ -429,14 +451,22 @@ outcomes:
   notebook: v1_laminar.ipynb
   output: claim:fig3h-go-alphabeta-csd-feedback
   measured: 279
-  notes: With the tie-break, under the Methods' band (reading a) the L1 sink starts first (-32.0 ms),
-    before L2/3 (-31.2 ms) and L4 (-25.6 ms), a margin of one sample (0.8 ms) over L2/3; under the code's
-    band (reading b) it does not (L1 -12.0 against -20.0 and -37.6 ms). The Methods' band is adopted.
-    S7's own rule fails in both readings. 279 and 275 windows against 300.
+  notes: Recorded as reproduced before the second verification round, with the single-sample tie-break,
+    under which the Methods' band (reading a) put the L1 sink onset first (-32.0 ms, before L2/3 -31.2
+    and L4 -25.6 ms). That onset is one sample and is not displayed. With the sustained tie-break the
+    only lasting, displayed L1 sink in reading a begins at 28.0 ms, after L4 (a sink from the window
+    start, -37.6 ms) and L2/3 (-28.8 ms); in reading b L1 (-12.0 ms) also follows L2/3 (-20.0 ms) and L4
+    (-27.2 ms). The rule fails at 1/16 of a cycle in both readings and holds at 1/4 only in reading b.
+    S7's own rule fails in both readings. 279 and 275 windows against 300. A change to not reproduced
+    is proposed.
   deviations:
   - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
-    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink. S7''s
-    rule is shown beside it, and the sign of each group''s mean CSD is printed at every lag.'
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
   - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
     at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
   - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
@@ -446,20 +476,34 @@ outcomes:
     positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
     every fourth row from the deepest. The round-1 analysis started at the top row.'
   - Adopted the Methods' band where the two band readings disagree.
+  proposed:
+    outcome: not_reproduced
+    reason: With the tie-break revised after the second verification round to count only a displayed
+      sink lasting at least 1/8 of a cycle (v1_laminar.ipynb, fig3h section), the L1 sink does not come
+      before the L2/3 and L4 sinks under either band (reading a, L1 28.0 against L2/3 -28.8 and L4 -37.6
+      ms; reading b, -12.0 against -20.0 and -27.2 ms), nor at 1/16 of a cycle. The reproduced outcome
+      rested on a single undisplayed sample at -32.0 ms. The verifier of round 2 rated it not reproduced.
 - claim: fig3i-go-theta-csd
   outcome: reproduced
   assumed: true
   notebook: v1_laminar.ipynb
   output: claim:fig3i-go-theta-csd
   measured: 685
-  notes: Under the Methods' band (reading a) the first sink onset among the four layer groups is in L4
-    (-120.8 ms) and the L2/3 sink follows (-84.0 ms); under the code's band (reading b) L5/6 and L2/3
-    start together (-122.4 ms), so L2/3 does not follow. The Methods' band is adopted. 685 and 575 windows
-    against 335.
+  notes: Recorded as reproduced before the second verification round, with the single-sample tie-break
+    (reading a, L4 -120.8 ms, L2/3 following at -84.0 ms). Those onsets came from brief sign flips. With
+    the sustained tie-break, under the Methods' band (reading a) L2/3 and L4 are both sinks from the window
+    start (-124.8 ms), so the L2/3 sink does not follow; under the code's band (reading b) L4 is a sink
+    from the window start and L2/3 starts at -58.4 ms, so the rule holds there. The Methods' band is adopted.
+    At 1/16 of a cycle reading a holds too, at 1/4 it fails. S7's own rule fails in both readings. 685
+    and 575 windows against 335. A change to not reproduced is proposed.
   deviations:
   - 'Tie-break of S7''s first-sink rule (protocol, reader step 3, a criterion unable to decide): the sink
-    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink. S7''s
-    rule is shown beside it, and the sign of each group''s mean CSD is printed at every lag.'
+    onset of each layer group''s mean CSD, the first lag at which it turns from source to sink, counted
+    only for a displayed sink (a row of the group shows a sink) lasting at least 1/8 of a period of the
+    band centre, after runs of sink or source shorter than that are merged into their neighbours. The
+    minimum duration was added after the second verification round, where single-sample and undisplayed
+    sign flips decided fig3h and fig3i; the single-sample onsets and the rule at 1/16 and 1/4 of a cycle
+    are printed beside it, with S7''s rule and the sign of each group''s mean CSD at every lag.'
   - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR of
     at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
   - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here without
@@ -469,6 +513,13 @@ outcomes:
     positions, the crop range(centre - down, centre + up), which leaves out the topmost common row, and
     every fourth row from the deepest. The round-1 analysis started at the top row.'
   - Adopted the Methods' band where the two band readings disagree.
+  proposed:
+    outcome: not_reproduced
+    reason: With the tie-break revised after the second verification round to count only a displayed
+      sink lasting at least 1/8 of a cycle (v1_laminar.ipynb, fig3i section), the Methods' band (reading
+      a), which is adopted, has L2/3 and L4 both sinks from the window start (-124.8 ms), so the L2/3
+      sink does not follow the first sink; the code's band (reading b) holds (L4 -124.8, L2/3 -58.4 ms).
+      The reproduced outcome rested on brief sign flips. The verifier of round 2 rated it not reproduced.
 - claim: fig4ab-ssa-condition-spectra
   outcome: partially_reproduced
   notebook: v1_laminar.ipynb
@@ -516,7 +567,8 @@ outcomes:
     in every layer group; later increases first in L5/6 at 160 ms, before L4 at 170 and 180 ms and L2/3
     at 190 and 180 ms), but in gamma the later increase starts in L5/6 and L2/3 together (200 ms): two
     of three bands, partial. With the code''s 30-50 Hz band all three hold (reproduced). Under reading
-    (b) only gamma holds (alpha/beta and theta have L4 tied with L5/6 at 160 ms).'
+    (b) only gamma holds (alpha/beta and theta have L4 tied with L5/6 at 160 ms). By reading (printed),
+    partially reproduced in three of the four and reproduced under S3 (a) with 30-50 Hz.'
   deviations:
   - S3 fitting range of the spectrograms adopted from the code (5-150 Hz, reading a). The Methods' sentence
     'Power spectra were parameterized across the frequency range 2 to 90 Hz with a frequency resolution
@@ -535,7 +587,8 @@ outcomes:
   output: claim:fig4g-ssa-gamma-csd-feedforward
   measured: 1868
   notes: With the tie-break, L4 starts first under both bands (-9.6 and -12.8 ms) and the L2/3 (-4.0 and
-    -4.8 ms) and L6 (6.4 and 7.2 ms) sinks follow. 1868 and 1943 windows against 1910.
+    -4.8 ms) and L6 (6.4 and 7.2 ms) sinks follow. The rule holds at 1/16 of a cycle and with single-sample
+    onsets, and fails at 1/4 of a cycle in both readings. 1868 and 1943 windows against 1910.
   deviations: *id001
 - claim: fig4h-ssa-alphabeta-csd
   outcome: not_reproduced
@@ -543,9 +596,13 @@ outcomes:
   notebook: v1_laminar.ipynb
   output: claim:fig4h-ssa-alphabeta-csd
   measured: 303
-  notes: With the tie-break, the L4 sink starts first under both bands (reading a, L4 -36.0 against L1
-    -32.8 and L5/6 -28.8 ms; reading b, -40.8 against -40.0 and -36.0 ms), so no L1 or L5/6 sink comes
-    before it; the reading b margin is 0.8 ms. S7's own rule fails in both readings. 303 and 272 windows
+  notes: With the tie-break, under the Methods' band (reading a) the L4 sink (-21.6 ms) starts before
+    the L5/6 (-12.0 ms) and L1 (16.0 ms) sinks; under the code's band (reading b) the L1 sink (-34.4 ms)
+    starts before L4 (25.6 ms), so the rule holds there. The Methods' band is adopted. The split is the
+    same at 1/16 of a cycle; at 1/4 both readings fail. With single-sample onsets both fail (reading a,
+    L4 -36.0 against L1 -32.8 and L5/6 -28.8 ms; reading b, L4 -40.8 against L1 -40.0 and L5/6 -36.0
+    ms). In reading a L1 and L5/6 are sinks at the first lag while L4 is a source, so a reading by eye
+    could differ. S7's own rule fails in both readings. 303 and 272 windows
     against 319. In the round-1 analysis (top row kept) the rule held with margins under 2 ms.
   deviations: *id001
 - claim: fig4i-ssa-theta-csd
@@ -554,8 +611,9 @@ outcomes:
   notebook: v1_laminar.ipynb
   output: claim:fig4i-ssa-theta-csd
   measured: 2481
-  notes: The first sink onsets are in L4 (reading a, -124.8 ms; no L1 or L6 sink onset) or L5/6 (reading
-    b, -122.4 ms), not in L1 or L6. 2481 and 2054 windows against 1266.
+  notes: With the tie-break, neither band has an L1 or L6 sink onset in the window; L4 (reading a) and
+    L5 (both readings) are sinks from the window start. The rule also fails at 1/16 and 1/4 of a cycle
+    and with single-sample onsets. 2481 and 2054 windows against 1266.
   deviations: *id001
 - claim: fig5-l23-gamma-by-area
   outcome: not_reproduced
@@ -568,7 +626,8 @@ outcomes:
     1.5, 1.1, 1.3 and 0.3. Of the five cases the paper calls not significant, at most 2 have no masked
     L2/3 gamma point; DD-AM (156 points), GO-AL (4) and GO-AM (2) have some, and DD-PM has 143 under one
     of the five seeds. In V1 the filtered analysis (v1_laminar.ipynb) gives 0.797 against 0.745 dB for
-    DD (S3 a, 30-90 Hz), and its unfiltered variant reproduces the areas notebook's V1 values.
+    DD (S3 a, 30-90 Hz), and its unfiltered variant gives the areas notebook's V1 values, with one
+    significant GO point fewer (1307 against 1308).
   deviations:
   - Areas are read at their kept rows only (every fourth aligned channel, from the deepest as in the code),
     without the median filter, to fit the time limit; the per-mouse spectra average over those rows. v1_laminar.ipynb
@@ -620,7 +679,7 @@ inputs: []
 findings:
 - kind: format_error
   about: data
-  severity: critical
+  severity: major
   statement: In version 0.240503.0152, the version the paper cites, the LFP timestamps of every probe
     file of 7 of the 14 mice (sub-642507, sub-645322, sub-645324, sub-645495, sub-647836, sub-649323,
     sub-649324) run 0, 24, 48, ... with no relation to seconds, so their LFP cannot be put on the clock
@@ -678,16 +737,17 @@ findings:
     file's rule (order of the first displayed sinks) ties at the window start because the display threshold
     (2 SD over the number of windows) passes about 90% of points. How were the onsets read, and with which
     band-pass filter (Syncopy firws order) and bands (the Methods' 2-10, 10-30 and 30-90 Hz or the code's
-    4-8, 12-24 and 30-50 Hz)? This attempt used each group's mean sink onset and adopted the Methods'
-    bands; fig2h, fig3h and fig3i change outcome with the bands.
+    4-8, 12-24 and 30-50 Hz)? This attempt used each group's mean sink onset, counted for a displayed
+    sink lasting at least 1/8 of a cycle, and adopted the Methods' bands; fig2h, fig3i and fig4h change
+    outcome with the bands.
 - kind: methods_unavailable
   statement: Question for the paper's authors. Supplementary Figure 4 names no test for the pupil comparison
     and the code at cee2e6f has none. Which test, window and z-scoring were used? The cluster test of
     the claims file finds a difference.
 - kind: code_mismatch
   statement: The gamma band of the laminar panels and Figure 5 is 30-90 Hz in the text and 30-50 Hz in
-    the code's BANDS; the Figure 5 values are closer to the paper's under 30-50 Hz (4 of 13 within tolerance
-    against 0).
+    the code's BANDS; the Figure 5 values are closer to the paper's under 30-50 Hz (at most 3 of 13 within
+    tolerance, against at most 2 under 30-90 Hz).
 - kind: other
   about: data
   severity: minor
@@ -962,3 +1022,293 @@ verifications:
     response: 'No change of outcome. Problem 8: added the eye clock against the stimulus table, a stimulus-locked
       pupil response against random times (above it in all 9 mice), and a time-in-session variant (against
       the last 50 main-block xxxy the sign of the difference reverses), reported in the notes.'
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebooks v1_laminar.ipynb and areas.ipynb with their conclusions and
+    summaries, the helper module glo.py, the claims file, the README and this attempt record, with the paper''s
+    full text. Report: transcripts/sennesh-2025/verifier-2-report.md.'
+  results:
+  - claim: trial-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with 34 of the 37 outcomes. On the note: "A likely cause is the handling of the 0 to 2
+      main-block sequences per mouse..." Those sequences can only affect the main-block counts (xxxX, xxxY).
+      The differences in XXXY (random block, -3), xxxx (-4) and yyyy (-1) come from other blocks (v1 cells
+      5 and 25).'
+    response: No change of outcome. The note now says the left-out main-block sequences can affect only the
+      xxxX and xxxY counts, and that the cause of the other differences is not known.
+  - claim: three-contrasts-gamma-increase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2ab-dd-condition-spectra
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The code''s condition-panel reading (dB of the trial-mean power) is stated and settled from the
+      code, and the per-trial dB reading is shown beside it. On the note "...and the gamma does not last past
+      250 ms": under the per-trial dB reading, the largest gamma value after 250 ms equals the overall maximum
+      (1.58 / 0.72 dB, cell 32). The gamma does last; what fails is the 2.25 dB level.'
+    response: No change of outcome. The record's note and the notebook's Result cell now say the gamma lasts
+      under the per-trial dB reading and is below 2.25 dB, which gives partially reproduced under that reading
+      too.
+  - claim: fig2c-dd-v1-contrast
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2d-dd-gamma-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2e-dd-alphabeta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: The code's 5-150 Hz fitting range (S3 reading a) is the conservative choice here; reading b would
+      give reproduced. The L1 value changes with which L1 row is kept (0.74 against 2.30 dB), and the record
+      says so.
+    response: No change of outcome. The notebook now prints the outcome under each S3 reading (partially reproduced
+      under a, reproduced under b), and the notes say so.
+  - claim: fig2f-dd-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig2g-dd-gamma-csd-feedforward
+    agrees: true
+    outcome: reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig2h-dd-alphabeta-csd-feedback
+    agrees: true
+    outcome: not_reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig2i-dd-theta-csd-mixed
+    agrees: true
+    outcome: not_reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: dd-aperiodic-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig1-aperiodic-no-difference-all
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: dd-gamma-peak-frequency-v1
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: dd-gamma-peak-frequency-lm
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: dd-gamma-power-and-peak-only-v1-lm
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: ssa-gamma-peak-frequency-lower
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig2-alphabeta-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig2-gamma-height-differences
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: go-theta-peaks
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3ab-go-condition-spectra
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3c-go-v1-contrast
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3d-go-gamma-laminar
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'The adopted combination takes the code''s fitting range together with the Methods'' 30-90 Hz band,
+      and it is the only one of the four readings that reproduces (cell 73): the 30-50 Hz band gives partial
+      (late value 0.94 dB); under the 5-90 Hz fitting range (S3 reading b), with either band, L5/6 has no onset
+      increase (0 points), so not reproduced. The stated reason for preferring the code''s range is arguable:
+      the Methods sentence "2 to 90 Hz" sits in the paragraph about removing the aperiodic component from spectrograms
+      (paper line 174). The onset values (0.57-0.75 dB) are also above the paper''s 0.2-0.4 dB; the criterion
+      does not test them. The record should give the outcomes by reading and not rest on one adopted reading.'
+    response: 'Kept reproduced, resting on the assumption, and the disagreement recorded. The notebook now
+      prints the outcome under each of the four readings (reproduced, partially reproduced, not reproduced,
+      not reproduced), and the Result cell and notes give them, with the onset values. The S3 range is applied
+      the same way in fig2e, fig3d and fig4def: it lowers fig2e and lifts fig3d. The range stays adopted from
+      the code, as the Methods'' 2 Hz resolution does not fit the 5 Hz spectrogram grid; the question to the
+      paper''s authors (findings) asks which range was used.'
+  - claim: fig3e-go-alphabeta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3f-go-theta-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig3g-go-gamma-csd-feedforward
+    agrees: true
+    outcome: reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig3h-go-alphabeta-csd-feedback
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 85, reading a: the L1 "sink onset" at -32.0 ms is one sample, and that sample is not displayed
+      (the shown row has no x there). L1''s displayed sinks begin at +28.0 ms, after L2/3 and L4. Under reading
+      b, L1 is not first either, and S7''s rule fails in both readings. The CSD tie-break has no minimum duration
+      or display requirement; I would require a sustained, displayed sink before counting an onset.'
+    response: Outcome kept as recorded, as round 2 allows no change; a change to not reproduced is proposed.
+      The tie-break now counts only a displayed sink lasting at least 1/8 of a band-centre cycle, with 1/16
+      and 1/4 shown; under it the L1 sink comes after L2/3 and L4 in both readings.
+  - claim: fig3i-go-theta-csd
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 88, reading a: L2/3 and L4 are both sinks from the first lag (-124.8 ms) through most of
+      the window. The -120.8 against -84.0 ms ordering comes from brief sign flips, so a by-eye reading gives
+      a tie, which is what S7''s own rule gives. Reading b fails, and there are 685 and 575 windows against
+      335.'
+    response: Outcome kept as recorded, as round 2 allows no change; a change to not reproduced is proposed.
+      With the sustained tie-break, L2/3 and L4 are both sinks from the window start under the Methods' band,
+      so the rule fails there; under the code's band it now holds (L2/3 from -58.4 ms), and the Methods' band
+      stays adopted.
+  - claim: fig4ab-ssa-condition-spectra
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig4c-ssa-v1-contrast
+    agrees: true
+    outcome: reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: fig4def-ssa-laminar
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partial under three of the four readings.
+    response: No change of outcome. The notebook now prints the outcome under each of the four readings.
+  - claim: fig4g-ssa-gamma-csd-feedforward
+    agrees: true
+    outcome: reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. With the sustained tie-break the rule holds at 1/8 and 1/16 of a cycle
+      and fails at 1/4 in both readings, as the notes say.
+  - claim: fig4h-ssa-alphabeta-csd
+    agrees: true
+    outcome: not_reproduced
+    reason: 'This follows from the tie-break, but it is fragile. In reading a, L1 and L5/6 are already sinks
+      at the first lag while L4 is a source (v1 cell 103), so a by-eye reading could give the opposite result.
+      The S7 rule fails in both readings. On v1 cell 104, "the margins are under 1 ms in reading b": only the
+      L1 margin is (0.8 ms); L5/6 trails L4 by 4.8 ms.'
+    response: No change of outcome. With the sustained tie-break reading a fails (L4 -21.6 ms before L5/6 -12.0
+      and L1 16.0 ms) and reading b holds (L1 -34.4 before L4 25.6 ms); the Methods' band stays adopted. The
+      Result cell and notes say a by-eye reading could differ, and the margin sentence is corrected.
+  - claim: fig4i-ssa-theta-csd
+    agrees: true
+    outcome: not_reproduced
+    reason: 'fig2g, fig3g, fig4g (reproduced) and fig2h, fig2i, fig4i (not reproduced): in the gamma CSDs,
+      the L4 sink starts several samples before the L2/3 sink, so the tie-break works there.'
+    response: No change of outcome. The CSD tie-break now counts only a displayed sink lasting at least 1/8
+      of a band-centre cycle (round-2 point 2); the outcome is the same under it, at 1/16 and 1/4 of a cycle
+      where printed, and the notes give the new onsets.
+  - claim: fig5-l23-gamma-by-area
+    agrees: true
+    outcome: not_reproduced
+    reason: 'On areas cell 37 and the record''s fig5 note, "its unfiltered variant reproduces the areas notebook''s
+      V1 values": the values match, but the GO point count differs by one (1307 against 1308, v1 cell 23 against
+      areas cell 36). This is trivial. Round-1 point 3: the V1 values move by at most 0.09 dB without the median
+      filter, and the masks share 70-88% of their points.'
+    response: No change of outcome. The note and areas cell 37 now give the one-point difference.
+  - claim: fig5-hierarchy-restriction
+    agrees: true
+    outcome: not_reproduced
+    reason: The fig5-hierarchy outcome holds even if the small counts (GO-AL 4 points, GO-AM 2) flip.
+    response: No change of outcome.
+  - claim: suppfig3-fastsweep-aperiodic
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with 34 of the 37 outcomes. Everything else in the Result cells, both Summary sections,
+      the README outcome table and the record's notes matches the printed outputs.
+    response: No change of outcome.
+  - claim: suppfig4-pupil-dd-no-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: A check of the eye clock and a time-in-session variant were added, and the sign of the difference
+      reverses. The clock check shows a stimulus-locked response; it does not show a zero offset.
+    response: No change of outcome. The finding says the eye clock is consistent with the stimulus table as
+      far as this check shows; it does not claim a zero offset.
+  findings:
+  - finding: 1
+    agrees: false
+    severity: major
+    reason: v1 cell 11 shows it for the V1 files of the 7 mice, and that 42 files of those 7 mice differ between
+      the versions. The timestamps of the other probe files ("every probe file") are not printed. I would rate
+      it major, not critical. The defect is plain from the values (a 24 s step at 1250 Hz, end times near 2.4e8),
+      and it blocks the analysis for half the mice.
+    response: Severity changed to major. v1 cell 11 now prints the first two and last timestamps of all 42
+      probe files of the 7 mice in the cited version; all 42 run 0, 24, ...
+  - finding: 2
+    agrees: true
+    reason: v1 cell 11 shows r = 0.999-1.0 and 0.9985-1.0 on all six probes. Cell 10 shows that no two sessions
+      share a stimulus sequence, and that in the pinned version the largest correlation between different mice
+      is 0.844. Critical is right. One recording is deposited under two subjects, nothing in the files shows
+      it, and an analysis that takes the files as given would count it twice against the wrong stimulus tables.
+    response: No change.

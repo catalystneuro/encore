@@ -59,7 +59,8 @@ Where the parameters come from (claims file, opening comment, S1 to S7, unless s
   computed here to avoid Elephant's dependencies. S7's first-sink rule ties when every layer
   group holds a displayed sink at the first lag; the notebook then uses, as an assumption, the
   sink onset of each group's mean CSD (the first lag at which it turns from source to sink),
-  and prints the sign of each group's mean CSD at every lag.
+  counted for a displayed sink lasting at least 1/8 of a period of the band centre, and prints
+  the sign of each group's mean CSD at every lag.
 - Per-mouse spectra (claim dd-gamma-peak-frequency-v1): Hann-tapered FFT of each trial's
   segment, zero-padded to 1250 samples, every second bin kept (a 2 Hz grid, the Methods' 2 Hz
   resolution).
