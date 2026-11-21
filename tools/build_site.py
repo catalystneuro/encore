@@ -138,6 +138,23 @@ VERIFICATION_TIER = {"agent": "agent_verified", "person": "human_verified",
 CAUTION = "A failure to reproduce is not a finding that the paper is wrong."
 
 
+def finding_severity(record: dict, finding: dict, n: int) -> dict:
+    """How severe finding `n` of an attempt record is, and whether it is one to present as a problem that changes
+    results (docs/protocol.md, the attempt record): rated `critical`, and checked against the notebook's outputs by
+    someone other than the attempt's author. The rating is the attempt's own (from pilot-18), checked by the verifier
+    in round 2; or, for an earlier attempt, the one a later review gave it (`findings_review` in the record), checked
+    in that review. `checked` is what the check said, for the page."""
+    own = finding.get("severity")
+    if own:
+        said = [x for v in record.get("verifications") or [] for x in v.get("findings") or [] if x["finding"] == n]
+        agreed, note = (said[-1]["agrees"], said[-1].get("reason")) if said else (False, None)
+        return {"severity": own, "changes_results": own == "critical" and agreed, "checked": squash(note) if agreed else None}
+    review = next((x for x in (record.get("findings_review") or {}).get("findings") or [] if x["finding"] == n), {})
+    agreed = review.get("confirmed") is True
+    return {"severity": review.get("severity"), "changes_results": review.get("severity") == "critical" and agreed,
+            "checked": squash(review.get("note")) if agreed else None}
+
+
 def load_yaml(path: Path):
     # libyaml when PyYAML has it: the site reads every claims file and record, and the pure-Python parser
     # takes most of the build.
@@ -271,11 +288,25 @@ def collect(executed: Path | None = None) -> dict:
         entries[data["name"]] = data
     titles = {p["doi"]: p["title"] for t in queue["targets"] for p in t["papers"]}
 
+    def cells_of(entry: dict, notebook: str) -> dict:
+        """The id of the cell each tag of a notebook is on (the first, for a tag on several): the executed copy's
+        page has an anchor for each cell, `cell-id=<id>`, so a claim can link to the cell that tests it."""
+        try:
+            nb = json.loads((ROOT / "entries" / entry["name"] / notebook).read_text())
+        except (OSError, ValueError):
+            return {}
+        out = {}
+        for cell in nb.get("cells") or []:
+            for tag in (cell.get("metadata") or {}).get("tags") or []:
+                if cell.get("id"):
+                    out.setdefault(tag, cell["id"])
+        return out
+
     def notebooks_of(entry: dict) -> list[dict]:
         out = []
         for n in entry["notebooks"]:
             page = f'notebooks/{entry["name"]}/{Path(n["path"]).stem}.html'
-            out.append({"path": n["path"], "title": n.get("title") or n["path"],
+            out.append({"path": n["path"], "title": n.get("title") or n["path"], "cells": cells_of(entry, n["path"]),
                         "executed": page if executed and (executed / entry["name"] / Path(page).name).is_file()
                         else None})
         return out
@@ -306,6 +337,9 @@ def collect(executed: Path | None = None) -> dict:
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
+            # Everything the attempt used that is not in its datasets: other data, the paper's code (docs/protocol.md).
+            "inputs": [{"what": squash(str(i.get("what") or "")), "source": squash(str(i.get("source") or ""))}
+                       for i in a.get("inputs") or []],
             "entry_title": entry["title"] if entry else None,
             # The recorder's summary for the site (docs/agents/recorder.md, step 2), when the attempt has one.
             "summary": squash((ROOT / "summaries" / f"{a['id']}.md").read_text())
@@ -323,6 +357,7 @@ def collect(executed: Path | None = None) -> dict:
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
                 "notebook": o.get("notebook"),
+                "output": o.get("output"),
                 "notes": squash(o.get("notes")),
                 "deviations": [squash(d) for d in o.get("deviations") or []],
                 "assumed": bool(o.get("assumed")),
@@ -334,7 +369,7 @@ def collect(executed: Path | None = None) -> dict:
             # Every finding of the record, numbered as the record has them (a reconciliation names them by number);
             # split after reconcile() into those about the data (`findings`) and about the paper (`paper_notes`).
             "findings": [{"kind": f["kind"], "statement": squash(f["statement"]), "found": f.get("found"),
-                          "status": None, "n": n,
+                          "status": None, "n": n, **finding_severity(a, f, n),
                           "about": f.get("about") or ("paper" if f["kind"] in ABOUT_PAPER else "data"),
                           "datasets": [str(x) for x in f.get("datasets") or []]}
                          for n, f in enumerate(a.get("findings") or [], 1)],
@@ -542,7 +577,8 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
             "notebooks": [{"path": "figures.ipynb", "title": "Figures", "executed": None},
                           {"path": "behaviour.ipynb", "title": "Behaviour", "executed": None}],
             "outcomes": outcomes,
-            "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30))}
+            "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30)),
+                          "severity": None, "changes_results": False, "checked": None}
                          for _ in range(rng.randint(1, 10))],
             "verifications": [] if tier == "runs" else [{
                 "date": date, "kind": "agent", "by": "Demo verifier", "reviewed": "Demo",
@@ -606,8 +642,10 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
     The groups are the paper's findings that rest on the dataset ("dataset"), those that also use
     data from elsewhere ("with_inputs"), those on data the paper deposited in another archive
     ("elsewhere"), and the registry's checks that the dataset is the paper's data ("link"), which are
-    not findings of the paper. They are never added together, so that an outcome that may reflect
-    outside data, or a link, does not count as a judgement of the paper's findings on the dandiset.
+    not findings of the paper. A dataset's own pages and badges count the first group alone, so that an
+    outcome that may reflect outside data does not count as a judgement of the dataset. A paper's (its page,
+    its row in the list, its badges, its authors' pages) count all of the paper's findings, wherever their
+    data are: the group "paper", which is the first three together. A link is in neither.
     """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
     # A deprecated attempt stays on its page but counts for nothing.
@@ -618,7 +656,69 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
     def group_of(o):
         return "link" if o.get("kind") == "link" else groups.get(o.get("data"), o.get("data"))
     return {k: sum(1 for a in attempts for o in a["outcomes"]
-                   if o["outcome"] == k and group_of(o) == group) for k in OUTCOMES}
+                   if o["outcome"] == k and (group_of(o) != "link" if group == "paper" else group_of(o) == group))
+            for k in OUTCOMES}
+
+
+# Whose DOIs these are, by prefix: for naming an attempt's other sources (source_ref).
+DOI_HOSTS = [("10.48324/dandi", "DANDI"), ("10.26275/", "SPARC"), ("10.6080/", "CRCNS"), ("10.5281/zenodo", "Zenodo"),
+             ("10.6084/m9.figshare", "Figshare"), ("10.5061/dryad", "Dryad"), ("10.17605/osf", "OSF"),
+             ("10.25493/", "EBRAINS"), ("10.18112/openneuro", "OpenNeuro"), ("10.12751/g-node", "G-Node"),
+             ("10.17632/", "Mendeley Data"), ("10.7910/dvn", "Harvard Dataverse"), ("10.35092/", "CaltechDATA")]
+_DOI_KEYS: dict = {}
+
+
+def source_ref(data: dict, source: str, root: str) -> dict:
+    """How one of an attempt's other sources is named and linked, from the `source` its record gives (a DOI, or a
+    repository's address with the commit read): its host, a short label, and an address. A DOI of a dataset the
+    registry lists is named as that dataset and opens its page here, when it has one."""
+    if id(data) not in _DOI_KEYS:
+        keys = {}
+        for t in data["targets"]:
+            for d in [t.get("doi"), *(t.get("version_dois") or [])]:
+                if d:
+                    keys[str(d).lower()] = t["key"]
+        _DOI_KEYS.clear()
+        _DOI_KEYS[id(data)] = keys
+    doi = re.search(r"\b10\.\d{4,9}/[^\s,;)\]]+", source)
+    url = re.search(r"https?://[^\s,;)\]]+", source)
+    geo = re.search(r"\bGS[EM]\d+\b", source)
+    if doi and not (url and "github.com" in url.group(0)):
+        d = doi.group(0).rstrip(".").lower()
+        dandi = re.match(r"10\.48324/dandi\.(\d{6})", d)
+        key = _DOI_KEYS[id(data)].get(d) or (f"dandi:{dandi.group(1)}" if dandi else None)
+        if key:
+            has_page = key in current_attempts(data)
+            return {"host": "A dataset in the registry" if has_page else ARCHIVES.get(split_key(key)[0], {}).get("label", ""),
+                    "label": dataset_label(key), "href": root + page_of(key) if has_page else f"https://doi.org/{d}"}
+        host = next((name for prefix, name in DOI_HOSTS if d.startswith(prefix)), "DOI")
+        return {"host": host, "label": d, "href": f"https://doi.org/{d}"}
+    if url:
+        u = url.group(0).rstrip(".")
+        repo = re.match(r"https?://(github|gitlab)\.com/([^/\s]+/[^/\s#?]+)", u)
+        if repo:
+            return {"host": "GitHub" if repo.group(1) == "github" else "GitLab",
+                    "label": repo.group(2).removesuffix(".git"), "href": u}
+        return {"host": "", "label": re.sub(r"^https?://(www\.)?", "", u).split("/")[0], "href": u}
+    if geo:
+        return {"host": "GEO", "label": geo.group(0),
+                "href": f"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={geo.group(0)}"}
+    return {"host": "", "label": source if len(source) <= 60 else source[:57].rstrip() + "…", "href": None}
+
+
+def other_sources(data: dict, attempts: list[dict], root: str) -> list[dict]:
+    """The other sources a paper's attempts used, each once (by its source), with what was taken from it."""
+    out, seen = [], set()
+    for a in attempts:
+        for i in a.get("inputs") or []:
+            ref = source_ref(data, i["source"], root)
+            if ref["label"] == a["paper"].lower():
+                # The paper's own DOI: what it published beside its text, its supplementary files and tables.
+                ref = {**ref, "host": "", "label": "The paper’s supplementary files"}
+            if (ref["label"], ref["href"]) not in seen:
+                seen.add((ref["label"], ref["href"]))
+                out.append({**ref, "what": i["what"], "source": i["source"]})
+    return out
 
 
 def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
@@ -975,7 +1075,9 @@ def rows(data: dict) -> dict[str, list]:
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["key"])),
             "page": page_of(t["key"]) if atts else None, "url": archive_url(t["key"]),
             "findings": sum(len(a["findings"]) for a in atts if not a.get("deprecated")) if atts else None,
-            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
+            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]})
+                     + ([CHANGES_RESULTS] if any(f["changes_results"] for a in atts or [] if not a.get("deprecated")
+                                                 for f in a["findings"]) else []),
             # For the datasets list, which a curator reads: the open findings by kind (most first), the versions
             # the attempts ran on, and how many papers were tested on the dataset.
             "found_counts": dict(Counter(f["kind"] for a in atts or [] if not a.get("deprecated")
@@ -1013,7 +1115,8 @@ def rows(data: dict) -> dict[str, list]:
                                "notebook": nb["executed"] if nb else None,
                                "notebook_title": nb["title"] if nb else None})
             for f in a["findings"]:
-                findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
+                findings.append({**common, "kind": f["kind"], "statement": f["statement"],
+                                 "changes_results": f["changes_results"]})
     return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings,
             "authors": author_rows(data)}
 
@@ -1334,7 +1437,7 @@ def author_badge(data: dict, author: dict) -> dict | None:
     verifier has checked), over all their papers in the registry. None when that is nothing."""
     papers = []
     for q in author["papers"]:
-        n = sum(outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+        n = sum(outcome_counts(a, "paper")["reproduced"] for a in q["live"] if a["tier"] != "runs")
         if n:
             papers.append({"doi": q["doi"], "key": q["key"], "byline": q["byline"], "title": q["title"],
                            "reproduced": n, "url": SITE_URL + f'papers/{q["key"]}/'})
@@ -1453,12 +1556,24 @@ def paper_badge(data: dict, q: dict) -> dict | None:
     """A paper's badge (docs/badges.md): how many of its findings were reproduced, counted as a dataset's badge
     counts them (claims on its datasets, reproduced in full, in current attempts an independent verifier has
     checked). None when that is nothing."""
-    total = sum(outcome_counts(a)["reproduced"] for a in q["live"] if a["tier"] != "runs")
+    total = sum(outcome_counts(a, "paper")["reproduced"] for a in q["live"] if a["tier"] != "runs")
     if not total:
         return None
     text = f'{total} finding{"" if total == 1 else "s"} reproduced'
     return {"text": text, "reproduced": total, "url": SITE_URL + f'papers/{q["key"]}/',
             "svg": SITE_URL + f'badge/papers/{q["key"]}.svg', "alt": f'Encore: {text}, {q["byline"]}'}
+
+
+def paper_reproduced(data: dict, q: dict) -> dict | None:
+    """A badge with only the number of the paper's findings reproduced, over every current attempt, verified or not
+    (as the bar at the top of its page counts them). None when no finding was reproduced, or when paper_badge already
+    says the same number."""
+    total = sum(outcome_counts(a, "paper")["reproduced"] for a in q["live"])
+    if not total or total == (paper_badge(data, q) or {}).get("reproduced"):
+        return None
+    text = f'{total} finding{"" if total == 1 else "s"} reproduced'
+    return {"text": text, "reproduced": total, "url": SITE_URL + f'papers/{q["key"]}/',
+            "svg": SITE_URL + f'badge/papers/{q["key"]}-reproduced.svg', "alt": f'Encore: {text}, {q["byline"]}'}
 
 
 def paper_outcomes(data: dict, q: dict) -> dict | None:
@@ -1488,6 +1603,11 @@ def paper_badges_panel(data: dict, q: dict, root: str) -> str:
     styles = ([{"name": "Findings reproduced", "src": f"{local}.svg", "svg": badge["svg"], "alt": badge["alt"],
                 "url": badge["url"], "counts": "It counts the paper&rsquo;s findings reproduced in full by attempts "
                                                "an independent verifier has checked."}] if badge else [])
+    count = paper_reproduced(data, q)
+    if count:
+        styles += [{"name": "Reproduced", "src": f"{local}-reproduced.svg", "svg": count["svg"], "alt": count["alt"],
+                    "url": count["url"], "counts": "It counts the paper&rsquo;s findings reproduced in full in a "
+                                                   "current attempt, verified or not."}]
     if every:
         styles += [{"name": "All outcomes", "src": f"{local}-outcomes.svg", "svg": every["svg_outcomes"],
                     "alt": every["alt"], "url": every["url"], "counts": all_note},
@@ -1614,7 +1734,7 @@ def paper_rows(data: dict) -> list[dict]:
     for p in papers:
         live, atts = p["live"], p["attempts"]
         outcomes = [o for a in live for o in a["outcomes"]]
-        counts = outcome_counts(live) if live else None
+        counts = outcome_counts(live, "paper") if live else None
         rows_.append({
             "id": p["key"], "title": p["title"], "byline": p["byline"], "doi": p["doi"],
             "journal": journal.get(p["doi"], "Not recorded"),
@@ -1637,7 +1757,8 @@ def paper_rows(data: dict) -> list[dict]:
             "findings": sum(len(a["findings"]) for a in live) if live else None,
             # What the datasets list had, now that the papers are the one list: what was found about the data, and
             # whether CatalystNeuro converted any of the paper's datasets.
-            "found": sorted({f["kind"] for a in live for f in a["findings"]}),
+            "found": sorted({f["kind"] for a in live for f in a["findings"]})
+                     + ([CHANGES_RESULTS] if any(f["changes_results"] for a in live for f in a["findings"]) else []),
             "converted": "catalystneuro" if any(by_key.get(k, {}).get("catalystneuro") for k in p["datasets"]) else "other",
             "missing": sum(len(a.get("missing_datasets") or []) for a in live),
             "page": f"papers/{p['key']}/",
@@ -1776,6 +1897,16 @@ def gist(notes: str, limit: int = 110, shortest: int = 40) -> str:
     return text[:limit + 1].rsplit(" ", 1)[0].rstrip(",;:(–—-") + "…"
 
 
+def cell_href(data: dict, attempt: dict, o: dict, root: str) -> str | None:
+    """Where the cell that tests a claim is, in the executed copy of its notebook: the notebook's page at the
+    cell's anchor, or at its top when the cell is not known. None when the notebook has no executed copy."""
+    nb = next((n for n in attempt.get("notebooks") or [] if n["path"] == o.get("notebook")), None)
+    if not nb or not nb.get("executed"):
+        return None
+    cell = (nb.get("cells") or {}).get(o.get("output") or "")
+    return f'{data.get("notebooks_root") or root}{nb["executed"]}' + (f"#cell-id={cell}" if cell else "")
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
@@ -1823,10 +1954,15 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
         cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
         body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
     # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at
-    # the end of the claim's first line, and with a link to the claim once it is open.
-    ident = f'<code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
-    body += (f'<p class="claim-link small muted">Claim id <code>{e(o["claim"])}</code> &middot; '
-             f'<a href="#claim-{e(o["claim"])}">link to this claim</a></p>')
+    # the end of the claim's first line, once, with the link to the claim under it.
+    ident = (f'<span class="claim-ref"><code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
+             f'<a class="claim-anchor" href="#claim-{e(o["claim"])}">link to this claim</a></span>')
+    # Open, the claim leads to the cell of the executed notebook that tests it (cell_href, set by the page).
+    if o.get("cell"):
+        at_cell = "#cell-id=" in o["cell"]
+        body += (f'<p class="claim-link"><a href="{e(o["cell"])}">See the notebook {"cell" if at_cell else ""} that tests '
+                 f'this claim</a> <span class="muted small">in the executed notebook, with its output</span></p>'
+                 ).replace("notebook  that", "notebook that")
     # What was found, in a line under the statement while the claim is closed; open, the full notes show.
     lead = f'<p class="gist">{e(gist(o["notes"]))}</p>' if o["notes"] else ""
     # The chip is not a link here: inside the summary a click should open the claim.
@@ -2012,7 +2148,7 @@ def attempt_row(a: dict, root: str, share: bool = False, paper: dict | None = No
     """One attempt in a list; with `share`, the share of its claims reproduced in place of its date. Given its
     paper (papers_of), the row is the paper's, laid out as in the papers list (list.js, papers): the byline and
     journal above the title, which opens the paper's page, then its datasets and the outcomes."""
-    counts = outcome_counts(a)
+    counts = outcome_counts(a, "paper" if paper else "dataset")
     side = (f'<span class="small"><b>{reproduced_share(counts):.0%}</b> reproduced</span>' if share
             else f'<span class="small muted">{e(a["date"])}</span>')
     mark = deprecated_badge() if a.get("deprecated") else quiet_tier(a["tier"]) if paper else tier_badge(a["tier"])
@@ -2719,7 +2855,7 @@ def page_list(data: dict, kind: str) -> str:
             "blocked_by": {**BLOCKED_BY, "(none)": "No blocked claim"},
             "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
             "status": {**STATUS, "claims": "Claims read, not yet attempted"} if kind == "papers" else STATUS,
-            "found": {**FINDING_KINDS, "(none)": "None recorded"},
+            "found": {CHANGES_RESULTS: CHANGES_LABEL, **FINDING_KINDS, "(none)": "None recorded"},
             "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
             "attempted": {"yes": "Has a paper attempted", "no": "None attempted yet"},
             "paper_count": {"one": "One paper", "several": "Several papers", "(none)": "None listed"},
@@ -3075,9 +3211,18 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict], p
             f'<p class="sub small" style="margin-top:10px">{intro}</p><ol class="timeline">{items}</ol></details>')
 
 
+CHANGES_RESULTS = "changes_results"   # in the lists' `found`, beside the kinds: a dataset or paper with such a finding
+CHANGES_LABEL = "Changes results"
+CHANGES_NOTE = ("The data are wrong in a way the files do not show, so an analysis that takes them as given comes out "
+                "wrong. Each was checked against the notebook&rsquo;s outputs by someone other than the "
+                "attempt&rsquo;s author.")
+
+
 def finding_tags(f: dict) -> str:
-    tags = (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
-            if f.get("status") else "")
+    tags = (f'<span class="tag changes" title="The data are wrong in a way the files do not show; checked against '
+            f'the notebook&rsquo;s outputs">{CHANGES_LABEL}</span>' if f.get("changes_results") else "")
+    tags += (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
+             if f.get("status") else "")
     if f.get("found") == "on_prompt":
         tags += ('<span class="tag" title="Not found by the blind attempt; found when the reconcile step '
                  'checked the earlier finding">found on prompt</span>')
@@ -3090,6 +3235,7 @@ def findings_list(findings: list[dict], root: str, note=None) -> str:
     return "".join(
         f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
+        + (f'<br><span class="muted small">Checked: {e(f["checked"])}</span>' if f.get("checked") else "")
         + (f'<br><span class="muted small">{note(f)}</span>' if note else "") + '</span></li>'
         for f in findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
 
@@ -3130,10 +3276,21 @@ def page_dataset(data: dict, key: str) -> str:
         when = dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
         older = ("" if i == 0 else ' <span class="tag" title="A newer version was tested too; these findings were '
                  'not checked on it">an older version</span>')
+        # Under its version, the problems that change results come first, under their own heading: a finding is
+        # about the version it was found on, these as much as the others.
+        worst = [(f, a) for a in group for f in a["findings"] if f["changes_results"]]
+        rest = [(f, a) for a in group for f in a["findings"] if not f["changes_results"]]
+        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f)) for f, a in pairs)
         findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
-                          f'{n} open finding{"" if n == 1 else "s"}</span></h3><ul class="findings">'
-                          + ("".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f))
-                                     for a in group for f in a["findings"]) or findings_list([], root)) + "</ul>")
+                          f'{n} open finding{"" if n == 1 else "s"}</span></h3>')
+        if worst:
+            findings_html += (f'<h4 class="changes-head">Problems that change results <span class="count">{len(worst)}'
+                              f'</span></h4><p class="sub small" style="margin:4px 0 0">{CHANGES_NOTE}</p>'
+                              f'<ul class="findings">{listed(worst)}</ul>'
+                              + (f'<h4 class="changes-head">Other findings <span class="count">{len(rest)}</span></h4>'
+                                 if rest else ""))
+        if rest or not worst:
+            findings_html += f'<ul class="findings">{listed(rest) or findings_list([], root)}</ul>'
     if not atts:
         findings_html = f'<ul class="findings">{findings_list([], root)}</ul>'
     # Findings of an earlier attempt that a repeat attempt found fixed, on the version it ran on.
@@ -3310,7 +3467,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     # The datasets the page is about: the paper's that its attempts used, or the one.
     about = list(dict.fromkeys(k for a in atts for k in a.get("datasets") or [a["key"]])) if paper else [dandiset]
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
-    counts = outcome_counts(atts)
+    # A paper's page counts all of the paper's claims; a dataset's, those that rest on the dataset alone.
+    counts = outcome_counts(atts, "paper" if paper else "dataset")
     n = sum(counts.values())
     order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
 
@@ -3347,6 +3505,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         # result of the paper: it is under Provenance, not among the claims.
         rank = {**order, "blocked": 3}
         results = [o for o in a["outcomes"] if o.get("kind") != "link"]
+        for o in a["outcomes"]:
+            o["cell"] = cell_href(data, a, o, root)
         for nb in a["notebooks"]:
             mine = sorted((o for o in results if o.get("notebook") == nb["path"]),
                           key=lambda o: rank[o["outcome"]])
@@ -3362,8 +3522,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      f'alt="Open in Colab" width="117" height="20"></a>') if not data["demo"] and a.get("entry") else ""
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span>{colab}</h3>'
-                            f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
-                            f'</p>{by_outcome(mine, root, a, asked)}</div>')
+                            f'{by_outcome(mine, root, a, asked)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
         blocked = [o for o in results if o.get("notebook") not in listed]
         if blocked:
@@ -3382,13 +3541,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
 
     all_findings = [f for a in atts for f in a["findings"]]
 
-    def finding_tags(f):
-        tags = (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
-                if f.get("status") else "")
-        if f.get("found") == "on_prompt":
-            tags += ('<span class="tag" title="Not found by the blind attempt; found when the reconcile step '
-                     'checked the earlier finding">found on prompt</span>')
-        return tags
+    all_findings.sort(key=lambda f: not f["changes_results"])   # stable: the record's order within each
     findings_html = "".join(
         f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}</span></li>'
@@ -3454,6 +3607,18 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     else:
         deviations_html = '<p class="muted" style="margin-top:14px">None recorded.</p>'
 
+    # Everything the attempts used that is not in the datasets, in the records' own words.
+    def _src_full(o):
+        link = f'<a href="{e(o["href"])}">{e(o["label"])}</a>' if o["href"] else e(o["label"])
+        return (f'<li><p class="src-name">{link}' + (f' <span class="muted">{e(o["host"])}</span>' if o["host"] else "")
+                + f'</p><p class="src-what">{e(o["what"])}</p><p class="src-from small muted">Source as recorded: '
+                  f'{e(o["source"])}</p></li>')
+    others_all = other_sources(data, atts, root)
+    others_full = (f'<h3 id="other-sources" style="margin-top:22px">Other data and code used <span class="count">'
+                   f'{len(others_all)}</span></h3><p class="sub small" style="margin-top:6px">What the attempt'
+                   f'{"s" if len(atts) != 1 else ""} used that is not in the dataset{"s" if len(about) != 1 else ""}: '
+                   f'other data, and the paper&rsquo;s code. Each is as the attempt&rsquo;s record describes it.</p>'
+                   f'<ul class="srcs-full">{"".join(_src_full(o) for o in others_all)}</ul>') if others_all else ""
     provenance_html = ""
     for a in atts:
         agent = a.get("agent") or {}
@@ -3612,13 +3777,12 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             + (f'<div class="answer"><strong>The reader’s answer.</strong> {e(answer)}</div>' if answer
                else '<div class="answer open">No reader has answered it yet.</div>')
             + "</li>")
-    questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>'
-                       f'<p class="sub small" style="margin-top:12px">Where the author or a verifier believed the '
+    questions_body = (f'<p class="sub small" style="margin-top:12px">Where the author or a verifier believed the '
                        f'claims file misread the paper, they asked, citing the paper, and a reader who had not seen '
                        f'the data answered from the paper alone, amending the claims file where it was wrong. The '
                        f'author then ran the claim as answered. Attempts before protocol pilot-11 also asked here '
-                       f'for method details the claims file did not give.</p>'
-                       f'<ul class="questions">{question_items}</ul></section>') if questions else ""
+                      f'for method details the claims file did not give.</p>'
+                      f'<ul class="questions">{question_items}</ul>') if questions else ""
 
     # What the attempts found about the paper itself (its methods, its code, its own consistency): on its page.
     notes = [f for a in atts for f in a.get("paper_notes") or []] if paper else []
@@ -3629,11 +3793,17 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                    f'<ul class="findings">' + "".join(
                        f'<li><span><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span></span>'
                        f'<span>{finding_tags(f)}{e(f["statement"])}</span></li>' for f in notes)
-                   + '</ul></section>') if notes else ""
+                   + '</ul>'
+                   # The questions asked about the paper's text are notes on the paper too: one tab holds both.
+                   + (f'<h3 id="questions" style="margin-top:28px">Questions about the claims '
+                      f'<span class="count">{len(questions)}</span></h3>{questions_body}' if questions else "")
+                   + '</section>') if notes else ""
+    questions_panel = (f'<section class="tabpanel" id="questions"><h2>Questions</h2>{questions_body}</section>'
+                       if questions and not notes else "")
     tab_defs = [("claims", "Claims", n),
-                *([("notes", "Notes on the paper", len(notes))] if notes else []),
+                *([("notes", "Notes on the paper", len(notes) + len(questions))] if notes else []),
                 *([] if paper else [("findings", "Findings about the data", len(all_findings))]),
-                *([("questions", "Questions", len(questions))] if questions else []),
+                *([("questions", "Questions", len(questions))] if questions and not notes else []),
                 ("notebooks", "Notebooks", n_notebooks), ("verification", "Verification", n_rounds),
                 ("differences", "Method differences", len(deviations)), ("provenance", "Provenance", None)]
     # Findings about the data belong to the dataset: on a paper's page, a pointer to its datasets' pages.
@@ -3685,11 +3855,35 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      if n_k else '<span class="muted">no findings about the data</span>',
                      archive_link(k, f"on {archive_of(k)}"),
                      f'<a href="{root}api/{page_of(k).rstrip("/")}.json">JSON</a>' if mine_ and k in current else ""]
-            lines += "<tr>" + f"<th scope=\"row\">{cells[0]}</th>" + "".join(f"<td>{c}</td>" for c in cells[1:]) + "</tr>"
+            # In the sidebar the row wraps: the dataset, its version and its size on one line, then, on the next, the
+            # findings about it and its links (a cell that only breaks the line, before the findings).
+            lines += ("<tr>" + f"<th scope=\"row\">{cells[0]}</th>" + "".join(f"<td>{c}</td>" for c in cells[1:3])
+                      + '<td class="sets-break" aria-hidden="true"></td>' + "".join(f"<td>{c}</td>" for c in cells[3:]) + "</tr>")
+            # Under the dataset's line, the claims that rest on it alone, when they are only some of the paper's:
+            # the others also use outside data, or are on data in another archive. What the dataset's own page counts.
+            own = outcome_counts([x for x in mine_ if not x.get("deprecated")]) if mine_ else {}
+            n_own = sum(own.values())
+            if mine_ and n_own < n:
+                said = " · ".join(f"{c} {OUTCOMES[o][0].lower()}" for o, c in own.items() if c) or "none"
+                lines += (f'<tr class="sets-own"><td colspan="{len(cells)}"><strong>{n_own}</strong> of the {n} claims rest on '
+                          f'this dataset alone'
+                          + (f': {said}' if n_own else "") + '. <span class="muted">The others also use data from '
+                          'outside it, or are on data the paper deposited elsewhere.</span></td></tr>')
         heading = ("Data the paper reuses" if paper["relation"] == ["reuses"] else
                    "Dataset" if len(listed) == 1 else "Datasets")
         sets = (f'<div class="sets"><table aria-label="{heading}"><caption>{heading}</caption><tbody>{lines}</tbody>'
                 f'</table></div>')
+        # Under the datasets: what else the attempts used, by name. What was taken from each is under Provenance.
+        others = other_sources(data, atts, root)
+        SHOWN = 6
+        def _src(o):
+            link = f'<a href="{e(o["href"])}">{e(o["label"])}</a>' if o["href"] else e(o["label"])
+            return f'<li>{link}' + (f' <span class="muted">{e(o["host"])}</span>' if o["host"] else "") + "</li>"
+        others_side = (f'<div class="srcs"><p class="srcs-head">Other data and code used</p><ul>'
+                       + "".join(_src(o) for o in others[:SHOWN])
+                       + (f'<li class="muted">and {len(others) - SHOWN} more</li>' if len(others) > SHOWN else "")
+                       + f'</ul><p class="small"><a href="#provenance">What was taken from each</a></p></div>'
+                       ) if others else ""
         missing = [m for a in atts for m in a.get("missing_datasets") or []]
         # Why an attempt left a dataset out, in its own words: long, so on request.
         could_not = (f'<details class="sets-why"><summary>{len(missing)} dataset{"" if len(missing) == 1 else "s"} '
@@ -3709,7 +3903,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                 f'<p class="phead-tier">{tier_badge(tier, tier_link)}</p>'
                 f'<p class="sub small"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · <span class="key">paper key '
                 f'<code>{e(paper["key"])}</code></span></p>'
-                f'{sets}{could_not}'
+                f'{sets}{could_not}{others_side}'
                 + (f'<div class="phead-tags">{tags}</div>' if tags else "") + '</aside>')
     else:
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
@@ -3721,7 +3915,6 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   <div class="phead">
   <div class="phead-main">
   <div class="result"><p class="result-head">Outcomes of {n} claims</p>{bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}</div>
-  {outside_note(atts)}
   {summary_block(atts, name=lambda a: ", ".join(e(x["label"]) for x in attempt_sets(data, a)))}
   {responses_block(data, paper, one, root)}
   {superseded}
@@ -3762,7 +3955,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     <p class="sub small" style="margin-top:12px">How the tests differed from the paper’s method or data, and the claims
     each applies to.</p>
     {deviations_html}</section>
-  <section class="tabpanel" id="provenance"><h2>Provenance</h2>{provenance_html}</section>
+  <section class="tabpanel" id="provenance"><h2>Provenance</h2>{provenance_html}{others_full}</section>
   {related}
   {paper_badges_panel(data, paper, root) if paper and not one else ""}
   <div class="prevnext">{prev_link}{next_link}</div>
@@ -3924,6 +4117,8 @@ def build(data: dict, output: Path) -> None:
         (output / "badge" / "papers").mkdir(parents=True, exist_ok=True)
         if badge:
             (output / "badge" / "papers" / f'{p["key"]}.svg').write_text(badge_svg(badge))
+        if paper_reproduced(data, p):
+            (output / "badge" / "papers" / f'{p["key"]}-reproduced.svg').write_text(badge_svg(paper_reproduced(data, p)))
         if every:
             (output / "badge" / "papers" / f'{p["key"]}-outcomes.svg').write_text(outcomes_badge_svg(every))
             (output / "badge" / "papers" / f'{p["key"]}-card.svg').write_text(card_badge_svg(every))

@@ -172,7 +172,13 @@ The public site is static and is built from the files above by
   `DANDI:000003`.
 - **A page per attempted dataset** at `datasets/<archive>/<id>/`, with tabs
   for claims, findings, verification, method differences and provenance. It is
-  complete HTML and is the page an archive would link to. Each claim has its
+  complete HTML and is the page an archive would link to. Its findings are under
+  the version of the dataset they were found on, and each version's begin
+  with the "Problems that change results": the findings rated `critical`
+  (docs/protocol.md, the attempt record) that someone other than the attempt's
+  author checked against the notebook's outputs, each with what the check
+  found. No other severity is shown: there is no score for a dataset and no
+  ranking of datasets by severity. Each claim has its
   own anchor. A closed claim shows its statement and, under it, the first
   sentence of the agent's notes, so the list can be read without opening each. The DANDI pages used to be at `dandisets/<id>/`, which now
   redirects.

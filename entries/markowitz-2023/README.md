@@ -1,38 +1,26 @@
-# Markowitz, Gillis, Jay et al. (2023) from dandiset 000559
+# Markowitz et al. (2023) on dandiset 000559
 
-Tests the findings of [Markowitz et al. (2023)](https://doi.org/10.1038/s41586-022-05611-2) that can
-be tested on [DANDI:000559](https://dandiarchive.org/dandiset/000559/0.260528.0858), which holds the
-dLight photometry, MoSeq syllables and closed-loop optogenetic sessions of the paper: 14 DLS and 8
-DMS dLight mice, 20 Opto-DA mice and 12 no-opsin controls.
+Tests the findings of Markowitz, Gillis, Jay et al. (2023), "Spontaneous behaviour is structured by
+reinforcement without explicit reward" (Nature 614, 108-117, doi:10.1038/s41586-022-05611-2), on
+DANDI:000559 version 0.261113.1911. The claims are in `claims/markowitz-2023.yaml` and the outcomes
+in `attempts/markowitz-2023-02.yaml`.
 
-| Claim | Outcome |
-|---|---|
-| dLight is negatively correlated with velocity at short timescales and positively at long ones | Partially reproduced |
-| Syllable-associated dLight differs across syllables (Kruskal-Wallis) | Partially reproduced |
-| Syllable identity cannot be decoded from dLight | Reproduced |
-| Syllables with more dLight are used more | Reproduced |
-| Syllables with more dLight have less predictable outgoing transitions | Reproduced |
-| dLight at a syllable instance predicts that syllable's use over the next minutes | Partially reproduced |
-| DMS has fewer dopamine transients than DLS | Reproduced |
-| DMS dopamine does not predict future syllable use | Not reproduced |
-| Opto-DA increases target syllable use more than in controls (log2 fold change) | Reproduced |
-| The same, for the change in counts | Reproduced |
-| Nine Opto-DA mice are learners | Not reproduced (7) |
-| In learners, change during stimulation predicts change after it | Reproduced |
-| Brief Opto-DA does not change movement; 3-s stimulation increases velocity | Blocked: metadata insufficient |
-| Spontaneous and food-reward transients are of similar size | Blocked: data missing |
-| Figures 3i, 4f (need catch trials) | Blocked: metadata insufficient |
-| Figure 1f, 2k, Extended Data 10d, Figures 4b, 4c, 4h and 5 | Blocked: not attempted |
+- `photometry.ipynb`: the dLight photometry findings of Figs. 1 and 2 and Extended Data Figs. 2, 3
+  and 7 (DLS dopamine at syllable transitions, its relation to velocity, to syllable use and to
+  sequence entropy, and DMS against DLS). About 45 minutes.
+- `optoda.ipynb`: the closed-loop Opto-DA findings of Fig. 3 and Extended Data Fig. 10 (target
+  reinforcement, learners, sequence entropy, kinematics, duration, place preference). About 10
+  minutes.
+- `markowitz.py`: streaming loaders for the dandiset's NWB files and the shared measures.
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
+and the differences from the paper's method.
 
-The files do not mark catch trials, the genotype or opsin of a mouse, or the session type, and
-they hold fewer photometry sessions than the paper used. The attempt record, with the reasons and
-the differences from the paper's method, is
-[`attempts/markowitz-2023-01.yaml`](../../attempts/markowitz-2023-01.yaml).
+The food-reward and calibration sessions are not in the dandiset, so the claims on them are
+blocked. Most files of the velocity-modulation claim (Extended Data Fig. 10d) do not state the
+direction of stimulation; `optoda.ipynb` reads it from the data, after correcting a 2700-s offset
+of the detection clock, and tests the claim on that basis; the syllable decoder of Fig. 1l was too large to run; the encoding, decoding and
+reinforcement-learning models and the Opto-DA target-specificity panel were not run within the time
+of the attempt.
 
-- `reproduce_markowitz_2023.ipynb`: the analysis. It takes about 13 minutes, about 4 of them streaming
-  1,729 files.
-- `spontda.py`: streaming the files, the dLight processing and quality criteria of the paper,
-  syllable instances, and the closed-loop counts. Other notebooks on this dandiset can import it.
+Run with `python tools/entry.py run entries/markowitz-2023`.

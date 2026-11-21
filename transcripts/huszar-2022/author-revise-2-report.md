@@ -1,21 +1,26 @@
-I've answered every point in the round-2 report. No outcome changed and nothing is proposed for round 3. The verifier agreed with all 35 outcomes, and the re-run gives the same numbers for every claim, so none of the conclusions needed new figures. `python tools/entry.py all entries/000552-huszar-2022` passes with 0 errors in about 8 minutes.
+I've addressed every point in the round-2 report and recorded the round. No outcome changed, and no `proposed` changes were needed. The final run of `python tools/entry.py all entries/huszar-2022` passed: the check found 0 errors, the notebook took 47.6 min and peaked at 1.4 GB, and I confirmed the conclusions match its numbers. Nothing is committed.
 
-**Corrections and added outputs**
-- **Sessions without units (fig7fg):** the count was wrong in cell 62 and the fig7fg notes. Of the paper's 96 sessions, 57 have units and 39 don't (not 31). Cell 63 now prints this.
-- **Stimulation channels in raw files (B7):** the notebook now lists every dataset in all 13 raw files, not just one. None has a stimulation, TTL, event or pulse series, only the voltage series and the electrodes table. The general statement in cell 62, the Summary, the README and the ed2 notes now rests on all 13 files.
-- **Cell 16 and ed2 notes:** these now give the paper's pulse protocol and clipping window. They say the paper states neither the gap between pulse blocks nor what the clipped samples contain. The conclusion that the stimulation period isn't in the recording is now conditional on clipped samples being flat or zero. Only one wideband file was scanned.
-- **fig7fg connection test:** I added a version that tests the three bins around the cross-correlogram peak, as the Methods describe (`is_monosynaptic_peak` in `huszar.py`). It searches for the peak at lags up to 4.0 ms, a range the Methods don't give, and I chose it after seeing the first results. Both tests now pass a synthetic check in the notebook. I also added a second session from inside the Fig. 7f cohort, e13_26m1_211019.
-  - The original test finds connections in 0.448 and 0.407 of pairs (old session, new session); the peak-centred one finds 0.405 and 0.394. The paper reports 0.173.
-  - So the block stands. The notes now say the gap may come from this implementation as well as from what the Methods leave out.
-- **Smaller fixes:**
-  - Corrected a swapped column label in the fig6c output, which should read "(novel, familiar)".
-  - The novel-explorations conclusion now states as an interpretation that the 164 cm T-maze is the paper's novel figure-eight.
-  - The README run time now says about eight minutes.
-- **Round 2 in the attempt record:** recorded under `verifications` for all 35 claims, with the verifier's reasons in its own words and my responses.
-- **Paper text:** saved under `paper/` (PMC10807234, as BioC JSON and plain text). That folder is gitignored, so it won't be committed.
+**Outcomes:** all 44 are unchanged (17 reproduced, 10 partially reproduced, 7 not reproduced, 10 blocked). The round-2 entry records the verifier agreeing with 38 and disagreeing with 6: sessions-durations, ed10, fig3c, fig3e, ed6 and fig4d. fig6c-novel is recorded as accepted only on condition of the open-field scale.
 
-**Not done**
-- **Earlier record entry:** the round-1 response for fig7fg also said "31 sessions". I left it as originally recorded, corrected the outcome notes, and said so in the round-2 summary.
-- **fig5e rate rule (B4):** no change. The files hold no cell types or waveforms to check the 5 Hz rule against, and the dependence is already stated.
-- **fig6d-rate:** no change. Its fragility is already stated in the notes, the conclusion and the summary.
-- **Wideband scans:** the other 10 wideband files (54 to 184 GB each) were not scanned.
+**Fixes and new outputs:**
+- **Theta channel:** a channel now has to show a positive sharp wave *and* sit above the layer centre. 72 of 104 sessions follow that rule, and the notebook prints that every one of their channels is above the centre and positive. Six sessions with 20 or fewer non-REM ripples (including the two with no non-REM) fall back to all ripples; this is now stated and printed. Added variants on the rule-following sessions only:
+  - fig6c-theta: rho = 0.734.
+  - fig6d-rate: rank-sum p = 0.051 on that subset (paired p = 0.0047), stated in the notes.
+  - fig7fg: theta slope 0.0026.
+- **fig2c:** the SBD median is 0.0170, still just below tolerance by the notebook's check, so it stays partially reproduced.
+- **Open-field scale (fig6c-novel and the other novel-environment claims):** a new data-check cell prints the evidence. Lab-unit tracks recorded alongside centimetre positions work out at 0.85 to 0.93 cm per unit. A 0.85 variant gives p = 0.57 for fig6c-novel, the same outcome. The open fields themselves carry no scale, so that outcome stays marked as resting on an assumption and conditional on it.
+- **fig6f:** ran the scale variants (the main effect holds under each) and compared against the Supplementary Table 5 means.
+- **fig7d:** added a bootstrap over connections. The 29–42 ms peak wins in 999 of 1,000 resamplings, and the difference from the next bin has a 95% interval of 0.00017 to 0.00050.
+- **Wrong numbers and sentences:** corrected every one the report quoted (ed5, ed10, fig5b, fig7b, fig7fg, the "60% more" sentence, the README row count and "without sleep states"), and removed the uncited "earlier run" sentence.
+- **ed5 and ed10 fractions:** these move between runs because each claim shares one random generator across its comparisons. ed5's novel fraction is now 0.498 (0.604 before); ed10's ratemap fraction is 0.132 (0.106 before). The notes and notebook say so.
+- **ed3:** its numbers moved slightly with the new theta channel; the notes are updated and the outcome is unchanged.
+- **Round 1 record:** ed3, ed5, ed7 and ed10 now read `agrees: false`, as the verifier said those were disagreements.
+- **ed10:** added a question to `questions/huszar-2022.yaml` asking whether its dependency on ed2 should be dropped. With it dropped, its own parts would give not reproduced (p = 0.078).
+
+**Not done, and why:**
+- **ed10** stays blocked with no proposed change, because the claims file's `depends_on` still blocks it.
+- **fig3c, fig3e, ed6, ed7 and fig4d** stay blocked as `too_large`; the first run's time limit is what stopped them. Their notes now say plainly that they were not attempted and that the 9 to 12 GB figure only applies to holding the whole matrix in memory. A chunked version would be a new analysis, which the protocol leaves to a new attempt. fig4d's notes give its size from the Methods, with no timing.
+- **sessions-durations** stays not reproduced, with the disagreement recorded and the existing reader question still open.
+- **The paper's pair set of 315,722** (fig7fg) is still unexplained.
+
+I also set `runtime_minutes` to 47 in `entry.yaml`.

@@ -1,72 +1,11 @@
-# pelot-2020 · claims-check · run 44220878237
+# pelot-2020 · claims-check · run 44665295929
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-ls paper/; cat claims/pelot-2020.yaml; grep -n "Reader" -A40 docs/protocol.md | head -80
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "claims/pelot-2020.yaml"
-}
-```
-
-```
-1	# Claims for Pelot, Goldhagen, Cariello, Musselman, Clissold, Ezzell & Grill (2020), "Quantified
-2	# Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat", Front.
-3	# Neurosci. 14, 601479, on SPARC:60.
-4	#
-5	# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
-6	# Actions"), 2026-11-18, protocol pilot-16 as stated in docs/protocol.md (Reader, steps 1 to 4).
-7	#
-8	# Text read: the version of record, from Europe PMC (PMC7672126, JATS XML flattened;
-9	# paper/10.3389-fnins.2020.601479.txt), the abstract, Introduction, Materials and Methods,
-10	# Results, figure legends and Discussion. No PDF was supplied, so no figure was read; Figures
-11	# 6, 7 and 9 are known here only from their legends and the Results. Three parts are missing
-12	# from the text read. (1) Eqs. 1 to 4, the perineurium thickness fits, were dropped in the
-13	# flattening; only their R2 values and fascicle counts survive, so the fit coefficients are
-14	# not available as expected values. (2) The supplement (Supplements 1 to 6, Supplementary
-15	# Tables 1 to 6 and Supplementary Figures 13 to 18) is not under paper/; the paper's numbers
-16	# are all in the main text, but Supplement 4 (literature values) and Supplement 6 (age
-17	# trends) are what two claims rest on. (3) The reference list is empty, so the identifiers of
-18	# the SPARC datasets Pelot et al. (2020a to g) are not in the text read.
-19	#
-20	# Code read: none. The paper links no code repository. The archive's file listing for SPARC:60
-[... 858 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python tools/claims_check.py claims/pelot-2020.yaml paper/10.3389-fnins.2020.601479.txt; wc -l paper/*.txt
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "paper/10.3389-fnins.2020.601479.txt"
-}
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "paper/10.3389-fnins.2020.601479.txt",
- "offset": 134
-}
+cd  ls paper/; sed -n '/Reader/,/^## /p' docs/protocol.md | head -80; cat claims/pelot-2020.yaml; python tools/claims_check.py claims/pelot-2020.yaml paper/*.txt
 ```
 
 Result: not kept, because it reads the paper's text.
@@ -74,31 +13,26 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-grep -n -i "reader\|tolerance\|threshold\|with_inputs\|elsewhere\|kind\|checks\|ready\|absence" docs/protocol.md | head -80
+cd  awk '/^## Reader/,/^## [A-Z][a-z]+$/' docs/protocol.md | head -150; wc -l claims/pelot-2020.yaml paper/*.txt; python tools/claims_check.py claims/pelot-2020.yaml paper/*.txt | tail -20
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "Reader" docs/protocol.md | head; grep -n "^## " docs/protocol.md
 ```
 
 ```
-13:- The **reader** reads the paper and writes the claims file: every finding,
-14:  and how each is to be tested, taken from the paper. A second reader checks
 15:  it against the paper. Readers never see the dataset's data.
-19:  lacks it takes from the paper, citing the passage, and it asks a reader
-21:- The **verifier** checks the author's work and must not be the author.
 28:Reader runs are made with the [Paper run](../.github/workflows/papers.yml)
-32:`author`, `author-answers` when a reader answered a question on the claims
 43:## Reader
-85:     reader check the statement against the paper without opening it. For a
-100:     numbers the attempt must match, with tolerances, stay in `expected`.
-101:     Record only tests whose result is the finding. A significance threshold
-106:   - `expected`: each reported number the claim rests on, with a tolerance.
-110:     widened by 10% of each bound. Give the reason for any other tolerance.
-122:     bins, thresholds, what a measure is compared with) is taken from the
-137:   - For a claim of absence ("no difference", "did not change"), the
-138:     criterion names the test and threshold the paper used. The claim is
-141:     several readings does not apply: absence is judged on the paper's test
-149:     `with_labels`, `with_inputs` or `elsewhere` (step 4, and author, step
-156:     rests on it. A claim on data in none of them is `data: elsewhere`, or
-161:     recordings of its own, or on other data, are `data: elsewhere` when they
-[... 36 more lines not kept]
+43:## Reader
+199:## Author
+631:## Repeat attempts
+697:## Local and remote datasets
+720:## Verifier
 ```
 
 **Agent calls Read**
@@ -107,7 +41,7 @@ grep -n -i "reader\|tolerance\|threshold\|with_inputs\|elsewhere\|kind\|checks\|
 {
  "file_path": "docs/protocol.md",
  "offset": 43,
- "limit": 150
+ "limit": 156
 }
 ```
 
@@ -132,299 +66,376 @@ grep -n -i "reader\|tolerance\|threshold\|with_inputs\|elsewhere\|kind\|checks\|
 60	
 61	Read the code the paper links to before writing criteria. Say what it holds,
 62	and record the repository and commit read. Where the Methods leave a choice
-[... 130 more lines not kept]
+[... 136 more lines not kept]
 ```
 
-**Agent**
-
-The checker passes (34 claims, 0 problems). I've read the whole paper. Now I'm making the corrections I can show from the text.
-
-**Agent calls Edit**
+**Agent calls Read**
 
 ```json
 {
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  criterion: Means within the stated SDs, and the human against pig Tukey comparison from the\n    model of nerve-diameter-anova with p >= 0.05. The paper prints one p for the comparison;\n    it can be read as (a) the species main-effect contrast human against pig or (b) human\n    against pig at each level in the species by level Tukey; the absence holds under either.",
- "new_string": "  criterion: A claim of absence, judged on the paper's test, Tukey's HSD after the model of\n    nerve-diameter-anova. Reproduced when the means are within the stated SDs and the human\n    against pig comparison has p >= 0.05. The paper prints one p for both levels, and the model\n    has no detected interaction, so the test is read as the species main-effect contrast human\n    against pig; human against pig at each level in the species by level Tukey is shown as a\n    variant. The effect size is reported either way."
+ "file_path": "paper/10.3389-fnins.2020.601479.txt"
 }
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  statement: Rat vagus nerves are about ten times smaller in diameter than human and pig nerves,\n    significantly so at both levels.",
- "new_string": "  statement: Rat vagus nerves are about ten times smaller in diameter than human and pig nerves,\n    significantly smaller than each of the two larger species."
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  criterion: Tukey's HSD after the model of nerve-diameter-anova. Reproduced when rat against\n    human and rat against pig both have p < 0.0001 with rat smaller, and the ratio of the rat\n    mean to each larger species' mean is between 0.05 and 0.2 at each level (a factor of\n    about ten, read as 5 to 20; 0.260/2.2 and 0.135/1.6 from the paper's means give 0.12 and\n    0.08). Partially reproduced when p < 0.05 but not below 0.0001.",
- "new_string": "  criterion: Tukey's HSD after the model of nerve-diameter-anova. The paper's \"both comparisons\n    of rat to larger species\" are rat against human and rat against pig, one p for both\n    levels, read as the species main-effect contrasts; the same contrasts at each level are\n    shown as a variant. Reproduced when rat against human and rat against pig both have p <\n    0.0001 with rat smaller, and the ratio of the rat mean to each larger species' mean is\n    between 0.05 and 0.2 at each level (\"approximately ten times\" read as a factor of 5 to 20,\n    a choice of this file; 0.260/2.2 and 0.135/1.6 from the paper's means give 0.12 and 0.08).\n    Partially reproduced when p < 0.05 but not below 0.0001."
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  criterion: Reproduced when the level effect of nerve-diameter-anova has p < 0.05 with the\n    cervical least squares mean larger, and the relative difference of means (cervical minus\n    subdiaphragmatic over cervical) is larger for pig and for rat than for human. The rat part",
- "new_string": "  criterion: Reproduced when the level effect of nerve-diameter-anova has p < 0.05 with the\n    cervical least squares mean larger, and the relative difference of means (cervical minus\n    subdiaphragmatic over cervical) is larger for pig and for rat than for human. The paper\n    judges \"clearest\" qualitatively; the relative difference is this file's reading of it, and\n    the outcome of that part rests on that assumption. The rat part"
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  source: Figure 6 legend; Results, paragraph 6\n  quote: The three rat samples with asterisks are multifascicular",
- "new_string": "  source: Figure 6 legend; Results, paragraph 6; Discussion, paragraph 9\n  quote: The three rat samples with asterisks are multifascicular"
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  quote: The ratios of the mean endoneurial area of the subdiaphragmatic VN to the cervical VN were\n    0.20, 0.42, and 0.32 for human, pig, and rat, respectively\n  data: elsewhere",
- "new_string": "  quote: The ratios of the mean endoneurial area of the subdiaphragmatic VN to the cervical VN were\n    0.20, 0.42, and 0.32 for human, pig, and rat, respectively ... where the ratios of the mean\n    diameter of the subdiaphragmatic VN to the cervical VN were 0.87, 0.75, and 0.68 for human,\n    pig, and rat, respectively.\n  data: elsewhere"
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  criterion: The paper judges this qualitatively from Figure 6. Readings (a) the coefficient of\n    variation across samples of effective nerve diameter and of per-sample mean fascicle\n    diameter; (b) the SDs reported in the Results relative to the means. Reproduced when, at\n    both levels, the human value exceeds the pig value for both measures under either reading;\n    the rat values are reported against the Discussion's statement that pig and rat ranges were\n    more consistent than human.",
- "new_string": "  criterion: The paper judges this qualitatively from Figure 6 and names no measure. Readings\n    (a) the coefficient of variation across samples of effective nerve diameter and of\n    per-sample mean fascicle diameter; (b) for fascicles, the Discussion's \"ranges of fascicle\n    diameters\", the coefficient of variation across samples of each sample's fascicle diameter\n    range (human and pig only, as rat statistics use one fascicle per sample). Reproduced\n    when, at both levels, the human value exceeds the pig value and the rat value for both\n    measures under either reading; partially reproduced when human exceeds pig but not rat.\n    The SDs over means from the paper's Results (nerve diameter, human 0.26 and 0.18, pig 0.09\n    and 0.13, rat 0.10 and 0.11) are reported for comparison."
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "    three studies) and 2.0 mm (Stakenborg et al., 2020); reproduced when the human cervical mean\n    nerve diameter is below 3.0 mm and its range overlaps 3.0 mm. The other parts need the\n    literature values of Supplement 4, which was not supplied, and are not decidable from the\n    text read.",
- "new_string": "    three studies) and 2.0 mm (Stakenborg et al., 2020); that part is reproduced when the human\n    cervical mean nerve diameter is below 3.0 mm. The \"overlapping ranges\" are those of the\n    paper's samples against the literature spreads, which are in Supplement 4 (the paper's own\n    1.9 +/- 0.5 mm does not reach 3.0 mm, so the overlap is not with the literature mean). That\n    part and the other parts need the literature values of Supplement 4, which was not\n    supplied, and are not decidable from the text read."
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "    none of them in the text read. With those values as inputs, reproduced when each published\n    cervical mean lies within the rat cervical mean +/- SD and the rat subdiaphragmatic mean\n    exceeds each published subdiaphragmatic mean. Without them the claim cannot be decided.",
- "new_string": "    none of them in the text read. With those values as inputs, reproduced when each published\n    cervical mean lies within the rat cervical mean +/- SD and the rat subdiaphragmatic mean\n    exceeds each published subdiaphragmatic mean (\"compared well\" and \"slightly larger\", the\n    Discussion's \"trended larger\", are judged by the paper as Figure 7 shows them; these rules\n    are this file's reading of that figure, and the outcome rests on them). Without the values\n    the claim cannot be decided."
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "    Reproduced when no species shows\n    a difference under reading (a); reading (b) is shown as a variant, and any species where\n    the two disagree is recorded. The rat part is testable on the dataset alone.",
- "new_string": "    Reproduced when no species shows\n    a difference under reading (a); reading (b) is shown as a variant, and any species where\n    the two disagree is recorded. Both tests are choices of this file, as the paper's\n    \"did not suggest\" names none, so the outcome rests on an assumption. The rat part is\n    testable on the dataset alone."
-}
-```
-
-```
-<tool_use_error>String to replace not found in file.
-String:     Reproduced when no species shows
-    a difference under reading (a); reading (b) is shown as a variant, and any species where
-    the two disagree is recorded. The rat part is testable on the dataset alone.</tool_use_error>
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  criterion: For non-peanut fascicles, the ratio of thickness to diameter. Reproduced when, for\n    both species, the median ratio exceeds 0.03 and the ratio's excess over 0.03 is larger for\n    fascicles below the species' median diameter than above it.",
- "new_string": "  criterion: For non-peanut fascicles (Figure 9 legend), the ratio of thickness to diameter\n    against the 3% line of Figure 9. The paper judges this from Figure 9B and names no\n    measure; this file reads it as follows, and the outcome rests on that reading. Reproduced\n    when, for both species, the median ratio exceeds 0.03 and the median excess over 0.03 is\n    larger for fascicles below the species' median diameter than above it."
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "  criterion: The IF values are over the 284 non-peanut fascicles of Figure 9A and B. Reproduced",
- "new_string": "  criterion: The IF values are over the 284 non-peanut fascicles of Figure 9A and B; the MT\n    values over all inner perineurium traces of the 18 pig MT samples (Figure 6). Reproduced"
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "    the two disagree is recorded. The rat part is testable on the dataset alone.",
- "new_string": "    the two disagree is recorded. Both tests are choices of this file, as the paper's \"did\n    not suggest\" names none, so the outcome rests on an assumption. The rat part is testable\n    on the dataset alone."
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/pelot-2020.yaml",
- "old_string": "- id: perineurium-no-level-difference",
- "new_string": "- id: perineurium-thicker-larger-fascicles\n  statement: In the human and pig vagus nerves, larger fascicles have thicker perineurium.\n  source: Introduction, paragraph 3; Results, paragraph 10; Figure 9A\n  quote: our data also showed thicker perineurium for larger fascicles, as well as thicker\n    perineurium as a proportion of fascicle diameter for smaller fascicles.\n  data: elsewhere\n  where: SPARC Portal, Pelot et al. (2020a) for human and (2020b) for pig IF; identifiers not in\n    the text read\n  criterion: Non-peanut fascicles (Figure 9 legend), thickness and diameter as in\n    rat-perineurium-fit, the species' fits of Eqs. 1 and 2 (fit form open, readings as in\n    rat-perineurium-fit). The paper shows this in Figure 9A without a test. Readings (a) the\n    fitted thickness increases over the species' range of diameters; (b) Spearman correlation\n    of thickness with diameter is positive. Reproduced when human and pig both show the\n    increase under either reading; the rat result is reported, not required.\n- id: perineurium-no-level-difference"
-}
-```
-
-```
-The file claims/pelot-2020.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> claims/pelot-2020.yaml <<'EOF'
-checks:
-- date: 2026-11-18
-  kind: agent
-  model: claude-opus-5-5
-  ready: true
-  changes:
-  - rat-ten-times-smaller, statement said significant "at both levels"; the paper's "both comparisons of rat to larger species" are rat against human and rat against pig, so the statement and criterion now say that, with per-level contrasts as a variant, and the 5 to 20 factor is marked as this file's choice.
-  - human-pig-nerve-diameter-similar, a claim of absence was judged under two readings; the paper prints one p for both levels with no detected interaction, so the species main-effect contrast is the test and the per-level contrast a variant, as the protocol's rule for absence asks.
-  - human-pig-level-ratios, the quote held only the endoneurial ratios; extended to the sentence with the diameter ratios 0.87 and 0.75 that the statement also gives.
-  - literature-comparison-human-pig, the criterion required the paper's human cervical range to overlap 3.0 mm, which its own 1.9 +/- 0.5 mm fails; the "overlapping ranges" are against the literature spreads in Supplement 4, so that part is now undecidable without it.
-  - human-variability, the statement and the Discussion include rats but the criterion only reported them; rats are now part of the judgement (partial when only human against pig holds), and the Discussion's "ranges of fascicle diameters" is added as a reading.
-  - nerve-cervical-larger, rat-literature-comparison, perineurium-no-level-difference, human-pig-perineurium-thicker, measures not named by the paper were presented as given; each now says it is this file's reading and that the outcome rests on it.
-  - rat-subdiaphragmatic-multifascicular, source adds Discussion paragraph 9, which states "generally monofascicular".
-  - pig-if-mt-consistent, criterion now says the MT values are over all inner perineurium traces of the 18 pig MT samples.
-  - perineurium-thicker-larger-fascicles, added; the Introduction and abstract state that larger fascicles have thicker perineurium, a main finding no claim covered.
-  - Open, Eqs. 1 to 4 are missing from the text read, so the perineurium fit form and coefficients stay open (readings named in rat-perineurium-fit); the PDF would settle them.
-  - Open, Supplements 4 and 6 are not under paper/, so literature-comparison-human-pig, rat-literature-comparison and no-age-trend cannot be fully decided or rest on assumed tests.
-  - Open, the Discussion's rat diameter ratio 0.68 disagrees with the Results means (0.52); rat-level-ratios names readings but the paper does not settle which tissue enters it.
-  - Open, the SPARC identifiers of Pelot et al. (2020a to g) are not in the text read, as the reference list is empty.
-EOF
-python tools/claims_check.py claims/pelot-2020.yaml paper/10.3389-fnins.2020.601479.txt; grep -n "—\|rather" claims/pelot-2020.yaml
 ```
 
 Result: not kept, because it reads the paper's text.
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-sed -n '/^checks:/,$p' claims/pelot-2020.yaml | grep -n '  - .*: ' ; git status --short
+```json
+{
+ "file_path": "claims/pelot-2020.yaml"
+}
 ```
 
 ```
-M claims/pelot-2020.yaml
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? scripts
+1	# Claims for Pelot, Goldhagen, Cariello, Musselman, Clissold, Ezzell & Grill (2020), "Quantified
+2	# Morphology of the Cervical and Subdiaphragmatic Vagus Nerves of Human, Pig, and Rat", Front.
+3	# Neurosci. 14, 601479, on SPARC:60, SPARC:64, SPARC:65, SPARC:89, SPARC:16, SPARC:61 and
+4	# SPARC:82.
+5	#
+6	# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+7	# Actions"), 2026-11-20, protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+8	# It revises the file of 2026-11-18 (protocol pilot-16), which was read for SPARC:60 alone.
+9	#
+10	# Text read: the version of record, from Europe PMC (PMC7672126, JATS XML flattened;
+11	# paper/10.3389-fnins.2020.601479.txt), the abstract, Introduction, Materials and Methods,
+12	# Results, figure legends and Discussion. No PDF was supplied, so no figure was read; Figures
+13	# 6, 7 and 9 are known here only from their legends and the Results. Three parts are missing
+14	# from the text read. (1) Eqs. 1 to 4, the perineurium thickness fits, were dropped in the
+15	# flattening; only their R2 values and fascicle counts survive, so the fit form and
+16	# coefficients are open. (2) The supplement (Supplements 1 to 6, Supplementary Tables 1 to 6
+17	# and Supplementary Figures 13 to 18) is not under paper/. The paper's own numbers are all in
+18	# the main text; Supplement 4 (literature values) and Supplement 6 (age trends) are what three
+19	# claims rest on. (3) The reference list is empty, so the dataset identifiers of Pelot et al.
+20	# (2020a to g) are not in the text read; the mapping below is read from the dataset titles
+[... 953 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.3389-fnins.2020.601479.txt",
+ "offset": 134
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "claims/pelot-2020.yaml",
+ "offset": 973
+}
+```
+
+```
+973	    linear equation with forced zero intercept" for Eq. 4 suggests, (ii) linear through zero,
+974	    or (iii) another model linear in its coefficients (a power law fitted in log space is
+975	    excluded, as the Methods name linear least squares on the data). Reproduced when, under
+976	    one combination, the count is 22 and R2 is within tolerance; partially reproduced when the
+977	    count matches and R2 is outside. The coefficients are reported for comparison with Eq. 3
+978	    once it is read from the PDF.
+979	- id: perineurium-thicker-larger-fascicles
+980	  statement: In the human and pig vagus nerves, larger fascicles have thicker perineurium.
+981	  source: Introduction, paragraph 3; Results, paragraph 10; Figure 9A
+982	  quote: our data also showed thicker perineurium for larger fascicles, as well as thicker
+983	    perineurium as a proportion of fascicle diameter for smaller fascicles.
+984	  datasets:
+985	  - sparc-65
+986	  - sparc-89
+987	  depends_on:
+988	  - human-perineurium-fit
+989	  - pig-perineurium-fit
+990	  criterion: Non-peanut fascicles (Figure 9 legend), thickness and diameter as in
+991	    rat-perineurium-fit, the species' fits of Eqs. 1 and 2 (fit form open, readings as in
+992	    rat-perineurium-fit). The paper shows this in Figure 9A without a test. Readings (a) the
+[... 182 more lines not kept]
 ```
 
 **Agent**
 
-The file is ready for an attempt (`ready: true`). I changed only `claims/pelot-2020.yaml`, and nothing is committed or pushed.
+The checker passes (43 claims, 0 problems). I've read the whole paper and the claims file. Next I'm confirming a few points before editing.
 
-**Checker:** `claims/pelot-2020.yaml: 35 claims, 35 quotes, 21 statistical values, 0 problems` (it was 34 claims before I added one).
+**Agent calls Bash**
+
+```bash
+cd  grep -n "^checks\|^[a-z_]*:" claims/pelot-2020.yaml; ls claims | head; grep -l "^checks:" claims/*.yaml | head -2 | xargs -I{} sh -c 'sed -n "/^checks:/,\$p" {} | head -20'
+```
+
+```
+113:schema_version: 2
+114:paper: doi:10.3389/fnins.2020.601479
+115:claims:
+alasfour-2024.yaml
+amjad-2025.yaml
+andrews-2024.yaml
+armstrong-2026.yaml
+asari-2009.yaml
+ashworth-2025.yaml
+athalye-2023.yaml
+azcorra-2023.yaml
+bakalar-2023.yaml
+bech-2026.yaml
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2-rois-three-bands, fig2-inferior-temporal-all-bands, fig2-beta-temporal-only, fig2-single-band-rois. Removed the statistics entries (t-test against finite chance, BH FDR at 0.01); the threshold marks which features count as above chance (Figure 2 legend), a method and not a result. The criteria keep it through M6.
+[... 28 more lines not kept]
+```
+
+**Agent**
+
+Now the edits.
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    value: 2\n    tolerance: 0.2\n    unit: percentage points\n  criterion: Mean endoneurial proportion of the four IF samples per level (sparc-89) against the\n    MT mean of the nine samples per level (sparc-64), the comparison the sentence makes. The\n    tolerance is the default 10%; the paper's \"∼\" sets none.",
+ "new_string": "    value: 2\n    tolerance: 0.5\n    unit: percentage points\n  criterion: Mean endoneurial proportion of the four IF samples per level (sparc-89) against the\n    MT mean of the nine samples per level (sparc-64), the comparison the sentence makes. The\n    tolerance is 0.5 points, not the default 10%, as the paper gives \"∼2\" to one significant\n    figure, which covers 1.5 to 2.5."
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "  criterion: The paper shows this in Figure 9B without a test. Readings (a) the ratio implied by\n    each species' fit (rat-perineurium-fit) decreases over the species' range of diameters; (b)\n    Spearman correlation of the ratio with diameter is negative. Reproduced when human and pig\n    show the decrease under either reading; the rat result, of which the paper claims less, is\n    reported and not required.",
+ "new_string": "  criterion: The paper shows this in Figure 9B without a test. Readings (a) the ratio implied by\n    each species' fit (rat-perineurium-fit) decreases over the species' range of diameters; (b)\n    Spearman correlation of the ratio with diameter is negative. The sentence states the\n    decrease for the VN data as a whole and stresses human and pig, and the Discussion has the\n    rat ratio above 3% for smaller fascicles and below it for larger ones, so the rat is\n    included. Reproduced when all three species show the decrease under a reading, the human\n    and pig decreases larger than the rat's; partially reproduced when human and pig show it\n    and rat does not."
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    largest fascicles only; 22 fascicles across 18 samples points to (a). The fit form, read as\n    (i) thickness linear in diameter with an intercept, which the paper's \"also ... with a\n    linear equation with forced zero intercept\" for Eq. 4 suggests, (ii) linear through zero,\n    or (iii) another model linear in its coefficients (a power law fitted in log space is\n    excluded, as the Methods name linear least squares on the data). Reproduced when, under\n    one combination, the count is 22 and R2 is within tolerance;",
+ "new_string": "    largest fascicles only; 22 fascicles across 18 samples points to (a). The fit form, read as\n    (i) thickness linear in diameter with an intercept, which the paper's \"also ... with a\n    linear equation with forced zero intercept\" for Eq. 4 suggests, or (ii) linear through\n    zero. Reproduced when, under one combination, the count is 22 and R2 is within tolerance;"
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    are more fascicles cervically.\n  source: Results, paragraph 4",
+ "new_string": "    are more fascicles cervically.\n  source: Results, paragraph 4\n  # criterion requires the cervical mean above the subdiaphragmatic one for \"more fascicles at the cervical level\""
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent**
+
+I added a comment where the change belongs in the criterion. Moving it there.
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "  source: Results, paragraph 4\n  # criterion requires the cervical mean above the subdiaphragmatic one for \"more fascicles at the cervical level\"",
+ "new_string": "  source: Results, paragraph 4"
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    variance readings as in nerve-diameter-anova. Reproduced when the means are within the\n    stated SDs, species and level have p < 0.05 and the interaction p >= 0.05 under a reading.",
+ "new_string": "    variance readings as in nerve-diameter-anova. Reproduced when the means are within the\n    stated SDs, species and level have p < 0.05 with the cervical least squares mean above the\n    subdiaphragmatic one, and the interaction p >= 0.05 under a reading."
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "  statement: Endoneurium is a larger share of the human nerve cervically (32 +/- 7.9%) than\n    subdiaphragmatically (8.8 +/- 5.3%), while in pigs it is more even across levels (27 +/- 5.3%\n    and 20 +/- 4.0%, MT); perineurium follows the same trends",
+ "new_string": "  statement: Endoneurium is a larger share of the human nerve cervically (32 +/- 7.9%) than\n    subdiaphragmatically (8.8 +/- 5.3%), while in pigs it is more even across levels (27 +/- 5.3%\n    and 20 +/- 4.0%, MT), slightly below the human cervical share and above the human\n    subdiaphragmatic one; perineurium follows the same trends"
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "  source: Results, paragraph 7\n  quote: The human endoneurium occupied",
+ "new_string": "  source: Results, paragraphs 6 and 7\n  quote: The human endoneurium occupied"
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    four samples per level). Reproduced when every value is within its stated SD.",
+ "new_string": "    four samples per level). Reproduced when every value is within its stated SD and the pig MT\n    endoneurial mean is below the human mean cervically and above it subdiaphragmatically\n    (Results, paragraphs 6 and 7)."
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    nerve areas and diameters are generally smaller; human subdiaphragmatic sizes match prior\n    reports; pig fascicle numbers match literature, with slightly smaller mean diameters.",
+ "new_string": "    nerve areas and diameters are generally smaller, so the endoneurial proportion is larger;\n    human subdiaphragmatic sizes match prior reports, with fewer fascicles than one study of the\n    posterior branch; pig fascicle numbers match literature, with slightly smaller mean\n    diameters."
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    \"overlapping ranges\" as the paper's sample range overlapping the literature spread; these",
+ "new_string": "    \"overlapping ranges\" as the paper's sample range overlapping the literature spread, \"fewer\n    fascicles\" as the human subdiaphragmatic mean below the Stakenborg et al. (2020) posterior\n    value, and \"larger proportion\" as the human cervical endoneurial percentage above the\n    literature percentages (the first two studies of the legend); these"
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "claims/pelot-2020.yaml",
+ "old_string": "    the subdiaphragmatic level had 44 fascicles total (inner perineurium traces) of which 4 were\n    intrafascicular bundles in 2 peanut fascicles.\n  datasets:",
+ "new_string": "    the subdiaphragmatic level had 44 fascicles total (inner perineurium traces) of which 4 were\n    intrafascicular bundles in 2 peanut fascicles. For the pig anti-fibronectin IF micrographs,\n    the cervical level had 210 fascicles total (inner perineurium traces) of which 57 were\n    intrafascicular bundles in 25 peanut fascicles; the subdiaphragmatic level had 179 fascicles\n    total (inner perineurium traces) of which 48 were intrafascicular bundles in 19 peanut\n    fascicles.\n  datasets:"
+}
+```
+
+```
+The file claims/pelot-2020.yaml has been updated successfully.
+```
+
+**Agent**
+
+Now the checks entry.
+
+**Agent calls Bash**
+
+```bash
+cd  cat >> claims/pelot-2020.yaml <<'EOF'
+checks:
+- date: 2026-11-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - pig-if-endoneurium-lower. The tolerance of 0.2 points (10% of 2) was tighter than the paper's number allows; "∼2" is given to one significant figure, so the tolerance is now 0.5 points, with the reason in the criterion.
+  - perineurium-ratio-decreases. The criterion left the rat out, but the sentence states the decrease for the VN data as a whole ("particularly for the human and pig samples") and the Discussion puts the rat ratio above 3% for small fascicles and below it for large ones. The rat decrease is now required for full reproduction, human and pig alone give partial.
+  - rat-perineurium-fit (and the claims that take its fit form). Dropped fit-form reading (iii), any model linear in its coefficients; the text says Eq. 4 was "also" fit "with a linear equation with forced zero intercept", which allows a linear fit with or without intercept and nothing wider, and the open-ended reading let the R2 be matched by choice of model.
+  - fascicle-number-human-pig. The criterion tested the level effect but not its direction; it now requires the cervical mean above the subdiaphragmatic one, as the Results state.
+  - human-pig-tissue-proportions. The statement and criterion left out the comparison the Results make (paragraph 6, and paragraph 7 "slightly lower than in the human cervical VN"), pig endoneurium below human cervically and above it subdiaphragmatically. Added, and the source now cites paragraphs 6 and 7.
+  - literature-comparison-human-pig. The statement left out two findings of Results paragraph 8, the larger human cervical endoneurial proportion and the fewer human subdiaphragmatic fascicles than the posterior-branch study; added to the statement, with readings in the criterion marked as this file's.
+  - peanut-fascicle-counts. The quote covered the human counts only; extended to the sentence giving the pig IF counts.
+  - Open. Eqs. 1 to 4 are missing from the text read, so the perineurium fit form and coefficients cannot be checked; the PDF would settle readings (i) and (ii) of rat-perineurium-fit.
+  - Open. The supplement is not under paper/; Supplements 4 and 6 and Supplementary Figure 16 decide literature-comparison-human-pig, rat-literature-comparison, no-age-trend and rat-carotid-sheath-bundles, which rest on this file's readings until then.
+  - Open. The Discussion's rat diameter ratio (0.68) disagrees with the Results means (0.52); rat-level-ratios names readings but the paper does not settle which is meant.
+  - Open. Several criteria use operational rules the paper does not give (5 to 20 for "approximately ten times", the shape and fat rules, a factor of two for "similar" to 3%, the age and level tests); each says so and its outcome rests on it.
+  - Open. The Discussion's "the raw data in Figure 6 do not suggest an effect of sex on morphology" has no claim; the paper says its sample is too small to assess sex, so it is left as a minor observation.
+  - Checked, unchanged. Every p, F, mean, SD, count and percentage against the text; the non-peanut counts (73, 284) against the Figure 9 legend; paragraph numbers in the sources.
+EOF
+python tools/claims_check.py claims/pelot-2020.yaml paper/10.3389-fnins.2020.601479.txt; grep -n " — \|rather" claims/pelot-2020.yaml | sed -n '1,5p'; git status --short
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+I checked the file against the paper and made seven corrections. It is ready for an attempt.
+
+**Checker result** (same before and after my edits): `claims/pelot-2020.yaml: 43 claims, 43 quotes, 21 statistical values, 0 problems`
 
 **Changes, by claim**
-- **rat-ten-times-smaller:** the statement said the difference was significant "at both levels". In the paper, "both comparisons of rat to larger species" means rat against human and rat against pig. The statement and criterion now say that, with the per-level contrasts as a variant. The 5 to 20 reading of "approximately ten times" is now marked as this file's choice.
-- **human-pig-nerve-diameter-similar:** this is a claim of absence, but it was judged under two readings. The paper prints one p for both levels and finds no interaction, so the test is the species main-effect contrast. The per-level contrast is a variant.
-- **human-pig-level-ratios:** the quote held only the endoneurial area ratios. I extended it to cover the diameter ratios (0.87 and 0.75), which the statement also gives.
-- **literature-comparison-human-pig:** the criterion required the paper's human cervical range to overlap 3.0 mm. The paper's own 1.9 ± 0.5 mm would fail that test. The overlap the paper means is with the literature spreads, which are in Supplement 4, so that part is now marked undecidable without it.
-- **human-variability:** the statement and the Discussion include rats, but the criterion only reported them. Rats now count toward the result: partially reproduced when only human against pig holds. I added the Discussion's "ranges of fascicle diameters" as a second reading.
-- **nerve-cervical-larger, rat-literature-comparison, perineurium-no-level-difference, human-pig-perineurium-thicker:** each used a measure or test the paper does not name, presented as if it did. Each now says the measure is this file's reading and that the outcome rests on it.
-- **rat-subdiaphragmatic-multifascicular:** the source now also cites Discussion paragraph 9, which says "generally monofascicular".
-- **pig-if-mt-consistent:** the criterion now says which fascicles the MT values are taken over.
-- **New claim, perineurium-thicker-larger-fascicles:** the Introduction and abstract state that larger fascicles have thicker perineurium in human and pig, and no claim covered it.
+- **pig-if-endoneurium-lower**: the tolerance was 0.2 points (10% of 2). The paper writes "∼2" to one significant figure, so I widened it to 0.5 points and gave that reason in the criterion.
+- **perineurium-ratio-decreases**: the criterion did not require the rat result. The paper states the decrease for its vagus nerve data as a whole ("particularly for the human and pig samples"), and the Discussion describes the same trend in rats. A full reproduction now needs a rat decrease too; human and pig alone count as partial.
+- **rat-perineurium-fit**: I dropped fit-form reading (iii), "any model linear in its coefficients". The text supports only a linear fit, with or without an intercept, and the open-ended reading let the R² be matched by picking a model.
+- **fascicle-number-human-pig**: the criterion tested the level effect but not its direction. It now requires the cervical mean to be above the subdiaphragmatic one, as the Results say.
+- **human-pig-tissue-proportions**: added the comparison the Results make (pig endoneurium below the human share cervically, above it subdiaphragmatically) to the statement and criterion. The source now cites Results paragraphs 6 and 7.
+- **literature-comparison-human-pig**: added two findings from Results paragraph 8 that the statement left out: the larger human cervical endoneurial proportion, and fewer human subdiaphragmatic fascicles than the one study of the posterior branch. The criterion marks how these are judged as the file's own reading.
+- **peanut-fascicle-counts**: the quote covered only the human counts; I extended it to the pig counts.
 
-**Still open**
-- **Perineurium fits:** Eqs. 1 to 4 were lost from the text, so the fit form and coefficients are unknown. The readings are named in rat-perineurium-fit; the PDF would settle them.
-- **Missing supplements:** Supplements 4 and 6 are not under `paper/`. Without them, the two literature-comparison claims cannot be fully decided, and no-age-trend uses a test this file assumed.
-- **Rat diameter ratio:** the Discussion gives 0.68, but the Results means give 0.52. rat-level-ratios names readings for both, but the paper does not say which tissue enters the ratio.
-- **Dataset identifiers:** the SPARC identifiers for Pelot et al. (2020a to g) are not in the text, because the reference list is empty.
+I checked every p, F, mean, SD, count and percentage against the text, plus the source paragraph numbers, and found no other errors. The check entry is appended under `checks`.
+
+**Still open** (recorded in the check entry)
+- **Equations 1 to 4 are missing from the text**, so the form and coefficients of the perineurium fits can't be checked. The PDF would settle this.
+- **The supplement is not under `paper/`.** Four claims (the two literature comparisons, no-age-trend and rat-carotid-sheath-bundles) rest on the file's own readings until Supplements 4 and 6 and Supplementary Figure 16 are read.
+- **The paper contradicts itself on one rat ratio.** The Discussion gives the subdiaphragmatic-to-cervical diameter ratio as 0.68, but the Results means give 0.52. The file names both readings; the paper doesn't say which is meant.
+- **Some criteria use rules the paper doesn't give**: 5 to 20 for "approximately ten times", the rules for oblong shape and fat, a factor of two for "similar" to 3%, and the tests for age and level. Each criterion says so.
+- **No claim for one minor remark**: the Discussion's "no sex effect suggested by Figure 6". The paper itself says its sample is too small to assess sex.
+
+Nothing was committed or pushed.
 
 ## End of run
 
-24 turns, 3 minutes, $1.11 at API prices, result: success.
+23 turns, 3 minutes, $1.14 at API prices, result: success.

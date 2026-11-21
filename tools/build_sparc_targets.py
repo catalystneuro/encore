@@ -12,6 +12,9 @@ IsReferencedBy, IsSupplementTo or IsDocumentedBy, leaving out SPARC's own DOIs a
 with their PubMed Central ids. It also records what an agent will need before reading the data: whether the
 dataset has a README, which SPARC Data Structure folders and sheets it has, and which formats it holds.
 
+A paper's data can be in several datasets. Unless --only is given, the builder also adds every other SPARC dataset
+that names one of the list's papers, so that the paper is tested on all of them.
+
 A dataset is named by its id (SPARC:206, folder sparc-206). Reading the files needs no account (docs/archives.md,
 "SPARC").
 """
@@ -183,14 +186,48 @@ def target(spec: str) -> dict:
     }
 
 
+def also_named(datasets: list[dict], dois: set[str], have: set[str]) -> list[str]:
+    """The ids of the SPARC datasets that name one of these papers as theirs and are not in the list yet: a paper's
+    other datasets (Pelot et al. 2020 has seven). `datasets` is Pennsieve Discover's listing."""
+    out = []
+    for x in datasets:
+        if x.get("organizationName") not in ("SPARC", "SPARC Consortium") or str(x["id"]) in have:
+            continue
+        if any(p["relationshipType"] in PAPER_RELATIONS and p["doi"].lower() in dois
+               for p in x.get("externalPublications") or []):
+            out.append(str(x["id"]))
+    return sorted(out, key=int)
+
+
+def discover() -> list[dict]:
+    """Every dataset Pennsieve Discover lists."""
+    out, offset = [], 0
+    while True:
+        page = get(f"{API}/datasets?limit=500&offset={offset}")
+        out += page["datasets"]
+        offset += 500
+        if offset >= page["totalCount"]:
+            return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("items", nargs="+", help="<id or SPARC DOI or URL>[:<version>][=<paper DOI>]")
+    parser.add_argument("--only", action="store_true",
+                        help="only the datasets given: do not add the other SPARC datasets that name the same papers")
     parser.add_argument("--out", type=Path, default=ROOT / "targets" / "sparc.json")
     parser.add_argument("--note", default="Experimental SPARC datasets whose paper is in PubMed Central, chosen by hand "
                                          "to test the pipeline on SPARC.")
     args = parser.parse_args()
     targets = [target(s) for s in args.items]
+    if not args.only:
+        # A paper's data can be in several datasets: every other one that names a paper of the list is added, so
+        # that the paper is tested on all of its datasets.
+        dois = {p["doi"] for t in targets for p in t["papers"] if not p["preprint"]}
+        more = also_named(discover(), dois, {t["id"] for t in targets})
+        for id_ in more:
+            print(f"adding SPARC:{id_}, which names a paper of the list", file=sys.stderr)
+        targets += [target(id_) for id_ in more]
     for t in targets:
         if not t["papers"]:
             print(f"warning: SPARC:{t['id']} links no paper; give one as {t['id']}=<paper DOI>", file=sys.stderr)

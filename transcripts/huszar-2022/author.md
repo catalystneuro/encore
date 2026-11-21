@@ -1,173 +1,245 @@
-# 000552 · author · run 39047119296
+# huszar-2022 · author · run 44458325474
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; echo ======; cat README.md; echo =====; cat docs/design.md; ls; ls entries claims attempts tools
+date -u; ls; ls docs entries attempts claims paper | head -80
 ```
 
 ```
-<persisted-output>
-Output too large (45KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bnaonb2q8.txt
-
-Preview (first 2KB):
-# Protocol for an attempt
-
-Version: `pilot-7`. Record this version in the attempt's provenance.
-
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-[... 25 more lines not kept]
+Thu Nov 19 04:31:16 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+[... 92 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bnaonb2q8.txt"
+ "file_path": "docs/protocol.md"
 }
 ```
 
 ```
 1	# Protocol for an attempt
 2	
-3	Version: `pilot-7`. Record this version in the attempt's provenance.
+3	Version: `pilot-16`. Record this version in the attempt's provenance.
 4	
-5	This is what an agent, or a person, does to attempt a target and deposit the
-6	result. It is written from the eight pilot attempts
-7	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-8	
-9	There are two roles. The **author** makes the attempt. The **verifier** checks
-10	it and must not be the author: for agents, a separate run with a separate
-11	context that has not seen the author's reasoning.
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+10	
+11	An attempt has three roles, each a separate run with a separate context:
 12	
-13	Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-14	workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-15	`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-16	of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-17	kept in [`transcripts/<dandiset>/`](../transcripts).
-18	
-19	## Author
-20	
-[... 879 more lines not kept]
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 694 more lines not kept]
 ```
-
-**Agent**
-
-Now the example entry formats.
 
 **Agent calls Bash**
 
 ```bash
-ls -la entries/001453-fouke-2025/ claims/001453/; cat entries/001453-fouke-2025/entry.yaml entries/001453-fouke-2025/requirements.in; cat entries/001453-fouke-2025/README.md 2>/dev/null; cat attempts/001453-fouke-2025-01.yaml
+ls paper claims/huszar* entries/huszar-2022 entries/fouke-2025; ls paper/* | head
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "claims/huszar-2022.yaml"
+}
 ```
 
 ```
-<persisted-output>
-Output too large (38.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bs3yu3u8q.txt
-
-Preview (first 2KB):
-claims/001453/:
-total 24
-drwxr-xr-x  2 runner runner  4096 Oct 17 15:54 .
-drwxr-xr-x 35 runner runner  4096 Oct 17 15:54 ..
--rw-r--r--  1 runner runner 12471 Oct 17 15:54 10.1016-j.cub.2025.04.027.yaml
-
-entries/001453-fouke-2025/:
-total 124
-drwxr-xr-x  2 runner runner  4096 Oct 17 15:54 .
-drwxr-xr-x 35 runner runner  4096 Oct 17 15:54 ..
--rw-r--r--  1 runner runner  2158 Oct 17 15:54 README.md
--rw-r--r--  1 runner runner   914 Oct 17 15:54 entry.yaml
--rw-r--r--  1 runner runner 16218 Oct 17 15:54 omr.py
--rw-r--r--  1 runner runner 79403 Oct 17 15:54 reproduce_fouke_2025.ipynb
--rw-r--r--  1 runner runner    61 Oct 17 15:54 requirements.in
--rw-r--r--  1 runner runner  5989 Oct 17 15:54 requirements.lock.txt
-[... 35 more lines not kept]
+1	# Claims for Huszar, Zhang, Blockus and Buzsaki (2022), Preconfigured dynamics in the hippocampus
+2	# are guided by embryonic birthdate and rate of neurogenesis, Nature Neuroscience 25, 1201-1212,
+3	# tested on dandiset 000552.
+4	# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-19,
+5	# protocol pilot-16 as stated in docs/protocol.md. The writer did not look at the dandiset's data or
+6	# files; only its title and description on the archive were read. This file replaces the version of
+7	# 2026-10-19, whose opening comment recorded outputs of a data check and fixed method choices from
+8	# them (a 5 Hz rate rule for pyramidal cells, a 0.2 s speed smoothing, a 5 cm/s running threshold
+9	# for theta-related rates); those are removed, and every method detail below is taken from the
+10	# paper or its code, or named as open.
+11	#
+12	# Text read: the author manuscript in PubMed Central (PMC10807234, NIHMS1955147), full text as
+13	# served by NCBI PMC: main text, Methods, main figure legends and Extended Data Figure 1 to 10
+14	# legends; with its two supplements, the Reporting Summary (NIHMS1955146_Supplemental_Material.pdf)
+15	# and the Supplementary Information (NIHMS1955146_Supplemental_Material_2.pdf, Supplementary
+16	# Tables 1 to 5). The supplementary tables are images in that PDF; they were read from the images.
+17	# The version of record is not open access. Main figure images were not available, so values
+18	# printed only inside panels could not be read.
+19	#
+20	# Code read: github.com/rhuszar/optotagCA1_final, commit 51320d4 (its only commit), the repository
+[... 918 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bs3yu3u8q.txt"
+ "file_path": "claims/huszar-2022.yaml",
+ "offset": 938,
+ "limit": 700
 }
 ```
 
 ```
-1	claims/001453/:
-2	total 24
-3	drwxr-xr-x  2 runner runner  4096 Oct 17 15:54 .
-4	drwxr-xr-x 35 runner runner  4096 Oct 17 15:54 ..
-5	-rw-r--r--  1 runner runner 12471 Oct 17 15:54 10.1016-j.cub.2025.04.027.yaml
-6	
-7	entries/001453-fouke-2025/:
-8	total 124
-9	drwxr-xr-x  2 runner runner  4096 Oct 17 15:54 .
-10	drwxr-xr-x 35 runner runner  4096 Oct 17 15:54 ..
-11	-rw-r--r--  1 runner runner  2158 Oct 17 15:54 README.md
-12	-rw-r--r--  1 runner runner   914 Oct 17 15:54 entry.yaml
-13	-rw-r--r--  1 runner runner 16218 Oct 17 15:54 omr.py
-14	-rw-r--r--  1 runner runner 79403 Oct 17 15:54 reproduce_fouke_2025.ipynb
-15	-rw-r--r--  1 runner runner    61 Oct 17 15:54 requirements.in
-16	-rw-r--r--  1 runner runner  5989 Oct 17 15:54 requirements.lock.txt
-17	schema_version: 1
-18	name: 001453-fouke-2025
-19	type: reproduction
-20	title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
-[... 674 more lines not kept]
+938	  statement: On the figure-eight maze each trial was 205 cm long, position was tracked at 30 Hz,
+939	    and animals ran at least ten trials along each arm in every session.
+940	  source: Methods, Behavior, paragraph 1
+941	  quote: The length of each trial was 205 cm. ... at a frame rate of 30 Hz ... Animals were required
+942	    to run at least ten trials along each arm (at least twenty trials total) within each session.
+943	  expected:
+944	  - quantity: trial length (linearized)
+945	    value: 205
+946	    tolerance: 20.5
+947	    unit: cm
+948	  - quantity: tracking rate
+949	    value: 30
+950	    tolerance: 3
+951	    unit: Hz
+952	  criterion: Familiar figure-eight sessions of the nine maze mice. Trial length is the extent of
+953	    the linearized position of a trial (the code's maps have 205 1 cm bins per trial type,
+954	    get_corrBeh_v3.m); tracking rate is one over the median interval of position samples. Trials
+955	    per arm are counted in each session; "along each arm" read as left and right trial types.
+956	    Reproduced when both values are within tolerance and every session has at least ten trials of
+957	    each type. Partially reproduced when the values hold and every session has at least 20
+[... 665 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-head -c 5000 claims/001453/10.1016-j.cub.2025.04.027.yaml; echo; echo =====; ls schemas; head -c 3000 entries/001453-fouke-2025/omr.py
+cd  grep -n "DANDI" -A60 docs/archives.md | head -120; wc -l README.md docs/design.md
 ```
 
 ```
-# Claims for Fouke, He, Loring & Naumann (2025) on dandiset 001453.
-# Source: the accepted author manuscript in PubMed Central (PMC12218792), full text, read
-# from its Results, figure legends and STAR Methods. The version of record is not open access.
-#
-# When these criteria were written, the author had seen the data check only: the file list,
-# subject metadata, frame rates, units, trial structure and stimulus codes of every file, and
-# the extent of positions. No claim's analysis had been run. The author had also read the
-# outputs printed in the paper's own analysis notebook (Fig1-S1.ipynb, GitLab commit 33a5c29),
-# which include per-stimulus median speeds and angular velocities and its statistics.
-#
-# The dandiset holds only the freely swimming tracking data of Figure 1 and Figure S1. Its
-# stimulus codes 0 to 20 carry no names. The names come from the paper's code and from the
-# stimulus software's protocol file (see stimulus-code-link), so the claims that need them
-# use outside data and depend on that claim.
-#
-# Method choices fixed here, from the paper's Fig1-S1.ipynb where the Methods are silent: a
-# trial is one stim_index; tracked frames only; positions smoothed with a Savitzky-Golay filter
-# (21 frames, order 2); trials rejected when the absolute cumulative heading change exceeds
-# 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or the mean speed exceeds
-# 100 mm/s; measures taken from 3 s to 35 s after the first frame (the 3 s stationary phase is
-[... 118 more lines not kept]
+4:the DANDI Archive. The protocol is written for any archive. What is particular
+5-to an archive (how its datasets are named, versioned and read) is here, and an
+6-agent is pointed to its archive's section.
+7-
+8-A dataset is keyed as `<archive>:<id>` and shown as `<LABEL>:<id>`, for example
+9:`DANDI:000003`. Its files in this repository (`claims/`, `questions/`,
+10-`transcripts/`, the `attempt/` branch, the paper store) are under its folder
+11:name: the identifier alone for DANDI, which the registry began with, and
+12-`<archive>-<id>` for any other archive. Each archive is an adapter, a module in `tools/archives/` ("Adding an archive",
+13-below), and `tools/datasets.py` turns one form of a dataset's name into another.
+14-The workflows take a dataset in any of these forms.
+15-
+16:## DANDI
+17-
+18-- **Datasets.** A dandiset, identified by six digits (`000003`). Targets are the
+19-  public dandisets whose metadata names a paper (`targets/dandisets.json`, built
+20:  by `tools/build_targets.py` and refreshed daily by the Track DANDI workflow).
+21-- **Versions.** A published version (`0.220126.1855`) is fixed and has a DOI,
+22-  `10.48324/dandi.<id>/<version>`. The draft can change. Pin the version the
+23-  paper cites, or the latest published one. For a draft, record its
+[... 103 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in entries/fouke-2025/README.md; head -c 6000 attempts/fouke-2025-01.yaml; ls schemas tools
+```
+
+```
+schema_version: 1
+name: fouke-2025
+type: reproduction
+title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
+description: Tests the freely swimming findings of Fouke, He, Loring and Naumann (2025) on dandiset
+  001453, which holds the tracking data of 25 zebrafish and 12 Danionella cerebrum larvae during the
+  optomotor protocol. It compares swimming speed, turning and angular acceleration between species
+  and stimuli, the response to monocular stimuli, and how steady the swimming is. The imaging and
+  head-fixed tail tracking of the paper's Figures 2 to 4 are not in the dandiset.
+license: Apache-2.0
+notebooks:
+- path: reproduce_fouke_2025.ipynb
+  title: Reproducing Fouke et al. (2025) from dandiset 001453
+  runtime_minutes: 6
+helpers:
+- omr.py
+related:
+- id: dandi:001453/0.250518.1950
+  relation: uses_data
+- id: doi:10.1016/j.cub.2025.04.027
+[... 199 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+s=json.load(open('schemas/attempt.schema.json'))
+print(json.dumps(s,indent=0)[:9000])
+EOF
+```
+
+```
+{
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "One attempt at reproducing the claims of a target",
+"description": "Draft. To be revised after the pilot. An attempt is recorded whether or not it produced a working notebook.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+"schema_version",
+"id",
+"datasets",
+"paper",
+"date",
+"provenance",
+"outcomes"
+],
+"properties": {
+"schema_version": {
+"const": 3
+},
+"id": {
+[... 450 more lines not kept]
 ```
 
 **Agent**
 
-Now the dandiset.
+Now the dataset.
 
 **Agent calls Bash**
 
 ```bash
-curl -s https://api.dandiarchive.org/api/dandisets/000552/ | python -m json.tool; curl -s https://api.dandiarchive.org/api/dandisets/000552/versions/ | python -m json.tool
+cd $TMPDIR; curl -s https://api.dandiarchive.org/api/dandisets/000552/ | python -m json.tool | head -40; curl -s "https://api.dandiarchive.org/api/dandisets/000552/versions/" | python -m json.tool | head -60
 ```
 
 Result: the fetched text is not kept.
@@ -175,2578 +247,4173 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-mkdir -p paper; curl -s https://api.dandiarchive.org/api/dandisets/000552/versions/0.230630.2304/ > paper/dandiset_meta.json; python -c "
-import json;d=json.load(open('paper/dandiset_meta.json'))
-for k in ['description','relatedResource','assetsSummary','contributor','citation','keywords','wasGeneratedBy']:
-  print(k, json.dumps(d.get(k),indent=1)[:3000])
-"; curl -s "https://api.dandiarchive.org/api/dandisets/000552/versions/0.230630.2304/assets/?page_size=200" | python -c "
-import json,sys;d=json.load(sys.stdin)
-print(d['count'])
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/000552/versions/0.261113.1035/assets/?page_size=200" > assets.json; python -c "
+import json;d=json.load(open('assets.json'));print(d['count'])
 for a in d['results']: print(a['path'], round(a['size']/1e9,2))
 "
 ```
 
 Result: the fetched text is not kept.
 
-**Agent**
-
-Now the paper. Check open access status.
-
 **Agent calls Bash**
 
 ```bash
-curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/s41593-022-01138-x&format=json&resultType=core" | python -c "
-import json,sys;d=json.load(sys.stdin)
-for r in d['resultList']['result']: print(r.get('pmid'),r.get('pmcid'),r.get('isOpenAccess'),r.get('inEPMC'),r.get('title'),r.get('fullTextUrlList'))
-"; curl -s "https://api.unpaywall.org/v2/10.1038/s41593-022-01138-x?email=[removed: an e-mail address]" | python -m json.tool | head -60
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-Author manuscript in PMC (free full text). Fetch it.
-
-**Agent calls Bash**
-
-```bash
-cd paper && curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10807234/fullTextXML" -o pmc.xml; ls -la pmc.xml; head -c 500 pmc.xml
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-curl -sL "https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:10807234&metadataPrefix=pmc" -o pmc.xml; ls -la pmc.xml; head -c 1000 pmc.xml
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import re
-from lxml import etree
-t=etree.parse('pmc.xml')
-ns={'j':'https://jats.nlm.nih.gov/ns/archiving/1.4/'}
-art=t.find('.//j:article',ns)
-def text(e): return ''.join(e.itertext())
-out=[]
-for el in art.iter():
-    tag=etree.QName(el).localname
-    if tag in ('title',):
-        out.append('\n## '+text(el).strip())
-    elif tag=='p':
-        out.append(re.sub(r'\s+',' ',text(el)).strip())
-    elif tag=='caption':
-        pass
-open('paper.txt','w').write('\n'.join(out))
-print(len(out))
-EOF
-wc -c paper.txt
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "<stdin>", line 2, in <module>
-ModuleNotFoundError: No module named 'lxml'
-wc: paper.txt: No such file or directory
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import re
-import xml.etree.ElementTree as ET
-t=ET.parse('pmc.xml')
-def ln(tag): return tag.split('}')[-1]
-art=[e for e in t.iter() if ln(e.tag)=='article'][0]
-def text(e): return re.sub(r'\s+',' ',''.join(e.itertext())).strip()
-out=[]
-def walk(e, depth=0):
-    tag=ln(e.tag)
-    if tag=='title':
-        out.append('\n## '+text(e)); return
-    if tag=='p':
-        out.append(text(e)); return
-    if tag=='ref':
-        out.append('REF '+text(e)); return
-    for c in e: walk(c)
-walk(art)
-open('paper.txt','w').write('\n'.join(out))
-EOF
-wc -c paper.txt; grep -n "^## " paper.txt | head -80
-```
-
-```
-124230 paper.txt
-8:## Results
-10:## In vivo recordings from birthdated CA1 pyramidal neurons.
-14:## Cofiring of SBD pyramidal neurons in all brain states.
-19:## Birthdated neurons join assemblies with distinct dynamics.
-24:## Cofiring of SBD neurons interacts with rates of neurogenesis.
-27:## SBD pyramidal neurons exhibit overlapping place tuning.
-34:## Common birthdate shapes the structure of CA1 microcircuits.
-38:## Discussion
-41:## Embryonic origins of the CA1 microcircuit architecture.
-45:## Neurons born together wire and fire together.
-53:## The wave of neurogenesis affects connectivity and activity.
-58:## Online content
-61:## Methods
-63:## Animals.
-66:## Fluorescent microscopy.
-69:## Quantification of normalized cell depth.
-72:## In utero hippocampal electroporation.
-76:## BrdU experiments.
-82:## Silicon probes coupled with optic fibers for optogenetics.
-[... 38 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,60p paper.txt
-```
-
-```
-<persisted-output>
-Output too large (34.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bdyhqlrqd.txt
-
-Preview (first 2KB):
-Author contributions
-R.H., H.B. and G.B. designed the study. R.H. and Y.Z. performed the experiments. R.H. performed data analysis and modeling with help from Y.Z. in analyzing histological data. R.H. and G.B. wrote the manuscript with contributions from the other authors.
-The incorporation of new information into the hippocampal network is likely to be constrained by its innate architecture and internally generated activity patterns. However, the origin, organization and consequences of such patterns remain poorly understood. In the present study we show that hippocampal network dynamics are affected by sequential neurogenesis. We birthdated CA1 pyramidal neurons with in utero electroporation over 4 embryonic days, encompassing the peak of hippocampal neurogenesis, and compared their functional features in freely moving adult mice. Neurons of the same birthdate displayed distinct connectivity, coactivity across brain states and assembly dynamics. Same-birthdate neurons exhibited overlapping spatial representations, which were maintained across different environments. Overall, the wiring and functional features of CA1 pyramidal neurons reflected a combination of birthdate and the rate of neurogenesis. These observations demonstrate that sequential neurogenesis during embryonic development shapes the preconfigured forms of adult network dynamics.
-...
-</persisted-output>
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 60,200p paper.txt; sed -n 270,300p paper.txt
-```
-
-```
-<persisted-output>
-Output too large (75KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bxe5ke7k8.txt
-
-Preview (first 2KB):
-## Methods
-
-## Animals.
-All experiments were conducted in accordance with the Institutional Animal Care and Use Committee of New York University Medical Center (IA15–01466). Time-pregnant C57BL/6J female mice were either bred in-house or obtained from Charles River Laboratory. Timed pregnancies were prepared by co-housing males and females shortly before the dark cycle. Early morning of the next day was considered embryonic (E) age 0.5. Time-pregnant mice and their offspring were kept on a regular light:dark cycle. Electrode-implanted adult mice (3–6 months) were housed individually on a reverse light:dark cycle. At the end of all experiments, animals were deeply anesthetized with isoflurane and transcardially perfused with 4% paraformaldehyde. Brains were post-fixed in 4% paraformaldehyde for 1 d, and then moved to 1× phosphate-buffered saline (PBS). Brain slices were taken on a vibratome at 50 μm (LEICA VT10000 S).
-
-## Fluorescent microscopy.
-Slices were mounted on to glass slides, stained with DAPI (SouthernBiotech), and imaged under a fluorescent microscope (OLYMPUS BX61VS) with a magnification of ×10 under three filters: DAPI, tetramethylrhodamine (TRITC; for tdTomato) and FITC (for eYFP). This procedure was followed to verify the presence of electroporated plasmids and to analyze the somatic radial position (see below).
-
-## Quantification of normalized cell depth.
-...
-</persisted-output>
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bdyhqlrqd.txt"
-}
-```
-
-```
-1	Author contributions
-2	R.H., H.B. and G.B. designed the study. R.H. and Y.Z. performed the experiments. R.H. performed data analysis and modeling with help from Y.Z. in analyzing histological data. R.H. and G.B. wrote the manuscript with contributions from the other authors.
-3	The incorporation of new information into the hippocampal network is likely to be constrained by its innate architecture and internally generated activity patterns. However, the origin, organization and consequences of such patterns remain poorly understood. In the present study we show that hippocampal network dynamics are affected by sequential neurogenesis. We birthdated CA1 pyramidal neurons with in utero electroporation over 4 embryonic days, encompassing the peak of hippocampal neurogenesis, and compared their functional features in freely moving adult mice. Neurons of the same birthdate displayed distinct connectivity, coactivity across brain states and assembly dynamics. Same-birthdate neurons exhibited overlapping spatial representations, which were maintained across different environments. Overall, the wiring and functional features of CA1 pyramidal neurons reflected a combination of birthdate and the rate of neurogenesis. These observations demonstrate that sequential neurogenesis during embryonic development shapes the preconfigured forms of adult network dynamics.
-4	The hippocampus plays a crucial role in the rapid encoding and storage of episodic memories. This function is thought to depend on its unique anatomical and functional organization1. In contrast to the neocortex where receptive fields are topographically organized (that is, physically nearby neurons have similar fields), hippocampal ‘place cells’ that represent the same or different parts of an environment are thought to be randomly distributed throughout the hippocampus2,3. It has been suggested that the specific constellation of place cells representing a particular environment is established via activity-dependent
-[... 57 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bxe5ke7k8.txt"
-}
-```
-
-```
-1	
-2	## Methods
-3	
-4	## Animals.
-5	All experiments were conducted in accordance with the Institutional Animal Care and Use Committee of New York University Medical Center (IA15–01466). Time-pregnant C57BL/6J female mice were either bred in-house or obtained from Charles River Laboratory. Timed pregnancies were prepared by co-housing males and females shortly before the dark cycle. Early morning of the next day was considered embryonic (E) age 0.5. Time-pregnant mice and their offspring were kept on a regular light:dark cycle. Electrode-implanted adult mice (3–6 months) were housed individually on a reverse light:dark cycle. At the end of all experiments, animals were deeply anesthetized with isoflurane and transcardially perfused with 4% paraformaldehyde. Brains were post-fixed in 4% paraformaldehyde for 1 d, and then moved to 1× phosphate-buffered saline (PBS). Brain slices were taken on a vibratome at 50 μm (LEICA VT10000 S).
-6	
-7	## Fluorescent microscopy.
-8	Slices were mounted on to glass slides, stained with DAPI (SouthernBiotech), and imaged under a fluorescent microscope (OLYMPUS BX61VS) with a magnification of ×10 under three filters: DAPI, tetramethylrhodamine (TRITC; for tdTomato) and FITC (for eYFP). This procedure was followed to verify the presence of electroporated plasmids and to analyze the somatic radial position (see below).
-9	
-10	## Quantification of normalized cell depth.
-11	CA1 pyramidal neuron coordinates were identified by thresholding expression in the red spectrum (tdTomato), followed by manual curation (ImageJ). In each section, the CA1 region was delimited according to the Mouse Brain Atlas53. The border between stratum pyramidale (SP) and stratum radiatum (SR), as well as the border between SP and stratum oriens (SO), were identified manually assisted by the high contrast of DAPI expression (Extended Data Fig. 1). Using customized written scripts, a perpendicular projection was made from each identified pyramidal neuron to the SP–SR borde
-[... 108 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bxe5ke7k8.txt",
- "offset": 119
-}
-```
-
-```
-119	## Matching of waveform profile distances supports results in main Fig. 2c, g and Fig. 5c.
-120	a, Left: Waveform profile distances (Extended Data Fig. 2d–f) for SBD (blue, median=13.0128, n=1,743) and DBD same-shank pairs (red, median=15.68, n=15,996; P=4.6e-27) contributing to analyses in Fig. 2c, g. Right: Waveform profile distances for same-shank pairs recorded >60 μm apart. Blue: median=17.41, n=347. Red, median=16.59, n=3,581. P=5.5e-1. Anatomical distance was defined as the distance between the neurons’ maximum waveform channels on the probe layout. Same-shank SBD and DBD pairs recorded >60 μm apart were less differentially affected by spike sorting errors, as evidenced by similar waveform profile distances. b, Left: SPW-R-related pairwise correlations (Fig. 2g) of same-shank SBD (blue, median=0.037, n=347) and DBD (red, median=0.021, n=3,588; P=1.4e-04) pairs recorded >60 μm apart. Right: Theta cycle correlations (Fig. 2c) for pairs shown on the left. Blue: SBD, median=0.019. Red: DBD, median=0.0092. P=4.3e-12. c, Left: Waveform profile distances of DBD pairs recorded >60 μm apart were resampled according to the empirical probability mass function of waveform profile distances of SBD pairs. Group size was fixed at n=1,743 of the original SBD group. >60 μm SBD pairs were sampled with replacement to achieve the latter. Blue: median=17.5854. Red: DBD, median=17.5305. P=6.9e-1. Right: P-value distribution (n=500 resamplings) for comparisons shown in b. All tests were P < 0.05. d, Same as a for same-shank pairs involved in spatial ratemap correlation analyses in Fig. 5c. Left: Blue: SBD, median=10.498, n=1,205. Red: DBD, median=14.49, n=13,549. P=6.5e-107. Right: Blue: SBD, median=14.0836, n=252. Red: DBD, median=15.028, n=2,998. P=7.8e-3. e, Spatial ratemap correlation of same-shank pairs recorded >60 μm apart. Blue: SBD, median=0.0079, n=252. Red: DBD, median=−0.0308, n=2998. P=3.3e-2. f, Same resampling as c matching waveform profile distances and group siz
-[... 48 more lines not kept]
-```
-
-**Agent**
-
-I have the full author manuscript (PMC10807234). Now let me open an NWB file and list everything in it.
-
-**Agent calls Bash**
-
-```bash
-cd .. ; python -c "import dandi, h5py, remfile, pynwb; print(dandi.__version__, h5py.__version__, pynwb.__version__)"; which uv; python --version
+cd  python -c "import pynwb, remfile, h5py; print(pynwb.__version__)" 2>&1; which python uv; python --version; nproc; free -g
 ```
 
 ```
 Traceback (most recent call last):
   File "<string>", line 1, in <module>
-    import dandi, h5py, remfile, pynwb; print(dandi.__version__, h5py.__version__, pynwb.__version__)
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'dandi'
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
-Python 3.13.16
+    import pynwb, remfile, h5py; print(pynwb.__version__)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'pynwb'
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/uv
+Python 3.13.18
+4
+               total        used        free      shared  buff/cache   available
+Mem:              15           1          12           0           2          14
+Swap:              2           0           2
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && uv venv -q explore && . explore/bin/activate && uv pip install -q dandi h5py remfile pynwb numpy pandas scipy scikit-learn 2>&1 | tail -3; python -c "import dandi,pynwb;print(dandi.__version__,pynwb.__version__)"
+cd $TMPDIR && uv venv -q venv && . venv/bin/activate && uv pip install -q pynwb remfile h5py numpy scipy pandas matplotlib requests jupyter nbconvert ipykernel 2>&1 | tail -3; python -c "import pynwb;print(pynwb.__version__)"
 ```
 
 ```
-0.81.0 4.2.0
+4.2.0
 Shell cwd was reset to
 ```
 
+**Agent**
+
+Let me open one processed file and list everything.
+
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/inspect.py <<'EOF'
-import h5py, remfile, sys
-from dandi.dandiapi import DandiAPIClient
+cd $TMPDIR && . venv/bin/activate && cat > survey.py <<'EOF'
+import json, requests, remfile, h5py, pynwb, time, sys
+d=json.load(open('assets.json'))['results']
 path=sys.argv[1]
-c=DandiAPIClient()
-ds=c.get_dandiset('000552','0.230630.2304')
-a=ds.get_asset_by_path(path)
-url=a.get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-def show(name,obj):
-    if isinstance(obj,h5py.Dataset):
-        s=f"{name} {obj.shape} {obj.dtype}"
-        if obj.size<=5 and obj.dtype.kind in 'OSU': s+=f" = {obj[()]}"
-        attrs={k:v for k,v in obj.attrs.items() if k in('unit','description','resolution','rate','conversion')}
-        print(s, attrs if attrs else '')
-    else:
-        d=obj.attrs.get('description','')
-        print(name+'/', obj.attrs.get('neurodata_type',''), str(d)[:200])
-f.visititems(show)
+a=[x for x in d if x['path']==path][0]
+url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
+s3=requests.head(url,allow_redirects=True).url
+t=time.time()
+f=h5py.File(remfile.File(s3),'r')
+def walk(g,pre=''):
+    for k,v in g.items():
+        if isinstance(v,h5py.Dataset):
+            print(pre+k, v.shape, v.dtype)
+        else:
+            print(pre+k+'/', dict((kk,str(vv)[:150]) for kk,vv in v.attrs.items() if kk in ('neurodata_type','description','colnames')))
+            walk(v,pre+'  ')
+walk(f)
+print('time',time.time()-t)
 EOF
-. $TMPDIR/explore/bin/activate && python $TMPDIR/inspect.py sub-e13-1m1/sub-e13-1m1_ses-e13-1m1-200220_behavior+ecephys.nwb
+python survey.py sub-e16-3m1/sub-e16-3m1_ses-e16-3m1-210201_behavior+ecephys.nwb 2>&1 | grep -v "^ *[a-z_]*_index" | head -300
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/inspect.py", line 1, in <module>
-    import h5py, remfile, sys
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/h5py/__init__.py", line 33, in <module>
-    from . import version
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/h5py/version.py", line 17, in <module>
-    import numpy
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/numpy/__init__.py", line 109, in <module>
-    from numpy.__config__ import show_config
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/numpy/__config__.py", line 4, in <module>
-    from numpy._core._multiarray_umath import (
-    ...<3 lines>...
-    )
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/numpy/_core/__init__.py", line 24, in <module>
-    from . import multiarray
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/numpy/_core/multiarray.py", line 11, in <module>
-    from . import _multiarray_umath, overrides
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/numpy/_core/overrides.py", line 4, in <module>
-    import inspect
-[... 16 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-mv $TMPDIR/inspect.py $TMPDIR/nwbls.py; . $TMPDIR/explore/bin/activate && python $TMPDIR/nwbls.py sub-e13-1m1/sub-e13-1m1_ses-e13-1m1-200220_behavior+ecephys.nwb
-```
-
-```
-<persisted-output>
-Output too large (152.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bq7toye90.txt
-
-Preview (first 2KB):
-acquisition/  
-analysis/  
-file_create_date (1,) object = [b'2023-06-30T22:27:38.005531+00:00'] 
-general/  
-general/experiment_description () object = b'Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis' 
-general/experimenter (4,) object = [b'Husz\xc3\xa1r, Roman' b'Zhang, Yunchang' b'Blockus, Heike'
- b'Buzs\xc3\xa1ki, Gy\xc3\xb6rgy'] 
-general/institution () object = b'Princeton' 
-general/keywords (3,) object = [b'Development of the nervous system' b'Hippocampus' b'Neural circuits'] 
-general/lab () object = b'Buzsaki' 
-general/related_publications (1,) object = [b'https://doi.org/10.1038/s41593-022-01138-x'] 
-general/session_id () object = b'e13_1m1_200220' 
-general/subject/ Subject 
-general/subject/age () object = b'P3M/P6M' 
-general/subject/genotype () object = b'Wild type' 
-general/subject/sex () object = b'M' 
-[... 18 more lines not kept]
+acquisition/ {}
+analysis/ {}
+file_create_date (1,) object
+general/ {}
+  devices/ {}
+    Probe/ {'description': '64-channel silicon probe in 4 electrode groups, poly2 site layout (session.mat); recorded with Intan Technologies, RHD2000 USB interface board (256ch)', 'neurodata_type': 'Device'}
+  experiment_description () object
+  experimenter (4,) object
+  external_resources/ {'neurodata_type': 'HERD'}
+    entities (10,) [('entity_id', 'O'), ('entity_uri', 'O')]
+    entity_keys (15,) [('entities_idx', '<u4'), ('keys_idx', '<u4')]
+    files (1,) [('file_object_id', 'O')]
+    keys (15,) [('key', 'O')]
+    object_keys (15,) [('objects_idx', '<u4'), ('keys_idx', '<u4')]
+    objects (10,) [('files_idx', '<u4'), ('object_id', 'O'), ('object_type', 'O'), ('relative_path', 'O'), ('field', 'O')]
+  extracellular_ephys/ {}
+    Group 1/ {'description': 'electrode group 1 of session.mat extracellular.electrodeGroups', 'neurodata_type': 'ElectrodeGroup'}
+      device/ {'description': '64-channel silicon probe in 4 electrode groups, poly2 site layout (session.mat); recorded with Intan Technologies, RHD2000 USB interface board (256ch)', 'neurodata_type': 'Device'}
+    Group 2/ {'description': 'electrode group 2 of session.mat extracellular.electrodeGroups', 'neurodata_type': 'ElectrodeGroup'}
+      device/ {'description': '64-channel silicon probe in 4 electrode groups, poly2 site layout (session.mat); recorded with Intan Technologies, RHD2000 USB interface board (256ch)', 'neurodata_type': 'Device'}
+[... 191 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -v -E "^units/(waveform|spike_times)" /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bq7toye90.txt | grep -v "electrodes/" | head -150; wc -l /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bq7toye90.txt
-```
-
-```
-<persisted-output>
-Output too large (152.8KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bmueutduk.txt
-
-Preview (first 2KB):
-acquisition/  
-analysis/  
-file_create_date (1,) object = [b'2023-06-30T22:27:38.005531+00:00'] 
-general/  
-general/experiment_description () object = b'Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis' 
-general/experimenter (4,) object = [b'Husz\xc3\xa1r, Roman' b'Zhang, Yunchang' b'Blockus, Heike'
- b'Buzs\xc3\xa1ki, Gy\xc3\xb6rgy'] 
-general/institution () object = b'Princeton' 
-general/keywords (3,) object = [b'Development of the nervous system' b'Hippocampus' b'Neural circuits'] 
-general/lab () object = b'Buzsaki' 
-general/related_publications (1,) object = [b'https://doi.org/10.1038/s41593-022-01138-x'] 
-general/session_id () object = b'e13_1m1_200220' 
-general/subject/ Subject 
-general/subject/age () object = b'P3M/P6M' 
-general/subject/genotype () object = b'Wild type' 
-general/subject/sex () object = b'M' 
-[... 18 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-F=/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bq7toye90.txt; awk '{print $1}' $F | awk -F/ '{print $1"/"$2"/"$3}' | sort | uniq -c | sort -rn | head -40
-```
-
-```
-17 processing/ecephys/Ripples
-     14 specifications/core/2.6.0-alpha
-      5 specifications/hdmf-common/1.6.0
-      5 processing/behavior/SleepStates
-      4 specifications/hdmf-experimental/0.3.0
-      3 specifications/ndx-events/0.2.0
-      1 timestamps_reference_time//
-      1 stimulus/templates/
-      1 stimulus/presentation/
-      1 stimulus//
-      1 specifications/ndx-events/
-      1 specifications/hdmf-experimental/
-      1 specifications/hdmf-common/
-      1 specifications/core/
-      1 specifications//
-      1 session_start_time//
-      1 session_description//
-      1 processing/ecephys/
-      1 processing/behavior/
-      1 processing//
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-F=/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bq7toye90.txt; grep -v "^specifications" $F | cut -c1-250
-```
-
-```
-acquisition/  
-analysis/  
-file_create_date (1,) object = [b'2023-06-30T22:27:38.005531+00:00'] 
-general/  
-general/experiment_description () object = b'Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis' 
-general/experimenter (4,) object = [b'Husz\xc3\xa1r, Roman' b'Zhang, Yunchang' b'Blockus, Heike'
- b'Buzs\xc3\xa1ki, Gy\xc3\xb6rgy'] 
-general/institution () object = b'Princeton' 
-general/keywords (3,) object = [b'Development of the nervous system' b'Hippocampus' b'Neural circuits'] 
-general/lab () object = b'Buzsaki' 
-general/related_publications (1,) object = [b'https://doi.org/10.1038/s41593-022-01138-x'] 
-general/session_id () object = b'e13_1m1_200220' 
-general/subject/ Subject 
-general/subject/age () object = b'P3M/P6M' 
-general/subject/genotype () object = b'Wild type' 
-general/subject/sex () object = b'M' 
-general/subject/species () object = b'Mus musculus' 
-general/subject/strain () object = b'C57BL/6' 
-general/subject/subject_id () object = b'e13_1m1' 
-identifier () object = b'2f691a9f-b90a-4ab5-8b36-30f89516a9b4' 
-[... 31 more lines not kept]
-```
-
-**Agent**
-
-That small file holds only sleep states and ripples, no units. Let me check per-asset metadata across all files.
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-from dandi.dandiapi import DandiAPIClient
-c=DandiAPIClient()
-ds=c.get_dandiset('000552','0.230630.2304')
-import collections
-cnt=collections.Counter()
-for a in ds.get_assets():
-    m=a.get_raw_metadata()
-    vm=tuple(sorted(v['value'] for v in m.get('variableMeasured',[])))
-    cnt[('raw' in a.path, vm)]+=1
-for k,v in cnt.items(): print(v,k)
+cd $TMPDIR && . venv/bin/activate && cat > meta.py <<'EOF'
+import json, requests, remfile, h5py, sys, numpy as np
+d=json.load(open('assets.json'))['results']
+path=sys.argv[1]
+a=[x for x in d if x['path']==path][0]
+s3=requests.head(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/",allow_redirects=True).url
+f=h5py.File(remfile.File(s3),'r')
+dec=lambda x: x.decode() if isinstance(x,bytes) else x
+for k in ['subject_id','sex','age','description','genotype','strain']:
+    print(k, dec(f['general/subject/'+k][()]))
+print('session_description', dec(f['session_description'][()]))
+print('exp', dec(f['general/experiment_description'][()])[:1500])
+for k,v in f['units'].items():
+    if isinstance(v,h5py.Dataset): print('UNIT', k, dec(v.attrs.get('description',''))[:400])
+for tbl in ['units/meanings_tables/putative_cell_type_meanings','intervals/epochs/meanings_tables/environment_meanings','intervals/epochs/meanings_tables/task_meanings','processing/behavior/SleepStates/meanings_tables/label_meanings','intervals/trials/meanings_tables/visited_arm_meanings']:
+    g=f[tbl]; print(tbl, [ (dec(a),dec(b)) for a,b in zip(g['value'][:],g['meaning'][:])])
+e=f['intervals/epochs']; print([ (dec(n),dec(en),dec(t),s,st) for n,en,t,s,st in zip(e['epoch_name'][:],e['environment'][:],e['task'][:],e['start_time'][:],e['stop_time'][:])])
+for k in ['trials','OptogeneticPulses']:
+  for c,v in f['intervals/'+k].items():
+    if isinstance(v,h5py.Dataset): print(k,c,dec(v.attrs.get('description',''))[:300])
+for c,v in f['processing/ecephys/Ripples'].items():
+    print('RIP',c,dec(v.attrs.get('description',''))[:300])
+print(dec(f['processing/behavior/RewardEvents'].attrs['description']))
+print(dec(f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries1/data'].attrs.get('unit')), dec(f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries1/data'].attrs.get('conversion')))
+lfp=f['processing/ecephys/LFP/LFP']; print({k:dec(v) for k,v in lfp['data'].attrs.items()}, {k:dec(v) for k,v in lfp['starting_time'].attrs.items()}, lfp['starting_time'][()])
+el=f['general/extracellular_ephys/electrodes']
+for c in el: 
+  if isinstance(el[c],h5py.Dataset): print('EL',c,dec(el[c].attrs.get('description',''))[:200], el[c][:5] if el[c].dtype!=object or c!='group' else '')
+print('units desc', dec(f['units'].attrs['description']))
 EOF
+python meta.py sub-e16-3m1/sub-e16-3m1_ses-e16-3m1-210201_behavior+ecephys.nwb
 ```
 
 ```
-12 (True, ('ElectricalSeries', 'ElectrodeGroup', 'LFP', 'ProcessingModule'))
-1 (True, ('ElectricalSeries', 'ElectrodeGroup'))
-64 (False, ('ElectrodeGroup', 'Position', 'ProcessingModule', 'SpatialSeries', 'Units'))
-39 (False, ('ProcessingModule',))
-1 (False, ('ElectricalSeries', 'ElectrodeGroup', 'LFP', 'Position', 'ProcessingModule', 'SpatialSeries', 'Units'))
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF' > $TMPDIR/assets.tsv
-from dandi.dandiapi import DandiAPIClient
-c=DandiAPIClient()
-ds=c.get_dandiset('000552','0.230630.2304')
-for a in ds.get_assets():
-    m=a.get_raw_metadata()
-    vm=sorted(v['value'] for v in m.get('variableMeasured',[]))
-    print(a.path, a.size, 'Units' in vm, 'Position' in vm, 'LFP' in vm, sep='\t')
-EOF
-sort $TMPDIR/assets.tsv | awk -F'\t' '{split($1,p,"/"); print p[1], $3, $4, $5, ($1 ~ /raw/ ? "raw":"proc")}' | sort | uniq -c
-```
-
-```
-9 sub-e13-16f1 True True False proc
-      5 sub-e13-1f1 False False False proc
-     12 sub-e13-1m1 False False False proc
-      3 sub-e13-26m1 False False True raw
-      4 sub-e13-26m1 True True False proc
-     12 sub-e14-1m1 False False False proc
-      4 sub-e14-2m2 True True False proc
-      8 sub-e14-2m3 True True False proc
-      7 sub-e15-10m1 True True False proc
-      4 sub-e15-13f1 False False True raw
-      4 sub-e15-13f1 True True False proc
-      3 sub-e15-4m1 False False False proc
-      4 sub-e15-4m2 False False False proc
-      3 sub-e15-5m1 False False False proc
-      7 sub-e15-9f1 True True False proc
-      9 sub-e16-1f1 True True False proc
-      5 sub-e16-2m1 True True False proc
-      1 sub-e16-3m1 False False False raw
-      1 sub-e16-3m1 False False True raw
-      3 sub-e16-3m1 True True False proc
-[... 3 more lines not kept]
-```
-
-**Agent**
-
-Units appear in 65 of 104 processed sessions (11 of 17 subjects). Let me inspect one with units.
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python $TMPDIR/nwbls.py sub-e14-2m3/sub-e14-2m3_ses-e14-2m3-201017_behavior+ecephys.nwb | grep -v "^specifications" | cut -c1-300
-```
-
-```
-acquisition/  
-analysis/  
-file_create_date (1,) object = [b'2023-06-30T22:27:27.438844+00:00'] 
-general/  
-general/devices/  
-general/devices/Device/ Device Ecephys probe. Automatically generated.
-general/experiment_description () object = b'Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis' 
-general/experimenter (4,) object = [b'Husz\xc3\xa1r, Roman' b'Zhang, Yunchang' b'Blockus, Heike'
- b'Buzs\xc3\xa1ki, Gy\xc3\xb6rgy'] 
-general/extracellular_ephys/  
-general/extracellular_ephys/Group 1/ ElectrodeGroup no description
-general/extracellular_ephys/Group 2/ ElectrodeGroup no description
-general/extracellular_ephys/Group 3/ ElectrodeGroup no description
-general/extracellular_ephys/Group 4/ ElectrodeGroup no description
-general/extracellular_ephys/electrodes/ DynamicTable metadata about extracellular electrodes
-general/extracellular_ephys/electrodes/channel_name (64,) object {'description': 'unique channel reference'}
-general/extracellular_ephys/electrodes/group (64,) object {'description': 'a reference to the ElectrodeGroup this electrode is a part of'}
-general/extracellular_ephys/electrodes/group_name (64,) object {'description': 'the name of the ElectrodeGroup this electrode is a part of'}
-general/extracellular_ephys/electrodes/id (64,) int64 
-general/extracellular_ephys/electrodes/location (64,) object {'description': 'the location of channel within the subject e.g. brain region'}
-[... 80 more lines not kept]
+subject_id e16_3m1
+sex M
+age P3M/P6M
+description CA1 pyramidal neurons birthdated by in utero electroporation at E16.5 (the e-number of the subject id; the source has no other record of the electroporation day). Sex from the m or f of the subject id. Age: 3 to 6 months, the range the paper gives for the implanted mice as a group; no source file gives each mouse's age.
+genotype Wild type
+strain C57BL/6
+session_description Recording from a 64-channel silicon probe in CA1, with light pulses for optogenetic tagging of the birthdated pyramidal neurons, in the home cage and in the spatial alternation task of the figure-8 maze.
+exp The incorporation of new information into the hippocampal network is likely to be constrained by its innate architecture and internally generated activity patterns. However, the origin, organization and consequences of such patterns remain poorly understood. In the present study we show that hippocampal network dynamics are affected by sequential neurogenesis. We birthdated CA1 pyramidal neurons with in utero electroporation over 4 embryonic days, encompassing the peak of hippocampal neurogenesis, and compared their functional features in freely moving adult mice. Neurons of the same birthdate displayed distinct connectivity, coactivity across brain states and assembly dynamics. Same-birthdate neurons exhibited overlapping spatial representations, which were maintained across different environments. Overall, the wiring and functional features of CA1 pyramidal neurons reflected a combination of birthdate and the rate of neurogenesis. These observations demonstrate that sequential neurogenesis during embryonic development shapes the preconfigured forms of adult network dynamics.
+UNIT acg_tau_rise rise time constant of the autocorrelogram fit, in ms (cell_metrics.acg_tau_rise)
+UNIT cluster_id Phy cluster id of the unit (spikes.cellinfo cluID)
+UNIT electrode_group the electrode group that each spike unit came from
+UNIT electrodes the electrodes that
+[... 62 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-. $TMPDIR/explore/bin/activate && python $TMPDIR/nwbls.py sub-e16-3m1/sub-e16-3m1_ses-e16-3m1-210201_behavior+ecephys.nwb | grep -v "^specifications" | grep -v -E "Ripples/|electrodes/|SleepStates/" | cut -c1-250; echo ======; python $TMPDIR/nwbls.py sub-e15-13f1/sub-e15-13f1_ses-e15-13f1-220117-raw_ecephys.nwb | grep -v "^specifications" | grep -v "electrodes/" | cut -c1-250
+mkdir -p entries/huszar-2022; date -u
 ```
 
 ```
-acquisition/  
-analysis/  
-file_create_date (1,) object = [b'2023-06-30T22:27:31.045812+00:00'] 
-general/  
-general/devices/  
-general/devices/DeviceEcephys/ Device no description
-general/experiment_description () object = b'Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis' 
-general/experimenter (4,) object = [b'Husz\xc3\xa1r, Roman' b'Zhang, Yunchang' b'Blockus, Heike'
- b'Buzs\xc3\xa1ki, Gy\xc3\xb6rgy'] 
-general/extracellular_ephys/  
-general/extracellular_ephys/Group1/ ElectrodeGroup Group1 electrodes.
-general/extracellular_ephys/Group2/ ElectrodeGroup Group2 electrodes.
-general/extracellular_ephys/Group3/ ElectrodeGroup Group3 electrodes.
-general/extracellular_ephys/Group4/ ElectrodeGroup Group4 electrodes.
-general/institution () object = b'Princeton' 
-general/keywords (3,) object = [b'Development of the nervous system' b'Hippocampus' b'Neural circuits'] 
-general/lab () object = b'Buzsaki' 
-general/related_publications (1,) object = [b'https://doi.org/10.1038/s41593-022-01138-x'] 
-general/session_id () object = b'e16_3m1_210201' 
-general/subject/ Subject 
-[... 93 more lines not kept]
+Thu Nov 19 04:33:01 UTC 2026
 ```
 
-**Agent**
+**Agent calls Write**
 
-Big picture so far: units carry no cell-type or light-response label and no stimulation times are stored. Let me check the draft's extra assets, the linked code, and the lab's own data repository.
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-from dandi.dandiapi import DandiAPIClient
-c=DandiAPIClient()
-pub={a.path:(a.size,a.identifier) for a in c.get_dandiset('000552','0.230630.2304').get_assets()}
-dr={a.path:(a.size,a.identifier) for a in c.get_dandiset('000552','draft').get_assets()}
-print('only draft', [ (p,dr[p]) for p in dr if p not in pub])
-print('only pub', [p for p in pub if p not in dr])
-print('changed', [p for p in pub if p in dr and pub[p][0]!=dr[p][0]])
-EOF
-curl -s "https://api.github.com/users/rhuszar/repos?per_page=100" | python -c "import json,sys; [print(r['name'], r['pushed_at'], r['description']) for r in json.load(sys.stdin)]"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && git clone -q https://github.com/rhuszar/optotagCA1_final.git && cd optotagCA1_final && git log -1 --format='%H %ad' && find . -type f -not -path './.git/*' | head -100 && find . -type f -not -path './.git/*' | wc -l; cat README* 2>/dev/null | head -50
+```json
+{
+ "file_path": "entries/huszar-2022/huszar.py",
+ "content": "\"\"\"Loading and measures for Huszar et al. (2022) on DANDI:000552.\n\nStreams the processed NWB files of the pinned version with remfile and h5py; nothing is\nwritten to disk. Where a parameter comes from is said beside it:\n\n- \"claims\" means the criterion of the claim in claims/huszar-2022.yaml, which cites the paper or\n  its code (github.com/rhuszar/optotagCA1_final, commit 51320d4);\n- \"Methods\" or a legend means the passage of the paper it was taken from (protocol, author 1.6);\n- \"assumption\" means a choice the paper leaves open, with the reason;\n- \"standard\" means a detail that cannot change a result.\n\"\"\"\nimport concurrent.futures as cf\nimport json\nimport re\n\nimport h5py\nimport numpy as np\nimport remfile\nimport requests\n\nDANDISET = \"000552\"\nVERSION = \"0.261113.1035\"  # most recent published version; see the notebook header\nAPI = \"https://api.dandiarchive.org/api\"\n\n# Supplementary Table 1: mice and the analyses they enter (claims file, opening comment).\nHOMECAGE_EXCLUDED = {\"e15_13f1\", \"e16_3m2\"}  # not in the homecage analyses (Figs 1-4, 7)\nFAMILIAR_MICE = {\"e13_16f1\", \"e13_26m1\", \"e14_2m2\", \"e14_2m3\", \"e15_9f1\", \"e15_10m1\",\n                 \"e16_1f1\", \"e16_2m1\", \"e16_3m1\"}  # Figure 5 column\nNOVEL_MICE = {\"e13_26m1\", \"e15_13f1\", \"e16_3m2\"}  # Figure 6 column\n# Supplementary Table 1 session and light-responsive counts, in the table's row order\n# (claims file, st1-animal-sessions, inferred note).\nST1_ORDER = [\"e13_1m1\", \"e13_1f1\", \"e13_16f1\", \"e13_26m1\", \"e14_1m1\", \"e14_2m2\", \"e14_2m3\",\n             \"e15_4m1\", \"e15_4m2\", \"e15_5m1\", \"e15_9f1\", \"e15_10m1\", \"e15_13f1\", \"e16_1f1\",\n             \"e16_2m1\", \"e16_3m1\", \"e16_3m2\"]\nST1_SESSIONS = [12, 5, 12, 3, 4, 3, 9, 4, 8, 7, 7, 9, 5, 4, 4, 4, 4]\nST1_LIGHT = [14, 6, 56, 35, 68, 19, 124, 9, 67, 67, 44, 49, 23, 43, 40, 53, 69]\n\nBIRTHDATES = [\"E13.5\", \"E14.5\", \"E15.5\", \"E16.5\"]\nBD_DAY = {\"E13.5\": 13.5, \"E14.5\": 14.5, \"E15.5\": 15.5, \"E16.5\": 16.5}\n\n\ndef birthdate(subject_id):\n    \"\"\"Electroporation day from the subject id (e13_ is E13.5 and so on), as the files describe.\"\"\"\n    return {\"13\": \"E13.5\", \"14\": \"E14.5\", \"15\": \"E15.5\", \"16\": \"E16.5\"}[subject_id[1:3]]\n\n\ndef assets():\n    \"\"\"Processed NWB assets of the pinned version (raw wide-band files left out).\"\"\"\n    out, url = [], f\"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/?page_size=200\"\n    while url:\n        r = requests.get(url, timeout=60).json()\n        out += r[\"results\"]\n        url = r[\"next\"]\n    return sorted([a for a in out if a[\"path\"].endswith(\"behavior+ecephys.nwb\")],\n                  key=lambda a: a[\"path\"])\n\n\ndef s3_url(asset):\n    r = requests.head(f\"{API}/assets/{asset['asset_id']}/download/\", allow_redirects=True,\n                      timeout=60)\n    return r.url\n\n\ndef open_nwb(asset):\n    return h5py.File(remfile.File(s3_url(asset)), \"r\")\n\n\ndef _s(x):\n    return x.decode() if isinstance(x, bytes) else x\n\n\ndef _col(g, name):\n    v = g[name][:]\n    return np.array([_s(x) for x in v], dtype=object) if v.dtype == object else v\n\n\ndef table(g, cols=None):\n    \"\"\"A TimeIntervals or DynamicTable group as a dict of arrays (ragged columns left out).\"\"\"\n    out = {}\n    for k, v in g.items():\n        if isinstance(v, h5py.Dataset) and (cols is None or k in cols) and not k.endswith(\"_index\"):\n            if k + \"_index\" in g:\n                continue\n            out[k] = _col(g, k)\n    return out\n\n\ndef session_meta(asset):\n    \"\"\"Metadata and small arrays of one session: no spike times, no LFP samples.\"\"\"\n    with open_nwb(asset) as f:\n        sub = f[\"general/subject\"]\n        m = {\"path\": asset[\"path\"], \"session_id\": _s(f[\"general/session_id\"][()]),\n             \"subject_id\": _s(sub[\"subject_id\"][()]), \"sex\": _s(sub[\"sex\"][()]),\n             \"age\": _s(sub[\"age\"][()])}\n        m[\"birthdate\"] = birthdate(m[\"subject_id\"])\n        u = f[\"units\"]\n        m[\"n_units\"] = int(u[\"id\"].shape[0])\n        m[\"has_cell_type\"] = \"putative_cell_type\" in u\n        for c in [\"putative_cell_type\", \"light_responsive\", \"opto_p_salt\", \"opto_h_reliable\",\n                  \"shank_id\", \"max_electrode\", \"trough_to_peak\", \"firing_rate\", \"unit_name\"]:\n            if c in u:\n                v = _col(u, c)\n                m[\"u_\" + c] = v.tolist() if not isinstance(v, np.ndarray) or v.dtype != object \\\n                    else list(v)\n        idx = u[\"spike_times_index\"][:]\n        m[\"u_n_spikes\"] = np.diff(np.r_[0, idx]).tolist()\n        st = u[\"spike_times\"]\n        m[\"first_spike\"] = float(np.min(st[:min(len(st), 2000000)])) if len(st) else np.nan\n        m[\"last_spike\"] = float(st[idx[-1] - 1]) if len(idx) else np.nan\n        ec = f[\"processing/ecephys\"]\n        if \"LFP\" in ec:\n            lfp = ec[\"LFP/LFP\"]\n            rate = float(lfp[\"starting_time\"].attrs[\"rate\"])\n            m[\"lfp_shape\"] = list(lfp[\"data\"].shape)\n            m[\"lfp_rate\"] = rate\n            m[\"lfp_duration_s\"] = lfp[\"data\"].shape[0] / rate\n        else:\n            m[\"lfp_duration_s\"] = np.nan\n        if \"Ripples\" in ec:\n            r = ec[\"Ripples\"]\n            m[\"rip_start\"] = r[\"start_time\"][:].tolist()\n            m[\"rip_stop\"] = r[\"stop_time\"][:].tolist()\n            m[\"rip_dur\"] = r[\"ripple_durations\"][:].tolist()\n        beh = f[\"processing\"].get(\"behavior\")\n        m[\"sleep\"] = None\n        if beh is not None and \"SleepStates\" in beh:\n            m[\"sleep\"] = {k: (v.tolist() if not isinstance(v[0], str) else list(v))\n                          for k, v in table(beh[\"SleepStates\"]).items() if k != \"id\"}\n        m[\"series\"] = {}\n        if beh is not None:\n            for pos in [\"LinearizedPosition\", \"SubjectPosition\"]:\n                if pos in beh:\n                    for k, v in beh[pos].items():\n                        ts = v[\"timestamps\"]\n                        m[\"series\"][pos + \"/\" + k] = {\n                            \"desc\": _s(v.attrs.get(\"description\", \"\")),\n                            \"n\": int(ts.shape[0]), \"t0\": float(ts[0]), \"t1\": float(ts[-1]),\n                            \"unit\": _s(v[\"data\"].attrs.get(\"unit\", \"\"))}\n        iv = f[\"intervals\"]\n        m[\"epochs\"] = {k: list(v) if v.dtype == object else v.tolist()\n                       for k, v in table(iv[\"epochs\"]).items()} if \"epochs\" in iv else None\n        m[\"trials\"] = {k: list(v) if v.dtype == object else v.tolist()\n                       for k, v in table(iv[\"trials\"]).items()} if \"trials\" in iv else None\n        m[\"pulse_periods\"] = ({k: v.tolist() for k, v in\n                               table(iv[\"OptogeneticPulsePeriods\"]).items()}\n                              if \"OptogeneticPulsePeriods\" in iv else None)\n        m[\"n_pulses\"] = int(iv[\"OptogeneticPulses/id\"].shape[0]) if \"OptogeneticPulses\" in iv \\\n            else 0\n        if \"OptogeneticPulses\" in iv:\n            m[\"pulse_t0\"] = float(iv[\"OptogeneticPulses/start_time\"][0])\n            m[\"pulse_t1\"] = float(iv[\"OptogeneticPulses/stop_time\"][-1])\n    return m\n\n\ndef survey(workers=8):\n    \"\"\"session_meta for every processed file, in parallel threads (metadata only).\"\"\"\n    a = assets()\n    with cf.ThreadPoolExecutor(workers) as ex:\n        return list(ex.map(session_meta, a))\n\n\ndef spike_trains(f, keep=None):\n    \"\"\"List of spike-time arrays (s), one per unit, for the unit indices in keep (all if None).\"\"\"\n    u = f[\"units\"]\n    idx = u[\"spike_times_index\"][:]\n    st = u[\"spike_times\"][:]\n    starts = np.r_[0, idx[:-1]]\n    rows = range(len(idx)) if keep is None else keep\n    return [st[starts[i]:idx[i]] for i in rows]\n\n\n# ---------- intervals ----------\n\ndef merge(iv):\n    iv = sorted([tuple(x) for x in iv if x[1] > x[0]])\n    out = []\n    for a, b in iv:\n        if out and a <= out[-1][1]:\n            out[-1][1] = max(out[-1][1], b)\n        else:\n            out.append([a, b])\n    return np.array(out).reshape(-1, 2)\n\n\ndef subtract(base, cut):\n    \"\"\"Intervals of base minus the union of cut.\"\"\"\n    cut = merge(cut)\n    out = []\n    for a, b in merge(base):\n        cur = a\n        for c, d in cut:\n            if d <= cur or c >= b:\n                continue\n            if c > cur:\n                out.append([cur, c])\n            cur = max(cur, d)\n        if cur < b:\n            out.append([cur, b])\n    return np.array(out).reshape(-1, 2)\n\n\ndef in_intervals(t, iv):\n    \"\"\"Boolean mask of times t inside any of the (sorted, disjoint) intervals iv.\"\"\"\n    if len(iv) == 0:\n        return np.zeros(len(t), bool)\n    i = np.searchsorted(iv[:, 0], t, side=\"right\") - 1\n    ok = i >= 0\n    ok[ok] = t[ok] < iv[i[ok], 1]\n    return ok\n\n\ndef homecage_intervals(m):\n    \"\"\"The homecage period of a session (claims file, opening comment; getHomecageMetrics.m):\n    the recording up to the start of the second behavioural subsession when there is one, else\n    the whole recording, without the optogenetic pulse periods and the maze epochs.\n\n    Behavioural subsessions are the epochs with an environment other than 'none'. The pulse\n    periods are OptogeneticPulsePeriods, widened to the first and last pulse (standard).\"\"\"\n    end = m[\"lfp_duration_s\"] if np.isfinite(m[\"lfp_duration_s\"]) else m[\"last_spike\"]\n    beh = []\n    if m[\"epochs\"]:\n        e = m[\"epochs\"]\n        beh = [(s, t) for s, t, env in zip(e[\"start_time\"], e[\"stop_time\"], e[\"environment\"])\n               if env != \"none\"]\n    beh = sorted(beh)\n    if len(beh) >= 2:\n        end = beh[1][0]\n    cut = list(beh)\n    if m[\"pulse_periods\"]:\n        cut += list(zip(m[\"pulse_periods\"][\"start_time\"], m[\"pulse_periods\"][\"stop_time\"]))\n    if m.get(\"n_pulses\"):\n        cut.append((m[\"pulse_t0\"] - 1.0, m[\"pulse_t1\"] + 1.0))\n    return subtract([[0.0, end]], cut)\n\n\n# ---------- single-cell measures ----------\n\ndef acg_counts(t, lo, hi, binsize=0.001, maxlag=0.3):\n    \"\"\"Autocorrelogram counts in bins of binsize up to maxlag (positive lags), from spikes t.\"\"\"\n    t = np.sort(t)\n    nb = int(round(maxlag / binsize))\n    counts = np.zeros(nb, np.int64)\n    j0 = 0\n    # pairwise differences within maxlag, vectorised over lag offsets\n    for k in range(1, len(t)):\n        d = t[k:] - t[:-k]\n        m = d < maxlag\n        if not m.any():\n            break\n        b = (d[m] / binsize).astype(int)\n        counts += np.bincount(b, minlength=nb)[:nb]\n    return counts\n\n\ndef burst_index(t, short=(0.002, 0.005)):\n    \"\"\"Burst index of the Figure 1h legend: ACG count at short lags (2-5 ms in the legend; the\n    code's 3-5 ms is the variant) over the count at 200-300 ms, ACG in 1 ms bins\n    (getHomecageMetrics.m, claims).\"\"\"\n    c = acg_counts(t, 0, 0.3)\n    s = c[int(round(short[0] * 1000)):int(round(short[1] * 1000))].sum()\n    l = c[200:300].sum()\n    return s / l if l > 0 else np.nan, c\n\n\ndef ripple_measures(trains, rip):\n    \"\"\"Per cell, SPW-R firing rate (spikes in ripples over total ripple duration) and\n    participation (fraction of ripples with at least one spike) (getHomecageMetrics.m, claims),\n    and the ripple-by-cell count matrix used for cofiring.\"\"\"\n    rip = np.asarray(rip).reshape(-1, 2)\n    edges = rip.ravel()\n    tot = np.sum(rip[:, 1] - rip[:, 0])\n    counts = np.zeros((len(rip), len(trains)), np.int32)\n    for j, t in enumerate(trains):\n        k = np.searchsorted(edges, t, side=\"right\")\n        inside = (k % 2) == 1\n        c = np.bincount((k[inside] - 1) // 2, minlength=len(rip))\n        counts[:, j] = c[:len(rip)]\n    rate = counts.sum(0) / tot if tot > 0 else np.full(len(trains), np.nan)\n    part = (counts > 0).mean(0) if len(rip) else np.full(len(trains), np.nan)\n    return rate, part, counts\n\n\ndef pair_corr(counts, pairs):\n    \"\"\"Pearson correlation of count vectors for index pairs (Methods, Cofiring analysis).\n    A pair with a constant vector has no correlation (NaN), as corr gives in MATLAB.\"\"\"\n    x = counts.astype(float)\n    x = x - x.mean(0)\n    sd = np.sqrt((x ** 2).sum(0))\n    out = np.full(len(pairs), np.nan)\n    for n, (i, j) in enumerate(pairs):\n        if sd[i] > 0 and sd[j] > 0:\n            out[n] = (x[:, i] @ x[:, j]) / (sd[i] * sd[j])\n    return out\n\n\n# ---------- statistics ----------\n\ndef boot_kw(groups, n_boot=5000, rng=None):\n    \"\"\"Bootstrap Kruskal-Wallis (Methods, Statistical analysis): pool, reassign to groups of the\n    same sizes with replacement, p is the fraction of null H at or above the observed.\"\"\"\n    from scipy.stats import kruskal\n    groups = [np.asarray(g, float)[np.isfinite(g)] for g in groups]\n    h = kruskal(*groups).statistic\n    pool = np.concatenate(groups)\n    sizes = [len(g) for g in groups]\n    null = np.empty(n_boot)\n    for b in range(n_boot):\n        s = rng.choice(pool, size=len(pool), replace=True)\n        null[b] = kruskal(*np.split(s, np.cumsum(sizes)[:-1])).statistic\n    return h, float(np.mean(null >= h))\n\n\ndef boot_anova(groups, n_boot=5000, rng=None):\n    \"\"\"Bootstrap one-way ANOVA (Methods, Statistical analysis), as boot_kw with F.\"\"\"\n    from scipy.stats import f_oneway\n    groups = [np.asarray(g, float)[np.isfinite(g)] for g in groups]\n    F = f_oneway(*groups).statistic\n    pool = np.concatenate(groups)\n    sizes = [len(g) for g in groups]\n    null = np.empty(n_boot)\n    for b in range(n_boot):\n        s = rng.choice(pool, size=len(pool), replace=True)\n        null[b] = f_oneway(*np.split(s, np.cumsum(sizes)[:-1])).statistic\n    return F, float(np.mean(null >= F))\n\n\ndef inverted_u(medians):\n    \"\"\"Inverted-U of the claims (fig1h): the highest median at E14.5 or E15.5, with E13.5 and\n    E16.5 both below it.\"\"\"\n    k = int(np.argmax(medians))\n    return k in (1, 2) and medians[0] < medians[k] and medians[3] < medians[k]\n\n\n# ---------- rate maps ----------\n\ndef gauss_smooth_1d(x, fwhm_bins):\n    \"\"\"Gaussian smoothing with the FWHM of the Methods (9 cm on 1 cm bins), zero padded.\"\"\"\n    from scipy.ndimage import gaussian_filter1d\n    return gaussian_filter1d(x, fwhm_bins / 2.3548, mode=\"constant\")\n\n\ndef kalman_speed(t, x, q=50.0, r=1.0):\n    \"\"\"Speed from a constant-velocity Kalman filter of position (Methods: velocity by Kalman\n    filter; its settings are not given, claims opening comment: a standard choice).\n    q is the acceleration noise (cm^2/s^4 scale), r the measurement noise (cm^2).\"\"\"\n    n = len(t)\n    v = np.zeros(n)\n    s = np.array([x[0], 0.0])\n    P = np.eye(2) * 10\n    for i in range(1, n):\n        dt = max(t[i] - t[i - 1], 1e-3)\n        F = np.array([[1, dt], [0, 1]])\n        Q = q * np.array([[dt ** 4 / 4, dt ** 3 / 2], [dt ** 3 / 2, dt ** 2]])\n        s = F @ s\n        P = F @ P @ F.T + Q\n        if np.isfinite(x[i]):\n            y = x[i] - s[0]\n            S = P[0, 0] + r\n            K = P[:, 0] / S\n            s = s + K * y\n            P = P - np.outer(K, P[0])\n        v[i] = s[1]\n    return np.abs(v)\n\n\ndef skaggs_info(rate, occ):\n    \"\"\"Skaggs spatial information in bits/s (Methods, ref. 76): sum p_i r_i log2(r_i / r).\"\"\"\n    ok = np.isfinite(rate) & (occ > 0)\n    p = occ[ok] / occ[ok].sum()\n    r = rate[ok]\n    mr = np.sum(p * r)\n    if mr <= 0:\n        return np.nan\n    nz = r > 0\n    return float(np.sum(p[nz] * r[nz] * np.log2(r[nz] / mr)))\n"
+}
 ```
 
 ```
-51320d45c5ee41147048128df333f251379bf755 Fri Jul 8 11:36:17 2022 -0700
-./analyze_monosyn.m
-./untitled.m
-./extract_ccgs.m
-./get_ripple_features.m
-./novelEnv_example.m
-./ratemap_remap.m
-./analyze_ripple_features.m
-./analyze_theta_phase.m
-./get_corrBeh_v2.m
-./get_corrBeh_famnov.m
-./ccg_sessionVisualize.m
-./revision2022_code/corrBeh_nov_v1.mat
-./revision2022_code/untitled.m
-./revision2022_code/get_corrBeh_v3.m
-./revision2022_code/tabulate_animal.m
-./revision2022_code/get_monoConnections.m
-./revision2022_code/assemblies_homecageCond.mat
-./revision2022_code/corrHome_v7.mat
-./revision2022_code/analyze_monoConnections.m
-[... 68 more lines not kept]
-```
-
-**Agent**
-
-The repo `rhuszar/optotagCA1_final` holds MATLAB code and some `.mat` result files. Let me see what the `.mat` files contain and how the code identifies light-responsive cells.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/optotagCA1_final && ls -la revision2022_code/*.mat revision2022_code/hpc/*.mat revision2022_code/test/*.mat && . $TMPDIR/explore/bin/activate && python - <<'EOF'
-import scipy.io as sio, glob, h5py
-for f in sorted(glob.glob('revision2022_code/**/*.mat',recursive=True)):
-    try:
-        m=sio.loadmat(f, squeeze_me=True, struct_as_record=False)
-        print('==',f)
-        for k,v in m.items():
-            if k.startswith('__'): continue
-            t=type(v).__name__
-            sh=getattr(v,'shape',None)
-            fields=getattr(v,'_fieldnames',None)
-            print('  ',k,t,sh, fields[:40] if fields else '')
-    except NotImplementedError:
-        print('== v7.3',f)
-        with h5py.File(f) as h: h.visit(lambda n: print('   ',n) if n.count('/')<2 else None)
-EOF
-```
-
-```
--rw-r--r-- 1 runner runner  2514100 Oct 17 15:59 revision2022_code/assemblies_homecage.mat
--rw-r--r-- 1 runner runner   446023 Oct 17 15:59 revision2022_code/assemblies_homecageCond.mat
--rw-r--r-- 1 runner runner 11200607 Oct 17 15:59 revision2022_code/assemblies_trackConditioned.mat
--rw-r--r-- 1 runner runner  1050188 Oct 17 15:59 revision2022_code/corrBeh_nov_v1.mat
--rw-r--r-- 1 runner runner 13969593 Oct 17 15:59 revision2022_code/corrBeh_v7.mat
--rw-r--r-- 1 runner runner  8914228 Oct 17 15:59 revision2022_code/corrHome_v7.mat
--rw-r--r-- 1 runner runner     3862 Oct 17 15:59 revision2022_code/hpc/assembly_ratesVrev.mat
--rw-r--r-- 1 runner runner      384 Oct 17 15:59 revision2022_code/hpc/basepaths_rerun.mat
--rw-r--r-- 1 runner runner     5827 Oct 17 15:59 revision2022_code/hpc/devAssembly_paramsVrev.mat
--rw-r--r-- 1 runner runner     4554 Oct 17 15:59 revision2022_code/hpc/refdist_depth.mat
--rw-r--r-- 1 runner runner     2830 Oct 17 15:59 revision2022_code/hpc/targetdist_depth.mat
--rw-r--r-- 1 runner runner      965 Oct 17 15:59 revision2022_code/hpc/targetdist_var.mat
--rw-r--r-- 1 runner runner  2529125 Oct 17 15:59 revision2022_code/test/assemblies_homecage.mat
--rw-r--r-- 1 runner runner  2605007 Oct 17 15:59 revision2022_code/test/assemblies_homecage_pre.mat
-== revision2022_code/assemblies_homecage.mat
-   assembly_dynamics ndarray (4,) 
-   animal_ntag ndarray (199139,) 
-   animal_tag ndarray (4676,) 
-   basenames_ntag ndarray (199139,) 
-   basenames_tag ndarray (4676,) 
-[... 205 more lines not kept]
+File created successfully at: entries/huszar-2022/huszar.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/optotagCA1_final/revision2022_code && . $TMPDIR/explore/bin/activate && python - <<'EOF'
-import scipy.io as sio, numpy as np
-m=sio.loadmat('corrHome_v7.mat', squeeze_me=True)
-for k in ['id_tag','basenames_tagtag','animal_tag','id_session','propotion_tagged','ripcorr_tagtag','converge_tagtag','tagtag_shankdist','id_ntag','basenames_ntag']:
-    v=m[k]; print(k, v.dtype, v.shape, v[:5] if v.ndim==1 else v[:3])
-print(np.unique(m['basenames_tagtag']).size, np.unique(m['basenames_tagtag'])[:100])
-print(np.unique(m['animal_tag']))
-print(np.median(m['ripcorr_tagtag']), np.median(m['ripcorr_ntag']), np.median(m['thetacorr_tagtag']), np.median(m['thetacorr_ntag']))
-b=sio.loadmat('corrBeh_v7.mat', squeeze_me=True)
-for k in ['id_tag_cells','id_ntag_cells','id_tag','basenames_tagtag','animal_tag','rateTheta_tag']:
-    v=b[k]; print(k, v.dtype, v.shape, v[:5])
-print(np.unique(b['basenames_tagtag']))
-EOF
-```
-
-```
-id_tag object (3751,) ['e13' 'e13' 'e13' 'e13' 'e13']
-basenames_tagtag object (3751,) ['e13_1m1_200224' 'e13_1m1_200306' 'e13_1f1_200229' 'e13_16f1_210302'
- 'e13_16f1_210302']
-animal_tag object (3751,) ['e13_1m1' 'e13_1m1' 'e13_1f1' 'e13_16f1' 'e13_16f1']
-id_session object (78,) ['e13' 'e13' 'e13' 'e13' 'e13']
-propotion_tagged float64 (78,) [0.01069519 0.05       0.02325581 0.10526316 0.11428571]
-ripcorr_tagtag float64 (3751,) [ 0.04082876 -0.00030388  0.00435771  0.05597798  0.09807221]
-converge_tagtag float64 (3751,) [0.18181818 0.         0.         0.33333333 0.5       ]
-tagtag_shankdist uint8 (3751,) [0 3 1 1 0]
-id_ntag object (50461,) ['e13' 'e13' 'e13' 'e13' 'e13']
-basenames_ntag object (50461,) ['e13_1m1_200220' 'e13_1m1_200220' 'e13_1m1_200220' 'e13_1m1_200220'
- 'e13_1m1_200220']
-78 ['e13_16f1_210302' 'e13_16f1_210312' 'e13_16f1_210314' 'e13_16f1_210315'
- 'e13_16f1_210317' 'e13_16f1_210319' 'e13_16f1_210322' 'e13_16f1_210328'
- 'e13_16f1_210331' 'e13_1f1_200229' 'e13_1m1_200224' 'e13_1m1_200306'
- 'e13_26m1_211019' 'e13_26m1_211116' 'e13_26m1_211119' 'e13_26m1_211124'
- 'e14_1m1_200130' 'e14_1m1_200201' 'e14_1m1_200203' 'e14_1m1_200204'
- 'e14_1m1_200205' 'e14_1m1_200206' 'e14_1m1_200207' 'e14_1m1_200208'
- 'e14_1m1_200210' 'e14_1m1_200211' 'e14_1m1_200212' 'e14_1m1_200213'
- 'e14_2m2_201017' 'e14_2m2_201019' 'e14_2m2_201022' 'e14_2m3_201017'
-[... 42 more lines not kept]
-```
-
-**Agent**
-
-The `id_*` fields are birthdate strings, not unit identifiers, so these files cannot label individual dandiset units. Let me check how the code loads light-responsive status.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/optotagCA1_final && grep -n -i -E "opto|tag|cell_metrics|putativeCellType|load\(|\.mat'" revision2022_code/getHomecageMetrics.m | head -60; echo ====; grep -rn -h -o -E "[A-Za-z_]+\.(cellinfo|events|states|ripples|behavior|optoStim|timestamps|session)\.mat" --include=*.m . | sort | uniq -c | sort -rn
-```
-
-```
-9:% Proportion of PYRs tagged
-16:load( fullfile(basepath, [basename '.pulses.events.mat']) )
-17:load( fullfile(basepath, [basename '.spikes.cellinfo.mat']) )
-18:load( fullfile(basepath, [ basename '.cell_metrics.cellinfo.mat']) )
-19:load( fullfile(basepath, [basename '.ripples.events.mat']) )
-20:load( fullfile(basepath, [basename '.mono_res.cellinfo.mat']) )
-21:load( fullfile(basepath, [basename '.deepSuperficialfromRipple.channelinfo.mat']) )
-22:load( fullfile(basepath, [basename '.ThetaModulation.cellinfo.mat']) );
-23:load( fullfile(basepath, [basename '.session.mat']) );
-29:    load( fullfile(basepath, [basename '.Behavior.mat']) )
-30:    if exist( fullfile(basepath, [basename '.Tracking.Behavior.mat']) ) 
-33:        load( fullfile(basepath, [basename '.Tracking.Behavior.mat'])  )
-37:        load( fullfile(basepath, [basename '.MergePoints.events.mat']) )
-60:% Tagged pyramidal cells
-61:opto_ind = (cell_metrics.optoTag.p_salt<0.001) & cell_metrics.optoTag.h_reliable;
-62:pyr_ind = cellfun(@(x) ~isempty(regexp(x, 'Pyramidal', 'once')), cell_metrics.putativeCellType);
-63:pyr_ind_tagged = find( opto_ind & pyr_ind );
-64:n_int = sum( cellfun(@(x) ~isempty(regexp(x, 'Inter', 'once')), cell_metrics.putativeCellType) );
-65:% Store proportion tagged
-66:prop_tagged = length(pyr_ind_tagged) / sum(pyr_ind);
-[... 203 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-for u in https://buzsakilab.nyumc.org/datasets/ https://buzsakilab.nyumc.org/datasets/HuszarR/ https://buzsakilab.nyumc.org/datasets/HuszarR/optotagCA1/; do echo "== $u"; curl -s -m 30 -L -o /dev/null -w "%{http_code}\n" "$u"; done; curl -s -m 30 -L https://buzsakilab.nyumc.org/datasets/ | grep -i -o 'href="[^"]*"' | head -60
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-The paper's data link now redirects to the lab databank, which serves files through Globus, with no DOI or commit. Checking whether raw files carry stimulation channels:
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && for p in sub-e16-3m2/sub-e16-3m2_ses-e16-3m2-211211-raw_ecephys.nwb sub-e13-26m1/sub-e13-26m1_ses-e13-26m1-211116-raw_ecephys.nwb sub-e16-3m1/sub-e16-3m1_ses-e16-3m1-210201-raw_ecephys.nwb; do echo "== $p"; python $TMPDIR/nwbls.py $p | grep -v "^specifications" | grep -E "acquisition|processing|session_start|stimulus|intervals|data |starting_time|rate"; done
-```
-
-```
-== sub-e16-3m2/sub-e16-3m2_ses-e16-3m2-211211-raw_ecephys.nwb
-acquisition/  
-general/extracellular_ephys/electrodes/ DynamicTable metadata about extracellular electrodes
-processing/  
-processing/ecephys/ ProcessingModule Intermediate data from extracellular electrophysiology recordings, e.g., LFP.
-processing/ecephys/LFP/ LFP 
-processing/ecephys/LFP/ElectricalSeriesLFP/ ElectricalSeries Acquisition traces for the ElectricalSeriesLFP.
-processing/ecephys/LFP/ElectricalSeriesLFP/data (26731000, 128) int16 {'conversion': np.float64(1.9499999999999999e-07), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-processing/ecephys/LFP/ElectricalSeriesLFP/electrodes (128,) int64 {'description': 'electrode_table_region'}
-processing/ecephys/LFP/ElectricalSeriesLFP/starting_time () float64 {'rate': np.float64(1250.0), 'unit': 'seconds'}
-session_description () object = b'NWB files containing only the raw data for the corresponding session IDs in this DANDI set.' 
-session_start_time () object = b'2011-08-18T00:00:00-04:00' 
-stimulus/  
-stimulus/presentation/  
-stimulus/templates/  
-== sub-e13-26m1/sub-e13-26m1_ses-e13-26m1-211116-raw_ecephys.nwb
-acquisition/  
-acquisition/ElectricalSeries/ ElectricalSeries Acquisition traces for the ElectricalSeries.
-acquisition/ElectricalSeries/data (618657540, 128) int16 {'conversion': np.float64(1.9499999999999999e-07), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-acquisition/ElectricalSeries/electrodes (128,) int64 {'description': 'electrode_table_region'}
-[... 33 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, time
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-for p in ['sub-e16-3m1/sub-e16-3m1_ses-e16-3m1-210201-raw_ecephys.nwb','sub-e13-26m1/sub-e13-26m1_ses-e13-26m1-211116-raw_ecephys.nwb','sub-e15-13f1/sub-e15-13f1_ses-e15-13f1-220118-raw_ecephys.nwb','sub-e16-3m2/sub-e16-3m2_ses-e16-3m2-211212-raw_ecephys.nwb']:
-    url=ds.get_asset_by_path(p).get_content_url(follow_redirects=1,strip_query=True)
-    f=h5py.File(remfile.File(url),'r')
-    d=f.get('acquisition/ElectricalSeries/data')
-    l=f['processing/ecephys/LFP/ElectricalSeriesLFP/data']
-    print(p, 'raw', None if d is None else (d.shape, d.chunks, d.compression), 'lfp', l.shape, l.chunks, l.compression)
-EOF
-```
-
-```
-sub-e16-3m1/sub-e16-3m1_ses-e16-3m1-210201-raw_ecephys.nwb raw ((526542720, 64), (707, 64), 'gzip') lfp (21939280, 64) (342801, 1) gzip
-sub-e13-26m1/sub-e13-26m1_ses-e13-26m1-211116-raw_ecephys.nwb raw ((618657540, 128), (707, 128), 'gzip') lfp (25777397, 128) (201385, 1) gzip
-sub-e15-13f1/sub-e15-13f1_ses-e15-13f1-220118-raw_ecephys.nwb raw ((889593360, 128), (707, 128), 'gzip') lfp (37066390, 128) (289581, 1) gzip
-sub-e16-3m2/sub-e16-3m2_ses-e16-3m2-211212-raw_ecephys.nwb raw ((670353600, 128), (707, 128), 'gzip') lfp (27931400, 128) (218214, 1) gzip
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-p='sub-e16-3m1/sub-e16-3m1_ses-e16-3m1-210201-raw_ecephys.nwb'
-url=ds.get_asset_by_path(p).get_content_url(follow_redirects=1,strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-l=f['processing/ecephys/LFP/ElectricalSeriesLFP/data']
-x=l[:,10].astype(float)
-fs=1250
-print('dur min', len(x)/fs/60)
-d=np.abs(np.diff(x))
-thr=np.median(d)+12*np.median(np.abs(d-np.median(d)))/0.6745
-idx=np.where(d>thr)[0]
-print('n big jumps', len(idx), 'thr', thr)
-# histogram of jump times in 5 min bins
-h,_=np.histogram(idx/fs/60, bins=np.arange(0,len(x)/fs/60+5,5))
-print(h)
-# intervals between successive jumps (ms)
-iv=np.diff(idx)/fs*1000
-vals,c=np.unique(np.round(iv[(iv>5)&(iv<1000)]/10)*10, return_counts=True)
-o=np.argsort(-c)[:10]; print(list(zip(vals[o],c[o])))
-# zero runs / flat segments (clipping)
-z=(np.diff(x)==0)
-print('fraction zero diffs', z.mean())
-EOF
-```
-
-```
-dur min 292.5237333333333
-n big jumps 26413 thr 1218.8302446256487
-[  65   42   45  109  112  186  269   69  332  699  605 1109  542  766
-  661  411  350  295  355  848  692  480  115  714  482   86   31   66
-   50  102   87  280  231  198  450  551   23  129  527  809 1266 1182
- 1007  734  735  190  378  230  204 1195  886  695  634  282  257  307
- 1241  594  423]
-[(np.float64(10.0), np.int64(5488)), (np.float64(20.0), np.int64(880)), (np.float64(30.0), np.int64(333)), (np.float64(40.0), np.int64(249)), (np.float64(100.0), np.int64(180)), (np.float64(110.0), np.int64(166)), (np.float64(90.0), np.int64(163)), (np.float64(50.0), np.int64(161)), (np.float64(80.0), np.int64(159)), (np.float64(120.0), np.int64(154))]
-fraction zero diffs 0.002943670117873974
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/survey.py <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd, json
-from concurrent.futures import ThreadPoolExecutor
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-assets=[a for a in ds.get_assets() if 'behavior+ecephys' in a.path]
-def dec(v): return v.decode() if isinstance(v,bytes) else v
-def one(a):
-    url=a.get_content_url(follow_redirects=1,strip_query=True)
-    f=h5py.File(remfile.File(url),'r')
-    r={'path':a.path}
-    r['session_id']=dec(f['general/session_id'][()])
-    r['start']=dec(f['session_start_time'][()])
-    ss=f['processing/behavior/SleepStates']
-    lab=[dec(x) for x in ss['label'][:]]
-    st=ss['start_time'][:]; sp=ss['stop_time'][:]
-    r['ss_min']=st.min(); r['ss_max']=sp.max()
-    r['ss_labels']=dict(pd.Series(lab).value_counts())
-    r['ss_dur']={k:float(sum(sp[i]-st[i] for i in range(len(lab)) if lab[i]==k)) for k in set(lab)}
-    rp=f['processing/ecephys/Ripples']
-    r['n_rip']=len(rp['start_time']); 
-    du=rp['ripple_durations'][:]
-    r['rip_dur_med']=float(np.median(du)); r['rip_dur_min']=float(du.min()); r['rip_dur_max']=float(du.max())
-    r['rip_dur_med_ss']=float(np.median(rp['stop_time'][:]-rp['start_time'][:]))
-    r['rip_t_max']=float(rp['stop_time'][:].max())
-    if 'units' in f:
-        u=f['units']
-        r['n_units']=len(u['id'])
-        idx=u['spike_times_index'][:]
-        r['n_spikes']=int(idx[-1])
-        st_=u['spike_times']
-        r['spk_last']=float(st_[idx[-1]-1]) if idx[-1] else np.nan
-        r['groups']=sorted(set(dec(x) for x in u['group_id'][:]))
-        r['unit_name0']=dec(u['unit_name'][0])
-    if 'intervals/trials' in f:
-        t=f['intervals/trials']
-        r['n_trials']=len(t['id'])
-        r['fam']=dict(pd.Series(t['is_familiar_maze'][:]).value_counts())
-        r['recs']=sorted(set(int(x) for x in t['recordings'][:]))
-        r['arms']=dict(pd.Series([dec(x) for x in t['visited_arm'][:]]).value_counts())
-    if 'intervals/epochs' in f:
-        e=f['intervals/epochs']; r['epochs']=list(zip(e['start_time'][:].round(1), e['stop_time'][:].round(1)))
-        r['epoch_cols']=list(e.keys())
-    if 'processing/behavior' in f:
-        r['beh_desc']=f['processing/behavior'].attrs.get('description','')
-        r['beh_keys']=list(f['processing/behavior'].keys())
-        if 'LinearizedPosition' in f['processing/behavior']:
-            lp=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries']
-            x=lp['data'][:]; ts=lp['timestamps'][:]
-            r['lin_min']=float(np.nanmin(x)); r['lin_max']=float(np.nanmax(x)); r['lin_nan']=float(np.isnan(x).mean())
-            r['pos_dt']=float(np.median(np.diff(ts))); r['pos_t0']=float(ts[0]); r['pos_t1']=float(ts[-1])
-        if 'SubjectPosition' in f['processing/behavior']:
-            sp_=f['processing/behavior/SubjectPosition/SpatialSeries/data'][:]
-            r['xy_min']=np.nanmin(sp_,0).round(1).tolist(); r['xy_max']=np.nanmax(sp_,0).round(1).tolist()
-    return r
-with ThreadPoolExecutor(8) as ex: rows=list(ex.map(one, assets))
-pd.to_pickle(rows, '/tmp/claude-1001/survey.pkl')
-print(len(rows))
-EOF
-. $TMPDIR/explore/bin/activate && time python $TMPDIR/survey.py
+cd entries/huszar-2022 && sed -i 's/        m\["first_spike"\] = .*$//' huszar.py && . $TMPDIR/venv/bin/activate && time python -c "
+import huszar, json, numpy as np
+ms=huszar.survey(12)
+json.dump(ms, open('$TMPDIR/survey.json','w'), default=lambda o: o.tolist() if hasattr(o,'tolist') else str(o))
+print(len(ms))
+"
 ```
 
 ```
 104
 
-real	1m20.857s
-user	0m11.489s
-sys	0m0.860s
+real	2m11.800s
+user	0m13.939s
+sys	0m1.886s
 ```
 
 **Agent calls Bash**
 
 ```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import pandas as pd, numpy as np
-pd.set_option('display.width',250); pd.set_option('display.max_rows',200); pd.set_option('display.max_colwidth',60)
-rows=pd.read_pickle('/tmp/claude-1001/survey.pkl')
-df=pd.DataFrame(rows).sort_values('path')
-df['dur_min']=df[['ss_max','rip_t_max']].max(axis=1)/60
-print(df[['session_id','start','dur_min','n_rip','rip_dur_med','rip_dur_med_ss','rip_dur_min','rip_dur_max','n_units','spk_last','n_trials','fam','recs','arms']].to_string())
+cd $TMPDIR && . venv/bin/activate && python - <<'EOF'
+import json, numpy as np, collections
+ms=json.load(open('survey.json'))
+subs=collections.OrderedDict()
+for m in ms:
+    subs.setdefault(m['subject_id'],[]).append(m)
+print(len(subs))
+for s,L in subs.items():
+    lr=sum(sum(1 for x in m.get('u_light_responsive',[]) if x) for m in L)
+    nct=sum(m['has_cell_type'] for m in L)
+    print(s, L[0]['sex'], L[0]['age'], len(L), 'lr',lr, 'withCT',nct, 'units',sum(m['n_units'] for m in L))
+for m in ms[:3]: print(m['session_id'], m['lfp_duration_s'], m['last_spike'], m['epochs'] and list(zip(m['epochs']['epoch_name'],m['epochs']['environment'])), m['sleep'] and collections.Counter(m['sleep']['label']), m['series'].keys(), m['pulse_periods'], m['n_pulses'])
 EOF
 ```
 
 ```
-session_id                      start     dur_min  n_rip  rip_dur_med  rip_dur_med_ss  rip_dur_min  rip_dur_max  n_units      spk_last  n_trials                    fam    recs                       arms
-4     e13_16f1_210302  2021-03-02T00:00:00-05:00  350.100000   5798       0.0376          0.0376         0.02       0.1840    135.0  21003.429467      22.0   {False: 20, True: 2}     [1]   {'right': 15, 'left': 7}
-2     e13_16f1_210312  2021-03-12T00:00:00-05:00  298.266667   5402       0.0384          0.0384         0.02       0.1728    124.0  17898.249467      21.0   {False: 19, True: 2}     [1]  {'right': 11, 'left': 10}
-1     e13_16f1_210314  2021-03-14T00:00:00-05:00  269.950000   4876       0.0384          0.0384         0.02       0.1816    121.0  16197.107667      25.0   {False: 23, True: 2}     [1]  {'right': 14, 'left': 11}
-3     e13_16f1_210315  2021-03-15T00:00:00-04:00  280.116667   4508       0.0384          0.0384         0.02       0.1856    114.0  16791.380733      20.0   {False: 18, True: 2}     [1]   {'right': 11, 'left': 9}
-0     e13_16f1_210317  2021-03-17T00:00:00-04:00  307.570680   5304       0.0384          0.0384         0.02       0.1664    130.0  18453.230567      25.0   {False: 23, True: 2}     [1]  {'right': 14, 'left': 11}
-8     e13_16f1_210319  2021-03-19T00:00:00-04:00  287.866667   5404       0.0368          0.0368         0.02       0.1536    120.0  17273.109933      26.0   {False: 24, True: 2}     [1]  {'right': 16, 'left': 10}
-5     e13_16f1_210322  2021-03-22T00:00:00-04:00  302.266667   5409       0.0384          0.0384         0.02       0.1688    104.0  18136.086667      25.0   {False: 23, True: 2}     [1]  {'right': 15, 'left': 10}
-9     e13_16f1_210328  2021-03-28T00:00:00-04:00  325.783333   6250       0.0376          0.0376         0.02       0.1736    211.0  19541.682433      21.0   {False: 19, True: 2}     [1]  {'right': 11, 'left': 10}
-14    e13_16f1_210331  2021-03-31T00:00:00-04:00  303.100000   5855       0.0368     
-[... 95 more lines not kept]
+17
+e13_16f1 F P3M/P6M 9 lr 124 withCT 9 units 1213
+e13_1f1 F P3M/P6M 5 lr 6 withCT 5 units 360
+e13_1m1 M P3M/P6M 12 lr 14 withCT 12 units 1432
+e13_26m1 M P3M/P6M 4 lr 40 withCT 4 units 853
+e14_1m1 M P3M/P6M 12 lr 56 withCT 12 units 853
+e14_2m2 M P3M/P6M 4 lr 9 withCT 4 units 583
+e14_2m3 M P3M/P6M 8 lr 67 withCT 8 units 452
+e15_10m1 M P3M/P6M 7 lr 44 withCT 7 units 704
+e15_13f1 F P3M/P6M 4 lr 53 withCT 4 units 1385
+e15_4m1 M P3M/P6M 3 lr 35 withCT 3 units 202
+e15_4m2 M P3M/P6M 4 lr 68 withCT 4 units 375
+e15_5m1 M P3M/P6M 3 lr 19 withCT 3 units 233
+e15_9f1 F P3M/P6M 7 lr 67 withCT 7 units 610
+e16_1f1 F P3M/P6M 9 lr 49 withCT 9 units 604
+e16_2m1 M P3M/P6M 5 lr 23 withCT 5 units 301
+e16_3m1 M P3M/P6M 4 lr 43 withCT 4 units 697
+e16_3m2 M P3M/P6M 4 lr 69 withCT 4 units 799
+e13_16f1_210302 21007.648 21003.42946666667 [('e13_16f1_210302_094405', 'none'), ('e13_16f1_210302_122812', 'figure-8 maze'), ('e13_16f1_210302_143404', 'none')] Counter({'Awake': 12, 'Non-REM': 11, 'REM': 7}) dict_keys(['LinearizedPosition/LinearizedSpatialSeries1', 'SubjectPosition/SpatialSeries1']) {'id': [0, 1, 2], 'start_time': [14897.9686, 17105.262366666666, 20125.225566666668], 'stop_time': [14986.980366666667, 17134.47693333333, 20933.217866666666]} 4586
+e13_16f1_210312 17898.368 17898.249466666668 [('e13_16f1_210312_094329', 'none'), ('e13_16f1_210312_120316', 'figure-8 maze'), ('e13_16f1_210312_123313', 'none')] Counter({'Awake': 18, 'Non-REM': 17, 'REM': 6}) dict_keys(['LinearizedPosition/LinearizedSpatialSeries1', 'SubjectPosition/SpatialSeries1']) {'id': [0], 'start_time': [15711.174333333332], 'stop_time': [16519.1652]} 4000
+[... 2 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd
-from dandi.dandiapi import DandiAPIClient
-pd.set_option('display.width',250); pd.set_option('display.max_rows',200)
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-def dec(v): return v.decode() if isinstance(v,bytes) else v
-for p in ['sub-e15-13f1/sub-e15-13f1_ses-e15-13f1-220119_behavior+ecephys.nwb','sub-e14-2m3/sub-e14-2m3_ses-e14-2m3-201017_behavior+ecephys.nwb']:
-    f=h5py.File(remfile.File(ds.get_asset_by_path(p).get_content_url(follow_redirects=1,strip_query=True)),'r')
-    print('==',p)
-    print('beh desc', f['processing/behavior'].attrs['description'])
-    e=f['intervals/epochs']; print('epochs', {k:e[k][:] for k in e.keys()})
-    t=f['intervals/trials']
-    df=pd.DataFrame({k:[dec(x) for x in t[k][:]] for k in t.keys() if k!='id'})
-    print(df.to_string())
-    lp=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries']
-    ts=lp['timestamps'][:]; x=lp['data'][:]
-    xy=f['processing/behavior/SubjectPosition/SpatialSeries/data'][:]
-    gaps=np.where(np.diff(ts)>5)[0]
-    print('pos segments', [(round(ts[0],1))]+[(round(ts[g],1),round(ts[g+1],1)) for g in gaps]+[round(ts[-1],1)])
-    rw=f['processing/behavior/RewardEventsEightMazeTrack']; print('reward data', rw['data'][:20], rw['timestamps'][:5])
-    print({k:dict(f['processing/behavior/RewardEventsEightMazeTrack'].attrs) for k in ['x']})
-    for k in rw.keys(): print(k, dict(rw[k].attrs))
-    ss=f['processing/behavior/SleepStates']; print(pd.Series([dec(v) for v in ss['label'][:]]).value_counts().to_dict())
+cd $TMPDIR && . venv/bin/activate && python - <<'EOF'
+import json, numpy as np, collections
+ms=json.load(open('survey.json'))
+H=[m for m in ms if m['subject_id'] not in ('e15_13f1','e16_3m2')]
+for name,S in [('96',H),('104',ms)]:
+    ct=collections.Counter(x for m in S for x in m.get('u_putative_cell_type',[]))
+    lr=sum(sum(m['u_light_responsive']) for m in S)
+    d=np.array([m['lfp_duration_s']/60 for m in S]); d2=np.array([m['last_spike']/60 for m in S])
+    print(name, len(S), sum(m['n_units'] for m in S), ct, 'lr',lr, 'dur', np.nanmin(d),np.nanmedian(d),np.nanmax(d), 'lastspike',d2.min(),np.median(d2),d2.max(), np.isnan(d).sum())
+    print(' sleep none', sum(m['sleep'] is None for m in S), 'noNREM', sum(1 for m in S if m['sleep'] and 'Non-REM' not in m['sleep']['label']), 'no ripples', sum('rip_dur' not in m for m in S), 'no pulses', sum(m['n_pulses']==0 for m in S), 'no epochs', sum(m['epochs'] is None for m in S))
+# per-session pct light responsive
+import itertools
+for m in ms:
+    ct=m.get('u_putative_cell_type',[])
+    if not ct or 'Pyramidal Cell' not in ct: print('no pyr', m['session_id'], m['n_units'])
+envs=collections.Counter(e for m in ms if m['epochs'] for e in m['epochs']['environment'])
+print(envs)
 EOF
 ```
 
 ```
-== sub-e15-13f1/sub-e15-13f1_ses-e15-13f1-220119_behavior+ecephys.nwb
-beh desc The behavior of the subject for the following recordings: alternation, alternation
-epochs {'id': array([0, 1, 2, 3, 4, 5, 6, 7]), 'start_time': array([    0.   ,  6816.448,  8880.064, 12656.288, 15089.472, 21190.08 ,
-       22703.2  , 28171.936]), 'stop_time': array([ 6816.44796667,  8880.06396667, 12656.28796667, 15089.47196667,
-       21190.07996667, 22703.19996667, 28171.93596667, 29249.79196667])}
-   expected_arm  is_familiar_maze  recordings    start_time     stop_time visited_arm  visited_matched_expected
-0          none              True           1   6837.174767   6881.419333        left                       NaN
-1         right              True           1   6882.719667   6915.327933       right                       1.0
-2          left              True           1   6916.895000   6962.473233       right                       0.0
-3          left              True           1   6963.073400   7030.857267        left                       1.0
-4         right              True           1   7031.790833   7097.074067       right                       1.0
-5          left              True           1   7097.740900   7174.293667       right                       0.0
-6          left              True           1           NaN           NaN        left                       1.0
-7         right              True           1   7322.364567   7378.945600       right                       1.0
-8          left              True           1   7384.647033   7459.099267        left                       1.0
-9         right              True           1   7459.932833   7504.677500       right                       1.0
-10         left              True           1   7510.145567   7589.765767       right                       0.0
-11         left              True           1           NaN           NaN        left                       1.0
-12        right              True           1   7693.825533 
-[... 93 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-def dec(v): return v.decode() if isinstance(v,bytes) else v
-for a in sorted(ds.get_assets(), key=lambda a:a.path):
-    if 'behavior+ecephys' not in a.path or not any(s in a.path for s in ['e13-26m1','e15-13f1','e16-3m2']): continue
-    f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1,strip_query=True)),'r')
-    ts=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries/timestamps'][:]
-    x=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries/data'][:]
-    xy=f['processing/behavior/SubjectPosition/SpatialSeries/data'][:]
-    gaps=np.where(np.diff(ts)>5)[0]
-    b=[0]+list(gaps+1)+[len(ts)]
-    t=f['intervals/trials']; rec=t['recordings'][:]; st=t['start_time'][:]
-    e=f['intervals/epochs']
-    print('==', a.path.split('/')[1], 'desc:', f['processing/behavior'].attrs['description'][-60:])
-    print('   epochs', list(zip(e['start_time'][:].round(0), e['stop_time'][:].round(0))))
-    for i in range(len(b)-1):
-        s=slice(b[i],b[i+1])
-        print(f'   seg {ts[b[i]]:.0f}-{ts[b[i+1]-1]:.0f} n={b[i+1]-b[i]} lin {np.nanmin(x[s]):.0f}-{np.nanmax(x[s]):.0f} x {np.nanmin(xy[s,0]):.0f}-{np.nanmax(xy[s,0]):.0f} y {np.nanmin(xy[s,1]):.0f}-{np.nanmax(xy[s,1]):.0f} nan {np.isnan(x[s]).mean():.2f}')
-    for r in sorted(set(rec)): print('   rec', r, 'trials', (rec==r).sum(), 'first', np.nanmin(st[rec==r]).round(0))
-EOF
-```
-
-```
-Exit code 1
-== sub-e13-26m1_ses-e13-26m1-211019_behavior+ecephys.nwb desc: bject for the following recordings: alternation, alternation
-   epochs [(np.float64(0.0), np.float64(7590.0)), (np.float64(7590.0), np.float64(9328.0)), (np.float64(9328.0), np.float64(15088.0)), (np.float64(15088.0), np.float64(16753.0)), (np.float64(16753.0), np.float64(22201.0)), (np.float64(22201.0), np.float64(24298.0))]
-   seg 7606-9323 n=51501 lin 0-222 x 2-90 y 4-89 nan 0.00
-   seg 15103-15103 n=1 lin 136-136 x 1-1 y 0-0 nan 0.00
-   seg 15116-15116 n=1 lin 136-136 x 1-1 y 0-0 nan 0.00
-   seg 15138-15138 n=1 lin 136-136 x 1-1 y 0-0 nan 0.00
-   seg 15145-16749 n=48053 lin 0-170 x 0-1 y 0-1 nan 0.00
-   rec 1 trials 47 first 7613.0
-   rec 2 trials 33 first 15160.0
-Traceback (most recent call last):
-  File "<stdin>", line 14, in <module>
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
-    return self._get(name)
-           ~~~~~~~~~^^^^^^
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "/tmp/claude-1001/explore/lib/python3.13/site-packages/h5py/_hl/group.py", line 421, in _get
-    oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-for a in sorted(ds.get_assets(), key=lambda a:a.path):
-    if 'behavior+ecephys' not in a.path or not any(s in a.path for s in ['e13-26m1','e15-13f1','e16-3m2']): continue
-    f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1,strip_query=True)),'r')
-    ts=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries/timestamps'][:]
-    x=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries/data'][:]
-    xy=f['processing/behavior/SubjectPosition/SpatialSeries/data'][:]
-    gaps=np.where(np.diff(ts)>60)[0]
-    b=[0]+list(gaps+1)+[len(ts)]
-    t=f['intervals/trials']; rec=t['recordings'][:]; st=t['start_time'][:]; sp=t['stop_time'][:]
-    print('==', a.path.split('/')[1])
-    if 'intervals/epochs' in f:
-        e=f['intervals/epochs']; print('   epochs', list(zip(e['start_time'][:].round(0), e['stop_time'][:].round(0))))
-    for i in range(len(b)-1):
-        s=slice(b[i],b[i+1])
-        print(f'   seg {ts[b[i]]:.0f}-{ts[b[i+1]-1]:.0f} n={b[i+1]-b[i]} dt={np.median(np.diff(ts[s])):.4f} lin {np.nanmin(x[s]):.1f}-{np.nanmax(x[s]):.1f} x {np.nanmin(xy[s,0]):.2f}-{np.nanmax(xy[s,0]):.2f} y {np.nanmin(xy[s,1]):.2f}-{np.nanmax(xy[s,1]):.2f}')
-    for r in sorted(set(rec)): print('   rec', r, 'trials', (rec==r).sum(), 'span', np.nanmin(st[rec==r]).round(0), np.nanmax(sp[rec==r]).round(0))
-EOF
-```
-
-```
-== sub-e13-26m1_ses-e13-26m1-211019_behavior+ecephys.nwb
-   epochs [(np.float64(0.0), np.float64(7590.0)), (np.float64(7590.0), np.float64(9328.0)), (np.float64(9328.0), np.float64(15088.0)), (np.float64(15088.0), np.float64(16753.0)), (np.float64(16753.0), np.float64(22201.0)), (np.float64(22201.0), np.float64(24298.0))]
-   seg 7606-9323 n=51501 dt=0.0333 lin 0.0-221.9 x 2.17-90.02 y 3.65-89.32
-   seg 15103-16749 n=48056 dt=0.0333 lin 0.0-170.0 x 0.01-0.73 y 0.06-0.98
-   rec 1 trials 47 span 7613.0 9300.0
-   rec 2 trials 33 span 15160.0 16729.0
-== sub-e13-26m1_ses-e13-26m1-211116_behavior+ecephys.nwb
-   seg 7470-8719 n=37482 dt=0.0333 lin 0.0-221.9 x 1.68-92.41 y 1.70-89.41
-   seg 13595-13939 n=8608 dt=0.0400 lin 0.0-100.0 x 0.26-0.89 y 0.04-0.77
-   rec 1 trials 21 span 7480.0 8698.0
-   rec 2 trials 12 span 13612.0 13931.0
-== sub-e13-26m1_ses-e13-26m1-211119_behavior+ecephys.nwb
-   epochs [(np.float64(0.0), np.float64(6149.0)), (np.float64(6149.0), np.float64(7581.0)), (np.float64(7581.0), np.float64(14844.0)), (np.float64(14844.0), np.float64(16450.0)), (np.float64(16450.0), np.float64(25648.0))]
-   seg 6181-7572 n=41704 dt=0.0333 lin 0.0-221.9 x 1.30-92.04 y 2.59-89.45
-   seg 14907-16446 n=46166 dt=0.0333 lin 0.0-110.0 x 0.01-0.20 y 0.00-1.00
-   rec 1 trials 25 span 6193.0 7553.0
-   rec 2 trials 58 span 14920.0 16446.0
-== sub-e13-26m1_ses-e13-26m1-211124_behavior+ecephys.nwb
-   epochs [(np.float64(0.0), np.float64(8612.0)), (np.float64(8612.0), np.float64(10016.0)), (np.float64(10016.0), np.float64(14544.0)), (np.float64(14544.0), np.float64(16401.0)), (np.float64(16401.0), np.float64(22237.0))]
-   seg 8632-10011 n=41348 dt=0.0333 lin 0.0-221.9 x 2.21-91.68 y 2.81-89.16
-[... 45 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/optotagCA1_final && wc -l get_corrBeh_famnov.m ratemap_remap.m revision2022_code/get_corrBeh_v3.m novelEnv_example.m && cat get_corrBeh_famnov.m
-```
-
-```
-<persisted-output>
-Output too large (42KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bmr085195.txt
-
-Preview (first 2KB):
-  904 get_corrBeh_famnov.m
-   85 ratemap_remap.m
-  462 revision2022_code/get_corrBeh_v3.m
-  564 novelEnv_example.m
- 2015 total
-
-
-
-basepaths_famnov = [{'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211019'} ; ...
-                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211116'} ; ...
-                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211119'} ; ...
-                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211124'} ; ...
-                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211210'} ; ...
-                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211211'} ; ...
-                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211212'} ; ...
-                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211213'} ; ...
-[... 25 more lines not kept]
+96 96 9472 Counter({'Pyramidal Cell': 7411, 'Narrow Interneuron': 1556, 'Wide Interneuron': 504, 'Unknown': 1}) lr 664 dur 113.70186666666667 309.9488 475.6165333333333 lastspike 113.66937611111112 309.7496394444445 475.61443888888886 0
+ sleep none 0 noNREM 2 no ripples 0 no pulses 0 no epochs 34
+104 104 11656 Counter({'Pyramidal Cell': 9243, 'Narrow Interneuron': 1850, 'Wide Interneuron': 560, 'Unknown': 3}) lr 786 dur 113.70186666666667 319.6446666666667 494.21853333333337 lastspike 113.66937611111112 319.61505805555555 492.8228238888889 0
+ sleep none 0 noNREM 2 no ripples 0 no pulses 0 no epochs 34
+Counter({'none': 135, 'figure-8 maze': 53, 'tmaze_familiar': 12, 'tmaze_ipshita': 3, 'linear_thomas': 3, 'linear_manu': 3, 'openField_gergo': 3, 'openField_coolbox': 2, 'openField_thomas': 2})
+Shell cwd was reset to
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bmr085195.txt"
+ "file_path": "paper/10.1038-s41593-022-01138-x.supp2.pdf",
+ "pages": "1-3"
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . venv/bin/activate && uv pip install -q pymupdf && python -c "
+import fitz
+d=fitz.open('paper/10.1038-s41593-022-01138-x.supp2.pdf')
+print(len(d))
+for i,p in enumerate(d):
+    print(i, p.get_text()[:200].replace('\n',' '))
+    p.get_pixmap(dpi=110).save(f'st{i}.png')
+"
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/st1.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+cd entries/huszar-2022 && python - <<'EOF'
+s=open('huszar.py').read()
+old=s[s.index('ST1_ORDER = ['):s.index('ST1_SESSIONS')]
+new='''ST1_ORDER = ["e13_1m1", "e13_1f1", "e14_1m1", "e15_4m1", "e15_4m2", "e15_5m1", "e13_16f1",
+             "e14_2m2", "e14_2m3", "e15_9f1", "e15_10m1", "e16_1f1", "e16_2m1", "e16_3m1",
+             "e13_26m1", "e15_13f1", "e16_3m2"]  # row order of the table's image
+'''
+s=s.replace(old,new)
+s=s.replace("# (claims file, st1-animal-sessions, inferred note).","# (claims file, st1-animal-sessions, inferred note; row order read from the image of the\n# table in the Supplementary Information PDF, page 2).")
+open('huszar.py','w').write(s)
+EOF
+grep -n "ST1" huszar.py; date -u
+```
+
+```
+33:ST1_ORDER = ["e13_1m1", "e13_1f1", "e14_1m1", "e15_4m1", "e15_4m2", "e15_5m1", "e13_16f1",
+36:ST1_SESSIONS = [12, 5, 12, 3, 4, 3, 9, 4, 8, 7, 7, 9, 5, 4, 4, 4, 4]
+37:ST1_LIGHT = [14, 6, 56, 35, 68, 19, 124, 9, 67, 67, 44, 49, 23, 43, 40, 53, 69]
+Thu Nov 19 04:37:14 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import time, json, numpy as np, huszar as h, resource
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+a=[x for x in h.assets() if x['path']==m['path']][0]
+t=time.time()
+f=h.open_nwb(a)
+tr=h.spike_trains(f)
+print('load',time.time()-t, sum(len(x) for x in tr))
+hc=h.homecage_intervals(m); print(hc[:5], hc.shape, (hc[:,1]-hc[:,0]).sum()/60)
+t=time.time()
+pyr=[i for i,c in enumerate(m['u_putative_cell_type']) if c=='Pyramidal Cell']
+bi=[]
+for i in pyr[:20]:
+    s=tr[i][h.in_intervals(tr[i],hc)]
+    bi.append(h.burst_index(s)[0])
+print('acg 20 cells',time.time()-t, np.round(bi,3))
+# LFP: one channel over 300 s
+lfp=f['processing/ecephys/LFP/LFP/data']; print(lfp.chunks, lfp.shape)
+t=time.time(); x=lfp[:1250*600,5]; print('lfp 600s one ch', time.time()-t)
+print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
+EOF
+```
+
+```
+load 1.777312994003296 5188576
+[[    0.          7767.904     ]
+ [10089.75996667 16400.75706667]
+ [17210.7482     17551.424     ]] (3, 2) 240.3262816666666
+acg 20 cells 0.04128527641296387 [0.016 0.072 0.07  0.029 0.079 0.083 0.069 0.133 0.063 0.125 0.058 0.092
+ 0.11  0.105 0.052 0.065 0.145 0.032 0.131 0.211]
+(65536, 16) (21939280, 64)
+lfp 600s one ch 1.1950888633728027
+0.23722 GB
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper && grep -n -i "theta" 10.1038-s41593-022-01138-x.txt | cut -c1-600 | head -60
+```
+
+```
+7:pmc Nat Neurosci Nat Neurosci 319 nihpa 9809671 Nature neuroscience 1097-6256 1546-1726 pmc-is-collection-domain yes pmc-collection-title NIHPA Author Manuscripts PMC10807234 PMC10807234.1 10807234 10807234 NIHMS1955147 35995878 10.1038/s41593-022-01138-x NIHMS1955147 NIHPA1955147 1 Article Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis http://orcid.org/0000-0002-8426-8308 Huszár Roman 1 2 ✉ http://orcid.org/0000-0003-3294-7373 Zhang Yunchang 1 2 Blockus Heike 3 4 http://orcid.org/0000-0002-3100-4800 Buzsáki György 1 2 5 ✉ 1 Neuroscience 
+35:[13] Navas-Olive, A. et al. Multimodal determinants of phase-locked dynamics across deep-superficial hippocampal sublayers during theta oscillations. Nat. Commun. 11, 2217 (2020). 10.1038/s41467-020-15840-6
+153:[72] Buzsáki, G. Theta oscillations in the hippocampus. Neuron 33, 325–340 (2002). 10.1016/S0896-6273(02)00586-X
+```
+
+**Agent calls Bash**
+
+```bash
+python3 -c "
+import re
+t=open('10.1038-s41593-022-01138-x.txt').read()
+i=t.find('Theta cycle'); 
+for key in ['Theta cycle','REM shifting','theta channel','Detection of theta','Cofiring analysis','SPW-R detection','Spatial ratemap','Monosynaptic','spike transmission','burst','Unit isolation','Statistical analysis']:
+    for m in re.finditer(key,t):
+        print('=====',key, m.start()); print(t[m.start()-100:m.start()+1500]); break
+" > $TMPDIR/methods.txt; wc -c $TMPDIR/methods.txt
+```
+
+```
+16327 /tmp/claude-1001/methods.txt
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/methods.txt"
 }
 ```
 
 ```
-1	  904 get_corrBeh_famnov.m
-2	   85 ratemap_remap.m
-3	  462 revision2022_code/get_corrBeh_v3.m
-4	  564 novelEnv_example.m
-5	 2015 total
-6	
-7	
-8	
-9	basepaths_famnov = [{'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211019'} ; ...
-10	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211116'} ; ...
-11	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211119'} ; ...
-12	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e13\e13_26m1\e13_26m1_211124'} ; ...
-13	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211210'} ; ...
-14	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211211'} ; ...
-15	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211212'} ; ...
-16	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e16\e16_3m2\e16_3m2_211213'} ; ...
-17	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e15\e15_13f1\e15_13f1_220117'} ; ...
-18	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e15\e15_13f1\e15_13f1_220118'} ; ...
-19	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e15\e15_13f1\e15_13f1_220119'} ; ...
-20	                    {'Z:\Buzsakilabspace\LabShare\RomanHuszar\DATA\e15\e15_13f1\e15_13f1_220120'}];
-[... 890 more lines not kept]
+1	===== Theta cycle 93073
+2	0.037, n =347) and DBD (red, median=0.021, n =3,588; P=1.4e-04) pairs recorded >60 μm apart. Right: Theta cycle correlations ( Fig. 2c ) for pairs shown on the left. Blue: SBD, median=0.019. Red: DBD, median=0.0092. P=4.3e-12. c , Left: Waveform profile distances of DBD pairs recorded >60 μm apart were resampled according to the empirical probability mass function of waveform profile distances of SBD pairs. Group size was fixed at n =1,743 of the original SBD group. >60 μm SBD pairs were sampled with replacement to achieve the latter. Blue: median=17.5854. Red: DBD, median=17.5305. P=6.9e-1. Right: P-value distribution ( n =500 resamplings) for comparisons shown in b . All tests were P < 0.05. d , Same as a for same-shank pairs involved in spatial ratemap correlation analyses in Fig. 5c . Left: Blue: SBD, median=10.498, n =1,205. Red: DBD, median=14.49, n =13,549. P=6.5e-107. Right: Blue: SBD, median=14.0836, n =252. Red: DBD, median=15.028, n =2,998. P=7.8e-3. e , Spatial ratemap correlation of same-shank pairs recorded >60 μm apart. Blue: SBD, median=0.0079, n =252. Red: DBD, median=−0.0308, n =2998. P=3.3e-2. f , Same resampling as c matching waveform profile distances and group sizes of pairs involved in the spatial ratemap correlation analysis in Fig. 5c . Blue: SBD, median=14.0856. Red: DBD, median=13.97. P=3.1e-1. Right: P-value distribution ( n =500 resamplings) for the comparison in e . 447/500 (89.4%) tests were P < 0.05. Vertical dashed line indicates P=0.05. Group comparisons were based on a two-sided Wilcoxon test. Box plot central mark, notch and edges indicat
+3	===== REM shifting 61656
+4	curring within identified waking periods (see section State scoring ) were considered for analysis. REM shifting and theta-depth modulation. Theta phase was extracted in the waking and REM periods identified via state scoring. Broadband LFP was filtered and Hilbert transformed to extract amplitude and phase, as described above. In the wakin
+[... 17 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/optotagCA1_final && grep -rn -i -E "popvec|population|pv_corr|pvcorr|Turn1|turn|central|segment" --include=*.m . | head -40
+cd $TMPDIR && . venv/bin/activate && python - <<'EOF'
+import json, numpy as np, collections
+ms=json.load(open('survey.json'))
+for m in ms:
+    if m['subject_id'] in ('e13_26m1','e15_13f1','e16_3m2'):
+        print(m['session_id'], list(zip(m['epochs']['epoch_name'],m['epochs']['environment'],np.round(m['epochs']['start_time']),np.round(m['epochs']['stop_time']))) if m['epochs'] else None)
+        for k,v in m['series'].items(): print('   ',k,v['n'],round(v['t0']),round(v['t1']),v['unit'],v['desc'][:260])
+        if m['trials']: print('   trials', len(m['trials']['start_time']), collections.Counter(zip(m['trials']['recordings'],m['trials']['is_familiar_maze'],m['trials']['visited_arm'])))
+EOF
 ```
 
 ```
-./ratemap_remap.m:59:title('Population vector decorrelation')
-./ratemap_remap.m:77:cc_turn1 = cc_all(:,75:111); cc_turn1 = cc_turn1(:);
-./ratemap_remap.m:79:cc_turn2 = cc_all(:,186:205); cc_turn2 = cc_turn2(:);
-./ratemap_remap.m:80:boxplot([cc_stem ; cc_turn1 ; cc_arm ; cc_turn2], [ones(size(cc_stem)) ; 2*ones(size(cc_turn1)) ; 3*ones(size(cc_arm)) ; 4*ones(size(cc_turn2))],...
-./ratemap_remap.m:81:    'notch','on','whisker',3,'labels',{'stem','turn1', 'arm', 'turn2'})
-./analyze_theta_phase.m:555:% is the REM shifting population
-./revision2022_code/subsample2D_local.m:4:population and use it as a PMF for sampling the 2D histogram of the other population
-./revision2022_code/hpc/resample_depth.m:23:    return
-./revision2022_code/hpc/estimate_k_poissNull.m:20:    disp('This animal is not being considered, returning...')
-./revision2022_code/hpc/runAssembly_Vrev.m:41:    disp('This animal is not being considered, returning...')
-./revision2022_code/hpc/runAssembly_Vrev.m:42:    return
-./revision2022_code/hpc/runAssembly_Vrev.m:57:    return
-./revision2022_code/hpc/runAssembly_trackVrev_condHome_v1.m:49:    disp('This animal is not being considered, returning...')
-./revision2022_code/hpc/runAssembly_trackVrev_condHome_v1.m:50:    return
-./revision2022_code/hpc/runAssembly_trackVrev_condHome_v1.m:67:    return
-./revision2022_code/hpc/estimate_k.m:28:%     disp('This animal is not being considered, returning...')
-./revision2022_code/hpc/estimate_k.m:29:%     return
-./revision2022_code/hpc/estimate_k.m:44:    return
-./revision2022_code/hpc/estimate_k.m:71:    return
-./revision2022_code/hpc/runAssembly_hardcoded.m:36:    disp('This animal is not being considered, returning...')
-[... 21 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/optotagCA1_final && cat ratemap_remap.m; grep -n -i -E "firingMapsAvg|speed|minTime|nBins|smooth|1.5|kalman|Ispike|Isec|bits" revision2022_code/get_corrBeh_v3.m | head -40
-```
-
-```
-%%
-cc_all = [];
-
-animal_exclude = [{'e16_3m2'} {'e15_13f1'}];
-for kp = 1:length(basepaths_beh)
-    fprintf('%d/%d\n',kp,length(basepaths_beh))
-    basepath = alterPath( basepaths_beh{kp}, true );
-    basename = bz_BasenameFromBasepath(basepath);
-    
-    if any( cellfun(@(x) ~isempty(regexp(basename, x, 'once')), animal_exclude) )
-        continue
-    end
-    
-    load(fullfile(basepath, [basename '.cell_metrics.cellinfo.mat']))
-    try
-        load(fullfile(basepath, [basename '.firingMapsAvg_v2.cellinfo.mat']))
-    catch
-        load(fullfile(basepath, [basename '.firingMapsAvg_multSess.cellinfo.mat']))
-    end
-    pyr_id_log = cellfun(@(x) ~isempty(regexp(x, 'Pyramidal', 'once')), cell_metrics.putativeCellType);
+e13_26m1_211019 [('e13_26m1_211019_093241', 'none', np.float64(0.0), np.float64(7590.0)), ('e13_26m1_211019_114439', 'tmaze_familiar', np.float64(7590.0), np.float64(9328.0)), ('e13_26m1_211019_121416', 'none', np.float64(9328.0), np.float64(15088.0)), ('e13_26m1_211019_145847', 'tmaze_ipshita', np.float64(15088.0), np.float64(16753.0)), ('e13_26m1_211019_152351', 'none', np.float64(16753.0), np.float64(22201.0)), ('e13_26m1_211019_165657', 'none', np.float64(22201.0), np.float64(24298.0))]
+    LinearizedPosition/LinearizedSpatialSeries1_tmaze_familiar 51501 7606 9323 centimeters linearized position along the maze in sub-session 1 (e13_26m1_211019_114439), environment tmaze_familiar (maze_info.mat), from the lab's Behavior.mat
+    LinearizedPosition/LinearizedSpatialSeries2_tmaze_ipshita 48056 15103 16749 centimeters linearized position along the maze in sub-session 2 (e13_26m1_211019_145847), environment tmaze_ipshita (maze_info.mat), from the lab's Behavior.mat
+    SubjectPosition/SpatialSeries1_tmaze_familiar 51501 7606 9323 centimeters (x, y) of the head-mounted LEDs in sub-session 1 (e13_26m1_211019_114439), environment tmaze_familiar (maze_info.mat), from the lab's Behavior.mat, in cm
+    SubjectPosition/SpatialSeries2_tmaze_ipshita 48056 15103 16749 n.a. (x, y) of the head-mounted LEDs in sub-session 2 (e13_26m1_211019_145847), environment tmaze_ipshita (maze_info.mat), from the lab's Behavior.mat, in the lab's units: x 0.01 to 0.73, y 0.06 to 0.98, with no scale given in the source
+   trials 80 Counter({(1, True, 'left'): 27, (2, False, 'left'): 21, (1, True, 'right'): 20, (2, False, 'right'): 12})
+e13_26m1_211116 [('e13_26m1_211116_130304', 'tmaze_familiar', np.float64(7454.0), np.float64(8724.0)), ('e13_26m1_211116_151447', 'linear_thomas', np.float64(13579.0), np.float64(14023.0))]
+    LinearizedPosition/LinearizedSpatialSeries1_tmaze_familiar 37482 7470 8719 centimeters linearized position along the maze in sub-session 1 (e13_26m1_211116_130304), environ
 [... 66 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-def dec(v): return v.decode() if isinstance(v,bytes) else v
-p='sub-e14-2m3/sub-e14-2m3_ses-e14-2m3-201017_behavior+ecephys.nwb'
-f=h5py.File(remfile.File(ds.get_asset_by_path(p).get_content_url(follow_redirects=1,strip_query=True)),'r')
-lp=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries']; x=lp['data'][:]; ts=lp['timestamps'][:]
-xy=f['processing/behavior/SubjectPosition/SpatialSeries/data'][:]
-t=f['intervals/trials']; st=t['start_time'][:]; sp=t['stop_time'][:]; arm=[dec(a) for a in t['visited_arm'][:]]
-for i in range(1,6):
-    m=(ts>=st[i])&(ts<=sp[i])
-    xx=x[m]
-    print(i, arm[i], round(sp[i]-st[i],1), 'n',m.sum(), 'lin first/last', xx[:3].round(1), xx[-3:].round(1), 'min/max', np.nanmin(xx).round(1), np.nanmax(xx).round(1), 'xy start', xy[m][0].round(1), 'end', xy[m][-1].round(1))
-    # sample lin every 1 s
-    print('   ', xx[::30].round(0))
-# outside trials
-m=np.ones(len(ts),bool)
-for a,b in zip(st,sp): m &= ~((ts>=a)&(ts<=b))
-print('outside trials n', m.sum(), 'lin range', np.nanmin(x[m]), np.nanmax(x[m]))
-h,e=np.histogram(x[~m], bins=np.arange(0,230,10)); print(h)
+. $TMPDIR/venv/bin/activate && cd entries/huszar-2022 && python - <<'EOF'
+import json, numpy as np, huszar as h
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+a=[x for x in h.assets() if x['path']==m['path']][0]
+f=h.open_nwb(a)
+g=f['processing/behavior/LinearizedPosition/LinearizedSpatialSeries1']
+x=g['data'][:]; t=g['timestamps'][:]
+print(np.nanmin(x),np.nanmax(x), np.isnan(x).mean(), np.median(np.diff(t)))
+tr=m['trials']
+for s,e,arm in list(zip(tr['start_time'],tr['stop_time'],tr['visited_arm']))[:4]:
+    k=(t>=s)&(t<=e); print(arm, round(e-s,1), np.nanmin(x[k]), np.nanmax(x[k]), x[k][:3], x[k][-3:])
 EOF
 ```
 
 ```
-1 right 37.9 n 1138 lin first/last [1.9 1.9 2.2] [201.  202.4 203.9] min/max 1.9 203.9 xy start [83.5 41.4] end [88.1 60.6]
-    [  2.  15.  22.  55.  77.  88.  98. 112. 113. 114. 114. 114. 114. 114.
- 113. 112. 111. 112. 113. 111. 114. 113. 114. 114. 113. 113. 114. 114.
- 114. 114. 114. 135. 180. 189. 187. 188. 188. 186.]
-2 left 58.8 n 1766 lin first/last [2.  2.2 2.6] [203.7 204.4 204.9] min/max 2.0 204.9 xy start [83.4 41.7] end [84.5 27.9]
-    [  2.  12.  13.  18.  18.  25.  44.  45.  49.  67.  77.  76.  80.  88.
-  92. 108. 114. 114. 114. 114. 112. 111. 108. 115. 114. 116. 116. 115.
- 115. 115. 115. 115. 108. 115. 107. 115. 115. 115. 115. 108. 110. 110.
- 110. 108. 108. 108. 108. 114. 129. 163. 177. 182. 190. 187. 189. 185.
- 186. 188. 189.]
-3 right 69.8 n 2094 lin first/last [2.6 3.3 4.1] [203.5 204.2 204.9] min/max 2.6 204.9 xy start [82.8 41. ] end [88.1 59.6]
-    [  3.  15.  45.  76.  94. 102. 113. 112. 114. 114. 113. 113. 113. 113.
- 113. 113. 110. 110. 110. 110. 110. 111. 111. 111. 111. 113. 113. 113.
- 114. 114. 115. 113. 113. 106. 108. 108. 108. 110. 107. 107. 106. 106.
- 107. 107. 107. 108. 106. 106. 106. 109. 109. 108. 109. 109. 108. 112.
- 107. 108. 119. 120. 159. 161. 182. 187. 189. 187. 189. 192. 193. 194.]
-4 left 52.0 n 1560 lin first/last [0.9 1.8 2.5] [204.  204.3 204.7] min/max 0.9 204.7 xy start [84.5 43.2] end [83.9 27.8]
-    [  1.  30.  72.  79.  78.  76.  76.  85. 105. 113. 114. 114. 115. 114.
- 113. 113. 111. 115. 118. 126. 134. 157. 175. 180. 188. 183. 184. 184.
- 184. 179. 178. 179. 179. 179. 179. 181. 185. 185. 185. 186. 185. 184.
-[... 9 more lines not kept]
+0.0 221.82757017982385 0.0 0.03333333333284827
+right 98.3 1.339267706842918 204.85716755697126 [1.33926771 1.93524051 2.48381072] [204.2786311  204.47147659 204.85716756]
+left 55.7 0.5277928659709064 204.86368009339986 [0.52779287 0.81101709 1.0751424 ] [204.31385165 204.58876587 204.86368009]
+right 51.9 0.8990588559890682 204.95359029914658 [0.89905886 1.33926771 1.60339302] [203.60367191 204.37505385 204.9535903 ]
+left 65.6 0.7037238212945417 204.86368009339986 [0.70372382 1.33926771 1.86751833] [204.22221357 204.58876587 204.86368009]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 1,80p entries/001453-fouke-2025/reproduce_fouke_2025.ipynb | head -120; python - <<'EOF'
-import json
-nb=json.load(open('entries/001453-fouke-2025/reproduce_fouke_2025.ipynb'))
-print(nb['metadata'])
-for c in nb['cells'][:6]:
-    print('---',c['cell_type'],c.get('metadata'))
-    print(''.join(c['source'])[:1500])
+cat >> huszar.py <<'EOF'
+
+
+# ---------- per-session processing ----------
+
+def electrode_shanks(f):
+    """Physical shank of each electrode row (electrodes table, shank; chanMap kcoords)."""
+    return f["general/extracellular_ephys/electrodes/shank"][:]
+
+
+def ccg_pair(a, b, binsize=0.002, maxlag=0.3):
+    """Cross-correlogram counts of b relative to a, bins of binsize centred on lags from -maxlag
+    to +maxlag (Figure 2b: 2 ms bins over +-300 ms, extract_ccgs.m, claims)."""
+    nb = int(round(maxlag / binsize))
+    edges = (np.arange(-nb, nb + 2) - 0.5) * binsize
+    lo = np.searchsorted(b, a - maxlag - binsize)
+    hi = np.searchsorted(b, a + maxlag + binsize)
+    n = hi - lo
+    if n.sum() == 0:
+        return np.zeros(len(edges) - 1)
+    rep = np.repeat(np.arange(len(a)), n)
+    idx = np.concatenate([np.arange(l, h) for l, h in zip(lo[n > 0], hi[n > 0])])
+    d = b[idx] - a[rep]
+    return np.histogram(d, edges)[0].astype(float)
+
+
+def ccg_sync(a, b):
+    """Figure 2b synchrony of a pair (claims, fig2b reading b): the CCG z-scored against its
+    outer 75 bins on each side, mean of the z-scores within +-50 ms."""
+    c = ccg_pair(a, b)
+    base = np.r_[c[:75], c[-75:]]
+    sd = base.std()
+    if sd == 0:
+        return np.nan
+    z = (c - base.mean()) / sd
+    mid = len(c) // 2
+    return float(z[mid - 25:mid + 26].mean())
+
+
+def homecage_session(asset, m, ccgs=True):
+    """Homecage measures of one session: per pyramidal cell the rate, burst index, SPW-R rate
+    and participation; per SBD and DBD pair the SPW-R cofiring and the CCG synchrony.
+    Spikes of the homecage period (homecage_intervals). Ripples are the dataset's
+    (bz_FindRipples, as the Methods), kept when they start inside the homecage period."""
+    with open_nwb(asset) as f:
+        trains_all = spike_trains(f)
+        shanks = electrode_shanks(f)
+        maxel = f["units/max_electrode"][:]
+        ids = f["electrodes"][:] if "electrodes" in f else None
+    ct = np.array(m.get("u_putative_cell_type", [None] * m["n_units"]), dtype=object)
+    lr = np.array(m.get("u_light_responsive", [False] * m["n_units"]), bool)
+    pyr = np.where(ct == "Pyramidal Cell")[0]
+    hc = homecage_intervals(m)
+    hc_dur = float(np.sum(hc[:, 1] - hc[:, 0]))
+    trains = [trains_all[i][in_intervals(trains_all[i], hc)] for i in pyr]
+    rip = np.c_[m["rip_start"], m["rip_stop"]]
+    keep = in_intervals(rip[:, 0], hc) & in_intervals(rip[:, 1], hc)
+    rip_hc = rip[keep]
+    rrate, rpart, counts = ripple_measures(trains, rip_hc)
+    cells = []
+    for k, i in enumerate(pyr):
+        t = trains[k]
+        b25, c = burst_index(t)
+        s35 = c[3:5].sum()
+        l = c[200:300].sum()
+        cells.append({"session": m["session_id"], "subject": m["subject_id"],
+                      "birthdate": m["birthdate"], "unit": int(i), "lr": bool(lr[i]),
+                      "rate": len(t) / hc_dur, "burst": b25,
+                      "burst35": s35 / l if l > 0 else np.nan,
+                      "rip_rate": float(rrate[k]), "rip_part": float(rpart[k]),
+                      "shank": int(shanks[maxel[i]]) if maxel[i] < len(shanks) else -1,
+                      "maxel": int(maxel[i])})
+    lrk = [k for k, i in enumerate(pyr) if lr[i]]
+    nrk = [k for k, i in enumerate(pyr) if not lr[i]]
+    sbd = [(a, b) for n, a in enumerate(lrk) for b in lrk[n + 1:]]
+    dbd = [(a, b) for a in lrk for b in nrk]
+    pairs = sbd + dbd
+    rc = pair_corr(counts, pairs)
+    sync = [ccg_sync(trains[a], trains[b]) if ccgs else np.nan for a, b in pairs]
+    pr = [{"session": m["session_id"], "subject": m["subject_id"], "birthdate": m["birthdate"],
+           "sbd": n < len(sbd), "a": int(pyr[a]), "b": int(pyr[b]), "rip_corr": rc[n],
+           "sync": sync[n], "shank_a": cells[a]["shank"], "shank_b": cells[b]["shank"]}
+          for n, (a, b) in enumerate(pairs)]
+    info = {"session": m["session_id"], "hc_dur": hc_dur, "n_rip_hc": int(keep.sum()),
+            "n_rip": len(rip), "rip_hc_dur": (rip_hc[:, 1] - rip_hc[:, 0]).tolist()}
+    return cells, pr, info
+EOF
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, numpy as np, huszar as h, time, pandas as pd
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+A={a['path']:a for a in h.assets()}
+for sid in ['e16_3m1_210201','e13_16f1_210302']:
+    m=[x for x in ms if x['session_id']==sid][0]
+    t=time.time(); c,p,i=h.homecage_session(A[m['path']],m); print(time.time()-t)
+    c=pd.DataFrame(c); p=pd.DataFrame(p)
+    print(c[c.lr].describe().T[['count','50%']]); print(p.groupby('sbd')[['rip_corr','sync']].median(), len(p))
 EOF
 ```
 
 ```
-{
- "cells": [
-  {
-   "cell_type": "markdown",
-   "id": "55a2264c",
-   "metadata": {},
-   "source": [
-    "# Reproducing Fouke et al. (2025) from dandiset 001453\n",
-    "\n",
-    "**Paper.** Fouke KE, He Z, Loring MD, Naumann EA (2025). Neural circuits underlying divergent\n",
-    "visuomotor strategies of zebrafish and *Danionella cerebrum*. *Current Biology*.\n",
-    "[doi:10.1016/j.cub.2025.04.027](https://doi.org/10.1016/j.cub.2025.04.027). This attempt used the\n",
-    "full text of the accepted author manuscript in PubMed Central (PMC12218792); the version of record\n",
-    "is not open access.\n",
-    "\n",
-    "**Dandiset.** [DANDI:001453](https://dandiarchive.org/dandiset/001453/0.250518.1950), version\n",
-    "0.250518.1950. The paper cites no DANDI version (its data statement points to a GitLab repository\n",
-    "that holds code only). This is the only published version. The draft holds the same 37 files\n",
-    "(same blobs and sizes); it differs only in metadata added later (authors, keywords, and a\n",
-    "`relatedResource` link to the paper), none of which the analysis uses.\n",
-[... 162 more lines not kept]
-```
-
-**Agent**
-
-Let me read what `tools/entry.py check` enforces before writing files.
-
-**Agent calls Bash**
-
-```bash
-grep -n "def \|error(\|fail\|raise\|problems.append\|errors.append" tools/entry.py | head -120; wc -l tools/entry.py
-```
-
-```
-28:that takes longer than --max-minutes fails, even if it ran without error.
-68:    def __init__(self):
-71:    def error(self, where, message: str) -> None:
-72:        self.errors.append(f"{where}: {message}")
-75:def schema(name: str) -> Draft202012Validator:
-79:def load(report: Report, path: Path):
-84:        report.error(path.relative_to(ROOT), f"not valid YAML: {e}")
-88:def validate(report: Report, path: Path, schema_name: str) -> dict | None:
-94:        report.error(path.relative_to(ROOT), f"{where}: {err.message}")
-98:def _plain(value):
-109:def code_of(notebook_path: Path) -> str:
-116:def check(entry_dir: Path) -> Report:
-123:        report.error(rel / "entry.yaml", f"name {entry.get('name')!r} must match the directory name")
-128:        report.error(rel / name, "notebook is not listed in entry.yaml")
-130:        report.error(rel / "entry.yaml", f"listed notebook {name!r} does not exist")
-134:            report.error(rel / "entry.yaml", f"listed helper {name!r} does not exist")
-138:        report.error(rel, "no requirements.in")
-140:        report.error(rel, "no requirements.lock.txt; run `tools/entry.py lock`")
-147:                report.error(rel / "requirements.lock.txt", f"{name} is required but not locked; re-run lock")
-155:            report.error(rel / "entry.yaml", "an orientation or reproduction entry must relate to a dandiset")
-[... 34 more lines not kept]
+313.5883297920227
+          count        50%
+unit       12.0  44.500000
+rate       12.0   1.181796
+burst      12.0   0.092008
+burst35    12.0   0.083352
+rip_rate   12.0   5.897967
+rip_part   12.0   0.208544
+shank      12.0   1.500000
+maxel      12.0  14.000000
+       rip_corr      sync
+sbd                      
+False  0.020508  1.278957
+True   0.044309  1.936794 1650
+24.091293811798096
+          count        50%
+unit       12.0  40.000000
+rate       12.0   1.699307
+burst      12.0   0.068863
+burst35    12.0   0.058563
+[... 8 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 20,66p tools/entry.py; sed -n 255,360p tools/entry.py
-```
-
-```
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-- no notebook or helper embeds a large literal array or an encoded image, or
-  reads a figure from somewhere else.
-
-`run` builds a fresh virtual environment from the lock file and executes each
-notebook through a Jupyter kernel installed in that environment, in the entry
-directory. The executed copies
-go to --output-dir (default: executed/<name>/, which git ignores). A notebook
-that takes longer than --max-minutes fails, even if it ran without error.
-
-`handover` builds what a verifier is given in its first round
-(docs/protocol.md): the executed notebooks with the conclusions removed (every
-markdown cell that begins "**Result:" and everything from the "## Summary"
-heading on), the helper modules and the claims files, in
-executed/<name>/handover/. Run the entry first.
-
-Requires `uv` on PATH, and `pyyaml`, `jsonschema` and `nbformat` to run this
-script itself. The entry's own dependencies come only from its lock file.
-"""
-
-[... 134 more lines not kept]
-```
-
-**Agent**
-
-Checking total size of the files with units, to plan streaming:
-
-**Agent calls Bash**
-
-```bash
-awk -F'\t' '$3=="True" && $1!~/raw/ {s+=$2; n++} END {print n, s/1e9 " GB"}' $TMPDIR/assets.tsv; . $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, time
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-p='sub-e15-13f1/sub-e15-13f1_ses-e15-13f1-220118_behavior+ecephys.nwb'
-f=h5py.File(remfile.File(ds.get_asset_by_path(p).get_content_url(follow_redirects=1,strip_query=True)),'r')
-d=f['units/spike_times']; print(d.shape, d.chunks, d.compression)
-for k in ['ripple_raw','ripple_amplitudes']:
-    x=f['processing/ecephys/Ripples/'+k]; print(k, x.shape, x.chunks, x.compression)
-t=time.time(); a=d[:]; print('read s', time.time()-t, a.nbytes/1e6,'MB')
-import numpy as np
-idx=f['units/spike_times_index'][:]
-bounds=np.r_[0,idx]
-print('sorted per unit', all(np.all(np.diff(a[bounds[i]:bounds[i+1]])>=0) for i in range(len(idx))))
-EOF
-```
-
-```
-65 10.7667 GB
-(22155872,) None None
-ripple_raw (9502, 465) (297, 15) gzip
-ripple_amplitudes (9502, 465) (297, 15) gzip
-read s 1.962247371673584 177.246976 MB
-sorted per unit True
-```
-
-**Agent**
-
-Spike times are stored per unit, sorted, uncompressed, and a 177 MB array streams in about 2 s, so loading all 65 sessions is feasible if each is reduced as it loads. Writing the helper module now.
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np
-from dandi.dandiapi import DandiAPIClient
-ds=DandiAPIClient().get_dandiset('000552','0.230630.2304')
-p='sub-e14-2m3/sub-e14-2m3_ses-e14-2m3-201017_behavior+ecephys.nwb'
-f=h5py.File(remfile.File(ds.get_asset_by_path(p).get_content_url(follow_redirects=1,strip_query=True)),'r')
-print(f['units/unit_name'][:5], f['units/group_id'][:5], f['units/clu_id'][:5])
-e=f['general/extracellular_ephys/electrodes']
-print({k:e[k][:5] for k in e.keys() if k!='group'})
-print(f['processing/behavior/SleepStates/label'][:10])
-print(f['processing/ecephys/Ripples/peaks'][:3], f['processing/ecephys/Ripples/start_time'][:3])
-print(dict(f['units'].attrs))
-EOF
-```
-
-```
-[b'1' b'2' b'3' b'4' b'5'] [b'Group3' b'Group4' b'Group3' b'Group4' b'Group4'] [584. 623. 635. 652. 666.]
-{'channel_name': array([b'1', b'2', b'3', b'4', b'5'], dtype=object), 'group_name': array([b'Group 2', b'Group 2', b'Group 2', b'Group 2', b'Group 2'],
-      dtype=object), 'id': array([0, 1, 2, 3, 4]), 'location': array([b'unknown', b'unknown', b'unknown', b'unknown', b'unknown'],
-      dtype=object), 'rel_x': array([470., 470., 470., 430., 470.], dtype=float32), 'rel_y': array([-320., -280., -160., -180.,  -40.], dtype=float32)}
-[b'Awake' b'Non-REM' b'REM' b'Awake' b'Non-REM' b'Awake' b'Non-REM'
- b'Awake' b'Non-REM' b'REM']
-[109.792  171.036  171.1528] [109.7808 171.0168 171.1392]
-{'colnames': array(['spike_times', 'unit_name', 'clu_id', 'group_id'], dtype=object), 'description': 'Autogenerated by neuroconv.', 'namespace': 'core', 'neurodata_type': 'Units', 'object_id': '7da2df5f-6506-4c40-a196-eed11c4a30ab'}
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000552-huszar-2022/huszar.py",
- "content": "\"\"\"Loading and measures for dandiset 000552 (Huszar, Zhang, Blockus & Buzsaki 2022).\n\nHuszar R, Zhang Y, Blockus H, Buzsaki G (2022). Preconfigured dynamics in the hippocampus are\nguided by embryonic birthdate and rate of neurogenesis. Nature Neuroscience 25, 1201-1212.\ndoi:10.1038/s41593-022-01138-x.\n\nThe dandiset holds one `behavior+ecephys` NWB file per recording session (104 files, 17 mice) and\n13 `raw_ecephys` files. A processed file holds sleep states, detected sharp-wave ripples\n(SPW-Rs) and, in 65 of them, spike-sorted units with their spike times, the animal's position\n(x, y and linearized, in cm) and the figure-eight maze trials. Units carry no cell type and no\nlight-responsiveness label. Files are streamed from the archive at the pinned version; nothing is\nwritten to disk.\n\nEach file is reduced as it loads: spike times are kept only inside the maze recordings (with a\nmargin for the time-shift check), plus per-unit counts by sleep state and a peri-ripple\nhistogram of the population.\n\nWhere the parameters come from:\n\n- From the paper's Methods: spatial bins of 1 cm, only moments with speed above 1.5 cm/s,\n  Gaussian smoothing of spike counts and occupancy with 9 cm full width at half maximum (FWHM),\n  rate map = smoothed counts / smoothed occupancy, never-visited bins excluded; left and right\n  trials mapped separately and concatenated; Pearson correlation of maps; spatial information in\n  bits/s after Skaggs et al. (1993); SPW-R duration limits of 20 to 200 ms; 30 Hz tracking.\n- From the paper's code (https://github.com/rhuszar/optotagCA1_final, commit\n  51320d45c5ee41147048128df333f251379bf755), where the Methods are silent: the figure-eight\n  trial spans 205 one-cm bins; its segments for Figure 5e are stem (bins 1-74), turn 1 (75-111),\n  arm (112-185) and turn 2 (186-205) (`ratemap_remap.m`); the stem is excluded from ratemap\n  correlations, keeping bins 75-205 on the familiar figure-eight and 51-164 on the novel T-maze\n  (`get_corrBeh_famnov.m`); linear tracks keep all bins.\n- Common choices made here, as the paper's are not available from the dandiset: speed is the\n  absolute derivative of the linearized position smoothed with a Gaussian of 0.2 s s.d. (the\n  paper uses a Kalman filter); putative pyramidal cells are units with a session mean firing rate\n  of at most `PYR_MAX_RATE_HZ` (the paper classifies by waveform shape and autocorrelogram, which\n  the dandiset does not hold); the \"theta-related\" firing rate is approximated by the firing rate\n  while running at `RUN_SPEED_CM_S` or faster inside maze trials (the paper counts spikes in\n  detected theta cycles of the LFP).\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy.ndimage import gaussian_filter1d\n\nDANDISET_ID = \"000552\"\nDANDISET_VERSION = \"0.230630.2304\"\n\nBIN_CM = 1.0\nMIN_SPEED_CM_S = 1.5            # Methods\nSMOOTH_FWHM_CM = 9.0            # Methods (linear mazes)\nSPEED_SMOOTH_S = 0.2            # common choice; the paper uses a Kalman filter\nFIG8_BINS = 205                 # code: 205 one-cm bins per figure-eight trial (Methods: 205 cm)\nFIG8_SEGMENTS = {\"stem\": (1, 74), \"turn1\": (75, 111), \"arm\": (112, 185), \"turn2\": (186, 205)}\nFIG8_POST_STEM = (75, 205)      # code, 1-based inclusive\nTMAZE_POST_STEM = (51, 164)     # code, novel T-maze\nPYR_MAX_RATE_HZ = 5.0           # common choice; no cell type in the dandiset\nRUN_SPEED_CM_S = 5.0            # common choice for the theta-rate proxy\nSHIFT_MARGIN_S = 5.0            # spikes kept this far around the maze recordings\nRIPPLE_PSTH_EDGES = np.arange(-0.5, 0.5001, 0.01)\nRIPPLE_SHUFFLE_SEED = 0\n\n_FWHM_TO_SD = 1.0 / (2.0 * np.sqrt(2.0 * np.log(2.0)))\n\n\ndef _dec(v):\n    return v.decode() if isinstance(v, bytes) else v\n\n\ndef birthdate_of(subject_id: str) -> str:\n    \"\"\"Embryonic day of electroporation, from the subject id (e13 -> E13.5). The files hold it nowhere else.\"\"\"\n    return f\"E{subject_id.split('_')[0][1:]}.5\"\n\n\ndef list_assets() -> pd.DataFrame:\n    \"\"\"All files of the pinned version, with their kind and size.\"\"\"\n    ds = DandiAPIClient().get_dandiset(DANDISET_ID, DANDISET_VERSION)\n    rows = []\n    for a in ds.get_assets():\n        rows.append({\"path\": a.path, \"size_gb\": a.size / 1e9, \"asset\": a,\n                     \"kind\": \"raw\" if \"raw_ecephys\" in a.path else \"processed\",\n                     \"subject\": a.path.split(\"/\")[0].replace(\"sub-\", \"\")})\n    return pd.DataFrame(rows).sort_values(\"path\").reset_index(drop=True)\n\n\ndef open_asset(asset) -> h5py.File:\n    url = asset.get_content_url(follow_redirects=1, strip_query=True)\n    return h5py.File(remfile.File(url), \"r\")\n\n\ndef _intervals(group) -> tuple[np.ndarray, np.ndarray]:\n    return group[\"start_time\"][:], group[\"stop_time\"][:]\n\n\ndef _in_intervals(t: np.ndarray, starts: np.ndarray, stops: np.ndarray) -> np.ndarray:\n    \"\"\"Boolean mask of sorted times t falling inside any [start, stop) interval.\"\"\"\n    mask = np.zeros(len(t), bool)\n    for a, b in zip(starts, stops):\n        i, j = np.searchsorted(t, [a, b])\n        mask[i:j] = True\n    return mask\n\n\ndef _segments(ts: np.ndarray, gap_s: float = 60.0) -> list[tuple[int, int]]:\n    \"\"\"Index ranges of the position series separated by gaps longer than gap_s (one per maze recording).\"\"\"\n    cuts = np.where(np.diff(ts) > gap_s)[0] + 1\n    bounds = np.r_[0, cuts, len(ts)]\n    return [(int(bounds[i]), int(bounds[i + 1])) for i in range(len(bounds) - 1)]\n\n\ndef speed_from_linear(ts: np.ndarray, lin: np.ndarray, trial_id: np.ndarray) -> np.ndarray:\n    \"\"\"Speed (cm/s) from the linearized position, smoothed within each trial; NaN outside trials.\"\"\"\n    speed = np.full(len(ts), np.nan)\n    for k in np.unique(trial_id[trial_id >= 0]):\n        idx = np.where(trial_id == k)[0]\n        if len(idx) < 5:\n            continue\n        dt = np.median(np.diff(ts[idx]))\n        x = gaussian_filter1d(lin[idx], SPEED_SMOOTH_S / dt, mode=\"nearest\")\n        speed[idx] = np.abs(np.gradient(x, ts[idx]))\n    return speed\n\n\ndef load_session(asset, with_units: bool = True) -> dict:\n    \"\"\"Read one processed file and reduce it to what the analyses use.\"\"\"\n    f = open_asset(asset)\n    s = {\"path\": asset.path, \"session_id\": _dec(f[\"general/session_id\"][()]),\n         \"subject\": _dec(f[\"general/subject/subject_id\"][()]), \"sex\": _dec(f[\"general/subject/sex\"][()]),\n         \"age\": _dec(f[\"general/subject/age\"][()]), \"start\": _dec(f[\"session_start_time\"][()])}\n    s[\"birthdate\"] = birthdate_of(s[\"subject\"])\n\n    ss = f[\"processing/behavior/SleepStates\"]\n    st, sp = _intervals(ss)\n    s[\"states\"] = pd.DataFrame({\"label\": [_dec(x) for x in ss[\"label\"][:]], \"start\": st, \"stop\": sp})\n\n    rp = f[\"processing/ecephys/Ripples\"]\n    s[\"ripples\"] = pd.DataFrame({\"start\": rp[\"start_time\"][:], \"stop\": rp[\"stop_time\"][:],\n                                 \"peak\": rp[\"peaks\"][:], \"duration\": rp[\"ripple_durations\"][:]})\n    s[\"end_s\"] = float(max(sp.max(), s[\"ripples\"][\"stop\"].max()))\n\n    s[\"has_units\"] = \"units\" in f\n    s[\"has_position\"] = \"processing/behavior/LinearizedPosition\" in f\n    if s[\"has_position\"]:\n        t = f[\"intervals/trials\"]\n        trials = pd.DataFrame({k: [_dec(x) for x in t[k][:]] for k in t.keys() if k != \"id\"})\n        trials[\"recordings\"] = trials[\"recordings\"].astype(int)\n        s[\"trials\"] = trials\n        lp = f[\"processing/behavior/LinearizedPosition/LinearizedSpatialSeries\"]\n        ts, lin = lp[\"timestamps\"][:], lp[\"data\"][:]\n        xy = f[\"processing/behavior/SubjectPosition/SpatialSeries/data\"][:]\n        s[\"pos_unit\"] = lp[\"data\"].attrs.get(\"unit\")\n        good = np.isfinite(trials.start_time.values) & np.isfinite(trials.stop_time.values)\n        trial_id = np.full(len(ts), -1)\n        for k in np.where(good)[0]:\n            i, j = np.searchsorted(ts, [trials.start_time.iloc[k], trials.stop_time.iloc[k]])\n            trial_id[i:j] = k\n        s[\"pos\"] = pd.DataFrame({\"t\": ts, \"lin\": lin, \"x\": xy[:, 0], \"y\": xy[:, 1], \"trial\": trial_id})\n        s[\"pos\"][\"speed\"] = speed_from_linear(ts, lin, trial_id)\n        s[\"pos_segments\"] = [(float(ts[a]), float(ts[b - 1])) for a, b in _segments(ts)]\n        if \"intervals/epochs\" in f:\n            s[\"epochs\"] = pd.DataFrame({\"start\": f[\"intervals/epochs/start_time\"][:],\n                                        \"stop\": f[\"intervals/epochs/stop_time\"][:]})\n\n    if s[\"has_units\"] and with_units:\n        u = f[\"units\"]\n        idx = u[\"spike_times_index\"][:]\n        all_t = u[\"spike_times\"][:]\n        bounds = np.r_[0, idx]\n        s[\"unit_names\"] = [_dec(x) for x in u[\"unit_name\"][:]]\n        s[\"unit_groups\"] = [_dec(x) for x in u[\"group_id\"][:]]\n        n = len(idx)\n        s[\"n_spikes\"] = np.diff(bounds)\n        s[\"spikes_sorted\"] = bool(all(np.all(np.diff(all_t[bounds[i]:bounds[i + 1]]) >= 0) for i in range(n)))\n        s[\"first_spike\"] = float(all_t.min()) if len(all_t) else np.nan\n        s[\"last_spike\"] = float(all_t.max()) if len(all_t) else np.nan\n        # per-unit spike counts and durations by sleep state\n        counts = {}\n        for lab in s[\"states\"].label.unique():\n            sel = s[\"states\"][s[\"states\"].label == lab]\n            counts[lab] = np.array([_in_intervals(all_t[bounds[i]:bounds[i + 1]], sel.start.values,\n                                                  sel.stop.values).sum() for i in range(n)])\n        s[\"state_counts\"] = counts\n        s[\"state_durations\"] = s[\"states\"].assign(d=lambda d: d.stop - d.start).groupby(\"label\").d.sum().to_dict()\n        # peri-ripple histogram of all spikes, and the same around random times in the same states\n        pk = s[\"ripples\"][\"peak\"].values\n        pooled = np.sort(all_t)\n        def psth(centres):\n            h = np.zeros(len(RIPPLE_PSTH_EDGES) - 1)\n            for c in centres:\n                i, j = np.searchsorted(pooled, [c - 0.5, c + 0.5])\n                h += np.histogram(pooled[i:j] - c, RIPPLE_PSTH_EDGES)[0]\n            return h / len(centres) / np.diff(RIPPLE_PSTH_EDGES)\n        rng = np.random.default_rng(RIPPLE_SHUFFLE_SEED)\n        s[\"ripple_psth\"] = psth(pk)\n        s[\"ripple_psth_shuffled\"] = psth(pk + rng.uniform(-60, 60, len(pk)))\n        # spikes kept around the maze recordings only\n        if s[\"has_position\"]:\n            keep = [(a - SHIFT_MARGIN_S, b + SHIFT_MARGIN_S) for a, b in s[\"pos_segments\"]]\n            ka, kb = np.array(keep).T\n            s[\"maze_spikes\"] = [all_t[bounds[i]:bounds[i + 1]][_in_intervals(all_t[bounds[i]:bounds[i + 1]], ka, kb)]\n                                for i in range(n)]\n        del all_t\n    f.close()\n    return s\n\n\ndef load_all(paths: list[str] | None = None, with_units: bool = True, workers: int = 6) -> list[dict]:\n    \"\"\"Load the processed files (all, or those listed), in path order.\"\"\"\n    assets = list_assets()\n    assets = assets[assets.kind == \"processed\"]\n    if paths is not None:\n        assets = assets[assets.path.isin(paths)]\n    with ThreadPoolExecutor(workers) as ex:\n        return list(ex.map(lambda a: load_session(a, with_units), assets.asset))\n\n\n# --- maze recordings and rate maps ------------------------------------------------------------\n\ndef recordings(s: dict) -> list[dict]:\n    \"\"\"The maze recordings of a session: trials of one `recordings` value, with their position.\n\n    The recording run first in the session is the familiar figure-eight (Methods). The length of a\n    recording's track is taken from the largest linearized position inside its trials.\n    \"\"\"\n    out = []\n    tr = s[\"trials\"]\n    for r in sorted(tr.recordings.unique()):\n        rows = tr[(tr.recordings == r) & tr.start_time.notna() & tr.stop_time.notna()]\n        ids = rows.index.values\n        pos = s[\"pos\"][s[\"pos\"].trial.isin(ids)]\n        out.append({\"recording\": int(r), \"trials\": rows, \"pos\": pos,\n                    \"start\": float(rows.start_time.min()), \"stop\": float(rows.stop_time.max()),\n                    \"track_max_cm\": float(np.nanmax(pos.lin)) if len(pos) else np.nan})\n    first = min(out, key=lambda d: d[\"start\"])\n    for d in out:\n        d[\"familiar\"] = d is first\n        L = d[\"track_max_cm\"]\n        d[\"kind\"] = (\"figure-eight\" if d[\"familiar\"] else\n                     \"T-maze\" if L > 150 else \"linear track\")\n        d[\"n_bins\"] = FIG8_BINS if d[\"familiar\"] else int(np.ceil(L / BIN_CM))\n    return out\n\n\ndef _smooth(v: np.ndarray, fwhm_bins: float) -> np.ndarray:\n    return gaussian_filter1d(v.astype(float), fwhm_bins * _FWHM_TO_SD, mode=\"constant\")\n\n\ndef rate_maps(spikes: list[np.ndarray], rec: dict, shift_s: float = 0.0,\n              min_speed: float = MIN_SPEED_CM_S) -> dict:\n    \"\"\"Left and right rate maps (Hz) of every unit on one recording, per 1-cm bin.\n\n    Occupancy and spike counts are taken at moments with speed above `min_speed`, inside trials;\n    a spike is placed at the position sample nearest in time. Returns maps of shape\n    (units, 2, bins), the occupancy (2, bins) in s, and a mask of visited bins.\n    \"\"\"\n    pos = rec[\"pos\"]\n    n_bins = rec[\"n_bins\"]\n    edges = np.arange(n_bins + 1) * BIN_CM\n    dt = np.median(np.diff(pos.t.values))\n    arm = rec[\"trials\"].visited_arm.reindex(pos.trial.values).values\n    moving = (pos.speed.values > min_speed) & np.isfinite(pos.lin.values)\n    occ = np.zeros((2, n_bins))\n    counts = np.zeros((len(spikes), 2, n_bins))\n    pos_t = pos.t.values\n    pos_bin = np.clip(np.digitize(pos.lin.values, edges) - 1, 0, n_bins - 1)\n    for side, name in enumerate([\"left\", \"right\"]):\n        sel = moving & (arm == name)\n        occ[side] = np.bincount(pos_bin[sel], minlength=n_bins)[:n_bins] * dt\n        # trial intervals of this side, to keep spikes inside them\n        rows = rec[\"trials\"][rec[\"trials\"].visited_arm == name]\n        for u, t in enumerate(spikes):\n            tt = t - shift_s\n            inside = _in_intervals(tt, rows.start_time.values, rows.stop_time.values)\n            tt = tt[inside]\n            if not len(tt):\n                continue\n            k = np.clip(np.searchsorted(pos_t, tt), 1, len(pos_t) - 1)\n            k -= (tt - pos_t[k - 1]) < (pos_t[k] - tt)\n            ok = sel[k]\n            counts[u, side] = np.bincount(pos_bin[k[ok]], minlength=n_bins)[:n_bins]\n    fw = SMOOTH_FWHM_CM / BIN_CM\n    occ_s = np.stack([_smooth(o, fw) for o in occ])\n    visited = occ > 0\n    with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n        maps = np.stack([[_smooth(c, fw) for c in cu] for cu in counts]) / occ_s[None]\n    maps[:, ~visited] = np.nan\n    return {\"maps\": maps, \"occupancy\": occ, \"visited\": visited}\n\n\ndef correlation_bins(rec: dict) -> np.ndarray:\n    \"\"\"1-based bins used for ratemap correlations: post-stem on the figure-eight and T-maze, all on linear tracks.\"\"\"\n    if rec[\"kind\"] == \"figure-eight\":\n        a, b = FIG8_POST_STEM\n    elif rec[\"kind\"] == \"T-maze\":\n        a, b = TMAZE_POST_STEM\n    else:\n        a, b = 1, rec[\"n_bins\"]\n    return np.arange(a, min(b, rec[\"n_bins\"]) + 1)\n\n\ndef concatenated(maps: np.ndarray, bins_1based: np.ndarray) -> np.ndarray:\n    \"\"\"Left and right maps over the given bins, concatenated: (units, 2 * len(bins)).\"\"\"\n    i = bins_1based - 1\n    return np.concatenate([maps[:, 0, i], maps[:, 1, i]], axis=1)\n\n\ndef pairwise_map_correlations(cat: np.ndarray) -> np.ndarray:\n    \"\"\"Pearson correlations of every unit pair over the bins visited in both trial types (upper triangle).\"\"\"\n    ok = np.all(np.isfinite(cat), axis=0)\n    x = cat[:, ok]\n    with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n        c = np.corrcoef(x)\n    iu = np.triu_indices(len(cat), 1)\n    return c[iu]\n\n\ndef skaggs_information(maps: np.ndarray, occ: np.ndarray) -> np.ndarray:\n    \"\"\"Spatial information in bits/s (Skaggs et al. 1993), over left and right maps together.\"\"\"\n    p = occ / occ.sum()\n    out = np.full(len(maps), np.nan)\n    for u, m in enumerate(maps):\n        ok = np.isfinite(m) & (p > 0)\n        lam = np.sum(p[ok] * m[ok])\n        if lam <= 0:\n            continue\n        r = m[ok]\n        with np.errstate(divide=\"ignore\", invalid=\"ignore\"):\n            terms = np.where(r > 0, p[ok] * r * np.log2(r / lam), 0.0)\n        out[u] = terms.sum()\n    return out\n\n\ndef uniform_information(maps: np.ndarray) -> np.ndarray:\n    \"\"\"The paper code's variant: mean over bins of r log2(r / mean r), without occupancy weights (bits/s).\"\"\"\n    out = np.full(len(maps), np.nan)\n    for u, m in enumerate(maps):\n        r = m[np.isfinite(m)]\n        mu = r.mean() if len(r) else 0\n        if mu <= 0:\n            continue\n        with np.errstate(divide=\"ignore\", invalid=\"ignore\"):\n            out[u] = np.nanmean(np.where(r > 0, r * np.log2(r / mu), 0.0))\n    return out\n\n\ndef running_rate(spikes: list[np.ndarray], rec: dict, min_speed: float = RUN_SPEED_CM_S) -> np.ndarray:\n    \"\"\"Firing rate (Hz) of each unit while running at min_speed or faster inside the recording's trials.\"\"\"\n    pos = rec[\"pos\"]\n    dt = np.median(np.diff(pos.t.values))\n    run = (pos.speed.values >= min_speed)\n    t = pos.t.values\n    # runs of consecutive running samples become intervals\n    edges = np.diff(np.r_[0, run.astype(int), 0])\n    a, b = np.where(edges == 1)[0], np.where(edges == -1)[0]\n    starts, stops = t[a] - dt / 2, t[np.minimum(b, len(t)) - 1] + dt / 2\n    total = run.sum() * dt\n    return np.array([_in_intervals(x, starts, stops).sum() / total for x in spikes]) if total > 0 else np.full(len(spikes), np.nan)\n\n\ndef mean_rates(s: dict) -> np.ndarray:\n    \"\"\"Session mean firing rate of each unit: spike count over the session length (Hz).\"\"\"\n    return s[\"n_spikes\"] / s[\"end_s\"]\n"
-}
-```
-
-```
-File created successfully at: entries/000552-huszar-2022/huszar.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Testing the loader on two sessions:
-
-**Agent calls Bash**
-
-```bash
-cd entries/000552-huszar-2022 && . $TMPDIR/explore/bin/activate && python - <<'EOF'
-import time, numpy as np, huszar as h
+. $TMPDIR/venv/bin/activate && cd entries/huszar-2022 && python - <<'EOF'
+import json, numpy as np, huszar as h, time
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+A={a['path']:a for a in h.assets()}
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+t=time.time(); f=h.open_nwb(A[m['path']]); tr=h.spike_trains(f); print('load',time.time()-t)
+hc=h.homecage_intervals(m)
+ct=np.array(m['u_putative_cell_type']); pyr=np.where(ct=='Pyramidal Cell')[0]
+trains=[tr[i][h.in_intervals(tr[i],hc)] for i in pyr]
 t=time.time()
-ss=h.load_all(paths=['sub-e14-2m3/sub-e14-2m3_ses-e14-2m3-201017_behavior+ecephys.nwb','sub-e15-13f1/sub-e15-13f1_ses-e15-13f1-220119_behavior+ecephys.nwb','sub-e13-1m1/sub-e13-1m1_ses-e13-1m1-200220_behavior+ecephys.nwb'])
-print('load s', time.time()-t)
-for s in ss:
-    print(s['session_id'], s['has_units'], s['end_s']/60)
-    if not s['has_units']: continue
-    r=h.mean_rates(s); print(' units', len(r), 'frac<=5Hz', np.mean(r<=5).round(2), 'median rate', np.median(r).round(2), 'sorted', s['spikes_sorted'])
-    print(' psth peak/base', s['ripple_psth'][45:55].max()/s['ripple_psth'][:10].mean(), 'shuf', s['ripple_psth_shuffled'][45:55].max()/s['ripple_psth_shuffled'][:10].mean())
-    for rec in h.recordings(s):
-        m=h.rate_maps(s['maze_spikes'], rec)
-        info=h.skaggs_information(m['maps'].reshape(len(m['maps']),-1), m['occupancy'].ravel())
-        print(' rec', rec['recording'], rec['kind'], rec['n_bins'], 'trials', len(rec['trials']), 'occ s', m['occupancy'].sum().round(0), 'info med', np.nanmedian(info).round(2))
-        for sh in [-2,-0.5,0,0.5,2]:
-            m2=h.rate_maps(s['maze_spikes'], rec, shift_s=sh)
-            i2=h.skaggs_information(m2['maps'].reshape(len(m2['maps']),-1), m2['occupancy'].ravel())
-            print('   shift', sh, np.nanmedian(i2).round(3))
-        rr=h.running_rate(s['maze_spikes'], rec); print('  run rate med', np.nanmedian(rr).round(2))
-EOF
-```
-
-```
-load s 6.72730278968811
-e13_1m1_200220 False 113.66666666666667
-e14_2m3_201017 True 329.29393333333337
- units 34 frac<=5Hz 0.82 median rate 2.25 sorted True
- psth peak/base 6.9773394564480915 shuf 1.0184652500695925
- rec 1 figure-eight 205 trials 27 occ s 640.0 info med 0.6
-   shift -2 0.329
-   shift -0.5 0.569
-   shift 0 0.603
-   shift 0.5 0.476
-   shift 2 0.333
-  run rate med 4.15
-e15_13f1_220119 True 487.46666666666664
- units 343 frac<=5Hz 0.89 median rate 0.74 sorted True
- psth peak/base 5.663597498737323 shuf 1.0271613845035255
- rec 1 figure-eight 205 trials 29 occ s 791.0 info med 0.63
-   shift -2 0.329
-   shift -0.5 0.548
-   shift 0 0.625
-   shift 0.5 0.575
-[... 9 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/explore/bin/activate && python - <<'EOF'
-import time, numpy as np, pandas as pd, huszar as h, pickle
+mx=0
+for x in trains:
+    t1=time.time(); h.burst_index(x); d=time.time()-t1
+    if d>mx: mx=d; print(len(x), d)
+print('acg',time.time()-t)
 t=time.time()
-ss=h.load_all()
-print('load s', round(time.time()-t))
-pickle.dump(ss, open('/tmp/claude-1001/all.pkl','wb'))
-u=[s for s in ss if s['has_units']]
-r=np.concatenate([h.mean_rates(s) for s in u])
-print('sessions', len(ss), 'with units', len(u), 'units', len(r), 'frac<=5', np.mean(r<=5).round(3), 'frac<=10', np.mean(r<=10).round(3))
-print(pd.Series(r).describe(percentiles=[.05,.25,.5,.75,.9,.95]).round(2))
+for x in trains[:10]: h.ccg_sync(trains[0],x)
+print('ccg10',time.time()-t)
 EOF
 ```
 
 ```
-load s 147
-sessions 104 with units 65 units 8201 frac<=5 0.878 frac<=10 0.927
-count    8201.00
-mean        2.64
-std         4.44
-min         0.00
-5%          0.16
-25%         0.51
-50%         1.14
-75%         2.32
-90%         6.73
-95%        13.00
-max        45.97
-dtype: float64
-```
-
-**Agent**
-
-All 104 files load in about 2.5 minutes. The 65 files with units hold 8,201 units, against the paper's 9,471. Checking the claims and attempt schemas before writing the claims file:
-
-**Agent calls Bash**
-
-```bash
-cd  && python -c "
-import json
-for n in ['claims','attempt','entry']:
-    s=json.load(open(f'schemas/{n}.schema.json'))
-    print('=====',n); print(json.dumps(s,indent=1)[:6000])
-"
-```
-
-```
-===== claims
-{
- "$schema": "https://json-schema.org/draft/2020-12/schema",
- "title": "Claims proposed for one target (a dandiset and one of its papers)",
- "description": "Draft. To be revised after the pilot.",
- "type": "object",
- "additionalProperties": false,
- "required": [
-  "schema_version",
-  "dandiset",
-  "paper",
-  "claims"
- ],
- "properties": {
-  "schema_version": {
-   "const": 1
-  },
-  "dandiset": {
-   "type": "string",
-   "pattern": "^[0-9]{6}$"
-[... 504 more lines not kept]
-```
-
-**Agent**
-
-Writing the claims file (criteria fixed before running any claim analysis; the opening comment says what I had seen).
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "claims/000552/10.1038-s41593-022-01138-x.yaml",
- "content": "# Claims for Huszar, Zhang, Blockus & Buzsaki (2022) on dandiset 000552.\n# Source: the author manuscript in PubMed Central (PMC10807234), full text, read from its\n# Results, Methods, figure legends and Extended Data legends. Supplementary Tables 1 to 5 are not\n# in the manuscript text and were not read. The version of record is not open access.\n#\n# When these criteria were written, the author had seen the data check only: the file list and\n# metadata of the archive, the contents of every kind of file, per file the number of units,\n# sleep states and ripples, the trials table and position segments, the session length (end of\n# the last sleep-state or ripple interval; shortest 113.7 min, longest 494.2 min), per-file\n# median ripple durations (29.6 to 42.4 ms, all durations from 20 to 199.2 ms), the number of\n# trials per visited arm in each file, the total number of units (8,201 in 65 files) and the\n# distribution of unit mean firing rates (87.8% at or below 5 Hz), and, on three files, that\n# spatial information of the units peaks at zero time shift between spikes and position. No\n# claim's analysis (population vectors, ratemap correlations, spatial information or firing\n# rates on familiar and novel mazes) had been run. The author had also read the paper's code at\n# https://github.com/rhuszar/optotagCA1_final (commit 51320d4) and the summary values in its\n# result files.\n#\n# The dandiset holds spike times, sleep states, ripples and position, but no label of which\n# units are light-responsive (birthdated), no optogenetic pulse times, no putative cell types and\n# no waveforms. Every claim that compares same-birthdate with different-birthdate neurons, or\n# light-responsive neurons across birthdates, is blocked. The claims tested here are the\n# descriptions of the dataset and the findings that use all pyramidal neurons.\n#\n# Method choices fixed here, from the Methods where they say, from the paper's code where they\n# do not (see huszar.py), and otherwise common choices: putative pyramidal cells are units whose\n# session mean rate is at most 5 Hz; speed is the derivative of linearized position smoothed with\n# a 0.2 s Gaussian; rate maps in 1 cm bins at speed above 1.5 cm/s, smoothed 9 cm FWHM, left and\n# right trials apart; the familiar figure-eight is the first maze recording of a session; the\n# \"theta-related\" firing rate is the rate while running at 5 cm/s or faster inside maze trials.\nschema_version: 1\ndandiset: \"000552\"\npaper: doi:10.1038/s41593-022-01138-x\nclaims:\n- id: cohort-birthdates\n  statement: Chronic recordings were made from 17 adult mice (12 males, 5 females) electroporated\n    at E13.5 (n = 4), E14.5 (n = 3), E15.5 (n = 6) and E16.5 (n = 4).\n  source: Results, first section; Methods, Implantation and recording\n  expected:\n  - quantity: mice\n    value: 17\n    tolerance: 0\n  - quantity: males\n    value: 12\n    tolerance: 0\n  - quantity: females\n    value: 5\n    tolerance: 0\n  criterion: Mice are the distinct subject ids of the dandiset; sex from the files' subject\n    metadata; birthdate from the subject id prefix (e13 is E13.5), the only place the files hold\n    it. Reproduced when the counts of mice, of each sex and of each birthdate all match exactly\n    (counts of animals carry no measurement error, so the tolerance is zero). Not reproduced\n    otherwise.\n- id: sessions-durations\n  statement: The recordings comprise 92 sessions lasting 113.7 to 475.6 min (median 309.1 min),\n    each including a homecage period of sleep and wake.\n  source: Methods, Implantation and recording\n  expected:\n  - quantity: number of sessions\n    value: 92\n    tolerance: 9.2\n  - quantity: median session duration\n    value: 309.1\n    tolerance: 30.9\n    unit: min\n  criterion: A session is a processed (behavior+ecephys) file; its duration is the end of its\n    last sleep-state or ripple interval (the files' clocks start at 0). The paper gives two\n    session counts, 92 (Methods) and 96 (the per-birthdate session counts of Figure 1e, and the\n    Figure 7f legend); the count is judged under either reading, within 10%. The range holds when\n    every duration lies within 113.7 to 475.6 min widened by 10% of each bound (102.3 to 523.2\n    min). Reproduced when the count (either reading), the median and the range all hold. Partially\n    reproduced when the durations hold and the count does not. Not reproduced when the durations\n    do not hold. Each session must also hold sleep states including non-REM sleep.\n- id: spwr-duration\n  statement: SPW-Rs were detected with duration limits of 20 to 200 ms, and their median duration\n    across all recordings was 36.4 ms.\n  source: Figure 2b legend; Methods, SPW-R detection\n  expected:\n    quantity: median SPW-R duration\n    value: 36.4\n    tolerance: 3.64\n    unit: ms\n  criterion: Durations from the Ripples tables of all processed files. Readings for \"median\n    across all recordings\", listed before the analysis; (a) the median over all ripples pooled;\n    (b) the median of the per-session medians. Reproduced when the median is within tolerance\n    under one reading and every ripple lies within 20 to 200 ms. Partially reproduced when only\n    one of the two holds. Not reproduced when neither does.\n- id: unit-count\n  statement: The dataset includes 9,471 well-isolated units, 7,411 putative pyramidal cells and\n    2,060 putative interneurons.\n  source: Methods, Unit isolation and classification; Extended Data Figure 2a\n  expected:\n  - quantity: well-isolated units\n    value: 9471\n    tolerance: 947\n  - quantity: fraction putative pyramidal\n    value: 0.7825\n    tolerance: 0.078\n  criterion: Units are the rows of the units tables of all processed files. The fraction of\n    putative pyramidal cells uses this attempt's rule (session mean rate at most 5 Hz), as the\n    files hold no cell type; it is reported as a check of the rule, and the outcome rests on the\n    count. Reproduced when the count is within tolerance. Not reproduced otherwise.\n- id: maze-cohort\n  statement: Nine mice (E13.5 n = 2, E14.5 n = 2, E15.5 n = 2, E16.5 n = 3) ran a spatial\n    alternation task on a familiar figure-eight maze, and a cohort of three mice also explored\n    novel environments.\n  source: Results, SBD pyramidal neurons exhibit overlapping place tuning; Methods, Behavior\n  criterion: Mice with figure-eight trials and mice with a second maze recording are counted from\n    the trials tables. The paper calls the novel-environment cohort separate; its code\n    (ratemap_remap.m) leaves out two mice, e15_13f1 and e16_3m2, from the familiar-maze analysis,\n    so the third novel mouse is also in the nine. Readings; (a) disjoint cohorts, 12 mice with\n    maze data, 9 of them at the stated birthdates and 3 with novel recordings; (b) the code's\n    reading, the maze mice without e15_13f1 and e16_3m2 are the nine at the stated birthdates, and\n    3 mice have novel recordings. Reproduced when one reading matches exactly. Not reproduced\n    otherwise.\n- id: maze-task\n  statement: On the figure-eight maze each trial was 205 cm long, position was tracked at 30 Hz,\n    and animals ran at least ten trials along each arm in every session.\n  source: Methods, Behavior\n  expected:\n  - quantity: trial length (linearized)\n    value: 205\n    tolerance: 20.5\n    unit: cm\n  - quantity: tracking rate\n    value: 30\n    tolerance: 3\n    unit: Hz\n  criterion: Trial length is the median over familiar figure-eight trials of the largest\n    linearized position inside the trial; tracking rate is 1 over the median interval of the\n    position timestamps. Trials per arm are counted in every familiar figure-eight recording under\n    two readings of \"along each arm\"; (a) the visited arm; (b) the expected arm. Reproduced when\n    both values are within tolerance and every session has at least ten trials per arm under one\n    reading. Partially reproduced when the values hold and every session has at least 20 trials\n    but some session has fewer than ten on one arm. Not reproduced otherwise.\n- id: novel-explorations\n  statement: The novel-environment cohort of three mice made 16 novel environment explorations in\n    six distinct environments (two linear tracks, three open fields and one figure-eight maze).\n  source: Results, SBD pyramidal neurons exhibit overlapping place tuning; Methods, Behavior\n  expected:\n    quantity: novel environment explorations\n    value: 16\n    tolerance: 1.6\n  criterion: A novel exploration is a maze recording other than the first of its session, with\n    trials and position. Reproduced when 3 mice and 16 (within tolerance) explorations are found.\n    Partially reproduced when 3 mice are found with fewer explorations. Not reproduced otherwise.\n    The kinds of environment are read from the track length and the x-y extent, and reported.\n- id: fig5e-pv-decorrelation\n  statement: Population firing-rate vectors at the same linearized position decorrelate between\n    left and right trials once the animal leaves the common stem of the figure-eight maze\n    (median correlations stem 0.93, turn 1 0.412, arm 0.372, turn 2 0.394).\n  source: Figure 5e\n  expected:\n  - quantity: median PV correlation, stem\n    value: 0.93\n    tolerance: 0.093\n  - quantity: median PV correlation, turn 1\n    value: 0.412\n    tolerance: 0.0412\n  - quantity: median PV correlation, arm\n    value: 0.372\n    tolerance: 0.0372\n  - quantity: median PV correlation, turn 2\n    value: 0.3944\n    tolerance: 0.0394\n  criterion: Sessions are the familiar figure-eight recordings of the nine maze mice (all maze\n    mice except e15_13f1 and e16_3m2, as in ratemap_remap.m). In each session and each 1 cm bin of\n    the 205, the Pearson correlation across putative pyramidal cells of their left-trial and\n    right-trial rates; bins pooled over sessions by segment (stem bins 1-74, turn 1 75-111, arm\n    112-185, turn 2 186-205). Kruskal-Wallis test across the four segments. Reproduced when all\n    four medians are within tolerance and the test gives p < 0.05 with the stem highest.\n    Partially reproduced when the stem median exceeds each of the other three and the test gives\n    p < 0.05, but a median is outside tolerance. Not reproduced otherwise.\n- id: fig6c-theta-rate-preserved\n  statement: Individual pyramidal neurons preserve their theta-related firing rates between the\n    familiar and novel environments (Spearman rho = 0.7378, n = 2,544 neurons).\n  source: Figure 6c, top\n  expected:\n    quantity: Spearman correlation of theta-related rates, familiar and novel\n    value: 0.7378\n    tolerance: 0.0738\n  criterion: Putative pyramidal cells of the sessions with a novel exploration; for each, the\n    firing rate while running at 5 cm/s or faster in the familiar figure-eight trials and in the\n    novel maze trials. Spearman correlation over cells with both rates. Reproduced when rho is at\n    least 0.664 (the lower end of the tolerance; a stronger correlation supports preservation\n    more) with p < 0.05. Partially reproduced when rho is positive with p < 0.05 but below 0.664.\n    Not reproduced otherwise.\n- id: fig6c-novel-ratemap-corr-higher\n  statement: Pairwise spatial ratemap correlations between pyramidal neurons are higher in novel\n    environments (median 0.048) than in the familiar environment (median -0.045).\n  source: Figure 6c, bottom\n  expected:\n  - quantity: median ratemap correlation, familiar\n    value: -0.045\n    tolerance: 0.03\n  - quantity: median ratemap correlation, novel\n    value: 0.048\n    tolerance: 0.03\n  criterion: All pairs of putative pyramidal cells in the sessions of the three novel-environment\n    mice (the paper's pairs each include one light-responsive neuron, which cannot be identified\n    here). Familiar pairs from the familiar figure-eight without its stem (bins 75-205), novel\n    pairs from the novel mazes (T-maze bins 51-164, linear tracks all bins). Two-sided Wilcoxon\n    rank-sum test. The tolerance is 0.03 in place of 10%, because 10% of a median near zero\n    (0.005) is far below the spread such a median has between sessions; 0.03 is a third of the\n    reported difference. Reproduced when the novel median exceeds the familiar median with p <\n    0.05 and both medians are within tolerance. Partially reproduced when the direction and the\n    test hold but a median is outside tolerance. Not reproduced otherwise.\n- id: fig6d-info-lower-novel\n  statement: Spatial information is lower in novel environments than in the familiar one (median\n    0.39 against 0.88 bits/s).\n  source: Figure 6d, right\n  expected:\n  - quantity: median spatial information, familiar\n    value: 0.88\n    tolerance: 0.088\n    unit: bits/s\n  - quantity: median spatial information, novel\n    value: 0.39\n    tolerance: 0.039\n    unit: bits/s\n  criterion: Putative pyramidal cells of the sessions of the three novel-environment mice;\n    Skaggs information in bits/s (Methods) over the left and right maps together, whole track,\n    per cell and maze; familiar from the familiar figure-eight of every such session, novel from\n    each novel maze. Two-sided Wilcoxon rank-sum test. The code's unweighted information is shown\n    as a variant. Reproduced when novel is lower with p < 0.05 and both medians are within\n    tolerance. Partially reproduced when novel is lower with p < 0.05 but a median is outside\n    tolerance. Not reproduced otherwise.\n- id: fig6d-rate-lower-novel\n  statement: Theta-related firing rates are slightly lower in novel environments than in the\n    familiar one (median 0.69 against 0.77 Hz).\n  source: Figure 6d, left\n  expected:\n  - quantity: median theta-related rate, familiar\n    value: 0.77\n    tolerance: 0.077\n    unit: Hz\n  - quantity: median theta-related rate, novel\n    value: 0.69\n    tolerance: 0.069\n    unit: Hz\n  criterion: The same cells and running rates as fig6c-theta-rate-preserved, familiar from every\n    session of the three mice, novel from the sessions with a novel maze. Two-sided Wilcoxon\n    rank-sum test, as the paper. Reproduced when novel is lower with p < 0.05 and both medians are\n    within tolerance. Partially reproduced when novel is lower with p < 0.05 but a median is\n    outside tolerance. Not reproduced otherwise. The paired signed-rank test is shown as a variant.\n- id: ed2-light-responsive-count\n  statement: 664 of 7,411 putative pyramidal neurons (8.96%) were light-responsive, that is,\n    birthdated.\n  source: Extended Data Figure 2a\n  expected:\n    quantity: light-responsive pyramidal neurons\n    value: 664\n    tolerance: 66\n- id: fig1e-labelled-fraction\n  statement: The fraction of light-responsive pyramidal cells per session follows a bell-shaped\n    wave over birthdates, peaking at E15.5 (E13.5 5.39%, E14.5 11.16%, E15.5 14.74%, E16.5 9.16%;\n    ANOVA p = 4e-4).\n  source: Figure 1e\n- id: fig1c-radial-depth\n  statement: Neurons born on later days lie more superficially in the pyramidal layer (median\n    normalized depth 0.71, 0.48, 0.28 and 0.19 for E13.5 to E16.5).\n  source: Figure 1c\n- id: fig1f-rem-shift\n  statement: Earlier-born light-responsive neurons more often shift their preferred theta phase in\n    REM sleep (30.89% at E13.5 to 19.7% at E16.5; regression slope -3.42% per day).\n  source: Figure 1f\n- id: fig1g-rate-by-birthdate\n  statement: Earlier-born light-responsive pyramidal neurons have higher firing rates (medians\n    1.57, 1.63, 1.62 and 1.16 Hz; Kruskal-Wallis p = 0.016).\n  source: Figure 1g\n- id: fig1h-burst-by-birthdate\n  statement: Burst index is an inverted-U function of birthdate (medians 0.1167, 0.1272, 0.136,\n    0.1082; Kruskal-Wallis p = 0.0044).\n  source: Figure 1h\n- id: fig2b-synchrony-per-animal\n  statement: Same-birthdate (SBD) pairs fire more synchronously than different-birthdate (DBD)\n    pairs in 11 of 13 animals.\n  source: Figure 2a,b; Extended Data Figure 4\n- id: fig2c-theta-cofiring\n  statement: SBD pairs cofire more than DBD pairs in theta cycles (median 0.0189 against 0.0087).\n  source: Figure 2c\n- id: fig2d-theta-depth\n  statement: Intermediate-birthdate neurons have lower theta depth modulation in waking but not in\n    REM sleep.\n  source: Figure 2d\n- id: fig2f-ripple-firing-by-birthdate\n  statement: SPW-R firing rates and participation of light-responsive neurons are an inverted-U\n    function of birthdate.\n  source: Figure 2f\n- id: fig2g-ripple-cofiring\n  statement: SBD pairs cofire more than DBD pairs in SPW-Rs (median 0.0399 against 0.0231).\n  source: Figure 2g\n- id: fig3c-assembly-cofiring\n  statement: Assembly members cofire more in SPW-Rs than member-nonmember pairs, and segregation\n    from nonmembers depends nonlinearly on the members' birthdate.\n  source: Figure 3c\n- id: fig3e-assembly-expression\n  statement: Assemblies with intermediate-birthdate members are expressed in SPW-Rs at higher\n    rates (E13.5 8.16, E14.5 9.25, E15.5 8.16, E16.5 6.9 Hz; ANOVA p = 0.0158).\n  source: Figure 3e\n- id: fig4d-model-fit\n  statement: A model with a bell-shaped rate of neurogenesis and correlations among SBD neurons\n    reproduces the assembly expression rates, and a uniform-neurogenesis model does not.\n  source: Figure 4c,d; Extended Data Figure 9\n  depends_on:\n  - fig3e-assembly-expression\n- id: fig5b-spatial-info-by-birthdate\n  statement: Spatial information and coverage on the maze are largest in intermediate-birthdate\n    neurons.\n  source: Figure 5b\n- id: fig5c-sbd-ratemap-overlap\n  statement: SBD pairs have higher spatial ratemap correlations than DBD pairs on the familiar\n    maze (median 0.0152 against -0.0256).\n  source: Figure 5c\n- id: fig5d-overlap-by-distance\n  statement: The ratemap overlap of SBD pairs depends on their anatomical distance, larger within\n    250 micrometres.\n  source: Figure 5d\n- id: fig5f-remap-together\n  statement: Between left and right trials, ratemaps of SBD pairs reorganize closer together than\n    those of DBD pairs.\n  source: Figure 5f\n- id: fig6e-sbd-novel-overlap\n  statement: In novel environments SBD pairs have higher ratemap correlations than DBD pairs\n    (median 0.117 against 0.046).\n  source: Figure 6e\n- id: fig6f-remap-together-novel\n  statement: Ratemaps of SBD pairs remain closer together than those of DBD pairs between the\n    familiar and novel environments.\n  source: Figure 6f\n- id: fig7b-sbd-convergence\n  statement: SBD pyramidal pairs converge onto the same interneurons more than DBD pairs (median\n    convergence 0.2727 against 0.2).\n  source: Figure 7b\n- id: fig7ce-convergence-by-birthdate\n  statement: Convergence onto interneurons and spike transmission probability are bell-shaped\n    functions of the presynaptic neurons' birthdate.\n  source: Figure 7c-e\n- id: fig7fg-convergence-cofiring\n  statement: Of all pyramidal pairs, 65.27% share at least one postsynaptic interneuron, and\n    cofiring in SPW-Rs, theta cycles and ratemap overlap all increase with convergence.\n  source: Figure 7f,g\n  expected:\n    quantity: pairs with nonzero convergence\n    value: 65.27\n    tolerance: 6.53\n    unit: percent\n"
-}
-```
-
-```
-File created successfully at: claims/000552/10.1038-s41593-022-01138-x.yaml (file state is current in your context — no need to Read it back)
+load 7.514389514923096
+62266 0.003287076950073242
+acg 0.07454037666320801
+ccg10 0.41881704330444336
 ```
 
 **Agent calls Bash**
 
 ```bash
 python - <<'EOF'
-import yaml, json, re
-from jsonschema import Draft202012Validator
-p='claims/000552/10.1038-s41593-022-01138-x.yaml'
-d=yaml.safe_load(open(p))
-v=Draft202012Validator(json.load(open('schemas/claims.schema.json')))
-print([e.message for e in v.iter_errors(d)])
-print(len(d['claims']))
-def walk(x):
-    if isinstance(x,dict):
-        for k,v in x.items(): walk(v)
-    elif isinstance(x,list):
-        for v in x: walk(v)
-    elif isinstance(x,str) and ': ' in x: print('COLON', x[:80])
-walk(d)
+s=open('huszar.py').read()
+old='''    rep = np.repeat(np.arange(len(a)), n)
+    idx = np.concatenate([np.arange(l, h) for l, h in zip(lo[n > 0], hi[n > 0])])
+    d = b[idx] - a[rep]'''
+new='''    rep = np.repeat(np.arange(len(a)), n)
+    start = np.repeat(lo - np.r_[0, np.cumsum(n)[:-1]], n)
+    idx = np.arange(n.sum()) + start
+    d = b[idx] - a[rep]'''
+assert old in s
+s=s.replace(old,new)
+open('huszar.py','w').write(s)
+EOF
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import numpy as np, huszar as h, time
+rng=np.random.default_rng(0)
+a=np.sort(rng.uniform(0,10000,30000)); b=np.sort(np.r_[rng.uniform(0,10000,20000), a[:5000]+0.001])
+t=time.time(); c=h.ccg_pair(a,b); print(time.time()-t, c[148:153], c.sum())
+d=(b[None,:2000]-a[:2000,None]).ravel()
+print(h.ccg_sync(a,b))
 EOF
 ```
 
 ```
-[]
-35
+0.0053746700286865234 [ 134.  145. 4501.  796.  135.] 49865.0
+8.399876130889977
 ```
-
-**Agent**
-
-The claims file validates. Now prototyping the claim computations on the cached load (final numbers will come from the notebook run).
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000552-huszar-2022 && . $TMPDIR/explore/bin/activate && cat > $TMPDIR/proto.py <<'EOF'
-import pickle, numpy as np, pandas as pd, huszar as h, time
-from scipy import stats
-ss=pickle.load(open('/tmp/claude-1001/all.pkl','rb'))
-beh=[s for s in ss if s['has_units'] and s['has_position']]
-print('beh sessions', len(beh))
-t0=time.time()
-seg={k:[] for k in h.FIG8_SEGMENTS}
-rows=[]
-for s in beh:
-    if s['subject'] in ('e15_13f1','e16_3m2'): continue
-    recs=h.recordings(s); fam=[r for r in recs if r['familiar']][0]
-    pyr=h.mean_rates(s)<=h.PYR_MAX_RATE_HZ
-    sp=[x for x,k in zip(s['maze_spikes'],pyr) if k]
-    m=h.rate_maps(sp, fam)['maps']
-    L,R=m[:,0,:],m[:,1,:]
-    cc=np.full(205,np.nan)
-    for b in range(205):
-        ok=np.isfinite(L[:,b])&np.isfinite(R[:,b])
-        if ok.sum()>2 and L[ok,b].std()>0 and R[ok,b].std()>0: cc[b]=np.corrcoef(L[ok,b],R[ok,b])[0,1]
-    for k,(a,b) in h.FIG8_SEGMENTS.items(): seg[k].append(cc[a-1:b])
-print('n sessions', len(seg['stem']), 'time', time.time()-t0)
-for k in seg:
-    v=np.concatenate(seg[k]); print(k, len(v), np.isnan(v).sum(), np.nanmedian(v).round(3))
-print(stats.kruskal(*[np.concatenate(seg[k])[~np.isnan(np.concatenate(seg[k]))] for k in seg]))
+cat >> huszar.py <<'EOF'
+
+
+def behaviour_epochs(m):
+    """Behavioural subsessions (epochs whose environment is not 'none'), in time order. The
+    first is the familiar figure-eight (get_corrBeh_famnov.m, "1 is always familiar"; claims)."""
+    e = m["epochs"] or {"environment": [], "start_time": [], "stop_time": [], "epoch_name": []}
+    out = [(s, t, env, n) for s, t, env, n in zip(e["start_time"], e["stop_time"],
+                                                     e["environment"], e["epoch_name"])
+           if env != "none"]
+    return sorted(out)
+
+
+def linear_series_for(m, t0, t1):
+    """Name of the LinearizedPosition series whose timestamps lie inside [t0, t1]."""
+    for k, v in m["series"].items():
+        if k.startswith("LinearizedPosition/") and v["t0"] >= t0 - 1 and v["t1"] <= t1 + 1:
+            return k
+    return None
+
+
+SPEED_MIN = 1.5  # cm/s, Methods, Spatial ratemap analyses
+FWHM_LIN = 9.0  # cm, Methods
+NBINS = 205  # 1 cm bins over the 205 cm trial (Methods, Behavior; get_corrBeh_v3.m, claims)
+
+
+def linear_maps(f, m, t0, t1, trains, nbins=NBINS, fwhm=FWHM_LIN, smin=SPEED_MIN):
+    """Left and right rate maps on a linearized maze between t0 and t1 (Methods, Spatial
+    ratemap analyses): per trial, speed from a Kalman filter of the linearized position, samples
+    with speed > 1.5 cm/s, spikes and time in 1 cm bins per trial type, each smoothed with a
+    9 cm FWHM Gaussian, rate = smoothed spikes / smoothed time, never-visited bins NaN.
+    Trial type is the trials table's visited_arm. Returns maps (2, ncells, nbins), the raw
+    occupancy (2, nbins) in s, and per-trial bookkeeping."""
+    name = linear_series_for(m, t0, t1)
+    g = f["processing/behavior/" + name]
+    x = g["data"][:].astype(float)
+    if x.ndim > 1:
+        x = x[:, 0]
+    ts = g["timestamps"][:]
+    dt = float(np.median(np.diff(ts)))
+    tr = m["trials"]
+    occ = np.zeros((2, nbins))
+    spk = np.zeros((2, len(trains), nbins))
+    info = []
+    for s, e, arm in zip(tr["start_time"], tr["stop_time"], tr["visited_arm"]):
+        if s < t0 - 1 or e > t1 + 1 or arm not in ("left", "right"):
+            continue
+        side = 0 if arm == "left" else 1
+        k = np.where((ts >= s) & (ts <= e) & np.isfinite(x))[0]
+        if len(k) < 5:
+            continue
+        sp = kalman_speed(ts[k], x[k])
+        b = np.clip(np.floor(x[k]).astype(int), 0, nbins - 1)
+        run = sp > smin
+        occ[side] += np.bincount(b[run], minlength=nbins)[:nbins] * dt
+        info.append({"arm": arm, "x0": float(np.nanmin(x[k])), "x1": float(np.nanmax(x[k])),
+                     "dur": float(e - s)})
+        for c, t in enumerate(trains):
+            tt = t[(t >= ts[k[0]]) & (t <= ts[k[-1]])]
+            if len(tt) == 0:
+                continue
+            j = np.clip(np.searchsorted(ts[k], tt), 0, len(k) - 1)
+            ok = run[j]
+            spk[side, c] += np.bincount(b[j[ok]], minlength=nbins)[:nbins]
+    so = np.stack([gauss_smooth_1d(o, fwhm) for o in occ])
+    ss = np.stack([[gauss_smooth_1d(s_, fwhm) for s_ in spk[side]] for side in range(2)])
+    with np.errstate(invalid="ignore", divide="ignore"):
+        maps = ss / so[:, None, :]
+    maps[:, :, occ == 0] = np.nan if False else maps[:, :, :][:, :, occ == 0] if False else np.nan
+    for side in range(2):
+        maps[side][:, occ[side] == 0] = np.nan
+    return maps, occ, info, dt
+
+
+def maze_session(asset, m):
+    """Familiar figure-eight rate maps of all pyramidal cells of one session."""
+    ep = behaviour_epochs(m)
+    if not ep:
+        return None
+    t0, t1, env, name = ep[0]
+    ct = np.array(m.get("u_putative_cell_type", [None] * m["n_units"]), dtype=object)
+    pyr = np.where(ct == "Pyramidal Cell")[0]
+    lr = np.array(m["u_light_responsive"], bool)
+    with open_nwb(asset) as f:
+        tr = spike_trains(f, pyr)
+        shanks = electrode_shanks(f)
+        maxel = f["units/max_electrode"][:]
+        maps, occ, info, dt = linear_maps(f, m, t0, t1, tr)
+    return {"session": m["session_id"], "subject": m["subject_id"], "birthdate": m["birthdate"],
+            "env": env, "pyr": pyr, "lr": lr[pyr], "shank": shanks[maxel[pyr]], "maps": maps,
+            "occ": occ, "trials": info, "dt": dt,
+            "trial_counts": {a: sum(1 for i in info if i["arm"] == a) for a in ("left", "right")}}
 EOF
-python $TMPDIR/proto.py
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, numpy as np, huszar as h, time
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+A={a['path']:a for a in h.assets()}
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+t=time.time(); r=h.maze_session(A[m['path']],m); print(time.time()-t)
+print(r['env'], r['trial_counts'], r['occ'].sum(1), r['dt'], np.isnan(r['maps']).mean(), np.nanmax(r['maps']))
+print([ (round(i['x0'],1),round(i['x1'],1)) for i in r['trials']][:5])
+EOF
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "/tmp/claude-1001/proto.py", line 1, in <module>
-    import pickle, numpy as np, pandas as pd, huszar as h, time
-ModuleNotFoundError: No module named 'huszar'
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000552-huszar-2022 && . $TMPDIR/explore/bin/activate && PYTHONPATH=. python $TMPDIR/proto.py
-```
-
-```
-beh sessions 65
-n sessions 57 time 4.69549298286438
-stem 4218 37 0.937
-turn1 2109 3 0.547
-arm 4218 8 0.492
-turn2 1140 3 0.465
-KruskalResult(statistic=np.float64(7632.664152733327), pvalue=np.float64(0.0))
+  File "<stdin>", line 5, in <module>
+  File "entries/huszar-2022/huszar.py", line 549, in maze_session
+    maps, occ, info, dt = linear_maps(f, m, t0, t1, tr)
+                          ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "entries/huszar-2022/huszar.py", line 530, in linear_maps
+    maps[:, :, occ == 0] = np.nan if False else maps[:, :, :][:, :, occ == 0] if False else np.nan
+    ~~~~^^^^^^^^^^^^^^^^
+IndexError: too many indices for array: array is 3-dimensional, but 4 were indexed
 ```
 
 **Agent**
 
-Fig. 5e prototype: 57 sessions and 4,218 stem bins, matching the paper's counts exactly; stem 0.937 matches, the other segments come out higher than reported. Now Fig. 6 prototypes:
+Remove that stray line.
 
 **Agent calls Bash**
 
 ```bash
-. $TMPDIR/explore/bin/activate && cat > $TMPDIR/proto6.py <<'EOF'
-import pickle, numpy as np, pandas as pd, huszar as h, time
-from scipy import stats
-ss=pickle.load(open('/tmp/claude-1001/all.pkl','rb'))
-nov_mice=('e13_26m1','e15_13f1','e16_3m2')
-cells=[]; famc=[]; novc=[]; info=[]
-for s in ss:
-    if s['subject'] not in nov_mice: continue
-    recs=h.recordings(s)
-    pyr=h.mean_rates(s)<=h.PYR_MAX_RATE_HZ
-    sp=[x for x,k in zip(s['maze_spikes'],pyr) if k]
-    rates={}
-    for r in recs:
-        m=h.rate_maps(sp, r)
-        cat=h.concatenated(m['maps'], h.correlation_bins(r))
-        c=h.pairwise_map_correlations(cat)
-        (famc if r['familiar'] else novc).append(c)
-        I=h.skaggs_information(m['maps'].reshape(len(sp),-1), m['occupancy'].ravel())
-        Iu=h.uniform_information(m['maps'].reshape(len(sp),-1))
-        for i in range(len(sp)): info.append({'session':s['session_id'],'fam':r['familiar'],'kind':r['kind'],'I':I[i],'Iu':Iu[i]})
-        rates['fam' if r['familiar'] else 'nov']=h.running_rate(sp, r)
-        print(s['session_id'], r['recording'], r['kind'], r['n_bins'], 'pairs', len(c), 'cells', len(sp), 'occ', m['occupancy'].sum().round())
-    for i in range(len(sp)):
-        cells.append({'session':s['session_id'],'fam':rates['fam'][i],'nov':rates.get('nov',np.full(len(sp),np.nan))[i]})
-c=pd.DataFrame(cells); I=pd.DataFrame(info)
-both=c.dropna()
-print('cells', len(c), 'with both', len(both), stats.spearmanr(both.fam, both.nov))
-print('rate med fam', c.fam.median(), 'nov', c.nov.median(), stats.ranksums(c.fam.dropna(), c.nov.dropna()), stats.wilcoxon(both.fam, both.nov))
-fc=np.concatenate(famc); nc=np.concatenate(novc)
-print('corr fam', np.nanmedian(fc), len(fc), 'nov', np.nanmedian(nc), len(nc), stats.ranksums(fc[~np.isnan(fc)], nc[~np.isnan(nc)]))
-print('info fam', I[I.fam].I.median(), 'nov', I[~I.fam].I.median(), stats.ranksums(I[I.fam].I.dropna(), I[~I.fam].I.dropna()))
-print('uinfo fam', I[I.fam].Iu.median(), 'nov', I[~I.fam].Iu.median())
-print(I.groupby(['fam','kind']).I.median())
+sed -i '/maps\[:, :, occ == 0\] = np.nan if False/d' huszar.py && . $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, numpy as np, huszar as h, time
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+A={a['path']:a for a in h.assets()}
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+t=time.time(); r=h.maze_session(A[m['path']],m); print(time.time()-t)
+print(r['env'], r['trial_counts'], r['occ'].sum(1), r['dt'], np.isnan(r['maps']).mean(), np.nanmax(r['maps']))
+print([ (round(i['x0'],1),round(i['x1'],1)) for i in r['trials']][:5])
+mp=r['maps']; print(np.nanmean(mp,axis=(0,2))[:10])
 EOF
-PYTHONPATH=. python $TMPDIR/proto6.py
+date -u
 ```
 
 ```
-e13_26m1_211019 1 figure-eight 205 pairs 29161 cells 242 occ 859.0
-e13_26m1_211019 2 T-maze 164 pairs 29161 cells 242 occ 729.0
-e13_26m1_211116 1 figure-eight 205 pairs 17020 cells 185 occ 647.0
-e13_26m1_211116 2 linear track 100 pairs 17020 cells 185 occ 172.0
-e13_26m1_211119 1 figure-eight 205 pairs 14535 cells 171 occ 661.0
-e13_26m1_211119 2 linear track 110 pairs 14535 cells 171 occ 774.0
-e13_26m1_211124 1 figure-eight 205 pairs 13203 cells 163 occ 665.0
-e15_13f1_220117 1 figure-eight 205 pairs 58653 cells 343 occ 892.0
-e15_13f1_220118 1 figure-eight 205 pairs 54285 cells 330 occ 856.0
-e15_13f1_220118 2 linear track 110 pairs 54285 cells 330 occ 795.0
-e15_13f1_220119 1 figure-eight 205 pairs 46360 cells 305 occ 791.0
-e15_13f1_220119 3 T-maze 164 pairs 46360 cells 305 occ 630.0
-e15_13f1_220120 1 figure-eight 205 pairs 35778 cells 268 occ 1129.0
-e15_13f1_220120 2 linear track 100 pairs 35778 cells 268 occ 704.0
-e16_3m2_211210 1 figure-eight 205 pairs 14878 cells 173 occ 622.0
-e16_3m2_211211 1 figure-eight 205 pairs 15400 cells 176 occ 613.0
-e16_3m2_211211 3 linear track 110 pairs 15400 cells 176 occ 679.0
-e16_3m2_211212 1 figure-eight 205 pairs 15753 cells 178 occ 648.0
-e16_3m2_211212 3 linear track 100 pairs 15753 cells 178 occ 576.0
-e16_3m2_211213 1 figure-eight 205 pairs 16653 cells 183 occ 758.0
-[... 11 more lines not kept]
+3.0238394737243652
+figure-8 maze {'left': 15, 'right': 15} [415.59999999 474.73333333] 0.03333333333284827 0.007317073170731708 30.136213994950392
+[(1.3, 204.9), (0.5, 204.9), (0.9, 205.0), (0.7, 204.9), (2.2, 204.6)]
+[4.43970248 4.57991442 6.64000509 2.10158452 2.03018975 0.73423492
+ 1.23375776 2.69516973 1.26822334 4.58288371]
+Thu Nov 19 04:46:38 UTC 2026
 ```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000552-huszar-2022/huszar.py",
- "old_string": "    s[\"birthdate\"] = birthdate_of(s[\"subject\"])\n\n    ss = f[\"processing/behavior/SleepStates\"]",
- "new_string": "    s[\"birthdate\"] = birthdate_of(s[\"subject\"])\n    # what the file holds, for the record of what is missing\n    s[\"groups\"] = {g: sorted(f[g].keys()) for g in (\"acquisition\", \"stimulus/presentation\", \"analysis\",\n                                                     \"intervals\", \"processing\") if g in f}\n    s[\"processing\"] = {m: sorted(f[\"processing\"][m].keys()) for m in f[\"processing\"]}\n    s[\"units_columns\"] = sorted(f[\"units\"].keys()) if \"units\" in f else []\n    s[\"electrode_groups\"] = sorted(k for k in f[\"general/extracellular_ephys\"].keys() if k != \"electrodes\") \\\n        if \"general/extracellular_ephys\" in f else []\n    if \"processing/ecephys/LFP/ElectricalSeriesLFP\" in f:\n        e = f[\"processing/ecephys/LFP/ElectricalSeriesLFP\"]\n        s[\"lfp\"] = {\"shape\": e[\"data\"].shape, \"rate\": float(e[\"starting_time\"].attrs[\"rate\"]),\n                    \"conversion\": float(e[\"data\"].attrs[\"conversion\"])}\n\n    ss = f[\"processing/behavior/SleepStates\"]"
-}
-```
-
-```
-The file entries/000552-huszar-2022/huszar.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000552-huszar-2022/huszar.py",
- "old_string": "def mean_rates(s: dict) -> np.ndarray:",
- "new_string": "def raw_file_info(asset) -> dict:\n    \"\"\"Shapes and rates of the series in a raw_ecephys file, and its session start time.\"\"\"\n    f = open_asset(asset)\n    out = {\"path\": asset.path, \"start\": _dec(f[\"session_start_time\"][()])}\n    for name, key in ((\"raw\", \"acquisition/ElectricalSeries\"), (\"lfp\", \"processing/ecephys/LFP/ElectricalSeriesLFP\")):\n        if key in f:\n            out[name + \"_shape\"] = f[key][\"data\"].shape\n            out[name + \"_rate\"] = float(f[key][\"starting_time\"].attrs[\"rate\"])\n    f.close()\n    return out\n\n\ndef lfp_samples(asset, start: int, n: int, channel: int) -> np.ndarray:\n    \"\"\"A short stretch of one LFP channel (raw integer values).\"\"\"\n    f = open_asset(asset)\n    x = f[\"processing/ecephys/LFP/ElectricalSeriesLFP/data\"][start:start + n, channel]\n    f.close()\n    return x\n\n\ndef mean_rates(s: dict) -> np.ndarray:"
-}
-```
-
-```
-The file entries/000552-huszar-2022/huszar.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Adding the byte size to the asset list, then writing the notebook builder.
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000552-huszar-2022/huszar.py",
- "old_string": "        rows.append({\"path\": a.path, \"size_gb\": a.size / 1e9, \"asset\": a,",
- "new_string": "        rows.append({\"path\": a.path, \"size\": a.size, \"size_gb\": a.size / 1e9, \"asset\": a,"
-}
-```
-
-```
-The file entries/000552-huszar-2022/huszar.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/build_nb.py",
- "content": "\"\"\"Builds reproduce_huszar_2022.ipynb (not part of the entry).\"\"\"\nimport sys\nimport nbformat as nbf\n\nOUT = \"entries/000552-huszar-2022/reproduce_huszar_2022.ipynb\"\ncells = []\n\n\ndef md(text, tags=None):\n    c = nbf.v4.new_markdown_cell(text.strip(\"\\n\"))\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\ndef code(text, tags=None):\n    c = nbf.v4.new_code_cell(text.strip(\"\\n\"))\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\nRESULTS = {}\nif len(sys.argv) > 1:\n    import json\n    RESULTS = json.load(open(sys.argv[1]))\n\n\ndef result(cid):\n    if cid in RESULTS:\n        md(RESULTS[cid])\n\n\nmd(r\"\"\"\n# Reproducing Huszar et al. (2022) from dandiset 000552\n\n**Paper.** Huszar R, Zhang Y, Blockus H, Buzsaki G (2022). Preconfigured dynamics in the\nhippocampus are guided by embryonic birthdate and rate of neurogenesis. *Nature Neuroscience* 25,\n1201-1212. [doi:10.1038/s41593-022-01138-x](https://doi.org/10.1038/s41593-022-01138-x). This\nattempt used the full text of the author manuscript in PubMed Central (PMC10807234); the version of\nrecord is not open access. The Supplementary Tables were not available to it.\n\n**Dandiset.** [DANDI:000552](https://dandiarchive.org/dandiset/000552/0.230630.2304), version\n0.230630.2304. The paper cites no DANDI version (its data statement points to the Buzsaki lab\nrepository). This is the only published version and the most recent one, so it is pinned. The\ndraft differs from it only by three small BIDS files (`README`, `dataset_description.json`,\n`bids-validator-config.json`) that the analysis does not use; the data check below shows this.\n\n**What the dandiset holds.** 104 processed files (one per session, 17 mice) with sleep states and\nsharp-wave ripples, of which 65 (11 mice) also hold spike-sorted units, position and maze trials;\nand 13 raw files. The units carry no label of light-responsiveness (birthdate), no cell type and no\nwaveforms, and no optogenetic pulse times are stored. The paper's central comparisons, same- against\ndifferent-birthdate neurons and light-responsive neurons across birthdates, therefore cannot be\nmade. What can be tested is the description of the dataset and the findings that use all pyramidal\nneurons on the familiar and novel mazes.\n\n**Code read.** The paper's analysis code, https://github.com/rhuszar/optotagCA1_final at commit\n51320d45c5ee41147048128df333f251379bf755 (MATLAB, with some result files). It sets the figure-eight\nsegments and the stem exclusion used here (see `huszar.py`). No data are taken from it.\n\nNo random numbers are drawn in the claim sections; the only random draw is the time shuffle of the\nperi-ripple control in the data check, seeded in `huszar.py`.\n\n| Claim | Status |\n|---|---|\n| cohort-birthdates | tested |\n| sessions-durations | tested |\n| spwr-duration | tested |\n| unit-count | tested |\n| maze-cohort | tested |\n| maze-task | tested |\n| novel-explorations | tested |\n| fig5e-pv-decorrelation | tested |\n| fig6c-theta-rate-preserved | tested |\n| fig6c-novel-ratemap-corr-higher | tested |\n| fig6d-info-lower-novel | tested |\n| fig6d-rate-lower-novel | tested |\n| ed2-light-responsive-count, fig1e, fig1f, fig1g, fig1h, fig2b, fig2c, fig2d, fig2f, fig2g, fig3c, fig3e, fig5b, fig5c, fig5f, fig6e, fig6f | blocked: no light-responsiveness labels or pulse times (data missing) |\n| fig5d, fig7b, fig7ce | blocked: also need unit positions or cell types (data missing) |\n| fig4d-model-fit | blocked: depends on fig3e |\n| fig1c-radial-depth | blocked: histology not in the dandiset (data missing) |\n| fig7fg-convergence-cofiring | blocked: no cell types to find interneurons (metadata insufficient) |\n\"\"\")\n\ncode(r\"\"\"\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import stats\n\nimport huszar as h\n\npd.set_option(\"display.width\", 220)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nstarted = time.time()\nassets = h.list_assets()\nsessions = h.load_all()\nprint(f\"loaded {len(sessions)} processed files of dandiset {h.DANDISET_ID} version {h.DANDISET_VERSION} \"\n      f\"in {time.time() - started:.0f} s\")\n\"\"\")\n\nmd(r\"\"\"\n## Data check\n\nEach check of the metadata against the values is stated under its output.\n\"\"\")\n\ncode(r\"\"\"\nproc, raw = assets[assets.kind == \"processed\"], assets[assets.kind == \"raw\"]\nprint(f\"{len(assets)} files: {len(proc)} processed (behavior+ecephys), {len(raw)} raw_ecephys; \"\n      f\"{assets.size_gb.sum():.0f} GB in all, {proc.size_gb.sum():.1f} GB processed\")\n\ninfo = pd.DataFrame([{\n    \"session\": s[\"session_id\"], \"subject\": s[\"subject\"], \"birthdate\": s[\"birthdate\"], \"sex\": s[\"sex\"],\n    \"age\": s[\"age\"], \"date\": s[\"start\"][:10], \"duration_min\": round(s[\"end_s\"] / 60, 1),\n    \"states\": len(s[\"states\"]), \"ripples\": len(s[\"ripples\"]),\n    \"units\": len(s[\"n_spikes\"]) if s[\"has_units\"] else 0, \"position\": s[\"has_position\"],\n    \"recordings\": \",\".join(map(str, sorted(s[\"trials\"].recordings.unique()))) if s[\"has_position\"] else \"\",\n    \"trials\": len(s[\"trials\"]) if s[\"has_position\"] else 0} for s in sessions])\nsubjects = info.groupby(\"subject\").agg(\n    birthdate=(\"birthdate\", \"first\"), sex=(\"sex\", \"first\"), sessions=(\"session\", \"size\"),\n    with_units=(\"units\", lambda u: int((u > 0).sum())), units=(\"units\", \"sum\"),\n    with_position=(\"position\", \"sum\")).reset_index()\nsubjects[\"raw_files\"] = subjects.subject.map(raw.subject.str.replace(\"-\", \"_\").value_counts()).fillna(0).astype(int)\nprint(subjects.to_string(index=False))\nprint(\"\\nAge field values:\", info.age.unique().tolist())\nprint(\"Archive summary: numberOfSubjects 17, species Mus musculus, 117 files.\")\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nThe archive's summary (17 subjects, 117 files) matches the files. The birthdate (embryonic day of\nelectroporation) is stored nowhere in the files except as the prefix of the subject id (`e13` for\nE13.5); the age is a range (P3M/P6M) for every mouse. Six mice (all three E13.5 mice without maze\ndata aside from e13_16f1 and e13_26m1, the E14.5 mouse e14_1m1 and three E15.5 mice) have 39 files\nbetween them that hold sleep states and ripples but no units and no position.\n\"\"\")\n\ncode(r\"\"\"\ndraft = {a.path: a.size for a in DandiAPIClient().get_dandiset(h.DANDISET_ID, \"draft\").get_assets()}\npub = dict(zip(assets.path, assets[\"size\"]))\nprint(\"Files only in the draft:\", sorted(set(draft) - set(pub)))\nprint(\"Files only in the published version:\", sorted(set(pub) - set(draft)))\nprint(\"Files in both with different sizes:\", [p for p in pub if p in draft and draft[p] != pub[p]])\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nThe draft adds three small BIDS files and changes no data file, so the published version holds\neverything the draft holds that the analysis could use.\n\"\"\")\n\ncode(r\"\"\"\nprint(info.to_string(index=False))\n\"\"\", tags=[\"sanity\"])\n\ncode(r\"\"\"\nunits_files = [s for s in sessions if s[\"has_units\"]]\nprint(\"Columns of the units tables:\", sorted({tuple(s[\"units_columns\"]) for s in units_files}))\nfor g in (\"acquisition\", \"stimulus/presentation\", \"analysis\", \"intervals\"):\n    print(f\"Contents of {g} across files:\", sorted({tuple(s[\"groups\"].get(g, [])) for s in sessions}))\nmods = pd.Series([str(s[\"processing\"]) for s in sessions]).value_counts()\nprint(\"\\nProcessing modules and their contents (number of files):\")\nfor k, v in mods.items():\n    print(f\"  {v:3d}  {k}\")\nsame = sum(set(s[\"unit_groups\"]) <= set(s[\"electrode_groups\"]) for s in units_files)\nprint(f\"\\nFiles in which every unit group_id names an electrode group: {same} of {len(units_files)}\")\nprint(\"Example (first file with units):\", sorted(set(units_files[0][\"unit_groups\"])), \"against\",\n      units_files[0][\"electrode_groups\"])\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nNothing in the files marks a unit as light-responsive or gives its cell type; the units tables\nhold only spike times, a unit name, a cluster id and a group id. No optogenetic stimulation times\nare stored (stimulus and acquisition are empty in every processed file; the raw files are checked\nbelow). The units have no waveforms and no link to the electrodes table, and in some files their\n`group_id` values (\"Group3\") are not the names of the electrode groups (\"Group 3\"), so a unit's\nplace on the probe cannot be recovered either.\n\"\"\")\n\ncode(r\"\"\"\nrates = np.concatenate([h.mean_rates(s) for s in units_files])\nprint(f\"Units: {len(rates)} in {len(units_files)} files\")\nprint(\"Session mean firing rate (Hz), percentiles 0, 5, 25, 50, 75, 95, 100:\",\n      np.percentile(rates, [0, 5, 25, 50, 75, 95, 100]).round(2).tolist())\nprint(f\"Fraction at or below {h.PYR_MAX_RATE_HZ} Hz (this attempt's putative pyramidal rule): {np.mean(rates <= h.PYR_MAX_RATE_HZ):.3f}\"\n      f\"; at or below 10 Hz: {np.mean(rates <= 10):.3f}; paper's pyramidal fraction 7411/9471 = {7411 / 9471:.3f}\")\nprint(\"Spike times sorted within every unit in every file:\", all(s[\"spikes_sorted\"] for s in units_files))\nlate = [(s[\"session_id\"], round(s[\"last_spike\"] - s[\"end_s\"], 1)) for s in units_files if s[\"last_spike\"] > s[\"end_s\"] + 1]\nprint(\"Files whose last spike is more than 1 s after the last sleep-state or ripple interval:\", late)\nprint(\"Earliest first spike over files (s):\", round(min(s[\"first_spike\"] for s in units_files), 3))\ndur = np.concatenate([s[\"ripples\"].duration.values for s in sessions])\nprint(f\"\\nRipples: {len(dur)} in {len(sessions)} files; durations {dur.min() * 1000:.1f} to {dur.max() * 1000:.1f} ms\")\ndd = np.concatenate([(s[\"ripples\"].stop - s[\"ripples\"].start - s[\"ripples\"].duration).values for s in sessions])\nprint(f\"stop - start - ripple_durations: largest absolute difference {np.abs(dd).max() * 1000:.3f} ms\")\ninside = np.concatenate([((s[\"ripples\"].peak >= s[\"ripples\"].start) & (s[\"ripples\"].peak <= s[\"ripples\"].stop)).values for s in sessions])\nprint(f\"Ripple peaks inside their start-stop interval: {inside.mean():.4f}\")\nlabels = pd.Series(np.concatenate([s[\"states\"].label.values for s in sessions])).value_counts()\nprint(\"Sleep-state labels (intervals over all files):\", labels.to_dict())\nprint(\"Files with at least one Non-REM interval:\", sum((s[\"states\"].label == \"Non-REM\").any() for s in sessions), \"of\", len(sessions))\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nSpike times are sorted and fall within the session. Ripple durations lie within the 20 to 200 ms\nlimits of the Methods, and the stored durations equal stop minus start. Units are in seconds and\nare consistent with the session lengths. The fraction of units at or below 5 Hz (the rule used here\nfor putative pyramidal cells, as the files hold no cell type) is compared with the paper's fraction\nof pyramidal cells.\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor s in sessions:\n    if not s[\"has_position\"]:\n        continue\n    for r in h.recordings(s):\n        p = r[\"pos\"]\n        rows.append({\"session\": s[\"session_id\"], \"recording\": r[\"recording\"], \"kind\": r[\"kind\"],\n                     \"trials\": len(r[\"trials\"]), \"pos_unit\": s[\"pos_unit\"],\n                     \"dt_ms\": round(1000 * np.median(np.diff(p.t)), 2),\n                     \"lin_max_in_trials\": round(r[\"track_max_cm\"], 1),\n                     \"x_range\": f\"{np.nanmin(p.x):.2f}-{np.nanmax(p.x):.2f}\", \"y_range\": f\"{np.nanmin(p.y):.2f}-{np.nanmax(p.y):.2f}\",\n                     \"speed_p95\": round(np.nanpercentile(p.speed, 95), 1)})\nrecs = pd.DataFrame(rows)\nprint(recs.to_string(index=False))\nnan_trials = sum(int((s[\"trials\"].start_time.isna() | s[\"trials\"].stop_time.isna()).sum()) for s in sessions if s[\"has_position\"])\nprint(f\"\\nTrials with no start or stop time: {nan_trials} of {sum(len(s['trials']) for s in sessions if s['has_position'])}\")\nfam_flag = []\nfor s in sessions:\n    if not s[\"has_position\"]:\n        continue\n    first = min(s[\"trials\"].recordings.unique(), key=lambda r: s[\"trials\"][s[\"trials\"].recordings == r].start_time.min())\n    for _, t in s[\"trials\"].iterrows():\n        fam_flag.append({\"first_recording\": t.recordings == first, \"is_familiar_maze\": t.is_familiar_maze,\n                         \"single_recording_session\": s[\"trials\"].recordings.nunique() == 1})\nff = pd.DataFrame(fam_flag)\nprint(\"\\nis_familiar_maze against whether the trial is in the session's first maze recording:\")\nprint(pd.crosstab([ff.single_recording_session, ff.first_recording], ff.is_familiar_maze).to_string())\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nPosition is stated in cm. The familiar figure-eight recordings span about 90 by 90 cm (the Methods\ngive a 79 by 79 cm maze, so the tracked head positions extend somewhat beyond it or the scale is\napproximate), and the linearized position inside trials reaches about 205 cm, the trial length of\nthe Methods. In several novel recordings the x and y values lie between 0 and 1, so they are not in\ncm as stated; their linearized position (0 to 100, 110 or 164 cm) looks like cm. Position is\nsampled every 33.3 ms (30 Hz) in most recordings and every 40 ms (25 Hz) in some novel ones.\n`is_familiar_maze` is True for only the first two trials of sessions with a single maze\nrecording, where every trial is on the familiar maze, so the column is wrong there; this attempt\ntakes the first maze recording of a session as the familiar figure-eight (Methods: the familiar\nmaze was always run first).\n\"\"\")\n\ncode(r\"\"\"\nraw_info = pd.DataFrame([h.raw_file_info(a) for a in raw.asset])\nraw_info[\"session_date_in_name\"] = raw_info.path.str.extract(r\"-(\\d{6})-raw\")[0]\nprint(raw_info.to_string(index=False))\nbig = [s for s in sessions if \"lfp\" in s]\nfor s in big:\n    print(f\"\\nProcessed file {s['session_id']} also holds an LFP series: {s['lfp']}\")\n    rawa = raw[raw.path.str.contains(s[\"session_id\"].replace(\"_\", \"-\") + \"-raw\")].asset.iloc[0]\n    proca = proc[proc.path.str.contains(s[\"session_id\"].replace(\"_\", \"-\") + \"_behavior\")].asset.iloc[0]\n    a, b = h.lfp_samples(proca, 1_000_000, 2000, 5), h.lfp_samples(rawa, 1_000_000, 2000, 5)\n    print(\"Same 2000 samples (channel 5) as the raw file's 1250 Hz LFP:\", bool(np.array_equal(a, b)))\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nThe raw files hold the wideband signal (30 kHz) for 9 sessions and an LFP (1250 Hz) for all 13;\nnone holds a stimulation or TTL channel. Six raw files give a session start of 2011-08-18, which\ncannot be right for sessions recorded in 2021 and 2022 (the date in the file name). The processed\nfile of e16_3m1_210201 holds a copy of the raw file's 1250 Hz LFP, but labelled 30,000 Hz and with a\nconversion factor of 3.05e-13 V; both attributes are wrong. No analysis here uses the LFP.\n\"\"\")\n\ncode(r\"\"\"\n# 1. Ripples and spikes: population rate around ripple peaks, against the same peaks shifted at random by up to 60 s.\ncentre = (h.RIPPLE_PSTH_EDGES[:-1] > -0.02) & (h.RIPPLE_PSTH_EDGES[:-1] < 0.02)\nbase = np.abs(h.RIPPLE_PSTH_EDGES[:-1]) >= 0.4\nratio = np.array([s[\"ripple_psth\"][centre].mean() / s[\"ripple_psth\"][base].mean() for s in units_files])\nratio_sh = np.array([s[\"ripple_psth_shuffled\"][centre].mean() / s[\"ripple_psth_shuffled\"][base].mean() for s in units_files])\nprint(f\"Population rate within 20 ms of ripple peaks over rate 0.4-0.5 s away: median {np.median(ratio):.2f} \"\n      f\"(range {ratio.min():.2f} to {ratio.max():.2f}); shifted peaks: median {np.median(ratio_sh):.2f} \"\n      f\"(range {ratio_sh.min():.2f} to {ratio_sh.max():.2f})\")\n\n# 2. Ripples and sleep states: ripple rate in each state.\nrr = []\nfor s in sessions:\n    st = s[\"states\"]\n    for lab in st.label.unique():\n        sel = st[st.label == lab]\n        n = sum(((s[\"ripples\"].peak >= a) & (s[\"ripples\"].peak < b)).sum() for a, b in zip(sel.start, sel.stop))\n        rr.append({\"session\": s[\"session_id\"], \"state\": lab, \"per_min\": n / ((sel.stop - sel.start).sum() / 60)})\nrr = pd.DataFrame(rr).pivot(index=\"session\", columns=\"state\", values=\"per_min\")\nprint(\"\\nRipples per minute by sleep state, median over files:\", rr.median().round(2).to_dict())\nprint(\"Files where the REM rate is the lowest of the three:\", int((rr[\"REM\"] < rr[[\"Awake\", \"Non-REM\"]].min(axis=1)).sum()), \"of\", len(rr))\n\n# 3. Trials, position and sleep states.\nstarts, ends, awake = [], [], []\nfor s in sessions:\n    if not s[\"has_position\"]:\n        continue\n    p = s[\"pos\"]\n    for k, g in p[p.trial >= 0].groupby(\"trial\"):\n        starts.append(g.lin.iloc[0]); ends.append(g.lin.iloc[-1])\n    tr = s[\"trials\"].dropna(subset=[\"start_time\", \"stop_time\"])\n    aw = s[\"states\"][s[\"states\"].label == \"Awake\"]\n    tot = (tr.stop_time - tr.start_time).sum()\n    cov = sum(max(0, min(b, d) - max(a, c)) for a, b in zip(tr.start_time, tr.stop_time) for c, d in zip(aw.start, aw.stop))\n    awake.append(cov / tot)\nprint(f\"\\nLinearized position at the first sample of a trial: median {np.median(starts):.1f} cm; at the last: {np.median(ends):.1f} cm\")\nprint(f\"Fraction of trial time labelled Awake: median {np.median(awake):.3f}, lowest {np.min(awake):.3f}\")\n\"\"\", tags=[\"sanity\"])\n\ncode(r\"\"\"\n# 4. Spikes and position: spatial information of all units on the first maze recording, with spikes shifted in time.\nshifts = [-2.0, -0.5, 0.0, 0.5, 2.0]\nshift_rows = []\nfor s in units_files:\n    if not s[\"has_position\"]:\n        continue\n    rec = h.recordings(s)[0]\n    row = {\"session\": s[\"session_id\"]}\n    for sh in shifts:\n        m = h.rate_maps(s[\"maze_spikes\"], rec, shift_s=sh)\n        row[sh] = np.nanmedian(h.skaggs_information(m[\"maps\"].reshape(len(m[\"maps\"]), -1), m[\"occupancy\"].ravel()))\n    shift_rows.append(row)\nshift_df = pd.DataFrame(shift_rows).set_index(\"session\")\nbest = shift_df.idxmax(axis=1)\nprint(\"Median spatial information (bits/s) by time shift of spikes against position, median over sessions:\",\n      shift_df.median().round(3).to_dict())\nprint(\"Sessions whose information peaks at zero shift:\", int((best == 0.0).sum()), \"of\", len(best),\n      \"; others:\", best[best != 0.0].to_dict())\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nThe four checks support a shared clock. Population firing rises several-fold at ripple peaks and not\nat randomly shifted peaks, so the ripple tables share the spikes' clock. Ripples are rarer in REM\nsleep than in waking and non-REM sleep, as expected if the state intervals share that clock. Trials\nbegin near 0 cm and end near 205 cm of linearized position and fall in Awake intervals, so the\ntrials share the position clock. Spatial information is highest with no shift between spikes and\nposition, so spikes and position share a clock in every session listed. The 39 files without units\ncould only be checked for ripples against sleep states.\n\"\"\")\n\ncode(r\"\"\"\n# Recordings deposited more than once: identical spike counts per unit, or identical ripple tables.\nsig_units = {}\nfor s in units_files:\n    sig_units.setdefault(tuple(s[\"n_spikes\"]), []).append(s[\"session_id\"])\nsig_rip = {}\nfor s in sessions:\n    sig_rip.setdefault((len(s[\"ripples\"]), round(float(s[\"ripples\"].peak.sum()), 3)), []).append(s[\"session_id\"])\nprint(\"Files sharing identical per-unit spike counts:\", [v for v in sig_units.values() if len(v) > 1])\nprint(\"Files sharing identical ripple tables:\", [v for v in sig_rip.values() if len(v) > 1])\ntwo = info[info.session.str.startswith(\"e15_5m1_200313\")]\nprint(\"\\nThe two files of e15_5m1 on 2020-03-13:\")\nprint(two.to_string(index=False))\n\"\"\", tags=[\"sanity\"])\n\nmd(r\"\"\"\nNo recording is deposited twice. The two files of mouse e15_5m1 dated 2020-03-13 differ in length and\nin their ripples, so they are two recordings of one day (the paper's code lists both).\n\"\"\")\n\n# ---------------- claims ----------------\n\nmd(r\"\"\"\n## Claims about the dataset\n\n### cohort-birthdates\n\n> Chronic recordings were made from 17 adult mice (12 males, 5 females) electroporated at E13.5\n> (n = 4), E14.5 (n = 3), E15.5 (n = 6) and E16.5 (n = 4).\n\"\"\")\n\ncode(r\"\"\"\nprint(\"Mice:\", subjects.subject.nunique())\nprint(\"By sex:\", subjects.sex.value_counts().to_dict())\nprint(\"By birthdate:\", subjects.birthdate.value_counts().sort_index().to_dict())\nprint(\"Paper: 17 mice; 12 M, 5 F; E13.5 4, E14.5 3, E15.5 6, E16.5 4.\")\nprint(pd.crosstab(subjects.birthdate, subjects.sex).to_string())\n\"\"\", tags=[\"claim:cohort-birthdates\"])\nresult(\"cohort-birthdates\")\n\nmd(r\"\"\"\n### sessions-durations\n\n> The recordings comprise 92 sessions lasting 113.7 to 475.6 min (median 309.1 min), each including\n> a homecage period of sleep and wake.\n\"\"\")\n\ncode(r\"\"\"\nd = info.duration_min\nprint(f\"Processed files (sessions): {len(info)}; paper: 92 (Methods) or 96 (Figure 1e and Figure 7f).\")\nprint(f\"Duration: shortest {d.min():.1f} min ({info.session[d.idxmin()]}), longest {d.max():.1f} min ({info.session[d.idxmax()]}), median {d.median():.1f} min\")\nprint(f\"Durations within 102.3-523.2 min: {int(d.between(102.3, 523.2).sum())} of {len(d)}; within 113.7-475.6 min: {int(d.between(113.7, 475.6).sum())}\")\nprint(\"Sessions longer than 475.6 min:\", info.loc[d > 475.6, [\"session\", \"duration_min\"]].values.tolist())\nprint(\"Sessions with a duration equal (to 0.1 min) to the paper's bounds:\", info.loc[d.round(1).isin([113.7, 475.6]), [\"session\", \"duration_min\"]].values.tolist())\nexcl = info[~info.subject.isin([\"e15_13f1\", \"e16_3m2\"])]\nprint(f\"\\nVariant: without the two mice recorded only in the novel-environment design (e15_13f1, e16_3m2): \"\n      f\"{len(excl)} sessions, median {excl.duration_min.median():.1f} min, range {excl.duration_min.min():.1f}-{excl.duration_min.max():.1f}\")\nprint(\"Sessions per birthdate (all files):\", info.birthdate.value_counts().sort_index().to_dict(),\n      \"; Figure 1e: E13.5 30, E14.5 24, E15.5 24, E16.5 18\")\nprint(\"Sessions per birthdate (without e15_13f1 and e16_3m2):\", excl.birthdate.value_counts().sort_index().to_dict())\nprint(\"Every file holds Awake and Non-REM intervals:\", all({\"Awake\", \"Non-REM\"} <= set(s[\"states\"].label) for s in sessions))\n\"\"\", tags=[\"claim:sessions-durations\"])\nresult(\"sessions-durations\")\n\nmd(r\"\"\"\n### spwr-duration\n\n> SPW-Rs were detected with duration limits of 20 to 200 ms, and their median duration across all\n> recordings was 36.4 ms.\n\"\"\")\n\ncode(r\"\"\"\nper = pd.DataFrame([{\"session\": s[\"session_id\"], \"subject\": s[\"subject\"], \"n\": len(s[\"ripples\"]),\n                     \"median_ms\": 1000 * s[\"ripples\"].duration.median()} for s in sessions])\nprint(f\"(a) median over all {len(dur)} ripples pooled: {1000 * np.median(dur):.1f} ms\")\nprint(f\"(b) median of the {len(per)} per-session medians: {per.median_ms.median():.1f} ms\")\nprint(f\"Ripples within 20-200 ms: {np.mean((dur >= 0.02) & (dur <= 0.2)):.4f}; shortest {1000 * dur.min():.1f}, longest {1000 * dur.max():.1f} ms\")\nprint(\"Paper: 36.4 ms (tolerance 32.8-40.0).\")\nprint(\"\\nBy mouse (median of session medians, ms, and ripples):\")\nprint(per.groupby(\"subject\").agg(sessions=(\"n\", \"size\"), ripples=(\"n\", \"sum\"), median_ms=(\"median_ms\", \"median\")).round(1).to_string())\n\"\"\", tags=[\"claim:spwr-duration\"])\nresult(\"spwr-duration\")\n\nmd(r\"\"\"\n### unit-count\n\n> The dataset includes 9,471 well-isolated units, 7,411 putative pyramidal cells and 2,060 putative\n> interneurons.\n\"\"\")\n\ncode(r\"\"\"\nprint(f\"Units in the dandiset: {len(rates)} in {len(units_files)} of {len(sessions)} files; paper 9,471 (tolerance 8,524-10,418)\")\nprint(f\"Fraction at or below {h.PYR_MAX_RATE_HZ} Hz: {np.mean(rates <= h.PYR_MAX_RATE_HZ):.3f} (paper's pyramidal fraction 0.783)\")\nprint(\"\\nBy mouse:\")\nprint(subjects[[\"subject\", \"birthdate\", \"sessions\", \"with_units\", \"units\"]].to_string(index=False))\nnou = subjects[subjects.with_units == 0]\nprint(f\"\\nMice without any units: {nou.subject.tolist()} ({int(nou.sessions.sum())} files)\")\nprint(f\"Units per file with units: median {np.median([len(s['n_spikes']) for s in units_files]):.0f}, \"\n      f\"range {min(len(s['n_spikes']) for s in units_files)}-{max(len(s['n_spikes']) for s in units_files)}\")\n\"\"\", tags=[\"claim:unit-count\"])\nresult(\"unit-count\")\n\nmd(r\"\"\"\n### maze-cohort\n\n> Nine mice (E13.5 n = 2, E14.5 n = 2, E15.5 n = 2, E16.5 n = 3) ran a spatial alternation task on a\n> familiar figure-eight maze, and a cohort of three mice also explored novel environments.\n\"\"\")\n\ncode(r\"\"\"\nmaze_mice = subjects[subjects.with_position > 0]\nnovel_mice = sorted({s[\"subject\"] for s in sessions if s[\"has_position\"] and s[\"trials\"].recordings.nunique() > 1})\nprint(\"Mice with figure-eight trials:\", len(maze_mice), maze_mice.birthdate.value_counts().sort_index().to_dict())\nprint(\"Mice with a second maze recording (novel):\", novel_mice)\ncode_nine = maze_mice[~maze_mice.subject.isin([\"e15_13f1\", \"e16_3m2\"])]\nprint(\"(a) disjoint cohorts would need 12 maze mice; found\", len(maze_mice))\nprint(\"(b) maze mice without e15_13f1 and e16_3m2:\", len(code_nine), code_nine.birthdate.value_counts().sort_index().to_dict(),\n      \"; novel mice:\", len(novel_mice))\nprint(\"Paper: nine mice, E13.5 2, E14.5 2, E15.5 2, E16.5 3; novel cohort 3.\")\n\"\"\", tags=[\"claim:maze-cohort\"])\nresult(\"maze-cohort\")\n\nmd(r\"\"\"\n### maze-task\n\n> On the figure-eight maze each trial was 205 cm long, position was tracked at 30 Hz, and animals\n> ran at least ten trials along each arm in every session.\n\"\"\")\n\ncode(r\"\"\"\nlens, dts, arms = [], [], []\nfor s in sessions:\n    if not s[\"has_position\"]:\n        continue\n    fam = h.recordings(s)[0]\n    p = fam[\"pos\"]\n    lens += p.groupby(\"trial\").lin.max().tolist()\n    dts.append(np.median(np.diff(p.t)))\n    t = fam[\"trials\"]\n    arms.append({\"session\": s[\"session_id\"], \"subject\": s[\"subject\"], \"trials\": len(s[\"trials\"][s[\"trials\"].recordings == fam[\"recording\"]]),\n                 \"visited_left\": int((t.visited_arm == \"left\").sum()), \"visited_right\": int((t.visited_arm == \"right\").sum()),\n                 \"expected_left\": int((t.expected_arm == \"left\").sum()), \"expected_right\": int((t.expected_arm == \"right\").sum())})\narms = pd.DataFrame(arms)\nprint(f\"Largest linearized position in a familiar trial: median {np.median(lens):.1f} cm (range {np.min(lens):.1f}-{np.max(lens):.1f}); paper 205 cm\")\nprint(f\"Tracking rate: median {1 / np.median(dts):.2f} Hz over {len(dts)} familiar recordings (range {1 / np.max(dts):.2f}-{1 / np.min(dts):.2f}); paper 30 Hz\")\narms[\"min_visited\"] = arms[[\"visited_left\", \"visited_right\"]].min(axis=1)\narms[\"min_expected\"] = arms[[\"expected_left\", \"expected_right\"]].min(axis=1)\nprint(f\"\\nSessions with at least 10 trials on each arm: visited {int((arms.min_visited >= 10).sum())} of {len(arms)}; \"\n      f\"expected {int((arms.min_expected >= 10).sum())} of {len(arms)}\")\nprint(f\"Sessions with at least 20 timed trials on the familiar maze: {int((arms.trials >= 20).sum())} of {len(arms)} (fewest {arms.trials.min()})\")\nprint(\"\\nSessions with fewer than 10 on an arm under either reading:\")\nprint(arms[(arms.min_visited < 10) | (arms.min_expected < 10)].to_string(index=False))\n\"\"\", tags=[\"claim:maze-task\"])\nresult(\"maze-task\")\n\nmd(r\"\"\"\n### novel-explorations\n\n> The novel-environment cohort of three mice made 16 novel environment explorations in six distinct\n> environments (two linear tracks, three open fields and one figure-eight maze).\n\"\"\")\n\ncode(r\"\"\"\nnov = recs[(recs.session.isin(info[info.recordings.str.contains(\",\")].session))]\nnov = nov[nov.duplicated(\"session\", keep=\"first\")]\nprint(\"Novel recordings with trials and position:\")\nprint(nov[[\"session\", \"recording\", \"kind\", \"trials\", \"lin_max_in_trials\", \"x_range\", \"y_range\", \"dt_ms\"]].to_string(index=False))\nprint(f\"\\n{len(nov)} novel explorations in {nov.session.str[:8].nunique()} mice; paper 16 in 3 mice (tolerance 14.4-17.6)\")\nprint(\"Kinds (track length):\", nov.groupby([\"kind\", \"lin_max_in_trials\"]).size().to_dict())\nprint(\"\\nEpochs of the novel-cohort sessions, with the position samples inside each:\")\nfor s in sessions:\n    if s[\"subject\"] in novel_mice and \"epochs\" in s:\n        e = s[\"epochs\"].copy()\n        e[\"minutes\"] = ((e.stop - e.start) / 60).round(1)\n        e[\"position_samples\"] = [int(((s[\"pos\"].t >= a) & (s[\"pos\"].t < b)).sum()) for a, b in zip(e.start, e.stop)]\n        print(s[\"session_id\"], e[[\"minutes\", \"position_samples\"]].values.tolist())\n\"\"\", tags=[\"claim:novel-explorations\"])\nresult(\"novel-explorations\")\n\n# ---- Figure 5e\nmd(r\"\"\"\n## Claims about all pyramidal neurons\n\nPutative pyramidal cells are units whose session mean rate is at most 5 Hz (the files hold no cell\ntype). Rate maps follow the Methods (1 cm bins, speed above 1.5 cm/s, 9 cm FWHM smoothing, left and\nright trials apart).\n\n### fig5e-pv-decorrelation\n\n> Population firing-rate vectors at the same linearized position decorrelate between left and right\n> trials once the animal leaves the common stem of the figure-eight maze (median correlations stem\n> 0.93, turn 1 0.412, arm 0.372, turn 2 0.394).\n\"\"\")\n\ncode(r\"\"\"\ndef pv_correlations(s, max_rate=h.PYR_MAX_RATE_HZ, min_speed=h.MIN_SPEED_CM_S):\n    fam = h.recordings(s)[0]\n    keep = h.mean_rates(s) <= max_rate\n    sp = [x for x, k in zip(s[\"maze_spikes\"], keep) if k]\n    m = h.rate_maps(sp, fam, min_speed=min_speed)[\"maps\"]\n    cc = np.full(h.FIG8_BINS, np.nan)\n    for b in range(h.FIG8_BINS):\n        l, r = m[:, 0, b], m[:, 1, b]\n        ok = np.isfinite(l) & np.isfinite(r)\n        if ok.sum() > 2 and l[ok].std() > 0 and r[ok].std() > 0:\n            cc[b] = np.corrcoef(l[ok], r[ok])[0, 1]\n    return cc, int(keep.sum())\n\npv_sessions = [s for s in units_files if s[\"has_position\"] and s[\"subject\"] not in (\"e15_13f1\", \"e16_3m2\")]\npv, ncells = {}, {}\nfor s in pv_sessions:\n    pv[s[\"session_id\"]], ncells[s[\"session_id\"]] = pv_correlations(s)\npvm = np.array(list(pv.values()))\n\ndef by_segment(mat):\n    return {k: mat[:, a - 1:b].ravel() for k, (a, b) in h.FIG8_SEGMENTS.items()}\n\nseg = by_segment(pvm)\nprint(f\"{len(pv)} sessions of {len({s['subject'] for s in pv_sessions})} mice; putative pyramidal cells per session: median {np.median(list(ncells.values())):.0f}, range {min(ncells.values())}-{max(ncells.values())}\")\npaper = {\"stem\": 0.93, \"turn1\": 0.412, \"arm\": 0.372, \"turn2\": 0.3944}\nfor k, v in seg.items():\n    print(f\"{k:6s} bins {len(v):5d}, without a value {int(np.isnan(v).sum()):3d}, median {np.nanmedian(v):.3f} \"\n          f\"(paper {paper[k]}, tolerance {paper[k] * 0.9:.3f}-{paper[k] * 1.1:.3f}), range {np.nanmin(v):.2f} to {np.nanmax(v):.2f}\")\nkw = stats.kruskal(*[v[~np.isnan(v)] for v in seg.values()])\nprint(f\"Kruskal-Wallis across segments: H = {kw.statistic:.1f}, p = {kw.pvalue:.2g} (paper H = 7278.3)\")\n\"\"\", tags=[\"claim:fig5e-pv-decorrelation\"])\n\ncode(r\"\"\"\nsub_of = {s[\"session_id\"]: s[\"subject\"] for s in pv_sessions}\nper_mouse = pd.DataFrame({k: pd.Series({m: np.nanmedian(pvm[[sub_of[x] == m for x in pv], a - 1:b])\n                                         for m in sorted(set(sub_of.values()))}) for k, (a, b) in h.FIG8_SEGMENTS.items()})\nprint(\"Median PV correlation by mouse:\")\nprint(per_mouse.round(3).to_string())\nprint(\"\\nVariants (medians stem, turn1, arm, turn2):\")\nfor label, kw_ in [(\"all units\", dict(max_rate=np.inf)), (\"rate at most 10 Hz\", dict(max_rate=10)),\n                   (\"rate at most 2 Hz\", dict(max_rate=2)), (\"no speed threshold\", dict(min_speed=-1))]:\n    mat = np.array([pv_correlations(s, **kw_)[0] for s in pv_sessions])\n    sg = by_segment(mat)\n    print(f\"  {label:20s}\", {k: round(float(np.nanmedian(v)), 3) for k, v in sg.items()})\nfig, ax = plt.subplots(figsize=(7, 3))\nx = np.arange(1, h.FIG8_BINS + 1)\nmu, sd = np.nanmean(pvm, 0), np.nanstd(pvm, 0)\nax.fill_between(x, mu - sd, mu + sd, color=\"0.85\")\nax.plot(x, mu, \"k\")\nfor a, b in h.FIG8_SEGMENTS.values():\n    ax.axvline(b + 0.5, color=\"0.5\", lw=0.5)\nax.set_xlabel(\"linearized position (cm)\"); ax.set_ylabel(\"PV correlation, left vs right\")\nax.set_ylim(-0.2, 1.05)\nprint(f\"Plotted: mean over sessions ({np.nanmin(mu):.2f} to {np.nanmax(mu):.2f}) with one s.d.; \"\n      f\"{int(((mu - sd) < -0.2).sum())} bins of the lower band fall below the axis\")\nplt.show()\n\"\"\", tags=[\"claim:fig5e-pv-decorrelation\"])\nresult(\"fig5e-pv-decorrelation\")\n\n# ---- Figure 6\nmd(r\"\"\"\n### Familiar and novel environments (Figure 6c, d)\n\nThe sessions are those of the three mice of the novel-environment cohort (12 sessions, as in the\npaper's `get_corrBeh_famnov.m`); 9 of them hold a novel maze recording. The \"theta-related\" rate is\napproximated by the rate while running at 5 cm/s or faster inside maze trials.\n\"\"\")\n\ncode(r\"\"\"\nFAMNOV = (\"e13_26m1\", \"e15_13f1\", \"e16_3m2\")\n\ndef famnov_measures(max_rate=h.PYR_MAX_RATE_HZ, run_speed=h.RUN_SPEED_CM_S, include_stem=False):\n    cells, pairs, infos = [], [], []\n    for s in sessions:\n        if s[\"subject\"] not in FAMNOV:\n            continue\n        keep = h.mean_rates(s) <= max_rate\n        sp = [x for x, k in zip(s[\"maze_spikes\"], keep) if k]\n        rates = {}\n        for r in h.recordings(s):\n            m = h.rate_maps(sp, r)\n            bins = np.arange(1, r[\"n_bins\"] + 1) if include_stem else h.correlation_bins(r)\n            c = h.pairwise_map_correlations(h.concatenated(m[\"maps\"], bins))\n            pairs.append(pd.DataFrame({\"session\": s[\"session_id\"], \"subject\": s[\"subject\"], \"familiar\": r[\"familiar\"],\n                                       \"kind\": r[\"kind\"], \"corr\": c}))\n            flat = m[\"maps\"].reshape(len(sp), -1)\n            infos.append(pd.DataFrame({\"session\": s[\"session_id\"], \"subject\": s[\"subject\"], \"familiar\": r[\"familiar\"],\n                                       \"kind\": r[\"kind\"], \"info\": h.skaggs_information(flat, m[\"occupancy\"].ravel()),\n                                       \"info_unweighted\": h.uniform_information(flat)}))\n            rates[\"fam\" if r[\"familiar\"] else \"nov\"] = h.running_rate(sp, r, min_speed=run_speed)\n        cells.append(pd.DataFrame({\"session\": s[\"session_id\"], \"subject\": s[\"subject\"], \"fam\": rates[\"fam\"],\n                                   \"nov\": rates.get(\"nov\", np.full(len(sp), np.nan))}))\n    return pd.concat(cells, ignore_index=True), pd.concat(pairs, ignore_index=True), pd.concat(infos, ignore_index=True)\n\ncells6, pairs6, info6 = famnov_measures()\nprint(f\"{cells6.session.nunique()} sessions, {len(cells6)} putative pyramidal cells; \"\n      f\"{cells6.nov.notna().sum()} in the {cells6[cells6.nov.notna()].session.nunique()} sessions with a novel maze\")\n\"\"\")\n\nmd(r\"\"\"\n### fig6c-theta-rate-preserved\n\n> Individual pyramidal neurons preserve their theta-related firing rates between the familiar and\n> novel environments (Spearman rho = 0.7378, n = 2,544 neurons).\n\"\"\")\n\ncode(r\"\"\"\nboth = cells6.dropna(subset=[\"fam\", \"nov\"])\nprint(f\"Cells with both rates: {len(both)}; dropped: {cells6.nov.isna().sum()} in sessions without a novel maze, \"\n      f\"{(cells6.fam.isna() & cells6.nov.notna()).sum()} without a familiar rate\")\nr = stats.spearmanr(both.fam, both.nov)\nprint(f\"Spearman rho = {r.statistic:.3f}, p = {r.pvalue:.2g}, n = {len(both)} (paper 0.7378, n = 2,544; criterion rho >= 0.664)\")\nprint(\"Cells silent in one environment (rate 0): familiar\", int((both.fam == 0).sum()), \", novel\", int((both.nov == 0).sum()))\nprint(\"\\nBy mouse:\")\nfor m, g in both.groupby(\"subject\"):\n    rr_ = stats.spearmanr(g.fam, g.nov)\n    print(f\"  {m}: rho = {rr_.statistic:.3f}, p = {rr_.pvalue:.2g}, n = {len(g)}\")\nprint(\"By session:\", {k: round(stats.spearmanr(g.fam, g.nov).statistic, 3) for k, g in both.groupby(\"session\")})\nprint(\"\\nVariants:\")\nfor label, kw_ in [(\"all units\", dict(max_rate=np.inf)), (\"rate at most 10 Hz\", dict(max_rate=10)), (\"running at 1.5 cm/s or faster\", dict(run_speed=1.5))]:\n    cv = famnov_measures(**kw_)[0].dropna(subset=[\"fam\", \"nov\"])\n    rv = stats.spearmanr(cv.fam, cv.nov)\n    print(f\"  {label:30s} rho = {rv.statistic:.3f}, n = {len(cv)}\")\nfig, ax = plt.subplots(figsize=(3.5, 3.5))\nlo = 0.01\nax.loglog(np.clip(both.fam, lo, None), np.clip(both.nov, lo, None), \".\", ms=2, color=\"0.3\")\nax.set_xlabel(\"familiar rate (Hz)\"); ax.set_ylabel(\"novel rate (Hz)\")\nprint(f\"Plotted rates range {both[['fam', 'nov']].min().min():.3f} to {both[['fam', 'nov']].max().max():.2f} Hz; \"\n      f\"{int(((both.fam < lo) | (both.nov < lo)).sum())} cells below {lo} Hz drawn at {lo}\")\nplt.show()\n\"\"\", tags=[\"claim:fig6c-theta-rate-preserved\"])\nresult(\"fig6c-theta-rate-preserved\")\n\nmd(r\"\"\"\n### fig6c-novel-ratemap-corr-higher\n\n> Pairwise spatial ratemap correlations between pyramidal neurons are higher in novel environments\n> (median 0.048) than in the familiar environment (median -0.045).\n\"\"\")\n\ncode(r\"\"\"\nfc = pairs6[pairs6.familiar].corr.dropna(); nc = pairs6[~pairs6.familiar].corr.dropna()\ndropped = pairs6.corr.isna().sum()\nt = stats.ranksums(nc, fc)\nprint(f\"Familiar: median {fc.median():.4f}, n = {len(fc)} pairs (paper -0.045, n = 31,067; tolerance -0.075 to -0.015)\")\nprint(f\"Novel:    median {nc.median():.4f}, n = {len(nc)} pairs (paper 0.048, n = 41,991; tolerance 0.018 to 0.078)\")\nprint(f\"Rank-sum (novel against familiar): z = {t.statistic:.2f}, p = {t.pvalue:.2g}; pairs without a value (a silent cell): {dropped}\")\nprint(\"\\nBy mouse and maze (median, pairs):\")\nprint(pairs6.groupby([\"subject\", \"familiar\", \"kind\"]).corr.agg([\"median\", \"count\"]).round(4).to_string())\nprint(\"\\nBy session, familiar against novel median in sessions with both:\")\nps = pairs6.groupby([\"session\", \"familiar\"]).corr.median().unstack()\nprint(ps.dropna().round(4).to_string())\nprint(\"Sessions where the novel median is higher:\", int((ps.dropna()[False] > ps.dropna()[True]).sum()), \"of\", len(ps.dropna()))\nfam_same = pairs6[pairs6.familiar & pairs6.session.isin(ps.dropna().index)].corr.dropna()\nprint(f\"\\nVariant, familiar pairs only from sessions with a novel maze: median {fam_same.median():.4f}, rank-sum p = {stats.ranksums(nc, fam_same).pvalue:.2g}\")\nfor label, kw_ in [(\"all units\", dict(max_rate=np.inf)), (\"rate at most 10 Hz\", dict(max_rate=10)), (\"stem included\", dict(include_stem=True))]:\n    pv_ = famnov_measures(**kw_)[1]\n    f_, n_ = pv_[pv_.familiar].corr.dropna(), pv_[~pv_.familiar].corr.dropna()\n    print(f\"Variant, {label:20s} familiar {f_.median():.4f}, novel {n_.median():.4f}, rank-sum p = {stats.ranksums(n_, f_).pvalue:.2g}\")\n\"\"\", tags=[\"claim:fig6c-novel-ratemap-corr-higher\"])\nresult(\"fig6c-novel-ratemap-corr-higher\")\n\nmd(r\"\"\"\n### fig6d-info-lower-novel\n\n> Spatial information is lower in novel environments than in the familiar one (median 0.39 against\n> 0.88 bits/s).\n\"\"\")\n\ncode(r\"\"\"\nfi = info6[info6.familiar].info.dropna(); ni = info6[~info6.familiar].info.dropna()\nt = stats.ranksums(ni, fi)\nprint(f\"Familiar: median {fi.median():.3f} bits/s, n = {len(fi)} (paper 0.88, n = 2,544; tolerance 0.792-0.968)\")\nprint(f\"Novel:    median {ni.median():.3f} bits/s, n = {len(ni)} (paper 0.39, n = 3,443; tolerance 0.351-0.429)\")\nprint(f\"Rank-sum: z = {t.statistic:.2f}, p = {t.pvalue:.2g}; cells without a value (silent on the maze): {int(info6.info.isna().sum())}\")\nprint(f\"Ranges: familiar {fi.min():.3f} to {fi.max():.2f}, novel {ni.min():.3f} to {ni.max():.2f}\")\nprint(\"\\nBy mouse and maze (median bits/s, cells):\")\nprint(info6.groupby([\"subject\", \"familiar\", \"kind\"]).info.agg([\"median\", \"count\"]).round(3).to_string())\nfu, nu = info6[info6.familiar].info_unweighted.dropna(), info6[~info6.familiar].info_unweighted.dropna()\nprint(f\"\\nVariant, the code's unweighted information: familiar {fu.median():.3f}, novel {nu.median():.3f}, rank-sum p = {stats.ranksums(nu, fu).pvalue:.2g}\")\nfor label, kw_ in [(\"all units\", dict(max_rate=np.inf)), (\"rate at most 10 Hz\", dict(max_rate=10))]:\n    iv = famnov_measures(**kw_)[2]\n    print(f\"Variant, {label:20s} familiar {iv[iv.familiar].info.median():.3f}, novel {iv[~iv.familiar].info.median():.3f}\")\n\"\"\", tags=[\"claim:fig6d-info-lower-novel\"])\nresult(\"fig6d-info-lower-novel\")\n\nmd(r\"\"\"\n### fig6d-rate-lower-novel\n\n> Theta-related firing rates are slightly lower in novel environments than in the familiar one\n> (median 0.69 against 0.77 Hz).\n\"\"\")\n\ncode(r\"\"\"\nfr_, nr_ = cells6.fam.dropna(), cells6.nov.dropna()\nt = stats.ranksums(nr_, fr_)\nprint(f\"Familiar: median {fr_.median():.3f} Hz, n = {len(fr_)} (paper 0.77, n = 2,544; tolerance 0.693-0.847)\")\nprint(f\"Novel:    median {nr_.median():.3f} Hz, n = {len(nr_)} (paper 0.69; tolerance 0.621-0.759)\")\nprint(f\"Rank-sum: z = {t.statistic:.2f}, p = {t.pvalue:.2g} (paper p = 3.3e-3)\")\nw = stats.wilcoxon(both.nov, both.fam)\nprint(f\"Variant, paired signed-rank over {len(both)} cells with both: median ratio novel/familiar \"\n      f\"{np.median(both.nov[both.fam > 0] / both.fam[both.fam > 0]):.3f}, p = {w.pvalue:.2g}\")\nfam_same = cells6[cells6.nov.notna()].fam\nprint(f\"Variant, familiar only in sessions with a novel maze: median {fam_same.median():.3f} Hz, rank-sum p = {stats.ranksums(nr_, fam_same).pvalue:.2g}\")\nprint(\"\\nBy mouse (median Hz):\")\nprint(cells6.groupby(\"subject\")[[\"fam\", \"nov\"]].median().round(3).to_string())\nfor label, kw_ in [(\"all units\", dict(max_rate=np.inf)), (\"rate at most 10 Hz\", dict(max_rate=10)), (\"running at 1.5 cm/s or faster\", dict(run_speed=1.5))]:\n    cv = famnov_measures(**kw_)[0]\n    print(f\"Variant, {label:30s} familiar {cv.fam.median():.3f}, novel {cv.nov.median():.3f}, rank-sum p = {stats.ranksums(cv.nov.dropna(), cv.fam.dropna()).pvalue:.2g}\")\n\"\"\", tags=[\"claim:fig6d-rate-lower-novel\"])\nresult(\"fig6d-rate-lower-novel\")\n\nmd(r\"\"\"\n## Blocked claims\n\nThe data check shows what the files lack. Every claim that compares same-birthdate (SBD) with\ndifferent-birthdate (DBD) neurons, or light-responsive neurons across birthdates, needs to know\nwhich units responded to light. The files hold no such label, no optogenetic pulse times from which\nto derive one (neither the processed nor the raw files have a stimulation channel), and no\nwaveforms. The paper's labels come from CellExplorer's `cell_metrics.optoTag` and\n`putativeCellType` fields and `pulses.events.mat` files on the lab's server, which are not public\nat a pinned identifier. Claims fig5d, fig7b and fig7ce also need unit positions on the probe or cell\ntypes, which the files lack. fig1c needs histology, which is not in the dandiset. fig7fg needs\nputative interneurons, and the files carry no cell type and no waveforms to classify them.\n\n| Claim | Reason |\n|---|---|\n| ed2-light-responsive-count, fig1e, fig1f, fig1g, fig1h | no light-responsiveness labels or pulse times |\n| fig2b, fig2c, fig2d, fig2f, fig2g | no labels; SBD and DBD pairs cannot be formed |\n| fig3c, fig3e | no labels; assemblies cannot be grouped by birthdate |\n| fig4d-model-fit | depends on fig3e |\n| fig5b, fig5c, fig5f, fig6e, fig6f | no labels |\n| fig5d | no labels and no unit positions |\n| fig7b, fig7ce | no labels and no cell types |\n| fig1c-radial-depth | no histology |\n| fig7fg-convergence-cofiring | no cell types or waveforms (metadata insufficient) |\n\"\"\")\n\ncode(r\"\"\"\nprint(f\"Run time: {(time.time() - started) / 60:.1f} min\")\n\"\"\")\n\nif RESULTS.get(\"summary\"):\n    md(RESULTS[\"summary\"])\n\nnb = nbf.v4.new_notebook()\nnb.cells = cells\nnb.metadata[\"kernelspec\"] = {\"display_name\": \"Python 3\", \"language\": \"python\", \"name\": \"python3\"}\nnbf.write(nb, OUT)\nprint(\"wrote\", OUT, len(cells), \"cells\")\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/build_nb.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Fixing a few bugs in the builder before running (column names that shadow DataFrame methods, the familiar-recording selection, and a wrong sentence about which mice lack units):
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && python - <<'EOF'
-p='build_nb.py'; s=open(p).read()
-rep=[
-('''Six mice (all three E13.5 mice without maze
-data aside from e13_16f1 and e13_26m1, the E14.5 mouse e14_1m1 and three E15.5 mice) have 39 files
-between them that hold sleep states and ripples but no units and no position.''',
-'''Six mice (e13_1f1 and e13_1m1 at E13.5, e14_1m1 at E14.5, and e15_4m1, e15_4m2 and e15_5m1 at
-E15.5) have 39 files between them that hold sleep states and ripples but no units and no position.'''),
-('"kind": "corr": c}', 'XX'),
-('''"kind": r["kind"], "corr": c}))''', '''"kind": r["kind"], "r": c}))'''),
-('''"kind": r["kind"], "info": h.skaggs_information''', '''"kind": r["kind"], "bits": h.skaggs_information'''),
-('pairs6[pairs6.familiar].corr.dropna(); nc = pairs6[~pairs6.familiar].corr.dropna()', 'pairs6[pairs6.familiar].r.dropna(); nc = pairs6[~pairs6.familiar].r.dropna()'),
-('dropped = pairs6.corr.isna().sum()', 'dropped = pairs6.r.isna().sum()'),
-('pairs6.groupby(["subject", "familiar", "kind"]).corr.agg', 'pairs6.groupby(["subject", "familiar", "kind"]).r.agg'),
-('ps = pairs6.groupby(["session", "familiar"]).corr.median()', 'ps = pairs6.groupby(["session", "familiar"]).r.median()'),
-('pairs6.session.isin(ps.dropna().index)].corr.dropna()', 'pairs6.session.isin(ps.dropna().index)].r.dropna()'),
-('f_, n_ = pv_[pv_.familiar].corr.dropna(), pv_[~pv_.familiar].corr.dropna()', 'f_, n_ = pv_[pv_.familiar].r.dropna(), pv_[~pv_.familiar].r.dropna()'),
-('fi = info6[info6.familiar].info.dropna(); ni = info6[~info6.familiar].info.dropna()', 'fi = info6[info6.familiar].bits.dropna(); ni = info6[~info6.familiar].bits.dropna()'),
-('int(info6.info.isna().sum())', 'int(info6.bits.isna().sum())'),
-('info6.groupby(["subject", "familiar", "kind"]).info.agg', 'info6.groupby(["subject", "familiar", "kind"]).bits.agg'),
-('{iv[iv.familiar].info.median():.3f}, novel {iv[~iv.familiar].info.median():.3f}', '{iv[iv.familiar].bits.median():.3f}, novel {iv[~iv.familiar].bits.median():.3f}'),
-('''        rows.append({"session": s["session_id"], "recording": r["recording"], "kind": r["kind"],''',
- '''        rows.append({"session": s["session_id"], "recording": r["recording"], "familiar": r["familiar"], "kind": r["kind"],'''),
-('''nov = recs[(recs.session.isin(info[info.recordings.str.contains(",")].session))]
-nov = nov[nov.duplicated("session", keep="first")]''', '''nov = recs[~recs.familiar]'''),
-('''    rec = h.recordings(s)[0]
-    row = {"session": s["session_id"]}''', '''    rec = familiar(s)
-    row = {"session": s["session_id"]}'''),
-('''    fam = h.recordings(s)[0]
-    p = fam["pos"]''', '''    fam = familiar(s)
-    p = fam["pos"]'''),
-('''def pv_correlations(s, max_rate=h.PYR_MAX_RATE_HZ, min_speed=h.MIN_SPEED_CM_S):
-    fam = h.recordings(s)[0]''', '''def pv_correlations(s, max_rate=h.PYR_MAX_RATE_HZ, min_speed=h.MIN_SPEED_CM_S):
-    fam = familiar(s)'''),
-('''started = time.time()
-assets = h.list_assets()''', '''def familiar(s):
-    \"\"\"The familiar figure-eight recording of a session (its first maze recording).\"\"\"
-    return next(r for r in h.recordings(s) if r["familiar"])
+cat >> huszar.py <<'EOF'
 
 
-started = time.time()
-assets = h.list_assets()'''),
-('''print(f"\\nVariant: without the two mice recorded only in the novel-environment design (e15_13f1, e16_3m2): "''',
- '''print(f"\\nVariant: without e15_13f1 and e16_3m2, the two mice absent from the paper code's homecage results: "'''),
-]
-for a,b in rep:
-    if a=='"kind": "corr": c}': continue
-    assert a in s, a[:60]
-    s=s.replace(a,b)
-open(p,'w').write(s)
+def run_sessions(func, metas, workers=4):
+    """Run func(asset, meta) over sessions in worker processes; results in the order given."""
+    A = {a["path"]: a for a in assets()}
+    with cf.ProcessPoolExecutor(workers) as ex:
+        futs = [ex.submit(func, A[m["path"]], m) for m in metas]
+        return [fu.result() for fu in futs]
 EOF
-python $TMPDIR/build_nb.py && . $TMPDIR/explore/bin/activate && uv pip install -q matplotlib nbconvert ipykernel 2>&1 | tail -1
-```
-
-```
-Exit code 1
-  File "/tmp/claude-1001/build_nb.py", line 85
-    code(r"""
-         ^^^^
-SyntaxError: invalid syntax. Perhaps you forgot a comma?
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-p='build_nb.py'; s=open(p).read()
-s=s.replace('''def familiar(s):
-    """The familiar figure-eight recording of a session (its first maze recording)."""
-''','''def familiar(s):
-    # the familiar figure-eight recording of a session: its first maze recording
-''')
-open(p,'w').write(s)
+cat > $TMPDIR/run1.py <<'EOF'
+import json, pickle, time, resource, sys
+sys.path.insert(0,'entries/huszar-2022')
+import huszar as h
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+H=[m for m in ms if m['subject_id'] not in h.HOMECAGE_EXCLUDED]
+t=time.time()
+sub=H[:int(sys.argv[1])] if len(sys.argv)>1 else H
+r=h.run_sessions(h.homecage_session, sub)
+print('homecage', len(sub), time.time()-t)
+pickle.dump(r, open('/tmp/claude-1001/hc.pkl','wb'))
+F=[m for m in ms if m['subject_id'] in h.FAMILIAR_MICE and h.behaviour_epochs(m)]
+t=time.time()
+r=h.run_sessions(h.maze_session, F)
+print('maze', len(F), time.time()-t)
+pickle.dump(r, open('/tmp/claude-1001/maze.pkl','wb'))
+print(resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss/1e6,'GB')
 EOF
-python $TMPDIR/build_nb.py && . $TMPDIR/explore/bin/activate && uv pip install -q matplotlib nbconvert ipykernel 2>&1 | tail -1
+. $TMPDIR/venv/bin/activate && time python $TMPDIR/run1.py 8
 ```
 
 ```
-wrote entries/000552-huszar-2022/reproduce_huszar_2022.ipynb 50 cells
-Shell cwd was reset to
+homecage 8 23.640774726867676
+maze 57 60.88364553451538
+0.369152 GB
+
+real	1m25.305s
+user	1m51.016s
+sys	0m5.453s
 ```
-
-**Agent**
-
-Running the notebook in the exploration environment to catch errors:
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000552-huszar-2022 && . $TMPDIR/explore/bin/activate && time jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/run1 reproduce_huszar_2022.ipynb 2>&1 | tail -30
+. $TMPDIR/venv/bin/activate && time python $TMPDIR/run1.py
 ```
 
 ```
-[NbConvertApp] Making directory /tmp/claude-1001/run1
-[NbConvertApp] Converting notebook reproduce_huszar_2022.ipynb to notebook
-[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 193056 bytes to /tmp/claude-1001/run1/reproduce_huszar_2022.ipynb
+homecage 96 81.53478693962097
+maze 57 42.77310061454773
+0.406672 GB
 
-real	5m56.638s
-user	6m17.890s
-sys	0m18.218s
+real	2m5.242s
+user	4m27.479s
+sys	0m13.039s
 ```
 
-**Agent**
+**Agent calls Bash**
 
-Ran clean in 6 minutes. Reading the outputs:
+```bash
+. $TMPDIR/venv/bin/activate && cd entries/huszar-2022 && python - <<'EOF'
+import pickle, numpy as np, pandas as pd, huszar as h
+r=pickle.load(open('/tmp/claude-1001/hc.pkl','rb'))
+C=pd.DataFrame([c for x in r for c in x[0]]); P=pd.DataFrame([p for x in r for p in x[1]])
+L=C[C.lr]
+print(len(C), len(L), L.groupby('birthdate').size().tolist())
+for col in ['rate','burst','burst35','rip_rate','rip_part']:
+    print(col, L.groupby('birthdate')[col].median().round(4).tolist())
+print(P.groupby('sbd').size().tolist(), P.groupby('sbd').rip_corr.median().round(4).tolist(), P.rip_corr.isna().sum())
+from scipy.stats import ranksums
+print(ranksums(P[P.sbd].rip_corr.dropna(), P[~P.sbd].rip_corr.dropna()))
+# per-session fraction
+fr=C.groupby(['session','birthdate']).lr.mean().reset_index().groupby('birthdate').lr.agg(['mean','std','size']); print(fr*[100,100,1])
+EOF
+```
+
+```
+7411 664 [184, 132, 233, 115]
+rate [1.5165, 1.6199, 1.5438, 1.1523]
+burst [0.0881, 0.0916, 0.1039, 0.08]
+burst35 [0.0807, 0.0803, 0.0951, 0.0744]
+rip_rate [7.484, 8.8232, 7.9118, 6.1295]
+rip_part [0.237, 0.2686, 0.2355, 0.1942]
+[50461, 3751] [0.0226, 0.0385] 303
+RanksumsResult(statistic=np.float64(21.015447104940826), pvalue=np.float64(4.737596508526484e-98))
+                mean       std  size
+birthdate                           
+E13.5       5.394180  4.989062    30
+E14.5      11.160804  8.532129    24
+E15.5      14.735193  8.684178    24
+E16.5       9.161971  3.842837    18
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/venv/bin/activate && cd entries/huszar-2022 && python - <<'EOF'
+import pickle, numpy as np, pandas as pd, huszar as h
+R=[x for x in pickle.load(open('/tmp/claude-1001/maze.pkl','rb')) if x]
+print(len(R), sorted(set(x['subject'] for x in R)), sum(x['lr'].sum() for x in R))
+print(pd.Series([x['env'] for x in R]).value_counts())
+print(min(min(x['trial_counts'].values()) for x in R), [ (x['session'],x['trial_counts']) for x in R if min(x['trial_counts'].values())<10])
+rows=[];pairs=[]
+for x in R:
+    M=x['maps']; occ=x['occ']
+    for c in range(M.shape[1]):
+        rL,rR=M[0,c],M[1,c]
+        rate=np.r_[rL,rR]; o=np.r_[occ[0],occ[1]]
+        si=h.skaggs_info(rate,o)
+        rows.append(dict(session=x['session'],bd=x['birthdate'],lr=x['lr'][c],si=si,
+           cov_b=np.nansum(rate>5)))
+    lr=np.where(x['lr'])[0]; nr=np.where(~x['lr'])[0]
+    stem=slice(74,205)
+    V=np.concatenate([M[0][:,stem],M[1][:,stem]],axis=1)
+    for kind,pp in [(True,[(a,b) for i,a in enumerate(lr) for b in lr[i+1:]]),(False,[(a,b) for a in lr for b in nr])]:
+        for a,b in pp:
+            ok=np.isfinite(V[a])&np.isfinite(V[b])
+            va,vb=V[a][ok],V[b][ok]
+            r=np.corrcoef(va,vb)[0,1] if va.std()>0 and vb.std()>0 else np.nan
+            pairs.append(dict(sbd=kind,r=r,sh=abs(x['shank'][a]-x['shank'][b])))
+D=pd.DataFrame(rows); P=pd.DataFrame(pairs)
+L=D[D.lr]; print(L.groupby('bd').size().tolist(), L.groupby('bd').si.median().round(3).tolist(), L.groupby('bd').cov_b.median().tolist())
+print(P.groupby('sbd').size().tolist(), P.groupby('sbd').r.median().round(4).tolist(), P.r.isna().sum())
+print(P.groupby(['sh','sbd']).r.agg(['mean','size']))
+EOF
+```
+
+```
+57 ['e13_16f1', 'e13_26m1', 'e14_2m2', 'e14_2m3', 'e15_10m1', 'e15_9f1', 'e16_1f1', 'e16_2m1', 'e16_3m1'] 466
+figure-8 maze     53
+tmaze_familiar     4
+Name: count, dtype: int64
+5 [('e13_16f1_210302', {'left': 15, 'right': 7}), ('e13_16f1_210315', {'left': 11, 'right': 9}), ('e14_2m2_201013', {'left': 7, 'right': 8}), ('e14_2m2_201017', {'left': 8, 'right': 12}), ('e14_2m2_201022', {'left': 9, 'right': 10}), ('e14_2m3_201017', {'left': 19, 'right': 8}), ('e15_10m1_200716', {'left': 12, 'right': 8}), ('e15_10m1_200719', {'left': 12, 'right': 8}), ('e15_10m1_200723', {'left': 8, 'right': 8}), ('e15_10m1_200809', {'left': 12, 'right': 9}), ('e15_10m1_200812', {'left': 13, 'right': 9}), ('e15_9f1_200715', {'left': 14, 'right': 7}), ('e15_9f1_200717', {'left': 11, 'right': 9}), ('e15_9f1_200809', {'left': 12, 'right': 8}), ('e16_1f1_200823', {'left': 7, 'right': 13}), ('e16_1f1_200917', {'left': 13, 'right': 7}), ('e16_1f1_200918', {'left': 17, 'right': 9}), ('e16_1f1_200919', {'left': 21, 'right': 8}), ('e16_1f1_200920', {'left': 13, 'right': 9}), ('e16_1f1_200923', {'left': 13, 'right': 9}), ('e16_1f1_201001', {'left': 12, 'right': 8}), ('e16_1f1_201002', {'left': 13, 'right': 7}), ('e16_1f1_201004', {'left': 15, 'right': 9}), ('e16_2m1_201116', {'left': 7, 'right': 5}), ('e16_2m1_201121', {'left': 9, 'right': 13}), ('e16_2m1_201129', {'left': 10, 'right': 8}), ('e16_3m1_210111', {'left': 8, 'right': 10})]
+[164, 76, 111, 115] [0.564, 0.632, 0.918, 0.62] [34.5, 32.0, 37.0, 12.0]
+[39965, 2609] [-0.0239, 0.0189] 122
+              mean   size
+sh sbd                   
+0  False  0.026807  13549
+   True   0.060140   1205
+1  False  0.014703  20603
+   True   0.038552   1021
+2  False  0.010983   4467
+   True   0.023436    335
+3  False  0.005417   1346
+   True  -0.024834     48
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper && python3 -c "
+t=open('10.1038-s41593-022-01138-x.txt').read()
+i=t.find('Theta-cycle detection.'); print(t[i:i+1200]); print('----')
+i=t.find('reliability'); 
+import re
+for m in re.finditer('reliab',t): print(t[m.start()-300:m.start()+900]); print('==='); 
+" | head -60
+```
+
+```
+Theta-cycle detection. As theta-phase shifts along the radial axis 72 , a channel with a positive sharp wave (that is, above the center of the pyramidal layer) was selected to ensure consistency of extracted phases across recordings. Broadband LFP was bandpass filtered between 6 and 12 Hz using a fourth-order Chebyshev filter. The Hilbert transform of the filtered signal was computed, and its absolute value and angle at each timepoint were taken to be the theta-band amplitude and phase, respectively. Intervals with theta-band amplitude 1 s.d. above the mean were considered for theta cycle detection. Within these intervals, timepoints where the phase crossed 0° were identified as peaks of theta, and timepoints of consecutive theta peaks were considered the onsets and offsets of individual theta cycles (all throughout, peaks are at 0° and 360° and troughs at 180°). Only theta cycles occurring within identified waking periods (see section State scoring ) were considered for analysis. REM shifting and theta-depth modulation. Theta phase was extracted in the waking and REM periods identified via state scoring. Broadband LFP was filtered and Hilbert transformed to extract amplitude and p
+----
+; Supplementary Table 1 ) were implanted with high-density silicon probes and optic fibers targeting CA1. Pyramidal neurons were separated from interneurons based on waveform shape and bursting statistics ( Extended Data Fig. 2a , b ). Birthdated pyramidal neurons were identified optogenetically by reliable, short-latency discharge following 1.5- to 3-ms light pulses ( Fig. 1d and Extended Data Fig. 2 ; Methods ). Waveform shapes of light-responsive pyramidal neurons were no different from those of nonresponsive neurons ( Extended Data Fig. 2i ). Furthermore, light-evoked spikes were systematically most similar to spontaneous spikes of their assigned cluster ( Extended Data Fig. 2d – f ), validating our identification method of birthdated pyramidal cells in vivo. The fraction of ligh
+[... 17 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/huszar-2022 && cat >> huszar.py <<'EOF'
+
+
+# ---------- theta ----------
+
+def _sos(lo, hi, fs=1250.0, order=4):
+    """Fourth-order Chebyshev band-pass (Methods); type II with 20 dB stopband as buzcode's
+    bz_Filter default (standard), applied forward and backward."""
+    from scipy.signal import cheby2
+    return cheby2(order, 20, [lo, hi], btype="band", fs=fs, output="sos")
+
+
+def pick_theta_channel(f, m, win_s=52.4288):
+    """The theta channel (Methods, Theta-cycle detection): 'a channel with a positive sharp wave
+    (that is, above the center of the pyramidal layer)'. The paper does not say how it was
+    picked from the channels that qualify (assumption): in one LFP chunk of about 52 s during
+    homecage non-REM sleep with the most SPW-Rs, the pyramidal layer centre is the good channel
+    with the largest ripple-band (130-200 Hz) power at the ripple peaks; on its shank, the
+    theta channel is the channel with a positive mean sharp wave (2-40 Hz LFP at 0 to 50 ms
+    after the peaks, against the chunk mean) that has the largest ripple power, so that it lies
+    just above the centre. Returns (theta channel row, pyramidal channel row, details)."""
+    from scipy.signal import sosfiltfilt
+    lfp = f["processing/ecephys/LFP/LFP/data"]
+    fs = float(f["processing/ecephys/LFP/LFP/starting_time"].attrs["rate"])
+    n = int(round(win_s * fs))
+    peaks = f["processing/ecephys/Ripples/peaks"][:]
+    ss = m["sleep"]
+    nrem = np.array([(a, b) for a, b, l in zip(ss["start_time"], ss["stop_time"], ss["label"])
+                     if l == "Non-REM"]).reshape(-1, 2)
+    hc = homecage_intervals(m)
+    ok = in_intervals(peaks, merge(nrem)) & in_intervals(peaks, hc)
+    p = peaks[ok] if ok.sum() > 20 else peaks
+    blk = np.floor(p * fs / n).astype(int)
+    b = np.bincount(blk).argmax()
+    x = lfp[b * n:(b + 1) * n, :].astype(float)
+    t0 = b * n / fs
+    pk = ((p[blk == b] - t0) * fs).astype(int)
+    pk = pk[(pk > 100) & (pk < len(x) - 100)]
+    rip = sosfiltfilt(_sos(130, 200, fs), x, axis=0)
+    sw = sosfiltfilt(_sos(2, 40, fs), x, axis=0)
+    w = np.arange(-30, 31)
+    rpow = np.array([np.mean(rip[pk[:, None] + w, c] ** 2) for c in range(x.shape[1])])
+    w2 = np.arange(0, 63)
+    swa = np.array([np.mean(sw[pk[:, None] + w2, c]) - np.mean(sw[:, c])
+                    for c in range(x.shape[1])])
+    el = f["general/extracellular_ephys/electrodes"]
+    bad = el["bad_channel"][:] if "bad_channel" in el else np.zeros(x.shape[1], bool)
+    shank = el["shank"][:]
+    rp = np.where(bad, -np.inf, rpow)
+    pyr_ch = int(np.argmax(rp))
+    cand = np.where((shank == shank[pyr_ch]) & ~bad & (swa > 0))[0]
+    th = int(cand[np.argmax(rpow[cand])]) if len(cand) else pyr_ch
+    return th, pyr_ch, {"n_ripples": int(len(pk)), "sw_theta": float(swa[th]),
+                        "sw_pyr": float(swa[pyr_ch]), "positive_found": bool(len(cand))}
+
+
+def read_channel(f, ch, block=2 ** 16 * 16):
+    lfp = f["processing/ecephys/LFP/LFP/data"]
+    conv = float(lfp.attrs.get("conversion", 1.0))
+    out = np.empty(lfp.shape[0], np.float32)
+    for s in range(0, lfp.shape[0], block):
+        out[s:s + block] = lfp[s:s + block, ch]
+    return out * conv * 1e6  # microvolts
+
+
+def theta_phase_amp(x, fs=1250.0):
+    """6-12 Hz band, Hilbert amplitude and phase (Methods); phase 0 at theta peaks."""
+    from scipy.fft import next_fast_len
+    from scipy.signal import hilbert, sosfiltfilt
+    y = sosfiltfilt(_sos(6, 12, fs), x.astype(np.float64)).astype(np.float32)
+    n = len(y)
+    z = hilbert(y, N=next_fast_len(n))[:n]
+    return np.abs(z).astype(np.float32), np.angle(z).astype(np.float32)
+
+
+def theta_cycles(amp, ph, fs=1250.0):
+    """Theta cycles (Methods): inside intervals with amplitude above mean + 1 SD, cycles between
+    consecutive 0 degree crossings (peaks), both crossings inside one such interval."""
+    hi = amp > amp.mean() + amp.std()
+    cross = np.where((ph[:-1] < 0) & (ph[1:] >= 0) & (np.abs(ph[1:] - ph[:-1]) < np.pi))[0] + 1
+    lab = np.cumsum(np.r_[0, np.diff(hi.astype(np.int8)) != 0])
+    c0, c1 = cross[:-1], cross[1:]
+    keep = hi[c0] & hi[c1] & (lab[c0] == lab[c1])
+    return np.c_[c0[keep], c1[keep]] / fs
+
+
+def rayleigh(ph):
+    """Rayleigh test of circular uniformity (approximation of Zar, as CircStat circ_rtest)."""
+    n = len(ph)
+    if n < 2:
+        return np.nan, np.nan, np.nan
+    C, S = np.cos(ph).sum(), np.sin(ph).sum()
+    R = np.hypot(C, S)
+    r = R / n
+    z = R ** 2 / n
+    p = np.exp(np.sqrt(1 + 4 * n + 4 * (n ** 2 - R ** 2)) - (1 + 2 * n))
+    return float(min(p, 1.0)), float(np.mod(np.arctan2(S, C), 2 * np.pi)), float(r)
+
+
+def state_intervals(m, label):
+    ss = m["sleep"]
+    return merge([(a, b) for a, b, l in zip(ss["start_time"], ss["stop_time"], ss["label"])
+                  if l == label])
+
+
+def intersect(a, b):
+    a, b = merge(a), merge(b)
+    out = []
+    for s, e in a:
+        for c, d in b:
+            lo, hi = max(s, c), min(e, d)
+            if hi > lo:
+                out.append([lo, hi])
+    return np.array(out).reshape(-1, 2)
+
+
+def _mask_intervals(mask, fs):
+    d = np.diff(np.r_[0, mask.astype(np.int8), 0])
+    s, e = np.where(d == 1)[0], np.where(d == -1)[0]
+    return np.c_[s, e] / fs
+
+
+def theta_session(asset, m, novel=False):
+    """Theta measures of one session. Homecage wake and REM (homecage_intervals with the lab's
+    sleep states): for each light-responsive pyramidal cell the Rayleigh p, preferred phase and
+    mean resultant length in wake (amplitude above its mean) and in REM (all); per SBD and DBD
+    pair the theta-cycle cofiring (Methods, Cofiring analysis; cycles with both edges in
+    homecage WAKE, get_corrHome_v2.m). For a novel session also the theta-related rate of every
+    pyramidal cell in each behavioural subsession, with and without the wake restriction."""
+    fs = 1250.0
+    with open_nwb(asset) as f:
+        th, pch, det = pick_theta_channel(f, m)
+        x = read_channel(f, th)
+        ct = np.array(m["u_putative_cell_type"], dtype=object)
+        pyr = np.where(ct == "Pyramidal Cell")[0]
+        trains = spike_trains(f, pyr)
+    lr = np.array(m["u_light_responsive"], bool)[pyr]
+    amp, ph = theta_phase_amp(x)
+    del x
+    hc = homecage_intervals(m)
+    wake = intersect(state_intervals(m, "Awake"), hc)
+    rem = intersect(state_intervals(m, "REM"), hc)
+    wake_hi = intersect(wake, _mask_intervals(amp > amp.mean(), fs))
+    cells = []
+    for k in np.where(lr)[0]:
+        t = trains[k]
+        row = {"session": m["session_id"], "subject": m["subject_id"],
+               "birthdate": m["birthdate"], "unit": int(pyr[k])}
+        for st, iv in (("wake", wake_hi), ("rem", rem)):
+            tt = t[in_intervals(t, iv)]
+            idx = np.clip((tt * fs).astype(int), 0, len(ph) - 1)
+            p, mu, r = rayleigh(ph[idx].astype(float))
+            row.update({st + "_p": p, st + "_phase": mu, st + "_mrl": r, st + "_n": len(tt)})
+        cells.append(row)
+    cyc = theta_cycles(amp, ph, fs)
+    out = {"session": m["session_id"], "theta_ch": th, "pyr_ch": pch, **det,
+           "n_cycles": len(cyc), "wake_s": float(np.sum(np.diff(wake, axis=1)))}
+    W = state_intervals(m, "Awake")
+    cw = cyc[in_intervals(cyc[:, 0], intersect(W, hc)) & in_intervals(cyc[:, 1], intersect(W, hc))]
+    out["n_cycles_hc_wake"] = len(cw)
+    counts = np.zeros((len(cw), len(pyr)), np.int32)
+    edges = cw.ravel()
+    for j, t in enumerate(trains):
+        kk = np.searchsorted(edges, t, side="right")
+        ins = kk % 2 == 1
+        counts[:, j] = np.bincount((kk[ins] - 1) // 2, minlength=len(cw))[:len(cw)]
+    lrk, nrk = np.where(lr)[0], np.where(~lr)[0]
+    sbd = [(a, b) for n, a in enumerate(lrk) for b in lrk[n + 1:]]
+    dbd = [(a, b) for a in lrk for b in nrk]
+    tc = pair_corr(counts, sbd + dbd)
+    pairs = [{"session": m["session_id"], "subject": m["subject_id"],
+              "birthdate": m["birthdate"], "sbd": n < len(sbd), "a": int(pyr[a]),
+              "b": int(pyr[b]), "theta_corr": tc[n]} for n, (a, b) in enumerate(sbd + dbd)]
+    rates = []
+    if novel:
+        for n_ep, (t0, t1, env, name) in enumerate(behaviour_epochs(m)):
+            sel = (cyc[:, 0] >= t0) & (cyc[:, 1] <= t1)
+            for restrict in (True, False):
+                c = cyc[sel]
+                if restrict:
+                    c = c[in_intervals(c[:, 0], W) & in_intervals(c[:, 1], W)]
+                dur = float(np.sum(c[:, 1] - c[:, 0]))
+                e = c.ravel()
+                for j, t in enumerate(trains):
+                    kk = np.searchsorted(e, t, side="right")
+                    rates.append({"session": m["session_id"], "unit": int(pyr[j]),
+                                  "lr": bool(lr[j]), "epoch": n_ep, "env": env,
+                                  "wake_only": restrict, "n_cycles": len(c),
+                                  "rate": np.sum(kk % 2 == 1) / dur if dur > 0 else np.nan})
+    return cells, pairs, out, rates
+
+
+def theta_session_novel(asset, m):
+    return theta_session(asset, m, novel=True)
+EOF
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, numpy as np, huszar as h, time, resource, pandas as pd
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+A={a['path']:a for a in h.assets()}
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+t=time.time(); c,p,o,r=h.theta_session(A[m['path']],m); print(time.time()-t)
+print(o); print(pd.DataFrame(c).round(3).to_string()); P=pd.DataFrame(p); print(P.groupby('sbd').theta_corr.median())
+print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+EOF
+date -u
+```
+
+```
+38.45217299461365
+{'session': 'e16_3m1_210201', 'theta_ch': 63, 'pyr_ch': 17, 'n_ripples': 57, 'sw_theta': 64.14531668929475, 'sw_pyr': -191.98424967544886, 'positive_found': True, 'n_cycles': 11557, 'wake_s': 9901.9011, 'n_cycles_hc_wake': 5093}
+           session  subject birthdate  unit  wake_p  wake_phase  wake_mrl  wake_n  rem_p  rem_phase  rem_mrl  rem_n
+0   e16_3m1_210201  e16_3m1     E16.5    16   0.000       1.585     0.095   11132  0.000      0.785    0.249    305
+1   e16_3m1_210201  e16_3m1     E16.5    17   0.000       2.323     0.079   10848  0.005      1.102    0.132    301
+2   e16_3m1_210201  e16_3m1     E16.5    22   0.000       1.343     0.035    8200  0.000      4.790    0.117   1296
+3   e16_3m1_210201  e16_3m1     E16.5    27   0.000       2.522     0.043    5025  0.000      4.129    0.119    563
+4   e16_3m1_210201  e16_3m1     E16.5    34   0.000       1.947     0.088    6268  0.000      4.873    0.159    743
+5   e16_3m1_210201  e16_3m1     E16.5    42   0.000       1.962     0.042    7098  0.000      0.510    0.159    418
+6   e16_3m1_210201  e16_3m1     E16.5    47   0.000       2.743     0.083    3853  0.000      3.702    0.204    295
+7   e16_3m1_210201  e16_3m1     E16.5    66   0.000       1.697     0.070    3073  0.000      0.794    0.391     76
+8   e16_3m1_210201  e16_3m1     E16.5   117   0.000       1.247     0.229     696  0.811      4.274    0.058     63
+9   e16_3m1_210201  e16_3m1     E16.5   149   0.000       1.430     0.114    3582  0.331      1.202    0.098    115
+10  e16_3m1_210201  e16_3m1     E16.5   154   0.000       2.914     0.062    4103  0.000      1.338    0.258    114
+11  e16_3m1_210201  e16_3m1     E16.5   162   0.001       1.078     0.139     355  0.011      3.957    0.330     41
+sbd
+False    0.009347
+True     0.018984
+Name: theta_corr, dtype: float64
+1.650324
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/run2.py <<'EOF'
+import json, pickle, time, sys
+sys.path.insert(0,'entries/huszar-2022')
+import huszar as h
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+S=[m for m in ms if m['subject_id'] not in h.HOMECAGE_EXCLUDED or m['subject_id'] in h.NOVEL_MICE]
+t=time.time()
+r=h.run_sessions(h.theta_session_novel, S)
+print('theta', len(S), time.time()-t)
+pickle.dump(r, open('/tmp/claude-1001/theta.pkl','wb'))
+EOF
+. $TMPDIR/venv/bin/activate && time python $TMPDIR/run2.py
+```
+
+```
+theta 104 1271.741611480713
+
+real	21m12.739s
+user	17m8.662s
+sys	2m50.561s
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; . $TMPDIR/venv/bin/activate && python - <<'EOF'
+import pickle, numpy as np, pandas as pd
+R=pickle.load(open('/tmp/claude-1001/theta.pkl','rb'))
+O=pd.DataFrame([x[2] for x in R]); print(O.positive_found.value_counts(), O.n_cycles_hc_wake.describe())
+C=pd.DataFrame([c for x in R for c in x[0]]); C=C[~C.subject.isin(['e15_13f1','e16_3m2'])]
+w=C[C.wake_p<0.01]; r=C[C.rem_p<0.01]
+print(w.groupby('birthdate').size().tolist(), w.groupby('birthdate').wake_mrl.median().round(4).tolist())
+print(r.groupby('birthdate').size().tolist(), r.groupby('birthdate').rem_mrl.median().round(4).tolist())
+for thr in [0.01,0.05]:
+    b=C[(C.wake_p<thr)&(C.rem_p<thr)].copy()
+    wd=np.degrees(b.wake_phase); rd=np.degrees(b.rem_phase)
+    b['shift']=((wd>=120)&(wd<=300))&~((rd>=120)&(rd<=300))
+    print(thr, b.groupby('birthdate').size().tolist(), (b.groupby('birthdate')['shift'].mean()*100).round(2).tolist())
+P=pd.DataFrame([p for x in R for p in x[1]]); P=P[~P.subject.isin(['e15_13f1','e16_3m2'])]
+print(P.groupby('sbd').size().tolist(), P.groupby('sbd').theta_corr.median().round(4).tolist())
+EOF
+```
+
+```
+Thu Nov 19 05:14:08 UTC 2026
+positive_found
+False    69
+True     35
+Name: count, dtype: int64 count      104.000000
+mean      3473.894231
+std       2644.032166
+min         64.000000
+25%       1863.000000
+50%       2871.500000
+75%       4237.000000
+max      14581.000000
+Name: n_cycles_hc_wake, dtype: float64
+[175, 117, 173, 101] [0.1207, 0.0905, 0.0916, 0.1073]
+[102, 90, 105, 70] [0.1399, 0.1427, 0.1444, 0.1439]
+0.01 [93, 80, 76, 65] [27.96, 20.0, 19.74, 21.54]
+0.05 [115, 93, 108, 71] [28.7, 22.58, 25.93, 21.13]
+[50461, 3751] [0.0078, 0.0177]
+```
+
+**Agent calls Bash**
+
+```bash
+cat >> huszar.py <<'EOF'
+
+
+# ---------- monosynaptic connections ----------
+
+MONO_BIN = 0.0008  # s, Methods, Monosynaptic connection analyses
+MONO_LAG = 0.05  # s, half-width of the CCG window (standard; wide enough for the baseline)
+
+
+def hollow_gauss(sd_bins, hollow=0.6):
+    """Hollowed Gaussian kernel (Stark and Abeles 2009, as English et al. 2017): the centre bin
+    weight reduced by the hollow fraction, kernel normalised to sum 1."""
+    half = int(np.ceil(3 * sd_bins))
+    k = np.exp(-0.5 * (np.arange(-half, half + 1) / sd_bins) ** 2)
+    k[half] *= (1 - hollow)
+    return k / k.sum()
+
+
+def ccg_lags(a, b, binsize=MONO_BIN, maxlag=MONO_LAG):
+    """CCG counts of b around a, bins of binsize centred on 0, lags -maxlag..maxlag."""
+    nb = int(round(maxlag / binsize))
+    edges = (np.arange(-nb, nb + 2) - 0.5) * binsize
+    lo = np.searchsorted(b, a - maxlag - binsize)
+    hi = np.searchsorted(b, a + maxlag + binsize)
+    n = hi - lo
+    if n.sum() == 0:
+        return np.zeros(len(edges) - 1), edges
+    rep = np.repeat(np.arange(len(a)), n)
+    start = np.repeat(lo - np.r_[0, np.cumsum(n)[:-1]], n)
+    idx = np.arange(n.sum()) + start
+    return np.histogram(b[idx] - a[rep], edges)[0].astype(float), edges
+
+
+def _conv_reflect(c, k):
+    h = len(k) // 2
+    x = np.r_[c[h:0:-1], c, c[-2:-h - 2:-1]]
+    return np.convolve(x, k, mode="valid")
+
+
+def mono_test(c, sd_s=0.015, alpha=0.001):
+    """Monosynaptic pyramidal-to-interneuron test (Methods: 'identical to the reliability test',
+    English et al. 2017): baseline from a hollowed Gaussian (15 ms s.d., the reliability test's
+    value) convolved with the CCG; the bins at 0.8 to 2.8 ms lags (the window of the spike
+    transmission measure, Methods) must hold a count above baseline (Poisson, upper tail) and
+    the peak bin a count above the largest of the mirror bins at negative lags (Poisson),
+    each at alpha 0.001 Bonferroni corrected for the bins tested."""
+    from scipy.stats import poisson
+    nb = (len(c) - 1) // 2
+    base = _conv_reflect(c, hollow_gauss(sd_s / MONO_BIN))
+    win = nb + np.arange(1, 4)  # lags 0.8, 1.6, 2.4 ms (bin centres within 0.8 to 2.8 ms)
+    a = alpha / len(win)
+    p_base = poisson.sf(c[win] - 1, np.maximum(base[win], 1e-9))
+    pk = win[np.argmax(c[win])]
+    mirror = nb - np.arange(1, 4)
+    p_ant = poisson.sf(c[pk] - 1, max(c[mirror].max(), 1e-9))
+    return bool(np.any(p_base < a) and p_ant < a)
+
+
+def transmission(a, b, sd_s=0.008):
+    """Spike transmission probability (Methods): CCG of presynaptic spikes a, divided by their
+    number, minus the baseline from an 8 ms s.d. hollowed Gaussian, summed over 0.8-2.8 ms lags
+    where it exceeds the baseline."""
+    if len(a) < 20:
+        return np.nan
+    c, _ = ccg_lags(a, b, maxlag=0.03)
+    pr = c / len(a)
+    base = _conv_reflect(pr, hollow_gauss(sd_s / MONO_BIN))
+    nb = (len(c) - 1) // 2
+    win = nb + np.arange(1, 4)
+    d = pr[win] - base[win]
+    return float(np.sum(d[d > 0]))
+
+
+ISI_EDGES = np.logspace(np.log10(0.005), np.log10(1.0), 16)  # 15 log bins, 5-1000 ms (claims)
+
+
+def mono_session(asset, m):
+    """Pyramidal-to-interneuron connections of one session, from spikes outside the light pulse
+    periods; per connection the transmission probability for presynaptic spikes with preceding
+    ISI of 10 to 40 ms (claims, fig7ce) and per ISI bin (fig7d)."""
+    ct = np.array(m["u_putative_cell_type"], dtype=object)
+    pyr = np.where(ct == "Pyramidal Cell")[0]
+    inn = np.where(np.isin(ct, ["Narrow Interneuron", "Wide Interneuron"]))[0]
+    lr = np.array(m["u_light_responsive"], bool)
+    with open_nwb(asset) as f:
+        tr = spike_trains(f)
+    cut = []
+    if m["pulse_periods"]:
+        cut += list(zip(m["pulse_periods"]["start_time"], m["pulse_periods"]["stop_time"]))
+    if m.get("n_pulses"):
+        cut.append((m["pulse_t0"] - 1.0, m["pulse_t1"] + 1.0))
+    keep = subtract([[0, m["last_spike"] + 1]], cut)
+    tr = {i: tr[i][in_intervals(tr[i], keep)] for i in np.r_[pyr, inn]}
+    conn = np.zeros((len(pyr), len(inn)), bool)
+    rows = []
+    for p_, i in enumerate(pyr):
+        a = tr[i]
+        if len(a) < 100:
+            continue
+        isi = np.r_[np.inf, np.diff(a)]
+        for q, j in enumerate(inn):
+            c, _ = ccg_lags(a, tr[j])
+            if c.sum() < 50:
+                continue
+            if mono_test(c):
+                conn[p_, q] = True
+                sel = (isi >= 0.010) & (isi <= 0.040)
+                st = transmission(a[sel], tr[j])
+                by = [transmission(a[(isi >= lo) & (isi < hi)], tr[j])
+                      for lo, hi in zip(ISI_EDGES[:-1], ISI_EDGES[1:])]
+                rows.append({"session": m["session_id"], "subject": m["subject_id"],
+                             "birthdate": m["birthdate"], "pre": int(i), "post": int(j),
+                             "pre_lr": bool(lr[i]), "stp": st, "stp_isi": by})
+    return {"session": m["session_id"], "subject": m["subject_id"],
+            "birthdate": m["birthdate"], "pyr": pyr, "inn": inn, "lr": lr[pyr],
+            "conn": conn, "rows": rows}
+
+
+def convergence(conn, a, b):
+    """Shared postsynaptic interneurons over the union of targets (Methods); NaN with none."""
+    u = np.sum(conn[a] | conn[b])
+    return np.sum(conn[a] & conn[b]) / u if u > 0 else np.nan
+EOF
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, numpy as np, huszar as h, time, resource
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+A={a['path']:a for a in h.assets()}
+H=[m for m in ms if m['subject_id'] not in h.HOMECAGE_EXCLUDED]
+print('possible pairs', sum(sum(c=='Pyramidal Cell' for c in m['u_putative_cell_type'])*sum(c in('Narrow Interneuron','Wide Interneuron') for c in m['u_putative_cell_type']) for m in H))
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+t=time.time(); r=h.mono_session(A[m['path']],m); print(time.time()-t, r['conn'].shape, r['conn'].sum(), np.nanmedian([x['stp'] for x in r['rows']]))
+print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+EOF
+```
+
+```
+possible pairs 184230
+13.839917659759521 (144, 23) 916 0.018480100813271946
+0.242516
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/run3.py <<'EOF'
+import json, pickle, time, sys
+sys.path.insert(0,'entries/huszar-2022')
+import huszar as h
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+H=[m for m in ms if m['subject_id'] not in h.HOMECAGE_EXCLUDED]
+t=time.time()
+r=h.run_sessions(h.mono_session, H)
+print('mono', len(H), time.time()-t)
+pickle.dump(r, open('/tmp/claude-1001/mono.pkl','wb'))
+EOF
+. $TMPDIR/venv/bin/activate && time python $TMPDIR/run3.py
+```
+
+```
+mono 96 362.9983215332031
+
+real	6m3.815s
+user	21m6.920s
+sys	0m8.643s
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; . $TMPDIR/venv/bin/activate && cd entries/huszar-2022 && python - <<'EOF'
+import pickle, numpy as np, pandas as pd, huszar as h
+R=pickle.load(open('/tmp/claude-1001/mono.pkl','rb'))
+print('conns', sum(x['conn'].sum() for x in R), sum(x['conn'].size for x in R))
+rows=[]; 
+for x in R:
+    c=x['conn']; lr=np.where(x['lr'])[0]; nr=np.where(~x['lr'])[0]
+    for i,a in enumerate(lr):
+        for b in lr[i+1:]: rows.append(dict(bd=x['birthdate'],sbd=True,cv=h.convergence(c,a,b)))
+        for b in nr: rows.append(dict(bd=x['birthdate'],sbd=False,cv=h.convergence(c,a,b)))
+D=pd.DataFrame(rows); print(D.groupby('sbd').cv.agg(['median','count','size']))
+s=D[D.sbd].dropna(); d=D[~D.sbd].dropna()
+dm=d.groupby('bd').cv.median(); s['corr']=s.cv-s.bd.map(dm)
+print(s.groupby('bd')['corr'].agg(['median','size']))
+M=pd.DataFrame([r for x in R for r in x['rows']])
+L=M[M.pre_lr]; print(L.groupby('birthdate').stp.agg(['median','size']))
+isi=np.array(M.stp_isi.tolist()); print(np.round(np.nanmean(isi,0),4), np.round(np.sqrt(h.ISI_EDGES[:-1]*h.ISI_EDGES[1:])*1000,1))
+# nonzero convergence fraction across all pyr pairs
+nz=0;tot=0
+for x in R:
+    c=x['conn']; n=len(c)
+    if n<2: continue
+    sh=(c.astype(int)@c.T.astype(int)); iu=np.triu_indices(n,1); nz+=(sh[iu]>0).sum(); tot+=len(iu[0])
+print(nz,tot,nz/tot)
+EOF
+```
+
+```
+Thu Nov 19 05:21:20 UTC 2026
+conns 50618 184230
+         median  count   size
+sbd                          
+False  0.363636  50341  50461
+True   0.454545   3748   3751
+         median  size
+bd                   
+E13.5  0.116883  1199
+E14.5  0.142857   532
+E15.5  0.100000  1578
+E16.5  0.053571   439
+             median  size
+birthdate                
+E13.5      0.014126  2040
+E14.5      0.015266   671
+E15.5      0.017157  1584
+E16.5      0.015033   859
+[0.019  0.0213 0.0229 0.0249 0.0266 0.0269 0.0267 0.0262 0.0257 0.0254
+ 0.0253 0.0249 0.0248 0.0248 0.0248] [  6.    8.5  12.1  17.2  24.5  34.9  49.7  70.7 100.7 143.3 204.  290.5
+[... 2 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
 python - <<'EOF'
-import json
-nb=json.load(open('/tmp/claude-1001/run1/reproduce_huszar_2022.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    out=''
-    for o in c.get('outputs',[]):
-        if 'text' in o: out+=''.join(o['text'])
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: out+=''.join(o['data']['text/plain'])
-    if i==7: out=out[:600]+'\n...[info table]...'
-    print(f'===== cell {i} tags={c["metadata"].get("tags")}\n{out}')
+s=open('huszar.py').read()
+old='''            if mono_test(c):'''
+new='''            pb, pa = mono_p(c)
+            pvals.append((p_, q, pb, pa))
+            if pb < 0.001 / 3 and pa < 0.001 / 3:'''
+s=s.replace(old,new)
+s=s.replace('''    conn = np.zeros((len(pyr), len(inn)), bool)
+    rows = []''','''    conn = np.zeros((len(pyr), len(inn)), bool)
+    rows, pvals = [], []''')
+s=s.replace('''            "conn": conn, "rows": rows}''','''            "conn": conn, "rows": rows, "pvals": np.array(pvals).reshape(-1, 4)}''')
+old2='''    p_ant = poisson.sf(c[pk] - 1, max(c[mirror].max(), 1e-9))
+    return bool(np.any(p_base < a) and p_ant < a)'''
+new2='''    p_ant = poisson.sf(c[pk] - 1, max(c[mirror].max(), 1e-9))
+    return bool(np.any(p_base < a) and p_ant < a)
+
+
+def mono_p(c, sd_s=0.015):
+    """The two p values of mono_test (smallest baseline p over the window, and the peak against
+    the mirror bins), so that the count can be shown at other alphas."""
+    from scipy.stats import poisson
+    nb = (len(c) - 1) // 2
+    base = _conv_reflect(c, hollow_gauss(sd_s / MONO_BIN))
+    win = nb + np.arange(1, 4)
+    p_base = poisson.sf(c[win] - 1, np.maximum(base[win], 1e-9))
+    pk = win[np.argmax(c[win])]
+    mirror = nb - np.arange(1, 4)
+    return float(p_base.min()), float(poisson.sf(c[pk] - 1, max(c[mirror].max(), 1e-9)))'''
+s=s.replace(old2,new2)
+s+='''
+
+def novel_session(asset, m):
+    """Rate maps of all pyramidal cells in the familiar figure-eight (first subsession) and in
+    each later subsession with a linearized position in cm (novel figure-eight and linear
+    tracks). Open fields are left out: their x and y are in the lab's units with no scale
+    (dataset description), so the 1 cm bins of the Methods cannot be formed."""
+    ep = behaviour_epochs(m)
+    ct = np.array(m["u_putative_cell_type"], dtype=object)
+    pyr = np.where(ct == "Pyramidal Cell")[0]
+    lr = np.array(m["u_light_responsive"], bool)
+    out = []
+    with open_nwb(asset) as f:
+        tr = spike_trains(f, pyr)
+        for n, (t0, t1, env, name) in enumerate(ep):
+            ser = linear_series_for(m, t0, t1)
+            if ser is None:
+                out.append({"epoch": n, "env": env, "maps": None, "why": "no linearized series "
+                            "inside the epoch"})
+                continue
+            nb = int(np.ceil(m["series"][ser]["n"] and 0)) or None
+            g = f["processing/behavior/" + ser]
+            xmax = float(np.nanmax(g["data"][:]))
+            nbins = NBINS if n == 0 else int(np.ceil(xmax))
+            maps, occ, info, dt = linear_maps(f, m, t0, t1, tr, nbins=nbins)
+            out.append({"epoch": n, "env": env, "maps": maps, "occ": occ, "nbins": nbins,
+                        "trial_counts": {a: sum(1 for i in info if i["arm"] == a)
+                                         for a in ("left", "right")}})
+    return {"session": m["session_id"], "subject": m["subject_id"],
+            "birthdate": m["birthdate"], "pyr": pyr, "lr": lr[pyr], "epochs": out}
+'''
+open('huszar.py','w').write(s)
+EOF
+grep -n "nb = int(np.ceil(m\[\"series\"\]" huszar.py; sed -i '/nb = int(np.ceil(m\["series"\]\[ser\]\["n"\] and 0)) or None/d' huszar.py
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, numpy as np, huszar as h, time, pickle
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+N=[m for m in ms if m['subject_id'] in h.NOVEL_MICE]
+t=time.time(); r=h.run_sessions(h.novel_session, N); print(time.time()-t)
+pickle.dump(r, open('/tmp/claude-1001/novel.pkl','wb'))
+for x in r:
+    print(x['session'], [(e['env'], e.get('nbins'), e.get('trial_counts'), e.get('why')) for e in x['epochs']])
 EOF
 ```
 
 ```
-<persisted-output>
-Output too large (38KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bqv7pk7zz.txt
+910:            nb = int(np.ceil(m["series"][ser]["n"] and 0)) or None
+30.343415021896362
+e13_26m1_211019 [('tmaze_familiar', 205, {'left': 27, 'right': 20}, None), ('tmaze_ipshita', 170, {'left': 21, 'right': 12}, None)]
+e13_26m1_211116 [('tmaze_familiar', 205, {'left': 11, 'right': 10}, None), ('linear_thomas', 100, {'left': 4, 'right': 5}, None)]
+e13_26m1_211119 [('tmaze_familiar', 205, {'left': 13, 'right': 12}, None), ('linear_manu', 110, {'left': 29, 'right': 29}, None)]
+e13_26m1_211124 [('tmaze_familiar', 205, {'left': 13, 'right': 13}, None), ('openField_gergo', None, None, 'no linearized series inside the epoch')]
+e15_13f1_220117 [('tmaze_familiar', 205, {'left': 20, 'right': 12}, None), ('openField_coolbox', None, None, 'no linearized series inside the epoch')]
+e15_13f1_220118 [('tmaze_familiar', 205, {'left': 15, 'right': 10}, None), ('linear_manu', 110, {'left': 34, 'right': 34}, None), ('openField_thomas', None, None, 'no linearized series inside the epoch')]
+e15_13f1_220119 [('tmaze_familiar', 205, {'left': 19, 'right': 10}, None), ('openField_gergo', None, None, 'no linearized series inside the epoch'), ('tmaze_ipshita', 170, {'left': 19, 'right': 13}, None)]
+e15_13f1_220120 [('tmaze_familiar', 205, {'left': 27, 'right': 19}, None), ('linear_thomas', 100, {'left': 24, 'right': 25}, None)]
+e16_3m2_211210 [('tmaze_familiar', 205, {'left': 11, 'right': 12}, None), ('openField_coolbox', None, None, 'no linearized series inside the epoch')]
+e16_3m2_211211 [('tmaze_familiar', 205, {'left': 16, 'right': 16}, None), ('openField_thomas', 110, {'left': 22, 'right': 23}, None), ('linear_manu', None, None, 'no linearized series inside the epoch')]
+e16_3m2_211212 [('tmaze_familiar', 205, {'left': 13, 'right': 16}, None), ('openField_gergo', None, None, 'no linearized series inside the epoch'), ('linear_thomas', 100, {'left': 17, 'right': 17}, None)]
+e16_3m2_211213 [('tmaze_familiar', 205, {'left': 10, 'right': 17}, None), ('tmaze_ipshita', 170, {'left': 16, 'right
+[... 1 more lines not kept]
+```
 
-Preview (first 2KB):
-===== cell 1 tags=None
-loaded 104 processed files of dandiset 000552 version 0.230630.2304 in 142 s
+**Agent calls Bash**
 
-===== cell 3 tags=['sanity']
-117 files: 104 processed (behavior+ecephys), 13 raw_ecephys; 1545 GB in all, 12.6 GB processed
- subject birthdate sex  sessions  with_units  units  with_position  raw_files
-e13_16f1     E13.5   F         9           9   1213              9          0
- e13_1f1     E13.5   M         5           0      0              0          0
- e13_1m1     E13.5   M        12           0      0              0          0
-e13_26m1     E13.5   M         4           4    853              4          3
- e14_1m1     E14.5   M        12           0      0              0          0
- e14_2m2     E14.5   M         4           4    583              4          0
- e14_2m3     E14.5   M         8           8    452              8          0
-e15_10m1     E15.5   M         7           7    704              7          0
-e15_13f1     E15.5   F         4           4   1385              4          4
- e15_4m1     E15.5   M         3           0      0              0          0
-[... 19 more lines not kept]
+```bash
+python - <<'EOF'
+s=open('huszar.py').read()
+old='''def linear_series_for(m, t0, t1):
+    """Name of the LinearizedPosition series whose timestamps lie inside [t0, t1]."""
+    for k, v in m["series"].items():
+        if k.startswith("LinearizedPosition/") and v["t0"] >= t0 - 1 and v["t1"] <= t1 + 1:
+            return k
+    return None'''
+new='''def linear_series_for(m, t0, t1, env=None):
+    """Name of the LinearizedPosition series whose timestamps lie inside [t0, t1] and, when the
+    series name carries an environment, whose environment is the epoch's."""
+    for k, v in m["series"].items():
+        if k.startswith("LinearizedPosition/") and v["t0"] >= t0 - 1 and v["t1"] <= t1 + 1:
+            suffix = k.split("_", 1)[1] if "_" in k.split("/")[1] else None
+            if env is not None and suffix is not None and suffix != env:
+                continue
+            return k
+    return None'''
+assert old in s; s=s.replace(old,new)
+s=s.replace('''    name = linear_series_for(m, t0, t1)
+    g = f[''','''    name = linear_series_for(m, t0, t1, env)
+    g = f[''')
+s=s.replace('''def linear_maps(f, m, t0, t1, trains, nbins=NBINS, fwhm=FWHM_LIN, smin=SPEED_MIN):''','''def linear_maps(f, m, t0, t1, trains, nbins=NBINS, fwhm=FWHM_LIN, smin=SPEED_MIN, env=None):''')
+s=s.replace('''            ser = linear_series_for(m, t0, t1)''','''            ser = linear_series_for(m, t0, t1, env)''')
+s=s.replace('''            maps, occ, info, dt = linear_maps(f, m, t0, t1, tr, nbins=nbins)''','''            maps, occ, info, dt = linear_maps(f, m, t0, t1, tr, nbins=nbins, env=env)''')
+open('huszar.py','w').write(s)
+EOF
+grep -n "LinearizedSpatialSeries" $TMPDIR/survey.json | head -0; . $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, huszar as h
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+m=[x for x in ms if x['session_id']=='e16_3m2_211211'][0]
+for t0,t1,env,n in h.behaviour_epochs(m): print(env, h.linear_series_for(m,t0,t1,env))
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+for t0,t1,env,n in h.behaviour_epochs(m): print(env, h.linear_series_for(m,t0,t1,env))
+EOF
+```
+
+```
+tmaze_familiar LinearizedPosition/LinearizedSpatialSeries1_tmaze_familiar
+openField_thomas None
+linear_manu None
+figure-8 maze LinearizedPosition/LinearizedSpatialSeries1
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+s=open('huszar.py').read()
+old='''            p, mu, r = rayleigh(ph[idx].astype(float))
+            row.update({st + "_p": p, st + "_phase": mu, st + "_mrl": r, st + "_n": len(tt)})'''
+new='''            p, mu, r = rayleigh(ph[idx].astype(float))
+            row.update({st + "_p": p, st + "_phase": mu, st + "_mrl": r, st + "_n": len(tt)})
+            # clock control: the same spikes against the phase 10.3 s later
+            sh = np.clip(((tt + 10.3) * fs).astype(int), 0, len(ph) - 1)
+            ps, _, rs = rayleigh(ph[sh].astype(float))
+            row.update({st + "_p_shift": ps, st + "_mrl_shift": rs})'''
+assert old in s; s=s.replace(old,new)
+s+='''
+
+def clock_checks(asset, m, shift=1.0):
+    """Contrasts that show that spikes share the clock of the pulses, the ripples and the
+    position (protocol, author step 2): for light-responsive cells, spikes in the 10 ms after
+    each pulse onset against the 10 ms windows 'shift' s later; for pyramidal cells, the SPW-R
+    rate with the ripple times as given against shifted by 'shift' s; for maze sessions, the
+    median spatial information with spikes as given against spikes shifted by 30 s."""
+    ct = np.array(m["u_putative_cell_type"], dtype=object)
+    pyr = np.where(ct == "Pyramidal Cell")[0]
+    lr = np.array(m["u_light_responsive"], bool)
+    with open_nwb(asset) as f:
+        tr = spike_trains(f)
+        on = f["intervals/OptogeneticPulses/start_time"][:]
+        out = {"session": m["session_id"]}
+        lrc = [tr[i] for i in np.where(lr)[0]]
+        def win_count(ts, starts):
+            iv = np.c_[starts, starts + 0.010]
+            return sum(int(in_intervals(t, iv).sum()) for t in ts)
+        out["pulse_true"] = win_count(lrc, on)
+        out["pulse_shift"] = win_count(lrc, on + shift)
+        rip = np.c_[m["rip_start"], m["rip_stop"]]
+        r0, _, _ = ripple_measures([tr[i] for i in pyr], rip)
+        r1, _, _ = ripple_measures([tr[i] for i in pyr], rip + shift)
+        out["rip_rate_true"] = float(np.median(r0))
+        out["rip_rate_shift"] = float(np.median(r1))
+        ep = behaviour_epochs(m)
+        if ep and m["subject_id"] in FAMILIAR_MICE:
+            t0, t1, env, name = ep[0]
+            trains = [tr[i] for i in pyr]
+            for lab, sh in (("true", 0.0), ("shift", 30.0)):
+                tt = [t + sh for t in trains]
+                maps, occ, info, dt = linear_maps(f, m, t0, t1, tt)
+                si = [skaggs_info(np.r_[maps[0, c], maps[1, c]], np.r_[occ[0], occ[1]])
+                      for c in range(len(trains))]
+                out["si_" + lab] = float(np.nanmedian(si))
+    return out
+'''
+open('huszar.py','w').write(s)
+EOF
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import json, huszar as h, time
+ms=json.load(open('/tmp/claude-1001/survey.json'))
+A={a['path']:a for a in h.assets()}
+m=[x for x in ms if x['session_id']=='e16_3m1_210201'][0]
+t=time.time(); print(h.clock_checks(A[m['path']],m), time.time()-t)
+EOF
+```
+
+```
+{'session': 'e16_3m1_210201', 'pulse_true': 3379, 'pulse_shift': 613, 'rip_rate_true': 3.1804604811226795, 'rip_rate_shift': 0.7070063258909383, 'si_true': 0.5585543626328896, 'si_shift': 0.14020423520624953} 5.03964900970459
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd paper && python3 -c "
+t=open('10.1038-s41593-022-01138-x.txt').read()
+import re
+for key in ['Fig. 1 |','Fig. 2 |','Fig. 5 |','Fig. 6 |','Fig. 7 |','Extended Data Fig. 4 |','Extended Data Fig. 5 |']:
+    i=t.find(key); print('=====',key); print(t[i:i+2600])
+" > $TMPDIR/legends.txt; wc -c $TMPDIR/legends.txt
+```
+
+```
+Thu Nov 19 05:23:34 UTC 2026
+18368 /tmp/claude-1001/legends.txt
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/84b68cdd-c07a-401e-a2bb-aba518cb58b8/tool-results/bqv7pk7zz.txt",
- "offset": 30
+ "file_path": "/tmp/claude-1001/legends.txt"
 }
 ```
 
 ```
-30	Files only in the published version: []
-31	Files in both with different sizes: []
-32	
-33	===== cell 7 tags=['sanity']
-34	         session  subject birthdate sex     age       date  duration_min  states  ripples  units  position recordings  trials
-35	 e13_16f1_210302 e13_16f1     E13.5   F P3M/P6M 2021-03-02         350.1      30     5798    135      True          1      22
-36	 e13_16f1_210312 e13_16f1     E13.5   F P3M/P6M 2021-03-12         298.3      41     5402    124      True          1      21
-37	 e13_16f1_210314 e13_16f1     E13.5   F P3M/P6M 2021-03-14         269.9      38     4876    121      True          1      25
-38	 e13_16f1_210315 e13_16f1     E13.5   F P3M/P6M 2021-03-15         280.1      41     4508    114
-39	...[info table]...
-40	===== cell 8 tags=['sanity']
-41	Columns of the units tables: [('clu_id', 'group_id', 'id', 'spike_times', 'spike_times_index', 'unit_name')]
-42	Contents of acquisition across files: [()]
-43	Contents of stimulus/presentation across files: [()]
-44	Contents of analysis across files: [()]
-45	Contents of intervals across files: [(), ('epochs',), ('epochs', 'trials'), ('trials',)]
-46	
-47	Processing modules and their contents (number of files):
-48	   64  {'behavior': ['LinearizedPosition', 'RewardEventsEightMazeTrack', 'SleepStates', 'SubjectPosition'], 'ecephys': ['Ripples']}
-49	   39  {'behavior': ['SleepStates'], 'ecephys': ['Ripples']}
-[... 442 more lines not kept]
+1	===== Fig. 1 |
+2	Fig. 1 | Birthdating CA1 pyramidal neurons via in utero electroporation. a , Closeup (left) and full view (right) of an example coronal section shows the expression of ChR2-EYFP (green) and tdTomato (red) following in utero electroporation at E15.5. Expression was restricted to the hippocampal CA1 subregion in all n = 17 mice. b , Top: tdTomato expression in CA1 following in utero electroporation (different example from a ). Manually drawn borders (dashed) delimit the pyramidal layer. The border between CA1 and CA2 (thick white line) was approximated by comparing with the Mouse Brain Atlas. White circles: tdTomato+ puncta identified via ImageJ. Bottom: Closeup of the projection foot of each tdTomato+ punctum on the border between stratum pyramidale (SP) and stratum radiatum (SR), from which each neuron’s radial depth was computed. Depth was normalized by the distance between the projection foot and crossing point with the border between SP and stratum oriens (SO). c , Top: Wideband activity recorded on a single silicon probe shank upon delivery of blue light pulses (2 ms; shaded blue). The bold channel highlights spikes (red dots) of a pyramidal neuron responding to blue light. Bottom: Autocorrelogram (left) of the highlighted neuron’s spike train reveals its burst firing, and the PSTH (middle) demonstrates its firing fidelity following light offset. Waveforms of spontaneous spikes are shown on the right (light blue: n = 50 spikes; dark blue: average). d , Left: Coronal section showing CA1 expression of tdTomato (red) introduced via in utero electroporation at E15.5. Cyan highlights nuclear expression of 5-bromo-2’deoxyuridine (BrdU), a marker of cell division and a commonly used birthdating tool. Right: A closeup highlighting three CA1 neurons exhibiting both tdTomato and BrdU expression. e , Fraction of Brdu and tdTomato double-labeled cells among tdTomato expressing neurons (mean ± SEM) as a function of BrdU injection timing (in hours) with res
+[... 13 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-. $TMPDIR/explore/bin/activate && PYTHONPATH=. python -c "
-import pickle; ss=pickle.load(open('/tmp/claude-1001/all.pkl','rb'))
-for s in ss:
-    if 'Non-REM' not in set(s['states'].label): print(s['session_id'], s['states'].label.value_counts().to_dict(), round(s['end_s']/60,1))
-"
+mkdir -p $TMPDIR/gen && cat > $TMPDIR/gen/part1.py <<'PYEOF'
+CELLS = []
+def md(s, tags=None): CELLS.append(("markdown", s.strip("\n"), tags or []))
+def code(s, tags=None): CELLS.append(("code", s.strip("\n"), tags or []))
+
+md(r'''
+# Reproducing Huszár et al. (2022) from DANDI:000552
+
+**Paper.** Huszár R, Zhang Y, Blockus H, Buzsáki G (2022). Preconfigured dynamics in the hippocampus are
+guided by embryonic birthdate and rate of neurogenesis. *Nature Neuroscience* 25, 1201-1212.
+doi:10.1038/s41593-022-01138-x.
+
+**Claims.** `claims/huszar-2022.yaml`, written from the author manuscript in PubMed Central (PMC10807234)
+with its Reporting Summary and Supplementary Information (Supplementary Tables 1 to 5), and the paper's code
+(github.com/rhuszar/optotagCA1_final, commit 51320d4). Method details the claims file lacks are taken from
+the Methods and legends of that text, cited beside the code in `huszar.py`.
+
+**Dataset.** DANDI:000552, version `0.261113.1035` (doi:10.48324/dandi.000552/0.261113.1035), the most recent
+published version. The paper cites no version (it was published before the dandiset). The earlier published
+version, 0.230630.2304, lacks what the claims need: its release notes say it had no light-responsive labels,
+no light pulses, units for only some sessions and LFP in only 13 files, while 0.261113.1035 holds all of
+these for the 104 sessions. It therefore also matches the claims file's description better. Only the 104
+processed files are read, streamed from the archive; the 11 raw wide-band files are not.
+
+This notebook streams every processed file and takes about 35 minutes, most of it reading one LFP channel
+per session for the theta analyses.
+
+| Claim | Tested here |
+|---|---|
+| cohort-birthdates, st1-animal-sessions, sessions-durations, spwr-duration, unit-count, ed2-light-responsive-count | yes |
+| fig1e-labelled-fraction, fig1f-rem-shift, fig1g-rate-by-birthdate, fig1h-burst-by-birthdate | yes |
+| fig2b-synchrony-per-animal, fig2c-theta-cofiring, fig2d-theta-depth, fig2f-ripple-firing-by-birthdate, fig2g-ripple-cofiring | yes |
+| maze-cohort, maze-task, novel-explorations | yes |
+| fig5b-spatial-info-by-birthdate, fig5c-sbd-ratemap-overlap, fig5d-overlap-by-distance, fig5e-pv-decorrelation, fig5f-remap-together | yes |
+| fig6c-theta-rate-preserved, fig6d-rate-lower-novel, fig6d-info-lower-novel, fig6c-novel-ratemap-corr-higher, fig6e-sbd-novel-overlap, fig6f-remap-together-novel | yes, open fields left out |
+| fig7b-sbd-convergence, fig7ce-convergence-by-birthdate, fig7d-transmission-gamma, fig7fg-convergence-cofiring | yes |
+| ed1-brdu-specificity, fig1c-radial-depth | blocked: histology not in the dataset |
+| ed2-waveform-validation | blocked: light-evoked waveforms need the wide-band signal, absent for 91 of 96 sessions |
+| ed5-matched-controls | blocked: no L-ratio in the dataset |
+| fig3c, fig3e, ed6, ed7 (assemblies), fig4d-model-fit | blocked: too large for this run |
+| ed3-depth-control, ed10-waveform-matched-controls | blocked: not reached in the run's time |
+''')
+
+code(r'''
+import json, time, zlib, resource, collections
+import numpy as np, pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+import huszar as h
+pd.set_option("display.width", 200); pd.set_option("display.max_columns", 30)
+KEY = "huszar-2022"
+def seed(claim): return zlib.crc32(f"{KEY}/{claim}".encode())
+SEEDS_PLUS = [0, 1000, 2000, 3000, 4000]
+T0 = time.time()
+''')
+
+md("## Data check")
+code(r'''
+metas = h.survey(workers=8)
+S = pd.DataFrame([{"session": m["session_id"], "subject": m["subject_id"], "sex": m["sex"], "age": m["age"],
+                   "birthdate": m["birthdate"], "units": m["n_units"],
+                   "pyr": sum(c == "Pyramidal Cell" for c in m.get("u_putative_cell_type", [])),
+                   "narrow": sum(c == "Narrow Interneuron" for c in m.get("u_putative_cell_type", [])),
+                   "wide": sum(c == "Wide Interneuron" for c in m.get("u_putative_cell_type", [])),
+                   "unknown_type": sum(c not in ("Pyramidal Cell", "Narrow Interneuron", "Wide Interneuron")
+                                       for c in m.get("u_putative_cell_type", [])),
+                   "light_resp": int(np.sum(m.get("u_light_responsive", []))),
+                   "lfp_min": m["lfp_duration_s"] / 60, "last_spike_min": m["last_spike"] / 60,
+                   "lfp_rate": m.get("lfp_rate"), "ripples": len(m["rip_start"]),
+                   "states": "/".join(sorted(set(m["sleep"]["label"]))) if m["sleep"] else "",
+                   "pulses": m["n_pulses"], "beh_epochs": len(h.behaviour_epochs(m)),
+                   "envs": ",".join(e[2] for e in h.behaviour_epochs(m)),
+                   "trials": len(m["trials"]["start_time"]) if m["trials"] else 0}
+                  for m in metas]).sort_values("session").reset_index(drop=True)
+META = {m["session_id"]: m for m in metas}
+S["homecage_mouse"] = ~S.subject.isin(h.HOMECAGE_EXCLUDED)
+print(len(S), "processed files,", S.subject.nunique(), "subjects,", S.session.nunique(), "distinct session ids")
+print("LFP rate(s):", S.lfp_rate.unique(), "Hz; LFP duration against last spike, max |difference| =",
+      round(float((S.lfp_min - S.last_spike_min).abs().max()), 2), "min")
+print(S.groupby("subject").agg(sex=("sex", "first"), birthdate=("birthdate", "first"), sessions=("session", "size"),
+                               units=("units", "sum"), pyr=("pyr", "sum"), light_resp=("light_resp", "sum")).to_string())
+print("\ncell types over all files:", S[["pyr", "narrow", "wide", "unknown_type"]].sum().to_dict())
+print("sleep-state labels per session:", S.states.value_counts().to_dict())
+print("behavioural environments:", collections.Counter(e for s in S.envs for e in s.split(",") if e))
+print("ages:", S.age.unique(), " sexes:", S.sex.unique())
+# deposited twice? identical spike counts or ripple counts between sessions
+dup = S[S.duplicated(["units", "ripples", "pulses"], keep=False)]
+print("sessions sharing unit, ripple and pulse counts (possible duplicates):", len(dup))
+''', ["sanity"])
+
+code(r'''
+# Clock checks (protocol, author step 2): spikes against light pulses, ripples and position, each with a shifted control.
+chk_sessions = [s for s in ["e13_16f1_210302", "e14_2m3_201125", "e15_9f1_200720", "e16_3m1_210201", "e15_4m2_191213"]]
+CK = pd.DataFrame(h.run_sessions(h.clock_checks, [META[s] for s in chk_sessions]))
+print(CK.round(3).to_string())
+''', ["sanity"])
+
+md(r'''
+The files describe 17 mice and 104 sessions, every session with sleep states, ripples, light pulses and
+units with CellExplorer cell types. In the five sessions checked, light-responsive cells fire several times
+more in the 10 ms after the pulse onsets than 1 s later, pyramidal cells fire several times faster in the
+ripples than in ripple-length windows shifted by 1 s, and spatial information drops when spikes are shifted
+by 30 s against the position. So spikes, pulses, ripples and position are consistent with one clock in those
+sessions. The theta section adds the same contrast for the LFP. Other sessions were not checked this way.
+''')
+PYEOF
+echo ok
 ```
 
 ```
-e13_1f1_200305 {'Awake': 1} 414.7
-e13_1f1_200307 {'Awake': 1} 331.5
+ok
 ```
-
-**Agent**
-
-Two files of mouse e13_1f1 have a single "Awake" interval covering the whole session, so sleep was not scored in them. Updating the builder with the corrections and the extra outputs:
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && python - <<'EOF'
-p='build_nb.py'; s=open(p).read()
-rep=[
-# cohort: sex from id suffix
-('''print(pd.crosstab(subjects.birthdate, subjects.sex).to_string())''',
-'''print(pd.crosstab(subjects.birthdate, subjects.sex).to_string())
-subjects["sex_from_id"] = subjects.subject.str.extract(r"_\\d+([fm])\\d+$")[0].str.upper()
-print("\\nSex implied by the subject id (the letter before the last digit, f or m):", subjects.sex_from_id.value_counts().to_dict())
-print("Mice whose sex field disagrees with their id:", subjects.loc[subjects.sex != subjects.sex_from_id, ["subject", "sex", "sex_from_id"]].values.tolist())'''),
-# sessions: which lack NREM
-('''print("Every file holds Awake and Non-REM intervals:", all({"Awake", "Non-REM"} <= set(s["states"].label) for s in sessions))''',
-'''no_sleep = [(s["session_id"], s["states"].label.value_counts().to_dict()) for s in sessions if "Non-REM" not in set(s["states"].label)]
-print(f"Files without a Non-REM interval: {len(no_sleep)} of {len(sessions)}: {no_sleep}")'''),
-('''print(f"Sessions with at least 20 timed trials on the familiar maze''', '''print(f"Sessions with at least 20 trials (rows of the trials table) on the familiar maze'''),
-# novel: epochs without position
-('''        print(s["session_id"], e[["minutes", "position_samples"]].values.tolist())''',
-'''        print(s["session_id"], e[["minutes", "position_samples"]].values.tolist())
-        e["last"] = np.arange(len(e)) == len(e) - 1
-        unpos.append(e[(e.position_samples == 0) & e.minutes.between(10, 50) & ~e["last"]].assign(session=s["session_id"]))
-unpos = pd.concat(unpos)
-print(f"\\nEpochs of 10 to 50 min without position that are not a session's last epoch: {len(unpos)}, in sessions {sorted(unpos.session.unique())}")
-print(f"Novel recordings with position plus these epochs: {len(nov)} + {len(unpos)} = {len(nov) + len(unpos)}")'''),
-('''print("\\nEpochs of the novel-cohort sessions, with the position samples inside each:")''',
-'''print("\\nEpochs of the novel-cohort sessions (minutes, position samples inside):")
-unpos = []'''),
-# data check text fixes
-('''Spike times are sorted and fall within the session. Ripple durations lie within the 20 to 200 ms
-limits of the Methods, and the stored durations equal stop minus start.''',
-'''Spike times are sorted. In 57 files the last spike comes 1.2 to 5.2 s after the end of the last
-sleep-state or ripple interval, so the session length used here (that end) is short by a few
-seconds. Ripple durations lie within the 20 to 200 ms limits of the Methods, and the stored
-durations equal stop minus start. Two files (e13_1f1_200305 and e13_1f1_200307) hold a single
-Awake interval for the whole session, so sleep was not scored in them.'''),
-('''The raw files hold the wideband signal (30 kHz) for 9 sessions and an LFP (1250 Hz) for all 13;
-none holds a stimulation or TTL channel. Six raw files give a session start of 2011-08-18, which
-cannot be right for sessions recorded in 2021 and 2022 (the date in the file name).''',
-'''The raw files hold the wideband signal (30 kHz) for 11 sessions and an LFP (1250 Hz) for 12; none
-holds a stimulation or TTL channel. Twelve of the 13 raw files give a session start of 2011-08-18,
-which cannot be right for sessions recorded in 2021 and 2022 (the date in the file name and in the
-processed file).'''),
-('''The four checks support a shared clock. Population firing rises several-fold at ripple peaks and not
-at randomly shifted peaks, so the ripple tables share the spikes' clock. Ripples are rarer in REM
-sleep than in waking and non-REM sleep, as expected if the state intervals share that clock. Trials
-begin near 0 cm and end near 205 cm of linearized position and fall in Awake intervals, so the
-trials share the position clock. Spatial information is highest with no shift between spikes and
-position, so spikes and position share a clock in every session listed. The 39 files without units
-could only be checked for ripples against sleep states.''',
-'''The checks are consistent with a shared clock. Population firing rises about five-fold at ripple
-peaks and not at randomly shifted peaks, so the ripple tables share the spikes' clock. Ripples are
-rarest in REM sleep in 101 of 104 files, as expected if the state intervals share that clock. Trials
-begin near 0 cm and end near 205 cm of linearized position and fall in Awake intervals, so the
-trials share the position clock. Spatial information is highest with no shift between spikes and
-position in 53 of 65 sessions and at a shift of 0.5 s in the other 12, well above its value at 2 s,
-so spikes and position share a clock to within about half a second; a finer offset is not ruled
-out. The 39 files without units could only be checked for ripples against sleep states.'''),
-]
-for a,b in rep:
-    assert a in s, a[:70]
-    s=s.replace(a,b)
-open(p,'w').write(s)
+cat > $TMPDIR/gen/part2.py <<'PYEOF'
+md("## Counts: cohort, sessions, units")
+md(r'''
+> **cohort-birthdates.** Chronic recordings were made from 17 adult mice (12 males, 5 females) electroporated
+> at E13.5 (n = 4), E14.5 (n = 3), E15.5 (n = 6) and E16.5 (n = 4).
+''')
+code(r'''
+sub = S.groupby("subject").agg(sex=("sex", "first"), birthdate=("birthdate", "first")).reset_index()
+print("mice:", len(sub), " males:", int((sub.sex == "M").sum()), " females:", int((sub.sex == "F").sum()))
+print("per birthdate:", sub.birthdate.value_counts().sort_index().to_dict())
+st1 = pd.DataFrame({"subject": h.ST1_ORDER})
+st1["table_birthdate"] = [h.birthdate(s) for s in h.ST1_ORDER]
+st1 = st1.merge(sub, on="subject", how="left")
+print("subjects of Supplementary Table 1 found in the dataset:", int(st1.sex.notna().sum()), "of", len(st1),
+      "; birthdate agrees:", int((st1.table_birthdate == st1.birthdate).sum()))
+''', ["claim:cohort-birthdates"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **st1-animal-sessions.** Supplementary Table 1 lists each mouse's recording sessions and light-responsive
+> cells; the 15 homecage mice contribute 96 sessions and 664 light-responsive cells, and the 17 mice 104 sessions.
+''')
+code(r'''
+per = S.groupby("subject").agg(sessions=("session", "size"), light_resp=("light_resp", "sum"), pyr=("pyr", "sum"))
+T = pd.DataFrame({"subject": h.ST1_ORDER, "table_sessions": h.ST1_SESSIONS, "table_light": h.ST1_LIGHT}).set_index("subject")
+T = T.join(per)
+T["pct_light"] = (100 * T.light_resp / T.pyr).round(2)
+T["sessions_match"] = T.sessions == T.table_sessions
+T["light_match"] = T.light_resp == T.table_light
+print(T.to_string())
+hm = T.index[~T.index.isin(h.HOMECAGE_EXCLUDED)]
+print("\nsessions of the 15 homecage mice:", int(T.loc[hm, "sessions"].sum()), "; of all 17:", int(T.sessions.sum()))
+print("light-responsive cells of the 15 homecage mice:", int(T.loc[hm, "light_resp"].sum()))
+print("mice whose session count matches:", int(T.sessions_match.sum()), "of 17; light-responsive count matches:",
+      int(T.light_match.sum()), "of 17")
+''', ["claim:st1-animal-sessions"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **sessions-durations.** The recordings comprise 92 sessions lasting 113.7 to 475.6 min (median 309.1 min),
+> each including a homecage period of sleep and wake.
+''')
+code(r'''
+S["duration_min"] = S.lfp_min
+S["has_nrem"] = S.states.str.contains("Non-REM")
+for lab, sel in [("96 sessions of the 15 homecage mice", S.homecage_mouse), ("104 sessions of all 17 mice", S.index >= 0)]:
+    d = S.loc[sel, "duration_min"]
+    print(f"{lab}: n = {len(d)}, median {d.median():.1f} min, range {d.min():.1f} to {d.max():.1f} min; "
+          f"all within 102.3-523.2: {bool(((d >= 102.33) & (d <= 523.16)).all())}; "
+          f"sessions without non-REM: {int((~S.loc[sel, 'has_nrem']).sum())}")
+print("sessions without non-REM sleep:", S.loc[~S.has_nrem, ["session", "states"]].values.tolist())
+print("count reading of 92 sessions: none of the session sets has 92; 96 is within 92 +- 9.2:", abs(96 - 92) <= 9.2,
+      "; 104 is:", abs(104 - 92) <= 9.2)
+''', ["claim:sessions-durations"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **unit-count.** The dataset includes 9,471 well-isolated units, 7,411 putative pyramidal cells and 2,060
+> putative interneurons (1,556 narrow waveform, 504 wide waveform).
+''')
+code(r'''
+for lab, sel in [("(a) 96 sessions of the 15 homecage mice", S.homecage_mouse), ("(b) 104 sessions of all 17 mice", S.index >= 0)]:
+    x = S.loc[sel]
+    print(f"{lab}: units {x.units.sum()}, pyramidal {x.pyr.sum()}, interneurons {x.narrow.sum() + x.wide.sum()} "
+          f"(narrow {x.narrow.sum()}, wide {x.wide.sum()}), other type {x.unknown_type.sum()}")
+''', ["claim:unit-count"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **ed2-light-responsive-count.** 664 of 7,411 putative pyramidal neurons (8.96%) were light-responsive, that
+> is, birthdated, leaving 6,747 nonresponsive.
+''')
+code(r'''
+x = S[S.homecage_mouse]
+U = pd.DataFrame([{"session": m["session_id"], "subject": m["subject_id"], "ct": c, "lr": l, "p_salt": p, "h_rel": r}
+                  for m in metas for c, l, p, r in zip(m["u_putative_cell_type"], m["u_light_responsive"],
+                                                       m["u_opto_p_salt"], m["u_opto_h_reliable"])])
+U = U[~U.subject.isin(h.HOMECAGE_EXCLUDED)]
+pyrU = U[U.ct == "Pyramidal Cell"]
+a = int(pyrU.lr.sum()); b = int(((pyrU.p_salt <= 0.001) & (pyrU.h_rel.astype(bool))).sum())
+b2 = int(((pyrU.p_salt < 0.001) & (pyrU.h_rel.astype(bool))).sum())
+print(f"(a) stored light_responsive: {a} of {len(pyrU)} pyramidal ({100*a/len(pyrU):.2f}%), nonresponsive {len(pyrU)-a}")
+print(f"(b) from the stored SALT p and reliability flag (p_salt <= 0.001 and h_reliable): {b}; with p < 0.001 (the code's): {b2}")
+print("light_responsive outside pyramidal cells:", int(U[U.ct != 'Pyramidal Cell'].lr.sum()))
+print("p_salt missing among pyramidal cells:", int(pyrU.p_salt.isna().sum()))
+''', ["claim:ed2-light-responsive-count"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **spwr-duration.** The median duration of SPW-Rs across all recordings is 36.4 ms, under detection limits of
+> 20 to 200 ms.
+''')
+code(r'''
+rows = []
+for m in metas:
+    d = np.asarray(m["rip_dur"]) * 1000
+    hc = h.homecage_intervals(m)
+    rip = np.c_[m["rip_start"], m["rip_stop"]]
+    k = h.in_intervals(rip[:, 0], hc) & h.in_intervals(rip[:, 1], hc)
+    rows.append({"session": m["session_id"], "subject": m["subject_id"], "all": d, "hc": d[k]})
+R = pd.DataFrame(rows)
+for setlab, sel in [("96 homecage-mouse sessions", ~R.subject.isin(h.HOMECAGE_EXCLUDED)), ("104 sessions", R.index >= 0)]:
+    for rl in ["all", "hc"]:
+        arrs = R.loc[sel, rl]
+        pooled = np.concatenate(arrs.values)
+        meds = np.array([np.median(a) for a in arrs if len(a)])
+        print(f"{setlab}, ripples={'(i) all detected' if rl=='all' else '(ii) homecage'}: n = {len(pooled)}; "
+              f"(a) pooled median {np.median(pooled):.2f} ms; (b) median of session medians {np.median(meds):.2f}; "
+              f"(c) mean of session medians {np.mean(meds):.2f}; range {pooled.min():.1f} to {pooled.max():.1f} ms; "
+              f"outside 20-200 ms: {int(((pooled < 20) | (pooled > 200)).sum())}")
+allr = np.concatenate(R["all"].values)
+print("ripple durations: start-stop agree with ripple_durations column to", 
+      np.max(np.abs(np.concatenate([(np.asarray(m['rip_stop']) - np.asarray(m['rip_start'])) * 1000 - np.asarray(m['rip_dur']) * 1000 for m in metas]))), "ms")
+''', ["claim:spwr-duration"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig1e-labelled-fraction.** The fraction of light-responsive pyramidal cells per session follows a
+> bell-shaped wave over birthdates, peaking at E15.5 (E13.5 5.39%, E14.5 11.16%, E15.5 14.74%, E16.5 9.16%).
+''')
+code(r'''
+x = S[S.homecage_mouse].copy()
+x["pct"] = 100 * x.light_resp / x.pyr
+g = x.groupby("birthdate").pct
+print(pd.DataFrame({"sessions": g.size(), "mean": g.mean().round(2), "sd": g.std().round(2)}).to_string())
+groups = [x[x.birthdate == b].pct.values for b in h.BIRTHDATES]
+for k in SEEDS_PLUS:
+    F, p = h.boot_anova(groups, rng=np.random.default_rng(seed("fig1e-labelled-fraction") + k))
+    print(f"seed +{k}: bootstrap ANOVA F = {F:.3f}, p = {p:.4f}")
+print("by mouse:", x.groupby(["birthdate", "subject"]).pct.mean().round(2).to_dict())
+''', ["claim:fig1e-labelled-fraction"])
+md("**Result: ...**", ["result"])
+PYEOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd  && grep -n "Result\|sanity\|claim:\|summary\|runtime" tools/entry.py | head -60
+```
+
+```
+21:- each notebook has a cell tagged `sanity` that prints what was loaded;
+37:markdown cell that begins "**Result:" and everything from the "## Summary"
+236:        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
+237:            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
+478:            if tag.startswith("claim:"):
+623:        if cell.cell_type == "markdown" and text.startswith("**Result:"):
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 1,60p tools/entry.py && sed -n 440,520p tools/entry.py
+```
+
+```
+"""Lock, check and run one entry. This is the whole local workflow for a deposit.
+
+    python tools/entry.py lock  entries/<name>   # pin the environment
+    python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py check entries/*/       # the same for every entry, in one process
+    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+    python tools/entry.py all   entries/<name>   # check, then run
+    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+
+`lock` compiles the entry's requirements.in (direct dependencies only) into
+requirements.lock.txt with every version pinned.
+
+`check` validates entry.yaml, and the claims and attempt files that mention
+the entry, against the schemas, and applies the conventions that keep a result
+tied to the data:
+
+- every notebook in the directory is listed in entry.yaml, and exists;
+- notebooks are committed without outputs;
+- the lock file is present and newer requirements are not left unlocked;
+- each notebook, or a helper it imports, names the dataset the entry uses (its identifier and version);
+[... 119 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/gen/part3.py <<'PYEOF'
+md(r'''
+## Homecage single-cell and SPW-R measures
+
+One pass over the 96 sessions of the 15 homecage mice (`h.homecage_session`). The homecage period is the
+recording up to the second behavioural subsession, without the light pulse periods and the maze epochs
+(claims, opening comment; getHomecageMetrics.m). SPW-Rs are the dataset's (bz_FindRipples, as the Methods),
+those starting and ending in the homecage period.
+''')
+code(r'''
+HM = [META[s] for s in S.loc[S.homecage_mouse, "session"]]
+t = time.time()
+hc_res = h.run_sessions(h.homecage_session, HM)
+CELLS = pd.DataFrame([c for r in hc_res for c in r[0]])
+PAIRS = pd.DataFrame([p for r in hc_res for p in r[1]])
+HCI = pd.DataFrame([r[2] for r in hc_res])
+LR = CELLS[CELLS.lr]
+print(f"{time.time()-t:.0f} s; pyramidal cells {len(CELLS)}, light-responsive {len(LR)}; pairs SBD {int(PAIRS.sbd.sum())}, DBD {int((~PAIRS.sbd).sum())}")
+print("homecage period per session (min): median", round(HCI.hc_dur.median() / 60, 1), "range", round(HCI.hc_dur.min() / 60, 1), "-", round(HCI.hc_dur.max() / 60, 1))
+print("homecage ripples per session: median", int(HCI.n_rip_hc.median()), "range", HCI.n_rip_hc.min(), "-", HCI.n_rip_hc.max(), "; of all ripples", round(HCI.n_rip_hc.sum() / HCI.n_rip.sum(), 3))
+print("light-responsive cells per birthdate:", LR.groupby("birthdate").size().to_dict())
+''')
+
+code(r'''
+def by_bd(df, col, claim, test="kw", n_seeds=5):
+    groups = [df[df.birthdate == b][col].dropna().values for b in h.BIRTHDATES]
+    med = [float(np.median(g)) for g in groups]
+    print(f"{col}: n = {[len(g) for g in groups]}, medians = {np.round(med, 4).tolist()}, ranges = "
+          f"{[(round(float(g.min()), 3), round(float(g.max()), 3)) for g in groups]}")
+    ps = []
+    for k in SEEDS_PLUS[:n_seeds]:
+        f = h.boot_kw if test == "kw" else h.boot_anova
+        st, p = f(groups, rng=np.random.default_rng(seed(claim) + k))
+        ps.append(p)
+    print(f"  bootstrap {'Kruskal-Wallis H' if test=='kw' else 'ANOVA F'} = {st:.3f}; p under the claim's seed and +1000..+4000: {ps}")
+    return med, ps
+''')
+
+md(r'''
+> **fig1g-rate-by-birthdate.** Earlier-born light-responsive pyramidal neurons have higher firing rates
+> (medians 1.57, 1.63, 1.62 and 1.16 Hz for E13.5 to E16.5).
+''')
+code(r'''
+med, ps = by_bd(LR, "rate", "fig1g-rate-by-birthdate")
+print("E16.5 lowest:", int(np.argmin(med)) == 3)
+print("within tolerance:", [abs(a - b) <= t for a, b, t in zip(med, [1.57, 1.63, 1.62, 1.16], [0.157, 0.163, 0.162, 0.116])])
+print("by mouse (median rate):", LR.groupby(["birthdate", "subject"]).rate.median().round(2).to_dict())
+''', ["claim:fig1g-rate-by-birthdate"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig1h-burst-by-birthdate.** Burst index is an inverted-U function of birthdate (medians 0.1167, 0.1272,
+> 0.136, 0.1082 for E13.5 to E16.5).
+''')
+code(r'''
+med, ps = by_bd(LR, "burst", "fig1h-burst-by-birthdate")
+print("legend 2-5 ms: inverted-U:", h.inverted_u(med), "; within tolerance:",
+      [abs(a - b) <= t for a, b, t in zip(med, [0.1167, 0.1272, 0.136, 0.1082], [0.0117, 0.0127, 0.0136, 0.0108])])
+med35, ps35 = by_bd(LR, "burst35", "fig1h-burst-by-birthdate", n_seeds=1)
+print("code 3-5 ms variant: inverted-U:", h.inverted_u(med35))
+print("by mouse (median 2-5 ms):", LR.groupby(["birthdate", "subject"]).burst.median().round(3).to_dict())
+''', ["claim:fig1h-burst-by-birthdate"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig2f-ripple-firing-by-birthdate.** SPW-R firing rates (medians 7.8, 8.75, 8.01, 6.13 Hz) and
+> participation (0.245, 0.268, 0.235, 0.194) of light-responsive neurons are inverted-U functions of birthdate.
+''')
+code(r'''
+m1, p1 = by_bd(LR, "rip_rate", "fig2f-ripple-firing-by-birthdate")
+m2, p2 = by_bd(LR, "rip_part", "fig2f-ripple-firing-by-birthdate")
+print("rate: inverted-U", h.inverted_u(m1), "within tolerance", [abs(a - b) <= 0.1 * b for a, b in zip(m1, [7.8, 8.75, 8.01, 6.13])])
+print("participation: inverted-U", h.inverted_u(m2), "within tolerance", [abs(a - b) <= 0.1 * b + 1e-12 for a, b in zip(m2, [0.245, 0.268, 0.235, 0.194])])
+print("by mouse (median SPW-R rate):", LR.groupby(["birthdate", "subject"]).rip_rate.median().round(2).to_dict())
+''', ["claim:fig2f-ripple-firing-by-birthdate"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig2g-ripple-cofiring.** SBD pairs cofire more than DBD pairs in SPW-Rs (median 0.0399 against 0.0231).
+''')
+code(r'''
+def sbd_dbd(df, col):
+    s, d = df[df.sbd][col].dropna(), df[~df.sbd][col].dropna()
+    p = stats.ranksums(s, d).pvalue
+    print(f"{col}: SBD median {s.median():.4f} (n = {len(s)}), DBD median {d.median():.4f} (n = {len(d)}), "
+          f"two-sided Wilcoxon rank-sum p = {p:.3g}; dropped (NaN) SBD {int(df[df.sbd][col].isna().sum())}, DBD {int(df[~df.sbd][col].isna().sum())}")
+    return s.median(), d.median(), p
+s, d, p = sbd_dbd(PAIRS, "rip_corr")
+print("within tolerance:", abs(s - 0.0399) <= 0.004, abs(d - 0.0231) <= 0.0023)
+print("per birthdate SBD/DBD medians:", PAIRS.groupby(["birthdate", "sbd"]).rip_corr.median().round(4).to_dict())
+''', ["claim:fig2g-ripple-cofiring"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig2b-synchrony-per-animal.** Same-birthdate (SBD) pairs fire more synchronously than different-birthdate
+> (DBD) pairs in 11 of 13 animals.
+''')
+code(r'''
+rows = []
+for sbj, g in PAIRS.groupby("subject"):
+    s, d = g[g.sbd], g[~g.sbd]
+    ra = (s.rip_corr.dropna(), d.rip_corr.dropna())
+    rb = (s["sync"].dropna(), d["sync"].dropna())
+    pa = stats.ranksums(*ra).pvalue if len(ra[0]) and len(ra[1]) else np.nan
+    rows.append({"subject": sbj, "sbd_pairs": len(s), "dbd_pairs": len(d),
+                 "a_sbd_med": ra[0].median() if len(ra[0]) else np.nan, "a_dbd_med": ra[1].median(), "a_p": pa,
+                 "a_higher_sig": bool(len(ra[0]) and ra[0].median() > ra[1].median() and pa < 0.05),
+                 "b_diff": (rb[0].mean() - rb[1].mean()) if len(rb[0]) else np.nan})
+A = pd.DataFrame(rows)
+A["b_positive"] = A.b_diff > 0
+print(A.round(4).to_string())
+el = A[A.sbd_pairs > 0]
+print(f"animals with SBD pairs: {len(el)}; (a) SBD higher with p < 0.05: {int(el.a_higher_sig.sum())}; "
+      f"(a') SBD median higher regardless of p: {int((el.a_sbd_med > el.a_dbd_med).sum())}; (b) mean z-scored CCG difference > 0: {int(el.b_positive.sum())}")
+''', ["claim:fig2b-synchrony-per-animal"])
+md("**Result: ...**", ["result"])
+PYEOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/huszar-2022 && python - <<'EOF'
+s=open('huszar.py').read()
+old='''    info = {"session": m["session_id"], "hc_dur": hc_dur, "n_rip_hc": int(keep.sum()),'''
+new='''    with np.errstate(invalid="ignore", divide="ignore"):
+        cm = np.corrcoef(counts.T.astype(float)) if len(pyr) > 1 else np.zeros((len(pyr), len(pyr)))
+    info = {"session": m["session_id"], "rip_corr_mat": cm.astype(np.float32),
+            "hc_dur": hc_dur, "n_rip_hc": int(keep.sum()),'''
+assert old in s; s=s.replace(old,new)
+old='''    rates = []
+    if novel:'''
+new='''    with np.errstate(invalid="ignore", divide="ignore"):
+        out["theta_corr_mat"] = (np.corrcoef(counts.T.astype(float)) if len(pyr) > 1
+                                 else np.zeros((len(pyr), len(pyr)))).astype(np.float32)
+    rates = []
+    if novel:'''
+assert old in s; s=s.replace(old,new)
+old='''                                  "wake_only": restrict, "n_cycles": len(c),'''
+new='''                                  "wake_only": restrict, "n_cycles": len(c), "dur": dur,
+                                  "spikes": int(np.sum(kk % 2 == 1)),'''
+assert old in s; s=s.replace(old,new)
+open('huszar.py','w').write(s)
 EOF
-python $TMPDIR/build_nb.py
+echo done
 ```
 
 ```
-wrote entries/000552-huszar-2022/reproduce_huszar_2022.ipynb 50 cells
+done
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/gen/part4.py <<'PYEOF'
+md(r'''
+## Theta
+
+One LFP channel per session is read in full (`h.theta_session`), over the 96 homecage-mouse sessions and the
+8 sessions of the two novel-only mice. The channel is chosen by the Methods' rule, a channel with a positive
+sharp wave above the centre of the pyramidal layer; how one is picked among those that qualify is not said, so
+the helper takes the one with the largest ripple power on the shank of the pyramidal layer centre
+(assumption, `pick_theta_channel`). When no channel of that shank has a positive sharp wave, the pyramidal
+layer channel is used, and this is counted below.
+''')
+code(r'''
+TH_SESS = [META[s] for s in S.loc[S.homecage_mouse | S.subject.isin(h.NOVEL_MICE), "session"]]
+t = time.time()
+th_res = h.run_sessions(h.theta_session_novel, TH_SESS)
+TC = pd.DataFrame([c for r in th_res for c in r[0]])
+TP = pd.DataFrame([p for r in th_res for p in r[1]])
+TO = pd.DataFrame([{k: v for k, v in r[2].items() if k != "theta_corr_mat"} for r in th_res])
+TR = pd.DataFrame([x for r in th_res for x in r[3]])
+TMAT = {r[2]["session"]: r[2]["theta_corr_mat"] for r in th_res}
+print(f"{time.time()-t:.0f} s, {len(th_res)} sessions; peak memory of this process {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6:.2f} GB")
+print("sessions where a channel with a positive sharp wave was found on the pyramidal shank:", int(TO.positive_found.sum()), "of", len(TO))
+print("theta cycles in homecage wake per session: median", int(TO.n_cycles_hc_wake.median()), "range", TO.n_cycles_hc_wake.min(), "-", TO.n_cycles_hc_wake.max())
+hcm = ~TC.subject.isin(h.HOMECAGE_EXCLUDED)
+print("clock check, light-responsive cells of homecage mice locked in wake at p < 0.01: phases as given",
+      int((TC[hcm].wake_p < 0.01).sum()), "of", int(hcm.sum()), "; with spikes against the phase 10.3 s later",
+      int((TC[hcm].wake_p_shift < 0.01).sum()), "; median wake MRL", round(TC[hcm].wake_mrl.median(), 4), "against", round(TC[hcm].wake_mrl_shift.median(), 4))
+''', ["sanity"])
+
+md(r'''
+> **fig1f-rem-shift.** Earlier-born light-responsive neurons more often shift their preferred theta phase in REM
+> sleep (30.89% at E13.5 to 19.7% at E16.5; regression slope -3.42% per day).
+''')
+code(r'''
+TCH = TC[hcm].copy()
+def rem_shift(df, thr):
+    b = df[(df.wake_p < thr) & (df.rem_p < thr)].copy()
+    wd, rd = np.degrees(b.wake_phase), np.degrees(b.rem_phase)
+    b["shift"] = ((wd >= 120) & (wd <= 300)) & ~((rd >= 120) & (rd <= 300))
+    return b
+def slope_test(b, claim, k):
+    rng = np.random.default_rng(seed(claim) + k)
+    x = np.array([h.BD_DAY[d] for d in h.BIRTHDATES])
+    grp = [b[b.birthdate == d]["shift"].values.astype(float) for d in h.BIRTHDATES]
+    fr = np.array([g.mean() * 100 for g in grp])
+    sl = np.polyfit(x, fr, 1)[0]
+    boots = [np.polyfit(x, [rng.choice(g, len(g)).mean() * 100 for g in grp], 1)[0] for _ in range(1000)]
+    pool = np.concatenate(grp)
+    null = [np.polyfit(x, [rng.choice(pool, len(g)).mean() * 100 for g in grp], 1)[0] for _ in range(1000)]
+    return fr, sl, np.percentile(boots, [2.5, 97.5]), float(np.mean(np.array(null) <= sl))
+for thr in (0.01, 0.05):
+    b = rem_shift(TCH, thr)
+    print(f"Rayleigh threshold {thr}: cells locked in both states per birthdate {b.groupby('birthdate').size().tolist()}")
+    for k in (SEEDS_PLUS if thr == 0.01 else [0]):
+        fr, sl, ci, p = slope_test(b, "fig1f-rem-shift", k)
+        print(f"  seed +{k}: % REM shifting {np.round(fr, 2).tolist()}, slope {sl:.2f} %/day, 95% CI {np.round(ci, 2).tolist()}, one-tailed p = {p:.3f}")
+b = rem_shift(TCH, 0.01)
+print("within tolerance (0.01):", [abs(a - e) <= t for a, e, t in zip(slope_test(b, 'fig1f-rem-shift', 0)[0], [30.89, 24.5, 23.8, 19.7], [3.09, 2.45, 2.38, 1.97])])
+print("by mouse, % shifting (0.01):", (b.groupby(["birthdate", "subject"])["shift"].mean() * 100).round(1).to_dict())
+''', ["claim:fig1f-rem-shift"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig2d-theta-depth.** Intermediate-birthdate neurons have lower theta depth modulation in waking (medians
+> 0.127, 0.099, 0.094, 0.103) but not in REM sleep.
+''')
+code(r'''
+w = TCH[TCH.wake_p < 0.01].rename(columns={"wake_mrl": "wake_depth"})
+r = TCH[TCH.rem_p < 0.01].rename(columns={"rem_mrl": "rem_depth"})
+mw, pw = by_bd(w, "wake_depth", "fig2d-theta-depth")
+mr, pr = by_bd(r, "rem_depth", "fig2d-theta-depth")
+print("wake: E14.5 and E15.5 both below E13.5 and E16.5:", max(mw[1], mw[2]) < min(mw[0], mw[3]),
+      "; within tolerance:", [abs(a - e) <= 0.1 * e for a, e in zip(mw, [0.127, 0.099, 0.094, 0.103])])
+print("by mouse (median wake depth):", w.groupby(["birthdate", "subject"]).wake_depth.median().round(3).to_dict())
+''', ["claim:fig2d-theta-depth"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig2c-theta-cofiring.** SBD pairs cofire more than DBD pairs in theta cycles (median 0.0189 against 0.0087).
+''')
+code(r'''
+TPH = TP[~TP.subject.isin(h.HOMECAGE_EXCLUDED)]
+s, d, p = sbd_dbd(TPH, "theta_corr")
+print("pairs SBD", int(TPH.sbd.sum()), "DBD", int((~TPH.sbd).sum()), "; within tolerance:", abs(s - 0.0189) <= 0.0019, abs(d - 0.0087) <= 0.0009)
+pos = set(TO[TO.positive_found].session)
+s2, d2, p2 = sbd_dbd(TPH[TPH.session.isin(pos)], "theta_corr")
+print("variant, sessions with a positive sharp-wave channel only:", round(s2, 4), round(d2, 4))
+print("per birthdate SBD/DBD medians:", TPH.groupby(["birthdate", "sbd"]).theta_corr.median().round(4).to_dict())
+''', ["claim:fig2c-theta-cofiring"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig6c-theta-rate-preserved.** Individual pyramidal neurons preserve their theta-related firing rates
+> between the familiar and novel environments (Spearman rho = 0.7378, n = 2,544 neurons).
+''')
+code(r'''
+NS = S.loc[S.subject.isin(h.NOVEL_MICE), "session"].tolist()
+TRN = TR[TR.session.isin(NS)].copy()
+def theta_rates(wake_only):
+    x = TRN[TRN.wake_only == wake_only]
+    fam = x[x.epoch == 0].set_index(["session", "unit"])
+    nov = x[x.epoch > 0].groupby(["session", "unit"])[["spikes", "dur"]].sum()
+    df = fam[["rate", "lr"]].rename(columns={"rate": "fam"}).join(nov)
+    df["nov"] = df.spikes / df.dur
+    return df.dropna(subset=["fam", "nov"])
+print("novel sessions:", len(NS), "; novel subsessions:", TRN[TRN.epoch > 0].groupby(["session", "epoch"]).ngroups)
+for wo in (True, False):
+    df = theta_rates(wo)
+    rho, p = stats.spearmanr(df.fam, df.nov)
+    print(f"{'Methods, cycles in wake' if wo else 'code variant, no wake restriction'}: n = {len(df)} cells, Spearman rho = {rho:.4f}, p = {p:.3g}")
+df = theta_rates(True)
+print("per mouse rho:", {s: round(stats.spearmanr(g.fam, g.nov)[0], 3) for s, g in df.reset_index().assign(subject=lambda d: d.session.str[:8]).groupby("subject")})
+print("theta cycles per subsession (wake only): median", int(TRN[TRN.wake_only].groupby(['session','epoch']).n_cycles.first().median()),
+      "min", int(TRN[TRN.wake_only].groupby(['session','epoch']).n_cycles.first().min()))
+''', ["claim:fig6c-theta-rate-preserved"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig6d-rate-lower-novel.** Theta-related firing rates are slightly lower in novel environments than in the
+> familiar one (median 0.69 against 0.77 Hz).
+''')
+code(r'''
+for wo in (True, False):
+    df = theta_rates(wo)
+    p = stats.ranksums(df.nov, df.fam).pvalue
+    pw = stats.wilcoxon(df.nov, df.fam).pvalue
+    print(f"{'Methods (wake)' if wo else 'code variant'}: familiar median {df.fam.median():.3f} Hz, novel median {df.nov.median():.3f} Hz, "
+          f"n = {len(df)}; rank-sum p = {p:.3g}; paired signed-rank p = {pw:.3g}")
+''', ["claim:fig6d-rate-lower-novel"])
+md("**Result: ...**", ["result"])
+PYEOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/gen/part5.py <<'PYEOF'
+md("## Familiar figure-eight maze")
+md(r'''
+> **maze-cohort.** Nine mice (E13.5 n = 2, E14.5 n = 2, E15.5 n = 2, E16.5 n = 3) ran a spatial alternation
+> task on a familiar figure-eight maze, and three mice explored novel environments.
+''')
+code(r'''
+fam = S[S.subject.isin(h.FAMILIAR_MICE) & (S.beh_epochs > 0)]
+print("familiar-maze mice with figure-eight sessions:", fam.subject.nunique(), fam.groupby("birthdate").subject.nunique().to_dict(),
+      "; sessions:", len(fam))
+print("first environment of their sessions:", fam.envs.str.split(",").str[0].value_counts().to_dict())
+nov = S[S.subject.isin(h.NOVEL_MICE)]
+nov_has = nov[nov.envs.str.split(",").str.len() > 1]
+print("novel-environment mice with a later subsession:", nov_has.subject.nunique(), sorted(nov_has.subject.unique()),
+      "; sessions:", len(nov_has), "of", len(nov))
+other = S[~S.subject.isin(h.FAMILIAR_MICE | h.NOVEL_MICE) & (S.beh_epochs > 0)]
+print("other mice with behavioural subsessions:", other.subject.unique().tolist(), len(other), "sessions")
+''', ["claim:maze-cohort"])
+md("**Result: ...**", ["result"])
+
+code(r'''
+FM = [META[s] for s in fam.session]
+t = time.time()
+mz = h.run_sessions(h.maze_session, FM)
+print(f"{time.time()-t:.0f} s, {len(mz)} sessions, pyramidal cells {sum(len(x['pyr']) for x in mz)}, light-responsive {sum(int(x['lr'].sum()) for x in mz)}")
+''')
+
+md(r'''
+> **maze-task.** On the figure-eight maze each trial was 205 cm long, position was tracked at 30 Hz, and
+> animals ran at least ten trials along each arm in every session.
+''')
+code(r'''
+tl = pd.DataFrame([{"session": x["session"], "x0": t["x0"], "x1": t["x1"], "arm": t["arm"]} for x in mz for t in x["trials"]])
+tl["extent"] = tl.x1 - tl.x0
+print("linearized extent per trial (cm): median", round(tl.extent.median(), 1), "range", round(tl.extent.min(), 1), "-", round(tl.extent.max(), 1),
+      "; max position", round(tl.x1.max(), 1))
+rates = np.array([1 / x["dt"] for x in mz])
+print("tracking rate (1/median interval): median", round(float(np.median(rates)), 2), "Hz, range", round(rates.min(), 2), "-", round(rates.max(), 2))
+tc = pd.DataFrame([{"session": x["session"], **x["trial_counts"]} for x in mz])
+tc["min_type"] = tc[["left", "right"]].min(axis=1); tc["total"] = tc.left + tc.right
+print("sessions:", len(tc), "; with >= 10 of each type:", int((tc.min_type >= 10).sum()), "; with >= 20 trials:", int((tc.total >= 20).sum()))
+print(tc[tc.min_type < 10].to_string())
+''', ["claim:maze-task"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **novel-explorations.** The novel-environment mice made 16 novel environment explorations in six distinct
+> environments (two linear tracks, three open fields and one figure-eight maze).
+''')
+code(r'''
+ex = [(m["session_id"], e[2]) for m in metas if m["subject_id"] in h.NOVEL_MICE for e in h.behaviour_epochs(m)[1:]]
+print("novel explorations (subsessions after the first):", len(ex))
+print("by environment:", collections.Counter(e for _, e in ex))
+print("distinct environments:", len(set(e for _, e in ex)))
+''', ["claim:novel-explorations"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig5b-spatial-info-by-birthdate.** Spatial information (medians 0.836, 1.05, 1.35, 0.88 bits/s) and spatial
+> coverage (36, 44, 44, 18 cm) on the familiar maze are largest in intermediate-birthdate neurons.
+''')
+code(r'''
+def cell_maze_measures(x):
+    out = []
+    M, occ = x["maps"], x["occ"]
+    for c in range(M.shape[1]):
+        rl, rr = M[0, c], M[1, c]
+        cat, ocat = np.r_[rl, rr], np.r_[occ[0], occ[1]]
+        def cov(rate, o, use_info):
+            ok = np.isfinite(rate) & (o > 0)
+            p = o[ok] / o[ok].sum(); r = rate[ok]; mr = np.sum(p * r)
+            hi = r > 5
+            if use_info:
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    term = (r / mr) * np.log2(r / mr)
+                hi = hi & (term > 1)
+            return int(hi.sum())
+        out.append({"session": x["session"], "subject": x["subject"], "birthdate": x["birthdate"], "lr": bool(x["lr"][c]),
+                    "si_cat": h.skaggs_info(cat, ocat),
+                    "si_mean": np.nanmean([h.skaggs_info(rl, occ[0]), h.skaggs_info(rr, occ[1])]),
+                    "cov_a_cat": cov(cat, ocat, True), "cov_b_cat": cov(cat, ocat, False),
+                    "cov_a_mean": np.mean([cov(rl, occ[0], True), cov(rr, occ[1], True)]),
+                    "cov_b_mean": np.mean([cov(rl, occ[0], False), cov(rr, occ[1], False)])})
+    return out
+MC = pd.DataFrame([r for x in mz for r in cell_maze_measures(x)])
+ML = MC[MC.lr]
+exp_si, exp_cov = [0.836, 1.05, 1.35, 0.88], [36, 44, 44, 18]
+for col in ["si_cat", "si_mean"]:
+    med, ps = by_bd(ML, col, "fig5b-spatial-info-by-birthdate", n_seeds=5 if col == "si_cat" else 1)
+    print(f"  {col}: inverted-U {h.inverted_u(med)}, within tolerance {[abs(a - e) <= 0.1 * e for a, e in zip(med, exp_si)]}")
+for col in ["cov_a_cat", "cov_b_cat", "cov_a_mean", "cov_b_mean"]:
+    med, ps = by_bd(ML, col, "fig5b-spatial-info-by-birthdate", n_seeds=5 if col == "cov_a_cat" else 1)
+    print(f"  {col}: inverted-U {h.inverted_u(med)}, within tolerance {[abs(a - e) <= 0.1 * e for a, e in zip(med, exp_cov)]}")
+print("by mouse (median si_cat):", ML.groupby(["birthdate", "subject"]).si_cat.median().round(3).to_dict())
+''', ["claim:fig5b-spatial-info-by-birthdate"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig5c-sbd-ratemap-overlap.** SBD pairs have higher spatial ratemap correlations than DBD pairs on the
+> familiar maze (median 0.0152 against -0.0256).
+''')
+code(r'''
+STEM = slice(74, 205)  # bins 75 to 205, post_stem_inds (claims)
+def corr_visited(a, b):
+    ok = np.isfinite(a) & np.isfinite(b)
+    if ok.sum() < 3 or a[ok].std() == 0 or b[ok].std() == 0:
+        return np.nan
+    return float(np.corrcoef(a[ok], b[ok])[0, 1])
+def corr_code(a, b):
+    if not (np.isfinite(a).all() and np.isfinite(b).all()) or a.std() == 0 or b.std() == 0:
+        return np.nan
+    return float(np.corrcoef(a, b)[0, 1])
+rows = []
+for x in mz:
+    M = x["maps"]; V = np.concatenate([M[0][:, STEM], M[1][:, STEM]], axis=1)
+    lr = np.where(x["lr"])[0]; nr = np.where(~x["lr"])[0]
+    for sbd, pp in ((True, [(a, b) for i, a in enumerate(lr) for b in lr[i + 1:]]), (False, [(a, b) for a in lr for b in nr])):
+        for a, b in pp:
+            rows.append({"session": x["session"], "subject": x["subject"], "birthdate": x["birthdate"], "sbd": sbd, "a": a, "b": b,
+                         "r": corr_visited(V[a], V[b]), "r_code": corr_code(V[a], V[b]),
+                         "rL": corr_visited(M[0][a, STEM], M[0][b, STEM]), "rR": corr_visited(M[1][a, STEM], M[1][b, STEM]),
+                         "dshank": abs(int(x["shank"][a]) - int(x["shank"][b]))})
+MP = pd.DataFrame(rows)
+s, d, p = sbd_dbd(MP, "r")
+print("within tolerance:", abs(s - 0.0152) <= 0.0015, abs(d + 0.0256) <= 0.0026)
+s2, d2, p2 = sbd_dbd(MP, "r_code")
+print("by mouse SBD/DBD medians:", MP.groupby(["subject", "sbd"]).r.median().round(4).to_dict())
+''', ["claim:fig5c-sbd-ratemap-overlap"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig5d-overlap-by-distance.** Ratemap overlap of SBD pairs is larger than that of DBD pairs within 250
+> micrometres (same and adjacent shanks) but not at 500 micrometres.
+''')
+code(r'''
+import statsmodels.formula.api as smf
+import statsmodels.api as sm
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+D5 = MP[MP.dshank <= 2].dropna(subset=["r"]).copy()
+D5["dist"] = D5.dshank * 250; D5["grp"] = np.where(D5.sbd, "SBD", "DBD")
+print("pairs by shank distance (um) and group:", D5.groupby(["dist", "grp"]).size().to_dict(), "; dropped at 750 um:", int((MP.dshank > 2).sum()))
+fit = smf.ols("r ~ C(grp, Sum) * C(dist, Sum)", data=D5).fit()
+print(sm.stats.anova_lm(fit, typ=3).round(4).to_string())
+means = D5.groupby(["dist", "grp"]).r.mean()
+print("means:", means.round(4).to_dict())
+expd = {(0, "SBD"): 0.0707, (0, "DBD"): 0.0284, (250, "SBD"): 0.0445, (250, "DBD"): 0.0173, (500, "SBD"): 0.0195, (500, "DBD"): 0.0151}
+print("within tolerance:", {k: abs(means[k] - v) <= 0.1 * v for k, v in expd.items()})
+tk = pairwise_tukeyhsd(D5.r, D5.grp + "_" + D5.dist.astype(str))
+tt = pd.DataFrame(tk.summary().data[1:], columns=tk.summary().data[0])
+print(tt[[a.split("_")[1] == b.split("_")[1] for a, b in zip(tt.group1, tt.group2)]].to_string())
+''', ["claim:fig5d-overlap-by-distance"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig5e-pv-decorrelation.** Population firing-rate vectors at the same linearized position decorrelate between
+> left and right trials once the animal leaves the common stem (median correlations stem 0.93, turn 1 0.412,
+> arm 0.372, turn 2 0.394).
+''')
+code(r'''
+SEG = {"stem": (0, 74), "turn 1": (74, 111), "arm": (111, 185), "turn 2": (185, 205)}
+pv = []
+for x in mz:
+    M = x["maps"]
+    for b in range(205):
+        a1, a2 = M[0][:, b], M[1][:, b]
+        ok = np.isfinite(a1) & np.isfinite(a2)
+        r = np.corrcoef(a1[ok], a2[ok])[0, 1] if ok.sum() > 2 and a1[ok].std() > 0 and a2[ok].std() > 0 else np.nan
+        seg = [k for k, (lo, hi) in SEG.items() if lo <= b < hi][0]
+        pv.append({"session": x["session"], "bin": b, "seg": seg, "r": r})
+PV = pd.DataFrame(pv)
+print("PV correlations per segment:", PV.groupby("seg").r.agg(["median", "count"]).round(4).loc[list(SEG)].to_dict(), "; NaN:", int(PV.r.isna().sum()))
+groups = [PV[PV.seg == k].r.dropna().values for k in SEG]
+for k in SEEDS_PLUS:
+    H_, p = h.boot_kw(groups, rng=np.random.default_rng(seed("fig5e-pv-decorrelation") + k), n_boot=5000 if k == 0 else 1000)
+    print(f"seed +{k}: bootstrap Kruskal-Wallis H = {H_:.1f}, p = {p:.4f}")
+meds = [np.median(g) for g in groups]
+print("within tolerance:", [abs(a - e) <= 0.1 * e for a, e in zip(meds, [0.93, 0.412, 0.372, 0.3944])], "; stem highest:", int(np.argmax(meds)) == 0)
+''', ["claim:fig5e-pv-decorrelation"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig5f-remap-together.** Between left and right trials, ratemaps of SBD pairs reorganize closer together than
+> those of DBD pairs.
+''')
+code(r'''
+LRp = MP.dropna(subset=["rL", "rR"])
+obs = pd.concat([LRp.assign(x=LRp.rL, y=LRp.rR), LRp.assign(x=LRp.rR, y=LRp.rL)])
+sb = obs[obs.sbd]
+edges = np.percentile(np.r_[sb.rL, sb.rR], [0, 33, 66, 99])
+print("tercile edges (SBD, both trial types):", np.round(edges, 4).tolist())
+for lab, open_ in (("edges as the code has them", False), ("variant, outer edges open", True)):
+    e = edges.copy()
+    if open_: e[0], e[-1] = -np.inf, np.inf
+    o = obs.copy(); o["ter"] = pd.cut(o.x, e, labels=[1, 2, 3], include_lowest=True)
+    o = o.dropna(subset=["ter"]); o["grp"] = np.where(o.sbd, "SBD", "DBD")
+    fit = smf.ols("y ~ C(grp, Sum) * C(ter, Sum)", data=o).fit()
+    an = sm.stats.anova_lm(fit, typ=3)
+    mt = o.groupby(["ter", "grp"], observed=True).y.mean().unstack()
+    print(f"{lab}: n SBD {int(o.sbd.sum())}, DBD {int((~o.sbd).sum())}; birthdate F = {an.loc['C(grp, Sum)', 'F']:.2f}, p = {an.loc['C(grp, Sum)', 'PR(>F)']:.3g}; "
+          f"tercile p = {an.loc['C(ter, Sum)', 'PR(>F)']:.3g}; interaction p = {an.loc['C(grp, Sum):C(ter, Sum)', 'PR(>F)']:.3g}")
+    print("   tercile means:", mt.round(4).to_dict(), "; SBD > DBD in each tercile:", bool((mt.SBD > mt.DBD).all()))
+''', ["claim:fig5f-remap-together"])
+md("**Result: ...**", ["result"])
+PYEOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/gen/part6.py <<'PYEOF'
+md(r'''
+## Novel environments
+
+Rate maps in the familiar figure-eight and in the later subsessions of the 12 sessions of the three novel mice
+(`h.novel_session`). Open fields are left out: their positions are in the lab's units, with no scale given, so
+the Methods' 1 cm bins cannot be formed. A subsession whose linearized series has another environment's name
+or lies outside the epoch is left out too.
+''')
+code(r'''
+t = time.time()
+nv = h.run_sessions(h.novel_session, [META[s] for s in NS])
+NE = pd.DataFrame([{"session": x["session"], "epoch": e["epoch"], "env": e["env"], "used": e["maps"] is not None,
+                    "why": e.get("why", ""), "trials": e.get("trial_counts")} for x in nv for e in x["epochs"]])
+print(f"{time.time()-t:.0f} s"); print(NE.to_string())
+print("novel subsessions with maps:", int(NE[(NE.epoch > 0) & NE.used].shape[0]), "of", int((NE.epoch > 0).sum()))
+''')
+
+code(r'''
+NOVEL_BINS = {"tmaze_ipshita": slice(50, 164)}  # novel figure-eight bins 51-164 (code, claims); linear tracks all bins
+nrows, crows = [], []
+for x in nv:
+    for e in x["epochs"]:
+        if e["maps"] is None: continue
+        M, occ = e["maps"], e["occ"]
+        sl = STEM if e["epoch"] == 0 else NOVEL_BINS.get(e["env"], slice(None))
+        V = np.concatenate([M[0][:, sl], M[1][:, sl]], axis=1)
+        for c in range(M.shape[1]):
+            cat, ocat = np.r_[M[0, c], M[1, c]], np.r_[occ[0], occ[1]]
+            ok = np.isfinite(cat) & (ocat > 0)
+            r = cat[ok]; mr = r.mean()
+            with np.errstate(divide="ignore", invalid="ignore"):
+                eq = float(np.nanmean(np.where(r > 0, r * np.log2(r / mr), 0))) if mr > 0 else np.nan
+            crows.append({"session": x["session"], "epoch": e["epoch"], "env": e["env"], "unit": c, "lr": bool(x["lr"][c]),
+                          "si": h.skaggs_info(cat, ocat), "si_equal": eq})
+        lr = np.where(x["lr"])[0]; nr = np.where(~x["lr"])[0]
+        for sbd, pp in ((True, [(a, b) for i, a in enumerate(lr) for b in lr[i + 1:]]), (False, [(a, b) for a in lr for b in nr])):
+            for a, b in pp:
+                nrows.append({"session": x["session"], "epoch": e["epoch"], "env": e["env"], "sbd": sbd, "a": a, "b": b, "r": corr_visited(V[a], V[b])})
+NP = pd.DataFrame(nrows); NC = pd.DataFrame(crows)
+print("cells x subsessions:", len(NC), "; pairs x subsessions:", len(NP), "; NaN correlations:", int(NP.r.isna().sum()))
+''')
+
+md(r'''
+> **fig6d-info-lower-novel.** Spatial information is lower in novel environments than in the familiar one
+> (median 0.39 against 0.88 bits/s).
+''')
+code(r'''
+for col in ("si", "si_equal"):
+    f_, n_ = NC[NC.epoch == 0][col].dropna(), NC[NC.epoch > 0][col].dropna()
+    p = stats.ranksums(n_, f_).pvalue
+    print(f"{col}: familiar median {f_.median():.3f} bits/s (n = {len(f_)}), novel median {n_.median():.3f} (n = {len(n_)}), rank-sum p = {p:.3g}")
+print("novel medians by environment:", NC[NC.epoch > 0].groupby("env").si.median().round(3).to_dict())
+''', ["claim:fig6d-info-lower-novel"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig6c-novel-ratemap-corr-higher.** Pairwise spatial ratemap correlations are higher in novel environments
+> (median 0.048) than in the familiar environment (median -0.045).
+''')
+code(r'''
+f_, n_ = NP[NP.epoch == 0].r.dropna(), NP[NP.epoch > 0].r.dropna()
+p = stats.ranksums(n_, f_).pvalue
+print(f"familiar median {f_.median():.4f} (n = {len(f_)}), novel median {n_.median():.4f} (n = {len(n_)}), rank-sum p = {p:.3g}")
+print("within tolerance:", abs(f_.median() + 0.045) <= 0.0045, abs(n_.median() - 0.048) <= 0.0048)
+print("novel medians by environment:", NP[NP.epoch > 0].groupby("env").r.median().round(4).to_dict())
+''', ["claim:fig6c-novel-ratemap-corr-higher"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig6e-sbd-novel-overlap.** In novel environments SBD pairs have higher ratemap correlations than DBD pairs
+> (median 0.117 against 0.046).
+''')
+code(r'''
+s, d, p = sbd_dbd(NP[NP.epoch > 0], "r")
+print("within tolerance:", abs(s - 0.117) <= 0.0117, abs(d - 0.046) <= 0.0046)
+print("by environment SBD/DBD medians:", NP[NP.epoch > 0].groupby(["env", "sbd"]).r.median().round(4).to_dict())
+''', ["claim:fig6e-sbd-novel-overlap"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig6f-remap-together-novel.** Ratemaps of SBD pairs remain closer together than those of DBD pairs between
+> the familiar and novel environments.
+''')
+code(r'''
+famr = NP[NP.epoch == 0][["session", "a", "b", "sbd", "r"]].rename(columns={"r": "fam"})
+novr = NP[NP.epoch > 0][["session", "a", "b", "epoch", "r"]].rename(columns={"r": "nov"})
+J = novr.merge(famr, on=["session", "a", "b"]).dropna(subset=["fam", "nov"])
+J["grp"] = np.where(J.sbd, "SBD", "DBD")
+ea = np.percentile(J.fam, [0, 33, 66, 99])
+eb = np.percentile(np.r_[famr.fam.dropna(), novr.nov.dropna()], [0, 33, 66, 99])
+for lab, e in (("(a) familiar SBD and DBD correlations", ea), ("(b) code, all three columns", eb)):
+    e = e.copy(); e[0], e[-1] = -np.inf, np.inf
+    o = J.copy(); o["ter"] = pd.cut(o.fam, e, labels=[1, 2, 3])
+    fit = smf.ols("nov ~ C(grp, Sum) * C(ter, Sum)", data=o).fit()
+    an = sm.stats.anova_lm(fit, typ=3)
+    mt = o.groupby(["ter", "grp"], observed=True).nov.mean().unstack()
+    print(f"{lab}: n SBD {int(o.sbd.sum())}, DBD {int((~o.sbd).sum())}; birthdate F = {an.loc['C(grp, Sum)', 'F']:.2f}, p = {an.loc['C(grp, Sum)', 'PR(>F)']:.3g}; "
+          f"tercile p = {an.loc['C(ter, Sum)', 'PR(>F)']:.3g}; interaction p = {an.loc['C(grp, Sum):C(ter, Sum)', 'PR(>F)']:.3g}")
+    print("   tercile means:", mt.round(4).to_dict(), "; terciles with SBD > DBD:", int((mt.SBD > mt.DBD).sum()),
+          "; SBD mean over all", round(o[o.sbd].nov.mean(), 4), "DBD", round(o[~o.sbd].nov.mean(), 4))
+''', ["claim:fig6f-remap-together-novel"])
+md("**Result: ...**", ["result"])
+PYEOF
+cat > $TMPDIR/gen/part7.py <<'PYEOF'
+md(r'''
+## Monosynaptic connections
+
+Pyramidal-to-interneuron CCGs in 0.8 ms bins from spikes outside the light pulse periods, over the 96
+homecage-mouse sessions (`h.mono_session`). The Methods give the test as identical to the reliability test
+of the light-responsive detection (hollowed Gaussian baseline, 15 ms s.d., Poisson tests at alpha 0.001
+Bonferroni corrected, the peak against the bins before zero lag) and refer to English et al. (2017) for the
+rest; the lags tested (0.8 to 2.8 ms, the window of the transmission measure) and the hollow fraction (0.6)
+are assumptions.
+''')
+code(r'''
+t = time.time()
+mo = h.run_sessions(h.mono_session, HM)
+CON = pd.DataFrame([r for x in mo for r in x["rows"]])
+PV_ = np.concatenate([x["pvals"] for x in mo])
+npairs = sum(x["conn"].size for x in mo)
+print(f"{time.time()-t:.0f} s; possible pyramidal-interneuron pairs {npairs}; tested (CCG with >= 50 counts) {len(PV_)}; connections {int(sum(x['conn'].sum() for x in mo))}")
+for a in (0.001, 0.0001, 1e-5, 1e-6):
+    print(f"  count at alpha {a} (Bonferroni over 3 bins): {int(((PV_[:, 2] < a / 3) & (PV_[:, 3] < a / 3)).sum())}")
+''', ["sanity"])
+
+md(r'''
+> **fig7b-sbd-convergence.** SBD pyramidal pairs converge onto the same interneurons more than DBD pairs (median
+> convergence 0.2727 against 0.2).
+''')
+code(r'''
+crow = []
+for x in mo:
+    c = x["conn"]; lr = np.where(x["lr"])[0]; nr = np.where(~x["lr"])[0]
+    for i, a in enumerate(lr):
+        for b in lr[i + 1:]: crow.append({"session": x["session"], "subject": x["subject"], "birthdate": x["birthdate"], "sbd": True, "cv": h.convergence(c, a, b)})
+        for b in nr: crow.append({"session": x["session"], "subject": x["subject"], "birthdate": x["birthdate"], "sbd": False, "cv": h.convergence(c, a, b)})
+CV = pd.DataFrame(crow)
+s, d, p = sbd_dbd(CV, "cv")
+print("within tolerance:", abs(s - 0.2727) <= 0.0273, abs(d - 0.2) <= 0.02)
+print("by birthdate SBD/DBD medians:", CV.groupby(["birthdate", "sbd"]).cv.median().round(4).to_dict())
+''', ["claim:fig7b-sbd-convergence"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig7ce-convergence-by-birthdate.** Convergence onto interneurons (DBD-corrected medians 0.0857, 0.1071, 0.1,
+> 0.0285) and spike transmission probability (0.0184, 0.0202, 0.0222, 0.0199) are bell-shaped functions of the
+> presynaptic neurons' birthdate.
+''')
+code(r'''
+sb = CV[CV.sbd].dropna().copy()
+dm = CV[~CV.sbd].groupby("birthdate").cv.median()
+sb["cv_corr"] = sb.cv - sb.birthdate.map(dm)
+m1, p1 = by_bd(sb, "cv_corr", "fig7ce-convergence-by-birthdate")
+print("corrected convergence: inverted-U", h.inverted_u(m1), "within tolerance", [abs(a - e) <= 0.1 * abs(e) for a, e in zip(m1, [0.0857, 0.1071, 0.1, 0.0285])])
+L7 = CON[CON.pre_lr]
+m2, p2 = by_bd(L7, "stp", "fig7ce-convergence-by-birthdate")
+print("transmission: inverted-U", h.inverted_u(m2),
+      "; within tolerance, legend:", [abs(a - e) <= 0.1 * e for a, e in zip(m2, [0.0184, 0.0202, 0.0222, 0.0199])],
+      "; table:", [abs(a - e) <= 0.1 * e for a, e in zip(m2, [0.0238, 0.02356, 0.0247, 0.0195])])
+''', ["claim:fig7ce-convergence-by-birthdate"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig7d-transmission-gamma.** Spike transmission probability peaks at presynaptic interspike intervals of 15 to
+> 23 ms, in the gamma range, with short-term depression at shorter intervals.
+''')
+code(r'''
+isi = np.array(CON.stp_isi.tolist(), float)
+centres = np.sqrt(h.ISI_EDGES[:-1] * h.ISI_EDGES[1:]) * 1000
+mean = np.nanmean(isi, 0)
+print(pd.DataFrame({"isi_lo_ms": h.ISI_EDGES[:-1] * 1000, "isi_hi_ms": h.ISI_EDGES[1:] * 1000, "centre_ms": centres,
+                    "mean_stp": mean, "n": np.isfinite(isi).sum(0)}).round(4).to_string())
+k = int(np.nanargmax(mean))
+print(f"peak bin {h.ISI_EDGES[k]*1000:.1f}-{h.ISI_EDGES[k+1]*1000:.1f} ms (centre {centres[k]:.1f}); in 13.5-25.3 ms: {13.5 <= centres[k] <= 25.3}; "
+      f"shortest bin {mean[0]:.4f} below peak {mean[k]:.4f}: {mean[0] < mean[k]}")
+for lab, sel in (("light-responsive presynaptic only", CON.pre_lr.values),):
+    mm = np.nanmean(isi[sel], 0); kk = int(np.nanargmax(mm)); print(lab, "peak centre", round(centres[kk], 1), "ms")
+''', ["claim:fig7d-transmission-gamma"])
+md("**Result: ...**", ["result"])
+
+md(r'''
+> **fig7fg-convergence-cofiring.** Of 184,230 possible pyramidal-interneuron pairs, 31,932 are monosynaptically
+> connected; 65.27% of pyramidal pairs share at least one postsynaptic interneuron, and cofiring in SPW-Rs, theta
+> cycles and ratemap overlap all increase with convergence.
+''')
+code(r'''
+RMAT = {r[2]["session"]: r[2]["rip_corr_mat"] for r in hc_res}
+MAPV = {}
+for x in mz:
+    MAPV[x["session"]] = np.concatenate([x["maps"][0][:, STEM], x["maps"][1][:, STEM]], axis=1)
+rows, nz, tot, anyt = [], 0, 0, 0
+for x in mo:
+    c = x["conn"].astype(int); n = len(c)
+    if n < 2: continue
+    sh = c @ c.T; un = n - (1 - c) @ (1 - c).T  # shared targets; union of targets
+    iu = np.triu_indices(n, 1)
+    nz += int((sh[iu] > 0).sum()); tot += len(iu[0]); anyt += int((un[iu] > 0).sum())
+    lr = x["lr"]; rm = RMAT[x["session"]]; tm = TMAT[x["session"]]; V = MAPV.get(x["session"])
+    for a, b in zip(*iu):
+        if sh[a, b] == 0: continue
+        rows.append({"session": x["session"], "nr_pair": (not lr[a]) and (not lr[b]), "cv": sh[a, b] / un[a, b],
+                     "rip": rm[a, b], "theta": tm[a, b], "map": corr_visited(V[a], V[b]) if V is not None else np.nan})
+Q = pd.DataFrame(rows)
+nconn = int(sum(x["conn"].sum() for x in mo))
+print(f"connections {nconn} of {npairs} possible; pyramidal pairs with >= 1 shared interneuron {nz} of {tot} ({100*nz/tot:.2f}%); "
+      f"of pairs with any target {anyt} ({100*nz/max(anyt,1):.2f}%)")
+def quint_reg(df, col, claim, k):
+    d = df.dropna(subset=[col]).copy()
+    d["q"] = pd.qcut(d.cv.rank(method="first"), 5, labels=False) + 1
+    X = d.q.values.astype(float); Y = d[col].values
+    def tstat(x, y):
+        xm = x - x.mean(); b = (xm @ (y - y.mean())) / (xm @ xm)
+        res = y - y.mean() - b * xm; se = np.sqrt((res @ res) / (len(y) - 2) / (xm @ xm)); return b, b / se
+    b, t = tstat(X, Y)
+    rng = np.random.default_rng(seed(claim) + k)
+    null = np.array([tstat(X, rng.choice(Y, len(Y)))[1] for _ in range(1000)])
+    return b, t, float(np.mean(np.abs(null) >= abs(t))), d.groupby("q")[col].mean().round(4).tolist(), len(d)
+for lab, sel in (("(a) nonresponsive pairs", Q.nr_pair), ("(b) all pyramidal pairs", Q.index >= 0)):
+    for col in ("rip", "theta", "map"):
+        b, t, p, qm, n = quint_reg(Q[sel], col, "fig7fg-convergence-cofiring", 0)
+        print(f"{lab}, {col}: n = {n}, quintile means {qm}, slope {b:.4f}, t = {t:.2f}, bootstrap p = {p:.3f}")
+for k in SEEDS_PLUS[1:]:
+    print(f"seed +{k} (a):", [round(quint_reg(Q[Q.nr_pair], col, 'fig7fg-convergence-cofiring', k)[2], 3) for col in ("rip", "theta", "map")])
+''', ["claim:fig7fg-convergence-cofiring"])
+md("**Result: ...**", ["result"])
+PYEOF
+echo ok; date -u
+```
+
+```
+ok
+Thu Nov 19 05:27:48 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/gen && sed -i 's/    sh = c @ c.T; un = n - (1 - c) @ (1 - c).T  # shared targets; union of targets/    sh = c @ c.T; un = c.shape[1] - (1 - c) @ (1 - c).T  # shared targets; union of targets/' part7.py && grep -n "un = c.shape" part7.py
+cat > part8.py <<'PYEOF'
+md(r'''
+## Blocked claims
+
+> **ed2-waveform-validation.** Light-evoked spikes most resemble the spontaneous spikes of their own cluster, and
+> light-responsive and nonresponsive pyramidal cells have the same waveform trough-to-peak.
+
+The waveform distance needs the waveforms of light-evoked spikes, which need the wide-band signal around the
+pulses. The processed files hold only each unit's mean waveform over all spikes; the wide-band signal is in the
+11 raw files, of which 5 are homecage-mouse sessions (52 to 141 GB each). The claim is blocked. The
+trough-to-peak part alone is printed here for the record; it does not decide the outcome.
+''')
+code(r'''
+tp = U.merge(pd.DataFrame([{"session": m["session_id"], "i": i, "ttp": v} for m in metas for i, v in enumerate(m["u_trough_to_peak"])]).assign(
+    i=lambda d: d.groupby("session").cumcount()), left_on=[U.session, U.groupby("session").cumcount()], right_on=["session", "i"], how="left") if False else None
+rows = []
+for m in metas:
+    if m["subject_id"] in h.HOMECAGE_EXCLUDED: continue
+    for c, l, v in zip(m["u_putative_cell_type"], m["u_light_responsive"], m["u_trough_to_peak"]):
+        if c == "Pyramidal Cell": rows.append({"lr": l, "ttp": v})
+TT = pd.DataFrame(rows)
+a, b = TT[TT.lr].ttp.dropna(), TT[~TT.lr].ttp.dropna()
+print(f"trough-to-peak: light-responsive mean {a.mean():.3f} ms (n = {len(a)}), nonresponsive mean {b.mean():.3f} ms (n = {len(b)}), "
+      f"two-sided t-test p = {stats.ttest_ind(a, b).pvalue:.3g}")
+''', ["claim:ed2-waveform-validation"])
+
+md(r'''
+The other blocked claims are not computed here: the histology of ed1-brdu-specificity and fig1c-radial-depth is
+not in the dataset; ed5-matched-controls needs each unit's L-ratio, which the units table does not hold; the
+assembly claims (fig3c, fig3e, ed6, ed7) and the model of fig4d were not run (see the attempt record for the
+estimate); ed3-depth-control and ed10-waveform-matched-controls were not reached in the run's time.
+''')
+
+code(r'''
+print(f"notebook runtime {(time.time() - T0)/60:.1f} min; peak memory of this process {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6:.2f} GB")
+''')
+
+md(r'''
+## Summary
+
+...
+''')
+PYEOF
+sed -i '/^tp = U.merge/,/^    i=lambda d/d' part8.py; grep -n "tp = \|lambda" part8.py
+cat > build.py <<'PYEOF'
+import nbformat, sys
+CELLS = []
+ns = {}
+src = ""
+for p in ["part1.py", "part2.py", "part3.py", "part4.py", "part5.py", "part6.py", "part7.py", "part8.py"]:
+    src += open(f"/tmp/claude-1001/gen/{p}").read().replace("CELLS = []\n", "", 1 if p != "part1.py" else 0) + "\n"
+exec(src, ns)
+nb = nbformat.v4.new_notebook()
+for kind, s, tags in ns["CELLS"]:
+    c = nbformat.v4.new_markdown_cell(s) if kind == "markdown" else nbformat.v4.new_code_cell(s)
+    if tags: c.metadata["tags"] = tags
+    nb.cells.append(c)
+nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
+nbformat.write(nb, sys.argv[1])
+print(len(nb.cells), "cells")
+PYEOF
+. $TMPDIR/venv/bin/activate && python build.py entries/huszar-2022/reproduce_huszar_2022.ipynb
+```
+
+```
+91:    sh = c @ c.T; un = c.shape[1] - (1 - c) @ (1 - c).T  # shared targets; union of targets
+123 cells
 Shell cwd was reset to
 ```
 
-**Agent**
-
-Writing the conclusion texts (each sentence tied to a printed number) and the summary:
-
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/results.json.py <<'PYEOF'
-import json
-R = {}
-R["cohort-birthdates"] = """**Result: not reproduced.** The dandiset holds 17 mice with the stated birthdates (E13.5 4,
-E14.5 3, E15.5 6, E16.5 4), but their sex fields give 13 males and 4 females against the paper's 12
-and 5. Mouse e13_1f1 is stored as male while its id, like those of the four mice stored as female,
-carries an f; read from the ids, the counts are 12 and 5. The difference is most likely an error in
-the sex field, but the criterion takes the field as stored."""
-R["sessions-durations"] = """**Result: partially reproduced.** The 104 files are within 10% of the paper's other session
-count (96, from Figure 1e and Figure 7f), though not of the 92 in the Methods; their median length is
-319.6 min (paper 309.1) and all lie within the widened range, from 113.7 to 494.2 min. Without
-e15_13f1 and e16_3m2 there are 96 sessions whose per-birthdate counts equal those of Figure 1e (30,
-24, 24, 18) and whose lengths run from 113.7 to 475.6 min, the paper's bounds, with a median of 309.9
-min. Two files of e13_1f1 hold no scored sleep (one Awake interval for the whole session), so not
-every session holds the sleep the claim states; that part fails."""
-R["spwr-duration"] = """**Result: reproduced.** The median ripple duration is 36.0 ms under both readings (paper 36.4 ms),
-and all 494,578 ripples last 20.0 to 199.2 ms."""
-R["unit-count"] = """**Result: not reproduced.** The dandiset holds 8,201 units, fewer than the paper's 9,471
-(tolerance 8,524 to 10,418). Six of the 17 mice (39 files) have no units at all. The 5 Hz rule
-classes 87.8% of units as putative pyramidal cells, against the paper's 78.3% pyramidal by waveform
-and autocorrelogram."""
-R["maze-cohort"] = """**Result: reproduced.** Under reading (b), the code's, the maze mice without e15_13f1 and e16_3m2
-are nine, at E13.5 2, E14.5 2, E15.5 2 and E16.5 3, and three mice (e13_26m1, e15_13f1, e16_3m2) have
-novel recordings. Reading (a) fails: 11 mice have maze data, not 12, because e13_26m1 belongs to both
-cohorts, which the paper calls separate."""
-R["maze-task"] = """**Result: not reproduced.** Trials span 204.1 cm (median of the largest linearized position;
-paper 205 cm) and position is sampled at 30.00 Hz, but only 38 of 65 familiar sessions have ten or
-more trials on each visited arm (22 of 65 by expected arm), and 6 sessions have fewer than 20 trials
-(the fewest has 12)."""
-R["novel-explorations"] = """**Result: partially reproduced.** The three mice are there, but only 9 novel explorations have
-trials and position (3 T-maze runs of about 164 cm and 6 linear-track runs of 100 or 110 cm),
-against 16. The novel-cohort sessions hold 7 further epochs of 10 to 50 min without position that are
-not a session's last epoch; with them the count is 16, consistent with the paper. The kinds with
-position (a T-maze and two track lengths) match the paper's figure-eight and two linear tracks, so
-the explorations without position are likely the three open fields."""
-R["fig5e-pv-decorrelation"] = """**Result: partially reproduced.** Over 57 sessions of nine mice the population vectors
-decorrelate after the stem (Kruskal-Wallis H = 7632.7, p = 0), and the stem median (0.937) matches the
-paper's 0.93, but turn 1 (0.547), arm (0.492) and turn 2 (0.465) stay more correlated than reported
-(0.412, 0.372, 0.394). The values depend on which units count as pyramidal: with a 2 Hz cut the three
-medians are 0.387, 0.288 and 0.306, and with all units 0.948, 0.94 and 0.921. The stem is the most
-correlated segment in every mouse (stem 0.849 to 0.952, other segments 0.296 to 0.738)."""
-R["fig6c-theta-rate-preserved"] = """**Result: reproduced.** The running rates of 2,038 putative pyramidal cells on the familiar and
-novel mazes correlate with Spearman rho = 0.734 (paper 0.7378), and rho is 0.723 to 0.755 in each
-mouse; the variants give 0.763 to 0.808. The rate here is a running rate, not the paper's rate in
-theta cycles."""
-R["fig6c-novel-ratemap-corr-higher"] = """**Result: not reproduced.** Pooled over pairs, the median ratemap correlation is -0.0364 in
-novel mazes and -0.0530 on the familiar maze, the rank-sum test finds no difference (p = 0.67), and
-the novel median is outside its tolerance (0.018 to 0.078). Within each of the 9 sessions with a
-novel maze the novel median is the higher one, so the direction holds session by session, but the
-pooled test and the reported size do not. The dandiset lacks the open-field explorations, and the
-paper's pairs each include a light-responsive neuron; either may account for the difference."""
-R["fig6d-info-lower-novel"] = """**Result: partially reproduced.** Spatial information is lower on novel mazes (median 0.270
-bits/s) than on the familiar maze (0.631 bits/s), rank-sum p = 1.5e-59, as the paper reports, but
-both medians are below the paper's 0.39 and 0.88. The code's unweighted information gives 0.285 and
-0.646. Novel information is lowest on the linear tracks (0.083 to 0.337) and, for one mouse's T-maze,
-close to its familiar value (0.608 against 0.617)."""
-R["fig6d-rate-lower-novel"] = """**Result: partially reproduced.** Running rates are lower on novel mazes (median 0.799 Hz) than
-on the familiar maze (0.958 Hz), rank-sum p = 7e-06, and lower in each mouse, but both medians lie
-above the paper's theta-cycle rates (0.69 and 0.77 Hz), outside tolerance. The paired test over
-2,038 cells gives a median novel-to-familiar ratio of 0.822 (p = 1.3e-13)."""
-R["summary"] = """## Summary
-
-| Claim | Outcome |
-|---|---|
-| cohort-birthdates | not reproduced (one mouse's sex field) |
-| sessions-durations | partially reproduced |
-| spwr-duration | reproduced |
-| unit-count | not reproduced |
-| maze-cohort | reproduced |
-| maze-task | not reproduced |
-| novel-explorations | partially reproduced |
-| fig5e-pv-decorrelation | partially reproduced |
-| fig6c-theta-rate-preserved | reproduced |
-| fig6c-novel-ratemap-corr-higher | not reproduced |
-| fig6d-info-lower-novel | partially reproduced |
-| fig6d-rate-lower-novel | partially reproduced |
-| ed2, fig1e, fig1f, fig1g, fig1h, fig2b, fig2c, fig2d, fig2f, fig2g, fig3c, fig3e, fig4d, fig5b, fig5c, fig5d, fig5f, fig6e, fig6f, fig7b, fig7ce, fig1c | blocked: data missing |
-| fig7fg-convergence-cofiring | blocked: metadata insufficient |
-
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
-and the differences from the paper's method.
-
-**How the analysis differs from the paper's.** Putative pyramidal cells are units with a session
-mean rate of at most 5 Hz, as the files hold no cell types or waveforms; the Figure 5e values move a
-long way with this choice. The "theta-related" rate is the rate while running at 5 cm/s or faster,
-not the rate in LFP theta cycles. Speed comes from smoothed linearized position, not a Kalman filter.
-The Figure 6c pair correlations use all pairs of putative pyramidal cells, where the paper's pairs
-each include a light-responsive neuron, and the novel mazes are only those with position (no open
-fields). The familiar maze is taken as the first maze recording of each session.
-
-**What was found about the dandiset.**
-
-- No unit is labelled light-responsive, no cell type is given, no waveforms are stored and no
-  optogenetic pulse times are stored, in the processed or the raw files. The paper's main findings,
-  which compare same- and different-birthdate neurons, cannot be tested.
-- Six of the 17 mice (39 files) have sleep states and ripples but no units and no position; the
-  dandiset holds 8,201 units where the paper reports 9,471.
-- The open-field explorations of the novel-environment cohort have no position (7 of 16 novel
-  explorations), and several novel recordings give x and y between 0 and 1 though stated in cm.
-- `is_familiar_maze` is wrong in sessions with a single maze recording (True only for the first two
-  trials). Mouse e13_1f1 is stored as male, though its id marks it female and the paper's sex counts
-  need it female. Two files of e13_1f1 have no scored sleep.
-- Twelve of 13 raw files give a session start of 2011-08-18. The processed file of e16_3m1_210201
-  holds a copy of the 1250 Hz LFP labelled 30,000 Hz with a wrong conversion factor.
-- Units have no link to electrodes, and their `group_id` values do not match the electrode group
-  names in 64 of 65 files. The birthdate of each mouse is stored only in its subject id.
-- The 96 files of the 15 homecage mice match the paper's per-birthdate session counts and duration
-  bounds exactly; the Methods' count of 92 sessions disagrees with the paper's own 96."""
-json.dump(R, open('/tmp/claude-1001/results.json','w'), indent=1)
+cd $TMPDIR && . venv/bin/activate && uv pip install -q statsmodels && cat > dev.py <<'PYEOF'
+import sys, os, pickle, hashlib, nbformat, traceback, io, contextlib
+sys.path.insert(0, 'entries/huszar-2022')
+os.chdir('entries/huszar-2022')
+import huszar as h
+_orig = h.run_sessions
+def cached(func, metas, workers=4):
+    key = func.__name__ + "_" + hashlib.md5(",".join(m["session_id"] for m in metas).encode()).hexdigest()[:8]
+    p = f"/tmp/claude-1001/cache_{key}.pkl"
+    if os.path.exists(p): return pickle.load(open(p, "rb"))
+    r = _orig(func, metas, workers); pickle.dump(r, open(p, "wb")); return r
+h.run_sessions = cached
+_sv = h.survey
+def survey(workers=8):
+    p = "/tmp/claude-1001/cache_survey.pkl"
+    if os.path.exists(p): return pickle.load(open(p, "rb"))
+    r = _sv(workers); pickle.dump(r, open(p, "wb")); return r
+h.survey = survey
+nb = nbformat.read(sys.argv[1], as_version=4)
+ns = {}
+start = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+for i, c in enumerate(nb.cells):
+    if c.cell_type != "code": continue
+    print(f"\n######## cell {i} {c.metadata.get('tags', [])}", flush=True)
+    try:
+        exec(c.source, ns)
+    except Exception:
+        traceback.print_exc(); break
 PYEOF
-python $TMPDIR/results.json.py && python $TMPDIR/build_nb.py $TMPDIR/results.json
+time python dev.py entries/huszar-2022/reproduce_huszar_2022.ipynb 2>&1 | grep -v Warning | tail -250
 ```
 
 ```
-wrote entries/000552-huszar-2022/reproduce_huszar_2022.ipynb 63 cells
+seed +0: % REM shifting [28.7, 22.58, 25.93, 21.13], slope -1.94 %/day, 95% CI [-5.79, 1.84], one-tailed p = 0.172
+within tolerance (0.01): [np.True_, np.False_, np.False_, np.True_]
+by mouse, % shifting (0.01): {('E13.5', 'e13_16f1'): 35.3, ('E13.5', 'e13_1f1'): 0.0, ('E13.5', 'e13_1m1'): 20.0, ('E13.5', 'e13_26m1'): 5.3, ('E14.5', 'e14_1m1'): 23.3, ('E14.5', 'e14_2m2'): 62.5, ('E14.5', 'e14_2m3'): 9.5, ('E15.5', 'e15_10m1'): 5.0, ('E15.5', 'e15_4m1'): 40.0, ('E15.5', 'e15_4m2'): 14.3, ('E15.5', 'e15_5m1'): 0.0, ('E15.5', 'e15_9f1'): 30.8, ('E16.5', 'e16_1f1'): 23.8, ('E16.5', 'e16_2m1'): 23.1, ('E16.5', 'e16_3m1'): 19.4}
+
+######## cell 52 ['claim:fig2d-theta-depth']
+wake_depth: n = [175, 117, 173, 101], medians = [0.1207, 0.0905, 0.0916, 0.1073], ranges = [(0.046, 0.311), (0.035, 0.286), (0.033, 0.291), (0.031, 0.362)]
+  bootstrap Kruskal-Wallis H = 33.515; p under the claim's seed and +1000..+4000: [0.0, 0.0, 0.0, 0.0, 0.0]
+rem_depth: n = [102, 90, 105, 70], medians = [0.1399, 0.1427, 0.1444, 0.1439], ranges = [(0.034, 0.358), (0.03, 0.35), (0.044, 0.39), (0.028, 0.437)]
+  bootstrap Kruskal-Wallis H = 0.955; p under the claim's seed and +1000..+4000: [0.8176, 0.807, 0.8116, 0.8106, 0.8084]
+wake: E14.5 and E15.5 both below E13.5 and E16.5: True ; within tolerance: [True, True, True, True]
+by mouse (median wake depth): {('E13.5', 'e13_16f1'): 0.123, ('E13.5', 'e13_1f1'): 0.124, ('E13.5', 'e13_1m1'): 0.109, ('E13.5', 'e13_26m1'): 0.103, ('E14.5', 'e14_1m1'): 0.143, ('E14.5', 'e14_2m2'): 0.09, ('E14.5', 'e14_2m3'): 0.071, ('E15.5', 'e15_10m1'): 0.091, ('E15.5', 'e15_4m1'): 0.145, ('E15.5', 'e15_4m2'): 0.078, ('E15.5', 'e15_5m1'): 0.083, ('E15.5', 'e15_9f1'): 0.091, ('E16.5', 'e16_1f1'): 0.114, ('E16.5', 'e16_2m1'): 0.11, ('E16.5', 'e16_3m1'): 0.106}
+
+######## cell 55 ['claim:fig2c-theta-cofiring']
+theta_corr: SBD median 0.0177 (n = 3727), DBD median 0.0078 (n = 50388), two-sided Wilcoxon rank-sum p = 1.59e-40; dropped (NaN) SBD 24, DBD 73
+pairs SBD 3751 DBD 50461 ; w
+[... 240 more lines not kept]
 ```
-
-**Agent**
-
-Now `entry.yaml`, `requirements.in` and the README:
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000552-huszar-2022 && cat > requirements.in <<'EOF'
-dandi
-h5py
-matplotlib
-numpy
-pandas
-remfile
-scipy
+date -u; cd $TMPDIR && . venv/bin/activate && time python dev.py entries/huszar-2022/reproduce_huszar_2022.ipynb > devout.txt 2>&1; grep -v Warning devout.txt | head -150
+```
+
+```
+Thu Nov 19 06:03:24 UTC 2026
+
+real	5m17.048s
+user	7m56.322s
+sys	0m0.904s
+
+######## cell 1 []
+
+######## cell 3 ['sanity']
+104 processed files, 17 subjects, 104 distinct session ids
+LFP rate(s): [1250.] Hz; LFP duration against last spike, max |difference| = 13.56 min
+         sex birthdate  sessions  units   pyr  light_resp
+subject                                                  
+e13_16f1   F     E13.5         9   1213  1013         124
+e13_1f1    F     E13.5         5    360   271           6
+e13_1m1    M     E13.5        12   1432  1139          14
+e13_26m1   M     E13.5         4    853   712          40
+e14_1m1    M     E14.5        12    853   604          56
+e14_2m2    M     E14.5         4    583   475           9
+e14_2m3    M     E14.5         8    452   345          67
+[... 136 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && grep -v Warning devout.txt | sed -n '/cell 44/,/cell 52/p'
+```
+
+```
+######## cell 44 ['claim:fig2b-synchrony-per-animal']
+     subject  sbd_pairs  dbd_pairs  a_sbd_med  a_dbd_med     a_p  a_higher_sig  b_diff  b_positive
+0   e13_16f1        977      13198     0.0403     0.0183  0.0000          True  1.2942        True
+1    e13_1f1          1        349     0.0023     0.0386  0.3199         False  0.6701        True
+2    e13_1m1          2       1348     0.0334     0.0250  0.7743         False -0.8463       False
+3   e13_26m1        220       6260     0.0328     0.0201  0.0000          True  1.2603        True
+4    e14_1m1        174       2838     0.0432     0.0318  0.0277          True  0.5391        True
+5    e14_2m2          8       1068     0.0551     0.0289  0.0266          True  2.8483        True
+6    e14_2m3        351       2494     0.0399     0.0350  0.0670         False  0.2059        True
+7   e15_10m1        206       3316     0.0379     0.0244  0.0000          True  0.7846        True
+8    e15_4m1        199       1452     0.0394     0.0329  0.0657         False  0.2905        True
+9    e15_4m2        707       3566     0.0279     0.0248  0.0214          True -0.1117       False
+10   e15_5m1         59        943     0.0385     0.0245  0.0103          True  0.5492        True
+11   e15_9f1        408       4365     0.0567     0.0341  0.0000          True  0.9744        True
+12   e16_1f1        148       2521     0.0206     0.0085  0.0000          True  0.5210        True
+13   e16_2m1         48       1022     0.0087     0.0156  0.6151         False  0.6069        True
+14   e16_3m1        243       5721     0.0400     0.0215  0.0000          True  0.5365        True
+animals with SBD pairs: 15; (a) SBD higher with p < 0.05: 10; (a') SBD median higher regardless of p: 13; (b) mean z-scored CCG difference > 0: 13
+
+######## cell 47 ['sanity']
+[... 19 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/huszar-2022 && python - <<'EOF'
+s=open('huszar.py').read()
+old='''    picked from the channels that qualify (assumption): in one LFP chunk of about 52 s during
+    homecage non-REM sleep with the most SPW-Rs, the pyramidal layer centre is the good channel
+    with the largest ripple-band (130-200 Hz) power at the ripple peaks; on its shank, the
+    theta channel is the channel with a positive mean sharp wave (2-40 Hz LFP at 0 to 50 ms
+    after the peaks, against the chunk mean) that has the largest ripple power, so that it lies
+    just above the centre. Returns (theta channel row, pyramidal channel row, details)."""'''
+new='''    picked from the channels that qualify (assumption): in one LFP chunk of about 52 s during
+    homecage non-REM sleep with the most SPW-Rs, the pyramidal layer centre is the good channel
+    with the largest ripple-band (130-200 Hz) power at the ripple peaks; the theta channel is
+    the good channel with a positive mean sharp wave (2-40 Hz LFP at 0 to 50 ms after the
+    peaks, against the chunk mean) that has the largest ripple power, so that it lies just
+    above the centre, preferring the shank of the pyramidal layer centre and taking any shank
+    when that shank has none. With no such channel at all, the pyramidal layer channel is used.
+    Returns (theta channel row, pyramidal channel row, details)."""'''
+assert old in s; s=s.replace(old,new)
+old='''    cand = np.where((shank == shank[pyr_ch]) & ~bad & (swa > 0))[0]
+    th = int(cand[np.argmax(rpow[cand])]) if len(cand) else pyr_ch
+    return th, pyr_ch, {"n_ripples": int(len(pk)), "sw_theta": float(swa[th]),
+                        "sw_pyr": float(swa[pyr_ch]), "positive_found": bool(len(cand))}'''
+new='''    cand = np.where((shank == shank[pyr_ch]) & ~bad & (swa > 0))[0]
+    where = "same shank"
+    if not len(cand):
+        cand = np.where(~bad & (swa > 0))[0]
+        where = "other shank"
+    th = int(cand[np.argmax(rpow[cand])]) if len(cand) else pyr_ch
+    return th, pyr_ch, {"n_ripples": int(len(pk)), "sw_theta": float(swa[th]),
+                        "sw_pyr": float(swa[pyr_ch]), "positive_found": bool(len(cand)),
+                        "where": where if len(cand) else "none, pyramidal channel"}'''
+assert old in s; s=s.replace(old,new)
+open('huszar.py','w').write(s)
 EOF
-cat > entry.yaml <<'EOF'
+cd $TMPDIR/gen && python - <<'EOF'
+p='part3.py'; s=open(p).read()
+old='''print(f"animals with SBD pairs: {len(el)};'''
+new='''t13 = A[~A.subject.isin(["e13_1f1", "e13_1m1"])]
+print(f"the 13 animals of the claim (without e13_1f1 and e13_1m1, the two E13.5 mice with one light-responsive cell in most sessions): "
+      f"(a) SBD higher with p < 0.05 in {int(t13.a_higher_sig.sum())}; (b) z-scored CCG difference > 0 in {int(t13.b_positive.sum())}")
+print(f"animals with SBD pairs: {len(el)};'''
+assert old in s; s=s.replace(old,new); open(p,'w').write(s)
+p='part4.py'; s=open(p).read()
+old='''print("sessions where a channel with a positive sharp wave was found on the pyramidal shank:", int(TO.positive_found.sum()), "of", len(TO))'''
+new='''print("theta channel with a positive sharp wave, by where it was found:", TO["where"].value_counts().to_dict())
+print("sharp wave at the theta channel (uV): median", round(TO.sw_theta.median(), 1), "; at the pyramidal layer channel:", round(TO.sw_pyr.median(), 1))'''
+assert old in s; s=s.replace(old,new)
+s=s.replace('''pos = set(TO[TO.positive_found].session)''','''pos = set(TO[TO["where"] == "same shank"].session)''')
+s=s.replace('''print("variant, sessions with a positive sharp-wave channel only:", round(s2, 4), round(d2, 4))''','''print("variant, sessions whose theta channel is on the shank of the pyramidal layer centre:", round(s2, 4), round(d2, 4))''')
+s=s.replace('''the helper takes the one with the largest ripple power on the shank of the pyramidal layer centre
+(assumption, `pick_theta_channel`). When no channel of that shank has a positive sharp wave, the pyramidal
+layer channel is used, and this is counted below.''','''the helper takes the one with the largest ripple power, on the shank of the pyramidal layer centre when that
+shank has one and on any shank otherwise (assumption, `pick_theta_channel`); where it was found is counted below.''')
+open(p,'w').write(s)
+EOF
+grep -n "pos = set\|where" part4.py | head; date -u
+```
+
+```
+8:shank has one and on any shank otherwise (assumption, `pick_theta_channel`); where it was found is counted below.
+20:print("theta channel with a positive sharp wave, by where it was found:", TO["where"].value_counts().to_dict())
+84:pos = set(TO[TO["where"] == "same shank"].session)
+Thu Nov 19 06:09:18 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/huszar-2022 && cat > entry.yaml <<'EOF'
 schema_version: 1
-name: 000552-huszar-2022
+name: huszar-2022
 type: reproduction
-title: Birthdated CA1 pyramidal neurons in freely moving mice (Huszar et al. 2022)
-description: Tests the findings of Huszar, Zhang, Blockus and Buzsaki (2022) that can be tested on
-  dandiset 000552, which holds sleep states, sharp-wave ripples, spike-sorted units and position
-  from 17 mice electroporated at E13.5 to E16.5. It checks the description of the dataset and tests
-  the findings on all pyramidal neurons on familiar and novel mazes (population-vector
-  decorrelation, firing rates, spatial information and ratemap correlations). The units carry no
-  light-responsiveness label and no optogenetic pulse times are stored, so the comparisons of
-  same- and different-birthdate neurons are blocked.
+title: Birthdate and hippocampal dynamics (Huszar et al. 2022)
+description: Tests the findings of Huszar, Zhang, Blockus and Buzsaki (2022) on dandiset 000552, which holds
+  the CA1 silicon-probe recordings of 17 birthdated mice (104 sessions) with units, light-responsive labels,
+  sleep states, SPW-Rs, LFP and maze position. It covers the cohort and unit counts, single-cell and SPW-R
+  firing by birthdate, cofiring of same-birthdate pairs in SPW-Rs and theta cycles, theta phase measures,
+  place maps on the familiar and novel mazes, and pyramidal-to-interneuron connectivity. Histology, assemblies
+  and the network model are not tested.
 license: Apache-2.0
 notebooks:
 - path: reproduce_huszar_2022.ipynb
   title: Reproducing Huszar et al. (2022) from dandiset 000552
-  runtime_minutes: 7
+  runtime_minutes: 35
 helpers:
 - huszar.py
 related:
-- id: dandi:000552/0.230630.2304
+- id: dandi:000552/0.261113.1035
   relation: uses_data
 - id: doi:10.1038/s41593-022-01138-x
   relation: reproduces
 EOF
-cd ../.. && python tools/entry.py lock entries/000552-huszar-2022 && python tools/entry.py check entries/000552-huszar-2022
+printf "h5py\nmatplotlib\nnumpy\npandas\nremfile\nrequests\nscipy\nstatsmodels\n" > requirements.in
+echo "# placeholder" > README.md
+. $TMPDIR/venv/bin/activate && python $TMPDIR/gen/build.py reproduce_huszar_2022.ipynb && cd ../.. && python tools/entry.py lock entries/huszar-2022 && python tools/entry.py check entries/huszar-2022
 ```
 
 ```
-wrote entries/000552-huszar-2022/requirements.lock.txt
+123 cells
+wrote huszar-2022/requirements.lock.txt (Python 3.13, with hashes)
 0 error(s)
 ```
-
-**Agent**
-
-Lock and check pass. Running the entry from a clean environment:
 
 **Agent calls Bash**
 
 ```bash
-time python tools/entry.py all entries/000552-huszar-2022 2>&1 | tail -20
+date -u && time python tools/entry.py run entries/huszar-2022 2>&1 | tail -20; date -u
 ```
 
 ```
-Installed kernelspec registry-000552-huszar-2022 in executed/000552-huszar-2022/.venv/share/jupyter/kernels/registry-000552-huszar-2022
-0 error(s)
-pass  reproduce_huszar_2022.ipynb  (356 s)
+Thu Nov 19 06:09:43 UTC 2026
+Installed kernelspec registry-huszar-2022 in executed/huszar-2022/.venv/share/jupyter/kernels/registry-huszar-2022
+pass  reproduce_huszar_2022.ipynb  (2139 s)
 
-real	6m4.385s
-user	6m20.665s
-sys	0m16.240s
+real	35m42.240s
+user	53m9.418s
+sys	3m26.697s
+Thu Nov 19 06:45:25 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF' > $TMPDIR/final_out.txt
+import nbformat
+nb=nbformat.read('executed/huszar-2022/reproduce_huszar_2022.ipynb',as_version=4)
+for i,c in enumerate(nb.cells):
+    if c.cell_type!='code': continue
+    tags=c.metadata.get('tags',[])
+    txt=''.join(o.get('text','') if o.get('output_type')=='stream' else str(o.get('data',{}).get('text/plain','')) for o in c.get('outputs',[]))
+    print(f"#### {i} {tags}\n{txt}")
+EOF
+grep -v "Warning\|warnings.warn" $TMPDIR/final_out.txt | sed -n '/#### 44/,/#### 65/p'
+```
+
+```
+#### 44 ['claim:fig2b-synchrony-per-animal']
+     subject  sbd_pairs  dbd_pairs  a_sbd_med  a_dbd_med     a_p  a_higher_sig  b_diff  b_positive
+0   e13_16f1        977      13198     0.0403     0.0183  0.0000          True  1.2942        True
+1    e13_1f1          1        349     0.0023     0.0386  0.3199         False  0.6701        True
+2    e13_1m1          2       1348     0.0334     0.0250  0.7743         False -0.8463       False
+3   e13_26m1        220       6260     0.0328     0.0201  0.0000          True  1.2603        True
+4    e14_1m1        174       2838     0.0432     0.0318  0.0277          True  0.5391        True
+5    e14_2m2          8       1068     0.0551     0.0289  0.0266          True  2.8483        True
+6    e14_2m3        351       2494     0.0399     0.0350  0.0670         False  0.2059        True
+7   e15_10m1        206       3316     0.0379     0.0244  0.0000          True  0.7846        True
+8    e15_4m1        199       1452     0.0394     0.0329  0.0657         False  0.2905        True
+9    e15_4m2        707       3566     0.0279     0.0248  0.0214          True -0.1117       False
+10   e15_5m1         59        943     0.0385     0.0245  0.0103          True  0.5492        True
+11   e15_9f1        408       4365     0.0567     0.0341  0.0000          True  0.9744        True
+12   e16_1f1        148       2521     0.0206     0.0085  0.0000          True  0.5210        True
+13   e16_2m1         48       1022     0.0087     0.0156  0.6151         False  0.6069        True
+14   e16_3m1        243       5721     0.0400     0.0215  0.0000          True  0.5365        True
+the 13 animals of the claim (without e13_1f1 and e13_1m1, the two E13.5 mice with one light-responsive cell in most sessions): (a) SBD higher with p < 0.05 in 10; (b) z-scored CCG difference > 0 in 12
+animals with SBD pairs: 15; (a) SBD higher with p < 0.05: 10; (a') SBD median higher regardless of p: 13; (b) mean z-scored CCG difference > 0: 13
+
+[... 47 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -v "Warning\|warnings.warn" $TMPDIR/final_out.txt | sed -n '/#### 105/,$p' | grep -v "^ *[0-9]* *[0-9.]* *[0-9.]* *[0-9.]* *0.0" | head -60
+```
+
+```
+#### 105 ['sanity']
+359 s; possible pyramidal-interneuron pairs 184230; tested (CCG with >= 50 counts) 183641; connections 50618
+  count at alpha 0.001 (Bonferroni over 3 bins): 50618
+  count at alpha 0.0001 (Bonferroni over 3 bins): 43525
+  count at alpha 1e-05 (Bonferroni over 3 bins): 38402
+  count at alpha 1e-06 (Bonferroni over 3 bins): 34535
+
+#### 107 ['claim:fig7b-sbd-convergence']
+cv: SBD median 0.4545 (n = 3748), DBD median 0.3636 (n = 50341), two-sided Wilcoxon rank-sum p = 1.31e-79; dropped (NaN) SBD 3, DBD 120
+within tolerance: False False
+by birthdate SBD/DBD medians: {('E13.5', False): 0.4286, ('E13.5', True): 0.5455, ('E14.5', False): 0.2857, ('E14.5', True): 0.4286, ('E15.5', False): 0.3, ('E15.5', True): 0.4, ('E16.5', False): 0.375, ('E16.5', True): 0.4286}
+
+#### 110 ['claim:fig7ce-convergence-by-birthdate']
+cv_corr: n = [1199, 532, 1578, 439], medians = [0.1169, 0.1429, 0.1, 0.0536], ranges = [(-0.429, 0.571), (-0.286, 0.714), (-0.3, 0.7), (-0.375, 0.625)]
+  bootstrap Kruskal-Wallis H = 47.339; p under the claim's seed and +1000..+4000: [0.0, 0.0, 0.0, 0.0, 0.0]
+corrected convergence: inverted-U True within tolerance [False, False, True, False]
+stp: n = [2040, 671, 1584, 859], medians = [0.0141, 0.0153, 0.0172, 0.015], ranges = [(0.0, 0.21), (0.001, 0.377), (0.0, 0.347), (0.0, 0.289)]
+  bootstrap Kruskal-Wallis H = 35.518; p under the claim's seed and +1000..+4000: [0.0, 0.0, 0.0, 0.0, 0.0]
+transmission: inverted-U True ; within tolerance, legend: [False, False, False, False] ; table: [False, False, False, False]
+
+[... 24 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; grep -v "Warning\|warnings.warn" $TMPDIR/final_out.txt | sed -n '/#### 3 /,/#### 8 /p' | head -30
+```
+
+```
+Thu Nov 19 06:46:34 UTC 2026
+#### 3 ['sanity']
+104 processed files, 17 subjects, 104 distinct session ids
+LFP rate(s): [1250.] Hz; LFP duration against last spike, max |difference| = 13.56 min
+         sex birthdate  sessions  units   pyr  light_resp
+subject                                                  
+e13_16f1   F     E13.5         9   1213  1013         124
+e13_1f1    F     E13.5         5    360   271           6
+e13_1m1    M     E13.5        12   1432  1139          14
+e13_26m1   M     E13.5         4    853   712          40
+e14_1m1    M     E14.5        12    853   604          56
+e14_2m2    M     E14.5         4    583   475           9
+e14_2m3    M     E14.5         8    452   345          67
+e15_10m1   M     E15.5         7    704   509          44
+e15_13f1   F     E15.5         4   1385  1187          53
+e15_4m1    M     E15.5         3    202   155          35
+e15_4m2    M     E15.5         4    375   262          68
+e15_5m1    M     E15.5         3    233   160          19
+e15_9f1    F     E15.5         7    610   450          67
+e16_1f1    F     E16.5         9    604   485          49
+[... 11 more lines not kept]
 ```
 
 **Agent**
 
-Passed in 356 s. Checking the executed copy against the conclusions, particularly the new outputs:
+Now the conclusions, summary and README text.
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/gen/results.py <<'PYEOF'
+R = {
+"cohort-birthdates": "**Result: reproduced.** The files hold 17 mice, 12 male and 5 female, with 4, 3, 6 and 4 mice electroporated at E13.5 to E16.5; all 17 animals of Supplementary Table 1 are present with the table's birthdate. Sex and birthdate come from the subject ids, as the files say.",
+"st1-animal-sessions": "**Result: reproduced.** Every one of the 17 mice has the table's session count and the table's number of light-responsive cells; the 15 homecage mice give 96 sessions and 664 light-responsive cells, and the 17 mice 104 sessions.",
+"sessions-durations": "**Result: not reproduced.** No session set has 92 sessions; under the 96-session reading the count (96) is within 92 +- 9.2, the median is 309.9 min and every duration lies within 113.7 to 475.6 min, the paper's exact range. Two sessions (e13_1f1_200305, e13_1f1_200307) hold only wake in their sleep states, so the criterion's requirement that every session holds non-REM sleep fails, and the criterion has no partial outcome for this case.",
+"unit-count": "**Result: reproduced.** Over the 96 sessions of the 15 homecage mice there are 7,411 pyramidal cells and 2,060 interneurons (1,556 narrow, 504 wide), the paper's numbers exactly; the total is 9,472 units, the paper's 9,471 plus one unit without a cell type.",
+"ed2-light-responsive-count": "**Result: reproduced.** The stored labels give 664 light-responsive cells of 7,411 pyramidal cells (8.96%), and the same 664 follow from the stored SALT p and reliability flag.",
+"spwr-duration": "**Result: reproduced.** Every combination of reading gives a median between 36.00 and 36.80 ms, within 36.4 +- 3.64 ms; the mean of session medians of all detected ripples (the code's reading) is 36.28 ms over the 96 sessions. All 494,578 ripples last 20.0 to 199.2 ms.",
+"fig1e-labelled-fraction": "**Result: reproduced.** The per-session means are 5.39, 11.16, 14.74 and 9.16% over 30, 24, 24 and 18 sessions, the paper's values, with F = 8.525 as printed; the bootstrap ANOVA gives p < 0.0002 under all five seeds, E13.5 is lowest and E15.5 highest.",
+"fig1g-rate-by-birthdate": "**Result: reproduced.** Medians 1.52, 1.62, 1.54 and 1.15 Hz over 184, 132, 233 and 115 light-responsive cells are within tolerance, E16.5 is lowest, and the bootstrap Kruskal-Wallis gives p = 0.034 (0.034 to 0.041 over the five seeds).",
+"fig1h-burst-by-birthdate": "**Result: partially reproduced.** The bootstrap Kruskal-Wallis gives p <= 0.0004 under all seeds and the medians form an inverted U (0.088, 0.092, 0.104, 0.080, highest at E15.5), but all four medians are about 25% below the paper's (0.117 to 0.136) and outside tolerance; the code's 3-5 ms variant is lower still (0.074 to 0.095).",
+"fig2b-synchrony-per-animal": "**Result: reproduced.** Of the 13 animals of the claim, SBD pairs cofire more in SPW-Rs than DBD pairs with p < 0.05 in 10 (reading a), and the z-scored CCG of SBD pairs exceeds that of DBD pairs in 12 (reading b); both are in the range 10 to 12. The two E13.5 mice the paper leaves out do have SBD pairs in the files (1 and 2 pairs).",
+"fig2c-theta-cofiring": "**Result: reproduced, resting on the choice of theta channel.** SBD median 0.0180 against DBD 0.0078 over 3,727 and 50,388 pairs with a correlation, rank-sum p = 1.3e-41; both medians are within tolerance, the DBD median at the lower edge (0.0078 to 0.0096). In the 35 sessions whose theta channel lies on the shank of the pyramidal layer centre, the SBD median is 0.0145.",
+"fig2d-theta-depth": "**Result: reproduced, resting on the choice of theta channel.** Wake depth modulation medians 0.120, 0.097, 0.090 and 0.107 are within tolerance, E14.5 and E15.5 are below E13.5 and E16.5, and the bootstrap Kruskal-Wallis gives p < 0.0002; in REM sleep the medians are 0.140 to 0.144 and p = 0.74 to 0.75 over the seeds, so no difference is found, as the paper reports.",
+"fig2f-ripple-firing-by-birthdate": "**Result: reproduced.** SPW-R rate medians 7.48, 8.82, 7.91 and 6.13 Hz and participation 0.237, 0.269, 0.236 and 0.194 are within tolerance, both are inverted U, and both bootstrap Kruskal-Wallis tests give p <= 0.001 under all seeds.",
+"fig2g-ripple-cofiring": "**Result: reproduced.** SBD median 0.0385 against DBD 0.0226 (3,738 and 50,171 pairs with a correlation), rank-sum p = 4.7e-98; both within tolerance.",
+"fig1f-rem-shift": "**Result: not reproduced, resting on the choice of theta channel.** The fractions of REM-shifting cells are 27.96, 20.99, 19.74 and 21.54% (E14.5 and E15.5 outside tolerance), the slope is -2.05% per day with a 95% interval of about -6.2 to 2.2, and the one-tailed p is 0.157 to 0.174 over the five seeds, so the slope is not significant. With the code's Rayleigh threshold of 0.05 the slope is -1.98 and p = 0.162.",
+"fig6c-theta-rate-preserved": "**Result: reproduced, resting on the choice of theta channel.** Over the 2,544 pyramidal cells of the 12 novel sessions (the paper's n), theta-related rates in the familiar and novel subsessions correlate with Spearman rho = 0.741, p < 1e-300; the same with or without the wake restriction, and 0.735 to 0.745 in each mouse.",
+"fig6d-rate-lower-novel": "**Result: reproduced, resting on the choice of theta channel.** Median theta-related rate 0.755 Hz in the familiar maze and 0.675 Hz in novel environments over 2,544 cells, rank-sum p = 0.0013; both within tolerance.",
+"maze-cohort": "**Result: reproduced.** The nine mice of the table's Figure 5 column have 57 sessions with a first subsession on the figure-eight (2, 2, 2 and 3 mice per birthdate), and the three mice of the Figure 6 column have later subsessions in all 12 of their sessions.",
+"maze-task": "**Result: not reproduced.** Trials span a median 202.8 cm of linearized position (maximum 205.0) and tracking runs at 30.0 Hz, both within tolerance, but only 30 of 57 sessions hold at least ten trials of each type, and 6 sessions hold fewer than 20 trials in all, so neither the full nor the partial condition on trial counts holds.",
+"novel-explorations": "**Result: reproduced.** The three novel mice have 16 subsessions after the familiar one, in six environments: two linear tracks, three open fields and one novel figure-eight (tmaze_ipshita).",
+"fig5b-spatial-info-by-birthdate": "**Result: partially reproduced.** Both measures differ across birthdates (bootstrap Kruskal-Wallis p <= 0.0008 under all readings and seeds) and both have their highest median at E14.5 or E15.5 with E13.5 and E16.5 below it, as the claim states, but no reading brings the medians within tolerance: spatial information is 0.56, 0.63, 0.92 and 0.62 bits/s (concatenated maps) against 0.84 to 1.35, and coverage 29.5, 31.5, 31 and 12 cm (reading a) against 36, 44, 44 and 18.",
+"fig5c-sbd-ratemap-overlap": "**Result: partially reproduced.** Over 2,609 SBD and 39,965 DBD pairs (the paper's counts), SBD median 0.0189 against DBD -0.0239, rank-sum p = 5.9e-9; the DBD median is within tolerance and the SBD median is above it (0.0137 to 0.0167). The code's variant gives 0.0187 and -0.0249.",
+"fig5d-overlap-by-distance": "**Result: partially reproduced.** The birthdate main effect has p = 0.0001 over 2,561 SBD and 38,497 DBD pairs, and SBD exceeds DBD by Tukey's test at 0 um (p = 0.0002) and 250 um (p = 0.041) but not at 500 um (p = 0.96), as the paper says; five of the six means are outside the tight tolerances (for example SBD 0 um 0.060 against 0.0707).",
+"fig5e-pv-decorrelation": "**Result: partially reproduced.** Median PV correlations are 0.930 on the stem, 0.488 on turn 1, 0.407 on the arm and 0.407 on turn 2; the stem is highest and the bootstrap Kruskal-Wallis gives p < 0.0002 under all seeds, but the turn 1 median is outside tolerance (0.371 to 0.453).",
+"fig5f-remap-together": "**Result: reproduced.** The birthdate main effect has F = 24.0, p = 9.5e-7 with SBD higher, and SBD exceeds DBD in each tercile (0.020, 0.049, 0.072 against 0.002, 0.022, 0.043); the variant with open outer edges gives the same.",
+"fig6d-info-lower-novel": "**Result: partially reproduced.** Spatial information is lower in the novel linear environments than on the familiar maze (median 0.367 against 0.661 bits/s, rank-sum p = 9.9e-36); the novel median is within tolerance and the familiar one is not (0.792 to 0.968). The open fields, 7 of the 16 novel explorations, are not included.",
+"fig6c-novel-ratemap-corr-higher": "**Result: not reproduced.** In the novel environments that could be mapped (8 of 16 subsessions, no open fields), the median pairwise ratemap correlation is -0.032 against -0.045 on the familiar maze, rank-sum p = 0.75; the familiar median is within tolerance, the novel one (0.048 expected) is not.",
+"fig6e-sbd-novel-overlap": "**Result: partially reproduced.** In the mapped novel environments SBD pairs correlate more than DBD pairs (median 0.030 against -0.034 over 931 and 21,442 pairs, rank-sum p = 0.002), but both medians are outside tolerance (0.117 and 0.046 expected).",
+"fig6f-remap-together-novel": "**Result: reproduced.** Under both readings of the tercile edges the birthdate main effect has p = 0.016 and 0.013 with SBD higher (mean novel correlation 0.040 against 0.016), and SBD exceeds DBD in all three terciles.",
+"fig7b-sbd-convergence": "**Result: partially reproduced, resting on the assumed connection detector.** SBD pairs converge more than DBD pairs (median 0.455 against 0.364, rank-sum p = 1.3e-79), but both medians are far above the paper's (0.273 and 0.200); the detector finds 50,618 connections against the paper's 31,932.",
+"fig7ce-convergence-by-birthdate": "**Result: partially reproduced, resting on the assumed connection detector.** Corrected convergence (medians 0.117, 0.143, 0.100, 0.054) and transmission probability (0.0141, 0.0153, 0.0172, 0.0150) are both inverted U across birthdates with bootstrap Kruskal-Wallis p < 0.0002, but only one median of the eight (corrected convergence, E15.5) is within tolerance under either reading of the transmission medians.",
+"fig7d-transmission-gamma": "**Result: not reproduced, resting on the assumed connection detector.** Mean transmission probability rises from 0.0190 at 5-7 ms ISIs to a peak of 0.0269 in the 29-42 ms bin (centre 34.9 ms), outside 13.5 to 25.3 ms; the shortest-ISI bin is below the peak, as the claim's depression at short intervals says.",
+"fig7fg-convergence-cofiring": "**Result: not reproduced, resting on the assumed connection detector.** The possible pairs are 184,230, the paper's number exactly, but the detector finds 50,618 connections (31,932 +- 3,193 expected) and 86.2% of pyramidal pairs share an interneuron (65.27 +- 6.53% expected). SPW-R cofiring, theta cofiring and ratemap correlation all rise with convergence under both readings (slopes 0.0040, 0.0029 and 0.0017 for nonresponsive pairs, bootstrap p < 0.001 under all seeds), so the slope part holds.",
+}
+SANITY_TEXT = r'''
+The files describe 17 mice and 104 sessions, one file per session with no duplicates by unit, ripple and pulse
+counts. Every session has units with cell types, light pulses, ripples and LFP at 1,250 Hz; 101 sessions have
+wake, non-REM and REM states, one has no REM, and two (e13_1f1_200305 and e13_1f1_200307) have wake only. In
+the five sessions checked, light-responsive cells fire 2.7 to 15 times more in the 10 ms after the pulse onsets
+than 1 s later, pyramidal cells fire 5 to 6 times faster in the ripples than in windows shifted by 1 s, and in
+the four maze sessions among them the median spatial information falls from 0.56 to 1.07 to 0.13 to 0.19
+bits/s when spikes are shifted by 30 s against the position. Spikes, pulses, ripples and position are
+therefore consistent with one clock in those sessions; other sessions were not checked this way. The theta
+section adds the same contrast for the LFP.
+'''
+SUMMARY = r'''
+## Summary
+
+| Claim | Outcome |
+|---|---|
+| cohort-birthdates | reproduced |
+| st1-animal-sessions | reproduced |
+| sessions-durations | not reproduced (two sessions without sleep; all else holds) |
+| spwr-duration | reproduced |
+| unit-count | reproduced |
+| ed2-light-responsive-count | reproduced |
+| ed2-waveform-validation | blocked: data missing |
+| ed1-brdu-specificity, fig1c-radial-depth | blocked: data missing |
+| fig1e-labelled-fraction | reproduced |
+| fig1f-rem-shift | not reproduced (assumed theta channel) |
+| fig1g-rate-by-birthdate | reproduced |
+| fig1h-burst-by-birthdate | partially reproduced |
+| ed3-depth-control | blocked: not reached |
+| fig2b-synchrony-per-animal | reproduced |
+| fig2c-theta-cofiring | reproduced (assumed theta channel) |
+| fig2d-theta-depth | reproduced (assumed theta channel) |
+| fig2f-ripple-firing-by-birthdate | reproduced |
+| fig2g-ripple-cofiring | reproduced |
+| ed5-matched-controls | blocked: data missing (L-ratio) |
+| fig3c, fig3e, ed6, ed7, fig4d | blocked: too large |
+| maze-cohort | reproduced |
+| maze-task | not reproduced (trial counts) |
+| novel-explorations | reproduced |
+| fig5b-spatial-info-by-birthdate | partially reproduced |
+| fig5c-sbd-ratemap-overlap | partially reproduced |
+| fig5d-overlap-by-distance | partially reproduced |
+| fig5e-pv-decorrelation | partially reproduced |
+| fig5f-remap-together | reproduced |
+| fig6c-theta-rate-preserved | reproduced (assumed theta channel) |
+| fig6d-rate-lower-novel | reproduced (assumed theta channel) |
+| fig6d-info-lower-novel | partially reproduced |
+| fig6c-novel-ratemap-corr-higher | not reproduced |
+| fig6e-sbd-novel-overlap | partially reproduced |
+| fig6f-remap-together-novel | reproduced |
+| fig7b-sbd-convergence | partially reproduced (assumed detector) |
+| fig7ce-convergence-by-birthdate | partially reproduced (assumed detector) |
+| fig7d-transmission-gamma | not reproduced (assumed detector) |
+| fig7fg-convergence-cofiring | not reproduced (assumed detector) |
+| ed10-waveform-matched-controls | blocked: data missing (depends on ed2-waveform-validation) |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the
+differences from the paper's method.
+
+**How the analysis differs from the paper's.** The theta channel is chosen by a rule of this attempt that
+follows the Methods' description, and in 62 of 104 sessions no channel with a positive sharp wave was found,
+so the pyramidal layer channel was used. The monosynaptic detector follows the Methods' description with
+assumed lags, kernel and Bonferroni count, and finds about 60% more connections than the paper. Open fields
+are left out of the novel-environment analyses for lack of a spatial scale. Rate maps use a constant-velocity
+Kalman filter whose settings the paper does not give. The bootstrap post hoc test is replaced by Tukey's test
+on the six distance and birthdate groups.
+
+**What was found about the dataset.** The files give the paper's counts of mice, sessions, units, cell types
+and light-responsive cells exactly, and the paper's per-session labelled fractions. Two sessions of e13_1f1 hold
+wake only in their sleep states. In e16_3m2_211211 the position series named for the linear_manu
+subsession lies inside the openField_thomas subsession. Positions outside the familiar maze have no spatial
+scale. The units table has no L-ratio. Mice e13_1f1 and e13_1m1, which the paper says had a single
+light-responsive cell per session, have 1 and 2 same-birthdate pairs in the files. 27 of 57 familiar-maze
+sessions hold fewer than ten trials of one type.
+'''
+PYEOF
+cd $TMPDIR/gen && python - <<'EOF'
+s=open('build.py').read()
+s=s.replace('''exec(src, ns)''','''exec(src, ns)
+exec(open("/tmp/claude-1001/gen/results.py").read(), ns)
+cells = []
+last = None
+for kind, txt, tags in ns["CELLS"]:
+    for t in tags:
+        if t.startswith("claim:"): last = t[6:]
+    if "result" in tags:
+        txt = ns["R"][last]; tags = []
+    if txt.startswith("The files describe 17 mice and 104 sessions"):
+        txt = ns["SANITY_TEXT"].strip()
+    if txt.startswith("## Summary"):
+        txt = ns["SUMMARY"].strip()
+    cells.append((kind, txt, tags))
+ns["CELLS"] = cells''')
+open('build.py','w').write(s)
+EOF
+. $TMPDIR/venv/bin/activate && python build.py entries/huszar-2022/reproduce_huszar_2022.ipynb && grep -c "Result: \.\.\." entries/huszar-2022/reproduce_huszar_2022.ipynb
+```
+
+```
+Exit code 1
+123 cells
+0
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/gen && python - <<'EOF'
+s=open('results.py').read()
+s=s.replace("pyramidal cells fire 5 to 6 times faster in the ripples than in windows shifted by 1 s","pyramidal cells fire 4.5 to 6.3 times faster in the ripples than in windows shifted by 1 s")
+s=s.replace("the median spatial information falls from 0.56 to 1.07 to 0.13 to 0.19\nbits/s when spikes are shifted by 30 s against the position","the median spatial information falls from between 0.56 and 1.07 bits/s to between\n0.13 and 0.19 bits/s when spikes are shifted by 30 s against the position")
+open('results.py','w').write(s)
+EOF
+grep -c "4.5 to 6.3\|between 0.56" results.py; . $TMPDIR/venv/bin/activate && python build.py entries/huszar-2022/reproduce_huszar_2022.ipynb; date -u
+```
+
+```
+2
+123 cells
+Thu Nov 19 06:47:48 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/gen && python - <<'EOF'
+s=open('part1.py').read()
+s=s.replace("| ed3-depth-control, ed10-waveform-matched-controls | blocked: not reached in the run's time |","| ed3-depth-control | blocked: not reached in the run's time |\n| ed10-waveform-matched-controls | blocked: depends on ed2-waveform-validation |")
+open('part1.py','w').write(s)
+s=open('part8.py').read()
+s=s.replace("estimate); ed3-depth-control and ed10-waveform-matched-controls were not reached in the run's time.","estimate); ed3-depth-control was not reached in the run's time; ed10-waveform-matched-controls depends on\ned2-waveform-validation, which is blocked.")
+open('part8.py','w').write(s)
+EOF
+grep -c "ed10" part1.py part8.py
+cat > entries/huszar-2022/README.md <<'EOF'
+# Huszár, Zhang, Blockus & Buzsáki (2022) from dandiset 000552
+
+Tests the findings of [Huszár et al. (2022)](https://doi.org/10.1038/s41593-022-01138-x) that can be tested
+on [DANDI:000552](https://dandiarchive.org/dandiset/000552/0.261113.1035), which holds the CA1 silicon-probe
+recordings of 17 mice whose pyramidal neurons were birthdated by in utero electroporation (104 sessions),
+with units, light-responsive labels, sleep states, SPW-Rs, LFP and maze position.
+
+| Claim | Outcome |
+|---|---|
+| Cohort, sessions, units and light-responsive counts (5 claims) | Reproduced |
+| Session count and durations | Not reproduced (two sessions without sleep states) |
+| SPW-R duration | Reproduced |
+| Labelled fraction, firing rate, SPW-R firing and cofiring by birthdate (Figs 1e, 1g, 2b, 2f, 2g) | Reproduced |
+| Burst index by birthdate (Fig. 1h) | Partially reproduced |
+| Theta cofiring, theta depth, theta-related rates (Figs 2c, 2d, 6c, 6d) | Reproduced, on an assumed theta channel |
+| REM shifting (Fig. 1f) | Not reproduced, on an assumed theta channel |
+| Maze cohort and novel explorations | Reproduced |
+| Maze trial counts | Not reproduced |
+| Place maps on the familiar maze (Figs 5b to 5e) | Partially reproduced |
+| Remapping of SBD pairs (Figs 5f, 6f) | Reproduced |
+| Novel environments (Figs 6c bottom, 6d right, 6e) | One not reproduced, two partially reproduced (open fields left out) |
+| Pyramidal-to-interneuron convergence (Fig. 7) | Two partially reproduced, two not reproduced, on an assumed detector |
+| Histology, light-evoked waveforms, L-ratio controls (5 claims) | Blocked: data missing |
+| Assemblies and network model (5 claims) | Blocked: too large |
+| Depth control (Extended Data Fig. 3) | Blocked: not reached |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The attempt record, with the reasons and the differences from the paper's method, is
+[`attempts/huszar-2022-02.yaml`](../../attempts/huszar-2022-02.yaml).
+
+- `reproduce_huszar_2022.ipynb`: the analysis. It takes about 35 minutes, most of it reading one LFP channel
+  per session for the theta analyses.
+- `huszar.py`: streaming the files, the homecage, theta, maze and connectivity measures, and the bootstrap
+  tests. Other notebooks on this dandiset can import it.
+EOF
+. $TMPDIR/venv/bin/activate && python build.py entries/huszar-2022/reproduce_huszar_2022.ipynb && cd  && python tools/entry.py check entries/huszar-2022 && date -u && time python tools/entry.py run entries/huszar-2022 2>&1 | tail -3; date -u
+```
+
+```
+part1.py:1
+part8.py:1
+123 cells
+0 error(s)
+Thu Nov 19 06:48:12 UTC 2026
+Installed kernelspec registry-huszar-2022 in executed/huszar-2022/.venv/share/jupyter/kernels/registry-huszar-2022
+pass  reproduce_huszar_2022.ipynb  (2131 s)
+
+real	35m36.348s
+user	53m23.440s
+sys	3m28.116s
+Thu Nov 19 07:23:49 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cp $TMPDIR/final_out.txt $TMPDIR/final_out_prev.txt; python - <<'EOF' > $TMPDIR/final_out.txt
+import nbformat
+nb=nbformat.read('executed/huszar-2022/reproduce_huszar_2022.ipynb',as_version=4)
+for i,c in enumerate(nb.cells):
+    if c.cell_type!='code': continue
+    tags=c.metadata.get('tags',[])
+    txt=''.join(o.get('text','') if o.get('output_type')=='stream' else str(o.get('data',{}).get('text/plain','')) for o in c.get('outputs',[]))
+    print(f"#### {i} {tags}\n{txt}")
+EOF
+diff <(grep -v "Warning\|warn\| s;\| s,\|^[0-9]* s\|runtime" $TMPDIR/final_out_prev.txt) <(grep -v "Warning\|warn\| s;\| s,\|^[0-9]* s\|runtime" $TMPDIR/final_out.txt) | head; grep runtime $TMPDIR/final_out.txt
+```
+
+```
+notebook runtime 35.4 min; peak memory of this process 1.05 GB
+```
+
+**Agent calls Bash**
+
+```bash
+cat > attempts/huszar-2022-02.yaml <<'EOF'
+schema_version: 3
+id: huszar-2022-02
+datasets:
+- archive: dandi
+  id: "000552"
+  version: 0.261113.1035
+  doi: 10.48324/dandi.000552/0.261113.1035
+  relation: primary
+paper: doi:10.1038/s41593-022-01138-x
+date: 2026-11-19
+entry: huszar-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44458325474
+outcomes:
+- claim: cohort-birthdates
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:cohort-birthdates
+  measured: [17, 12, 5]
+  notes: 17 subjects, 12 male and 5 female, with 4, 3, 6 and 4 mice at E13.5, E14.5, E15.5 and E16.5. All 17
+    animals of Supplementary Table 1 are present and agree on birthdate. Sex and electroporation day are
+    derived from the subject id, as the subject descriptions say.
+- claim: st1-animal-sessions
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:st1-animal-sessions
+  measured: [96, 104, 664]
+  notes: All 17 mice match the table's session count and its light-responsive count. The 15 homecage mice give
+    96 sessions and 664 light-responsive cells; all 17 give 104 sessions.
+  deviations:
+  - The claims file lists the per-mouse counts "in the table's row order" but names the mice in birthdate order
+    in its opening comment. The table's row order was read from the image of Supplementary Table 1
+    (Supplementary Information PDF, page 2), which lists e13_1m1, e13_1f1, e14_1m1, e15_4m1, e15_4m2, e15_5m1,
+    e13_16f1 and so on; with that order every row matches.
+- claim: sessions-durations
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:sessions-durations
+  measured: [96, 309.9]
+  notes: No session set has 92 sessions. Under the 96-session reading (the 15 homecage mice) the count is within
+    92 +- 9.2, the median duration is 309.9 min (309.1 +- 30.9) and the durations run from 113.7 to 475.6 min,
+    the paper's exact range. Under the 104-session reading the count is outside tolerance (median 319.6 min,
+    range 113.7 to 494.2 min). Two sessions, e13_1f1_200305 and e13_1f1_200307, hold only wake in their sleep
+    states, so the criterion's requirement that every session holds non-REM sleep fails; the criterion's
+    partial outcome is for durations without the count and does not cover this case, so the outcome is not
+    reproduced although everything but the sleep condition holds. Duration is the LFP length, which differs
+    from the last spike by at most 13.6 min.
+- claim: spwr-duration
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:spwr-duration
+  measured: 36.0
+  notes: Reading (a)(i), the pooled median of all detected ripples, is 36.00 ms over the 96 homecage-mouse
+    sessions (428,509 ripples) and over all 104. Every other combination gives 36.00 to 36.80 ms; the code's
+    reading (c)(i), the mean of per-session medians, gives 36.28 ms. All ripples last 20.0 to 199.2 ms. The
+    ripples are the dataset's, detected by the lab with bz_FindRipples.
+- claim: unit-count
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:unit-count
+  measured: [9472, 7411, 2060]
+  notes: Reading (a), the 96 sessions of the 15 homecage mice, gives 9,472 units, 7,411 pyramidal cells and
+    2,060 interneurons (1,556 narrow, 504 wide), the paper's type counts exactly; the extra unit over 9,471 has
+    no cell type ("Unknown"). Reading (b), all 104 sessions, gives 11,656 units, 9,243 pyramidal and 2,410
+    interneurons, outside tolerance.
+- claim: ed2-light-responsive-count
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:ed2-light-responsive-count
+  measured: [664, 0.0896]
+  notes: Reading (a), the stored light_responsive column, marks 664 of 7,411 pyramidal cells (8.96%), leaving
+    6,747. Reading (b) from the stored SALT p (<= 0.001, or the code's < 0.001) and reliability flag gives the
+    same 664. No non-pyramidal unit is marked. Detection from the raw pulse responses was not repeated.
+- claim: ed2-waveform-validation
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:ed2-waveform-validation
+  notes: The waveform distance needs the mean waveform of light-evoked spikes, which needs the wide-band
+    signal around the pulses. The processed files hold only each unit's mean waveform over all spikes. The
+    wide-band signal is in 11 raw files, 5 of them homecage-mouse sessions (52 to 141 GB each); the other 91
+    homecage sessions have none in the dataset. The trough-to-peak half, printed for the record and not judged,
+    gives means of 0.696 ms (664 light-responsive) and 0.700 ms (6,747 nonresponsive), t-test p = 0.134, the
+    paper's values.
+- claim: ed1-brdu-specificity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology (BrdU and tdTomato counts) is not in the dataset, which holds only electrophysiology and
+    behaviour, and the paper names no other public deposit of it.
+- claim: fig1c-radial-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The tdTomato puncta depths come from histology, which is not in the dataset or any public deposit the
+    paper names.
+- claim: fig1e-labelled-fraction
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1e-labelled-fraction
+  measured: [5.39, 11.16, 14.74, 9.16]
+  notes: Per-session means 5.39, 11.16, 14.74 and 9.16% over 30, 24, 24 and 18 sessions (s.d. 4.99, 8.53,
+    8.68, 3.84), the paper's values; F = 8.525 as printed, bootstrap p < 0.0002 under all five seeds (the paper
+    gives 0.0004). E13.5 is lowest and E15.5 highest.
+- claim: fig1f-rem-shift
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1f-rem-shift
+  measured: [27.96, 20.99, 19.74, 21.54, -2.05]
+  notes: With the Methods' Rayleigh threshold of 0.01, 93, 81, 76 and 65 light-responsive cells are locked in
+    both states (paper 123, 106, 143, 76). The REM-shifting fractions are 27.96, 20.99, 19.74 and 21.54%;
+    E14.5 and E15.5 are outside tolerance. The slope is -2.05% per day (95% bootstrap interval about -6.2 to
+    2.2), with one-tailed p 0.157, 0.168, 0.174, 0.157 and 0.174 under the five seeds, so it is negative but
+    not significant. The code's threshold of 0.05 gives 28.32, 23.91, 25.69 and 21.13%, slope -1.98, p = 0.162.
+    By mouse the fractions vary widely (0 to 62.5%).
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring. The preferred phases depend on the channel's
+    depth, so this claim is the one most exposed to it.
+  - Theta phases are taken in the homecage period only (wake and REM within it), as the homecage metrics of
+    the code; the Methods do not restrict the state periods to the homecage.
+- claim: fig1g-rate-by-birthdate
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1g-rate-by-birthdate
+  measured: [1.5165, 1.6199, 1.5438, 1.1523]
+  notes: 184, 132, 233 and 115 light-responsive cells (the paper's n). Medians 1.52, 1.62, 1.54 and 1.15 Hz,
+    all within tolerance; E16.5 lowest. Bootstrap Kruskal-Wallis H = 8.46, p = 0.034 under the claim's seed,
+    0.034 to 0.041 over the five (paper H = 11.82, p = 0.016).
+- claim: fig1h-burst-by-birthdate
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig1h-burst-by-birthdate
+  measured: [0.0881, 0.0916, 0.1039, 0.08]
+  notes: Medians 0.088, 0.092, 0.104 and 0.080 (2-5 ms over 200-300 ms, 1 ms ACG bins of homecage spikes); the
+    bootstrap Kruskal-Wallis gives H = 20.5 and p 0 to 0.0004 over the seeds, and the profile is an inverted U
+    with its peak at E15.5. All four medians are about 25% below the paper's and outside tolerance. The code's
+    3-5 ms variant gives 0.081, 0.080, 0.095, 0.074, also an inverted U.
+  deviations:
+  - The legend's 2-5 ms window is used, as the criterion says; the gap to the paper's medians suggests the
+    ACG or its normalisation differs from the one described, which the paper does not give in more detail.
+- claim: ed3-depth-control
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted within the five-hour run. It needs each neuron's depth relative to the SPW reversal
+    (from the LFP depth profile of each shank) and 500 depth-matched resamplings of six measures, two of them
+    from the maze; the run gave its time to the claims the depth control rests on (fig1h, fig2f, fig2d, fig5b),
+    which are tested.
+- claim: fig2b-synchrony-per-animal
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2b-synchrony-per-animal
+  measured: 10
+  notes: Of the 13 animals of the claim (the homecage mice without e13_1f1 and e13_1m1), SBD pairs cofire more
+    in SPW-Rs than DBD pairs with rank-sum p < 0.05 in 10 (reading a; e14_2m3, e15_4m1 and e16_2m1 are not
+    significant), and the mean z-scored CCG within 50 ms is higher for SBD in 12 (reading b; not e15_4m2).
+    Both lie in 10 to 12. In the files the two left-out mice do have SBD pairs, 1 in e13_1f1 and 2 in
+    e13_1m1; with all 15 the counts are 10 and 13.
+  deviations:
+  - Reading (b) uses spikes of the homecage period, as the other homecage measures; the code's CCGs take
+    spikes outside pulses over the whole session.
+- claim: fig2c-theta-cofiring
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2c-theta-cofiring
+  measured: [0.018, 0.0078, 3751, 50461]
+  notes: SBD median 0.0180 and DBD 0.0078 over 3,727 and 50,388 pairs with a correlation (3,751 and 50,461
+    pairs, the paper's counts; 24 and 73 pairs without spikes in the cycles dropped); rank-sum p = 1.3e-41.
+    Both within tolerance, the DBD median at the lower edge (0.0078 to 0.0096). In the 35 sessions whose theta
+    channel lies on the shank of the pyramidal layer centre, SBD 0.0145 and DBD 0.0081 (p = 8.9e-7). Theta
+    cycles in homecage wake per session median 2,871 (64 to 14,562). As a clock check, 567 of 664
+    light-responsive cells are phase locked in wake against 31 when their spikes are set against the phase
+    10.3 s later.
+  deviations:
+  - 'Assumption: the theta channel. The Methods require "a channel with a positive sharp wave (that is, above
+    the center of the pyramidal layer)" and do not say how one is chosen. The helper takes, in a 52 s stretch of
+    non-REM sleep, the channel with a positive mean 2-40 Hz deflection after the ripple peaks that has the
+    largest ripple power, on the shank of the pyramidal layer centre when it has one (35 sessions) and on any
+    shank otherwise (7 sessions). In 62 of 104 sessions no channel qualified and the pyramidal layer channel was
+    used, which departs from the Methods.'
+  - The theta filter is a fourth-order Chebyshev type II band-pass (20 dB, buzcode's default), applied forward
+    and backward; the amplitude threshold (mean + 1 SD) is taken over the whole session.
+- claim: fig2d-theta-depth
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2d-theta-depth
+  measured: [0.1203, 0.0971, 0.0904, 0.1073]
+  notes: Wake, 175, 118, 173 and 101 locked cells (paper 178, 127, 207, 101), medians 0.120, 0.097, 0.090 and
+    0.107, all within tolerance, E14.5 and E15.5 below E13.5 and E16.5; bootstrap Kruskal-Wallis H = 29.7, p <
+    0.0002 under all seeds. REM, 102, 91, 105 and 70 cells, medians 0.140, 0.142, 0.144 and 0.144, H = 1.25, p
+    0.737 to 0.752 over the seeds, so the absence of a REM difference holds.
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring.
+- claim: fig2f-ripple-firing-by-birthdate
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2f-ripple-firing-by-birthdate
+  measured: [7.484, 8.8232, 7.9118, 6.1295, 0.237, 0.2686, 0.2355, 0.1942]
+  notes: SPW-R rate medians 7.48, 8.82, 7.91 and 6.13 Hz, H = 19.9, p 0 to 0.0002; participation 0.237,
+    0.269, 0.236 and 0.194, H = 17.9, p 0 to 0.001; all eight within tolerance and both inverted U. Ripples
+    are those starting and ending in the homecage period (77.7% of all detected).
+- claim: fig2g-ripple-cofiring
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig2g-ripple-cofiring
+  measured: [0.0385, 0.0226]
+  notes: SBD median 0.0385 and DBD 0.0226 over 3,738 and 50,171 pairs with a correlation (13 and 290 pairs with
+    a constant count vector dropped); rank-sum p = 4.7e-98. Both within tolerance. SBD exceeds DBD at each
+    birthdate.
+- claim: ed5-matched-controls
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Both expected values are fractions of L-ratio and theta-rate matched resamplings of the novel ratemap
+    correlations. The units table has no L-ratio or other isolation metric, so the L-ratio half cannot be run
+    on the dataset; the rate-matched resamplings were not run in the time. The novel ratemap correlations it
+    resamples are themselves tested without the open fields (fig6e-sbd-novel-overlap).
+- claim: fig3c-assembly-cofiring
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not run. The assemblies are found by ICA on homecage spikes binned at 1 ms and smoothed; the homecage
+    periods run a median 237 min (up to 384 min), so the matrix holds about 14 million bins by a median of 77
+    pyramidal cells per session, about 9 GB in double precision for a median session and over 12 GB for the
+    largest, with four sessions in parallel. A chunked implementation of the covariance and expression was not
+    attempted within the run.
+- claim: fig3e-assembly-expression
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig3c-assembly-cofiring, which was not run (too large as implemented here).
+- claim: ed6-heldout-assemblies
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig3c-assembly-cofiring, which was not run (too large as implemented here).
+- claim: ed7-sbd-coactivation
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig3e-assembly-expression, which was not run (too large as implemented here).
+- claim: fig4d-model-fit
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig3e-assembly-expression, which was not run; the simulation grid with 100 uniform-model
+    runs per parameter pair was not attempted.
+- claim: maze-cohort
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:maze-cohort
+  measured: [9, 3]
+  notes: The nine mice of the table's Figure 5 column have 57 sessions whose first subsession is the
+    figure-eight (53 labelled figure-8 maze, 4 tmaze_familiar), 2, 2, 2 and 3 mice per birthdate; the three
+    Figure 6 mice have later subsessions in all 12 of their sessions. No other mouse has behavioural
+    subsessions.
+- claim: maze-task
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:maze-task
+  measured: [202.8, 30.0]
+  notes: Trials span a median 202.8 cm of linearized position (maximum 205.0 cm) and tracking runs at 30.0 Hz
+    in every session, both within tolerance. Only 30 of 57 familiar sessions hold at least ten left and ten
+    right trials (counting trials whose visited arm is left or right), and 6 hold fewer than 20 trials, the
+    fewest 12 (e16_2m1_201116, 7 and 5); neither the full nor the partial condition holds.
+- claim: novel-explorations
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:novel-explorations
+  measured: 16
+  notes: 16 subsessions after the familiar one in the 12 sessions of the three novel mice, in six environments
+    (tmaze_ipshita 3, linear_thomas 3, linear_manu 3, openField_gergo 3, openField_coolbox 2, openField_thomas
+    2), that is one novel figure-eight, two linear tracks and three open fields.
+- claim: fig5b-spatial-info-by-birthdate
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5b-spatial-info-by-birthdate
+  measured: [0.5639, 0.6321, 0.9183, 0.6201, 29.5, 31.5, 31.0, 12.0]
+  notes: 164, 76, 111 and 115 light-responsive cells (the paper's n). Spatial information, concatenated maps
+    (first reading), medians 0.56, 0.63, 0.92 and 0.62 bits/s, H = 23.1, p < 0.0002 under all seeds; mean of
+    left and right 0.52, 0.62, 0.87, 0.54. Coverage reading (a) on concatenated maps 29.5, 31.5, 31 and 12 cm
+    (p 0.0002 to 0.0008), reading (b) 34.5, 32, 37, 12. Every reading has the highest median at E14.5 or E15.5
+    with E13.5 and E16.5 below it and p < 0.05, but no reading puts the medians within tolerance (spatial
+    information 25 to 40% below the paper's).
+  deviations:
+  - Speed from a constant-velocity Kalman filter of the linearized position with settings chosen here, as the
+    claims file allows; maps from trials whose visited arm is left or right.
+- claim: fig5c-sbd-ratemap-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5c-sbd-ratemap-overlap
+  measured: [0.0189, -0.0239, 2609, 39965]
+  notes: 2,609 SBD and 39,965 DBD pairs, the paper's counts. SBD median 0.0189 against DBD -0.0239 (122 DBD
+    pairs without a correlation), rank-sum p = 5.9e-9. The DBD median is within tolerance and the SBD median
+    above it (0.0137 to 0.0167). The code's variant (pairs with any unvisited bin dropped) gives 0.0187 and
+    -0.0249, p = 8.1e-9.
+- claim: fig5d-overlap-by-distance
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5d-overlap-by-distance
+  measured: [0.0601, 0.0268, 0.0386, 0.0147, 0.0234, 0.011]
+  notes: 2,561 SBD and 38,497 DBD pairs at 0 to 500 um (1,394 pairs 750 um apart dropped); same-shank pairs
+    1,205 SBD and 13,494 DBD (Extended Data Fig. 10d gives 1,205 and 13,549). Two-way ANOVA, birthdate F =
+    14.5, p = 0.0001; distance p = 0.0007; interaction p = 0.40. Tukey SBD against DBD at 0 um p = 0.0002, 250
+    um p = 0.041, 500 um p = 0.96, as the paper says. Of the six means only DBD at 0 um is within tolerance.
+  deviations:
+  - The post hoc test is Tukey's HSD over the six birthdate-by-distance groups (statsmodels), standing in for
+    MATLAB's multcompare on the anovan model; the ANOVA uses type III sums of squares, as anovan's default.
+- claim: fig5e-pv-decorrelation
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5e-pv-decorrelation
+  measured: [0.93, 0.4878, 0.4072, 0.4074]
+  notes: Medians stem 0.930, turn 1 0.488, arm 0.407 and turn 2 0.407 over 4,074, 2,106, 4,209 and 1,136 bins
+    (160 bins without a correlation); stem highest, H = 7,589, bootstrap p < 0.0002 under all seeds (1,000
+    resamplings for the four extra seeds). Turn 1 is outside tolerance (0.371 to 0.453).
+- claim: fig5f-remap-together
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5f-remap-together
+  notes: Tercile edges at the 0, 33, 66 and 99th percentiles of the SBD left and right correlations; 5,144 SBD
+    and 77,443 DBD observations. Birthdate main effect F = 24.0, p = 9.5e-7, SBD higher; tercile p = 2.2e-13;
+    interaction p = 0.60. SBD means 0.020, 0.049, 0.072 against DBD 0.002, 0.022, 0.043 (Supplementary Table 5,
+    SBD 0.041, 0.050, 0.076, DBD 0.010, 0.023, 0.043). With open outer edges the result is the same.
+- claim: fig6c-theta-rate-preserved
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6c-theta-rate-preserved
+  measured: [0.7408, 2544]
+  notes: 2,544 pyramidal cells of the 12 novel sessions, the paper's n. Spearman rho = 0.741, p < 1e-300, the
+    same with and without the wake restriction (the behavioural subsessions fall in scored wake); per mouse
+    0.735 to 0.745. Novel rates pool all later subsessions, open fields included, as theta rates need no
+    position.
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring.
+- claim: fig6d-rate-lower-novel
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6d-rate-lower-novel
+  measured: [0.755, 0.675]
+  notes: Familiar median 0.755 Hz and novel 0.675 Hz over 2,544 cells, rank-sum p = 0.0013; paired signed-rank
+    variant p = 1.3e-7. Both medians within tolerance.
+  deviations:
+  - Assumption on the theta channel; see fig2c-theta-cofiring.
+- claim: fig6d-info-lower-novel
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6d-info-lower-novel
+  measured: [0.661, 0.367]
+  notes: Familiar median 0.661 bits/s over 2,532 cells, novel 0.367 over 1,728 cell-environment values,
+    rank-sum p = 9.9e-36; the equal-weight variant gives 0.684 and 0.380. The novel median is within tolerance
+    and the familiar one below it (0.792 to 0.968). Novel environments are the novel figure-eight and the linear
+    tracks; the open fields are left out (7 of 16 explorations, plus one linear track whose position series
+    lies in another subsession), so the novel n is about half the paper's 3,443.
+  deviations:
+  - Open fields left out, as their positions have no spatial scale in the files (see findings).
+  - Familiar information is computed on the concatenated left and right maps, the first reading of
+    fig5b-spatial-info-by-birthdate.
+- claim: fig6c-novel-ratemap-corr-higher
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6c-novel-ratemap-corr-higher
+  measured: [-0.0451, -0.032]
+  notes: Familiar median -0.0451 over 31,211 pairs (paper 31,067) and novel -0.0320 over 22,373 pair-environment
+    values (paper 41,991), rank-sum p = 0.75. The familiar median is within tolerance; the novel one is far
+    below 0.048, and no novel environment reaches it (linear_manu -0.031, linear_thomas -0.010, tmaze_ipshita
+    -0.048). The open fields, which the paper includes, could not be mapped; whether they carry the higher
+    correlations cannot be told from these data.
+  deviations:
+  - Open fields left out (see fig6d-info-lower-novel).
+- claim: fig6e-sbd-novel-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6e-sbd-novel-overlap
+  measured: [0.0296, -0.0343]
+  notes: SBD median 0.030 over 931 values against DBD -0.034 over 21,442, rank-sum p = 0.002. Both medians
+    outside tolerance (0.117 and 0.046). SBD exceeds DBD in each mapped environment.
+  deviations:
+  - Open fields left out (see fig6d-info-lower-novel).
+- claim: fig6f-remap-together-novel
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6f-remap-together-novel
+  notes: 931 SBD and 21,302 DBD observations. Reading (a), edges from the familiar correlations, birthdate F =
+    5.85, p = 0.016; reading (b), the code's edges, F = 6.14, p = 0.013; SBD higher in all three terciles under
+    both (overall mean novel correlation 0.040 against 0.016). Open fields left out, as for fig6e.
+  deviations:
+  - Open fields left out (see fig6d-info-lower-novel).
+- claim: fig7b-sbd-convergence
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7b-sbd-convergence
+  measured: [0.4545, 0.3636]
+  notes: SBD median 0.455 over 3,748 pairs and DBD 0.364 over 50,341 (3 and 120 pairs with no targets dropped),
+    rank-sum p = 1.3e-79. Both medians are well above the paper's (0.273, 0.200). The detector finds 50,618
+    connections of 184,230 possible pairs against the paper's 31,932, which raises every convergence index; at
+    alpha 1e-6 it would still find 34,535.
+  deviations:
+  - 'Assumption: the connection detector. The Methods say the test is "identical to the reliability test" and
+    refer to English et al. (2017). Taken from the Methods: 0.8 ms bins, spikes outside the pulse periods, a
+    hollowed Gaussian baseline with the reliability test''s 15 ms s.d., Poisson tests at alpha 0.001 Bonferroni
+    corrected, the peak against the bins before zero lag. Assumed: the lags tested (the three bins at 0.8 to
+    2.8 ms, the window of the transmission measure), a hollow fraction of 0.6, Bonferroni over those three
+    bins, and at least 50 CCG counts in +-50 ms.'
+- claim: fig7ce-convergence-by-birthdate
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7ce-convergence-by-birthdate
+  measured: [0.1169, 0.1429, 0.1, 0.0536, 0.0141, 0.0153, 0.0172, 0.015]
+  notes: Corrected convergence over 1,199, 532, 1,578 and 439 SBD pairs (paper 1,200, 533, 1,579, 439), medians
+    0.117, 0.143, 0.100 and 0.054, H = 47.3, p < 0.0002 under all seeds; transmission probability over 2,040,
+    671, 1,584 and 859 connections (paper 1,180, 440, 1,155, 557), medians 0.0141, 0.0153, 0.0172, 0.0150, H =
+    35.5, p < 0.0002. Both are inverted U. Only the E15.5 corrected convergence is within tolerance; the
+    transmission medians are below both the legend's and the table's readings.
+  deviations:
+  - Assumption on the connection detector; see fig7b-sbd-convergence.
+  - The transmission baseline is the CCG convolved with an 8 ms s.d. hollowed Gaussian (Methods), with the
+    hollow fraction 0.6 assumed.
+- claim: fig7d-transmission-gamma
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7d-transmission-gamma
+  notes: Mean transmission over about 50,500 connections per bin rises from 0.0190 (5 to 7 ms) through 0.0249
+    (14 to 21 ms) to a peak of 0.0269 at 29 to 42 ms (centre 34.9 ms) and declines slowly to 0.0248 at 1 s. The
+    peak lies outside 13.5 to 25.3 ms; the depression at short intervals holds. With light-responsive
+    presynaptic cells only the peak is in the same bin.
+  deviations:
+  - Assumption on the connection detector; see fig7b-sbd-convergence. The mean is over all detected
+    connections, as the criterion says.
+- claim: fig7fg-convergence-cofiring
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig7fg-convergence-cofiring
+  measured: [50618, 184230, 86.24]
+  notes: 184,230 possible pyramidal-interneuron pairs, the paper's number exactly; 50,618 connections (31,932 +-
+    3,193 expected) and 86.24% of 371,756 pyramidal pairs sharing an interneuron (65.27 +- 6.53% expected), so
+    two of the three counts fail. The slopes all hold. Reading (a), nonresponsive pairs with nonzero
+    convergence, slopes 0.0040 (SPW-R, t = 55.5), 0.0029 (theta, t = 51.0) and 0.0017 (ratemap, t = 4.3), and
+    reading (b) 0.0042, 0.0031 and 0.0023; every bootstrap p is below 0.001 under all five seeds.
+  deviations:
+  - Assumption on the connection detector; see fig7b-sbd-convergence. Theta cofiring rests also on the theta
+    channel assumption (fig2c-theta-cofiring).
+- claim: ed10-waveform-matched-controls
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on ed2-waveform-validation, blocked because the light-evoked waveforms need the wide-band
+    signal. Its own waveform distances between spontaneous mean waveforms could be computed from the stored
+    waveform_mean, but were not run.
+findings:
+- kind: data_missing
+  about: data
+  statement: Sessions e13_1f1_200305 and e13_1f1_200307 have only wake in their SleepStates table, with no
+    non-REM or REM sleep, while the paper says every recording included a homecage period of sleep and wake. A
+    third session has no REM. Either the sleep scoring of these sessions is missing from the files or they held
+    no sleep.
+- kind: metadata_error
+  about: data
+  statement: In e16_3m2_211211 the position series named for the linear_manu subsession
+    (LinearizedSpatialSeries3_linear_manu and SpatialSeries3_linear_manu) has timestamps from 9,575 to 11,203
+    s, inside the openField_thomas epoch (9,559 to 12,002 s), and none inside the linear_manu epoch (15,124 to
+    16,771 s). The series or its epoch is mislabelled or mistimed; the attempt leaves both subsessions out.
+- kind: metadata_insufficient
+  about: data
+  statement: Positions outside the familiar figure-eight (the novel figure-eight, linear tracks and open fields)
+    are in the lab's units with no spatial scale, as the files' own descriptions say. Linearized positions of
+    the novel figure-eight and linear tracks are in cm, but the open fields have none, so the Methods' 1 cm
+    bins cannot be formed and the open fields (7 of the 16 novel explorations) were left out of the novel
+    ratemap analyses.
+- kind: data_missing
+  about: data
+  statement: The units table has no cluster isolation metric. The paper uses each unit's L-ratio (Extended Data
+    Figs 2h and 5), so its L-ratio controls cannot be repeated on the dataset.
+- kind: other
+  about: data
+  statement: The paper leaves out two E13.5 mice from the per-animal comparison because only a single
+    light-responsive neuron per session was recorded in them (Extended Data Fig. 4 legend). In the files these
+    mice, e13_1f1 and e13_1m1, have sessions with two light-responsive cells, giving 1 and 2 same-birthdate
+    pairs.
+- kind: other
+  about: data
+  statement: The Methods say animals ran at least ten trials along each arm in every session. In the trials
+    table, 27 of the 57 familiar figure-eight sessions hold fewer than ten trials of one visited arm, and 6
+    hold fewer than 20 trials in all (fewest 7 left and 5 right, e16_2m1_201116). Trials may be missing from the
+    table, or the paper's rule may describe training.
+- kind: paper_inconsistency
+  about: paper
+  statement: The Methods give 92 sessions lasting 113.7 to 475.6 min (median 309.1), while Supplementary Table 1,
+    Figure 1e and Figure 7f give 96 sessions for the 15 homecage mice. The files hold 96 sessions for those
+    mice, and their durations run from exactly 113.7 to 475.6 min (median 309.9), so the 92 appears to be a
+    miscount of the same 96 sessions.
+- kind: methods_unavailable
+  about: paper
+  statement: How the theta channel was chosen among channels with a positive sharp wave is not given. In 62 of
+    104 sessions this attempt found no channel whose mean sharp wave is positive and used the pyramidal layer
+    channel. The REM-shift fractions (Fig. 1f) depend on the channel's depth. Which channel per session, or the
+    rule, would settle it.
+- kind: methods_unavailable
+  about: paper
+  statement: The monosynaptic connection test is described as identical to the reliability test with reference
+    to English et al. (2017), without the lags tested, the hollow fraction, the number of comparisons
+    corrected for, or a minimum count. With the choices stated in this attempt it finds 50,618 connections
+    against the paper's 31,932, which changes the convergence values and the transmission peak (Fig. 7).
+    The detector's parameters, or the list of detected connections, would settle it.
+- kind: methods_unavailable
+  about: paper
+  statement: The burst index (Fig. 1h legend, ACG count at 2-5 ms over 200-300 ms) computed on the homecage
+    spikes gives medians about 25% below the paper's, with the same shape; the code's 3-5 ms gives lower
+    values still. The ACG used (bins, spike set, normalisation) is not fully given.
+EOF
+cd  && python tools/entry.py check entries/huszar-2022
+```
+
+```
+0 error(s)
+```
 
 **Agent calls Bash**
 
 ```bash
 python - <<'EOF'
-import json
-nb=json.load(open('executed/000552-huszar-2022/reproduce_huszar_2022.ipynb'))
-want=['claim:cohort-birthdates','claim:sessions-durations','claim:novel-explorations','claim:fig5e-pv-decorrelation','claim:fig6c-theta-rate-preserved','claim:fig6c-novel-ratemap-corr-higher','claim:fig6d-info-lower-novel','claim:fig6d-rate-lower-novel','claim:spwr-duration','claim:unit-count','claim:maze-task']
-for c in nb['cells']:
-    if c['cell_type']!='code': continue
-    t=c['metadata'].get('tags',[])
-    if not any(x in want for x in t): continue
-    out=''.join(''.join(o.get('text','')) for o in c.get('outputs',[]))
-    lines=[l for l in out.splitlines() if 'session' not in l[:3]]
-    print('=====',t); print('\n'.join(out.splitlines()[:14]))
-EOF
-```
-
-```
-===== ['claim:cohort-birthdates']
-Mice: 17
-By sex: {'M': 13, 'F': 4}
-By birthdate: {'E13.5': 4, 'E14.5': 3, 'E15.5': 6, 'E16.5': 4}
-Paper: 17 mice; 12 M, 5 F; E13.5 4, E14.5 3, E15.5 6, E16.5 4.
-sex        F  M
-birthdate      
-E13.5      1  3
-E14.5      0  3
-E15.5      2  4
-E16.5      1  3
-
-Sex implied by the subject id (the letter before the last digit, f or m): {'M': 12, 'F': 5}
-Mice whose sex field disagrees with their id: [['e13_1f1', 'M', 'F']]
-===== ['claim:sessions-durations']
-Processed files (sessions): 104; paper: 92 (Methods) or 96 (Figure 1e and Figure 7f).
-Duration: shortest 113.7 min (e13_1m1_200220), longest 494.2 min (e15_13f1_220118), median 319.6 min
-Durations within 102.3-523.2 min: 104 of 104; within 113.7-475.6 min: 101
-Sessions longer than 475.6 min: [['e15_13f1_220118', 494.2], ['e15_13f1_220119', 487.5], ['e16_3m2_211210', 484.5]]
-Sessions with a duration equal (to 0.1 min) to the paper's bounds: [['e13_1m1_200220', 113.7], ['e16_1f1_200919', 475.6]]
-[... 147 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-nb=json.load(open('executed/000552-huszar-2022/reproduce_huszar_2022.ipynb'))
-for c in nb['cells']:
-    if 'claim:novel-explorations' in c['metadata'].get('tags',[]):
-        print(''.join(''.join(o.get('text','')) for o in c['outputs'])[-1500:])
-EOF
-```
-
-```
-l-cohort sessions (minutes, position samples inside):
-e13_26m1_211019 [[126.5, 0.0], [29.0, 51501.0], [96.0, 0.0], [27.7, 48056.0], [90.8, 0.0], [35.0, 0.0]]
-e13_26m1_211119 [[102.5, 0.0], [23.9, 41704.0], [121.1, 0.0], [26.8, 46166.0], [153.3, 0.0]]
-e13_26m1_211124 [[143.5, 0.0], [23.4, 41348.0], [75.5, 0.0], [30.9, 0.0], [97.3, 0.0]]
-e15_13f1_220117 [[109.5, 0.0], [31.2, 55242.0], [93.7, 0.0], [39.9, 0.0], [150.8, 0.0]]
-e15_13f1_220118 [[93.6, 0.0], [35.0, 62112.0], [89.8, 0.0], [32.4, 57452.0], [67.8, 0.0], [41.8, 0.0], [104.6, 0.0], [29.2, 0.0]]
-e15_13f1_220119 [[113.6, 0.0], [34.4, 61023.0], [62.9, 0.0], [40.6, 0.0], [101.7, 0.0], [25.2, 44732.0], [91.1, 0.0], [18.0, 0.0]]
-e15_13f1_220120 [[159.9, 0.0], [39.6, 70582.0], [100.4, 0.0], [30.3, 44805.0], [105.1, 0.0], [18.8, 0.0]]
-e16_3m2_211210 [[179.5, 0.0], [29.6, 52106.0], [67.8, 0.0], [43.7, 0.0], [163.8, 0.0]]
-e16_3m2_211211 [[87.8, 0.0], [21.1, 36888.0], [50.4, 0.0], [40.7, 48818.0], [52.0, 0.0], [27.5, 0.0], [61.9, 0.0], [15.0, 0.0]]
-e16_3m2_211212 [[101.5, 0.0], [29.5, 52223.0], [61.4, 0.0], [30.3, 0.0], [50.3, 0.0], [22.6, 33205.0], [76.7, 0.0]]
-e16_3m2_211213 [[125.9, 0.0], [30.4, 54018.0], [64.8, 0.0], [34.3, 61076.0], [145.8, 0.0]]
-
-Epochs of 10 to 50 min without position that are not a session's last epoch: 7, in sessions ['e13_26m1_211124', 'e15_13f1_220117', 'e15_13f1_220118', 'e15_13f1_220119', 'e16_3m2_211210', 'e16_3m2_211211', 'e16_3m2_211212']
-Novel recordings with position plus these epochs: 9 + 7 = 16
-```
-
-**Agent**
-
-All conclusions match the executed numbers. Writing the README and the attempt record:
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000552-huszar-2022/README.md",
- "content": "# Huszar, Zhang, Blockus & Buzsaki (2022) from dandiset 000552\n\nTests the findings of [Huszar et al. (2022)](https://doi.org/10.1038/s41593-022-01138-x) that can be\ntested on [DANDI:000552](https://dandiarchive.org/dandiset/000552/0.230630.2304), which holds sleep\nstates, sharp-wave ripples, spike-sorted units and position from 17 mice whose CA1 pyramidal neurons\nwere birthdated by in utero electroporation. The units carry no label of which neurons responded to\nlight (were birthdated), and no optogenetic pulse times, cell types or waveforms are stored, so the\npaper's comparisons of same- and different-birthdate neurons cannot be made.\n\n| Claim | Outcome |\n|---|---|\n| 17 mice at the stated birthdates, 12 males and 5 females | Not reproduced (one mouse's sex field) |\n| 92 sessions of 113.7 to 475.6 min, median 309.1, each with sleep | Partially reproduced |\n| Median SPW-R duration 36.4 ms, limits 20 to 200 ms | Reproduced |\n| 9,471 well-isolated units | Not reproduced |\n| Nine figure-eight mice by birthdate, three novel-environment mice | Reproduced |\n| 205 cm trials, 30 Hz tracking, ten or more trials per arm | Not reproduced |\n| 16 novel environment explorations | Partially reproduced |\n| Population vectors decorrelate after the maze stem (Figure 5e) | Partially reproduced |\n| Firing rates preserved between familiar and novel mazes (Figure 6c) | Reproduced |\n| Ratemap correlations higher in novel mazes (Figure 6c) | Not reproduced |\n| Spatial information lower in novel mazes (Figure 6d) | Partially reproduced |\n| Firing rates lower in novel mazes (Figure 6d) | Partially reproduced |\n| Same- against different-birthdate comparisons, birthdate profiles, model (21 claims) | Blocked: data missing |\n| Convergence onto interneurons over all pairs (Figure 7f, g) | Blocked: metadata insufficient |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning\nand the differences from the paper's method.\n\nPutative pyramidal cells are units with a session mean rate of at most 5 Hz, as the files hold no\ncell type, and the \"theta-related\" rate is the rate while running; both are substitutes for the\npaper's methods. The attempt record, with the reasons and the differences from the paper's method,\nis [`attempts/000552-huszar-2022-01.yaml`](../../attempts/000552-huszar-2022-01.yaml).\n\n- `reproduce_huszar_2022.ipynb`: the analysis. It takes about six minutes, most of it streaming the\n  104 processed files.\n- `huszar.py`: loading the files, maze recordings, rate maps, spatial information and running\n  rates. Other notebooks on this dandiset can import it.\n"
-}
-```
-
-```
-File created successfully at: entries/000552-huszar-2022/README.md (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000552-huszar-2022/README.md",
- "old_string": "| Same- against different-birthdate comparisons, birthdate profiles, model (21 claims) | Blocked: data missing |",
- "new_string": "| Same- against different-birthdate comparisons, birthdate profiles, model, histology (22 claims) | Blocked: data missing |"
-}
-```
-
-```
-The file entries/000552-huszar-2022/README.md has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "attempts/000552-huszar-2022-01.yaml",
- "content": "schema_version: 1\nid: 000552-huszar-2022-01\ndandiset: \"000552\"\ndandiset_version: 0.230630.2304\npaper: doi:10.1038/s41593-022-01138-x\ndate: 2026-10-17\nentry: 000552-huszar-2022\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-7\ninputs:\n- what: Method parameters only, no data. The figure-eight segment bins of Figure 5e (stem 1-74, turn\n    1 75-111, arm 112-185, turn 2 186-205 of 205 one-cm bins) and the list of mice left out of it\n    (e15_13f1, e16_3m2) from ratemap_remap.m; the stem bins excluded from ratemap correlations\n    (familiar 75-205, novel T-maze 51-164) and the 12 familiar-novel sessions from\n    get_corrBeh_famnov.m. The code's result files (corrHome_v7.mat and others) were read to see what\n    identifiers they hold; nothing from them is used in the notebook.\n  source: https://github.com/rhuszar/optotagCA1_final at commit 51320d45c5ee41147048128df333f251379bf755\noutcomes:\n- claim: cohort-birthdates\n  outcome: not_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:cohort-birthdates\n  measured:\n  - 17\n  - 13\n  - 4\n  notes: 17 mice, with E13.5 4, E14.5 3, E15.5 6 and E16.5 4, as the paper states. The subject sex\n    fields give 13 males and 4 females against 12 and 5. Mouse e13_1f1 is stored as male while its\n    id carries an f like the ids of the four mice stored as female; with the sex read from the ids\n    the counts are 12 and 5. The outcome follows the criterion, which takes the field as stored; the\n    likely cause is an error in that field (see findings).\n- claim: sessions-durations\n  outcome: partially_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:sessions-durations\n  measured:\n  - 104\n  - 319.6\n  notes: 104 processed files, within 10% of the 96 sessions of Figure 1e and Figure 7f but not of\n    the 92 of the Methods. Median duration 319.6 min (paper 309.1), range 113.7 to 494.2 min, all\n    inside the widened range of 102.3 to 523.2 min; two files last exactly the paper's bounds (113.7\n    and 475.6 min). Without e15_13f1 and e16_3m2 there are 96 sessions with per-birthdate counts equal\n    to Figure 1e (30, 24, 24, 18), range 113.7 to 475.6 min and median 309.9 min. Two files of\n    e13_1f1 (200305, 200307) hold one Awake interval for the whole session and no scored sleep, so\n    the statement that each session includes sleep fails for them; that part makes the outcome\n    partial.\n  deviations:\n  - Session duration is the end of the last sleep-state or ripple interval; in 57 files the last\n    spike falls 1.2 to 5.2 s later.\n  - The criterion named the sleep condition without saying which outcome its failure gives; with the\n    count, median and range holding and the sleep condition failing in 2 of 104 files, the outcome is\n    taken as partial.\n  - The session count was judged under two readings (92 and 96), as the paper gives both.\n- claim: spwr-duration\n  outcome: reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:spwr-duration\n  measured: 36.0\n  notes: Median duration 36.0 ms over all 494,578 ripples pooled and 36.0 ms as the median of\n    the 104 session medians (paper 36.4). All ripples last 20.0 to 199.2 ms, within the 20 to 200 ms\n    limits. Per-mouse medians run from 29.6 to 40.0 ms.\n  deviations:\n  - Uses the ripples stored in the files; detection was not repeated.\n- claim: unit-count\n  outcome: not_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:unit-count\n  measured:\n  - 8201\n  - 0.878\n  notes: 8,201 units in 65 of 104 files, below the tolerance of 8,524 to 10,418. Six mice (e13_1f1,\n    e13_1m1, e14_1m1, e15_4m1, e15_4m2, e15_5m1; 39 files) have no units. Files with units hold 34 to\n    376 (median 99). The 5 Hz rule classes 87.8% as putative pyramidal cells, against the paper's\n    78.3%.\n  deviations:\n  - The pyramidal fraction uses a firing-rate rule, as the files hold no cell type.\n- claim: maze-cohort\n  outcome: reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:maze-cohort\n  notes: 11 mice have figure-eight trials. Under reading (b), the maze mice without e15_13f1 and\n    e16_3m2 are nine, at E13.5 2, E14.5 2, E15.5 2 and E16.5 3, and three mice (e13_26m1, e15_13f1,\n    e16_3m2) have novel recordings, so e13_26m1 is in both cohorts. Reading (a), disjoint cohorts of\n    12 mice, does not hold.\n  deviations:\n  - The paper calls the novel cohort separate; the reading that matches takes the overlap from the\n    paper's code, recorded as an ambiguity.\n- claim: maze-task\n  outcome: not_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:maze-task\n  measured:\n  - 204.1\n  - 30.0\n  notes: Median trial length 204.1 cm and tracking at 30.00 Hz in all 65 familiar recordings,\n    both within tolerance. Only 38 of 65 sessions have at least ten trials on each visited arm (22 of\n    65 by expected arm), and 6 sessions have fewer than 20 trials (fewest 12), so neither the full nor\n    the partial condition holds. The requirement may have applied to training, not to every recorded\n    session.\n  deviations:\n  - Two readings of \"trials along each arm\" (visited and expected) were used; neither holds.\n- claim: novel-explorations\n  outcome: partially_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:novel-explorations\n  measured: 9\n  notes: Three mice with 9 novel explorations that have trials and position (3 T-maze runs of about\n    164 cm, 3 linear-track runs of 110 cm and 3 of 100 cm), against 16. The novel-cohort sessions hold\n    7 further epochs of 10 to 50 min without position that are not a session's last epoch; with them\n    the count is 16, consistent with the paper but not shown. The kinds with position correspond to\n    the paper's figure-eight and two linear tracks, so the explorations without position are likely\n    the three open fields.\n- claim: fig5e-pv-decorrelation\n  outcome: partially_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:fig5e-pv-decorrelation\n  measured:\n  - 0.937\n  - 0.547\n  - 0.492\n  - 0.465\n  notes: 57 sessions of nine mice (the paper's bin counts, 4,218 stem bins, imply the same 57), with\n    28 to 242 putative pyramidal cells per session. Kruskal-Wallis H = 7632.7 (paper 7278.3), p = 0,\n    stem highest. Stem 0.937 is within tolerance; turn 1 0.547, arm 0.492 and turn 2 0.465 are above\n    the paper's 0.412, 0.372 and 0.394. The stem is the most correlated segment in every mouse. The\n    medians depend strongly on the cell rule; at most 2 Hz gives 0.925, 0.387, 0.288, 0.306; at most\n    10 Hz gives 0.966, 0.787, 0.771, 0.746; all units 0.988, 0.948, 0.94, 0.921; no speed threshold\n    0.924, 0.589, 0.522, 0.492. 51 of 11,685 bins had no value.\n  deviations:\n  - Putative pyramidal cells by session mean rate (at most 5 Hz), not by waveform and\n    autocorrelogram; the files hold no cell type or waveforms.\n  - Speed from smoothed linearized position, not a Kalman filter.\n- claim: fig6c-theta-rate-preserved\n  outcome: reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:fig6c-theta-rate-preserved\n  measured: 0.734\n  notes: Spearman rho = 0.734 over 2,038 putative pyramidal cells with a familiar and a novel rate\n    (paper 0.7378 over 2,544), p = 0; per mouse 0.723 to 0.755, per session 0.583 to 0.851. Variants\n    with all units, a 10 Hz rule or a 1.5 cm/s running threshold give 0.763 to 0.808. 679 cells of the\n    3 sessions without a novel maze have no novel rate.\n  deviations:\n  - The rate is the firing rate while running at 5 cm/s or faster inside maze trials, in place of\n    the rate in LFP theta cycles; the LFP is in the raw files of 8 of the 9 novel sessions but was not\n    used.\n  - Novel mazes are only those with position; the open fields are not in the data.\n  - Putative pyramidal cells by firing rate.\n- claim: fig6c-novel-ratemap-corr-higher\n  outcome: not_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:fig6c-novel-ratemap-corr-higher\n  measured:\n  - -0.053\n  - -0.0364\n  notes: Median familiar -0.0530 over 327,656 pairs (within tolerance) and novel -0.0364 over 242,655\n    pairs (outside 0.018 to 0.078); rank-sum p = 0.67. Within each of the 9 sessions with a novel\n    maze the novel median is higher than the familiar one, so the direction holds session by session;\n    with familiar pairs only from those sessions the pooled test gives p = 0.1. Variants with all\n    units (p = 0.38) or a 10 Hz rule (p = 0.66) agree; including the stem gives p = 3.5e-50 with novel\n    higher. Per maze kind, novel medians run from -0.0548 to 0.0073.\n  deviations:\n  - All pairs of putative pyramidal cells, where the paper's pairs each include a light-responsive\n    neuron (not identifiable in the files).\n  - Novel mazes are only the T-maze and linear tracks with position; the paper's novel pairs also\n    come from open fields with two-dimensional maps.\n- claim: fig6d-info-lower-novel\n  outcome: partially_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:fig6d-info-lower-novel\n  measured:\n  - 0.631\n  - 0.27\n  notes: Familiar median 0.631 bits/s over 2,709 cells and novel 0.270 over 2,028 cell-maze values,\n    rank-sum p = 1.5e-59, so information is lower in novel mazes as stated, but both medians are below\n    the tolerances (0.792 to 0.968 and 0.351 to 0.429). The code's unweighted measure gives 0.646 and\n    0.285. By mouse, familiar 0.617 to 0.645; novel 0.083 to 0.337 on linear tracks and 0.282 to 0.608\n    on the T-maze.\n  deviations:\n  - Skaggs information over left and right maps of the whole linearized track, with putative\n    pyramidal cells by firing rate; no open fields.\n- claim: fig6d-rate-lower-novel\n  outcome: partially_reproduced\n  notebook: reproduce_huszar_2022.ipynb\n  output: claim:fig6d-rate-lower-novel\n  measured:\n  - 0.958\n  - 0.799\n  notes: Familiar median 0.958 Hz over 2,717 cells and novel 0.799 Hz over 2,038, rank-sum p = 7e-06;\n    lower in novel mazes in each mouse (0.731 to 0.821 against 0.858 to 1.081). Both medians are above\n    the paper's 0.77 and 0.69 Hz and outside tolerance. Paired signed-rank, median ratio 0.822, p =\n    1.3e-13. Variants (all units, 10 Hz rule, 1.5 cm/s threshold) all give lower novel rates (p 4.5e-05\n    to 0.00048).\n  deviations:\n  - Running rate in place of the rate in LFP theta cycles, which explains part of the higher\n    medians.\n  - Putative pyramidal cells by firing rate; no open fields.\n- claim: ed2-light-responsive-count\n  outcome: blocked\n  blocked_by: data_missing\n  notes: No unit is labelled light-responsive and no optogenetic pulse times are stored in the\n    processed or raw files (stimulus and acquisition are empty in the processed files; the raw files\n    hold only the ElectricalSeries and LFP). The paper's labels come from CellExplorer optoTag fields\n    and pulses.events.mat files on the lab server, which the paper's data link reaches only through\n    the lab databank and Globus, at no pinned identifier. The 1250 Hz LFP of one session showed no\n    regular pulse train when looked at while preparing (not run here); the 30 kHz raw data, where\n    pulse artefacts might be found, exist for 11 sessions and are 100 to 180 GB each.\n- claim: fig1e-labelled-fraction\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs the light-responsive units of each session; see ed2-light-responsive-count.\n- claim: fig1c-radial-depth\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Histology (tdTomato and DAPI images) is not in the dandiset and was not found elsewhere.\n- claim: fig1f-rem-shift\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs light-responsive units by birthdate; see ed2-light-responsive-count. It also needs the\n    LFP, which is in the raw files of only 12 sessions.\n- claim: fig1g-rate-by-birthdate\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs the light-responsive units; see ed2-light-responsive-count. Grouping all units by the\n    mouse's birthdate would test a different quantity, as most units in a mouse are not birthdated.\n- claim: fig1h-burst-by-birthdate\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs the light-responsive units; see ed2-light-responsive-count.\n- claim: fig2b-synchrony-per-animal\n  outcome: blocked\n  blocked_by: data_missing\n  notes: SBD and DBD pairs cannot be formed without light-responsiveness labels; six of the\n    homecage mice also have no units.\n- claim: fig2c-theta-cofiring\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD and DBD pairs (no labels) and theta cycles from the LFP (raw files of 12 sessions\n    only).\n- claim: fig2d-theta-depth\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs light-responsive units by birthdate and the LFP.\n- claim: fig2f-ripple-firing-by-birthdate\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs light-responsive units by birthdate; the ripples themselves are in the files.\n- claim: fig2g-ripple-cofiring\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD and DBD pairs; no labels.\n- claim: fig3c-assembly-cofiring\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The member-nonmember part could be computed, but the analysis keeps only assemblies with a\n    light-responsive member and groups them by birthdate, which needs the labels.\n- claim: fig3e-assembly-expression\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Assemblies are grouped by the birthdate of light-responsive members; no labels.\n- claim: fig4d-model-fit\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The model is fitted to the assembly expression rates of fig3e-assembly-expression, which is\n    blocked.\n- claim: fig5b-spatial-info-by-birthdate\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs light-responsive units by birthdate.\n- claim: fig5c-sbd-ratemap-overlap\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD and DBD pairs; no labels.\n- claim: fig5d-overlap-by-distance\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD pairs and the shank of each unit; units have no electrode link and their group_id\n    does not match the electrode groups in 64 of 65 files.\n- claim: fig5f-remap-together\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD and DBD pairs; no labels.\n- claim: fig6e-sbd-novel-overlap\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD and DBD pairs; no labels.\n- claim: fig6f-remap-together-novel\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD and DBD pairs; no labels.\n- claim: fig7b-sbd-convergence\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs SBD pairs and putative interneurons; neither labels nor cell types are in the files.\n- claim: fig7ce-convergence-by-birthdate\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Needs light-responsive units by birthdate and putative interneurons.\n- claim: fig7fg-convergence-cofiring\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Uses all pyramidal-interneuron pairs and needs no birthdate labels, but needs to know which\n    units are interneurons; the files carry no cell type and no waveforms to classify them, and a\n    firing-rate rule would not separate wide-waveform interneurons. It also covers the homecage\n    sessions of six mice that have no units in the dandiset.\nfindings:\n- kind: data_missing\n  statement: No unit is labelled light-responsive (birthdated), and no optogenetic pulse times are\n    stored in the processed or the raw files, so the paper's comparisons of same- and\n    different-birthdate neurons and its birthdate profiles (22 of the 35 claims listed here) cannot\n    be tested. The labels exist in the lab's CellExplorer files (optoTag, putativeCellType), which are\n    not public at a pinned identifier.\n- kind: metadata_insufficient\n  statement: Units carry no putative cell type and no waveforms, though the paper classifies 7,411\n    pyramidal cells and 2,060 interneurons.\n- kind: data_missing\n  statement: Six of the 17 mice (e13_1f1, e13_1m1, e14_1m1, e15_4m1, e15_4m2, e15_5m1; 39 files) have\n    sleep states and ripples but no units and no position. The dandiset holds 8,201 units where the\n    paper reports 9,471.\n- kind: data_missing\n  statement: Of the 16 novel environment explorations, 7 have no position or trials (likely the three\n    open fields); the novel-cohort sessions hold 7 epochs of 10 to 50 min without position.\n- kind: metadata_error\n  statement: Mouse e13_1f1 is stored as male. Its id marks it female, and the paper's 12 males and 5\n    females require it to be female.\n- kind: metadata_error\n  statement: The trials column is_familiar_maze is True only for the first two trials of sessions with\n    a single maze recording, where every trial is on the familiar maze (112 True, 1,182 False).\n- kind: metadata_error\n  statement: In several novel recordings (e13_26m1 211019, 211116, 211119; e15_13f1 220120; e16_3m2\n    211213) x and y lie between 0 and 1 though stated in cm.\n- kind: metadata_error\n  statement: Twelve of the 13 raw files give a session start of 2011-08-18 for sessions recorded in\n    2021 and 2022.\n- kind: metadata_error\n  statement: The processed file of e16_3m1_210201 holds a copy of the 1250 Hz LFP of the raw file,\n    labelled with a rate of 30,000 Hz and a conversion factor of 3.05e-13 V.\n- kind: identifier_missing\n  statement: Units have no link to the electrodes table, and their group_id values (\"Group3\") do not\n    match the electrode group names (\"Group 3\") in 64 of 65 files, so a unit's shank and position on\n    the probe cannot be recovered.\n- kind: metadata_insufficient\n  statement: The embryonic day of electroporation, the variable the paper is about, is stored only as\n    the prefix of each subject id (e13 for E13.5); the age is given as P3M/P6M for every mouse.\n- kind: other\n  statement: Two files of e13_1f1 (200305, 200307) hold a single Awake interval for the whole session,\n    so sleep was not scored, though both hold ripples.\n- kind: other\n  statement: Only 38 of 65 familiar-maze sessions have ten or more trials on each visited arm, and 6\n    have fewer than 20 trials, where the Methods require ten per arm in every session; 19 of 1,942\n    trials have no start or stop time.\n- kind: paper_inconsistency\n  statement: The Methods give 92 sessions, while Figure 1e (30, 24, 24 and 18 sessions) and Figure 7f\n    give 96. The dandiset's files of the 15 homecage mice are 96 sessions that match Figure 1e by\n    birthdate and the Methods' duration bounds exactly (113.7 to 475.6 min).\n- kind: paper_inconsistency\n  statement: The paper calls the novel-environment cohort of three mice separate, but one of them\n    (e13_26m1) is also among the nine figure-eight mice, in the dandiset and in the paper's code.\n"
-}
-```
-
-```
-File created successfully at: attempts/000552-huszar-2022-01.yaml (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Correcting one figure (the raw files are 54 to 184 GB, not 100 to 180), then checking:
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/exist for 11 sessions and are 100 to 180 GB each./exist for 11 sessions and are 54 to 184 GB each./' attempts/000552-huszar-2022-01.yaml && grep -n "54 to 184" attempts/000552-huszar-2022-01.yaml && python - <<'EOF'
 import yaml
-for p in ['attempts/000552-huszar-2022-01.yaml','entries/000552-huszar-2022/entry.yaml']:
-    d=yaml.safe_load(open(p))
-    def walk(x):
-        if isinstance(x,dict): [walk(v) for v in x.values()]
-        elif isinstance(x,list): [walk(v) for v in x]
-        elif isinstance(x,str) and ': ' in x: print('COLON', p, x[:80])
-    walk(d)
-d=yaml.safe_load(open('attempts/000552-huszar-2022-01.yaml'))
-import collections; print(collections.Counter(o['outcome'] for o in d['outcomes']), len(d['outcomes']))
+c=[x['id'] for x in yaml.safe_load(open('claims/huszar-2022.yaml'))['claims']]
+a=[x['claim'] for x in yaml.safe_load(open('attempts/huszar-2022-02.yaml'))['outcomes']]
+print(len(c),len(a), set(c)-set(a), set(a)-set(c), [x for x in a if a.count(x)>1])
+import collections; print(collections.Counter(x['outcome'] for x in yaml.safe_load(open('attempts/huszar-2022-02.yaml'))['outcomes']))
 EOF
-python tools/entry.py check entries/000552-huszar-2022
+grep -n " — \|rather\|\*\*" attempts/huszar-2022-02.yaml entries/huszar-2022/README.md entries/huszar-2022/huszar.py | head; python tools/entry.py handover entries/huszar-2022 2>&1 | tail -3; date -u
 ```
 
 ```
-212:    pulse artefacts might be found, exist for 11 sessions and are 54 to 184 GB each.
-Counter({'blocked': 23, 'partially_reproduced': 5, 'not_reproduced': 4, 'reproduced': 3}) 35
+44 44 set() set() []
+Counter({'reproduced': 18, 'blocked': 11, 'partially_reproduced': 9, 'not_reproduced': 6})
+entries/huszar-2022/huszar.py:289:    sd = np.sqrt((x ** 2).sum(0))
+entries/huszar-2022/huszar.py:354:        Q = q * np.array([[dt ** 4 / 4, dt ** 3 / 2], [dt ** 3 / 2, dt ** 2]])
+entries/huszar-2022/huszar.py:610:    rpow = np.array([np.mean(rip[pk[:, None] + w, c] ** 2) for c in range(x.shape[1])])
+entries/huszar-2022/huszar.py:630:def read_channel(f, ch, block=2 ** 16 * 16):
+entries/huszar-2022/huszar.py:668:    z = R ** 2 / n
+entries/huszar-2022/huszar.py:669:    p = np.exp(np.sqrt(1 + 4 * n + 4 * (n ** 2 - R ** 2)) - (1 + 2 * n))
+entries/huszar-2022/huszar.py:733:    out = {"session": m["session_id"], "theta_ch": th, "pyr_ch": pch, **det,
+entries/huszar-2022/huszar.py:788:    k = np.exp(-0.5 * (np.arange(-half, half + 1) / sd_bins) ** 2)
+wrote executed/huszar-2022/handover
+Thu Nov 19 07:26:13 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/gen && sed -i 's/\*\*Paper\.\*\*/Paper./; s/\*\*Claims\.\*\*/Claims./; s/\*\*Dataset\.\*\*/Dataset./' part1.py && sed -i 's/\*\*How the analysis differs from the paper'"'"'s\.\*\*/How the analysis differs from the paper'"'"'s./; s/\*\*What was found about the dataset\.\*\*/What was found about the dataset./' results.py && . $TMPDIR/venv/bin/activate && python build.py entries/huszar-2022/reproduce_huszar_2022.ipynb && python - <<'EOF'
+import nbformat,re
+nb=nbformat.read('entries/huszar-2022/reproduce_huszar_2022.ipynb',as_version=4)
+for c in nb.cells:
+    if c.cell_type=='markdown':
+        for m in re.findall(r'\*\*[^*]+\*\*',c.source):
+            if not m.startswith('**Result'): print(m)
+        if '—' in c.source or 'rather' in c.source: print('BAD', c.source[:80])
+EOF
+cd  && python tools/entry.py check entries/huszar-2022 && date -u && python tools/entry.py run entries/huszar-2022 2>&1 | tail -2; date -u
+```
+
+```
+123 cells
+**cohort-birthdates.**
+**st1-animal-sessions.**
+**sessions-durations.**
+**unit-count.**
+**ed2-light-responsive-count.**
+**spwr-duration.**
+**fig1e-labelled-fraction.**
+**fig1g-rate-by-birthdate.**
+**fig1h-burst-by-birthdate.**
+**fig2f-ripple-firing-by-birthdate.**
+**fig2g-ripple-cofiring.**
+**fig2b-synchrony-per-animal.**
+**fig1f-rem-shift.**
+**fig2d-theta-depth.**
+**fig2c-theta-cofiring.**
+**fig6c-theta-rate-preserved.**
+**fig6d-rate-lower-novel.**
+**maze-cohort.**
+**maze-task.**
+[... 20 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/gen && sed -i -E 's/^> \*\*([a-z0-9-]+)\.\*\*/> Claim \1:/' part*.py && grep -c "^> Claim" part*.py | tr '\n' ' ' && . $TMPDIR/venv/bin/activate && python build.py entries/huszar-2022/reproduce_huszar_2022.ipynb && python - <<'EOF'
+import nbformat,re
+nb=nbformat.read('entries/huszar-2022/reproduce_huszar_2022.ipynb',as_version=4)
+print([m for c in nb.cells if c.cell_type=='markdown' for m in re.findall(r'\*\*[^*]+\*\*',c.source) if not m.startswith('**Result')])
+EOF
+cd  && python tools/entry.py check entries/huszar-2022 && date -u && python tools/entry.py run entries/huszar-2022 2>&1 | tail -1; date -u
+```
+
+```
+part1.py:0 part2.py:7 part3.py:5 part4.py:5 part5.py:8 part6.py:4 part7.py:4 part8.py:1 123 cells
+[]
 0 error(s)
+Thu Nov 19 08:02:13 UTC 2026
+pass  reproduce_huszar_2022.ipynb  (2154 s)
+Thu Nov 19 08:38:12 UTC 2026
 ```
-
-**Agent**
-
-Check passes. Running the handover (step 6):
 
 **Agent calls Bash**
 
 ```bash
-python tools/entry.py handover entries/000552-huszar-2022 && ls -la executed/000552-huszar-2022/handover/ && python -c "
-import json
-nb=json.load(open('executed/000552-huszar-2022/handover/reproduce_huszar_2022.ipynb'))
-print(sum(1 for c in nb['cells'] if c['cell_type']=='markdown' and ''.join(c['source']).lstrip().startswith(('**Result','## Summary'))), 'conclusion cells left;', len(nb['cells']), 'cells')
-"; git status --short
+cp $TMPDIR/final_out.txt $TMPDIR/final_out_prev.txt; python - <<'EOF' > $TMPDIR/final_out.txt
+import nbformat
+nb=nbformat.read('executed/huszar-2022/reproduce_huszar_2022.ipynb',as_version=4)
+for i,c in enumerate(nb.cells):
+    if c.cell_type!='code': continue
+    txt=''.join(o.get('text','') if o.get('output_type')=='stream' else str(o.get('data',{}).get('text/plain','')) for o in c.get('outputs',[]))
+    print(f"#### {i} {c.metadata.get('tags',[])}\n{txt}")
+EOF
+diff <(grep -v "Warning\|warn\| s;\| s,\|^[0-9]* s\|runtime" $TMPDIR/final_out_prev.txt) <(grep -v "Warning\|warn\| s;\| s,\|^[0-9]* s\|runtime" $TMPDIR/final_out.txt) | head -5; grep runtime $TMPDIR/final_out.txt
+python tools/entry.py check entries/huszar-2022 && python tools/entry.py handover entries/huszar-2022 | tail -1; ls entries/huszar-2022; date -u
 ```
 
 ```
-wrote executed/000552-huszar-2022/handover
-total 240
-drwxr-xr-x 2 runner runner   4096 Oct 17 17:09 .
-drwxr-xr-x 4 runner runner   4096 Oct 17 17:09 ..
--rw-r--r-- 1 runner runner  18947 Oct 17 17:09 10.1038-s41593-022-01138-x.yaml
--rw-r--r-- 1 runner runner  19290 Oct 17 17:09 huszar.py
--rw-r--r-- 1 runner runner 195222 Oct 17 17:09 reproduce_huszar_2022.ipynb
-0 conclusion cells left; 50 cells
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? attempts/000552-huszar-2022-01.yaml
-?? claims/000552/
-[... 2 more lines not kept]
-```
-
-**Agent**
-
-The handover is built with no conclusion cells left. Checking the entry directory for stray files:
-
-**Agent calls Bash**
-
-```bash
-ls -la entries/000552-huszar-2022/; rm -rf entries/000552-huszar-2022/__pycache__; ls entries/000552-huszar-2022/
-```
-
-```
-total 120
-drwxr-xr-x  4 runner runner  4096 Oct 17 17:07 .
-drwxr-xr-x 36 runner runner  4096 Oct 17 16:42 ..
-drwxr-xr-x  3 runner runner  4096 Oct 17 16:43 .claude
--rw-r--r--  1 runner runner  2631 Oct 17 17:07 README.md
-drwxr-xr-x  2 runner runner  4096 Oct 17 16:53 __pycache__
--rw-r--r--  1 runner runner  1068 Oct 17 17:01 entry.yaml
--rw-r--r--  1 runner runner 19290 Oct 17 16:49 huszar.py
--rw-r--r--  1 runner runner 65221 Oct 17 17:00 reproduce_huszar_2022.ipynb
--rw-r--r--  1 runner runner    49 Oct 17 17:01 requirements.in
--rw-r--r--  1 runner runner  5566 Oct 17 17:01 requirements.lock.txt
+notebook runtime 35.8 min; peak memory of this process 1.05 GB
+0 error(s)
+wrote executed/huszar-2022/handover
 README.md
+__pycache__
 entry.yaml
 huszar.py
 reproduce_huszar_2022.ipynb
 requirements.in
 requirements.lock.txt
+Thu Nov 19 08:38:42 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-find entries/000552-huszar-2022/.claude -type f | head;
+rm -rf entries/huszar-2022/__pycache__; python tools/entry.py check entries/huszar-2022
 ```
 
 ```
-(Bash completed with no output)
-```
-
-**Agent calls Bash**
-
-```bash
-find entries/000552-huszar-2022/.claude; rmdir -p entries/000552-huszar-2022/.claude/* 2>/dev/null; rmdir entries/000552-huszar-2022/.claude 2>/dev/null; ls -a entries/000552-huszar-2022/
-```
-
-```
-Permission for this tool use was denied. It requires approval, and this session has no approval surface — nobody can answer a permission prompt here — so it was denied automatically. The action was NOT performed; do not claim it succeeded, and do not retry it: this action, and anything else that requires approval, will be denied the same way for the rest of this session. Tell the user what was blocked and why you needed it, then continue with the parts of the task that do not require approval. What required approval: Dangerous rmdir operation detected: 'entries/000552-huszar-2022/.claude/*'
-
-This command's removal target cannot be statically resolved to a directory. This requires explicit approval and cannot be auto-allowed by permission rules. Dangerous rmdir operation on statically-unresolvable target: entries/000552-huszar-2022/.claude/*
+0 error(s)
 ```
 
 **Agent**
 
-Everything for steps 1 to 6 is in place: the claims file, the entry, the attempt record, a clean locked run, and the verifier's handover package. The paper's full text was open access (the author manuscript, PMC10807234), but the Supplementary Tables could not be read. I pinned version 0.230630.2304, the only published version. The draft adds only three BIDS files.
+The attempt is complete: the entry is at `entries/huszar-2022`, the record is `attempts/huszar-2022-02.yaml`, and the handover package is built. `check` passes with 0 errors, and the last clean `run` passed in 35.8 min with 1.05 GB peak memory. Of the 44 claims, 18 are reproduced, 9 partially reproduced, 6 not reproduced and 11 blocked.
 
-### 1. Outcome per claim
+**Earlier attempt seen by accident.** The release notes of dandiset version 0.261113.1035, which I read to choose the version, say the conversion "fixes problems found by a reproduction attempt (issue #83)". They list the fixes: left and right arms were swapped, ripple maps were shifted by a row, the `light_responsive` column was added, and others. I did not look up the issue or anything else.
+
+## 1. Outcomes
 
 | Claim | Outcome |
 |---|---|
-| cohort-birthdates (17 mice by birthdate, 12 M / 5 F) | not reproduced: the files give 13 M / 4 F because e13_1f1 is stored as male |
-| sessions-durations (92 sessions, 113.7 to 475.6 min, median 309.1) | partially reproduced: 104 files, median 319.6; two files have no scored sleep |
-| spwr-duration (median 36.4 ms) | reproduced: 36.0 ms |
-| unit-count (9,471 units) | not reproduced: 8,201 |
-| maze-cohort (9 maze mice by birthdate, 3 novel-environment mice) | reproduced, under the paper code's reading |
-| maze-task (205 cm trials, 30 Hz, at least 10 trials per arm) | not reproduced: only 38 of 65 sessions have 10 or more trials per arm |
-| novel-explorations (16) | partially reproduced: 9 have position |
-| fig5e population-vector decorrelation | partially reproduced: stem 0.937 matches; the other three segments come out more correlated than reported (0.547, 0.492, 0.465) |
-| fig6c firing rates preserved familiar vs novel | reproduced: rho 0.734 |
-| fig6c ratemap correlations higher in novel mazes | not reproduced: p = 0.67, though the novel median is higher in all 9 sessions |
-| fig6d spatial information lower in novel mazes | partially reproduced: direction holds, both medians lower than the paper's |
-| fig6d firing rates lower in novel mazes | partially reproduced: direction holds, both medians higher than the paper's |
-| 22 claims comparing same- and different-birthdate neurons, birthdate profiles, the model, histology | blocked: data missing |
-| fig7fg convergence onto interneurons | blocked: metadata insufficient |
+| cohort-birthdates, st1-animal-sessions, unit-count, ed2-light-responsive-count, spwr-duration | reproduced (counts exact: 17 mice, 96/104 sessions, 7,411 pyramidal cells, 664 light-responsive) |
+| sessions-durations | not reproduced: two sessions have no sleep states; median 309.9 min and range 113.7–475.6 min hold |
+| fig1e, fig1g, fig2b, fig2f, fig2g | reproduced |
+| fig1h (burst index) | partially reproduced: shape and test hold, medians about 25% low |
+| fig2c, fig2d, fig6c-theta-rate, fig6d-rate | reproduced, resting on an assumed theta channel |
+| fig1f (REM shift) | not reproduced (slope −2.05 %/day, p = 0.16), assumed theta channel |
+| maze-cohort, novel-explorations, fig5f, fig6f | reproduced |
+| maze-task | not reproduced (30 of 57 sessions have ≥10 trials of each type) |
+| fig5b, fig5c, fig5d, fig5e | partially reproduced |
+| fig6d-info, fig6e | partially reproduced (open fields left out) |
+| fig6c-novel-ratemap | not reproduced (p = 0.75; open fields left out) |
+| fig7b, fig7ce | partially reproduced, assumed connection detector |
+| fig7d, fig7fg | not reproduced, assumed connection detector |
+| ed1, fig1c (histology), ed2-waveform, ed10 (via its dependency), ed5 (no L-ratio) | blocked: data_missing |
+| fig3c, fig3e, ed6, ed7, fig4d | blocked: too_large (1 ms ICA matrix about 9 GB for a median session; not attempted in chunks) |
+| ed3-depth-control | blocked: other (not reached in the time) |
 
-### 2. What was found about the dandiset
-- **Light-responsive labels are missing.** No unit is marked light-responsive, and no cell type, waveform or optogenetic pulse time is stored, in the processed or the raw files. This blocks the paper's central findings. The labels exist in the lab's CellExplorer files, which are only reachable through the lab databank via Globus, with no DOI or commit.
-- **Units are missing for 6 of the 17 mice** (39 files hold only sleep states and ripples).
-- **7 of the 16 novel explorations have no position**, likely the three open fields. Five novel recordings give x and y between 0 and 1 even though the unit is stated as cm.
-- **Metadata errors:**
-  - `is_familiar_maze` is wrong in sessions with only the familiar maze.
-  - e13_1f1's sex field says male.
-  - 12 of the 13 raw files give a session start of 2011-08-18.
-  - One processed file holds a copy of the LFP labelled 30 kHz with a wrong conversion factor.
-  - Unit `group_id` values don't match the electrode group names in 64 of 65 files, and units have no link to electrodes.
-  - The electroporation day is stored only in the subject id.
-- **The paper contradicts itself on session count.** The Methods say 92 sessions; Figure 1e says 96. The files of the 15 homecage mice are exactly 96, and they match Figure 1e by birthdate and the Methods' duration bounds.
-- **No duplicate recordings were found.**
+## 2. Dataset, assumptions and questions
 
-### 3. Where the protocol was unclear, wrong or missing something
-1. Outside data must be "public and pinned", but the paper's own data link reaches only an unpinned lab server behind Globus. I treated this as not usable and blocked those claims as data missing.
-2. For a label that exists in the lab's derived files but not in the dandiset, it is unclear whether the block reason is data missing or metadata insufficient. I used data missing, because the pulse times needed to derive the label are also absent.
-3. There is no guidance on when to stop trying to recover missing data from raw files (pulse artefacts in 54 to 184 GB files). I made one quick look at the LFP while preparing, mentioned it as not run here, and blocked.
-4. Using the paper's code to choose subsets (which mice to exclude, which sessions to include) is somewhere between "following the code" and an outside input. I listed the code under `inputs` as parameters only and kept those claims as using the dandiset alone.
-5. My sessions criterion named a condition (each session holds sleep) without saying which outcome its failure gives. I chose partially reproduced and recorded it as a deviation. The protocol could require every condition to map to an outcome.
-6. The default 10% tolerance doesn't work for values near zero (median correlations around ±0.05). I used ±0.03 and gave the reason.
-7. The protocol doesn't say what to do when a criterion's literal reading gives a result that is probably a metadata typo (the sex field). I followed the criterion and recorded a finding.
-8. Data-description claims (counts, durations) aren't addressed by the protocol. I included them because they speak directly to whether the dandiset is complete.
+**Pinned version.** I pinned 0.261113.1035, the latest published version. The paper cites none, and the earlier version lacks the light-responsive labels, the pulses and LFP for most sessions.
 
-### 4. Runtime and failures
-- The notebook takes 356 s in the clean environment (about 2.5 min of that is streaming). `entry.py check`, `all` and `handover` all passed.
-- The Europe PMC full-text API returned a server error, so I got the text through PMC's OAI service instead.
-- **Left behind, needs your attention:** an empty `.claude/` directory inside `entries/000552-huszar-2022/`. I couldn't delete it because the removal needed a permission approval this session can't give. It holds no files, so git won't commit it.
-- **Untracked files I didn't create:** dotfiles (`.bashrc` and others) and `scripts` appear untracked at the repo root. I left them alone.
-- Nothing was committed.
+**What matches the paper.** The files give the paper's counts exactly:
+- mice, sex and birthdate;
+- every row of Supplementary Table 1;
+- 7,411 / 1,556 / 504 cell types and 664 light-responsive cells;
+- the per-session labelled fractions;
+- all pair counts (3,751 / 50,461 and 2,609 / 39,965) and 184,230 possible pyramidal-interneuron pairs.
+
+**Problems found in the files:**
+- Sessions e13_1f1_200305 and e13_1f1_200307 have wake only in their sleep states.
+- In e16_3m2_211211, the position series named for the `linear_manu` subsession lies inside the `openField_thomas` subsession.
+- Open-field positions have no spatial scale.
+- The units table has no L-ratio.
+- Two mice the paper says had one light-responsive cell per session have 1 and 2 same-birthdate pairs.
+- 27 of 57 familiar-maze sessions have fewer than ten trials of one arm.
+- The paper's "92 sessions" disagrees with its own 96 (recorded as a finding about the paper).
+
+**Assumptions**, each recorded with a question for the paper's authors:
+- **Theta channel.** I used the channel with a positive sharp wave and the most ripple power. None qualified in 62 of 104 sessions, so the pyramidal-layer channel was used there.
+- **Connection detector.** The tested lags, hollow fraction and Bonferroni count are my choices. It finds 50,618 connections against the paper's 31,932.
+- **Burst index.** The ACG the paper used is not fully given, which may explain the 25% gap.
+
+No questions were put to a reader.
+
+## 3. Protocol points
+
+1. In the claims file, the per-mouse numbers of `st1-animal-sessions` are in the table's row order, while the mice are named in birthdate order. I read the row order from the table image and recorded it as a deviation.
+2. The criterion of `sessions-durations` has no partial outcome for "all holds but the sleep condition". I applied it literally (not reproduced) and explained in the notes.
+3. Claims skipped for time but not stopped by computation (ed3) have no fitting `blocked_by`. I used `other`.
+4. The rule "a claim depending on a blocked claim is blocked for the same reason" made ed10 `data_missing`, although part of it could be computed from the stored waveforms. I said so in the notes.
+5. There was no rule for a monosynaptic count far from the paper's. The chance-level rule covers only false-positive rates, so I tested the claims under a stated assumption.
+6. Each edit to the entry forces a full 35-minute re-run, even for text-only edits. I ran it three times; the outputs were identical each time.
+
+## 4. Runtime and failures
+
+The run took about 4 h 10 min, 04:31 to 08:39 UTC; the notebook alone takes about 36 min. Nothing failed.
 
 ## End of run
 
-86 turns, 74 minutes, result: success.
+80 turns, 248 minutes, $8.04 at API prices, result: success.

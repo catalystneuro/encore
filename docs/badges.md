@@ -138,7 +138,8 @@ registry.
 
 The count follows the same rule as a dataset badge, for one paper:
 
-- Claims that rest on the paper's datasets.
+- Every claim of the paper, wherever its data are: in its dataset, in its dataset together with outside data, or in
+  another archive. A dataset's badge counts only the claims that rest on that dataset alone.
 - Outcome "reproduced". Partial reproductions do not count.
 - Current attempts that an independent verifier has checked.
 
@@ -149,6 +150,7 @@ A paper has this badge only when at least one finding counts.
 | Style | Address | What it shows |
 |---|---|---|
 | Findings reproduced | `badge/papers/<key>.svg` | One number: the findings reproduced in full, in verified attempts. |
+| Reproduced | `badge/papers/<key>-reproduced.svg` | One number: the findings reproduced in full, in every current attempt, verified or not. A paper has it only when this number differs from the first style's. |
 | All outcomes | `badge/papers/<key>-outcomes.svg` | One line with four counts: reproduced, partially reproduced, not reproduced and blocked. An outcome with no claim is shown as 0. |
 | Card | `badge/papers/<key>-card.svg` | The paper's short name, the number of claims and datasets, the outcomes as one bar, and the four counts. |
 
@@ -202,7 +204,8 @@ dataset.
 
 The count follows the same rule as a dataset badge, over all of the person's papers in the registry:
 
-- Claims that rest on the paper's datasets.
+- Every claim of the paper, wherever its data are: in its dataset, in its dataset together with outside data, or in
+  another archive. A dataset's badge counts only the claims that rest on that dataset alone.
 - Outcome "reproduced". Partial reproductions do not count.
 - Current attempts that an independent verifier has checked.
 

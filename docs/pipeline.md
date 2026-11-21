@@ -128,6 +128,24 @@ treated the same way. The recorder reads no paper, so it starts on the unverifie
 dataset whose paper was flagged. Each
 run's commit records its account.
 
+## A paper with several datasets
+
+A paper's data are often in more than one dataset. The paper is tested on all of them, each a dataset in its own
+right with its page, and none is read as outside data. Three things keep the list complete:
+
+- **Before an attempt.** The runner's chain looks for every target that names the paper and has no paper match
+  yet, and runs their paper matches first (`tools/runner/describe.py siblings`). A dataset that matches is listed
+  for the paper, and the paper's claims are then read again for all of its datasets.
+- **When a list is built by hand.** `tools/build_sparc_targets.py` adds every other SPARC dataset that names a
+  paper of the list. For the other archives whose lists are chosen by hand, look for the paper's other deposits when
+  adding one.
+- **During an attempt.** An author who finds a dataset the paper deposited, and that the paper is not listed on,
+  says so in its report (`docs/protocol.md`, "Author", step 4). Add the dataset to its archive's target list and
+  to `papers/datasets/<paper>.yaml`, and queue the paper again.
+
+What a paper's attempt used that is not a dataset of the paper (code, supplementary files, another group's data,
+a table from a web page) is listed on its page as "Other data and code used".
+
 ## The paper store
 
 `catalystneuro/registry-papers` holds, per dataset:

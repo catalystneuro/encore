@@ -1,0 +1,105 @@
+# markowitz-2023, Markowitz et al. 2023, second attempt
+
+Eleven claims reproduced, six partially, twelve not reproduced and fifteen
+blocked: two for missing data, `fig1l-identity-not-decodable` as too large
+(estimated at about 83 h and 238 h) and twelve as `other`, not run in time,
+though their data are in the dandiset; seven outcomes rest on an assumption
+and `fig2e-not-autocorrelation` is seed-sensitive. The first verification
+round agreed with 40 of the 44 outcomes; it disagreed on
+`fig1f-syllable-vs-movement-onset`, `fig2g-usage-crosscorrelation`,
+`fig3jk-post-predictable` and `ed10i-no-place-preference`, and the author
+moved fig2g and fig3jk to not reproduced and kept the other two. The second
+round agreed with 43 of 44, and its doubts led to two proposed changes, fig1f
+to partially reproduced once event counts were matched and
+`ed10d-optoda-vigour` from blocked to not reproduced; the answer run amended
+four criteria, after which the author proposed `ed3c-keypoint-velocity` as
+partially reproduced and ed10i as not reproduced, and a third round reviewed
+those four claims and agreed with all of them. The attempt pins
+0.261113.1911. The paper, Markowitz, Gillis, Jay et al., "Spontaneous
+behaviour is structured by reinforcement without explicit reward" (Nature
+614, 108-117), records dLight photometry in the dorsolateral (DLS) and
+dorsomedial striatum (DMS) of freely moving mice whose behaviour is parsed
+into syllables, and reports that dopamine transients relate to which
+syllables are used and in what order, and that pairing a syllable with
+optogenetic dopamine release (Opto-DA) increases its use. The claims were
+written from the version of record (PMC9892006) and the paper's code at
+commit 14ed714, 44 claims where the earlier attempt had 24. Reproduced are
+the syllable repertoire, the dip then peak of dLight at syllable onset, the
+weak correlation with kinematics, the relation of dLight to usage and
+transition entropy across syllables and across experiments, the prediction of
+future usage at every n from 10 to 390, the prediction of sequence
+variability (under the Methods' bins only), the fewer DMS transients, and the
+absence of duration and kinematic effects of Opto-DA. Partial are the
+velocity timescales (rate holds, amplitude does not), the keypoint
+correlations (forelimb r = -0.026), the syllable against movement onset
+comparison, the dLight differences across syllables (H = 280.39 to 300.77
+against 209.29), the autocorrelation control and the stimulation-post
+correlation, where the controls are also significant. Not reproduced are
+Opto-DA learning (U = 152, P = 0.110), the cumulative counts (P = 0.062), the
+learner count (7 against 9, all 7 among the paper's nine), the entropy
+effect once stimulation trials are drawn down to the catch count, the post
+predictability, the usage cross-correlation, the syllable specificity of Fig.
+2h, the DMS transient shape and peaks, vigour, place preference and the long
+stimulation velocity. The food-reward and calibration claims are blocked for
+missing data, and the encoding and decoding models, the Fig. 4 claims and the
+reinforcement-learning model were not run. The author read the dataset's
+release notes, which say the files were corrected after a reproduction
+attempt, and reported it; the reconciliation found the attempt blind
+otherwise. Of the earlier attempt's 12 findings 8 are fixed and 4 still
+present, and of the 12 outcomes that differ 9 follow from changed criteria
+and 3 (fig3i, fig3l and fig3m) from catch trials now being marked. The
+reconciliation also found that this attempt's Monday-baseline variant of
+fig3e searched only the target's own baseline rows and changed no baseline;
+rerun on the new files, the code's Monday rule gives U = 198 and the day
+before U = 151. Round 1 led to correcting 38 dLight+ChrimsonR files that are
+the baseline of one target and the post day of another, which raised the DLS
+baseline set from 145 to 164 experiments and moved no outcome. The author's
+run took about 3 h 25 min (17:19 to 20:42 UTC), and about an hour of the
+round-1 revision was lost when a test command hung on the author's own
+process check; the notebooks ran in about 25.5 and 3.7 min at first, with
+peak memory around 3 GB, and at the end photometry.ipynb took 2794 s,
+optoda.ipynb 649 s and earlier_findings.ipynb 109 s.
+
+The dataset was converted by CatalystNeuro (catalystneuro/datta-lab-to-nwb).
+The food-reward photometry experiments, the open-loop dLight calibration
+experiments and the dLight+ChrimsonR closed-loop sessions with 2-s and 3-s
+stimulation are not in the dandiset; only two 2-s excitation sessions are. In
+the velocity-modulation files the detection times and light onsets are
+2700.03 s later than the clock of the syllable labels, so that 1.0% of
+detections fall on a target instance unshifted and 99.4% after the shift, and
+these files do not record whether the fastest or slowest quartile was
+targeted, except in the session descriptions of mice 5891 to 5894; the
+dandiset has 9 mice with such files where the paper has 5. Which files form
+the paper's DLS sets is not recorded: the DLS experiments without stimulation
+number 164, or 204 with the post days, against 216 in Fig. 1b and 378 in the
+Methods, while the DMS experiments number 75 under the Methods' quality
+control and 64, the paper's count, under the code's rule. The dandiset holds
+10 DMS mice where the paper reports 8, and 92 of 167 DMS, 22 of 97
+dLight-only DLS and 10 of 236 dLight+ChrimsonR photometry session files have
+behaviour but no photometry, with no note saying why. The syllable-onset
+dLight averages differ between the dLight-only and the dLight+ChrimsonR mice
+(median peak 3.83 against -0.10, P = 0.001), with the same best label shift
+in both groups and no cause found in the files. The OptogeneticSeries
+description says onsets are recorded as 1, but the values are 0.01 W; 70.7%
+of target detections are stimulated where the Methods give 75%; one
+dlight-chrimson-6 session with a dF/F of up to 10,804% is not marked
+excluded; the keypoint reference frame is "TBD"; and the re-referenced,
+z-scored dLight trace the analyses use is not stored, nor the fit behind it.
+Four questions are put to the paper's authors: the units of the
+movement-initiation score and whether initiations start from stillness, what
+Fig. 1f compares and whether event counts were matched, whether the Fig. 3i
+entropy is per trial or pooled and trial counts matched, and which
+experiments form the Extended Data Fig. 10d baseline and how direction was
+recorded.
+
+The author's points on the protocol: the dataset's own archive metadata can
+reveal an earlier attempt, which the blind rule does not anticipate; no
+`blocked_by` reason fits a claim never started for lack of time, and `other`
+was used; with 1,000 shuffles a Holm correction over 120 bin sizes can never
+pass, and a normal approximation was used for those variants; running every
+random analysis under five seeds exceeded the budget, so it was done for
+three claims; "under any reading" makes a claim reproduced even when another
+reading gives the opposite direction; fig2e-not-autocorrelation's criterion
+had a gap, judged partial; 46 claims in five hours is not feasible and the
+protocol gives no priority; and `docs/archives.md` could note that h5py
+serialises threads.

@@ -1,20 +1,23 @@
-The file is ready for an attempt (`ready: true`). I changed only `claims/pelot-2020.yaml`, and nothing is committed or pushed.
+I checked the file against the paper and made seven corrections. It is ready for an attempt.
 
-**Checker:** `claims/pelot-2020.yaml: 35 claims, 35 quotes, 21 statistical values, 0 problems` (it was 34 claims before I added one).
+**Checker result** (same before and after my edits): `claims/pelot-2020.yaml: 43 claims, 43 quotes, 21 statistical values, 0 problems`
 
 **Changes, by claim**
-- **rat-ten-times-smaller:** the statement said the difference was significant "at both levels". In the paper, "both comparisons of rat to larger species" means rat against human and rat against pig. The statement and criterion now say that, with the per-level contrasts as a variant. The 5 to 20 reading of "approximately ten times" is now marked as this file's choice.
-- **human-pig-nerve-diameter-similar:** this is a claim of absence, but it was judged under two readings. The paper prints one p for both levels and finds no interaction, so the test is the species main-effect contrast. The per-level contrast is a variant.
-- **human-pig-level-ratios:** the quote held only the endoneurial area ratios. I extended it to cover the diameter ratios (0.87 and 0.75), which the statement also gives.
-- **literature-comparison-human-pig:** the criterion required the paper's human cervical range to overlap 3.0 mm. The paper's own 1.9 ± 0.5 mm would fail that test. The overlap the paper means is with the literature spreads, which are in Supplement 4, so that part is now marked undecidable without it.
-- **human-variability:** the statement and the Discussion include rats, but the criterion only reported them. Rats now count toward the result: partially reproduced when only human against pig holds. I added the Discussion's "ranges of fascicle diameters" as a second reading.
-- **nerve-cervical-larger, rat-literature-comparison, perineurium-no-level-difference, human-pig-perineurium-thicker:** each used a measure or test the paper does not name, presented as if it did. Each now says the measure is this file's reading and that the outcome rests on it.
-- **rat-subdiaphragmatic-multifascicular:** the source now also cites Discussion paragraph 9, which says "generally monofascicular".
-- **pig-if-mt-consistent:** the criterion now says which fascicles the MT values are taken over.
-- **New claim, perineurium-thicker-larger-fascicles:** the Introduction and abstract state that larger fascicles have thicker perineurium in human and pig, and no claim covered it.
+- **pig-if-endoneurium-lower**: the tolerance was 0.2 points (10% of 2). The paper writes "∼2" to one significant figure, so I widened it to 0.5 points and gave that reason in the criterion.
+- **perineurium-ratio-decreases**: the criterion did not require the rat result. The paper states the decrease for its vagus nerve data as a whole ("particularly for the human and pig samples"), and the Discussion describes the same trend in rats. A full reproduction now needs a rat decrease too; human and pig alone count as partial.
+- **rat-perineurium-fit**: I dropped fit-form reading (iii), "any model linear in its coefficients". The text supports only a linear fit, with or without an intercept, and the open-ended reading let the R² be matched by picking a model.
+- **fascicle-number-human-pig**: the criterion tested the level effect but not its direction. It now requires the cervical mean to be above the subdiaphragmatic one, as the Results say.
+- **human-pig-tissue-proportions**: added the comparison the Results make (pig endoneurium below the human share cervically, above it subdiaphragmatically) to the statement and criterion. The source now cites Results paragraphs 6 and 7.
+- **literature-comparison-human-pig**: added two findings from Results paragraph 8 that the statement left out: the larger human cervical endoneurial proportion, and fewer human subdiaphragmatic fascicles than the one study of the posterior branch. The criterion marks how these are judged as the file's own reading.
+- **peanut-fascicle-counts**: the quote covered only the human counts; I extended it to the pig counts.
 
-**Still open**
-- **Perineurium fits:** Eqs. 1 to 4 were lost from the text, so the fit form and coefficients are unknown. The readings are named in rat-perineurium-fit; the PDF would settle them.
-- **Missing supplements:** Supplements 4 and 6 are not under `paper/`. Without them, the two literature-comparison claims cannot be fully decided, and no-age-trend uses a test this file assumed.
-- **Rat diameter ratio:** the Discussion gives 0.68, but the Results means give 0.52. rat-level-ratios names readings for both, but the paper does not say which tissue enters the ratio.
-- **Dataset identifiers:** the SPARC identifiers for Pelot et al. (2020a to g) are not in the text, because the reference list is empty.
+I checked every p, F, mean, SD, count and percentage against the text, plus the source paragraph numbers, and found no other errors. The check entry is appended under `checks`.
+
+**Still open** (recorded in the check entry)
+- **Equations 1 to 4 are missing from the text**, so the form and coefficients of the perineurium fits can't be checked. The PDF would settle this.
+- **The supplement is not under `paper/`.** Four claims (the two literature comparisons, no-age-trend and rat-carotid-sheath-bundles) rest on the file's own readings until Supplements 4 and 6 and Supplementary Figure 16 are read.
+- **The paper contradicts itself on one rat ratio.** The Discussion gives the subdiaphragmatic-to-cervical diameter ratio as 0.68, but the Results means give 0.52. The file names both readings; the paper doesn't say which is meant.
+- **Some criteria use rules the paper doesn't give**: 5 to 20 for "approximately ten times", the rules for oblong shape and fat, a factor of two for "similar" to 3%, and the tests for age and level. Each criterion says so.
+- **No claim for one minor remark**: the Discussion's "no sex effect suggested by Figure 6". The paper itself says its sample is too small to assess sex.
+
+Nothing was committed or pushed.

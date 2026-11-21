@@ -220,6 +220,16 @@
               "pattern": "^https://"
             }
           }
+        },
+        "author_notes": {
+          "description": "The notes from the paper's authors that this attempt used (papers/author-notes/<paper>.yaml), each by its issue's address (docs/protocol.md, Author, step 1.6).",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https://github\\.com/.+/issues/[0-9]+$"
+          }
         }
       }
     },
@@ -452,6 +462,46 @@
           "reviewed": {
             "description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.",
             "type": "string"
+          },
+          "findings": {
+            "description": "From protocol pilot-18, in round 2: what the verifier said of each finding the record rates `critical` (docs/protocol.md, the attempt record).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "finding",
+                "agrees"
+              ],
+              "properties": {
+                "finding": {
+                  "description": "The finding's number in this record's `findings`, from 1.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "agrees": {
+                  "description": "Whether the verifier agreed that the outputs show the finding and that it is critical.",
+                  "type": "boolean"
+                },
+                "severity": {
+                  "description": "The severity the verifier would give, where it differs.",
+                  "enum": [
+                    "critical",
+                    "major",
+                    "minor",
+                    "none"
+                  ]
+                },
+                "reason": {
+                  "description": "The verifier's reason, in its own words.",
+                  "type": "string"
+                },
+                "response": {
+                  "description": "What the author changed or replied.",
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -496,6 +546,15 @@
             "enum": [
               "data",
               "paper"
+            ]
+          },
+          "severity": {
+            "description": "For a finding about the data: how much it harms someone who uses the dataset (docs/protocol.md, the attempt record). `critical`: the data are wrong and nothing shows it, so an analysis gives a wrong result. `major`: a main analysis is blocked or changed, and the user would notice. `minor`: evident from the values or easy to work around, a wrong unit label included. `none`: no problem, a check that passed. Required from protocol pilot-18.",
+            "enum": [
+              "critical",
+              "major",
+              "minor",
+              "none"
             ]
           },
           "datasets": {
@@ -672,6 +731,66 @@
             "description": "A DOI, or a repository URL with the commit read.",
             "type": "string",
             "minLength": 1
+          }
+        }
+      }
+    },
+    "findings_review": {
+      "description": "For an attempt made before protocol pilot-18, whose findings carry no severity: the severity a later review gave each finding about the data, and whether the review checked it against the notebook's outputs. Added to the record afterwards; nothing else in the record changes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "basis",
+        "findings"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "basis": {
+          "description": "What the ratings were made from.",
+          "type": "string",
+          "minLength": 1
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "finding",
+              "severity"
+            ],
+            "properties": {
+              "finding": {
+                "description": "The finding's number in this record's `findings`, from 1.",
+                "type": "integer",
+                "minimum": 1
+              },
+              "severity": {
+                "enum": [
+                  "critical",
+                  "major",
+                  "minor",
+                  "none"
+                ]
+              },
+              "confirmed": {
+                "description": "Whether a check of the executed notebook's outputs, by an agent or person that did not write the attempt, found that they show the finding and that it is critical. Unset: not checked.",
+                "type": "boolean"
+              },
+              "checked": {
+                "description": "The date of that check.",
+                "type": "string",
+                "format": "date"
+              },
+              "note": {
+                "description": "What the check found, with the cell it rests on.",
+                "type": "string"
+              }
+            }
           }
         }
       }

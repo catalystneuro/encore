@@ -1,38 +1,37 @@
-# Huszar, Zhang, Blockus & Buzsaki (2022) from dandiset 000552
+# Huszár, Zhang, Blockus & Buzsáki (2022) from dandiset 000552
 
-Tests the findings of [Huszar et al. (2022)](https://doi.org/10.1038/s41593-022-01138-x) that can be
-tested on [DANDI:000552](https://dandiarchive.org/dandiset/000552/0.230630.2304), which holds sleep
-states, sharp-wave ripples, spike-sorted units and position from 17 mice whose CA1 pyramidal neurons
-were birthdated by in utero electroporation. The units carry no label of which neurons responded to
-light (were birthdated), and no optogenetic pulse times, cell types or waveforms are stored, so the
-paper's comparisons of same- and different-birthdate neurons cannot be made.
+Tests the findings of [Huszár et al. (2022)](https://doi.org/10.1038/s41593-022-01138-x) that can be tested
+on [DANDI:000552](https://dandiarchive.org/dandiset/000552/0.261113.1035), which holds the CA1 silicon-probe
+recordings of 17 mice whose pyramidal neurons were birthdated by in utero electroporation (104 sessions),
+with units, light-responsive labels, sleep states, SPW-Rs, LFP and maze position.
 
 | Claim | Outcome |
 |---|---|
-| 17 mice at the stated birthdates, 12 males and 5 females | Reproduced |
-| 92 sessions of 113.7 to 475.6 min, median 309.1, each with sleep | Partially reproduced |
-| Median SPW-R duration 36.4 ms, limits 20 to 200 ms | Reproduced |
-| 9,471 well-isolated units | Not reproduced |
-| Nine figure-eight mice by birthdate, three novel-environment mice | Reproduced |
-| 205 cm trials, 30 Hz tracking, ten or more trials per arm | Not reproduced |
-| 16 novel environment explorations | Partially reproduced |
-| Population vectors decorrelate after the maze stem (Figure 5e) | Partially reproduced |
-| Firing rates preserved between familiar and novel mazes (Figure 6c) | Reproduced |
-| Ratemap correlations higher in novel mazes (Figure 6c) | Not reproduced |
-| Spatial information lower in novel mazes (Figure 6d) | Partially reproduced |
-| Firing rates lower in novel mazes (Figure 6d) | Reproduced |
-| Same- against different-birthdate comparisons, birthdate profiles, model, histology (22 claims) | Blocked: data missing |
-| Convergence onto interneurons over all pairs (Figure 7f, g) | Blocked: methods underspecified |
+| Cohort, sessions, units and light-responsive counts (4 claims) | Reproduced |
+| Session count and durations | Not reproduced (two sessions hold wake only, no sleep) |
+| SPW-R duration | Reproduced |
+| Labelled fraction, firing rate, SPW-R firing and cofiring by birthdate (Figs 1e, 1g, 2b, 2f, 2g) | Reproduced |
+| Burst index by birthdate (Fig. 1h) | Partially reproduced |
+| Theta depth, theta-related rates (Figs 2d, 6c, 6d) | Reproduced, on an assumed theta channel |
+| Theta cofiring (Fig. 2c) | Partially reproduced, on an assumed theta channel |
+| REM shifting (Fig. 1f) | Not reproduced, on an assumed theta channel |
+| Maze cohort and novel explorations | Reproduced |
+| Maze trial counts | Not reproduced |
+| Place maps on the familiar maze (Figs 5b to 5e) | Partially reproduced |
+| Remapping of SBD pairs (Figs 5f, 6f) | Reproduced |
+| Novel environments (Figs 6c bottom, 6d right, 6e) | One not reproduced (on an assumed open-field scale), two partially reproduced |
+| Pyramidal-to-interneuron convergence (Fig. 7) | Two partially reproduced, two not reproduced, on an assumed detector |
+| Depth control (Extended Data Fig. 3) | Not reproduced (fractions above the paper's), on an assumed depth reference |
+| Histology, light-evoked waveforms, L-ratio controls (5 claims) | Blocked: data missing |
+| Assemblies and network model (5 claims) | Blocked: too large (not run; see the attempt record) |
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
-and the differences from the paper's method.
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
 
-Putative pyramidal cells are units with a session mean rate of at most 5 Hz, as the files hold no
-cell type, and the "theta-related" rate is the rate while running; both are substitutes for the
-paper's methods. The attempt record, with the reasons and the differences from the paper's method,
-is [`attempts/huszar-2022-01.yaml`](../../attempts/huszar-2022-01.yaml).
+The attempt record, with the reasons and the differences from the paper's method, is
+[`attempts/huszar-2022-02.yaml`](../../attempts/huszar-2022-02.yaml).
 
-- `reproduce_huszar_2022.ipynb`: the analysis. It takes about eight minutes, most of it streaming the
-  104 processed files.
-- `huszar.py`: loading the files, maze recordings, rate maps, spatial information, running
-  rates and a monosynaptic connection test. Other notebooks on this dandiset can import it.
+- `reproduce_huszar_2022.ipynb`: the analysis. It takes about 47 minutes, most of it reading two LFP channels
+  per session for the theta analyses.
+- `huszar.py`: streaming the files, the homecage, theta, maze and connectivity measures, and the bootstrap
+  tests. Other notebooks on this dandiset can import it.

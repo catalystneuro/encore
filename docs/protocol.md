@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-16`. Record this version in the attempt's provenance.
+Version: `pilot-18`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -264,6 +264,14 @@ Do this before any analysis.
      label: criteria compare identity, not spelling.
    - Outside data supplies only what the dataset lacks, such as a label for
      each cell. The analysis runs on the dataset's data.
+   - A dataset the paper's authors deposited for this paper is one of the
+     paper's datasets, not outside data, wherever it is. When you find one
+     that the paper is not listed on (`papers/datasets/<paper>.yaml`), in an
+     archive the registry reads (`docs/archives.md`), use it and list it
+     under `inputs` as for any other source, and say in your report, by its
+     archive and identifier, that the paper should be listed on it. The
+     registry then lists it, and the next attempt tests the paper on all of
+     its datasets.
    - `elsewhere` is for a claim whose data the dataset does not hold at
      all, because the paper deposited them in another public archive (for
      example imaging in the BioImage Archive, proteomics in PRIDE, blots on
@@ -342,6 +350,23 @@ Do this before any analysis.
      claims file (reader, step 6), and a later run, `author-answers`,
      re-runs the claims it changed.
 
+**Notes from the paper's authors.** The authors of a paper can answer an
+attempt (`docs/author-responses.md`). What a confirmed author says about the
+method, the code or the data is kept in `papers/author-notes/<paper>.yaml`,
+and the next attempt's author reads it with the paper.
+
+- A method detail a note gives is used like one taken from the paper. The
+  deviation, or the notebook, cites the note's issue in place of a passage.
+- Code a note links may be read like the paper's own code.
+- Data a note points to outside the paper's datasets are inputs, listed under
+  `inputs`.
+- A note does not change a claim's statement, expected values or criterion.
+- A note that says what an outcome should be is not evidence. The claim is
+  tested all the same.
+- The record lists every note the attempt used under
+  `provenance: author_notes`, so that a reader can see that the authors'
+  input went into it.
+
 ### 2. Check the data against its description
 
 Descriptive metadata is often wrong. For every quantity the analysis uses,
@@ -401,7 +426,9 @@ module.
   that exhausts the memory ends the whole job, with nothing saved: on
   2026-11-06 an author run was killed nine times this way, each time on its
   full run, by a helper that read four sequencing libraries at once into
-  lists of lines.
+  lists of lines. The runner now ends the largest Python process when
+  almost no memory is free: a command that stops with `Terminated` or
+  `Killed` was using too much, so read less at once before running it again.
 - **Develop on a subset.** Build and debug each analysis on one or two
   sessions, or a few units, and run it on the whole dataset once, when it
   works; do not re-run whole notebooks to test a change. Time the subset and
@@ -503,6 +530,9 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   lists.
 - **`seed_sensitive`**: `true` on an outcome that is not the same under all
   five seeds (step 3). The notes give the measured value under each.
+- **`provenance: author_notes`**: the notes from the paper's authors that
+  the attempt used, each by its issue's address (step 1, "Notes from the
+  paper's authors").
 - **`proposed`**: on an outcome, a change of outcome found after the last
   verification round, with its `reason` (see "Hand over for verification").
 - **`inputs`**: everything used that is not in the dataset, each with where
@@ -527,6 +557,37 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   either, so give `about` for these two. In an attempt on several datasets,
   give each finding about the data its `datasets` (their folders, as in the
   claims file).
+
+  Give each finding about the data its `severity`: how much it harms someone
+  who uses the dataset. Rate what the finding shows, not how much work it
+  took to find.
+
+  | `severity` | Meaning | Examples |
+  |---|---|---|
+  | `critical` | The data are wrong, and nothing in the files shows it. An analysis that takes them as given comes out wrong. | One recording, session or unit deposited as two. Data filed under the wrong subject, session, area or label. Spikes, signals or events on different clocks. A spike train that holds another unit's spikes. Labels that say the opposite of the data. |
+  | `major` | A main analysis is blocked or changed, and the user would notice. | Trials, behaviour or a whole condition missing. A column an analysis needs with no definition. Counts far from the paper's. A scale that cannot be read off the values: one that differs between files or within a series, or is off by a small factor. |
+  | `minor` | The problem is evident from the values, or easy to work around. | A wrong unit label or conversion factor (volts that hold millivolts, meters that hold centimetres, degrees that hold radians). A small difference in counts. A missing description that the data make clear. Spike times that only need sorting. |
+  | `none` | No problem. | A check that passed. A note that the data agree with the paper. |
+
+  A wrong unit is `minor` however large the factor, because the values show
+  it. When a finding lists several problems, rate the worst. When the data
+  could not settle whether something is wrong (a clock that could not be
+  established, say), rate what was shown, at most `major`.
+
+  A `critical` rating is a public statement about someone's data, so the
+  verifier reviews each one in round 2. The revision records what it said
+  under that round's `findings`: the finding's number in the record (from 1),
+  `agrees`, the `severity` the verifier would give where it differs, and its
+  `reason`. Where the verifier did not agree, the revision changes the rating
+  to the verifier's, or keeps it and says why under `response`. Findings keep
+  their order from then on, and a new one goes at the end. The site presents
+  a critical finding as one only when a verifier agreed.
+
+  Attempts made before `pilot-18` did not rate their findings. A later review
+  rated them from their statements, and its ratings are in each record under
+  `findings_review`, apart from the attempt's own fields. A critical rating
+  there counts as checked only when the review also checked it against the
+  executed notebook's outputs (`confirmed`, with a `note` naming the cell).
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 
@@ -598,7 +659,8 @@ check of the one before it.
   problem (still present or partly fixed, pointing at the new finding). For an
   earlier finding the new attempt did not report, it checks the finding
   directly, in its own notebook `earlier_findings.ipynb` in the entry: fixed,
-  still present (added to the record's findings with `found: on_prompt`, so it
+  still present (added to the record's findings with its `severity` and
+  `found: on_prompt`, so it
   is never counted as found blind), or not checked. A finding no earlier one
   points at is new. It changes no outcome or statement of the blind attempt.
 - **Why outcomes differ.** For each claim whose outcome differs from the
@@ -698,6 +760,10 @@ Be skeptical. Do not assume the analysis is right.
    outputs. Quote any that the numbers do not support.
 3. Say which of your earlier points are resolved, and list what remains that
    bears on a conclusion.
+4. For each finding the record rates `critical`, say whether the notebook's
+   outputs show what it states, and whether `critical` is the rating the
+   attempt record's rules give it. Where you would rate it otherwise, give
+   your rating.
 
 Take counts of claims and outcomes from the attempt record, not from a
 report or a summary table.
