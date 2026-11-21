@@ -1,0 +1,543 @@
+schema_version: 3
+id: sennesh-2025-01
+datasets:
+- archive: dandi
+  id: "000253"
+  version: 0.240923.1441
+  doi: 10.48324/dandi.000253/0.240923.1441
+  relation: reuses
+paper: doi:10.1101/2025.07.31.667946
+date: 2026-11-20
+entry: sennesh-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44839964552
+outcomes:
+- claim: trial-counts
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:trial-counts
+  measured:
+  - 538
+  - 700
+  - 2046
+  - 1351
+  - 8465
+  - 1351
+  notes: Counted from the stimulus tables of the 14 mice, as the claims file defines the conditions.
+    The habituation count matches (700); the others differ by -3 (XXXY), +5 (xxxX), -4 (xxxx), +3
+    (xxxY) and -1 (yyyy) trials, at most 0.6%, inside the criterion's 5% bound for a partial
+    result. The paper's code reads its conditions from passiveglo_task_data.mat, which is not in
+    the dandiset, so the selection cannot be matched trial by trial. A likely cause is the handling
+    of the 0 to 2 main-block sequences per mouse that match neither the habituated pattern nor its
+    global oddball, which are left out here. Sub-621890 has a different schedule (807 main-block
+    and 100 sequence-control sequences) and is counted as it is.
+  deviations:
+  - Conditions rebuilt from the grating orientations and blocks of init_grating_presentations; the
+    dandiset has no condition labels and the paper's condition file is not public.
+- claim: three-contrasts-gamma-increase
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:three-contrasts-gamma-increase
+  notes: Masked points with a positive contrast between 30 and 60 Hz in V1, DD 2424, GO 1539 and
+    SSA 2064 under S3 reading (a); 1820, 444 and 1743 under reading (b). Largest values 6.18, 1.39
+    and 2.80 dB (reading a). The same under all five seeds.
+  deviations:
+  - LFP at 1250 Hz (the files' rate), so the 200 ms Hann window is 250 samples padded to 256.
+  - Each trial is de-meaned before the spectrogram, assumed to follow Syncopy's default
+    (polyremoval 0); the paper and the claims file do not say.
+- claim: fig2ab-dd-condition-spectra
+  outcome: not_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2ab-dd-condition-spectra
+  measured: 1.54
+  notes: XXXY 40-55 Hz maximum after onset 1.54 dB (reading a) and 0.64 dB (reading b), below the
+    2.25 dB lower bound. The xxxy alpha/beta maximum in the first 150 ms is -0.96 and -1.19 dB, against
+    at least 4.5 dB; XXXY alpha/beta has no rise (peak -1.98 and -2.23 dB at 80 ms). In these
+    spectrograms alpha/beta lies below the FOOOF aperiodic fit at all times (minimum about -5 dB).
+  deviations:
+  - The S6 condition panel is the dB spectrogram over the aperiodic fit, averaged over trials and
+    the 19 kept channels. The shape tests (lasting past 250 ms as the maximum after 250 ms reaching
+    2.25 dB; a fall as a drop of more than 1 dB after the peak) are readings made here of the
+    criterion's words.
+- claim: fig2c-dd-v1-contrast
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2c-dd-v1-contrast
+  measured:
+  - 2.43
+  - -1.58
+  notes: Under both readings the DD contrast has a significant positive gamma cluster and a negative
+    alpha/beta cluster after onset. Largest gamma value 2.69 dB (reading a) and 2.43 dB (reading b),
+    above the 0.9 to 2.2 dB range; largest alpha/beta decrease -1.34 and -1.58 dB, in range. The
+    largest gamma value is at 45 Hz both early and late, so the descent from 40-65 to 35-55 Hz is not
+    seen. Identical under the five seeds. measured gives reading (b), the Methods' fitting range.
+  deviations:
+  - The cluster test is a fast implementation of MNE's spatio_temporal_cluster_test with the
+    claims file's settings; the notebook checks it against MNE on synthetic data (identical F maps
+    and clusters).
+- claim: fig2d-dd-gamma-laminar
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2d-dd-gamma-laminar
+  measured: 3.31
+  notes: Under all four readings (two S3 ranges, two gamma bands) the largest gamma increase is in an
+    L2/3 channel, the mean positive gamma over L1 to L4 exceeds that over L5/6 (0.53 to 1.38
+    against 0.06 to 0.34 dB) and L5/6 has a significant loss after 100 ms of at most 0.31 to 1.01
+    dB. The largest increase is 3.31 to 4.43 dB, above 1.8 to 2.2 dB (measured is S3 reading b with
+    30-90 Hz).
+- claim: fig2e-dd-alphabeta-laminar
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2e-dd-alphabeta-laminar
+  measured:
+  - -2.16
+  - 0.0
+  notes: The desynchronization is in range (-2.05 dB reading a, -2.16 dB reading b) and starts in
+    L2/3 at 20 ms, no later than L4 (20 ms) and L5/6 (20 to 30 ms). L1 has no significant alpha/beta
+    increase (largest 0.0 dB against 0.9 to 1.65). The criterion's partial clause names signs and
+    layers holding with a value or the order off; here one of the two parts (the L1 increase) is
+    absent and the other holds in full, which is taken as holding in part.
+- claim: fig2f-dd-theta
+  outcome: not_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig2f-dd-theta
+  measured: 3.0
+  notes: By S5's rule the 2-10 Hz band holds only the 5 Hz bin. Its significant values lie in L2/3,
+    L4 and L5/6, none in L1, have both signs (119 positive and 142 negative points in reading a),
+    start at -10 ms, and reach 2.36 dB (reading a) and 3.00 dB (reading b), above 1.1 dB, which the
+    criterion names as not reproduced.
+- claim: fig2g-dd-gamma-csd-feedforward
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2g-dd-gamma-csd-feedforward
+  measured: 117
+  notes: S7's first-sink times tie at the first sample of the window in both readings, as every
+    layer group holds a displayed sink there (the display threshold, 2 SD over the number of
+    windows, passes 89% of points). With the tie-break (sink onset of each group's mean CSD) the L4
+    sink starts before the L2/3 and L5/6 sinks under both bands (L4 -6.4, L2/3 -2.4, L5/6 2.4 ms in
+    reading a; -12.8, -4.8 and 6.4 ms in reading b). 117 windows (reading a) and 108 (reading b)
+    against 125.
+  deviations:
+  - Tie-break of S7's first-sink rule, chosen here (protocol, reader step 3, "unable to decide"),
+    the first lag at which the mean CSD over a layer group's rows turns from source to sink. The
+    paper reads the patterns by eye.
+  - The band-pass FIR (Syncopy firws in the code) is not specified; a zero-phase windowed-sinc FIR
+    of at most 249 taps is assumed, as the 600 ms segments do not allow longer filters.
+  - The CSD repeats the edge rows (Elephant StandardCSD's default Vaknin electrodes), computed here
+    without Elephant.
+- claim: fig2h-dd-alphabeta-csd-feedback
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2h-dd-alphabeta-csd-feedback
+  measured: 144
+  notes: With the tie-break, the Methods' band (10-30 Hz, reading a) gives L4 -36.0 ms before L1
+    -35.2 ms, so L1 does not lead; the code's band (12-24 Hz, reading b) gives L1 first (-29.6 against
+    L2/3 -26.4 and L4 -15.2 ms). The readings disagree; the Methods' band is adopted (the Methods
+    come before the code). 144 and 153 windows against 189.
+  deviations:
+  - As for fig2g (tie-break, FIR, edge rows).
+  - Adopted the Methods' band where the two band readings disagree.
+- claim: fig2i-dd-theta-csd-mixed
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig2i-dd-theta-csd-mixed
+  measured: 163
+  notes: Under the Methods' band (2-10 Hz) an L5/6 sink starts before L4 (-124.0 against 104.0 ms)
+    but the L2/3 sink (-123.2 ms) does not follow the L4 sink; under the code's band (4-8 Hz) the
+    rule holds (L5/6 -124.0, L4 -120.8, L2/3 -112.8 ms). The Methods' band is adopted. 163 and 114
+    windows against 77.
+  deviations:
+  - As for fig2h.
+- claim: dd-aperiodic-no-difference
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:dd-aperiodic-no-difference
+  notes: Per mouse, area and condition, one FOOOF fit to the trial- and row-mean spectrum; Welch
+    permutation tests of offset and exponent, XXXY against xxxy. None of the 24 tests (6 areas, 2
+    parameters, the text's and the code's windows and ranges) has p < 0.05; the smallest p over the
+    five seeds is 0.62. Differences of means are at most 0.08 in offset and 0.05 in exponent. 14 mice
+    per area, 13 in LM and 11 in AL.
+  deviations:
+  - Areas are read at their kept rows only (every fourth aligned channel), without the median
+    filter, to fit the time limit; the per-mouse spectra average over those rows.
+  - LM has 13 mice and AL 11, as the probe labels allow (see findings).
+- claim: suppfig1-aperiodic-no-difference-all
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig1-aperiodic-no-difference-all
+  notes: None of the 72 tests (3 contrasts, 6 areas, 2 parameters, 2 readings) has p < 0.05. The
+    legend's 2-SEM bands of the aperiodic curves overlap at every frequency from 2 to 90 Hz in all
+    18 comparisons.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: dd-gamma-peak-frequency-v1
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:dd-gamma-peak-frequency-v1
+  measured:
+  - 37.57
+  - 33.71
+  notes: Mean gamma peak 37.57 Hz (99% interval 34.92 to 40.23) for XXXY and 33.71 Hz (31.37 to
+    36.06) for xxxy, both within tolerance; XXXY is higher in 12 of 14 mice and equal in 2;
+    permutation Welch test p = 0.018 (0.012 to 0.026 over the five seeds). Both readings give the
+    same per-mouse peaks. The areas notebook, on the kept rows only, gives 37.57 and 33.71 Hz and p =
+    0.012.
+  deviations:
+  - Per-mouse spectra are the Hann-tapered FFT of each trial's segment zero-padded to a 2 Hz grid,
+    a standard choice for the code's 500 ms mtmfft at 2 Hz steps.
+- claim: dd-gamma-peak-frequency-lm
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:dd-gamma-peak-frequency-lm
+  measured:
+  - 34.46
+  - 40.46
+  notes: In LM (13 mice) the gamma peak is 34.46 Hz for xxxy and 40.46 Hz for XXXY (reading a), both
+    within 10%, with p = 0.004 (0.002 to 0.006 over the five seeds); reading (b) gives 34.92 and
+    40.62 Hz, p = 0.006.
+  deviations:
+  - As for dd-aperiodic-no-difference (kept rows only; 13 mice in LM).
+- claim: dd-gamma-power-and-peak-only-v1-lm
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:dd-gamma-power-and-peak-only-v1-lm
+  notes: Under power reading (a) (any 30-90 Hz bin with the oddball higher) and the text's window, V1
+    passes both tests at 0.05 (power p = 0.002, peak p = 0.014) and LM both at 0.01 (power p =
+    0.008, 0.006 to 0.010 over the five seeds; peak p = 0.002, 0.002 to 0.006). No other area passes
+    both at 0.05 (peak p 0.12 or more, or the oddball peak not higher). Under the code's window or
+    power reading (b) LM fails at 0.01 (any-bin p 0.020 to 0.026; maximum p 0.11 to 0.18).
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: ssa-gamma-peak-frequency-lower
+  outcome: partially_reproduced
+  notebook: areas.ipynb
+  output: claim:ssa-gamma-peak-frequency-lower
+  measured:
+  - 36.77
+  - 42.0
+  - 37.14
+  - 42.86
+  - 36.18
+  - 43.27
+  - 38.14
+  - 44.29
+  notes: The xxxY peak is lower than the yyyy peak in LM, RL, AL and AM under both readings, with the
+    means within tolerance (reading a values given as measured). At the stated levels the test
+    passes in LM only under reading (a) (p = 0.028) and in LM and AM under reading (b) (p = 0.010 and
+    0.028); RL (p = 0.024 and 0.044, needing 0.01) and AL (p = 0.074 and 0.100) do not. V1 (36.1
+    against 39.0 Hz, p = 0.17) and PM (p = 0.49) are not significant. Two of four areas is a partial
+    result under the criterion. Over the five seeds RL ranges 0.016 to 0.048 and AM (reading b) 0.026
+    to 0.044, which do not change the count.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: suppfig2-alphabeta-peaks
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig2-alphabeta-peaks
+  notes: At most 5 of the 13 named cases differ by more than twice the larger SEM in the stated
+    direction (code window, at the peak frequency; 4 with the text's window; 1 and 2 with the
+    per-mouse maximum). The DD control is higher in V1 (-0.99 dB), LM (-1.58) and AL (-1.39), not in
+    RL, PM or AM; no GO case passes (differences -0.002 to -0.38 dB); SSA passes in AL (1.06 dB) and,
+    in the code's window, LM (0.74 dB). The pooled-SEM variant gives the same counts.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: suppfig2-gamma-height-differences
+  outcome: reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig2-gamma-height-differences
+  notes: Under the text's window at the peak frequency all 11 named cases differ by more than twice
+    the larger SEM (DD 1.37 to 2.91 dB, SSA 0.95 to 1.99 dB; 10 with the pooled SEM); the code's
+    window gives 10, and the per-mouse maximum gives 6 and 4.
+  deviations:
+  - As for dd-aperiodic-no-difference.
+- claim: go-theta-peaks
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:go-theta-peaks
+  measured: 6
+  notes: The V1 oscillatory spectrum averaged over mice has a local maximum above 0 dB at 6 Hz for
+    xxxX (3.54 dB) and xxxx (3.25 dB) under reading (a), and at 6 Hz for both under reading (b).
+    FOOOF finds a peak between 4.5 and 9.9 Hz in 19 of 28 mouse and condition spectra.
+- claim: fig3ab-go-condition-spectra
+  outcome: not_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig3ab-go-condition-spectra
+  measured:
+  - -0.69
+  - -1.11
+  notes: Alpha/beta maxima in the first 150 ms are -0.69 dB (xxxX) and -1.11 dB (xxxx) under reading
+    (a), -1.02 and -1.37 under (b), outside 1.8 to 4.4 and 3.6 to 6.6 dB; xxxx alpha/beta does not stay
+    above 1 dB. The 40-55 Hz power over 150-500 ms is higher for xxxX under reading (a) (-1.86 against
+    -2.09 dB) and not under (b).
+  deviations:
+  - The 50 to 200 ms span for "through 200 ms" and the 1 dB level are readings of the criterion.
+- claim: fig3c-go-v1-contrast
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig3c-go-v1-contrast
+  notes: Under both readings the masked GO contrast has positive 55-90 Hz values in the first 150 ms
+    (90 and 78 points, largest 1.06 and 0.51 dB), positive 40-55 Hz values after 300 ms (largest 0.52
+    and 0.14 dB), positive theta from -10 ms (largest 0.42 and 0.66 dB) and negative alpha/beta values
+    (down to -0.20 dB). Against the text's sizes, high gamma (at least 0.3) and alpha/beta (under 0.2)
+    agree; 40-55 Hz (at most 0.2) and theta (0.2-0.3) are larger under reading (a); theta fits the
+    legend's 0.4-0.5 dB under reading (a). Identical under the five seeds.
+- claim: fig3d-go-gamma-laminar
+  outcome: partially_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3d-go-gamma-laminar
+  measured: 0.79
+  notes: Under S3 reading (b) with the 30-90 Hz band, L2/3, L4 and L5/6 have significant positive
+    gamma in the first 100 ms and L1 a decrease (down to -0.21 dB), but the largest value in the last
+    100 ms is 0.79 dB, above 0.54 to 0.66 dB. Under reading (a) with 30-90 Hz all parts hold (0.65
+    dB); under the 30-50 Hz band the late value is 0.94 to 1.26 dB.
+  deviations:
+  - The readings disagree; S3 reading (b), the Methods' fitting range (2 to 90 Hz), and the Methods'
+    30-90 Hz band are adopted.
+- claim: fig3e-go-alphabeta-laminar
+  outcome: partially_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3e-go-alphabeta-laminar
+  notes: L1 has a significant alpha/beta decrease under both readings (down to -0.29 and -0.25 dB) and
+    L5/6 the largest increase (1.27 dB). Under reading (b) the first positive bin is in L2/3 (-10 ms)
+    before L5/6 (30 ms); under reading (a) L5/6 comes first (-10 ms, L2/3 and L4 at 0 ms), which
+    would be reproduced.
+  deviations:
+  - The readings disagree; S3 reading (b), the Methods' fitting range, is adopted.
+- claim: fig3f-go-theta-laminar
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig3f-go-theta-laminar
+  measured: 1.3
+  notes: Theta increases with no significant decrease; the first positive bins are in L4 and L5/6 at
+    -10 ms, the largest value is 1.15 dB (reading a) and 1.30 dB (reading b), in range, and the
+    increase reaches L2/3 (90 and 40 ms) but never L1.
+- claim: fig3g-go-gamma-csd-feedforward
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3g-go-gamma-csd-feedforward
+  measured: 461
+  notes: With the tie-break, the L4 sink starts before the L2/3 and L5/6 sinks under both bands (L4
+    -7.2, L2/3 -2.4, L5/6 4.0 ms in reading a; -10.4, -3.2 and 6.4 ms in reading b). 461 and 472
+    windows against 496.
+  deviations:
+  - As for fig2g.
+- claim: fig3h-go-alphabeta-csd-feedback
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3h-go-alphabeta-csd-feedback
+  measured: 290
+  notes: The L1 sink does not start first under either band (reading a, L1 24.8 ms against L2/3
+    -35.2 and L4 -25.6 ms; reading b, L1 -12.0 against -30.4 and -38.4 ms). S7's literal rule also
+    does not hold in either reading. 290 and 276 windows against 300.
+  deviations:
+  - As for fig2g.
+- claim: fig3i-go-theta-csd
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig3i-go-theta-csd
+  measured: 655
+  notes: The first sink onset among the four layer groups is in L4 (reading a, -121.6 ms) or L5/6
+    (reading b, -121.6 ms), and the L2/3 sink follows (-92.8 and -120.8 ms; the reading b margin is
+    0.8 ms). 655 and 580 windows against 335.
+  deviations:
+  - As for fig2g.
+- claim: fig4ab-ssa-condition-spectra
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig4ab-ssa-condition-spectra
+  measured:
+  - 0.25
+  - -1.33
+  notes: The ordering holds (yyyy 40-55 Hz maximum after 150 ms -1.08 dB, below 2.2 dB and below xxxY
+    at 0.25 dB in reading a; -1.65 and -0.54 dB in reading b), but no value is in range (xxxY 40-55 Hz
+    0.25 dB against 2.25 to 5.5; yyyy alpha/beta -1.33 dB against 1.8 to 4.4; xxxY alpha/beta -2.28 dB).
+- claim: fig4c-ssa-v1-contrast
+  outcome: reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig4c-ssa-v1-contrast
+  measured:
+  - -1.99
+  - 1.74
+  notes: Significant decreases in the first 150 ms span theta, alpha/beta and gamma bins, followed by
+    significant gamma increases after 150 ms. Largest decrease -1.98 dB (reading a) and -1.99 dB
+    (reading b), largest late increase 1.92 and 1.74 dB; outside the Results' ranges (0.45 to 1.65
+    and 0.9 to 1.65 dB) and inside the legend's 1-2 dB (0.9 to 2.2 dB), which the criterion names as
+    its second reading. Identical under the five seeds.
+- claim: fig4def-ssa-laminar
+  outcome: partially_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:fig4def-ssa-laminar
+  notes: Under reading (a) the gamma (both bands) and alpha/beta panels show an early loss in every layer
+    group and later increases starting in L5/6 (160 to 190 ms) before L4 and L2/3, while theta has no
+    early loss in L1 (2 of 3 bands); under reading (b) gamma holds, alpha/beta has L4 and L5/6 tied at
+    160 ms and theta fails (1 of 3). Partial under both readings.
+- claim: fig4g-ssa-gamma-csd-feedforward
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig4g-ssa-gamma-csd-feedforward
+  measured: 1883
+  notes: With the tie-break, L4 starts first under both bands (-8.8 and -11.2 ms) and the L2/3 (-3.2
+    and -4.0 ms) and L6 (6.4 and 7.2 ms) sinks follow. 1883 and 1936 windows against 1910.
+  deviations:
+  - As for fig2g.
+- claim: fig4h-ssa-alphabeta-csd
+  outcome: reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig4h-ssa-alphabeta-csd
+  measured: 303
+  notes: An L5/6 sink starts before L4 under reading (a) (-36.8 against -36.0 ms) and an L1 sink
+    before L4 under reading (b) (-40.0 against -38.4 ms); the margins are under 2 ms. 303 and 267
+    windows against 319.
+  deviations:
+  - As for fig2g.
+- claim: fig4i-ssa-theta-csd
+  outcome: not_reproduced
+  assumed: true
+  notebook: v1_laminar.ipynb
+  output: claim:fig4i-ssa-theta-csd
+  measured: 2476
+  notes: The first sinks are in L5 rows (reading a, -124.8 ms; no L1 or L6 sink onset) or in L4
+    (reading b, -111.2 ms), not in L1 or L6. 2476 and 2048 windows against 1266.
+  deviations:
+  - As for fig2g.
+- claim: fig5-l23-gamma-by-area
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:fig5-l23-gamma-by-area
+  notes: Over the eight combinations of readings (S3 range, gamma band, time average) at most 4 of the
+    13 values are within tolerance (S3 a, 30-50 Hz, whole window) and at most 12 of 13 signs match;
+    under 30-90 Hz the whole-window values are 0 of 13. With 30-90 Hz and S3 (a), the whole-window DD
+    values are 0.85 (V1), 0.32 (LM), 0.50 (RL) and 0.11 dB (AL) against 1.5, 1.1, 1.3 and 0.3. Of the
+    five cases the paper calls not significant, 3 (reading a) or 2 (reading b) have no masked L2/3
+    gamma point; DD-AM (93 points) and GO-AL (43) have some. The masks barely change over five seeds
+    (DD-LM 667 to 695 points).
+  deviations:
+  - As for dd-aperiodic-no-difference (kept rows only, no median filter).
+  - The four extra seeds were run for S3 reading (a) only, to fit the time limit.
+- claim: fig5-hierarchy-restriction
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:fig5-hierarchy-restriction
+  notes: Under reading (a) the areas with masked L2/3 gamma are V1, LM, RL, AL and AM for DD (AM
+    extra), V1, RL and AL for GO (LM missing, AL extra) and all six for SSA, three set differences
+    where one is allowed; reading (b) gives four. The GO value in RL is negative (-0.093 dB, 30-90
+    Hz, reading a).
+  deviations:
+  - As for fig5-l23-gamma-by-area.
+- claim: suppfig3-fastsweep-aperiodic
+  outcome: not_reproduced
+  notebook: areas.ipynb
+  output: claim:suppfig3-fastsweep-aperiodic
+  notes: With rows as samples (the code's reading), 5 of the 7 starred cases pass at their level under
+    both fitting ranges (DD-LM, GO-PM, SSA-V1, SSA-PM, SSA-AM with 5-150 Hz; DD-LM, GO-AL, GO-PM,
+    SSA-PM, SSA-AM with 5-90 Hz), but 4 and 6 of the 11 unstarred cases also pass at 0.05, more than
+    the 2 the criterion allows. With per-mouse spectra (the legend's reading) none of the 7 passes.
+    The criterion's partial clause covers 3 or 4 starred cases; five pass here while the selectivity
+    fails, which is recorded as not reproduced.
+  deviations:
+  - The FOOOF range for the 0-150 ms spectra is not given; both S3 ranges (5 to 150 and 5 to 90 Hz)
+    were run.
+  - As for dd-aperiodic-no-difference (kept rows only).
+- claim: suppfig4-pupil-dd-no-difference
+  outcome: not_reproduced
+  notebook: v1_laminar.ipynb
+  output: claim:suppfig4-pupil-dd-no-difference
+  notes: In the 9 mice with eye tracking (343 XXXY and 450 xxxy trials, 3 dropped), the cluster test
+    over P4 finds significant differences in z-scored pupil area (smallest cluster p 0.001 to 0.002
+    over the five seeds, pooled z-scoring; 0.001 per mouse). The pupil is larger in XXXY (mean z 0.129
+    against -0.098; largest mean difference 0.33 z). The 2-SEM bands overlap at 6 of 30 time points.
+    Five sessions have no eye tracking.
+  deviations:
+  - Pupil area from pupil_tracking with likely_blink samples removed and linear interpolation onto 30
+    points over P4, a standard choice; the paper gives no pupil method.
+inputs: []
+findings:
+- kind: format_error
+  about: data
+  severity: critical
+  statement: In version 0.240503.0152, the version the paper cites, the LFP timestamps of every probe
+    file of 7 of the 14 mice (sub-642507, sub-645322, sub-645324, sub-645495, sub-647836, sub-649323,
+    sub-649324) run 0, 24, 48, ... with no relation to seconds, so their LFP cannot be put on the
+    clock of the stimulus tables. Version 0.240923.1441 replaced these 42 files with timestamps in
+    seconds.
+- kind: other
+  about: data
+  severity: critical
+  statement: In version 0.240503.0152 the LFP of sub-645495 is nearly identical to that of
+    sub-645322 (correlation 0.999 to 1.0 on all six probes) and the LFP of sub-645324 nearly identical
+    to that of sub-647836 (0.9985 to 1.0), while their stimulus tables differ; one recording of each
+    pair is deposited under the wrong subject. In version 0.240923.1441 no two probe files of
+    different mice correlate above 0.85 on the same sample.
+- kind: data_missing
+  about: data
+  severity: major
+  statement: In version 0.240503.0152 the probe files of sub-649323 hold 86 to 88 LFP channels, one
+    in four, where the other mice hold 255 to 384; version 0.240923.1441 holds 344 to 353.
+- kind: metadata_insufficient
+  severity: major
+  statement: The stimulus table init_grating_presentations has no block, sequence or condition
+    labels; the habituation, main, random and sequence-control blocks and the conditions the paper
+    analyses can be told only from the grating orientations. The paper's code reads them from a file
+    (passiveglo_task_data.mat) that is not in the dandiset. Rebuilt from the orientations, the counts
+    differ from the paper's by 1 to 5 trials in 5 of 6 conditions.
+- kind: metadata_error
+  severity: minor
+  statement: The LFP is stored at 1250 Hz, where the paper's Methods state an LFP band at 2.5 kHz.
+- kind: metadata_error
+  severity: major
+  statement: The electrode area labels leave three mice without a probe labelled AL (sub-621890 and
+    sub-632485 have two probes labelled LM, sub-637908 two labelled RL), and probe 3 of sub-632487 has
+    no visual-cortex label, so LM has 13 mice and AL 11, where the paper says each mouse had a probe in
+    each of the six areas.
+- kind: other
+  about: data
+  severity: minor
+  statement: The habituation cohorts are 8 mice ("bbba") and 6 ("aaab"), where the paper describes two
+    cohorts of 7; one mouse (sub-647836) is 88 days old, below the paper's 95 to 128 days; the
+    dandiset has 4 male and 10 female mice. Five sessions have no eye tracking.
+- kind: other
+  about: data
+  severity: none
+  statement: In version 0.240923.1441 every LFP file has a linear clock in seconds (residuals below
+    1e-8 s) and, in every session, the evoked V1 difference between the two P4 orientations of the
+    main block grows only after P4 onset, so the LFP and the stimulus table share a clock as far as
+    this contrast shows.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The FOOOF fitting range for the spectrogram correction
+    is 2 to 90 Hz in the Methods and the whole 5-150 Hz grid in the code; three V1 laminar claims
+    (fig3d, fig3e, and partly fig4def) change outcome between them. Which was used for the figures?
+    This attempt adopted the Methods' range.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. The CSD laminar patterns are judged by eye; the claims
+    file's rule (order of the first displayed sinks) ties at the window start because the display
+    threshold (2 SD over the number of windows) passes about 90% of points. How were the onsets read,
+    and with which band-pass filter (Syncopy firws order) and bands (the Methods' 2-10, 10-30 and
+    30-90 Hz or the code's 4-8, 12-24 and 30-50 Hz)? This attempt used each group's mean sink onset
+    and adopted the Methods' bands; fig2h and fig2i change outcome with the bands.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Supplementary Figure 4 names no test for the pupil
+    comparison and the code at cee2e6f has none. Which test, window and z-scoring were used? The
+    cluster test of the claims file finds a difference.
+- kind: code_mismatch
+  statement: The gamma band of the laminar panels and Figure 5 is 30-90 Hz in the text and 30-50 Hz
+    in the code's BANDS; the Figure 5 values are closer to the paper's under 30-50 Hz (4 of 13 within
+    tolerance against 0).
