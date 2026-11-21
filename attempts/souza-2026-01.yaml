@@ -1,0 +1,738 @@
+schema_version: 3
+id: souza-2026-01
+datasets:
+- archive: dandi
+  id: '000713'
+  version: 0.240702.1725
+  doi: 10.48324/dandi.000713/0.240702.1725
+  relation: reuses
+paper: doi:10.3389/fnbeh.2026.1944695
+date: '2026-11-21'
+entry: souza-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44888760214
+inputs:
+- what: Allen Mouse Brain Common Coordinate Framework v3 annotation volume at 25 um (Wang et al. 2020)
+    and its structure list, as packaged by BrainGlobe (allen_mouse_25um_v1.2.tar.gz, SHA-256 696276744cc6552e3be87b236498aebeb2de79be3b66ebffc1a620ee75a9c0a9,
+    checked in the notebook), used for cortical layers and the CCF-derived area of the five layer claims.
+  source: https://gin.g-node.org/brainglobe/atlases at commit 78272d68aacb9d0b2a7d00806d6305544924df4b
+outcomes:
+- claim: data-sessions-units
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:data-sessions-units
+  measured:
+  - 104
+  - 54
+  - 54045
+  notes: Readings (a) and (b) of the criterion give 153 sessions from 81 mice, with 110,563 units in the
+    six areas, or 45,354 with the Allen default thresholds; neither is within 10%. The 104 sessions of
+    the 54 Sst-Cre and Vip-Cre mice, with units of quality good and presence ratio at least 0.95, give
+    104 sessions, 54 mice and 54,045 units (differences of 1, 0 and 6), within 10% but not exact; the
+    other selections tried (quality good alone 66,388, Allen thresholds 30,705, all units 76,151 in those
+    sessions) are further off. The files give no reason to leave out one of the 104 sessions. The selection
+    is used by every other claim. Open for the paper's authors, asked as a methods_unavailable finding.
+  deviations:
+  - The selection that fits (Sst-Cre and Vip-Cre mice, quality good, presence ratio at least 0.95) is
+    not one of the criterion's two readings; it was found by comparing the counts of several selections
+    with the paper's, and is adopted as an assumption.
+  assumed: true
+- claim: blocks-no-reward-in-replay
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:blocks-no-reward-in-replay
+  notes: In all 104 sessions block 0 is the natural-image block with every presentation active and block
+    5 the same image sequence with none active; every trial lies within 1 s of block 0's bounds, every
+    reward is in block 0, and no lick or reward time falls in block 5. The other blocks are spontaneous
+    (1, 3), gabor (2) and flash (4) in every session.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: reward-interval-min
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:reward-interval-min
+  measured: 6.972
+  notes: The smallest interval between consecutive performance rewards is 6.972 s over the 104 sessions
+    (per-session minima 6.97 to 46.84 s); with automatic rewards included it is the same. No session has
+    an interval below 6.96 s.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: latency-change-to-reward
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:latency-change-to-reward
+  measured:
+  - 15592
+  - 0.4507
+  - 0.111
+  - 4.2
+  notes: With the change time from the trial table's change_time_no_display_delay, 15,592 hits, a median
+    latency of 0.4507 s (median of session medians; pooled 0.4505), a median within-session SD of 0.1110
+    s (range 0.0464 to 0.1770 s, inside the widened range) are within tolerance, and 4.20% of hits depart
+    from their session median by more than 250 ms, outside 3.42 to 4.18%. With the change presentation's
+    start time (the displayed change), 0.4065 s and 4.31%, outside tolerance. The 15,592 hits are 738
+    fewer than the paper's 16,330.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Which time stands for the trial's image change is not given; the start of the change presentation
+    and the trial table's change_time_no_display_delay (about 44 ms earlier) are both run. The criterion
+    is met under neither.
+  assumed: true
+- claim: lick-reward-coincide
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:lick-reward-coincide
+  measured:
+  - 9.78
+  - 17.32
+  notes: Over the 15,592 earned rewards water follows the nearest lick by a median of 9.78 ms with a 95th
+    percentile of 17.32 ms; the nearest lick always precedes the reward, so the two readings agree. 5
+    rewards come more than 22 ms after the nearest lick (maximum 53.5 ms), so not every delay is within
+    20 ms.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: fig1e-cohort-size
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1e-cohort-size
+  measured:
+  - 10822
+  - 34959
+  - 7378
+  - 3444
+  - 68.2
+  - 11108
+  - 286
+  notes: Split-half positive 46,263 of 54,045 units (85.6%; 438 with r_split undefined). Family A significant
+    24,492, Family B 13,640, both 11,108, of which 286 discordant, leaving 10,822 (20.0% of tested), 7,378
+    suppressed (68.2%) and 3,444 enhanced (31.8%). Testable in both contrasts 34,959 under reading (a)
+    (cohort 31.0% of it), 37,892 under (b), 45,785 under (c). All counts are within tolerance under reading
+    (a) except the 286 discordant units (239, tolerance 24); per the criterion this is partially reproduced.
+    43,025 units are at the minimum p of 1/101; the BH threshold per area is 0.0396. The seed sensitivity
+    of the null was not computed under the four further seeds (it needs the spike times again); the 100
+    against 1,000 permutation check on 100 units changes 4 of 80 calls.
+  deviations:
+  - The analysis uses the 104 sessions of the Sst-Cre and Vip-Cre mice and their units of quality good
+    with presence ratio at least 0.95 in the six areas, the selection that fits the paper's counts (claim
+    data-sessions-units); the paper does not say how its sessions and units were chosen, and its 103rd
+    session could not be identified.
+  - The ISI-shuffle null uses 100 permutations per unit, not the paper's 1,000 (M&M 2.3), as 1,000 for
+    54,045 units is about nine CPU hours, over the notebook limit; on 100 units of session 0, 76 units
+    have p at most 0.05 with 100 permutations and 80 with 1,000 (Spearman of the p values 0.932). The
+    null rebuilds the train over the active block from its first spike (reading 1a of the criterion);
+    the whole-recording reading (1b) was not run.
+  - Responsiveness uses the Wilcoxon signed-rank test with the normal approximation and tie correction
+    for every trial count (scipy uses an exact test for 50 trials or fewer without ties or zeros).
+  - Miss pseudo-reward time is the change plus the session median latency (reading 3, M&M 2.4). The trial's
+    image change is the start of its change presentation in the block 0 stimulus table.
+  - The session median latency for the pseudo-reward times uses the change presentation's start time (claim
+    latency-change-to-reward).
+  assumed: true
+- claim: fig1d-split-half-above-null
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1d-split-half-above-null
+  notes: Per area the cohort's median r_split is 0.853 (VISrl) to 0.902 (VISp) against a pooled null median
+    of 0.074 to 0.092 and a 95th percentile of 0.380 to 0.409 (null maximum 0.770 to 0.849); every cohort
+    unit's r_split exceeds the median of its own null in every area (minimum r_split 0.255). Both readings
+    hold. The pooled null has 100 values per unit.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The paper gives no measure of well above; both readings in the criterion are run and agree.
+  - The ISI-shuffle null uses 100 permutations per unit, not the paper's 1,000 (M&M 2.3), as 1,000 for
+    54,045 units is about nine CPU hours, over the notebook limit; on 100 units of session 0, 76 units
+    have p at most 0.05 with 100 permutations and 80 with 1,000 (Spearman of the p values 0.932). The
+    null rebuilds the train over the active block from its first spike (reading 1a of the criterion);
+    the whole-recording reading (1b) was not run.
+  assumed: true
+- claim: fig1c-example-cells
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1c-example-cells
+  notes: Enhanced VISam cohort units 760, 8 with r_split at least 0.99 (maximum 0.9963); suppressed VISrl
+    units 1,158, 32 with r_split at least 0.98 (maximum 0.9960). The paper's two example units are not
+    identified, so they cannot be matched.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: fig1e-suppressed-fraction-by-area
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1e-suppressed-fraction-by-area
+  measured:
+  - 87.1
+  - 70.3
+  - 62.6
+  - 63.0
+  - 63.3
+  - 53.6
+  - 2421
+  - 2108
+  - 1637
+  notes: Suppressed fraction VISp 87.1% (2,108 of 2,421), VISl 70.3% (1,854 units), VISrl 62.6% (1,851),
+    VISal 63.0% (1,447), VISpm 63.3% (1,612), VISam 53.6% (1,637), all within tolerance; VISp highest
+    and VISam lowest. VISp exceeds VISam in 45 of the 54 mice. The per-area n of VISl, VISrl, VISal and
+    VISpm are within 5, 2, 4 and 9% of the paper's.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: fig1l-session-gradient
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1l-session-gradient
+  measured:
+  - 0.911
+  - 0.575
+  notes: With at least five cohort units per session and area (91 VISp, 88 VISam sessions), the median
+    suppressed fraction is 0.911 in VISp and 0.575 in VISam; VISam is 0.003 outside tolerance (0.468 to
+    0.572). Kruskal-Wallis H = 86.4, p = 3.8e-17 across the six areas.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: latency-jitter-control
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:latency-jitter-control
+  measured:
+  - 99.14
+  - 0.9959
+  notes: Over the twenty realizations 99.14% of the cohort (98.97 to 99.23%) passes Family A again with
+    the same SI sign; Spearman rho of the jittered SI with the original 0.9959 (0.9953 to 0.9964), Pearson
+    0.9995. The jitter draws use the claim's seed plus the session index; the four further seeds were
+    not run, as they need the spike times again, and the twenty realizations all give values within tolerance.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Seed sensitivity under the claim's seed plus 1000 to 4000 was not computed.
+  assumed: true
+- claim: waveform-ambiguous-band
+  outcome: not_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:waveform-ambiguous-band
+  measured:
+  - 54045
+  - 405
+  - 110
+  - 1205
+  notes: 54,045 units enter the fit (all have a duration; expected 53,806). Reading (b), the stored waveform_duration,
+    components at 0.264 and 0.621 ms, the same under all five seeds; ambiguous 405 (0.75%) with the band
+    0.4 to 0.6, 110 of them in the cohort (1.02%), and 1,205 with 0.3 to 0.7, which alone is within tolerance.
+    Reading (a), duration on the stored 30 kHz mean waveform (60 distinct values, 1st to 99th percentile
+    0.200 to 1.433 ms), components at 0.534 and 0.616 ms under the claim's seed and the seed plus 1000,
+    and 0.57 and 1.425 ms under the other three seeds; 1,292 ambiguous, 245 in the cohort, 6,510 with
+    the wide band. The suppressed fractions of the statement are judged in claim narrow-more-suppressed.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Reading (a) measures trough to the following maximum on the peak channel's mean waveform at its stored
+    30 kHz sampling, without upsampling; the paper does not say whether it upsampled.
+  assumed: true
+- claim: fig1jk-narrow-fraction-by-area
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1jk-narrow-fraction-by-area
+  measured:
+  - 25.0
+  - 27.1
+  notes: Reading (a) of the fraction (narrow among narrow and broad cohort units), stored duration; VISp
+    25.0%, VISrl 27.1%, VISl 19.2%, VISal 20.1%, VISpm 15.2%, VISam 16.5%. Within suppressed units 18.6
+    to 32.5%, within enhanced 7.7 to 18.1%. With durations from the mean waveform the fractions are 28.5
+    to 44.2%.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Waveform classes are judged on the units table's waveform_duration (reading b of claim waveform-ambiguous-band);
+    the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
+  assumed: true
+- claim: fig1h-median-isi-narrow-broad
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1h-median-isi-narrow-broad
+  measured:
+  - 42.2
+  - 88.0
+  - 2245
+  - 8467
+  notes: Stored duration, ambiguous units excluded, whole recording; narrow 42.2 ms (2,245 units), broad
+    88.0 ms (8,467). With the active block only 47.2 and 89.9 ms; with classes by the larger posterior
+    2,355 narrow units (43.3 ms). The paper's 11,024 classified units exceed its 10,805 cohort units left
+    after the ambiguous ones; 2,245 plus 8,467 is 10,712 here.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Waveform classes are judged on the units table's waveform_duration (reading b of claim waveform-ambiguous-band);
+    the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
+  assumed: true
+- claim: fig1gi-waveform-separation
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1gi-waveform-separation
+  notes: Stored duration; half-width median narrow 0.149 ms, broad 0.204 ms, median ISI 42.2 against 88.0
+    ms. Duration from the mean waveform; 0.170 against 0.203 ms and 54.7 against 89.5 ms. Mann-Whitney
+    p from 2.8e-264 to 1.6e-221 (and p printed as 0), as a variant. Half-width is measured on the 30 kHz
+    mean waveform. The autocorrelogram rise time is not defined in the paper and was not computed, so
+    that part of the statement is not tested.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Waveform classes are judged on the units table's waveform_duration (reading b of claim waveform-ambiguous-band);
+    the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
+  assumed: true
+- claim: narrow-more-suppressed
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:narrow-more-suppressed
+  measured:
+  - 0.815
+  - 0.647
+  - 0.647
+  notes: Stored duration; suppressed fraction 0.815 in 2,245 narrow and 0.647 in 8,467 broad units with
+    the band 0.4 to 0.6, and 0.647 in broad units (0.819 in narrow) with 0.3 to 0.7. Duration from the
+    mean waveform; 0.748, 0.650 and 0.647. All within tolerance under both readings.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Waveform classes are judged on the units table's waveform_duration (reading b of claim waveform-ambiguous-band);
+    the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
+  assumed: true
+- claim: narrow-more-suppressed-within-layer
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:narrow-more-suppressed-within-layer
+  measured: 89.0
+  notes: Stored duration, reading (a) (per session the narrow minus broad difference averaged over the
+    layer groups with at least five of each); narrow higher in 89.0% of 82 sessions, median +0.152, Wilcoxon
+    p = 1.6e-11. Reading (b), 80.2% of 172 session and layer pairs, p = 4.8e-18. With durations from the
+    mean waveform 73.9% (p = 4.6e-06) and 63.1%.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Waveform classes are judged on the units table's waveform_duration (reading b of claim waveform-ambiguous-band);
+    the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
+  assumed: true
+- claim: fig1mn-modulation-index-negative
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1mn-modulation-index-negative
+  measured:
+  - -0.1743
+  - 75.3
+  notes: Smoothed histogram; cohort median M -0.1743, 75.3% with M < 0, per-area medians VISp -0.2773,
+    VISl -0.1947, VISrl -0.1109, VISal -0.1448, VISpm -0.1619, VISam -0.1282, all negative. Unsmoothed
+    -0.1757 and 75.2%. The median is outside tolerance (-0.1455 to -0.1191); the fraction and the signs
+    hold.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: fig1m-narrow-stronger-m
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig1m-narrow-stronger-m
+  notes: Median M narrow -0.2276 (2,245) against broad -0.1570 (8,467) with the stored duration, -0.1982
+    against -0.1616 with reading (a); Mann-Whitney p = 1.6e-30 and 4.3e-10 as variants. Unsmoothed the
+    same to 0.002.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Waveform classes are judged on the units table's waveform_duration (reading b of claim waveform-ambiguous-band);
+    the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
+  assumed: true
+- claim: m-baseline-sensitivity
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:m-baseline-sensitivity
+  measured:
+  - -0.0413
+  - 55.9
+  - 42.7
+  - 2.41
+  notes: Smoothed; baseline -1.5 to -1.0 s gives a median M of -0.0413 (outside -0.0386 to -0.0316), 55.9%
+    with M < 0 (within), and 2.41% of enhanced units with M < 0 (outside 1.71 to 2.09); 42.7% of enhanced
+    units have M < 0 with the adjacent baseline (within). Under -1.5 to -1.0 s the medians are VISal +0.0020,
+    VISpm -0.0021, VISam +0.0377 and VISp -0.0825; VISpm does not change sign. VISp is the most negative
+    under all four baselines (-0.2773, -0.0894, -0.0825, -0.1728). No reward's -2.0 s baseline starts
+    before the block.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: layer-assignment-coverage
+  outcome: not_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:layer-assignment-coverage
+  measured:
+  - 97.2
+  - 97.3
+  - 96.5
+  - 97.4
+  - 66.0
+  notes: Layer assigned to 97.2% of the 54,045 tested units and 97.3% of the cohort; by area 96.5 to 98.5%
+    of all units (VISam 96.5%, VISrl 97.4%) and 95.8 to 98.1% of the cohort (VISam 95.8%, VISrl 97.5%).
+    1,508 units have a CCF coordinate of 0 or below and no layer. The CCF-derived area equals the unit-table
+    label for 66.0% of tested units, within tolerance; disagreements are mostly VISli (4,513) and SSp-bfd
+    (3,735). The paper's 48.0% in VISrl is not approached under either reading.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The annotation volume is BrainGlobe's allen_mouse_25um v1.2 (CCFv3, Wang et al. 2020); the paper names
+    no release. Unit coordinates are the electrodes table's x, y, z of the peak channel, rounded to the
+    nearest 25 um voxel.
+  assumed: true
+- claim: layer4-suppression
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:layer4-suppression
+  measured:
+  - 86
+  - 71
+  - 0.118
+  notes: Reading (a), other layers pooled, at least five units in each; 86 sessions, layer 4 higher in
+    71 (83%), median +0.118 (IQR +0.037 to +0.188), Wilcoxon p = 8.1e-10. Reading (b) 67 of 86, +0.115,
+    p = 3.5e-08. Suppressed fraction by layer 0.788 in layer 4 (1,909 units) against 0.600 to 0.699 in
+    layers 2/3, 5 and 6a.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: layer4-within-waveform
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:layer4-within-waveform
+  measured:
+  - 0.102
+  - 0.078
+  - 15.3
+  - 18.1
+  - 14.7
+  notes: Stored duration, reading (a); broad +0.102 (81 sessions, p = 6.1e-07), narrow +0.078 (57 sessions,
+    p = 5.7e-07). Duration from the mean waveform; broad +0.124 (p = 1.0e-07), narrow +0.086 (p = 1.1e-05).
+    Both excesses are positive under every reading, below the paper's +0.137 and +0.114 except the broad
+    one of reading (a); p < 1e-6 holds for broad and narrow only with the stored duration. Narrow percentage
+    of tested units with a class (stored duration); layer 4 15.3%, 6a 18.1% (outside 18.6 to 22.8%), 2/3
+    14.7%. With cohort units as a variant 30.3%, 20.0% and 25.5%.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Waveform classes are judged on the units table's waveform_duration (reading b of claim waveform-ambiguous-band);
+    the mixture on durations from the 30 kHz mean waveform does not separate narrow and broad units.
+  assumed: true
+- claim: layer4-controls
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:layer4-controls
+  measured:
+  - 19.9
+  - 18.1
+  - 84.0
+  - 85.8
+  - 0.125
+  - 0.122
+  - 0.142
+  - 67
+  - 80
+  notes: Layer 4 is 19.9% of tested units with a layer and 18.1% of the cohort's; split-half detection
+    84.0% in layer 4 and 85.8% in the others over all units with a layer (100% under reading b, which
+    holds only split-half positive units). Rate matched (octiles of log10 rate, 20 draws), 85 sessions,
+    median excess +0.125 against +0.122 unmatched in the same sessions (means +0.115 and +0.115), p =
+    1.1e-08. Units at least 50 um from a boundary; +0.142, higher in 67 of 80 sessions, p = 3.2e-09; at
+    least 75 um, +0.170 in 46 of 50. Every excess is positive and the 67 is within tolerance; the excesses
+    (+0.125, +0.122, +0.142) and the 80 sessions are outside tolerance. The unmatched value does not rise
+    above +0.116 as the paper's +0.148 does, under either of the criterion's readings (median +0.122,
+    mean +0.115).
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Rate matching uses rate r1 (spike count over the span from first to last spike) and pools all non-layer-4
+    units.
+  assumed: true
+- claim: fig2c-cv-lower
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig2c-cv-lower
+  measured:
+  - 0.63
+  - 0.851
+  notes: Rate r1, RW+ at least one unit, draws averaged as CV(t), the first readings; 556 session and
+    area pairs, pooled median CV 0.630 (RW+) and 0.851 (RW-), RW+ lower in all six areas, Wilcoxon p <
+    1e-8 in each (largest 5.2e-09), median differences -0.150 to -0.265 (VISl outside the widened range),
+    pooled rank-biserial -0.80 (per area -0.70 to -0.92), against the paper's about -1. With RW+ at least
+    five units, 0.596 and 0.818 and differences -0.139 to -0.247, all inside. The rate readings give the
+    same to 0.002. Under the five seeds the RW- median is 0.848 to 0.853 and all areas stay lower at p
+    < 0.001. RW+ is lower in all 54 mice.
+  seed_sensitive: false
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: cohort-faster-firing
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:cohort-faster-firing
+  measured:
+  - 4.75
+  - 2.83
+  notes: With the 0.2 Hz filter and rate r1, median RW+ 4.75 Hz (10,786 units), RW- 2.83 Hz (41,443);
+    per-area ratios VISp 1.89, VISl 1.60, VISrl 1.78, VISal 1.59, VISpm 1.63, VISam 1.49. Without the
+    filter RW- is 2.68 Hz, outside tolerance. Rate r2 and the units table's firing_rate give the same
+    to 0.01 Hz.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: cv-rate-matched
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:cv-rate-matched
+  measured:
+  - -0.194
+  - -0.048
+  - -0.8
+  - -0.38
+  - 64.6
+  notes: Rate r1, RW+ at least one unit, CV(t) averaged; pooled median difference -0.194 count matched
+    and -0.048 rate matched, rank-biserial -0.80 and -0.38, RW+ lower in 64.6% of 556 pairs. Per area
+    (rate matched) VISp -0.051 p = 0.025, VISl -0.064 p < 1e-4, VISrl -0.017 p = 0.197, VISal -0.097 p
+    < 1e-4, VISpm -0.026 p = 0.117, VISam -0.041 p = 0.0015. p < 0.01 holds in two or three of the five
+    areas under the eight readings (three under this one), and never in VISp (p 0.0153 to 0.0429). The
+    pooled rate-matched difference is -0.0482 under the claim's seed and -0.0508 to -0.0562 under the
+    four further seeds, two of which fall inside the tolerance (-0.066 to -0.054); the per-area tests
+    were not repeated under those seeds, so the outcome is given under the claim's seed.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: cv-unmatched-reverses
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:cv-unmatched-reverses
+  notes: Without matching, the pooled median of RW+ minus all-RW- CV is +0.041 (RW+ 0.630, RW- 0.605),
+    and RW+ is higher in 58.5% of pairs, so the sign reverses. RW+ has fewer units than RW- in 555 of
+    576 session and area pairs with RW+, not every one; the pooled median is over the 556 pairs where
+    RW- has at least as many units as RW+.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: fig2d-cv-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig2d-cv-correlations
+  measured:
+  - 0.523
+  - 0.416
+  - 0.354
+  notes: Reading (a), r per session averaged over sessions (81 to 104 sessions per pair); within RW- 0.523,
+    cross block 0.416 (36 pairs, including same-area pairs; 0.392 over the 30 different-area pairs), within
+    RW+ 0.354, all within tolerance, in the paper's order. Concatenated series (b); 0.523, 0.457 and 0.354.
+    Null means at most 0.002 (circular) and 0.027 (block); z against the circular null 13.8 to 27.5 (62
+    of 66 pairs at least 15), against the block null 18.9 to 34.5. Largest p_FDR of the concatenated series
+    1.4e-113. The nulls use the claim's seed only.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: cv-correlation-block-excess
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:cv-correlation-block-excess
+  measured:
+  - 0.158
+  - 83.0
+  notes: Over 100 sessions with at least two areas with both groups, the median excess of the RW- block
+    over the RW+ block is +0.158 (outside 0.189 to 0.231), positive in 83.0%, Wilcoxon p = 1.76e-12 (not
+    below 1e-13).
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: fig2f-pre-post-cv
+  outcome: not_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig2f-pre-post-cv
+  measured:
+  - 0.605
+  - 0.883
+  - 0.541
+  - 0.663
+  notes: Under the eight combinations of windows, events and CV readings, RW- rises at p < 0.001 in all
+    12 cells under six and in 8 under two; RW+ rises significantly in all 12 cells under every combination,
+    so 7 of 12 cells match the paper's pattern (the paper has RW+ not significant in active VISal and
+    VISam and replay VISpm, VISam and VISrl). VISp RW+ medians, pre to post; active 0.603 to 0.698 pre
+    and 0.882 to 0.914 post, replay 0.541 to 0.635 pre and 0.663 to 0.726 post; all four are within tolerance
+    only under windows (b) with pooled CV (b) (0.689, 0.914, 0.635, 0.726). The measured values are those
+    of the first combination listed (windows a, events a, CV a).
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The paper gives no pre and post windows or event set; the readings of the criterion are run. RW- is
+    count matched to RW+ (20 draws) with the claim's seed only.
+  assumed: true
+- claim: fig3a-archetypes
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig3a-archetypes
+  measured:
+  - 10822
+  - 200
+  notes: Response matrix 10,822 by 200 (no flat profiles). Peaks as the maximum absolute value (reading
+    b); default initialisation -445, -285, -185, -495, -35 and +1385 ms; random initialisation -445, -285,
+    -185, +185, -495 and +1395 ms, and under the four further seeds -495, -445, -285, -185, -35 and +1385
+    ms; the roles fit in every fit. As the maximum of the signed archetype (reading a) the peaks include
+    +235, +1075 (default) or +185, +535 ms (random), with no archetype within 200 ms of -45 ms.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The peak definition is open; the outcome rests on reading (b), the maximum absolute value.
+  assumed: true
+  seed_sensitive: false
+- claim: fig3b-mixtures
+  outcome: not_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig3b-mixtures
+  measured:
+  - 2.755
+  - 0.887
+  - 0.73
+  - 0.529
+  notes: Default initialisation, weights normalized by their sum (a); median effective number 2.755, 0.887%
+    of units with a weight at least 0.9, NMF variance explained 0.730; with weights scaled by the H norms
+    (b) 2.897 and 1.543%. Random initialisation 2.832 and 1.867% (0.998% under the seed plus 4000). The
+    hard assignment (six PCs, six-component full-covariance mixture) explains 0.529 (cluster means) or
+    0.551 (scaled), so the mixture explains 1.33 to 1.38 times as much (partial needs 1.5); a rank-6 PCA
+    explains 0.851.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The numbers of PCs and mixture components of the hard assignment are not given; six and six (rank
+    matched), the criterion's reading.
+  assumed: true
+- claim: fig3c-area-overlap
+  outcome: not_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig3c-area-overlap
+  measured: 0.0114
+  notes: Eta squared of the six simplex coordinates by area 0.0114 (default initialisation, weights a),
+    0.0199, 0.0212 and 0.0193 for the other combinations; 1,000 label shuffles give a mean of 0.00046
+    and a maximum of 0.0012, so p = 0.001 (the smallest possible). The between-area variance is small
+    and above the null as the paper says, but three to five times the paper's 0.004.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: fig3d-anticipatory-gradient
+  outcome: reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:fig3d-anticipatory-gradient
+  measured:
+  - 91.4
+  - 78.6
+  notes: Reading (a), mean standardized response -0.5 to 0 s against 0 to 1.5 s; VISp 91.4%, VISl 78.6%,
+    VISrl 69.3%, VISal 72.8%, VISpm 72.7%, VISam 68.8%. Reading (b), 0 to 0.5 s; VISp 92.6%, VISl 79.8%,
+    VISpm 76.1% (outside 59.4 to 75.9%). Reading (c), weight on the three earliest-peaking archetypes;
+    37.5 to 51.2% (default) and 57.3 to 82.5% (random).
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - The windows of the ramp sign are not given; the outcome rests on reading (a).
+  assumed: true
+- claim: anticipatory-direction-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:anticipatory-direction-overlap
+  measured:
+  - 84.2
+  - 0.622
+  - 94.7
+  - 38.3
+  - 0.227
+  - 0.066
+  notes: Reading (a) of claim fig3d-anticipatory-gradient; agreement 84.2%, phi 0.622, 94.7% of suppressed
+    and 38.3% of enhanced units anticipatory, VISp minus VISam 0.227, standardized to this cohort's 0.682
+    and 0.318 0.066 (with the paper's 0.655 and 0.345, 0.069). All within tolerance except phi (0.504
+    to 0.616). Reading (b) gives phi 0.697.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - Rests on reading (a) of the anticipatory label (claim fig3d-anticipatory-gradient).
+  assumed: true
+- claim: hits-vs-false-alarms
+  outcome: not_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:hits-vs-false-alarms
+  measured:
+  - 516
+  - 102
+  - 4.5
+  - 152.5
+  - -0.671
+  notes: 516 false-alarm trials (all with a sham change time) in 102 sessions; median 4.5 per session
+    over the 104 (5.0 over those with any), outside 3.6 to 4.4; median 152.5 hits per session. Cohort
+    units differing after BH per area; first lick (a) 2.2 to 7.5% with the responsiveness filter and 2.0
+    to 7.3% without; sham change plus median latency (b) 3.8 to 9.9% and 2.9 to 9.7%; expected 14.6 to
+    22.2%. Median SI in VISp over the cohort -0.671 (a) and -0.766 (b), -1.000 over the significant units.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  assumed: true
+- claim: hits-vs-lick-bouts
+  outcome: partially_reproduced
+  notebook: reproduce_souza_2026.ipynb
+  output: claim:hits-vs-lick-bouts
+  measured:
+  - 438
+  - 71.0
+  - 87.8
+  - -0.132
+  notes: Gap 500 ms; median 438 unrewarded bouts per session (121 to 1,473). With baseline (b) the cohort
+    fraction differing is 71.0% (VISp), 78.2% (VISl), 87.8% (VISrl), 82.1% (VISal), 78.5% (VISpm), 84.7%
+    (VISam), inside 67.4 to 97.7%, but the VISp median SI is -0.132. Baseline (a); 82.2 to 91.9% and SI
+    -0.785. Gap 250 ms; 737 bouts per session, outside tolerance. The responsiveness filter changes the
+    fractions by at most 0.3 points.
+  deviations:
+  - Sessions and units as claim data-sessions-units finds them (an assumption).
+  - A lick bout is not defined in the paper; gaps of 250 and 500 ms are run, and 500 ms is the one whose
+    bout count is within tolerance, an assumption.
+  assumed: true
+findings:
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. Which 103 sessions and which units were analysed? The dandiset
+    version holds 153 sessions from 81 mice. The 104 sessions of the Sst-Cre and Vip-Cre mice, with units
+    of quality good and presence ratio at least 0.95 in the six areas, give 104 sessions, 54 mice and
+    54,045 units, close to the paper's 103, 54 and 54,039; was this the selection, and which session was
+    left out? Every outcome of this attempt rests on the assumption.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. How were the peak time of an archetype (Figure 3A) and
+    the sign of a unit's pre against post-reward ramp (Figure 3D) defined? Peaks as the maximum absolute
+    value of the signed archetype fit the paper's six roles; peaks as the signed maximum do not. Mean
+    responses over -0.5 to 0 against 0 to 1.5 s match the anticipatory fractions; 0 to 0.5 s and the archetype
+    weights do not.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. How was a lick bout defined (Discussion, paragraph 7),
+    and did the ISI-shuffle null rebuild the spike train over the active block or the whole recording?
+    Bouts split at 500 ms gaps give the paper's 415 bouts per session (438 here); 250 ms gives 737. The
+    null was run over the active block only.
+- kind: paper_inconsistency
+  about: paper
+  statement: The paper's counts do not add up in two places. The Figure 1H legend classifies 2,308 narrow
+    and 8,716 broad cohort units, 11,024, more than the 10,805 cohort units left after the 227 ambiguous
+    ones (Materials and methods 2.5). The unmatched layer-4 excess in the rate-matching control is +0.148,
+    against +0.116 for the same comparison in the preceding sentence (Results 3.2); here both are about
+    +0.12.
+- kind: selection_undocumented
+  about: paper
+  statement: The paper states that it analysed 103 sessions from 54 mice but not how they were chosen
+    from the dandiset's 153 sessions from 81 mice, nor which units entered (54,039 of 110,563 units in
+    the six areas). The counts fit the Sst-Cre and Vip-Cre mice and units with quality good and presence
+    ratio at least 0.95.
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  statement: 1,508 of the 54,045 analysed units (quality good, presence ratio at least 0.95, in the six
+    visual areas) have a CCF coordinate (electrodes table x, y or z) of 0 or below, a value that falls
+    outside the brain; the files do not say that 0 marks a missing registration, while these units still
+    carry an area label in the location column.
+- kind: other
+  about: data
+  severity: minor
+  statement: The units table's waveform_duration and the trough-to-peak duration measured on the stored
+    mean waveform of the peak channel agree only at r = 0.66 (median difference -0.004 ms). The stored
+    mean waveforms are sampled at 30 kHz (82 samples), so their durations take 60 distinct values and
+    a two-component mixture on them does not separate narrow from broad units, while the stored waveform_duration
+    (151 values) does; the files do not say how waveform_duration was computed.
+- kind: other
+  about: data
+  severity: none
+  statement: Checks that passed. In all 104 sessions analysed, block 0 is the active natural-image block
+    and block 5 its passive replay with the same image sequence and no licks or rewards; water follows
+    the nearest lick by 1.3 to 53.5 ms (median 9.78 ms), so rewards and licks share a clock; and the summed
+    spiking of each session's units rises after the image changes of the stimulus table (post to pre ratio
+    1.19 to 4.12, against 0.52 to 1.29 with the times shifted 0.25 s), so spikes and stimuli share a clock.
