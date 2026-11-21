@@ -13,7 +13,7 @@ stimulus tables and eye tracking.
 | V1 condition spectrograms (Figures 2, 3, 4 a and b) | 2 partially reproduced, 1 not reproduced |
 | V1 cluster-tested contrasts (Figures 2c, 3c, 4c) | 2 reproduced, 1 partially reproduced |
 | V1 laminar panels (Figures 2d-f, 3d-f, 4d-f) | 1 reproduced, 5 partially reproduced, 1 not reproduced |
-| Trough-locked CSD patterns (Figures 2g-i, 3g-i, 4g-i) | 5 reproduced, 4 not reproduced, all resting on an assumption; a change to not reproduced is proposed for two of the reproduced |
+| Trough-locked CSD patterns (Figures 2g-i, 3g-i, 4g-i) | 3 reproduced, 6 not reproduced, all resting on an assumption |
 | Gamma and theta peaks, V1 and LM | 4 reproduced (one sensitive to the seed), 1 partially reproduced |
 | Aperiodic components (Supplementary Figures 1 and 3) | 2 reproduced, 1 not reproduced |
 | Alpha/beta and gamma peak heights (Supplementary Figure 2) | 1 reproduced, 1 not reproduced |
