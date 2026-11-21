@@ -13,6 +13,6 @@ paper's method, is [`attempts/yang-2026-01.yaml`](../../attempts/yang-2026-01.ya
 
 - `reproduce_yang_2026.ipynb`: the analysis. It surveys the 174 session files, streams the spike
   times, trial events, licks and video keypoints of the 112 late-delay sessions, and tests the 25
-  claims. It takes about 40 minutes, about 25 of them streaming.
+  claims. It takes 35 to 60 minutes depending on the runner, about 25 of them streaming.
 - `mam.py`: loading of the sessions, trial sets, z-scored window rates, choice and action axes,
   control splits, decoding, matching and distances. Other notebooks on this dandiset can import it.

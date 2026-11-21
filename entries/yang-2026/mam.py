@@ -42,7 +42,10 @@ cite the paper; "Methods" is the paper's Materials and Methods.
   likelihood per frame and no detection flag, and 0.9 is the usual DeepLabCut cut (0.5 and 0.99
   are computed as well, `LIKELIHOOD_VARIANTS`, to show how much it matters). Trials
   without a detection take the control mean ("fill", reading a) or are dropped from the fit
-  ("drop", reading b).
+  ("drop", reading b). Under reading b a region entry whose kept control trials are no more
+  than the design's columns is left out: the regression is then exact, and the residual choice
+  axis is round-off that differs between machines (a standard choice; the claims file and the
+  paper set no minimum).
 """
 
 from __future__ import annotations
@@ -444,6 +447,8 @@ def axes(S: dict, region: str, ts: dict, early: str = "early_own", video: str = 
     dirs = ld[cl]
     if regress:
         D, rows = video_design(S, cl, video, threshold)
+        if D.shape[0] <= D.shape[1]:
+            return None
         Xc, dirs = Xc[rows], dirs[rows]
         beta, *_ = np.linalg.lstsq(D, Xc, rcond=None)
         Xc = Xc - D @ beta

@@ -61,12 +61,18 @@ outcomes:
     striatum 0.0601, thalamus 0.0844, midbrain 0.0587, medulla 0.0521; all within tolerance and below
     0.10. All four readings that fill missing keypoints give 5 of 5; the four that drop trials without
     a keypoint from the video fit give 1 or 2 of 5, since the tongue is undetected in the choice window
-    on 82% of trials. Thalamus is highest; the lowest is medulla, not ALM (the criterion does not require
+    on 82% of trials. Under those four, 48 of 278 region entries are left out, as they keep no more
+    control trials than the regression's seven columns. Thalamus is highest; the lowest is medulla, not ALM (the criterion does not require
     the order). The likelihood cut (0.5, 0.9, 0.99) changes the fractions by at most 0.0017. With laser
     trials that had an early lick kept (M1 reading a; 19 / 94, 13 / 49, 10 / 31, 16 / 72, 8 / 35 entries)
     the fractions are 0.054 to 0.087, 5 of 5 within tolerance under the licks reading and 4 of 5 under
     the outcome reading, all below 0.10.
   deviations:
+  - Under reading b of the video regression (claims M5, trials lacking a keypoint dropped from the fit)
+    a region entry whose kept control trials are no more than the regression's seven columns is left
+    out, as the fit is then exact and its residual choice axis is round-off that differs between machines
+    (48 of 278 entries). The claims file and the paper set no minimum (standard choice). Added after verifier
+    round 2; it changes only the drop readings, on which no outcome rests.
   - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
     per frame and no detection flag, and the paper gives no rule. Cuts of 0.5 and 0.99 change no early
     fraction or cosine by more than 0.002 (standard choice, shown in the notebook).
@@ -90,7 +96,7 @@ outcomes:
   - 0.025
   notes: First reading, choice fractions ALM 0.0344, striatum 0.0424, thalamus 0.0615, midbrain 0.0288,
     medulla 0.0308; action fractions 0.0220, 0.0194, 0.0268, 0.0316, 0.0250. 10 of 10 within tolerance
-    under the four readings that fill missing keypoints, 7 of 10 under those that drop such trials. With
+    under the four readings that fill missing keypoints, 6 of 10 under those that drop such trials. With
     laser trials that had an early lick kept (M1 reading a), 10 of 10 within tolerance under the four
     readings that fill missing keypoints.
   deviations:
@@ -109,8 +115,8 @@ outcomes:
   - 0.523
   notes: Signed cosine, mean across mice, thalamus 0.297 and ALM 0.523 (SEM 0.045 and 0.025); striatum
     0.342, midbrain 0.348 and medulla 0.406 lie between. The absolute cosine gives the same outcome (5
-    sessions of 278 have a negative cosine). The readings that drop trials without a keypoint give 0.20
-    and 0.33, outside tolerance. With laser trials that had an early lick kept (M1 reading a), thalamus
+    sessions of 278 have a negative cosine). The readings that drop trials without a keypoint give 0.237
+    and 0.383, outside tolerance; their absolute cosine puts thalamus (0.252) within it but not ALM (0.395). With laser trials that had an early lick kept (M1 reading a), thalamus
     0.295 to 0.297 and ALM 0.523, also within tolerance.
   deviations:
   - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
@@ -171,7 +177,7 @@ outcomes:
   notes: Spearman correlation of the session joint fraction with the number of units, pooled over regions,
     rho -0.366, p = 3e-10, n = 278 region entries. Per region ALM -0.580 (p = 1e-9), striatum -0.283 (p
     = 0.051), thalamus -0.213 (p = 0.25), midbrain -0.371 (p = 0.0015), medulla -0.413 (p = 0.014); pooled
-    rho -0.366 to -0.423 over the eight readings.
+    rho -0.366 to -0.432 over the eight readings.
   deviations:
   - Spearman correlation as the claims file specifies; the paper reports no test.
 - claim: fig1-1d-without-video-regression
@@ -199,9 +205,9 @@ outcomes:
     its count and fraction are within tolerance. Counting good ALM units in place of units entering the
     fraction gives the same order. Under the other seven readings of M3 to M5 (matched sessions as under
     the first reading) the rule never selects ses-20200922T135318: the three other readings that fill
-    missing keypoints select ses-20210419T161140 and rank it second or third (distance 0.0031 to 0.0052
-    against 0.0019 to 0.0033), and the four that drop trials without keypoints select ses-20210129T132207
-    and rank it 38th of 43 (its joint fraction is 0.0008 to 0.0009 there).'
+    missing keypoints select ses-20210419T161140 and rank ses-20200922T135318 second or third (distance 0.0031 to 0.0052
+    against 0.0019 to 0.0033), and the four that drop trials without keypoints select ses-20201230T112558
+    and rank ses-20200922T135318 34th of 39 (its joint fraction is 0.0008 to 0.0009 there).'
 - claim: table1-decoding-early-vs-prelick
   outcome: partially_reproduced
   notebook: reproduce_yang_2026.ipynb
@@ -253,7 +259,7 @@ outcomes:
     (inside 0.495 to 0.638); the 250 ms bin exceeds every delay bin in every region. The same holds for
     50 ms and 100 ms steps and under all five seeds (250 ms bin 0.721 to 0.782, delay bins 0.540 to 0.588).
     Seed 17 gives the same (250 ms bin 0.720 to 0.780, delay bins 0.545 to 0.582). Decoding laser trials
-    alone (M8 reading a, 26 entries) gives a 250 ms bin of 0.628 to 0.780 (thalamus below 0.657), delay
+    alone (M8 reading a, 26 entries) gives a 250 ms bin of 0.628 to 0.780 (thalamus 0.628 and ALM 0.635 below 0.657), delay
     bins 0.412 to 0.686 and a 250 ms bin not above every delay bin, so it fails each part; the outcome
     rests on reading b, which the criterion allows.
   deviations:
@@ -337,7 +343,7 @@ outcomes:
   notes: Early-fraction entries, joint fraction in the bin centred 250 ms after Go, medulla 0.184, midbrain
     0.107, ALM 0.079, striatum 0.083, thalamus 0.050, all five within tolerance. The delay bins span 0.034
     to 0.099 (50 ms steps) or 0.035 to 0.099 (100 ms steps), outside 0.036 to 0.088 in medulla (0.099,
-    first bin) and thalamus (0.034 to 0.035). Distance-curve entries, 250 ms bin ALM 0.085 and medulla
+    first bin), thalamus (0.034 to 0.035) and, with 50 ms steps, ALM (0.035). Distance-curve entries, 250 ms bin ALM 0.085 and medulla
     0.199 outside tolerance, three of five within, and delay bins 0.036 to 0.099.
   deviations:
   - A video keypoint counts as detected when its likelihood is at least 0.9; the files give a likelihood
@@ -654,7 +660,9 @@ verifications:
       under the other M3/M5 readings the rule might select ses-20200922T135318 (problem 4).'
     response: 'The rule is now run under all eight readings of M3 to M5, with the candidate distances.
       No reading selects ses-20200922T135318: the fill readings select ses-20210419T161140 and rank it
-      second or third, the drop readings select ses-20210129T132207 and rank it 38th. Outcome unchanged.'
+      second or third, the drop readings select another session and rank it far down. Outcome unchanged.
+      (Corrected after round 2, which found that this response named the wrong session; the sessions
+      and ranks of the current run are in the notes.)'
   - claim: table1-decoding-early-vs-prelick
     agrees: true
     outcome: partially_reproduced
@@ -773,4 +781,182 @@ verifications:
     outcome: partially_reproduced
     reason: 'Cell 66: the separation is smaller at Go in every variant. The plane fraction is 0.70–1.00
       against 0.25 and PC1 is 0.035–0.085 against 0.04 ± 0.004; both are out.'
+    response: No change.
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full re-executed notebook after the round-1 revision, with its conclusions and
+    summary, the helper module mam.py, the claims file, the attempt record and the paper's full text.
+    The verifier agreed with all 25 outcomes and found both assumptions (fig2d-choice-share-flat, fig3-1c-alm-early-residual)
+    stated and reasonable. No finding is rated critical, and the verifier said none should be; it found
+    finding 1 (severity none) supported by the data check and the minor ratings of findings 2 to 5 right.
+    Cell numbers in the reasons are those of the round-2 copy. After this round the author found that
+    the readings that drop trials without keypoints (claims M5 reading b) gave different numbers on two
+    runners, as 48 region entries kept no more control trials than the regression has columns; those
+    entries are now left out of that reading (a deviation under table1-early-joint-fraction), and the
+    notes that cite it were updated. No outcome rests on that reading. The README and the notebook header
+    gave a run time of about 40 minutes, against 62.1 printed in the round-2 copy; the last three runs
+    took 35 to 36 minutes, and both now say 35 to 60 minutes, depending on the runner.
+  results:
+  - claim: session-counts
+    agrees: true
+    outcome: reproduced
+    reason: I agree; the new runs change none of the outcomes. Laser trials kept (M1 reading a) are now
+      reported.
+    response: No change.
+  - claim: table1-early-joint-fraction
+    agrees: true
+    outcome: reproduced
+    reason: 'Laser trials kept (M1 reading a): cell 18 gives 5/5 joint fractions under the licks reading
+      and 4/5 under the outcome reading.'
+    response: No change from the report. The drop readings now leave out the 48 region entries whose
+      video fit was exact (see reviewed); they give 1 or 2 of 5 as before. Outcome unchanged.
+  - claim: table1-early-axis-fractions
+    agrees: true
+    outcome: reproduced
+    reason: 'Laser trials kept (M1 reading a): cell 18 gives 10/10 axis fractions.'
+    response: With the 48 exact-fit entries left out of the drop readings, those readings give 6 of 10,
+      not 7; the notes and the Result cell say so. Outcome unchanged.
+  - claim: axes-cosine
+    agrees: true
+    outcome: reproduced
+    reason: 'Laser trials kept (M1 reading a): cell 18 gives both cosines within tolerance.'
+    response: The drop-reading cosines in the notes (0.20 and 0.33) were stale; they are now 0.237 and
+      0.383, given in the notes and the Result cell. Outcome unchanged.
+  - claim: fig1e-laser-vs-control-split
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 28 says "so is the highest of the other regions (midbrain, 7.6 to 8.8)", meaning within
+      tolerance under every reading. Cell 27 prints "ratio a, independent: ... highest within False" (7.56,
+      against a lower bound of 7.83). The seed-17 run''s a/disjoint value, 7.69, is also outside. The attempt
+      record''s "under three of four" is correct. The outcome is not affected.'
+    response: Cell 28 now says the highest other region is within tolerance under three of the four readings,
+      with 7.56 below 7.83 under reading a with independent groups. Outcome unchanged.
+  - claim: fig1-1b-corrected-joint-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; seed 17 gives the same outcome as the claim's seed.
+    response: No change.
+  - claim: fig1-1c-fraction-vs-neurons
+    agrees: true
+    outcome: reproduced
+    reason: The attempt record says "pooled rho -0.366 to -0.423 over the eight readings". Cell 33 prints
+      -0.366 to -0.428.
+    response: Corrected. With the exact-fit entries left out of the drop readings, the range is now -0.366
+      to -0.432 (cell 33), as the notes say. Outcome unchanged.
+  - claim: fig1-1d-without-video-regression
+    agrees: true
+    outcome: reproduced
+    reason: I agree; the new runs change none of the outcomes.
+    response: No change.
+  - claim: fig1b-example-session
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 89 says "the readings that drop trials without keypoints select ses-20210129T132207 and
+      rank it 38th". The same claim appears in the attempt record''s fig1b notes and in the response to
+      my round-1 reason. Cell 88 shows the drop readings select ses-20201230T112558 under three readings
+      and ses-20200925T153348 under one. ses-20210129T132207 appears in no output. The rank of 38 and the
+      joint fraction of 0.0008-0.0009 belong to the paper''s session, so "rank it" has the wrong referent.
+      Cell 88 never selects the paper''s session under any of the eight readings. The outcome is not affected.'
+    response: 'The wrong name came from an earlier run: the drop readings depended on round-off in sessions
+      whose video fit was exact (ses-20210129T132207 keeps 2 control trials with every keypoint against
+      7 regression columns), so they selected another session on each runner. Those entries are now left
+      out of the drop readings, and two runs give the same selection: all four drop readings select ses-20201230T112558
+      and rank ses-20200922T135318 34th of 39. Cell 89, the notes and the round-1 response now name the
+      session selected and say that the rank is the paper''s session''s. The rule still never selects ses-20200922T135318.
+      Outcome unchanged.'
+  - claim: table1-decoding-early-vs-prelick
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Decoding laser trials alone (M8 reading a): cell 70 gives 0-4 of 10 values within tolerance.'
+    response: No change.
+  - claim: fig2a-decoding-rises-after-go
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoding laser trials alone (M8 reading a): cell 73 shows the Go-aligned criterion fails in
+      every part. The attempt record''s "(thalamus below 0.657)" and cell 74''s "the thalamus 250 ms bin
+      0.63" omit that ALM, at 0.635 (cell 73), is also below 0.657.'
+    response: The notes and cell 74 now name both thalamus (0.628) and ALM (0.635) as below 0.657. Outcome
+      unchanged.
+  - claim: matched-reaction-time
+    agrees: true
+    outcome: reproduced
+    reason: I agree; seed 17 gives the same outcome as the claim's seed.
+    response: No change.
+  - claim: fig2d-choice-share-flat
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The assumption is stated and reasonable: the partial clause is read with the criterion''s own
+      SEM rule, the only definition of "rise" the criterion gives; cell 76 prints both counts (4 regions
+      not rising under the SEM rule, 3 counting any increase). Remaining: partial only under the SEM-rule
+      reading; counting any increase as a rise gives not reproduced. This ambiguity is in the claims file,
+      and it has been asked of a reader.'
+    response: No change; the question stands in questions/yang-2026.yaml.
+  - claim: fig2e-action-share-rises
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; the new runs change none of the outcomes.
+    response: No change.
+  - claim: fig2b-go-aligned-joint-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 83 and the attempt record list medulla and thalamus as outside 0.036-0.088 in the delay
+      bins. Cell 82 also lists ALM at 0.035 in the overlapping bins.
+    response: Cell 83 and the notes now also name ALM (0.035, 50 ms steps). Outcome unchanged.
+  - claim: fig2-1-energy-outside-subspace
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; the new runs change none of the outcomes.
+    response: No change.
+  - claim: fig3a-matched-pairs
+    agrees: true
+    outcome: reproduced
+    reason: I agree; seed 17 gives the same outcome as the claim's seed.
+    response: No change.
+  - claim: table1-prelick-residual
+    agrees: true
+    outcome: reproduced
+    reason: I agree; seed 17 gives the same outcome as the claim's seed.
+    response: No change.
+  - claim: fig3e-residual-ratio
+    agrees: true
+    outcome: reproduced
+    reason: I agree; seed 17 gives the same outcome as the claim's seed.
+    response: No change.
+  - claim: fig3-1ab-distances-scale
+    agrees: true
+    outcome: reproduced
+    reason: I agree; the new runs change none of the outcomes.
+    response: No change.
+  - claim: fig3-1d-matching-keeps-distance
+    agrees: true
+    outcome: reproduced
+    reason: I agree; seed 17 gives the same outcome as the claim's seed.
+    response: No change.
+  - claim: fig3-1c-alm-early-residual
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated and reasonable: the early window is scored in two 50 ms bins, which
+      rests on the Methods passages quoted in cell 58 and matches the paper''s 12.6 +- 2.0 almost exactly;
+      cell 59 prints both readings (12.59 binned, 18.36 as one window). Remaining: reproduced only under
+      the two-bin reading. The single 100 ms window the claims file''s criterion implies gives 18.36 and
+      would be partial. The claims file does not name this binning as open; this is a gap in the claims
+      file, now asked of a reader.'
+    response: No change; the question stands in questions/yang-2026.yaml.
+  - claim: fig3c-residual-time-course
+    agrees: true
+    outcome: reproduced
+    reason: I agree; seed 17 gives the same outcome as the claim's seed.
+    response: No change.
+  - claim: fig3c-late-residuals
+    agrees: true
+    outcome: reproduced
+    reason: Correctly kept at the claim's seed and flagged seed_sensitive. Reproduced at the claim's seed
+      and at +2000; it is partial at +1000, +3000, +4000 and at the paper's seed 17, where thalamus is 0.76-0.81
+      against a bound of 0.81. The outcome is protocol-correct and flagged, but it is fragile.
+    response: No change; the notes and the Result cell give the value under each seed.
+  - claim: fig3b-example-plane
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree; the new runs change none of the outcomes.
     response: No change.
