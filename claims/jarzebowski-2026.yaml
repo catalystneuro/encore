@@ -331,12 +331,27 @@ claims:
     some ChC conductance above 25 nS and some E_ChC below
     -58 mV each bring the median latency back within 1 ms of the reference (a choice made here; the
     paper gives no tolerance).
+- id: ccf-layer-link
+  kind: link
+  statement: The layer of each unit, taken from the Allen CCFv3 annotation volume, can be matched to
+    the dataset's units through the CCF coordinates of their peak channels, and agrees with the
+    dataset's own area label.
+  source: Methods, Laminar classification; added by the author of attempt jarzebowski-2026-01
+  data: with_inputs
+  criterion: Records are matched by coordinate, each unit's peak-channel x, y, z (um) divided by 10
+    and rounded to a voxel of the CCFv3 2017 annotation at 10 um, the resolution of Siegle et al.
+    (2021), whom the Methods cite. The link holds (reproduced) when at least 95% of the VISp units
+    passing D1 that have coordinates fall in a VISp layer voxel (VISp1, 2/3, 4, 5, 6a or 6b), a
+    threshold chosen here. Units without coordinates cannot be linked and are counted. Partially
+    reproduced from 80% to 95%, not reproduced below 80%.
 - id: cell-counts
   statement: The analysis includes 266 putative pyramidal image-responsive L2/3 cells from 78
     recordings and 1075 such L5 cells from 98 recordings of mouse V1.
   source: Figure 6B legend; Figure 7A legend
   quote: n = 266 cells from n = 78 recordings; L5 ... n = 1075 cells from n = 98 recordings
   data: with_inputs
+  depends_on:
+  - ccf-layer-link
   expected:
   - quantity: L2/3 cells
     value: 266
