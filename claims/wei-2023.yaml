@@ -1,0 +1,1127 @@
+# Claims for Wei, Nandi, Jia, Siegle, Denman, Lee, Buchin, Van Geit, Mosher, Olsen & Anastassiou
+# (2023), "Associations between in vitro, in vivo and in silico cell classes in mouse primary
+# visual cortex", Nature Communications 14, 2344, on DANDI:000021.
+#
+# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-21, protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the version of record (paper/10.1038-s41467-023-37844-8.txt, from PubMed Central),
+# its main text, figure legends and Methods; the Supplementary Information (Figures S1 to S8
+# with legends, Table S1), which the same text file holds; and the Source Data workbook
+# (41467_2023_37844_MOESM3_ESM.xlsx, read from the copy under paper/). The supplement PDF
+# (MOESM1) was not opened, as its text was legible. Table S2, cited for the visual stimulus
+# metrics, is not in the supplement text; Table 2 of the Methods names the same three metrics.
+# Fig 3d, 3e, S6 and the opto kappa and phase are given in the Source Data only as pickle files
+# (wt_phase_locking_df2.pickle, Fig7h_opto_kappa_phase.pickle) that are not supplied, and the
+# main-figure PDF is not supplied, so the significance stars of the main figures could not be
+# read. Statistics are recorded as the text and legends give them.
+#
+# Code read (Code availability). https://github.com/yinawei/Mouse_V1_EAP_Analysis at commit
+# 1e35126f1e521b4c98e9ba5fd6a4a8abce70530a (2021-08-10; Zenodo doi:10.5281/zenodo.7679748).
+# It holds Examples/NP_EAP_FeatureAnalysis.ipynb (EAP features and K-means clusters, Fig 2d),
+# Examples/Exp_Model_Classifier.ipynb (the FS/RS and AP/SP classifiers, Fig 4f to h; the
+# README calls them Fig 3c,f,g,h, from an earlier figure numbering), Examples/ecp_func.py (the
+# helper functions) and data: per-session mean waveforms (Examples/data/wt_EAP_data_info/
+# <session>.npy, units x 82 samples x 40 channels) with unit tables (<session>unitinfo.csv:
+# good flag, unit id, fr_5min, fr, depth relative to layer 4), exp_features.csv (features and
+# cluster labels of the 1204 units) and model_features.csv (features of the 33 models). The
+# code starts from these prepared files; how waveforms, the good flag, fr_5min and depth were
+# taken from the NWB files is not in it. No code for Fig 3, Fig 5 to 7, the phase-locking or
+# the optotagging is in it. https://github.com/yinawei/Mouse-all-active-models-EAP at commit
+# f1a426867032527e1ed5cbdf87eb56e9f7fa65ef (2021-08-10; Zenodo doi:10.5281/zenodo.7679762)
+# holds the BMTK/NEURON set-up to simulate one example model (cell 395830185).
+#
+# Method details the code fixes (NP_EAP_FeatureAnalysis.ipynb, ecp_func.py), followed below:
+# - Sessions: the 25 wild-type session ids listed in the notebook (732592105, 739448407,
+#   744228101, 750332458, 750749662, 754312389, 754829445, 757216464, 757970808, 759883607,
+#   761418226, 763673393, 766640955, 767871931, 768515987, 771160300, 771990200, 774875821,
+#   778240327, 778998620, 779839471, 781842082, 793224716, 799864342, 847657808); the Source
+#   Data (sheet Fig 1d) lists the same ids with unit counts summing to 1204.
+# - Waveforms: 40 channels around the peak channel; every second channel (one per 20 um row,
+#   the two columns on one side) gives 20 sites, the peak at index 10; each trace high-passed
+#   at 300 Hz (5th-order Butterworth, filtfilt) at 30 kHz; time axis sample*1/30 ms - 0.6 ms;
+#   cubic spline to 10000 points for feature timing.
+# - Features: TPW from the trough (minimum between -1 and 2.5 ms) to the following maximum;
+#   REP from that peak to the half-peak after it; 1/V below and above as the slope (times
+#   1000, ms/mm) of trough time against distance over sites within 100 um whose amplitude is at
+#   least max(0.5% of the peak amplitude, 5); spread from the 12% amplitude points of a spline
+#   of amplitude against distance; symmetry index |1/V below + 1/V above| / sqrt(2).
+# - Exclusions after the good flag and a hard-coded list of 38 unit ids: peak channel not at
+#   the centre, values beyond 3 SD of the mean in half width, TPW, REP, the two W slopes or the
+#   two 1/V features, trough time more than 0.1 ms from 0, amplitude below 15 or above 300.
+#   1287 good units became 1204.
+# - Clustering: features median-imputed and z-scored; K-means (k-means++, 1000 initialisations)
+#   for K = 1 to 9; the elbow is the largest ratio of successive WCSS differences, f(K) as in
+#   Methods eq. 5-6, the optimum its minimum. Two clusters on TPW and REP; then each of FS and
+#   RS clustered on 1/V below and 1/V above (z-scored over all units) with K from f(K).
+# - Classifiers (ecp_func.classifier): features z-scored, minority class upsampled with
+#   replacement to balance; 100 stratified 75/25 splits for each of 100 resamplings; linear SVC
+#   (C = 1, balanced weights) for two classes, random forest (20 trees, gini) for more; label
+#   by most frequent prediction.
+# - Two- and three-group tests (two_sample_test, three_sample_test): Shapiro-Wilk on each group
+#   at 0.05; t-test or Mann-Whitney U for two groups; one-way ANOVA with Holm-corrected t-tests,
+#   or Kruskal-Wallis with Holm-corrected Mann-Whitney tests (scikit_posthocs), for three.
+#
+# Data the paper used (Results; Methods, In vivo neuropixels recordings; Source Data).
+# - The Allen Brain Observatory Visual Coding Neuropixels dataset, via the AllenSDK and DANDI
+#   000021. Awake head-fixed mice on a running disc; V1 recorded with Neuropixels probes (384
+#   sites, 30 kHz, KiloSort2 spike sorting); stimuli named are flashes, drifting gratings and a
+#   mean-luminance gray screen (spontaneous). 25 wild-type C57BL/6J mice (24 male, 1 female),
+#   8 Pvalb-IRES-Cre x Ai32 (6 male, 2 female), 12 Sst-IRES-Cre x Ai32 (8 male, 4 female).
+#   The paper does not say which of the Visual Coding stimulus sets each session belongs to;
+#   the dandiset's title names the Brain Observatory 1.1 stimulus set only, so the author
+#   finds which of the 25 sessions, and which opto-tagging mice, it holds.
+# - Units: 1204 V1 units from the 25 wild-type mice (Source Data Fig2d gives each unit id and
+#   its cluster label, TPW, REP and 1/V features). Fig 3 uses units with EAP amplitude above
+#   50 uV and at least 100 spikes (745 RS for rate, CV and LV; 768 RS for the grating metrics;
+#   203 FS and 745 RS for phase-locking). Depth relative to the layer 4 centre found from the
+#   first CSD sink to flashes (Fig S1). LFP bands theta 3-8, alpha 8-12.5, beta 12.5-30, low
+#   gamma 30-50, high gamma 50-90 Hz (Results) or 8-12 and 12-30 Hz for alpha and beta
+#   (Methods). Optotagging with 10 ms square light pulses.
+# - Outside the dataset: 33 all-active single-cell models (15 spiny, Cre lines 5 Nr5a1, 4
+#   Scnn1a, 6 Rorb; 18 aspiny, 9 Pvalb, 9 Sst) fitted to cells of the Allen Cell Types Database
+#   (celltypes.brain-map.org, cell ids in Table S1), with their in vitro electrophysiology and
+#   reconstructed morphologies. The models are in the second repository (Zenodo
+#   doi:10.5281/zenodo.7679762); their simulated EAP features are in model_features.csv of the
+#   first (Zenodo doi:10.5281/zenodo.7679748) and in the Source Data.
+#
+# Details the paper and code leave open, with the readings named in the criteria:
+# - unit isolation ("well-isolated", "see Methods", but the Methods give no criteria);
+# - which recording period gives fr_5min, the FS/RS firing rate (Fig S3b);
+# - the drifting-grating period and spike sets for Fig 3 and how ISIs are pooled;
+# - the method of the ISI-median confidence interval;
+# - the LFP channel ("different neighboring electrodes"), the band filter, which spikes form
+#   the 10,000-spike cap, the alpha and beta band edges, and what "kappa" is (the text says it
+#   ranges from 0 to 1, which a von Mises concentration does not);
+# - the boundaries of the supragranular, granular and infragranular regions;
+# - the opto-tagging baseline window and unit selection.
+schema_version: 2
+paper: doi:10.1038/s41467-023-37844-8
+claims:
+- id: source-data-units-link
+  kind: link
+  statement: The 1204 unit ids of the paper's Source Data, with their one- and multi-channel
+    cluster labels, are units of the dataset's wild-type V1 recordings.
+  source: Source Data, sheets Fig 1d and Fig2d; NP_EAP_FeatureAnalysis.ipynb session list
+  data: with_labels
+  criterion: Each unit id of Source Data sheet Fig2d is looked up in the units tables of the
+    dataset's sessions among the 25 the code lists. The link holds (reproduced) when the
+    dataset holds all 25 sessions and every one of the 1204 ids is found, with the per-session
+    counts of sheet Fig 1d, in the VISp structure. It is partially reproduced when the dataset
+    holds only some of the 25 sessions and every id of those sessions is found; the number of
+    sessions and units held is then reported, and every claim judged on the dataset is judged
+    on that subset, as a deviation. It is not reproduced when ids of sessions the dataset holds
+    are missing or lie outside V1.
+- id: fig1d-unit-count
+  statement: The analysis rests on 1204 well-isolated V1 units from 25 wild-type mice, an
+    average of 48 units per mouse.
+  source: Results, EAP recordings from in vivo experiments and biophysical models of cell
+    types, paragraph 1; Figure 1d
+  quote: We only analyzed units located in V1 with an average of 48 units per wild-type mouse
+    being well-isolated (unit isolation criteria... the total number of units = 1204) during
+    spontaneous activity
+  expected:
+  - quantity: well-isolated V1 units from wild-type mice
+    value: 1204
+    tolerance: 120.4
+  - quantity: mean units per wild-type mouse
+    value: 48
+    tolerance: 4.8
+  depends_on:
+  - source-data-units-link
+  criterion: Units in VISp of the 25 sessions the code lists, then the code's exclusions (the
+    hard-coded list of 38 ids, peak channel off centre, 3 SD outliers in the seven features,
+    trough time beyond 0.1 ms, amplitude outside 15 to 300). The isolation step that sets the
+    code's good flag is not stated in the paper or code; two readings are run, (a) the
+    AllenSDK default unit filter the paper's stated access route applies (isi_violations <
+    0.5, amplitude_cutoff < 0.1, presence_ratio > 0.9), (b) every VISp unit the NWB units
+    table lists. The claim is reproduced when either reading gives counts within the
+    tolerances. Figure 1d's legend gives 24 wild-type mice and "204" units; the text and
+    Source Data give 25 and 1204, used here.
+- id: fig2-one-channel-two-clusters
+  statement: K-means clustering of the one-channel features TPW and REP gives two clusters as
+    the optimum by both the elbow method and the density function, a narrow-waveform cluster
+    with short REP and a wide-waveform cluster with long REP.
+  source: Results, The standard waveform features reveal two clusters, paragraph 1; Figure 2c,d
+  quote: Both the elbow method and density method of unsupervised K -means clustering 22
+    independently confirmed the optimal number of clusters is two.
+  depends_on:
+  - fig1d-unit-count
+  criterion: TPW and REP of each unit as the code computes them; median-imputed and z-scored;
+    K-means (k-means++, 1000 initialisations) for K = 1 to 9; elbow and f(K) as in
+    ecp_func.selectionK_kmeans and findElbow. Reproduced when both select K = 2 and the
+    cluster with the lower median TPW also has the lower median REP; partially when only one
+    method selects 2.
+- id: fig2-fs-rs-counts
+  statement: Of the 1204 units, 281 (23.3%) fall in the narrow-waveform (FS) cluster and 923
+    (76.7%) in the wide-waveform (RS) cluster.
+  source: Results, The standard waveform features reveal two clusters, paragraph 1; Figure 2d
+  quote: narrow waveform units ( n = 281, 23.3%) exhibit elevated spike frequency vs. wide
+    waveform ones ( n = 923, 76.7%)
+  expected:
+  - quantity: FS units
+    value: 281
+    tolerance: 28.1
+  - quantity: RS units
+    value: 923
+    tolerance: 92.3
+  - quantity: FS fraction
+    value: 23.3
+    tolerance: 2.33
+    unit: percent
+  depends_on:
+  - fig2-one-channel-two-clusters
+  criterion: Counts of the two clusters of fig2-one-channel-two-clusters. When the unit set
+    differs from the 1204 of the Source Data, the fraction is the measure; the agreement of
+    the cluster labels with the Source Data labels on the shared units is also reported.
+- id: figs3b-fs-faster
+  statement: FS units fire faster than RS units, at a median of 4.85 Hz (IQR 1.93 to 10.79
+    Hz) against 2.05 Hz (IQR 0.84 to 5.00 Hz).
+  source: Results, The standard waveform features reveal two clusters, paragraph 1; Figure S3b
+  quote: narrow waveform units spike at a median firing rate of 4.85 Hz (interquartile range,
+    IQR... 1.93-10.79 Hz) while wide waveform units fire at a median of 2.05 Hz (IQR... 0.84-5.00
+    Hz). Thus, narrow waveform units spike significantly faster than their wide waveform
+    counterparts
+  statistics:
+  - test: Mann-Whitney U test, two-sided
+    p: 3.5e-18
+    n: 281 FS and 923 RS units
+  expected:
+  - quantity: FS median firing rate
+    value: 4.85
+    tolerance: 0.485
+    unit: Hz
+  - quantity: RS median firing rate
+    value: 2.05
+    tolerance: 0.205
+    unit: Hz
+  depends_on:
+  - fig2-fs-rs-counts
+  criterion: Rate as N / T (Methods, Single unit firing properties). The code uses a column
+    fr_5min whose period is not stated; the text ties the 1204 units to spontaneous activity.
+    Readings, (a) the spontaneous (gray screen) block of the session, (b) the first 5 minutes
+    of the recording, (c) the whole session (Methods, N / T during the recording session).
+    Reproduced when, under a reading, both medians fall within tolerance and the two-sided
+    Mann-Whitney U test gives p < 0.001 with FS higher.
+- id: fig2-rs-more-asymmetric
+  statement: RS units have more asymmetric EAP propagation below against above the soma than
+    FS units.
+  source: Results, Spatial features reveal six distinct sub-clusters, paragraph 1; Figure 2c,d;
+    Figure S3c,d
+  quote: Looking at the multi-channel EAP features of FS vs. RS, RS generally exhibits a more
+    asymmetric EAP propagation below vs. above the putative soma location than FS
+  depends_on:
+  - fig2-fs-rs-counts
+  criterion: The paper reports no test. The symmetry index of Methods (distance of (1/V below,
+    1/V above) from the line y = -x) per unit. Reproduced when the RS median exceeds the FS
+    median and the paper's two-sample procedure (Shapiro-Wilk, then t-test or Mann-Whitney U,
+    Methods, Statistical analysis; ecp_func.two_sample_test) gives p < 0.05.
+- id: fig2d-three-subclusters-each
+  statement: Clustering FS and RS separately on the multi-channel features 1/V below and 1/V
+    above gives three clusters in each, FS1 to FS3 (130, 82 and 69 units) and RS1 to RS3 (479,
+    235 and 209 units).
+  source: Results, Spatial features reveal six distinct sub-clusters, paragraph 2; Figure 2d
+  quote: Unsupervised clustering ( K -means) indicated that the optimal number of
+    multi-channel clusters within FS and RS is three for each
+  expected:
+  - quantity: FS1 units
+    value: 130
+    tolerance: 13
+  - quantity: FS2 units
+    value: 82
+    tolerance: 8.2
+  - quantity: FS3 units
+    value: 69
+    tolerance: 6.9
+  - quantity: RS1 units
+    value: 479
+    tolerance: 47.9
+  - quantity: RS2 units
+    value: 235
+    tolerance: 23.5
+  - quantity: RS3 units
+    value: 209
+    tolerance: 20.9
+  depends_on:
+  - fig2-fs-rs-counts
+  - source-data-units-link
+  criterion: As the code, 1/V below and 1/V above z-scored over all units, then K-means within
+    each of FS and RS with K from f(K) (the code takes nc = argmin f(K) + 1), the elbow also
+    reported. Clusters are named by greatest overlap with the Source Data labels on shared
+    units. Reproduced when both methods give K = 3 in FS and in RS and the six counts are
+    within tolerance; partially when K = 3 in both but counts are off. Label agreement with
+    the Source Data is reported.
+- id: figs4-rs1-faster-above
+  statement: RS1 and RS2 both propagate asymmetrically and differ mainly in supragranular
+    propagation velocity, faster in RS1 than in RS2.
+  source: Results, Spatial features reveal six distinct sub-clusters, paragraph 2; Figure S4b
+  quote: For the RS group, RS1 and RS2 show mostly asymmetric propagation, with their main
+    difference being the supragranular propagation velocity, i.e., V above (RS1) > V above (RS2)
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: Reproduced when the RS1 median of 1/V above is below the RS2 median (faster
+    V above) and the paper's three-group procedure (ecp_func.three_sample_test) gives a
+    Holm-corrected RS1 against RS2 p < 0.05 for 1/V above.
+- id: figs4-rs-spread
+  statement: RS1 to RS3 differ in spatial spread, RS3 being the most spatially confined.
+  source: Results, Spatial features reveal six distinct sub-clusters, paragraph 2; Figure S4b
+    legend
+  quote: Comparison of spread among RS1-3, Kruskal-Wallis H-test, F=48.2, p = 3.34*10-11
+  statistics:
+  - test: Kruskal-Wallis H-test, Holm-Bonferroni corrected post hoc
+    statistic: F = 48.2
+    p: 3.34e-11
+    corrected: Holm-Bonferroni
+    n: 479 RS1, 235 RS2, 209 RS3
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: Spread as the code (extent above 12% of the peak amplitude along the probe).
+    Reproduced when the Kruskal-Wallis test gives p < 0.05 and the RS3 median spread is the
+    smallest of the three. The text also says RS3 has a faster infragranular velocity; its
+    sign convention for 1/V below is not stated, so it is reported, not judged.
+- id: figs4-fs-spread-absent
+  statement: FS1 to FS3 show no significant difference in spatial spread.
+  source: Results, Spatial features reveal six distinct sub-clusters, paragraph 2; Figure S4a
+    legend
+  quote: Comparison of spread among FS1-3, Kruskal-Wallis Htest, F=0.457, p=0.795
+  statistics:
+  - test: Kruskal-Wallis H-test
+    statistic: F = 0.457
+    p: 0.795
+    n: 130 FS1, 82 FS2, 69 FS3
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: A claim of absence, judged on the paper's test. Kruskal-Wallis H-test of spread
+    across FS1 to FS3. Reproduced when p >= 0.05, not reproduced when p < 0.05; the medians
+    are reported either way.
+- id: figs5-depth-distribution
+  statement: The six multi-channel clusters are distributed differently along the V1 depth
+    axis.
+  source: Results, Spatial features reveal six distinct sub-clusters, paragraph 2; Figure S5
+  quote: Looking at the distribution of the cortical depth, the six clusters are distributed
+    differently across V1 layers
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: The paper reports no test. Depth relative to the layer 4 centre, taken at the
+    first CSD sink after flash onset (Fig S1). How the CSD is computed and the sink located is
+    not stated, and the code starts from a precomputed depth; readings, (a) the standard
+    second spatial derivative of the flash-averaged LFP with the earliest sink in V1 as the
+    centre, (b) the CCF layer 4 midpoint of the probe in the session's channel table. The
+    paper's multi-group procedure (Methods, Statistical analysis; Kruskal-Wallis or one-way
+    ANOVA) across the six clusters. Reproduced when it gives p < 0.05 under a reading.
+- id: fig3a-isi-fs-rs
+  statement: During drifting gratings the ISI median of FS units is 19.63 ms (95% CI 19.60 to
+    19.67) and that of RS units 53.37 ms (95% CI 53.30 to 53.43), a significant difference.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 1;
+    Figure 3a
+  quote: the ISI median of FS is 19.63 ms with a 95% confidence interval (CI) at [19.60-19.67]
+    ms, while the ISI median of RS is 53.37 ms with 95% CI at [53.30-53.43] ms (Fig. 3a ,
+    Mann-Whitney U test, p = 0.0)
+  statistics:
+  - about: FS ISI median
+    ci:
+      level: 0.95
+      low: 19.6
+      high: 19.67
+      unit: ms
+  - about: RS ISI median
+    ci:
+      level: 0.95
+      low: 53.3
+      high: 53.43
+      unit: ms
+  - about: FS against RS ISI distributions
+    test: Mann-Whitney U test, two-sided
+    p: 0
+    n: 2,900,284 FS and 4,586,637 RS spikes
+  expected:
+  - quantity: FS ISI median
+    value: 19.63
+    tolerance: 0.04
+    unit: ms
+  - quantity: RS ISI median
+    value: 53.37
+    tolerance: 0.07
+    unit: ms
+  - quantity: FS spikes
+    value: 2900284
+    tolerance: 290028
+  - quantity: RS spikes
+    value: 4586637
+    tolerance: 458664
+  depends_on:
+  - fig2-fs-rs-counts
+  criterion: Units with EAP amplitude above 50 uV and at least 100 spikes (Methods). The
+    tolerances of the medians are the paper's confidence intervals, which reflect spike
+    sampling only; a median within 10% is reported as a variant. Open, the drifting-grating
+    period and the ISI pool; readings, (a) ISIs within each drifting-grating presentation,
+    pooled over all units of a cluster, (b) ISIs over the whole drifting-grating blocks,
+    pooled. The CI method is not stated; a bootstrap of the median over ISIs (as Fig 6a uses
+    for its intervals) is used. Reproduced when both medians fall in tolerance under a
+    reading and the Mann-Whitney test gives p < 0.001; partially when only the 10% variant
+    holds with the same direction and test.
+- id: fig3a-rs1-excitability
+  statement: RS1 units fire faster and with less variable spiking (lower CV and LV) than RS2
+    and RS3 units during drifting gratings.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 1;
+    Figure 3a
+  quote: Specifically, RS1 units exhibit faster, more stereotyped, and less variable spiking
+    than RS2-3 units.
+  statistics:
+  - test: Kruskal-Wallis H-test, Holm-Bonferroni corrected
+    p: 0.05
+    p_relation: <
+    corrected: Holm-Bonferroni
+    n: 419 RS1, 173 RS2, 153 RS3
+  expected:
+  - quantity: RS1 units
+    value: 419
+    tolerance: 41.9
+  - quantity: RS2 units
+    value: 173
+    tolerance: 17.3
+  - quantity: RS3 units
+    value: 153
+    tolerance: 15.3
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: Units with EAP amplitude above 50 uV and at least 100 spikes during drifting
+    gratings; rate N / T, CV and LV as Methods eqs. 7 and 8, over the drifting-grating spikes
+    (the period is open as in fig3a-isi-fs-rs). The paper's three-group procedure
+    (ecp_func.three_sample_test). Reproduced when for each of rate, CV and LV the omnibus test
+    and both Holm-corrected RS1 against RS2 and RS1 against RS3 tests give p < 0.05, with RS1
+    rate higher and RS1 CV and LV lower; partially when this holds for one or two of the three
+    measures. Rate, CV and LV are also tested on the Source Data labels (with_labels).
+- id: fig3a-rs23-visual-responses
+  statement: RS2 and RS3 have higher f1/f0, modulation index and lifetime sparseness to
+    drifting gratings than RS1.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 1;
+    Figure 3a
+  quote: Statistically significant differences emerge between RS1 vs. RS2-3 in terms of the
+    response metrics with RS2-3 exhibiting higher response sensitivity and selectivity over RS1
+  statistics:
+  - test: Kruskal-Wallis H-test, Holm-Bonferroni corrected
+    p: 0.05
+    p_relation: <
+    corrected: Holm-Bonferroni
+    n: 430 RS1, 182 RS2, 156 RS3
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: The three drifting-grating metrics as the AllenSDK defines them (Methods, Visual
+    stimulus metrics, which point to the AllenSDK documentation; the Source Data columns are
+    f1_f0_dg, mod_idx_dg and lifetime_sparseness_dg). The paper's three-group procedure.
+    Reproduced when for each metric the omnibus test and the Holm-corrected RS1 against RS2
+    and RS1 against RS3 tests give p < 0.05 with RS1 lowest; partially for one or two metrics.
+- id: fig3a-fs-visual-absent
+  statement: FS1 to FS3 do not differ significantly in their visual responses to drifting
+    gratings.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 1
+  quote: No significant difference in terms of visual responses was observed between FS1-3.
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: A claim of absence, judged on the paper's test. For f1/f0, modulation index and
+    lifetime sparseness, the paper's three-group procedure across FS1 to FS3 (units as in
+    fig3a-rs23-visual-responses). Reproduced when no omnibus test gives p < 0.05; not
+    reproduced when any does. Medians are reported either way.
+- id: fig3c-fs-more-phase-locked
+  statement: During drifting gratings a larger share of FS than RS units is phase-locked to
+    the LFP in every band (theta 96.6% against 86.7%, alpha 86.7% against 63.9%, beta 88.2%
+    against 67.7%, low gamma 83.3% against 58.1%, high gamma 91.1% against 68.5%).
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 2;
+    Figure 3c, left; Source Data sheet Fig3c
+  quote: with FS containing a significantly higher percentage of phase-locked units than RS
+    across frequency bands (Fig. 3c , left)
+  statistics:
+  - test: two sample z test for proportions, Holm-Bonferroni corrected over bands
+    p: 0.05
+    p_relation: <
+    corrected: Holm-Bonferroni
+    n: 203 FS and 745 RS units
+  expected:
+  - quantity: FS phase-locked, theta
+    value: 96.6
+    tolerance: 9.66
+    unit: percent
+  - quantity: RS phase-locked, theta
+    value: 86.7
+    tolerance: 8.67
+    unit: percent
+  - quantity: FS phase-locked, alpha
+    value: 86.7
+    tolerance: 8.67
+    unit: percent
+  - quantity: RS phase-locked, alpha
+    value: 63.9
+    tolerance: 6.39
+    unit: percent
+  - quantity: FS phase-locked, beta
+    value: 88.2
+    tolerance: 8.82
+    unit: percent
+  - quantity: RS phase-locked, beta
+    value: 67.7
+    tolerance: 6.77
+    unit: percent
+  - quantity: FS phase-locked, low gamma
+    value: 83.3
+    tolerance: 8.33
+    unit: percent
+  - quantity: RS phase-locked, low gamma
+    value: 58.1
+    tolerance: 5.81
+    unit: percent
+  - quantity: FS phase-locked, high gamma
+    value: 91.1
+    tolerance: 9.11
+    unit: percent
+  - quantity: RS phase-locked, high gamma
+    value: 68.5
+    tolerance: 6.85
+    unit: percent
+  depends_on:
+  - fig2-fs-rs-counts
+  criterion: The percentages are counts of Source Data sheet Fig3c (196, 176, 179, 169 and
+    185 of 203 FS; 646, 476, 504, 433 and 510 of 745 RS). Methods, Phase-locking analysis,
+    units with EAP amplitude above 50 uV and at least 100 spikes, at most 10,000 spikes,
+    Hilbert phase of the band-passed LFP, phase-locked when the Rayleigh test gives p < 0.001.
+    Open, (1) the LFP channel, read as (a) the LFP channel nearest the unit's peak channel
+    other than that channel, (b) the channels two rows above and below averaged; (2) the band
+    filter, read as the 5th-order Butterworth zero-phase band-pass of ecp_func; (3) the
+    10,000-spike cap, read as (a) the first 10,000, (b) a random 10,000; (4) alpha and beta
+    edges, 8-12.5 and 12.5-30 Hz (Results) or 8-12 and 12-30 Hz (Methods). Reproduced when,
+    under a combination of readings, FS exceeds RS in all five bands with Holm-corrected
+    z-test p < 0.05 and the percentages fall within tolerance; partially when FS exceeds RS
+    significantly in three or four bands. The percentages are computed from the Source Data
+    counts; the text states only the direction.
+- id: fig3c-rs-prefers-theta
+  statement: RS phase-locking is most common for theta and less common at higher frequencies
+    (beta, low and high gamma), while the share of phase-locked FS units stays high across
+    bands.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 2;
+    Figure 3c, left
+  quote: In general, the percentage of significantly entrained FS units was high and remained
+    broadly unaffected by the specific LFP bands. In contrast, RS couples preferentially to slow
+    LFP oscillations (theta), with the percentage decreasing for higher frequencies (beta,
+    gamma, and high gamma).
+  depends_on:
+  - fig3c-fs-more-phase-locked
+  criterion: Percentages of fig3c-fs-more-phase-locked. Reproduced when the RS theta
+    percentage is the highest of the five bands and exceeds each of beta, low gamma and high
+    gamma, and the range of FS percentages over the five bands is smaller than the range of
+    RS percentages (in the Source Data, 13.3 against 28.6 points).
+- id: figs7-spontaneous-less-locked
+  statement: Far fewer FS and RS units are phase-locked during spontaneous activity than
+    during drifting gratings, in every band.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 2;
+    Figure S7; Source Data sheet FigS7
+  quote: Notably, FS and RS coupling to in vivo oscillations is input- and behavior-dependent,
+    with a much lower percentage of phase-locked neurons detected during spontaneous activity
+    (Fig. S7 ) than during drifting gratings (Fig. 3c , left) across frequency bands
+  expected:
+  - quantity: FS phase-locked during spontaneous activity, theta
+    value: 19.5
+    tolerance: 1.95
+    unit: percent
+  - quantity: RS phase-locked during spontaneous activity, theta
+    value: 4.7
+    tolerance: 0.47
+    unit: percent
+  depends_on:
+  - fig3c-fs-more-phase-locked
+  criterion: The same phase-locking method on spikes and LFP of the spontaneous (gray screen)
+    period, for units active in both periods (Fig S7 legend; 203 FS and 750 RS in the legend,
+    210 and 766 in Source Data sheet FigS7, whose theta counts are 41 of 210 FS and 36 of 766
+    RS). Reproduced when, for FS and for RS, the spontaneous percentage is below the
+    drifting-grating percentage in all five bands and the theta percentages fall within
+    tolerance; partially when only the direction holds. The theta percentages are computed
+    from the Source Data counts; no sentence gives them.
+- id: fig3c-fs-stronger-earlier
+  statement: FS units phase-lock more strongly (higher kappa) than RS units across bands and
+    spike earlier in the cycle than RS units in beta and low gamma.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 2;
+    Figure 3c, right
+  quote: The pairwise comparison revealed that FS has stronger phase-locking across frequency
+    bands and spikes earlier in the cycle than RS for beta and low gamma
+  statistics:
+  - test: Mann-Whitney U test, two-sided, Holm-Bonferroni corrected
+    p: 0.05
+    p_relation: <
+    corrected: Holm-Bonferroni
+    n: 203 FS and 745 RS units
+  depends_on:
+  - fig3c-fs-more-phase-locked
+  criterion: Kappa and preferred phase from pycircstat for each phase-locked unit and band
+    (Methods). What kappa is, is open; readings, (a) pycircstat.kappa of the spike phases (the
+    von Mises concentration estimate), (b) the mean resultant length (pycircstat.resultant_
+    vector_length), which ranges from 0 to 1 as the Methods say kappa does. The text cites
+    "Fig. 2f, g" for this, which do not exist; Fig 3c is meant. Reproduced when under a
+    reading kappa is higher for FS in all five bands and the FS preferred phase is earlier in
+    beta and low gamma, with Holm-corrected two-sided Mann-Whitney p < 0.05; partially when
+    kappa holds in three or four bands or only one of the two phase results holds.
+- id: fig3d-rs2-gamma-locking
+  statement: Among RS clusters, RS2 phase-locks more strongly to low and high gamma than RS1,
+    while the preferred phase of RS1 to RS3 stays at about 180 to 200 degrees.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 3;
+    Figure 3d
+  quote: We found significant differences in LFP coupling for RS1-3 in the low and high gamma
+    bands, with RS2 exhibiting stronger phase locking to low and high gamma than RS1 (Fig. 3d ).
+    The preferred phase of RS1-3 remains similar at 180
+  statistics:
+  - test: Kruskal-Wallis H-test, Holm-Bonferroni corrected
+    p: 0.05
+    p_relation: <
+    corrected: Holm-Bonferroni
+    n: 419 RS1, 173 RS2, 153 RS3
+  expected:
+  - quantity: preferred phase range of RS1 to RS3, all bands
+    value: 190
+    tolerance: 28
+    unit: degrees
+  depends_on:
+  - fig3c-fs-stronger-earlier
+  - fig2d-three-subclusters-each
+  criterion: Kappa and phase as fig3c-fs-stronger-earlier, per RS cluster. Reproduced when in
+    low and high gamma the omnibus test gives p < 0.05 and the Holm-corrected RS2 against RS1
+    test gives p < 0.05 with RS2 higher, and the cluster mean phases lie within the reported
+    range of 180 to 200 degrees widened by 10% of each bound (162 to 220); partially when
+    only one gamma band holds.
+- id: fig3e-fs-cluster-locking
+  statement: FS3 phase-locks more strongly to high gamma than FS2, and FS1 to FS3 have
+    distinct preferred phases in alpha, beta and low gamma.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 3;
+    Figure 3e
+  quote: Specifically, FS3 exhibit stronger phase locking to high gamma than FS2, with
+    distinct preferred phases among the three clusters in alpha, beta, and low gamma
+  statistics:
+  - test: Kruskal-Wallis H-test, Holm-Bonferroni corrected
+    p: 0.05
+    p_relation: <
+    corrected: Holm-Bonferroni
+    n: 100 FS1, 54 FS2, 49 FS3
+  expected:
+  - quantity: FS1 units
+    value: 100
+    tolerance: 10
+  - quantity: FS2 units
+    value: 54
+    tolerance: 5.4
+  - quantity: FS3 units
+    value: 49
+    tolerance: 4.9
+  depends_on:
+  - fig3c-fs-stronger-earlier
+  - fig2d-three-subclusters-each
+  criterion: Kappa and phase as fig3c-fs-stronger-earlier, per FS cluster. Reproduced when
+    the Holm-corrected FS3 against FS2 kappa test in high gamma gives p < 0.05 with FS3
+    higher, and the omnibus phase test gives p < 0.05 in each of alpha, beta and low gamma;
+    partially when the kappa result or only some phase results hold.
+- id: figs6c-fs-stronger-across-depth
+  statement: FS units phase-lock more strongly than RS units in the supragranular, granular
+    and infragranular regions in all LFP bands.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 4;
+    Figure S6c
+  quote: Looking at one-channel clusters, FS shows consistently stronger phase-coupling than RS
+    across the cortical depth for all LFP bands (Fig. S6c ).
+  statistics:
+  - test: Mann-Whitney U test, two-sided
+    p: 0.05
+    p_relation: <
+    n: supragranular 37 FS and 107 RS, granular 54 FS and 185 RS, infragranular 112 FS and
+      453 RS
+  depends_on:
+  - fig3c-fs-stronger-earlier
+  criterion: Regions by distance from pia, supragranular (broadly layers 2-3), granular
+    (layer 4), infragranular (layers 5-6); the boundaries are not given. Readings, (a) the CCF
+    layer of the unit's peak channel in the session's channel table, (b) depth relative to
+    the CSD layer 4 centre, with layer 4 as the depths within 100 um of the centre. The
+    reading whose region counts come closer to the legend's is preferred. Kappa as
+    fig3c-fs-stronger-earlier. Reproduced when FS mean kappa exceeds RS in all 15 region and
+    band cells with p < 0.05 in at least 12; partially when FS exceeds RS in at least 12.
+- id: figs6d-rs3-supragranular-beta
+  statement: In the supragranular region the beta-band coupling strength (kappa) of RS3 is
+    almost double that of RS1.
+  source: Results, Distinct functional properties of the in vivo clusters, paragraph 4;
+    Figure S6d; Discussion, paragraph 2
+  quote: we found the most significant differences in the coupling strength of RS1-3 in
+    supragranular beta and low gamma, with kappa almost doubling between supragranular RS3 and
+    RS1 in beta
+  statistics:
+  - test: Mann-Whitney U test, two-sided
+    p: 0.05
+    p_relation: <
+  expected:
+  - quantity: ratio of RS3 to RS1 mean kappa, supragranular beta
+    value: 2
+    tolerance: 0.2
+  depends_on:
+  - figs6c-fs-stronger-across-depth
+  criterion: Regions and kappa as figs6c-fs-stronger-across-depth. Reproduced when the RS3 to
+    RS1 ratio of mean kappa in supragranular beta is within tolerance ("almost doubling" read
+    as 2, 10%) and the two-sided Mann-Whitney test gives p < 0.05; partially when RS3 exceeds
+    RS1 significantly but the ratio is outside tolerance.
+- id: fig4g-experiment-classifier-fs-rs
+  statement: A linear SVM trained on TPW and REP of in vivo units discriminates FS from RS with
+    a validation accuracy above 99%.
+  source: Results, Multimodal mapping between electrophysiology-, morphology-, and
+    Cre-reporter-based classes, paragraph 3; Figure 4g
+  quote: In the experiment-based classifier, we trained on one-channel EAP features (TPW, REP)
+    of in vivo units to discriminate between FS and RS clusters (training/validation set,
+    75%/25%), and classification accuracy on the validation data set exceeded 99%
+  expected:
+    quantity: validation accuracy, FS against RS
+    value: 99
+    unit: percent
+  depends_on:
+  - fig2-fs-rs-counts
+  criterion: As Exp_Model_Classifier.ipynb, which printed 99.62% (FS upsampled to balance,
+    z-scored TPW and REP, 100 resamplings each of 100 stratified 75/25 splits, linear SVC C =
+    1). Reproduced when the mean validation accuracy exceeds 99%; partially when it exceeds
+    95%.
+- id: fig5d-experiment-classifier-rs
+  statement: A classifier trained on the multi-channel in vivo features discriminates RS1 to
+    RS3 with accuracy above 99%.
+  source: Results, Composition and properties of multi-channel RS clusters, paragraph 2;
+    Figure 5d
+  quote: We also pursued the opposite direction by building the experiment-based classifier
+    trained on multi-channel in vivo EAP features to discriminate among RS1-3 and saw very high
+    classification accuracy (>99%; Fig. 5d ).
+  expected:
+    quantity: validation accuracy, RS1 to RS3
+    value: 99
+    unit: percent
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: Random forest for more than two classes (Methods; ecp_func.classifier, 20 trees,
+    gini), on z-scored 1/V below and 1/V above of RS units, classes upsampled to the largest
+    (ecp_func.upsampling_data), 100 stratified 75/25 splits. The notebook for this panel is
+    not in the repository; the 100 resamplings of the FS/RS notebook are followed. Reproduced
+    when mean validation accuracy exceeds 99%; partially when it exceeds 95%.
+- id: fig6a-fs1-symmetric
+  statement: The spike propagation symmetry index separates FS1 (symmetric propagation) from
+    FS2 and FS3 (asymmetric propagation).
+  source: Results, Multi-channel features separate inhibitory Pvalb and Sst, paragraph 1;
+    Figure 6a
+  quote: The spike propagation symmetry index separates FS1 from FS2-3 ... Kruskal-Wallis H
+    -test, F = 111.41, p -values corrected using the Holm-Bonferroni method for multiple
+    tests, *** p < 0.001
+  statistics:
+  - test: Kruskal-Wallis H-test, Holm-Bonferroni corrected
+    statistic: F = 111.41
+    p: 0.001
+    p_relation: <
+    corrected: Holm-Bonferroni
+    n: 130 FS1, 82 FS2, 69 FS3
+  depends_on:
+  - fig2d-three-subclusters-each
+  criterion: Symmetry index as Methods eq. 1 (the Source Data values are z-scored, which does
+    not change the ranks). Reproduced when the omnibus test and the Holm-corrected FS1 against
+    FS2 and FS1 against FS3 tests give p < 0.001 with FS1 lowest; partially at p < 0.05.
+- id: fig7-opto-unit-counts
+  statement: Opto-tagging found 25 well-isolated Pvalb units in 8 Pvalb-Cre mice and 18 Sst
+    units in 12 Sst-Cre mice.
+  source: Results, Comparisons with ground-truth channelrhodopsin-tagged Pvalb and Sst units in
+    vivo, paragraph 1; Figure 7c,d
+  quote: Extracellular recordings with Neuropixels in these animals detected 25 well-isolated
+    Pvalb units in 8 Pvalb-Cre mice and 18 Sst units in 12 Sst-Cre mice
+  expected:
+  - quantity: opto-tagged Pvalb units
+    value: 25
+    tolerance: 2.5
+  - quantity: opto-tagged Sst units
+    value: 18
+    tolerance: 1.8
+  criterion: Methods, Detection of opto-tagged neurons, 1 ms PSTH bins over the 10 ms square
+    pulses, spikes counted 2 to 8 ms after onset, tagged when the trial-averaged rate there
+    exceeds 25 Hz and 2.5 times the rate in the window just before onset; V1 units of the
+    Pvalb-IRES-Cre and Sst-IRES-Cre x Ai32 sessions. Open, (1) the baseline window, read as
+    (a) the 6 ms from -6 to 0 ms, (b) the 10 ms before onset; (2) isolation, the two readings
+    of fig1d-unit-count. Figure 7 legends and the Source Data give 24 Pvalb units; 24 is
+    taken as a second reading of the Pvalb count. Reproduced when under a reading both counts
+    fall within tolerance of either reported Pvalb count; the numbers of mice are reported.
+    When the dataset holds only some of these mice, the claim is judged on the counts per
+    mouse, as a deviation.
+- id: fig7d-pvalb-fs-sst-diffuse
+  statement: In one-channel feature space opto-tagged Pvalb units overlap the wild-type FS
+    cluster, while Sst units are more diffuse and span FS and RS.
+  source: Results, Comparisons with ground-truth channelrhodopsin-tagged Pvalb and Sst units in
+    vivo, paragraph 2; Figure 7d
+  quote: For one-channel EAP features (TPW, REP), the opto-tagged Pvalb units exhibit clear
+    overlap with FS from experiments with wild-type animals. Sst units are much more diffuse,
+    spanning across the FS/RS-space
+  depends_on:
+  - fig7-opto-unit-counts
+  - fig4g-experiment-classifier-fs-rs
+  criterion: Opto-tagged units placed in FS or RS by the experiment-based classifier of
+    fig4g-experiment-classifier-fs-rs (the paper's way of assigning new units to FS/RS).
+    Reproduced when more than half of the Pvalb units are FS, Sst units fall in both FS and
+    RS, and the share of Sst units in RS exceeds that of Pvalb units.
+- id: fig7e-pvalb-sst-one-channel
+  statement: Opto-tagged Pvalb and Sst units differ in TPW, REP and spike rate, Pvalb units
+    having narrower waveforms, shorter REP and higher rates.
+  source: Results, Comparisons with ground-truth channelrhodopsin-tagged Pvalb and Sst units in
+    vivo, paragraph 2; Figure 7e; Source Data sheet Fig7deg
+  quote: Direct comparison of one-channel features (TPW, REP) and in vivo activity metrics like
+    spike frequency show that Pvalb is well-separated from Sst (Fig. 7e , top).
+  statistics:
+  - test: Mann-Whitney U test, two-sided
+    p: 0.01
+    p_relation: <
+    n: 24 Pvalb and 18 Sst units
+  depends_on:
+  - fig7-opto-unit-counts
+  criterion: The legend marks the one-channel comparisons with ** or ***, so p < 0.01 is
+    recorded; which star goes with which panel could not be read. Reproduced when each of
+    TPW, REP and rate gives a two-sided Mann-Whitney p < 0.01 with Pvalb lower in TPW and REP
+    and higher in rate; partially when two of three do. The direction of each difference is
+    read from the medians of Source Data sheet Fig7deg (TPW 0.23 against 0.35 ms, REP 0.22
+    against 0.28 ms, rate 11.5 against 5.3 Hz); the text says only that they are well
+    separated.
+- id: fig7g-pvalb-more-symmetric
+  statement: Opto-tagged Pvalb units have more symmetric EAP propagation (a lower symmetry
+    index) than Sst units, as the models predict.
+  source: Results, Comparisons with ground-truth channelrhodopsin-tagged Pvalb and Sst units in
+    vivo, paragraph 2; Figure 7g
+  quote: A pairwise comparison of the symmetry index for the Pvalb and Sst optotagged units
+    confirms that Pvalb shows more symmetric EAP propagation compared to Sst (Fig. 7g )
+  statistics:
+  - test: two-sample t-test, two-sided
+    p: 0.012
+    n: 24 Pvalb and 18 Sst units
+  depends_on:
+  - fig7-opto-unit-counts
+  criterion: Symmetry index as Methods eq. 1 from each unit's 1/V below and 1/V above.
+    Reproduced when Pvalb mean is lower and the paper's two-sample procedure gives p < 0.05.
+- id: fig7h-pvalb-higher-cv
+  statement: During drifting gratings opto-tagged Pvalb units have higher spike time
+    variability (CV) than Sst units.
+  source: Results, Comparisons with ground-truth channelrhodopsin-tagged Pvalb and Sst units in
+    vivo, paragraph 3; Figure 7h, left
+  quote: First, we found that Pvalb exhibits higher spike time variability than Sst (Fig. 7h ,
+    left).
+  statistics:
+  - test: Mann-Whitney U test, two-sided
+    p: 0.0076
+    n: 24 Pvalb and 18 Sst units
+  depends_on:
+  - fig7-opto-unit-counts
+  criterion: CV of ISIs during drifting gratings (Methods eq. 7; the period read as in
+    fig3a-isi-fs-rs). Reproduced when the Pvalb median is higher and the two-sided
+    Mann-Whitney test gives p < 0.05.
+- id: fig7h-pvalb-theta-sst-later
+  statement: Opto-tagged Pvalb units phase-lock more strongly than Sst units to theta, and Sst
+    units spike about 40 to 50 degrees later than Pvalb units in beta, low gamma and high
+    gamma.
+  source: Results, Comparisons with ground-truth channelrhodopsin-tagged Pvalb and Sst units in
+    vivo, paragraph 3; Figure 7h, right
+  quote: Specifically, we found that Pvalb exhibits stronger phase coupling than Sst for slower
+    (theta) oscillations. Furthermore, Pvalb has a significantly different spike phase,
+    especially for faster oscillations (beta, low-, and high-gamma) than Sst, with Sst units
+    spiking in a later phase by about 40-50
+  statistics:
+  - test: Mann-Whitney U test, two-sided
+    p: 0.05
+    p_relation: <
+    n: 24 Pvalb and 18 Sst units
+  expected:
+  - quantity: Sst minus Pvalb mean preferred phase, beta, low gamma and high gamma
+    value: 45.5
+    tolerance: 9.5
+    unit: degrees
+  depends_on:
+  - fig7-opto-unit-counts
+  - fig3c-fs-stronger-earlier
+  criterion: Kappa and phase as fig3c-fs-stronger-earlier, during drifting gratings. The range
+    40 to 50 degrees widened by 10% of each bound is 36 to 55. Reproduced when theta kappa is
+    higher for Pvalb with p < 0.05 and, in each of beta, low and high gamma, the phase differs
+    with p < 0.05 and the Sst minus Pvalb difference of mean phases lies in 36 to 55 degrees;
+    partially when the theta result and some of the phase results hold.
+- id: fig4d-ap-sp-models-tpw-rep
+  statement: Simulated EAPs of aspiny (AP) models have significantly lower TPW and REP than
+    those of spiny (SP) models, as in vivo FS against RS.
+  source: Results, Multimodal mapping between electrophysiology-, morphology-, and
+    Cre-reporter-based classes, paragraph 1; Figure 4d
+  quote: simulated AP cells exhibit significantly lower TPW (two-sample t test, p = 0.00025) and
+    REP (Mann-Whitney U test, p = 0.00024) than SP ones
+  statistics:
+  - about: TPW, AP against SP models
+    test: two-sample t-test, two-sided
+    p: 0.00025
+    n: 18 AP and 15 SP models
+  - about: REP, AP against SP models
+    test: Mann-Whitney U test, two-sided
+    p: 0.00024
+    n: 18 AP and 15 SP models
+  data: elsewhere
+  where: GitHub yinawei/Mouse-all-active-models-EAP (Zenodo doi:10.5281/zenodo.7679762);
+    model features in yinawei/Mouse_V1_EAP_Analysis Examples/data/model_features.csv (Zenodo
+    doi:10.5281/zenodo.7679748); Source Data sheet Fig4cd
+  criterion: Tests on the model features. Reproduced when both tests give p < 0.001 with AP
+    lower.
+- id: fig4e-in-vitro-ap-sp
+  statement: The in vitro cells behind the AP and SP models differ significantly in spike
+    width, adaptation, spike rate and f-I slope.
+  source: Results, Multimodal mapping between electrophysiology-, morphology-, and
+    Cre-reporter-based classes, paragraph 1; Figure 4e
+  quote: show statistically significant differences in intrinsic properties known to
+    differentiate between major excitatory and inhibitory classes (spike width, adaptation,
+    spike rate, and f-I slope; Fig. 4e )
+  statistics:
+  - test: Mann-Whitney U test or two-sample t-test, two-sided
+    p: 0.001
+    p_relation: <
+    n: 18 AP and 15 SP neurons
+  data: elsewhere
+  where: Allen Cell Types Database (celltypes.brain-map.org), cell ids of Table S1; Source Data
+    sheet Fig4e
+  criterion: The tests the Fig 4e legend assigns (Mann-Whitney for width, adaptation and f-I
+    slope; t-test for spike rate). Reproduced when all four give p < 0.001; partially at p <
+    0.05.
+- id: fig4f-model-classifier
+  statement: A linear SVM trained on TPW and REP of the models separates AP from SP with 82.5%
+    validation accuracy, and applied to in vivo units labels most FS units AP and most RS units
+    SP.
+  source: Results, Multimodal mapping between electrophysiology-, morphology-, and
+    Cre-reporter-based classes, paragraph 2; Figure 4f
+  quote: This process yielded 82.5% classification accuracy on the validation data set ...
+    Most FS units are labeled as AP neurons, while the majority of RS is SP
+  expected:
+    quantity: validation accuracy, AP against SP models
+    value: 82.5
+    tolerance: 8.25
+    unit: percent
+  data: with_inputs
+  depends_on:
+  - fig2-fs-rs-counts
+  criterion: As Exp_Model_Classifier.ipynb (printed 81.67%), model features from
+    model_features.csv, z-scored together with the upsampled set, applied to the z-scored in
+    vivo TPW and REP. Reproduced when accuracy is within tolerance and more than half of FS
+    are labelled AP and more than half of RS SP.
+- id: fig4g-models-map-to-fs-rs
+  statement: The experiment-based classifier labels most AP models FS and most SP models RS.
+  source: Results, Multimodal mapping between electrophysiology-, morphology-, and
+    Cre-reporter-based classes, paragraph 3; Figure 4g
+  quote: When applying the classifier on the test datasets, i.e., model-labeled AP and SP
+    neurons, most AP neurons were labeled as FS and most SP neurons as RS units
+  data: with_inputs
+  depends_on:
+  - fig4g-experiment-classifier-fs-rs
+  criterion: The classifier of fig4g-experiment-classifier-fs-rs applied to the model features
+    of model_features.csv, each model labelled by its most frequent prediction. Reproduced
+    when more than half of the 18 AP models are FS and more than half of the 15 SP models RS.
+- id: fig4h-cre-lines-map
+  statement: Models of excitatory Cre lines (Scnn1a, Rorb, Nr5a1) are mainly classified RS and
+    models of inhibitory lines (Pvalb, Sst) mainly FS.
+  source: Results, Multimodal mapping between electrophysiology-, morphology-, and
+    Cre-reporter-based classes, paragraph 3; Figure 4h
+  quote: The excitatory classes (Scnn1a, Rorb, and Nr5a1) are mainly classified as RS, whereas
+    inhibitory classes (Pvalb and Sst) are mainly classified as FS
+  data: with_inputs
+  depends_on:
+  - fig4g-models-map-to-fs-rs
+  criterion: Labels of fig4g-models-map-to-fs-rs grouped by the cre_lines column of
+    model_features.csv. Reproduced when more than half of each excitatory line is RS and more
+    than half of each inhibitory line FS; partially when this holds pooled over excitatory
+    and over inhibitory lines.
+- id: fig5a-sp-models-three-clusters
+  statement: K-means on the simulated multi-channel features of the 15 SP models gives three
+    clusters (SP1 to SP3, with 5, 7 and 3 models), as many as the RS clusters in vivo.
+  source: Results, Composition and properties of multi-channel RS clusters, paragraph 1;
+    Figure 5a,b
+  quote: Two separate clustering analyses (elbow method and the density function) determined
+    the number of SP clusters in our simulated data to be three, i.e., SP1-3.
+  expected:
+  - quantity: SP1 models
+    value: 5
+    tolerance: 0.5
+  - quantity: SP2 models
+    value: 7
+    tolerance: 0.7
+  - quantity: SP3 models
+    value: 3
+    tolerance: 0.3
+  data: elsewhere
+  where: model_features.csv in yinawei/Mouse_V1_EAP_Analysis (Zenodo doi:10.5281/zenodo.
+    7679748); Source Data sheet Fig5a
+  criterion: The clustering of fig2-one-channel-two-clusters on the SP models' 1/V below and
+    1/V above. Reproduced when both methods give K = 3 and the counts are 5, 7 and 3.
+- id: fig5c-sp-rs-two-way-mapping
+  statement: A random forest trained on the SP models' multi-channel features identifies SP1 to
+    SP3 with more than 94% accuracy and maps RS1 to SP1, RS2 to SP2 and RS3 to SP3; the
+    experiment-based classifier maps SP1 to SP3 back to RS1 to RS3.
+  source: Results, Composition and properties of multi-channel RS clusters, paragraph 2;
+    Figure 5c,d
+  quote: we applied the model-based classifier on the test experimental data sets (in vivo
+    clustered RS1-3) and found that, indeed, RS1 units are mapped to SP1, RS2 to SP2, and RS3
+    to SP3 with high fidelity (performance... >94%; Fig. 5c )
+  expected:
+    quantity: model-based classifier accuracy
+    value: 94
+    unit: percent
+  data: with_inputs
+  depends_on:
+  - fig5a-sp-models-three-clusters
+  - fig5d-experiment-classifier-rs
+  criterion: Random forest as fig5d-experiment-classifier-rs, trained on SP1 to SP3 and
+    applied to RS1 to RS3, and the reverse. Reproduced when the model-based validation
+    accuracy exceeds 94%, the most frequent SP label of each RS cluster is the matching one,
+    and each SP cluster's models are labelled the matching RS cluster by majority.
+- id: fig5e-ca-lva
+  statement: Axonal low-voltage-activated Ca conductance is higher in SP1 and SP3 models than
+    in SP2 models, with a large effect size.
+  source: Results, Composition and properties of multi-channel RS clusters, paragraph 3;
+    Figure 5e
+  quote: Pairwise comparison between SP1 and 3 model conductances indicates that the axonal
+    low-voltage activated Ca-conductance is increased for SP1 and SP3 vs. SP2 (Cohen's d effect
+    size > 0.8; Fig. 5e )
+  data: elsewhere
+  where: GitHub yinawei/Mouse-all-active-models-EAP (Zenodo doi:10.5281/zenodo.7679762);
+    Source Data sheet Fig5e
+  criterion: Cohen's d of axonal gbar_Ca_LVA. Reproduced when d > 0.8 for SP1 against SP2 and
+    SP3 against SP2, with SP2 lower.
+- id: fig5g-bifurcation-velocity-sp
+  statement: Across SP models the morphological bifurcation distance is linearly related to the
+    inverse spike propagation velocity (slope 2.7, r = 0.8).
+  source: Results, Composition and properties of multi-channel RS clusters, paragraph 3;
+    Figure 5g, right
+  quote: the morphology bifurcation distance exhibits a strong linear relationship with the
+    spike propagation speed across SP1-3 (Fig. 5g right, slope = 2.7, the correlation
+    coefficient r = 0.8
+  statistics:
+  - test: linear regression
+    statistic: r = 0.8, slope = 2.7
+    p: 1.02e-07
+    n: 15 SP models, above and below soma
+  expected:
+  - quantity: slope
+    value: 2.7
+    tolerance: 0.27
+  - quantity: correlation coefficient
+    value: 0.8
+    tolerance: 0.08
+  data: elsewhere
+  where: Allen Cell Types Database reconstructions (cell ids of Table S1); Source Data sheet
+    Fig5g
+  criterion: Bifurcation distance as Methods eq. 2 (normalised, nodes beyond 200 um excluded,
+    summed above and below soma) against 1/V above and 1/V below. Reproduced when slope and r
+    fall within tolerance with p < 0.001.
+- id: fig5j-sp1-rate-tau
+  statement: In vitro, SP1 neurons reach a higher maximum spike rate than SP2 neurons and are
+    more electrotonically compact (differing cellular time constant).
+  source: Results, Composition and properties of multi-channel RS clusters, paragraph 4;
+    Figure 5j
+  quote: Specifically, SP1 neurons achieve a higher spike rate especially compared to SP2 ...
+    Moreover, SP1 is more electrotonically compact than SP2 (Fig. 5j ).
+  data: elsewhere
+  where: Allen Cell Types Database (cell ids of Table S1); Source Data sheet Fig5j
+  criterion: Cohen's d (the legend marks d > 0.8). Reproduced when SP1 against SP2 gives d >
+    0.8 for maximum spike rate, SP1 higher, and for tau.
+- id: fig6b-pvalb-sst-models-symmetry
+  statement: The symmetry index separates Pvalb from Sst models, Pvalb models being more
+    symmetric.
+  source: Results, Multi-channel features separate inhibitory Pvalb and Sst, paragraph 1;
+    Figure 6b, right
+  quote: Notably, a clearer separation between Pvalb and Sst models was achieved based on the
+    symmetry index
+  statistics:
+  - test: two-sample t-test, two-sided
+    p: 0.000998
+    n: 9 Pvalb and 9 Sst models
+  data: elsewhere
+  where: model_features.csv in yinawei/Mouse_V1_EAP_Analysis (Zenodo doi:10.5281/zenodo.
+    7679748); Source Data sheet Fig6b
+  criterion: Symmetry index of the models. Reproduced when Pvalb mean is lower with p < 0.01.
+- id: fig6cf-kv31
+  statement: Pvalb and Sst models differ significantly in three conductances, the largest
+    effect being dendritic Kv3.1.
+  source: Results, Multi-channel features separate inhibitory Pvalb and Sst, paragraph 2;
+    Figure 6c,f
+  quote: Pairwise comparison between Pvalb and Sst models at the level of ionic conductances
+    reveals statistically significant differences in three conductances, with the effect size
+    being largest for Kv3.1
+  statistics:
+  - test: Mann-Whitney U test, two-sided
+    p: 0.05
+    p_relation: <
+    n: 9 Pvalb and 9 Sst models
+  data: elsewhere
+  where: GitHub yinawei/Mouse-all-active-models-EAP (Zenodo doi:10.5281/zenodo.7679762);
+    Source Data sheet Fig6cf
+  criterion: Mann-Whitney tests of every conductance. Reproduced when exactly three give p <
+    0.05 and dendritic Kv3.1 has the largest |d| among them.
+- id: fig6d-sst-asymmetric-morphology
+  statement: Sst morphologies are asymmetric, with bifurcation distance above the soma longer
+    than below, while Pvalb morphologies are symmetric; Pvalb and Sst differ below the soma
+    (p = 0.03) but not above (p = 0.45).
+  source: Results, Multi-channel features separate inhibitory Pvalb and Sst, paragraph 2;
+    Figure 6d
+  quote: Specifically, while Pvalb morphologies are symmetric (i.e., above vs. below bifurcation
+    distance remains similar), Sst possesses a more asymmetric morphology with the bifurcation
+    distance above being longer than below their soma
+  statistics:
+  - about: above soma, Pvalb against Sst
+    test: two-sample t-test, two-sided
+    p: 0.45
+    n: 9 Pvalb and 9 Sst
+  - about: below soma, Pvalb against Sst
+    test: two-sample t-test, two-sided
+    p: 0.03
+    n: 9 Pvalb and 9 Sst
+  data: elsewhere
+  where: Allen Cell Types Database reconstructions (cell ids of Table S1); Source Data sheet
+    Fig6d
+  criterion: Bifurcation distances as fig5g-bifurcation-velocity-sp. Reproduced when the below
+    comparison gives p < 0.05, the above one p >= 0.05, and Sst |above| exceeds |below|.
+- id: fig6e-bifurcation-velocity-inhibitory
+  statement: Across Pvalb and Sst models the bifurcation distance above and below the soma is
+    linearly related to the inverse EAP propagation velocity (slope 2.67, r = 0.8).
+  source: Results, Multi-channel features separate inhibitory Pvalb and Sst, paragraph 2;
+    Figure 6e
+  quote: We found that the bifurcation distance above and below the soma is robustly related to
+    the inverse of the EAP propagation velocity (Fig. 6e , right, slope = 2.67, the correlation
+    coefficient r = 0.8
+  statistics:
+  - test: linear regression
+    statistic: r = 0.8, slope = 2.67
+    p: 5.12e-09
+    n: 9 Pvalb and 9 Sst models, above and below soma
+  expected:
+  - quantity: slope
+    value: 2.67
+    tolerance: 0.267
+  - quantity: correlation coefficient
+    value: 0.8
+    tolerance: 0.08
+  data: elsewhere
+  where: Allen Cell Types Database reconstructions (cell ids of Table S1); Source Data sheet
+    Fig6d
+  criterion: As fig5g-bifurcation-velocity-sp, on the 18 inhibitory models.
+- id: fig6g-pvalb-sst-in-vitro
+  statement: In vitro, Pvalb and Sst neurons differ in maximum spike rate, rheobase and resting
+    potential among other properties.
+  source: Results, Multi-channel features separate inhibitory Pvalb and Sst, paragraph 3;
+    Figure 6g
+  quote: Maximum spike rate to dc current injections separates between Pvalb and Sst neurons.
+    Mann-Whitney U test, two-sided, p = 0.0067
+  statistics:
+  - about: maximum spike rate
+    test: Mann-Whitney U test, two-sided
+    p: 0.0067
+    n: 9 Pvalb and 9 Sst neurons
+  data: elsewhere
+  where: Allen Cell Types Database (cell ids of Table S1); Source Data sheet Fig6g
+  criterion: Reproduced when maximum spike rate gives p < 0.01 and rheobase and resting
+    potential each p < 0.05.
+- id: figs8-rotation-symmetry
+  statement: The angle between the probe and the morphology changes multi-channel EAP metrics,
+    including the symmetry index, of Pvalb and Sst models, with some angles enlarging and some
+    hiding the Pvalb against Sst difference.
+  source: Results, Multi-channel features separate inhibitory Pvalb and Sst, paragraph 4;
+    Figure S8
+  quote: we varied the angle between the extracellular probe and morphology across Pvalb and Sst
+    models and found that, indeed, certain EAP multi-channel metrics, including the symmetry
+    index, are affected by this parameter
+  data: elsewhere
+  where: GitHub yinawei/Mouse-all-active-models-EAP (Zenodo doi:10.5281/zenodo.7679762)
+  criterion: Simulation of rotated morphologies; the angles are shown only in Fig S8a, which
+    was not read. Reproduced when the Pvalb against Sst symmetry-index test is significant at
+    some angles and not at others.
