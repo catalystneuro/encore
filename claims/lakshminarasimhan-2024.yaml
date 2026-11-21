@@ -70,9 +70,12 @@
 #    concatenated in time, h(t) = [h_l(t) h_r(t)] for ALM and r(t) likewise for each thalamic unit
 #    (Methods; Figure S6B legend).
 # W7 Readout. Ordinary least squares of c(t), -1 for every bin of left trials and +1 for right,
-#    on h(t) (Methods). An intercept is included (standard). Figure 6C gives n = 5 sessions, so the
-#    readout and its PC alignment are computed per session from that session's ALM units, and
-#    averaged over sessions.
+#    on h(t) (Methods). An intercept is included (standard). Which ALM population is used is open
+#    between two passages. (R1) Figure 6C gives n = 5 sessions, so the readout and its PC alignment
+#    are computed per session from that session's ALM units, and averaged over sessions. (R2) The
+#    Figure S6 legend says the ALM population (n=151) was subsampled to 53 units "in all analysis",
+#    so the readout is computed on the 151 units pooled as in W9 (P1), subsampled at random to 53,
+#    averaged over 20 subsamples.
 # W8 PCs. Eigendecomposition of the covariance of the training-set h(t) (mean-subtracted), top
 #    k = 16 eigenvectors (Methods). Readout in the PC basis w_PC = w U_1:16, taken in absolute
 #    value as for the motor task (Methods, Estimation of readout weights); the alignment of the
@@ -82,7 +85,9 @@
 #    (n=151) was subsampled to match the dataset from motor cortex (n=53 +/- 9)". Readings
 #    (P1) the 151 ALM units pooled over the five sessions as one trial-averaged population,
 #    subsampled at random to 53 units, the result averaged over 20 subsamples; (P2) the same
-#    without subsampling; (P3) each thalamic unit with the ALM units of its own session.
+#    without subsampling; (P3) each thalamic unit with the ALM units of its own session. P3 applies
+#    only to sessions that hold both ALM and thalamic units; the Methods say the recordings were
+#    made "in separate sessions" in ALM and thalamus.
 # W10 Thalamic regression. For each thalamic unit, OLS of r(t) on the projections h_k(t) =
 #    h(t) U_1:k, k = 1 to 16, and on all cortical units; R2 on the test set, R2(k) = 1 -
 #    Var[r - w_k h_k] / Var[r] (Methods). Normalization of R2(k), open between the Methods and the
@@ -126,8 +131,9 @@ claims:
   criterion: The model of STAR Methods (N = 256, g = 1.5, dt = 0.1 tau, RFLO with eta = 0.1 on
     thalamocortical and readout weights, random fixed corticothalamic weights, 10,000 trials), on
     the basic motor control task, for M = 1, 2, 4, ..., 128 (Figure 1 legend), 40 initializations
-    each (Quantification). Reproduced when the median 1 - R2 decreases from M = 1 to M = 128 and
-    the Spearman correlation between M and the medians is negative.
+    each (Quantification). The paper gives no test; the Spearman correlation is a standard choice.
+    Reproduced when the median 1 - R2 decreases from M = 1 to M = 128 and the Spearman correlation
+    between M and the medians is negative.
 - id: fig1d-cortical-feedback-alignment
   statement: The alignment between feedback weights B and readout weights W_O in cortical neurons
     rises as learning performance improves, a sign of credit assignment in thalamocortical synapses.
@@ -141,8 +147,9 @@ claims:
   criterion: Same simulations as fig1c-tc-learning-improves-with-thalamus. Alignment is the
     normalized dot product of B and W_O (STAR Methods, Alignment between weights), normalized as
     (beta - beta_0)/(1 - beta_0) with beta_0 the alignment with a random direction (Figure 1
-    legend). Reproduced when the median normalized alignment at the end of learning increases with
-    M (Spearman correlation positive).
+    legend). The paper gives no test; the Spearman correlation is a standard choice. Reproduced when
+    the median normalized alignment at the end of learning increases with M (Spearman correlation
+    positive).
   depends_on:
   - fig1c-tc-learning-improves-with-thalamus
 - id: fig1cd-corticothalamic-plasticity-fails
@@ -176,7 +183,10 @@ claims:
   data: elsewhere
   where: Not deposited; written from STAR Methods and the Figure S1D legend
   criterion: As fig1cd-corticothalamic-plasticity-fails, with initial weights of variance 1/N (the
-    paper says "~O(1/N)" and gives no constant). Reproduced when the median normalized thalamic
+    paper says "~O(1/N)" and gives no constant). Which weights start small is open. The Results
+    and Table S1 (S1D, thalamocortical weights "starting from a small value") say thalamocortical;
+    the Figure S1D legend says "initial corticothalamic weights". The thalamocortical reading is
+    the main one (two passages); the corticothalamic reading is run as a variant. Reproduced when the median normalized thalamic
     feedback alignment exceeds its bootstrap standard error above 0 for most M and the two-site
     model has lower median 1 - R2 than the thalamocortical-only model for most M.
 - id: fig2d-metalearned-error-reduction
@@ -217,7 +227,9 @@ claims:
   data: elsewhere
   where: Not deposited; written from STAR Methods, Meta-learning, and the Figure S2A legend
   criterion: As fig2d-metalearned-error-reduction, with random B and readout weights updated by the
-    delta rule (Table S1, S2A). Reproduced when the median error with optimized weights is lower
+    delta rule (Table S1, S2A), and, during the learning phase, the component of the optimized
+    corticothalamic weights aligned with the readout weights updated while the orthogonal
+    components stay fixed (Figure S2A legend; STAR Methods, Meta-learning). Reproduced when the median error with optimized weights is lower
     than with random weights in both tasks by a two-sided Wilcoxon rank-sum test at p < 0.05 over
     the 40 runs (the paper names no test).
   depends_on:
@@ -242,11 +254,29 @@ claims:
   where: Not deposited; written from STAR Methods, Meta-learning and Alignment between weights
   criterion: The meta-learned weights of fig2d-metalearned-error-reduction, one per initialization
     (40); alignment of the optimized weight vector with W_O and with the leading eigenvector of the
-    cortical covariance, normalized by beta_0 (Results). Two-sided paired t test over runs in each
-    task. Reproduced when readout alignment exceeds PC alignment in motor control and PC exceeds
+    cortical covariance, normalized by beta_0 (Results). Paired t test over runs in each task (the
+    paper does not say one- or two-sided; two-sided used). Reproduced when readout alignment exceeds PC alignment in motor control and PC exceeds
     readout in working memory, each at p < 0.05.
   depends_on:
   - fig2d-metalearned-error-reduction
+- id: figs2b-prealignment-irrelevant
+  statement: The alignments of meta-learned corticothalamic weights with the readout and leading PC
+    directions do not depend on whether the weights start orthogonal to or aligned with the readout
+    direction.
+  source: Results, Optimal corticothalamic connectivity improves learning performance, paragraph 4;
+    Figure S2B
+  quote: Pre-aligning corticothalamic weights to the readout direction at the beginning of the
+    meta-learning procedure did not alter these results
+  data: elsewhere
+  where: Not deposited; the paper's code at commit 2aa94dd has no meta-learning; written from STAR
+    Methods, Meta-learning, and the Figure S2B legend
+  criterion: As fig2e-alignment-task-dependent, with the corticothalamic weights at the start of
+    meta-learning either orthogonal to or perfectly aligned with the readout direction (Figure S2B
+    legend; N = 256, M = 32). The paper gives no test or threshold for "did not alter". Reproduced
+    when, from both starting points, the pattern of fig2e-alignment-task-dependent holds by its
+    test; the alignments from both starts are reported.
+  depends_on:
+  - fig2e-alignment-task-dependent
 - id: fig3ab-single-thalamic-neuron
   statement: With one thalamic neuron, readout-aligned corticothalamic weights give the best learning
     of motor control and PC-aligned weights the best learning of working memory.
@@ -323,10 +353,12 @@ claims:
     sizes of the cortical network
   data: elsewhere
   where: Not deposited; written from STAR Methods, Models of distributed thalamic representation
-  criterion: N = 64 to 2,048 (powers of two), M = ceil(N/100) and ceil(N/10), rho = 1, readout
-    alignment for motor control and PC alignment for working memory, 40 runs; benefit (1 -
-    R0^2)/(1 - R2) (Figure 4 legend). Reproduced when the median benefit exceeds 1 at every N for
-    both ratios and both tasks.
+  criterion: N = 64 to 2,048 (powers of two), M = ceil(N/100) and ceil(N/10), readout alignment for
+    motor control and PC alignment for working memory, 40 runs; benefit (1 - R0^2)/(1 - R2)
+    (Figure 4 legend). The value of rho for Figure 4A and 4B is not given; rho = 1 (the value the
+    Methods give for all other subspace-aligned simulations) is an assumption. The paper gives no
+    threshold for "stable" or "modest"; the benefit at both ratios is reported. Reproduced when the
+    median benefit exceeds 1 at every N for both ratios and both tasks.
 - id: fig4cd-partial-alignment
   statement: Corticothalamic weights that carry only a fraction of the variance in the readout
     direction or the leading PC still improve learning.
@@ -360,6 +392,44 @@ claims:
     memory.
   depends_on:
   - fig4ab-network-size-compression
+- id: figs3c-readout-shifts-with-complexity
+  statement: In the motor control model, the readout shifts toward lower-variance cortical PCs as
+    task complexity increases.
+  source: Results, Subspace-aligned corticothalamic connectivity outperforms random corticothalamic
+    projection, paragraph 7; Figure S3C
+  quote: Furthermore, the readout shifts toward PCs with even lower variance as the task complexity
+    is increased
+  data: elsewhere
+  where: Not deposited; written from STAR Methods, the Figure S3 legend and Table S1
+  criterion: Motor control task with c = 1 to 5 (STAR Methods, Task description), N = 256,
+    thalamocortical weights by RFLO and corticothalamic weights partially aligned with the readout
+    (Table S1, S3C), 40 runs. Measure, the index of the PC with the highest contribution to the
+    readout weights (Figure S3C legend), taken as the largest |W_O . u_i|. Open details, named as
+    readings. M is not given for S3C (the S3A and S3B legend gives M = 16); M = 16 is used. rho is
+    not given; rho^2 = 0.5 and 1 are run. Whether the PCs are taken before or after learning is not
+    given; both are run. The paper gives no test. Reproduced when, under one reading, the median
+    index at c = 5 is higher than at c = 1 and the Spearman correlation between c and the median
+    index (a standard choice) is positive.
+- id: figs4cd-gradual-structure
+  statement: Corticothalamic structure still improves learning when it is established gradually,
+    by slowly aligning the weights with the readout (motor control) or the leading PC (working
+    memory) during thalamocortical learning.
+  source: Results, Subspace-aligned corticothalamic connectivity outperforms random corticothalamic
+    projection, paragraph 8; Figure S4C and S4D
+  quote: we found that structure in the corticothalamic connectivity is useful even if this
+    structure is established gradually in conjunction with the learning of thalamocortical synapses
+  data: elsewhere
+  where: Not deposited; written from the Figure S4 legend
+  criterion: Models of fig3ab-single-thalamic-neuron with corticothalamic weights updated as W_k =
+    (1 - beta) W_(k-1) + beta u, u the readout (motor control) or the leading PC (working memory)
+    (Figure S4 legend), 40 runs. Open details. The starting weights are not given; random weights
+    N(0, 1/N) as in the random model are used. M is not given; M = 1 as in Figure 3A and 3B is
+    used. The beta values are not given (the figure axis is labeled "Corticothalamic learning
+    rate"); 1e-4, 1e-3, 1e-2 and 1e-1 are used. The paper gives no test. Reproduced when, in both
+    tasks, the median 1 - R2 is lower than that of the random model at every beta used; the values
+    are shown for every beta.
+  depends_on:
+  - fig3ab-single-thalamic-neuron
 - id: figs4ab-needs-thalamocortical-learning
   statement: Structured corticothalamic weights give no benefit unless thalamocortical synapses are
     learned.
@@ -441,8 +511,7 @@ claims:
   statement: In the delayed reaching task, the best model sends PCs to the thalamic nucleus active
     during preparation and the readout to the nucleus active during execution, and it reaches all
     targets well.
-  source: Results, Findings generalize to composite motor/memory task, paragraph 3; Figure 5B and 5C;
-    Figure S5J
+  source: Results, Findings generalize to composite motor/memory task, paragraph 3; Figure 5B and 5C
   quote: maximal performance was obtained in a model that conveyed PCs and readout signals to the
     thalamic nucleus that engaged in learning during preparation and execution, respectively
   data: elsewhere
@@ -452,6 +521,24 @@ claims:
     targets, go cue between 5 and 20 tau), the nine combinations of random, PC and readout for the
     preparatory and execution modules, 40 runs each. Reproduced when PC (prep) with readout (exec)
     has the lowest median 1 - R2 of the nine.
+- id: figs5j-reaching-robust
+  statement: In the delayed reaching task, the advantage of PC-aligned preparatory and
+    readout-aligned execution corticothalamic weights holds across numbers of reach targets and
+    across maximum delays.
+  source: Results, Findings generalize to composite motor/memory task, paragraph 3; Figure S5J
+  quote: The results were unchanged as we varied the number of target locations or the
+    distribution of delays
+  data: elsewhere
+  where: Not deposited; written from STAR Methods, Reaching, the Figure S5J legend and the reaching
+    code at commit 2aa94dd
+  criterion: As fig5b-reaching-pc-prep-readout-exec, comparing the four models of Figure S5J (random,
+    PC prep with readout exec, readout prep with readout exec, PC prep with PC exec). Delays drawn
+    from U[5, tmax] tau (Figure S5J legend). The grids are given only as figure axis labels, which
+    the text garbles (number of targets up to about 12; tmax about 10 to 25 tau); 4, 8 and 12
+    targets and tmax = 10, 15, 20 and 25 tau are used. Reproduced when PC prep with readout exec has
+    the lowest median loss of the four at every grid point.
+  depends_on:
+  - fig5b-reaching-pc-prep-readout-exec
 - id: fig6-wm-choice-r2
   statement: In the working memory task, ALM population activity explains the animal's choice well
     (R2 = 0.97).
@@ -462,8 +549,8 @@ claims:
     value: 0.97
     tolerance: 0.097
   criterion: Methods W1 to W7. R2 of the test-set c(t) predicted from the test-set h(t) with the
-    training-set weights, per session, and the mean over the five sessions; trial readings T1 and
-    T2. Reproduced when the value is within tolerance under one reading (the upper bound is 1).
+    training-set weights, under readings R1 (per session, mean over the five sessions) and R2 (W7);
+    trial readings T1 and T2. Reproduced when the value is within tolerance under one reading (the upper bound is 1).
   depends_on:
   - wm-sessions-link
 - id: fig6-motor-hand-r2
@@ -483,8 +570,9 @@ claims:
   source: Results, Data are consistent with model predictions, paragraph 3; Figure 6C (blue)
   quote: In mice performing the working memory task, leading PCs of the frontal cortex activity had a
     large influence on the animal ... behavioral choice
-  criterion: Methods W1 to W8; alignment of the readout with each of PCs 1 to 16 per session, mean
-    over the five sessions (Figure 6C, n = 5). The paper gives no threshold for "leading" or "large";
+  criterion: Methods W1 to W8; alignment of the readout with each of PCs 1 to 16, per session with
+    the mean over the five sessions (W7 R1, Figure 6C, n = 5), and on the pooled subsampled
+    population (W7 R2). The paper gives no threshold for "leading" or "large";
     readings (a) the PC with the largest mean alignment is PC 1 or 2; (b) the mean alignment over
     PCs 1 to 3 exceeds the mean over PCs 4 to 16. Reproduced when both hold under one trial reading,
     partially reproduced when one holds.
@@ -512,7 +600,7 @@ claims:
   criterion: Methods W1 to W6, W9 and W10, R2 from all cortical units of the reading of W9 (in P1,
     53 units); mean over the 72 thalamic units. The tolerance is the paper's stated spread (taken as
     the SEM). Reproduced when the mean is within tolerance under one combination of the T and P
-    readings; partially reproduced when the mean is between 0.6 and 0.8 under one.
+    readings.
   depends_on:
   - wm-sessions-link
 - id: figs6d-motor-thalamic-r2
@@ -596,10 +684,31 @@ claims:
     p: 0.17
   criterion: A claim of absence, judged on the paper's test for the working memory data. Methods W1
     to W10; corticothalamic weights of each thalamic unit from the regression on all 16 PCs, mapped
-    back to unit space (w U_1:16^T); alignment with PC 1 and with the readout direction (W7)
+    back to unit space (w U_1:16^T); the paper does not say which regression gives these weights,
+    and the regression on all cortical units (W10) is run as a variant; alignment with PC 1 and with the readout direction (W7)
     estimated on the same cortical population, as |cos| (Methods, Alignment between weights). The paper does not state the direction
     of the one-sided test; it is taken as PC greater than readout, the model's prediction for working
     memory (Results). Reproduced when the one-sided paired t test over the 72 units gives p >= 0.05;
     the p-value and the mean difference are reported, and compared with 0.17 and 0.09.
   depends_on:
   - wm-sessions-link
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2e-alignment-task-dependent. No change to values; the two p-values the checker could not find are printed as "1.6 × 10 −4" and "2.8 × 10 −3" (Results, paragraph 4) and match 0.00016 and 0.0028. Said the paper does not give the sidedness of the paired t test.
+  - Header W7, fig6-wm-choice-r2, fig6c-wm-leading-pcs-drive-choice. The Figure S6 legend says the ALM population of 151 was subsampled to 53 "in all analysis", which the readout criteria ignored. Named the readings R1 (per session, Figure 6C n = 5) and R2 (pooled 151 units subsampled to 53) and added R2 to both criteria.
+  - Header W9. Said P3 applies only to sessions that hold both ALM and thalamic units, since the Methods say ALM and thalamus were recorded in separate sessions.
+  - fig1c-tc-learning-improves-with-thalamus, fig1d-cortical-feedback-alignment. Said the paper gives no test and the Spearman correlation is a standard choice.
+  - figs1d-small-initial-weights. The Results and Table S1 say thalamocortical weights start small, the Figure S1D legend says corticothalamic. Named the conflict, with thalamocortical as the main reading and corticothalamic as a variant.
+  - figs2a-random-feedback. Added the update of the readout-aligned component of the optimized corticothalamic weights during learning (Figure S2A legend; STAR Methods, Meta-learning), which the criterion left out.
+  - fig4ab-network-size-compression. rho = 1 was stated as if given; the paper gives rho only for the other simulations, so it is now named an assumption. Said "stable" and "modest" have no threshold in the paper.
+  - figs6d-wm-thalamic-r2. Removed the "partially reproduced" band of 0.6 to 0.8, a tolerance with no basis in the paper and no reason given.
+  - figs6f-ct-alignment-not-significant. The paper does not say which regression gives the corticothalamic weights; named the regression on all cortical units as a variant.
+  - fig5b-reaching-pc-prep-readout-exec. Dropped Figure S5J from the source; its finding is now its own claim.
+  - Added figs2b-prealignment-irrelevant, figs3c-readout-shifts-with-complexity, figs4cd-gradual-structure and figs5j-reaching-robust. These are findings stated in the Results with their own panels that had no claim.
+  - Open. The Figure S6F p-values (0.09, 0.17) are figure labels; which task each belongs to needs the figure, which could not be rendered here.
+  - Open. Whether ALM and thalamic units share sessions in the five sessions, and so whether n = 5 in Figure 6C means sessions with ALM units, is not settled by the paper; the author finds it in the data (wm-sessions-link).
+  - Open. Many simulation grids (corticothalamic learning rates, noise levels, rho values, beta values, target and delay grids) are not in the text; the criteria name the choices made. These claims are all data elsewhere and do not bear on DANDI:000009.
