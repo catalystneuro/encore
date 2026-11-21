@@ -20,7 +20,8 @@ claims/russo-2025.yaml, whose criteria cite the paper's code):
   low, intermediate and high intensities (Methods, three intensities per animal).
 - State: rest when the mean wheel speed from -0.5 to +0.5 s is below 0.1 cm/s, active above
   (Methods, Evoked potentials analyses).
-- EEG: the -3 to +3 ms artifact replaced by the reversed -9 to -3 ms signal, 0.5 Hz third-order
+- EEG: the -3 to +3 ms artifact (at 2500 Hz, -3.2 to +2.4 ms) replaced by the reversed preceding
+  signal of the same length, 0.5 Hz third-order
   Butterworth high-pass with filtfilt on the continuous signal, epochs -2 to +2 s (Methods, EEG
   quality control and pre-processing).
 - LFP: epochs -2 to +2 s, linear detrend (Methods, Neuropixels EPs pre-processing); the 0 to 3 ms
@@ -36,7 +37,9 @@ claims/russo-2025.yaml, whose criteria cite the paper's code):
   vector of the Hilbert transform of each epoch, averaged over the window and channels
   (Methods, after Sinkkonen et al.). Windows early 3 to 50 ms and late 150 to 250 ms.
 - Units: spikes in 0 to 2 ms after a pulse are removed (Methods). Cortical RS above 0.4 ms,
-  FS at or below 0.4 ms; thalamic relay above 0.45 ms and TRN below 0.35 ms (Methods). SM-TH
+  FS at or below 0.4 ms; thalamic relay above 0.45 ms and TRN below 0.35 ms (Methods). Units
+  under 0.35 ms located in RT itself form a class of their own (TRN-RT), added to TRN as a variant,
+  since the Methods classify "thalamic units" by width and do not say which areas. SM-TH
   is the nuclei AV, CL, MD, PO, VAL, VPL, VPM and VM (Methods). Responsive: the trial-averaged
   rate in 3 to 500 ms leaves the baseline (-500 to -50 ms) mean by more than 7 SD (Methods).
   The paper estimates rates with an adaptive kernel; this module uses 10 ms bins, an assumption
@@ -48,7 +51,8 @@ claims/russo-2025.yaml, whose criteria cite the paper's code):
 - Peak latency of EEG, LFP and CSD per trial: the largest peak of the global field power (SD
   across channels) in 75 to 250 ms whose prominence exceeds the mean plus 3 SD of the trial's
   baseline GFP (claims file, fig2b-thalamus-leads, from the code's FindResponsePeaks). The
-  baseline is taken as -1 to -0.01 s, the baseline used elsewhere by the code (assumption).
+  baseline is taken as -1 to -0.01 s, the baseline used elsewhere by the code (assumption). The GFP
+  is computed over all channels and, as a variant, over the channels the file marks valid.
 """
 
 from __future__ import annotations
@@ -211,7 +215,10 @@ def _span(url, f, series, onsets, cols):
 
 
 def mask_artifact_reversed(x, idx):
-    """EEG: replace -3 to +3 ms around each onset with the reversed -9 to -3 ms signal (Methods)."""
+    """EEG: replace -3 to +3 ms around each onset with the reversed preceding signal (Methods).
+
+    At 2500 Hz the span is 15 samples, from 8 samples before the onset: -3.2 to +2.4 ms (last sample),
+    replaced by the reversed -9.2 to -3.6 ms. Outside every analysis window (3 ms on)."""
     n = int(round(0.006 * FS))         # 15 samples at 2500 Hz
     a = int(np.ceil(0.003 * FS))       # the masked span starts 8 samples before the onset
     for i in idx:
@@ -376,12 +383,15 @@ def units_table(url, f) -> pd.DataFrame:
     idx = U["spike_times_index"][:]
     df["i0"] = np.r_[0, idx[:-1]]
     df["i1"] = idx
-    df["area"] = np.where(df.location.str.startswith("MOs"), "MOs",
-                          np.where(df.location.isin(SM_TH), "SM-TH", "other"))
+    df["area"] = np.select([df.location.str.startswith("MOs"), df.location.isin(SM_TH), df.location == "RT"],
+                           ["MOs", "SM-TH", "RT"], "other")
     w = df.waveform_duration  # milliseconds in the files
+    # TRN-RT: units under 0.35 ms located in RT itself, a variant of the TRN class (Methods classify
+    # "thalamic units" by width; the main TRN class keeps to the SM-TH nuclei)
     df["cls"] = np.select([(df.area == "MOs") & (w > RS_MIN_MS), (df.area == "MOs") & (w <= RS_MIN_MS),
-                           (df.area == "SM-TH") & (w > RELAY_MIN_MS), (df.area == "SM-TH") & (w < TRN_MAX_MS)],
-                          ["RS", "FS", "relay", "TRN"], "other")
+                           (df.area == "SM-TH") & (w > RELAY_MIN_MS), (df.area == "SM-TH") & (w < TRN_MAX_MS),
+                           (df.area == "RT") & (w < TRN_MAX_MS)],
+                          ["RS", "FS", "relay", "TRN", "TRN-RT"], "other")
     return df
 
 
@@ -461,12 +471,15 @@ def _windows():
     return {"early": window_mask(EARLY), "late": window_mask(LATE)}
 
 
-def _reduce(ep, z=None):
-    """Keep only the early and late samples of the epochs, their phase vectors and the GFP latency."""
+def _reduce(ep, z=None, valid=None):
+    """Keep only the early and late samples of the epochs, their phase vectors and the GFP latency
+    (over all channels, and over the channels the file marks valid when `valid` is given)."""
     w = _windows()
     sel = w["early"] | w["late"]
     out = {"x": ep[..., sel].astype(np.float32), "ph": phase_vectors(ep)[..., sel],
            "early": w["early"][sel], "late": w["late"][sel], "lat": gfp_peak_latency(ep)}
+    if valid is not None:
+        out["lat_valid"] = gfp_peak_latency(ep[:, valid])
     if z is not None:
         out["z"] = z[..., sel].astype(np.float32)
     # trial average over all trials of each intensity, for plotting (-0.1 to 0.4 s, mean |x| over channels)
@@ -519,7 +532,7 @@ def process_session(path: str, with_lfp: bool = True) -> dict:
     res["eeg_onset_err_ms"] = float(np.abs(err).max() * 1e3)
     del raw
     z = zscore_baseline(ep.copy())
-    red = _reduce(ep, z)
+    red = _reduce(ep, z, eeg_valid)
     t = times()
     res["eeg_single_late"] = np.nanmean(np.abs(ep[:, eeg_valid][:, :, window_mask(LATE)]), axis=(1, 2))
     tw = (t >= -0.1) & (t < 0.4)
@@ -527,7 +540,7 @@ def process_session(path: str, with_lfp: bool = True) -> dict:
                         for i in ["low", "medium", "high"] for s in ["rest", "active"]}
     res["eeg_range_uv"] = (float(np.nanmin(ep)), float(np.nanmax(ep)))
     del ep, z
-    res["eeg_lat"] = red["lat"]
+    res["eeg_lat"], res["eeg_lat_valid"] = red["lat"], red["lat_valid"]
     res["eeg"] = pd.concat([amplitude_table(red, trials, np.ones(30, bool), False).assign(chan="all"),
                             amplitude_table(red, trials, eeg_valid, True).assign(chan="valid")])
     res["n_eeg_valid"] = int(eeg_valid.sum())
@@ -563,8 +576,8 @@ def process_session(path: str, with_lfp: bool = True) -> dict:
     del csd_parts
     lz = zscore_baseline(mask_artifact_mirrored(lfp[:, is_mos]))
     del lfp
-    red = _reduce(lz)
-    res["lfp_lat"] = red["lat"]
+    red = _reduce(lz, valid=lvalid[is_mos])
+    res["lfp_lat"], res["lfp_lat_valid"] = red["lat"], red["lat_valid"]
     res["lfp"] = pd.concat([amplitude_table(red, trials, np.ones(is_mos.sum(), bool), False).assign(chan="all"),
                             amplitude_table(red, trials, lvalid[is_mos], True).assign(chan="valid")])
     del red, lz

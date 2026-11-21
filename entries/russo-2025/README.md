@@ -21,12 +21,12 @@ have the deep MOs stimulation the paper analyses, about a third of the paper's m
 | Latencies are shorter during running, and correlate on single trials (Figure S7) | Reproduced |
 | SM-TH late rate is higher during running (Figure 3A) | Reproduced |
 | MOs late rate is not modulated (Figure S9A) | Not reproduced |
-| FS and TRN late rates are not modulated (Figure S10A) | Reproduced |
+| FS and TRN late rates are not modulated (Figure S10A) | Partially reproduced |
 | Relay unit ISIs are bimodal (HF and LF, Figure 3B) | Not reproduced |
 | HF units respond earlier (Figure S11D) | Not reproduced |
 | Higher intensity recruits more HF units (Figure S12) | Reproduced |
 | Baseline thalamic rate doubles during running (Figure 3E) | Reproduced |
-| LF onset variability rises during running (Figure 3E) | Partially reproduced |
+| LF onset variability rises during running (Figure 3E) | Not reproduced |
 | HF response frequency falls during running (Figure 3E) | Reproduced |
 | Thalamic features predict the EEG amplitude (Figure S13) | Not reproduced |
 | LF cross-correlation differs by state (Figure S13D) | Not reproduced |
@@ -34,7 +34,7 @@ have the deep MOs stimulation the paper analyses, about a third of the paper's m
 | Thalamic light delays the rebound (Figure 2F, 2G) | Partially reproduced |
 | Cortical light barely shifts the rebound (Figure S8B) | Reproduced |
 | Thalamic or cortical light suppresses firing (Figure 2H) | Reproduced |
-| Model claims (Figure 4, S14; 5 claims) | Blocked: not runnable |
+| Model claims (Figure 4, S14; 5 claims) | Blocked: not runnable (built and timed; too slow for the time limit) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -44,7 +44,8 @@ The attempt record, with the reasons and the differences from the paper's method
 
 - `reproduce_russo_2025.ipynb`: the EEG, LFP, CSD and unit claims on the dandiset, the link claim,
   and the human claims on the Source Data file. It takes about 15 minutes, most of it streaming
-  the EEG and the MOs LFP.
+  the EEG and the MOs LFP. Its model section builds the paper's network model and needs `make`
+  and `g++`.
 - `opto_russo_2025.ipynb`: the optogenetic claims on the paper's figshare deposit
   (doi:10.6084/m9.figshare.28440311.v1). About 3 minutes.
 - `russo.py`: streaming of the dandiset's chunked arrays, the paper's EEG, LFP and CSD
