@@ -1,0 +1,768 @@
+# Claims for Jarzebowski & Bendor (2026), "Temporal Gating by Chandelier Cells Encodes Signed
+# Prediction Errors", bioRxiv doi:10.64898/2026.06.26.734797, tested on dandiset 000713 (Allen
+# Institute, Visual Behavior Neuropixels), which the paper reuses.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-21,
+# protocol pilot-18 as stated in docs/protocol.md, Reader section.
+#
+# Text read. The bioRxiv preprint (Europe PMC record PPR1261135, EMS219534; header "Version:
+# preprint", posted 28 06 2026, record dated 29 09 2026) in paper/10.64898-2026.06.26.734797.txt:
+# Summary, Introduction, Results, Discussion, STAR Methods with the Key Resources Table, and the
+# legends of Figures 1 to 7. No PDF was supplied, so no figure was seen and no value drawn only in
+# a panel is known here. The text has a heading "Supplementary Material Supplemental Figures" with
+# nothing under it, so the Supplementary Figures S1 and S2 and their legends are not in the text
+# read. The main findings rest on Figures 5 to 7 and the Methods, which are present. The claims on
+# Figures S1 and S2 (post-omission and novelty bursting, noise correlations) rest on the Results
+# sentences that cite them; no number, n or test from those figures is known here.
+#
+# Code. The Key Resources Table links https://github.com/bendor-lab/SETA-model_allen_analysis
+# ("Computer codes for simulation and dataset analysis"); Code Availability says the codes "will
+# be made available on publication". On 2026-11-21 the repository was not public (GitHub API 404;
+# not among the public repositories of bendor-lab). No code was read. Every method below is from
+# the Methods and the legends.
+#
+# Data the paper used. The Visual Behavior Neuropixels dataset of Bennett et al. (2025), read with
+# AllenSDK 2.16.2 from s3://visual-behavior-neuropixels-data/visual-behavior-neuropixels/, citing
+# DANDI 000713 version 0.240702.1725 (Methods, Allen Brain Observatory data analysis). Mice
+# trained on a visual change detection task; natural images shown for 250 ms with 500 ms grey
+# between, in blocks of repeats; the image changes after a random number of repeats; licks after a
+# change are rewarded with water; some presentations are omitted. Two periods of each session
+# are used, the active task and the period of inactivity right after it (spontaneous activity).
+# Spikes of units in VISp only, layer from CCFv3 coordinates; putative pyramidal L2/3 and L5 units.
+# Running speed for locomotion. Optotagging (VIP-IRES-Cre;Ai32, Sst-IRES-Cre;Ai32 mice) to remove
+# Vip and Sst cells. The legends give n = 266 L2/3 cells from 78 recordings and 1075 L5 cells from
+# 98 recordings (Figures 6 and 7A, 7B), and 47 L2/3 cells from 35 recordings and 658 L5 cells from
+# 94 recordings (Figures 7C, 7D). A recording is a session.
+#
+# Figures 1 to 4 are simulations of a two-compartment LIF model of one L2/3 neuron in Brian 2, with
+# all parameters in the Methods (Computational model of L2/3 neuron; Synaptic connectivity and
+# kinetics; Scaling of L2/3 inputs). They use no recorded data; their claims are data elsewhere.
+#
+# Outside data. Layer labels come from the units' CCFv3 coordinates and "the average brain
+# template in CCFv3, as described by Siegle et al. (2021)" (Methods, Laminar classification), so
+# claims that split units by layer use the CCFv3 annotation volume (with_inputs).
+#
+# Common method for the recorded data (D1 to D9), cited to the Methods (M) or a legend. Criteria
+# below refer to these.
+# D1 Units (M, Unit inclusion). Units on channels in VISp; ISI violations <= 0.5; amplitude cutoff
+#    <= 0.1; presence ratio >= 0.9; SNR > 1; firing rate > 0.2 Hz; quality "good".
+# D2 Responsive (M, Unit inclusion). Over presentations of all images, spike count in the 250 ms
+#    after onset against the 250 ms before, Wilcoxon paired test, p < 0.05 with higher rate during
+#    presentation, and spikes in the 250 ms window on >= 20% of presentations.
+# D3 Putative pyramidal (M, Identification of pyramidal neurons). Peak-to-trough duration > 0.4 ms
+#    and firing rate < 10 Hz; units optotagged as Vip or Sst removed, a unit being tagged when its
+#    rate in the 1 to 10 ms after light onset exceeds 50 Hz and its z-score against baseline
+#    exceeds 2. Layer L2/3 or L5 from CCFv3 (M, Laminar classification).
+# D4 Windows and bursts (M, Spiking metrics and burst detection). 250 ms windows from presentation
+#    or omission onset. A burst is two or more spikes with ISI <= 10 ms; FSB is the fraction of the
+#    spikes in the windows that are in bursts.
+# D5 Firing-rate change (M). Modulation index (FR' - FR_control) / (FR' + FR_control).
+# D6 Periods (M, Allen Brain Observatory data analysis). Presentations and omissions from the
+#    active task; spontaneous activity from the period of inactivity immediately after the task.
+#    Repetition 1 is the first presentation of an image after an image change (Figure 5B legend).
+# D7 Locomotion (M, Locomotion detection). A presentation is locomotion when mean speed > 5 cm/s
+#    and speed > 3 cm/s for 75% of its duration; stationary when mean speed < 5 cm/s and speed
+#    < 3 cm/s for 75% of its duration; others are neither.
+# D8 Statistics (M, Quantification and statistical analysis). Mixed-effects model with a random
+#    effect of session; linear, or on the square-root-transformed response. Figure 5C models the
+#    fixed effect of repetition; the other figures test the intercept of the per-cell change.
+#    95% CI from the t distribution with the model's degrees of freedom; p < 0.05 significant.
+# D9 Noise correlations (M, Spiking metrics; Unit inclusion). Per trial, subtract the cell's mean
+#    response to that image at that repetition ordinal; average over the cells of one layer in one
+#    session; sessions with at least 10 putative pyramidal cells per layer; for L5 FSB, only
+#    trials with spikes.
+#
+# Open details of the common method, with the readings the text allows. Each claim that rests on
+# one names it.
+# O1 Responsive test sidedness (D2). (a) one-sided Wilcoxon, during > before; (b) two-sided, with
+#    the during rate higher. Which presentations enter it is also open: (a) all non-omitted image
+#    presentations of the active task; (b) those of the whole session.
+# O2 Firing rate for D1 and D3. (a) the dataset's unit firing rate (whole session); (b) the mean
+#    rate over the active task.
+# O3 Optotagging baseline (D3). The baseline of the z-score is not given. (a) the unit's rate in a
+#    window of the same length before each light pulse, across pulses; (b) its mean rate over the
+#    optotagging block. Which light pulses are used is not given; all pulses are the reading.
+# O4 FSB per cell (D4). (a) spikes in bursts summed over all windows of a condition, divided by all
+#    spikes in them; (b) the mean over windows of per-window FSB, windows without spikes left out.
+#    Only spikes inside a window count toward a burst under both.
+# O5 Spontaneous windows (D6). Fig. 6A splits spontaneous activity into 1 s trials "for
+#    visualisation purposes only", and the Methods compute metrics over 250 ms periods. (a)
+#    consecutive 250 ms windows over the spontaneous block that follows the active task; (b) the
+#    same, keeping only stationary windows (D7), as the Methods call it a period of inactivity.
+# O6 Square-root transform (D8). Legends say "Linear mixed-effects model" for Figures 6B, 7B, 7C,
+#    7D and "Mixed-effects model" for 5C, 6C and 7A. (a) linear on the raw change; (b) for the
+#    latter figures, the change computed on square-root-transformed FSB. Signs and p are judged
+#    under both; an expected CI is compared under the reading that matches.
+# O7 Locomotion window (D7). (a) the 250 ms presentation or omission window; (b) the 750 ms from
+#    its onset to the next onset.
+# O8 Presentations counted as repetitions (Figure 5). Whether presentations that follow an
+#    omission keep their ordinal is not said. (a) ordinals count every presentation since the
+#    change, all kept; (b) presentations right after an omission are left out (Figure S1 treats
+#    them apart).
+#
+# Inconsistencies in the printed statistics, recorded and not corrected. Figure 5C L5 slope is
+# printed t(7523) = 8.1 with CI [-0.0011, -0.0007]; the t is positive and the CI negative, and the
+# Results say FSB decreased. Figure 5C L2/3 slope is printed t(1860) = -0.59 with CI [-0.001,
+# 0.004], whose centre is positive.
+schema_version: 2
+paper: doi:10.64898/2026.06.26.734797
+claims:
+- id: model-positive-error-short-latency
+  statement: In the two-compartment model, L4 sensory input without L5 IT predictive input makes the
+    L2/3 neuron fire a short-latency singlet or doublet, depending on L4 strength, immediately after
+    the input arrives; basket cell inhibition ends the response.
+  source: Results, Positive prediction error, paragraph 1; Figure 1D
+  quote: When L4 sensory input arrives in the absence of L5 IT predictive input, the L2/3 neuron
+    produces a singlet or doublet depending on the L4 input strength ... Because no ChC clamp is
+    active, action potential initiation at the AIS is rapid and unimpeded. The resulting spike or
+    burst occurs immediately following sensory input arrival
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in full in the Methods (Brian 2); its code
+    (github.com/bendor-lab/SETA-model_allen_analysis) was not public on 2026-11-21
+  criterion: Simulated with the Methods' parameters (L4 60 nS, tau 4 ms; basket 1.2 times L4, tau
+    6 ms, onset 2.5 ms after L4; no L5 IT or ChC input; 80 runs with noise). Reproduced when the
+    neuron fires in most runs and the first spike falls within the first few ms after L4 onset,
+    with no spike after the basket conductance peaks, and stronger L4 gives doublets. "Short" has
+    no number in the paper; the latency is reported. The simulation time step is not given; a
+    standard 0.1 ms step is used, a choice that should not change the outcome.
+- id: model-negative-error-delayed-release
+  statement: With L5 IT predictive input and no sensory input, the ChC clamp holds the AIS below
+    threshold and the neuron fires a single gated release spike after the clamp decays, 15 to 20 ms
+    after the time the same L5 IT input could have triggered the L5 ET bAP.
+  source: Results, Negative prediction error, paragraph 1; Figure 1D
+  quote: In the absence of additional sensory drive from L4, the AIS cannot escape this clamp until
+    ChC conductance sufficiently decays, at which point the accumulated depolarisation is released as
+    a singlet if the soma remains sufficiently depolarised ( Fig. 1D ). In such case, the L2/3 input
+    arrives to the L5 ET 15–20 ms delayed
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  expected:
+  - quantity: delay of the gated release spike
+    value: 17.75
+    tolerance: 4.25
+    unit: ms
+  criterion: Simulated with the Methods' defaults (L5 IT 12 nS, tau 8 ms; ChC 25 nS, tau 4 ms,
+    reversal -58 mV, onset 1.5 ms after L5 IT; no L4 input; 80 runs). The range 15 to 20 ms is
+    widened by 10% of each bound (13.5 to 22 ms). The model has no L5 ET neuron, so the reference
+    time is open. Readings (a) latency of the first spike from L5 IT onset; (b) the same, measured
+    from the time of the L5 IT conductance peak (8 ms after onset). Reproduced when, under one
+    reading, the median latency over runs that spike lies in the range and runs that spike fire a
+    single spike.
+- id: fig2a-weak-sensory-silenced
+  statement: When L4 input is weaker than the predictive input, the ChC clamp vetoes the L2/3 spike
+    and basket cell inhibition prevents the gated release spike, so the neuron is silent.
+  source: Results, The circuit encodes a continuous error spectrum, paragraph 1; Figure 2A
+  quote: When L4 input was weaker than the predictive input, the ChC clamp successfully vetoed the
+    L2/3 spike, and basket cell hyperpolarisation prevented the gated release spike ( Fig. 2A ),
+    resulting in no spiking.
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: L5 IT 12 nS and ChC 25 nS (Figure 2B legend), with L4 below 12 nS and basket 1.2 times
+    L4. "Weaker than the predictive input" is read as L4 conductance below the L5 IT conductance.
+    Reproduced when the expected spike count is near zero (below 0.1 per run) for weak L4 inputs,
+    and lower than with the L5 IT and ChC input alone. The onset of L4 relative to L5 IT is not
+    given for Figure 2A and 2B; simultaneous onset is the reading, as Figure 2C shows delays of up
+    to 5 ms leave the behaviour unchanged.
+- id: fig2b-breakthrough-doublet-threshold
+  statement: A sufficiently strong L4 input during the active ChC clamp overrides it and drives a
+    breakthrough spike, but the L4 conductance needed for a doublet is higher than without a
+    prediction.
+  source: Results, The circuit encodes a continuous error spectrum, paragraph 1; Figure 2B
+  quote: When the L4 input was sufficiently strong and arrived during the active ChC clamp window,
+    it overrode the clamp and drove a spike, a breakthrough event, albeit with a higher threshold
+    for producing a doublet relative to a completely unpredicted positive error ( Fig. 2B ).
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: Expected spike count against L4 conductance, basket scaled 1.2 times, with (L5 IT
+    12 nS, ChC 25 nS) and without prediction conductances (Figure 2B legend), 80 runs per point.
+    Doublet threshold is the lowest L4 conductance with expected count >= 2 under each reading of
+    the threshold the paper leaves open, (a) expected count crossing 2, (b) half the runs firing
+    two or more spikes. Reproduced when strong L4 gives spikes with prediction and the doublet
+    threshold with prediction is higher than without. The L4 range is not given; 0 to 150 nS is a
+    plotting choice.
+- id: fig2c-robust-to-input-delay
+  statement: Delaying either the predictive or the sensory input by 5 ms leaves the model's
+    behaviour the same.
+  source: Results, The circuit encodes a continuous error spectrum, paragraph 1; Figure 2C
+  quote: The model was robust to exact time difference between prediction and sensory inputs and
+    delaying either input by 5 ms resulted in the same behaviour ( Fig. 2C ).
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: Expected spike count against sensory delay from L5 IT onset, at the L4 conductance
+    marked by the arrow in Figure 2B (not readable from the text; the Methods' default 60 nS is the
+    reading). Reproduced when the expected spike count at delays of -5 and +5 ms differs from that
+    at 0 ms by less than 0.5 spike (a choice made here; the paper gives no measure of "the same").
+- id: fig2d-latency-grows-as-sensation-weakens
+  statement: As sensory input weakens relative to the prediction, the latency of the breakthrough
+    spike lengthens continuously.
+  source: Results, The circuit encodes a continuous error spectrum, paragraph 1; Figure 2D
+  quote: As sensation weakened relative to prediction, breakthrough latency lengthened ... the
+    resulting L2/3 spike arrived progressively later relative to the bAP ( Fig. 2D )
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: Latency of the first spike from sensory onset against L4 conductance, for the
+    simulation of Figure 2B (Figure 2D legend), averaged over runs that spike. Reproduced when the
+    latency decreases with L4 conductance (Spearman rho < 0 over the conductances where any run
+    spikes) without a single jump between two values; the test is a choice made here, as the paper
+    shows the curve only.
+- id: fig3a-low-gain-suppresses-errors
+  statement: At low somatic gain of L4 and L5 IT, strong sensory input rarely drives bursts and an
+    omission (prediction only) often ends in silence instead of a gated release spike.
+  source: Results, Precision weighting of prediction error, paragraph 1; Figure 3A
+  quote: At low gain, both error signals were effectively suppressed ... strong sensory inputs rarely
+    drove bursts, and stimulus omission frequently ended in silence
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: All four conductances (L4, basket, L5 IT, ChC) scaled by 0.2 (Low), 0.5 (Mid) or 1.0
+    (High) (Methods, Scaling of L2/3 inputs; Figure 3A legend), sensory only and prediction only.
+    Reproduced when, at Low gain, the fraction of sensory-only runs with two or more spikes at the
+    default L4 (60 nS) is below that at High gain, and the fraction of prediction-only runs with no
+    spike is above one half (a reading of "frequently").
+- id: fig3b-gain-lowers-burst-threshold
+  statement: Raising L4 and L5 IT gain lowers the sensory threshold for bursts and raises the
+    probability of a gated release spike on omission trials.
+  source: Results, Precision weighting of prediction error, paragraph 1; Figure 3A and 3B
+  quote: As L4 and L5 IT gain increased the sensory threshold for bursts decreased (favouring LTP;
+    Fig. 3A,B ), and the probability of a gated release spike on omission trials increased
+    (favouring LTD; Fig. 3B ).
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: Expected spike count against L4 strength at gains 0.2, 0.5 and 1.0. Reproduced when the
+    burst threshold (lowest L4 with expected count >= 2) falls from Low to Mid to High, and the
+    fraction of prediction-only runs with a spike rises from Low to Mid to High.
+- id: fig3c-gain-keeps-release-delay
+  statement: Gain does not substantially change the delay of the gated release spike when it
+    occurs.
+  source: Results, Precision weighting of prediction error, paragraph 1; Figure 3C
+  quote: Critically, increased gain did not substantially alter the delay of the gated release spike
+    when it occurred ( Fig. 3C ).
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: First-spike latency from onset, prediction-only runs that spike, at gains 0.2, 0.5 and
+    1.0. "Not substantially" has no number; the reading here is that the median latencies at the
+    three gains differ by less than 5 ms, the delay shift the paper calls robust in Figure 2C. The
+    latencies are reported either way.
+- id: fig4a-basket-reduction-lowers-burst-threshold
+  statement: Reducing basket cell conductance relative to L4 drive lowers the threshold for L2/3
+    bursts.
+  source: Results, L4 excitatory drive / basket cell inhibitory balance, paragraph 1; Figure 4A
+  quote: Reducing basket cell conductance relative to L4 excitatory drive lowers the burst firing
+    threshold ( Fig. 4A ).
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: Spike count against L4 conductance and basket scaling (Figure 4A legend), 10 runs per
+    point (Methods). The scaling values are not given; 0.6 to 1.2 times L4 in steps of 0.2 is a
+    plotting choice. Reproduced when the burst threshold (lowest L4 with mean count >= 2) is lower
+    at every basket scaling below 1.2 than at 1.2.
+- id: fig4b-chc-reduction-shortens-latency
+  statement: Reducing ChC conductance shortens the latency of the first L2/3 spike for a given L4
+    strength and lowers the L4 needed for a positive error.
+  source: Results, L5 IT excitatory drive / chandelier cell inhibitory balance, paragraph 1; Figure
+    4B
+  quote: Reducing chandelier cell conductance relative to L5 IT excitatory drive decreased L2/3
+    spike latency for a given L4 strength reducing the L4 threshold required for generating a
+    positive error ( Fig. 4B ).
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: First-spike latency from sensory onset against ChC conductance and L4 conductance, L5
+    IT at 12 nS, 10 runs per point. Reproduced when, at each L4 conductance where the neuron fires,
+    latency increases with ChC conductance (Spearman rho > 0), and the lowest L4 that drives a spike
+    falls as ChC conductance falls.
+- id: fig4cd-l5it-shortens-release-and-doublets
+  statement: Without sensory input, raising L5 IT conductance with ChC fixed at 25 nS shortens the
+    release spike latency, and strong L5 IT input can produce a doublet instead of a singlet.
+  source: Results, L5 IT excitatory drive / chandelier cell inhibitory balance, paragraph 1; Figure
+    4C and 4D
+  quote: In the absence of sensory input, release-spike latency shortened with rising predictive
+    drive ( Fig. 4C ), and for strong L5 IT inputs could produce a doublet
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: L4 at 0, ChC 25 nS (Figure 4 legend), L5 IT increased from the default 12 nS, 80 runs.
+    Reproduced when the median release latency falls as L5 IT rises (Spearman rho < 0) and some L5
+    IT conductance gives an expected count >= 2. The L5 IT range is not given; 12 to 40 nS is a
+    plotting choice, extended if no doublet appears within it.
+- id: fig4d-strong-prediction-lowers-burst-threshold
+  statement: With strong L5 IT drive, weak sensory inputs reach the burst threshold at a lower L4
+    conductance.
+  source: Results, L5 IT excitatory drive / chandelier cell inhibitory balance, paragraph 1; Figure
+    4D
+  quote: We also observed that weak sensory inputs interacting with strong L5 IT drive had a lower
+    burst threshold ( Fig. 4D ).
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: Spike count against L4 and L5 IT conductance, ChC fixed at 25 nS. Reproduced when the
+    lowest L4 with expected count >= 2 falls as L5 IT rises above 12 nS.
+- id: fig4ef-compensation-restores-latency
+  statement: Raising the ChC conductance, or lowering the ChC reversal potential, can restore the
+    release spike latency after an increase in L5 IT drive.
+  source: Results, L5 IT excitatory drive / chandelier cell inhibitory balance, paragraph 2; Figure
+    4E and 4F
+  quote: Either change restored the latency of the gated release spike after an increased L5 IT
+    drive created an E/I imbalance.
+  data: elsewhere
+  where: the paper's two-compartment LIF model, specified in the Methods; code not public on
+    2026-11-21
+  criterion: Prediction only (no sensory conductance, Figure 4 legend), 10 runs per point. The
+    reference latency is that at the defaults (L5 IT 12 nS, ChC 25 nS, E_ChC -58 mV). Reproduced
+    when, for L5 IT raised to at least 20 nS, some ChC conductance above 25 nS and some E_ChC below
+    -58 mV each bring the median latency back within 1 ms of the reference (a choice made here; the
+    paper gives no tolerance).
+- id: cell-counts
+  statement: The analysis includes 266 putative pyramidal image-responsive L2/3 cells from 78
+    recordings and 1075 such L5 cells from 98 recordings of mouse V1.
+  source: Figure 6B legend; Figure 7A legend
+  quote: n = 266 cells from n = 78 recordings; L5 ... n = 1075 cells from n = 98 recordings
+  data: with_inputs
+  expected:
+  - quantity: L2/3 cells
+    value: 266
+    tolerance: 26.6
+  - quantity: L2/3 recordings
+    value: 78
+    tolerance: 7.8
+  - quantity: L5 cells
+    value: 1075
+    tolerance: 107.5
+  - quantity: L5 recordings
+    value: 98
+    tolerance: 9.8
+  criterion: Units selected by D1 to D3 in VISp, layer from the CCFv3 annotation (outside input),
+    sessions as in the Methods (all sessions, active task). Every reading of O1, O2 and O3 is run;
+    reproduced when one reading puts all four counts within tolerance. Partially reproduced when the
+    cell counts are within tolerance and a recording count is not.
+- id: fig5c-fsb-highest-on-first-repetition
+  statement: In L2/3 and L5 neurons the fraction of spikes in bursts is highest for the first
+    presentation of an image after a change and falls markedly from the first to the second
+    repetition.
+  source: Results, LTP-favouring conditions, paragraph 1; Figure 5C
+  quote: the fraction of L5 spikes occurring within bursts (FSB) was highest for the first stimulus
+    presentation and decreased with repeated presentations ( Fig. 5B–C ). Similarly, L2/3 neurons
+    had highest burst rate for the first stimulation ... For both L5 and L2/3, FSB decreased markedly
+    from the first to second repetition.
+  statistics:
+  - about: L2/3 intercept, FSB difference from Repetition 1
+    test: mixed-effects model, random effect of session
+    statistic: t(1860) = -10.35
+    p: 1.0e-25
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -0.07
+      high: -0.05
+  - about: L5 intercept, FSB difference from Repetition 1
+    test: mixed-effects model, random effect of session
+    statistic: t(7523) = -22.3
+    p: 1.0e-109
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -0.055
+      high: -0.046
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  expected:
+  - quantity: L2/3 intercept of FSB difference from Repetition 1
+    value: -0.06
+    tolerance: 0.01
+  - quantity: L5 intercept of FSB difference from Repetition 1
+    value: -0.0505
+    tolerance: 0.0045
+  criterion: Cells of cell-counts; FSB per cell and repetition ordinal (D4) over active-task
+    presentations; response FSB(k) - FSB(1) per cell for k >= 2; mixed-effects model with fixed
+    intercept and slope on repetition and a random effect of session (D8; Figure 5C legend). The
+    printed degrees of freedom (1860 = 266 x 7 - 2; 7523 = 1075 x 7 - 2) imply seven differences per
+    cell, so repetitions 2 to 8 are the reading. Open, the coding of repetition in the model. (a)
+    k - 2, so the intercept is the change at Repetition 2; (b) k as is. Also open O4, O6 and O8.
+    Reproduced when, under one reading, both intercepts are negative with p < 0.05 and within
+    tolerance of the printed CI; partially reproduced when both are negative with p < 0.05 and a
+    value is outside tolerance.
+- id: fig5c-l5-fsb-keeps-declining
+  statement: After the drop at the second repetition, L5 FSB keeps decreasing at a low rate with
+    further repetitions.
+  source: Results, LTP-favouring conditions, paragraph 1; Figure 5C
+  quote: A linear mixed-effects model showed FSB decreased at a low rate with further repetitions in
+    L5
+  statistics:
+  - about: L5 slope on repetition
+    test: mixed-effects model, random effect of session
+    statistic: t(7523) = 8.1
+    p: 1.0e-15
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -0.0011
+      high: -0.0007
+  data: with_inputs
+  depends_on:
+  - fig5c-fsb-highest-on-first-repetition
+  expected:
+  - quantity: L5 slope of FSB difference on repetition
+    value: -0.0009
+    tolerance: 0.0002
+    unit: per repetition
+  criterion: The slope of the model of fig5c-fsb-highest-on-first-repetition, L5 cells, under its
+    readings. The printed t is positive and the CI negative; the Results and the legend say FSB
+    decreases, so the sign is taken from them and the CI. Reproduced when the slope is negative with
+    p < 0.05 and within tolerance; partially reproduced when negative with p < 0.05 and outside
+    tolerance.
+- id: fig5c-l23-fsb-stable
+  statement: In L2/3, FSB does not change further with repetitions after the second.
+  source: Results, LTP-favouring conditions, paragraph 1; Figure 5C
+  quote: A linear mixed-effects model showed FSB decreased at a low rate with further repetitions in
+    L5, while it remained stable in L2/3 ( Fig 5C ).
+  statistics:
+  - about: L2/3 slope on repetition
+    test: mixed-effects model, random effect of session
+    statistic: t(1860) = -0.59
+    p: 0.55
+    ci:
+      level: 0.95
+      low: -0.001
+      high: 0.004
+  data: with_inputs
+  depends_on:
+  - fig5c-fsb-highest-on-first-repetition
+  criterion: A claim of absence, judged on the paper's test, the slope of the Figure 5C model for
+    L2/3 cells (as in fig5c-fsb-highest-on-first-repetition), at p < 0.05. Reproduced when the slope
+    has p >= 0.05; not reproduced when p < 0.05. The slope and its CI are reported either way.
+- id: fig5d-firing-rate-dips-then-stable
+  statement: Firing rate falls at the second presentation, then recovers slightly to a stable level
+    over further repetitions; neither L2/3 firing nor L5 bursting falls to zero.
+  source: Results, LTP-favouring conditions, paragraph 1; Figure 5D
+  quote: The firing rate followed a distinct time course over the same repetitions ... it fell at the
+    second presentation and then recovered slightly to a stable level ( Fig. 5D ). Neither L2/3
+    firing rate nor L5 bursting declined to zero.
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  criterion: Cells of cell-counts, both layers; the change in firing rate from Repetition 1 as the
+    modulation index (D5, control Repetition 1), repetitions 2 to 8 as in Figure 5C. The paper
+    reports no test. Reproduced when, in each layer, the median change at Repetition 2 is negative
+    and the median changes at 3 to 8 are all above that at Repetition 2, and when the mean L2/3
+    firing rate and mean L5 FSB over cells are above zero at every repetition. Open O8.
+- id: figs1-post-omission-bursting
+  statement: L5 bursting is higher for presentations that follow an omission than for those that
+    precede it.
+  source: Results, LTP-favouring conditions, paragraph 2; Figure S1A to S1C
+  quote: The decrease in L5 bursting was reversed when a repeated presentation followed an
+    unpredictably omitted stimulus. Post-omission stimuli drove significantly higher burst rates
+    than pre-omission stimuli ( Fig. S1A–C )
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  criterion: The Figure S1 legend was not read. From the Methods (D8, intercept of the per-cell
+    change) and Figure 6A (presentation immediately before omission), L5 cells of cell-counts; per
+    cell, FSB of the presentations right after an omission minus FSB of those right before it;
+    mixed-effects model with a random effect of session. Reproduced when the intercept is positive
+    with p < 0.05. Open O4 and O6. Whether L2/3 was also tested is not known; it is shown as a
+    variant.
+- id: figs1-novel-image-bursting
+  statement: The first presentation of a newly introduced image drives more bursting than the first
+    presentation of a familiar image.
+  source: Results, LTP-favouring conditions, paragraph 2; Figure S1D and S1E
+  quote: Burst probability also scaled with stimulus novelty ... the first presentation of a newly
+    introduced image drove higher burst rates than the first presentation of a familiar image ( Fig.
+    S1D–E ).
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  criterion: The Figure S1 legend was not read. From the Methods (Allen Brain Observatory data
+    analysis), sessions in which the image set was shown for the first time; Repetition 1 of blocks
+    that are among the first 10 blocks of their image (novel) against blocks repeating the image for
+    the twentieth or later time (familiar); per cell FSB(novel) - FSB(familiar); intercept of a
+    mixed-effects model with a random effect of session (D8). Reproduced when the intercept is
+    positive with p < 0.05. Layer is open, (a) L5 (the paragraph is about L5 bursting); (b) L2/3.
+    Reproduced under (a); (b) is shown. Open O4 and O6.
+- id: figs1-novel-firing-rate-unchanged
+  statement: Firing rates do not differ between the first presentations of novel and familiar
+    images.
+  source: Results, LTP-favouring conditions, paragraph 2; Figure S1F
+  quote: Because firing rates did not differ between novel and familiar presentations ( Fig. S1F )
+  data: with_inputs
+  depends_on:
+  - figs1-novel-image-bursting
+  criterion: A claim of absence. The paper's test is in the unread Figure S1 legend; from the
+    Methods it is the intercept of a mixed-effects model with a random effect of session on the
+    per-cell modulation index (D5, control familiar), on the presentations of
+    figs1-novel-image-bursting, at p < 0.05. Reproduced when p >= 0.05; not reproduced when p <
+    0.05. Layer as in figs1-novel-image-bursting. The effect and its CI are reported either way.
+- id: fig6b-omission-firing-below-spontaneous
+  statement: Firing rate during stimulus omission is lower than during spontaneous activity, in both
+    L2/3 and L5.
+  source: Results, LTD-favouring conditions, paragraph 1; Figure 6B
+  quote: The omission firing rate was also lower than spontaneous in both L2/3 and L5
+  statistics:
+  - about: L2/3
+    test: linear mixed-effects model, intercept
+    statistic: t(265) = -10.4
+    p: 1.0e-24
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -0.23
+      high: -0.11
+    n: 266 cells from 78 recordings
+  - about: L5
+    test: linear mixed-effects model, intercept
+    statistic: t(1074) = -12.8
+    p: 1.0e-36
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -0.15
+      high: -0.08
+    n: 1075 cells from 98 recordings
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  expected:
+  - quantity: L2/3 omission against spontaneous firing-rate change
+    value: -0.17
+    tolerance: 0.06
+  - quantity: L5 omission against spontaneous firing-rate change
+    value: -0.115
+    tolerance: 0.035
+  criterion: Cells of cell-counts; per cell, the modulation index (D5) of the firing rate in 250 ms
+    omission windows of the active task against spontaneous windows (control); linear mixed-effects
+    model, intercept only, random effect of session (D8; Figure 6B legend). Open O5. Reproduced when,
+    under one reading, both intercepts are negative with p < 0.05 and within tolerance; partially
+    reproduced when both are negative with p < 0.05 and a value is outside tolerance.
+- id: fig6c-omission-bursting-below-spontaneous
+  statement: L5 neurons show near-zero bursting during omission, with FSB below that of spontaneous
+    activity.
+  source: Results, LTD-favouring conditions, paragraph 1; Figure 6C and 6D
+  quote: L5 neurons showed near-zero bursting during stimulus omission, significantly below
+    spontaneous activity outside the stimulus blocks ( Fig. 6 )
+  statistics:
+  - test: mixed-effects model, intercept
+    statistic: t(1074) = -7.1
+    p: 1.0e-11
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -0.004
+      high: -0.001
+    n: 1075 cells from 98 recordings
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  expected:
+    quantity: L5 omission minus spontaneous FSB
+    value: -0.0025
+    tolerance: 0.0015
+  criterion: L5 cells of cell-counts; per cell, FSB during omission windows minus FSB during
+    spontaneous windows (D4); mixed-effects model, intercept only, random effect of session (D8).
+    The change measure is open, (a) the difference of FSB; (b) the modulation index of D5 applied to
+    FSB. Also open O4, O5 and O6. A cell with no spikes in a condition has FSB set to 0 under every
+    reading, as n equals the full 1075 cells. Reproduced when, under one reading, the intercept is
+    negative with p < 0.05 and within tolerance; partially reproduced when negative with p < 0.05
+    and outside tolerance.
+- id: figs2-l23-l5-activity-correlated
+  statement: Trial by trial, L5 population firing correlates with L2/3 population firing.
+  source: Results, L5 bursts are decoupled from L2/3 spiking on a trial-by-trial basis, paragraph 1;
+    Figure S2
+  quote: While overall L5 activity correlated with L2/3 activity
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  criterion: The Figure S2 legend was not read, so the test is open. Noise residuals as D9 for
+    Repetition 1 presentations and for post-omission presentations. Readings (a) a mixed-effects
+    model of the L5 firing-rate residual on the L2/3 firing-rate residual with a random effect of
+    session (D8); (b) Pearson correlation per session, the session coefficients tested against 0 by
+    an intercept-only mixed-effects model. Reproduced when, under both readings, the association is
+    positive with p < 0.05 in both conditions.
+- id: figs2-l5-bursting-not-predicted-by-rate
+  statement: Trial by trial, L5 burst fraction is not predicted by L2/3 or L5 population firing
+    rate, for the first repetition and for post-omission presentations.
+  source: Results, L5 bursts are decoupled from L2/3 spiking on a trial-by-trial basis, paragraph 1;
+    Figure S2A and S2B
+  quote: L5 burst rate was not predicted by either L2/3 or L5 firing rate. This held for both first
+    repetition ( Fig. S2A ) and post-omission conditions ( Fig. S2B ).
+  data: with_inputs
+  depends_on:
+  - figs2-l23-l5-activity-correlated
+  criterion: A claim of absence whose test is in the unread Figure S2 legend. Residuals as D9, L5
+    FSB only on trials with spikes. Open, which trials enter the L5 FSB mean, (a) cells without
+    spikes on the trial are left out of the mean; (b) trials on which no L5 cell spiked are left
+    out. The test is read from the Methods (D8) as a mixed-effects model of the L5 FSB residual on
+    the L2/3 firing-rate residual, and separately on the L5 firing-rate residual, random effect of
+    session, at p < 0.05. Reproduced when neither predictor has p < 0.05 in either condition; not
+    reproduced when one does. The coefficients are reported either way.
+- id: fig7a-running-raises-first-repetition-bursting
+  statement: Running increases L2/3 and L5 FSB on the first repetition of an image.
+  source: Results, Locomotion amplifies positive error and reduces negative-error drive, paragraph 1;
+    Figure 7A
+  quote: Running increased L2/3 and L5 burst rate on the first repetition of the image ( Fig. 7A )
+  statistics:
+  - about: L2/3
+    test: mixed-effects model, intercept
+    statistic: t(265) = 10.1
+    p: 1.0e-23
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: 0.05
+      high: 0.10
+    n: 266 cells from 78 recordings
+  - about: L5
+    test: mixed-effects model, intercept
+    statistic: t(1074) = 9.7
+    p: 1.0e-21
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: 0.03
+      high: 0.06
+    n: 1075 cells from 98 recordings
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  expected:
+  - quantity: L2/3 running minus stationary FSB, Repetition 1
+    value: 0.075
+    tolerance: 0.025
+  - quantity: L5 running minus stationary FSB, Repetition 1
+    value: 0.045
+    tolerance: 0.015
+  criterion: Cells of cell-counts; Repetition 1 presentations classed by D7; per cell, FSB running
+    minus FSB stationary; mixed-effects model, intercept only, random effect of session (D8; Figure
+    7A legend). Open O4, O6 and O7, and the change measure as in
+    fig6c-omission-bursting-below-spontaneous. Reproduced when, under one reading, both intercepts
+    are positive with p < 0.05 and within tolerance; partially reproduced when both are positive
+    with p < 0.05 and a value is outside tolerance.
+- id: fig7b-running-raises-first-repetition-rate
+  statement: Running increases L2/3 and L5 firing rate on the first repetition of an image.
+  source: Results, Locomotion amplifies positive error and reduces negative-error drive, paragraph 1;
+    Figure 7B
+  quote: Running also increased L2/3 and L5 firing rate ( Fig. 7B ).
+  statistics:
+  - about: L2/3
+    test: linear mixed-effects model, intercept
+    statistic: t(265) = 7.3
+    p: 1.0e-12
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: 0.09
+      high: 0.29
+    n: 266 cells from 78 recordings
+  - about: L5
+    test: linear mixed-effects model, intercept
+    statistic: t(1074) = 6.4
+    p: 1.0e-9
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: 0.05
+      high: 0.16
+    n: 1075 cells from 98 recordings
+  data: with_inputs
+  depends_on:
+  - fig7a-running-raises-first-repetition-bursting
+  expected:
+  - quantity: L2/3 running against stationary firing-rate change, Repetition 1
+    value: 0.19
+    tolerance: 0.10
+  - quantity: L5 running against stationary firing-rate change, Repetition 1
+    value: 0.105
+    tolerance: 0.055
+  criterion: As fig7a-running-raises-first-repetition-bursting, with the per-cell modulation index
+    of firing rate (D5, control stationary) and a linear mixed-effects model. Open O7. Reproduced
+    when, under one reading, both intercepts are positive with p < 0.05 and within tolerance;
+    partially reproduced when both are positive with p < 0.05 and a value is outside tolerance.
+- id: fig7c-running-leaves-omission-bursting
+  statement: During omission, FSB does not differ between running and stationary conditions, in
+    L2/3 or L5.
+  source: Results, Locomotion amplifies positive error and reduces negative-error drive, paragraph 1;
+    Figure 7C
+  quote: During omission, the fraction of L5 spikes occurring within bursts (FSB) did not differ
+    between running and stationary conditions ( Fig. 7C )
+  statistics:
+  - about: L2/3
+    test: linear mixed-effects model, intercept
+    statistic: t(46) = -1.0
+    p: 0.31
+    ci:
+      level: 0.95
+      low: -0.03
+      high: 0.003
+    n: 47 cells from 35 recordings
+  - about: L5
+    test: linear mixed-effects model, intercept
+    statistic: t(657) = 1.25
+    p: 0.21
+    ci:
+      level: 0.95
+      low: -0.0001
+      high: 0.0016
+    n: 658 cells from 94 recordings
+  data: with_inputs
+  depends_on:
+  - cell-counts
+  expected:
+  - quantity: L2/3 cells
+    value: 47
+    tolerance: 4.7
+  - quantity: L5 cells
+    value: 658
+    tolerance: 65.8
+  criterion: A claim of absence, judged on the paper's test. Omission windows classed by D7; per
+    cell, FSB running minus FSB stationary; linear mixed-effects model, intercept only, random effect
+    of session, p < 0.05 (Figure 7C legend). Reproduced when neither layer's intercept has p < 0.05;
+    not reproduced when one does; the effects are reported either way. The selection of the 47 and
+    658 cells is not stated; readings (a) cells of cell-counts with omission windows in both states;
+    (b) those with at least one spike during omission in both states. The cell counts are compared
+    under each. Open O4 and O7.
+- id: fig7d-running-lowers-omission-rate
+  statement: During omission, firing rate is lower when running than when stationary, in L2/3 and
+    L5.
+  source: Results, Locomotion amplifies positive error and reduces negative-error drive, paragraph 1;
+    Figure 7D
+  quote: in spite of a reduction in firing rates during running in both L2/3 and L5 ( Fig. 7D )
+  statistics:
+  - about: L2/3
+    test: linear mixed-effects model, intercept
+    statistic: t(46) = -3.1
+    p: 0.002
+    ci:
+      level: 0.95
+      low: -0.45
+      high: -0.10
+    n: 47 cells from 35 recordings
+  - about: L5
+    test: linear mixed-effects model, intercept
+    statistic: t(657) = -4.3
+    p: 1.0e-4
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -0.16
+      high: -0.06
+    n: 658 cells from 94 recordings
+  data: with_inputs
+  depends_on:
+  - fig7c-running-leaves-omission-bursting
+  expected:
+  - quantity: L2/3 running against stationary firing-rate change, omission
+    value: -0.275
+    tolerance: 0.175
+  - quantity: L5 running against stationary firing-rate change, omission
+    value: -0.11
+    tolerance: 0.05
+  criterion: Cells as in fig7c-running-leaves-omission-bursting, under its readings; per-cell
+    modulation index of omission firing rate (D5, control stationary); linear mixed-effects model,
+    intercept only, random effect of session. Reproduced when, under one reading, both intercepts
+    are negative with p < 0.05 and within tolerance; partially reproduced when both are negative with
+    p < 0.05 and a value is outside tolerance.
