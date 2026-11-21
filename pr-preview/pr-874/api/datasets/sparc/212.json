@@ -1,0 +1,935 @@
+{
+ "dataset": {
+  "archive": "sparc",
+  "id": "212",
+  "label": "SPARC:212"
+ },
+ "page": "datasets/sparc/212/",
+ "generated": "2026-11-21T05:29:07+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 11,
+  "partially_reproduced": 0,
+  "not_reproduced": 2,
+  "blocked": 8
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 4
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "wang-2019-01",
+   "dataset": {
+    "archive": "sparc",
+    "id": "212",
+    "version": "1",
+    "doi": "10.26275/lok5-wje6",
+    "relation": "primary"
+   },
+   "datasets": [
+    "sparc:212"
+   ],
+   "missing_datasets": [],
+   "key": "sparc:212",
+   "label": "SPARC:212",
+   "dataset_version": "1",
+   "paper": "10.1113/jp278016",
+   "paper_title": null,
+   "date": "2026-11-18",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-16"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/44305004690"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "wang-2019",
+   "inputs": [],
+   "entry_title": "Sympathetic nerve stimulation of mouse and rabbit hearts (Wang et al. 2019)",
+   "summary": "In this data, sympathetic nerve stimulation raised heart rate in rabbit and mouse hearts, shortened the rabbit action potential and calcium transient, prolonged mouse APD transiently and raised calcium transient amplitude in both species. APD also changed more at the base than at the apex in both species. The paper's monotonic rabbit time course did not hold: mean heart rate peaked at 20 s of stimulation and then fell by 60 s. The repolarization reversal, the paced-heart experiments and the model simulations could not be tested, as the dataset holds only per-heart summary tables and the MATLAB models could not run in the entry's environment. The propranolol control did not reproduce, on a single unadjusted test.",
+   "description": "Tests the findings of Wang, Morotti, Tapa et al. (2019) on SPARC dataset 212, which holds the authors' per-heart summary tables for Figures 1 to 3, 5F and 7F (heart rate, APD80, CaTD80 and relative CaT amplitude during sympathetic nerve stimulation in mouse and rabbit hearts) and the MATLAB myocyte models of Figure 8. The optical maps behind the spatio-temporal findings are not in the dataset.",
+   "notebooks": [
+    {
+     "path": "reproduce_wang_2019.ipynb",
+     "title": "Reproducing Wang et al. (2019) from SPARC dataset 212",
+     "cells": {
+      "sanity": "0348bd5b",
+      "claim:fig1a-rabbit-hr-increase": "9be119be",
+      "claim:fig1d-mouse-hr-increase": "9be119be",
+      "claim:fig1bc-rabbit-ap-cat-response": "8b47d131",
+      "claim:fig1ef-mouse-ap-cat-response": "d79f139f",
+      "claim:fig2a-rabbit-monotonic": "7583efcb",
+      "claim:fig2d-mouse-biphasic-apd": "c88794cb",
+      "claim:fig2cf-cat-amplitude-similar": "52cad279",
+      "claim:fig3abc-tyramine-na-mimic-sns": "497fbe43",
+      "claim:fig3d-propranolol-abolishes": "19e61d39",
+      "claim:fig3e-rate-step-biphasic": "0f9b4341",
+      "claim:fig3f-constant-pacing-sns-prolongs": "fd501d15",
+      "claim:fig4g-5f-rabbit-base-apex": "4f19f7ee",
+      "claim:fig7f-mouse-base-apex": "4f19f7ee"
+     },
+     "executed": "notebooks/wang-2019/reproduce_wang_2019.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1a-rabbit-hr-increase",
+     "statement": "In innervated rabbit hearts, 20 s of SNS increased heart rate over baseline.",
+     "source": "Figure 1A legend; Results, Integrated HR, AP and CaT responses, paragraph 1",
+     "quote": "(A) SNS increased rabbit heart rate (*p<0.05 SNS vs. baseline, n=5)",
+     "statistics": [
+      {
+       "test": "paired t-test or repeated measures ANOVA (Methods name both; the legend does not say which)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 rabbit hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig1a-rabbit-hr-increase",
+     "notes": "Fig1 sheet, 5 rabbit hearts. Heart rate 140.2 +- 11.9 bpm at baseline and 237.2 +- 28.2 with SNS, higher in all 5 hearts (change 70 to 132 bpm); paired t-test, two-sided, t = 8.37, p = 0.0011.",
+     "deviations": [
+      "The sheet gives one SNS value per heart and does not say which window of the 20 s it is, so the claims file's three window readings (at 20 s, mean, peak) cannot be told apart; the one value is tested."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-mouse-hr-increase",
+     "statement": "In innervated mouse hearts, 20 s of SNS increased heart rate over baseline.",
+     "source": "Figure 1D legend; Results, Integrated HR, AP and CaT responses, paragraph 1",
+     "quote": "(D) SNS increased mouse heart rate (*p<0.05 SNS vs. baseline, n=5)",
+     "statistics": [
+      {
+       "test": "paired t-test or repeated measures ANOVA (Methods name both; the legend does not say which)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 mouse hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig1d-mouse-hr-increase",
+     "notes": "Fig1 sheet, 5 mouse hearts. Heart rate 364.8 +- 29.4 bpm at baseline and 488.0 +- 56.2 with SNS, higher in all 5 hearts (change 62 to 171 bpm); paired t-test, two-sided, t = 6.28, p = 0.0033.",
+     "deviations": [
+      "As fig1a-rabbit-hr-increase, the window of the SNS value is not stated; the one value is tested."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1bc-rabbit-ap-cat-response",
+     "statement": "In the rabbit heart SNS shortened APD and CaTD and increased the normalized CaT amplitude.",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 1; Figure 1B and 1C",
+     "quote": "The rabbit heart showed prototypical responses, including increased frequency, obvious APD and CaT duration (CaTD) shortening ( Fig. 1 B and C ), and increases in the amplitude of the CaT",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig1bc-rabbit-ap-cat-response",
+     "notes": "Tested on the first 20 s of the 60 s SNS series (Fig2 sheet; APD80 and CaTD80 4 hearts, CaT amplitude 6 hearts). Under every window reading APD80 and CaTD80 are below time 0 in 4 of 4 hearts and the relative amplitude above 1 in 6 of 6, so the majority reading holds. By paired t-test APD80 at 20 s is -24.6 ms, p = 0.13 (mean of 5 to 20 s, -16.7 ms, p = 0.14), CaTD80 at 20 s -39.5 ms, p = 0.020, and amplitude at 20 s 1.122, p = 0.0006; the paired t-test reading holds for CaTD80 and amplitude, not APD80, so the outcome rests on the majority reading for APD80 and on the substitution of the Figure 2 hearts for those of Figure 1.",
+     "deviations": [
+      "The dataset holds no APD80, CaTD80 or CaT amplitude for the 20 s SNS hearts of Figure 1. The claim is tested on the first 20 s of the 60 s SNS series of Figure 2, assuming that the first 20 s of a 60 s stimulation stands for a 20 s stimulation (Methods, Sympathetic nerve stimulation, give one protocol of 5 to 15 Hz for up to 60 s). The Figure 2 hearts are not those of Figure 1 (their baseline heart rates differ).",
+      "Window readings as the claims file gives them, at 20 s, the mean of 5 to 20 s, and the most extreme value from 5 to 20 s; the series is sampled at 0, 5, 10, 15 and 20 s."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1ef-mouse-ap-cat-response",
+     "statement": "In the mouse heart SNS increased heart rate and CaT amplitude and shortened CaTD, but prolonged APD.",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 1; Figure 1D to 1F",
+     "quote": "As HR increased ( Fig. 1 D ), CaT amplitude increased ( Fig. 1 E ), CaTD shortened, and APD prolonged ( Fig. 1 E and F ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig1ef-mouse-ap-cat-response",
+     "notes": "Tested on the first 20 s of the 60 s SNS series (Fig2 sheet; 5 hearts, CaT amplitude 6). Under every window and both readings heart rate and amplitude rise, CaTD80 falls and APD80 rises. At 20 s, APD80 +9.5 ms (5 of 5, p = 0.0002), CaTD80 -3.4 ms (5 of 5, p = 0.042), amplitude 1.107 (6 of 6, p = 0.0027), heart rate +60.8 bpm (5 of 5, p = 0.011). The outcome rests on the substitution of the Figure 2 hearts for those of Figure 1.",
+     "deviations": [
+      "As fig1bc-rabbit-ap-cat-response, tested on the first 20 s of the Figure 2 series, as the Figure 1 values are not in the dataset."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-rabbit-monotonic",
+     "statement": "Over 60 s of SNS in the rabbit, heart rate increased monotonically while APD and CaTD decreased monotonically, with significant changes from time 0.",
+     "source": "Figure 2A legend; Results, Integrated HR, AP and CaT responses, paragraph 2",
+     "quote": "(A) In rabbit, APD and CaT duration (CaTD) monotonically decreased and HR monotonically increased over 60 sec of stimulation (*p<0.05 vs. time 0, n=4)",
+     "statistics": [
+      {
+       "test": "repeated measures ANOVA or paired t-tests against time 0 (Methods; not stated which)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "4 rabbit hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig2a-rabbit-monotonic",
+     "notes": "4 rabbit hearts, 10 time points (0 to 60 s). At 60 s all three differ from time 0 in the stated direction by paired t-test (HR +65.75 bpm, p = 0.0004; APD80 -31.3 ms, p = 0.021; CaTD80 -33.75 ms, p = 0.0028); after the repeated measures ANOVA with Holm-Sidak adjusted paired t-tests HR and CaTD80 hold (p = 0.0015 and 0.025) and APD80 does not (p = 0.18); with Holm-Sidak comparisons on the ANOVA's pooled error, a variant, all three hold at 60 s (APD80 p < 0.0001). With the Greenhouse-Geisser correction the APD80 ANOVA is not significant (p = 0.066), the HR and CaTD80 ANOVAs are (p = 0.0005 and 0.020). APD80 is monotonic under both readings. Heart rate is not monotonic under either; its mean peaks at 20 s (206.5 bpm) and falls to 194.75 at 60 s, and the 50 to 60 s fall is significant (paired t-test p = 0.047). CaTD80 is monotonic under reading (b) but not (a); its mean is lowest at 25 s (159.75 ms) and rises to 165.65 at 60 s. No combination of readings makes all three monotonic and significant at 60 s, and the criterion names no partial result, so the claim is not reproduced. Under reading (b) heart rate fails only on one unadjusted step test of 9, at p = 0.047; were that step not significant, reading (b) with (i) would hold for all three variables. Under reading (a) heart rate fails whatever the tests, as 5 of 9 steps of the mean go the wrong way. What holds is the direction of the change at 60 s for all three variables under reading (i) and the monotonic fall of APD80. Recorded as partially_reproduced until the third verification round, which agreed with not_reproduced.",
+     "deviations": [
+      "The comparisons against time 0 after a repeated measures ANOVA are not named in the paper, which names no software; Holm-Sidak adjusted paired t-tests were used (a standard choice), and as a variant Holm-Sidak comparisons on the ANOVA's pooled residual mean square, as SigmaPlot computes them. Neither corrects for sphericity; the ANOVA's Greenhouse-Geisser corrected p is printed beside it. The outcome does not depend on the choice, as heart rate fails monotonicity under both readings."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-mouse-biphasic-apd",
+     "statement": "In the mouse, over 60 s of SNS, heart rate increased monotonically and CaTD decreased monotonically, but APD was biphasic, prolonging to a maximum near 15 s (50.9 +- 5.1 ms at 0 s, 60.6 +- 4.1 ms at 15 s, p < 0.05) and shortening to near control by 60 s (46.5 +- 9.1 ms, not different from 0 s).",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 2; Figure 2D legend; Abstract (values)",
+     "quote": "In contrast, despite HR monotonically increasing, the mouse heart displayed a marked biphasic APD response, in which APD prolongation first occurred (reaching a maximum at ~15 sec of stimulation) before shortening to near-control values by 60 sec.",
+     "statistics": [
+      {
+       "about": "APD80, 15 s against 0 s",
+       "test": "repeated measures ANOVA or paired t-test (Methods; not stated which)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 mouse hearts"
+      },
+      {
+       "about": "APD80, 60 s against 0 s",
+       "test": "repeated measures ANOVA or paired t-test (Methods; not stated which)",
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "5 mouse hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig2d-mouse-biphasic-apd",
+     "notes": "5 mouse hearts. APD80 50.52 +- 4.52 ms at 0 s, 61.18 +- 3.24 at 15 s, 49.54 +- 4.94 at 60 s, all within tolerance. The mean peaks at 15 s, as does every heart. 15 s against 0 s +10.66 ms (paired t-test p = 0.0002; repeated measures ANOVA p = 2.3e-16, Holm-Sidak p = 0.0018); 60 s against 0 s -0.98 ms (p = 0.47; Holm-Sidak p = 0.72; pooled-error Holm-Sidak p < 0.0001 at 15 s and 0.51 at 60 s). Heart rate rises and CaTD80 falls at every step of the mean, with no significant step against. The deposited 60 s SD (4.94 ms) is about half the Abstract's 9.1.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2cf-cat-amplitude-similar",
+     "statement": "Both species increased relative CaT amplitude during 60 s of SNS, with similar magnitude and time course.",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 2; Figure 2C and 2F legends",
+     "quote": "Both species showed similar magnitude and time course of increase in the relative CaT amplitude, suggesting similar inotropic responses",
+     "statistics": [
+      {
+       "about": "rabbit relative CaT amplitude against time 0",
+       "test": "repeated measures ANOVA or paired t-test (Methods; not stated which)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "6 rabbit hearts"
+      },
+      {
+       "about": "mouse relative CaT amplitude against time 0",
+       "test": "repeated measures ANOVA or paired t-test (Methods; not stated which)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "6 mouse hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig2cf-cat-amplitude-similar",
+     "notes": "6 hearts per species. Relative amplitude above 1 by paired t-test against time 0 in the rabbit at every time from 5 s (1.122 at 20 s, p = 0.0006) and in the mouse from 10 to 30 s (1.107 at 20 s, p = 0.0027; 1.067 at 60 s, p = 0.080). Similarity under reading (b) holds at every time point (unpaired t-tests, p = 0.16 to 0.56). Under reading (a) it fails at 5, 10 and 15 s, where the rabbit mean exceeds the mouse mean by more than the smaller SD (at 15 s 1.098 against 1.072, mouse SD 0.018), and holds from 20 s on. The rabbit mean peaks at 30 s (1.123), the mouse mean at 20 s (1.107). Reading (b) rests on unpaired tests that do not find a difference with 6 hearts per species, which is weak evidence of similarity.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3abc-tyramine-na-mimic-sns",
+     "statement": "In traditionally perfused mouse hearts, bolus tyramine (20 uM) or noradrenaline (50 nM) produced APD, CaTD and HR responses similar to those of SNS.",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 3; Figure 3A to 3C legends",
+     "quote": "These acute infusions produced similar APD, CaTD, and HR responses compared to electrical SNS ( Fig. 3 A \u2013 C ).",
+     "statistics": [
+      {
+       "test": "repeated measures ANOVA or paired t-test against time 0",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "4 mouse hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig3abc-tyramine-na-mimic-sns",
+     "notes": "4 hearts each (one noradrenaline heart has no value at 12.33 s). Tyramine meets the pattern under both monotonic readings; HR and CaTD80 move in the stated direction at every step of the mean, APD80 is above time 0 at 6.75 s (+8.38 ms, p = 0.017), peaks at 17.75 s and is +2.13 ms at 59.5 s (p = 0.085). Noradrenaline gives the APD response (+9.53 ms at 6.25 s, p = 0.010; peak at 12.33 s; -3.20 ms at 59.75 s, p = 0.046) and CaTD80 falls at every step, but heart rate falls from 29.75 to 59.75 s in all 4 hearts (mean -26.75 bpm), so it is not monotonic under reading (a); under reading (b) the fall is not significant and the pattern holds. The criterion's \"both agents\" is met under reading (b) and only tyramine under reading (a). The criterion asks for \"HR rising\", and the noradrenaline heart rate stays above time 0 throughout, so the outcome is reproduced (it was partially_reproduced before the first verification). Reading (b) has little power with 3 or 4 hearts; the noradrenaline heart rate at 59.75 s is still 82.5 bpm above time 0 (p = 0.023), but it is not sustained as with SNS.",
+     "deviations": [
+      "The time points are those of the table (mean times across hearts, 6.25 to 59.75 s), not round times."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-propranolol-abolishes",
+     "statement": "Propranolol (10 uM) completely abolished the HR, APD and CaTD effects of SNS in the mouse heart, so the response is mediated by beta-adrenergic receptors.",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 3; Figure 3D legend",
+     "quote": "Furthermore, the effects of electrical SNS were completely abrogated by propranolol (10 \u03bcM, a \u03b2-adrenergic antagonist, Fig. 3D ), indicating that the response was mediated by \u03b2-adrenergic receptors.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig3d-propranolol-abolishes",
+     "notes": "3 hearts. A claim of absence judged by the claims file's rule (any time point, either test). By unadjusted paired t-tests (reading i) APD80 differs from time 0 at 10 s (+1.43 ms, p = 0.010; per heart +1.2, +1.4 and +1.7 ms); no other time point of any variable reaches p < 0.05. The outcome rests on this test. It is one of 27 tests on 3 hearts (chance of at least one p < 0.05 with no effect 0.75 if independent). The repeated measures ANOVA is significant for heart rate (p = 0.031) and not for APD80 (p = 0.11) or CaTD80 (p = 0.28); with the Greenhouse-Geisser correction none is (heart rate p = 0.23). After the ANOVA no Holm-Sidak adjusted paired t-test against time 0 reaches p < 0.05 (smallest 0.088). Holm-Sidak comparisons on the ANOVA's pooled error, a variant, follow only the significant heart rate ANOVA; they find heart rate above time 0 at 30 to 60 s (smallest p = 0.0048, at 60 s), on the uncorrected ANOVA, with heart rate rising from time 0 to 60 s in 2 of the 3 hearts (+32 and +20 bpm; the third -2 bpm). The largest mean changes are +16.7 bpm heart rate (+6.2%), +3.5 ms APD80 (+9.4%) and -0.73 ms CaTD80, against +87.4 bpm, +10.7 ms and -7.2 ms with SNS alone (Figure 2D table). The responses are much smaller than without propranolol.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-rate-step-biphasic",
+     "statement": "A step-wise increase in pacing rate mimicking the SNS heart rate change produced a biphasic APD response without SNS, to a lesser degree, and adding SNS prolonged APD and exaggerated the biphasic response.",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 3; Figure 3E legend",
+     "quote": "Interestingly, increasing the HR without any additional stimulation produced a biphasic APD response, although to a somewhat lesser degree ( Fig. 3E , black line). Applying SNS while also performing the step-wise increase in HR acted to prolong APD, further exaggerating the biphasic APD response",
+     "statistics": [
+      {
+       "test": "repeated measures ANOVA or paired t-test against time 0",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "3 mouse hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig3e-rate-step-biphasic",
+     "notes": "3 hearts. Without SNS the mean APD80 rises from 56.74 to 66.02 ms at 10 s and falls to 53.83 at 35 s; with SNS it rises to 71.57 ms at 10 s and falls to 57.27 at 35 s. Both are biphasic. The peak rise is larger with SNS (+14.83 against +9.28 ms) in the mean and in each heart (reading a). Under reading (b) SNS exceeds no SNS at 10 s by 5.55 ms, paired t-test p = 0.13, which does not hold. The no-SNS value at 5 s equals that at 0 s in all 3 hearts, and both conditions share the time-0 value; neither bears on the peak at 10 s or the end of the record.",
+     "deviations": [
+      "The table ends at 35 s; the claims file's \"by 60 s\" is read as the end of the record."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-constant-pacing-sns-prolongs",
+     "statement": "In the mouse at constant pacing (CL 100 ms), SNS eliminated the biphasic APD response and APD was prolonged compared to baseline; APD tended to shorten over 60 s of pacing both without and with SNS.",
+     "source": "Results, Integrated HR, AP and CaT responses, paragraph 3; Figure 3F legend",
+     "quote": "if HR was held constant during SNS, the biphasic APD response was eliminated and APD was prolonged compared to baseline ( Fig. 3F ), although APD in both cases tended to shorten throughout the 60 sec of pacing",
+     "statistics": [
+      {
+       "test": "repeated measures ANOVA or paired t-test against time 0",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 mouse hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig3f-constant-pacing-sns-prolongs",
+     "notes": "The no-SNS series has 4 hearts, the SNS series 5. Paired by column position (4 pairs), APD80 with SNS exceeds APD80 without SNS at every time point (0.5 to 3.9 ms) and at p < 0.05 at 0, 5, 10, 15 and 20 s (smallest p = 0.0023, at 15 s), so reading (a) holds. Reading (b) fails; with SNS APD80 is never above its own time 0. APD80 shortens over 60 s in both conditions (-11.55 ms without SNS, -13.78 ms with), and the SNS mean never rises above time 0, so no biphasic response. Unpaired (Welch) tests find no time point at p < 0.05 (smallest p = 0.068). The SNS series is already 2.7 ms longer at time 0 (paired p = 0.036), in each of the 4 pairs (1.65 to 4.84 ms), and on the change from time 0 SNS and no SNS do not differ at any time (paired p 0.18 to 0.94). Reading (a) compares the series at the same times, as the claims file writes it, so the gap at time 0 counts towards it. The pairing by column position is the 4th closest of the 120 ways of assigning the 4 no-SNS columns to the 5 SNS columns (sum of squared differences 400.9 against a smallest 380.3).",
+     "deviations": [
+      "The pairing of the no-SNS and SNS columns as the same hearts in the same order is assumed; the table does not identify hearts and one no-SNS column is empty. The outcome rests on it, as the unpaired variant finds no difference. It is the better supported choice; the empty no-SNS column keeps its place beside the SNS columns, which suggests the blocks are laid out by heart, and the position pairing is among the closest of the possible assignments."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4ab-rabbit-paced-shortening",
+     "statement": "With heart rate held constant by atrial pacing (CL 250 ms), 20 s SNS still shortened APD and CaTD in the rabbit heart, to a lesser degree than with free heart rate.",
+     "source": "Results, Spatio-temporal responses, paragraph 1; Figure 4A and 4B",
+     "quote": "When the HR was held constant with atrial pacing, SNS still caused shortening of both APD and CaTD in the rabbit heart, although to a lesser degree ( Fig. 4 A and B ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The dataset holds no paced (CL 250 ms) rabbit SNS series and no maps; its readme says \"There is no primary data, only a derivative folder\" with the summary workbook, whose sheets cover Figures 1, 2, 3, 5F and 7F only. The paper names no other deposit of the recordings.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4cd-activation-unchanged",
+     "statement": "In both species the pattern and speed of AP and CaT activation were spatially in phase and changed little with SNS.",
+     "source": "Results, Spatio-temporal responses, paragraphs 1 and 2; Figures 4C, 4D, 6C, 6D",
+     "quote": "The pattern and speed of AP and CaT activation were spatially in-phase and changed little with SNS ( Fig. 4 C and D ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Needs activation maps; the dataset has no maps or optical traces (see fig4ab-rabbit-paced-shortening).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-rabbit-repolarization-reversal",
+     "statement": "In the paced rabbit heart, SNS reversed the direction of the repolarization wavefront in 8 of 9 hearts.",
+     "source": "Results, Spatio-temporal responses, paragraph 1; Figure 4E",
+     "quote": "However, a reversal in the direction of the repolarization wavefront was observed in 8 out of 9 hearts during sympathetic stimulation ( Fig. 4E )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Needs repolarization maps of the 9 paced rabbit hearts; none are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-5f-rabbit-base-apex",
+     "statement": "In the rabbit, SNS shortened APD more at the base than at the apex, the cause of the repolarization reversal; at 15 s SNS the APD change differed between base and apex.",
+     "source": "Results, Spatio-temporal responses, paragraph 1; Figure 4G and Figure 5F legend",
+     "quote": "This change in repolarization is due to more substantial APD shortening at the base compared to the apex during SNS ( Fig. 4G , Fig 5F )",
+     "statistics": [
+      {
+       "about": "change in APD at 15 s SNS, base against apex",
+       "test": "paired t-test (Methods; not named in the legend)",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "4 rabbit hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig4g-5f-rabbit-base-apex",
+     "notes": "Fig5 sheet, 4 rabbit hearts, APD change at 15 s SNS. Base -28.40 +- 23.28 ms, apex -18.25 +- 17.08; the base shortened more in 4 of 4; base minus apex -10.15 ms, paired t-test t = -3.23, p = 0.048, close to the threshold. Without the heart of largest difference, p = 0.029; Wilcoxon signed-rank p = 0.125, its smallest possible value with 4 hearts. That this difference causes the repolarization reversal cannot be tested without maps.",
+     "deviations": [
+      "The regions are the authors' (Figure 5E), as given per heart in the workbook; the claims file's readings (basal and apical thirds or quarters) need maps and could not be applied."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-rabbit-free-rate-reversal",
+     "statement": "When heart rate was free to rise during SNS, the rabbit showed a full reversal of repolarization by 10 s of stimulation.",
+     "source": "Results, Spatio-temporal responses, paragraph 1; Figure 5C legend",
+     "quote": "(C) When HR was allowed to increase during SNS, a full reversal of AP repolarization was observed by 10sec of SNS.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Needs repolarization maps at successive times; none are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6ab-mouse-paced-apd-prolong",
+     "statement": "With heart rate held constant by atrial pacing (CL 100 ms), 20 s SNS prolonged APD and shortened CaTD in the mouse heart.",
+     "source": "Results, Spatio-temporal responses, paragraph 2; Figure 6A and 6B",
+     "quote": "On the other hand, when HR was controlled with atrial pacing in the mouse heart, SNS caused a prolongation of APD and a shortening of CaTD at 20 sec of SNS ( Fig. 6 A and B ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The dataset holds no 20 s SNS series of mouse hearts paced at CL 100 ms. The Fig3 sheet's constant-pacing table (Figure 3F) is a 60 s series of different design, the subject of fig3f-constant-pacing-sns-prolongs, and has no CaTD.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-mouse-repolarization-unchanged",
+     "statement": "In the mouse, the direction of the repolarization wavefront was unaltered by SNS in 7 of 8 hearts; 1 of 8 showed a complete reversal.",
+     "source": "Results, Spatio-temporal responses, paragraph 2; Figure 6E",
+     "quote": "the direction of the repolarization wavefront was unaltered in most (7 out of 8) mouse hearts in which repolarization was mapped ( Fig. 6E )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Needs repolarization maps of the 8 paced mouse hearts; none are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6fh-mouse-cat-ap-uncoupled",
+     "statement": "In the mouse, CaTD shortened during SNS while APD prolonged, so the CaT decay and CaTD patterns were spatially distinct from the AP changes.",
+     "source": "Results, Spatio-temporal responses, paragraph 2; Figure 6F and 6H",
+     "quote": "Despite the APD prolongation, the CaTD shortened during SNS, which resulted in a CaT decay and CaTD patterns that were spatially distinct from the changes in the AP ( Fig. 6 F and H ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Needs APD80 and CaTD80 maps; none are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-mouse-repolarization-late-shift",
+     "statement": "In the mouse with free heart rate, the repolarization pattern stayed consistent early in SNS and changed direction slightly at about 40 to 60 s, when APD shortening began.",
+     "source": "Results, Spatio-temporal responses, paragraph 2; Figure 7C to 7E",
+     "quote": "The repolarization pattern stayed consistent throughout the early stages of SNS, but slightly changed direction in the later stages of stimulation (~40-60 sec) when APD shortening began to occur ( Fig. 7 C \u2013 E ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Needs repolarization maps at successive times; none are in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7f-mouse-base-apex",
+     "statement": "In the mouse, APD prolonged more at the base than at the apex at 15 s SNS.",
+     "source": "Figure 7F legend; Discussion, Species Differences, paragraph 3",
+     "quote": "accordingly, greater APD prolongation was observed at the base versus the apex of the mouse heart ( Fig. 7F )",
+     "statistics": [
+      {
+       "about": "change in APD at 15 s SNS, base against apex",
+       "test": "paired t-test (Methods; not named in the legend)",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "5 mouse hearts"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_wang_2019.ipynb",
+     "output": "claim:fig7f-mouse-base-apex",
+     "notes": "Fig7 sheet, 5 mouse hearts, APD change at 15 s SNS. Base +14.46 +- 1.69 ms, apex +7.04 +- 3.07; the base prolonged more in 5 of 5; base minus apex +7.42 ms, paired t-test t = 7.26, p = 0.0019, below 0.01. Without the heart of largest difference p = 0.0083; Wilcoxon signed-rank p = 0.0625.",
+     "deviations": [
+      "The regions are the authors' (Figure 7E), as given in the workbook; the claims file's readings need maps."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8e-rabbit-sim-apd-shortening-cat",
+     "statement": "In AP-clamp simulations of the rabbit model, the experimentally observed APD shortening gave a larger steady-state increase in CaT amplitude and faster early CaT decay than constant or transiently prolonged APD.",
+     "source": "Results, Implications for the integrated cardiac fight-or-flight response, paragraph 2; Figure 8E and 8G",
+     "quote": "In the rabbit, APD shortening increased steady-state enhancement in CaT amplitude compared to the simulations in which APD was either held constant or transiently prolonged",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "output": null,
+     "notes": "The rabbit model of Bartos et al. (2017) is MATLAB code (solver ode15s); it is in the dataset itself (files/code/rabbit, with instructions for Figure 8) as well as on the Bers lab page. MATLAB cannot be installed in the entry's locked Python environment, and porting the model (about 100 kB of ODE code over six files) to Python is a new implementation, not the paper's method. GNU Octave is not on the machine that runs the notebook (the notebook checks the PATH for matlab and octave and finds neither). It can be installed without root from conda-forge, but the entry's environment is a Python virtual environment built from a pip lock file (tools/entry.py), which cannot hold it, so the simulations cannot run as part of the entry. A trial outside the notebook, not part of the entry and not deciding the outcome, found that the mouse model starts under Octave after a one-line change to its ode15s call and runs far slower than real time, so its 70 s simulations would likely not fit the notebook's time limit. The notebook prints the code files and the instructions, which cover the Figure 8 AP-clamp (APD fixed, mouse-like or rabbit-like) and current-clamp simulations. The claims file marks the claim as data elsewhere; that the code is in the dataset is asked of a reader in questions/wang-2019.yaml.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Rabbit (Bartos et al. 2017) and mouse (Morotti et al. 2014) ventricular myocyte models in MATLAB, at https://somapp.ucdmc.ucdavis.edu/Pharmacology/bers/ and http://elegrandi.wixsite.com/grandilab/downloads (Methods, Mathematical modelling)",
+     "proposed": null
+    },
+    {
+     "claim": "fig8f-mouse-sim-transient-prolongation-cat",
+     "statement": "In AP-clamp simulations of the mouse model, transient APD prolongation enhanced the early CaT increase and rate of decay over constant APD, and monotonic shortening blunted the CaT amplitude response and slowed decay.",
+     "source": "Results, Implications for the integrated cardiac fight-or-flight response, paragraph 2; Figure 8F and 8H",
+     "quote": "In the mouse, simulating the experimentally-observed transient APD prolongation enhanced the early CaT increase and rate of decay ( Fig. 8 F and H , black vs. blue line)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "output": null,
+     "notes": "As fig8e-rabbit-sim-apd-shortening-cat, for the mouse model of Morotti et al. (2014), in files/code/mouse.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Rabbit (Bartos et al. 2017) and mouse (Morotti et al. 2014) ventricular myocyte models in MATLAB, at https://somapp.ucdmc.ucdavis.edu/Pharmacology/bers/ and http://elegrandi.wixsite.com/grandilab/downloads (Methods, Mathematical modelling)",
+     "proposed": null
+    },
+    {
+     "claim": "fig8ij-current-clamp",
+     "statement": "In current clamp, SNS-like conditions gave a monotonic APD decrease in the rabbit model and only a slight APD increase in the mouse model; a stronger and slower PKA effect on IKur produced a biphasic mouse APD response.",
+     "source": "Figure 8I and 8J legend; Discussion, Species Differences, paragraph 5",
+     "quote": "(J) Current-clamp simulation in mouse produced a slight increase in APD (blue line), but did not fully replicate the biphasic response observed experimentally.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "output": null,
+     "notes": "As fig8e-rabbit-sim-apd-shortening-cat; the current-clamp simulations also run in MATLAB.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Rabbit (Bartos et al. 2017) and mouse (Morotti et al. 2014) ventricular myocyte models in MATLAB, at https://somapp.ucdmc.ucdavis.edu/Pharmacology/bers/ and http://elegrandi.wixsite.com/grandilab/downloads (Methods, Mathematical modelling)",
+     "proposed": null
+    },
+    {
+     "claim": "fig9-ical-mechanism",
+     "statement": "In the models, the shorter rabbit APD and the longer mouse APD each increased total ICaL, augmenting SR Ca release and CaT amplitude.",
+     "source": "Results, Implications for the integrated cardiac fight-or-flight response, paragraph 3; Figure 9",
+     "quote": "In rabbit, the shorter APD increased the driving force for I CaL during repolarization, resulting in an increase in total I CaL . Conversely, in mouse, a longer APD produced an increase total I CaL ( Fig. 9 ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "output": null,
+     "notes": "As fig8e-rabbit-sim-apd-shortening-cat; the instructions in the dataset cover Figure 8 only, and total ICaL is not among the outputs they name.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "Rabbit (Bartos et al. 2017) and mouse (Morotti et al. 2014) ventricular myocyte models in MATLAB, at https://somapp.ucdmc.ucdavis.edu/Pharmacology/bers/ and http://elegrandi.wixsite.com/grandilab/downloads (Methods, Mathematical modelling)",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dataset holds no optical maps, traces or ECG. Its derivative workbook gives per-heart summary values for Figure 1 (heart rate only), Figure 2, Figure 3B to 3F and Figures 5F and 7F. The data behind Figure 1 APD, CaTD and CaT amplitude, the paced experiments of Figures 4 and 6, and all activation, repolarization, APD and CaTD maps (Figures 4 to 7) are absent, so 8 of the paper's claims cannot be tested.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "dataset_description.xlsx gives 0 subjects and 0 samples, subject.csv and sample.csv are empty, and the curator's note calls the dataset a computational modelling dataset, although the workbook holds measurements from mouse and rabbit hearts (the Methods report 13 mice and 9 rabbits).",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "No table identifies a heart or animal, so hearts cannot be followed across figures or conditions. In the Figure 3F table the no-SNS and SNS columns can be paired only by position, and the second no-SNS column is empty.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The Figure 3F table has 4 hearts in its no-SNS series where the legend gives n = 5, and one noradrenaline heart (Figure 3C) has no values at 12.33 s.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The deposited mouse APD80 at 60 s of SNS is 49.54 +- 4.94 ms (n = 5), where the Abstract reports 46.5 +- 9.1 ms; the values at 0 s (50.52 +- 4.52) and 15 s (61.18 +- 3.24) are close to the Abstract's 50.9 +- 5.1 and 60.6 +- 4.1. The deposited values are not exactly those the paper summarises.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In the Figure 3E table every heart's no-SNS APD80 at 5 s equals its value at 0 s (56.9, 56.02 and 57.3 ms), consistent with the 0 s value being carried over in place of a measurement.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The tyramine and noradrenaline tables (Figure 3B and 3C) label time \"SNS Time (sec)\" though these hearts were not stimulated, and each has an unlabelled column B (0, 3.5, 3.403, 4.435, 9.469 for tyramine) consistent with the spread of the time points across hearts but not described. The Figure 1 heart rates have no unit and no statement of which part of the 20 s SNS they are.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module sns.py and the claims file, with the paper's full text (PMC6675632). The verifier read the archive's file list and metadata, tested the helpers on synthetic inputs (against_time0, monotonic) and had no attempt record.",
+     "agreed": 19,
+     "of": 25,
+     "disagreements": [
+      {
+       "claim": "fig2a-rabbit-monotonic",
+       "outcome": "not_reproduced",
+       "reason": "Mean HR peaks at 20 s and falls to 194.75 by 60 s, and the 50 to 60 s step is significantly the wrong way (p = 0.047). CaTD80 bottoms out at 25 s and then rises. No combination of readings passes for all three variables; only APD80 is monotonic."
+      },
+      {
+       "claim": "fig3abc-tyramine-na-mimic-sns",
+       "outcome": "reproduced",
+       "reason": "Reproduced, for noradrenaline under one reading only. Tyramine passes under both monotonic readings. Noradrenaline passes only under reading (b), which with n = 3 to 4 and a missing value at 12.33 s has little power to flag a fall; HR drops 26.75 bpm between 29.75 and 59.75 s (mean), and APD undershoots baseline at the end (-3.2 ms, p = 0.046)."
+      },
+      {
+       "claim": "fig8e-rabbit-sim-apd-shortening-cat",
+       "outcome": "blocked",
+       "reason": "Blocked, other (questionable). The claims file marks the simulation claims as data elsewhere behind a registration form, but the dataset holds the code in files/code/{mouse,rabbit}, with the masterCompute and ODE files, exp_APc_data_5Hz.mat, AP_2Hz.mat and instructions labelled \"for reproducing paper results (Figure 8)\", a misreading of the dataset by the claims file. MATLAB code is not a data reason for blocking. Whether the code runs under GNU Octave was not tried, so these may be testable, at least the Fig. 8 ones."
+      },
+      {
+       "claim": "fig8f-mouse-sim-transient-prolongation-cat",
+       "outcome": "blocked",
+       "reason": "As fig8e; the mouse model and its instructions are in files/code/mouse, and whether it runs under GNU Octave was not tried."
+      },
+      {
+       "claim": "fig8ij-current-clamp",
+       "outcome": "blocked",
+       "reason": "As fig8e; the instructions cover the current-clamp simulations of Figure 8."
+      },
+      {
+       "claim": "fig9-ical-mechanism",
+       "outcome": "blocked",
+       "reason": "As fig8e. Fig9 (total ICaL) is not obviously among the instructed outputs."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook after the first revision, with its conclusions and summary, the helper module sns.py, the claims file, the attempt record and the entry README, with the paper's full text.",
+     "agreed": 24,
+     "of": 25,
+     "disagreements": [
+      {
+       "claim": "fig2a-rabbit-monotonic",
+       "outcome": "not_reproduced",
+       "reason": "The criterion is \"reproduced when ... all three monotonic ... and significant at 60 s\" and has no partial rule, unlike fig2d, fig2cf and fig3abc. Partial is arguable under the protocol's general definition, but the reason given for it is false. The sentence that heart rate rises and APD80 and CaTD80 shorten significantly from time 0 at 60 s under every significance reading is contradicted by cells 23 and 24 (APD80 at 60 s Holm-Sidak p=0.1766, \"60 s sig (ii)\" False), by the first sentence of cell 25 and by the record's own \"APD80 does not (p = 0.18)\". Cell 25 also has the typo \"APD80 APD80 falls\". \"SigmaPlot's pooled-error Holm-Sidak\" should read as a variant, as the paper names no software."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The proposed change of outcome for fig2a-rabbit-monotonic and the analysis behind it (cells 22 to 25 of the executed notebook of the final revision), with the helper module sns.py, the claims file and the paper's full text.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The paper uses \"Repeated measures ANOVA or paired t-tests\" but does not say which test gives each \"*p<0.05 vs. time 0\" or which comparison follows the ANOVA. This attempt runs both, with Holm-Sidak comparisons after the ANOVA, on paired t-tests and, as a variant, on the ANOVA's pooled error. For the propranolol claim (Figure 3D) they disagree; an unadjusted paired t-test finds APD80 at 10 s above time 0 (p = 0.010), Holm-Sidak on paired t-tests finds nothing, and Holm-Sidak on the pooled error, after the heart rate ANOVA (p = 0.031, 0.23 with the Greenhouse-Geisser correction), finds heart rate above time 0 at 30 to 60 s (smallest p = 0.0048). The claims file's rule (either test) makes the claim not reproduced. Which test and comparison were used, with what software, and was sphericity corrected for?",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Are the columns of the Figure 3F no-SNS and SNS tables the same hearts in the same order, and why is the second no-SNS column empty? The test of SNS against no SNS is significant when paired by position (p = 0.0023 at 15 s) and not when unpaired.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "wang-2019",
+   "type": "reproduction",
+   "title": "Sympathetic nerve stimulation of mouse and rabbit hearts (Wang et al. 2019)",
+   "description": "Tests the findings of Wang, Morotti, Tapa et al. (2019) on SPARC dataset 212, which holds the authors' per-heart summary tables for Figures 1 to 3, 5F and 7F (heart rate, APD80, CaTD80 and relative CaT amplitude during sympathetic nerve stimulation in mouse and rabbit hearts) and the MATLAB myocyte models of Figure 8. The optical maps behind the spatio-temporal findings are not in the dataset.",
+   "datasets": [
+    "sparc:212"
+   ],
+   "papers": [
+    "10.1113/jp278016"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_wang_2019.ipynb",
+     "title": "Reproducing Wang et al. (2019) from SPARC dataset 212",
+     "cells": {
+      "sanity": "0348bd5b",
+      "claim:fig1a-rabbit-hr-increase": "9be119be",
+      "claim:fig1d-mouse-hr-increase": "9be119be",
+      "claim:fig1bc-rabbit-ap-cat-response": "8b47d131",
+      "claim:fig1ef-mouse-ap-cat-response": "d79f139f",
+      "claim:fig2a-rabbit-monotonic": "7583efcb",
+      "claim:fig2d-mouse-biphasic-apd": "c88794cb",
+      "claim:fig2cf-cat-amplitude-similar": "52cad279",
+      "claim:fig3abc-tyramine-na-mimic-sns": "497fbe43",
+      "claim:fig3d-propranolol-abolishes": "19e61d39",
+      "claim:fig3e-rate-step-biphasic": "0f9b4341",
+      "claim:fig3f-constant-pacing-sns-prolongs": "fd501d15",
+      "claim:fig4g-5f-rabbit-base-apex": "4f19f7ee",
+      "claim:fig7f-mouse-base-apex": "4f19f7ee"
+     },
+     "executed": "notebooks/wang-2019/reproduce_wang_2019.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 29,
+   "hashed": true
+  }
+ ],
+ "badge": null,
+ "badges": {
+  "reproduced": null,
+  "outcomes": "https://encorescience.org/badge/sparc/212-outcomes.svg",
+  "card": "https://encorescience.org/badge/sparc/212-card.svg"
+ }
+}
