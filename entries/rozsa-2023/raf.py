@@ -103,32 +103,52 @@ def fetch(asset, block=32 * 2**20, threads=16):
 # least 30 mV above threshold). Spikes are found as peaks with a prominence of at least 20 mV at
 # least 1 ms apart (a standard choice that only finds the candidates; the two rules above decide).
 # The threshold is found by walking back from the steepest point of the upstroke, at most 5 ms, to
-# the first sample of the run with dV/dt >= 5 mV/ms.
+# the first sample of the run with dV/dt >= 5 mV/ms. dV/dt is the change over 50 us (SMOOTH_S) of
+# the trace smoothed with a 50 us boxcar, which approximates the 10 kHz Bessel filter of the Methods
+# ("filtered at 10 kHz ... sampled at 50 kHz") and makes the threshold the same at every sampling
+# rate in the files (5 to 200 kHz). With the sample-to-sample derivative, one noise dip at 100 kHz
+# ends the walk early (verifier, round 1). On a synthetic AP with 0.2 mV noise the threshold is
+# within 0.6 mV of the true value at 16.7 to 200 kHz (tested while preparing).
 
 DVDT = 5.0          # mV/ms, Methods
 SLOPE_MS = 1.0      # ms, Methods
 SD_MS = 50.0        # ms, window of Figures 3F, 3K and 4F (claims file)
+SMOOTH_S = 50e-6    # s, boxcar for dV/dt (see above)
 HIST_BINS = np.arange(-100, -19.99, 0.5)
 
 
-def _ap_table(v, rate, i_stim):
-    """APs of one sweep. v in mV, rate in Hz, i_stim in pA (same length as v, or None)."""
+def dvdt(v, rate):
+    """dV/dt in mV/ms: the change over 50 us from each sample of the trace smoothed with a 50 us
+    boxcar (see above); the last elements are 0."""
+    w = max(1, int(round(SMOOTH_S * rate)))
+    if w > 1:
+        v = np.convolve(v, np.ones(w) / w, mode="same")
+    return np.r_[v[w:] - v[:-w], np.zeros(w)] * (rate / 1000.0) / w
+
+
+def _ap_table(v, rate, i_stim, hold=0.0):
+    """APs of one sweep. v in mV, rate in Hz, i_stim in pA relative to the holding current hold (pA)
+    (same length as v, or None). i_thr is the current at threshold relative to the holding current,
+    i_abs the absolute current (holding included)."""
     from scipy.signal import find_peaks
     ms = rate / 1000.0
-    dv = np.diff(v) * ms                       # mV/ms, dv[k] = v[k+1]-v[k]
+    w = max(1, int(round(SMOOTH_S * rate)))
     peaks, _ = find_peaks(v, prominence=20, distance=max(1, int(ms)))
     rows = []
     for p in peaks:
         lo = max(1, p - int(5 * ms))
         if p - lo < 2:
             continue
-        k = lo + int(np.argmax(dv[lo:p]))      # steepest point of the upstroke
+        a0 = max(0, lo - w)
+        dv = dvdt(v[a0:p + w], rate)          # dv[k - a0] is dV/dt from sample k
+        o = lo - a0
+        k = o + int(np.argmax(dv[o:p - a0]))   # steepest point of the upstroke
         if dv[k] < DVDT:
             continue
         j = k
-        while j > lo and dv[j - 1] >= DVDT:
+        while j > o and dv[j - 1] >= DVDT:
             j -= 1
-        thr_i = j                              # first sample of the run with dV/dt >= 5 mV/ms
+        thr_i = a0 + j                         # first sample of the run with dV/dt >= 5 mV/ms
         n1 = int(round(SLOPE_MS * ms))
         if thr_i - n1 < 0:
             continue
@@ -147,6 +167,7 @@ def _ap_table(v, rate, i_stim):
             sd_peak=float(np.std(pre_pk)) if full else np.nan,
             vpre=float(np.mean(pre_thr)) if full else np.nan,
             i_thr=float(i_stim[thr_i]) if i_stim is not None else np.nan,
+            i_abs=float(i_stim[thr_i] + hold) if i_stim is not None else np.nan,
         ))
     for r in rows:
         r["main"] = r["peak"] > 0
@@ -211,11 +232,23 @@ def extract(f, keep=()):
         if "data" not in o:
             continue
         chan = re.sub(r"_?\d+$", "", name)
+        if not chan.startswith(("Vm", "LFP")):
+            # Other acquisition series (camera images in some in vivo files) are only listed.
+            sweeps.append(dict(series=name, chan=chan, n=int(o["data"].shape[-1])))
+            continue
         start = float(o["starting_time"][()])
         rate = float(o["starting_time"].attrs["rate"])
         x = o["data"][:]
         if keep and chan.startswith(tuple(keep)):
-            raw[name] = (start, rate, (x * 1000.0).astype(np.float32))
+            if chan.startswith("LFP") and rate > 750 and len(x) > 100 * rate / 500:
+                # LFP kept at about 500 Hz, decimated with the same FIR filter the notebooks used
+                # on the full-rate trace in the first round (enough for the 0.5 to 45 Hz analyses
+                # and a hundredth of the memory; standard choice).
+                from scipy.signal import decimate
+                q = int(round(rate / 500.0))
+                raw[name] = (start, rate / q, decimate(x * 1000.0, q, ftype="fir").astype(np.float32))
+            else:
+                raw[name] = (start, rate, (x * 1000.0).astype(np.float32))
         if chan.startswith("LFP"):
             sweeps.append(dict(series=name, chan=chan, start=start, rate=rate, n=len(x)))
             continue
@@ -243,7 +276,18 @@ def extract(f, keep=()):
                   imax=float(i_stim.max()) if i_stim is not None else np.nan,
                   nsteps=len(steps),
                   pos_ms=sum((b - a) for a, b, amp in steps if amp > 5) / rate * 1000,
-                  neg_ends=[b / rate for a, b, amp in steps if amp < -5])
+                  neg_ends=[b / rate for a, b, amp in steps if amp < -5],
+                  neg_steps=[(a, b, amp) for a, b, amp in steps if amp < -5])
+        pos = [(a, b, amp) for a, b, amp in steps if amp > 5]
+        if pos and pos[0][0] > int(rate / 1000) and pos[0][1] - pos[0][0] > int(rate / 1000):
+            # Voltage jump at the onset of the first depolarizing step: mean of 0.05 to 0.15 ms
+            # after it minus the mean of the 0.5 ms before it. A jump that scales with the current
+            # is the drop over an uncompensated series resistance (bridge balance; data check).
+            a, b, amp = pos[0]
+            ms = rate / 1000.0
+            sw["jump_mv"] = float(np.mean(v[a + max(1, int(0.05 * ms)):a + max(2, int(0.15 * ms))])
+                                  - np.mean(v[a - max(1, int(0.5 * ms)):a]))
+            sw["jump_pa"] = amp
         if not steps:
             # Histogram of the membrane potential of sweeps without current (0.5 mV bins, -100
             # to -20 mV), for the up and down state readings of fig3-human-ap-states.
@@ -252,12 +296,16 @@ def extract(f, keep=()):
         if sg:
             sw.update(sg)
         sweeps.append(sw)
-        for r in _ap_table(v, rate, i_stim):
+        for r in _ap_table(v, rate, i_stim, hold if np.isfinite(hold) else 0.0):
             r.update(series=name, chan=chan, rate=rate, sweep_start=start,
                      t_abs=start + r["t_thr"],
                      since_neg=min([r["t_thr"] - e for e in sw["neg_ends"] if r["t_thr"] >= e], default=np.inf))
             aps.append(r)
-    return pd.DataFrame(aps), pd.DataFrame(sweeps), raw
+    aps = pd.DataFrame(aps)
+    if len(aps):
+        aps["series"] = aps.series.astype("category")
+        aps["chan"] = aps.chan.astype("category")
+    return aps, pd.DataFrame(sweeps), raw
 
 
 def metadata(f):
@@ -284,55 +332,102 @@ def metadata(f):
                 pharm[parts[0]] = parts[1]
     out["pharmacology"] = pharm
     out["electrodes"] = [k for k in g["intracellular_ephys"] if k != "sweep_table"]
+    out["electrode_descriptions"] = {k: s(g["intracellular_ephys"][k]["description"])
+                                     for k in out["electrodes"] if "description" in g["intracellular_ephys"][k]}
+    out["general"] = {k: s(g[k]) for k in g if isinstance(g[k], h5py.Dataset)}
     return out
 
 
-def process_group(assets, keep=(), threads=2):
-    """Fetch and extract every asset of a list; returns {path: (meta, aps, sweeps, raw)}."""
-    def one(a):
-        f = fetch(a)
-        try:
-            return a["path"], (metadata(f),) + extract(f, keep)
-        finally:
-            f.close()
-    import gc
+def _process_one(a, keep):
+    f = fetch(a)
+    try:
+        return a["path"], (metadata(f),) + extract(f, keep)
+    finally:
+        f.close()
 
-    def one_gc(a):
-        r = one(a)
-        gc.collect()
-        return r
-    # Files over 1.5 GB are read one at a time, to keep within memory.
-    small = [a for a in assets if a["size"] <= 1.5e9]
-    big = [a for a in assets if a["size"] > 1.5e9]
-    with ThreadPoolExecutor(threads) as ex:
-        out = dict(ex.map(one_gc, small))
-    for a in big:
-        k, v = one_gc(a)
-        out[k] = v
-    return out
+
+def process_group(assets, keep=(), workers=3, budget=4.5e9):
+    """Fetch and extract every asset of a list in worker processes; returns {path: (meta, aps,
+    sweeps, raw)}. Extraction is CPU bound, so files are read in up to `workers` processes at once,
+    with at most `budget` bytes of files in memory at a time (a file larger than the budget is read
+    alone)."""
+    import multiprocessing as mp
+    from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
+    todo = sorted(assets, key=lambda a: -a["size"])
+    out, running = {}, {}
+    with ProcessPoolExecutor(workers, mp_context=mp.get_context("forkserver")) as ex:
+        while todo or running:
+            while todo and len(running) < workers:
+                used = sum(a["size"] for a in running.values())
+                pick = next((a for a in todo if used + a["size"] <= budget), None)
+                if pick is None and not running:
+                    pick = todo[0]
+                if pick is None:
+                    break
+                todo.remove(pick)
+                running[ex.submit(_process_one, pick, keep)] = pick
+            done, _ = wait(running, return_when=FIRST_COMPLETED)
+            for fu in done:
+                running.pop(fu)
+                k, v = fu.result()
+                out[k] = v
+    return {a["path"]: out[a["path"]] for a in assets}
 
 
 # --- Analysis ----------------------------------------------------------------------------------
 
-def gmm_classes(aps, seed):
+THR_RANGE = (-80.0, -10.0)   # mV, plausible thresholds (verifier, round 1; standard choice)
+
+
+def plausible(aps):
+    """APs whose threshold lies in -80 to -10 mV and whose peak is below 100 mV. The others are
+    artefacts (thresholds from -1033 to +240 mV and peaks up to 1030 mV occur in the files) and are
+    left out of every AP analysis."""
+    return aps.thr.between(*THR_RANGE) & (aps.peak < 100)
+
+
+def gmm_classes(aps, seed, max_fit=200_000):
     """Reading (b) of the claims file's header: a two-component Gaussian mixture on threshold and
-    pre-AP slope, fitted to the APs given (one preparation pooled). Returns a boolean array, True
-    for RA-APs (the component with the lower mean threshold). Features are z-scored first (a
-    standard choice); the seed is the claim's."""
+    pre-AP slope, fitted to the APs given (one preparation pooled; artefacts must be removed first
+    with `plausible`). RA-APs are the component with the lower mean threshold (claims file). The
+    features are scaled by their median and interquartile range (a standard choice that outliers do
+    not dominate); the seed is the claim's. With more than max_fit APs the mixture is fitted to a
+    random draw of max_fit of them (seeded by the claim's seed) and applied to all (a standard choice,
+    for time). Returns (boolean array, True for RA-APs, and a dict with
+    the components' weights, means and SDs in mV and mV/ms, and whether the RA component also has
+    the lower mean slope, as the paper describes RA-APs)."""
     from sklearn.mixture import GaussianMixture
     X = aps[["thr", "slope"]].to_numpy(float)
-    X = (X - X.mean(0)) / X.std(0)
-    gm = GaussianMixture(2, random_state=seed, n_init=5).fit(X)
-    lab = gm.predict(X)
+    assert np.all((X[:, 0] >= THR_RANGE[0]) & (X[:, 0] <= THR_RANGE[1])), "remove artefacts first"
+    med = np.median(X, 0)
+    iqr = np.subtract(*np.percentile(X, [75, 25], 0))
+    Z = (X - med) / iqr
+    F = Z[np.random.default_rng(seed).choice(len(Z), max_fit, replace=False)] if len(Z) > max_fit else Z
+    gm = GaussianMixture(2, random_state=seed, n_init=5).fit(F)
+    lab = gm.predict(Z)
     lo = int(np.argmin(gm.means_[:, 0]))
-    return lab == lo
+    mu = gm.means_ * iqr + med
+    sd = np.sqrt(np.array([np.diag(c) for c in gm.covariances_])) * iqr
+    hi = 1 - lo
+    info = dict(n=len(X), n_ra=int((lab == lo).sum()), w_ra=float(gm.weights_[lo]), w_ais=float(gm.weights_[hi]),
+                thr_ra=float(mu[lo, 0]), thr_ais=float(mu[hi, 0]), slope_ra=float(mu[lo, 1]),
+                slope_ais=float(mu[hi, 1]), sd_thr_ra=float(sd[lo, 0]), sd_thr_ais=float(sd[hi, 0]),
+                sd_slope_ra=float(sd[lo, 1]), sd_slope_ais=float(sd[hi, 1]),
+                ra_slope_lower=bool(mu[lo, 1] < mu[hi, 1]))
+    return lab == lo, info
+
+
+def gmm_seed_range(aps, seed):
+    """Number of APs in the RA component under the claim's seed and the seed plus 1000 to 4000."""
+    return [int(gmm_classes(aps, seed + k)[0].sum()) for k in (0, 1000, 2000, 3000, 4000)]
 
 
 def paper_test(a, b, paired=False):
     """The paper's rule (Methods, "Statistics"): a Kolmogorov-Smirnov test of normality, then a
     t test (paired or two-sample) for normal data and a Mann-Whitney U test otherwise. Normality is
     tested on each group (on the differences when paired) against a normal with the sample's mean
-    and SD, at P < 0.05. Returns (test name, P)."""
+    and SD, at P < 0.05. The rule names no paired non-parametric test, so non-normal paired data get
+    the Mann-Whitney U test too, as the rule says. Returns (test name, P)."""
     from scipy import stats
     a = np.asarray(a, float)
     b = np.asarray(b, float)
@@ -345,7 +440,7 @@ def paper_test(a, b, paired=False):
     if paired:
         if normal(a - b):
             return "paired t", stats.ttest_rel(a, b).pvalue
-        return "Wilcoxon (paired, not normal)", stats.wilcoxon(a, b).pvalue
+        return "Mann-Whitney U (paired data, not normal)", stats.mannwhitneyu(a, b, alternative="two-sided").pvalue
     if normal(a) and normal(b):
         return "two-sample t", stats.ttest_ind(a, b).pvalue
     return "Mann-Whitney U", stats.mannwhitneyu(a, b, alternative="two-sided").pvalue
@@ -379,11 +474,15 @@ def induction_sweeps(sw):
     return v[(dur < 1.0) & (v.nsteps == 1) & (v.pos_ms >= 50) & (v.pos_ms <= 300)]
 
 
-def ra_aps_induction(aps, sw, rebound_s=0.3):
+def ra_aps_induction(aps, sw, rebound_s=0.3, absolute=True):
     """Reading (c) of the claims file's header for one induction recording. AIS-APs are the APs
-    during positive current; RA-APs the APs without positive current (I <= 5 pA at threshold) after
-    the first induction sweep, leaving out APs within 0.3 s of the end of a hyperpolarizing step
-    (rebound APs; a standard choice). Returns (ais, ra, t_first_induction, run starts)."""
+    during positive current steps; RA-APs the APs without positive current after the first induction
+    sweep, leaving out APs within 0.3 s of the end of a hyperpolarizing step (rebound APs; a
+    standard choice). Without positive current means at most 5 pA above the holding level at
+    threshold and, with absolute=True, at most 5 pA in absolute terms, so that APs driven by a
+    depolarizing holding current are not RA-APs (the paper: "steady-state somatic current
+    injections were needed to cross AIS-AP threshold, and RA-APs were absent during these
+    periods"). Returns (ais, ra, t_first_induction, run starts)."""
     ind = induction_sweeps(sw)
     if len(aps) == 0 or len(ind) == 0:
         return aps.iloc[:0], aps.iloc[:0], np.nan, []
@@ -391,8 +490,24 @@ def ra_aps_induction(aps, sw, rebound_s=0.3):
     starts = np.sort(ind.start.to_numpy())
     runs = [starts[0]] + [b for a, b in zip(starts[:-1], starts[1:]) if b - a > 5.0]
     ais = aps[aps.i_thr > 5]
-    ra = aps[(aps.i_thr <= 5) & (aps.t_abs >= t0) & (aps.since_neg > rebound_s)]
+    no_current = (aps.i_thr <= 5) & ((aps.i_abs <= 5) if absolute else True)
+    ra = aps[no_current & (aps.t_abs >= t0) & (aps.since_neg > rebound_s)]
     return ais, ra.sort_values("t_abs"), t0, runs
+
+
+def spontaneous_before(aps, sw, t0, rebound_s=0.3):
+    """Baseline before induction: the APs without current (absolute and relative current at most
+    5 pA, rebound APs left out) in the sweeps that start before the first induction sweep, and the
+    duration of the stepless sweeps among them (s). Returns (n APs, n in stepless sweeps, seconds of
+    stepless recording)."""
+    v = sw[sw.chan.str.startswith("Vm")]
+    pre = v[v.start < t0] if np.isfinite(t0) else v
+    stepless = set(pre[pre.nsteps == 0].series)
+    dur = float((pre[pre.nsteps == 0].n / pre[pre.nsteps == 0].rate).sum())
+    if not len(aps):
+        return 0, 0, dur
+    a = aps[aps.series.isin(set(pre.series)) & (aps.i_thr <= 5) & (aps.i_abs <= 5) & (aps.since_neg > rebound_s)]
+    return len(a), int(a.series.isin(stepless).sum()), dur
 
 
 def epochs(ra_times, runs=None):
