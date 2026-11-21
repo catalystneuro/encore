@@ -9,11 +9,11 @@ PM and AM, with LFP, stimulus tables and eye tracking.
 |---|---|
 | Trial counts | Partially reproduced |
 | Gamma increase in all three oddball contrasts (V1) | Reproduced |
-| V1 condition spectrograms (Figures 2, 3, 4 a and b) | 2 not reproduced, 1 partially reproduced |
+| V1 condition spectrograms (Figures 2, 3, 4 a and b) | 2 partially reproduced, 1 not reproduced |
 | V1 cluster-tested contrasts (Figures 2c, 3c, 4c) | 2 reproduced, 1 partially reproduced |
-| V1 laminar panels (Figures 2d-f, 3d-f, 4d-f) | 6 partially reproduced, 1 not reproduced |
+| V1 laminar panels (Figures 2d-f, 3d-f, 4d-f) | 1 reproduced, 5 partially reproduced, 1 not reproduced |
 | Trough-locked CSD patterns (Figures 2g-i, 3g-i, 4g-i) | 5 reproduced, 4 not reproduced, all resting on an assumption |
-| Gamma and theta peaks, V1 and LM | 4 reproduced, 1 partially reproduced |
+| Gamma and theta peaks, V1 and LM | 4 reproduced (one sensitive to the seed), 1 partially reproduced |
 | Aperiodic components (Supplementary Figures 1 and 3) | 2 reproduced, 1 not reproduced |
 | Alpha/beta and gamma peak heights (Supplementary Figure 2) | 1 reproduced, 1 not reproduced |
 | L2/3 gamma by area (Figure 5) | 2 not reproduced |
@@ -30,7 +30,7 @@ the grating sequences. The attempt record, with the reasons and the differences 
 method, is [`attempts/sennesh-2025-01.yaml`](../../attempts/sennesh-2025-01.yaml).
 
 - `v1_laminar.ipynb`: the data checks and the V1 claims (spectrograms, cluster tests, laminar
-  panels, trough-locked CSD, gamma and theta peaks, pupil). About 15 minutes, most of it streaming
+  panels, trough-locked CSD, gamma and theta peaks, pupil). About 17 minutes, most of it streaming
   the V1 LFP of 14 mice.
 - `areas.ipynb`: the claims across the six areas (aperiodic components, spectral peaks, L2/3 gamma
   of Figure 5). About 35 minutes.

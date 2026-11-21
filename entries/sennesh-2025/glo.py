@@ -24,14 +24,25 @@ Where the parameters come from (claims file, opening comment, S1 to S7, unless s
 - Epochs: 0.5 s before P4 onset to 0.5 s after P4 offset (S2; epoching notebook).
 - Channels (S1): locations containing "VIS" on the area's probe, median filter over 3 adjacent
   channels, aligned across mice at the median L4 channel, cropped to the smallest extent above
-  and below it, labels by majority vote, every fourth channel kept from the top of the cropped
-  column (where the downsampling starts is a standard choice, said to be one).
+  and below it, labels by majority vote, every fourth channel kept. The claims file does not say
+  where the downsampling starts; it is taken from the code (`alignment`, `kept_rows`): channels
+  ordered from the tip up, the topmost common row left out by the crop, every fourth row kept
+  from the deepest. The notebook repeats the cluster tests with the start moved up by 1 and 3
+  rows (`KEPT_SHIFTS`); in V1 the shift of 3 keeps the other L1 row and the shift of 1 none.
 - Spectrogram (S2): Hann taper, 200 ms window (250 samples at 1250 Hz), FFT padded to the next
-  power of two (256), power at the bins nearest 5, 10, ..., 150 Hz, windows centred every 10 ms
-  from -10 ms to 510 ms after P4 onset. Centring each window on the nearest sample, as 10 ms is
+  power of two (256), power at the bins nearest 5, 10, ..., 150 Hz. The bins lie 4.88 Hz apart
+  (`FOI_HZ`): the labels 5 to 100 Hz fall on 4.9 to 97.7 Hz, 105 to 150 Hz on 107.4 to
+  151.4 Hz, and the 102.5 Hz bin is not used. The labels are kept, as the claims' ranges are
+  written in them. Windows are centred every 10 ms from -10 ms to 510 ms after P4 onset. Centring each window on the nearest sample, as 10 ms is
   12.5 samples at 1250 Hz, is a standard choice that cannot change a result.
 - Aperiodic removal (S3): FOOOF 1.1.0, the Methods' settings, fitted to the spectrogram averaged
   over trials and time per condition and channel; readings (a) 5 to 150 Hz, (b) 5 to 90 Hz.
+- Condition panels (S6): the claims file's "dB spectrogram of S3 averaged over trials" is read
+  as in the paper's code (epych cee2e6f, notebooks/passiveglo/oscillatory_eyeballs.ipynb, cell 12:
+  `oscillatory()`, which divides each trial by the linear aperiodic fit, then `erp()`, the trial
+  mean, then `decibels()`), that is dB of the trial-mean power over the aperiodic fit. The trial
+  mean of per-trial dB values is shown as a second reading; for exponentially distributed power
+  it lies about 2.5 dB lower.
 - Cluster test (S4): F statistic of a one-way ANOVA of two groups, cluster-forming threshold the
   F quantile 0.99 with 1 and n1 + n2 - 1 degrees of freedom, clusters on the lattice of time,
   frequency and channel (faces adjacency, MNE's default lattice), cluster mass the sum of F,
@@ -45,7 +56,10 @@ Where the parameters come from (claims file, opening comment, S1 to S7, unless s
   windowed-sinc FIR (Hamming) of at most 249 taps applied forward and backward is an assumption
   forced by the 600 ms segments. The CSD is the standard second spatial difference,
   -(phi(z+h) - 2 phi(z) + phi(z-h)) / h^2 (Elephant StandardCSD with unit conductivity and its default Vaknin edge rows),
-  computed here to avoid Elephant's dependencies.
+  computed here to avoid Elephant's dependencies. S7's first-sink rule ties when every layer
+  group holds a displayed sink at the first lag; the notebook then uses, as an assumption, the
+  sink onset of each group's mean CSD (the first lag at which it turns from source to sink),
+  and prints the sign of each group's mean CSD at every lag.
 - Per-mouse spectra (claim dd-gamma-peak-frequency-v1): Hann-tapered FFT of each trial's
   segment, zero-padded to 1250 samples, every second bin kept (a 2 Hz grid, the Methods' 2 Hz
   resolution).
@@ -234,32 +248,42 @@ def cortical_channels(lfp, area):
     return d
 
 
-def alignment(channel_tables):
-    """S1: align per-mouse channel columns at the median L4 channel and crop to the common extent.
+def kept_rows(n, shift=0):
+    """S1 downsampling as the code does it (epych signal.py, downsample: channels.loc[0::4]) on a
+    column ordered from the deepest row up: every fourth row from the deepest, here returned as
+    top-down row numbers. shift moves the start up by that many rows (variants only)."""
+    return np.arange(n - 1 - shift, -1, -4)[::-1]
 
-    channel_tables: mouse -> cortical_channels table. Returns mouse -> (start, stop) rows of its
-    table, the aligned labels (majority vote), and the kept (every fourth) aligned rows.
+
+def alignment(channel_tables):
+    """S1 as the paper's code does it (epych cee2e6f, statistics/alignment.py, ChannelAlignment).
+
+    The code orders each probe's channels from the tip up (the LFP column order, local index
+    ascending, checked in the notebook), takes as centre the L4 channel at round(median) of the
+    L4 positions in that order (round half to even), and crops every mouse to
+    range(centre - down, centre + up), down and up the smallest extents below and above the
+    centre; the range leaves out the topmost common row. Labels by majority vote; every fourth
+    row kept from the deepest (kept_rows).
+
+    channel_tables: mouse -> cortical_channels table (top-down). Returns mouse -> (start, stop)
+    rows of its table, the aligned labels (top-down), the kept rows and the raw labels.
     """
     l4 = {}
     for m, d in channel_tables.items():
         idx = np.flatnonzero(d.location.map(layer_of) == "L4")
-        l4[m] = int(np.median(idx))
+        asc = np.sort(len(d) - 1 - idx)                     # positions counted from the tip
+        l4[m] = len(d) - 1 - int(round(np.median(asc)))      # back to top-down
     above = min(l4[m] for m in channel_tables)
     below = min(len(d) - 1 - l4[m] for m, d in channel_tables.items())
-    spans = {m: (l4[m] - above, l4[m] + below + 1) for m in channel_tables}
-    n = above + below + 1
-    labels = []
-    for i in range(n):
-        votes = collections.Counter(channel_tables[m].location.iloc[spans[m][0] + i]
-                                    for m in channel_tables)
-        labels.append(layer_of(votes.most_common(1)[0][0]))
-    kept = np.arange(0, n, 4)
+    spans = {m: (l4[m] - above + 1, l4[m] + below + 1) for m in channel_tables}
+    n = above + below
     raw = []
     for i in range(n):
         votes = collections.Counter(channel_tables[m].location.iloc[spans[m][0] + i]
                                     for m in channel_tables)
         raw.append(votes.most_common(1)[0][0])
-    return spans, labels, kept, raw
+    labels = [layer_of(x) for x in raw]
+    return spans, labels, kept_rows(n), raw
 
 
 # ----------------------------------------------------------------------------- LFP reading
@@ -351,15 +375,22 @@ def epoch_times(fs=FS, pre=PRE, post=P4_DUR + POST):
 _HANN = signal.windows.hann(WIN, sym=False)
 _FREQS = np.fft.rfftfreq(NFFT, 1 / FS)
 FOI_BINS = np.array([int(np.argmin(np.abs(_FREQS - f))) for f in FOI])
+FOI_HZ = _FREQS[FOI_BINS]        # the FFT bins' own frequencies (4.88 Hz apart), printed in the notebook
 
 
-def spectrogram(ep, fs=FS):
-    """S2. ep: (..., samples) epochs starting PRE s before P4 onset -> (..., time, freq) power."""
+def spectrogram(ep, fs=FS, batch=32):
+    """S2. ep: (..., samples) epochs starting PRE s before P4 onset -> (..., time, freq) power.
+
+    Computed over the leading axis in batches of trials, to bound memory; the result is the same.
+    """
     centres = np.round((TOI + PRE) * fs).astype(int)
     idx = centres[:, None] + np.arange(WIN)[None, :] - WIN // 2
-    seg = ep[..., idx] * _HANN
-    spec = np.fft.rfft(seg, n=NFFT, axis=-1)[..., FOI_BINS]
-    return (np.abs(spec) ** 2).astype(np.float32)
+    out = np.empty(ep.shape[:-1] + (len(TOI), len(FOI)), dtype=np.float32)
+    for i in range(0, max(len(ep), 1), batch):
+        seg = ep[i:i + batch][..., idx] * _HANN
+        spec = np.fft.rfft(seg, n=NFFT, axis=-1)[..., FOI_BINS]
+        out[i:i + batch] = np.abs(spec) ** 2
+    return out
 
 
 def fooof_aperiodic(freqs, power, fit_range):
@@ -417,10 +448,12 @@ def cluster_test(a, b, rng, n_perm=1000, threshold=None, batch=50):
     n1, n2 = len(a), len(b)
     n = n1 + n2
     shape = a.shape[1:]
-    x = np.concatenate([a.reshape(n1, -1), b.reshape(n2, -1)]).astype(np.float64)
-    x -= x.mean(0)                       # centred, so that float32 sums below lose nothing
-    tot, totsq = x.sum(0), (x ** 2).sum(0)
-    x = x.astype(np.float32)
+    x = np.concatenate([a.reshape(n1, -1), b.reshape(n2, -1)]).astype(np.float32, copy=False)
+    x -= x.mean(0, dtype=np.float64).astype(np.float32)   # centred, so that float32 sums lose little
+    tot = x.sum(0, dtype=np.float64)
+    totsq = np.zeros(x.shape[1])
+    for i in range(0, n, 256):           # in blocks of trials, to bound memory
+        totsq += (x[i:i + 256].astype(np.float64) ** 2).sum(0)
     threshold = f_threshold(n1, n2) if threshold is None else threshold
     f_obs = _f_from_sums(x[:n1].sum(0), n1, tot, totsq, n).reshape(shape)
     labels, k = ndimage.label(f_obs > threshold)
@@ -501,6 +534,29 @@ def phase_row(labels, band_name):
     return int(rows[len(rows) // 2])
 
 
+KEPT_SHIFTS = [1, 3]              # variants: the every-fourth start moved up by 1 or 3 rows (0 in the main analysis)
+
+
+def _variant_specs(e, edges, names, fs):
+    """Spectrograms of a variant channel set, stored compactly: per condition, float16 log10 power
+    relative to a float32 reference (the log10 of the mean power per frequency and channel).
+    The rounding (at most about 0.02 dB per trial and point) is a standard choice that cannot
+    change a result."""
+    out = {}
+    for i, c in enumerate(names):
+        x = e[edges[i]:edges[i + 1]]
+        x = x - x.mean(-1, keepdims=True)
+        p = np.log10(spectrogram(x, fs).transpose(0, 2, 3, 1))      # trials, time, freq, channel
+        ref = p.mean((0, 1)).astype(np.float32)
+        out[c] = ((p - ref).astype(np.float16), ref)
+    return out
+
+
+def variant_power(parts):
+    """Rebuild float32 power from _variant_specs parts of several mice (concatenated over trials)."""
+    return np.concatenate([10.0 ** (q.astype(np.float32) + ref) for q, ref in parts])
+
+
 def mouse_pass(url, meta, chans, span, labels, kept, conds, threads=48):
     """Read one mouse's aligned channels and reduce them to what the claims use.
 
@@ -523,19 +579,28 @@ def mouse_pass(url, meta, chans, span, labels, kept, conds, threads=48):
             ep[j] = epochs(tr[:, cols[j] - p], t0, fs, allon)
         del tr
     read_s = time.time() - started
-    # S1: median over 3 adjacent channels (edges use the nearest channel), then crop.
-    ep = ndimage.median_filter(ep, size=(3, 1, 1), mode="nearest")
     n_al = span[1] - span[0]
-    ep = ep[lo_pad:lo_pad + n_al]
-    ep = np.ascontiguousarray(ep.transpose(1, 0, 2))      # trials, channels, samples
-    out = {"read_s": read_s, "clock_resid": resid, "fs": fs, "t0": t0, "n_pairs": len(pairs)}
     edges = np.cumsum([0] + sizes)
     names = list(conds)
+    # Variant without the S1 median filter, on the kept rows (what light_pass reads in the areas
+    # notebook), so that the effect of skipping the filter can be shown in V1.
+    nofilt = np.ascontiguousarray(ep[lo_pad + np.asarray(kept)].transpose(1, 0, 2))
+    out = {"read_s": read_s, "clock_resid": resid, "fs": fs, "t0": t0, "n_pairs": len(pairs),
+           "variants": {}}
+    out["variants"]["nofilt"] = _variant_specs(nofilt, edges, names, fs)
+    del nofilt
+    # S1: median over 3 adjacent channels (edges use the nearest channel), then crop.
+    ep = ndimage.median_filter(ep, size=(3, 1, 1), mode="nearest")
+    ep = ep[lo_pad:lo_pad + n_al]
+    ep = np.ascontiguousarray(ep.transpose(1, 0, 2))      # trials, channels, samples
     out["spec"] = {}
     for i, c in enumerate(names):
         e = ep[edges[i]:edges[i + 1]][:, kept]
         e = e - e.mean(-1, keepdims=True)     # each trial de-meaned (Syncopy's default polyremoval=0)
         out["spec"][c] = spectrogram(e, fs).transpose(0, 2, 3, 1)   # trials, time, freq, channel
+    # Variants of where the every-fourth downsampling starts (moved up from the deepest row).
+    for k in KEPT_SHIFTS:
+        out["variants"][f"shift{k}"] = _variant_specs(ep[:, kept_rows(n_al, k)], edges, names, fs)
     # per-mouse spectra, aligned channels, two windows
     tt = epoch_times(fs)
     out["psd"] = {}
