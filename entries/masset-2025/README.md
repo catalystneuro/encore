@@ -9,8 +9,8 @@ task units the dandiset lacks. The dandiset has no published version; the draft 
 | Claim | Outcome |
 |---|---|
 | The units of both tasks link to the paper's per-neuron table (added check) | Reproduced |
-| 78 neurons recorded in the cued delay task, 50 selected | Reproduced on the paper's 78 flagged neurons, 48 selected (the spike file holds 67, of which 43 are selected; a change to partially reproduced is proposed) |
-| Trials and sessions per task | Partially reproduced (cued delay sessions 44 or 32 on the 78 neurons; 39 on the deposited units, and a change to reproduced is proposed) |
+| 78 neurons recorded in the cued delay task, 50 selected | Partially reproduced (the deposit holds 67, of which 43 are selected; the paper's table flags 11 more that are not deposited) |
+| Trials and sessions per task | Reproduced (39 cued delay sessions on the deposited units, weak evidence as the 11 undeposited neurons would add 5; 66 VR sessions, on the tolerance bound) |
 | Anticipatory licking starts later for longer delays | Reproduced |
 | Mean cue response falls with delay | Reproduced |
 | Exponential fits better than hyperbolic | Reproduced |

@@ -66,18 +66,24 @@ outcomes:
     matched VR rows are flagged Valid.VR (121 rows flagged). Matching also shows that the cued delay trials are
     aligned on the VSTIM_ON column, the odor onset.
 - claim: cued-delay-neurons
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: cued_delay_and_cross_task.ipynb
   output: claim:cued-delay-neurons
   measured:
-  - 78
-  - 48
-  notes: The paper's table flags 78 cued delay neurons (Valid.OdorNew), within 78 +- 7.8. The Mendeley spike file
-    holds 67 of them; with the other 11 taken from the table's 10 ms rates, 48 pass M3 under the claim's seed (43
-    of the 67 and 5 of the 11), within 50 +- 5, and 48 to 50 over the five seeds. Exclusions 18 (held-out R2 at
-    or below 0), 11 (mean cue response at or below 2 spikes/s) and 5 (ML at 900 um or more), against the paper's
-    17, 11 and 4. On the spike file alone the counts are 67 and 43 (43 to 45 over the seeds), both outside tolerance;
-    the outcome rests on taking the 11 undeposited neurons from the table.
+  - 67
+  - 43
+  notes: The Mendeley spike file holds 67 cued delay units, outside 78 +- 7.8, and 43 of them pass M3 under the
+    claim's seed (43, 43, 45, 44 and 43 over the five seeds), outside 50 +- 5 except at seed plus 2000. Exclusions
+    17 (held-out R2 at or below 0), 10 (mean cue response at or below 2 spikes/s), 3 both, and none at ML 900 um
+    or more, against the paper's 17, 11 and 4. The recorded count is outside tolerance at every seed, so the outcome
+    is the same under all five. The selection behaves as in the paper (43 of 67 and 50 of 78 are both 0.64), and
+    the shortfall is accounted for by the 11 neurons the paper's table flags (Valid.OdorNew) that are not in the
+    deposit (5 at ML above 900 um). The claims file allows those flags only as labels where they can be matched
+    to deposited units, which the 11 are not, so they are not counted here. As a variant, with their cue responses
+    taken from the table's 10 ms rates, 48 of 78 pass M3 (48 to 50 over the seeds). The criterion's primary reading,
+    the dandiset's marking of identified neurons, cannot be applied, as DANDI:000251 holds no cued delay units and
+    the Mendeley file has no identification flag; the deposited units are taken as the identified neurons, each
+    being a row the paper flags.
   deviations:
   - Tested on the paper's Mendeley deposit, as DANDI:000251 holds no cued delay recordings.
   - The units are taken as the identified dopamine neurons; the file has no identification flag, and the link shows
@@ -87,54 +93,34 @@ outcomes:
   - Fits use scipy's bounded least squares (least_squares) with the code's start points and bounds, where the code
     uses MATLAB fit; half splits are disjoint, where the code's two halves share one trial (Olfaction_Script.m,
     FirstHalf and SecondHalf).
-  - The 11 cued delay neurons the spike file lacks (rows of the paper's table flagged Valid.OdorNew) are taken from
-    the table, their cue responses being the mean of its 10 ms rates from 0.1 to 0.4 s after odor onset; on the
-    67 linked units these match the spike counts (mean absolute difference 0.43 spikes/s per trial, median correlation
-    0.987). Assumption, as the paper's 78 recorded neurons are the table's flagged rows (claim criterion, Valid.OdorNew
-    variant).
-  assumed: true
-  proposed:
-    outcome: partially_reproduced
-    reason: The claims file allows the paper's flags (Valid.OdorNew) only as labels where they can be matched to deposited
-      units, and the 11 neurons taken from the table match none, so using their table rates as data goes beyond the
-      claims file, as the round-2 verifier found. On the deposited units the table's 78 flagged rows give the expected
-      count, and 43 of the 67 deposited units pass M3 under the claim's seed (43 to 45 over the seeds), outside 50
-      +- 5 (cued_delay_and_cross_task.ipynb, claim:cued-delay-neurons, first table). The shortfall comes in part from
-      the 11 neurons missing from the deposit (5 of them at ML above 900 um).
+  - The 11 cued delay neurons the spike file lacks (rows of the paper's table flagged Valid.OdorNew) are shown only
+    as a variant, their cue responses being the mean of the table's 10 ms rates from 0.1 to 0.4 s after odor onset;
+    on the 67 linked units these match the spike counts (mean absolute difference 0.43 spikes/s per trial, median
+    correlation 0.987). The outcome does not use them.
 - claim: session-trial-counts
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: cued_delay_and_cross_task.ipynb
   output: claim:session-trial-counts
   measured:
-  - 44
-  - 81.9
+  - 39
+  - 81.4
   - 66
   - 58.8
-  notes: On the paper's 78 flagged cued delay neurons (the reading adopted for cued-delay-neurons), reading (a)
-    gives 44 cued delay sessions with 81.9 +- 14.3 trials and reading (b), sessions with an M3 neuron, 32 sessions
-    with 82.3 trials under the claim's seed (32 to 34 over the seeds; 34 under seed plus 2000 and 33 under plus
-    3000 are within 36 +- 3.6). VR, from DANDI, 66 sessions with 58.8 +- 19.5 trials (reading a) or 62 with 59.2
-    (b), within tolerance. The cued delay session count is outside tolerance under both readings at the claim's
-    seed; the other counts and both trial means hold. On the deposited spike file alone, reading (a) gives 39 cued
-    delay sessions with 81.4 trials, within tolerance; the 11 neurons it lacks add 5 sessions (m3049 s57, s59, s69,
-    m3050 s71, m3053 s64). The VR files hold only the open-loop trials of the standard track and the cued delay
-    file only the four odor trial types, so the two trial readings give the same counts. Sessions are a mouse and
-    a start time, or for the table a mouse and session number (39 either way for the deposited units).
+  notes: On the deposited files, reading (a), every session with a unit, gives 39 cued delay sessions with 81.4
+    +- 12.7 trials and 66 VR sessions with 58.8 +- 19.5 trials, all within tolerance, with no random draws. The
+    VR count sits on the upper bound of 60 +- 6. Reading (b), sessions with a unit of the analysed set, gives 62
+    VR sessions (59.2 trials) and 30 cued delay sessions (82.6 trials), the latter outside. The cued delay pass is
+    weak evidence that the paper's count was reproduced, as it depends on the deposit being incomplete. The deposit
+    lacks 11 of the 78 neurons the paper's table flags, and adding units can only add sessions; with them, as a
+    variant, the table puts the 78 neurons in 44 sessions (reading a, 81.9 trials), outside tolerance, and 32 under
+    reading (b) at the claim's seed (32 to 34 over the seeds). The VR units are those of the SU-VR-OL files, so the
+    78 units deposited twice are counted once. The VR files hold only the open-loop trials of the standard track
+    and the cued delay file only the four odor trial types, so the two trial readings give the same counts. Sessions
+    are a mouse and a start time, or for the table a mouse and session number (39 either way for the deposited units).
   deviations:
   - The cued delay half of the claim is tested on the Mendeley deposit (data with_inputs).
-  - The 11 cued delay neurons the spike file lacks (rows of the paper's table flagged Valid.OdorNew) are taken from
-    the table, their cue responses being the mean of its 10 ms rates from 0.1 to 0.4 s after odor onset; on the
-    67 linked units these match the spike counts (mean absolute difference 0.43 spikes/s per trial, median correlation
-    0.987). Assumption, as the paper's 78 recorded neurons are the table's flagged rows (claim criterion, Valid.OdorNew
-    variant).
-  assumed: true
-  seed_sensitive: true
-  proposed:
-    outcome: reproduced
-    reason: Without the 11 table neurons, which the claims file allows only as labels (see cued-delay-neurons), reading
-      (a) on the deposited files gives 39 cued delay sessions with 81.4 +- 12.7 trials and 66 VR sessions with 58.8
-      +- 19.5 trials, all within tolerance (the VR count at the edge of 60 +- 6), with no random draws (cued_delay_and_cross_task.ipynb,
-      claim:session-trial-counts, first table).
+  - The 11 cued delay neurons the spike file lacks (rows of the paper's table flagged Valid.OdorNew) are shown only
+    as a variant, from the table's 10 ms rates. The outcome does not use them.
 - claim: fig2b-anticipatory-licking
   outcome: reproduced
   notebook: cued_delay_and_cross_task.ipynb
@@ -934,3 +920,53 @@ verifications:
     reason: The verifier would lower the teleport session filed as open loop from major to minor; the trial table
       shows it (cell 4), and it is easy to drop.
     response: Lowered to minor, as the trial types show the problem.
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. The two proposed changes of outcome, on cued-delay-neurons and session-trial-counts, with the
+    analysis behind them in the printed outputs of cued_delay_and_cross_task.ipynb (cells 3, 6, 8, 13 and 48),
+    the attempt record and the claims file. Nothing else was reviewed. The verifier agreed with both proposals.
+    It also noted three places where the claims file does not fit the data, none of them a misreading of the paper.
+    Report in transcripts/masset-2025/verifier-3-report.md.
+  results:
+  - claim: cued-delay-neurons
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, but the reason needs correcting. The numbers come from the data. The spike file holds 67 units
+      (cell 3). M3 selects 43 under the claim's seed and 43, 43, 45, 44 and 43 over the five seeds (cell 13). The
+      exclusions are 17 with held-out R2 at or below 0, 10 with low rate, 3 both, and 0 at ML 900 um or more. The
+      change follows the round-2 finding that the 11 table-only rows go beyond the claims file's labels-only allowance.
+      It lowers this outcome, so the scope was not chosen to reach a result. The reason says that "on the deposited
+      units the table's 78 flagged rows give the expected count". That counts the 11 unmatched Valid.OdorNew rows,
+      which is the use the proposal itself rules out. On the deposited units the recorded count is 67, outside 78
+      +- 7.8, and the selected count is 43, outside 50 +- 5, so both expected quantities miss at the claim's seed.
+      Partial still fits. The selection behaves as in the paper (43/67 = 0.64, against 50/78 = 0.64), and the shortfall
+      is accounted for by the 11 neurons that are in the paper's table but not in the deposit (cell 8), the same
+      treatment as ed3f and fig2k-better. At seed +2000 45 neurons are selected, inside 50 +- 5 (cell 13), so the
+      claim should carry seed_sensitive true.
+    response: Outcome changed to partially reproduced, with the proposal, the assumed flag and the assumption's deviation
+      removed; the 11 table neurons are now only a variant. The notes, the notebook's conclusion and summary, and
+      the README give the deposited counts (67 recorded, 43 selected), both outside tolerance, and no longer say that
+      the 78 flagged rows give the expected count. seed_sensitive is not set, as the recorded count of 67 is outside
+      78 +- 7.8 at every seed, so the outcome is partially reproduced under all five seeds; the notes give the seed
+      plus 2000 count of 45. The notes also say that the criterion's primary reading, the dandiset's marking, cannot
+      be applied.
+  - claim: session-trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with a caveat. Under reading (a) on the deposited files (cell 48, first table) the cued delay
+      task has 39 sessions with 81.4 +- 12.7 trials, within 36 +- 3.6 and 81.4 +- 8.14, and VR 66 sessions with 58.8
+      +- 19.5 trials, within 60 +- 6 (66 sits exactly on the upper bound) and 58.8 +- 5.88. The VR units come from
+      the SU-VR-OL files only, so the 78 units deposited twice are not counted twice. Cued delay sessions number 39
+      whether keyed by start time or by unit name. There are no random draws, and one session reading and one trial
+      reading meet the criterion. The change applies the same data-scope rule as cued-delay-neurons, which lowers
+      that outcome and raises this one; it is consistent, not result-driven. The cued delay pass depends on the deposit
+      being incomplete. Adding units can only add sessions, and the paper's table puts its 78 neurons in 44 sessions
+      (cell 48), so 39 sessions agreeing with 36 is weak evidence that the paper's count was reproduced. The notes
+      should say this, and that the VR count sits on the tolerance bound.
+    response: Outcome changed to reproduced, with the proposal, the assumed and seed_sensitive flags and the assumption's
+      deviation removed (reading a has no random draws). The notes, the notebook's conclusion and the README now say
+      that the cued delay pass is weak evidence because it depends on the deposit being incomplete, with the 44 sessions
+      of the table's 78 neurons, and that the VR count sits on the upper bound. The verifier's remark that the claim's
+      data field (with_inputs) differs from that of cued-delay-neurons (elsewhere), though both rest on the same Mendeley
+      file, concerns the claims file and is left to it.
