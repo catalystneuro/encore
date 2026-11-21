@@ -53,12 +53,13 @@ outcomes:
   notes: Test-set R2 of the choice readout, mean over 10 splits, under the claim seed with every
     unit's trials as the files are (U1). R1 (per session, mean over the five sessions) gives -1.705
     for T1 and -0.732 for T2; R2 (151 pooled units subsampled to 53, 20 subsamples) gives -0.247 and
-    -29.2 (median 0.168 and 0.340). No reading comes near 0.97. Over the five seeds the means run
-    from -30.6 to 0.10 and the medians from -1.08 to 0.39. The training-set R2 of the same fits is
-    0.95 to 1.00, so the OLS readout on 18 to 53 units over 260 time points fits the training
+    -29.2 (median 0.168 and 0.340). No reading comes near 0.97. The measured value is that of R1
+    with T1, the first reading the criterion lists; the largest of the four means is -0.247 (R2, T1).
+    Over the five seeds the U1 means run from -30.6 to 0.105 and the medians from -1.08 to 0.39. The
+    training-set R2 of the same fits is 0.95 to 1.00 under U1 (0.93 to 1.00 under U2), so the OLS readout on 18 to 53 units over 260 time points fits the training
     averages and does not generalize to the test averages of 4 to 9 trials per choice. The variant
-    that averages each unit only over trials within its first-to-last-spike span (U2) gives at most
-    0.506. Diagnostics (seed + 1, R2, T1) show that the 10% test sets are noisy. The readout's
+    that averages each unit only over trials within its first-to-last-spike span (U2) gives means of at most
+    0.506 and medians of at most 0.660 under the claim seed. Diagnostics (seed + 1, R2, T1) show that the 10% test sets are noisy. The readout's
     outputs on the two halves of a test set correlate at 0.145 (Spearman-Brown reliability of the
     whole test set 0.25). With 10%, 30% and 50% test sets the test R2 means are -0.089, 0.371 and
     -0.333 and the medians 0.268, 0.515 and 0.313, none near 0.97. The training-set values are close
@@ -82,8 +83,10 @@ outcomes:
     (0.110) and the mean over PCs 1 to 3 exceeds that over PCs 4 to 16 (0.081 against 0.063); for T2
     the largest is with PC 1 (0.097) and the means are 0.068 against 0.063. Both hold under some
     reading for all five seeds. Under R1, reading (a) fails for both trial readings, the largest
-    alignment being with PC 16 (0.188 for T1, SEM 0.059), and (b) holds only for T1 (0.107 against
-    0.107). Against chance the leading PCs carry less of the readout than a random direction would.
+    alignment being with PC 16 (0.188 for T1, SEM 0.059), and (b) holds only for T1, by a margin of
+    0.0003 (0.1069 against 0.1065); it fails under seed + 2000 (by 0.0015) and holds under the other
+    three seeds. Were (b) to fail under R1, R1 would meet neither reading while R2 meets both, and the
+    outcome would still be partial. Against chance the leading PCs carry less of the readout than a random direction would.
     Under R2 the mean squared alignment with PCs 1 to 3 is 0.0096 (T1) and 0.0076 (T2), against 1/53
     = 0.0189, and PCs 1 to 16 hold 0.116 and 0.113 of the readout's squared norm, against 16/53 =
     0.302; per session that share is below its chance level in all five sessions under both trial
@@ -158,7 +161,11 @@ outcomes:
     readout, which has 0.29 of its norm in the span. Against these chance levels the order reverses
     (a diagnostic) as the PC 1 alignment is 0.46 of its chance level and the readout alignment 1.19
     times its own (chance-corrected dz -2.36, two-sided p below 0.001); with the readout taken at each
-    thalamic unit's own sigma the ratio is 1.21 and the raw one-sided p stays below 0.001. The test
+    thalamic unit's own sigma the ratio is 1.21 and the raw one-sided p stays below 0.001 on the main
+    reading; on T2 with P1 and U1 that variant gives a raw one-sided p of 0.140, which does not bear
+    on the main reading. The readout alignment of the all-units variant may be inflated by the factor
+    (H^T H)^-1 that the readout and the corticothalamic weights share; that variant does not decide
+    the outcome. The test
     the criterion gives thus compares two alignments with different chance levels. The regressions
     behind the weights do not predict test data (figs6d-wm-thalamic-r2). The paper's reported
     p = 0.17 for this dataset is not matched.
@@ -199,36 +206,41 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Needs 40 runs of 10,000 learning trials for each of M = 1 to 128. One learning trial of the
-    paper's model takes 9 to 10 ms at M = 1 and 24 to 27 ms at M = 128 in the notebook's runs (timed
-    after an untimed first call), about 12 to 13 h on one core and about 3 h on four for the curve, over the one-hour
-    limit of a notebook. Not run.
+    paper's model takes 8.8 ms at M = 1 and 26.2 ms at M = 128 in the final run (the fastest of three
+    timings after an untimed first call), 12.5 h on one core and 3.1 h on four for the curve, over the
+    one-hour limit of a notebook. The timings depend on the machine. The round-1 run gave 9 to 10 ms
+    and 24 to 27 ms, and the run the verifier read in round 2 gave 5.3 ms and 18.7 ms, which make the
+    curve 8.2 h on one core and 2.1 h on four. The estimates for the other simulation claims are in
+    the notebook's table (cell 41) and are lower bounds, with the motor control trial standing in for
+    every task. Not run.
 - claim: fig1d-cortical-feedback-alignment
   outcome: blocked
   blocked_by: too_large
-  notes: Uses the simulations of fig1c-tc-learning-improves-with-thalamus (about 12 h on one core).
-    Not run.
+  notes: Uses the simulations of fig1c-tc-learning-improves-with-thalamus (12.5 h on one core and
+    3.1 h on four in the final run, 8.2 h and 2.1 h at the fastest timing seen). Not run.
 - claim: fig1cd-corticothalamic-plasticity-fails
   outcome: blocked
   blocked_by: too_large
   notes: Needs the simulations of fig1c-tc-learning-improves-with-thalamus twice over (with and
-    without corticothalamic plasticity) and a search over four corticothalamic learning rates, more
-    than 24 h on one core by the notebook's timing. Not run.
+    without corticothalamic plasticity) and a search over four corticothalamic learning rates; the
+    two curves alone take 25.0 h on one core and 6.3 h on four in the final run (16.4 h and 4.1 h at
+    the fastest timing seen). Not run.
 - claim: figs1d-small-initial-weights
   outcome: blocked
   blocked_by: too_large
   notes: As fig1cd-corticothalamic-plasticity-fails, with two readings of which weights start small;
-    more than 24 h on one core. Not run.
+    the two curves alone take 25.0 h on one core and 6.3 h on four in the final run. Not run.
 - claim: fig2d-metalearned-error-reduction
   outcome: blocked
   blocked_by: too_large
   notes: Meta-learning runs 10,000 epochs of 200 learning trials at M = 32 for each of 40
-    initializations; the forward simulation alone is about 8 h per run by the notebook's timing,
-    before backpropagation through time. Not run.
+    initializations; the forward simulation alone is 7.8 h per run in the final run (about 5 h at the
+    fastest timing seen), before backpropagation through time. Not run.
 - claim: figs2a-random-feedback
   outcome: blocked
   blocked_by: too_large
-  notes: Depends on the meta-learning of fig2d-metalearned-error-reduction (about 8 h per run). Not
-    run.
+  notes: Depends on the meta-learning of fig2d-metalearned-error-reduction (7.8 h of forward
+    simulation per run in the final run). Not run.
 - claim: fig2e-alignment-task-dependent
   outcome: blocked
   blocked_by: too_large
@@ -241,29 +253,34 @@ outcomes:
 - claim: fig3ab-single-thalamic-neuron
   outcome: blocked
   blocked_by: too_large
-  notes: Three corticothalamic structures in two tasks, 40 runs of 10,000 trials each at M = 1;
-    about 1 h per set and about 6 h in all on one core by the notebook's timing. The other
-    simulation claims are estimated from the same rate of about 1 h per set of 40 runs at M = 1.
-    Not run.
+  notes: Three corticothalamic structures in two tasks, 40 runs of 10,000 trials each at M = 1. In
+    the final run one set takes 0.98 h on one core, and the six take 5.9 h on one core and 1.5 h on
+    four. At the fastest timing seen (5.3 ms per trial, the run the verifier read in round 2) they
+    take 3.5 h on one core and 0.9 h on four, which with the 10 to 14 minutes of the rest of the
+    notebook still exceeds its one-hour limit, on four cores the runner shares with the agent. The
+    margin is thin at that timing. The other simulation claims are estimated in the same table
+    (cell 41). Not run.
 - claim: fig3cd-advantage-persists-with-m
   outcome: blocked
   blocked_by: too_large
-  notes: The sets of fig3ab-single-thalamic-neuron for M = 1 to 256, many times its 6 h. Not run.
+  notes: The sets of fig3ab-single-thalamic-neuron for M = 1 to 256, 103.0 h on one core and 25.7 h on
+    four in the final run. Not run.
 - claim: fig3ef-task-type-not-complexity
   outcome: blocked
   blocked_by: too_large
-  notes: The sets of fig3ab-single-thalamic-neuron at five complexity levels per task, about 30 h on
-    one core. Not run.
+  notes: The sets of fig3ab-single-thalamic-neuron at five complexity levels per task, 29.4 h on one
+    core and 7.3 h on four in the final run. Not run.
 - claim: fig4ab-network-size-compression
   outcome: blocked
   blocked_by: too_large
   notes: Cortical networks up to N = 2,048 at two compression ratios in two tasks, 40 runs each; one
-    trial at N = 256 already takes about 10 ms or more, and the cost grows with N squared. Not run.
+    trial at N = 512 takes 17.6 ms in the final run, so the four sets at N = 512 alone take 7.8 h on
+    one core, and the cost grows with N squared up to N = 2,048. Not run.
 - claim: fig4cd-partial-alignment
   outcome: blocked
   blocked_by: too_large
-  notes: N = 2,048 at six values of rho squared and two compression ratios in two tasks, 40 runs each.
-    Not run.
+  notes: N = 2,048 at six values of rho squared and two compression ratios in two tasks, 40 runs each;
+    the 24 sets at N = 512 alone take 46.9 h on one core in the final run. Not run.
 - claim: fig4ef-model-pcs-and-thalamus
   outcome: blocked
   blocked_by: too_large
@@ -272,27 +289,29 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Five complexity levels with four readings (two rho values, PCs before or after learning),
-    40 runs of 10,000 trials each at M = 16, more than 20 h on one core. Not run.
+    40 runs of 10,000 trials each at M = 16; the ten sets of the two rho values take 14.0 h on one
+    core and 3.5 h on four in the final run. Not run.
 - claim: figs4cd-gradual-structure
   outcome: blocked
   blocked_by: too_large
-  notes: Four corticothalamic rates and a random model in two tasks, 40 runs each at M = 1, about 10 h
-    on one core. Not run.
+  notes: Four corticothalamic rates and a random model in two tasks, 40 runs each at M = 1, 9.8 h on
+    one core and 2.4 h on four in the final run. Not run.
 - claim: figs4ab-needs-thalamocortical-learning
   outcome: blocked
   blocked_by: too_large
   notes: Structured and random models with and without thalamocortical learning in two tasks, eight
-    sets of 40 runs, about 8 h on one core. Not run.
+    sets of 40 runs, 7.8 h on one core and 2.0 h on four in the final run. Not run.
 - claim: figs4ef-noise-robustness
   outcome: blocked
   blocked_by: too_large
-  notes: Two models at four noise levels in two tasks, sixteen sets of 40 runs, about 16 h on one
-    core. Not run.
+  notes: Two models at four noise levels in two tasks, sixteen sets of 40 runs, 15.7 h on one core
+    and 3.9 h on four in the final run. Not run.
 - claim: figs5ab-bptt-structure-irrelevant
   outcome: blocked
   blocked_by: too_large
   notes: Needs training by backpropagation through time for three structures in two tasks, 40 runs
-    each, and the RFLO sets of fig3ab-single-thalamic-neuron (about 6 h). Not run.
+    each, and the RFLO sets of fig3ab-single-thalamic-neuron (5.9 h on one core in the final run).
+    Not run.
 - claim: figs5cd-thalamic-recurrence
   outcome: blocked
   blocked_by: methods_underspecified
@@ -310,16 +329,18 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Corticocortical RFLO at three rates for structured and random models in two tasks, twelve
-    sets of 40 runs, with the N by N update in every step. Not run.
+    sets of 40 runs, with the N by N update in every step; without that update the twelve sets take
+    11.7 h on one core in the final run. Not run.
 - claim: fig5b-reaching-pc-prep-readout-exec
   outcome: blocked
   blocked_by: too_large
-  notes: Nine combinations of preparatory and execution structures, 40 runs each, about 9 h on one
-    core at the M = 1 rate. Not run.
+  notes: Nine combinations of preparatory and execution structures, 40 runs each, 8.8 h on one core
+    and 2.2 h on four at the M = 1 rate of the final run. Not run.
 - claim: figs5j-reaching-robust
   outcome: blocked
   blocked_by: too_large
-  notes: Four models over three target counts and four maximum delays, 48 sets of 40 runs. Not run.
+  notes: Four models over three target counts and four maximum delays, 48 sets of 40 runs, 47.0 h on
+    one core in the final run. Not run.
 findings:
 - kind: metadata_insufficient
   severity: major
@@ -530,7 +551,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig1d-cortical-feedback-alignment
     agrees: true
     outcome: blocked
@@ -539,7 +561,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig1cd-corticothalamic-plasticity-fails
     agrees: true
     outcome: blocked
@@ -548,7 +571,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs1d-small-initial-weights
     agrees: true
     outcome: blocked
@@ -557,7 +581,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig2d-metalearned-error-reduction
     agrees: true
     outcome: blocked
@@ -566,7 +591,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs2a-random-feedback
     agrees: true
     outcome: blocked
@@ -575,7 +601,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig2e-alignment-task-dependent
     agrees: true
     outcome: blocked
@@ -584,7 +611,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs2b-prealignment-irrelevant
     agrees: true
     outcome: blocked
@@ -593,7 +621,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig3ab-single-thalamic-neuron
     agrees: true
     outcome: blocked
@@ -602,7 +631,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig3cd-advantage-persists-with-m
     agrees: true
     outcome: blocked
@@ -611,7 +641,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig3ef-task-type-not-complexity
     agrees: true
     outcome: blocked
@@ -620,7 +651,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig4ab-network-size-compression
     agrees: true
     outcome: blocked
@@ -629,7 +661,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig4cd-partial-alignment
     agrees: true
     outcome: blocked
@@ -638,7 +671,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig4ef-model-pcs-and-thalamus
     agrees: true
     outcome: blocked
@@ -647,7 +681,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs3c-readout-shifts-with-complexity
     agrees: true
     outcome: blocked
@@ -656,7 +691,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs4cd-gradual-structure
     agrees: true
     outcome: blocked
@@ -665,7 +701,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs4ab-needs-thalamocortical-learning
     agrees: true
     outcome: blocked
@@ -674,7 +711,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs4ef-noise-robustness
     agrees: true
     outcome: blocked
@@ -683,7 +721,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs5ab-bptt-structure-irrelevant
     agrees: true
     outcome: blocked
@@ -692,7 +731,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs5cd-thalamic-recurrence
     agrees: true
     outcome: blocked
@@ -706,7 +746,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs5gh-corticocortical-learning
     agrees: true
     outcome: blocked
@@ -715,7 +756,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: fig5b-reaching-pc-prep-readout-exec
     agrees: true
     outcome: blocked
@@ -724,7 +766,8 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
   - claim: figs5j-reaching-robust
     agrees: true
     outcome: blocked
@@ -733,4 +776,410 @@ verifications:
       still exceeds the limit.
     response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
       h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
-      the estimates from the new timing. Outcome kept.
+      the estimates from the new timing. Outcome kept. (These are the timings of the round-1 run; the
+      round-2 response and the notes give those of the final run.)
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run, with its conclusions and summary, the helper
+    module, the claims file and the attempt record, with the paper. No finding is rated critical; the verifier agreed
+    with the ratings of findings 1 (major) and 2 (minor). It also found that the README gave the run time as about
+    thirteen minutes where cell 44 printed 9.6 min; the README now says 10 to 14 minutes, the range of the runs.
+    Report in transcripts/lakshminarasimhan-2024/verifier-2-report.md.
+  results:
+  - claim: wm-sessions-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 12 now computes the counts: 11 sessions (5 expected), 151 ALM units, 72 thalamic units, and 0
+      sessions holding both regions.'
+    response: No change needed.
+  - claim: fig6-wm-choice-r2
+    agrees: true
+    outcome: not_reproduced
+    reason: The largest mean test R2 is -0.247 (cell 18). The measured value of -1.705 is the R1/T1 reading. The
+      criterion asks for "one reading", so the best reading, -0.247, would be the fairer figure. The outcome is
+      the same either way. The summary row "Test R2 at most -0.247 under the claim seed" holds only for the U1 means;
+      under the same seed the medians reach 0.340 and the U2 variant reaches 0.506. In cell 20, "Training R2 0.95
+      to 1.00" holds for U1 (the U2 R1 value is 0.931), and "No mean exceeds 0.10" is a rounding of 0.105.
+    response: 'measured kept at -1.705: the protocol records the first reading the criterion lists, and R1 with
+      T1 is first. The notes now say so and give the largest mean, -0.247 (R2, T1). The summary row, the conclusion
+      (cell 20) and the notes now say the -0.247 is a U1 mean and give the medians (at most 0.340) and the U2 means
+      (at most 0.506) and medians (at most 0.660), the training R2 under U2 (0.93 to 1.00) and 0.105 as the largest
+      U1 mean over five seeds.'
+  - claim: fig6c-wm-leading-pcs-drive-choice
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Treating R1 and R2 as both required is a defensible reading of the criterion, and the record states
+      it as a deviation. One caveat: under the author''s reading, the R1 half depends on (b) at R1/T1, which is
+      a tie at printed precision (0.107 against 0.107, cell 22) and fails at seed +2000. The chance-level reason,
+      now printed in cell 24, supports "partial" independently.'
+    response: 'Cell 22 now prints four decimals and the margin of (b) under R1, T1, U1 per seed: 0.0003 under the
+      claim seed (0.1069 against 0.1065), -0.0015 under seed + 2000, positive under the other three. The conclusion
+      and notes give the margin and say that were (b) to fail under R1, R1 would meet neither reading while R2 meets
+      both, so the outcome would still be partial. Outcome kept; the claim is not marked seed_sensitive, as the
+      outcome is partial under every seed.'
+  - claim: figs6d-wm-thalamic-r2
+    agrees: true
+    outcome: not_reproduced
+    reason: Cells 29 and 30.
+    response: No change to the outcome. The summary methods paragraph now says that sigma is chosen on the validation
+      R2 of each regression, the 16-PC regression for the PC regressions and the regression on all units for that
+      one, as the deviation says.
+  - claim: fig6d-wm-top5-pcs
+    agrees: true
+    outcome: not_reproduced
+    reason: Cells 33 and 34.
+    response: No change needed.
+  - claim: figs6f-ct-alignment-not-significant
+    agrees: true
+    outcome: not_reproduced
+    reason: The main reading gives p = 8.3e-6 (cell 37). The "same sigma" sentence in cell 39 and the notes is true
+      for the main reading. Cell 38 also prints T2/P1/U1 with the readout at the thalamic unit's sigma, which gives
+      a raw one-sided p of 0.140, at or above 0.05; neither text mentions it. It does not change the main reading.
+      The shared (H^T H)^-1 factor in the all-units variant (round-1 point 6) is not addressed; it does not bear
+      on a conclusion.
+    response: Cell 39 and the notes now give the raw one-sided p of 0.140 for T2, P1, U1 with the readout at the
+      thalamic unit's sigma, as a variant that does not decide the outcome. The notes now say that the readout alignment
+      of the all-units variant may be inflated by the shared (H^T H)^-1 factor; no correction was computed, as that
+      variant does not decide the outcome. Outcome kept.
+  - claim: fig6-motor-hand-r2
+    agrees: true
+    outcome: blocked
+    reason: Agrees (no comment).
+    response: No change needed.
+  - claim: fig6c-motor-low-variance-pcs
+    agrees: true
+    outcome: blocked
+    reason: Agrees (no comment).
+    response: No change needed.
+  - claim: figs6d-motor-thalamic-r2
+    agrees: true
+    outcome: blocked
+    reason: Agrees (no comment).
+    response: No change needed.
+  - claim: fig6d-motor-top5-pcs
+    agrees: true
+    outcome: blocked
+    reason: Agrees (no comment).
+    response: No change needed.
+  - claim: fig6d-more-pcs-in-motor-task
+    agrees: true
+    outcome: blocked
+    reason: Agrees (no comment).
+    response: No change needed.
+  - claim: fig6e-motor-single-trial
+    agrees: true
+    outcome: blocked
+    reason: Agrees (no comment).
+    response: No change needed.
+  - claim: fig1c-tc-learning-improves-with-thalamus
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig1d-cortical-feedback-alignment
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig1cd-corticothalamic-plasticity-fails
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs1d-small-initial-weights
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig2d-metalearned-error-reduction
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs2a-random-feedback
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig2e-alignment-task-dependent
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs2b-prealignment-irrelevant
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig3ab-single-thalamic-neuron
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core. On the new timing, fig3ab-single-thalamic-neuron is borderline: 3.5 h on one core, about
+      0.9 h on four (cell 41). The record itself uses four cores for fig1c, so fig3ab''s too_large outcome now has
+      a thin margin if four cores count.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings. For fig3ab the final run gives 5.9
+      h on one core and 1.5 h on four. At the verifier's timing (0.9 h on four cores) the six sets with the 10 to
+      14 minutes of the rest of the notebook still exceed the one-hour notebook limit, on four cores the runner
+      shares with the agent; the notes say the margin is thin at that timing. Outcome kept.
+  - claim: fig3cd-advantage-persists-with-m
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig3ef-task-type-not-complexity
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig4ab-network-size-compression
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core. The fig4ab notes say "One trial at N = 256 already takes about 10 ms or more"; cell 41 prints
+      5.3 ms at N = 256, M = 1.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings. The fig4ab notes now cite the timing
+      at N = 512 (17.6 ms per trial, 7.8 h for the four sets at that size).
+  - claim: fig4cd-partial-alignment
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig4ef-model-pcs-and-thalamus
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs3c-readout-shifts-with-complexity
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs4cd-gradual-structure
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs4ab-needs-thalamocortical-learning
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs4ef-noise-robustness
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs5ab-bptt-structure-irrelevant
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs5cd-thalamic-recurrence
+    agrees: true
+    outcome: blocked
+    reason: Agrees (no comment).
+    response: No change needed.
+  - claim: figs5ef-bptt-corticothalamic
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs5gh-corticocortical-learning
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: fig5b-reaching-pc-prep-readout-exec
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.
+  - claim: figs5j-reaching-robust
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees, with one caveat: the time estimates in the record are stale. Cell 41 prints 5.3 ms per trial
+      at M = 1 and 18.7 ms at M = 128, which gives 0.6 h per set, 3.5 h for fig3ab, 8.2 h on one core and 2.1 h
+      on four for fig1c, and 5 h for fig2d; the earlier run gave 9 to 10 ms at M = 1, so the variation between runs
+      is about 45%, not a few percent. None of the record''s figures matches cell 41. All the totals still exceed
+      1 h on one core.'
+    response: Outcome kept. The timing cell now takes the fastest of three timings per M, adds M = 256 and N = 512,
+      and prints an estimate for every simulation claim (cell 41). The notes of every simulation claim give the
+      estimates of the final run (8.8 ms at M = 1, 26.2 ms at M = 128, 0.98 h per set at M = 1), and the conclusion
+      (cell 42) gives the range over the runs, including the verifier's 5.3 ms, and says the timings depend on the
+      machine. The round-1 responses are marked as giving the round-1 timings.

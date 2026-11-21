@@ -27,6 +27,6 @@ paper's 0.70 cannot be reached on them. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/lakshminarasimhan-2024-01.yaml`](../../attempts/lakshminarasimhan-2024-01.yaml).
 
-- `reproduce_lakshminarasimhan_2024.ipynb`: the analysis. It takes about thirteen minutes.
+- `reproduce_lakshminarasimhan_2024.ipynb`: the analysis. It takes 10 to 14 minutes.
 - `tcloop.py`: streaming the files, delay-period trial averages, and the readout and thalamic
   regressions of the paper's Methods. Other notebooks on this dandiset can import it.
