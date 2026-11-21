@@ -582,6 +582,12 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   to the verifier's, or keeps it and says why under `response`. Findings keep
   their order from then on, and a new one goes at the end. The site presents
   a critical finding as one only when a verifier agreed.
+
+  Attempts made before `pilot-18` did not rate their findings. A later review
+  rated them from their statements, and its ratings are in each record under
+  `findings_review`, apart from the attempt's own fields. A critical rating
+  there counts as checked only when the review also checked it against the
+  executed notebook's outputs (`confirmed`, with a `note` naming the cell).
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 

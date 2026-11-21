@@ -734,6 +734,66 @@
           }
         }
       }
+    },
+    "findings_review": {
+      "description": "For an attempt made before protocol pilot-18, whose findings carry no severity: the severity a later review gave each finding about the data, and whether the review checked it against the notebook's outputs. Added to the record afterwards; nothing else in the record changes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "basis",
+        "findings"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "basis": {
+          "description": "What the ratings were made from.",
+          "type": "string",
+          "minLength": 1
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "finding",
+              "severity"
+            ],
+            "properties": {
+              "finding": {
+                "description": "The finding's number in this record's `findings`, from 1.",
+                "type": "integer",
+                "minimum": 1
+              },
+              "severity": {
+                "enum": [
+                  "critical",
+                  "major",
+                  "minor",
+                  "none"
+                ]
+              },
+              "confirmed": {
+                "description": "Whether a check of the executed notebook's outputs, by an agent or person that did not write the attempt, found that they show the finding and that it is critical. Unset: not checked.",
+                "type": "boolean"
+              },
+              "checked": {
+                "description": "The date of that check.",
+                "type": "string",
+                "format": "date"
+              },
+              "note": {
+                "description": "What the check found, with the cell it rests on.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "allOf": [

@@ -138,6 +138,23 @@ VERIFICATION_TIER = {"agent": "agent_verified", "person": "human_verified",
 CAUTION = "A failure to reproduce is not a finding that the paper is wrong."
 
 
+def finding_severity(record: dict, finding: dict, n: int) -> dict:
+    """How severe finding `n` of an attempt record is, and whether it is one to present as a problem that changes
+    results (docs/protocol.md, the attempt record): rated `critical`, and checked against the notebook's outputs by
+    someone other than the attempt's author. The rating is the attempt's own (from pilot-18), checked by the verifier
+    in round 2; or, for an earlier attempt, the one a later review gave it (`findings_review` in the record), checked
+    in that review. `checked` is what the check said, for the page."""
+    own = finding.get("severity")
+    if own:
+        said = [x for v in record.get("verifications") or [] for x in v.get("findings") or [] if x["finding"] == n]
+        agreed, note = (said[-1]["agrees"], said[-1].get("reason")) if said else (False, None)
+        return {"severity": own, "changes_results": own == "critical" and agreed, "checked": squash(note) if agreed else None}
+    review = next((x for x in (record.get("findings_review") or {}).get("findings") or [] if x["finding"] == n), {})
+    agreed = review.get("confirmed") is True
+    return {"severity": review.get("severity"), "changes_results": review.get("severity") == "critical" and agreed,
+            "checked": squash(review.get("note")) if agreed else None}
+
+
 def load_yaml(path: Path):
     # libyaml when PyYAML has it: the site reads every claims file and record, and the pure-Python parser
     # takes most of the build.
@@ -352,7 +369,7 @@ def collect(executed: Path | None = None) -> dict:
             # Every finding of the record, numbered as the record has them (a reconciliation names them by number);
             # split after reconcile() into those about the data (`findings`) and about the paper (`paper_notes`).
             "findings": [{"kind": f["kind"], "statement": squash(f["statement"]), "found": f.get("found"),
-                          "status": None, "n": n,
+                          "status": None, "n": n, **finding_severity(a, f, n),
                           "about": f.get("about") or ("paper" if f["kind"] in ABOUT_PAPER else "data"),
                           "datasets": [str(x) for x in f.get("datasets") or []]}
                          for n, f in enumerate(a.get("findings") or [], 1)],
@@ -560,7 +577,8 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
             "notebooks": [{"path": "figures.ipynb", "title": "Figures", "executed": None},
                           {"path": "behaviour.ipynb", "title": "Behaviour", "executed": None}],
             "outcomes": outcomes,
-            "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30))}
+            "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30)),
+                          "severity": None, "changes_results": False, "checked": None}
                          for _ in range(rng.randint(1, 10))],
             "verifications": [] if tier == "runs" else [{
                 "date": date, "kind": "agent", "by": "Demo verifier", "reviewed": "Demo",
@@ -1057,7 +1075,9 @@ def rows(data: dict) -> dict[str, list]:
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["key"])),
             "page": page_of(t["key"]) if atts else None, "url": archive_url(t["key"]),
             "findings": sum(len(a["findings"]) for a in atts if not a.get("deprecated")) if atts else None,
-            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
+            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]})
+                     + ([CHANGES_RESULTS] if any(f["changes_results"] for a in atts or [] if not a.get("deprecated")
+                                                 for f in a["findings"]) else []),
             # For the datasets list, which a curator reads: the open findings by kind (most first), the versions
             # the attempts ran on, and how many papers were tested on the dataset.
             "found_counts": dict(Counter(f["kind"] for a in atts or [] if not a.get("deprecated")
@@ -1095,7 +1115,8 @@ def rows(data: dict) -> dict[str, list]:
                                "notebook": nb["executed"] if nb else None,
                                "notebook_title": nb["title"] if nb else None})
             for f in a["findings"]:
-                findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
+                findings.append({**common, "kind": f["kind"], "statement": f["statement"],
+                                 "changes_results": f["changes_results"]})
     return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings,
             "authors": author_rows(data)}
 
@@ -1736,7 +1757,8 @@ def paper_rows(data: dict) -> list[dict]:
             "findings": sum(len(a["findings"]) for a in live) if live else None,
             # What the datasets list had, now that the papers are the one list: what was found about the data, and
             # whether CatalystNeuro converted any of the paper's datasets.
-            "found": sorted({f["kind"] for a in live for f in a["findings"]}),
+            "found": sorted({f["kind"] for a in live for f in a["findings"]})
+                     + ([CHANGES_RESULTS] if any(f["changes_results"] for a in live for f in a["findings"]) else []),
             "converted": "catalystneuro" if any(by_key.get(k, {}).get("catalystneuro") for k in p["datasets"]) else "other",
             "missing": sum(len(a.get("missing_datasets") or []) for a in live),
             "page": f"papers/{p['key']}/",
@@ -2833,7 +2855,7 @@ def page_list(data: dict, kind: str) -> str:
             "blocked_by": {**BLOCKED_BY, "(none)": "No blocked claim"},
             "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
             "status": {**STATUS, "claims": "Claims read, not yet attempted"} if kind == "papers" else STATUS,
-            "found": {**FINDING_KINDS, "(none)": "None recorded"},
+            "found": {CHANGES_RESULTS: CHANGES_LABEL, **FINDING_KINDS, "(none)": "None recorded"},
             "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
             "attempted": {"yes": "Has a paper attempted", "no": "None attempted yet"},
             "paper_count": {"one": "One paper", "several": "Several papers", "(none)": "None listed"},
@@ -3189,9 +3211,18 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict], p
             f'<p class="sub small" style="margin-top:10px">{intro}</p><ol class="timeline">{items}</ol></details>')
 
 
+CHANGES_RESULTS = "changes_results"   # in the lists' `found`, beside the kinds: a dataset or paper with such a finding
+CHANGES_LABEL = "Changes results"
+CHANGES_NOTE = ("The data are wrong in a way the files do not show, so an analysis that takes them as given comes out "
+                "wrong. Each was checked against the notebook&rsquo;s outputs by someone other than the "
+                "attempt&rsquo;s author.")
+
+
 def finding_tags(f: dict) -> str:
-    tags = (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
-            if f.get("status") else "")
+    tags = (f'<span class="tag changes" title="The data are wrong in a way the files do not show; checked against '
+            f'the notebook&rsquo;s outputs">{CHANGES_LABEL}</span>' if f.get("changes_results") else "")
+    tags += (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
+             if f.get("status") else "")
     if f.get("found") == "on_prompt":
         tags += ('<span class="tag" title="Not found by the blind attempt; found when the reconcile step '
                  'checked the earlier finding">found on prompt</span>')
@@ -3204,6 +3235,7 @@ def findings_list(findings: list[dict], root: str, note=None) -> str:
     return "".join(
         f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
+        + (f'<br><span class="muted small">Checked: {e(f["checked"])}</span>' if f.get("checked") else "")
         + (f'<br><span class="muted small">{note(f)}</span>' if note else "") + '</span></li>'
         for f in findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
 
@@ -3244,10 +3276,21 @@ def page_dataset(data: dict, key: str) -> str:
         when = dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
         older = ("" if i == 0 else ' <span class="tag" title="A newer version was tested too; these findings were '
                  'not checked on it">an older version</span>')
+        # Under its version, the problems that change results come first, under their own heading: a finding is
+        # about the version it was found on, these as much as the others.
+        worst = [(f, a) for a in group for f in a["findings"] if f["changes_results"]]
+        rest = [(f, a) for a in group for f in a["findings"] if not f["changes_results"]]
+        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f)) for f, a in pairs)
         findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
-                          f'{n} open finding{"" if n == 1 else "s"}</span></h3><ul class="findings">'
-                          + ("".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f))
-                                     for a in group for f in a["findings"]) or findings_list([], root)) + "</ul>")
+                          f'{n} open finding{"" if n == 1 else "s"}</span></h3>')
+        if worst:
+            findings_html += (f'<h4 class="changes-head">Problems that change results <span class="count">{len(worst)}'
+                              f'</span></h4><p class="sub small" style="margin:4px 0 0">{CHANGES_NOTE}</p>'
+                              f'<ul class="findings">{listed(worst)}</ul>'
+                              + (f'<h4 class="changes-head">Other findings <span class="count">{len(rest)}</span></h4>'
+                                 if rest else ""))
+        if rest or not worst:
+            findings_html += f'<ul class="findings">{listed(rest) or findings_list([], root)}</ul>'
     if not atts:
         findings_html = f'<ul class="findings">{findings_list([], root)}</ul>'
     # Findings of an earlier attempt that a repeat attempt found fixed, on the version it ran on.
@@ -3498,13 +3541,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
 
     all_findings = [f for a in atts for f in a["findings"]]
 
-    def finding_tags(f):
-        tags = (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
-                if f.get("status") else "")
-        if f.get("found") == "on_prompt":
-            tags += ('<span class="tag" title="Not found by the blind attempt; found when the reconcile step '
-                     'checked the earlier finding">found on prompt</span>')
-        return tags
+    all_findings.sort(key=lambda f: not f["changes_results"])   # stable: the record's order within each
     findings_html = "".join(
         f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}</span></li>'
