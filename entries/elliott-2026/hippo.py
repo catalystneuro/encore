@@ -441,17 +441,18 @@ def theta(x, fs=1000.0, order=5):
     return butter_band(x, 4.0, 8.0, fs, order=order, axis=0)
 
 
-def phase_lock_unit(spk_ms, th, mode="envelope"):
+def phase_lock_unit(spk_ms, th, mode="envelope", rms=None):
     """Phase locking of one unit to the theta of its electrode (Methods, Phase locking neurons to
     theta wave activity). th: theta at 1 kHz on the same clock as spk_ms (list of window arrays,
     each with its start in ms). Methods reading ('envelope'): spikes kept while the Hilbert
-    envelope exceeds the RMS of the theta series over the analysed span. Code reading ('cycle'):
-    spikes kept within theta cycles (trough to trough) whose envelope peak exceeds the RMS of the
-    envelope. Returns (n_spikes_kept, rayleigh_p, circular_mean)."""
+    envelope exceeds the RMS of the theta series, over the analysed windows, or the value given as
+    rms (the Methods' "RMS of the whole time series": the theta of the whole recording). Code
+    reading ('cycle'): spikes kept within theta cycles (trough to trough) whose envelope peak
+    exceeds the RMS of the envelope. Returns (n_spikes_kept, rayleigh_p, circular_mean)."""
     from astropy.stats import rayleightest, circmean
     import astropy.units as u
     allth = np.concatenate([w for _, w in th])
-    rms_sig = np.sqrt(np.mean(allth ** 2))
+    rms_sig = np.sqrt(np.mean(allth ** 2)) if rms is None else rms
     env_all = np.concatenate([np.abs(signal.hilbert(w)) for _, w in th])
     rms_env = np.sqrt(np.mean(env_all ** 2))
     phases = []
