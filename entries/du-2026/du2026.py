@@ -430,6 +430,130 @@ def build_rtt_dataset(raw: RttRaw, *, bin_ms=20, neural_history_ms=100, neural_l
 
 
 # --------------------------------------------------------------------------
+# MC_Maze (data elsewhere: DANDI:000139, the version the claims file names)
+
+MAZE_ID = "000139"
+MAZE_VERSION = "0.220113.0408"  # claims file, maze-gain "where"
+MAZE_TRAIN_PATH = "sub-Jenkins/sub-Jenkins_ses-medium_desc-train_behavior+ecephys.nwb"
+
+
+def _bin_timestamped_mean(data: np.ndarray, timestamps: np.ndarray, bin_edges: np.ndarray) -> np.ndarray:
+    """mc_maze.py _bin_timestamped_mean: mean of the samples whose timestamps fall in each bin."""
+    n_bins = len(bin_edges) - 1
+    bin_index = np.searchsorted(bin_edges, timestamps, side="right") - 1
+    valid = (bin_index >= 0) & (bin_index < n_bins)
+    sums = np.zeros((n_bins, data.shape[-1]), dtype=float)
+    counts = np.zeros(n_bins, dtype=int)
+    np.add.at(sums, bin_index[valid], data[valid])
+    np.add.at(counts, bin_index[valid], 1)
+    output = np.full_like(sums, np.nan, dtype=float)
+    populated = counts > 0
+    output[populated] = sums[populated] / counts[populated, None]
+    return output
+
+
+@dataclass
+class MazeRaw:
+    hand_vel: np.ndarray
+    cursor_pos: np.ndarray
+    spike_counts: np.ndarray
+    n_units: int
+    heldout: np.ndarray
+    trials: pd.DataFrame
+    target_pos: list
+    n_bins: int
+    descriptions: dict
+
+
+def load_maze_raw(asset_id: str, bin_ms: int = 20) -> MazeRaw:
+    """Arrays mc_maze.py load_mc_maze reads: hand_vel and cursor_pos (stored
+    values, as pynwb's data[:] returns them), averaged into 20 ms bins on a grid
+    from 0 to the last trial stop_time, every unit's spike times histogrammed on
+    the same grid, and the trials table with its ragged target_pos column."""
+    with open_h5(asset_id) as h5:
+        behavior = h5["processing/behavior"]
+        descriptions = {name: {"unit": behavior[name]["data"].attrs.get("unit"),
+                               "conversion": behavior[name]["data"].attrs.get("conversion"),
+                               "description": behavior[name].attrs.get("description")}
+                        for name in ("hand_vel", "cursor_pos")}
+        group = h5["intervals/trials"]
+        trials = pd.DataFrame({name: group[name][:] for name in
+                               ("start_time", "stop_time", "move_onset_time", "trial_type", "trial_version",
+                                "active_target", "split", "success", "maze_id")})
+        trials["split"] = [v.decode() if isinstance(v, bytes) else str(v) for v in trials["split"]]
+        target_index = group["target_pos_index"][:]
+        target_data = group["target_pos"][:]
+        target_pos = [target_data[a:b] for a, b in zip(np.concatenate([[0], target_index[:-1]]), target_index)]
+        bin_seconds = bin_ms / 1000.0
+        n_bins = int(np.ceil(float(trials.stop_time.max()) / bin_seconds))
+        edges = np.arange(n_bins + 1, dtype=float) * bin_seconds
+        hand_vel = _bin_timestamped_mean(behavior["hand_vel/data"][:], behavior["hand_vel/timestamps"][:], edges)
+        cursor_pos = _bin_timestamped_mean(behavior["cursor_pos/data"][:], behavior["cursor_pos/timestamps"][:], edges)
+        index = h5["units/spike_times_index"][:]
+        spike_times = h5["units/spike_times"][:]
+        starts = np.concatenate([[0], index[:-1]])
+        counts = np.stack(
+            [np.histogram(spike_times[a:b], bins=edges)[0] for a, b in zip(starts, index)], axis=-1
+        ).astype(np.float32)
+        heldout = h5["units/heldout"][:]
+    return MazeRaw(hand_vel, cursor_pos, counts, counts.shape[1], heldout, trials, target_pos, n_bins, descriptions)
+
+
+def build_maze_dataset(raw: MazeRaw, *, bin_ms=20, movement_window_ms=800, neural_history_ms=100,
+                       neural_lead_ms=80, output_history_ms=100, output_lead_ms=None) -> TrialDataset:
+    """Port of mc_maze.py load_mc_maze with context_mode "template", as
+    run_primary_analyses.py _run_nlb calls it (neural_lead_ms=80): 40 bins from
+    the bin nearest move_onset_time, five spike bins ending 80 ms before each
+    behaviour bin, context = condition (trial_type, trial_version) one-hot by
+    phase, phase basis, target, onset cursor position and their difference
+    (Methods 4.3 and 4.4); release split labels "train" and "val"."""
+    if output_lead_ms is None:
+        output_lead_ms = neural_lead_ms
+    n_time = movement_window_ms // bin_ms
+    history_bins = neural_history_ms // bin_ms
+    lead_bins = neural_lead_ms // bin_ms
+    out_first = (output_lead_ms + output_history_ms) // bin_ms
+    keys = sorted({(int(a), int(b)) for a, b in zip(raw.trials.trial_type, raw.trials.trial_version)})
+    lookup = {k: i for i, k in enumerate(keys)}
+    basis = phase_basis(n_time)
+    neural_trials, context_trials, behavior_trials, conditions, labels, rows = [], [], [], [], [], []
+    for row_index, row in enumerate(raw.trials.itertuples()):
+        onset = int(round(float(row.move_onset_time) * 1000.0 / bin_ms))
+        samples = np.arange(onset, onset + n_time)
+        if (onset - lead_bins - history_bins < 0 or onset - out_first < 0 or samples[-1] >= raw.n_bins
+                or float(row.stop_time) * 1000.0 < float(row.move_onset_time) * 1000.0 + movement_window_ms
+                or not np.isfinite(raw.hand_vel[samples]).all() or not np.isfinite(raw.cursor_pos[onset]).all()):
+            continue
+        neural_trials.append(np.stack([raw.spike_counts[b - lead_bins - history_bins:b - lead_bins].reshape(-1)
+                                       for b in samples]))
+        c = lookup[(int(row.trial_type), int(row.trial_version))]
+        one_hot = np.zeros(len(keys))
+        one_hot[c] = 1.0
+        condition_phase = (one_hot[None, :, None] * basis[:, None, :]).reshape(n_time, -1)
+        targets = np.asarray(raw.target_pos[row_index]).reshape(-1, 2)
+        if not 0 <= int(row.active_target) < len(targets):
+            raise ValueError(f"active_target {row.active_target} for {len(targets)} targets")
+        target = targets[int(row.active_target)].astype(float)
+        cursor = raw.cursor_pos[onset].astype(float)
+        geometry = np.repeat(np.concatenate([target, cursor, target - cursor])[None, :], n_time, axis=0)
+        context_trials.append(np.concatenate([condition_phase, basis, geometry], axis=-1))
+        behavior_trials.append(raw.hand_vel[samples])
+        conditions.append(np.full(n_time, c, dtype=int))
+        labels.append(str(row.split))
+        rows.append(row_index)
+    labels = np.asarray(labels)
+    return TrialDataset(
+        neural=np.stack(neural_trials),
+        context=np.stack(context_trials),
+        behavior=np.stack(behavior_trials),
+        condition=np.stack(conditions),
+        train_indices=np.flatnonzero(labels == "train"),
+        test_indices=np.flatnonzero(labels == "val"),
+        source_rows=np.asarray(rows),
+    )
+
+
+# --------------------------------------------------------------------------
 # Synthetic generator (synthetic.py generate_synthetic_dataset; Methods 4.8)
 
 SYNTHETIC_REGIMES = {
@@ -628,7 +752,7 @@ def spearman(x, y) -> float:
 
 def fully_nested(ds: TrialDataset, *, seed: int = 20260726, n_permutations: int = 0, n_ranks: int = 1,
                  random_source_seeds: tuple = (), rff_seeds: tuple = (),
-                 permutation_seed_offsets: tuple = ()) -> dict:
+                 permutation_seed_offsets: tuple = (), n_bootstrap: int = 0) -> dict:
     """Port of nested_estimators.py evaluate_fully_nested_audit (Methods 4.5, 4.7, 4.9).
 
     Random-state offsets are the code's: nuisance folds seed+21 (fold
@@ -702,6 +826,18 @@ def fully_nested(ds: TrialDataset, *, seed: int = 20260726, n_permutations: int 
         per_trial_context_mse=trial_c, per_trial_exact_mse=trial_e,
         test_indices=te.copy(),
     )
+    if n_bootstrap:
+        rng = np.random.default_rng(seed + 501)
+        c3 = cpred.reshape(shape)
+        e3 = exact.reshape(shape)
+        cte_cond = conditions[te]
+        boots = np.empty(n_bootstrap)
+        for b in range(n_bootstrap):
+            sampled = np.concatenate([rng.choice(m, size=len(m), replace=True)
+                                      for m in (np.flatnonzero(cte_cond == c) for c in np.unique(cte_cond))])
+            yb = y3[sampled].reshape(-1, shape[-1])
+            boots[b] = normalized_gain(yb, c3[sampled].reshape(-1, shape[-1]), e3[sampled].reshape(-1, shape[-1]))
+        out["conditional_ci"] = tuple(float(q) for q in np.quantile(boots, [0.025, 0.975]))
     if n_ranks > 1:
         out["rank_gains"] = tuple(normalized_gain(yte, cpred, source_prediction(srcs[r])) for r in range(n_ranks))
     if random_source_seeds:
@@ -978,6 +1114,7 @@ def link_session_jobs(asset_id: str, path: str, jobs: list, signals=("SpikingBan
             ds = build_link_dataset(session, **build_kwargs)
             result = ESTIMATORS[estimator](ds, **estimator_kwargs)
             result["n_usable"] = len(ds.neural)
+            result["n_context"] = ds.context.shape[-1]
             result["n_trials_table"] = len(session.trials)
             if keep:
                 result["source_rows"] = ds.source_rows
@@ -993,6 +1130,50 @@ def rtt_jobs(asset_id: str, jobs: list) -> dict:
         out = {}
         for name, build_kwargs, estimator, estimator_kwargs, keep in jobs:
             ds = build_rtt_dataset(raw, **build_kwargs)
+            out[name] = _drop_arrays(ESTIMATORS[estimator](ds, **estimator_kwargs), keep)
+    return out
+
+
+RELEASE_MODULES = ("types", "estimators", "specification_estimators", "robustness_estimators", "nested_estimators")
+
+
+def release_estimators():
+    """The paper's own estimator modules, fetched from the release at PAPER_COMMIT
+    into a temporary package (its __init__ is left empty: the real one imports
+    the synthetic generator only), to run next to the ports here."""
+    import importlib
+    import sys
+    import tempfile
+    from pathlib import Path
+
+    root = Path(tempfile.mkdtemp()) / "neural_evidence"
+    root.mkdir()
+    (root / "__init__.py").write_text("")
+    raw = PAPER_CODE.replace("github.com", "raw.githubusercontent.com") + f"/{PAPER_COMMIT}/src/neural_evidence"
+    for name in RELEASE_MODULES:
+        with urllib.request.urlopen(f"{raw}/{name}.py", timeout=120) as response:
+            (root / f"{name}.py").write_bytes(response.read())
+    sys.path.insert(0, str(root.parent))
+    return importlib.import_module("neural_evidence.nested_estimators"), importlib.import_module("neural_evidence.types")
+
+
+def release_dataset(ds: TrialDataset, types_module):
+    """A port TrialDataset as the release's TrialDataset (trial_id and phase are not read by the estimators)."""
+    n, t = ds.neural.shape[:2]
+    return types_module.TrialDataset(
+        neural=ds.neural, context=ds.context, behavior=ds.behavior,
+        trial_id=np.repeat(np.arange(n)[:, None], t, axis=1), condition=ds.condition,
+        phase=np.repeat(np.linspace(0.0, 1.0, t, endpoint=False)[None, :], n, axis=0))
+
+
+def maze_jobs(asset_id: str, jobs: list) -> dict:
+    from threadpoolctl import threadpool_limits
+
+    with threadpool_limits(1):
+        raw = load_maze_raw(asset_id)
+        out = {}
+        for name, build_kwargs, estimator, estimator_kwargs, keep in jobs:
+            ds = build_maze_dataset(raw, **build_kwargs)
             out[name] = _drop_arrays(ESTIMATORS[estimator](ds, **estimator_kwargs), keep)
     return out
 

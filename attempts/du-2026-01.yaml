@@ -35,6 +35,12 @@ inputs:
 - what: The frozen confirmation manifest outputs/primary_analysis/link_confirmation_manifest.json, read
     to compare with the 20 sessions re-selected from the archive's metadata.
   source: https://github.com/gwkuqgfkqe/neural-decoder-context-audit at commit b042fbe1cda2ca5a353751c693d7c95f45de0456
+- what: The release's estimator modules (types, estimators, specification_estimators, robustness_estimators,
+    nested_estimators), fetched unchanged and run next to the ports on the same arrays (07_mc_maze.ipynb).
+  source: https://github.com/gwkuqgfkqe/neural-decoder-context-audit at commit b042fbe1cda2ca5a353751c693d7c95f45de0456
+- what: MC_Maze-medium, sub-Jenkins/sub-Jenkins_ses-medium_desc-train_behavior+ecephys.nwb, streamed; the data
+    of the data-elsewhere claims maze-gain and rff-maze and of the MC_Maze part of estimator-family-nlb.
+  source: 10.48324/dandi.000139/0.220113.0408
 outcomes:
 - claim: synthetic-template-null
   outcome: reproduced
@@ -245,8 +251,8 @@ outcomes:
   output: claim:representative-trial
   notes: The ninth of 18 sessions in gain order (the lower middle, as build_submission_figures.py
     figure8 takes it) is 2022-09-21 RD, and its median-improvement held-out trial is 123 as the trials
-    table row (reading a) and as the usable-trial index (reading b); it is position 39 of the 113
-    held-out trials (reading c). The other session reading, the earlier date of the two middle
+    table row (reading a) and as the usable-trial index (reading b); under reading (c) it is at
+    position 41 (from 0) of the 113 held-out trials in trial order. The other session reading, the earlier date of the two middle
     sessions, gives 2021-10-15 RD, trial 260.
   deviations:
   - The match holds under the lower-middle reading of the session tie only; the criterion names both
@@ -353,7 +359,8 @@ outcomes:
   notes: Mean replacement gain -0.00771; correct-pair gain above replacement in 20 of 20 sessions and
     in both task means (CO 0.02104 against -0.00292, RD 0.02213 against -0.01250). Under the four
     other seeds the replacement mean is -0.01963, -0.00902, -0.00938 and -0.01515, each outside the
-    tolerance.
+    tolerance; the correct-pair gain exceeds replacement in 20, 19, 20 and 20 of 20 sessions and in
+    both task means under each.
 - claim: confirm-table1-values
   outcome: reproduced
   notebook: 05_link_confirmation.ipynb
@@ -389,7 +396,8 @@ outcomes:
   - 0.08359
   - 0.05125
   - -0.02297
-  notes: All eight values equal the paper's at its precision. Under estimator seeds plus 1000 to 4000
+  notes: All eight values equal the paper's at its precision, and so does the conditional whole-trial
+    interval, 0.05371 to 0.08478 (500 resamples, the release script's default). Under estimator seeds plus 1000 to 4000
     (the release split is fixed) the gain is 0.06821 to 0.06855 and the replacement gain -0.02300 to
     -0.02332.
 - claim: rff-rtt
@@ -406,21 +414,51 @@ outcomes:
   notebook: 06_mc_rtt.ipynb
   output: claim:estimator-family-nlb
   notes: MC_RTT gain 0.0690 under block penalties and 0.04619 under nonlinear context (g chosen 0.25),
-    both positive, which is what the criterion tests. The MC_Maze part of the statement (near zero) was
-    not tested, as DANDI:000139 was not read.
+    both positive, which is what the criterion tests. The MC_Maze part, which the criterion reports
+    without making the outcome depend on it, holds on DANDI:000139 (07_mc_maze.ipynb) with block-penalty
+    gain 0.000455 and nonlinear-context gain -0.000243, both of absolute size below 0.01.
   deviations:
-  - MC_Maze part not tested; block Ridge solved exactly in place of lsqr (as in estimator-family-link);
-    nonlinear context under the release's setting only.
+  - Block Ridge solved exactly in place of lsqr (as in estimator-family-link); nonlinear context under the
+    release's setting only.
 - claim: maze-gain
-  outcome: blocked
-  blocked_by: other
-  notes: The claim's data are MC_Maze-medium, DANDI:000139 version 0.220113.0408 (data elsewhere,
-    public). This attempt did not read it; the paper's loader (mc_maze.py) is in the release, and the
-    port and runs did not fit in this run after the 32 other claims. A later attempt can test it.
+  outcome: reproduced
+  notebook: 07_mc_maze.ipynb
+  output: claim:maze-gain
+  measured:
+  - 0.90533
+  - 0.000513
+  - 0.542
+  - -0.0000371
+  seed_sensitive: true
+  notes: On DANDI:000139 version 0.220113.0408 (data elsewhere; 250 trials, 27 conditions, 152 units,
+    188/62 release split, 258 context features), estimator seed 20260726 gives context-only R2 0.90533,
+    fully nested gain 0.000513, MSE reduction 0.542% (RMSE 81.76 to 81.53) and replacement gain
+    -0.0000371, all four within tolerance; the conditional interval is 0.00026 to 0.00076, as in the paper.
+    The release's own estimator code gives the same values on the same arrays. Under estimator seeds plus
+    1000 to 4000 the gain is -0.000138, 0.000479, 0.000528 and 0.000509 and the replacement gain
+    -0.0027212, 0.0000294, -0.0000190 and 0.0000075; the replacement gain is outside its tolerance under
+    each of these seeds and the gain under the first.
+  deviations:
+  - Tested in the revision after verification round 1; the first version of the attempt had blocked it
+    without reading the file. The loader is a port of the release's mc_maze.py (template context,
+    neural_lead_ms 80, as run_primary_analyses.py _run_nlb calls it).
+  - The conditional interval uses 500 bootstrap resamples, the default of run_primary_analyses.py; the
+    paper gives no count.
 - claim: rff-maze
-  outcome: blocked
-  blocked_by: other
-  notes: As maze-gain, DANDI:000139 was not read in this attempt.
+  outcome: reproduced
+  notebook: 07_mc_maze.ipynb
+  output: claim:rff-maze
+  measured:
+  - 0.0000448
+  - 0.0001386
+  seed_sensitive: true
+  notes: Map seeds 20260802, 20260803 and 20260804 give MC_Maze gains 0.0000448, 0.0000772 and
+    0.0001386 (the release's code gives the same), so the lowest and highest are within tolerance. Under
+    estimator seeds plus 1000 to 4000 the lowest of the three is 0.0000263, 0.0000360, 0.0000624 and
+    0.0000384, outside its tolerance under each, and the highest 0.0001194 to 0.0001387; every map gain
+    stays positive.
+  deviations:
+  - Tested in the revision after verification round 1, as maze-gain.
 findings:
 - kind: metadata_insufficient
   about: data
@@ -470,12 +508,243 @@ findings:
 - kind: other
   about: paper
   statement: The paper says the NLB velocity unit fields and descriptions disagree (Limitations, Table 2
-    legend). In MC_RTT the series carry unit m/s or meters with conversion 0.001, so the stored values
-    are mm/s and mm, as the descriptions say; the fields agree once the conversion is applied.
+    legend). In MC_RTT and in MC_Maze (hand_vel, cursor_pos) the series carry unit m/s or meters with
+    conversion 0.001, so the stored values are mm/s and mm, as the descriptions say; the fields agree
+    once the conversion is applied.
 - kind: other
   about: paper
   statement: The paper's released code, ported here, reproduces its reported values at their printed
-    precision for every claim tested. The confirmation-set values are those of one outer split (seed
-    20260726); under four other split seeds the combined geometry-by-phase mean is 0.0148 to 0.0207 and
-    the history mean 0.0034 to 0.0082, so the exact values reported rest on that split, while the
-    qualitative pattern holds in each.
+    precision for every claim tested; run next to the ports on MC_Maze and on one LINK session, the
+    release's estimator functions give identical values. The confirmation-set values are those of one
+    outer split (seed 20260726); under four other split seeds the combined geometry-by-phase mean is
+    0.0148 to 0.0207 and the history mean 0.0034 to 0.0082, so the exact values reported rest on that
+    split, while the qualitative pattern holds in each. The MC_Maze gain (0.00051) and replacement gain
+    (-0.00004) likewise rest on the estimator seed, and under four others the gain is -0.00014 to 0.00053
+    and the replacement gain -0.0027 to 0.00003.
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebooks (01 to 06) with the conclusion cells and the summaries removed, the
+    helper module and the claims file, with the paper's full text under paper/. The verifier read the DANDI
+    API for 000129, 001201 and 000139 and tested the helpers on synthetic inputs (interior ranks, octants,
+    window and drop rule, neural, position and behaviour alignment, tie rule, permutations, gain, Spearman,
+    date bootstrap, build_link_dataset feature counts). It found no leakage.
+  results:
+  - claim: synthetic-template-null
+    agrees: true
+    outcome: reproduced
+    reason: 01 cell 4 gives median -0.0000023 and median absolute gain 0.0000092, below 0.03. The range
+      -0.0000588 to 0.0000248 matches the paper exactly.
+    response: No change.
+  - claim: synthetic-signal-ordering
+    agrees: true
+    outcome: reproduced
+    reason: 01 cell 6 gives weak 0.22451 and strong 0.37360, strictly increasing from template-only.
+    response: No change.
+  - claim: synthetic-pair-breaking
+    agrees: true
+    outcome: reproduced
+    reason: 01 cell 8 gives 10/10 seeds above both controls, replacement mean -0.3486 and permutation mean
+      -0.3663.
+    response: No change.
+  - claim: link-development-sample
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 10 gives 9 dates and 6,750 usable trials; all 18 sessions have 375.
+    response: The notebook's statement that the two later versions of 001201 list the same assets had no
+      supporting output (report, part C); a new cell in 02 lists both later versions and shows the same
+      312 paths with the same sizes. Outcome unchanged.
+  - claim: link-neural-only-r2
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 12 gives CO 0.3077 and RD 0.3129.
+    response: No change.
+  - claim: link-context-ladder-gain
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 14 shows the gain falling at every step for both tasks, and 10/10 values within
+      tolerance (all equal the paper to 4 decimals).
+    response: No change.
+  - claim: link-context-only-r2
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 16 gives plus history 0.6617/0.6839 and phase only 0.0084/0.0055, both below 0.02.
+    response: No change.
+  - claim: link-phase-only-replacement
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 18 gives an RD mean of 0.10498, positive.
+    response: No change.
+  - claim: link-task-contrast-by-context
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 20 gives signs +, -, -, + as stated. Geometry by phase (0.0015) is near zero under both
+      readings; its interval contains 0, and it is smaller in absolute value than the direction (0.0155)
+      and additive (0.0110) contrasts.
+    response: No change.
+  - claim: nested-geometry-gain
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 22 gives SBP 0.02009 (18/18 positive) and TCR 0.01155 (17/18); date intervals 0.01586
+      to 0.02401 and 0.00711 to 0.01591, close to Table 1.
+    response: No change.
+  - claim: nested-history-gain
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 24 gives 0.00873 (17/18) and 0.00420 (16/18), each below its geometry mean.
+    response: No change.
+  - claim: nested-replacement-negative
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 26 gives all four negative, 4/4 within tolerance.
+    response: No change.
+  - claim: replacement-source-diagnostics
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 28 gives minimum eligible sources 5, median maximum reuse 3, maximum 4 and
+      self-replacement error 0.
+    response: No change.
+  - claim: permutation-negative
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 30, reading (a), gives 18/18 negative, mean -0.01418. Reading (b) also passes (36/36,
+      -0.01387).
+    response: No change.
+  - claim: replacement-penalty-distance
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 32 gives 8 positive and 10 negative correlations, and the date interval -0.0204 to
+      0.0301 contains 0. Both readings hold.
+    response: No change.
+  - claim: replacement-ranks-lower
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 34 shows ranks 1 to 5 and all five random draws below the correct-pair mean, for SBP
+      and TCR.
+    response: No change.
+  - claim: practical-mse-reduction
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 36 gives 6/6 within tolerance (4.92%, 0.01407, 0.01372, 2.72%, 2.83%, 1.31%).
+    response: No change.
+  - claim: representative-trial
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 38 gives 2022-09-21 RD as the ninth session in gain order, and its median trial is 123
+      under readings (a) and (b); the other session reading gives 2021-10-15 RD. The "position among 113
+      held-out trials" (39 and 75) is an index into test_indices in train_test_split's shuffled order, so
+      it is not a meaningful position for reading (c) (problem 1). Sorting by (gain, date, task) and taking
+      index (n-1)//2 matches the claims file's first reading (problem 6).
+    response: Reading (c) is now computed as the position among the held-out trials in ascending trial
+      order, 41 from 0 (77 for the other session reading); notes and notebook text corrected. Outcome
+      unchanged, as readings (a) and (b) give 123.
+  - claim: confirm-geometry-gain
+    agrees: true
+    outcome: reproduced
+    reason: 05 cell 6 gives 20/20 positive and 0.02158 (CO 0.02104, RD 0.02213). The re-run selection rule
+      gives the same 20 assets as the frozen manifest, and the paper's gate passes. The confirmation
+      results depend strongly on the split seed; under seeds +1000 to +4000 the combined geometry mean is
+      0.0148 to 0.0207 and several values fall outside the 10% tolerances, but the criterion fixes seed
+      20260726 (problem 4).
+    response: No change; the outcome was already marked seed_sensitive with the values under each seed.
+  - claim: confirm-history-contraction
+    agrees: true
+    outcome: reproduced
+    reason: 05 cell 8 gives 0.00755 (CO 0.00670, RD 0.00840), 19/20 positive, below the geometry mean.
+    response: No change (seed_sensitive, as for confirm-geometry-gain).
+  - claim: confirm-replacement
+    agrees: true
+    outcome: reproduced
+    reason: 05 cell 10 gives -0.00771, with correct-pair gain above replacement in 20/20 sessions and in
+      both task means. Under seeds +1000 to +4000 the notebook prints only how many replacement gains are
+      positive, not how many sessions have correct-pair gain above replacement.
+    response: The cell now prints, for each of the five seeds, the sessions with gain above replacement
+      (20, 20, 19, 20 and 20 of 20) and whether both task means are above (yes under each). The summary
+      sentence that said every session was corrected to 19 or 20 of 20. Outcome unchanged.
+  - claim: confirm-table1-values
+    agrees: true
+    outcome: reproduced
+    reason: 05 cell 12 gives -0.00498, 4.761% and 2.047%.
+    response: No change.
+  - claim: rtt-data
+    agrees: true
+    outcome: reproduced
+    reason: 06 cell 4 gives 1080 blocks, 130 units, an 810/270 split and 21 bins per block.
+    response: No change.
+  - claim: rtt-gain
+    agrees: true
+    outcome: reproduced
+    reason: 06 cell 6 gives gain 0.06846 (positive) and replacement -0.02297 (negative); all 7 other values
+      within tolerance.
+    response: The conditional whole-trial interval of the release is now computed as well (0.05371 to
+      0.08478, as in the paper). Outcome unchanged.
+  - claim: rff-rtt
+    agrees: true
+    outcome: reproduced
+    reason: 06 cell 8 gives 0.01685, 0.01501 and 0.01491, all positive and inside the widened range.
+    response: No change.
+  - claim: rff-link
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 42 shows CO and RD positive under every map. Reading (a) 0.00310 to 0.00404 is inside
+      the range, and history 0.00111 to 0.00142 is inside. Reading (b) fails (0.00269 is outside), but one
+      reading suffices.
+    response: No change.
+  - claim: estimator-family-link
+    agrees: true
+    outcome: reproduced
+    reason: 03 cell 4 shows that under the code's setting (nonlinear-context reading (a)) every CO, RD and
+      18-session mean is positive for both families. Reading (b), all 27 nonlinear-context settings, was
+      not run; the criterion needs only one reading. _BlockRidge solves with cholesky where the release
+      uses lsqr; this is stated, one session differs by 5e-7, and a different solver cannot plausibly flip
+      the positive means (problem 3).
+    response: No change. Reading (b) of the nonlinear context was not run in the revision either (estimated
+      about 9 h).
+  - claim: estimator-family-nlb
+    agrees: true
+    outcome: reproduced
+    reason: 06 cell 10 gives block 0.06901 and nonlinear context 0.04619, both positive. The criterion makes
+      the outcome depend only on MC_RTT; the MC_Maze half of the statement is untested.
+    response: The MC_Maze part is now run on DANDI:000139 (07_mc_maze.ipynb) and holds (block-penalty gain
+      0.000455, nonlinear-context gain -0.000243, both of absolute size below 0.01). Outcome unchanged.
+  - claim: temporal-offset
+    agrees: true
+    outcome: reproduced
+    reason: 04 cell 5 shows the gain at 120 ms below the gain at 0 ms for CO and RD under both estimators.
+      Under the fully nested reading only RD-change reading (b) holds (RD-CO goes from +0.00241 to -0.00024
+      and -0.00061); under the evaluate_decoders_nested reading both (a) and (b) hold.
+    response: No change.
+  - claim: split-seed-stability
+    agrees: true
+    outcome: reproduced
+    reason: 02 cell 40 gives 6/6 positive and within tolerance.
+    response: No change.
+  - claim: context-capacity-contrast
+    agrees: true
+    outcome: reproduced
+    reason: 04 cell 7 shows the quadratic-plus-history contrast positive for SBP and TCR under both
+      estimators. Only TCR shows a changed contrast; SBP does not change. The context feature counts
+      141/351/151/361 in 04 cell 3 are a hard-coded string, not computed (problem 2); the verifier's own
+      check of build_link_dataset gives 9/81/87/141/151/351/361.
+    response: 04 cell 3 now prints the context feature counts from the datasets the fits used (141, 351,
+      151 and 361 in every session). Outcome unchanged.
+  - claim: maze-gain
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). DANDI:000139 is not one of this attempt's datasets. The API shows 000129
+      holds only sub-Indy files (2 assets) and 001201 only sub-Monkey-N (312); the MC_Maze file exists only
+      in 000139 0.220113.0408. No part can be tested.
+    response: Outcome changed to reproduced. The claim is data elsewhere, and the protocol (author step 1.4)
+      says to test such a claim on the archive that holds its data and never to block it as data_missing.
+      The file is public, so the revision ports the release's mc_maze.py and tests it in a new notebook,
+      07_mc_maze.ipynb. Under estimator seed 20260726 all four values are within tolerance and the
+      interval equals the paper's. Under other estimator seeds the replacement gain falls outside its
+      tolerance, so the outcome is marked seed_sensitive.
+  - claim: rff-maze
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), same as maze-gain.
+    response: Outcome changed to reproduced, on DANDI:000139 as for maze-gain. The three map gains are
+      0.0000448, 0.0000772 and 0.0001386, and the lowest and highest are within tolerance. Under other
+      estimator seeds the lowest falls outside, so the outcome is marked seed_sensitive.
