@@ -67,7 +67,12 @@
 #   0. Means, pairwise noise correlations and the summed log variance are unchanged.
 # - M3 overlap percentage of manifold A relative to B. The fraction of A's trials whose nearest
 #   trial of B is closer than the 5th percentile of the pairwise distances within B (Euclidean,
-#   in the N-neuron space; box_and_overlap.py uses np.percentile(..., 5)).
+#   in the N-neuron space; box_and_overlap.py uses np.percentile(..., 5)). The Methods speak of
+#   distances between pairs of points within B, read as pairs of distinct trials, which is the
+#   main reading. The code takes the percentile over the full cdist matrix of B with itself,
+#   zero diagonal included, and counts a trial when its distance is <= the threshold
+#   (compute_overlap_stimpairs, compute_overlap_stimpairs_consis); this is run as a variant.
+#   The overlap of a manifold relative to itself is 1 in the code.
 # - M4 statistics on curves. Each slope-changed value is compared with the as-is value by a
 #   Wilcoxon signed-rank test across sessions (or session pairs), p < 0.05, uncorrected (the
 #   notebooks call scipy wilcoxon per slope with no correction). n is 30 sessions or 435 session
@@ -131,7 +136,9 @@ claims:
     overlap percentages and a directed edge wherever one is above zero, (i) at slope 0 the three
     do not form one strongly connected component, (ii) in the as-is data they do, (iii) the mean
     of the six directed overlap percentages is larger at slope 2 than as-is and larger as-is than
-    at slope 0. Reproduced when all three hold, partially when two hold. The same measures over
+    at slope 0. The finding is stated of the 2D Isomap picture, so the same three tests on the 2D
+    Isomap coordinates of the three stimuli are a second reading; both are run. Reproduced when
+    all three hold, partially when two hold. The same measures over
     all 12 stimuli (the size of the largest strongly connected component, the mean overlap) and
     the other sessions are shown as variants.
 - id: illusion-fig3a-orthogonal-variance-example
@@ -251,8 +258,9 @@ claims:
     tolerance: 0.021
   criterion: Across-stimulus fit per neuron as in M1 with stimuli as points (Methods,
     Log-mean vs. log-variance relationship across stimuli). The mean's tolerance is the paper's
-    stated SD, as no SEM is given. Reproduced when both values are within tolerance and a
-    two-sided Wilcoxon rank-sum test (Mann-Whitney U, as fit_slope_histogram.ipynb cell 25)
+    stated SD, as no SEM is given. Reproduced when both values are within tolerance, the
+    across-stimulus slopes are larger than the across-neuron slopes (higher mean and median), and
+    a two-sided Wilcoxon rank-sum test (Mann-Whitney U, as fit_slope_histogram.ipynb cell 25)
     between the two sets of slopes gives p < 0.001.
 - id: figs1-gain-variance
   statement: The gain variance of the modulated Poisson model is larger and more spread across
@@ -278,6 +286,12 @@ claims:
   - quantity: mean across-neuron gain variance
     value: 0.26
     tolerance: 0.026
+  - quantity: SD of across-stimulus gain variance
+    value: 0.92
+    tolerance: 0.092
+  - quantity: SD of across-neuron gain variance
+    value: 0.15
+    tolerance: 0.015
   - quantity: neurons excluded from across-stimulus fits
     value: 401
     tolerance: 40
@@ -301,7 +315,10 @@ claims:
   depends_on:
   - data-v1-units
   criterion: Trials split into moving (trial mean speed >= 1 cm/s) and stationary, and into pupil
-    area tertiles (0-33, 33-67, 67-100 percentiles of trial mean area); M1 fit per session,
+    area tertiles (0-33, 33-67, 67-100 percentiles of trial mean area; the Methods do not say over
+    which trials the percentiles are taken, and the code takes them over the trials of all
+    sessions pooled, fit_slope_histogram.ipynb cell 67, which is followed, with per-session
+    tertiles as a variant); M1 fit per session,
     stimulus and state, all pooled. The legend names a Wilcoxon rank-sum test for locomotion and
     a Kruskal-Wallis test for pupil, without printing p in the text; the code runs a two-sided
     Mann-Whitney U test and scipy kruskal. Reproduced when moving slopes are lower than
@@ -351,7 +368,8 @@ claims:
   criterion: M2 in each V1 session at slopes 0, 1 and 2. Reproduced when every neuron pair's noise
     correlation per stimulus equals the as-is value to within 1e-6 (it must, by construction),
     and the fraction of variance on the first PC of each stimulus manifold differs from as-is for
-    most stimuli at slopes 0 and 2. The example in the figure is session index 7
+    most stimuli at slopes 0 and 2 (the paper gives no count or test for S4B; "most" is read as
+    more than half, an open reading). The example in the figure is session index 7
     (decode_noise_corr.ipynb cell 18); all sessions are reported.
 - id: fig1d-dimensionality-falls-with-slope
   statement: The effective dimensionality of individual stimulus manifolds falls as the slope
@@ -420,8 +438,11 @@ claims:
   data: elsewhere
   where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
     (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
-  criterion: M3 for every ordered pair of the 119 stimuli, averaged per session (diagonal set to
-    0 as in RSA_overlap_SCC.ipynb). Judged by O2 (increasing) with M4. The legend's test is
+  criterion: M3 for every ordered pair of distinct stimuli (119 times 118), averaged per session,
+    as the Methods' "across all stimulus pairs". The code's Figure 2A cell (RSA_overlap_SCC.ipynb
+    cell 16) averages the full 119 by 119 matrix with its diagonal of self-overlaps; that mean is
+    shown as a variant (it sets the diagonal to 0 only for Figure 2C, cell 18). Judged by O2
+    (increasing) with M4. The legend's test is
     Wilcoxon signed-rank; its threshold is cut from the text and taken from the code (0.05).
 - id: fig2b-decoding-falls-with-slope
   statement: Linear SVM decoding accuracy of image identity decreases monotonically as the slope
@@ -544,7 +565,10 @@ claims:
     half, Spearman correlation of the two matrices, averaged over 10 partitions per session.
     Whether the slope fit and manipulation are done on all neurons before splitting or on each
     half is not stated; the code fits on all neurons and splits after (RSA_overlap_SCC.ipynb,
-    box_and_overlap.py compute_overlap_stimpairs_consis), which is followed. Judged by O1.
+    box_and_overlap.py compute_overlap_stimpairs_consis), which is followed. The Methods correlate
+    "the two matrices" without saying whether the diagonal (self-overlap) is included; the code
+    flattens the full 119 by 119 matrices, diagonal included (RSA_overlap_SCC.ipynb cell 13),
+    which is followed, and the off-diagonal correlation is shown as a variant. Judged by O1.
 - id: fig4c-rsm-similarity-within-mice
   statement: Representational similarity matrices from two halves of the V1 neurons of a session
     are most similar around a slope of 1.
@@ -580,7 +604,9 @@ claims:
   where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
     (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
   criterion: M3 overlap matrix per session with all its V1 neurons, Spearman correlation between
-    the matrices of every pair of sessions. Judged by O1 over session pairs.
+    the matrices of every pair of sessions, the full 119 by 119 matrices flattened with the
+    diagonal included as in the code (RSA_overlap_SCC.ipynb cell 16; the Methods do not say),
+    the off-diagonal correlation shown as a variant. Judged by O1 over session pairs.
 - id: fig4e-rsm-similarity-across-mice
   statement: Representational similarity matrices of pairs of mice are most similar around a
     slope of 1.
@@ -613,10 +639,11 @@ claims:
   where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
     (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
   criterion: Analyses of fig4c and fig4e for LM and PM, sessions without neurons in the area
-    excluded. "Near maximal" is open; read as the value at slope 1 within one SEM (across
-    sessions or pairs) of the curve's maximum and not differing from the maximum slope's value by
-    the M4 test. Reproduced when this holds for LM and PM in both S6B and S6C, partially when it
-    holds in two or three of the four panels. The other areas are reported.
+    excluded. "Near maximal" is open; readings, (a) the across-session (or across-pair) mean at
+    slope 1 is within one SEM of the curve's maximum, (b) the slope of the maximum lies within an
+    O1 window. The paper compares no slope with the maximum by a test, so none is used.
+    Reproduced when, under either reading, this holds for LM and PM in both S6B and S6C,
+    partially when it holds in two or three of the four panels. The other areas are reported.
 - id: figs4c-shuffling-alters-dependence
   statement: Destroying pairwise noise correlations by shuffling trials within stimulus for each
     neuron changes how decoding accuracy and RSM similarity depend on the slope.
@@ -640,3 +667,22 @@ claims:
     each neuron before slope manipulation. Reproduced when, for each of the three analyses, the
     original and shuffled curves differ by the Wilcoxon signed-rank test at p < 0.05 at one or
     more slopes (the green lines of the legend), partially when this holds for one or two.
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header M3. The Methods take the 5th percentile over pairs of points within B; the code takes it over the full self-distance matrix with its zero diagonal and counts distances <= the threshold (box_and_overlap.py at ac3300b). Named the Methods reading as main and the code's as a variant, since it can change which overlaps are above zero.
+  - fig2a-overlap-rises-with-slope. The criterion said the diagonal is set to 0 as in RSA_overlap_SCC.ipynb; the code does that only for Figure 2C (cell 18) and averages the full matrix with its self-overlaps for Figure 2A (cell 16). Now averages over pairs of distinct stimuli, as the Methods say, with the code's mean as a variant.
+  - fig4a-overlap-consistency-within-mice, fig4d-overlap-consistency-across-mice. The Methods do not say whether the self-overlap diagonal enters the Spearman correlation; the code flattens the full matrices with it (RSA_overlap_SCC.ipynb cells 13 and 16). Said so, followed the code, and named the off-diagonal correlation as a variant.
+  - fig1b-across-stimulus-slope. The tolerance on the mean (the stated SD, 0.21) and a two-sided test did not fix the direction the statement gives. Added that the across-stimulus slopes must be larger than the across-neuron slopes.
+  - figs1-gain-variance. The statement says the across-stimulus values are more spread, but no SD was expected. Added the SDs 0.92 and 0.15 from the Figure S1B legend with 10% tolerances.
+  - figs2-behavioral-state. The Methods do not say over which trials the pupil tertiles are taken; the code pools all sessions (fit_slope_histogram.ipynb cell 67). Said so, followed the code, and named per-session tertiles as a variant.
+  - figs6-higher-areas-consistency. The criterion compared slope 1 with the maximum slope by a Wilcoxon test the paper never makes. Removed it and named two readings of "near maximal" (within one SEM of the maximum, or the maximum within an O1 window).
+  - figs4ab-noise-correlation-under-manipulation. "Most stimuli" is not from the paper; marked it as an open reading (more than half).
+  - illusion-fig1c-isomap-geometry. The finding is about the 2D Isomap picture, but the criterion judged it only in the N-neuron space. Added the same tests on the 2D Isomap coordinates as a second reading.
+  - Checked against the code at ac3300b and found to agree with it, M2 (the offset formula), M4 (statsmodels multipletests is imported but never called), the one-sided Wilcoxon test in ortho_variance.ipynb cell 13, the arrow lengths 60 and 22 and the Lc1, Ic1, Tre2 labels in cell 9, session index 6 and stimuli Ic1, Lc1, Tre1 in visualize_manifold.ipynb cell 8, the median 1.11 for 12-frame movie bins in fit_slope_histogram.ipynb cell 46, and session index 7 in decode_noise_corr.ipynb cell 18.
+  - Open. Figure S5B (the movie trajectory breaks into segments at slope 0 and blurs at slope 2) and Figure S5D have no claim. They are qualitative example pictures on the Allen data, not tested on dandiset 000248, and were not added.
+  - Open. The code normalizes orthogonal variance by the mean per-neuron variance where the Methods say the sum. The factor N is constant within a session and leaves the Spearman correlations and the Figure 3A comparison unchanged, so the criteria were not changed.
+  - Open. No PDF was supplied, and the legends of Figures 2 and 3 are cut in the text, so the p threshold for Figures 2A to 2D and 3D to 3F comes from the code only, and no figure panel could be read.
