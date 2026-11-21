@@ -39,7 +39,11 @@ outcomes:
     sub-11G-4, S3 sub-1A-0, S4 sub-9E-2 from 30.0 s). Recordings 7 (S5) and 8 (S6) match the layout
     of the sub-3C and sub-8D files but no file by time (best ratio 1.3 and 1.4), so their raw
     recordings are not in the dandiset. The same scan run in lfp_elliott_2026.ipynb gives the same
-    links. The unit counts and durations of the linked records are compared in table1-unit-counts.
+    links. Each sorting file is the one the paper's latency notebook for that recording loads
+    (printed with its cell and line). The scan finds the S3 sorting in a 40 s piece of its file
+    (ratio 39 at the expected offset), and every sub-3C file is at least 40 s long, so no sub-3C
+    file holds a stretch of the S5 recording, alone or joined to the others. The unit counts and
+    durations of the linked records are compared in table1-unit-counts.
   deviations:
   - A link claim added by the author, as the claims that use the sortings with the raw voltage need
     the match (protocol, author step 1.4).
@@ -66,7 +70,11 @@ outcomes:
     near the paper's initiation, holds 7 bursts, but that is not a reading the criterion names.
     The median fraction of units whose rate rises at a burst is 0.49 to 0.53, so the synchrony part
     is borderline. All readings give 12 epochs. Measured is the first reading the criterion lists
-    (reading a, sigma 10, median over the first 150 s).
+    (reading a, sigma 10, median over the first 150 s). Outside the criterion, merging peaks closer
+    than 500 ms (the code's S1 sub-bursts are 170 to 180 ms apart) gives a median of 7.5 to 10
+    bursts per epoch (7.5 and 8.0 under reading b) and 60 to 83 bursts in S1; whether the
+    criterion's 50 ms merge counts sub-bursts as bursts is asked of a reader
+    (questions/elliott-2026.yaml).
   deviations:
   - Reading a needs the pre-KA part of the KA recording; no time of KA application is recorded and
     bursting starts within the first second, so the separate baseline recording of the same slice
@@ -111,31 +119,47 @@ outcomes:
     0.90 s (S1) and 0.37 s (S2) of the recordings, which bounds the latency only if KA was applied
     at the recording start, which nothing states.
 - claim: s4-ka-no-epileptiform
-  outcome: not_reproduced
+  outcome: partially_reproduced
+  assumed: true
   notebook: reproduce_elliott_2026.ipynb
   output: claim:s4-ka-no-epileptiform
-  notes: Under every burst reading at least three of S3 to S6 have an epoch of bursts longer than
-    10 s (longest epochs 16 to 418 s), and S1 has none (longest 8 to 10 s), while S2 has two
-    (19 s). By these readings the claim's test does not separate the slices; S4 alone has a 5 s
-    longest epoch under reading b with sigma 20 and 11 to 29 s under the others. The bursts of S3 to
-    S6 raise the rate of fewer units (median fraction 0.15 to 0.34) than those of S1 and S2 (0.49 to
-    0.74). The LFP part of the paper's classification is not tested (claims file).
+  notes: With a burst counted as synchronized when more than half of the units rise (the fig1g
+    criterion's definition of a synchronous burst), S3 to S6 have no synchronized burst under any
+    reading, while S1 has 77 to 138 and S2 89 to 134. S2 has two epochs longer than 10 s (19 s)
+    under every reading; S1 has none, its longest epoch lasting 8 to 10 s. The test finds no
+    sustained synchronized bursting in S3 to S6, the absence the claim states, and the positive
+    control holds for S2 but not for S1, so neither the criterion's reproduced clause (which needs
+    S1 too) nor its not-reproduced clause (any of S3 to S6) applies; partially reproduced. At a
+    fraction of 0.4, S4 to S6 have 1 to 6 synchronized bursts and no epoch longer than 2 s; at 0.6
+    none. With every burst kept (the first version, which dropped "synchronized"), at least three
+    of S3 to S6 have epochs longer than 10 s (longest 16 to 418 s), as their bursts raise the rate
+    of few units (median fraction 0.15 to 0.34 against 0.49 to 0.74 in S1 and S2). The LFP part of
+    the paper's classification is not tested (claims file).
   deviations:
   - Sustained synchronized bursting is read as an epoch (bursts with gaps under 5 s) lasting more
-    than 10 s from its first to its last burst.
+    than 10 s from its first to its last burst, an assumption; the outcome for S1 rests on it.
+  - A synchronized burst is one in which more than half of the units fire above their mean rate
+    within 50 ms of the peak, from the fig1g criterion ("a burst raises the rate of most units");
+    0.4 and 0.6 are shown.
 - claim: ext3-onset-spectral-signature
   outcome: reproduced
   assumed: true
   notebook: lfp_elliott_2026.ipynb
   output: claim:ext3-onset-spectral-signature
-  notes: With onset at the first burst of the first epoch (0.9 s) only 0.9 s of baseline exists, and
-    the criterion fails at all six electrodes (delta ratios 0.60 to 1.42, amplitude ratios 0.77 to
-    1.54). With onset at the paper's initiation burst (14.4 s, 5 s baseline), delta power in the 2 s
-    after onset is 2.4 to 5.6 times the baseline at all six electrodes and the 0.1 to 100 Hz
-    amplitude 2.09 to 2.97 times, so the criterion holds at three of three electrodes under both
-    electrode readings with the broadband amplitude. The theta amplitude rises 1.00 to 1.66 times,
-    below the factor of 2, so the statement's increase in theta amplitude holds only weakly. The
-    alignment of theta with bursts is tested in table2-phase-locking-counts.
+  notes: The criterion's onset, the first burst of the first epoch, falls at 0.73 to 0.90 s under the
+    four burst readings, so only 0.73 to 0.90 s of baseline exists and the 2 s after onset lie
+    within the 2 s e-folding half-width of the 0.5 Hz wavelet from the recording's start; these runs
+    cannot test the claim, and the criterion fails there at all six electrodes (delta ratios 0.60 to
+    1.54, amplitude ratios 0.77 to 1.31). With onset at the paper's initiation burst (14.4 s, 5 s
+    baseline), delta power in the 2 s after onset is 2.4 to 5.6 times the baseline at all six
+    electrodes and the 0.1 to 100 Hz amplitude 2.09 to 2.97 times, so the criterion holds at three
+    of three electrodes under both electrode readings with the broadband amplitude. With onset at
+    the first epoch that has 5 s of recording before it, the criterion holds at three of three
+    electrodes under burst reading b (onset 14.98 and 15.05 s) and at none or one under reading a
+    (13.15 and 13.76 s, isolated bursts before the initiation). The theta amplitude never reaches
+    twice the baseline (at most 1.92 times), so the statement's increase in theta amplitude holds
+    only weakly. Whether the criterion's onset is the paper's is asked of a reader. The alignment
+    of theta with bursts is tested in table2-phase-locking-counts.
   deviations:
   - Assumed onset at 14.4 s, the first burst of S1 as the paper's code sets it (sub-bursts at 14.4 to
     14.91 s) and its figures show it (Extended Data Fig. 4c, baseline at 14.62 s; Fig. 4d,
@@ -152,16 +176,22 @@ outcomes:
   notes: Plane fits to arrival time explain little (R2 0.02 at initiation and 0.05 in the seizure
     stage of S1; 0.02 and 0.31 in S2). The initiation direction is 75 to 79 degrees from the layer's
     long axis in both slices, initiation and seizure directions differ by 4 to 16 degrees, and the
-    seizure direction is 151 to 173 degrees from the outward normal. In S1 the baseline R2 (0.002)
-    is the lowest of the three stages; in S2 it (0.09 to 0.10) is above that of initiation. Filter
-    order 4 and 5 give the same.
+    seizure direction is 151 to 173 degrees from the outward normal (7 to 29 degrees from the
+    inward normal, were the hilus on the convex side). In S1 the baseline R2 (0.000 to 0.001) is the
+    lowest of the three stages; in S2 it (0.06 to 0.07) is above that of the code's initiation
+    window. With a 250 ms S2 initiation window (one theta cycle) the initiation direction is 27
+    degrees from the long axis (R2 0.43) but 34 degrees from the seizure direction, outside 60 to
+    120. Filter order 4 and 5 give the same. Sign conventions of lag_matrix and plane_direction were
+    checked by the verifier on a synthetic travelling wave.
   deviations:
-  - Stage windows from the paper's figures and code (S1 baseline 13.6 to 14.6 s, initiation 14.4 to
-    14.91 s, seizure 15.0 to 28.0 s; S2 baseline 34.2 to 35.2 s, initiation 35.208 to 35.302 s,
-    seizure 35.3 to 38.5 s; Extended Data Figs. 4 and 5, figures/figure_2/burst_peak_comparison.ipynb,
-    figures/supplement/seizure_2/seizure2_burst_peaks.ipynb).
+  - Stage windows from the paper's figures and code (S1 initiation 14.4 to 14.91 s, seizure 15.0 to
+    28.0 s; S2 initiation 35.208 to 35.302 s, seizure 35.3 to 38.5 s; Extended Data Figs. 4 and 5,
+    figures/figure_2/burst_peak_comparison.ipynb, figures/supplement/seizure_2/seizure2_burst_peaks.ipynb,
+    printed with cell and line in the notebook). Bursting starts within the first second, so no
+    window lies before the first burst; the baselines are stretches free of detected bursts under
+    every reading just before initiation, S1 12.0 to 13.0 s and S2 34.45 to 35.2 s.
   - That the hilus lies on the concave side of the fitted layer is an assumption used for the
-    outward direction.
+    outward direction; the other side is shown.
 - claim: ext4b-theta-delay
   outcome: not_reproduced
   notebook: lfp_elliott_2026.ipynb
@@ -183,24 +213,35 @@ outcomes:
   notes: Clusters are coherent beyond all 1000 shuffles in the S1 initiation (0.69 against a shuffle
     maximum of 0.57) and seizure stages (0.90 against 0.52) and in the S2 seizure stage (0.86
     against 0.48), under both filter orders and all five seeds. The S2 initiation window of the code
-    (94 ms, shorter than one theta cycle) gives 0.84 against 0.86 and fails; a 0.5 s window around
-    it gives 0.91 against 0.76. S3 and S4 are less coherent (0.44 each, below their shuffle maxima
-    0.49 and 0.48). S5 and S6 have no raw recording here. The S2 baseline is also coherent (0.81
-    against 0.61), where the paper reports no pattern at baseline. The first part of the criterion
-    fails on the S2 initiation window, the second holds for the slices that could be tested.
+    (94 ms, shorter than one theta cycle; median lag 0 ms, 0.2% of lags at the window edge) gives
+    0.84 against 0.86 and fails; every window of one theta cycle or longer passes under all five
+    seeds (250 ms from 35.208 s, 0.92 to 0.93 against 0.64 to 0.65; 500 ms, 0.88 against 0.48; 1 s,
+    0.88 against 0.47; 35.0 to 35.5 s, 0.91 against 0.76), with 11 to 22% of lags at the edge. So
+    the first part of the criterion holds once the S2 initiation window spans a theta cycle. S3 and
+    S4 are less coherent (0.44 each, below their shuffle maxima 0.49 and 0.48), but S5 and S6 have
+    no raw recording here, so the second part is shown for 2 of the 4 slices it names; partially
+    reproduced under every initiation window. The S1 baseline is not coherent (0.37 against 0.44);
+    the S2 baseline is (0.67 against 0.50), where the paper reports no pattern at baseline.
   deviations:
-  - Stage windows as in fig1j-theta-propagation-stages; for S3 and S4 the 8 s window with the most
-    spikes (the paper's segments "with higher than average burst-like activity" have no stated
-    length).
+  - Stage windows as in fig1j-theta-propagation-stages; S2 initiation windows of 250 ms, 500 ms and
+    1 s from 35.208 s and 35.0 to 35.5 s as variants of the code's 94 ms window; for S3 and S4 the
+    8 s window with the most spikes (the paper's segments "with higher than average burst-like
+    activity" have no stated length).
   - S5 and S6 not tested (raw recordings not in the dandiset).
 - claim: methods-rolling-wave-counts
   outcome: blocked
   blocked_by: methods_underspecified
+  notebook: lfp_elliott_2026.ipynb
+  output: claim:methods-rolling-wave-counts
   notes: The paper counted rolling waves by watching videos and gives no detector or list of bursts
     investigated. The criterion allows a detector built on the plane fits of
     fig1j-theta-propagation-stages; those fits explain 2 to 5% of the arrival-time variance in S1
     and give initiation and seizure directions within 16 degrees of each other, so a detector built
-    on them has no defensible basis. Not run. The question is put to the paper's authors (findings).
+    on them has no defensible basis. Run as the criterion defines it on S1's first seizure window
+    (15 to 28 s), it finds no rolling wave. Of 63 theta cycles none has a plane fit with R2 above
+    0.5 (median 0.0023, largest 0.38), though 37 point within 45 degrees of the seizure direction,
+    and none of the 7 to 22 bursts there has a rolling wave. Adopting it would give 0 for every
+    expected value; it is not adopted. The question is put to the paper's authors (findings).
 - claim: fig2a-subbursts-track-theta
   outcome: not_reproduced
   notebook: lfp_elliott_2026.ipynb
@@ -209,7 +250,11 @@ outcomes:
     difference between clusters is 0.24, -0.26 and -0.65 uV over the three sub-bursts. In S2 the
     firing difference flips (3.90 then -7.06 Hz) but the theta difference does not alternate (4.68,
     2.45, -0.76 uV). The S2 initiation clusters come from the code's 94 ms window, which fails the
-    coherence test in ext4-electrode-lag-clusters.
+    coherence test in ext4-electrode-lag-clusters; with the clusters of the 250 ms window the
+    firing difference flips (-8.92 then 5.51 Hz) and theta again does not alternate (-7.20, -4.42,
+    1.14 uV). The sub-burst times are printed beside their source lines in the code
+    (burst_peak_comparison.ipynb cell 5, seizure2_burst_peaks.ipynb cell 7); the S2 sub-bursts last
+    26 to 37 ms, a fraction of one theta cycle.
 - claim: table2-phase-locking-counts
   outcome: not_reproduced
   notebook: lfp_elliott_2026.ipynb
@@ -224,8 +269,12 @@ outcomes:
   deviations:
   - LFP is the 20-sample mean of the raw voltage (1 kHz) where the paper used its own filtered,
     downsampled pickles.
-  - The code's get_raw_data spans are in file time (the S4 span 145 to 155 s lies beyond the 130 s
-    sorting); they are moved to the sorting's clock by the offsets of the link.
+  - The code's spans are the start and stop times in the names of the LFP files it saved
+    (data/ephys_raw at commit 0f83f70, printed in the notebook; the get_raw_data notebooks list
+    only some of them). They are in file time (the S4 span 145 to 155 s lies beyond the 130 s
+    sorting) and are moved to the sorting's clock by the offsets of the link.
+  - Theta is filtered within each window, as the code filters each saved window
+    (TJ_phase_locking_basics.ipynb cell 3 line 107, printed in the notebook).
 - claim: table2-phase-locking-seizure-vs-not
   outcome: partially_reproduced
   notebook: lfp_elliott_2026.ipynb
@@ -250,7 +299,8 @@ outcomes:
     on position). With the code's spike selection the spatial splits give 0.0042 and 0.0014, and
     with units significant over the whole recording 0.035 to 0.051 (Methods) and 0.0008 to 0.013
     (code). The statement's two spatial groups with different phases are supported at p <= 0.01
-    only with the code's spike selection.
+    only with the code's spike selection. Whether reading b, which cannot fail, is a reading of
+    the paper is asked of a reader.
   deviations:
   - The polar mode is taken from a 36-bin histogram, a standard choice.
 - claim: fig2c-sttc-two-clusters
@@ -293,8 +343,12 @@ outcomes:
   notes: S1 and S2 are bipolar (modes 180 degrees apart; R2 0.52 and 0.68 against R1 0.12 and 0.10),
     and no other slice is. S3 and S4 are not unimodal by the measure (two peaks 67.5 degrees apart,
     second 0.92 and 0.70 of the first; R1 0.34 and 0.35 above R2 0.15 and 0.26). S5 and S6 have
-    peaks 45 and 135 degrees apart; with y flipped they become bimodal not bipolar. 2 of 6 slices
-    are in their stated class.
+    peaks 45 and 135 degrees apart. 2 of 6 slices are in their stated class. Unit positions lie on a
+    17.5 um grid, so 8 to 24% of the latency weight falls exactly on the 22.5 degree bin edges, and
+    flipping y does not mirror the histogram. With y flipped or the bins shifted by half a bin, S1
+    and S2 stay bipolar and no other slice becomes bipolar, while S4, S5 and S6 change class (3 or
+    4 of 6 in their stated class); S3 and S4 are never unimodal. The partial outcome holds under
+    all four.
   deviations:
   - One dominant peak is read as the second-largest local maximum being below half the largest;
     the claims file does not define it.
@@ -314,6 +368,8 @@ outcomes:
 - claim: ext12-simulation-recurrence
   outcome: blocked
   blocked_by: not_runnable
+  notebook: reproduce_elliott_2026.ipynb
+  output: claim:ext12-simulation-recurrence
   notes: The simulation needs NEST with a neuron model compiled by NESTML; the code pins conda
     nest-simulator 3.4 and nestml 5 (environment.yml), which the registry's pip lock cannot provide.
     Tried with PyPI nest-simulator 3.10.0. NESTML 9.0.1 fails to parse the model
@@ -413,3 +469,249 @@ findings:
     the NEST available from PyPI (3.10) neither NESTML 9 (cannot parse the model's syntax) nor NESTML
     5 (calls an API NEST 3.10 removed) compiles the model, so the code does not run outside that
     conda environment.
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The first executed notebooks (reproduce_elliott_2026.ipynb and lfp_elliott_2026.ipynb)
+    with the conclusion cells and the summaries removed, the helper module and the claims file, with
+    the paper's full text. The verifier checked the archive's metadata through the DANDI API, tested
+    the STTC helper against a brute-force calculation, lag_matrix and plane_direction on a synthetic
+    travelling wave, and the histogram classes on a synthetic lattice. It did not open the paper's
+    repository or the NWB files.
+  results:
+  - claim: sorting-dandiset-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Six of eight sortings link to one file each, with ratios of 74 to 169 against chance. S5
+      and S6 match the electrode layout but no file in time (ratio about 1.3). No S5-layout file
+      (3C) is longer than 3.17 min, while the S5 sorting spans 6.4 min. It could not check the
+      sorting-file assignments in the repository, nor confirm S5 and S6 are absent beyond the
+      notebook's scan, and asked for a scan of the S5 sorting against the 3C files concatenated in
+      index order.
+    response: The notebook now prints, for each recording, the line of the paper's latency notebook
+      that loads its sorting file, with its cell and line; all eight name the file used. The scan is
+      a full-mode correlation, so a file holding any stretch of a sorting is found; scanned against
+      a 40 s piece of its file, the S3 sorting is found at the expected offset with ratio 39, and
+      every sub-3C file is at least 40 s long, so no sub-3C file holds part of S5, joined to others
+      or not. Outcome unchanged.
+  - claim: table1-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: All 8 unit counts match exactly, but only 5 of 8 recordings match on both units and file
+      duration, and the criterion needs 6. Recordings 7 and 8 have no file to measure. The one real
+      miss is recording 6 (file 2.67 min, sorted span 2.17 min, paper 2.2). The paper's durations
+      are the analysed spans, which match for all 8; under the strict criterion recordings 7 and 8
+      are unmeasurable, not mismatched (problem 13, a claims-file issue).
+    response: Outcome unchanged. Whether the durations of Extended Data Table 1 are the analysed spans
+      or the file durations is asked of a reader (questions/elliott-2026.yaml).
+  - claim: fig1g-ka-synchronized-bursting
+    agrees: true
+    outcome: not_reproduced
+    reason: Under all four readings the median bursts per epoch is 15 to 40 and the first epoch holds
+      2 to 4 bursts; neither is in 5.4 to 8.8. Merging peaks only within 50 ms counts sub-bursts as
+      bursts (the code's S1 sub-bursts are about 170 ms apart), so the readings cannot produce the
+      paper's unit of a burst; 67 bursts in 11 superbursts is about 6 per superburst. The 12 epochs
+      include a spurious one at 0.7 to 2.4 s. Reading a uses the separate baseline recording for the
+      pre-KA part, which is stated (problem 9).
+    response: Outcome unchanged. A variant outside the criterion merges peaks closer than 250 or 500
+      ms; at 500 ms the median is 7.5 to 10 bursts per epoch (7.5 and 8.0 under reading b) and S1
+      has 60 to 83 bursts. It decides nothing here; whether the criterion's 50 ms merge reads the
+      paper's burst correctly is asked of a reader.
+  - claim: methods-burst-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: S1 gives 124 to 353 bursts (expected 67). S2 values all miss (89 to 157 bursts, a 19 s
+      first epoch, a 486 to 491 s span). Only S1's superburst count (12) and span (344 s) fall in
+      tolerance.
+    response: No change. The burst reading is part of the question to a reader on fig1g.
+  - claim: methods-rate-increase-after-ka
+    agrees: true
+    outcome: not_reproduced
+    reason: The rate falls in both slices under readings b and c, by 0.03 to 0.12 spikes/s per unit;
+      the criterion's partial outcome needs a rise. Readings b and c compare separately curated
+      unit sets on different electrode configurations (887 against 1009 channels for S1), so the
+      comparison is not like for like; the readings come from the claims file (problem 14).
+    response: No change; the notes already say the unit sets were curated separately.
+  - claim: methods-onset-latency
+    agrees: true
+    outcome: blocked
+    reason: Confirmed on the archive that session descriptions are empty, the dandiset has no
+      wasGeneratedBy entry, the description has no KA timing, and the files have no intervals or
+      stimulus series.
+    response: No change.
+  - claim: s4-ka-no-epileptiform
+    agrees: true
+    outcome: not_reproduced
+    reason: S3, S5 and S6 have epochs longer than 10 s under every reading, but the positive control
+      S1 also fails under every reading (longest epoch 8 to 10 s), so the test does not
+      discriminate. The cell drops "synchronized" from the claim; the fraction of units that rise
+      per burst is 0.15 to 0.34 in S3 to S6 against 0.49 to 0.74 in S1 and S2, and the bursts in
+      those slices come from thresholds near noise level. The label stands by the criterion but
+      should be reported as a test that cannot discriminate (problem 1). It asked for a run that
+      keeps only bursts where most units rise.
+    response: Changed to partially_reproduced, resting on an assumption. The test now keeps only
+      synchronized bursts, as the fig1g criterion defines them (more than half of the units rise);
+      S3 to S6 then have none under any reading, while S1 has 77 to 138 and S2 89 to 134. S2 has
+      epochs of 19 s and S1's longest is 8 to 10 s, so the absence holds and the control holds for
+      S2 but not S1, which fits neither the reproduced nor the not-reproduced clause. Fractions of
+      0.4 and 0.6 and the version with every burst kept are shown.
+  - claim: ext3-onset-spectral-signature
+    agrees: false
+    outcome: partially_reproduced
+    reason: At the criterion's onset (0.895 s) the baseline is under 1 s and nothing holds; that
+      stretch sits in the edge region of the 0.5 Hz wavelet, so that run is not a valid failure. At
+      the paper's initiation time (14.4 s, the author's addition) delta rises at 6 of 6 electrodes
+      and broadband amplitude is above 2x at 6 of 6 (2.1 to 3.0), but theta amplitude never reaches
+      2x (at most 1.66). The only valid run uses 14.4 s, which the criterion does not name (problem
+      2). It asked for the criterion's onset under the other three burst readings, with the baseline
+      that exists before it.
+    response: Kept reproduced, resting on the assumption, and the disagreement recorded. The
+      criterion names the theta and the 0.1 to 100 Hz amplitude as readings, and the claim holds at
+      three of three electrodes under the broadband reading; the weak theta rise (at most 1.92
+      times) is stated in the notes as the part of the statement that holds only weakly. Added the
+      criterion's onset under all four readings (0.73 to 0.90 s, with that much baseline, inside
+      the wavelet's 2 s half-width) and the first epoch with 5 s of recording before it, which
+      gives 3 of 3 under reading b (14.98 and 15.05 s) and 0 or 1 under reading a (13.15 and 13.76
+      s). Whether the criterion's onset is the paper's initiation is asked of a reader.
+  - claim: fig1j-theta-propagation-stages
+    agrees: true
+    outcome: not_reproduced
+    reason: Initiation runs 75 to 79 degrees from the layer axis, and initiation versus seizure
+      differ by 4 to 16 degrees. Plane R2 is 0.02 to 0.05 for S1, so the directions carry little
+      information. The baseline window (13.6 to 14.6 s) overlaps initiation (14.4 to 14.91 s) and
+      contains detected bursts at 13.15 and 13.76 s, and the text places the paper's baseline plot
+      at 14.62 s, inside initiation (problem 7). Reversing the hilus assumption makes the
+      seizure-versus-outward angle 7 to 29 degrees, but the initiation conditions still fail
+      (problem 10).
+    response: Baselines are now burst-free stretches just before initiation (S1 12.0 to 13.0 s, S2
+      34.45 to 35.2 s), checked against the bursts of every reading, and the text no longer cites
+      14.62 s. The inward-normal angle (7 to 29 degrees) and an S2 run with a 250 ms initiation
+      window are shown; S1 fails every condition but the baseline one. Outcome unchanged.
+  - claim: ext4b-theta-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: Median lag is -19 to -23 ms against 40 +- 4 ms. 87% of pair lags along the fitted
+      seizure direction are negative, which contradicts the direction itself; with R2 of 0.05 the
+      plane fit means little (problem 10).
+    response: No change; the notes give the sign and the weak fit.
+  - claim: ext4-electrode-lag-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: S1 initiation, S1 seizure and S2 seizure are coherent beyond all shuffles. S3 and S4 are
+      not coherent (0.44 against 0.69 to 0.90). S2 initiation in the code's 94 ms window fails and
+      passes only in the author's own 0.5 s window. S5 and S6 were not tested. The 94 ms window is
+      shorter than one theta cycle (median lag 0, 0.2% of lags at the edge), so k-means on it is
+      meaningless, and whether ext4 is reproduced or partial turns on this (problem 3). It asked
+      for windows of one or more full theta cycles around 35.2 s with their lag-edge fractions.
+    response: Added S2 initiation windows of 250 ms, 500 ms and 1 s from 35.208 s, with lag-edge
+      fractions (11 to 22%); all pass under all five seeds (0.88 to 0.93 against shuffle maxima of
+      0.47 to 0.65). The first part of the criterion then holds; the second is shown for S3 and S4
+      only, as S5 and S6 have no raw recording, so the outcome stays partially reproduced under
+      every window.
+  - claim: methods-rolling-wave-counts
+    agrees: true
+    outcome: blocked
+    reason: The criterion allows blocking. It also names a detector that could be adopted as an
+      assumption, and that was not tried.
+    response: The criterion's detector is now run on S1's first seizure window; of 63 theta cycles
+      none has a plane fit with R2 above 0.5 (largest 0.38), so it finds no rolling wave. It is not
+      adopted, as its reference direction rests on a fit with R2 0.05; outcome unchanged.
+  - claim: fig2a-subbursts-track-theta
+    agrees: true
+    outcome: not_reproduced
+    reason: In S1 the firing difference does not flip (0.22, then 0.91) and theta does not
+      alternate. In S2 firing flips but theta does not. The S2 modes come from the incoherent
+      94 ms clusters, and the S2 sub-burst times (about 30 ms apart) are too close together to
+      track theta; their source in the code was not shown (problem 3).
+    response: The sub-burst times are now printed beside their source lines in the code. With the
+      clusters of the 250 ms S2 window, theta again does not alternate. Outcome unchanged.
+  - claim: table2-phase-locking-counts
+    agrees: false
+    outcome: partially_reproduced
+    reason: Under the code's cycle selection, recordings 1 and 3 match (73, 107), and recordings 2, 4,
+      5 and 6 stay below 10% with the code's spans (8.0, 5.9, 5.7, 5.5%). Recording 2 never reaches
+      14 +- 1.4, and recordings 7 and 8 are untested. Moving the code's spans from file time to
+      sorting time is an inference, plausible; theta is filtered per window, which adds edge
+      effects in 10 s windows (problem 11). It could not check the seizure windows, the code's spans
+      or the thresholds in the repository.
+    response: Kept not_reproduced and recorded the disagreement. The criterion names the Methods'
+      envelope selection as the reading and the code's cycle selection as a variant, as the claims
+      file's opening comment says (the Methods for the main result, the code's choice a variant);
+      under the Methods' selection S1 gives 60 against 70 +- 7, so the partial clause fails. Every
+      window and span is now printed beside its source; the spans are the times in the names of the
+      LFP files the code saved, and the code filters theta within each saved window, as done here.
+  - claim: table2-phase-locking-seizure-vs-not
+    agrees: true
+    outcome: partially_reproduced
+    reason: Seizure mean is 43.0 to 46.9% (in tolerance) and every other value is below 10%. S2
+      outside seizure is 8/180 = 4.44%, the paper's own count, which fails 4 +- 0.4 only through
+      rounding; the tolerance applied to a rounded percentage is a claims-file issue. The others
+      mean covers only 4 of the 6 recordings. The shuffled-spike null gives 10/212 and 15/180, and
+      the paper's 5% outside seizures is the Rayleigh test's nominal false-positive rate (problem 8).
+    response: Outcome unchanged. The tolerance on the rounded 4% is asked of a reader.
+  - claim: fig2b-phase-cluster-kuiper
+    agrees: true
+    outcome: reproduced
+    reason: Reading a with cycle selection gives p = 0.0042, and reading c gives 0.0014. This depends
+      on the code's selection; with the Methods' envelope selection reading a gives p = 0.037, only
+      partial. Split b divides angles by their distance from the mode and then tests the angles, so
+      it is significant by construction (p = 0); a flaw in the claims file's reading, reported
+      without comment (problem 6).
+    response: Outcome unchanged; the notes say it rests on reading b, which cannot fail, or on the
+      code's spike selection. Whether reading b is a reading of the paper is asked of a reader.
+  - claim: fig2c-sttc-two-clusters
+    agrees: true
+    outcome: partially_reproduced
+    reason: S2 holds in 3 of 4 variants. S1 fails in all 4 (Mann-Whitney p 0.20 to 0.59).
+    response: No change.
+  - claim: ext9-sttc-eigenvector-gradient
+    agrees: true
+    outcome: partially_reproduced
+    reason: S2 holds (Spearman p = 4e-13). S1 fails (p = 0.26). The second-eigenvector test is the
+      author's own, outside the criterion, and must not count toward the outcome (problem 12).
+    response: No change; the notes and the notebook say the second eigenvector is a variant outside
+      the criterion, and it does not enter the outcome.
+  - claim: ext9-sttc-beats-correlation
+    agrees: true
+    outcome: reproduced
+    reason: STTC wins on 20 of 20 eigenvalues and 20 of 20 errors.
+    response: No change.
+  - claim: fig3a-significant-pairs
+    agrees: true
+    outcome: reproduced
+    reason: All 8 counts are exact. The STTC helper agrees with a brute-force calculation.
+    response: No change.
+  - claim: fig3a-bipolar-angle-histograms
+    agrees: true
+    outcome: partially_reproduced
+    reason: S1 and S2 are bipolar and no other slice is, under both y directions. S3 and S4 are
+      never unimodal; S5 and S6 fall in their stated class only with y flipped. Unit positions sit
+      on a 17.5 um grid, so many pair angles fall on the 22.5 degree bin edges and mirroring the
+      angles does not mirror the histogram; the markdown says the classes do not change with y
+      flipped, but S4, S5 and S6 change class (problem 5). It asked for the number of angles on
+      bin edges and the classes with the bins offset by half a bin.
+    response: The markdown is corrected. Added the count of angles on bin edges (8 to 24% of the
+      weight) and the classes with the bins shifted by half a bin under both y directions; S1 and S2
+      stay bipolar and no other slice is bipolar under all four, so the outcome is unchanged.
+  - claim: ext10-baseline-same-circuit
+    agrees: true
+    outcome: reproduced
+    reason: Both baselines are bipolar, with modes 0 to 22 degrees from the KA modes.
+    response: No change.
+  - claim: table3-geometry-test
+    agrees: true
+    outcome: reproduced
+    reason: With y as stored 8 of 8 are in tolerance, and S1 KA gives p = 9.66e-20.
+    response: No change.
+  - claim: ext12-simulation-recurrence
+    agrees: true
+    outcome: blocked
+    reason: The notebook gives no reason beyond "see the attempt record". The claim needs only the
+      repository's simulation code, not the dandiset, so it looks testable (problem 4). It gave
+      blocked with the reason other, where the record has not_runnable.
+    response: Kept not_runnable. The spike notebook now has a section that states the reason and
+      prints the simulation's environment (conda-forge nest-simulator 3.4 and nestml 5, which the
+      registry's pip lock cannot hold) and the model's first line, whose keyword NESTML 9 does not
+      parse; the trials with the PyPI NEST 3.10 were made while preparing and are said to be run
+      outside the notebook.

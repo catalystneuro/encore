@@ -69,6 +69,31 @@ def _fetch(path):
     return r.content
 
 
+def code_lines(path, pattern):
+    """Lines of a notebook of the paper's repository (at CODE_COMMIT) that match a regular
+    expression, as (cell index, line number in the cell, text), so that a value taken from the
+    code can be printed beside its source."""
+    import json
+    import re
+    nb = json.loads(_fetch(path))
+    out = []
+    for i, c in enumerate(nb["cells"]):
+        if c["cell_type"] != "code":
+            continue
+        for j, line in enumerate("".join(c["source"]).splitlines()):
+            if re.search(pattern, line):
+                out.append((i, j + 1, line.strip()))
+    return out
+
+
+def code_tree():
+    """Paths of all files in the paper's repository at CODE_COMMIT (GitHub API)."""
+    r = requests.get(f"https://api.github.com/repos/braingeneers/human_hippocampus/git/trees/{CODE_COMMIT}?recursive=1",
+                     timeout=120)
+    r.raise_for_status()
+    return [x["path"] for x in r.json()["tree"]]
+
+
 def _load_acqm(b):
     z = zipfile.ZipFile(io.BytesIO(b))
     d = np.load(z.open([n for n in z.namelist() if n.endswith(".npz")][0]), allow_pickle=True)
@@ -329,17 +354,21 @@ def burst_synchrony(trains, burst_times_s, length_ms, half_window_ms=50.0):
 
 # ---------------------------------------------------------------- link of sortings to raw files
 
-def offset_scan(asset_id, sorting, n_units=3):
+def offset_scan(asset_id, sorting, n_units=3, t0=None, t1=None):
     """Find where a sorting sits in a raw file: for the n most active units, the high-passed
     (300 to 6000 Hz) trace of the electrode nearest the unit is correlated with the unit's spike
-    train at every offset (FFT); a sorting from this file gives a sharp negative peak (the spike
-    trough) at its offset. Returns (offset_s, peak_score, null_score), scores in units of the
-    median absolute deviation of the correlation, summed over units; null_score is the 100th most
-    negative value, the level of chance alignments."""
+    train at every offset (FFT, full mode, so that a file holding only part of the sorting's span
+    is also found); a sorting from this file gives a sharp negative peak (the spike trough) at its
+    offset. Returns (offset_s, peak_score, null_score), scores in units of the median absolute
+    deviation of the correlation, summed over units; null_score is the 100th most negative value,
+    the level of chance alignments. t0, t1 (s) restrict the scan to part of the file; the offset is
+    then relative to t0."""
     sos = signal.butter(3, [300, 6000], btype="band", fs=FS, output="sos")
     f = open_nwb(asset_id)
     e = electrodes(f)
     d = f["acquisition/ElectricalSeries/data"]
+    i0 = 0 if t0 is None else int(t0 * FS)
+    i1 = d.shape[0] if t1 is None else int(t1 * FS)
     trains = sorting["trains"]
     top = np.argsort([len(t) for t in trains])[::-1][:n_units]
     L = int(max(t[-1] for t in trains if len(t)) * FS / 1000) + 2
@@ -347,7 +376,7 @@ def offset_scan(asset_id, sorting, n_units=3):
     for u in top:
         x, y = sorting["pos"][u]
         col = int(np.argmin((e.x - x) ** 2 + (e.y - y) ** 2))
-        v = d[:, col].astype(np.float32)
+        v = d[i0:i1, col].astype(np.float32)
         v = signal.sosfiltfilt(sos, v - v.mean()).astype(np.float32)
         ind = np.zeros(L, np.float32)
         ind[np.round(trains[u] * FS / 1000).astype(int)] = 1
