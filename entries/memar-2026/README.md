@@ -4,15 +4,16 @@ Tests the iEEG findings of [Ostadsharif Memar & Dehghani (2026)](https://doi.org
 "Spatially Masked Regression Reveals Local and Distributed Predictability in Electrophysiological
 Recordings", on [DANDI:000055](https://dandiarchive.org/dandiset/000055/0.220127.0436) (AJILE12), which
 holds the intracranial recordings and wrist movement events of the paper's 12 subjects. The paper's
-scalp EEG dataset is not in the dandiset.
+scalp EEG dataset is not in the dandiset. The trials are built from the `ReachEvents` times: in three
+files the `reaches` table is offset from the recording's clock by the session's start time.
 
 | Claim | Outcome |
 |---|---|
 | Intra-subject iEEG DistCorr 0.553 ± 0.068 | Reproduced |
 | Intra-subject values per subject (Table II) | Partially reproduced |
-| Cross-subject iEEG DistCorr 0.389 ± 0.064 | Reproduced |
+| Cross-subject iEEG DistCorr 0.389 ± 0.064 | Reproduced (on preprocessing before segmentation) |
 | Cross-subject values per subject (Table II) | Not reproduced |
-| Cross-subject below intra-subject | Reproduced |
+| Cross-subject below intra-subject | Reproduced (on preprocessing before segmentation) |
 | DistCorr falls as more of the neighbourhood is masked | Reproduced |
 | Reconstruction stays above zero with the neighbourhood masked | Reproduced (on an assumed reading) |
 | All > Local > Non-local electrodes as predictors | Not reproduced |

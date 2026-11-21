@@ -3,9 +3,12 @@ Regression", on AJILE12 (DANDI:000055).
 
 Where each parameter comes from:
 
-- Trials. 2 s windows centred on the start of each wrist movement event of the `reaches` table
-  (the same times as processing/behavior/ReachEvents), every session of a subject pooled. Claims
-  file, opening comment, "Which movement events", reading (a), and "Which recording days".
+- Trials. 2 s windows centred on each wrist movement event of processing/behavior/ReachEvents,
+  every session of a subject pooled. Claims file, opening comment, "Which movement events",
+  reading (a), and "Which recording days". The `reaches` table holds the same times within 1 ms
+  except in three files, where every one of its times is later by the time from 19:00 of the
+  previous day to the session start (8.1 to 8.5 h) and events fall after the recording's end; the
+  clock check in the main notebook shows that ReachEvents is on the recording's clock there.
 - Preprocessing. The steps and their order are the paper's (Methods II A a): DC removal and linear
   detrending, 0.5 to 150 Hz Butterworth band-pass, 60 Hz notch, 120 Hz low-pass, |z| > 5 replaced
   by the channel median, common average reference, per-channel z-scoring across time. Filter
@@ -44,7 +47,15 @@ Where each parameter comes from:
   code's one per lag (a standard choice; a sum of biases is one bias).
 - Surrogates. Per trial and channel (Algorithm 4; Load_preprocess_data): phase permutation with
   Hermitian symmetry and DC kept (shuffle_phase), IAAFT with 5 iterations (iaaft_1d), blocks of
-  0.5 s (block_shuffle_1d default).
+  0.5 s (block_shuffle_1d default). End-matched phase surrogate (claims file, surrogate-ieeg,
+  reading b): each series is cut to the 900-sample segment, of the 101 that fit in the 2 s trial,
+  whose first and last values and first and last slopes differ least (squared jumps, each scaled
+  by the series' variance or the variance of its differences; the end-point mismatch of Schreiber
+  and Schmitz 2000, Physica D 142, 346), then phase shuffled. The fixed length keeps the trials
+  equal in length; the 0.2 s of slack is a standard choice.
+- Parallel fits. Each subject's fit runs in its own forked process with one linear-algebra
+  thread; each subject's generator is seeded from the claim's generator, so the result does not
+  depend on the order in which the processes finish.
 - Cross-subject (Methods II D 2, Algorithm 2; Test_new_subject_iEEG.py): see `cross_subject`.
 """
 from __future__ import annotations
@@ -139,7 +150,14 @@ def _read_event(i0):
     return a.astype(np.float32), b.astype(np.float32), False, None
 
 
-def load_session(asset_id, workers=32):
+def event_times(f, source="ReachEvents"):
+    """Movement event times of an open file, sorted: ReachEvents (used) or the reaches table."""
+    if source == "reaches":
+        return np.sort(f["intervals/reaches/start_time"][:])
+    return np.sort(f["processing/behavior/ReachEvents/timestamps"][:])
+
+
+def load_session(asset_id, workers=32, source="ReachEvents"):
     """Events of one session, preprocessed under both readings.
 
     Returns dict with 'a' and 'b' (trials, channels, time) float32, the event times kept, the
@@ -149,8 +167,9 @@ def load_session(asset_id, workers=32):
     url = s3_url(asset_id)
     f = h5py.File(remfile.File(url), "r")
     n_samp = f["acquisition/ElectricalSeries/data"].shape[0]
-    t = f["intervals/reaches/start_time"][:]
-    i0 = np.round(t * FS).astype(int)
+    st = float(f["acquisition/ElectricalSeries/starting_time"][()])
+    t = event_times(f, source)
+    i0 = np.round((t - st) * FS).astype(int)
     keep = (i0 - HALF - PAD >= 0) & (i0 + HALF + PAD <= n_samp)
     with ProcessPoolExecutor(workers, initializer=_init_worker, initargs=(url,)) as ex:
         # consecutive events to the same worker, so events in the same HDF5 chunk share its cache
@@ -183,13 +202,17 @@ def load_subject(sub, readings=("a", "b"), workers=32):
     ss = [a for a in assets() if a["path"].startswith(sub + "/")]
     out = {r: [] for r in readings}
     info = []
-    for a in ss:
+    times, sess = [], []
+    for k, a in enumerate(ss):
         s = load_session(a["asset_id"], workers)
         for r in readings:
             out[r].append(s[r].astype(np.float16 if r == "b" else np.float32))
+        times.append(s["times"])
+        sess.append(np.full(len(s["times"]), k))
         info.append(dict(path=a["path"], trials=len(s["times"]), dropped_edge=s["dropped"],
                          dropped_nan=s["nan_pad"], nan_in_epoch=s["nan_epoch"]))
     res = {r: np.concatenate(v) for r, v in out.items()}
+    res["times"], res["session"] = np.concatenate(times), np.concatenate(sess)
     res["el"] = electrodes(ss[0]["asset_id"])
     res["sessions"] = info
     return res
@@ -343,13 +366,14 @@ def _dcor_chunk(args):
 
 
 _POOL = {}
+SERIAL = False      # set in the forked workers of `parallel`, which score in their own process
 
 
 def dcor_rows(u, v, workers=4):
     """Distance correlation of each row pair (Eqs. 8 to 14); 0 where a row is constant."""
     u = np.ascontiguousarray(u, dtype=np.float64)
     v = np.ascontiguousarray(v, dtype=np.float64)
-    if len(u) < 400:
+    if len(u) < 400 or SERIAL:
         out = _dcor_chunk((u, v))
     else:
         if "p" not in _POOL:
@@ -374,7 +398,7 @@ def run_smr(x, nbr, m, rng, *, lagged=False, decim=1, rule="ceil", mode="mask", 
     """One intra-subject SMR run. x: preprocessed trials (trials, ch, time), not yet z-scored
     across trials; rng: the claim's generator (mask draws, initial weights, batch order).
     Returns per-electrode test DistCorr, W, b, and fit diagnostics."""
-    xz = zscore_trials(x)
+    xz = zscore_trials(np.asarray(x, np.float32))
     tr, va, te = split_64_16_20(len(x), split_seed)
     allow = mask_matrix(nbr, m, rng, rule=rule, mode=mode)
     W, b, best_ep, n_ep = fit_smr(xz, tr, va, allow, rng, lagged=lagged, decim=decim,
@@ -382,6 +406,39 @@ def run_smr(x, nbr, m, rng, *, lagged=False, decim=1, rule="ceil", mode="mask", 
     xhat = predict(xz[te], W, b, lagged)
     dc = score(xz[te], xhat, np.arange(len(te)))
     return dict(dc=dc, W=W, b=b, best_ep=best_ep, n_ep=n_ep, allow=allow)
+
+
+# ----------------------------------------------------------------------------- parallel fits
+_JOBS = {}
+
+
+def _run_job(k):
+    global SERIAL
+    SERIAL = True
+    fn, args, kw = _JOBS["jobs"][k]
+    return fn(*args, **kw)
+
+
+def parallel(jobs, workers=3):
+    """Run jobs, each (function, args, kwargs), in forked processes, which see the parent's
+    arrays without copying them. Set OPENBLAS_NUM_THREADS=1 before numpy is imported."""
+    import ctypes
+    import gc
+    import multiprocessing as mp
+    if "p" in _POOL:
+        _POOL.pop("p").shutdown()
+    gc.collect()
+    ctypes.CDLL("libc.so.6").malloc_trim(0)     # return freed memory before forking
+    _JOBS["jobs"] = jobs
+    with ProcessPoolExecutor(workers, mp_context=mp.get_context("fork")) as ex:
+        out = list(ex.map(_run_job, range(len(jobs))))
+    _JOBS.clear()
+    return out
+
+
+def run_surrogate(x, kind, nbr, m, rng, **kw):
+    """Surrogate of x drawn with rng, then one SMR run on it with the same generator."""
+    return run_smr(surrogate(x, kind, rng), nbr, m, rng, **kw)
 
 
 # ----------------------------------------------------------------------------- surrogates
@@ -420,25 +477,53 @@ def block_shuffle(sig, rng, block=250):
     return np.concatenate([out, sig[-rem:]]) if rem else out
 
 
-def surrogate(x, kind, rng, batch=20000):
+END_SLACK = 100      # end-matched segments are 1000 - 100 = 900 samples long
+
+
+def _phase_rows(r, rng):
+    n = r.shape[1]
+    F = np.fft.fft(r, axis=1)
+    amp, ph = np.abs(F), np.angle(F)
+    pos = np.arange(1, n // 2)
+    rp = rng.permuted(ph[:, pos], axis=1)
+    ph[:, pos] = rp
+    ph[:, n - pos] = -rp
+    return np.fft.ifft(amp * np.exp(1j * ph), axis=1).real
+
+
+def end_matched(r, slack=END_SLACK):
+    """Per row, the segment of length n - slack whose end points match best: the squared jump in
+    value (scaled by the row's variance) plus the squared jump in slope (scaled by the variance of
+    the differences), minimised over the slack + 1 start positions. Returns segments and starts."""
+    n = r.shape[1]
+    L = n - slack
+    d = np.diff(r, axis=1)
+    v = r.var(1, keepdims=True)
+    dv = d.var(1, keepdims=True)
+    v[v == 0], dv[dv == 0] = 1, 1
+    s = np.arange(slack + 1)
+    jump = (r[:, s] - r[:, s + L - 1]) ** 2 / v + (d[:, s] - d[:, s + L - 2]) ** 2 / dv
+    st = jump.argmin(1)
+    return np.take_along_axis(r, st[:, None] + np.arange(L), 1), st
+
+
+def surrogate(x, kind, rng, batch=5000):
     """Surrogate of every trial and channel independently (Algorithm 4), vectorised over rows:
     the same operations as `shuffle_phase`, `iaaft` and `block_shuffle`, with each row's
     permutation drawn by `rng.permuted` (the draws differ from a per-row loop; a standard choice).
+    kind 'phase_end' is the end-matched phase surrogate, END_SLACK samples shorter.
     x: (trials, ch, time)."""
     shp = x.shape
-    rows = x.reshape(-1, shp[-1]).astype(np.float64)
-    out = np.empty_like(rows)
+    rows = x.reshape(-1, shp[-1])
     n = shp[-1]
+    n_out = n - END_SLACK if kind == "phase_end" else n
+    out = np.empty((len(rows), n_out), np.float32)
     for s in range(0, len(rows), batch):
-        r = rows[s:s + batch]
+        r = rows[s:s + batch].astype(np.float64)
         if kind == "phase":
-            F = np.fft.fft(r, axis=1)
-            amp, ph = np.abs(F), np.angle(F)
-            pos = np.arange(1, n // 2)
-            rp = rng.permuted(ph[:, pos], axis=1)
-            ph[:, pos] = rp
-            ph[:, n - pos] = -rp
-            out[s:s + batch] = np.fft.ifft(amp * np.exp(1j * ph), axis=1).real
+            out[s:s + batch] = _phase_rows(r, rng)
+        elif kind == "phase_end":
+            out[s:s + batch] = _phase_rows(end_matched(r)[0], rng)
         elif kind == "iaaft":
             srt = np.sort(r, axis=1)
             mag = np.abs(np.fft.fft(r, axis=1))
@@ -456,7 +541,7 @@ def surrogate(x, kind, rng, batch=20000):
             if rem:
                 idx = np.concatenate([idx, np.broadcast_to(np.arange(nb * B, n), (len(r), rem))], 1)
             out[s:s + batch] = np.take_along_axis(r, idx, axis=1)
-    return out.reshape(shp).astype(np.float32)
+    return out.reshape(shp[:-1] + (n_out,))
 
 
 # ----------------------------------------------------------------------------- cross-subject
@@ -467,8 +552,10 @@ def corr_matrix_paired(xs, xd):
     acc = np.zeros((xs.shape[1], xd.shape[1]))
     cnt = np.zeros_like(acc)
     for t in range(r):
-        a = xs[t] - xs[t].mean(1, keepdims=True)
-        c = xd[t] - xd[t].mean(1, keepdims=True)
+        a = xs[t].astype(np.float64)
+        c = xd[t].astype(np.float64)
+        a = a - a.mean(1, keepdims=True)
+        c = c - c.mean(1, keepdims=True)
         na, nc = np.linalg.norm(a, axis=1), np.linalg.norm(c, axis=1)
         with np.errstate(invalid="ignore", divide="ignore"):
             C = (a @ c.T) / np.outer(na, nc)
@@ -485,7 +572,7 @@ def corr_matrix_concat(xs, xd):
     a = xs.transpose(1, 0, 2).reshape(xs.shape[1], -1)
     c = xd.transpose(1, 0, 2).reshape(xd.shape[1], -1)
     L = min(a.shape[1], c.shape[1])
-    a, c = a[:, :L], c[:, :L]
+    a, c = a[:, :L].astype(np.float32), c[:, :L].astype(np.float32)
     a = a - a.mean(1, keepdims=True)
     c = c - c.mean(1, keepdims=True)
     return (a @ c.T) / np.outer(np.linalg.norm(a, axis=1), np.linalg.norm(c, axis=1))
@@ -522,7 +609,8 @@ def cross_subject(target, donors, which_c="all", corr="paired", split_seed=42):
     from sklearn.model_selection import train_test_split
     idx = np.arange(len(target))
     va, te = train_test_split(idx, test_size=0.5, random_state=split_seed)
-    vmean, tmean = target[va].mean(0), target[te].mean(0)
+    vmean = target[va].astype(np.float64).mean(0)
+    tmean = target[te].astype(np.float64).mean(0)
     n = target.shape[1]
     val_dc = np.full((len(donors), n), np.nan)
     test_dc = np.full((len(donors), n), np.nan)
@@ -550,20 +638,33 @@ def survey_file(a):
     el = f["general/extracellular_ephys/electrodes"]
     xyz = np.c_[el["x"][:], el["y"][:], el["z"][:]]
     loc = sorted({s.decode() for s in el["location"][:]})
+    reaches = f["intervals/reaches/start_time"][:]
+    rev = f["processing/behavior/ReachEvents/timestamps"][:]
+    diff = reaches - rev
+    labels = [s.decode() for s in f["intervals/epochs/labels"][:]]
+    dur = f["intervals/epochs/stop_time"][:] - f["intervals/epochs/start_time"][:]
+    start = f["session_start_time"][()]
+    start = start.decode() if isinstance(start, bytes) else str(start)
     return dict(path=a["path"], subject=a["path"].split("/")[0], samples=es["data"].shape[0],
                 channels=es["data"].shape[1], rate=float(es["starting_time"].attrs["rate"]),
                 conversion=float(es["data"].attrs["conversion"]), unit=es["data"].attrs["unit"],
                 hours=es["data"].shape[0] / float(es["starting_time"].attrs["rate"]) / 3600,
+                starting_time=float(es["starting_time"][()]), session_start=start,
                 reaches=len(f["intervals/reaches/start_time"]),
                 reach_events=len(f["processing/behavior/ReachEvents/timestamps"]),
                 good=int(el["good"][:].sum()), no_coords=int(np.isnan(xyz).any(1).sum()),
                 x_pos=int((xyz[:, 0] > 0).sum()), x_neg=int((xyz[:, 0] < 0).sum()),
-                locations=",".join(loc), times=f["intervals/reaches/start_time"][:],
-                reaches_after_end=int((f["intervals/reaches/start_time"][:] * FS
-                                       >= es["data"].shape[0]).sum()),
-                reach_vs_events_max_diff_s=float(np.abs(
-                    f["intervals/reaches/start_time"][:]
-                    - f["processing/behavior/ReachEvents/timestamps"][:]).max()))
+                locations=",".join(loc), times=np.sort(rev),
+                reaches_after_end=int((reaches * FS >= es["data"].shape[0]).sum()),
+                events_after_end=int((rev * FS >= es["data"].shape[0]).sum()),
+                reach_vs_events_max_diff_s=float(np.abs(diff).max()),
+                n_differ=int((np.abs(diff) > 0.01).sum()),
+                offsets_s=sorted({round(float(v), 1) for v in diff[np.abs(diff) > 0.01]}),
+                epochs=len(labels),
+                sleep_rest_n=labels.count("Sleep/rest"), inactive_n=labels.count("Inactive"),
+                sleep_rest_h=float(dur[[l == "Sleep/rest" for l in labels]].sum() / 3600),
+                inactive_h=float(dur[[l == "Inactive" for l in labels]].sum() / 3600),
+                label_set=sorted(set(labels)))
 
 
 def survey(workers=16):
@@ -596,6 +697,19 @@ def clock_check(x, rng, n_perm=200):
     obs, t = tmax(d)
     null = np.array([tmax(d * rng.choice([-1, 1], (len(d), 1)))[0] for _ in range(n_perm)])
     return obs, np.percentile(null, 95), int((np.abs(t) > 4).sum()), t
+
+
+def overlap(times, session, idx_a=None, idx_b=None, width=2 * HALF / FS):
+    """Fraction of trials (of idx_a, default all) whose window overlaps the window of another
+    trial (of idx_b, default all) in the same session."""
+    n = len(times)
+    idx_a = np.arange(n) if idx_a is None else idx_a
+    idx_b = np.arange(n) if idx_b is None else idx_b
+    hit = np.zeros(len(idx_a), bool)
+    for k, i in enumerate(idx_a):
+        j = idx_b[(session[idx_b] == session[i]) & (idx_b != i)]
+        hit[k] = (np.abs(times[j] - times[i]) < width).any()
+    return hit.mean()
 
 
 def drop_uncoordinated(S):

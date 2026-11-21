@@ -2,7 +2,7 @@ schema_version: 3
 id: memar-2026-01
 datasets:
 - archive: dandi
-  id: "000055"
+  id: '000055'
   version: 0.220127.0436
   doi: 10.48324/dandi.000055/0.220127.0436
   relation: reuses
@@ -21,13 +21,11 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/44898633044
 inputs:
-- what: Method details the claims file does not give, read from the paper's code. The filter orders
-    of the preprocessing (4th-order Butterworth, zero phase, notch Q of 30; utils.preprocess_iEEG),
-    PyTorch's default Adam and nn.Linear settings that train.py uses, and the cross-subject
-    evaluation on stored trials that are not z-scored across trials (Test_new_subject_iEEG.py,
-    lines 101 to 161). No data come from the code.
-  source: https://github.com/neurovium/SpatiallyMaskedRegression at commit
-    244dcdbd67f217873c2a52b77485d97c6fa9bf0e
+- what: Method details the claims file does not give, read from the paper's code. The filter orders of the preprocessing
+    (4th-order Butterworth, zero phase, notch Q of 30; utils.preprocess_iEEG), PyTorch's default Adam and nn.Linear
+    settings that train.py uses, and the cross-subject evaluation on stored trials that are not z-scored across
+    trials (Test_new_subject_iEEG.py, lines 101 to 161). No data come from the code.
+  source: https://github.com/neurovium/SpatiallyMaskedRegression at commit 244dcdbd67f217873c2a52b77485d97c6fa9bf0e
 outcomes:
 - claim: intra-ieeg-mean
   outcome: reproduced
@@ -36,177 +34,234 @@ outcomes:
   output: claim:intra-ieeg-mean
   measured:
   - 0.602
-  notes: Mean over the 12 subjects of the per-electrode mean of per-trial test DistCorr at m = 1.0,
-    0.602 ± 0.058 under reading (a) (preprocessing before segmentation, approximated with padded
-    windows) and 0.570 ± 0.066 under reading (b) (preprocessing per epoch); both are within
-    0.553 ± 0.068. Under the claim's seed plus 0, 1000, 2000, 3000 and 4000 (each also setting the
-    split) the reading (a) mean ranges from 0.598 to 0.602, and per subject by at most 0.033.
-    7718 trials over 55 sessions. The atlas neighbourhood variant could not be run, as no
-    electrode has an anatomical label; m = 0 gives 0.712 (masking_coverage.ipynb); the round rule
-    does not change m = 1.0.
+  notes: 'Mean over the 12 subjects of the per-electrode mean of per-trial test DistCorr at m = 1.0, 0.602 ± 0.057
+    under preprocessing reading (a) (before segmentation, approximated with padded windows) and 0.571 ± 0.065 under
+    reading (b) (per epoch); both are within 0.553 ± 0.068. Under the claim''s seed plus 0, 1000, 2000, 3000 and
+    4000 (each also setting the split) the reading (a) mean ranges from 0.598 to 0.602, and per subject by at most
+    0.033. 7957 trials over 55 sessions. Variants: the atlas neighbourhood could not be run, as no electrode has
+    an anatomical label; m = 0 gives 0.714 (a) and 0.659 (b), outside the tolerance (masking_coverage.ipynb); the
+    round rule masks the same 9 neighbours at m = 1.0. The SD across electrodes (0.108 and 0.111 on average) is
+    about three times Table II''s (0.034), a sign that the pipelines differ.'
   deviations:
-  - The trials are 2 s windows centred on each start time of the reaches table, every session of a
-    subject pooled (claims file, readings (a) for the events and the days). Reading (b) for the
-    events, movement together with rest trials, was not run; the paper and its code do not define
-    rest trials (the code's unused DANDI path places all of them at 0.5 s).
-  - Preprocessing the whole recording (reading a) would mean reading 845 GB; each event is read with
-    5 s of padding on each side and filtered, and the statistics of the |z| > 5 step and the
-    z-scoring are taken over the session's event windows. An approximation of reading (a).
-  - Filter orders (4th-order Butterworth, filtfilt, notch Q 30) from the code
-    (utils.preprocess_iEEG), which the Methods do not give.
-  - For time, the gradient steps and the validation loss use every 10th sample of each trial, and
-    training stops at 200 epochs (the code allows 10000 with a patience of 200). On sub-07 the mean
-    score is 0.6453 under this setting, 0.6454 with early stopping up to 3000 epochs and 0.6456
-    with every sample for 100 epochs (surrogates_lagged.ipynb). The median epoch of the best
-    validation loss is 72 to 139 per subject.
-  - All electrodes are trained at once as independent rows of one matrix, so the batch order is
-    shared across electrodes; each row has its own loss, Adam state and early-stopping checkpoint.
-  - Electrodes without MNI coordinates (8 in sub-12) are left out, as they have no (x, z)
-    neighbourhood; events whose padded window holds NaN samples (132) or runs past the start or end of
-    the recording (238) are left out. The paper names no exclusion.
+  - 'The trials are 2 s windows centred on each wrist movement event of ReachEvents, every session of a subject
+    pooled (claims file, readings (a) for the events and the days). The first run used the reaches table, which
+    in three files is not on the recording''s clock (findings); 7957 trials are kept. Movement-event reading (b),
+    movement and rest trials, was not run: the paper and its code do not define rest trials, and the dataset''s
+    epochs table labels only coarse behaviour (Sleep/rest, Inactive, TV and so on) over intervals of seconds to
+    hours, so any rule for drawing rest trials from it would be this attempt''s invention.'
+  - Preprocessing the whole recording (reading a) would mean reading 845 GB; each event is read with 5 s of padding
+    on each side and filtered, and the statistics of the |z| > 5 step and the z-scoring are taken over the session's
+    event windows. An approximation of reading (a).
+  - Filter orders (4th-order Butterworth, filtfilt, notch Q 30) from the code (utils.preprocess_iEEG), which the
+    Methods do not give.
+  - For time, the gradient steps and the validation loss use every 10th sample of each trial, and training stops
+    at 200 epochs (the code allows 10000 with a patience of 200). On sub-07 the mean score changes by at most 0.0002
+    for the instantaneous model (up to 3000 epochs, or every sample for 100 epochs) and for the lagged, Local and
+    phase-surrogate fits (up to 1000 epochs) (surrogates_lagged.ipynb). The median epoch of the best validation
+    loss is 80 to 117 per subject.
+  - All electrodes are trained at once as independent rows of one matrix, so the batch order is shared across electrodes;
+    each row has its own loss, Adam state and early-stopping checkpoint. Subjects are fitted in parallel processes,
+    each with a generator seeded from the claim's.
+  - Electrodes without MNI coordinates (16 in sub-03, 8 in sub-12) are left out, as they have no (x, z) neighbourhood;
+    events whose padded window holds NaN samples (131) are left out. The paper names no exclusion. The reading (b)
+    trials are held as float16 between loading and fitting.
 - claim: table2-ieeg-intra-subjects
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_memar_2026.ipynb
   output: claim:table2-ieeg-intra-subjects
-  measured: [0.561, 0.669, 0.600, 0.485, 0.559, 0.431, 0.616, 0.493, 0.612, 0.589, 0.593, 0.634]
-  notes: Under reading (b) 8 of 12 subject values are within the table's SD across electrodes
-    (sub-01, 02, 04, 06, 08, 09, 10, 11), Spearman rho 0.78 (p = 0.003), range 0.431 to 0.669
-    against 0.428 to 0.647; these are the values given as measured. Under reading (a) 4 of 12 are
-    within (sub-01, 09, 10, 11), rho 0.71 (p = 0.009), range 0.501 to 0.718. The misses are mostly
-    above the table (sub-03 +0.065, sub-05 +0.035 and sub-07 +0.085 under reading b). The outcome
-    rests on reading (b) of where preprocessing is applied, and on row n of Table II being sub-n.
+  measured:
+  - 0.562
+  - 0.669
+  - 0.598
+  - 0.481
+  - 0.559
+  - 0.439
+  - 0.616
+  - 0.495
+  - 0.613
+  - 0.589
+  - 0.593
+  - 0.634
+  notes: Under preprocessing reading (b) 8 of 12 subject values are within the table's SD across electrodes (sub-01,
+    02, 04, 06, 08, 09, 10, 11), Spearman rho 0.78 (p = 0.003), range 0.439 to 0.669 against 0.428 to 0.647; these
+    are the values given as measured. Under reading (a) 4 of 12 are within (sub-01, 09, 10, 11), rho 0.71 (p = 0.009),
+    range 0.504 to 0.718. The misses are mostly above the table (sub-03 +0.063, sub-05 +0.035 and sub-07 +0.085
+    under reading b). The outcome rests on reading (b) of where preprocessing is applied, on movement-event reading
+    (a), and on row n of Table II being sub-n.
   deviations:
-  - As intra-ieeg-mean. The subject order is the claims file's reading; the paper gives no
-    identifiers in Table II.
+  - As intra-ieeg-mean. The subject order is the claims file's reading; the paper gives no identifiers in Table
+    II.
 - claim: cross-ieeg-mean
   outcome: reproduced
   notebook: reproduce_memar_2026.ipynb
   output: claim:cross-ieeg-mean
   measured:
-  - 0.351
-  notes: With C from all of the target's trials and Eq. 3 (paired trials), the mean over subjects is
-    0.351 ± 0.105; with the validation trials only 0.339, and with the code's concatenated
-    correlation 0.350 (all) and 0.347 (validation). All four are within 0.389 ± 0.064. Every
-    electrode of every target was matched to a donor electrode in at least one donor. Donor
-    matrices are the reading (a) m = 1.0 weights.
+  - 0.352
+  notes: With preprocessing reading (a), C from all of the target's trials and Eq. 3 (paired trials), the mean over
+    subjects is 0.352 ± 0.105; with the validation trials only 0.352, and with the code's concatenated correlation
+    0.357 (all) and 0.356 (validation). All four are within 0.389 ± 0.064. With preprocessing reading (b) (donor
+    weights and target trials both per-epoch) the mean is 0.315 to 0.318, outside the tolerance; under reading (b)
+    the paired and concatenated correlations are equal, as every epoch has mean 0 and SD 1. The outcome rests on
+    preprocessing reading (a). Every electrode of every target was matched to a donor electrode. The SD across electrodes
+    per subject is 0.13 to 0.20, against 0.004 to 0.016 in Table II.
   deviations:
-  - The target's trials enter as stored after preprocessing, not z-scored across trials, as the
-    paper's evaluation script averages the stored trials (Test_new_subject_iEEG.py, lines 101 to
-    106; the Methods say only that the trial averages are z-scored).
-  - Inherits the trial definition and speed deviations of intra-ieeg-mean through the donor
-    matrices.
+  - The target's trials enter as stored after preprocessing, not z-scored across trials, as the paper's evaluation
+    script averages the stored trials (Test_new_subject_iEEG.py, lines 101 to 106; the Methods say only that the
+    trial averages are z-scored).
+  - 'Inherits the trial definition and speed deviations of intra-ieeg-mean through the donor matrices. Movement-event
+    reading (b), movement and rest trials, was not run: the paper and its code do not define rest trials, and the
+    dataset''s epochs table labels only coarse behaviour (Sleep/rest, Inactive, TV and so on) over intervals of
+    seconds to hours, so any rule for drawing rest trials from it would be this attempt''s invention.'
+  assumed: true
 - claim: table2-ieeg-cross-subjects
   outcome: not_reproduced
   notebook: reproduce_memar_2026.ipynb
   output: claim:table2-ieeg-cross-subjects
-  measured: [0.290, 0.386, 0.344, 0.272, 0.269, 0.280, 0.467, 0.279, 0.289, 0.332, 0.354, 0.647]
-  notes: No subject value is within the table's SD under any of the four readings (0 of 12); the
-    tolerances are 0.004 to 0.016. The Spearman rho with Table II is 0.17 (p = 0.60) for the first
-    reading and 0.16 to 0.28 for the others. The largest differences are sub-12 (0.647 against
-    0.340) and sub-05 (0.269 against 0.509). The values given are the first reading's.
+  measured:
+  - 0.305
+  - 0.368
+  - 0.351
+  - 0.252
+  - 0.267
+  - 0.289
+  - 0.471
+  - 0.268
+  - 0.325
+  - 0.331
+  - 0.352
+  - 0.646
+  notes: At most 1 subject value of 12 is within the table's SD under each of the eight readings (two preprocessing
+    readings by four of C); the tolerances are 0.004 to 0.016. The Spearman rho with Table II is 0.27 (p = 0.39)
+    for the first reading and 0.08 to 0.27 for the others. The largest differences are sub-12 (0.646 under a, 0.480
+    under b, against 0.340) and sub-05 (0.267 against 0.509). The values given are preprocessing (a), all trials,
+    paired. Movement-event reading (b) was not run, so the outcome rests on reading (a) of the events.
+  assumed: true
+  deviations:
+  - 'Movement-event reading (b), movement and rest trials, was not run: the paper and its code do not define rest
+    trials, and the dataset''s epochs table labels only coarse behaviour (Sleep/rest, Inactive, TV and so on) over
+    intervals of seconds to hours, so any rule for drawing rest trials from it would be this attempt''s invention.'
 - claim: cross-below-intra-ieeg
   outcome: reproduced
   notebook: reproduce_memar_2026.ipynb
   output: claim:cross-below-intra-ieeg
-  notes: The cross-subject average (0.351) is below the intra-subject average (0.602, reading a),
-    and cross-ieeg-mean is reproduced. 11 of 12 subjects have cross below intra with the paired
-    correlation, 12 of 12 with the concatenated one; sub-12 is the exception (0.647 against
-    0.639).
+  notes: Under preprocessing reading (a) the cross-subject average (0.352) is below the intra-subject average (0.602),
+    and cross-ieeg-mean is reproduced; 11 of 12 subjects have cross below intra with all trials and the paired correlation
+    (sub-12 0.646 against 0.639), 12 of 12 under the other three. Under reading (b) cross (0.315 to 0.318) is below
+    intra (0.571) in 12 of 12 subjects, but cross-ieeg-mean is not met there, which would make it partially reproduced.
+    The outcome rests on preprocessing reading (a).
+  assumed: true
+  deviations:
+  - Judged on preprocessing reading (a), the reading under which cross-ieeg-mean holds; as cross-ieeg-mean for the
+    trials and the movement events.
 - claim: fig4a-mask-sweep-ieeg
   outcome: reproduced
   notebook: masking_coverage.ipynb
   output: claim:fig4a-mask-sweep-ieeg
-  notes: Subject averages 0.712, 0.674, 0.650, 0.628 and 0.602 at m = 0, 0.25, 0.5, 0.75 and 1.0
-    (0, 3, 5, 7 and 9 neighbours masked); the average and each of the 12 subjects fall at every
-    step. With the code's round rule (2 and 4 neighbours at 0.25 and 0.5) the averages are 0.685
-    and 0.660 and still fall at every step in all 12 subjects. The seed sensitivity of the mask
-    draws was not computed (see deviations).
+  notes: Under preprocessing reading (a) the subject averages are 0.714, 0.673, 0.651, 0.628 and 0.602 at m = 0,
+    0.25, 0.5, 0.75 and 1.0 (0, 3, 5, 7 and 9 neighbours masked); the average and each of the 12 subjects fall at
+    every step. Under reading (b), run at m = 0 and 1.0 only for time, 0.659 falls to 0.571, in 12 of 12 subjects.
+    The code's round rule was run in round 1 (averages 0.685 and 0.660 at m = 0.25 and 0.5, falling at every step
+    in all 12 subjects) and not in this revision. The seed sensitivity of the mask draws was not computed (see deviations).
   deviations:
   - As intra-ieeg-mean (trials, preprocessing reading a, speed).
-  - For time, the five-seed check of the protocol was run for intra-ieeg-mean only. The steps of
-    the average (0.023 to 0.039) are larger than the spread over seeds seen there (0.004 for the
-    mean).
+  - For time, the five-seed check of the protocol was run for intra-ieeg-mean only. The steps of the average (0.023
+    to 0.040) are larger than the spread over seeds seen there (0.004 for the mean).
 - claim: full-mask-above-zero-ieeg
   outcome: reproduced
   assumed: true
   notebook: surrogates_lagged.ipynb
   output: claim:full-mask-above-zero-ieeg
-  notes: The m = 1.0 average is 0.602, above zero (reading a; smallest electrode value 0.225) and
-    above the phase-shuffled surrogate average 0.201 (reading b, the criterion's assumption), with
-    12 of 12 subjects above their own phase-shuffled value. The m = 1.0 values are recomputed in
-    surrogates_lagged.ipynb with that notebook's generator; they equal the sweep's m = 1.0 values
-    to three decimals in every subject.
+  notes: 'The m = 1.0 average is 0.602 under preprocessing reading (a) and 0.571 under (b), above zero (smallest
+    electrode value 0.228 and 0.235) and above the phase-shuffled surrogate average (reading b of the criterion,
+    its assumption): 0.202, or 0.196 end-matched, under (a) and 0.207 under (b), with 12 of 12 subjects above their
+    own surrogate value in each. The m = 1.0 values are recomputed in surrogates_lagged.ipynb with that notebook''s
+    generator; they equal the sweep''s m = 1.0 values within 0.001 in every subject.'
   deviations:
-  - Judged by reading (b) of the criterion, the m = 1.0 average against the phase-shuffled
-    surrogate average, an assumption the claims file names because the paper compares with zero
-    only and the sample DistCorr cannot fall below zero.
+  - Judged by reading (b) of the criterion, the m = 1.0 average against the phase-shuffled surrogate average, an
+    assumption the claims file names because the paper compares with zero only and the sample DistCorr cannot fall
+    below zero.
   - As intra-ieeg-mean (trials, preprocessing reading a, speed).
 - claim: fig5a-coverage-ieeg
   outcome: not_reproduced
   notebook: masking_coverage.ipynb
   output: claim:fig5a-coverage-ieeg
-  notes: All 0.712, Local 0.567, Non-local 0.602. All is highest in 12 of 12 subjects, but Local
-    is below Non-local on average and in 10 of 12 subjects (Local is above only in sub-09 and
-    sub-10), so the order All > Local > Non-local does not hold under either reading of
-    "consistently".
+  notes: Under preprocessing reading (a) All 0.714, Local 0.567, Non-local 0.602; under (b) All 0.659, Local 0.569,
+    Non-local 0.571. All is highest in 12 of 12 subjects under both, but Local is below Non-local on average under
+    both, and above it in only 2 (a) or 4 (b) of 12 subjects, so the order All > Local > Non-local does not hold
+    under either reading of "consistently". Movement-event reading (b) was not run, so the outcome rests on reading
+    (a) of the events. The Local fits reach their best validation loss at a median epoch of 104 (a) and 111 (b);
+    on sub-07 training Local up to 1000 epochs changes its score by 0.0001.
   deviations:
-  - As intra-ieeg-mean. Local is the 9 nearest electrodes in the (x, z) projection; the atlas
-    neighbourhood of the code could not be built (no anatomical labels), and with it Local could
-    hold a different number of electrodes.
+  - 'As intra-ieeg-mean. Local is the 9 nearest electrodes in the (x, z) projection; the atlas neighbourhood of
+    the code could not be built (no anatomical labels), and with it Local could hold a different number of electrodes.
+    Movement-event reading (b), movement and rest trials, was not run: the paper and its code do not define rest
+    trials, and the dataset''s epochs table labels only coarse behaviour (Sleep/rest, Inactive, TV and so on) over
+    intervals of seconds to hours, so any rule for drawing rest trials from it would be this attempt''s invention.'
+  assumed: true
 - claim: surrogate-ieeg
   outcome: reproduced
   notebook: surrogates_lagged.ipynb
   output: claim:surrogate-ieeg
   measured:
-  - 0.201
+  - 0.202
   - 0.184
-  - 0.229
-  notes: Averages 0.201 ± 0.033 (phase), 0.184 ± 0.024 (IAAFT) and 0.229 ± 0.027 (block), within
-    0.181 ± 0.029, 0.232 ± 0.060 and 0.201 ± 0.168, and below the original 0.602 in each of the 12
-    subjects. The paper's subject 3 block value above its original is not seen (sub-03 0.226
-    against 0.627).
+  - 0.23
+  notes: Under preprocessing reading (a) the averages are 0.202 ± 0.032 (phase), 0.184 ± 0.024 (IAAFT) and 0.230
+    ± 0.026 (block), within 0.181 ± 0.029, 0.232 ± 0.060 and 0.201 ± 0.168, and below the original 0.602 in each
+    of the 12 subjects. The end-matched phase surrogate (reading b of the criterion) gives 0.196 ± 0.028. Under
+    preprocessing reading (b) 0.207, 0.192 and 0.232, all within and below the original 0.571. The paper's subject
+    3 block value above its original is not seen (sub-03 0.226 against 0.627).
   deviations:
-  - Reading (b), end-matched segments before the phase shuffle, was not run; trimming each trial
-    and channel to its own segment gives series of different lengths, and neither the paper nor
-    the code says how they are recombined. The outcome rests on reading (a), the code's.
-  - The surrogates are drawn with per-row permutations of one generator (rng.permuted), vectorised
-    over channels and trials; the code draws them one series at a time.
-  - Seed sensitivity not computed, for time.
+  - 'End-matched phase surrogate (reading b of the criterion): each series cut to the 900-sample segment, of the
+    101 that fit in the trial, whose end values and end slopes match best (Schreiber and Schmitz 2000), then shuffled;
+    a fixed length keeps the trials equal, a standard choice. Each series takes its own segment, as phase shuffling
+    one series at a time already breaks the timing between channels. Run with preprocessing reading (a) only, for
+    time.'
+  - The surrogates are drawn with per-row permutations of one generator per subject (rng.permuted), vectorised over
+    channels and trials; the code draws them one series at a time.
+  - 'Seed sensitivity not computed, for time. Movement-event reading (b), movement and rest trials, was not run:
+    the paper and its code do not define rest trials, and the dataset''s epochs table labels only coarse behaviour
+    (Sleep/rest, Inactive, TV and so on) over intervals of seconds to hours, so any rule for drawing rest trials
+    from it would be this attempt''s invention.'
 - claim: surrogate-order-ieeg
   outcome: not_reproduced
   notebook: surrogates_lagged.ipynb
   output: claim:surrogate-order-ieeg
-  notes: IAAFT gives the lowest average (0.184), then phase (0.201) and block (0.229). Phase is not
-    the lowest in any of the 12 subjects, and IAAFT is below phase in all 12, the reverse of
-    "IAAFT surrogates retain somewhat more". The differences between surrogates (0.017 between
-    IAAFT and phase) are smaller than between any surrogate and the original.
+  notes: 'IAAFT gives the lowest average under every reading run: preprocessing (a) IAAFT 0.184, phase 0.202, end-matched
+    phase 0.196, block 0.230; preprocessing (b) IAAFT 0.192, phase 0.207, block 0.232. Phase is not the lowest in
+    any of the 12 subjects under any of them, the reverse of "IAAFT surrogates retain somewhat more". End matching
+    lowers the phase average by 0.006, less than its gap to IAAFT (0.012). Movement-event reading (b) and the end-matched
+    surrogate under preprocessing (b) were not run, so the outcome rests on them not reversing the order.'
   deviations:
   - As surrogate-ieeg.
+  assumed: true
 - claim: lagged-ieeg-no-gain
   outcome: reproduced
   notebook: surrogates_lagged.ipynb
   output: claim:lagged-ieeg-no-gain
   measured:
-  - 0.603
-  notes: Lagged 0.603 ± 0.060 against instantaneous 0.602 ± 0.058 (lags of 0, 10, 15, 25 and 30
-    samples); the difference is +0.0018, 0.3% of the instantaneous average, under the 10% bound
-    the criterion assumes. Per subject differences range from -0.0097 to +0.0145; 7 of 12 gain;
-    Wilcoxon signed-rank p = 0.42 (context only).
+  - 0.604
+  notes: Lagged 0.604 ± 0.059 against instantaneous 0.602 ± 0.057 (preprocessing reading a; lags of 0, 10, 15, 25
+    and 30 samples); the difference is +0.0015, 0.3% of the instantaneous average, under the 10% bound the criterion
+    assumes. Per subject differences range from -0.0092 to +0.0195; 7 of 12 gain; Wilcoxon signed-rank p = 0.79
+    (context only). The lagged fits reach their best validation loss at a median epoch of 86 to 115 per subject,
+    and on sub-07 training up to 1000 epochs changes the lagged score by 0.0002.
   deviations:
   - One bias in place of the code's one per lag.
-  - As intra-ieeg-mean (trials, preprocessing reading a, speed); seed sensitivity not computed.
+  - As intra-ieeg-mean (trials, preprocessing reading a, speed); preprocessing reading (b) not run for the lagged
+    model, for time; seed sensitivity not computed.
 - claim: intra-eeg-mean
   outcome: blocked
   blocked_by: not_runnable
-  notes: The EEG data (BNCI Horizon 2020, Upper Limb Movements, Ofner et al. 2017) are not in
-    DANDI:000055, and the paper gives no accession or version. The iEEG analyses filled the run's
-    five hours (the three notebooks took 46, 42 and 42 minutes), and the EEG data were not
-    fetched or tested.
+  notes: The EEG data (BNCI Horizon 2020, Upper Limb Movements, Ofner et al. 2017) are not in DANDI:000055, and
+    the paper gives no accession or version. The iEEG analyses filled the run's five hours (the three notebooks
+    take 45, 37 and 50 minutes in this revision), and the EEG data were not fetched or tested.
 - claim: intra-eeg-above-ieeg
   outcome: blocked
   blocked_by: not_runnable
-  notes: Depends on intra-eeg-mean, not tested in this run. The iEEG average is 0.602.
+  notes: Depends on intra-eeg-mean, not tested in this run. The iEEG average is 0.602 (preprocessing a) or 0.571
+    (b).
 - claim: cross-eeg-mean
   outcome: blocked
   blocked_by: not_runnable
@@ -214,8 +269,8 @@ outcomes:
 - claim: transfer-penalty-larger-ieeg
   outcome: blocked
   blocked_by: not_runnable
-  notes: Depends on the EEG claims, not tested in this run. On iEEG the cross over intra ratio is
-    0.58 (0.351 / 0.602) and the difference 0.251.
+  notes: Depends on the EEG claims, not tested in this run. On iEEG the cross over intra ratio is 0.58 to 0.59 and
+    the difference 0.245 to 0.250 under preprocessing reading (a), 0.55 to 0.56 and 0.253 to 0.256 under (b) (reproduce_memar_2026.ipynb).
 - claim: lagged-eeg-no-gain
   outcome: blocked
   blocked_by: not_runnable
@@ -239,45 +294,244 @@ outcomes:
 findings:
 - kind: metadata_error
   about: data
-  severity: major
-  statement: In four files the reaches table and the ReachEvents timestamps disagree, by 30682 s
-    (sub-01 ses-7), 30048 s (sub-04 ses-3), 29240 s (sub-06 ses-3) and 86400 s (sub-08 ses-4);
-    elsewhere they agree within 1 ms. In the first three, the files whose recordings are shorter
-    than 24 h, the reaches table puts 132, 22 and 83 events after the end of the recording, and
-    sub-08 ses-4 has 1. One of the two tables is not on the recording's clock in these files; this
-    attempt did not establish which. It used the reaches table and dropped the events past the end,
-    so the remaining trials of those sessions may not be centred on movements.
+  severity: critical
+  statement: In three files (sub-01 ses-7, sub-04 ses-3, sub-06 ses-3) every start time of the reaches table is
+    later than the matching ReachEvents timestamp by 30682.4, 30048.3 and 29240.6 s, which is the time from 19:00
+    of the previous day to the session start (03:07 to 03:31; the other files start at 19:00). The reaches table
+    therefore puts 132, 22 and 83 events after the end of the recording, and its remaining times are 8.1 to 8.5
+    h from the movements. At the ReachEvents times sub-06 ses-3 shows an event-locked high-gamma change (|t| 9.28
+    against a null 95th percentile of 3.42) and sub-01 ses-7 a weaker one (3.83 against 3.39); at the reaches times
+    neither does (2.90 and 2.74); sub-04 ses-3 (35 events) shows neither. ReachEvents is on the recording's clock
+    and the reaches table is not, and nothing in the table says so. In sub-08 ses-4 one event of the reaches table
+    is 24 h later than its ReachEvents time. Elsewhere the two agree within 1 ms. This attempt's first run used
+    the reaches table; the trials now come from ReachEvents.
 - kind: metadata_insufficient
   about: data
   severity: minor
-  statement: The location column of every electrode table holds "unknown"; the dataset has no
-    anatomical (AAL) labels, which the paper's Figure 6 shows and its code's default atlas
-    neighbourhood needs.
+  statement: The location column of every electrode table holds "unknown"; the dataset has no anatomical (AAL) labels,
+    which the paper's Figure 6 shows and its code's default atlas neighbourhood needs.
 - kind: metadata_insufficient
   about: data
   severity: minor
-  statement: Eight electrodes of sub-12 have no MNI coordinates (NaN x, y and z) in every session;
-    they cannot be placed in a coordinate neighbourhood.
+  statement: Sixteen electrodes of sub-03 and eight of sub-12 have no MNI coordinates (NaN x, y and z) in every
+    session; they cannot be placed in a coordinate neighbourhood.
 - kind: other
   about: data
   severity: minor
-  statement: The paper says each subject's electrodes are in one hemisphere; in the electrode
-    tables sub-09 has 16 of 126 electrodes at x > 0 with the rest at x < 0, and sub-06 and sub-12
-    have 1 and 4 at x > 0. They may be midline or contralateral contacts; the files do not say.
+  statement: The paper says each subject's electrodes are in one hemisphere; in the electrode tables sub-09 has
+    16 of 126 electrodes at x > 0 with the rest at x < 0, and sub-06 and sub-12 have 1 and 4 at x > 0. They may
+    be midline or contralateral contacts; the files do not say.
 - kind: other
   about: data
   severity: minor
-  statement: High-gamma power after the movement events against before them shows an event-locked
-    change in 10 of 12 subjects (largest |t| 5.2 to 30.2 against a null 95th percentile near 3.4),
-    but not in sub-02 (2.65) and sub-09 (3.09), so the alignment of events and signal is not
-    established for those two. 132 events have NaN samples within 5 s of the 2 s window, 75 of them inside it. No session is
-    deposited twice (no two sessions share event times or a channel correlation matrix).
+  statement: High-gamma power after the movement events against before them shows an event-locked change in 10 of
+    12 subjects (largest |t| 5.2 to 30.3 against a null 95th percentile near 3.4), but not in sub-02 (2.66 against
+    3.30) and sub-09 (3.08 against 3.41), so the alignment of events and signal is not established for those two;
+    their event tables agree and lie within the recordings. 131 events have NaN samples within 5 s of the 2 s window,
+    76 of them inside it. Every ElectricalSeries starting_time is 0. No session is deposited twice (no two sessions
+    share event times or a channel correlation matrix), and no two trial windows overlap.
 - kind: methods_unavailable
   about: paper
-  statement: Questions for the paper's authors. (1) Which movement events and recording days form
-    the iEEG trials, whether rest trials were included, and how rest trials were chosen. (2)
-    Whether the preprocessing was applied to the continuous recordings or to each 2 s epoch; the
-    per-subject values in Table II match better under per-epoch preprocessing (8 of 12) than under
-    continuous (4 of 12). (3) How Table II's rows map to AJILE12 participants. (4) Which mask
-    intensity the Intra-Subject, Lagged and surrogate columns use (m = 1.0 is assumed here, as the
-    code's notebook says).
+  statement: Questions for the paper's authors. (1) Which movement events and recording days form the iEEG trials,
+    whether rest trials were included, and how rest trials were chosen (the dataset labels only coarse behaviour).
+    (2) Whether the preprocessing was applied to the continuous recordings or to each 2 s epoch; the per-subject
+    values in Table II match better under per-epoch preprocessing (8 of 12) than under continuous (4 of 12), while
+    the cross-subject average is met only under continuous preprocessing. (3) How Table II's rows map to AJILE12
+    participants. (4) Which mask intensity the Intra-Subject, Lagged and surrogate columns use (m = 1.0 is assumed
+    here, as the code's notebook says).
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: 'Round 1. The executed notebooks of the first run with the conclusion cells and the summaries removed,
+    the helper module and the claims file, with the paper. The verifier queried the archive and tested the helpers
+    on synthetic inputs (all passed). It found no misreading of the paper in the claims file, so no question was
+    added for a reader. Its other points: problem 5 (the two event tables) led to the trials being rebuilt from
+    ReachEvents, after a clock check showed that the reaches table is offset by the session start in three files;
+    problem 6, every starting_time is now printed (all 0) and sub-02 and sub-09 are discussed; problem 7, trial
+    overlap is printed (no two windows overlap, so no test trial shares samples with a training or validation trial);
+    problem 8, float16 for reading (b) is kept and stated; problem 9, no change. Report in transcripts/memar-2026/verifier-1-report.md.'
+  results:
+  - claim: intra-ieeg-mean
+    agrees: true
+    outcome: reproduced
+    reason: Reading a gives 0.602 ± 0.058 and reading b gives 0.570 ± 0.066. Both fall inside 0.553 ± 0.068, and
+      five seeds give 0.598 to 0.602. Reading a sits near the upper edge (0.621). The m = 0 variant would be 0.712,
+      which is outside. Problem 10, the m = 0 variant appears only in the masking notebook; problem 11, the SD across
+      electrodes (0.07 to 0.15) is about 3× the paper's (0.02 to 0.04), a sign the pipelines differ, not discussed.
+    response: 'Outcome kept. Re-run with the events of ReachEvents (problem 5): 0.602 ± 0.057 (a), 0.571 ± 0.065
+      (b), five seeds 0.598 to 0.602. The intra-subject section now points to the m = 0 variant (0.714 a, 0.659
+      b, outside the tolerance) and the notes give it; the SD across electrodes is printed for both readings (0.108,
+      0.111 against 0.034) and discussed as a sign that the pipelines differ.'
+  - claim: table2-ieeg-intra-subjects
+    agrees: true
+    outcome: partially_reproduced
+    reason: 8 of 12 subjects are within tolerance under preprocessing reading b and 4 of 12 under reading a. Spearman
+      rho is 0.78 and 0.71. The outcome depends on reading b. Problem 1, event reading (b) never run, so the partial
+      outcome is provisional.
+    response: 'Outcome kept, on preprocessing reading (b), marked assumed: 8 of 12 (b) and 4 of 12 (a) after the
+      re-run. Event reading (b) is not run: the paper and code do not define rest trials, and the epochs table (label
+      counts per subject now printed) holds only coarse behaviour labels, so any rule would be invented; the notes
+      say so.'
+  - claim: cross-ieeg-mean
+    agrees: true
+    outcome: reproduced
+    reason: The mean is 0.340 to 0.351 under all four readings, inside 0.389 ± 0.064. The SD across subjects (about
+      0.106) is larger than the paper's 0.064, and sub-12 (0.647) is an outlier. Problem 2, donors are reading-a
+      weights only.
+    response: 'Outcome kept, now marked assumed. Cross-subject was re-run under preprocessing reading (b), donors
+      and target both per-epoch: 0.315 to 0.318, outside the tolerance; under (a) 0.352 to 0.357. The outcome rests
+      on reading (a), as the criterion allows one reading. The SD across electrodes per subject is printed (0.13
+      to 0.20 against 0.004 to 0.016).'
+  - claim: table2-ieeg-cross-subjects
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 12 subjects are within tolerance under every reading, and Spearman rho is 0.14 to 0.28. Problems
+      1 and 2, judged on reading a only for the events and the preprocessing, so provisional.
+    response: Outcome kept, marked assumed. Under all eight readings (preprocessing a and b, four of C) 0 or 1 of
+      12 are within tolerance, rho 0.08 to 0.27. Event reading (b) not run (see table2-ieeg-intra-subjects).
+  - claim: cross-below-intra-ieeg
+    agrees: true
+    outcome: reproduced
+    reason: Under every reading the cross average (0.34 to 0.35) is below intra (0.602), and cross-ieeg-mean is
+      reproduced. 11 or 12 of 12 subjects have cross below intra.
+    response: Outcome kept, marked assumed. Under preprocessing (a) 0.352 against 0.602, 11 or 12 of 12 subjects.
+      Under (b) cross (0.315 to 0.318) is below intra (0.571) in 12 of 12 but cross-ieeg-mean is not met, which
+      would give partially reproduced; the notes say so.
+  - claim: fig4a-mask-sweep-ieeg
+    agrees: true
+    outcome: reproduced
+    reason: 'The average falls at every step: 0.712, 0.673, 0.650, 0.628, 0.602. All 12 subjects fall at every step,
+      and the result holds with the round rule. Problem 2, the sweep is not run under preprocessing reading b.'
+    response: 'Outcome kept. Re-run: 0.714, 0.673, 0.651, 0.628, 0.602 under (a), 12 of 12 subjects. Under (b),
+      run at m = 0 and 1.0 only for time, 0.659 to 0.571, 12 of 12. The round variant was not re-run in this revision,
+      for time; the notes give the round 1 values.'
+  - claim: full-mask-above-zero-ieeg
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading b: the m = 1.0 average of 0.602 is above the phase-shuffle average of 0.201, in 12 of 12 subjects.
+      Reading a also holds, with the smallest electrode at 0.226.'
+    response: Outcome kept. Now also under preprocessing (b) (0.571 against 0.207) and against the end-matched phase
+      surrogate (0.602 against 0.196), 12 of 12 in each.
+  - claim: fig5a-coverage-ieeg
+    agrees: true
+    outcome: not_reproduced
+    reason: All 0.712 > Non-local 0.602 > Local 0.567, so the required order All > Local > Non-local fails. Local
+      beats Non-local in only 2 of 12 subjects. Only one reading of the open trial details was run (problems 1 and
+      2).
+    response: 'Outcome kept, marked assumed. Run under preprocessing (b) as well: All 0.659, Local 0.569, Non-local
+      0.571, Local above in 4 of 12; under (a) 0.714, 0.567, 0.602, 2 of 12. Event reading (b) not run (no definition
+      of rest trials). Convergence of the Local fits printed (median best epoch 104 and 111; 1000 epochs on sub-07
+      change the score by 0.0001).'
+  - claim: lagged-ieeg-no-gain
+    agrees: true
+    outcome: reproduced
+    reason: Lagged 0.603 against instantaneous 0.602. That is within 0.554 ± 0.067, and the difference is +0.3%,
+      under the 10% bound. Problem 4, the speed deviations were not checked for the lagged model, with 5× the parameters;
+      with 200 epochs an undertrained lagged model could understate a gain, though a gain would have to exceed 10%
+      to change the outcome.
+    response: 'Outcome kept. Re-run: 0.604 against 0.602 (+0.3%). The speed check now covers the lagged, Local and
+      phase-surrogate fits on sub-07: up to 1000 epochs changes each by at most 0.0002, and the median best epoch
+      of the lagged fits (86 to 115) is printed. Preprocessing reading (b) was not run for the lagged model, for
+      time.'
+  - claim: surrogate-ieeg
+    agrees: true
+    outcome: reproduced
+    reason: Phase 0.201, IAAFT 0.184 and block 0.229 are all within tolerance and all below the original. Only reading
+      a (no end matching) was run; problem 3, the stated reason for not running end matching, unequal lengths, is
+      weak, as one fixed-length sub-segment per series gives equal-length trials.
+    response: 'Outcome kept. End-matched phase surrogates added as the verifier proposed (one 900-sample segment
+      per series, chosen by end value and slope mismatch): 0.196 under preprocessing (a). Preprocessing (b) added
+      for the three code surrogates: 0.207, 0.192, 0.232. All within tolerance and below the original.'
+  - claim: surrogate-order-ieeg
+    agrees: true
+    outcome: not_reproduced
+    reason: IAAFT (0.184) is lowest, not phase (0.201). Phase is lowest in 0 of 12 subjects, and reading b's order
+      also fails. Only the surrogate reading without end matching was run (problem 3); end matching could lower
+      the phase value below IAAFT, the comparison the claim turns on.
+    response: 'Outcome kept, marked assumed. End matching lowers the phase average from 0.202 to 0.196, still above
+      IAAFT (0.184); under preprocessing (b) phase 0.207 against IAAFT 0.192. Phase is lowest in 0 of 12 subjects
+      under every reading run. Not run: event reading (b), and end matching under preprocessing (b).'
+  - claim: intra-eeg-mean
+    agrees: true
+    outcome: blocked
+    reason: 'EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time.'
+  - claim: intra-eeg-above-ieeg
+    agrees: true
+    outcome: blocked
+    reason: 'Needs the EEG values. The iEEG half (0.602 or 0.570) is available. EEG not in the dataset. Archive
+      check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb for 12 subjects; the measured
+      variables are ElectricalSeries and Position; there is no scalp EEG. The verifier gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time. The iEEG half is printed: 0.602 (a), 0.571 (b).'
+  - claim: cross-eeg-mean
+    agrees: true
+    outcome: blocked
+    reason: 'EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time.'
+  - claim: transfer-penalty-larger-ieeg
+    agrees: true
+    outcome: blocked
+    reason: 'Needs the EEG values. The iEEG half could have been computed but was not reported: ratio about 0.58,
+      difference about 0.25. EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time. The iEEG half is now printed: ratio 0.58 to 0.59 and difference 0.245
+      to 0.250 (a), 0.55 to 0.56 and 0.253 to 0.256 (b).'
+  - claim: lagged-eeg-no-gain
+    agrees: true
+    outcome: blocked
+    reason: 'EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time.'
+  - claim: fig4b-mask-sweep-eeg
+    agrees: true
+    outcome: blocked
+    reason: 'EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time.'
+  - claim: fig5b-coverage-eeg
+    agrees: true
+    outcome: blocked
+    reason: 'EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time.'
+  - claim: surrogate-eeg
+    agrees: true
+    outcome: blocked
+    reason: 'EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time.'
+  - claim: surrogate-order-eeg
+    agrees: true
+    outcome: blocked
+    reason: 'EEG not in the dataset. Archive check: 000055 at 0.220127.0436 has 55 assets, all sub-XX_ses-N_behavior+ecephys.nwb
+      for 12 subjects; the measured variables are ElectricalSeries and Position; there is no scalp EEG. The verifier
+      gave the block as data_missing.'
+    response: 'Kept blocked. The block reason stays not_runnable: the claims file marks these claims data: elsewhere
+      (BNCI Horizon 2020), and the protocol does not allow data_missing for a claim whose data are public in another
+      archive; they were not fetched for time.'
