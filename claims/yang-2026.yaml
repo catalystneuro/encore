@@ -1,0 +1,877 @@
+# Claims for Yang (2026), "Form, Timing, and Behavioral Matching of the Population Response to
+# ALM Photoinhibition", Research Square preprint doi:10.21203/rs.3.rs-11447300/v1, on DANDI
+# 000363 (Mesoscale Activity Map, Chen et al. 2024, Cell 187:676-691), which the paper reuses.
+#
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-21, protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read. The preprint, version 1 (posted 2026-10-22), from
+# paper/10.21203-rs.3.rs-11447300-v1.txt: abstract, Introduction, Results, Materials and
+# Methods, Discussion, figure legends of Figures 1 to 3, Table 1, and the Extended Data legends
+# (Figures 1-1, 2-1, 3-1). There is no separate supplement; the Extended Data are figures whose
+# legends are in the text. No PDF was supplied and no figure was read. Values shown only in a
+# figure (per-mouse points, curves) are not available; claims rest on the numbers the text and
+# Table 1 print.
+#
+# Code read. None. Code Accessibility says the code "has been deposited in a private GitHub
+# repository and will be made publicly available upon publication". No method detail below is
+# settled by code. The analyses used Python 3.12, NumPy and scikit-learn logistic regression
+# (lbfgs), and one random seed, 17, for splits, folds and match order (Methods, Code and data;
+# Statistics).
+#
+# Statistics. The paper reports no hypothesis test; every estimate is an unweighted mean
+# across mice with the SEM across mice (Methods, Statistics, "No test was added after the means
+# were known"). No claim has a statistics entry. Tolerances are the printed SEM where one is
+# given (the paper's stated spread), otherwise 10% of the value, and for printed ranges the
+# range widened by 10% of each bound.
+#
+# Data the paper used (Methods, Dataset; Units and regions; Table 1). DANDI 000363, version
+# 0.231012.2129; spike times, trial events, optogenetic locations and video keypoints from the
+# derived session files. Mice performing a memory-guided directional licking task (instructed
+# left or right, lick after a Go cue), with Neuropixels recordings from ALM, striatum,
+# thalamus, midbrain and medulla. 168 sessions contained photoinhibition; the analysed sessions
+# are those with bilateral ALM photoinhibition during the last 0.5 s of the delay, ending at Go.
+# 19 mice and 93 sessions gave an ALM estimate; Table 1 gives the counts per region (ALM 19 /
+# 93, striatum 13 / 48, thalamus 10 / 31, midbrain 16 / 71, medulla 8 / 35; after matching 19 /
+# 87, 12 / 42, 10 / 29, 15 / 64, 8 / 32). Measured variables per trial: instructed side,
+# photostimulation code and its location list, laser onset, Go cue time, lick times and
+# directions, early-lick flag, outcome; per unit: spike times, classification label, electrode
+# location; per video frame: jaw, nose and tongue keypoints.
+#
+# Shared methods, cited once here and named in the criteria by label. Each says where it comes
+# from; details the paper does not fix are marked open, with the readings its text allows.
+# Every reading is run; a claim is reproduced when its result matches under any combination of
+# readings, and the readings that match are reported.
+# M1 Sessions (Methods, Dataset). Sessions that contain photoinhibition trials. Bilateral
+#   trials are those whose photostimulation control code has an optogenetic location list with
+#   ALM on both sides. A session enters when the median bilateral laser onset is within 0.08 s
+#   of -0.50 s relative to Go; sessions with onset about 1.2 s before Go are not pooled. Laser
+#   trials are the bilateral trials of a retained session. Control trials have no
+#   photostimulation and no early lick. Open, whether laser trials with an early lick are kept
+#   (the exclusion is stated for controls only); readings (a) kept, (b) excluded.
+# M2 Units, regions and sides (Methods, Units and regions). Units with classification label
+#   "good" (the classifier label of Chen et al., not the spike-sorting quality flag).
+#   Electrode locations are mapped to ALM, striatum, thalamus, midbrain or medulla, the two
+#   hemispheres pooled. A region enters a session with at least 20 good units; an instructed
+#   side enters with at least 10 laser and 10 control trials. Open, the mapping from annotated
+#   brain areas to the five regions; readings (a) the region labels of Chen et al. 2024 if the
+#   session files carry them, (b) the Allen CCF parent structures (ALM by its annotation,
+#   striatum STR, thalamus TH, midbrain MB, medulla MY). Counts in Table 1 check the choice.
+# M3 Behavior (not defined in the paper). Lick direction and reaction time are not defined.
+#   Open; lick direction readings (a) the side of the first lick after Go from the lick
+#   events, (b) from instructed side and outcome (hit is the instructed side, miss the other,
+#   no-response trials have none). Reaction time is the first lick after Go minus Go, a
+#   standard choice. Trials without a lick enter no analysis that needs lick direction or the
+#   lick. The pre-lick window is the 200 ms before that first lick (Methods, Decoding; Matched
+#   distance).
+# M4 Rates (Methods, Rates and coding axes). In a window, the mean spike rate of each good
+#   unit, z-scored by the mean and standard deviation over control trials in that window; units
+#   with control SD below 1e-6 are dropped from that window. Open, how windows referenced to
+#   laser onset are placed on control trials, which have no laser; readings (a) all trials on
+#   Go, at the session's median laser onset plus the offsets, (b) laser trials on their own
+#   onset, controls on the session's median onset relative to Go. Open, which units enter when
+#   a unit is dropped in one window and kept in another; standard choice, the units kept in
+#   every window a measure uses.
+# M5 Axes and early difference (Methods, Rates and coding axes). Fit on control trials only,
+#   within session and region. Choice axis, mean lick-right minus mean lick-left activity from
+#   600 ms before Go to Go, after least-squares removal of mean jaw, nose and tongue position in
+#   the same window. Action axis, the same contrast from Go to 300 ms after Go, no video
+#   regression. Each scaled to unit length. Early difference, mean laser minus mean control
+#   activity within instructed side, 20 to 120 ms after laser onset, the two sides combined in
+#   proportion to their numbers of laser trials. Open, the video regression; readings (a) the x
+#   and y coordinates of each keypoint averaged over the window's frames, with an intercept,
+#   frames without a detected keypoint left out of its mean and a trial with no detection
+#   given the control mean; (b) the same with trials lacking any keypoint dropped from the fit.
+# M6 Fractions (Methods, Rates and coding axes). Q from a QR factorization of the two axes;
+#   joint fraction = |Q^T d|^2 / |d|^2 for difference vector d; choice and action fractions =
+#   (axis . d)^2 / |d|^2. The cosine between the axes is stored, not the result.
+# M7 Summary (Methods, Statistics). Sessions are averaged within mouse with no weighting, then
+#   the unweighted mean across mice; uncertainty is the SEM across mice (standard choice, n-1
+#   in the SD). A ratio is formed per mouse, then averaged.
+# M8 Decoding (Methods, Decoding). Feature per trial, its z-scored population vector minus the
+#   mean of control trials of the same instructed side, that mean estimated inside the
+#   training fold. Label, lick direction. L2-penalized logistic regression (scikit-learn,
+#   lbfgs). Balanced accuracy under 5-fold cross-validation stratified by instructed side and
+#   lick direction, seed 17. A session needs at least 40 trials and 15 of each lick direction.
+#   Early versus pre-lick, penalty chosen from {0.1, 1, 10} inside the training fold; the
+#   Go-aligned curve, fixed penalty 1. Open, which trials are decoded; the Results say
+#   "Single-trial deviations from the control mean" and "There is no paired trial without
+#   laser"; readings (a) laser trials only, (b) laser and control trials together. Open, how
+#   the penalty is chosen inside the fold; standard choice, an inner stratified 5-fold
+#   search on balanced accuracy. The penalty is read as scikit-learn's C.
+# M9 Matching (Methods, Matched distance). Within session and instructed side, each laser
+#   trial with a lick paired to a control trial with the same lick direction and reaction time
+#   within 100 ms, without replacement, in random order, ties broken at random, seed 17;
+#   sessions with fewer than 10 pairs dropped. For each retained control trial a second control
+#   trial drawn by the same rule from controls not already used. Residual, mean laser-control
+#   Euclidean distance minus mean control-control Euclidean distance, on z-scored population
+#   vectors. Primary window, the 200 ms before the lick in 50 ms bins. Open, the closest match
+#   or any match within the caliper; readings (a) the control with the smallest reaction-time
+#   difference, (b) a random control within 100 ms. Open, a laser pair whose control has no
+#   second control; readings (a) the pair is dropped from both distances, (b) kept for the
+#   laser-control distance only. Open, how the four 50 ms bins give one pre-lick distance;
+#   readings (a) the distance per bin averaged over bins, (b) the distance of the four bins
+#   concatenated. Open, the z-scoring of the pre-lick bins; readings (a) by control trials in
+#   each lick-aligned bin, (b) by all non-early-lick control trials as for the curve.
+# M10 Time courses (Methods, Time courses). Go-aligned, from 600 ms before to 600 ms after Go;
+#   distance in 50 ms bins; joint fraction and balanced accuracy in 100 ms bins averaged from
+#   adjacent 50 ms rates; axes not refit. For the distance curve, units must pass the SD
+#   threshold in every bin; if fewer than 20 do, units passing in at least 80% of bins are kept
+#   and their failing bins set to zero; the z-score reference for these bins is every
+#   non-early-lick control trial. Energy per neuron, the squared length of the laser-minus-
+#   control vector inside or outside the coding subspace divided by the number of units. Open,
+#   the step of the 100 ms bins (the text names bins "centered 250 ms after Go" and "that
+#   begins at onset"); readings (a) overlapping bins stepped by 50 ms, (b) non-overlapping
+#   bins from -600 ms. Open, the bin of the energy curve; the text names "the 100 ms bin that
+#   begins at onset", so 100 ms bins as for the fraction.
+#
+# Data. Every claim uses the dataset alone (data: dataset, the default). No outside data is
+# used.
+schema_version: 2
+paper: doi:10.21203/rs.3.rs-11447300/v1
+claims:
+- id: session-counts
+  statement: Of the 168 sessions with photoinhibition, the late-delay bilateral sessions give
+    ALM estimates from 19 mice and 93 sessions, with 13 mice and 48 sessions for striatum, 10
+    and 31 for thalamus, 16 and 71 for midbrain and 8 and 35 for medulla.
+  source: Methods, Dataset, paragraph 2, and Units and regions; Table 1, column Mice / sessions
+  quote: Analyses used the 168 sessions that contained photoinhibition. ... Nineteen mice and 93
+    sessions contributed an ALM estimate. Counts for the other regions ... are in Table 1.
+  expected:
+  - quantity: sessions with photoinhibition
+    value: 168
+    tolerance: 16.8
+  - quantity: ALM mice
+    value: 19
+    tolerance: 1.9
+  - quantity: ALM sessions
+    value: 93
+    tolerance: 9.3
+  - quantity: striatum mice
+    value: 13
+    tolerance: 1.3
+  - quantity: striatum sessions
+    value: 48
+    tolerance: 4.8
+  - quantity: thalamus mice
+    value: 10
+    tolerance: 1.0
+  - quantity: thalamus sessions
+    value: 31
+    tolerance: 3.1
+  - quantity: midbrain mice
+    value: 16
+    tolerance: 1.6
+  - quantity: midbrain sessions
+    value: 71
+    tolerance: 7.1
+  - quantity: medulla mice
+    value: 8
+    tolerance: 0.8
+  - quantity: medulla sessions
+    value: 35
+    tolerance: 3.5
+  criterion: Sessions, trials, units, regions and sides by M1 and M2, counting a region in a
+    session when the joint fraction (M6) can be computed for it. Reproduced when every count is
+    within tolerance under one combination of the M1, M2 and M3 readings; partially reproduced
+    when the 168 and the ALM counts are and some region counts are not. The combination that
+    matches best is the one the other claims report first.
+- id: table1-early-joint-fraction
+  statement: In the 20 to 120 ms after bilateral laser onset only 5 to 8% of the laser-control
+    population difference lies in the joint choice-action subspace, from 0.052 in ALM (the
+    lowest) to 0.080 in thalamus (the highest).
+  source: Results, The early population difference lies mostly outside the choice and action
+    axes, paragraph 2; Table 1, Joint fraction; Figure 1C, 1D
+  quote: Across regions, the joint fraction of that difference inside the two-axis subspace was
+    0.052– 0.080 (Table 1; Fig. 1C,D). ... Thalamus had the highest joint fraction (0.080 ±
+    0.016) and ALM the lowest (0.052 ± 0.011; 19 mice, 93 sessions).
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: ALM joint fraction
+    value: 0.052
+    tolerance: 0.011
+  - quantity: striatum joint fraction
+    value: 0.061
+    tolerance: 0.009
+  - quantity: thalamus joint fraction
+    value: 0.080
+    tolerance: 0.016
+  - quantity: midbrain joint fraction
+    value: 0.060
+    tolerance: 0.007
+  - quantity: medulla joint fraction
+    value: 0.056
+    tolerance: 0.013
+  criterion: Joint fraction of the early difference (M4 to M6) per session and region, mouse
+    means and mean across mice (M7). Reproduced when all five region means are within
+    tolerance under one combination of readings and each is below 0.10; partially reproduced
+    when all are below 0.10 (the paper's point that most of the difference lies outside the
+    subspace) and some are outside tolerance. That thalamus is highest and ALM lowest is
+    reported, not required, as the SEMs overlap.
+- id: table1-early-axis-fractions
+  statement: The choice axis alone holds 0.030 to 0.059 of the early difference and the action
+    axis 0.021 to 0.032, by region as in Table 1.
+  source: Results, The early population difference lies mostly outside the choice and action
+    axes, paragraph 2; Table 1, Choice fraction and Action fraction; Figure 1C
+  quote: The choice axis alone held 0.030–0.059 and the action axis 0.021– 0.032.
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: ALM choice fraction
+    value: 0.031
+    tolerance: 0.011
+  - quantity: striatum choice fraction
+    value: 0.044
+    tolerance: 0.009
+  - quantity: thalamus choice fraction
+    value: 0.059
+    tolerance: 0.014
+  - quantity: midbrain choice fraction
+    value: 0.030
+    tolerance: 0.005
+  - quantity: medulla choice fraction
+    value: 0.034
+    tolerance: 0.011
+  - quantity: ALM action fraction
+    value: 0.022
+    tolerance: 0.003
+  - quantity: striatum action fraction
+    value: 0.021
+    tolerance: 0.005
+  - quantity: thalamus action fraction
+    value: 0.025
+    tolerance: 0.008
+  - quantity: midbrain action fraction
+    value: 0.032
+    tolerance: 0.006
+  - quantity: medulla action fraction
+    value: 0.026
+    tolerance: 0.006
+  criterion: Per-axis fractions by M6 on the early difference (M4, M5), summarized by M7.
+    Reproduced when all ten values are within tolerance under one combination of readings;
+    partially reproduced when at least seven are. The Results print 0.030 as the lowest choice
+    fraction and Table 1 prints 0.030 (midbrain) and 0.031 (ALM); the table values are used.
+- id: axes-cosine
+  statement: The choice and action axes are not orthogonal; their cosine ranges from 0.29 in
+    thalamus to 0.52 in ALM.
+  source: Results, The early population difference lies mostly outside the choice and action
+    axes, paragraph 3; Figure 1-1A
+  quote: The axes are not orthogonal. Their cosine ranged from 0.29 ± 0.04 in thalamus to 0.52 ±
+    0.03 in ALM
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: thalamus cosine between choice and action axes
+    value: 0.29
+    tolerance: 0.04
+  - quantity: ALM cosine between choice and action axes
+    value: 0.52
+    tolerance: 0.03
+  criterion: Cosine of the two unit axes (M5) per session and region, summarized by M7. Open,
+    signed or absolute cosine (both axes are lick right minus lick left, so the signed value is
+    the natural one); readings (a) signed, (b) absolute. Reproduced when, under one reading,
+    both values are within tolerance and the other three region means lie between them
+    (widened by the tolerances); partially reproduced when both values are within tolerance
+    and the ordering does not hold.
+- id: fig1e-laser-vs-control-split
+  statement: The early laser difference is larger than the difference between size-matched
+    splits of control trials in every mouse, with a median ratio across mice of 152 in ALM and
+    3.3 to 8.7 in the other regions.
+  source: Results, The early population difference lies mostly outside the choice and action
+    axes, paragraph 3; Figure 1E
+  quote: Relative to a size-matched split of control trials, the laser difference was larger in
+    every mouse. The median ratio across mice was 152 in ALM and 3.3– 8.7 in the other regions
+    (Fig. 1E).
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: ALM median ratio across mice
+    value: 152
+    tolerance: 15.2
+  - quantity: lowest median ratio among striatum, thalamus, midbrain, medulla
+    value: 3.3
+    tolerance: 0.33
+  - quantity: highest median ratio among striatum, thalamus, midbrain, medulla
+    value: 8.7
+    tolerance: 0.87
+  criterion: Energy of the early laser difference (M5) divided by the energy of a control
+    difference, the control trials of each instructed side split into two groups each the size
+    of that side's laser set, 20 random splits, seed 17 (Methods, Rates and coding axes,
+    paragraph 3). Per mouse the mean of session ratios (M7), then the median across mice
+    (Results). Open, how the 20 splits give one ratio; readings (a) laser energy over the mean
+    split energy, (b) the mean over splits of the ratio. Open, sides with fewer than twice as
+    many controls as laser trials; readings (a) the two groups drawn without overlap, as large
+    as the controls allow, (b) the two groups of laser-set size drawn independently. The sides
+    are combined as for the laser difference (M5). Reproduced when, under one combination,
+    every mouse in every region has a ratio above 1 and the three values are within
+    tolerance; partially reproduced when every ratio is above 1 and a value is outside
+    tolerance.
+- id: fig1-1b-corrected-joint-fraction
+  statement: After the control-split projection is removed, joint fractions remain low, with
+    mouse means from about 0.003 in medulla to 0.099 in thalamus.
+  source: Results, The early population difference lies mostly outside the choice and action
+    axes, paragraph 3; Figure 1-1B
+  quote: After the control-split projection was removed, joint fractions remained low, with mouse
+    means ranging from about 0.003 in medulla to 0.099 in thalamus (Fig. 1-1B).
+  depends_on:
+  - fig1e-laser-vs-control-split
+  expected:
+  - quantity: medulla corrected joint fraction, mouse mean
+    value: 0.003
+    tolerance: 0.003
+  - quantity: thalamus corrected joint fraction, mouse mean
+    value: 0.099
+    tolerance: 0.0099
+  criterion: The paper says only "the fraction after subtracting the control-split projection"
+    (Methods, Rates and coding axes, paragraph 3). Open, the correction; readings (a) the
+    in-subspace energy of the laser difference minus the mean in-subspace energy of the
+    control-split differences, over the total laser energy minus the mean total split energy;
+    (b) the same with the numerator only corrected; (c) the joint fraction of the laser
+    difference minus that of the mean control-split difference vector. Open, what "mouse means
+    ranging from about 0.003 in medulla to 0.099 in thalamus" refers to (Figure 1-1B plots
+    points); readings (a) the region means across mice (M7), (b) the lowest single mouse mean
+    (a medulla mouse) and the highest single mouse mean (a thalamus mouse) over all regions.
+    Reproduced when, under one combination, the medulla and thalamus values are within
+    tolerance (the 10% default is below the precision "about 0.003" allows for medulla, so
+    0.003 absolute is used) and every region mean is below 0.15; partially reproduced when
+    every region mean is below 0.15. The bound 0.15 for "remained low" is not from the paper.
+- id: fig1-1c-fraction-vs-neurons
+  statement: Joint fractions decrease with the number of neurons in a session.
+  source: Results, The early population difference lies mostly outside the choice and action
+    axes, paragraph 3; Figure 1-1C
+  quote: Joint fractions decreased with the number of neurons in a session (Fig. 1-1C).
+  depends_on:
+  - table1-early-joint-fraction
+  criterion: The paper reports no test; Figure 1-1C plots one session per point. Session joint
+    fraction (M6) against the number of units entering it, all regions pooled. Spearman rank
+    correlation, a standard choice for a monotone trend the paper does not specify.
+    Reproduced when the pooled correlation is negative with p < 0.05 (two-sided); partially
+    reproduced when it is negative with p >= 0.05. Per-region correlations are reported.
+- id: fig1-1d-without-video-regression
+  statement: Without the video regression in the choice-axis fit, joint fractions remain low
+    but change; in thalamus the fraction rises from 0.080 to 0.109.
+  source: Results, The early population difference lies mostly outside the choice and action
+    axes, paragraph 3; Figure 1-1D
+  quote: Without the video regression in the choice-axis fit, joint fractions remained low but
+    were not unchanged; in thalamus the fraction rose from 0.080 to 0.109 (Fig. 1-1D).
+  depends_on:
+  - table1-early-joint-fraction
+  expected:
+  - quantity: thalamus joint fraction without video regression
+    value: 0.109
+    tolerance: 0.0109
+  criterion: The joint fraction (M6) recomputed with the choice axis fit without the jaw, nose
+    and tongue regression (M5), summarized by M7. Reproduced when the thalamus value is within
+    tolerance, exceeds the thalamus value with the regression, and every region mean stays
+    below 0.15; partially reproduced when it exceeds the value with the regression and is
+    outside tolerance.
+- id: fig1b-example-session
+  statement: The pre-specified ALM example session is ses-20200922T135318, with 130 neurons and a
+    joint fraction of 0.053, chosen as the session whose joint fraction is closest to the ALM
+    mouse mean.
+  source: Figure 1B legend; Methods, Example session
+  quote: One pre-specified ALM session (ses-20200922T135318; 130 neurons; joint fraction 0.053)
+  depends_on:
+  - table1-early-joint-fraction
+  expected:
+  - quantity: example session neuron count
+    value: 130
+    tolerance: 13
+  - quantity: example session joint fraction
+    value: 0.053
+    tolerance: 0.0053
+  criterion: Candidates are ALM sessions that enter both the early-fraction analysis and the
+    distance curve (M10) and have at least the median neuron count of that set; the session
+    whose joint fraction is closest to the ALM mouse mean is taken, ties broken by neuron count
+    and then by session name (Methods, Example session). Reproduced when this rule selects
+    ses-20200922T135318 and its neuron count and joint fraction are within tolerance;
+    partially reproduced when that session's count and fraction are within tolerance and the
+    rule selects another session.
+- id: table1-decoding-early-vs-prelick
+  statement: Balanced accuracy for lick direction rises from 0.567 to 0.611 in the early window
+    to 0.788 to 0.839 in the 200 ms before the first lick.
+  source: Results, Lick decoding rises without a matching rise on the choice axis, paragraph 1;
+    Table 1, Early accuracy and Accuracy before lick; Figure 2C
+  quote: Single-trial deviations from the control mean predicted lick direction much more
+    accurately before the lick than in the early window. Balanced accuracy rose from 0.567–0.611
+    early to 0.788–0.839 in the 200 ms before the first lick (Table 1; Fig. 2C).
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: ALM early accuracy
+    value: 0.584
+    tolerance: 0.006
+  - quantity: striatum early accuracy
+    value: 0.602
+    tolerance: 0.014
+  - quantity: thalamus early accuracy
+    value: 0.580
+    tolerance: 0.011
+  - quantity: midbrain early accuracy
+    value: 0.567
+    tolerance: 0.008
+  - quantity: medulla early accuracy
+    value: 0.611
+    tolerance: 0.019
+  - quantity: ALM accuracy before lick
+    value: 0.788
+    tolerance: 0.025
+  - quantity: striatum accuracy before lick
+    value: 0.802
+    tolerance: 0.034
+  - quantity: thalamus accuracy before lick
+    value: 0.797
+    tolerance: 0.045
+  - quantity: midbrain accuracy before lick
+    value: 0.796
+    tolerance: 0.025
+  - quantity: medulla accuracy before lick
+    value: 0.839
+    tolerance: 0.027
+  criterion: Decoding by M8 with the penalty chosen inside each training fold, in the early
+    window (M4, M5) and the pre-lick window (M3), summarized by M7. Reproduced when, under one
+    combination of readings, pre-lick accuracy exceeds early accuracy in every region and at
+    least eight of the ten values are within tolerance; partially reproduced when the rise
+    holds in every region and fewer values are within tolerance.
+- id: fig2a-decoding-rises-after-go
+  statement: On the Go-aligned grid balanced accuracy stays near 0.55 to 0.58 through the delay
+    and rises after Go, to 0.73 to 0.77 in the 100 ms bin centered 250 ms after Go.
+  source: Results, Lick decoding rises without a matching rise on the choice axis, paragraph 1;
+    Figure 2A
+  quote: On a Go-aligned grid the rise occurred after Go. Through the delay, balanced accuracy
+    stayed near 0.55–0.58. In the 100 ms bin centered 250 ms after Go it was 0.73–0.77 (Fig. 2A).
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: lowest region mean accuracy, bin centered 250 ms after Go
+    value: 0.73
+    tolerance: 0.073
+  - quantity: highest region mean accuracy, bin centered 250 ms after Go
+    value: 0.77
+    tolerance: 0.077
+  criterion: Decoding by M8 with fixed penalty 1 in the 100 ms Go-aligned bins of M10, all trials
+    aligned to Go, summarized by M7. "Through the delay" is read as the bins lying within the
+    600 ms before Go. Reproduced when the region means in the 250 ms bin lie in 0.73 to 0.77
+    widened by 10% of each bound (0.657 to 0.847), every region mean in the delay bins lies in
+    0.55 to 0.58 widened the same way (0.495 to 0.638), and the 250 ms bin exceeds every delay
+    bin in every region; partially reproduced when the rise after Go holds and a range does
+    not.
+- id: matched-reaction-time
+  statement: On the matched laser trials the median reaction time is 0.29 s, with quartiles 0.22
+    and 0.39 s, so the pre-lick window falls mostly after Go.
+  source: Results, Lick decoding rises without a matching rise on the choice axis, paragraph 1;
+    Figure 1A and 2A legends
+  quote: On the matched laser trials the median reaction time was 0.29 s (quartiles 0.22 and 0.39
+    s), so the pre-lick window fell mostly after Go.
+  depends_on:
+  - fig3a-matched-pairs
+  expected:
+  - quantity: median reaction time, matched laser trials
+    value: 0.29
+    tolerance: 0.029
+    unit: s
+  - quantity: 25th percentile reaction time, matched laser trials
+    value: 0.22
+    tolerance: 0.022
+    unit: s
+  - quantity: 75th percentile reaction time, matched laser trials
+    value: 0.39
+    tolerance: 0.039
+    unit: s
+  criterion: Reaction time by M3 on the laser trials of the pairs retained by M9, pooled over
+    sessions and regions with each laser trial counted once. Open, whether pairs from all
+    regions or a session's trials count once; readings (a) each laser trial once per session,
+    (b) once per region entry. Reproduced when all three values are within tolerance under one
+    reading.
+- id: fig2d-choice-share-flat
+  statement: The choice-axis share of the laser-minus-control vector does not rise with decoding
+    accuracy; early-window means are 0.035 to 0.046, and before the lick the share falls or
+    stays flat in four regions and rises only in medulla, from 0.036 to 0.058, with pre-lick
+    means of 0.025 (ALM), 0.019 (striatum), 0.012 (thalamus), 0.034 (midbrain) and 0.058
+    (medulla).
+  source: Results, Lick decoding rises without a matching rise on the choice axis, paragraph 2;
+    Figure 2D
+  quote: The choice-axis share of the laser-minus-control vector did not rise with decoding
+    accuracy (Fig. 2D). Early-window means were 0.035–0.046. Before the lick, the share fell or
+    stayed flat in four regions and rose only in medulla, from 0.036 to 0.058. The pre-lick means
+    were 0.025 ± 0.004 in ALM, 0.019 ± 0.005 in striatum, 0.012 ± 0.002 in thalamus, 0.034 ±
+    0.008 in midbrain, and 0.058 ± 0.014 in medulla.
+  depends_on:
+  - table1-decoding-early-vs-prelick
+  expected:
+  - quantity: ALM pre-lick choice fraction
+    value: 0.025
+    tolerance: 0.004
+  - quantity: striatum pre-lick choice fraction
+    value: 0.019
+    tolerance: 0.005
+  - quantity: thalamus pre-lick choice fraction
+    value: 0.012
+    tolerance: 0.002
+  - quantity: midbrain pre-lick choice fraction
+    value: 0.034
+    tolerance: 0.008
+  - quantity: medulla pre-lick choice fraction
+    value: 0.058
+    tolerance: 0.014
+  - quantity: medulla early choice fraction, Figure 2D sessions
+    value: 0.036
+    tolerance: 0.0036
+  criterion: Choice fraction (M6) of the laser-minus-control vector in the early window (M5) and
+    in the pre-lick window (M3), the pre-lick vector formed within instructed side and combined
+    by laser counts as for the early difference, rates z-scored in that window (M4), the axes
+    those of M5, not refit. The early means here (0.035 to 0.046) differ from Table 1 (0.030 to
+    0.059), so Figure 2D uses another session set; open, which; readings (a) the sessions that
+    enter decoding (M8), (b) the sessions with matched pairs (M9). Reproduced when, under one
+    combination, the early means lie in 0.035 to 0.046 widened by 10% of each bound, the five
+    pre-lick means are within tolerance, and the pre-lick mean exceeds the early mean by more
+    than its SEM in medulla only (the SEM as the line between "rose" and "stayed flat" is a
+    choice, not from the paper); partially reproduced when the mouse-level choice fraction
+    does not rise in at least four regions and some values are outside tolerance.
+- id: fig2e-action-share-rises
+  statement: The action-axis share rises from 0.016 to 0.030 in the early window to 0.040 to
+    0.122 before the lick, largest in medulla (0.122).
+  source: Results, Lick decoding rises without a matching rise on the choice axis, paragraph 2;
+    Figure 2E and Figure 2-1C
+  quote: The action-axis share rose from 0.016–0.030 early to 0.040–0.122 before the lick,
+    largest in medulla (0.122 ± 0.015; Fig. 2E; Fig. 2-1C).
+  depends_on:
+  - fig2d-choice-share-flat
+  expected:
+  - quantity: medulla pre-lick action fraction
+    value: 0.122
+    tolerance: 0.015
+  - quantity: lowest region pre-lick action fraction
+    value: 0.040
+    tolerance: 0.004
+  - quantity: lowest region early action fraction, Figure 2E sessions
+    value: 0.016
+    tolerance: 0.0016
+  - quantity: highest region early action fraction, Figure 2E sessions
+    value: 0.030
+    tolerance: 0.003
+  criterion: Action fraction (M6) in the early and pre-lick windows, as for the choice fraction
+    in fig2d-choice-share-flat, on the same session set readings. Reproduced when, under one
+    reading, the pre-lick mean exceeds the early mean in every region, medulla has the largest
+    pre-lick mean, and the four values are within tolerance; partially reproduced when the
+    rise holds in every region and a value is outside tolerance.
+- id: fig2b-go-aligned-joint-fraction
+  statement: On the Go-aligned grid the joint fraction stays about 0.04 to 0.08 through the delay;
+    in the bin centered 250 ms after Go it is 0.165 in medulla, 0.102 in midbrain, 0.072 in
+    ALM, 0.075 in striatum and 0.056 in thalamus.
+  source: Results, Lick decoding rises without a matching rise on the choice axis, paragraph 2;
+    Figure 2B
+  quote: The joint fraction on the Go-aligned grid remained about 0.04–0.08 through the delay. In
+    the bin centered 250 ms after Go it was 0.165 ± 0.028 in medulla and 0.102 ± 0.016 in
+    midbrain, with smaller values in ALM (0.072 ± 0.010), striatum (0.075 ± 0.015), and thalamus
+    (0.056 ± 0.012; Fig. 2B).
+  depends_on:
+  - table1-early-joint-fraction
+  expected:
+  - quantity: medulla joint fraction, bin centered 250 ms after Go
+    value: 0.165
+    tolerance: 0.028
+  - quantity: midbrain joint fraction, bin centered 250 ms after Go
+    value: 0.102
+    tolerance: 0.016
+  - quantity: ALM joint fraction, bin centered 250 ms after Go
+    value: 0.072
+    tolerance: 0.010
+  - quantity: striatum joint fraction, bin centered 250 ms after Go
+    value: 0.075
+    tolerance: 0.015
+  - quantity: thalamus joint fraction, bin centered 250 ms after Go
+    value: 0.056
+    tolerance: 0.012
+  criterion: Joint fraction (M6) of the Go-aligned laser-minus-control vector in the 100 ms bins
+    of M10, axes of M5 not refit, summarized by M7. Open, the session set (the early-fraction
+    sessions, or the distance-curve sessions of M10); both are run. Reproduced when, under one
+    combination, the five values are within tolerance and the region means in the bins within
+    the 600 ms before Go lie in 0.04 to 0.08 widened by 10% of each bound (0.036 to 0.088);
+    partially reproduced when at least three of the five values are within tolerance.
+- id: fig2-1-energy-outside-subspace
+  statement: Most of the population difference stays outside the coding subspace; in ALM the
+    energy per neuron outside the subspace rises from 0.09 before laser onset to 26 in the 100
+    ms bin that begins at onset and then falls, while the other regions stay near or below 1.
+  source: Results, Lick decoding rises without a matching rise on the choice axis, paragraph 3;
+    Figure 2-1A, B
+  quote: In ALM, energy per neuron outside the subspace rose from 0.09 before laser onset to 26 ±
+    10 in the 100 ms bin that begins at onset, then fell. The other regions stayed near or below
+    1 on that scale (Fig. 2-1A,B).
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: ALM energy per neuron outside the subspace, 100 ms bin beginning at laser onset
+    value: 26
+    tolerance: 10
+  - quantity: ALM energy per neuron outside the subspace, before laser onset
+    value: 0.09
+    tolerance: 0.009
+  criterion: Energy per neuron (M10) outside and inside the coding subspace of the Go-aligned
+    laser-minus-control vector, summarized by M7. Open, the units and z-scoring (the Methods
+    give energy per neuron in the distance-curve paragraph, but the vector is the one of the
+    joint-fraction curve); readings (a) as for the distance curve (M10), (b) as for the
+    Go-aligned joint fraction, each bin z-scored by its control trials (M4). "Before laser
+    onset" is read as the 100 ms bin ending at onset. Reproduced when both ALM values are
+    within tolerance, the ALM curve falls after the onset bin, the other four regions stay
+    below 1.1 in every bin ("near or below 1", widened by 10%), and the energy outside the subspace exceeds that
+    inside in every region in the onset bin; partially reproduced when the ALM peak at onset
+    and the other regions' low values hold and a value is outside tolerance.
+- id: fig3a-matched-pairs
+  statement: Matching laser and control trials within session and instructed side on lick
+    direction and a reaction-time difference of at most 100 ms retains 2,676 pairs, with a
+    median absolute reaction-time difference of 1.3 ms and a largest of 99 ms.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 1; Figure 3A
+  quote: Of 2,676 retained pairs, the median absolute difference was 1.3 ms and the largest was
+    99 ms (Fig. 3A).
+  depends_on:
+  - session-counts
+  expected:
+  - quantity: retained pairs
+    value: 2676
+    tolerance: 267.6
+  - quantity: median absolute reaction-time difference
+    value: 1.3
+    tolerance: 0.13
+    unit: ms
+  - quantity: largest absolute reaction-time difference
+    value: 99
+    tolerance: 9.9
+    unit: ms
+  criterion: Pairs by M9 on the late-delay sessions (M1), with reaction time by M3. Open, what
+    the 2,676 counts; readings (a) pairs per session and instructed side, each session counted
+    once, (b) pairs summed over region entries. Reproduced when, under one combination, all
+    three values are within tolerance; partially reproduced when the median and the largest
+    are and the count is not. The matched mice and sessions per region of Table 1 (19 / 87, 12
+    / 42, 10 / 29, 15 / 64, 8 / 32) are reported against the counts found.
+- id: table1-prelick-residual
+  statement: Every mouse has a positive pre-lick residual (laser-control minus control-control
+    distance), with means of 1.52 in ALM, 1.38 in striatum, 2.99 in thalamus, 0.76 in midbrain
+    and 0.47 in medulla.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 2; Table 1, Residual before lick; Figure 3D
+  quote: Every mouse had a positive pre-lick residual (Fig. 3D). The means were 1.52 ± 0.14 in
+    ALM, 1.38 ± 0.51 in striatum, 2.99 ± 0.84 in thalamus, 0.76 ± 0.10 in midbrain, and 0.47 ±
+    0.13 in medulla (Table 1).
+  depends_on:
+  - fig3a-matched-pairs
+  expected:
+  - quantity: ALM pre-lick residual
+    value: 1.52
+    tolerance: 0.14
+    unit: z
+  - quantity: striatum pre-lick residual
+    value: 1.38
+    tolerance: 0.51
+    unit: z
+  - quantity: thalamus pre-lick residual
+    value: 2.99
+    tolerance: 0.84
+    unit: z
+  - quantity: midbrain pre-lick residual
+    value: 0.76
+    tolerance: 0.10
+    unit: z
+  - quantity: medulla pre-lick residual
+    value: 0.47
+    tolerance: 0.13
+    unit: z
+  criterion: Residual by M9 in the 200 ms before the lick, per session and region, mouse means
+    and mean across mice (M7). Reproduced when, under one combination of readings, every mouse
+    in every region has a positive residual and the five means are within tolerance;
+    partially reproduced when every mouse is positive and some means are outside tolerance,
+    or when all five means are within tolerance and one or two mice are not positive.
+- id: fig3e-residual-ratio
+  statement: Divided by the control-control distance, the pre-lick residual is 0.111 in ALM,
+    0.093 in striatum, 0.142 in thalamus, 0.063 in midbrain and 0.036 in medulla, so matched
+    laser-control pairs are farther apart than control-control pairs by 0.04 to 0.14 of the
+    control-control distance.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 2; Table 1, Residual / control distance; Figure 3E
+  quote: That ratio was 0.111 in ALM, 0.093 in striatum, 0.142 in thalamus, 0.063 in midbrain,
+    and 0.036 in medulla (Fig. 3E).
+  depends_on:
+  - table1-prelick-residual
+  expected:
+  - quantity: ALM residual over control-control distance
+    value: 0.111
+    tolerance: 0.009
+  - quantity: striatum residual over control-control distance
+    value: 0.093
+    tolerance: 0.031
+  - quantity: thalamus residual over control-control distance
+    value: 0.142
+    tolerance: 0.034
+  - quantity: midbrain residual over control-control distance
+    value: 0.063
+    tolerance: 0.007
+  - quantity: medulla residual over control-control distance
+    value: 0.036
+    tolerance: 0.010
+  criterion: Per mouse, the residual of table1-prelick-residual divided by the mouse's
+    control-control distance, then averaged across mice (Table 1 legend; Methods, Statistics).
+    Open, whether the ratio is formed from the mouse's mean residual and mean distance or per
+    session and then averaged within mouse; readings (a) mouse means first, (b) session ratios
+    averaged. Reproduced when the five values are within tolerance under one combination;
+    partially reproduced when at least three are.
+- id: fig3-1ab-distances-scale
+  statement: Raw distance scales with the number of neurons, and the control-control distance is
+    already larger in thalamus than in midbrain.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 2; Figure 3-1A, B
+  quote: Raw distance scales with the number of neurons, and the control–control distance is
+    already larger in thalamus than in midbrain (Fig. 3-1A,B)
+  depends_on:
+  - table1-prelick-residual
+  criterion: Pre-lick control-control distance by M9 per session and region. Reproduced when the
+    thalamus mouse mean exceeds the midbrain mouse mean (M7) and the Spearman correlation
+    across sessions, all regions pooled, between control-control distance and number of units
+    is positive with p < 0.05 (a standard choice; the paper reports no test); partially
+    reproduced when one of the two holds.
+- id: fig3-1d-matching-keeps-distance
+  statement: Matching lick direction and reaction time does not remove the pre-lick laser-control
+    distance.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 2; Figure 3-1D
+  quote: Matching did not remove the pre-lick distance (Fig. 3-1D).
+  depends_on:
+  - table1-prelick-residual
+  criterion: Pre-lick laser-control distance after matching (M9) and without matching, the
+    unmatched pairs drawn within session and instructed side without regard to lick direction
+    or reaction time (Methods, Matched distance), seed 17. Reproduced when the matched
+    laser-control distance exceeds the matched control-control distance in every region (mouse
+    means, M7); the unmatched distance and the change from matching are reported.
+- id: fig3-1c-alm-early-residual
+  statement: In ALM most of the separation comes earlier; the ALM residual on the same pairs is
+    12.6 in the 20 to 120 ms window against 1.52 before the lick.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 3; Figure 3-1C
+  quote: In ALM, most of the separation came earlier. The ALM residual was 12.6 ± 2.0 in the 20–120
+    ms window, compared with 1.52 before the lick (Fig. 3-1C).
+  depends_on:
+  - table1-prelick-residual
+  expected:
+  - quantity: ALM residual, early window
+    value: 12.6
+    tolerance: 2.0
+    unit: z
+  criterion: Residual by M9 on the same pairs in the early window (M4, M5 window), summarized by
+    M7. Reproduced when the ALM value is within tolerance and exceeds the ALM pre-lick residual
+    found in table1-prelick-residual by a factor of at least 4; partially reproduced when the
+    early value exceeds the pre-lick value by that factor and is outside tolerance.
+- id: fig3c-residual-time-course
+  statement: On the Go-aligned residual curve ALM peaks in the bin that begins at laser onset
+    (21.3) and then declines; thalamus is negative in the two bins after onset (-1.2 and -1.5)
+    and peaks at 11.2 in the bin centered 25 ms before Go; midbrain peaks at 2.1 shortly after
+    onset, striatum at 2.8 in the bin centered 25 ms after Go, and medulla at 1.3.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 3; Figure 3C
+  quote: On the Go-aligned curve, the ALM residual peaked in the bin that begins at laser onset
+    (21.3 ± 2.9) and then declined. Thalamus was negative in the two bins after laser onset (−1.2
+    ± 0.3 and −1.5 ± 0.7) and peaked at 11.2 ± 2.1 in the bin centered 25 ms before Go. Peaks in
+    the other regions were smaller and occurred at different times ... 2.1 ± 0.4 in midbrain shortly
+    after laser onset, 2.8 ± 0.9 in striatum in the bin centered 25 ms after Go, and 1.3 ± 0.5 in
+    medulla.
+  depends_on:
+  - fig3a-matched-pairs
+  expected:
+  - quantity: ALM peak residual, bin beginning at laser onset
+    value: 21.3
+    tolerance: 2.9
+    unit: z
+  - quantity: thalamus residual, first bin after laser onset
+    value: -1.2
+    tolerance: 0.3
+    unit: z
+  - quantity: thalamus residual, second bin after laser onset
+    value: -1.5
+    tolerance: 0.7
+    unit: z
+  - quantity: thalamus peak residual, bin centered 25 ms before Go
+    value: 11.2
+    tolerance: 2.1
+    unit: z
+  - quantity: midbrain peak residual
+    value: 2.1
+    tolerance: 0.4
+    unit: z
+  - quantity: striatum peak residual, bin centered 25 ms after Go
+    value: 2.8
+    tolerance: 0.9
+    unit: z
+  - quantity: medulla peak residual
+    value: 1.3
+    tolerance: 0.5
+    unit: z
+  criterion: Residual by M9 on the matched pairs in the 50 ms Go-aligned bins of M10 (units,
+    zero-filling and z-scoring as stated there), summarized by M7, the peak being the bin with
+    the largest mouse mean. "The two bins after laser onset" is read as the first two 50 ms
+    bins from onset (-500 to -400 ms); midbrain's "shortly after laser onset" as a peak in the
+    200 ms after onset. Reproduced when the peak bins are those named (ALM at onset, thalamus
+    at -25 ms, striatum at +25 ms, midbrain within 200 ms after onset), the two thalamus bins
+    are negative, and at least five of the seven values are within tolerance; partially
+    reproduced when the ALM and thalamus peak bins hold and fewer values are within tolerance.
+- id: fig3c-late-residuals
+  statement: From 0.23 to 0.38 s after Go the residuals are 0.8 to 1.4 in ALM, 0.9 to 2.1 in
+    thalamus, 0.3 to 0.8 in striatum and below 0.5 in midbrain and medulla.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 3; Figure 3C
+  quote: From 0.23 to 0.38 s after Go, residuals were 0.8–1.4 in ALM, 0.9–2.1 in thalamus, 0.3–0.8
+    in striatum, and below 0.5 in midbrain and medulla (Fig. 3C).
+  depends_on:
+  - fig3c-residual-time-course
+  criterion: On the curve of fig3c-residual-time-course, the 50 ms bins whose centers lie from
+    0.23 to 0.38 s after Go (read as the bins centered 225 to 375 ms, the grid having centers
+    at odd multiples of 25 ms). Reproduced when the mouse means of those bins lie in the
+    printed ranges widened by 10% of each bound (ALM 0.72 to 1.54, thalamus 0.81 to 2.31,
+    striatum 0.27 to 0.88, midbrain and medulla below 0.55); partially reproduced when three of
+    the five regions do.
+- id: fig3b-example-plane
+  statement: In the example session matched laser and control trajectories separate along the
+    early off-subspace direction and come closer again at Go; the displayed plane holds 25% of
+    the session's early matched difference, the first principal component of control activity
+    orthogonal to the choice axis 4%.
+  source: Results, A population difference remains after matching lick direction and reaction
+    time, paragraph 3; Figure 3B
+  quote: In the example session, matched laser and control trajectories separated along the
+    early off-subspace direction and were closer again at Go (Fig. 3B). That plane held 25% of
+    the session’s early matched difference. The first principal component of control-trial
+    activity orthogonal to the choice axis held 4%.
+  depends_on:
+  - fig1b-example-session
+  expected:
+  - quantity: fraction of early matched difference in the displayed plane
+    value: 0.25
+    tolerance: 0.025
+  - quantity: fraction of early matched difference on the first control principal component
+    value: 0.04
+    tolerance: 0.004
+  criterion: In the example session (fig1b-example-session), the plane spanned by the choice
+    axis and the early laser-minus-control direction orthogonal to the choice and action axes
+    (Methods, Example session), held fixed. Early matched difference, mean of the matched
+    laser trials minus mean of their matched controls (M9) in the early window. Fraction, its
+    energy in the plane over its total energy (as M6). Principal component, first PC of
+    control-trial activity in the early window after projecting out the choice axis; open,
+    which control trials and window; readings (a) all control trials in the early window, (b)
+    the matched control trials in the early window. Open, whether the plane's off-subspace
+    direction comes from the unmatched (M5) or matched early difference; both are run.
+    Reproduced when, under one combination, both fractions are within tolerance and the
+    matched laser-control separation in the plane is smaller at Go than in the early window;
+    partially reproduced when the separation holds and a fraction is outside tolerance.
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1-1b-corrected-joint-fraction, medulla tolerance 0.0003 changed to 0.003, as the criterion already said and as "about 0.003" warrants; criterion now refers to the tolerances.
+  - fig1-1b-corrected-joint-fraction, added the open reading of "mouse means ranging from" (region means across mice, or the extreme single mouse means), since Figure 1-1B plots points and the sentence allows both; marked the 0.15 bound as not from the paper.
+  - fig2d-choice-share-flat, quote extended with the sentence that prints the five pre-lick means the expected values use.
+  - fig2d-choice-share-flat, marked the SEM rule separating "rose" from "stayed flat" as a choice the paper does not make.
+  - fig3c-residual-time-course, quote extended with the sentence that prints the midbrain, striatum and medulla peaks the expected values use.
+  - fig2-1-energy-outside-subspace, bound for the other regions changed from 1.5 to 1.1, the printed "near or below 1" widened by 10% as for other printed bounds; 1.5 had no source.
+  - fig2-1-energy-outside-subspace, units and z-scoring named as open with two readings (distance-curve rules or per-bin rules of the fraction curve); the Methods place energy in the distance-curve paragraph but the vector is that of the fraction curve.
+  - Open, not settled. Several judging thresholds for vague words are the writer's choices and not from the paper; fig1-1d-without-video-regression (every region below 0.15 for "remained low"), fig3-1c-alm-early-residual (factor 4 for "much smaller"), and the "at least seven of ten" or "eight of ten" partial rules in the Table 1 claims. They do not change the method, only how near a miss is graded.
+  - Open, not settled. fig3-1d-matching-keeps-distance judges "did not remove" as matched laser-control distance above matched control-control, which overlaps table1-prelick-residual; the paper does not say whether removal is judged against the control-control distance or against the unmatched distance (Figure 3-1D shows both matched and unmatched).
