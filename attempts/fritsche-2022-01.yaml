@@ -1,0 +1,417 @@
+schema_version: 3
+id: fritsche-2022-01
+datasets:
+- archive: dandi
+  id: "000021"
+  version: 0.251116.2246
+  doi: 10.48324/dandi.000021/0.251116.2246
+  relation: reuses
+paper: doi:10.1523/jneurosci.1350-21.2021
+date: 2026-11-21
+entry: fritsche-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44870457733
+outcomes:
+- claim: units-responsive-count
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:units-responsive-count
+  measured:
+  - 2422
+  - 580
+  - 142
+  - 91
+  notes: With `noise` units left out and reading O4 a, c, e (rate over the mean plus 1 SD of the
+    blank trials, preferred orientation pooled over directions and temporal frequencies), 2422
+    units are responsive in the eight regions, V1 580, LGN 142, LP 91, all within tolerance, and
+    all eight named regions have at least 50 units. Without the `noise` filter reading a, d, e also
+    matches (2298; V1 548, LGN 153, LP 92). The other O4 readings give 2214 to 7626 and fail. Units
+    on channels labelled `grey` (122) and `VIS` (71) also pass 50; these labels name no area.
+  deviations:
+  - Units the files label `noise` are left out, read as part of the "default quality metrics of the
+    AllenSDK" (Methods, Unit exclusion), whose units table omits them; the unit counts support this
+    reading. The variant without it is shown.
+  - Channels labelled `grey` or `VIS` are not counted as regions; the paper names only areas.
+  - The invalid intervals listed in 13 sessions are not applied; the paper does not mention them.
+- claim: fig1d-v1-1back
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig1d-v1-1back
+  measured: 0.821
+  notes: Main reading (O1a pooled per-unit ratio, O2a geometric region value, O3a blanks holding
+    positions, O3c pairs within blocks) gives 0.821 (t interval 0.804 to 0.839), 580 units, t =
+    -18.02, p = 6.0e-58 (paper 4e-57). The four readings with O1a and O2a lie in [0.821, 0.832];
+    the other 20 readings give 0.848 to 0.931. Per mouse the V1 ratio runs from 0.698 to 0.965.
+  deviations:
+  - The ratio is pooled over current orientations within each unit (O1a); the Methods' "dividing the
+    firing rate of each neuron for repeat by that for orthogonal" (Figure 1D legend) reads most
+    directly this way. All readings are shown.
+- claim: fig1d-extrastriate-1back
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig1d-extrastriate-1back
+  measured:
+  - 0.795
+  - 0.876
+  notes: LM 0.828, AL 0.828, RL 0.876, PM 0.795, AM 0.819, all inside [0.72, 0.968]; largest
+    corrected p 2.0e-24 (paper below 2e-21). Twenty of 24 readings keep all five inside.
+- claim: fig1d-thalamus-1back
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig1d-thalamus-1back
+  measured:
+  - 0.935
+  - 0.833
+  notes: LGN 0.935 (0.912 to 0.959), 142 units, p = 6.7e-07 (paper 8e-7); LP 0.833 (0.793 to
+    0.876), 91 units, p = 1.7e-10 (paper 3e-10). Twenty of 24 readings put both inside the paper's
+    intervals.
+- claim: fig1e-consistent-across-mice
+  outcome: partially_reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig1e-consistent-across-mice
+  notes: Cortex, 32 of 32 mice have the orthogonal rate above the repeat rate (sign test p =
+    4.7e-10), reading (a). Thalamus, 21 of the 23 mice with thalamic units (p = 6.6e-05), so only
+    reading (b) holds there, which the criterion rates as partial.
+- claim: fig2-v1-tuning-main-effect
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig2-v1-tuning-main-effect
+  notes: Mixed ANOVA on log ratios with the 45 degree trials pooled, relative orientation F(2, 998) =
+    19.97, p = 3.1e-09 (paper 4e-11); the other three readings give p from 9.4e-14 to 2.6e-10. Ratios
+    0.799 at 0 degrees, 0.875 at 45, 0.927 at 90. 78 of 580 V1 units (96 with averaged 45) are left
+    out for a cell with a zero rate. Every other cortical area also has a significant main effect
+    (p from 5e-11 to 0.027).
+  deviations:
+  - Tertiles are formed on all responsive units of the region before units with a zero-rate cell
+    are left out, so the tertiles are not equal in the ANOVA (194, 192, 116 in V1); the paper does
+    not say how such units were handled.
+  - The mixed ANOVA is computed with the standard split-plot sums of squares and no sphericity
+    correction; the paper names no correction.
+- claim: fig2-v1-tuning-interaction
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig2-v1-tuning-interaction
+  notes: Interaction F = 3.28, p = 0.011 (log, pooled 45; paper 0.005); 6.3e-07 to 0.018 under the
+    other readings. The spread of ratios over relative orientation is 0.057 (low OSI), 0.125
+    (medium), 0.248 (high).
+- claim: fig2-v1-adaptation-at-all-orientations
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig2-v1-adaptation-at-all-orientations
+  notes: Pooled 45 degrees, Benjamini-Hochberg over the nine V1 cells, all eight other cells below
+    1 at corrected p < 0.05 (largest 0.012, medium OSI at 90); high OSI at 90 has ratio 0.993, p =
+    0.92 (paper 0.88). The same with the family of 72 cells. With Bonferroni 7 of 8 (V1 family) or
+    6 of 8 (all cells); with averaged 45, 7 of 8 under Benjamini-Hochberg.
+  deviations:
+  - The legend's "corrected for multiple comparisons" names no method; Benjamini-Hochberg, the
+    paper's stated method, is used (O6), and Bonferroni is shown.
+- claim: fig2-thalamus-no-tuning-dependence
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig2-thalamus-no-tuning-dependence
+  notes: Log ratios, pooled 45. LGN main effect F = 2.17, p = 0.12 (paper 0.28), interaction F =
+    1.37, p = 0.25 (0.24); LP F = 0.10, p = 0.91 (0.91), interaction F = 0.19, p = 0.95 (0.92). No
+    reading reaches 0.05; the smallest p is 0.073 (LGN main effect, averaged 45, log); on the ratio
+    scale LGN gives 0.28 and 0.30. Ratios per cell, LGN 0.879 to 0.991, LP 0.795 to 0.863.
+- claim: fig3a-v1-long-term
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig3a-v1-long-term
+  measured: 8
+  notes: Significant (FDR over n = 1 to 10) at every n from 1 to 8, not at 9 or 10; 8-back ratio
+    0.984. Eight of 12 readings of O1 and O3 give 8, the four per-orientation arithmetic readings
+    give 2, and one geometric reading 5. In 22 of 32 mice the mean V1 8-back log ratio is below
+    zero.
+- claim: fig3a-v1-double-exponential
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig3a-v1-double-exponential
+  measured:
+  - 14.21
+  - 0.816
+  - 3.755
+  - 6.714
+  notes: All four inside their Table 1 intervals under sign reading (a). Reading (b) fits the same
+    curve with a_slow = -3.76%, outside its interval as a signed value. Fits to the region's mean
+    log ratio (O5a) and to all unit values (O5b) give the same estimates, as every unit has a value
+    at every n. Eight of 12 readings of O1 and O3 put all four inside; the per-orientation
+    arithmetic readings put tau_slow on its bound of 50.
+  deviations:
+  - Fits start from four fixed starting points and keep the lowest residual; the paper does not
+    give its optimizer (a standard choice).
+- claim: fig3a-v1-half-life
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig3a-v1-half-life
+  measured: 13.96
+  notes: tau_slow 6.714 trials x 3 s x ln 2 = 13.96 s (13.97 s with the measured 3.003 s spacing).
+- claim: fig4-cumulative-adaptation
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig4-cumulative-adaptation
+  measured:
+  - 20.36
+  - 17.88
+  notes: Main reading 1-back 17.88% and cumulative 2- to 8-back 20.36%. The four pooled geometric
+    readings give 18.89 to 20.36% against 16.80 to 17.88%; the arithmetic and per-orientation
+    readings do not match.
+- claim: fig4b-linear-accumulation
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig4b-linear-accumulation
+  notes: With the both-orthogonal baseline (c) the predicted ratio is inside the bootstrapped 95%
+    interval of the observed one for all seven pairs (1-2 observed 0.765, 0.738 to 0.793, predicted
+    0.754), so pair readings (a) and (b) both hold, under all five seeds. With baseline (d) six of
+    seven pairs hold and pair 1-2 does not (0.788, 0.765 to 0.811), under all five seeds.
+- claim: fig3b-thalamus-short-term
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig3b-thalamus-short-term
+  notes: Counting significant adaptation (corrected p < 0.05 with the ratio below 1), the reading
+    O1a, O3a with pairs across blocks (O3d) meets the criterion, LGN only 1-back, LP to 2, cortex V1
+    8, LM 8, AL 7, RL 6, PM 7, AM 6. Under the main reading (pairs within blocks) RL stops at 5 and
+    the criterion fails, while LGN and LP still stop at 1 and 2. Counting significance in either
+    direction, LP is also significant at 3-back in the main reading (ratio 1.03) and LGN at 9-back
+    in the across-blocks reading, so only the partial rule would hold. With `noise` units kept LGN
+    also gains a significant 7-back. The question of what Figure 3B's borders mark is for the
+    paper's authors (finding).
+  deviations:
+  - Assumed that "significant adaptation" counts only ratios below 1; a two-tailed test also flags
+    ratios above 1, and the paper does not say whether Figure 3B's borders include those.
+  - Rests on the `noise` unit filter (see units-responsive-count).
+- claim: v1-vs-thalamus-welch
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:v1-vs-thalamus-welch
+  notes: Over n = 2 to 10 with Benjamini-Hochberg within each pair of regions, V1 is stronger than
+    LGN at exactly 2, 4 and 9 and than LP at 3, both unnormalized (LP also at 4) and normalized by
+    the region's mean 1-back log ratio (b); for reading (b), V1 against LP at 3-back t = 3.77,
+    corrected p = 0.002. Normalizing each unit by its own 1-back log ratio (a) finds none; 38 V1, 11
+    LGN and 8 LP units have a 1-back log ratio within 0.02 of zero. Over n = 2 to 50, 3 of the four
+    remain unnormalized and 1 under (b).
+- claim: fig3c-mice-long-term
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig3c-mice-long-term
+  notes: 4- to 8-back, cortex 31 of 32 mice (trials pooled; 30 with rates averaged) have orthogonal
+    above repeat, sign test p = 1.5e-08 (reading b); thalamus 14 of 23, p = 0.4, neither reading.
+- claim: decay-cortex-double-better
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:decay-cortex-double-better
+  notes: F tests on the region means, V1 p = 0.0015, LM 0.017, AL 8.0e-05, PM 0.0041, AM 0.011, RL
+    0.22 (paper RL 0.072); with all unit values, 4.2e-06 to 0.0021 and RL 0.12. Two of the five p
+    values (LM, AM) are above the paper's bound of 0.006.
+- claim: table1-extrastriate-tau-slow
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:table1-extrastriate-tau-slow
+  measured:
+  - 3.929
+  - 3.232
+  - 5.662
+  - 4.274
+  - 2.827
+  notes: AL, AM, LM, PM and RL tau_slow inside their Table 1 intervals; the six bootstrapped
+    intervals overlap under all five seeds (claim seed, V1 3.79 to 11.59, RL 1.97 to 35.11). V1's
+    tau_slow, 6.71, is the largest. All a_fast, tau_fast and a_slow are inside their intervals.
+    Bootstrap fits on a bound, dropped, 0 to 23 of 1000 per area (RL 23).
+- claim: decay-thalamus-single
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:decay-thalamus-single
+  measured:
+  - 0.031
+  - 0.712
+  - 6.48
+  - 16.85
+  notes: F tests not significant, LGN p = 0.81, LP 0.57 (unit values 0.62, 0.19); LGN tau 0.031 and
+    a 6.48%, LP tau 0.712 and a 16.85%, each inside its Table 1 interval. The double fits reach a
+    bound in both. With `noise` units kept the LGN tau falls to 0.000, outside its interval.
+  deviations:
+  - Rests on the `noise` unit filter (see units-responsive-count).
+- claim: fig5-repeat-suppression
+  outcome: partially_reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig5-repeat-suppression
+  measured:
+  - 0.757
+  - 0.922
+  notes: 2189 cortical units. 1-back repeat over blank 0.757 and orthogonal over blank 0.922, both
+    below 1. Repeat suppression lasts longer, significant by t tests with FDR at 1 to 4 and 7, by the
+    bootstrap interval at 1 to 5, 7 and 9; orthogonal at 1 and 2 (and 4 by the interval). The
+    criterion fails on two parts, under the claim's seed and the four others; orthogonal is still
+    below 1 at 2-back (0.972), and repeat is not significant at 8-back (0.999). Averaged over 100
+    subsampling draws, repeat is significant to 8-back and orthogonal still at 2-back. 24 to 30
+    blank trials per session serve as the 1-back baseline.
+  deviations:
+  - Repeat and orthogonal trials are subsampled per session and per n to the number of n-back blank
+    trials (Methods); the paper does not say whether it drew per session or per n.
+- claim: fig6c-static-v1-1back
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig6c-static-v1-1back
+  measured:
+  - 0.897
+  - 545
+  notes: 0.897 (t interval 0.889 to 0.905), p = 4e-85 (paper 2e-81), 545 V1 units. Eight of 24
+    readings fall in [0.89, 0.91], all with the pooled ratio.
+- claim: fig6c-static-other-areas-1back
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig6c-static-other-areas-1back
+  measured:
+  - 0.891
+  - 0.930
+  - 0.957
+  - 0.900
+  - 61
+  - 17
+  notes: Extrastriate 0.891 to 0.930 (largest corrected p 1.7e-09); LGN 0.957, p = 0.0025; LP
+    0.900, p = 0.0045; counts 61 and 17.
+- claim: fig6d-static-consistent-across-mice
+  outcome: partially_reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig6d-static-consistent-across-mice
+  notes: Cortex 32 of 32 mice (p = 4.7e-10); thalamus 15 of 17 mice with static-responsive thalamic
+    units (p = 0.0023), so only reading (b) holds there.
+- claim: fig7a-static-v1-long-term
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig7a-static-v1-long-term
+  measured:
+  - 20
+  - 8.255
+  - 0.533
+  - 2.065
+  - 9.47
+  notes: FDR family 1 to 20 (a), largest significant n 20 (20-back ratio 0.991, corrected p =
+    9.3e-05); family 1 to 50 (b) gives 49. Fit a_fast 8.26%, tau_fast 0.533, a_slow 2.07%, tau_slow
+    9.47, all inside Table 2.
+- claim: fig7b-static-cortex-decay
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig7b-static-cortex-decay
+  measured:
+  - 13.582
+  - 6.287
+  - 8.24
+  - 19.072
+  - 19.696
+  notes: F tests p from 9.5e-12 to 1.4e-05 over the six cortical areas (AM 1.4e-05 is above the
+    paper's bound of 1e-5); AL, AM, LM, PM, RL tau_slow inside Table 2; bootstrapped intervals
+    overlap under all five seeds.
+- claim: fig7-static-lgn-single
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig7-static-lgn-single
+  measured:
+  - 2.771
+  - 4.00
+  notes: F test p = 0.20 (paper 0.22; unit values 0.14); tau 2.77 trials and a 4.00%, inside Table
+    2. The LGN static tau is longer than the drifting one (0.031), reported only.
+- claim: fig7b-static-areas-long-term
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig7b-static-areas-long-term
+  measured: 20
+  notes: Family 1 to 20, largest significant n V1 20, LM 15, AL 20, RL 17, PM 20, AM 20, LGN 5, LP 9;
+    reading (c) holds (some area in 18 to 22), (d) does not (LM, RL), and both thalamic nuclei stay
+    below every cortical area. Family 1 to 50, five cortical areas reach 46 to 49, AM 22.
+- claim: fig7c-static-long-term-across-mice
+  outcome: partially_reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig7c-static-long-term-across-mice
+  notes: 5- to 20-back, cortex 30 of 32 mice (p = 2.5e-07), V1 29 of 32 (p = 2.6e-06); reading (b)
+    holds and (a) does not. Thalamus 11 of 17 (p = 0.33), reported only.
+- claim: fig8-no-spurious-long-term
+  outcome: not_reproduced
+  seed_sensitive: true
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:fig8-no-spurious-long-term
+  notes: The recovered 1-back ratio contains the ground truth in every run (drifting 0.821, static
+    0.897). Claim seed, Poisson noise at the V1 median rate (9.97 Hz drifting, 9.04 Hz static),
+    drifting has no n in 2 to 10 whose interval excludes 1, but static 5- and 6-back do (0.986,
+    0.987). No noise, static passes and drifting 2- and 6-back exclude 1 (0.996, 1.003). No reading
+    meets the criterion or its partial rule under the claim's seed. Of the four other seeds, one
+    (+1000) meets reading (a, c); the others fail. Without noise the spurious ratios stay within
+    0.0037 of 1 (drifting) and 0.0007 (static) over n = 2 to 10, against V1 drifting ratios of
+    0.918 to 0.984 at 2- to 8-back.
+  deviations:
+  - The paper does not give the simulated neuron's rate or noise; Poisson counts at the V1 median
+    orthogonal 1-back rate, and no noise, were run. A question for the authors (finding).
+- claim: robust-threshold-preferred-window
+  outcome: reproduced
+  notebook: reproduce_fritsche_2022.ipynb
+  output: claim:robust-threshold-preferred-window
+  notes: All seven variants meet the reading. Drifting 2.5 Hz (656 V1 units, significant to 7) and
+    10 Hz (430, to 8), preferred-orientation trials (to 8); static 2.5 Hz, 10 Hz and 0 to 100 ms all
+    reach 20 within the family 1 to 20. V1 F tests p <= 0.0105; LGN only at 1-back for drifting.
+  deviations:
+  - For the static 0 to 100 ms window, units are selected on 0 to 250 ms (545 V1) as the main
+    variant, and on 0 to 100 ms (97 V1) as a second; the Methods do not say which.
+findings:
+- kind: metadata_insufficient
+  statement: The units table holds every sorted unit (74658), with a `quality` column marking 20182
+    as `noise` and the AllenSDK quality metric columns (isi_violations, amplitude_cutoff,
+    presence_ratio and others), none of which has a description in the files. The paper's unit
+    counts are matched when the `noise` units are left out, as the AllenSDK's units table does;
+    nothing in the files says that they should be, and keeping them changes the thalamic decay
+    results.
+  about: data
+  severity: minor
+- kind: other
+  about: data
+  statement: Three sessions (715093703, 719161530, 721123822) hold 598 drifting gratings in place
+    of the 600 the paper and the stimulus design give; one or two direction and frequency
+    conditions there have 14 presentations.
+  severity: minor
+- kind: other
+  about: data
+  statement: Thirteen sessions list invalid intervals tagged with a probe, totalling 12 to 2931 s,
+    and several overlap the drifting or static grating epochs. Their meaning is not described in
+    the files; the paper does not mention them, and they are not applied here.
+  severity: minor
+- kind: metadata_insufficient
+  about: data
+  statement: 3723 of the units that pass the quality metrics sit on channels whose area is `grey`
+    and 686 on `VIS`, labels that name no structure; they reach 50 responsive units, the paper's
+    rule for a region, and are left out here.
+  severity: minor
+- kind: other
+  about: data
+  statement: Checks that passed. 32 mice, one session each, with the genotypes the paper gives;
+    stimulus parameters, durations and spacing as the Methods describe; no recording or unit
+    deposited twice; the V1 orientation tuning is locked to the stimulus tables in every session
+    (true labels against labels shifted by whole presentations).
+  severity: none
+- kind: other
+  about: data
+  statement: Static blank sweeps number 189 to 197 of 6000 presentations per session, about one in
+    31, where the Methods say roughly one in 25.
+  severity: minor
+- kind: methods_unavailable
+  statement: For Figure 3B, do the borders marking significance (p < 0.05, FDR per area) include
+    n-back ratios significantly above 1? Here LP is significant at 3-back with a ratio of 1.03, and
+    the outcome of fig3b-thalamus-short-term depends on whether that counts; adaptation below 1 was
+    assumed.
+- kind: methods_unavailable
+  statement: For the simulated neuron of Figure 8, what rate and noise model were used, and was the
+    95% interval across the 32 sequences a t interval or a bootstrap? With Poisson noise at about 10
+    Hz single n-back intervals exclude 1 at chance-like rates, and the claim's outcome depends on
+    the seed.
+- kind: methods_unavailable
+  statement: Were units the Allen files label `noise` left out (the AllenSDK units table omits them)?
+    The paper's counts are matched with that filter, and the thalamic decay fits change without it.
+    The analysis code at doi:10.34973/kpt9-y956 is restricted and could not be read.
