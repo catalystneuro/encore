@@ -27,25 +27,24 @@ inputs:
   source: https://github.com/kaushik-l/tc-learning at commit 2aa94dd5fb381ffb30a56962a3be20b96f63868b
 outcomes:
 - claim: wm-sessions-link
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_lakshminarasimhan_2024.ipynb
   output: claim:wm-sessions-link
   measured:
-  - 5
+  - 11
   - 151
   - 72
   notes: Of the 24 mice in the dandiset, one has both ALM and thalamic units, anm00264943. Its five
     ALM sessions hold 151 units (30, 18, 39, 46 and 18) and its six thalamic sessions hold 72 units
     (11, 13, 18, 10, 10 and 10), the paper's totals exactly, counting every sorted unit (the files
-    carry no isolation label). No session holds both regions, as the paper says ("in separate
-    sessions"). The paper's five sessions match the ALM sessions (Figure 6C, n = 5); the thalamic
-    units come from six more, eleven sessions in all. The only other mouse with ALM units next to
-    another region (anm00261335) has SNr units, not thalamic ones. No spike train or trial table
-    is deposited twice.
-  deviations:
-  - The claim says five sessions; the mouse has five ALM sessions and six thalamic sessions. The
-    measured session count is that of the ALM sessions, which is what the paper's per-session
-    analysis (Figure 6C, n = 5) uses.
+    carry no isolation label). The mouse has eleven sessions, not the five the expected value gives
+    with tolerance 0, and no session holds both regions (computed from the regions each file names),
+    as the paper says ("in separate sessions"). The paper's five sessions match the ALM sessions
+    (Figure 6C, n = 5). The mouse and the unit totals link; the session count does not. The only
+    other mouse with ALM units next to another region (anm00261335) has SNr units, not thalamic ones.
+    No spike train or trial table is deposited twice. The dependent claims are tested on the eleven
+    sessions; the readout claims use only the five ALM sessions, and the thalamic claims pair the six
+    thalamic sessions with them.
 - claim: fig6-wm-choice-r2
   outcome: not_reproduced
   notebook: reproduce_lakshminarasimhan_2024.ipynb
@@ -57,10 +56,15 @@ outcomes:
     -29.2 (median 0.168 and 0.340). No reading comes near 0.97. Over the five seeds the means run
     from -30.6 to 0.10 and the medians from -1.08 to 0.39. The training-set R2 of the same fits is
     0.95 to 1.00, so the OLS readout on 18 to 53 units over 260 time points fits the training
-    averages and does not generalize to the test averages of 4 to 13 trials per choice. The variant
+    averages and does not generalize to the test averages of 4 to 9 trials per choice. The variant
     that averages each unit only over trials within its first-to-last-spike span (U2) gives at most
-    0.506. The training-set values are close to the paper's 0.97; whether the paper's R2 is
-    in-sample is asked of the paper's authors (findings).
+    0.506. Diagnostics (seed + 1, R2, T1) show that the 10% test sets are noisy. The readout's
+    outputs on the two halves of a test set correlate at 0.145 (Spearman-Brown reliability of the
+    whole test set 0.25). With 10%, 30% and 50% test sets the test R2 means are -0.089, 0.371 and
+    -0.333 and the medians 0.268, 0.515 and 0.313, none near 0.97. The training-set values are close
+    to the paper's 0.97; whether the paper's R2 is in-sample is asked of the paper's authors
+    (findings). The partial link (eleven sessions, not five) does not bear on this claim, which uses
+    the five ALM sessions.
   deviations:
   - The smoothing grid (10, 25, 50, 100 and 200 ms), the 10 ms bin and the padding before smoothing
     are standard choices; the paper gives none of them (claims W3, W4).
@@ -69,22 +73,27 @@ outcomes:
   - Each unit is averaged over all selected trials (U1), as the files give no interval over which
     each unit was recorded; U2 is shown as a variant and gives the same outcome.
 - claim: fig6c-wm-leading-pcs-drive-choice
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_lakshminarasimhan_2024.ipynb
   output: claim:fig6c-wm-leading-pcs-drive-choice
-  notes: Under the claim seed with U1, both readings hold with the pooled, subsampled readout (R2)
-    for T1 and for T2. For T1 the largest alignment is with PC 2 (0.110) and the mean over PCs 1 to
-    3 exceeds that over PCs 4 to 16 (0.081 against 0.063); for T2 the largest is with PC 1 (0.097)
-    and the means are 0.068 against 0.063. Both readings hold under some reading for all five seeds.
-    Per session (R1, the reading of Figure 6C, n = 5), reading (a) fails for both trial readings, the
-    largest alignment being with PC 16 (0.188 for T1), and (b) holds only for T1 (0.107 against
-    0.107). The alignments are small. A random direction has a mean alignment of 0.110 with a fixed
-    direction in 53 dimensions, and the R2 profiles lie between 0.046 and 0.110. The readout behind
-    them does not predict test data (fig6-wm-choice-r2). The outcome rests on the criterion's rule
-    that one reading suffices; the reading that matches the figure's n = 5 does not.
+  notes: The criterion names both readouts, per session (R1, Figure 6C, n = 5) and pooled and
+    subsampled (R2), and lets only the trial reading vary. Under the claim seed with U1, both
+    readings of "leading" hold under R2 for T1 and for T2. For T1 the largest alignment is with PC 2
+    (0.110) and the mean over PCs 1 to 3 exceeds that over PCs 4 to 16 (0.081 against 0.063); for T2
+    the largest is with PC 1 (0.097) and the means are 0.068 against 0.063. Both hold under some
+    reading for all five seeds. Under R1, reading (a) fails for both trial readings, the largest
+    alignment being with PC 16 (0.188 for T1, SEM 0.059), and (b) holds only for T1 (0.107 against
+    0.107). Against chance the leading PCs carry less of the readout than a random direction would.
+    Under R2 the mean squared alignment with PCs 1 to 3 is 0.0096 (T1) and 0.0076 (T2), against 1/53
+    = 0.0189, and PCs 1 to 16 hold 0.116 and 0.113 of the readout's squared norm, against 16/53 =
+    0.302; per session that share is below its chance level in all five sessions under both trial
+    readings (0.045 to 0.593, against 0.348 to 0.889). The readout lies mostly in PCs 17 to 53 and
+    does not predict test data (fig6-wm-choice-r2), so the statement's "large influence" of the
+    leading PCs is not supported.
   deviations:
-  - The criterion's readings R1 and R2 give different results; the claim holds under R2 only, which
-    the criterion allows. Both are shown.
+  - The criterion's readouts R1 and R2 give different results. Both are required, as the criterion
+    lists them together and lets only the trial reading vary; (a) and (b) hold under R2, only (b)
+    under R1 for T1. The chance levels of the alignments are diagnostics, not part of the criterion.
 - claim: figs6d-wm-thalamic-r2
   outcome: not_reproduced
   notebook: reproduce_lakshminarasimhan_2024.ipynb
@@ -96,7 +105,14 @@ outcomes:
     test R2 under P1. The U2 variant gives -1.91 to -3.80. Over the five seeds the means run from
     -5.47 to -1.98. P3 does not apply, as no session holds both ALM and thalamic units. The
     training-set R2 of the same regressions is 0.73 to 0.77 under P1 and near 1 under P2, close to
-    the paper's 0.70 under P1; see the question to the paper's authors (findings).
+    the paper's 0.70 under P1; see the question to the paper's authors (findings). Noise ceilings
+    (seed + 1, T1) show that a mean test-set R2 near 0.70 is out of reach with 10% test sets. The
+    averages of the two halves of a unit's test set correlate at 0.04 to 0.17 on average over the
+    sigma grid (reliability of the whole test set 0.07 to 0.28), and a unit's own training-set
+    average predicts its test-set average with a mean R2 of -0.05 to 0.06. With 30% and 50% test sets
+    the mean test R2 of T1, P1, U1 is -1.57 and -1.72. The thalamic units come from six sessions
+    beside the five ALM sessions (wm-sessions-link, partial), and are paired with the ALM sessions as
+    the deviation says.
   deviations:
   - Thalamic units and ALM units come from different sessions, so each thalamic unit's trial
     averages (split 80/10/10 within its own session) are paired with the ALM averages of the
@@ -114,9 +130,14 @@ outcomes:
     any of the five seeds. With U1 over the five seeds, N1 gives at most 0.31 under P1 and -1.02 to
     2.01 under P2, where a few units with test R2(16) near 0 dominate the mean; N2 gives -0.09 to
     0.11; N3 gives 0.76 to 0.86. The test-set R2(k) is 0.005 at k = 1 and falls to -0.93 at k = 16
-    (T1, P1), and no unit has a positive test R2(16), so the normalizations do not measure a
-    fraction of explainable variance. On the training set (a diagnostic) N2 gives 0.68 and N3 0.70
-    under T1 and P1.
+    (T1, P1). Under the claim seed no unit has a positive test R2(16) under P1 (6 under T1 and P2,
+    10 under T2 and P2), and none has a positive test R2 from all units under any reading, so the
+    denominators of N1 and N2 are not positive and these ratios are not fractions of explainable
+    variance. N3 rescales each curve between its minimum and maximum; 48 of the 72 units have their
+    largest test R2(k) at k = 1 (T1, P1), so N3 at k = 5 measures the fall of the curve. With 50% test
+    sets (a diagnostic, seed + 1) the mean test R2(k) peaks at 0.043 (k = 3) and N1, N2 and N3 give
+    3.89, -0.16 and 0.87. On the training set (a diagnostic) N2 gives 0.68 and N3 0.70 under T1 and
+    P1. The partial link bears on this claim as on figs6d-wm-thalamic-r2.
   deviations:
   - Each normalization is applied to the unit's mean R2(k) curve over splits and subsamples, a
     choice the paper does not state.
@@ -131,10 +152,16 @@ outcomes:
     p-value is below 0.001 under all five seeds. Every 16-PC reading under the claim seed gives
     p < 0.05; T2 with P1 gives p >= 0.05 under two of the four other seeds (p 0.21 and 0.052). With
     the weights of the regression on all units, the variant, the readout alignment is the larger
-    (one-sided p = 1). Both alignments are below the mean alignment of a random direction (0.203
-    within the 16-PC span, 0.109 in 53 dimensions), and the regressions behind the weights do not
-    predict test data (figs6d-wm-thalamic-r2). The paper's reported p = 0.17 for this dataset is
-    not matched.
+    (one-sided p = 1, two-sided p below 0.001, dz -10.5), which meets the criterion's p >= 0.05 by an
+    effect in the other direction; the main reading decides. The 16-PC weights lie in the span of
+    PCs 1 to 16, where a random direction has mean alignment 0.203 with PC 1 and 0.059 with the
+    readout, which has 0.29 of its norm in the span. Against these chance levels the order reverses
+    (a diagnostic) as the PC 1 alignment is 0.46 of its chance level and the readout alignment 1.19
+    times its own (chance-corrected dz -2.36, two-sided p below 0.001); with the readout taken at each
+    thalamic unit's own sigma the ratio is 1.21 and the raw one-sided p stays below 0.001. The test
+    the criterion gives thus compares two alignments with different chance levels. The regressions
+    behind the weights do not predict test data (figs6d-wm-thalamic-r2). The paper's reported
+    p = 0.17 for this dataset is not matched.
   deviations:
   - The main reading uses P1, as the Figure S6 legend says the ALM population was subsampled "in all
     analysis", and T1, which claims W2 lists first; all 16-PC readings give the same outcome under
@@ -172,34 +199,35 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Needs 40 runs of 10,000 learning trials for each of M = 1 to 128. One learning trial of the
-    paper's model takes about 4 to 5 ms at M = 1 and about 22 ms at M = 128 in the notebook, about 8 h on one core
-    and 2 h on four for the curve, over the one-hour limit of a notebook. Not run.
+    paper's model takes 9 to 10 ms at M = 1 and 24 to 27 ms at M = 128 in the notebook's runs (timed
+    after an untimed first call), about 12 to 13 h on one core and about 3 h on four for the curve, over the one-hour
+    limit of a notebook. Not run.
 - claim: fig1d-cortical-feedback-alignment
   outcome: blocked
   blocked_by: too_large
-  notes: Uses the simulations of fig1c-tc-learning-improves-with-thalamus (about 8 h on one core).
+  notes: Uses the simulations of fig1c-tc-learning-improves-with-thalamus (about 12 h on one core).
     Not run.
 - claim: fig1cd-corticothalamic-plasticity-fails
   outcome: blocked
   blocked_by: too_large
   notes: Needs the simulations of fig1c-tc-learning-improves-with-thalamus twice over (with and
     without corticothalamic plasticity) and a search over four corticothalamic learning rates, more
-    than 16 h on one core by the notebook's timing. Not run.
+    than 24 h on one core by the notebook's timing. Not run.
 - claim: figs1d-small-initial-weights
   outcome: blocked
   blocked_by: too_large
   notes: As fig1cd-corticothalamic-plasticity-fails, with two readings of which weights start small;
-    more than 16 h on one core. Not run.
+    more than 24 h on one core. Not run.
 - claim: fig2d-metalearned-error-reduction
   outcome: blocked
   blocked_by: too_large
   notes: Meta-learning runs 10,000 epochs of 200 learning trials at M = 32 for each of 40
-    initializations; the forward simulation alone is about 5 h per run by the notebook's timing,
+    initializations; the forward simulation alone is about 8 h per run by the notebook's timing,
     before backpropagation through time. Not run.
 - claim: figs2a-random-feedback
   outcome: blocked
   blocked_by: too_large
-  notes: Depends on the meta-learning of fig2d-metalearned-error-reduction (about 5 h per run). Not
+  notes: Depends on the meta-learning of fig2d-metalearned-error-reduction (about 8 h per run). Not
     run.
 - claim: fig2e-alignment-task-dependent
   outcome: blocked
@@ -214,23 +242,23 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Three corticothalamic structures in two tasks, 40 runs of 10,000 trials each at M = 1;
-    about 0.5 h per set and about 3 h in all on one core by the notebook's timing.
-    The other simulation claims are estimated from the same rate of about 0.5 h per set of 40 runs
-    at M = 1. Not run.
+    about 1 h per set and about 6 h in all on one core by the notebook's timing. The other
+    simulation claims are estimated from the same rate of about 1 h per set of 40 runs at M = 1.
+    Not run.
 - claim: fig3cd-advantage-persists-with-m
   outcome: blocked
   blocked_by: too_large
-  notes: The sets of fig3ab-single-thalamic-neuron for M = 1 to 256, many times its 3 h. Not run.
+  notes: The sets of fig3ab-single-thalamic-neuron for M = 1 to 256, many times its 6 h. Not run.
 - claim: fig3ef-task-type-not-complexity
   outcome: blocked
   blocked_by: too_large
-  notes: The sets of fig3ab-single-thalamic-neuron at five complexity levels per task, about 15 h on
+  notes: The sets of fig3ab-single-thalamic-neuron at five complexity levels per task, about 30 h on
     one core. Not run.
 - claim: fig4ab-network-size-compression
   outcome: blocked
   blocked_by: too_large
   notes: Cortical networks up to N = 2,048 at two compression ratios in two tasks, 40 runs each; one
-    trial at N = 256 already takes about 4 ms or more, and the cost grows with N squared. Not run.
+    trial at N = 256 already takes about 10 ms or more, and the cost grows with N squared. Not run.
 - claim: fig4cd-partial-alignment
   outcome: blocked
   blocked_by: too_large
@@ -244,27 +272,27 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Five complexity levels with four readings (two rho values, PCs before or after learning),
-    40 runs of 10,000 trials each at M = 16, more than 10 h on one core. Not run.
+    40 runs of 10,000 trials each at M = 16, more than 20 h on one core. Not run.
 - claim: figs4cd-gradual-structure
   outcome: blocked
   blocked_by: too_large
-  notes: Four corticothalamic rates and a random model in two tasks, 40 runs each at M = 1, about 5 h
+  notes: Four corticothalamic rates and a random model in two tasks, 40 runs each at M = 1, about 10 h
     on one core. Not run.
 - claim: figs4ab-needs-thalamocortical-learning
   outcome: blocked
   blocked_by: too_large
   notes: Structured and random models with and without thalamocortical learning in two tasks, eight
-    sets of 40 runs, about 4 h on one core. Not run.
+    sets of 40 runs, about 8 h on one core. Not run.
 - claim: figs4ef-noise-robustness
   outcome: blocked
   blocked_by: too_large
-  notes: Two models at four noise levels in two tasks, sixteen sets of 40 runs, about 8 h on one
+  notes: Two models at four noise levels in two tasks, sixteen sets of 40 runs, about 16 h on one
     core. Not run.
 - claim: figs5ab-bptt-structure-irrelevant
   outcome: blocked
   blocked_by: too_large
   notes: Needs training by backpropagation through time for three structures in two tasks, 40 runs
-    each, and the RFLO sets of fig3ab-single-thalamic-neuron (about 3 h). Not run.
+    each, and the RFLO sets of fig3ab-single-thalamic-neuron (about 6 h). Not run.
 - claim: figs5cd-thalamic-recurrence
   outcome: blocked
   blocked_by: methods_underspecified
@@ -286,7 +314,7 @@ outcomes:
 - claim: fig5b-reaching-pc-prep-readout-exec
   outcome: blocked
   blocked_by: too_large
-  notes: Nine combinations of preparatory and execution structures, 40 runs each, about 4.5 h on one
+  notes: Nine combinations of preparatory and execution structures, 40 runs each, about 9 h on one
     core at the M = 1 rate. Not run.
 - claim: figs5j-reaching-robust
   outcome: blocked
@@ -337,8 +365,11 @@ findings:
     test trials, as the STAR Methods say, or on the trials used to fit? With OLS on trial averages as
     the Methods describe, test-set R2 is negative here (choice at most -0.25, thalamic units -2.1 on
     average), while training-set R2 is close to the paper's values (choice 0.95 to 1.00, thalamic
-    0.74, top-5 fraction 0.68). A regularized regression, a different split, or in-sample R2 would
-    each explain the difference.
+    0.74, top-5 fraction 0.68). With 10% test sets the thalamic test-set averages are mostly noise
+    here (the two halves of a unit's test set correlate at 0.04 to 0.17 on average, a reliability of
+    at most 0.28), so a test-set R2 of 0.70 is out of reach for any model of the unit's mean,
+    regularized or not. In-sample R2, or R2 on averages over many more trials, would explain the
+    difference.
 - kind: paper_inconsistency
   statement: The STAR Methods say the working memory dataset "includes 5 behavioral sessions from one
     mouse", but the 72 thalamic units of that mouse come from six sessions besides the five ALM
@@ -354,3 +385,352 @@ findings:
   about: paper
   statement: The motor control recordings of Sauerbrei et al. (2020), used for half of Figure 6 and
     Figure S6, are not deposited in any archive the paper names; six claims cannot be tested.
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper; the verifier checked the archive for
+    the blocked claims and tested the helpers on synthetic inputs. Report in transcripts/lakshminarasimhan-2024/verifier-1-report.md.
+  results:
+  - claim: wm-sessions-link
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Only one mouse, anm00264943, has both ALM and thalamic units, and its totals match exactly,
+      151 ALM and 72 thalamic. It has 11 sessions, though, 5 ALM and 6 thalamic. The criterion expects
+      5 sessions with tolerance 0, and the notebook never checks the session count; ok tests only the
+      unit totals. The link itself is not in doubt. "Sessions holding both: 0" is a hard-coded string,
+      not computed.'
+    response: 'Changed to partially reproduced, with 11 as the measured session count: the mouse and the
+      unit totals link, the session count does not. The notebook now computes the session count against
+      the expected 5 and the number of sessions holding both regions from the regions each file names
+      (0). The dependent claims'' notes say how the partial link bears on them.'
+  - claim: fig6-wm-choice-r2
+    agrees: true
+    outcome: not_reproduced
+    reason: The largest test R2 over R1/R2 x T1/T2 at the claim seed is -0.247; across five seeds the
+      means run from -30.6 to 0.10 and the medians top out at 0.39, against a band of 0.873 to 1. Training
+      R2 is 0.95 to 0.99, close to the paper's 0.97, but the criterion is test-set R2. The negative test
+      R2 is not a code bug (helpers tested on synthetic spikes); the paper's procedure, OLS on 2 x 130
+      heavily smoothed bins with 10% test sets of about 5 to 8 trials per choice, is very fragile, and
+      the outcome says more about the method than about the data.
+    response: 'Outcome kept. Added the outputs asked for: the correlation of the readout''s outputs on
+      the two halves of the test set (0.145, reliability of the whole test set 0.25) and the test R2 with
+      10%, 30% and 50% test sets (means -0.089, 0.371 and -0.333, medians 0.268, 0.515 and 0.313). Corrected
+      the test trials per choice to 4 to 9. The question to the paper''s authors on in-sample R2 stays.'
+  - claim: fig6c-wm-leading-pcs-drive-choice
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Read literally, the criterion is met: under R2 (pooled units) PC 1 or 2 is the argmax and
+      PCs 1 to 3 beat 4 to 16 at every seed for T1. Under R1 (per session, which matches Figure 6C''s
+      n = 5) the argmax is PC 16 at every seed. Even under R2 the PC1 and PC2 alignments (0.077 and 0.110)
+      are at or below the random-direction value of 0.110 for 53 units. The summed squared alignment over
+      PCs 1 to 16 is about 0.075, where a random direction gives 16/53, about 0.30, so the readout lies
+      mostly in PCs 17 to 53, against a large influence of the leading PCs. The readout analysed also
+      has negative test R2.'
+    response: Changed to partially reproduced. The criterion lists R1 and R2 together and lets only the
+      trial reading vary, so both readouts count; (a) and (b) hold under R2 and only (b) under R1 for
+      T1. Added the alignment with every PC against chance (under R2 the mean squared alignment with PCs
+      1 to 3 is 0.0096 and 0.0076 against 1/53 = 0.0189, and PCs 1 to 16 hold 0.116 and 0.113 of the squared
+      norm against 0.302; per session the share is below chance in all five sessions) and the R1 standard
+      errors as numbers.
+  - claim: figs6d-wm-thalamic-r2
+    agrees: true
+    outcome: not_reproduced
+    reason: Mean test R2 runs from -5.47 to -1.98 over all seeds and readings, and no unit is positive
+      under P1, against 0.70 +/- 0.01. Training R2 is 0.74 (P1). Whether 0.70 is reachable at all with
+      10% test sets could not be checked; a noise ceiling would settle it.
+    response: 'Outcome kept. Added the noise ceilings asked for: with 10% test sets the two halves of
+      a unit''s test set correlate at 0.04 to 0.17 on average over the sigma grid (reliability 0.07 to
+      0.28), and a unit''s training-set average predicts its test-set average with a mean R2 of -0.05
+      to 0.06, so 0.70 is out of reach on these test sets. Added the main reading with 30% and 50% test
+      sets (-1.57 and -1.72).'
+  - claim: fig6d-wm-top5-pcs
+    agrees: true
+    outcome: not_reproduced
+    reason: No combination of T, P and N falls within 0.59 to 0.67 at any seed. The underlying test R2(k)
+      is negative for every unit at k = 16, so the N1, N2 and N3 ratios are undefined, not merely off.
+      N1 and N2 are ratios of negative R2 values, and N3 min-max rescales curves that decrease with k,
+      so its 0.84 at k = 5 only reflects that decline; these are printed as if they were explainable-variance
+      fractions.
+    response: Outcome kept. The notebook now prints, per reading, how many units have a positive denominator
+      for N1 and N2 (none under P1) and how many units have their largest R2(k) at k = 1 (48 of 72), and
+      the conclusion and notes say that none of the ratios is a fraction of explainable variance. Added
+      the main reading with 50% test sets as a diagnostic.
+  - claim: figs6f-ct-alignment-not-significant
+    agrees: true
+    outcome: not_reproduced
+    reason: This is a claim of absence, and at the claim seed every 16-PC reading gives p < 0.05; the
+      main reading gives p = 8.3e-6, and only T2/P1 at seeds +2000 and +4000 reach p >= 0.05. The all-units
+      variant gives p = 1.0, a large effect in the opposite direction, which does not fit "difference
+      not significant" either. w_tc is confined to the top-16 PC span, which holds about 27% of the readout's
+      norm, so a random vector in it would align about 0.20 with PC1 and about 0.055 with the readout;
+      the observed 0.094 and 0.071 put PC1 below its chance level and the readout above its own, so the
+      test, as the criterion specifies it, does not compare like with like. The criterion's p >= 0.05
+      is satisfied trivially by a strong effect in the opposite direction. The all-units readout alignment
+      is inflated by the shared (H^T H)^-1 factor, and w_ro is taken at the readout's best sigma while
+      w_tc and U come from each thalamic unit's best sigma.
+    response: Outcome kept. Added the chance levels per fit in the 16-PC span (0.203 with PC 1, 0.059
+      with the readout, which has 0.29 of its norm in the span) and the comparison against them (PC 1
+      at 0.46 of chance, readout at 1.19, dz -2.36), a two-sided p for every reading, and the readout
+      taken at each thalamic unit's own sigma (same outcome, raw one-sided p below 0.001). The notes say
+      the all-units variant meets p >= 0.05 by an effect in the other direction and that the main reading
+      decides. The criterion's one-sided rule follows the Figure S6F legend ("Statistics of a one-sided
+      paired t-test are shown"), so it is not a misreading of the paper and no question was added.
+  - claim: fig6-motor-hand-r2
+    agrees: true
+    outcome: blocked
+    reason: DANDI:000009 holds only ALM, SNr and thalamus extracellular files plus intracellular files,
+      with no motor cortex and no hand tracking. A DANDI search for "Sauerbrei", "Hantman", "motor thalamus"
+      and "reach-to-grasp" finds no Sauerbrei et al. 2020 deposit (000221 is a different study). No part
+      can be tested.
+    response: No change needed.
+  - claim: fig6c-motor-low-variance-pcs
+    agrees: true
+    outcome: blocked
+    reason: DANDI:000009 holds only ALM, SNr and thalamus extracellular files plus intracellular files,
+      with no motor cortex and no hand tracking. A DANDI search for "Sauerbrei", "Hantman", "motor thalamus"
+      and "reach-to-grasp" finds no Sauerbrei et al. 2020 deposit (000221 is a different study). No part
+      can be tested.
+    response: No change needed.
+  - claim: figs6d-motor-thalamic-r2
+    agrees: true
+    outcome: blocked
+    reason: DANDI:000009 holds only ALM, SNr and thalamus extracellular files plus intracellular files,
+      with no motor cortex and no hand tracking. A DANDI search for "Sauerbrei", "Hantman", "motor thalamus"
+      and "reach-to-grasp" finds no Sauerbrei et al. 2020 deposit (000221 is a different study). No part
+      can be tested.
+    response: No change needed.
+  - claim: fig6d-motor-top5-pcs
+    agrees: true
+    outcome: blocked
+    reason: DANDI:000009 holds only ALM, SNr and thalamus extracellular files plus intracellular files,
+      with no motor cortex and no hand tracking. A DANDI search for "Sauerbrei", "Hantman", "motor thalamus"
+      and "reach-to-grasp" finds no Sauerbrei et al. 2020 deposit (000221 is a different study). No part
+      can be tested.
+    response: No change needed.
+  - claim: fig6e-motor-single-trial
+    agrees: true
+    outcome: blocked
+    reason: DANDI:000009 holds only ALM, SNr and thalamus extracellular files plus intracellular files,
+      with no motor cortex and no hand tracking. A DANDI search for "Sauerbrei", "Hantman", "motor thalamus"
+      and "reach-to-grasp" finds no Sauerbrei et al. 2020 deposit (000221 is a different study). No part
+      can be tested.
+    response: No change needed.
+  - claim: fig6d-more-pcs-in-motor-task
+    agrees: true
+    outcome: blocked
+    reason: The comparison needs the motor data. The working memory half is tested and fails.
+    response: No change needed.
+  - claim: fig1c-tc-learning-improves-with-thalamus
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig1d-cortical-feedback-alignment
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig1cd-corticothalamic-plasticity-fails
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs1d-small-initial-weights
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig2d-metalearned-error-reduction
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs2a-random-feedback
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig2e-alignment-task-dependent
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs2b-prealignment-irrelevant
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig3ab-single-thalamic-neuron
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig3cd-advantage-persists-with-m
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig3ef-task-type-not-complexity
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig4ab-network-size-compression
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig4cd-partial-alignment
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig4ef-model-pcs-and-thalamus
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs3c-readout-shifts-with-complexity
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs4cd-gradual-structure
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs4ab-needs-thalamocortical-learning
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs4ef-noise-robustness
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs5ab-bptt-structure-irrelevant
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs5cd-thalamic-recurrence
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited; figs5cd is methods_underspecified and follows its criterion.
+    response: No change needed.
+  - claim: figs5ef-bptt-corticothalamic
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs5gh-corticocortical-learning
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: fig5b-reaching-pc-prep-readout-exec
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.
+  - claim: figs5j-reaching-robust
+    agrees: true
+    outcome: blocked
+    reason: The data are not deposited. The timed RFLO run gives at least 14.5 h for fig1c alone. The
+      M = 1 time (22.7 ms) is inflated by first-call overhead, since M = 8 takes 9.6 ms, but the total
+      still exceeds the limit.
+    response: The timing now follows an untimed first call (M = 1 takes 9 to 10 ms per trial, about 1
+      h per set of 40 runs; 12 to 13 h for the fig1c curve), and the notes of every simulation claim give
+      the estimates from the new timing. Outcome kept.

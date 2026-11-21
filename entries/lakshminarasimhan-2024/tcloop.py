@@ -25,7 +25,8 @@ in the header of claims/lakshminarasimhan-2024.yaml, which cite the paper.
   cut to the analysis window, so that the edges are not set to zero (standard
   choice).
 - Split: 80% training, 10% validation, 10% test, at random within each choice
-  (claims W5; Methods, "Estimation of readout weights").
+  (claims W5; Methods, "Estimation of readout weights"). Larger test fractions
+  (the training set shrinks to match) are run only as diagnostics.
 - Activity: per choice, trial-averaged rates, left then right concatenated in time
   (claims W6; Methods).
 - Readout: OLS of c(t) (-1 left, +1 right) on h(t) with an intercept (claims W7).
@@ -196,14 +197,17 @@ class Prepared:
         self.n_units = c.shape[1]
 
 
-def split(choice, rng):
-    """80/10/10 split within each choice (claims W5). Returns three index arrays."""
+def split(choice, rng, test_frac=0.1):
+    """80/10/10 split within each choice (claims W5). Returns three index arrays.
+
+    test_frac other than 0.1 (a diagnostic) takes the extra test trials from the
+    training set; validation stays at 10%."""
     sets = [[], [], []]
     for c in (0, 1):
         i = rng.permutation(np.flatnonzero(choice == c))
         n = len(i)
         nv = max(1, int(round(0.1 * n)))
-        nt = max(1, int(round(0.1 * n)))
+        nt = max(1, int(round(test_frac * n)))
         sets[0].append(i[nv + nt:])
         sets[1].append(i[:nv])
         sets[2].append(i[nv:nv + nt])
@@ -254,13 +258,31 @@ def ols(X, Y):
     return b[:-1], b[-1]
 
 
-def pcs(H):
-    """Eigenvectors of the covariance of H (time x units), largest first, top K."""
+def pcs(H, k=K):
+    """Eigenvectors of the covariance of H (time x units), largest first, top k
+    (all of them with k=None)."""
     Hc = H - H.mean(0)
     C = Hc.T @ Hc / (len(H) - 1)
     ev, U = np.linalg.eigh(C)
     o = np.argsort(ev)[::-1]
-    return U[:, o[:K]], ev[o]
+    return U[:, o[:k]], ev[o]
+
+
+def chance_alignment(d):
+    """Mean |z . u| / ||z|| of a random direction z with a fixed unit vector u in d
+    dimensions: Gamma(d/2) / (sqrt(pi) Gamma((d+1)/2))."""
+    from scipy.special import gammaln
+    return float(np.exp(gammaln(d / 2) - gammaln((d + 1) / 2)) / np.sqrt(np.pi))
+
+
+def half_correlation(a, b):
+    """Correlation over time between the averages of two halves of a set, per
+    column. The Spearman-Brown reliability of the whole set's average is
+    2 r / (1 + r), applied in the notebook to the mean r."""
+    a = a - a.mean(0)
+    b = b - b.mean(0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return (a * b).sum(0) / np.sqrt((a ** 2).sum(0) * (b ** 2).sum(0))
 
 
 def alignment(m, n):
@@ -343,14 +365,28 @@ N_SUB = 20  # claims W7 (R2) and W9 (P1)
 N_KEEP = 53  # claims W7 and W9; Figure S6 legend, "subsampled to match ... (n=53 +/- 9)"
 
 
-def _split_all(preps, rng, span):
+def _halves(test, choice):
+    """The test trials in two halves within each choice, by alternate position in
+    the (already random) test set, so that no random draw is added."""
+    a, b = [], []
+    for c in (0, 1):
+        i = test[choice[test] == c]
+        a.append(i[0::2])
+        b.append(i[1::2])
+    return np.concatenate(a), np.concatenate(b)
+
+
+def _split_all(preps, rng, span, test_frac=0.1, halves=False):
     """Split every session; return per sigma the averages (tr, va, te), pooled over
-    the sessions' units, and a mask of units finite in all three sets."""
-    sets = [split(p.choice, rng) for p in preps]
+    the sessions' units, and a mask of units finite in all three sets. With
+    halves=True the averages of the two halves of the test set follow (te_a, te_b)."""
+    sets = [split(p.choice, rng, test_frac) for p in preps]
+    if halves:
+        sets = [st + list(_halves(st[2], p.choice)) for p, st in zip(preps, sets)]
     out = {}
     for s in SIGMAS_MS:
-        H = [np.hstack([average(p, st[i], s, span) for p, st in zip(preps, sets)]) for i in range(3)]
-        keep = np.all([np.all(np.isfinite(h), 0) for h in H], 0)
+        H = [np.hstack([average(p, st[i], s, span) for p, st in zip(preps, sets)]) for i in range(len(sets[0]))]
+        keep = np.all([np.all(np.isfinite(h), 0) for h in H[:3]], 0)
         out[s] = (H, keep)
     return out
 
@@ -359,10 +395,11 @@ def readout_per_session(alm, rng, span=False, n_splits=N_SPLITS):
     """Reading R1: readout per ALM session, sigma chosen on the validation set.
 
     Returns per session arrays over splits: test R2, training R2, validation R2,
-    chosen sigma, alignment with PCs 1 to 16 (n_splits, K), and units used."""
+    chosen sigma, alignment with PCs 1 to 16 (n_splits, K), the fraction of the
+    readout's squared norm in the span of PCs 1 to 16, and units used."""
     res = []
     for p in alm:
-        d = dict(test=[], train=[], val=[], sigma=[], align=[], n=[], path=p.path)
+        d = dict(test=[], train=[], val=[], sigma=[], align=[], top16=[], n=[], path=p.path)
         for _ in range(n_splits):
             A = _split_all([p], rng, span)
             best = None
@@ -374,6 +411,7 @@ def readout_per_session(alm, rng, span=False, n_splits=N_SPLITS):
                     best = (rv, rt, s, w, H, keep.sum())
             rv, rt, s, w, H, n = best
             U, _ = pcs(H[0])
+            d["top16"].append(float(np.sum((w @ U) ** 2) / (w @ w)))
             d["test"].append(rt)
             d["val"].append(rv)
             d["train"].append(float(r2(choice_target(), H[0] @ w + ols(H[0], choice_target())[1])))
@@ -384,35 +422,41 @@ def readout_per_session(alm, rng, span=False, n_splits=N_SPLITS):
     return res
 
 
-def readout_pooled(alm, rng, span=False, n_splits=N_SPLITS, n_sub=N_SUB, n_keep=N_KEEP):
+def readout_pooled(alm, rng, span=False, n_splits=N_SPLITS, n_sub=N_SUB, n_keep=N_KEEP,
+                   test_frac=0.1):
     """Reading R2: readout on the ALM units pooled over the sessions, subsampled to
     n_keep units n_sub times per split, sigma chosen on the validation set.
 
-    Returns arrays over (split, subsample): test R2, training R2, sigma and the
-    alignment with PCs 1 to 16."""
-    d = dict(test=[], train=[], sigma=[], align=[])
+    Returns arrays over (split, subsample): test R2, training R2, sigma, the
+    alignment with PCs 1 to 16, the alignment with every PC (all n_keep of them),
+    and the correlation between the readout's outputs on the two halves of the
+    test set (for a noise ceiling, a diagnostic)."""
+    d = dict(test=[], train=[], sigma=[], align=[], align_all=[], rel=[])
     for _ in range(n_splits):
-        A = _split_all(alm, rng, span)
+        A = _split_all(alm, rng, span, test_frac, halves=True)
         avail = np.flatnonzero(np.all([A[s][1] for s in SIGMAS_MS], 0))
         for _ in range(n_sub):
             sub = rng.choice(avail, size=min(n_keep, len(avail)), replace=False)
             best = None
             for s in SIGMAS_MS:
                 H = [h[:, sub] for h in A[s][0]]
-                w, b, rv, rt = readout_fit(*H)
+                w, b, rv, rt = readout_fit(*H[:3])
                 if best is None or rv > best[0]:
                     best = (rv, rt, s, w, H, b)
             rv, rt, s, w, H, b = best
             U, _ = pcs(H[0])
+            Ua, _ = pcs(H[0], None)
             d["test"].append(rt)
             d["train"].append(float(r2(choice_target(), H[0] @ w + b)))
             d["sigma"].append(s)
             d["align"].append(readout_pc_alignment(w, U))
+            d["align_all"].append(np.abs(w @ Ua) / np.linalg.norm(w))
+            d["rel"].append(float(half_correlation(H[3] @ w, H[4] @ w)))
     return {k: np.array(v) for k, v in d.items()}
 
 
 def thalamic_analysis(alm, thal, rng, pool="P1", span=False, n_splits=N_SPLITS,
-                      n_sub=N_SUB, n_keep=N_KEEP):
+                      n_sub=N_SUB, n_keep=N_KEEP, test_frac=0.1):
     """Regressions of every thalamic unit on the pooled ALM population (claims W9,
     W10), with the alignments of figs6f-ct-alignment-not-significant.
 
@@ -424,24 +468,33 @@ def thalamic_analysis(alm, thal, rng, pool="P1", span=False, n_splits=N_SPLITS,
     cortical units, the alignment of the corticothalamic weights (all 16 PCs, mapped
     back to units) with PC 1 and with the readout, the same for the weights of the
     regression on all units, the training-set R2 of both (a diagnostic, not a
-    reading of any claim), and the number of fits that entered each mean."""
+    reading of any claim), and the number of fits that entered each mean.
+
+    Diagnostics for the alignments: a_ro_same, the alignment with the readout fitted
+    at the thalamic unit's own sigma (the main a_ro takes the readout at its own
+    best sigma); c_ro and c_ro_same, the mean alignment of a random direction in the
+    span of PCs 1 to 16 with the readout, chance_alignment(16) times the fraction of
+    the readout's norm in that span (with PC 1 it is chance_alignment(16)); and
+    ro16, that fraction."""
     n_t = sum(p.n_units for p in thal)
     acc = {k: [] for k in ("r2k", "full", "a_pc", "a_ro", "a_pc_full", "a_ro_full",
-                           "r2k_train", "full_train")}
+                           "r2k_train", "full_train", "a_ro_same", "c_ro", "c_ro_same", "ro16")}
+    c16 = chance_alignment(K)
     for _ in range(n_splits):
-        A = _split_all(alm, rng, span)
-        T = _split_all(thal, rng, span)
+        A = _split_all(alm, rng, span, test_frac)
+        T = _split_all(thal, rng, span, test_frac)
         avail = np.flatnonzero(np.all([A[s][1] for s in SIGMAS_MS], 0))
         tkeep = np.all([T[s][1] for s in SIGMAS_MS], 0)
         subs = ([rng.choice(avail, size=min(n_keep, len(avail)), replace=False) for _ in range(n_sub)]
                 if pool == "P1" else [avail])
         for sub in subs:
-            fits, ro = {}, None
+            fits, ro, w_s = {}, None, {}
             for s in SIGMAS_MS:
                 H = [h[:, sub] for h in A[s][0]]
                 R = [r[:, tkeep] for r in T[s][0]]
                 fits[s] = thalamic_regression(*H, *R)
                 w, b, rv, rt = readout_fit(*H)
+                w_s[s] = w
                 if ro is None or rv > ro[0]:
                     ro = (rv, w)
             w_ro = ro[1]
@@ -456,6 +509,12 @@ def thalamic_analysis(alm, thal, rng, pool="P1", span=False, n_splits=N_SPLITS,
                 out["r2k_train"][:, u] = f["r2tr"][:, j]
                 out["a_pc"][u] = alignment(f["w_tc"][:, j], f["U"][:, 0])
                 out["a_ro"][u] = alignment(f["w_tc"][:, j], w_ro)
+                w_same = w_s[SIGMAS_MS[bs[j]]]
+                out["a_ro_same"][u] = alignment(f["w_tc"][:, j], w_same)
+                frac = np.linalg.norm(f["U"].T @ w_ro) / np.linalg.norm(w_ro)
+                out["ro16"][u] = frac
+                out["c_ro"][u] = c16 * frac
+                out["c_ro_same"][u] = c16 * np.linalg.norm(f["U"].T @ w_same) / np.linalg.norm(w_same)
                 g = fits[SIGMAS_MS[bf[j]]]
                 out["full"][u] = g["full_te"][j]
                 out["full_train"][u] = g["full_tr"][j]
@@ -466,6 +525,22 @@ def thalamic_analysis(alm, thal, rng, pool="P1", span=False, n_splits=N_SPLITS,
     res = {k: np.nanmean(np.array(v), 0) for k, v in acc.items()}
     res["n_fits"] = np.sum(np.isfinite(np.array(acc["full"])), 0)
     return res
+
+
+def thalamic_ceiling(thal, rng, n_splits=N_SPLITS, test_frac=0.1):
+    """Noise ceilings of the thalamic test-set averages (a diagnostic, not a
+    reading of any claim), per sigma, as means over splits per unit:
+    'train', the R2 of the test-set average r(t) predicted by the unit's own
+    training-set average (what a perfect model of the training average reaches);
+    'half', the correlation between the averages of the two halves of the test set."""
+    acc = {s: {"train": [], "half": []} for s in SIGMAS_MS}
+    for _ in range(n_splits):
+        T = _split_all(thal, rng, False, test_frac, halves=True)
+        for s in SIGMAS_MS:
+            R, keep = T[s]
+            acc[s]["train"].append(np.where(keep, r2(R[2], R[0]), np.nan))
+            acc[s]["half"].append(np.where(keep, half_correlation(R[3], R[4]), np.nan))
+    return {s: {k: np.nanmean(np.array(v), 0) for k, v in d.items()} for s, d in acc.items()}
 
 
 # ---------------------------------------------------------------------------
