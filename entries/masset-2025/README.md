@@ -9,8 +9,8 @@ task units the dandiset lacks. The dandiset has no published version; the draft 
 | Claim | Outcome |
 |---|---|
 | The units of both tasks link to the paper's per-neuron table (added check) | Reproduced |
-| 78 neurons recorded in the cued delay task, 50 selected | Reproduced on the paper's 78 flagged neurons, 48 selected (the spike file holds 67, of which 43 are selected) |
-| Trials and sessions per task | Partially reproduced (cued delay sessions 44 or 32 on the 78 neurons) |
+| 78 neurons recorded in the cued delay task, 50 selected | Reproduced on the paper's 78 flagged neurons, 48 selected (the spike file holds 67, of which 43 are selected; a change to partially reproduced is proposed) |
+| Trials and sessions per task | Partially reproduced (cued delay sessions 44 or 32 on the 78 neurons; 39 on the deposited units, and a change to reproduced is proposed) |
 | Anticipatory licking starts later for longer delays | Reproduced |
 | Mean cue response falls with delay | Reproduced |
 | Exponential fits better than hyperbolic | Reproduced |
@@ -37,11 +37,11 @@ task units the dandiset lacks. The dandiset has no published version; the draft 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-In the dandiset, 78 open-loop units are deposited twice under different session numbers, and one
+In the dandiset, 78 open-loop units are deposited twice under different session numbers and identifiers, and one
 open-loop file holds a teleport session. The attempt record, with the reasons and the differences
 from the paper's method, is [`attempts/masset-2025-01.yaml`](../../attempts/masset-2025-01.yaml).
 
-- `vr_population.ipynb`: the VR claims on the population (about 28 minutes, most of it fitting).
+- `vr_population.ipynb`: the VR claims on the population (about 38 minutes, most of it fitting).
 - `vr_single_mouse.ipynb`: the single-mouse VR fits (about 34 minutes).
 - `vr_reward_expectation.ipynb`: the common reward expectation model (about 27 minutes).
 - `cued_delay_and_cross_task.ipynb`: the link, the cued delay claims and the cross-task claims

@@ -72,6 +72,11 @@ def dandi_assets():
     return out
 
 
+def dandi_description():
+    url = f"https://api.dandiarchive.org/api/dandisets/{DANDISET}/versions/{DANDI_VERSION}/"
+    return json.load(urllib.request.urlopen(url))["description"]
+
+
 def dandi_version_info():
     url = f"https://api.dandiarchive.org/api/dandisets/{DANDISET}/versions/{DANDI_VERSION}/info/"
     return json.load(urllib.request.urlopen(url))
@@ -90,7 +95,10 @@ def _read_su(asset):
         return dict(path=asset["path"], subject=h["general/subject/subject_id"][()].decode(),
                     start=h["session_start_time"][()].decode(), n_units=len(idx),
                     ml=float(h["units/implant_ML"][0]), spikes=st, trials=trials, licks=licks,
-                    unit_desc=h["units"].attrs.get("description", ""))
+                    unit_desc=h["units"].attrs.get("description", ""),
+                    identifier=h["identifier"][()].decode(),
+                    session_id=h["general/session_id"][()].decode(),
+                    session_desc=h["session_description"][()].decode())
 
 
 def dandi_su_files(assets, kinds=("SU-VR-OL", "SU-VR-ALL-OL", "SU-VR-ALL-TP", "SU-VR-ALL-SPD")):
@@ -404,12 +412,12 @@ def _cv_job(args):
     return cv_fit(*args)
 
 
-def cv_fit_bootstraps(psths, x0, workers=4):
+def cv_fit_bootstraps(psths, x0, workers=4, maxiter=CV_MAXITER):
     """Fit both halves of each bootstrap with the same initial values (as the code); returns arrays
     (2 n_boot, ...) with first halves first."""
     from concurrent.futures import ProcessPoolExecutor
     nb = psths.shape[0]
-    jobs = [(psths[k % nb, k // nb], x0) for k in range(2 * nb)]
+    jobs = [(psths[k % nb, k // nb], x0, maxiter) for k in range(2 * nb)]
     with ProcessPoolExecutor(workers) as ex:
         fits = list(ex.map(_cv_job, jobs))
     out = {k: np.array([f[k] for f in fits])
