@@ -90,7 +90,8 @@
 #    same, keeping only stationary windows (D7), as the Methods call it a period of inactivity.
 # O6 Square-root transform (D8). Legends say "Linear mixed-effects model" for Figures 6B, 7B, 7C,
 #    7D and "Mixed-effects model" for 5C, 6C and 7A. (a) linear on the raw change; (b) for the
-#    latter figures, the change computed on square-root-transformed FSB. Signs and p are judged
+#    latter figures, the change computed on square-root-transformed FSB. The Results call the
+#    Figure 5C model "A linear mixed-effects model", against its legend. Signs and p are judged
 #    under both; an expected CI is compared under the reading that matches.
 # O7 Locomotion window (D7). (a) the 250 ms presentation or omission window; (b) the 750 ms from
 #    its onset to the next onset.
@@ -160,7 +161,8 @@ claims:
     2026-11-21
   criterion: L5 IT 12 nS and ChC 25 nS (Figure 2B legend), with L4 below 12 nS and basket 1.2 times
     L4. "Weaker than the predictive input" is read as L4 conductance below the L5 IT conductance.
-    Reproduced when the expected spike count is near zero (below 0.1 per run) for weak L4 inputs,
+    Reproduced when the expected spike count is near zero (below 0.1 per run, a choice made here;
+    the paper says "no spiking") for weak L4 inputs,
     and lower than with the L5 IT and ChC input alone. The onset of L4 relative to L5 IT is not
     given for Figure 2A and 2B; simultaneous onset is the reading, as Figure 2C shows delays of up
     to 5 ms leave the behaviour unchanged.
@@ -220,9 +222,13 @@ claims:
     2026-11-21
   criterion: All four conductances (L4, basket, L5 IT, ChC) scaled by 0.2 (Low), 0.5 (Mid) or 1.0
     (High) (Methods, Scaling of L2/3 inputs; Figure 3A legend), sensory only and prediction only.
-    Reproduced when, at Low gain, the fraction of sensory-only runs with two or more spikes at the
-    default L4 (60 nS) is below that at High gain, and the fraction of prediction-only runs with no
-    spike is above one half (a reading of "frequently").
+    The Methods set the default L4 (60 nS) to give a single spike, so bursts at High gain need a
+    stronger L4; "strong sensory inputs" is read as the L4 conductances at which High gain gives an
+    expected count >= 2 (the L4 range is open, as in fig2b-breakthrough-doublet-threshold).
+    Reproduced when, at those L4 conductances, the fraction of sensory-only runs with two or more
+    spikes at Low gain is below one half (a reading of "rarely") and below that at High gain, and
+    the fraction of prediction-only runs with no spike at Low gain is above one half (a reading of
+    "frequently").
 - id: fig3b-gain-lowers-burst-threshold
   statement: Raising L4 and L5 IT gain lowers the sensory threshold for bursts and raises the
     probability of a gated release spike on omission trials.
@@ -233,9 +239,13 @@ claims:
   data: elsewhere
   where: the paper's two-compartment LIF model, specified in the Methods; code not public on
     2026-11-21
-  criterion: Expected spike count against L4 strength at gains 0.2, 0.5 and 1.0. Reproduced when the
-    burst threshold (lowest L4 with expected count >= 2) falls from Low to Mid to High, and the
-    fraction of prediction-only runs with a spike rises from Low to Mid to High.
+  criterion: Expected spike count against L4 strength at gains 0.2, 0.5 and 1.0 (Figure 3B legend).
+    The Results read the omission probability from Figure 3B, which suggests its simulation keeps
+    the prediction conductances while L4 varies, but the legend does not say so. Open, (a) L5 IT
+    and ChC at their defaults times the gain, L4 varied, omission being L4 = 0; (b) sensory only
+    for the burst threshold and prediction only for omission, as in Figure 3A. Reproduced when,
+    under one reading, the burst threshold (lowest L4 with expected count >= 2) falls from Low to
+    Mid to High, and the fraction of omission runs with a spike rises from Low to Mid to High.
 - id: fig3c-gain-keeps-release-delay
   statement: Gain does not substantially change the delay of the gated release spike when it
     occurs.
@@ -246,7 +256,9 @@ claims:
   where: the paper's two-compartment LIF model, specified in the Methods; code not public on
     2026-11-21
   criterion: First-spike latency from onset, prediction-only runs that spike, at gains 0.2, 0.5 and
-    1.0. "Not substantially" has no number; the reading here is that the median latencies at the
+    1.0. The Figure 3C legend plots latency against L4 strength for the simulation of Figure 3B;
+    the release delay is read at L4 = 0 under reading (a) of fig3b-gain-lowers-burst-threshold,
+    which is the same simulation as prediction only. "Not substantially" has no number; the reading here is that the median latencies at the
     three gains differ by less than 5 ms, the delay shift the paper calls robust in Figure 2C. The
     latencies are reported either way.
 - id: fig4a-basket-reduction-lowers-burst-threshold
@@ -315,7 +327,8 @@ claims:
     2026-11-21
   criterion: Prediction only (no sensory conductance, Figure 4 legend), 10 runs per point. The
     reference latency is that at the defaults (L5 IT 12 nS, ChC 25 nS, E_ChC -58 mV). Reproduced
-    when, for L5 IT raised to at least 20 nS, some ChC conductance above 25 nS and some E_ChC below
+    when, for L5 IT raised to at least 20 nS (a choice made here; the L5 IT range is not given),
+    some ChC conductance above 25 nS and some E_ChC below
     -58 mV each bring the median latency back within 1 ms of the reference (a choice made here; the
     paper gives no tolerance).
 - id: cell-counts
@@ -466,7 +479,8 @@ claims:
     change) and Figure 6A (presentation immediately before omission), L5 cells of cell-counts; per
     cell, FSB of the presentations right after an omission minus FSB of those right before it;
     mixed-effects model with a random effect of session. Reproduced when the intercept is positive
-    with p < 0.05. Open O4 and O6. Whether L2/3 was also tested is not known; it is shown as a
+    with p < 0.05. The change measure is open as in fig6c-omission-bursting-below-spontaneous, (a)
+    the difference of FSB; (b) the modulation index of D5 applied to FSB. Open O4 and O6. Whether L2/3 was also tested is not known; it is shown as a
     variant.
 - id: figs1-novel-image-bursting
   statement: The first presentation of a newly introduced image drives more bursting than the first
@@ -484,7 +498,8 @@ claims:
     the twentieth or later time (familiar); per cell FSB(novel) - FSB(familiar); intercept of a
     mixed-effects model with a random effect of session (D8). Reproduced when the intercept is
     positive with p < 0.05. Layer is open, (a) L5 (the paragraph is about L5 bursting); (b) L2/3.
-    Reproduced under (a); (b) is shown. Open O4 and O6.
+    Reproduced under (a); (b) is shown. The change measure is open as in
+    figs1-post-omission-bursting. Open O4 and O6.
 - id: figs1-novel-firing-rate-unchanged
   statement: Firing rates do not differ between the first presentations of novel and familiar
     images.
@@ -715,16 +730,23 @@ claims:
   - quantity: L2/3 cells
     value: 47
     tolerance: 4.7
+  - quantity: L2/3 recordings
+    value: 35
+    tolerance: 3.5
   - quantity: L5 cells
     value: 658
     tolerance: 65.8
+  - quantity: L5 recordings
+    value: 94
+    tolerance: 9.4
   criterion: A claim of absence, judged on the paper's test. Omission windows classed by D7; per
     cell, FSB running minus FSB stationary; linear mixed-effects model, intercept only, random effect
     of session, p < 0.05 (Figure 7C legend). Reproduced when neither layer's intercept has p < 0.05;
     not reproduced when one does; the effects are reported either way. The selection of the 47 and
     658 cells is not stated; readings (a) cells of cell-counts with omission windows in both states;
-    (b) those with at least one spike during omission in both states. The cell counts are compared
-    under each. Open O4 and O7.
+    (b) those with at least one spike during omission in both states. The cell and recording
+    counts are compared under each; they inform which reading matches and do not decide the
+    absence. Open O4 and O7.
 - id: fig7d-running-lowers-omission-rate
   statement: During omission, firing rate is lower when running than when stationary, in L2/3 and
     L5.
@@ -766,3 +788,21 @@ claims:
     intercept only, random effect of session. Reproduced when, under one reading, both intercepts
     are negative with p < 0.05 and within tolerance; partially reproduced when both are negative with
     p < 0.05 and a value is outside tolerance.
+checks:
+- date: '2026-11-21'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3a-low-gain-suppresses-errors, criterion compared bursts at the default L4 of 60 nS, which the Methods set to give a single spike, so High gain would not burst there either; now compared at the L4 conductances where High gain bursts, with "rarely" read as below one half.
+  - fig3b-gain-lowers-burst-threshold, the Results read the omission probability from Figure 3B, so whether its simulation keeps the prediction conductances while L4 varies is open; both readings named.
+  - fig3c-gain-keeps-release-delay, noted that the Figure 3C legend plots latency against L4 for the Figure 3B simulation and that the release delay is read at L4 = 0.
+  - fig2a-weak-sensory-silenced, the 0.1 spike-per-run threshold is now marked as a choice made here.
+  - fig4ef-compensation-restores-latency, the 20 nS L5 IT level is now marked as a choice made here, as the paper gives no range.
+  - figs1-post-omission-bursting and figs1-novel-image-bursting, the FSB change measure (difference or modulation index) is open as in fig6c-omission-bursting-below-spontaneous; now named.
+  - fig7c-running-leaves-omission-bursting, added the recording counts printed in the Figure 7C legend (35 L2/3 and 94 L5 recordings, 10% tolerance) beside the cell counts, and said these counts do not decide the absence.
+  - Header O6, added that the Results call the Figure 5C model linear while its legend says mixed-effects model.
+  - Checked and left as written, every quote, statistic, expected value and tolerance against the text; the D1 to D9 methods against the Methods; the degrees-of-freedom reading (7 differences per cell) of Figure 5C; coverage of Figures 1 to 7, S1 and S2.
+  - Open, Figures S1 and S2 and their legends are absent from the text, so the tests for figs1 and figs2 claims are read from the Methods and may differ from the paper's.
+  - Open, the code repository github.com/bendor-lab/SETA-model_allen_analysis still returned 404 on 2026-11-21, so no method was checked against code.
+  - Open, the printed Figure 5C L5 slope (t positive, CI negative) and L2/3 slope (CI centre positive against a negative t) are inconsistent in the paper; the claims follow the Results and the CI, which only the authors can settle.
