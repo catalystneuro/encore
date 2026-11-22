@@ -361,41 +361,57 @@ def rewire_configuration(a: np.ndarray, rng: np.random.Generator) -> np.ndarray:
 
 
 def swapping_edges(a: np.ndarray, rng: np.random.Generator, nswap: int = 2000,
-                   max_tries: int = 4000) -> np.ndarray:
+                   max_tries: int = 4000) -> tuple[np.ndarray, int]:
     """Port of `swapping_edges` in SIM_doubleedge.py: x->y and a->b become x->b and a->y.
 
     Sources are drawn with probability proportional to total degree, targets uniformly among
     each source's successors; a swap that would create a parallel edge is skipped. As in the
-    code, self-loops are not prevented, and at most `max_tries` attempts are made for `nswap`
-    swaps.
+    code, self-loops are not prevented, and draws that end in `continue` there (the same
+    source twice, a source without successors, the same target) do not count towards
+    `max_tries`; the code stops once its counter reaches `max_tries`. The code calls it with
+    nswap=2000, max_tries=4000 for the signaling network and nswap=6000, max_tries=9000 for
+    the anatomical one (SIM_doubleedge.py lines 237 and 493). Returns the swapped adjacency
+    and the number of swaps made.
     """
     succ = [np.nonzero(a[i])[0].tolist() for i in range(a.shape[0])]
     succ_set = [set(x) for x in succ]
     deg = total_degree(a).astype(float)
-    pairs = rng.choice(len(deg), size=(max_tries + 1, 2), p=deg / deg.sum())
-    picks = rng.random((max_tries + 1, 2))
+    p = deg / deg.sum()
     swaps = 0
-    for tries in range(max_tries + 1):
-        if swaps >= nswap:
-            break
-        ui, xi = pairs[tries]
+    n = 0
+    chunk = 4096
+    pairs = rng.choice(len(deg), size=(chunk, 2), p=p)
+    picks = rng.random((chunk, 2))
+    j = 0
+    while swaps < nswap:
+        if j == chunk:
+            pairs = rng.choice(len(deg), size=(chunk, 2), p=p)
+            picks = rng.random((chunk, 2))
+            j = 0
+        ui, xi = pairs[j]
+        pv, py = picks[j]
+        j += 1
         if ui == xi or not succ[ui] or not succ[xi]:
             continue
-        vi = int(picks[tries, 0] * len(succ[ui]))
-        yi = int(picks[tries, 1] * len(succ[xi]))
+        vi = int(pv * len(succ[ui]))
+        yi = int(py * len(succ[xi]))
         v, y = succ[ui][vi], succ[xi][yi]
-        if v == y or y in succ_set[ui] or v in succ_set[xi]:
+        if v == y:
             continue
-        succ[ui][vi], succ[xi][yi] = y, v
-        succ_set[ui].discard(v)
-        succ_set[ui].add(y)
-        succ_set[xi].discard(y)
-        succ_set[xi].add(v)
-        swaps += 1
+        if y not in succ_set[ui] and v not in succ_set[xi]:
+            succ[ui][vi], succ[xi][yi] = y, v
+            succ_set[ui].discard(v)
+            succ_set[ui].add(y)
+            succ_set[xi].discard(y)
+            succ_set[xi].add(v)
+            swaps += 1
+        if n >= max_tries:
+            break
+        n += 1
     out = np.zeros_like(a)
     for i, t in enumerate(succ):
         out[i, t] = 1
-    return out
+    return out, swaps
 
 
 def class_flow(a: np.ndarray, labels: np.ndarray) -> dict:
