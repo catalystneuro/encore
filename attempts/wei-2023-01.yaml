@@ -115,7 +115,7 @@ outcomes:
     labels are shown beside it.
   assumed: true
 - claim: figs3b-fs-faster
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs3b-fs-faster
   measured:
@@ -125,8 +125,8 @@ outcomes:
     1.3e-05 to 2.3e-64), but no reading puts both medians within tolerance. Under reading (c) the first
     5-min gray screen (the period of the code's fr_5min column) gives FS 4.26 and RS 2.29 Hz, the first
     5 minutes FS 4.50 (within tolerance) and RS 2.38 Hz, against 4.85 and 2.05 Hz. On the Source Data
-    units and labels the gray-screen block gives 4.55 and 2.50 Hz. A change to not reproduced is proposed
-    (see proposed).
+    units and labels the gray-screen block gives 4.55 and 2.50 Hz. The criterion defines only a reproduced
+    outcome and no reading meets it, so the claim is not reproduced (changed after round 3, which agreed).
   deviations:
   - Reading (a) of the criterion is shown as (a1), the first 5-min gray-screen block, which reproduces
     the code's fr_5min exactly on all 618 units of the code's tables, and (a2), all gray-screen intervals
@@ -138,14 +138,6 @@ outcomes:
     Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
     code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
     labels are shown beside it.
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion defines only a reproduced outcome, both medians within tolerance under a reading
-      with the Mann-Whitney test at p < 0.001, and no reading meets it (cell of figs3b-fs-faster; the
-      closest, reading c over the first 5 minutes, gives FS 4.50 Hz within tolerance and RS 2.38 Hz against
-      2.05 +- 0.205). Both verification rounds gave not reproduced. The partial outcome read the direction
-      and the test, which hold under every reading, as the effect holding in part, but the criterion decides
-      the outcome and gives no partial clause.
 - claim: fig2-rs-more-asymmetric
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
@@ -248,7 +240,8 @@ outcomes:
     2380 on 1, so it may be a fixed offset and not a placement from each probe's CSD; the recorded outcome
     took it as the paper's CSD placement, which the outputs do not support. The two centres differ by
     -420 to +340 um per probe, and neither is validated here. The outcome stays as verified in round
-    1 and reviewed in round 2; a change to partially reproduced is proposed.
+    1 and reviewed in round 2; a change to partially reproduced was proposed, and the round-3 verifier
+    disagreed and would give reproduced (see proposed).
   deviations:
   - FS is clustered with K forced to 3, as f(K) selects 2 under reading (a); the FS1 to FS3 clusters rest
     on that choice.
@@ -277,6 +270,14 @@ outcomes:
       differs from the code's by -420 to +340 um per probe). The difference is present for the clusters
       found here and absent for the paper's labels, so the effect holds in part, as the verifier gives
       (cell of figs5-depth-distribution).
+      The round-3 verifier disagreed and would give reproduced, with assumed true. In its words, the attempt
+      decides all downstream claims on its own reading (c) clusters, and with the CSD depth the test gives
+      p = 0.044, which meets the criterion as written; the criterion has no partial clause, the reason the
+      record gives for figs3b applies equally here, and the sibling claims fig6a-fs1-symmetric and figs4-fs-spread-absent
+      are recorded as reproduced on the same clusters. The outcome is fragile (FS forced to K = 3, a CSD
+      centre not validated) and, if the six clusters are read as the paper's own labels, it is not reproduced.
+      It also noted that the CSD minimum centre (depth_csd_min) is never tested in cell 41. As round 3 did
+      not agree with the proposed change, the outcome stays not reproduced.
 - claim: fig6a-fs1-symmetric
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
@@ -1664,3 +1665,33 @@ verifications:
     outcome: blocked
     reason: Agrees; accepts not_runnable.
     response: No change.
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3, same harness, separate context, did not write the notebook)
+  reviewed: The two proposed outcome changes of the second revision (figs3b-fs-faster and figs5-depth-distribution),
+    with the full executed notebook, the helper module, the claims file, the attempt record and the paper's full text.
+  results:
+  - claim: figs3b-fs-faster
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with not reproduced. The rates come from the data and equal the code's fr_5min for all 618 units
+      (cell 6), and cell 20 prints every period under all three isolation readings and the Source Data labels. The
+      criterion's only outcome clause needs both medians within tolerance under one reading with p < 0.001, and no
+      row does this (reading c first 5 min gives FS 4.50 Hz in tolerance and RS 2.38 Hz not). FS is faster under
+      every reading, but the criterion has no partial clause that this could satisfy.
+    response: The outcome is changed to not reproduced and proposed is removed; the notes, the notebook's conclusion,
+      the summary and the README say so.
+  - claim: figs5-depth-distribution
+    agrees: false
+    outcome: reproduced
+    reason: I disagree with partially reproduced and would give reproduced, with assumed true. The depth method follows
+      the criterion, and under the attempt's usual rule, its own reading (c) clusters, the Kruskal-Wallis test gives
+      p = 0.044 (0.011 under reading a, 2.0e-08 under reading b), which meets "Reproduced when it gives p < 0.05".
+      The criterion has no partial clause; the record's reason for figs3b applies equally here, and fig6a-fs1-symmetric
+      and figs4-fs-spread-absent are recorded as reproduced on the same clusters. The outcome is fragile (FS forced
+      to K = 3, a CSD centre not validated, one probe's first sink at 83 ms), and the paper's labels on the same depth
+      give p = 0.36 and the code's centre 0.25 to 0.34; if the six clusters are read as the paper's own, it is not
+      reproduced. The CSD minimum centre (depth_csd_min) is never tested in cell 41. This changes my round-2 view.
+    response: The outcome stays not reproduced, as round 3 did not agree with the proposed change, and proposed is
+      kept with the verifier's view added to its reason. The test on depth_csd_min is not run in this revision, as
+      a change that needs an analysis not yet run waits for a new attempt.
