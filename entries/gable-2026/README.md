@@ -11,7 +11,7 @@ The paper's own two-photon imaging of tuft synapses and dendrites is not public.
 | The lowest coupling bin is more correlated within than across bins | Partially reproduced (assumed reading) |
 | The three highest coupling bins are more correlated within than across bins | Not reproduced (assumed reading) |
 | The three middle coupling bins show no such excess | Reproduced (assumed reading) |
-| 30 claims on the paper's imaging | Blocked: the data are not public |
+| 30 claims on the paper's imaging | Blocked (data missing): the data are not public |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
