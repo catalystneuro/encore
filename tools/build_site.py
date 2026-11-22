@@ -2035,6 +2035,9 @@ def beacon(data: dict) -> str:
 # Who to write to about a check for a journal: CatalystNeuro's contact page, until the site has an address of its own.
 CONTACT_URL = CN_URL + "/contact"
 PROTOCOL_URL = REPO_URL + "/blob/main/docs/protocol.md"
+# What Anthropic does with what is sent to its models, by kind of account: the source of the journals page's
+# statement on training and retention, read on 2026-11-22.
+DATA_USAGE_URL = "https://code.claude.com/docs/en/data-usage"
 
 # The pages of the registry itself, which share the second bar (shell): the overview of the record and its lists.
 REGISTRY_PAGES = ("overview", "papers", "datasets", "authors", "pipeline")
@@ -2615,10 +2618,9 @@ def page_home(data: dict) -> str:
 
     body = f'''<header class="hero"><div class="wrap">
   <div class="hero-text">
-    <h1>Check the data behind a paper against its findings</h1>
-    <p class="lede">Encore reads a paper, writes down each of its findings as a claim that can be tested, and tests
-    the claims on the data the paper deposited. An independent agent checks the work. Every claim gets an outcome, and
-    every problem found in the dataset is recorded.</p>
+    <h1>Do the deposited data support the paper?</h1>
+    <p class="lede">Encore tests each finding of a paper on the data its authors deposited. You get a report of what
+    reproduced, what did not, and what is missing from the dataset, with the code behind every result.</p>
     <p class="hero-actions"><a class="button" href="journals/">Encore for journals</a>
     <a class="button secondary" href="registry/">Browse the registry</a></p>
     <p class="hero-by">Developed by <a href="{CN_URL}">CatalystNeuro</a>. The protocol, the code and every record are
@@ -2677,18 +2679,21 @@ def page_home(data: dict) -> str:
 </div></section>
 <section class="band" id="behind"><div class="wrap behind">
   <div><h2>Who is behind Encore</h2>
-    <p>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>, a team of research software engineers for
-    neuroscience. CatalystNeuro converts lab data to the NWB standard and publishes them on the DANDI Archive, and its
-    engineers trained as neuroscientists.</p></div>
+    <p>{SITE_NAME} is built by <a href="{CN_URL}">CatalystNeuro</a>, a team of research software engineers who trained
+    as neuroscientists. CatalystNeuro converts lab data to the NWB standard and publishes them on the DANDI Archive.</p>
+    <p>We believe recent advances in AI make it possible to raise the standard for open science: for the first time,
+    the reproducibility of computational results can be checked at scale. {SITE_NAME} is our first large step in that
+    direction.</p>
+    <p>Encore is led by Ben Dichter, founder and CEO of CatalystNeuro.</p></div>
   <div><h2>Open by design</h2>
     <p>The <a href="{PROTOCOL_URL}">protocol</a> the agents follow, the <a href="{REPO_URL}">code</a> that runs them
     and the transcript of every run are public. The code is under the Apache-2.0 license and the registry's records
     are in the public domain.</p></div>
 </div></section>
 <section class="band ink" id="contact"><div class="wrap">
-  <h2>Checks for your journal</h2>
-  <p>Tell us about your journal and the data its papers deposit, and we will work out with you where a check fits.</p>
-  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Contact us</a>
+  <h2>See what a check finds on your papers</h2>
+  <p>Send us a few papers with deposited data, published or in review, and we will return a full report on each.</p>
+  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
   <a class="button secondary" href="journals/">What a journal gets</a></p>
 </div></section>
 </main>'''
@@ -2701,7 +2706,7 @@ def page_home(data: dict) -> str:
         "url": SITE_URL, "description": SITE_DESCRIPTION,
         "publisher": {"@type": "Organization", "name": "CatalystNeuro", "url": "https://www.catalystneuro.com"},
     }
-    return shell(data, f"{SITE_NAME}: check the data behind a paper against its findings", "", "home", body, scripts,
+    return shell(data, f"{SITE_NAME}: do the deposited data support the paper?", "", "home", body, scripts,
                  path="", structured=structured, bleed=True)
 
 
@@ -2726,45 +2731,78 @@ def page_journals(data: dict) -> str:
     <ul class="kinds-list journals-list">{rows_}</ul>
     <p class="small"><a href="{root}papers/?status=attempted">All papers, with a filter by journal</a></p></div>'''
                    if journals else "")
+    counts = outcome_counts(attempts)
+    n_blocked = counts["blocked"]
+    missing = sum(1 for c in rows_cache(data)["claims"] if c["outcome"] == "blocked" and c["blocked_by"] == "data_missing")
+    n_papers = len(papers)
+    evidence = (f'''<p class="lede">In the public registry of {n_papers:,} papers, {shares(counts)["blocked"]}% of the
+  claims could not be tested at all, and for {round(100 * missing / n_blocked)}% of those the data the claim rests on
+  were not in the dataset. A check finds this while the authors can still fix it.</p>''' if n_blocked and missing else "")
     body = f'''<header class="page">
   <h1>Encore for journals</h1>
-  <p class="lede">A journal that asks its authors to deposit their data can use Encore to see whether the deposited
-  data support the findings of the paper. A check lists each claim of the paper with its outcome and each problem
-  found in the dataset.</p>
-  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Contact us</a>
+  <p class="lede">Your journal asks authors to deposit their data. Encore tells you whether what they deposited is
+  enough to support the paper.</p>
+  {evidence}
+  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
   <a class="button secondary" href="{root}about/">How a check is made</a></p>
 </header>
 <main class="journals">
+  <div class="panel" id="report"><h2>What an editor receives</h2>
+    <ul class="receives">
+      <li>Each key finding of the paper as a claim, with an outcome: reproduced, partially reproduced, not reproduced,
+      or blocked.</li>
+      <li>Each problem found in the dataset, such as missing data, errors in the metadata, or a selection of units or
+      sessions the paper does not document.</li>
+      <li>The notebook that ran each test, which the authors or a reviewer can run again.</li>
+      <li>For a full check, the verdict of an independent verifier on every outcome.</li>
+    </ul></div>
+  <h2 class="section-head" id="offers">Four ways to work with us</h2>
   <div class="grid2">
-    <div class="panel"><h2>Before publication</h2>
-      <p>The <a href="{ENCORE_DOCS}"><code>encore</code> command</a> checks a manuscript against its dataset: files
-      in a directory, files at a URL, or a draft dataset in an archive. A quick check takes one to three hours. A full
-      check adds two rounds in which an independent agent verifies the work, and takes several hours more.</p>
-      <p>The report lists every claim with its outcome and every finding about the data, and points to the notebooks
-      that tested them.</p></div>
-    <div class="panel"><h2>After publication</h2>
-      <p>A published paper's check can be put on the public record. The paper gets a page in the registry with its
-      claims, outcomes, notebooks and verification, and a <a href="{REPO_URL}/blob/main/docs/badges.md">badge</a>
-      that states how many findings were reproduced and links to that page. The same numbers are served as JSON.</p>
-      <p>Authors can <a href="{REPO_URL}/blob/main/docs/author-responses.md">respond to a check</a>, and the response
-      is shown on the paper's page.</p></div>
-    <div class="panel"><h2>Confidential manuscripts</h2>
-      <p>A check you run yourself runs on your own machine, with your own Claude account, and its result stays on
-      that machine. The agents' commands run in a sandbox that can write only inside the run's directory and can
-      reach only the archives, Python's package index, GitHub and doi.org. Nothing is added to the public registry
-      unless a run is requested for it.</p></div>
-    <div class="panel"><h2>What a check does not say</h2>
-      <p>{CAUTION} The agents make mistakes, and an outcome describes what one attempt could recover with the methods
-      available to it. A check needs the data to be available: a claim whose data are not in the dataset is recorded
-      as blocked. Attempts so far have used datasets in {e(archives)}.
-      <a href="{root}registry/#caution">More on reading outcomes</a></p></div>
+    <div class="panel"><h2>A pilot on your own papers</h2>
+      <p>Send us a few papers with deposited data, published or in review. We run a full check on each and return
+      the reports, so you see what a check finds on your journal's papers before you decide anything.</p></div>
+    <div class="panel"><h2>Checks during review</h2>
+      <p>At the stage of review you choose, your editorial office sends us the manuscript and the location of its
+      data. We return the report for the editor to share with the reviewers and the authors. A quick check takes one
+      to three hours of computing. A full check, with two rounds of independent verification, takes several hours
+      more.</p></div>
+    <div class="panel"><h2>A public record for published papers</h2>
+      <p>For accepted papers, we add the check to the public registry. The paper gets a page with every claim, its
+      outcome and the code behind it, and a <a href="{REPO_URL}/blob/main/docs/badges.md">badge</a> for the article
+      page that links there. Authors can <a href="{REPO_URL}/blob/main/docs/author-responses.md">respond</a>, and
+      their response is shown beside the check.</p></div>
+    <div class="panel"><h2>Run it yourselves</h2>
+      <p>The <a href="{ENCORE_DOCS}"><code>encore</code> command</a> is open source and runs on your own machines,
+      with your own Claude account, on files in a directory, files at a URL, or a draft dataset in an archive. We
+      help your team set it up.</p></div>
+  </div>
+  <div class="grid2">
+    <div class="panel" id="confidential"><h2>Confidential manuscripts</h2>
+      <p>A manuscript under review does not go through the public registry. We run its check with the
+      <code>encore</code> command on our own machines, and the result stays there until we send it to you. The agents'
+      commands run in a sandbox that can write only inside the run's directory and can reach only the archives,
+      Python's package index, GitHub and doi.org.</p>
+      <p>The manuscript and the data are sent to Anthropic's models under its commercial terms. Under those terms
+      Anthropic does not train models on them and keeps them for 30 days
+      (<a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>). Nothing goes on the public registry unless the
+      journal and the authors ask for it.</p>
+      <p>If the manuscript must stay on your own systems, your team can run the same check itself.</p></div>
+    <div class="panel"><h2>What a check does and does not say</h2>
+      <p>{CAUTION} A check reports what one attempt could recover from the deposited data, and the agents that make
+      it can be mistaken.</p>
+      <p>A blocked claim usually points to data the authors still need to deposit. A claim that did not reproduce is
+      a question to put to the authors, and the report gives them the notebook that ran the test. The editor and the
+      reviewers decide what follows. <a href="{root}registry/#caution">More on reading outcomes</a></p>
+      <p>Most checks so far are of neuroscience papers, on data in {e(archives)}. The registry also holds checks of
+      papers in ecology, microbiology, political science, food safety and planetary science, and we take papers from
+      <a href="{root}papers/?status=attempted&amp;archive=dryad,figshare">other fields</a>.</p></div>
   </div>
   {example}
   {in_registry}
-  <div class="panel contact-panel" id="contact"><h2>Working with us</h2>
-    <p>CatalystNeuro offers Encore checks to journals as a service. Tell us about your journal, the data its papers
-    deposit and where in review a check would help, and we will reply with how we can run it for you.</p>
-    <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Contact us</a></p></div>
+  <div class="panel contact-panel" id="contact"><h2>Start with a pilot</h2>
+    <p>Tell us about your journal and the data its papers deposit. We suggest starting with a pilot on a few of your
+    papers, then deciding where in review a check belongs.</p>
+    <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a></p></div>
 </main>'''
     return shell(data, f"Encore for journals · {SITE_NAME}", root, "journals", body, path="journals/",
                  description="Encore checks the data deposited with a paper against the paper's findings: an outcome "

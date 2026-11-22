@@ -742,7 +742,7 @@ def test_the_home_page_says_what_encore_does_and_shows_the_registrys_own_numbers
     example is a verified attempt of a real paper, and the numbers are the registry's."""
     data, out = built
     home = (out / "index.html").read_text()
-    assert "<h1>Check the data behind a paper against its findings</h1>" in home
+    assert "<h1>Do the deposited data support the paper?</h1>" in home
     assert '<a class="button" href="journals/">' in home and '<a class="button secondary" href="registry/">' in home
     assert home.count(f'href="{site.CONTACT_URL}"') >= 2 and site.CAUTION in home
     for head, _ in site.HOME_STEPS:
