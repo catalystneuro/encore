@@ -1,0 +1,321 @@
+schema_version: 3
+id: gable-2026-01
+datasets:
+- archive: dandi
+  id: '000010'
+  version: 0.220126.1905
+  doi: 10.48324/dandi.000010/0.220126.1905
+  relation: reuses
+paper: doi:10.1523/jneurosci.0974-26.2026
+date: '2026-11-22'
+entry: gable-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/45034337289
+inputs:
+- what: The paper's analysis code (FigureS4.ipynb and Figures/sled_glutamate_functions.py), read for the
+    coupling, pair and bootstrap procedure and the printed per-session neuron counts that support the
+    assumed reading; no data are taken from it.
+  source: https://github.com/kerlin-lab/Gable_2026 at commit 688e662767ed32b6ea60a2827c3483408edf6deb
+outcomes:
+- claim: figs4-session-selection
+  outcome: not_reproduced
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-session-selection
+  measured:
+  - 9
+  - 16
+  - 501
+  - 5060
+  notes: No reading of O1 to O3 matches. With units counted once every reading gives 9 mice (7 Sim1, 2
+    Tlx) and 15 or 16 sessions; with every stored row, 10 mice (7 Sim1, 3 Tlx) and 17 or 18 sessions,
+    against 8 Sim1 and 3 Tlx mice and 20 sessions. Measured values are under the reading adopted for the
+    other claims (baa, units counted once), 9 mice, 16 sessions, 501 same-range and 5,060 different-range
+    pairs (paper 753 and 6,586). The output printed by FigureS4.ipynb (commit 688e662) shows 20 sessions
+    of 18 to 25 neurons, 411 neurons in all, and 771 same-range pairs; reading baa selects 16 sessions
+    of 18 to 25 neurons, 318 in all. Over all sixteen variants the pair counts run from 452 to 893 and
+    from 4,650 to 8,860, and abb with every stored row comes closest on sessions (18). Without the Ai32
+    crosses the count is 7 mice under every reading. The dataset holds 10 KJ18 and 6 PL56 mice; 7 of these
+    16 have no session with 18 units above 0.5 Hz under any reading. The outcome is the same under every
+    reading, so it does not rest on an assumption.
+  deviations:
+  - The selection is run under the eight combinations of O1 to O3, as the criterion directs.
+  - Mice are counted by the strain in the subject record; the KJ18 and PL56 mice crossed with Ai32 are
+    counted with their Cre line, and the count without them is shown.
+  - Units stored twice in a file (a repeated id with an identical spike train) are counted once; the paper
+    may have counted every stored row, which the selection claim shows as a variant.
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample
+    and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes
+    earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper
+    does not say how a common length was set.
+- claim: figs4-lowest-couplers-correlated
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-lowest-couplers-correlated
+  measured: 0.0479
+  notes: Under baa the lowest bin's mean difference is 0.048 (same 0.028, different -0.020; 60 same-range
+    and 768 different-range pairs), Holm-corrected one-tailed p = 0.0007, positive and significant but
+    below the tolerance of 0.054 to 0.066. Over the five seeds it is 0.0478 to 0.0479 with p = 0.0007.
+    It is significant under all eight readings (0.040 to 0.055) and within tolerance only under bba, so
+    the outcome rests on the reading. The difference is positive in each of the 8 mice with same-range
+    pairs in the bin. The session selection did not match the paper's (figs4-session-selection), so the
+    population differs from the paper's 20 sessions.
+  deviations:
+  - Assumed reading baa of the open details the claims file names (O1 to O3), as the readings give different
+    outcomes. O1 (b), only units above 0.5 Hz enter a selected session, because the output printed by
+    the paper's FigureS4.ipynb (commit 688e662) gives 18 to 25 neurons per session, which readings baa
+    and bab give here and the O1 (a) readings do not (up to 34). O2 (a), the rate over the recording,
+    as the Methods' 'session-wide firing rate' says. O3 (a), the four trial types, as TSA is defined on
+    CL, CR, IR and IL (Methods, Activity extraction). Results under all eight readings are in the notebook.
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample
+    and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes
+    earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper
+    does not say how a common length was set.
+  - Units stored twice in a file (a repeated id with an identical spike train) are counted once; the paper
+    may have counted every stored row, which the selection claim shows as a variant.
+  - Bootstrap seed from the claim, as the protocol requires; the paper gives none.
+- claim: figs4-high-couplers-correlated
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-high-couplers-correlated
+  measured:
+  - 0.0082
+  - 0.0211
+  - 0.0675
+  notes: Under baa the bins 71.43 to 85.71% and 85.71 to 100% are significant (0.021 and 0.068, Holm p
+    = 0.0007), but bin 57.14 to 71.43% is not (0.008, Holm p = 0.074, 0.066 to 0.090 over the five seeds),
+    and only the top bin is within tolerance; the 71.43 to 85.71% difference is about a third of the paper's
+    0.06. With two of three significant and one within tolerance the criterion gives not reproduced. Under
+    bab all three bins are significant (0.012, 0.019, 0.069), which it calls partially reproduced; under
+    the other six readings the 57.14 to 71.43% bin is not significant. The two top bins are significant
+    under every reading. Per mouse, under baa, the difference is positive in 7 of 9, 6 of 7 and 5 of 5
+    mice in the three bins.
+  deviations:
+  - Assumed reading baa of the open details the claims file names (O1 to O3), as the readings give different
+    outcomes. O1 (b), only units above 0.5 Hz enter a selected session, because the output printed by
+    the paper's FigureS4.ipynb (commit 688e662) gives 18 to 25 neurons per session, which readings baa
+    and bab give here and the O1 (a) readings do not (up to 34). O2 (a), the rate over the recording,
+    as the Methods' 'session-wide firing rate' says. O3 (a), the four trial types, as TSA is defined on
+    CL, CR, IR and IL (Methods, Activity extraction). Results under all eight readings are in the notebook.
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample
+    and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes
+    earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper
+    does not say how a common length was set.
+  - Units stored twice in a file (a repeated id with an identical spike train) are counted once; the paper
+    may have counted every stored row, which the selection claim shows as a variant.
+  - Bootstrap seed from the claim, as the protocol requires; the paper gives none.
+- claim: figs4-middle-couplers-not-correlated
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_gable_2026.ipynb
+  output: claim:figs4-middle-couplers-not-correlated
+  notes: Under baa none of the three middle bins has a Holm-corrected p below 0.05; mean differences -0.001,
+    -0.003 and 0.005 (paper 0.004, 0.001 and -0.002), Holm p 1.0, 1.0 and 0.54, the same over the five
+    seeds (0.54 to 0.57 for the third). Under four of the eight readings (aba, abb, bab, bbb) one of these
+    bins reaches p below 0.05 (smallest 0.007 under abb), with mean differences of at most 0.0084, so
+    the outcome rests on the reading.
+  deviations:
+  - Assumed reading baa of the open details the claims file names (O1 to O3), as the readings give different
+    outcomes. O1 (b), only units above 0.5 Hz enter a selected session, because the output printed by
+    the paper's FigureS4.ipynb (commit 688e662) gives 18 to 25 neurons per session, which readings baa
+    and bab give here and the O1 (a) readings do not (up to 34). O2 (a), the rate over the recording,
+    as the Methods' 'session-wide firing rate' says. O3 (a), the four trial types, as TSA is defined on
+    CL, CR, IR and IL (Methods, Activity extraction). Results under all eight readings are in the notebook.
+  - Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample
+    and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes
+    earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper
+    does not say how a common length was set.
+  - Units stored twice in a file (a repeated id with an identical spike train) are counted once; the paper
+    may have counted every stored row, which the selection claim shows as a variant.
+  - Bootstrap seed from the claim, as the protocol requires; the paper gives none.
+- claim: fig2f-sd-input-elevated
+  outcome: blocked
+  blocked_by: other
+  notes: Rests on the paper's own two-photon imaging of L5 ET tuft synapses and dendrites, which is not
+    in DANDI:000010 (it holds the Li et al. 2015 silicon-probe and calcium imaging data). The paper's
+    Code and data availability names github.com/kerlin-lab/Gable_2026, which at commit 688e662 holds code
+    only, its notebooks loading pickled data from the lab's servers; no deposit of the imaging was found
+    on DANDI. The claims file marks the claim data elsewhere with no public archive; data_missing would
+    apply, but the entry check refuses it for an elsewhere claim, so it is blocked as other and a question
+    is asked of a reader (questions/gable-2026.yaml).
+- claim: fig2j-tsa-dendrite-specific
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig2i-tsa-extended-kinetics
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs1-controls-unchanged
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig2n-abrupt-input-dendrite-specific
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig2m-abrupt-input-fast-kinetics
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: table1-both-sexes
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs1l-multibranch-specific
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs2ab-correlation-declines-with-distance
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig2c-dendrite-correlation-bimodal
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs1c-tuft-spikes-rare
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig3c-coupling-distribution
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs3-coupling-rank-robust
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs3f-coupling-not-from-early-response
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig3d-high-couplers-correlated
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig3d-lowest-couplers-correlated
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs3e-spontaneous-lowest-couplers
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig3f-sc-most-active-at-spike
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig3f-dendrite-specific-every-group
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs3g-dff-groups-less-distinct
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: figs2c-no-coupling-clustering
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig4df-group-timing
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig4h-go-mode-sc
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig4h-outcome-nc
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig4h-response-similar
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig5b-spike-go-mode-sc-wc
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig5d-spike-outcome-nc
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig5b-go-mode-dendrite-specific
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig5d-outcome-not-dendrite-specific
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+- claim: fig1efg-task-selective-synapses
+  outcome: blocked
+  blocked_by: other
+  notes: The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated).
+findings:
+- kind: format_error
+  severity: critical
+  statement: In 50 of the 99 ecephys files the units table repeats a unit id (72 extra rows, for example
+    ids 3, 4, 4, 5, 5), and in every case the repeated rows hold the identical spike train. A unit is
+    stored twice, so an analysis that takes each row as a unit counts it twice; in this attempt the duplicates
+    change which sessions reach the paper's 18-unit filter (9 or 10 mice and 15 to 18 sessions depending
+    on whether they are counted once). Whether another unit was lost in place of the copy cannot be told
+    from the files.
+- kind: other
+  about: data
+  severity: major
+  statement: The paper's selection (KJ18 and PL56 mice, sessions with at least 18 good units above 0.5
+    Hz, photostimulation trials excluded) gives 9 or 10 mice (7 Sim1, 2 or 3 Tlx) and 15 to 18 sessions
+    under every reading tried, against the paper's 11 mice (8 Sim1, 3 Tlx) and 20 sessions. The dataset
+    holds 10 KJ18 and 6 PL56 mice, so the difference lies in the units or rates, not in missing mice.
+- kind: metadata_error
+  severity: minor
+  statement: Every trial's task is labelled 'audio delay', while the files' experiment description ('object
+    location discrimination task') and the paper describe a tactile sample cue.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The units' quality column holds the single value 'good' for all 1,441 units, so it does not
+    separate high-quality units from others as the paper's selection expects.
+- kind: format_error
+  severity: minor
+  statement: 558 BehavioralEvents timestamps are NaN (126 sample, 121 delay, 130 GO, 181 photostimulation
+    onsets), so these events cannot be placed in a trial; in the 16 sessions analysed one photostimulation
+    onset is NaN, and the stored laser trace shows no included trial with laser power.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The units' observation intervals start at a trial start and last 5.5 s, while the trials'
+    stop times differ from their ends by up to 13 s, and 574 trials with a sample time (in 65 files) have
+    no observation interval, so no spikes are stored for them. Neither is described in the files.
+- kind: format_error
+  severity: minor
+  statement: Ten units in four files store spike times out of order, and two files hold spikes outside
+    their units' observation intervals (10,895 in sub-214429 ses-20130806, 4,665 in sub-219031 ses-20131024).
+- kind: other
+  about: data
+  severity: none
+  statement: Spikes and trial events share a clock as far as decoding shows; the instructed side of correct
+    trials is decoded at a median balanced accuracy of 0.52 before sample onset and 0.88 after GO, and
+    near 0.5 with labels shifted by one trial. Photostimulation onsets agree with the stored laser power
+    trace in the 13 selected sessions checked. The published version and the draft hold the same 158 assets.
+- kind: methods_unavailable
+  statement: For the authors. The step that builds the Figure S4 input arrays (ephys_secondaryAna.PKL)
+    from DANDI:000010 is not in the code at commit 688e662. Which units enter a selected session (all
+    high-quality units, or only those above 0.5 Hz), how the session-wide rate is measured (over the recording,
+    or within the analysis windows), which trials enter (only CL, CR, IL, IR, or also early-lick and no-response
+    trials), how trial windows of different length were made common, and whether units stored twice in
+    the files were counted once all change which sessions pass and whether the 57.14 to 71.43% and middle
+    bins are significant. This attempt assumed only units above 0.5 Hz (the code's printed 18 to 25 neurons
+    per session support it), the rate over the recording, and the four trial types. Could you confirm
+    or correct these choices?
