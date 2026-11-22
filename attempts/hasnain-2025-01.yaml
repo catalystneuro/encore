@@ -144,12 +144,16 @@ outcomes:
     the claim would be not reproduced. With 5 sessions the test has little power; the main-reading V1 difference
     is 28.3 points. Over the five seeds the main-reading V1 p is 0.079 to 0.086, the B2 V1 p 0.040. Under reading
     G2 (19 sessions) the main reading with V2 gives 33.9 against 42.7%, p = 0.251 (0.249 to 0.261 over the seeds),
-    which the criterion counts as reproduced; the outcome rests on G1. Movement-null dimensions are 5 to 10, potent
+    which the criterion counts as reproduced; the outcome rests on G1. G1 is held fixed for every outcome while the
+    readings of M3 to M6 and the seeds are searched for one under which a claim holds; read the same way under G2,
+    this claim would be reproduced. An earlier execution on a runner with other linear algebra kernels gave, under
+    G2, 34.1 against 42.9%, p = 0.251 (0.251 to 0.266 over the seeds). Movement-null dimensions are 5 to 10, potent
     4 to 9; 30 to 50% of bins are moving, mostly in the response epoch (51 to 82% of its bins, 1 to 25% of baseline
     bins).
   deviations:
   - 5 sessions where the paper has 16 (map-session-selection, reading G1, assumed); reading G2 shown in the second
-    notebook.
+    notebook. The selection is held at G1 while the other readings are searched, an asymmetry between the
+    selection and the readings of M3 to M6, and under G2 this claim holds.
   - The movement threshold is Otsu's threshold on log10 speed, a standard choice for the value between the two modes
     that the paper set by hand; the keypoint positions are first smoothed with a Gaussian of 3 frames, as unsmoothed
     tracking jitter makes the speed histogram unimodal.
@@ -180,7 +184,11 @@ outcomes:
     difference is also significant (fig4c-alm-null-potent-similar): no single reading reproduces both Figure 4c
     claims. Under reading G2 (19 sessions) null is below potent under the main reading (V2 35.7 against 51.7%, p
     = 0.027; V1 p = 0.020; V1 and V2 p 0.008 to 0.027 over the seeds) and under B2 (V2 30.8 against 56.4%, p = 0.005),
-    with the null mean outside tolerance in each, partially reproduced. 31 to 128 medulla units per G1 session.'
+    with the null mean outside tolerance in each, partially reproduced (an earlier execution on a runner with other
+    linear algebra kernels gave V2 35.4 against 52.3%, p = 0.017, and B2 V2 31.3 against 56.0%, p = 0.0065). The
+    combination that reproduces the claim is searched over M3 to M6 and the seeds with the selection held at G1;
+    the same search is not applied to G2, under which fig4c-alm-null-potent-similar and fig4e-medulla-null-lower-dimension
+    hold. 31 to 128 medulla units per G1 session.'
   deviations:
   - The outcome rests on reading G1 of the selection, B2 of M4 and V2 of M6, which the paper leaves open (asked
     of the authors under findings).
@@ -207,7 +215,10 @@ outcomes:
     zero in 3 of 44 pairs, all with 0.24 predictors per trial or fewer: with up to 1.24 predictors per training
     trial (T1), a nearly unpenalized per-bin fit overfits. As variants with larger penalties, standardized and pooled,
     R2 is at most 16.6% (ALM to medulla, lambda 100), with ALM to ALM at 6.9%, below ALM to medulla, the reverse
-    of the paper.'
+    of the paper. The decoder amplifies differences in the last digits of the subspaces, which depend on the processor''s
+    linear algebra kernels: an earlier execution on another runner gave ALM to ALM -6039.6 to -2188.1%, the median
+    over bins -364.1 to -178.8% and the span R2 -320.5 to -120.3% (ALM to medulla), and example.m -1829.2 to -1512.9%,
+    with the same outcome.'
   deviations:
   - Subspaces from the main reading and reading G1; the bilateral sessions are 17, not 20.
   - Larger penalties, the R2 over the whole span, the median over bins and the example.m z-score are shown as variants;
@@ -223,7 +234,9 @@ outcomes:
     over the five seeds p is 0.45 to 1.00. Under the median over bins, the R2 over the span and the example.m z-score
     p is 0.11 to 0.99. In the lambda = 100 variant ALM to medulla exceeds medulla to ALM by 6.2 points (p = 0.091),
     with medulla to ALM at 10.4%. Under reading G2 (19 sessions) every mean R2 is below -10^6 % and p is 0.15 to
-    0.87, not reproduced.
+    0.87, not reproduced. An earlier execution on a runner with other linear algebra kernels gave medulla to ALM
+    -517.8 to -288.0%, the lambda = 100 difference 6.17 points (p = 0.094) and G2 p 0.197 to 0.987, with the same
+    outcome.
   deviations:
   - As for fig4d-alm-predicts-medulla-null.
 - claim: fig4e-medulla-null-lower-dimension
@@ -238,10 +251,14 @@ outcomes:
     z-score, a variant, gives N1 10.2 against 14.4, p = 0.042. Under reading G2 (19 sessions) N1 does not differ
     (p = 0.98; 0.86 to 1.00 over the seeds) but N2 is lower in the medulla (3.35 against 5.93, p = 0.027, lower
     in 14 of 19; B2 p = 0.018), which the criterion counts as reproduced; there the medulla N2 is below 1.4 in 5
-    sessions, each with a unit whose |z| exceeds 3000. The outcome rests on G1. The medulla has 31 to 128 units
+    sessions, each with a unit whose |z| exceeds 3000. The outcome rests on G1, which is held fixed while the readings
+    of M3 to M6 are searched; read the same way under G2, the claim would be reproduced under N2. An earlier execution
+    on a runner with other linear algebra kernels gave under G2 N1 p = 0.925 and N2 3.37 against 5.96, p = 0.0255.
+    The medulla has 31 to 128 units
     and ALM 40 to 85; the medulla has fewer units in 2 sessions.
   deviations:
-  - 5 sessions (reading G1, assumed); dimensions from 100 shuffles of every 4th bin.
+  - 5 sessions (reading G1, assumed, held fixed while the readings of M3 to M6 are searched; under G2 the claim
+    holds with N2); dimensions from 100 shuffles of every 4th bin.
   - N2 is the claims file's stand-in for the scale-dependent measure of ref 70, which the paper does not specify.
 - claim: fig4f-medulla-null-not-spanning-alm
   outcome: partially_reproduced
@@ -257,7 +274,11 @@ outcomes:
     shuffled within session; 58.2 to 62.6% over seeds). The medulla of sub-460436_ses-20200109 has d_null = 1 and
     its units spread along one line; without that session (claim seed plus 1) 21.0% of ALM units have no medulla
     neighbour, 16 of 57 ALM cells hold no medulla unit and 26 of 67 medulla cells lie outside the ALM cells. The
-    judgment rests on these counts and the plots.
+    judgment rests on these counts and the plots. The embedding depends on the last digits of its inputs, which
+    differ between processors' linear algebra kernels, and an earlier execution on another runner gave 33.3% (23.3
+    to 33.3% over seeds), 3 of 28 ALM cells without a medulla unit, 2 of 27 medulla cells outside the ALM cells,
+    57.4% of medulla units with an ALM neighbour (57.4 to 65.9%), and without the session 20.1%, 20 of 62 and 20
+    of 62. Both executions give the same judgment.
   deviations:
   - umap-learn with the Methods' parameters stands in for MATLAB's run_umap (claims, M10); the neighbour and grid
     counts are this attempt's description of the embedding, the paper judges by inspection.
@@ -289,7 +310,7 @@ findings:
   about: data
   severity: none
   statement: The spike, video and trial clocks agree in all 22 selected sessions. The tongue becomes visible a median
-    56 to 271 ms after the go cue, lick direction is decoded from spike counts after the go cue well above shuffled
+    56 to 262 ms after the go cue, lick direction is decoded from spike counts after the go cue well above shuffled
     labels, and jaw and nose speed rises at the go cue. The units of the session compared are the same in versions
     0.230822.0128 and 0.231012.2129.
 - kind: paper_inconsistency
@@ -330,7 +351,8 @@ verifications:
 - date: '2026-11-22'
   kind: agent
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: 'The first executed notebook with the conclusion cells and the summary removed, the helper module and
+  reviewed: 'The first executed notebook with the conclusion cells and the summary removed (cells 21 and 31 still
+    held the author''s result text, as the verifier''s round-1 report says), the helper module and
     the claims file, with the paper''s full text under paper/. The verifier queried the DANDI API for the dandiset''s
     versions and searched the archive for the paper''s own recordings, and tested ridge_r2, selectivity_p, the rate
     kernel, shuffle_dimension and movement_mask on synthetic inputs. Its other points: subspaces fitted on all trials
@@ -526,3 +548,179 @@ verifications:
       and no medulla cell lies outside the ALM cells. Without the d_null = 1 session the first part still holds
       (21.0%; 16 of 57 ALM cells without medulla) but 26 of 67 medulla cells lie outside the ALM cells. The first
       part of the criterion holds and the second in part.'
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. Both executed notebooks in full, with the conclusions and summaries, the helper module, the claims
+    file and the attempt record after the round-1 revision. The verifier also checked the record''s findings, none of which
+    is rated critical, and would rate none critical (clocks agree, nb1 cell 9; the units match across versions, nb1 cell
+    5; the other-delay trials and the missing CCF labels are evident from the files); it found the existing ratings reasonable.
+    Its other points: the README run times (now 40 and 50 minutes, from this execution''s 2428 and 3012 s), the clock finding''s
+    271 ms (now 262 ms, as both notebooks print), and the round-1 reviewed field, which now says that cells 21 and 31 still
+    held the author''s result text.'
+  results:
+  - claim: own-recordings-cohort
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: fig1i-selectivity-proportions
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: fig2c-subspace-variance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: fig2e-potent-only-units
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: fig2f-letn-preference-like-un
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: fig2gh-letn-span-subspaces
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: ed2f-false-negatives
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: fig3c-network-beats-linear
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: fig3d-letn-un-movement-encoding
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: ed3-letn-fast-switch
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: ed3a-cd-early-un-not-letn
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing). No assumption needed.
+    response: No change.
+  - claim: map-session-selection
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. nb1 cell 12: no reading (G1, G2 at 0/20/40 um, U2) gives both the session and the unit counts. G1 as
+      main reading and 20 um label transfer are stated and reasonable, and the outcome does not depend on either. The nb1
+      cell 11 markdown says U2 cannot place units in the CCF and that all units on the region''s probe are shown, but cells
+      6, 12 and 13 form U2 by label transfer, so this text is stale.'
+    response: Cell 11 now says that U2, like G2, takes the label of the nearest unit classified good within 20 um, and that
+      the counts of all units on each probe are also shown. Outcome unchanged.
+  - claim: fig4b-medulla-selectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. nb1 cell 17: under E1 the order holds for every seed and both thresholds, and every value is outside
+      tolerance. Leaving out ignore, stim, early-lick and other-delay trials, and G1, are stated and reasonable. The block
+      shuffle gives 30.3 / 47.9 / 85.9%.'
+    response: No change; the re-run gives the same values.
+  - claim: fig4c-alm-null-potent-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees under G1 (cell 20: main p = 0.086 to 0.194, no reading with both means in tolerance). Under G2 (nb2
+      cell 10, 34.13 / 42.89, p = 0.251) the claim meets its criterion. Holding G1 fixed is defensible, as G2 brings units
+      with |z| up to 53615 and transferred labels, but the record should say plainly that G1 is held fixed while the M3
+      to M6 readings are searched; read the same way for every claim, fig4c-ALM would be reproduced. No change asked, only
+      that the asymmetry be stated in the README and the record. The G2 numbers in nb2 cell 11 and the record (V1 p = 0.050,
+      B2 V2 p = 0.041, 0.249 to 0.261 over the seeds) do not match nb2''s outputs.'
+    response: The re-run showed why the text and the outputs disagreed. The result text had been written from one execution
+      and the deposited notebooks came from another, on a runner whose processor made OpenBLAS pick other kernels (this
+      runner uses SkylakeX; forcing the Haswell kernel changes a subspace fit bitwise). The last digits of the fits differ,
+      and the decoder, the UMAP embedding and some G2 shuffle dimensions amplify that. The re-run on this runner gave exactly
+      the numbers of the earlier text, and a second re-run repeated them. Under G2 this execution gives 33.9 against 42.7%,
+      p = 0.251 (0.249 to 0.261 over the seeds), V1 p = 0.050 and B2 V2 p = 0.041, as the text says; the record's notes
+      now also give the earlier execution's values. The asymmetry is stated in the README, in both notebooks' summaries,
+      in this outcome's notes and in a deviation. Outcome unchanged.
+  - claim: fig4c-medulla-null-smaller
+    agrees: true
+    outcome: reproduced
+    reason: Agrees by the letter of the criterion. G1, B2, V2 give 28.40 / 51.88, p = 0.017 (cell 20). Potent is 52.28 under
+      offsets 2000 and 4000, outside the 51.92 bound (cell 22). The assumptions are stated and the fragility (1 of 15 combinations)
+      is disclosed. The attempt applies 'under one reading' across 15 G1 combinations to reach reproduced but declines G2
+      for fig4c-ALM and fig4e. The G2 numbers in nb2 cell 11 and the record do not match the outputs.
+    response: The re-run showed why the text and the outputs disagreed. The result text had been written from one execution
+      and the deposited notebooks came from another, on a runner whose processor made OpenBLAS pick other kernels (this
+      runner uses SkylakeX; forcing the Haswell kernel changes a subspace fit bitwise). The last digits of the fits differ,
+      and the decoder, the UMAP embedding and some G2 shuffle dimensions amplify that. The re-run on this runner gave exactly
+      the numbers of the earlier text, and a second re-run repeated them. This execution's G2 values match the text (V2
+      35.7 against 51.7%, p = 0.027; B2 V2 30.8 against 56.4%, p = 0.005); the notes add the earlier execution's values
+      and state that the search over readings is made with the selection held at G1. The G1 values (28.4 against 51.9%,
+      p = 0.017) are the same in every execution. Outcome unchanged.
+  - claim: fig4d-alm-predicts-medulla-null
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees (cells 30, 31, 33, 35); the assumptions are stated. The numbers in nb1 cell 36 and the record do not
+      match the outputs: ALM to ALM -6098.6 to -2191.3% (cell 30 shows -6039.6 to -2188.1), the median -364.9 to -178.8%
+      (-364.05 to -178.77), the span -320.8 to -120.3% (-320.48 to -120.27), example.m -1828.9 to -1512.9% (-1829.17 to
+      -1512.92).'
+    response: The re-run showed why the text and the outputs disagreed. The result text had been written from one execution
+      and the deposited notebooks came from another, on a runner whose processor made OpenBLAS pick other kernels (this
+      runner uses SkylakeX; forcing the Haswell kernel changes a subspace fit bitwise). The last digits of the fits differ,
+      and the decoder, the UMAP embedding and some G2 shuffle dimensions amplify that. The re-run on this runner gave exactly
+      the numbers of the earlier text, and a second re-run repeated them. This execution prints -6098.6 to -2191.3%, -364.89
+      to -178.78%, -320.78 to -120.27% and -1828.89 to -1512.92%, as the text says. The record's notes now also give the
+      earlier execution's values, with the same outcome, and the summary and README say that the numbers depend on the processor.
+      Outcome unchanged.
+  - claim: fig4d-decoding-asymmetry
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Medulla to ALM '-517.9 to -290.4%' in nb1 cell 36 does not match cell 30 (-517.84 to -287.97); the lambda
+      = 100 asymmetry '6.2 points (p = 0.091)' does not match cell 35 (6.17, p = 0.0943), though the record's response claims
+      this text now matches the output. The G2 range 'p = 0.15 to 0.46 under the claim's seed and 0.17 to 0.87 over the
+      other seeds' does not match nb2 cell 18 (0.197 to 0.441 and 0.228 to 0.987).
+    response: The re-run showed why the text and the outputs disagreed. The result text had been written from one execution
+      and the deposited notebooks came from another, on a runner whose processor made OpenBLAS pick other kernels (this
+      runner uses SkylakeX; forcing the Haswell kernel changes a subspace fit bitwise). The last digits of the fits differ,
+      and the decoder, the UMAP embedding and some G2 shuffle dimensions amplify that. The re-run on this runner gave exactly
+      the numbers of the earlier text, and a second re-run repeated them. This execution prints -517.94 to -290.36%, 6.22
+      points (p = 0.0914) and G2 p 0.154 to 0.460 and 0.171 to 0.871, as the text says; the round-1 response was right for
+      the execution it was written from. The notes add the earlier execution's values. Outcome unchanged.
+  - claim: fig4e-medulla-null-lower-dimension
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees under G1 (cell 25: N1 p = 0.741, N2 p = 0.087); G1 is stated. Under G2 (nb2 cell 15) N2 p = 0.0255,
+      so read the same way as fig4c-medulla this claim would be reproduced under N2; the asymmetry should be stated. The
+      G2 numbers in nb2 cell 16, its summary and the record (N1 10.9 / 10.9, p = 0.98; N2 3.35 against 5.93, p = 0.027;
+      B2 p = 0.876 and 0.018) do not match the outputs (11.21 / 11.42, p = 0.925; 3.37 / 5.96, p = 0.0255; B2 p = 0.699
+      and 0.0193).'
+    response: The re-run showed why the text and the outputs disagreed. The result text had been written from one execution
+      and the deposited notebooks came from another, on a runner whose processor made OpenBLAS pick other kernels (this
+      runner uses SkylakeX; forcing the Haswell kernel changes a subspace fit bitwise). The last digits of the fits differ,
+      and the decoder, the UMAP embedding and some G2 shuffle dimensions amplify that. The re-run on this runner gave exactly
+      the numbers of the earlier text, and a second re-run repeated them. This execution prints N1 10.89 against 10.95,
+      p = 0.98, N2 3.35 against 5.93, p = 0.027, B2 p = 0.876 and 0.0178, as the text says. The asymmetry is stated in the
+      README, both summaries, the notes and a deviation; the notes add the earlier execution's values. Outcome unchanged.
+  - claim: fig4f-medulla-null-not-spanning-alm
+    agrees: true
+    outcome: partially_reproduced
+    reason: I now agree with partial, changing my round-1 not_reproduced. The within-session shuffle (cell 38) answers my
+      session-clumping objection. In every seed, 23 to 33% of ALM units have no medulla neighbour, against 0.1% under the
+      shuffle. Without the d_null = 1 session, 20 of 62 medulla cells lie outside the ALM cells, so the second part of the
+      criterion does not hold robustly. The criterion defines no 'partial' level. Cell 39 and the record misreport cell
+      38 (25.7% against 33.3%, 21.3 to 27.3% against 23.3 to 33.3%, 6 of 26 against 3 of 28, 0 of 20 against 2 of 27, 59.4%
+      against 57.4%, spread 9.75 against 7.62, and without the session 21.0%, 16 of 57, 26 of 67 against 20.1%, 20 of 62,
+      20 of 62); the judgment must be restated from cell 38.
+    response: The re-run showed why the text and the outputs disagreed. The result text had been written from one execution
+      and the deposited notebooks came from another, on a runner whose processor made OpenBLAS pick other kernels (this
+      runner uses SkylakeX; forcing the Haswell kernel changes a subspace fit bitwise). The last digits of the fits differ,
+      and the decoder, the UMAP embedding and some G2 shuffle dimensions amplify that. The re-run on this runner gave exactly
+      the numbers of the earlier text, and a second re-run repeated them. UMAP is the most sensitive step. This execution's
+      cell 38 prints 25.7%, 21.3 to 27.3%, 6 of 26, 0 of 20, 59.4%, spread 9.75 and, without the session, 21.0%, 16 of 57
+      and 26 of 67, as cell 39 says. The notes now give the earlier execution's values too; both give the same judgment.
+      Outcome unchanged.
