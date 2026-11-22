@@ -39,12 +39,25 @@ GRIDS = {"a": np.log10(1.82), "b": 0.052}
 # Figure 2 legend: merging-number pairs delta = r * delta' for the neuron.
 NEURON_RATIOS = (3.3, 5.9, 11.0)
 # Claims file, O3: the four fit readings (xmin by KS or xmin = 1; discrete or continuous).
-READINGS = {
+# Assumption, the range of the exponent (raised by the round-1 verifier). The locked release of
+# powerlaw, 2.0.0, bounds the power-law alpha to [0, 3] by default (Power_Law.DEFAULT_PARAMETER_RANGES),
+# so no fit can exceed 3, and its find_xmin discards every candidate xmin whose fit reaches the
+# bound. The estimator the paper cites (Clauset et al., ref. 36, Section 3) has no upper bound,
+# and neither had the package as its paper describes it (Alstott et al., ref. 37; releases 1.x
+# require only alpha > 1). The paper gives no version. Adopted: alpha in [1, inf), the method as
+# cited. The release's default cap is run as a variant, the same readings with suffix "_cap3".
+ALPHA_RANGES = {"": {"alpha": [1, None]}, "_cap3": None}
+_BASE_READINGS = {
     "ks_discrete": dict(xmin=None, discrete=True),
     "ks_continuous": dict(xmin=None, discrete=False),
     "x1_discrete": dict(xmin=1, discrete=True),
     "x1_continuous": dict(xmin=1, discrete=False),
 }
+READINGS = {name + sfx: dict(kw, parameter_ranges=pr)
+            for sfx, pr in ALPHA_RANGES.items() for name, kw in _BASE_READINGS.items()}
+ADOPTED_READINGS = tuple(_BASE_READINGS)                       # unbounded exponent
+CAPPED_READINGS = tuple(r + "_cap3" for r in _BASE_READINGS)    # powerlaw 2.0.0 default, a variant
+CAP = 3.0
 
 
 # ---------------------------------------------------------------- archive access
@@ -170,7 +183,9 @@ def fit(x: np.ndarray, reading: str) -> dict:
 
     Uses the powerlaw package (Alstott et al., ref. 37 of the paper, implementing Clauset et al.,
     ref. 36): Fit(...) and distribution_compare('power_law', 'exponential'). The readings of the
-    lower cutoff and of discreteness are those of the claims file, O3.
+    lower cutoff and of discreteness are those of the claims file, O3; the range of the exponent
+    is unbounded, or capped at 3 in the "_cap3" variants (see READINGS). `at_cap` marks a capped
+    fit within 0.01 of the cap.
     """
     import powerlaw
 
@@ -178,7 +193,8 @@ def fit(x: np.ndarray, reading: str) -> dict:
     kw = READINGS[reading]
     out = dict(reading=reading, n=len(x), xmax=float(x.max()) if len(x) else np.nan)
     if len(x) < 2 or np.unique(x).size < 2:
-        out.update(alpha=np.nan, sigma=np.nan, xmin=np.nan, n_tail=0, R=np.nan, p=np.nan, supported=False)
+        out.update(alpha=np.nan, in_range=False, at_cap=False, sigma=np.nan, xmin=np.nan, n_tail=0, R=np.nan,
+                   p=np.nan, supported=False)
         return out
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -187,8 +203,11 @@ def fit(x: np.ndarray, reading: str) -> dict:
             R, p = F.distribution_compare("power_law", "exponential")
         except Exception:  # a failed test is counted as not supported and reported
             R, p = np.nan, np.nan
+    a_ = float(F.power_law.alpha)
     out.update(
-        alpha=float(F.power_law.alpha),
+        alpha=a_,
+        in_range=bool(F.power_law.in_range()),
+        at_cap=bool(kw["parameter_ranges"] is None and a_ > CAP - 0.01),
         sigma=float(F.power_law.sigma),
         xmin=float(F.xmin),
         n_tail=int((x >= F.xmin).sum()),
@@ -253,6 +272,7 @@ def unit_pattern(times_ms, grid_name, reading, ratios=NEURON_RATIOS) -> dict:
     nk = sum(x["supported"] for x in kf)
     betas = [x["alpha"] for x in bf if np.isfinite(x["alpha"])]
     out.update(used=True, n_pairs=len(prs), b_supported=nb, k_supported=nk,
+               n_at_cap=sum(x["at_cap"] for x in bf + kf), n_fits=len(bf) + len(kf),
                b_frac=nb / len(g), k_frac=nk / len(prs) if prs else np.nan,
                median_beta=float(np.median(betas)) if betas else np.nan,
                pattern=bool(nb > len(g) / 2 and len(prs) > 0 and nk > len(prs) / 2))
@@ -372,15 +392,32 @@ def simulate_decremental(n: int, series: str, gamma: float, rng: np.random.Gener
     return t
 
 
-def unit_all_patterns(times_ms) -> list[dict]:
-    """unit_pattern under both grids (O4) and the four fit readings (O3), for a worker pool."""
+def unit_all_patterns(times_ms, readings=ADOPTED_READINGS, grids=tuple(GRIDS)) -> list[dict]:
+    """unit_pattern under the given grids (O4) and fit readings (O3), for a worker pool."""
     out = []
-    for g in GRIDS:
-        for r in READINGS:
+    for g in grids:
+        for r in readings:
             row = unit_pattern(times_ms, g, r)
             row.update(grid=g, reading=r)
             out.append(row)
     return out
+
+
+def capped_patterns(times_ms) -> list[dict]:
+    """The capped variant (powerlaw 2.0.0 default range) on grid (a) alone, for a worker pool."""
+    return unit_all_patterns(times_ms, CAPPED_READINGS, ("a",))
+
+
+def cdf_int(x: np.ndarray) -> np.ndarray:
+    """Empirical CDF of positive integers at 0, 1, ..., max(x)."""
+    c = np.bincount(x).cumsum()
+    return c / c[-1]
+
+
+def ks_d_int(c1: np.ndarray, c2: np.ndarray) -> float:
+    """Two-sample KS statistic from two integer CDFs (cdf_int), padded with 1."""
+    n = max(len(c1), len(c2))
+    return float(np.abs(np.pad(c1, (0, n - len(c1)), constant_values=1) - np.pad(c2, (0, n - len(c2)), constant_values=1)).max())
 
 
 def ccdf_at(x: np.ndarray, at: np.ndarray) -> np.ndarray:
