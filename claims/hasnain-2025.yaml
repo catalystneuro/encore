@@ -93,7 +93,9 @@
 #    number of trials sampled is open; the reading is the smaller of the two trial counts. How
 #    the five epochs map onto the paper's three (sample, delay, response) is open between (E1) a
 #    unit selective in either sub-epoch counts for the epoch and (E2) each sub-epoch alone, every
-#    one reported.
+#    one reported. The Figure 1i legend gives "p < 0.05; shuffle test" with no correction; the
+#    Methods' Bonferroni threshold, which names Fig. 1i and Fig. 4b, is the main reading, and the
+#    uncorrected p < 0.05 is a variant.
 # M8 Cross-region decoding (Figure 4d). Movement-null projections of single trials. For each time
 #    bin t, ridge regression (lambda 0.01) from the source projections at t and the 8 preceding
 #    bins (D_source x 9 predictors) to all target dimensions at t; 70% of trials to train, 30% to
@@ -108,8 +110,9 @@
 #    epochs of M7, -1.8 to +1.5 s.
 # M9 Dimensionality (Figure 4e). Open between (N1) the shuffle count of M5 from the stationary
 #    bins (the Methods' only dimensionality procedure) and (N2) the participation ratio of the
-#    eigenvalues of the movement-null activity, the effective dimensionality of ref 70 that the
-#    Results cite. ALM against medulla, paired t test over sessions.
+#    eigenvalues of the movement-null activity, as a stand-in for the effective dimensionality the
+#    Results cite to ref 70 (Recanatesi et al. 2022, a scale-dependent measure of dimensionality);
+#    the paper does not say which scale or measure it used. ALM against medulla, paired t test over sessions.
 # M10 UMAP (Figure 4f). Equal numbers of left and right correct trials, half to train and half to
 #    test; trial-averaged movement-null reconstructions (X Q Q') of both trial types concatenated
 #    in time; z-scored per unit on the training set; run_umap with 2 components, 30 neighbours,
@@ -209,7 +212,7 @@ claims:
 - id: fig2e-potent-only-units
   statement: More units than expected from random subspaces have activity almost entirely in the
     movement-potent subspace (subspace preference near -1).
-  source: Results, Subspace specificity of L-ETNs, paragraph 2; Figure 2e; Discussion, paragraph 2
+  source: Results, Subspace specificity of L-ETNs, paragraph 2; Figure 2e; Discussion, paragraph 1
   quote: As in previous work, we observed an unusually large number of units with activity contained almost
     entirely within the movement-potent subspace ( Fig. 2e )
   criterion: Not testable on DANDI:000363; the paper's own recordings are not public. Were they available,
@@ -274,7 +277,8 @@ claims:
     tolerance: 1.06
     unit: percent
   criterion: Not testable on DANDI:000363; the paper's own recordings and videos are not public. The
-    s.d. given is the spread over neurons, so 10% of each mean is used as the tolerance.
+    s.d. given is the spread over neurons, so 10% of each mean is used as the tolerance. The unit count
+    differs between the Results (n = 1954 neurons) and the Figure 3c legend (n = 1945 units).
 - id: fig3d-letn-un-movement-encoding
   statement: Movements explain L-ETN activity no better than UN activity in the neural network model
     (26.4 +- 17.9% against 28.0 +- 20.1%, p = 0.39).
@@ -301,9 +305,10 @@ claims:
     after the go cue), while the UN switch is slower; the slope of the change from 0 to 150 ms is larger
     for L-ETNs (paired t test, p = 7.6e-18).
   source: Results, Coding specificity of L-ETNs; Extended Data Figure 3b to d
-  quote: L-ETN dynamics changed rapidly at the go cue, just preceding movement initiation, whereas the UN
+  quote: 'L-ETN dynamics changed rapidly at the go cue, just preceding movement initiation, whereas the UN
     state switch was slower and followed movement onset ( Extended Data Fig. 3b – d ; p = 7.6 × 10 - 18 ,
-    paired t -test between slope of curves in Extended Data Fig. 3d ; movement onset
+    paired t -test between slope of curves in Extended Data Fig. 3d ; movement onset: 105 ± 36 ms following
+    the go cue, mean ± s.d.; n = 27 sessions).'
   statistics:
   - test: paired t-test on bootstrap slopes
     p: 7.6e-18
@@ -327,7 +332,7 @@ claims:
     right and 1055 left ALM units) and ALM and medulla sessions with 604 ALM units and 724 medullary
     reticular nucleus units.
   source: Methods, Curation of Mesoscale Activity Map Dataset (MAP); Results, A subset of null dynamics is
-    found downstream of motor cortex, paragraphs 1 and 3
+    found downstream of motor cortex, paragraphs 1 and 4
   quote: For simultaneous bilateral ALM recordings, we included 20 sessions from 10 mice, consisting of 2016
     units (961 from right ALM and 1055 from left ALM). For simultaneous ALM and medulla recordings, we
     included 11 sessions from 7 mice, consisting of 1328 units (604 from ALM and 724 from medulla).
@@ -485,7 +490,7 @@ claims:
   statistics:
   - test: paired t-test
     p: 7.4e-5
-    n: 16 sessions
+    n: not stated for this test; the 16 ALM and medulla sessions of the Results
   depends_on:
   - map-session-selection
   criterion: Dimensionality per region and session as in M9, readings N1 and N2. Reproduced when, under one
@@ -505,3 +510,18 @@ claims:
     neighbour). Reproduced when the test-set embedding has a region holding ALM units with no medulla unit
     near them, and the medulla units fall within the region occupied by ALM units; the embedding is shown
     and the judgment stated as resting on inspection.
+checks:
+- date: 2026-11-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - ed3-letn-fast-switch, quote extended to the end of the sentence so that it holds the movement onset value (105 +- 36 ms, n = 27 sessions) the statement and expected value use.
+  - map-session-selection, source corrected from Results paragraphs 1 and 3 to 1 and 4; the 1116 neurons of the bilateral ALM sessions are in the decoding paragraph, which this file elsewhere calls paragraph 4.
+  - fig2e-potent-only-units, source corrected to Discussion paragraph 1; the sentence on a subpopulation larger than expected by chance follows the Discussion's opening sentence with no break in topic.
+  - fig3c-network-beats-linear, criterion notes that the Figure 3c legend gives n = 1945 units against 1954 neurons in the Results.
+  - fig4e-medulla-null-lower-dimension, statistics n changed to say the paper gives no n for this test; 16 sessions was an inference from the Results.
+  - Header M7, the Figure 1i legend's uncorrected p < 0.05 shuffle test added as a variant to the Methods' Bonferroni threshold.
+  - Header M9, ref 70 identified (Recanatesi et al. 2022, a scale-dependent dimensionality measure); the participation ratio of reading N2 is marked as a stand-in, since the paper does not name the measure or scale.
+  - Open, not settled. The ALM and medulla session count (16 in the Results and Figure 4, 11 from 7 mice in the Methods) and the bilateral ALM unit count (1116 in the Results, 2016 in the Methods) conflict in the paper; both readings stay in the criteria.
+  - Open, not settled. The variance explained reading V2 (normalization by total variance) departs from the Methods' formula; it is kept because the Results describe 78% of the variance in single-trial activity and the values add up, but the formula reading V1 is the Methods' own.
