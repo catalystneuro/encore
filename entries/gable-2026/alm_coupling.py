@@ -35,6 +35,10 @@ at commit 688e662, Figures/sled_glutamate_functions.py):
   interval (after which no spikes are stored), is dropped, as the code's NaN trial filter (E3)
   would drop it.
 - Spike times are sorted on loading; a few units store them out of order.
+- Units stored twice in a file (a repeated id with an identical spike train): `select_session`
+  and `analyse` count them once with `dedupe=True`, or keep every stored row with
+  `dedupe=False`. The claims file does not name this detail; the notebook runs both and adopts
+  every stored row as an assumption (it says why).
 """
 
 from __future__ import annotations
@@ -308,6 +312,12 @@ def unique_units(ses):
     return np.array(keep)
 
 
+def duplicate_pairs(ses, units):
+    """Pairs of positions in `units` whose rows hold the identical spike train (a unit stored twice)."""
+    return [(a, b) for a, b in itertools.combinations(range(len(units)), 2)
+            if np.array_equal(ses["spikes"][units[a]], ses["spikes"][units[b]])]
+
+
 def observed_until(ses):
     """End of the observation interval that starts at each trial's start (NaN when none).
 
@@ -370,7 +380,7 @@ def analyse(sessions, o1, o2, o3, dedupe=True):
             continue
         kept.append({"subject": ses["subject"], "session": ses["session"], "path": ses["path"],
                      "group": group, "ai32": "ai32" in ses["strains"],
-                     "n_units": len(sel["units"]), "n_trials": int(sel["trial_mask"].sum()),
+                     "n_units": len(sel["units"]), "units": sel["units"], "n_trials": int(sel["trial_mask"].sum()),
                      "types": pd.Series(sel["types"]).value_counts().to_dict()})
         x_by_session.append(session_tsa(ses, sel))
     coupling = [population_coupling(x) for x in x_by_session]
@@ -418,9 +428,10 @@ def decode_side(ses, units, trial_mask, align, windows, shift_labels=False, n_fo
 
 
 def laser_max_per_trial(url, trials):
-    """Largest laser power (the file's unit, mW) within each trial, from the stored trace."""
+    """Largest laser power (the file's unit, mW) within each trial, from the stored trace, the
+    names of the laser series, and whether the file describes optogenetics (general/optogenetics)."""
     f = h5py.File(remfile.File(url), "r")
-    pres = f["stimulus/presentation"]
+    pres = f["stimulus/presentation"] if "stimulus/presentation" in f else {}
     names = [k for k in pres if k.endswith("laser_power")]
     out = np.zeros(len(trials))
     for name in names:
@@ -428,7 +439,7 @@ def laser_max_per_trial(url, trials):
         lo = np.searchsorted(t, trials.start.to_numpy())
         hi = np.searchsorted(t, trials.stop.to_numpy())
         out = np.maximum(out, [d[a:b].max() if b > a else 0.0 for a, b in zip(lo, hi)])
-    return out, names
+    return out, names, "general/optogenetics" in f
 
 
 def by_mouse_differences(result):
