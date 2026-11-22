@@ -790,9 +790,12 @@ def test_a_claim_shows_the_papers_own_words_when_quoted():
     claim = {"claim": "fig2", "statement": "Rates rise.", "source": "Figure 2B", "quote": "Firing rates rose <sharply>.",
              "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p><cite>Figure 2B</cite>' in html
-    body = html.split("</summary>")[1]
-    assert body.index("blockquote") < body.index("It rose.")
+    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p></blockquote>' in html
+    head, body = html.split("</summary>")
+    # Where the paper says it is on the claim's own line, once, and the open claim's parts are labelled, in order.
+    assert '<span class="source">Figure 2B</span>' in head and "Figure 2B" not in body
+    assert body.index("<h5>From the paper</h5>") < body.index("blockquote") < body.index("<h5>Result</h5>") < body.index("It rose.")
+    assert "Deviations from" not in body and "Reported statistics" not in body      # no empty parts
     assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
 
 
@@ -864,11 +867,13 @@ def test_a_claim_shows_its_id_which_the_response_form_asks_for():
     claim = {"claim": "fig2-rates", "statement": "Rates rise.", "source": "Figure 2B", "outcome": "reproduced",
              "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    # In view without opening the claim, once, with the link to the claim under it.
+    # In view without opening the claim, once, at the end of the line under the statement, and itself the link to
+    # the claim.
     head = html.split("</summary>")[0]
-    assert ('<span class="claim-ref"><code class="claim-id" title="The id of this claim">fig2-rates</code>'
-            '<a class="claim-anchor" href="#claim-fig2-rates">link to this claim</a></span>') in head
-    assert html.count("fig2-rates</code>") == 1 and "Claim id" not in html
+    assert ('<a class="claim-id" href="#claim-fig2-rates" title="The id of this claim, and a link to it">'
+            'fig2-rates</a></div>') in head
+    assert head.index('class="statement"') < head.index('class="claim-meta"') < head.index('class="claim-id"')
+    assert html.count(">fig2-rates</a>") == 1 and "Claim id" not in html
     # Open, a claim tested in a notebook that has an executed copy leads to its cell there.
     assert "that tests this claim" not in html
     at_cell = site.claim_item({**claim, "cell": "../notebooks/demo/analysis.html#cell-id=ab12"}, "../")
@@ -883,7 +888,7 @@ def test_a_claim_shows_its_id_which_the_response_form_asks_for():
     assert site.cell_href({}, attempt, {"notebook": "other.ipynb", "output": "claim:a"}, "../") is None
     # The form's hint names ids as the page shows them, not numbers the page does not have.
     form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
-    assert "C3, C7" not in form and "end of the claim's first line" in form
+    assert "C3, C7" not in form and "at the end of the line under the claim" in form
 
 
 def test_a_closed_claim_gives_the_first_sentence_of_its_notes():

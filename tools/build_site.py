@@ -1919,9 +1919,17 @@ def cell_href(data: dict, attempt: dict, o: dict, root: str) -> str | None:
     return f'{data.get("notebooks_root") or root}{nb["executed"]}' + (f"#cell-id={cell}" if cell else "")
 
 
+def claim_sections(sections: list[tuple[str, str]], foot: str = "") -> str:
+    """The body of an open claim: each part under its own label (the paper's words, the result, the deviations
+    from its method), so that a long explanation reads as a record and not as one block of text."""
+    parts = "".join(f'<div class="claim-sec"><h5>{e(label)}</h5><div>{html_}</div></div>' for label, html_ in sections if html_)
+    return f'<div class="claim-body">{parts}{foot}</div>'
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
-    """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
-    blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
+    """One claim as an accordion. Closed, it is the statement, then what was found in a line, then where the paper
+    says it, its tags and its id. Open, the explanation follows in labelled parts (claim_sections)."""
+    blocked = f'<span class="why">{e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
@@ -1940,48 +1948,51 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
     if o.get("proposed"):
         tags += (f'<span class="tag">change to {e(OUTCOMES[o["proposed"]["outcome"]][0].lower())} '
                  f'proposed</span>')
-    body = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
+    found = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
     if o.get("proposed"):
-        body += (f'<p class="notes"><strong>Proposed after the last verification, not yet verified:</strong> '
-                 f'{e(OUTCOMES[o["proposed"]["outcome"]][0].lower())}. {e(squash(o["proposed"]["reason"]))}</p>')
+        found += (f'<p class="notes"><strong>Proposed after the last verification, not yet verified:</strong> '
+                  f'{e(OUTCOMES[o["proposed"]["outcome"]][0].lower())}. {e(squash(o["proposed"]["reason"]))}</p>')
     changed = next((c for c in ((attempt or {}).get("reconciliation") or {}).get("outcomes", [])
                     if c["claim"] == o["claim"]), None)
     if changed:
         then = attempt["reconciliation"]["earlier"].rsplit("-", 1)[1]
         tags += f'<span class="tag">was {e(OUTCOMES[changed["earlier"]][0].lower())} in attempt {e(then)}</span>'
-        body += (f'<p class="notes"><strong>Attempt {e(then)}:</strong> '
-                 f'{e(OUTCOMES[changed["earlier"]][0].lower())}. {e(changed["note"])}</p>')
-    if o["deviations"]:
-        items = "".join(f"<li>{e(d)}</li>" for d in o["deviations"])
-        body += (f'<p class="deviations-title">How the test differed from the paper’s method</p>'
-                 f'<ul class="deviations">{items}</ul>')
-    if not body:
-        body = '<p class="notes muted">No explanation recorded.</p>'
-    if o.get("statistics"):
-        items = "".join(f"<li>{e(statistic_text(s))}</li>" for s in o["statistics"])
-        body = f'<p class="deviations-title">What the paper reports</p><ul class="stats">{items}</ul>' + body
-    if o.get("inferred"):
-        body = f'<p class="inferred"><strong>Not quoted:</strong> {e(o["inferred"])}</p>' + body
+        found += (f'<p class="notes"><strong>Attempt {e(then)}:</strong> '
+                  f'{e(OUTCOMES[changed["earlier"]][0].lower())}. {e(changed["note"])}</p>')
+    # The paper's own words, or what the claim was drawn from when the paper does not say it in a sentence. Where
+    # in the paper is on the line above (source), so the quotation does not repeat it.
+    said = ""
     if o.get("quote"):
-        cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
-        body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
-    # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at
-    # the end of the claim's first line, once, with the link to the claim under it.
-    ident = (f'<span class="claim-ref"><code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
-             f'<a class="claim-anchor" href="#claim-{e(o["claim"])}">link to this claim</a></span>')
+        said = f'<blockquote class="quote"><p>{e(o["quote"])}</p></blockquote>'
+    if o.get("inferred"):
+        said += f'<p class="inferred"><strong>Not quoted:</strong> {e(o["inferred"])}</p>'
+    reports = ('<ul class="stats">' + "".join(f"<li>{e(statistic_text(s))}</li>" for s in o["statistics"]) + "</ul>"
+               if o.get("statistics") else "")
+    differed = ('<ul class="deviations">' + "".join(f"<li>{e(d)}</li>" for d in o["deviations"]) + "</ul>"
+                if o["deviations"] else "")
+    sections = [("From the paper", said), ("Reported statistics", reports),
+                ("Result", found or '<p class="notes muted">No explanation recorded.</p>'),
+                ("Deviations from the paper’s method", differed)]
     # Open, the claim leads to the cell of the executed notebook that tests it (cell_href, set by the page).
+    foot = ""
     if o.get("cell"):
         at_cell = "#cell-id=" in o["cell"]
-        body += (f'<p class="claim-link"><a href="{e(o["cell"])}">See the notebook {"cell" if at_cell else ""} that tests '
-                 f'this claim</a> <span class="muted small">in the executed notebook, with its output</span></p>'
-                 ).replace("notebook  that", "notebook that")
+        foot = (f'<p class="claim-link"><a href="{e(o["cell"])}">See the notebook {"cell" if at_cell else ""} that tests '
+                f'this claim</a> <span class="muted small">in the executed notebook, with its output</span></p>'
+                ).replace("notebook  that", "notebook that")
+    # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at the
+    # end of the line under the claim, once, and itself the link to the claim.
+    ident = (f'<a class="claim-id" href="#claim-{e(o["claim"])}" title="The id of this claim, and a link to it">'
+             f'{e(o["claim"])}</a>')
     # What was found, in a line under the statement while the claim is closed; open, the full notes show.
     lead = f'<p class="gist">{e(gist(o["notes"]))}</p>' if o["notes"] else ""
-    # The chip is not a link here: inside the summary a click should open the claim.
+    # The chip is not a link here: inside the summary a click should open the claim. Under an outcome's heading
+    # (by_outcome) it is not shown, as the heading and the claim's stripe already say it.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
-            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}{ident}</div>'
-            f'<p class="statement">{e(o["statement"])}</p>{lead}</summary>'
-            f'<div class="claim-body">{body}</div></details></li>')
+            f'<div class="claim-chip">{chip(o["outcome"])}</div>'
+            f'<p class="statement">{e(o["statement"])}</p>{lead}'
+            f'<div class="claim-meta">{blocked}{source}{tags}{ident}</div></summary>'
+            f'{claim_sections(sections, foot)}</details></li>')
 
 
 _ROWS: dict = {}
@@ -4433,17 +4444,18 @@ def claims_list(files: list[dict], titles: dict) -> tuple[str, int]:
         items = ""
         for c in f["claims"]:
             n += 1
-            body = ""
+            said = ""
             if c["quote"]:
-                cite = f'<cite>{e(c["source"])}</cite>' if c["source"] else ""
-                body += f'<blockquote class="quote"><p>{e(c["quote"])}</p>{cite}</blockquote>'
-            if c["criterion"]:
-                body += f'<p class="deviations-title">How it will be judged</p><p class="notes">{e(c["criterion"])}</p>'
+                said = f'<blockquote class="quote"><p>{e(c["quote"])}</p></blockquote>'
+            judged = f'<p class="notes">{e(c["criterion"])}</p>' if c["criterion"] else ""
+            sections = [("From the paper", said or '<p class="notes muted">No quote recorded.</p>'),
+                        ("Criterion", judged)]
+            source = f'<span class="source">{e(c["source"])}</span>' if c["source"] else ""
             items += (f'<li class="claim" id="claim-{e(c["id"])}"><details><summary>'
-                      f'<div class="claim-head"><span class="tag">{e(c["id"])}</span></div>'
-                      f'<p class="statement">{e(c["statement"])}</p></summary>'
-                      f'<div class="claim-body">{body or '<p class="notes muted">No quote recorded.</p>'}</div>'
-                      f'</details></li>')
+                      f'<p class="statement">{e(c["statement"])}</p>'
+                      f'<div class="claim-meta">{source}<a class="claim-id" href="#claim-{e(c["id"])}" '
+                      f'title="The id of this claim, and a link to it">{e(c["id"])}</a></div></summary>'
+                      f'{claim_sections(sections)}</details></li>')
         paper = titles.get(f["paper"].lower()) or f["paper"]
         claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
                         f'<a href="https://doi.org/{e(f["paper"])}">{e(paper)}</a> · '
