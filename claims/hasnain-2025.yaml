@@ -1,0 +1,527 @@
+# Claims for Hasnain, Han & Economo (2025), "Mapping neural subspace dynamics onto the structure
+# of the mouse descending motor system", bioRxiv doi:10.1101/2025.10.17.682917, tested on
+# DANDI:000363 (Mesoscale Activity Map Dataset), which the paper reuses.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-22,
+# protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read. The preprint (version 1, posted 2025-10-17), full text from PMC (PMC12632980), in
+# paper/10.1101-2025.10.17.682917.txt: Abstract, Introduction, Results, Discussion, Methods, the
+# legends of Extended Data Figures 1 to 3, and the legends of Figures 1 to 4. The paper has no
+# separate supplement (PMC lists none); the Extended Data legends are in the text. No PDF was
+# supplied, so no figure was read; every claim rests on the text.
+#
+# Code read. github.com/economolab/subspaceID, commit d593949fef8a39fe0a6eb54a21fc05cbca7bae84,
+# the only code the paper links ("Code for identifying movement-null and movement-potent
+# subspaces"). It holds orthogonal_subspaces.m (the manopt optimization of the Methods'
+# objective, each term normalized by the sum of the top-d eigenvalues of its covariance, with a
+# regularization weight alpha that example.m sets to 0), example.m (z-scores each neuron over all
+# bins and trials, takes the covariance of stationary and of moving bins, fixes 15 dimensions per
+# subspace, rng(101)), and a Python port (funcs.py, example.ipynb). It holds none of the paper's
+# other analyses (session selection, movement masks, dimensionality, variance explained,
+# selectivity, decoding, UMAP). The rest of the paper's code "will be made available on Github
+# upon publication".
+#
+# Data the paper used, as it reports them.
+# (1) The paper's own recordings (Figures 1 to 3, Extended Data Figures 2 and 3). 9 mice (3 male,
+# 6 female, C57BL/6J or VGAT-ChR2-EYFP negative), 27 sessions, delayed-response auditory licking
+# task (sample tones, 1.2 s delay, go cue). Neuropixels 1.0 (4 sessions) and 2.0 (23 sessions) in
+# ALM (13 sessions, 49 L-ETNs, 1020 UNs) and tjM1 (14 sessions, 55 L-ETNs, 830 UNs); L-ETNs
+# phototagged by retrograde ChR2 from the medulla and confirmed by collision tests. 400 Hz side and
+# bottom video, motion energy, DeepLabCut tongue tracking, Facemap singular vectors. These data are
+# not public ("Data will be made publicly available upon publication") and are not in DANDI:000363.
+# Their claims are kept, as data the paper recorded (data: dataset), and cannot be tested here.
+# (2) The MAP dataset, DANDI:000363 (Chen et al. 2024, ref 58), used for Figure 4: Neuropixels
+# recordings in mice doing the same delayed-response task. The paper takes sessions with at least
+# 30 units classified as 'good' in each region of interest: bilateral ALM sessions (20 sessions,
+# 10 mice, 961 right and 1055 left ALM units), and simultaneous ALM and medullary reticular nuclei
+# sessions (IRN, GRN and PARN; 604 ALM and 724 medulla units). ALM units are those labelled MOs in
+# the Allen CCF on probes described as targeting ALM. Movement is taken from the provided jaw and
+# nose keypoint tracking (side camera, 300 Hz). Measured variables used: unit spike times, unit
+# CCF location and quality label, probe target, trial times and types (lick left or right,
+# correct or error), and the jaw and nose keypoints.
+#
+# Method for the claims on DANDI:000363, from the Methods ("Curation of Mesoscale Activity Map
+# Dataset", "Subspace identification", "Dimensionality of subspaces", "Identifying selective
+# neurons", "UMAP embeddings", "Cross-region decoding") and the subspaceID code. Cited in the
+# criteria as M1 to M10. Where the paper leaves a detail open, the readings are named.
+# M1 Sessions. Sessions with at least 30 'good' units in each region of interest (Methods). The
+#    count of ALM and medulla sessions is open, between (S1) 16 sessions (Results; Figure 4c
+#    legend; every statistic of Figure 4 has n = 16) and (S2) 11 sessions from 7 mice (Methods).
+#    The bilateral ALM count is 20 sessions from 10 mice in both places, but the unit count
+#    differs (1116 neurons in the Results, 2016 units in the Methods).
+# M2 Units. Open between (U1) only units labelled 'good' in the regions of interest and (U2) all
+#    units in those regions of the selected sessions; the Methods use 'good' only to select
+#    sessions. The reported unit counts (604 ALM, 724 medulla; 961 and 1055 ALM) decide between
+#    them where they can. The ALM hemisphere in ALM and medulla sessions is not stated; all ALM
+#    units of the session are pooled, a reading of "ALM: 604 units". Medulla units are those in
+#    IRN, GRN or PARN, both hemispheres pooled.
+# M3 Firing rates. Spike counts in 5 ms bins, smoothed with a causal Gaussian kernel of 20 ms
+#    s.d. (Methods). Each neuron's single-trial activity has the mean baseline activity across
+#    trials subtracted and is divided by the standard deviation across trials, baseline -2.1 to
+#    -1.85 s before the go cue (Subspace identification; the Coding direction section gives -2.15
+#    to -1.85 s). The z-scoring of example.m (over all bins and trials) is a variant. All correct
+#    and error trials enter the subspace estimate (Methods). The trial window is not stated for
+#    the MAP data. Readings (W1) -2.15 s to +1.5 s around the go cue (the baseline start to the end
+#    of the late response epoch, the widest span the Methods' windows give) and (W2) -1.8 s to
+#    +1.5 s (the task epochs of the selectivity analysis only).
+# M4 Moving and stationary bins. Per session, the velocity magnitude of the jaw and nose
+#    keypoints, averaged, is thresholded by hand; movement bouts (at least 100 ms continuous)
+#    separated by 50 ms or less are merged (Methods). The threshold is open; the paper's procedure
+#    for its own data sets it between the two modes of the bimodal histogram (Videography and
+#    behavioral analysis), and that is the reading here. Whether supra-threshold runs shorter than
+#    100 ms count as moving is open, between (B1) they are stationary and (B2) they are moving.
+#    Keypoint velocities are resampled to the 5 ms bins.
+# M5 Subspaces. The Methods' objective, solved with manopt trust regions as orthogonal_subspaces.m
+#    does, alpha 0, computed in each region of a session independently (Results, paragraph on
+#    MAP). The dimensions d_null and d_potent are the number of eigenvalues of the stationary and
+#    moving covariances above the 95th percentile of 1000 shuffles of the time bins of each neuron
+#    separately (Dimensionality of subspaces). The Methods add a garbled sentence on sessions with
+#    forty or fewer neurons; it is read as (D1) no cap other than d_null + d_potent no larger than
+#    the number of neurons, or (D2) each dimension capped at 20 (example.m notes that above 20
+#    dimensions optimization is slow). The fixed 15 dimensions of example.m are a variant.
+# M6 Variance explained of a subspace (Figure 4c). VE = Tr(Q'CQ) / sum of the top d eigenvalues
+#    of C (Methods). Which C and which d are open. Readings (V1) C is the covariance of all
+#    single-trial activity, d the subspace's own dimension, and for both subspaces together d =
+#    d_null + d_potent; (V2) the same C normalized by its total variance, so that the two
+#    subspaces' values add up to that of both, as the paper's 37 + 41 = 78% do; (V3) C_stationary
+#    for the null and C_moving for the potent subspace, as in the objective.
+# M7 Selectivity (Figure 4b). For each unit, random equal samples of correct right and left
+#    trials; firing rate averaged within each epoch (seconds from the go cue; sample -1.8 to -1.2,
+#    early delay -1.2 to -0.5, late delay -0.5 to 0, early response 0 to 0.5, late response 0.5 to
+#    1.5); AUROC right against left, 1000 label shuffles, p the share of shuffles with |AUROC -
+#    0.5| at least the observed; significant below 0.05/5 (Bonferroni over the 5 epochs). The
+#    number of trials sampled is open; the reading is the smaller of the two trial counts. How
+#    the five epochs map onto the paper's three (sample, delay, response) is open between (E1) a
+#    unit selective in either sub-epoch counts for the epoch and (E2) each sub-epoch alone, every
+#    one reported. The Figure 1i legend gives "p < 0.05; shuffle test" with no correction; the
+#    Methods' Bonferroni threshold, which names Fig. 1i and Fig. 4b, is the main reading, and the
+#    uncorrected p < 0.05 is a variant.
+# M8 Cross-region decoding (Figure 4d). Movement-null projections of single trials. For each time
+#    bin t, ridge regression (lambda 0.01) from the source projections at t and the 8 preceding
+#    bins (D_source x 9 predictors) to all target dimensions at t; 70% of trials to train, 30% to
+#    test; R2 on the test set at each bin, averaged over all task epochs per session; paired t
+#    tests over sessions (Methods). The Results say "the previous 40 ms"; the Methods' 45 ms
+#    (t and 8 bins) is used. Open details. The trials used (T1 all trials, T2 correct trials
+#    only). The R2 over several target dimensions, (R1) one minus the residual over the total sum
+#    of squares pooled over dimensions, or (R2) the mean of each dimension's R2. Whether the
+#    predictors are standardized before the ridge (MATLAB's ridge() does so by default, and the
+#    paper uses it for Figure 3) is open; both are run. The ALM to ALM value is (A1) the mean of
+#    both directions per session, or (A2) each direction alone. The span averaged is the task
+#    epochs of M7, -1.8 to +1.5 s.
+# M9 Dimensionality (Figure 4e). Open between (N1) the shuffle count of M5 from the stationary
+#    bins (the Methods' only dimensionality procedure) and (N2) the participation ratio of the
+#    eigenvalues of the movement-null activity, as a stand-in for the effective dimensionality the
+#    Results cite to ref 70 (Recanatesi et al. 2022, a scale-dependent measure of dimensionality);
+#    the paper does not say which scale or measure it used. ALM against medulla, paired t test over sessions.
+# M10 UMAP (Figure 4f). Equal numbers of left and right correct trials, half to train and half to
+#    test; trial-averaged movement-null reconstructions (X Q Q') of both trial types concatenated
+#    in time; z-scored per unit on the training set; run_umap with 2 components, 30 neighbours,
+#    min_dist 0.3, cosine metric, fitted on the training data of ALM and medulla units together,
+#    test data transformed (Methods). umap-learn with the same parameters stands in for the MATLAB
+#    run_umap; the seed is a standard choice.
+#
+# Tolerances. The paper's stated spread where it gives one (s.d. over sessions for Figure 4c,
+# s.e.m. for Figure 4d and the paper's own data); otherwise 10% of the reported value. For a
+# directional result the paper tested, the criterion also asks for the same direction at p < 0.05
+# with the paper's test.
+schema_version: 2
+paper: doi:10.1101/2025.10.17.682917
+claims:
+- id: own-recordings-cohort
+  statement: The paper's own recordings comprise 27 sessions in 9 mice, with 49 L-ETNs and 1020 UNs in
+    ALM (13 sessions) and 55 L-ETNs and 830 UNs in tjM1 (14 sessions), 104 of 1954 units (5.3%) being
+    L-ETNs.
+  source: Methods, Analysis of electrophysiological recordings, last paragraph; Results, Similarity in
+    subspace preference is robust to false-negatives, paragraph 1
+  quote: For ALM, our dataset consisted of 49 L-ETNs and 1020 UNs (415 single units and 605 multi units
+    from 13 sessions). For tjM1, our dataset consisted of 55 L-ETNs and 830 UNs (433 single units and 397
+    multi units from 14 sessions).
+  expected:
+  - quantity: ALM L-ETNs
+    value: 49
+    tolerance: 4.9
+  - quantity: ALM UNs
+    value: 1020
+    tolerance: 102
+  - quantity: tjM1 L-ETNs
+    value: 55
+    tolerance: 5.5
+  - quantity: tjM1 UNs
+    value: 830
+    tolerance: 83
+  criterion: Not testable on DANDI:000363, which holds the MAP recordings of Chen et al. (2024) only;
+    the paper's own recordings are not public ("Data will be made publicly available upon publication").
+    Were they available, counts of units passing the inclusion rules of the Methods (Bombcell 'single'
+    or 'multi', no more than 20% shared spikes with L-ETNs, sessions with at least 20 units above 1 Hz).
+- id: fig1i-selectivity-proportions
+  statement: The proportion of L-ETNs selective for trial type in each task epoch is similar to that of
+    UNs (sample 24% against 20%, delay 31% against 34%, response 60% against 51%).
+  source: Results, Cell-type specific recordings of MCtx dynamics during movement, paragraph 2; Figure 1i
+  quote: 'The proportion of L-ETNs that exhibit trial-type selectivity in each of the task epochs was similar
+    to that of the UN population (sample: 24% of L-ETNs, 20% of UNs; delay: 31% of L-ETNs, 34% of UNs; response:
+    60% of L-ETNs, 51% of UNs)'
+  expected:
+  - quantity: L-ETNs selective in sample epoch
+    value: 24
+    tolerance: 2.4
+    unit: percent
+  - quantity: UNs selective in sample epoch
+    value: 20
+    tolerance: 2.0
+    unit: percent
+  - quantity: L-ETNs selective in delay epoch
+    value: 31
+    tolerance: 3.1
+    unit: percent
+  - quantity: UNs selective in delay epoch
+    value: 34
+    tolerance: 3.4
+    unit: percent
+  - quantity: L-ETNs selective in response epoch
+    value: 60
+    tolerance: 6.0
+    unit: percent
+  - quantity: UNs selective in response epoch
+    value: 51
+    tolerance: 5.1
+    unit: percent
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public. Were they available,
+    selectivity as in M7.
+- id: fig2c-subspace-variance
+  statement: In the paper's recordings the movement-null and movement-potent subspaces capture similar
+    shares of single-trial variance (37 +- 7.5% and 41 +- 6.9%, mean +- s.d. over 27 sessions), 78% together.
+  source: Results, Subspace specificity of L-ETNs, paragraph 2; Figure 2c
+  quote: 'We found that the movement-null and movement-potent subspaces contained similar proportions of
+    neural variance and together captured 78% of the variance in single-trial neural activity ( Fig. 2c ;
+    movement-null: 37 ± 7.5%, mean ± s.d.; movement-potent: 41 ± 6.9%; n = 27 sessions).'
+  expected:
+  - quantity: movement-null variance explained
+    value: 37
+    tolerance: 7.5
+    unit: percent
+  - quantity: movement-potent variance explained
+    value: 41
+    tolerance: 6.9
+    unit: percent
+  - quantity: both subspaces variance explained
+    value: 78
+    tolerance: 7.8
+    unit: percent
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public. Were they available,
+    variance explained as in M6.
+- id: fig2e-potent-only-units
+  statement: More units than expected from random subspaces have activity almost entirely in the
+    movement-potent subspace (subspace preference near -1).
+  source: Results, Subspace specificity of L-ETNs, paragraph 2; Figure 2e; Discussion, paragraph 1
+  quote: As in previous work, we observed an unusually large number of units with activity contained almost
+    entirely within the movement-potent subspace ( Fig. 2e )
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public. Were they available,
+    the preference index of each UN (Methods, Subspace preference) compared with its distribution under
+    1000 random covariance-aligned subspaces; the paper gives no cut for "almost entirely".
+- id: fig2f-letn-preference-like-un
+  statement: The subspace preferences of L-ETNs cannot be distinguished from those of UNs (two-sample t
+    test, p = 0.30).
+  source: Results, Subspace specificity of L-ETNs, paragraph 3; Figure 2f
+  quote: Surprisingly, we found that the subspace preferences of L-ETNs could not be distinguished from UNs
+    ( Fig. 2f ; p = 0.30 , two-sample t -test).
+  statistics:
+  - test: two-sample t-test
+    p: 0.30
+    n: 104 L-ETNs and 1850 UNs
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public. Were they available,
+    a claim of absence judged by a two-sided two-sample t test of the preference index, L-ETNs against
+    UNs, at p < 0.05.
+- id: fig2gh-letn-span-subspaces
+  statement: In UMAP embeddings of activity reconstructed from each subspace, L-ETNs populate the full
+    extent of both the movement-null and the movement-potent embeddings, though not uniformly.
+  source: Results, Subspace specificity of L-ETNs, paragraph 4; Figure 2g, h
+  quote: L-ETNs populated the full extent of both subspaces, albeit not necessarily uniformly ( Fig. 2g , h ).
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public. Were they available,
+    UMAP as in M10 on L-ETNs and UNs; the paper judges coverage by inspection.
+- id: ed2f-false-negatives
+  statement: After excluding 140 L-ETN-like UNs (by waveform and firing statistics and nearness to lower
+    layer 5b), the subspace preferences of L-ETNs remain indistinguishable from UNs (p = 0.22).
+  source: Results, Similarity in subspace preference is robust to false-negatives; Extended Data Figure 2f
+  quote: Applying these criteria yielded 140 L-ETN-like UNs. Excluding these from the UN population did not
+    qualitatively alter any results. The subspace preferences of L-ETNs remained indistinguishable from
+    UNs ( Extended Data Fig. 2f ; p = 0.22 , two-sample t -test).
+  statistics:
+  - test: two-sample t-test
+    p: 0.22
+  expected:
+  - quantity: L-ETN-like UNs excluded
+    value: 140
+    tolerance: 14
+  criterion: Not testable on DANDI:000363; the paper's own recordings and waveforms are not public. Were
+    they available, the LDA and distance rule of the Methods, then a claim of absence judged by a two-sided
+    two-sample t test at p < 0.05.
+- id: fig3c-network-beats-linear
+  statement: Neural networks predicting single-trial firing rates from video explain 27.9 +- 20.2% of
+    the variance (mean +- s.d., 1954 neurons), more than ridge regression (10.6 +- 17.9%), paired t
+    test p = 1.1e-10.
+  source: Results, Investigating movement encoding using a nonlinear model, paragraph 1; Figure 3c
+  quote: Neural network models explained 27.9 ± 20.2% (mean ± s.d., n = 1954 neurons) of the variance in
+    MCtx activity, outperforming linear regression models (10.6 ± 17.9%; Fig. 3c ; p = 1.1 × 10 - 10 ,
+    paired two-sided t -test)
+  statistics:
+  - test: paired two-sided t-test
+    p: 1.1e-10
+    n: 1954 neurons
+  expected:
+  - quantity: neural network variance explained
+    value: 27.9
+    tolerance: 2.79
+    unit: percent
+  - quantity: ridge regression variance explained
+    value: 10.6
+    tolerance: 1.06
+    unit: percent
+  criterion: Not testable on DANDI:000363; the paper's own recordings and videos are not public. The
+    s.d. given is the spread over neurons, so 10% of each mean is used as the tolerance. The unit count
+    differs between the Results (n = 1954 neurons) and the Figure 3c legend (n = 1945 units).
+- id: fig3d-letn-un-movement-encoding
+  statement: Movements explain L-ETN activity no better than UN activity in the neural network model
+    (26.4 +- 17.9% against 28.0 +- 20.1%, p = 0.39).
+  source: Results, Investigating movement encoding using a nonlinear model, paragraph 2; Figure 3d
+  quote: 'Again, L-ETNs could not be distinguished from UNs in terms of how well their dynamics were explained
+    by movements (L-ETN: 26.4 ± 17.9%, mean ± s.d., UN: 28.0 ± 20.1%; p = 0.39 , two-sample t -test).'
+  statistics:
+  - test: two-sample t-test
+    p: 0.39
+    n: 104 L-ETNs and 1850 UNs
+  expected:
+  - quantity: L-ETN variance explained
+    value: 26.4
+    tolerance: 2.64
+    unit: percent
+  - quantity: UN variance explained
+    value: 28.0
+    tolerance: 2.8
+    unit: percent
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public. A claim of absence
+    judged by a two-sided two-sample t test at p < 0.05.
+- id: ed3-letn-fast-switch
+  statement: L-ETN coding directions change rapidly at the go cue, before movement onset (105 +- 36 ms
+    after the go cue), while the UN switch is slower; the slope of the change from 0 to 150 ms is larger
+    for L-ETNs (paired t test, p = 7.6e-18).
+  source: Results, Coding specificity of L-ETNs; Extended Data Figure 3b to d
+  quote: 'L-ETN dynamics changed rapidly at the go cue, just preceding movement initiation, whereas the UN
+    state switch was slower and followed movement onset ( Extended Data Fig. 3b – d ; p = 7.6 × 10 - 18 ,
+    paired t -test between slope of curves in Extended Data Fig. 3d ; movement onset: 105 ± 36 ms following
+    the go cue, mean ± s.d.; n = 27 sessions).'
+  statistics:
+  - test: paired t-test on bootstrap slopes
+    p: 7.6e-18
+    n: 1000 bootstrap iterations
+  expected:
+  - quantity: movement onset after go cue
+    value: 105
+    tolerance: 36
+    unit: ms
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public.
+- id: ed3a-cd-early-un-not-letn
+  statement: The identity of the upcoming movement, along the early-sample coding direction, is stably
+    encoded in UNs until the go cue but decays to baseline in L-ETNs after the sample epoch.
+  source: Results, Coding specificity of L-ETNs; Extended Data Figure 3a legend
+  quote: Further, we found that the identity of upcoming movements was stably encoded in UNs, but not L-ETNs
+    ( Extended Data Fig. 3a ).
+  criterion: Not testable on DANDI:000363; the paper's own recordings are not public. Were they available,
+    hierarchical bootstrap of CD early projections, 5 to 95% intervals against zero (Methods).
+- id: map-session-selection
+  statement: In the MAP dataset, the paper's selection gives 20 bilateral ALM sessions from 10 mice (961
+    right and 1055 left ALM units) and ALM and medulla sessions with 604 ALM units and 724 medullary
+    reticular nucleus units.
+  source: Methods, Curation of Mesoscale Activity Map Dataset (MAP); Results, A subset of null dynamics is
+    found downstream of motor cortex, paragraphs 1 and 4
+  quote: For simultaneous bilateral ALM recordings, we included 20 sessions from 10 mice, consisting of 2016
+    units (961 from right ALM and 1055 from left ALM). For simultaneous ALM and medulla recordings, we
+    included 11 sessions from 7 mice, consisting of 1328 units (604 from ALM and 724 from medulla).
+  expected:
+  - quantity: bilateral ALM sessions
+    value: 20
+    tolerance: 2
+  - quantity: right ALM units
+    value: 961
+    tolerance: 96.1
+  - quantity: left ALM units
+    value: 1055
+    tolerance: 105.5
+  - quantity: ALM units in ALM and medulla sessions
+    value: 604
+    tolerance: 60.4
+  - quantity: medulla units in ALM and medulla sessions
+    value: 724
+    tolerance: 72.4
+  criterion: Sessions and units selected as in M1 and M2. The ALM and medulla session count is open between
+    (S1) 16 (Results and Figure 4) and (S2) 11 (Methods); the bilateral ALM unit count between 2016
+    (Methods) and 1116 (Results). Reproduced when, under one reading of M2, the session counts match one
+    of the readings and every unit count is within tolerance; partially reproduced when the session
+    counts match and some unit counts do not. The count of mice is reported.
+- id: fig4b-medulla-selectivity
+  statement: Medullary reticular nucleus units are selective for lick direction in each epoch, most in the
+    response epoch (sample 7%, delay 21%, response 49% of 724 units).
+  source: Results, A subset of null dynamics is found downstream of motor cortex, paragraph 2; Figure 4b
+  quote: 'Many units exhibited selectivity for either right or left licks in different task epochs, although
+    selectivity was most prominent during the response epoch (sample: 7%; delay: 21%; response: 49%; n = 724
+    units Fig. 4b ).'
+  depends_on:
+  - map-session-selection
+  expected:
+  - quantity: medulla units selective in sample epoch
+    value: 7
+    tolerance: 0.7
+    unit: percent
+  - quantity: medulla units selective in delay epoch
+    value: 21
+    tolerance: 2.1
+    unit: percent
+  - quantity: medulla units selective in response epoch
+    value: 49
+    tolerance: 4.9
+    unit: percent
+  criterion: Medulla units of M2, selectivity as in M7. Reproduced when, under one reading of M7 and M2,
+    all three percentages are within tolerance; partially reproduced when the order (response highest,
+    sample lowest) holds but a value is outside tolerance.
+- id: fig4c-alm-null-potent-similar
+  statement: In MAP ALM the movement-null and movement-potent subspaces explain comparable variance (36.0
+    +- 7.40% and 37.1 +- 8.70%, mean +- s.d.; paired t test p = 0.15, 16 sessions).
+  source: Results, A subset of null dynamics is found downstream of motor cortex, paragraph 3; Figure 4c
+  quote: 'In the MAP dataset, the variance explained by movement-null and movement-potent subspaces in the
+    ALM was similar to that reported here, with both subspaces explaining comparable amounts of variance
+    (movement-null: 36.0 ± 7.40%, mean ± s.d.; movement-potent: 37.1 ± 8.70%; p = 0.15 , paired two-sample
+    t -test; n = 16 sessions; Fig. 4c ).'
+  statistics:
+  - test: paired two-sample t-test
+    p: 0.15
+    n: 16 sessions
+  depends_on:
+  - map-session-selection
+  expected:
+  - quantity: ALM movement-null variance explained
+    value: 36.0
+    tolerance: 7.40
+    unit: percent
+  - quantity: ALM movement-potent variance explained
+    value: 37.1
+    tolerance: 8.70
+    unit: percent
+  criterion: ALM units of the ALM and medulla sessions (M1, M2), subspaces from ALM alone (M3 to M5),
+    variance explained per session (M6). A claim of absence, judged on the paper's test, a two-sided paired
+    t test over sessions of null against potent variance explained. Reproduced when it gives p >= 0.05 and
+    both means are within tolerance under one reading of M1 to M6; not reproduced when p < 0.05 under the
+    reading whose means match. The difference is reported under every reading.
+- id: fig4c-medulla-null-smaller
+  statement: In the medullary reticular nuclei the movement-null subspace explains less variance than the
+    movement-potent subspace (26.4 +- 3.90% against 44.8 +- 7.12%, mean +- s.d.; paired t test p = 1.9e-9,
+    16 sessions).
+  source: Results, A subset of null dynamics is found downstream of motor cortex, paragraph 3; Figure 4c,
+    right
+  quote: 'In contrast, in the medulla, the movement-null subspace explained less variance than the
+    movement-potent subspace (movement-null: 26.4 ± 3.90%, mean ± s.d.; movement-potent: 44.8 ± 7.12%; p =
+    1.9 × 10 - 9 , paired two-sample t -test; n = 16 sessions; Fig. 4c , right).'
+  statistics:
+  - test: paired two-sample t-test
+    p: 1.9e-9
+    n: 16 sessions
+  depends_on:
+  - map-session-selection
+  expected:
+  - quantity: medulla movement-null variance explained
+    value: 26.4
+    tolerance: 3.90
+    unit: percent
+  - quantity: medulla movement-potent variance explained
+    value: 44.8
+    tolerance: 7.12
+    unit: percent
+  criterion: Medulla units of the ALM and medulla sessions (M1, M2), subspaces from the medulla alone (M3
+    to M5), variance explained per session (M6). Reproduced when, under one reading, null is below potent
+    with p < 0.05 in a two-sided paired t test over sessions and both means are within tolerance;
+    partially reproduced when the test holds and a mean is outside tolerance.
+- id: fig4d-alm-predicts-medulla-null
+  statement: Medullary movement-null activity is predicted from ALM movement-null activity (40 +- 8.1%,
+    mean +- s.e.m.) nearly as well as contralateral ALM predicts ALM (54 +- 7.0%).
+  source: Results, A subset of null dynamics is found downstream of motor cortex, paragraph 4; Figure 4d
+  quote: Medullary movement-null activity could be predicted from ALM movement-null dynamics (40 ± 8.1%, mean
+    ± s.e.m; Fig. 4d ) nearly as accurately as from the contralateral ALM (54 ± 7.0%, mean ± s.e.m; Fig. 4d ).
+  depends_on:
+  - map-session-selection
+  expected:
+  - quantity: ALM to medulla movement-null R2
+    value: 40
+    tolerance: 8.1
+    unit: percent
+  - quantity: ALM to contralateral ALM movement-null R2
+    value: 54
+    tolerance: 7.0
+    unit: percent
+  criterion: Decoding as in M8, ALM to medulla on the ALM and medulla sessions, ALM to ALM on the bilateral
+    sessions (each hemisphere's subspaces from its own units). Reproduced when, under one reading of M1 to
+    M8, both means are within tolerance and the ALM to medulla mean is below the ALM to ALM mean. The paper
+    reports no test of "nearly as accurately"; none is applied.
+- id: fig4d-decoding-asymmetry
+  statement: Prediction is asymmetric; ALM movement-null activity is predicted less well from the medulla
+    (21 +- 6.7%, mean +- s.e.m.) than the medulla from ALM (paired t test p = 1.2e-4, 16 sessions).
+  source: Results, A subset of null dynamics is found downstream of motor cortex, paragraph 4; Figure 4d
+  quote: ALM movement-null dynamics were less accurately predicted from movement-null dynamics in medullary
+    reticular nuclei (21 ± 6.7%, mean ± s.e.m; p = 1.2 × 10 - 4 , paired t -test comparing ALM-to-medulla
+    and medulla-to-ALM predictions; n = 16 sessions; Fig. 4d ).
+  statistics:
+  - test: paired t-test, ALM-to-medulla against medulla-to-ALM
+    p: 1.2e-4
+    n: 16 sessions
+  depends_on:
+  - map-session-selection
+  expected:
+  - quantity: medulla to ALM movement-null R2
+    value: 21
+    tolerance: 6.7
+    unit: percent
+  criterion: Decoding as in M8 on the ALM and medulla sessions. Reproduced when, under one reading,
+    medulla to ALM is below ALM to medulla with p < 0.05 in a two-sided paired t test over sessions and the
+    medulla to ALM mean is within tolerance; partially reproduced when the test holds and the mean is
+    outside tolerance.
+- id: fig4e-medulla-null-lower-dimension
+  statement: The movement-null subspace has lower dimensionality in the medullary reticular nuclei than in
+    ALM (paired t test, p = 7.4e-5).
+  source: Results, A subset of null dynamics is found downstream of motor cortex, paragraph 5; Figure 4e
+  quote: Consistent with the latter, the dimensionality of the movement-null subspace was lower in medullary
+    reticular nuclei than in ALM ( Fig. 4e ; p = 7.4 × 10 - 5 , paired t -test).
+  statistics:
+  - test: paired t-test
+    p: 7.4e-5
+    n: not stated for this test; the 16 ALM and medulla sessions of the Results
+  depends_on:
+  - map-session-selection
+  criterion: Dimensionality per region and session as in M9, readings N1 and N2. Reproduced when, under one
+    reading, the medulla value is below the ALM value with p < 0.05 in a two-sided paired t test over the ALM
+    and medulla sessions. The unit counts per region are reported, since N1 depends on them.
+- id: fig4f-medulla-null-not-spanning-alm
+  statement: In a joint UMAP embedding of movement-null activity, medullary units do not span the set of
+    movement-null activity patterns seen in ALM.
+  source: Results, A subset of null dynamics is found downstream of motor cortex, paragraph 5; Figure 4f
+  quote: Further, examining a UMAP embedding of ALM and medullary movement-null activity, we found that the
+    activity patterns observed in the medullary nuclei did not span the collection of movement-null
+    activity patterns observed in the ALM ( Fig. 4f )
+  depends_on:
+  - map-session-selection
+  criterion: UMAP as in M10 on ALM and medulla units of the ALM and medulla sessions. The paper gives no
+    measure; it judges the embedding by inspection (Figure 4f legend shows ALM patterns with no medulla
+    neighbour). Reproduced when the test-set embedding has a region holding ALM units with no medulla unit
+    near them, and the medulla units fall within the region occupied by ALM units; the embedding is shown
+    and the judgment stated as resting on inspection.
+checks:
+- date: 2026-11-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - ed3-letn-fast-switch, quote extended to the end of the sentence so that it holds the movement onset value (105 +- 36 ms, n = 27 sessions) the statement and expected value use.
+  - map-session-selection, source corrected from Results paragraphs 1 and 3 to 1 and 4; the 1116 neurons of the bilateral ALM sessions are in the decoding paragraph, which this file elsewhere calls paragraph 4.
+  - fig2e-potent-only-units, source corrected to Discussion paragraph 1; the sentence on a subpopulation larger than expected by chance follows the Discussion's opening sentence with no break in topic.
+  - fig3c-network-beats-linear, criterion notes that the Figure 3c legend gives n = 1945 units against 1954 neurons in the Results.
+  - fig4e-medulla-null-lower-dimension, statistics n changed to say the paper gives no n for this test; 16 sessions was an inference from the Results.
+  - Header M7, the Figure 1i legend's uncorrected p < 0.05 shuffle test added as a variant to the Methods' Bonferroni threshold.
+  - Header M9, ref 70 identified (Recanatesi et al. 2022, a scale-dependent dimensionality measure); the participation ratio of reading N2 is marked as a stand-in, since the paper does not name the measure or scale.
+  - Open, not settled. The ALM and medulla session count (16 in the Results and Figure 4, 11 from 7 mice in the Methods) and the bilateral ALM unit count (1116 in the Results, 2016 in the Methods) conflict in the paper; both readings stay in the criteria.
+  - Open, not settled. The variance explained reading V2 (normalization by total variance) departs from the Methods' formula; it is kept because the Results describe 78% of the variance in single-trial activity and the values add up, but the formula reading V1 is the Methods' own.

@@ -1,0 +1,359 @@
+# Claims for Hiraoka & Jo (2025), "Hierarchical organization of bursty trains in event
+# sequences", doi:10.1063/5.0296506, on dandiset 000044.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-21,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read: paper/10.1063-5.0296506.txt. Its header says "version of record", but only its
+# first part (abstract and a 54-item reference list) is from the version of record. The body
+# that follows is the arXiv preprint (stamp arXiv:2508.18281v1, dated September 22, 2025, 50
+# references), and its abstract is worded differently. Every claim and quote below comes from
+# that preprint body: Sections I to V, Algorithms 1 and 2, and the legends of Figures 1 to 4.
+# The paper has no supplement. No PDF was supplied, so the figure panels were read only from
+# the labels the text extraction keeps (the delta values in the legends, n, tau_min, tau_max).
+# The paper links no analysis code. Its fits use the maximum likelihood estimator and the
+# likelihood ratio test of Clauset et al. (ref. 36), citing the Python package powerlaw
+# (Alstott et al., ref. 37). No version of that package is given. No code was read.
+#
+# Data the paper used. Three kinds of event sequence. (1) Neuronal spikes (refs. 38 and 39,
+# Grosmark & Buzsaki 2016, DANDI 000044 version 0.210812.1516). These are electrophysiological
+# recordings of pyramidal cells in rat hippocampus. Each session is two four-hour rest and sleep
+# periods with a 45-minute exploration of a novel maze between them. The spike train of each
+# neuron is one event sequence. The representative sequence is "unit 9 in the
+# Achilles-10252013 session", with n = 228 356 spikes, tau_min = 1.05 ms and tau_max = 1.82 x
+# 10^4 ms (Figure 2, top). The times are in ms. (2) Wikipedia edits by frequent editors, from
+# preprocessed data derived from the English Wikipedia dump of October 2, 2015, which a third
+# party provided. The representative is the most frequent editor (n = 1 154 494). (3)
+# Earthquakes of the Southern California Seismic Network catalog from 1993 to 2020. The events
+# are clustered on longitude and latitude by DBSCAN (eps = 0.07 degrees, minimum 35 points). The
+# representative is the south cluster (n = 330 215). Only (1) is in the dandiset. The synthetic
+# sequences of Figure 4 come from the paper's Algorithm 2 and were not deposited.
+#
+# Shared method, from Section II (Methods) unless stated.
+# - Interevent times tau_i = t_(i+1) - t_i. At timescale delta, a burst is a maximal run of
+#   events whose consecutive IETs are all <= delta. The burst size b is its number of events.
+#   The merging number k (pair delta' < delta) is the number of bursts at delta' that make up
+#   one burst at delta.
+# - Relevant timescales run from the smallest delta at which the largest burst has 100 or more
+#   events to the largest delta at which there are 100 or more bursts.
+# - Power-law exponents of the burst-size and merging-number distributions come from the
+#   maximum likelihood estimator. A power law is compared with an exponential by the
+#   likelihood ratio test. In Figures 2 and 4 a filled circle means that the test supports the
+#   power law over the exponential with p < 0.05.
+# - Merging-number pairs. In Figure 2 (neurons), delta = 3.3, 5.9 and 11 times delta', with
+#   delta' = 55, 100, 180, 330 and 590 ms in the distribution panel. Burst-size distributions
+#   are shown at delta = 55, 140, 370, 940, 2400 and 6300 ms.
+#
+# Details the paper leaves open, used by several criteria.
+# - O1, which unit is "unit 9". The readings are (a) the units table id 9, (b) row 9 counted
+#   from 0, (c) the ninth unit counted from 1, (d) a cluster number 9 kept in the unit
+#   metadata. The reading whose spike count, tau_min and tau_max match Figure 2 is used. If
+#   none matches, every reading is shown.
+# - O2, which part of the recording is used. The paper describes the whole session (both rest
+#   periods and the maze), so the reading taken is all spikes of the session. The epochs taken
+#   separately are a variant.
+# - O3, the fit. The paper fixes neither the lower cutoff xmin nor whether the data are treated
+#   as discrete. The readings are (a) the powerlaw package's default, with xmin chosen by
+#   minimizing the Kolmogorov-Smirnov distance (Clauset et al.), (b) xmin = 1, each with
+#   discrete = True and with the package's default continuous fit. A claim on an exponent is
+#   reproduced if it holds under one of these readings, and all of them are shown. The
+#   likelihood ratio test is powerlaw's distribution_compare('power_law', 'exponential'). A
+#   power law is supported when R > 0 and p < 0.05.
+# - O4, the grid of delta. The paper does not give it. The Figure 2 legend says the values of
+#   delta and delta' shown "span the entire range of relevant timescales", so for the neuron
+#   that range is about 55 to 6300 ms. The delta' labels (55, 100, 180, 330, 590 ms) step by
+#   about 1.82, but the burst-size labels (55, 140, 370, 940, 2400, 6300 ms) step by about 2.55,
+#   which is not a whole power of 1.82. The grid is therefore finer than the labels, and its
+#   density can change the criteria that count timescales or pairs ("more than half", "at
+#   least three grid points"). Two readings are run. (a) A geometric grid of ratio 1.82 from
+#   the lower end of the relevant range. (b) A geometric grid with log10 step about 0.052 (one
+#   fifth of that ratio, which holds both sets of labels). The pairs keep the ratios 3.3, 5.9
+#   and 11 of Figure 2 under both. A claim that counts grid points is judged under both, and
+#   when they differ every result is shown.
+schema_version: 2
+paper: doi:10.1063/5.0296506
+claims:
+- id: fig2-neuron-representative-sequence
+  statement: The representative neuronal sequence (unit 9 of session Achilles-10252013) has
+    228 356 spikes, with IETs from 1.05 ms to 1.82 x 10^4 ms.
+  source: Section III, paragraph 5; Figure 2, top (Neuronal spikes panel labels)
+  quote: Here, we show the results for a representative event se ... quence for each dataset
+    ... unit 9 in the Achilles-10252013 session in the neuronal spike recordings
+  expected:
+  - quantity: number of events n
+    value: 228356
+    tolerance: 22835.6
+  - quantity: minimum IET
+    value: 1.05
+    tolerance: 0.105
+    unit: ms
+  - quantity: maximum IET
+    value: 18200
+    tolerance: 1820
+    unit: ms
+  criterion: The values are read from the labels of Figure 2. The unit is found as in O1, using
+    all spikes of the session as in O2. Reproduced when, under one reading of O1, all three
+    values are within tolerance. The other claims on the representative unit use that
+    reading.
+- id: fig2-iet-broad
+  statement: The IETs of each process, the representative neuron included, extend across
+    several orders of magnitude.
+  source: Section III, paragraph 6; Figure 2, top left
+  quote: First, the range of IETs in each process extends across several orders of magnitude.
+  depends_on:
+  - fig2-neuron-representative-sequence
+  criterion: For the representative unit, reproduced when tau_max over tau_min is at least 10^3
+    (three decades). The paper says "several" and gives about 4.2 decades (1.05 to 1.82 x 10^4
+    ms). Three decades is the registry's reading of "several". The ratio is reported.
+- id: fig2-neuron-burst-size-heavy-tail
+  statement: For the representative neuron, the burst size distributions are heavy-tailed
+    across different timescales.
+  source: Section III, paragraph 6; Figure 2, top center and legend
+  quote: we con ... firm previous findings that burst size distributions Pδ(b) are heavy-tailed
+    across different timescales
+  depends_on:
+  - fig2-neuron-representative-sequence
+  criterion: Bursts as in the Methods, at each delta of the grid (O4) over the relevant range.
+    The fit and test follow O3. Figure 2 marks a supported power law with a filled circle but
+    shows no count. The criterion is therefore the registry's reading of "across different
+    timescales". Reproduced when the power law is supported (R > 0, p < 0.05) at more than half
+    of the relevant timescales, and at every one below 3000 ms, the range in which the paper
+    says beta is stable. Partially reproduced when it is supported at more than half but not at
+    every one below 3000 ms. The result at each delta is shown.
+- id: fig2-neuron-beta-stable
+  statement: For neuronal spikes the fitted burst-size exponent stays near 2.35 for several
+    decades of timescales, up to about 3000 ms.
+  source: Section III, paragraph 6; Section III, paragraph 9; Figure 2, top, beta panel
+  quote: our analysis shows that the estimated value of the power ... law exponent fitted to the
+    empirical distribution remains stable for several decades of timescales ... stable around βδ
+    ≃2.35 for neuronal spikes
+  expected:
+  - quantity: burst-size exponent beta for neuronal spikes, delta below 3000 ms
+    value: 2.35
+    tolerance: 0.235
+  depends_on:
+  - fig2-neuron-representative-sequence
+  criterion: Beta is fitted at each delta of the grid (O4) between the lower end of the
+    relevant range and 3000 ms, with the fit of O3. "Stable around 2.35" allows two readings,
+    (a) every estimate in that range within 2.35 +/- 0.235, (b) the median of the estimates
+    within that band and their range under 0.47 (twice the tolerance). Reproduced when (a) or
+    (b) holds under one reading of O3. The estimates and their standard errors are shown.
+- id: fig2-neuron-beta-decrease-follows-gamma
+  statement: For neuronal spikes, beta is stable below 3000 ms, where beta at the smaller
+    timescale is below gamma. Above 3000 ms beta decreases, apparently driven by a decreasing
+    gamma.
+  source: Section III, paragraph 9; Figure 2, top, beta and gamma panels
+  quote: for the range of δ < 3000 ms, for which we observe βδ′ < γδδ′. For δ > 3000 ms, the
+    decreasing tendency of βδ seems to be driven by the decreasing γδδ′
+  depends_on:
+  - fig2-neuron-beta-stable
+  - fig2-neuron-merging-heavy-tail
+  criterion: Beta(delta) on the grid of O4 and gamma for the pairs delta = 3.3, 5.9 and 11 delta'
+    (Figure 2), with the fit of O3. The paper names no test. The registry reads the claim in
+    three parts. (1) For pairs with delta < 3000 ms, beta at delta' is below gamma in most pairs
+    (more than half). (2) For delta > 3000 ms within the relevant range, beta has a negative
+    Spearman correlation with log delta. (3) Over the same range, gamma has a negative
+    Spearman correlation with log delta for at least one of the three ratios. Reproduced when
+    all three hold under one reading of O3. Partially reproduced when (1) and (2) hold. If the
+    relevant range above 3000 ms has fewer than three grid points, (2) and (3) are reported
+    and not judged.
+- id: fig2-neuron-merging-heavy-tail
+  statement: For the representative neuron, the merging-number distributions are heavy-tailed
+    for various pairs of timescales, and their fitted exponents gamma stay fairly constant
+    across a wide range of timescales.
+  source: Section III, paragraph 6; Figure 2, top right and gamma panel
+  quote: the merging number distributions Pδδ′(k) also ... heavy tails for various timescale pairs
+    ... although the estimated exponents are not as stable as in burst size distribution, they
+    remain relatively constant across a wide range of timescales
+  depends_on:
+  - fig2-neuron-representative-sequence
+  criterion: Merging numbers for the pairs delta = 3.3, 5.9 and 11 delta' (Figure 2 legend),
+    with delta' on the grid of O4 and both timescales within the relevant range. The fit and
+    test follow O3. The paper gives no count or band. Reproduced when the power law is
+    supported (R > 0, p < 0.05) for more than half of the pairs, and the gamma estimates of
+    those pairs have an interquartile range below 0.5. The second condition is the registry's
+    reading of "relatively constant". Partially reproduced when only the first holds. All
+    estimates are shown.
+- id: fig2-neuron-merging-collapse
+  statement: Rescaled merging-number distributions for different pairs of delta and delta'
+    collapse onto each other, so the burst tree is self-similar across levels.
+  source: Section III, paragraph 6; Figure 2, top right
+  quote: the rescaled distributions for different pairs of δ and δ′ collapse on top of each
+    other, implying that the structure of the burst tree is self-similar across hierarchical
+    levels or timescales
+  depends_on:
+  - fig2-neuron-merging-heavy-tail
+  criterion: The figure plots P(k) times the mean of k against k over the mean of k. The paper
+    shows the collapse by eye, and it is supported by the fitted tails ("This is supported by
+    fitting power-law tails"). How to measure it is open, and two readings are named. (a) The
+    complementary cumulative distributions of k over its mean for the pairs of Figure 2 (delta'
+    = 55, 100, 180, 330, 590 ms, each with delta = 3.3, 5.9 and 11 delta') differ by no more
+    than a factor of 2 at every point where all are above 10^-3. (b) The gamma estimates of
+    those pairs lie within +/- 0.5 of their median. Reproduced when either holds. The curves
+    and the estimates are shown.
+- id: fig2-exponents-above-two
+  statement: In most cases both gamma and the burst-size exponent at the smaller timescale
+    exceed 2, so the scaling relation reduces to beta at delta equal to the smaller of gamma
+    and beta at delta', which agrees with the observations.
+  source: Section III, paragraphs 8 and 9 (Eqs. 7 and 8); Figure 2
+  quote: Since γδδ′, βδ′ > 2 in most cases as shown in Fig. 2, we have
+  depends_on:
+  - fig2-neuron-beta-stable
+  - fig2-neuron-merging-heavy-tail
+  criterion: For the representative unit and each pair of fig2-neuron-merging-heavy-tail, with
+    the fit of O3. (1) In more than half of the pairs, both gamma and beta at delta' exceed 2.
+    (2) In more than half of the pairs, beta at delta is within 10% of the smaller of gamma and
+    beta at delta' (Eq. 8). "Most" is read as more than half, and "agrees well" as within 10%.
+    Both readings are the registry's. Reproduced when both hold, partially reproduced when only
+    (1) holds.
+- id: fig2-other-neurons-similar
+  statement: Other neurons of the recordings show patterns similar to the representative unit,
+    with heavy-tailed burst-size and merging-number distributions across timescales.
+  source: Section III, paragraph 5
+  quote: Other sequences in the datasets show similar patterns.
+  criterion: The paper names no set of neurons and shows none of them. The registry reads the
+    set as (a) the pyramidal units of session Achilles-10252013, or (b) the pyramidal units of
+    every session in the dandiset. Under either, only units whose relevant range holds at least
+    three grid points are used, with all spikes of the session (O2) and the fit of O3. A unit
+    shows the pattern when the power law is supported (R > 0, p < 0.05) for burst sizes at more
+    than half of its relevant timescales, and for merging numbers at more than half of its
+    pairs (ratios 3.3, 5.9 and 11). Reproduced when more than half of the units show the
+    pattern under one reading. These thresholds are the registry's reading of "similar
+    patterns". The distribution of each unit's median beta is reported.
+- id: fig2-wikipedia-beta
+  statement: For the most frequent Wikipedia editor (n = 1 154 494 edits), the burst-size
+    exponent is stable around 2.50, and the merging-number distributions are heavy-tailed.
+  source: Section III, paragraphs 3 and 6; Figure 2, middle
+  quote: βδ ≃2.50 for Wikipedia edits
+  data: elsewhere
+  where: Preprocessed edit histories derived from the English Wikipedia dump of October 2, 2015
+    (https://dumps.wikimedia.org/; refs. 26, 40 and 41), provided to the authors by Woo-Sik Son;
+    not deposited
+  expected:
+  - quantity: burst-size exponent beta, Wikipedia edits
+    value: 2.5
+    tolerance: 0.25
+  criterion: Not testable on the dandiset. Beta is judged as in fig2-neuron-beta-stable, and the
+    merging numbers as in fig2-neuron-merging-heavy-tail, on the Wikipedia data with the pairs
+    delta = 16, 63 and 250 delta' of Figure 2. The 3000 ms bound is the neuron's. For this
+    sequence the paper gives no bound, and two readings are run, (a) the whole relevant range,
+    (b) the timescales at which beta at delta' is below gamma, where Section III, paragraph 9
+    says beta is flat ("This argument can be applied to cases with other datasets").
+- id: fig2-earthquake-beta
+  statement: For earthquakes in the south cluster of Southern California (n = 330 215 events,
+    1993 to 2020), the burst-size exponent is stable around 2.60, and the merging-number
+    distributions are heavy-tailed.
+  source: Section III, paragraphs 4 and 6; Figure 2, bottom
+  quote: βδ ≃2.60 for earthquakes
+  data: elsewhere
+  where: Southern California Seismic Network catalog (FDSN network CI,
+    https://www.fdsn.org/networks/detail/CI/), events January 1, 1993 to December 31, 2020,
+    clustered by DBSCAN with eps 0.07 degrees and 35 minimum points
+  expected:
+  - quantity: burst-size exponent beta, earthquakes
+    value: 2.6
+    tolerance: 0.26
+  - quantity: events in the south cluster
+    value: 330215
+    tolerance: 33021.5
+  criterion: Not testable on the dandiset. Beta is judged as in fig2-neuron-beta-stable, and the
+    merging numbers as in fig2-neuron-merging-heavy-tail, on the south cluster with the pairs
+    delta = 4.5, 9.4 and 20 delta' of Figure 2. The range of delta is read as in
+    fig2-wikipedia-beta, (a) or (b).
+- id: fig4-model-heavy-tails
+  statement: Event sequences generated by the incremental dynamic algorithm, with linear,
+    quadratic or exponential timescale series, show heavy-tailed burst-size and merging-number
+    distributions over a wide range of timescales, with stable exponents.
+  source: Section IV, paragraphs 9 and 10; Figure 4
+  quote: For all of the three timescale series, the generated ... show heavy-tailed distributions
+    of burst sizes b for a wide range of timescales δ ... numbers k are also heavy-tailed across
+    different pairs of timescales δ and δ′, even though these timescales do not coincide with the
+    preset series of timescales δl ... the power-law exponent values of the heavy tails in Pδ(b)
+    and Pδδ′(k) are stable across timescales
+  data: elsewhere
+  where: Not deposited; generated by the paper's Algorithm 2 (Section IV), for which no code is
+    linked
+  criterion: Not testable on the dandiset. Algorithm 2 is run with n = 10^6, a zeta merging
+    distribution with gamma = 2.5 (memory function of Eq. 16), delta_0 = 1 and uniform IETs
+    (Eq. 10). The timescales are linear with w = 100, quadratic with w = 100, or exponential
+    with w = 2 (Section IV). Bursts, the fit and the test are as for Figure 2. The pairs are
+    those of the Figure 4 legends, delta = 1.8, 2.4 and 3.3 delta' (linear), 3.3, 5.9 and 11
+    delta' (quadratic), and 5.3, 12 and 28 delta' (exponential). Reproduced when, for each
+    series, the power law is supported (R > 0, p < 0.05) at more than half of the relevant
+    timescales and pairs, and the beta and gamma estimates each have an interquartile range
+    below 0.5. "More than half" and the 0.5 band are the registry's readings of "wide range"
+    and "stable", as in the Figure 2 claims.
+- id: fig4-model-iet-shapes
+  statement: The IET distribution of the model depends on the timescale series. With linear
+    timescales it resembles that of the earthquakes, and with exponential timescales it is a
+    power law reminiscent of the Wikipedia edits.
+  source: Section IV, paragraph 11; Figure 4, left column, and Figure 2, left column
+  quote: generated using a linear timescale series has a similar shape to that for the earthquake
+    sequence, while the power-law IET distribution for the sequence based on the exponential
+    timescales is reminiscent of that for the data on Wikipedia edits
+  data: elsewhere
+  where: Not deposited; generated by the paper's Algorithm 2 (Section IV), and the Wikipedia and
+    earthquake data named in fig2-wikipedia-beta and fig2-earthquake-beta
+  expected:
+  - quantity: maximum IET, linear timescales
+    value: 1960
+    tolerance: 196
+  - quantity: maximum IET, quadratic timescales
+    value: 20800
+    tolerance: 2080
+  - quantity: maximum IET, exponential timescales
+    value: 81600
+    tolerance: 8160
+  criterion: Not testable on the dandiset. The values are the tau_max labels of Figure 4, from
+    simulations set up as in fig4-model-heavy-tails. The comparison of shapes is made by eye in
+    the paper and is reported, not judged.
+- id: model-decremental-equivalent
+  statement: The decremental algorithm (Algorithm 1) produces sequences statistically
+    equivalent to those of the incremental algorithm (Algorithm 2), since the memory function
+    of Eq. 9 encodes the whole merging-number distribution.
+  source: Section IV, paragraphs 6 and 9
+  quote: We omit the results for event sequences generated by the decremental algorithm since it
+    produces statistically equivalent sequences as the incremental one.
+  data: elsewhere
+  where: Not deposited; generated by the paper's Algorithms 1 and 2 (Section IV)
+  criterion: Not testable on the dandiset. Both algorithms are run with the parameters of
+    fig4-model-heavy-tails. Reproduced when, at each relevant timescale, two-sample
+    Kolmogorov-Smirnov tests of the burst sizes do not differ at p < 0.05 after Bonferroni
+    correction. This test is the registry's reading of "statistically equivalent".
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, O4. The burst-size labels of Figure 2 (55, 140, 370, 940, 2400, 6300 ms)
+    step by about 2.55, not a whole power of 1.82, so the grid is finer than the delta' labels
+    and its density can change criteria that count timescales or pairs. The claim that a ratio
+    1.8 grid cannot change an outcome was unsupported. O4 now names two grids, both run, and
+    records the relevant range of about 55 to 6300 ms that the legend implies.
+  - fig2-neuron-burst-size-heavy-tail. Removed the statistics entry (p < 0.05). The p < 0.05 of
+    the Figure 2 legend is the threshold that decides a filled or open circle at each delta, a
+    method for counting timescales, and the text reports no test result for the finding. The
+    threshold stays in the criterion via O3.
+  - fig2-neuron-burst-size-heavy-tail. Statement cut to what the paper says ("heavy-tailed
+    across different timescales"). That a power law is supported over an exponential is not
+    stated in the text, and which circles are filled cannot be read from the text extraction.
+    The criterion keeps the likelihood ratio test as its measure.
+  - fig2-neuron-merging-heavy-tail. Removed the statistics entry (p < 0.05), for the same
+    reason as above.
+  - fig2-wikipedia-beta. Source corrected from Section III paragraph 2 to paragraph 3, the one
+    that describes the Wikipedia data (paragraph 2 is the neuronal data).
+  - fig2-wikipedia-beta and fig2-earthquake-beta. The statements include heavy-tailed merging
+    numbers, but the criteria judged beta only, and they borrowed the 3000 ms bound, which the
+    paper gives for the neuron alone. The criteria now also judge the merging numbers as in
+    fig2-neuron-merging-heavy-tail and name two readings of the range of delta, the whole
+    relevant range or the timescales where beta at delta' is below gamma (Section III,
+    paragraph 9).
+  - fig4-model-heavy-tails. Added the timescale pairs of the Figure 4 legends, which differ by
+    series and were missing, and marked the "more than half" and 0.5 interquartile-range
+    thresholds as the registry's readings.
+  - Open. The paper's PDF was not supplied, so which fitted exponents in Figures 2 and 4 are
+    filled circles, and the exact beta and gamma values per delta, cannot be checked. The
+    thresholds for "most", "several", "relatively constant", "collapse" and "statistically
+    equivalent" are the registry's readings, named as such in each criterion.
+  - Open. O2 (which epochs of the session are used) rests on the spike count of Figure 2 to
+    decide; the paper does not say.
