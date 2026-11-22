@@ -794,8 +794,8 @@ def test_a_claim_shows_the_papers_own_words_when_quoted():
     head, body = html.split("</summary>")
     # Where the paper says it is on the claim's own line, once, and the open claim's parts are labelled, in order.
     assert '<span class="source">Figure 2B</span>' in head and "Figure 2B" not in body
-    assert body.index("<h5>In the paper</h5>") < body.index("blockquote") < body.index("<h5>What the check found</h5>") < body.index("It rose.")
-    assert "How the test differed" not in body and "What the paper reports" not in body      # no empty parts
+    assert body.index("<h5>From the paper</h5>") < body.index("blockquote") < body.index("<h5>Result</h5>") < body.index("It rose.")
+    assert "Deviations from" not in body and "Reported statistics" not in body      # no empty parts
     assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
 
 

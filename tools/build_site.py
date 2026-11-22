@@ -1920,8 +1920,8 @@ def cell_href(data: dict, attempt: dict, o: dict, root: str) -> str | None:
 
 
 def claim_sections(sections: list[tuple[str, str]], foot: str = "") -> str:
-    """The body of an open claim: each part under its own label (what the paper says, what the check found, how the
-    test differed), so that a long explanation reads as a record and not as one block of text."""
+    """The body of an open claim: each part under its own label (the paper's words, the result, the deviations
+    from its method), so that a long explanation reads as a record and not as one block of text."""
     parts = "".join(f'<div class="claim-sec"><h5>{e(label)}</h5><div>{html_}</div></div>' for label, html_ in sections if html_)
     return f'<div class="claim-body">{parts}{foot}</div>'
 
@@ -1970,9 +1970,9 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
                if o.get("statistics") else "")
     differed = ('<ul class="deviations">' + "".join(f"<li>{e(d)}</li>" for d in o["deviations"]) + "</ul>"
                 if o["deviations"] else "")
-    sections = [("In the paper", said), ("What the paper reports", reports),
-                ("What the check found", found or '<p class="notes muted">No explanation recorded.</p>'),
-                ("How the test differed from the paper’s method", differed)]
+    sections = [("From the paper", said), ("Reported statistics", reports),
+                ("Result", found or '<p class="notes muted">No explanation recorded.</p>'),
+                ("Deviations from the paper’s method", differed)]
     # Open, the claim leads to the cell of the executed notebook that tests it (cell_href, set by the page).
     foot = ""
     if o.get("cell"):
@@ -4448,8 +4448,8 @@ def claims_list(files: list[dict], titles: dict) -> tuple[str, int]:
             if c["quote"]:
                 said = f'<blockquote class="quote"><p>{e(c["quote"])}</p></blockquote>'
             judged = f'<p class="notes">{e(c["criterion"])}</p>' if c["criterion"] else ""
-            sections = [("In the paper", said or '<p class="notes muted">No quote recorded.</p>'),
-                        ("How it will be judged", judged)]
+            sections = [("From the paper", said or '<p class="notes muted">No quote recorded.</p>'),
+                        ("Criterion", judged)]
             source = f'<span class="source">{e(c["source"])}</span>' if c["source"] else ""
             items += (f'<li class="claim" id="claim-{e(c["id"])}"><details><summary>'
                       f'<p class="statement">{e(c["statement"])}</p>'
