@@ -1,0 +1,2175 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000129",
+  "label": "DANDI:000129"
+ },
+ "page": "datasets/dandi/000129/",
+ "generated": "2026-11-22T19:57:35+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 38,
+  "partially_reproduced": 2,
+  "not_reproduced": 6,
+  "blocked": 12
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 5,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "makin-2018-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000129",
+    "version": "0.241017.1444",
+    "doi": "10.48324/dandi.000129/0.241017.1444",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000129"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000129",
+   "label": "DANDI:000129",
+   "dataset_version": "0.241017.1444",
+   "paper": "10.1088/1741-2552/aa9e95",
+   "paper_title": " Superior arm-movement decoding from cortex with a new, unsupervised-learning algorithm.",
+   "date": "2026-10-28",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-12"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/40749995806"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "makin-2018",
+   "inputs": [
+    {
+     "what": "The paper's list of monkey I sessions (NeuralAnalysis/Indy_HC_Sessions.csv), read only to check whether the dandiset's session is one of the paper's. The decoders follow the same repository's code where the Methods are silent (cited in makin.py), but no file of it is loaded.",
+     "source": "https://github.com/jgmakin/rbmish at commit 700062f5118b0910411cf9a8f73498e22203731d"
+    }
+   ],
+   "entry_title": "Arm-movement decoding with the rEFH and seven other decoders (Makin et al. 2018)",
+   "summary": "Most of Makin et al.'s main findings could not be tested here, because the dandiset holds one session where the paper used 49, and every claim that needs a test across sessions is blocked. On that one session the rEFH decoder's advantage at velocity and acceleration held, and so did the weak effect of a Kalman filter on KFlatent and the rising advantage with bin width. The rEFH's dynamic gain for position (4.45 dB against about 3) did not match, nor did position being the best-decoded variable for the rEFH, nor the losses in the figure 8 variants. The velocity-boost ratio (1.92 against the required 2) flips with the kinematics reading the Methods and code disagree on. The file has sorted units only, which probably explains the low unit count (111 against 171 to 413).",
+   "description": "Tests the findings of Makin, O'Doherty, Cardoso and Sabes (2018) on dandiset 000129, which holds one session of monkey I (M1 array, 649 s of sorted-unit spikes with fingertip and cursor kinematics) from the Neural Latents Benchmark. It re-implements the paper's eight decoders (linear regression, KFobs, KFlatent static and dynamic, Wiener filter, UKF, rEFH static and dynamic) from its Methods and code, and compares them at four bin widths, three amounts of training data and four fractions of the units. The paper's tests across its 49 sessions cannot be run on one session.",
+   "notebooks": [
+    {
+     "path": "reproduce_makin_2018.ipynb",
+     "title": "Decoders at 64 ms on dandiset 000129 (figures 2, 4 and 8)",
+     "cells": {
+      "sanity": "06d10895",
+      "claim:units-monkey-i": "bd694805",
+      "claim:fig2-velocity-boost": "ca6c885c",
+      "claim:fig2-kflatent-dynamic-little-effect": "08d5fb59",
+      "claim:fig2-refh-static-vel-acc": "27974ee2",
+      "claim:fig2-position-dynamic-gain": "1eda71b7",
+      "claim:fig2-sagittal-better": "dc1a9cf9",
+      "claim:fig2-linear-worst": "b0e16142",
+      "claim:fig2-gross-failures": "f50ef17a",
+      "claim:fig4-vel-acc-every-session": "01bf470c",
+      "claim:fig4-best-variable": "4d2bebfa",
+      "claim:fig2-refh-kf-best": "8acbddbb",
+      "claim:intro-gain-over-nearest": "13debcac",
+      "claim:fig4-position": "c829ae28",
+      "claim:static-refh-position-worse": "ca90c68a",
+      "claim:kflatent-modest": "0c6c337d",
+      "claim:fig8-velocity-variants": "69bcf7c7",
+      "claim:fig8-gaussian-still-beats-ukf": "680372fe",
+      "claim:fig8-position-variants": "cdf27d69"
+     },
+     "executed": "notebooks/makin-2018/reproduce_makin_2018.html"
+    },
+    {
+     "path": "binwidth_training_neurons.ipynb",
+     "title": "Bin width, training data and number of neurons (figures 5 to 7)",
+     "cells": {
+      "sanity": "d3332ecb",
+      "claim:fig5-advantage-with-binwidth": "80ff2373",
+      "claim:fig5-derivative-order": "24700d39",
+      "claim:advantage-grows-with-derivative": "5550e184",
+      "claim:fig7-affine-position": "73839c49",
+      "claim:fig7-kinematic-model-saturates": "af1bfbf4",
+      "claim:fig5-vel-acc-all-bins": "f2a99f3b",
+      "claim:fig5-position-bins": "c01e1b44",
+      "claim:fig6-training-time": "96e3d45c",
+      "claim:fig7-vel-acc-neurons": "b4743e7a",
+      "claim:fig7-position-neurons": "a9ac3d32"
+     },
+     "executed": "notebooks/makin-2018/binwidth_training_neurons.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "units-monkey-i",
+     "statement": "After units firing below 0.5 Hz were discarded, monkey I's sessions had between 171 and 413 units, the range reflecting that only 7 of 37 sessions included the S1 array.",
+     "source": "Methods, Data acquisition, paragraph 4",
+     "quote": "Finally, units with spike rates below 0.5 Hz were discarded. This left between 171 and 413 units for monkey I",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:units-monkey-i",
+     "notes": "111 of the 130 units in the file fire above 0.5 Hz over the 649.1 s session, below the criterion's range of 153.9 to 454.3. The file holds sorted units only (unit ids end in 1 to 4, none in 00), on 82 channels; the paper's counts include one unsorted hash unit per channel (Methods, Data acquisition), up to 96 more on this array, so the shortfall is consistent with the missing hash units and does not contradict the paper. With thresholds of 0.25 and 1 Hz the count is 117 and 94. No unit is a duplicate of another.",
+     "deviations": [
+      "One session, the only one in the dataset (dated 2017-02-02, not in the paper's session list), for a range over 37 sessions.",
+      "The rate is taken over the training file (649.1 s); the test file holds 190.3 s more of 98 of the units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-refh-kf-best",
+     "statement": "Averaged over the 49 sessions, no decoder outperforms the rEFH (+KF) for any kinematic variable, and for velocity and acceleration it is clearly superior to all other decoders.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 1; Figure 2",
+     "quote": "On average, no decoder outperforms the rEFH (+KF) for any kinematic variable. For velocity and acceleration, the rEFH (+KF) is clearly superior to any of the other decoders.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-refh-kf-best",
+     "notes": "The criterion needs the bootstrap of the session-weighted mean SNR difference over the paper's 49 sessions. The dandiset holds one session, which is not in the paper's list. The paper's 47 Sabes-lab sessions are public on Zenodo (doi:10.5281/zenodo.583331), but the claim is on the dataset (`data` is not `elsewhere`), so a reader is asked whether it should be (questions/000129.yaml). On the one session the mean part holds. The rEFH (+KF) has the highest SNR for position, velocity and acceleration (5.91, 5.06 and 2.36 dB), ahead of the next decoder by 0.28 dB (UKF), 1.19 and 0.45 dB (static rEFH), and it is highest with the other seeds and the code's kinematics (position margin 0.11 to 0.51 dB). This does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "intro-gain-over-nearest",
+     "statement": "The rEFH (+KF) improves SNR over its nearest competitor on average by 0.14 dB for position, 1.60 dB for velocity and 1.2 dB for acceleration; the position gain is not significant at p = 0.01.",
+     "source": "Introduction, paragraph 4",
+     "quote": "average improvements over its nearest competitor in signal-to-noise ratio of 0.14 dB (position), 1.60 dB (velocity) and 1.2 dB (acceleration) ... the improvement in position is not significant at the level of p = 0.01",
+     "statistics": [
+      {
+       "about": "position gain over the nearest competitor",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:intro-gain-over-nearest",
+     "notes": "The criterion needs the bootstrap over the 49 sessions for the position gain (p >= 0.01); see fig2-refh-kf-best. On the one session the gains of the rEFH (+KF) are 0.28, 1.24 and 1.02 dB over the nearest decoder other than the two rEFH decoders (reading a; UKF, UKF and WF) and 0.28, 1.24 and 1.25 dB over the UKF (reading b). Position and velocity are outside tolerance under both readings and with every seed (position 0.11 to 0.28 dB, velocity 1.24 to 1.31 dB); with the code's kinematics velocity is inside (1.45 and 1.55 dB) and position is 0.51 dB. No reading gets all three gains within tolerance on this session. This does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-velocity-boost",
+     "statement": "Relative to the static linear map, the rEFH (+KF) raises velocity SNR by more than twice as much as KFobs and nearly twice as much as the UKF.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 1; Figure 2, second row",
+     "quote": "the average SNR boost provided by the rEFH (+KF) for velocity is more than twice that supplied by KFobs ... nearly twice that of its nearest rival, which is the unscented Kalman filter (UKF)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-velocity-boost",
+     "notes": "Velocity SNR gains over linear regression are 3.67 dB for the rEFH (+KF), 1.91 for KFobs and 2.42 for the UKF. The rEFH's gain is 1.92 times KFobs's (the criterion needs more than 2) and 1.51 times the UKF's (inside 1.5 to 2.2), so only the UKF part holds, which the criterion does not grade as partial. The result is borderline. With the code's kinematics (cursor, no filter, bin means) the ratios are 2.05 and 1.70 and the claim is reproduced; with rEFH seeds 1 and 2 the KFobs ratio is 1.93 and 1.95. The copy the verifier reviewed, from an earlier run of the same notebook, gave 1.97 with seeds 1.92 to 1.99, so the ratio also moves by a few hundredths between runs; every run under the Methods kinematics has been below 2. The outcome rests on the kinematics reading. Question for the paper's authors (finding below) was the decoded kinematic state the fingertip position filtered at 10 Hz and subsampled, as the Methods say, or the unfiltered cursor position averaged over each bin, as getLatentsBMI.m and binSpikeCounts.m do?",
+     "deviations": [
+      "One session in place of 49; the session-weighted means are this session's values, so a margin this small carries one session's noise.",
+      "The kinematics follow the Methods (fingertip, 4th-order Butterworth at 10 Hz, last sample of each bin), as the claims file makes its main reading; the code's reading changes the outcome, and this reading is adopted as the one the paper's text states.",
+      "Sorted units only (111), without the hash units the paper used.",
+      "The UKF is a re-implementation of Li's UKF2; its fitting code is not in the paper's repository."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-kflatent-dynamic-little-effect",
+     "statement": "Adding the dynamic mapping (a second Kalman filter) to KFlatent changes its reconstruction little.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 2; Figure 2",
+     "quote": "Dynamic mapping (i.e. a KF) of KFlatent has little effect on reconstruction.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-kflatent-dynamic-little-effect",
+     "notes": "KFlatent (+KF) minus static KFlatent is 0.18, 0.21 and 0.09 dB for position, velocity and acceleration, all below 0.5 dB. With the two other EM seeds it is 0.18 to 0.19, 0.17 to 0.21 and 0.10 to 0.11 dB, and with the code's kinematics 0.29, 0.45 and 0.22 dB. EM ran the full 100 epochs in every run; the last epoch's gain was 4.3e-4 to 6.6e-4 of the total in the six runs of the first notebook (the code-kinematics run 4.3e-4), and 4.3e-4 to 9.4e-4 over every configuration of the second, above the Methods' criterion of 1e-4.",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111); EM convergence judged on the log-likelihood, which the Methods' cross-entropy criterion is equivalent to up to a constant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-refh-static-vel-acc",
+     "statement": "Under the static mapping alone, velocity and acceleration are reconstructed better from the rEFH than from any other filter.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 3; Figure 2",
+     "quote": "Under the static mapping alone, velocity and acceleration can be reconstructed better with the rEFH than with any other filter.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-refh-static-vel-acc",
+     "notes": "The static rEFH has 3.87 dB velocity SNR against the best other decoder's 3.82 (UKF), and 1.90 dB acceleration SNR against 1.34 (WF). The velocity margin is small, 0.05 dB here, 0.08 and 0.17 dB with rEFH seeds 1 and 2, and 0.09 dB over KFlatent (+KF) with the code's kinematics; the claim holds in all six runs, the EM seeds included.",
+     "deviations": [
+      "One session in place of 49, so the small velocity margin carries one session's noise.",
+      "Sorted units only (111); the UKF is a re-implementation of Li's UKF2."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-position-dynamic-gain",
+     "statement": "Position is reconstructed much more accurately from the rEFH with the dynamic than with the static mapping, by about 3 dB of SNR.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 4; Discussion, Relative reconstruction quality of position, velocity, and acceleration, paragraph 1; Figure 2",
+     "quote": "That position, on the other hand, can be reconstructed much more accurately from the rEFH with dynamic, as opposed to static, mappings ... the dynamic mapping (+KF) improves signal-to-noise by some 3 dB",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-position-dynamic-gain",
+     "notes": "The dynamic mapping raises the rEFH's position SNR from 1.46 to 5.91 dB, a gain of 4.45 dB (4.32 for x, 4.58 for y), outside 3 +- 0.5 dB. The effect is present and larger than the paper's; it is 4.22 to 4.52 dB with the other seeds and the code's kinematics. The static map has position R2 0.39 and 0.51 (x, y) on the training bins it was fitted on and 0.19 and 0.37 on the test bins, so the second KF, fitted on the training outputs as the paper's dynamic map is, sees outputs less noisy than those it filters at test. Whether this makes the gain larger than the paper's is not tested here.",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-sagittal-better",
+     "statement": "For each decoder and each derivative order, the sagittal (y) component is decoded better than the lateral (x) component.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 5; Figure 2",
+     "quote": "For each decoder and derivative order (position, velocity, acceleration), variables are decoded better in the sagittal ... than lateral (x) direction",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-sagittal-better",
+     "notes": "y has the higher SNR in 23 of 24 decoder and variable pairs; the exception is the static rEFH's velocity (y minus x -0.06 dB). Linear regression's velocity margin is 0.01 dB. With rEFH seed 2 all 24 hold; with rEFH seed 1, the two other EM seeds and the code's kinematics 23, with the same exception. The copy the verifier reviewed, from an earlier run of the same notebook, gave 24 of 24, so the outcome depends on the training run of the rEFH.",
+     "deviations": [
+      "One session in place of 49; the per-session comparison is this session's.",
+      "Sorted units only (111)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-linear-worst",
+     "statement": "Static linear regression reconstructs much worse than the other decoders.",
+     "source": "Results, Reconstruction quality of all decoders, paragraph 1; Figure 2",
+     "quote": "improvement in reconstruction over linear regression, which is much worse than the other six decoders",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-linear-worst",
+     "notes": "Every other decoder exceeds linear regression for each of the six variables; the smallest margin is 0.45 dB (static rEFH, x position). It holds in every variant (smallest 0.20 dB, KFobs x acceleration, code kinematics).",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-gross-failures",
+     "statement": "Gross failures (negative coefficients of determination) occur only for the UKF and KFlatent (+KF), in a few sessions.",
+     "source": "Results, paragraph after the decoder list",
+     "quote": "in our experiments, such gross failures occurred only for the UKF and KFlatent (+KF)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig2-gross-failures",
+     "notes": "No decoder has a negative R2 at 64 ms in this session (the lowest is 0.055, linear regression), so the criterion holds trivially; the claim's \"in a few sessions\" cannot be tested on one session. Outside the criterion's 64 ms with all units and 320 s of training, the second notebook prints negative R2 for linear regression (16 ms, 80 and 160 s, f = 1/8 and 1/4), static KFlatent, KFlatent (+KF) and the static rEFH (f = 1/8 and 1/4), KFobs (f = 1/4, x position), the UKF (f = 1/8, ay, and f = 1/4, x position), and KFlatent (+KF) at 16 ms; most are within 0.05 of zero, and at f = 1/8 KFlatent (+KF) diverges (position SNR -76.63 dB). Under a reading of \"in our experiments\" that covers every configuration the claim would fail; a reader is asked (questions/000129.yaml).",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-vel-acc-every-session",
+     "statement": "For velocity and acceleration, the rEFH (+KF) is better than KFobs and the UKF in every one of the 196 session, variable and axis combinations, and significantly so across sessions.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 2; Figure 4, columns 2 and 3",
+     "quote": "For velocity and acceleration, the rEFH is superior to KFobs and the UKF for all 196 data ... For both kinematic variables, the results are significant under a bootstrap (p < 0.01",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "49 sessions from three monkeys"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig4-vel-acc-every-session",
+     "notes": "In this session the rEFH (+KF) beats KFobs and the UKF in all 8 velocity and acceleration comparisons, by 1.04 to 1.81 dB, and in every variant (smallest margin 1.04 dB). The criterion's second part, the bootstrap across sessions at p < 0.01, cannot be run on one session; the outcome rests on the per-session part, which the claims file names as testable on one session. The verifier graded it partially reproduced in round 1 and agreed in round 2.",
+     "deviations": [
+      "One session in place of 49; the bootstrap part of the criterion is not tested.",
+      "Sorted units only (111); the UKF is a re-implementation of Li's UKF2."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-advantage-grows",
+     "statement": "The better decoded the session, the more the rEFH (+KF) outperforms the standard Kalman filter, shown by regression slopes above 1 for velocity and acceleration.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 2; Figure 4, columns 2 and 3",
+     "quote": "the better (more decodable) the session, the more the rEFH outperforms the standard Kalman filter ... confirmed with an F-test against a model with slope set to unity, intercept fit to data",
+     "statistics": [
+      {
+       "test": "F-test against a unit-slope model",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The regression of rEFH (+KF) SNR on KFobs SNR runs over all sessions and both axes; one session gives two points and no degrees of freedom for the F-test. The dandiset holds no other session; see fig2-refh-kf-best.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-position",
+     "statement": "The rEFH (+KF) decodes position better than KFobs, but not distinguishably from the UKF.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Figure 4, column 1",
+     "quote": "The rEFH\u2019s position reconstruction is likewise superior to KFobs (p < 0.01, bootstrap). It is not, however, distinguishable from either the UKF (bootstrap not significant even at p = 0.05).",
+     "statistics": [
+      {
+       "about": "rEFH (+KF) against KFobs, position",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "rEFH (+KF) against UKF, position",
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig4-position",
+     "notes": "Needs the bootstrap over the 49 sessions; see fig2-refh-kf-best. On the one session the rEFH (+KF) position SNR exceeds KFobs's by 0.90 dB and the UKF's by 0.28 dB (0.73 to 1.02 and 0.11 to 0.51 dB across the variants), which does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-best-variable",
+     "statement": "The best-decoded kinematic variable is velocity for the rEFH (+KF), but position for KFobs and the UKF.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Figure 4",
+     "quote": "the best-decoded kinematic variable is velocity for the rEFH, but position for KFobs and the UKF",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig4-best-variable",
+     "notes": "Position is the best-decoded variable for all three decoders. The rEFH (+KF) has 5.91 dB for position against 5.06 for velocity and 2.36 for acceleration; KFobs (5.00, 3.30, 1.02) and the UKF (5.63, 3.82, 1.11) have position highest, as the paper says. The ordering is the same with the other seeds and the code's kinematics, and at every bin width in the second notebook.",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-task-similar",
+     "statement": "The relative advantage of the rEFH (+KF) does not differ visibly between the center-out task (monkey C) and the point-to-point task (monkeys I and L); monkey L's sessions differ most.",
+     "source": "Results, Reaching task, paragraph 1; Figure 4",
+     "quote": "But across tasks, the relative advantage of the rEFH (+KF) does not differ visibly (there are too few sessions from monkey C for a statistical test)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "output": null,
+     "notes": "The comparison is of monkey C's two sessions with the range of monkey I's 37 sessions. The dandiset holds one monkey I session, not among the 37. Monkey C's data are named only by the preprint (Dyer et al., biorxiv 080861), with no archive identifier to pin, so they cannot be used as an input (author, step 1.4). The claim is `data elsewhere`, so it is not blocked as data_missing, which the verifier gave.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Monkey C data, Dyer et al. 2016, biorxiv.org/content/early/2016/10/14/080861 (reference 6); no archive identifier is given in the paper",
+     "proposed": null
+    },
+    {
+     "claim": "fig5-vel-acc-all-bins",
+     "statement": "For velocity and acceleration, the rEFH (+KF) is the best decoder at every bin width (16, 32, 64 and 128 ms).",
+     "source": "Results, Bin width, bullet 1; Figure 5",
+     "quote": "For velocity and acceleration, the rEFH (+KF) is the best for all bin widths",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig5-vel-acc-all-bins",
+     "notes": "Needs the bootstrap over the 49 sessions at four bin widths; see fig2-refh-kf-best. On the one session the rEFH (+KF) has the highest velocity and acceleration SNR at 32, 64 and 128 ms (margins 0.53 and 0.32, 1.19 and 0.45, 0.45 and 0.12 dB), but at 16 ms the WF is higher for velocity (3.30 against 3.01 dB) and acceleration (1.39 against 0.96 dB), against the claim. This does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-position-bins",
+     "statement": "For position the leading decoders cannot be told apart at any bin width except 16 ms, where the UKF is better.",
+     "source": "Results, Bin width, bullet 1; Figure 5",
+     "quote": "For position, the leading decoders are not statistically differentiable at any bin width ... except at 16 ms, where the UKF is superior (bootstrap, p < 0.01)",
+     "statistics": [
+      {
+       "about": "UKF against rEFH (+KF), position, 16 ms bins",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig5-position-bins",
+     "notes": "Needs the pairwise bootstrap over the 49 sessions at four bin widths; see fig2-refh-kf-best. On the one session the UKF's position SNR exceeds the rEFH (+KF)'s by 0.29 dB at 16 ms, the direction the paper reports; the absence of differences at 32 to 128 ms can be judged only with the test.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-advantage-with-binwidth",
+     "statement": "Reconstruction improves with bin width, and so does the relative advantage of the rEFH (+KF).",
+     "source": "Results, Bin width, bullet 2; Figure 5",
+     "quote": "With increasing bin width, reconstruction improves, as expected; but so does the relative advantage of the rEFH (+KF).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig5-advantage-with-binwidth",
+     "notes": "The rEFH (+KF) SNR rises from 3.01 to 5.46 dB (velocity) and 0.96 to 2.39 dB (acceleration) from 16 to 128 ms, with no fall between neighbouring widths. Its advantage over the best decoder other than the two rEFH decoders rises from -0.29 to 1.60 dB (velocity) and -0.44 to 1.14 dB (acceleration), and in percent from -8.9 to 41.6% and -31.3 to 92.0%, so the claim holds under both readings. The WF's velocity SNR does not improve with width (3.30 to 3.17 dB); the criterion tests only the rEFH (+KF).",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111); the UKF is a re-implementation of Li's UKF2."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-derivative-order",
+     "statement": "With increasing derivative order reconstruction quality declines (except that the rEFH is best at velocity), while the relative advantage of the rEFH (+KF) increases.",
+     "source": "Results, Bin width, bullet 3; Figure 5",
+     "quote": "With increasing derivative order (position, velocity, acceleration), the overall reconstruction quality declines (except for the rEFH, which is best at velocity), but the relative advantage of the rEFH (+KF) increases.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig5-derivative-order",
+     "notes": "The mean SNR of the six non-rEFH decoders falls from position to velocity to acceleration at all four widths (64 ms, 3.79, 3.06 and 0.99 dB). The percent advantage of the rEFH (+KF) rises from position to velocity to acceleration at 32, 64 and 128 ms (64 ms, 4.9, 32.6 and 76.5%) but not at 16 ms, where it is -6.2, -8.9 and -31.3%. Both parts hold at 3 of 4 widths, which the criterion grades as partial. The statement's exception (the rEFH best at velocity), which the criterion does not test, does not hold; the rEFH (+KF) decodes position best at every width.",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-training-time",
+     "statement": "The rEFH (+KF) is the best decoder of velocity and acceleration for 80, 160 and 320 s of training data; for position it never differs significantly from the UKF, and beats KFobs at 320 s but loses to it at 80 s.",
+     "source": "Results, Seconds of data used for training; Figure 6",
+     "quote": "For velocity and acceleration, the rEFH (+KF) is again the best decoder for all amounts of training data. For position, the differences between the rEFH (+KF) and the UKF are nowhere significant, but compared to KFobs, the rEFH is superior at 320 s and inferior at 80 s (bootstrap, p = 0.01)",
+     "statistics": [
+      {
+       "about": "rEFH (+KF) against KFobs, position, 320 s and 80 s",
+       "test": "bootstrap",
+       "p": 0.01
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig6-training-time",
+     "notes": "Part (ii) needs the bootstrap over the 49 sessions, and part (iii) its p-values; see fig2-refh-kf-best. On the one session part (i) holds on point values, the rEFH (+KF) having the highest velocity and acceleration SNR at 80, 160 and 320 s (velocity margins 0.33, 1.01 and 1.19 dB). For position it is 0.87 dB below the UKF at 80 s and 0.10 and 0.28 dB above at 160 and 320 s; against KFobs it is above at 320 s (0.90 dB) and below at 80 s (0.20 dB), the directions of part (iii). This does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-vel-acc-neurons",
+     "statement": "For velocity and acceleration, using a fraction 1/4, 1/2 or all of the neurons, the rEFH (+KF) outperforms all its rivals, and its percent gain in SNR grows with the number of neurons and with derivative order.",
+     "source": "Results, Number of neurons, paragraph 2; Figure 7",
+     "quote": "For velocity and acceleration, for all but the smallest fraction of neurons, the rEFH (+KF) outperforms all its rivals (bootstrap; the result holds for all comparisons at p < 0.01 except against the WF in acceleration at f = 1/4, where it holds for p < 0.05). The percent increase in SNR provided by the rEFH increases with neurons as well as derivative order.",
+     "statistics": [
+      {
+       "about": "all comparisons except WF, acceleration, f = 1/4",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "against WF, acceleration, f = 1/4",
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig7-vel-acc-neurons",
+     "notes": "Needs the bootstrap over the 49 sessions at each fraction; see fig2-refh-kf-best. On the one session the rEFH (+KF) ties the WF for velocity at f = 1/4 (1.56 dB each) and is the best decoder at f = 1/2 and 1. Its percent gain over the best decoder other than the two rEFH decoders rises with f for velocity (0.2, 19.1 and 32.6%) but not for acceleration (38.2, 87.1 and 76.5%), and over each decoder it also falls somewhere (over the UKF for velocity, 19.4 to 19.1% from f = 1/4 to 1/2). This does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-position-neurons",
+     "statement": "For position the rEFH's advantage is significant at p < 0.05 at f = 1/4 and 1/2, but not at f = 1, where the UKF comes close, nor at f = 1/8, where all decoders collapse.",
+     "source": "Results, Number of neurons, paragraph 2; Figure 7, left panel",
+     "quote": "Even for position, the rEFH\u2019s advantage is significant at p < 0.05, except for f = 1, where UKF performance gets close, and at the smallest fraction of neurons (f = 1/8)",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig7-position-neurons",
+     "notes": "Needs the bootstrap over the 49 sessions at each fraction; see fig2-refh-kf-best. On the one session the rEFH (+KF) has the highest position SNR at f = 1/4 (by 0.21 dB) and is 0.15 dB below the UKF at f = 1/2; the copy the verifier reviewed, from an earlier run, had it highest at both. This does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-affine-position",
+     "statement": "Position SNR of the decoders without a learned kinematic model (linear regression, static KFlatent, WF, static rEFH) is close to an affine function of the fraction of neurons, with correlations 0.999, 0.95, 0.98 and 1.000; static KFlatent is the most curved.",
+     "source": "Results, Number of neurons, paragraph 3; Figure 7, left panel",
+     "quote": "SNRs for the decoders that do not learn the kinematics explicitly ... are quite close to affine functions (i.e. linear with offset) of the fraction of neurons used (\u03c1 = 0.999, 0.95, 0.98, 1.000, respectively). SNR for KFlatent is clearly the most curved of these functions.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig7-affine-position",
+     "notes": "Correlations of position SNR with f are 0.995 (linear regression), 0.995 (static KFlatent), 0.986 (WF) and 0.991 (static rEFH) under reading a, and 0.956, 0.948, 0.954 and 0.914 with log2 f (reading b); all are within tolerance. Static KFlatent does not have the lowest correlation under either reading (the WF has under a, the static rEFH under b), so the ordering condition fails under both. At f = 1/8 and 1/4 (13 and 27 units) the position SNR of these decoders is within 0.33 dB of zero, so the correlations rest mostly on f = 1/2 and 1.",
+     "deviations": [
+      "One session in place of 49; fractions of 111 sorted units (13, 27, 55 and 111)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-kinematic-model-saturates",
+     "statement": "Position SNR of the four decoders that learn a kinematic state-transition model (KFobs, KFlatent (+KF), UKF, rEFH (+KF)) rises much faster at first with added neurons, then saturates.",
+     "source": "Results, Number of neurons, paragraph 3; Figure 7, left panel",
+     "quote": "In contrast, reconstruction quality for the four decoders (KFobs, KFlatent [+KF], UKF, rEFH [+KF]) that did learn a model of kinematic evolution ... initially grows much more quickly with the addition of neurons, before saturating.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:fig7-kinematic-model-saturates",
+     "notes": "Under reading b (1/8 to 1/2) the position SNR of KFobs, KFlatent (+KF), the UKF and the rEFH (+KF) rises 6.67, 207.33, 6.93 and 6.22 dB per unit f, faster than from 1/2 to 1 (3.79, 6.27, 4.95, 5.79) and faster than the largest initial slope of the static decoders (5.00, static KFlatent). Under reading a (1/8 to 1/4) it fails for KFobs, the UKF and the rEFH (+KF), whose position SNR is slightly lower at 1/4 than at 1/8. KFlatent (+KF) passes under b only because its filter diverges at f = 1/8 (-76.63 dB, 13 units); its slope from 1/4 to 1/2 is 4.20, below its late slope of 6.27, and it would pass only with an f = 1/8 SNR below -1.23 dB, where every other decoder is between -0.10 and 0.68 dB. Without that value the claim fails under both readings, so the outcome rests on a gross failure of one of the four decoders. The other three pass under b on their own slopes.",
+     "deviations": [
+      "One session in place of 49; fractions of 111 sorted units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-velocity-variants",
+     "statement": "Under the static mapping, about 0.7 dB of the rEFH's velocity advantage over the UKF is lost when the updated visible units are left out of decoding, and 0.4 dB when standard-normal visible units replace Poisson ones; Kalman filtering does not remove these differences.",
+     "source": "Results, Variant decoders for the rEFH, paragraph 3; Figure 8",
+     "quote": "Under a static mapping, some (about 0.7 dB) of that velocity-decoding advantage is lost when the updated visible units are neglected, and a little less (0.4 dB) lost when standard-normal units are used ... The differential between velocity decoders cannot be eliminated by Kalman filtering",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig8-velocity-variants",
+     "notes": "Static velocity SNR is 0.11 dB lower without the updated visible units (text 0.7, figure 8 about 0.3) and 0.08 dB higher, not lower, with standard-normal units on standardized counts (text 0.4). With the code's transform 2 sqrt(R + 3/8) the standard-normal rEFH loses 2.11 dB. Under the dynamic mapping the canonical rEFH (+KF) exceeds the variants by 0.15, 0.15 and 1.68 dB, so that part holds. The static rEFH's own velocity advantage over the UKF is 0.05 dB in this session, against about 0.94 dB in figure 8. Neither standard-normal reading matches.",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111).",
+      "The standard-normal rEFH uses the code's learning rate for such units (mw0 = 200, setParams.m)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-position-variants",
+     "statement": "For position the rEFH variants change the static but not the dynamic mapping; with the Kalman filter all three variants decode position about equally.",
+     "source": "Results, Variant decoders for the rEFH, paragraph 2; Figure 8, first panel",
+     "quote": "For position, the variants affect the static, but not the dynamic, mappings.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig8-position-variants",
+     "notes": "The dynamic part needs the bootstrap over the 49 sessions; see fig2-refh-kf-best. On the one session the static part holds, the canonical static rEFH having a higher position SNR (1.46 dB) than both variants (1.43 and 1.38). Under the dynamic mapping the canonical rEFH (+KF) is 0.11 and 0.16 dB above them. This does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig8-gaussian-still-beats-ukf",
+     "statement": "The rEFH keeps an advantage over the UKF when its visible units are standard normal instead of Poisson, so the noise model accounts for only part of its advantage.",
+     "source": "Discussion, The importance of nonlinear tuning, Poisson emissions, and a latent state, paragraph 1; Figure 8, medium-gray bars",
+     "quote": "the rEFH\u2019s advantage over the UKF is not abolished by abandoning the final \u2018correction\u2019, sc., Poisson rather than normally distributed spike counts (figure 8, medium-gray bars)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:fig8-gaussian-still-beats-ukf",
+     "notes": "Trained on standardized counts, the standard-normal rEFH (+KF) exceeds the UKF by 1.09 dB for velocity and 1.17 dB for acceleration. Trained on the code's transform it is 0.43 dB below the UKF for velocity and 0.12 dB above for acceleration, so the claim fails under the code's reading. Question for the paper's authors (finding below) were the standard-normal visible units fed standardized counts, as the Results say, or 2 sqrt(R + 3/8), as getLatentsBMI.m does?",
+     "deviations": [
+      "One session in place of 49.",
+      "The input of the standard-normal rEFH is the standardized counts the Results name (z-scored with the training mean and SD; Results, Variant decoders, \"first standardizing the data (separately for each neuron)\"), as the claims file makes its main reading; the code's transform changes the outcome.",
+      "The UKF is a re-implementation of Li's UKF2."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig9-taps",
+     "statement": "Adding taps improves both the rEFH (+KF) and the UKF; at 32, 64 and 128 ms the best rEFH decoder beats the best UKF at velocity and acceleration and is indistinguishable at position, while at 16 ms the UKF is better at position and velocity.",
+     "source": "Results, Augmenting the decoders with taps, paragraph 2; Figure 9",
+     "quote": "this introduction of taps improves the performance of the rEFH (figure 9), as it does the UKF. As before, at all but the smallest bin width, the best rEFH decoder is superior to the best UKF at velocity and acceleration reconstruction, and indistinguishable at position reconstruction (bootstrap; p < 0.01). At that smallest bin width (16 ms), however, the UKF is superior in both position and velocity decoding.",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Every grade of the criterion needs part (ii), the bootstrap over the 49 sessions at three bin widths, which the dandiset does not hold; see fig2-refh-kf-best. Parts (i) and (iii) are single-session comparisons that could be computed, but whatever they give the claim stays blocked, and the tapped decoders were not implemented. The tapped UKF follows Li's UKF2 (past and future kinematic states in the state, one bin of spike history), whose code is not in the paper's repository, and the tapped rEFH feeds the hidden units to that code without tuning nonlinearities (Results, Augmenting the decoders with taps), so both would be further re-implementations.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "kflatent-modest",
+     "statement": "KFlatent is only modestly better than the standard Kalman filter; nonlinear tuning (the UKF) improves on the standard filter more.",
+     "source": "Discussion, The importance of nonlinear tuning, Poisson emissions, and a latent state, paragraph 1; Figures 2 and 5 to 7",
+     "quote": "yet its performance is only modestly superior to that of the standard Kalman filter, KFobs ... What does improve the standard KF is the addition of tuning to nonlinear and tapped functions of the kinematic state",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:kflatent-modest",
+     "notes": "Reading a (velocity), the better KFlatent decoder exceeds KFobs by 0.10 dB and the UKF by 0.51 dB; reading b (velocity and acceleration) 0.08 and 0.30 dB; reading c (all three) KFlatent is 0.20 dB below KFobs. With the two other EM seeds KFlatent leads KFobs by 0.08 and 0.08 dB under reading a and 0.07 and 0.08 dB under reading b, so a and b hold in all three EM runs, though by small margins. With the code's kinematics readings a and b fail (0.49 and 0.39 dB for KFlatent against 0.38 and 0.22 for the UKF) and reading c holds (0.07 against 0.32 dB), so the claim holds under one reading with either kinematics. EM stopped at 100 epochs in every run, not at the Methods' criterion.",
+     "deviations": [
+      "One session in place of 49.",
+      "Sorted units only (111); the UKF is a re-implementation of Li's UKF2."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "advantage-grows-with-derivative",
+     "statement": "At 64 ms and with each amount of training data, the relative advantage of the rEFH (+KF) over the other decoders increases from position to velocity to acceleration.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Results, Seconds of data used for training; Figures 2, 4 and 6",
+     "quote": "Overall, the relative advantage provided by the rEFH increases with derivatives.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "binwidth_training_neurons.ipynb",
+     "output": "claim:advantage-grows-with-derivative",
+     "notes": "The percent advantage of the rEFH (+KF) over the best non-rEFH decoder rises from position to velocity to acceleration with 80 s (-26.1, 10.9, 76.4%), 160 s (2.4, 32.5, 71.3%) and 320 s (4.9, 32.6, 76.5%) of training. It also rises at each amount when the shorter trainings are scored only on the bins after 320 s.",
+     "deviations": [
+      "One session in place of 49.",
+      "For 80 and 160 s of training the paper does not say which bins are tested; the code tests on every bin after the training bins (getLatentsBMI.m, getTestBins), and this is the main reading. Scoring on the bins after 320 s gives the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "static-refh-position-worse",
+     "statement": "Under the static mapping alone the rEFH reconstructs position significantly worse than the UKF, while the rEFH (+KF) is not distinguishable from it.",
+     "source": "Discussion, Relative reconstruction quality of position, velocity, and acceleration, paragraph 1; Figure 8, first panel",
+     "quote": "Despite superior velocity and acceleration decoding, the rEFH (+KF) reconstructs position little better than the UKF (the differences are not significant); and under a static mapping, significantly worse.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_makin_2018.ipynb",
+     "output": "claim:static-refh-position-worse",
+     "notes": "Needs the bootstrap over the 49 sessions, and depends on fig4-position, which is blocked; see fig2-refh-kf-best. On the one session the static rEFH's position SNR is 4.17 dB below the UKF's (1.46 against 5.63; 4.01 to 4.12 dB in the variants), the direction the claim states, which does not decide the outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds one session of one of the paper's three monkeys (monkey I, M1 array, 649.1 s with kinematics), released for the Neural Latents Benchmark. The paper used 49 sessions. The file dates the session 2017-02-02, which is not in the paper's list of monkey I sessions (NeuralAnalysis/Indy_HC_Sessions.csv, ending 2017-01-31), so it is probably not one of the paper's sessions, though the dandiset names the paper as describing it. The paper's own sessions are on Zenodo (doi:10.5281/zenodo.583331). The paper's tests across sessions cannot be run on the dandiset.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The units table holds sorted units only (ids are channel times 100 plus 1 to 4). The paper kept an unsorted hash unit for every channel and counted them among its 171 to 413 units per monkey I session; without them 111 units pass the 0.5 Hz cut.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The training file has three gaps of 0.1 s (162.2 to 162.3, 324.5 to 324.6 and 486.8 to 486.9 s) where every behavioural series is NaN and no unit has a spike, splitting it into four segments; neither the file nor the dandiset says what was removed. The test file (190.3 s, 98 units) has no kinematics, so it cannot be used to score decoding.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-10-28",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The handover of the author-answers run, the executed notebooks with the conclusions and summaries removed, the helper module and the claims file. The verifier also read the paper and queried the DANDI API for 000129 at version 0.241017.1444.",
+     "agreed": 29,
+     "of": 31,
+     "disagreements": [
+      {
+       "claim": "fig2-sagittal-better",
+       "outcome": "reproduced",
+       "reason": "y beats x in 24 of 24 pairs; one rEFH seed gives 23. The static rEFH velocity and linear velocity margins are only 0.01 to 0.04 dB."
+      },
+      {
+       "claim": "fig4-vel-acc-every-session",
+       "outcome": "partially_reproduced",
+       "reason": "The per-session part holds; 8 of 8 comparisons favour the rEFH (+KF), smallest margin 1.08 dB across seeds. The across-session bootstrap cannot be tested (one session)."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-29",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The full executed notebooks of the author-revise-1 run with their conclusions and summaries, the README, the attempt record, the helper module and the claims file. The verifier also read the paper. It did not check the cited rbmish code details, which were not in its materials, and it notes that the UKF re-implements Li's UKF2, which cannot be checked against the original.",
+     "agreed": 31,
+     "of": 31,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods decode the fingertip position low-pass filtered at 10 Hz and subsampled per bin; the paper's code (getLatentsBMI.m, binSpikeCounts.m) decodes the cursor position with the filter commented out and averages each bin. The two readings change the outcome of fig2-velocity-boost. Question for the paper's authors, which kinematics were decoded?",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Results say the standard-normal rEFH variant was trained on standardized spike counts; the code (getLatentsBMI.m) feeds it 2 sqrt(R + 3/8). The two readings change the outcome of fig8-gaussian-still-beats-ukf. Question for the paper's authors, which input was used for figure 8?",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The UKF follows Li's UKF2 package (fit_ar_ukf_hist_rrcv.m, ar_ukf_hist.m), which the paper's repository calls but does not hold; the attempt re-implemented it from the paper's description (linear state transition, tuning to the six states, their magnitudes and the position-velocity products, regression with full noise covariances, standard unscented transform). Question for the paper's authors, can the UKF2 code and its ridge setting be published with the paper's code?",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  },
+  {
+   "id": "du-2026-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000129",
+    "version": "0.241017.1444",
+    "doi": "10.48324/dandi.000129/0.241017.1444",
+    "relation": "reuses"
+   },
+   "datasets": [
+    "dandi:001201",
+    "dandi:000129"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000129",
+   "label": "DANDI:000129",
+   "dataset_version": "0.241017.1444",
+   "paper": "10.64898/2026.08.04.742876",
+   "paper_title": null,
+   "date": "2026-11-21",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-18"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/44913833754"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "du-2026",
+   "inputs": [
+    {
+     "what": "The paper's analysis code, ported into the entry's helper du2026.py (LINK and MC_RTT loaders, synthetic generator, fully nested, nonlinear-neural, block-penalty, nonlinear-context and evaluate_decoders_nested estimators, replacement and permutation sources, the confirmation selection rule). The synthetic claims are tested on data this generator produces (data elsewhere).",
+     "source": "https://github.com/gwkuqgfkqe/neural-decoder-context-audit at commit b042fbe1cda2ca5a353751c693d7c95f45de0456 (tag v1.0-jne-submission)"
+    },
+    {
+     "what": "The frozen confirmation manifest outputs/primary_analysis/link_confirmation_manifest.json, read to compare with the 20 sessions re-selected from the archive's metadata.",
+     "source": "https://github.com/gwkuqgfkqe/neural-decoder-context-audit at commit b042fbe1cda2ca5a353751c693d7c95f45de0456"
+    },
+    {
+     "what": "The release's estimator modules (types, estimators, specification_estimators, robustness_estimators, nested_estimators), fetched unchanged and run next to the ports on the same arrays (07_mc_maze.ipynb).",
+     "source": "https://github.com/gwkuqgfkqe/neural-decoder-context-audit at commit b042fbe1cda2ca5a353751c693d7c95f45de0456"
+    },
+    {
+     "what": "MC_Maze-medium, sub-Jenkins/sub-Jenkins_ses-medium_desc-train_behavior+ecephys.nwb, streamed; the data of the data-elsewhere claims maze-gain and rff-maze and of the MC_Maze part of estimator-family-nlb.",
+     "source": "10.48324/dandi.000139/0.220113.0408"
+    }
+   ],
+   "entry_title": "Context-conditional neural gain in motor-cortex decoding (Du et al. 2026)",
+   "summary": "The paper's main findings held up in this data. In the LINK finger-task sessions, motor-cortex spiking-band power improved velocity decoding beyond task phase, target geometry and recent finger position (mean gain 0.02009, positive in all 18 sessions), and pairing each trial with the neural activity of the closest matched trial turned the gain negative. Both results held in the 20 held-out confirmation sessions and in the MC_RTT and MC_Maze reaching datasets. The exact confirmation and MC_Maze values match only under the paper's own random split and seed, and many move outside tolerance under others, while the pattern holds. The synthetic calibration, alternative estimators and timing and capacity checks also reproduced.",
+   "description": "Tests the findings of Du, Lai, Hu and Ye (2026) on LINK (dandiset 001201, one macaque, 18 development and 20 confirmation sessions) and MC_RTT (dandiset 000129), and their matched-seed synthetic calibration. It ports the paper's released estimators and recomputes the context ladder, the fully nested gains with trial replacement and permutation controls, the practical magnitudes, the confirmation sessions, the nonlinear and estimator-family sensitivities, the temporal-offset and context-capacity analyses, the MC_RTT results and the MC_Maze results on dandiset 000139 (data elsewhere).",
+   "notebooks": [
+    {
+     "path": "01_synthetic.ipynb",
+     "title": "Matched-seed synthetic calibration",
+     "cells": {
+      "sanity": "9c47ee1a",
+      "claim:synthetic-template-null": "b628c2d6",
+      "claim:synthetic-signal-ordering": "aae59241",
+      "claim:synthetic-pair-breaking": "6f821015"
+     },
+     "executed": "notebooks/du-2026/01_synthetic.html"
+    },
+    {
+     "path": "02_link_development.ipynb",
+     "title": "LINK development sessions (context ladder, fully nested gains, controls)",
+     "cells": {
+      "sanity": "8aa2a044",
+      "claim:link-development-sample": "4508ab1c",
+      "claim:link-neural-only-r2": "1b80e9f1",
+      "claim:link-context-ladder-gain": "7ec638f2",
+      "claim:link-context-only-r2": "8215b863",
+      "claim:link-phase-only-replacement": "61ad5a20",
+      "claim:link-task-contrast-by-context": "0dbacfca",
+      "claim:nested-geometry-gain": "1d04f7c8",
+      "claim:nested-history-gain": "b10b323d",
+      "claim:nested-replacement-negative": "4ebd1395",
+      "claim:replacement-source-diagnostics": "a11243c9",
+      "claim:permutation-negative": "948f2ba6",
+      "claim:replacement-penalty-distance": "f01c8c87",
+      "claim:replacement-ranks-lower": "b865c68e",
+      "claim:practical-mse-reduction": "93629faa",
+      "claim:representative-trial": "d3a1d691",
+      "claim:split-seed-stability": "19a0f252",
+      "claim:rff-link": "cb5f03bb"
+     },
+     "executed": "notebooks/du-2026/02_link_development.html"
+    },
+    {
+     "path": "03_link_estimators.ipynb",
+     "title": "LINK estimator families",
+     "cells": {
+      "sanity": "d3bd6297",
+      "claim:estimator-family-link": "4446e738"
+     },
+     "executed": "notebooks/du-2026/03_link_estimators.html"
+    },
+    {
+     "path": "04_link_temporal_capacity.ipynb",
+     "title": "LINK temporal offset and context capacity",
+     "cells": {
+      "sanity": "ed58c7e9",
+      "claim:temporal-offset": "6fd0d5fe",
+      "claim:context-capacity-contrast": "06f87d1c"
+     },
+     "executed": "notebooks/du-2026/04_link_temporal_capacity.html"
+    },
+    {
+     "path": "05_link_confirmation.ipynb",
+     "title": "LINK confirmation sessions",
+     "cells": {
+      "sanity": "0d3752da",
+      "claim:confirm-geometry-gain": "5bfca429",
+      "claim:confirm-history-contraction": "d9887975",
+      "claim:confirm-replacement": "c60347af",
+      "claim:confirm-table1-values": "895329f4"
+     },
+     "executed": "notebooks/du-2026/05_link_confirmation.html"
+    },
+    {
+     "path": "06_mc_rtt.ipynb",
+     "title": "MC_RTT",
+     "cells": {
+      "sanity": "044ce9c3",
+      "claim:rtt-data": "243e6aed",
+      "claim:rtt-gain": "998354b9",
+      "claim:rff-rtt": "84a88596",
+      "claim:estimator-family-nlb": "b9d3ba1c"
+     },
+     "executed": "notebooks/du-2026/06_mc_rtt.html"
+    },
+    {
+     "path": "07_mc_maze.ipynb",
+     "title": "MC_Maze, and the ports next to the release's code",
+     "cells": {
+      "sanity": "094ad0f6",
+      "claim:maze-gain": "a87c2013",
+      "claim:rff-maze": "df0d63ab"
+     },
+     "executed": "notebooks/du-2026/07_mc_maze.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "synthetic-template-null",
+     "statement": "In the matched-seed synthetic calibration, the template-only regime (no trial signal in the neural features) gave a median context-conditional neural gain of about zero (-0.0000023, range -0.0000588 to 0.0000248 over ten seeds).",
+     "source": "Results 2.2, paragraph 2; Figure 2a",
+     "quote": "The template-only median context-conditional neural gain was -0.0000023 (range, -0.0000588 to 0.0000248; Figure 2)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "01_synthetic.ipynb",
+     "output": "claim:synthetic-template-null",
+     "notes": "Template-only median gain -0.0000023 over seeds 20260726 to 20260735, median absolute gain 0.0000092 (criterion below 0.03), range -0.0000588 to 0.0000248, as in the paper. The ten seeds shifted by 1000, 2000, 3000 and 4000 give medians of -0.0000040 to -0.0000168.",
+     "deviations": [
+      "The data are generated by a port of the paper's synthetic.py (commit b042fbe) with the parameters of run_synthetic_calibration.py, which match Methods 4.8; no dataset is involved."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's code, github.com/gwkuqgfkqe/neural-decoder-context-audit tag v1.0-jne-submission (commit b042fbe), src/neural_evidence/synthetic.py and scripts/run_synthetic_calibration.py",
+     "proposed": null
+    },
+    {
+     "claim": "synthetic-signal-ordering",
+     "statement": "Weak and strong trial-signal regimes gave median gains of 0.2245 and 0.3736, and the three regime medians were strictly ordered (template-only, weak, strong).",
+     "source": "Results 2.2, paragraph 2; Figure 2a",
+     "quote": "Weak and strong regimes yielded median gains of 0.2245 and 0.3736, respectively. The medians were strictly ordered for all three regimes.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "01_synthetic.ipynb",
+     "output": "claim:synthetic-signal-ordering",
+     "notes": "Weak and strong medians 0.22451 and 0.37360, template-only -0.0000023, strictly increasing. The four shifted seed sets give weak 0.21996 to 0.22321 and strong 0.37035 to 0.37368, all ordered and within tolerance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's code, github.com/gwkuqgfkqe/neural-decoder-context-audit tag v1.0-jne-submission (commit b042fbe), src/neural_evidence/synthetic.py",
+     "proposed": null
+    },
+    {
+     "claim": "synthetic-pair-breaking",
+     "statement": "In the strong synthetic regime, correct-pair gain exceeded nearest source-context replacement and the mean of 100 within-condition permutations for 10 of 10 seeds; replacement and permutation means were -0.3486 and -0.3663.",
+     "source": "Results 2.2, paragraph 2; Figure 2b",
+     "quote": "In the strong regime, correct-pair gain exceeded nearest replacement and the mean of 100 within-condition test-trial permutations for 10/10 seeds. Nearest replacement produced a mean gain of -0.3486; the permutation mean was -0.3663.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "01_synthetic.ipynb",
+     "output": "claim:synthetic-pair-breaking",
+     "notes": "In the strong regime correct-pair gain exceeds nearest replacement and the mean of 100 permutations for 10 of 10 seeds; mean replacement gain -0.3486, mean permutation gain -0.3663. The shifted seed sets give 10 of 10 each, replacement means -0.3514 to -0.3782 and permutation means -0.3619 to -0.3673, all within tolerance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's code, github.com/gwkuqgfkqe/neural-decoder-context-audit tag v1.0-jne-submission (commit b042fbe), src/neural_evidence/synthetic.py",
+     "proposed": null
+    },
+    {
+     "claim": "link-development-sample",
+     "statement": "The LINK development set is the nine dates with both a CO and an RD session, 18 sessions and 6,750 usable trials from one macaque, with 375 usable trials in every analyzed session.",
+     "source": "Results 2.3, paragraph 1; Methods 4.2, LINK paragraph",
+     "quote": "We analyzed all nine LINK dates containing both center-out (CO) and random-target (RD) sessions... 18 sessions and 6,750 trials from one macaque",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:link-development-sample",
+     "notes": "The nine dates with more than one asset each hold one CO and one RD session (task from the NWB identifier, which agrees with the trials table's target_style). All 18 sessions have 375 trials and all 375 are usable under the window rule of link.py; one subject (sub-Monkey-N).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-neural-only-r2",
+     "statement": "In the LINK development sessions, neural-only Ridge decoding of finger velocity from 160 ms of SBP had held-out R2 of 0.308 in CO and 0.313 in RD, the same at every rung of the context ladder.",
+     "source": "Results 2.3, paragraph 3; Abstract, Main results",
+     "quote": "Neural-only performance remained at 0.308/0.313 for CO/RD",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:link-neural-only-r2",
+     "notes": "Held-out neural-only R2 from 160 ms of SBP, CO 0.3077 and RD 0.3129. Under split seeds plus 1000 to 4000 the task means are 0.2969 to 0.3116 (CO) and 0.3125 to 0.3248 (RD), all within tolerance. X, Y and the split do not change across the ladder, so one fit per session serves every rung, as the paper says.",
+     "deviations": [
+      "The neural-only penalty is chosen as in the release's evaluate_decoders_nested (inner 80/20 split, random state seed plus 11), the choice the claims file names; no release script computes this R2."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-context-ladder-gain",
+     "statement": "In LINK with SBP, mean context-conditional neural gain fell along the context ladder, from 0.3012/0.3125 (CO/RD) beyond phase alone to 0.0657/0.0502 beyond direction by phase, 0.0443/0.0332 beyond additive geometry, 0.0193/0.0209 beyond geometry by phase, and 0.0077/0.0098 beyond geometry by phase plus measured-output history.",
+     "source": "Results 2.3, paragraph 3; Figure 3b",
+     "quote": "With phase-only context, mean SBP gain was 0.3012 in CO and 0.3125 in RD (Figure 3). Direction by phase reduced it to 0.0657/0.0502; additive geometry to 0.0443/0.0332; geometry by phase to 0.0193/0.0209; and measured-output history to 0.0077/0.0098.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:link-context-ladder-gain",
+     "notes": "All ten task means equal the paper's at its precision and both tasks fall at every step. The gain is positive in 18 of 18 sessions on the first four rungs and 17 of 18 with history.",
+     "deviations": [
+      "The protocol's five-seed sensitivity was run for the geometry-by-phase and plus-history rungs (in other claims), not for the phase-only, direction-by-phase and additive-geometry rungs, to keep the notebook within its time limit."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-context-only-r2",
+     "statement": "Context-only R2 in LINK rose along the ladder from 0.0084/0.0055 (CO/RD) with phase alone to 0.6617/0.6839 with geometry by phase plus measured-output history.",
+     "source": "Results 2.3, paragraph 3; Figure 3a",
+     "quote": "Context-only R2 rose from 0.0084/0.0055 to 0.6617/0.6839.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:link-context-only-r2",
+     "notes": "Context-only R2 0.0084/0.0055 (CO/RD) with phase only (below 0.02, and equal to the paper's values), 0.6617/0.6839 with history. The middle rungs give 0.4064/0.4524, 0.4621/0.5175 and 0.5702/0.5999.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-phase-only-replacement",
+     "statement": "With phase-only context, the mean nearest-replacement gain in RD stayed positive (0.10498).",
+     "source": "Results 2.3, paragraph 4",
+     "quote": "The phase-only RD replacement gain remained positive (0.10498).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:link-phase-only-replacement",
+     "notes": "Mean RD replacement gain under phase only 0.10498, positive in 8 of 9 RD sessions; CO mean -0.01087. All source distances tie under phase only, and the tie rule picks the source.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-task-contrast-by-context",
+     "statement": "The descriptive RD-minus-CO gain contrast changed with the context; it was positive under phase only, negative under direction by phase and additive geometry, near zero under geometry by phase, and small positive after measured-output history.",
+     "source": "Results 2.3, paragraph 5; Figure 3c",
+     "quote": "It was positive under phase only, negative under direction and additive geometry, near zero under geometry-by-phase, and small positive after measured-output history.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:link-task-contrast-by-context",
+     "notes": "Mean RD minus CO over nine dates is 0.0113 (phase only), -0.0155 (direction by phase), -0.0110 (additive geometry), 0.0015 (geometry by phase) and 0.0021 (plus history). Geometry by phase is near zero under both readings (date-bootstrap interval -0.0035 to 0.0077 contains zero; its size is below the two negative rungs). The phase-only and history intervals also contain zero (-0.0396 to 0.0503 and -0.0015 to 0.0067); the criterion judges the signs on the means. The interval bounds change by at most 0.0018 over five generators.",
+     "deviations": [
+      "The bootstrap generator is seeded from the claim (protocol), not with the release's 20260802."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "nested-geometry-gain",
+     "statement": "With geometry-by-phase context, fully nested mean gain over the 18 LINK sessions was 0.02009 for SBP (18 of 18 sessions positive) and 0.01155 for TCR (17 of 18 positive).",
+     "source": "Results 2.4, paragraph 1; Table 1; Figure 4a",
+     "quote": "With geometry-by-phase context, mean gain was 0.02009 for SBP (18/18 sessions positive) and 0.01155 for threshold-crossing rate (TCR; 17/18 positive). Date-clustered 95% intervals were [0.01586, 0.02404] and [0.00709, 0.01594], respectively.",
+     "statistics": [
+      {
+       "about": "SBP mean gain, geometry by phase",
+       "test": "date-clustered bootstrap interval",
+       "ci": {
+        "level": 0.95,
+        "low": 0.01586,
+        "high": 0.02404
+       },
+       "n": "18 sessions on nine dates"
+      },
+      {
+       "about": "TCR mean gain, geometry by phase",
+       "test": "date-clustered bootstrap interval",
+       "ci": {
+        "level": 0.95,
+        "low": 0.00709,
+        "high": 0.01594
+       },
+       "n": "18 sessions on nine dates"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:nested-geometry-gain",
+     "notes": "SBP mean 0.02009 with 18 of 18 positive, TCR 0.01155 with 17 of 18 positive; date-clustered intervals 0.01586 to 0.02401 and 0.00711 to 0.01591 (paper 0.01586 to 0.02404 and 0.00709 to 0.01594). Under split seeds plus 1000 to 4000 the SBP mean is 0.01795 to 0.01918, 18 of 18 positive each; TCR was not re-run under other seeds.",
+     "deviations": [
+      "Seed sensitivity was run for SBP only."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "nested-history-gain",
+     "statement": "Adding lag-matched measured-output history reduced fully nested mean gain to 0.00873 for SBP (17 of 18 sessions positive) and 0.00420 for TCR (16 of 18 positive).",
+     "source": "Results 2.4, paragraph 1; Table 1",
+     "quote": "Adding lag-matched measured-output history reduced the means to 0.00873 for SBP and 0.00420 for TCR; 17/18 and 16/18 sessions were positive.",
+     "statistics": [
+      {
+       "about": "SBP mean gain, plus measured-output history",
+       "test": "date-clustered bootstrap interval",
+       "ci": {
+        "level": 0.95,
+        "low": 0.006,
+        "high": 0.01096
+       },
+       "n": "18 sessions on nine dates"
+      },
+      {
+       "about": "TCR mean gain, plus measured-output history",
+       "test": "date-clustered bootstrap interval",
+       "ci": {
+        "level": 0.95,
+        "low": 0.00217,
+        "high": 0.0063
+       },
+       "n": "18 sessions on nine dates"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:nested-history-gain",
+     "notes": "SBP 0.00873 with 17 of 18 positive, TCR 0.00420 with 16 of 18 positive, each below its geometry-by-phase mean; intervals 0.00599 to 0.01103 and 0.00214 to 0.00629. Under the four other seeds the SBP mean is 0.00742 to 0.00829 with 17 or 18 positive, within tolerance.",
+     "deviations": [
+      "Seed sensitivity was run for SBP only."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "nested-replacement-negative",
+     "statement": "Nearest source-context replacement made all four LINK mean gains negative, -0.00714 and -0.00407 for SBP (geometry by phase, plus history) and -0.00905 and -0.00537 for TCR.",
+     "source": "Results 2.4, paragraph 2; Table 1; Figure 4b",
+     "quote": "Nearest source-context replacement changed the four mean gains to -0.00714, -0.00407, -0.00905, and -0.00537, respectively.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:nested-replacement-negative",
+     "notes": "All four means negative and within tolerance (-0.00714, -0.00407, -0.00905, -0.00537); 14 to 16 of 18 sessions negative per configuration. Under split seeds plus 1000 to 4000 the SBP means are -0.00887, -0.00714, -0.00831, -0.00776 (geometry) and -0.00496, -0.00478, -0.00428, -0.00428 (history); both SBP values are outside their 10% tolerances under plus 1000, the history value under plus 2000, the geometry value under plus 3000, and neither under plus 4000. Under the first three of these at most three of four values could be within, and the outcome there would be partially reproduced (TCR was not re-run). All are still negative.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "replacement-source-diagnostics",
+     "statement": "For primary SBP geometry, every test trial had at least five eligible same-condition sources, the median over sessions of the maximum source reuse was three targets and the maximum over sessions four, and self-replacement reproduced the correct-pair predictions exactly.",
+     "source": "Results 2.4, paragraph 2",
+     "quote": "For primary SBP geometry, every target had at least five eligible same-condition sources; the median session maximum source reuse was three targets and the maximum over sessions was four. Self-replacement reproduced correct-pair predictions exactly to numerical precision.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:replacement-source-diagnostics",
+     "notes": "Minimum eligible same-condition sources 5 (sessions 2021-10-15 CO and 2022-08-10 CO); median of session maximum reuse 3, maximum 4; largest self-replacement difference 0.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "permutation-negative",
+     "statement": "The mean gain of 100 within-condition whole-trial permutations was negative in every LINK session, with an across-session mean of -0.0142.",
+     "source": "Results 2.4, paragraph 2",
+     "quote": "The mean of 100 within-condition whole-trial permutations was negative in every session (across-session mean, -0.0142).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:permutation-negative",
+     "notes": "Reading (a), 18 SBP geometry sessions, 18 of 18 negative, mean -0.01418, range -0.01916 to -0.00752. Reading (b), with TCR, 36 of 36 negative, mean -0.01387, also within tolerance. Four other permutation generators give -0.01405 to -0.01426 under reading (a), every session negative.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "replacement-penalty-distance",
+     "statement": "The replacement penalty had no consistent rank relation to the nearest-source context distance across sessions.",
+     "source": "Results 2.4, paragraph 2",
+     "quote": "Replacement penalty had no consistent rank relation to nearest-source distance across sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:replacement-penalty-distance",
+     "notes": "Session Spearman correlations between nearest-source distance and replacement penalty are positive in 8 and negative in 10 of 18 sessions (-0.089 to 0.134); mean 0.0058, date-bootstrap interval -0.0204 to 0.0301, containing zero under all five generators. Both readings hold.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "replacement-ranks-lower",
+     "statement": "Replacement with the first to fifth nearest sources and with a random same-condition source all lowered the across-session mean gain.",
+     "source": "Results 2.4, paragraph 2 (values in the supplement, not available)",
+     "quote": "Ranks one through five and a random same-condition source, reported in the supplement, all lowered the across-session mean.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:replacement-ranks-lower",
+     "notes": "SBP correct-pair mean 0.02009; ranks one to five give -0.00714, -0.00868, -0.01047, -0.01138, -0.01167, random same-condition sources -0.01382 to -0.01433 over five draws. TCR 0.01155 against -0.00905 to -0.01208 (ranks) and -0.01275 to -0.01411 (random). All lower under both readings.",
+     "deviations": [
+      "The random source is a uniform draw among the other same-condition test trials, with generators seeded from the claim (a standard choice the claims file names); five draws are shown."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "practical-mse-reduction",
+     "statement": "In LINK, SBP geometry-by-phase gain reduced context-model MSE by 4.92% on average (mean context RMSE 0.01407 to 0.01372), adding measured-output history reduced the remaining MSE by 2.72%, and the TCR reductions were 2.83% and 1.31%.",
+     "source": "Results 2.4, paragraph 3; Table 1; Figure 8c",
+     "quote": "In LINK, SBP geometry reduced MSE by 4.92% on average, from mean context RMSE 0.01407 to 0.01372 in the released numerical velocity units per 20 ms bin. Adding measured-output history reduced the remaining MSE by 2.72%. Corresponding TCR reductions were 2.83% and 1.31%.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:practical-mse-reduction",
+     "notes": "Mean percentage MSE reductions 4.92 (SBP geometry), 2.72 (SBP history), 2.83 (TCR geometry), 1.31 (TCR history); SBP mean context RMSE 0.01407 and correct-pair RMSE 0.01372. Six of six within tolerance. SBP geometry session reductions range 0.61 to 7.99%.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "representative-trial",
+     "statement": "The prespecified rule for the illustrative trajectory (session with median primary SBP geometry gain, then the held-out trial with median context-minus-correct trial MSE improvement) selects 2022-09-21 RD, trial 123.",
+     "source": "Figure 8a and legend; Methods 4.9, last paragraph",
+     "quote": "Prespecified median-improvement trial... 2022-09-21 RD, trial 123",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:representative-trial",
+     "notes": "The ninth of 18 sessions in gain order (the lower middle, as build_submission_figures.py figure8 takes it) is 2022-09-21 RD, and its median-improvement held-out trial is 123 as the trials table row (reading a) and as the usable-trial index (reading b); under reading (c) it is at position 41 (from 0) of the 113 held-out trials in trial order. The other session reading, the earlier date of the two middle sessions, gives 2021-10-15 RD, trial 260.",
+     "deviations": [
+      "The match holds under the lower-middle reading of the session tie only; the criterion names both readings, and the release's figure code uses the lower middle."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "split-seed-stability",
+     "statement": "The fully nested SBP geometry-by-phase result was stable across three whole-trial split and refitting seeds, with CO means 0.0193, 0.0180 and 0.0158 and RD means 0.0209, 0.0223 and 0.0201.",
+     "source": "Results 2.7, paragraph 2; Figure 7b",
+     "quote": "CO means were 0.0193, 0.0180, and 0.0158; RD means were 0.0209, 0.0223, and 0.0201.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:split-seed-stability",
+     "notes": "CO means 0.0193, 0.0180, 0.0158 and RD means 0.0209, 0.0223, 0.0201 under seeds 20260726, 27 and 28; six of six within tolerance and positive.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rff-link",
+     "statement": "In LINK SBP, nonlinear-neural geometry-by-phase means were positive for both tasks under every map (combined range 0.00310 to 0.00404), and the measured-output-history mean ranged from 0.00111 to 0.00142.",
+     "source": "Results 2.6, paragraph 4; Figure 6c; Figure 5a",
+     "quote": "In LINK SBP, nonlinear-neural geometry means were positive for both tasks under every map (combined range, 0.00310-0.00404), and the measured-output-history mean ranged from 0.00111 to 0.00142.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "02_link_development.ipynb",
+     "output": "claim:rff-link",
+     "notes": "Reading (a), 18-session geometry means 0.00361, 0.00404 and 0.00310 for the three map seeds, history means 0.00111, 0.00142 and 0.00121, all inside the widened ranges; CO and RD geometry means positive under every map (0.00269 to 0.00417). Reading (b), the six task means, does not hold (0.00269 is below the widened bound 0.00279).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "estimator-family-link",
+     "statement": "Separately penalized context and neural blocks and nonlinear context random features retained positive LINK task means, with magnitudes that differed between estimator families.",
+     "source": "Results 2.6, paragraph 5; Figure 5a",
+     "quote": "Separately penalized context and neural blocks and nonlinear context random features retained positive LINK task means",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "03_link_estimators.ipynb",
+     "output": "claim:estimator-family-link",
+     "notes": "Under block penalties and nonlinear context every CO and RD mean (reading a) and every 18-session mean (reading b) is positive for SBP and TCR, geometry by phase and plus history. Nonlinear-context 18-session means 0.01733, 0.00663, 0.00949 and 0.00274 against fully nested 0.02009, 0.00873, 0.01155 and 0.00420; block-penalty means close to the fully nested ones (about 0.019, 0.0086, 0.011 and 0.0041). The lowest task mean is 0.00075 (TCR history, CO, nonlinear context). Values from the run in the executed notebook.",
+     "deviations": [
+      "The block Ridge is solved exactly (Cholesky) where the release uses lsqr with tolerance 1e-6, to fit the time limit. On one session (2021-10-15 CO, SBP, geometry by phase) the two solvers choose the same penalties and give gains of 0.0261224 and 0.0261222 (03_link_estimators.ipynb); the other sessions were not run under lsqr.",
+      "Reading (b) of the nonlinear context, every setting of Methods 4.6 (27 combinations), was not run; estimated about 9 h on four processes. The outcome rests on reading (a), the release's setting."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "temporal-offset",
+     "statement": "Shifting both the neural and the measured-output histories back by 40, 80 and 120 ms with the behavioral window fixed reduced the small output-history-conditional gain and changed the RD direction at intermediate offsets.",
+     "source": "Results 2.7, paragraph 1; Figure 7a",
+     "quote": "Holding the behavioral window fixed and shifting both neural and measured-output histories to offsets 0, 40, 80, and 120 ms reduced the small output-history-conditional gain and changed the RD direction at intermediate offsets (Figure 7).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "04_link_temporal_capacity.ipynb",
+     "output": "claim:temporal-offset",
+     "notes": "Reading (i), fully nested, CO 0.00382, 0.00134, 0.00104, 0.00055 and RD 0.00623, 0.00110, 0.00043, 0.00038 at 0, 40, 80 and 120 ms; RD minus CO is 0.00241 at 0 ms and -0.00024 and -0.00061 at 40 and 80 ms (RD-change reading b holds, reading a does not). Reading (ii), evaluate_decoders_nested, CO 0.00400 to 0.00058 and RD 0.00678 to 0.00000 from 0 to 120 ms, RD -0.00032 at 80 ms, both RD readings hold. The reduction holds under both estimators.",
+     "deviations": [
+      "One window start, 280 ms after the start bin, for every offset (the claims file's reading of holding the window fixed); 367 to 375 trials per session are usable there."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "context-capacity-contrast",
+     "statement": "Adding quadratic geometry to the context changed the descriptive RD-minus-CO gain contrast, and the richest quadratic-history context gave a small positive contrast for both SBP and TCR.",
+     "source": "Results 2.7, paragraph 2; Figure 7c",
+     "quote": "Adding quadratic geometry changed the descriptive RD-minus-CO contrast, and the richest quadratic-history specification yielded a small positive contrast for both SBP and TCR.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "04_link_temporal_capacity.ipynb",
+     "output": "claim:context-capacity-contrast",
+     "notes": "Reading (i), fully nested, RD minus CO is 0.00152 (linear geometry), 0.00400 (quadratic), 0.00214 (linear plus history), 0.00374 (quadratic plus history) for SBP and 0.00227, 0.00495, 0.00181, 0.00275 for TCR. Quadratic plus history positive for both; for TCR the quadratic interval (0.00079 to 0.00915) excludes zero and the linear one (-0.00246 to 0.00686) does not. For SBP the quadratic contrast keeps its sign and its interval contains zero. Reading (ii) gives the same pattern. Whether each interval excludes zero is the same under five bootstrap generators.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "confirm-geometry-gain",
+     "statement": "In the 20 untouched LINK confirmation sessions, SBP geometry-by-phase gain was positive in all 20 and averaged 0.02158 (CO 0.02104, RD 0.02213).",
+     "source": "Results 2.5, paragraph 2; Table 1; Figure 6a",
+     "quote": "Under geometry-by-phase, gain was positive in 20/20 sessions and averaged 0.02158 (CO, 0.02104; RD, 0.02213).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "05_link_confirmation.ipynb",
+     "output": "claim:confirm-geometry-gain",
+     "notes": "The selection rule re-run on the archive's metadata picks the 20 assets of the frozen manifest. All 20 gains positive, mean 0.02158 (CO 0.02104, RD 0.02213), range 0.00593 to 0.04001; the paper's gate passes. Under split seeds plus 1000 to 4000 the combined mean is 0.01478, 0.01699, 0.02070 and 0.01843 with 19 or 20 positive; three of the four fall outside the 10% tolerance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "confirm-history-contraction",
+     "statement": "In the confirmation sessions, adding measured-output history reduced the combined mean gain to 0.00755 (CO 0.00670, RD 0.00840), with 19 of 20 sessions positive.",
+     "source": "Results 2.5, paragraph 2; Table 1; Figure 6a",
+     "quote": "Measured-output history reduced the combined mean to 0.00755 (CO, 0.00670; RD, 0.00840), with 19/20 sessions positive.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "05_link_confirmation.ipynb",
+     "output": "claim:confirm-history-contraction",
+     "notes": "Combined mean 0.00755 (CO 0.00670, RD 0.00840), 19 of 20 positive (2023-03-10 RD is -0.00128), below the geometry mean 0.02158. Under the four other seeds the combined mean is 0.00335, 0.00475, 0.00818 and 0.00600, three outside the tolerance, each below that seed's geometry mean.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "confirm-replacement",
+     "statement": "In the confirmation sessions, nearest-replacement gain averaged -0.00771 under geometry by phase, and correct-pair gain exceeded replacement gain in all 20 sessions and in both task means.",
+     "source": "Results 2.5, paragraph 2; Figure 6b",
+     "quote": "Nearest source-context replacement averaged -0.00771 under geometry, and correct-pair gain exceeded replacement in 20/20 sessions and in both task means.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "05_link_confirmation.ipynb",
+     "output": "claim:confirm-replacement",
+     "notes": "Mean replacement gain -0.00771; correct-pair gain above replacement in 20 of 20 sessions and in both task means (CO 0.02104 against -0.00292, RD 0.02213 against -0.01250). Under the four other seeds the replacement mean is -0.01963, -0.00902, -0.00938 and -0.01515, each outside the tolerance; the correct-pair gain exceeds replacement in 20, 19, 20 and 20 of 20 sessions and in both task means under each.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "confirm-table1-values",
+     "statement": "Table 1 gives, for the confirmation sessions, a replacement gain of -0.00498 with measured-output history and MSE reductions of 4.76% (geometry by phase) and 2.05% (plus history).",
+     "source": "Table 1, rows \"LINK confirm SBP\"",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Numbers only in Table 1; no sentence of the text states them.",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "05_link_confirmation.ipynb",
+     "output": "claim:confirm-table1-values",
+     "notes": "Plus-history replacement gain -0.00498, MSE reductions 4.761% and 2.047%. Under the four other seeds these are -0.01462 to -0.00467, 3.43 to 4.58% and 1.15 to 2.21%, mostly outside tolerance.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rtt-data",
+     "statement": "The MC_RTT training file holds 1,080 fixed analysis blocks, 130 units, finger velocity, cursor position and target position, with a release split of 810 train and 270 validation blocks.",
+     "source": "Methods 4.2, MC_RTT paragraph; Table 2",
+     "quote": "We used sub-Indy_desc-train_behavior+ecephys.nwb from Dandiset 000129 version 0.241017.1444... 1,080 fixed analysis blocks, 130 units, finger velocity, cursor position, and target position. Release labels provide 810/270 train/validation blocks",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "06_mc_rtt.ipynb",
+     "output": "claim:rtt-data",
+     "notes": "1,080 blocks of 600 ms, all kept (21 bins each), 130 units, split labels 810 train and 270 val; finger_vel, cursor_pos and target_pos present.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rtt-gain",
+     "statement": "In MC_RTT, target plus lag-matched cursor-position history gave context-only R2 of 0.6031, and fully nested neural gain beyond it was 0.06846 (conditional interval 0.05371 to 0.08478), context RMSE falling from 39.78 to 36.19 (a 17.25% MSE reduction), with component gains 0.0836 and 0.0513 and replacement gain -0.02297.",
+     "source": "Results 2.6, paragraph 3; Table 1; Figure 4c",
+     "quote": "In MC_RTT, target plus lag-matched measured cursor-position history achieved context-only R2 = 0.6031. Fully nested neural gain was 0.06846 (conditional interval, [0.05371, 0.08478]); context RMSE decreased from 39.78 to 36.19, a 17.25% reduction in MSE. Component gains were 0.0836 and 0.0513. Replacement produced -0.02297.",
+     "statistics": [
+      {
+       "about": "MC_RTT fully nested gain",
+       "test": "condition-stratified whole-trial bootstrap interval, conditional on one session and fitted model",
+       "ci": {
+        "level": 0.95,
+        "low": 0.05371,
+        "high": 0.08478
+       },
+       "n": "270 validation blocks"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "06_mc_rtt.ipynb",
+     "output": "claim:rtt-gain",
+     "notes": "All eight values equal the paper's at its precision, and so does the conditional whole-trial interval, 0.05371 to 0.08478 (500 resamples, the release script's default). Under estimator seeds plus 1000 to 4000 (the release split is fixed) the gain is 0.06821 to 0.06855 and the replacement gain -0.02300 to -0.02332.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rff-rtt",
+     "statement": "Under three prespecified nonlinear-neural random-feature maps, MC_RTT gain stayed positive (0.01491 to 0.01685).",
+     "source": "Results 2.6, paragraph 4; Figure 6c",
+     "quote": "whereas MC_RTT remained positive (0.01491-0.01685)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "06_mc_rtt.ipynb",
+     "output": "claim:rff-rtt",
+     "notes": "Map seeds 20260802, 20260803, 20260804 give 0.01685, 0.01501 and 0.01491, all positive and inside the range; replacement under the maps -0.00547 to -0.00931.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "estimator-family-nlb",
+     "statement": "Under the separate-block and nonlinear-context estimators, MC_RTT gain remained positive while MC_Maze remained near zero.",
+     "source": "Results 2.6, paragraph 5; Figure 5b",
+     "quote": "MC_Maze remained near zero, and MC_RTT remained positive",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "06_mc_rtt.ipynb",
+     "output": "claim:estimator-family-nlb",
+     "notes": "MC_RTT gain 0.0690 under block penalties and 0.04619 under nonlinear context (g chosen 0.25), both positive, which is what the criterion tests. The MC_Maze part, which the criterion reports without making the outcome depend on it, holds on DANDI:000139 (07_mc_maze.ipynb) with block-penalty gain 0.000455 and nonlinear-context gain -0.000243, both of absolute size below 0.01.",
+     "deviations": [
+      "Block Ridge solved exactly in place of lsqr (as in estimator-family-link); nonlinear context under the release's setting only."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "maze-gain",
+     "statement": "In MC_Maze, a condition-by-phase template with geometry gave context-only R2 of 0.9053, and the fully nested neural gain beyond it was 0.00051 (conditional interval 0.00026 to 0.00076), a 0.54% MSE reduction (RMSE 81.76 to 81.53), with replacement gain -0.00004.",
+     "source": "Results 2.6, paragraph 2; Table 1; Figure 4c",
+     "quote": "a condition-by-phase template and geometry achieved context-only R2 = 0.9053. Fully nested neural gain was 0.00051 (conditional 95% whole-trial interval, [0.00026, 0.00076]), corresponding to a 0.54% reduction in context-model MSE and RMSE 81.76 to 81.53",
+     "statistics": [
+      {
+       "about": "MC_Maze fully nested gain",
+       "test": "condition-stratified whole-trial bootstrap interval, conditional on one session and fitted model",
+       "ci": {
+        "level": 0.95,
+        "low": 0.00026,
+        "high": 0.00076
+       },
+       "n": "62 validation trials"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "07_mc_maze.ipynb",
+     "output": "claim:maze-gain",
+     "notes": "On DANDI:000139 version 0.220113.0408 (data elsewhere; 250 trials, 27 conditions, 152 units, 188/62 release split, 258 context features), estimator seed 20260726 gives context-only R2 0.90533, fully nested gain 0.000513, MSE reduction 0.542% (RMSE 81.76 to 81.53) and replacement gain -0.0000371, all four within tolerance; the conditional interval is 0.00026 to 0.00076, as in the paper. The release's own estimator code gives the same values on the same arrays. Under estimator seeds plus 1000 to 4000 the gain is -0.000138, 0.000479, 0.000528 and 0.000509 and the replacement gain -0.0027212, 0.0000294, -0.0000190 and 0.0000075; the replacement gain is outside its tolerance under each of these seeds and the gain under the first, and the replacement gain changes sign under two of them. The replacement gain's tolerance (0.000004) is narrower than the rounding of the paper's printed -0.00004; this is asked of a reader in questions/du-2026.yaml.",
+     "deviations": [
+      "Assumption. The criterion states no reproduction rule (\"Not on this attempt's datasets\"). The rule used is that of rtt-gain, the claim of the same Table 1 on the other NLB dataset, every expected value within its tolerance. The outcome rests on this rule; the values under it and under other estimator seeds are printed in 07_mc_maze.ipynb.",
+      "Tested in the revision after verification round 1; the first version of the attempt had blocked it without reading the file. The loader is a port of the release's mc_maze.py (template context, neural_lead_ms 80, as run_primary_analyses.py _run_nlb calls it).",
+      "The conditional interval uses 500 bootstrap resamples, the default of run_primary_analyses.py; the paper gives no count."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000139 version 0.220113.0408, sub-Jenkins_ses-medium_desc-train_behavior+ecephys.nwb",
+     "proposed": null
+    },
+    {
+     "claim": "rff-maze",
+     "statement": "Under the three nonlinear-neural maps, MC_Maze gain stayed practically zero (0.000045 to 0.000139).",
+     "source": "Results 2.6, paragraph 4; Figure 6c",
+     "quote": "MC_Maze remained practically zero (gain range, 0.000045-0.000139)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "07_mc_maze.ipynb",
+     "output": "claim:rff-maze",
+     "notes": "Map seeds 20260802, 20260803 and 20260804 give MC_Maze gains 0.0000448, 0.0000772 and 0.0001386 (the release's code gives the same), so the lowest and highest are within tolerance. Under estimator seeds plus 1000 to 4000 the lowest of the three is 0.0000263, 0.0000360, 0.0000624 and 0.0000384, outside its tolerance under each, and the highest 0.0001194 to 0.0001387; every map gain stays positive.",
+     "deviations": [
+      "Tested in the revision after verification round 1, as maze-gain."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "DANDI:000139 version 0.220113.0408, sub-Jenkins_ses-medium_desc-train_behavior+ecephys.nwb",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The MC_RTT training file's behaviour series hold 15 missing (NaN) 20 ms bins, which no description mentions; none falls inside the 1,080 analysis blocks.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [
+      "000129"
+     ]
+    },
+    {
+     "kind": "other",
+     "statement": "Checks that passed. LINK holds nine dates with a CO and an RD session, 375 trials each, one subject, no session deposited twice, and SBP, TCR, position, velocity and trials on one clock (velocity decoding from SBP peaks at lag 0 in 16 of 18 sessions and 2 bins in 2). The paper's confirmation rule re-run on the archive's metadata gives its 20 sessions, each with 375 usable trials. MC_RTT holds 1,080 blocks, 130 units and the 810/270 split, and its finger velocity follows the derivative of cursor position at lag 0.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "severity": "none",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [
+      "001201",
+      "000129"
+     ]
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-21",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebooks (01 to 06) with the conclusion cells and the summaries removed, the helper module and the claims file, with the paper's full text under paper/. The verifier read the DANDI API for 000129, 001201 and 000139 and tested the helpers on synthetic inputs (interior ranks, octants, window and drop rule, neural, position and behaviour alignment, tie rule, permutations, gain, Spearman, date bootstrap, build_link_dataset feature counts). It found no leakage.",
+     "agreed": 33,
+     "of": 33,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-21",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full re-executed notebooks 01 to 07 with their conclusions and summaries, the helper module, the claims file, the README and the attempt record, with the paper under paper/ (transcripts/du-2026/verifier-2-report.md). No finding is rated critical; the verifier found the four minor ratings correct.",
+     "agreed": 33,
+     "of": 33,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "other",
+     "statement": "The paper says the NLB velocity unit fields and descriptions disagree (Limitations, Table 2 legend). In MC_RTT and in MC_Maze (hand_vel, cursor_pos) the series carry unit m/s or meters with conversion 0.001, so the stored values are mm/s and mm, as the descriptions say; the fields agree once the conversion is applied.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's released code, ported here, reproduces its reported values at their printed precision for almost every claim tested. The exceptions are the date-clustered intervals of nested-geometry-gain (0.02401 against 0.02404, 0.00711 to 0.01591 against 0.00709 to 0.01594), reading (b) of rff-link, the session tie of representative-trial (it matches under one reading only) and RD-change reading (a) of temporal-offset under the fully nested estimator. Run next to the ports on MC_Maze and on one LINK session, the release's estimator functions give identical values. The confirmation-set values are those of one outer split (seed 20260726); under four other split seeds the combined geometry-by-phase mean is 0.0148 to 0.0207 and the history mean 0.0034 to 0.0082, so the exact values reported rest on that split, while the qualitative pattern holds in each. The MC_Maze gain (0.00051) and replacement gain (-0.00004) likewise rest on the estimator seed, and under four others the gain is -0.00014 to 0.00053 and the replacement gain -0.0027 to 0.00003.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "du-2026",
+   "type": "reproduction",
+   "title": "Context-conditional neural gain in motor-cortex decoding (Du et al. 2026)",
+   "description": "Tests the findings of Du, Lai, Hu and Ye (2026) on LINK (dandiset 001201, one macaque, 18 development and 20 confirmation sessions) and MC_RTT (dandiset 000129), and their matched-seed synthetic calibration. It ports the paper's released estimators and recomputes the context ladder, the fully nested gains with trial replacement and permutation controls, the practical magnitudes, the confirmation sessions, the nonlinear and estimator-family sensitivities, the temporal-offset and context-capacity analyses, the MC_RTT results and the MC_Maze results on dandiset 000139 (data elsewhere).",
+   "datasets": [
+    "dandi:000129",
+    "dandi:000139",
+    "dandi:001201"
+   ],
+   "papers": [
+    "10.64898/2026.08.04.742876"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "01_synthetic.ipynb",
+     "title": "Matched-seed synthetic calibration",
+     "cells": {
+      "sanity": "9c47ee1a",
+      "claim:synthetic-template-null": "b628c2d6",
+      "claim:synthetic-signal-ordering": "aae59241",
+      "claim:synthetic-pair-breaking": "6f821015"
+     },
+     "executed": "notebooks/du-2026/01_synthetic.html"
+    },
+    {
+     "path": "02_link_development.ipynb",
+     "title": "LINK development sessions (context ladder, fully nested gains, controls)",
+     "cells": {
+      "sanity": "8aa2a044",
+      "claim:link-development-sample": "4508ab1c",
+      "claim:link-neural-only-r2": "1b80e9f1",
+      "claim:link-context-ladder-gain": "7ec638f2",
+      "claim:link-context-only-r2": "8215b863",
+      "claim:link-phase-only-replacement": "61ad5a20",
+      "claim:link-task-contrast-by-context": "0dbacfca",
+      "claim:nested-geometry-gain": "1d04f7c8",
+      "claim:nested-history-gain": "b10b323d",
+      "claim:nested-replacement-negative": "4ebd1395",
+      "claim:replacement-source-diagnostics": "a11243c9",
+      "claim:permutation-negative": "948f2ba6",
+      "claim:replacement-penalty-distance": "f01c8c87",
+      "claim:replacement-ranks-lower": "b865c68e",
+      "claim:practical-mse-reduction": "93629faa",
+      "claim:representative-trial": "d3a1d691",
+      "claim:split-seed-stability": "19a0f252",
+      "claim:rff-link": "cb5f03bb"
+     },
+     "executed": "notebooks/du-2026/02_link_development.html"
+    },
+    {
+     "path": "03_link_estimators.ipynb",
+     "title": "LINK estimator families",
+     "cells": {
+      "sanity": "d3bd6297",
+      "claim:estimator-family-link": "4446e738"
+     },
+     "executed": "notebooks/du-2026/03_link_estimators.html"
+    },
+    {
+     "path": "04_link_temporal_capacity.ipynb",
+     "title": "LINK temporal offset and context capacity",
+     "cells": {
+      "sanity": "ed58c7e9",
+      "claim:temporal-offset": "6fd0d5fe",
+      "claim:context-capacity-contrast": "06f87d1c"
+     },
+     "executed": "notebooks/du-2026/04_link_temporal_capacity.html"
+    },
+    {
+     "path": "05_link_confirmation.ipynb",
+     "title": "LINK confirmation sessions",
+     "cells": {
+      "sanity": "0d3752da",
+      "claim:confirm-geometry-gain": "5bfca429",
+      "claim:confirm-history-contraction": "d9887975",
+      "claim:confirm-replacement": "c60347af",
+      "claim:confirm-table1-values": "895329f4"
+     },
+     "executed": "notebooks/du-2026/05_link_confirmation.html"
+    },
+    {
+     "path": "06_mc_rtt.ipynb",
+     "title": "MC_RTT",
+     "cells": {
+      "sanity": "044ce9c3",
+      "claim:rtt-data": "243e6aed",
+      "claim:rtt-gain": "998354b9",
+      "claim:rff-rtt": "84a88596",
+      "claim:estimator-family-nlb": "b9d3ba1c"
+     },
+     "executed": "notebooks/du-2026/06_mc_rtt.html"
+    },
+    {
+     "path": "07_mc_maze.ipynb",
+     "title": "MC_Maze, and the ports next to the release's code",
+     "cells": {
+      "sanity": "094ad0f6",
+      "claim:maze-gain": "a87c2013",
+      "claim:rff-maze": "df0d63ab"
+     },
+     "executed": "notebooks/du-2026/07_mc_maze.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 17,
+   "hashed": true
+  },
+  {
+   "name": "makin-2018",
+   "type": "reproduction",
+   "title": "Arm-movement decoding with the rEFH and seven other decoders (Makin et al. 2018)",
+   "description": "Tests the findings of Makin, O'Doherty, Cardoso and Sabes (2018) on dandiset 000129, which holds one session of monkey I (M1 array, 649 s of sorted-unit spikes with fingertip and cursor kinematics) from the Neural Latents Benchmark. It re-implements the paper's eight decoders (linear regression, KFobs, KFlatent static and dynamic, Wiener filter, UKF, rEFH static and dynamic) from its Methods and code, and compares them at four bin widths, three amounts of training data and four fractions of the units. The paper's tests across its 49 sessions cannot be run on one session.",
+   "datasets": [
+    "dandi:000129"
+   ],
+   "papers": [
+    "10.1088/1741-2552/aa9e95"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_makin_2018.ipynb",
+     "title": "Decoders at 64 ms on dandiset 000129 (figures 2, 4 and 8)",
+     "cells": {
+      "sanity": "06d10895",
+      "claim:units-monkey-i": "bd694805",
+      "claim:fig2-velocity-boost": "ca6c885c",
+      "claim:fig2-kflatent-dynamic-little-effect": "08d5fb59",
+      "claim:fig2-refh-static-vel-acc": "27974ee2",
+      "claim:fig2-position-dynamic-gain": "1eda71b7",
+      "claim:fig2-sagittal-better": "dc1a9cf9",
+      "claim:fig2-linear-worst": "b0e16142",
+      "claim:fig2-gross-failures": "f50ef17a",
+      "claim:fig4-vel-acc-every-session": "01bf470c",
+      "claim:fig4-best-variable": "4d2bebfa",
+      "claim:fig2-refh-kf-best": "8acbddbb",
+      "claim:intro-gain-over-nearest": "13debcac",
+      "claim:fig4-position": "c829ae28",
+      "claim:static-refh-position-worse": "ca90c68a",
+      "claim:kflatent-modest": "0c6c337d",
+      "claim:fig8-velocity-variants": "69bcf7c7",
+      "claim:fig8-gaussian-still-beats-ukf": "680372fe",
+      "claim:fig8-position-variants": "cdf27d69"
+     },
+     "executed": "notebooks/makin-2018/reproduce_makin_2018.html"
+    },
+    {
+     "path": "binwidth_training_neurons.ipynb",
+     "title": "Bin width, training data and number of neurons (figures 5 to 7)",
+     "cells": {
+      "sanity": "d3332ecb",
+      "claim:fig5-advantage-with-binwidth": "80ff2373",
+      "claim:fig5-derivative-order": "24700d39",
+      "claim:advantage-grows-with-derivative": "5550e184",
+      "claim:fig7-affine-position": "73839c49",
+      "claim:fig7-kinematic-model-saturates": "af1bfbf4",
+      "claim:fig5-vel-acc-all-bins": "f2a99f3b",
+      "claim:fig5-position-bins": "c01e1b44",
+      "claim:fig6-training-time": "96e3d45c",
+      "claim:fig7-vel-acc-neurons": "b4743e7a",
+      "claim:fig7-position-neurons": "a9ac3d32"
+     },
+     "executed": "notebooks/makin-2018/binwidth_training_neurons.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 13,
+   "hashed": false
+  }
+ ],
+ "badge": {
+  "text": "38 findings reproduced \u00b7 2 papers",
+  "reproduced": 38,
+  "papers": [
+   {
+    "doi": "10.64898/2026.08.04.742876",
+    "key": "du-2026",
+    "byline": "Du et al. 2026",
+    "title": "A Context-Conditional Audit of Trial-Pairing-Dependent Neural Gain in Motor-Cortex Decoding",
+    "relation": "reuses",
+    "reproduced": 28,
+    "url": "https://encorescience.org/papers/du-2026/"
+   },
+   {
+    "doi": "10.1088/1741-2552/aa9e95",
+    "key": "makin-2018",
+    "byline": "Makin et al. 2018",
+    "title": " Superior arm-movement decoding from cortex with a new, unsupervised-learning algorithm.",
+    "relation": "primary",
+    "reproduced": 10,
+    "url": "https://encorescience.org/papers/makin-2018/"
+   }
+  ],
+  "url": "https://encorescience.org/datasets/dandi/000129/",
+  "svg": "https://encorescience.org/badge/dandi/000129.svg",
+  "alt": "Encore: 38 findings reproduced, from 2 papers, from DANDI:000129"
+ },
+ "badges": {
+  "reproduced": "https://encorescience.org/badge/dandi/000129.svg",
+  "outcomes": "https://encorescience.org/badge/dandi/000129-outcomes.svg",
+  "card": "https://encorescience.org/badge/dandi/000129-card.svg"
+ }
+}
