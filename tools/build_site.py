@@ -9,6 +9,7 @@ entries/ and transcripts/, and writes:
     index.html                    the home page: what Encore does and for whom
     registry/index.html           overview of the registry: numbers, breakdowns, latest attempts
     journals/index.html           what Encore offers a journal
+    check/index.html              how to run the check on your own data
     datasets/index.html           every target, filterable and paginated
     datasets/<archive>/<id>/      one static page per attempted dataset, and one per earlier attempt
     dandisets/<id>/               redirects to the dataset's page, for links made before
@@ -2055,7 +2056,7 @@ def footer(data: dict, root: str) -> str:
         + column("Method", [("How it works", f"{root}about/"), ("Protocol", PROTOCOL_URL),
                             ("Reading an outcome", f"{root}registry/#caution"),
                             ("Badges", f"{REPO_URL}/blob/main/docs/badges.md"), ("Agent runs", f"{REPO_URL}/actions")])
-        + column("Use Encore", [("For journals", f"{root}journals/"), ("Check your own data", ENCORE_DOCS),
+        + column("Use Encore", [("For journals", f"{root}journals/"), ("Check your own data", f"{root}check/"),
                                 ("For authors", f"{root}about/#authors"), ("Contact", CONTACT_URL),
                                 ("Repository", REPO_URL)]))
     return f'''<footer><div class="wrap">
@@ -2119,7 +2120,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 {banner}<nav class="top" aria-label="Site"><div class="wrap">
   <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow" id="tabrow">{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
-  <a class="tab ext quiet" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
+  <a class="tab quiet" href="{root}check/"{' aria-current="page"' if active == "check" else ""} title="Run the same check on your own data with the encore command">Check your data</a>
   <a class="tab cta" href="{CONTACT_URL}" title="Write to CatalystNeuro about checks for your journal">Contact us</a></div>
   <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false" aria-controls="tabrow" aria-label="Menu"><span aria-hidden="true"></span></button>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
@@ -2444,7 +2445,7 @@ def page_overview(data: dict) -> str:
   <p class="lede">Can the findings of a paper be reproduced from its open data? AI agents try, on the datasets in
   public archives. Independent agents check each attempt, and every finding gets an outcome, whether or not it
   reproduced. <a href="../about/">How it works</a> ·
-  <a href="{ENCORE_DOCS}">Run the same check on your own data</a></p>
+  <a href="../check/">Run the same check on your own data</a></p>
   <form class="home-search" method="get" action="../papers/" role="search">
     <input name="q" type="search" placeholder="Search papers" aria-label="Search papers">
     <button class="ghost" type="submit">Search</button>
@@ -2661,7 +2662,7 @@ def page_home(data: dict) -> str:
     <div class="audience"><h3>Authors and labs</h3>
       <p>Run the same check on your own dataset before you deposit it. The <code>encore</code> command runs on your
       machine, and the result stays there.</p>
-      <p><a href="{ENCORE_DOCS}">Check your own data</a></p></div>
+      <p><a href="check/">Check your own data</a></p></div>
     <div class="audience"><h3>Archives</h3>
       <p>Each dataset in the registry has a page with what the checks found about its data, a badge the archive can
       show, and a JSON file with the same numbers.</p>
@@ -2772,7 +2773,7 @@ def page_journals(data: dict) -> str:
       page that links there. Authors can <a href="{REPO_URL}/blob/main/docs/author-responses.md">respond</a>, and
       their response is shown beside the check.</p></div>
     <div class="panel"><h2>Run it yourselves</h2>
-      <p>The <a href="{ENCORE_DOCS}"><code>encore</code> command</a> is open source and runs on your own machines,
+      <p>The <a href="{root}check/"><code>encore</code> command</a> is open source and runs on your own machines,
       with your own Claude account, on files in a directory, files at a URL, or a draft dataset in an archive. We
       help your team set it up.</p></div>
   </div>
@@ -2807,6 +2808,60 @@ def page_journals(data: dict) -> str:
     return shell(data, f"Encore for journals · {SITE_NAME}", root, "journals", body, path="journals/",
                  description="Encore checks the data deposited with a paper against the paper's findings: an outcome "
                              "for every claim, and every problem found in the dataset, for journals and their editors.")
+
+
+def page_check(data: dict) -> str:
+    """How to run the same check on your own data with the `encore` command: what docs/encore.md says, in brief,
+    for an author or a lab; the document itself has every option."""
+    root = "../"
+    body = f'''<header class="page">
+  <h1>Check your own data</h1>
+  <p class="lede">Before you deposit a dataset, check it against your paper. The <code>encore</code> command runs the
+  same check as the registry, on your own machine: agents read the paper, write down each of its claims, and test the
+  claims on the data. You get an outcome for every claim and a list of what is wrong with or missing from the
+  dataset.</p>
+</header>
+<main class="journals check">
+  <div class="panel"><h2>Run a check</h2>
+    <pre class="snippet term">pip install encore-science
+
+encore check ./nwb/ --paper paper.pdf                    # a directory of files, before you upload them
+encore check s3://bucket/smith-2024/ --paper paper.pdf   # files at a URL
+encore check DANDI:001234 --draft --paper paper.pdf      # a dataset in an archive</pre>
+    <p>A quick check, the default, takes one to three hours: a reader writes the claims from the paper, a second
+    reader checks them, and an author tests them on the data. <code>--full</code> adds two rounds in which an
+    independent agent verifies the work, and takes several hours more. If a run stops, run the same command again and
+    it goes on from where it stopped.</p></div>
+  <div class="grid2">
+    <div class="panel"><h2>What you need</h2>
+      <ul class="receives">
+        <li><a href="https://docs.claude.com/en/docs/claude-code">Claude Code</a>, signed in to a Claude account or
+        with an API key. The run counts against that account's usage.</li>
+        <li>Python 3.10 or later, and git.</li>
+        <li>The paper, as a PDF or a text file. A preprint is fine.</li>
+      </ul></div>
+    <div class="panel"><h2>What you get</h2>
+      <p>The run writes <code>report.md</code>, which lists every claim with its outcome (reproduced, partially
+      reproduced, not reproduced, or blocked) and every finding about the data, and points to the notebooks that
+      tested them. A failure to reproduce may be the agent's: read the notes and the notebooks before acting on
+      one.</p></div>
+    <div class="panel"><h2>What stays on your machine</h2>
+      <p>A check you run yourself stays on your machine. The agents' commands run in a sandbox: they can write only
+      inside the run's directory and can reach only the archives, Python's package index, GitHub and doi.org. A
+      local dataset is read in place and never changed.</p></div>
+    <div class="panel"><h2>Put a dataset on the record</h2>
+      <p>To have a published dataset checked in the public registry, ask for a run with
+      <code>encore request</code>: a first attempt on a dataset with a paper, or a repeat after its data were
+      fixed. <a href="{REPO_URL}/blob/main/docs/queue.md">How the queue works</a></p></div>
+  </div>
+  <div class="panel contact-panel"><h2>The full documentation</h2>
+    <p>Every command and option is in the <a href="{ENCORE_DOCS}">documentation of the <code>encore</code>
+    command</a>, and the source is in the <a href="{REPO_URL}">repository</a>. Editors who want checks run for
+    their journal can read <a href="{root}journals/">Encore for journals</a>.</p></div>
+</main>'''
+    return shell(data, f"Check your own data · {SITE_NAME}", root, "check", body, path="check/",
+                 description="Run the Encore check on your own dataset before you deposit it: the encore command "
+                             "tests the claims of your paper on your data, on your own machine.")
 
 
 ABOUT_STEPS = [
@@ -3730,8 +3785,7 @@ def page_dataset(data: dict, key: str) -> str:
                   + '. <span class="muted small">Reproduced in full, by attempts an independent verifier checked.</span></p>') if badge else ""
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
-  <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
-  <p class="sub">{e(name)}</p>
+  <div class="dhead"><h1>{e(name)}</h1></div>
   {people_html(data, contributors_of(data, key), root, noun="contributors")}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   {f'<p class="sub small" style="margin-top:8px">Tested on dataset {"; ".join(versions)}</p>' if versions else ""}
@@ -4405,8 +4459,7 @@ def page_claims(data: dict, key: str) -> str:
     name = (target or {}).get("name") or dataset_label(key)
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
-  <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
-  <p class="sub">{e(name)}</p>
+  <div class="dhead"><h1>{e(name)}</h1></div>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <p class="lede">Not attempted yet. These are the claims read from its paper, which an attempt will
   test{("; next in the pipeline: " + e(row["next"].lower())) if row and row["next"] else ""}.</p>
@@ -4430,7 +4483,7 @@ def build(data: dict, output: Path) -> None:
     for sub in ("papers", "datasets", "dandisets", "data", "api/dandiset"):
         (output / sub).mkdir(parents=True, exist_ok=True)
     (output / "index.html").write_text(page_home(data))
-    for sub, page in (("registry", page_overview), ("journals", page_journals)):
+    for sub, page in (("registry", page_overview), ("journals", page_journals), ("check", page_check)):
         (output / sub).mkdir(exist_ok=True)
         (output / sub / "index.html").write_text(page(data))
     (output / "about").mkdir(exist_ok=True)
@@ -4631,7 +4684,7 @@ def page_not_found(data: dict) -> str:
 
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dataset page dated by its latest attempt."""
-    pages = [(p, data["generated"][:10]) for p in ("", "registry/", "journals/", "about/", "pipeline/")]
+    pages = [(p, data["generated"][:10]) for p in ("", "registry/", "journals/", "check/", "about/", "pipeline/")]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]

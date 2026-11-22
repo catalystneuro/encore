@@ -711,7 +711,11 @@ def test_the_bar_is_the_sites_and_the_registrys_pages_have_a_bar_of_their_own(bu
     footer = home[home.index("<footer>"):home.index("</footer>")]
     assert [h for _, h in re.findall(r'<a class="(tab)" href="([^"]*)"', bar)] == ["registry/", "about/", "journals/"]
     assert "pipeline" not in bar and 'href="pipeline/">Pipeline</a>' in footer
-    assert re.search(rf'<a class="tab ext quiet" href="{re.escape(site.ENCORE_DOCS)}" title="Run the same check', bar)
+    # "Check your data" is a page of the site, which points on to the command's full documentation.
+    assert '<a class="tab quiet" href="check/" title="Run the same check' in bar
+    check = (out / "check" / "index.html").read_text()
+    assert "<h1>Check your own data</h1>" in check and "pip install encore-science" in check
+    assert f'href="{site.ENCORE_DOCS}"' in check and 'href="../check/" aria-current="page"' in check
     assert f'<a class="tab cta" href="{site.CONTACT_URL}"' in bar
     assert 'class="regnav"' not in home and "aria-current" not in bar     # the home page is none of the three
     # The button is filled in ink, and the menu button shows only on a small screen.
@@ -777,7 +781,7 @@ def test_the_journals_page_lists_the_journals_of_the_papers_attempted(built):
     for name, n in journals[:12]:
         assert n == sum(1 for p in rows if p["journal"] == name)
         assert f'journal={urllib.parse.quote(name)}">{html.escape(name)}</a><span class="num">{n:,}</span>' in page
-    for path in ("registry/", "journals/"):
+    for path in ("registry/", "journals/", "check/"):
         assert f"<loc>{site.SITE_URL}{path}</loc>" in (out / "sitemap.xml").read_text()
 
 
