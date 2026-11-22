@@ -16,8 +16,10 @@ Where the parameters come from:
   (Methods, "we analyzed recordings from the primary visual cortex (V1)"). Isolation is open
   (claim fig1d-unit-count): reading (a) the AllenSDK default filter (isi_violations < 0.5,
   amplitude_cutoff < 0.1, presence_ratio > 0.9) on units of quality "good"; reading (b) every
-  VISp unit of quality "good". The code's list of 38 excluded unit ids is applied in both
-  (NP_EAP_FeatureAnalysis.ipynb, cell 4).
+  VISp unit the units table lists, of quality "good" or "noise", as the criterion words it;
+  reading (c), an assumption used for the claims after fig1d-unit-count, reading (a) with at
+  least 100 spikes in the first 5-min gray screen (see assemble). The code's list of 38
+  excluded unit ids is applied in all three (NP_EAP_FeatureAnalysis.ipynb, cell 4).
 - Waveforms: the 40 channels from the peak channel minus 20 to plus 19 of the units table's
   mean waveforms (the code's per-session arrays are units x 82 samples x 40 channels with the
   peak at channel 20, as its check maxCh0 != 10 on every second channel implies). Units whose
@@ -397,23 +399,29 @@ def kmeans_labels(X, k, seed, n_init=1000):
 
 # ----------------------------------------------------------------------------- spike trains
 
-def isi_stats(isis: np.ndarray) -> dict:
-    """CV (Methods eq. 7) and LV (Methods eq. 8, Shinomoto's local variation) of ISIs."""
+def isi_stats(parts) -> dict:
+    """CV (Methods eq. 7) and LV (Methods eq. 8, Shinomoto's local variation) of ISIs, given
+    as one array per interval (isis_within). CV is over the pooled ISIs; LV is over pairs of
+    consecutive ISIs of the same interval, so no pair straddles two intervals."""
+    parts = [np.asarray(x, float) for x in parts]
+    isis = np.concatenate(parts) if parts else np.zeros(0)
     if len(isis) < 2:
         return {"cv": np.nan, "lv": np.nan}
-    a, b = isis[:-1], isis[1:]
-    lv = 3.0 / (len(isis) - 1) * np.sum(((a - b) / (a + b)) ** 2)
+    terms = [((x[:-1] - x[1:]) / (x[:-1] + x[1:])) ** 2 for x in parts if len(x) > 1]
+    n_pairs = sum(len(t) for t in terms)
+    lv = 3.0 / n_pairs * np.sum(np.concatenate(terms)) if n_pairs else np.nan
     return {"cv": np.std(isis) / np.mean(isis), "lv": lv}
 
 
-def isis_within(spikes: np.ndarray, starts, stops) -> np.ndarray:
-    """ISIs between consecutive spikes inside each interval (pairs never cross intervals)."""
+def isis_within(spikes: np.ndarray, starts, stops) -> list:
+    """ISIs between consecutive spikes inside each interval, one array per interval with at
+    least two spikes (pairs never cross intervals)."""
     out = []
     for s, e in zip(starts, stops):
         x = spikes[np.searchsorted(spikes, s):np.searchsorted(spikes, e)]
         if len(x) > 1:
             out.append(np.diff(x))
-    return np.concatenate(out) if out else np.zeros(0)
+    return out
 
 
 def count_within(spikes, starts, stops) -> int:
@@ -599,9 +607,12 @@ def _lfp_channels(pf: h5py.File):
     return grp["data"], grp["timestamps"], lf
 
 
-def lfp_pick(lf: pd.DataFrame, peak_id: int, peak_vpos: float):
+def lfp_pick(lf: pd.DataFrame, peak_id: int, peak_vpos: float, min_far: float = 100.0):
     """LFP columns for a unit: (a) the nearest LFP channel other than the peak channel,
-    (b) the nearest one on the other side of the peak channel from (a)."""
+    (b) the nearest one on the other side of the peak channel from (a), (c) the nearest one at
+    least min_far um from the peak channel along the probe, above or below (a check that the
+    unit's own spikes do not carry the phase locking, asked by the round-1 verifier; a tie goes
+    to the channel above)."""
     c = lf[lf.id != peak_id]
     dz = c.vpos.values - peak_vpos
     order = np.lexsort((-dz, np.abs(dz)))       # nearest; a tie goes to the channel above
@@ -609,7 +620,18 @@ def lfp_pick(lf: pd.DataFrame, peak_id: int, peak_vpos: float):
     side = np.sign(dz[a]) if dz[a] != 0 else 1.0
     other = np.where(np.sign(dz) == -side)[0]
     b = other[np.argmin(np.abs(dz[other]))] if len(other) else a
-    return int(c.col.values[a]), int(c.col.values[b])
+    far = np.where(np.abs(dz) >= min_far)[0]
+    far = far[np.lexsort((-dz[far], np.abs(dz[far])))]
+    cc = far[0] if len(far) else order[-1]
+    return int(c.col.values[a]), int(c.col.values[b]), int(c.col.values[cc])
+
+
+def nearest_sample(t, v):
+    """Index of the LFP sample nearest each spike time (t sorted)."""
+    if len(t) < 2:
+        return np.zeros(len(v), int)
+    i = np.clip(np.searchsorted(t, v), 1, len(t) - 1)
+    return np.where(np.abs(v - t[i - 1]) <= np.abs(t[i] - v), i - 1, i)
 
 
 def _read_cols(data, ts, cols, t0, t1):
@@ -632,7 +654,14 @@ def process_session(session: int, seed: int, cap: int = 10000, n_seeds: int = 5,
     info = session_info(f)
     info["session"] = session
     u = visp_units(f)
-    u = u[u.quality == "good"].copy()
+    info["visp_units"] = len(u)
+    info["visp_noise_units"] = int((u.quality != "good").sum())
+    E0 = f["general/extracellular_ephys/electrodes"]
+    info["electrodes_xyz_nan"] = int(sum(np.isnan(E0[k][:]).sum() for k in ("x", "y", "z")))
+    info["electrodes_n"] = len(E0["id"])
+    _y, _z = E0["y"][:], E0["z"][:]
+    _ok = ~np.isnan(_y) & ~np.isnan(_z)
+    info["electrodes_y_eq_z"] = int((_y[_ok] == _z[_ok]).sum())
     u["bad_list"] = u.index.isin(BAD_UNITS)
     rows = u.row.values
     # ---- waveform features
@@ -686,7 +715,8 @@ def process_session(session: int, seed: int, cap: int = 10000, n_seeds: int = 5,
         d["rate_dg_blocks"] = d["n_dg_blocks"] / info["dg_block_time"]
         ia = isis_within(s, dg.start_time.values, dg.stop_time.values)
         ib = isis_within(s, blocks.start.values, blocks.stop.values)
-        isi_a[uid], isi_b[uid] = ia.astype(np.float32), ib.astype(np.float32)
+        isi_a[uid] = np.concatenate(ia).astype(np.float32) if ia else np.zeros(0, np.float32)
+        isi_b[uid] = np.concatenate(ib).astype(np.float32) if ib else np.zeros(0, np.float32)
         for tag, x in (("a", ia), ("b", ib)):
             st = isi_stats(x)
             d[f"cv_dg_{tag}"], d[f"lv_dg_{tag}"] = st["cv"], st["lv"]
@@ -748,6 +778,7 @@ def process_session(session: int, seed: int, cap: int = 10000, n_seeds: int = 5,
             centre = float(z[in_v1][first.argmin()]) if first.min() < 10 ** 6 else np.nan
             centre_min = float(z[in_v1][np.unravel_index(c.argmin(), c.shape)[1]])
             out["csd"].append({"probe": int(probe), "centre": centre, "centre_min": centre_min,
+                               "csd": c.astype(np.float32), "z": z[in_v1], "t_ms": tt[post] * 1000,
                                "n_v1_lfp": int(in_v1.sum()), "t_first_ms": float(tt[post][first.min()] * 1000)
                                if first.min() < 10 ** 6 else np.nan})
             u.loc[pu.index, "depth_csd"] = pu.vpos.values - centre
@@ -767,11 +798,10 @@ def process_session(session: int, seed: int, cap: int = 10000, n_seeds: int = 5,
                                                    for a, b in zip(keep_s, keep_e)])]
                                  if len(keep_s) else s[:0])
             keys = [("results", k) for k in BANDS_RESULTS] + [("methods", "alpha"), ("methods", "beta")]
-            phs = {(uid, lr, key): [] for uid in pu.index for lr in "ab" for key in keys}
+            phs = {(uid, lr, key): [] for uid in pu.index for lr in "abc" for key in keys}
             for s0, s1 in zip(starts, stops):
                 t, x = _read_cols(data, ts, cols, s0, s1)
-                kidx = {uid: np.clip(np.searchsorted(t, v[(v >= s0) & (v < s1)]), 0, len(t) - 1)
-                        for uid, v in sp_units.items()}
+                kidx = {uid: nearest_sample(t, v[(v >= s0) & (v < s1)]) for uid, v in sp_units.items()}
                 for key in keys:
                     lo, hi = (BANDS_RESULTS if key[0] == "results" else BANDS_METHODS)[key[1]]
                     for c0 in range(0, len(cols), 8):
@@ -781,7 +811,7 @@ def process_session(session: int, seed: int, cap: int = 10000, n_seeds: int = 5,
                         ph = np.angle(signal.hilbert(y, N=nfft, axis=0)[:len(y)]).astype(np.float32)
                         del y
                         for uid in pu.index:
-                            for lr, colv in zip("ab", picks[uid]):
+                            for lr, colv in zip("abc", picks[uid]):
                                 if colv in part:
                                     phs[(uid, lr, key)].append(ph[kidx[uid], part.index(colv)])
                         del ph
@@ -792,7 +822,7 @@ def process_session(session: int, seed: int, cap: int = 10000, n_seeds: int = 5,
                 for si, rg in enumerate(rngs):
                     subsets[f"random{si}"] = (np.sort(rg.choice(n_all, cap, replace=False))
                                               if n_all > cap else np.arange(n_all))
-                for lr in "ab":
+                for lr in "abc":
                     for key in keys:
                         a_ = np.concatenate(phs.pop((uid, lr, key))).astype(np.float64)
                         for cap_read, ix in subsets.items():
@@ -841,17 +871,27 @@ def process_all(sessions, seed, workers=3) -> dict:
 # ----------------------------------------------------------------------------- analysis helpers
 
 def assemble(results: dict, groups: dict) -> pd.DataFrame:
-    """One table of units over sessions, with session, genotype group and the two isolation
-    readings (fig1d-unit-count)."""
+    """One table of units over sessions, with session, genotype group and the isolation
+    readings: (a) and (b) of the criterion of fig1d-unit-count, and (c), reading (a) with at
+    least 100 spikes in the first 5-min gray screen. (c) is taken from the Results ("well-isolated
+    ... during spontaneous activity", paragraph 1 of "EAP recordings from in vivo experiments")
+    and the 100-spike rule of the Methods ("Single unit firing properties"); every unit of the
+    code's unit tables has fr_5min at least 0.35 Hz, about 100 spikes in that block. It is an
+    assumption, used for the claims after fig1d-unit-count."""
     frames = []
     for g, sess in groups.items():
         for s in sess:
             u = results[s]["units"].copy()
             u["session"], u["group"] = s, g
+            a, b = results[s]["info"]["spont5"]
+            u["n_spont5"] = np.round(u.rate_spont5 * (b - a)).astype(int)
             frames.append(u)
     u = pd.concat(frames)
-    u["iso_a"] = u.allensdk_filter & ~u.bad_list
-    u["iso_b"] = ~u.bad_list
+    u["iso_a"] = u.allensdk_filter & (u.quality == "good") & ~u.bad_list
+    u["iso_b"] = ~u.bad_list            # every VISp unit of the units table, good or noise
+    # (c): (a) and at least 100 spikes in the first 5-min gray screen, the period of the code's
+    # fr_5min column (see the docstring)
+    u["iso_c"] = u.iso_a & (u.n_spont5 >= 100)
     return u
 
 
@@ -891,8 +931,10 @@ def cluster_multi_channel(df: pd.DataFrame, fsrs: np.ndarray, seed: int, n_init:
 
 def name_by_overlap(index, labels, ref: pd.Series, names):
     """Name each cluster by the reference label it shares most units with (one to one,
-    greedy on the overlap counts)."""
+    greedy on the overlap counts). Only reference labels among names are used, so every
+    cluster gets one of names."""
     shared = pd.Series(labels, index=index).loc[lambda s: s.index.isin(ref.index)]
+    shared = shared[ref.loc[shared.index].isin(names).values]
     tab = pd.crosstab(shared.values, ref.loc[shared.index].values)
     mapping, used = {}, set()
     pairs = sorted(((tab.loc[i, j], i, j) for i in tab.index for j in tab.columns), reverse=True)

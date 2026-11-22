@@ -41,9 +41,12 @@ outcomes:
   notes: The dandiset holds 13 of the 25 sessions; all 566 Source Data units of those sessions are VISp
     units of quality good there, with the per-session counts of sheet Fig 1d, and none of the 638 units
     of the other 12 sessions is in the dandiset. On the matched units TPW and REP are equal to the Source
-    Data values for 85.0% of units and 1/V below and above for 71.7% and 68.0%. The other claims are judged
-    on the 13 sessions. Unit ids are matched directly; the ids of the 12 missing sessions are in none
-    of the held sessions' units tables.
+    Data values for 85.0% of units and 1/V below and above for 71.7% and 68.0%. The 85 units whose TPW
+    or REP differ also differ in 1/V below, and the per-session table shows where they lie; where they
+    differ, TPW differs by a median of 0.004 ms (IQR -0.017 to 0.024 ms), so the waveforms are close but
+    not identical. Every one of the 566 units has at least 100 spikes in the first 5-min gray screen,
+    and 270 of the 297 reading (a) units outside the code's tables have fewer. The other claims are judged
+    on the 13 sessions.
   deviations:
   - Only 13 of the 25 sessions are in the dandiset, so every claim on the dataset is judged on that subset.
 - claim: fig1d-unit-count
@@ -54,381 +57,518 @@ outcomes:
   - 741
   - 57.0
   notes: On the 13 held sessions, reading (a) gives 741 units after the code's exclusions, 57.0 per mouse,
-    and reading (b) 1604, 123.4 per mouse, against 48 +- 4.8; the Source Data put 566 units (43.5 per
-    mouse) in the same sessions. Starting from the code's own unit tables gives 494 units, 38.0 per mouse.
-    The total of 1204 cannot be reached with 13 of 25 sessions. Per session, reading (a) gives 16 to 94
-    units, the Source Data 16 to 71.
+    and reading (b) 1820, 140.0 per mouse, against 48 +- 4.8; the Source Data put 566 units (43.5 per
+    mouse) in the same sessions. Reading (c), not a reading of the criterion, gives 516 units, 39.7 per
+    mouse, and keeps 487 of the 566 Source Data units with 29 others, where reading (a) keeps 493 with
+    248 others. Starting from the code's own unit tables gives 494 units, 38.0 per mouse. The total of
+    1204 cannot be reached with 13 of 25 sessions.
   deviations:
   - 13 of 25 sessions; the total cannot be compared and the mean per mouse is the measure.
   - The code's 3 SD exclusions are taken over the values present (nanmean, nanstd); taken literally, NaN
-    in 1/V above and W above (14 and 8 units) turns them off, giving 752 and 1610 units (assumption, see
-    the helper's code_exclusions).
+    in 1/V above and W above (14 and 8 units) turns them off, giving 752 and 1845 units (readings a and
+    b) (assumption, see the helper's code_exclusions).
   - The waveform window is the 40 channels from the peak minus 20 to plus 19, as the code's array layout
     implies (NP_EAP_FeatureAnalysis.ipynb cells 3 and 7); every unit's window fits on the probe.
+  - Reading (b) holds every VISp unit of the units table, quality good or noise, as the criterion words
+    it; reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen, is shown as
+    a variant and is not used for this claim's outcome.
 - claim: fig2-one-channel-two-clusters
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig2-one-channel-two-clusters
-  notes: Under both readings the elbow and the minimum of f(K) select K = 2 (also under the four other
-    seeds, reading a), and the cluster of lower median TPW (0.261 ms, reading a) also has the lower median
-    REP (0.251 against 0.302 ms).
+  notes: Under all three readings the elbow and the minimum of f(K) select K = 2 (also under the four
+    other seeds, reading c), and the cluster of lower median TPW (0.258 ms, reading c) also has the lower
+    median REP (0.250 against 0.303 ms). The Source Data features of the 1204 units give K = 2 by both
+    methods as well.
   deviations:
   - K-means random states are the claim's seed, where the code uses 10 and 11400; with 1000 initialisations
     the five seeds give the same K and labels.
   - The dandiset holds 13 of the paper's 25 wild-type sessions; the result is on those.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig2-fs-rs-counts
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig2-fs-rs-counts
   measured:
-  - 154
-  - 587
-  - 20.8
-  notes: The FS fraction is 20.8% (154 of 741, reading a) and 17.9% (287 of 1604, reading b), below the
-    tolerance of 23.3 +- 2.33%, under all five seeds. The FS/RS labels agree with the Source Data on 98.4%
-    of shared units, and the Source Data labels of the 566 held units give 24.0% FS, so the difference
-    comes from which units are included.
+  - 131
+  - 385
+  - 25.4
+  notes: 'Under reading (c) the FS fraction is 25.4% (131 of 516), within 23.3 +- 2.33%, under all five
+    seeds; the FS/RS labels agree with the Source Data on 99.4% of shared units. Readings (a) and (b)
+    give 20.8% (154 of 741) and 20.5% (373 of 1820), below the tolerance, and the Source Data labels of
+    the 566 held units give 24.0%. The fraction depends on the unit set: the low-firing units of reading
+    (a) that the code''s tables leave out lower it.'
   deviations:
   - The dandiset holds 13 of the paper's 25 wild-type sessions; the result is on those. The fraction is
     the measure, as the criterion says.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  assumed: true
 - claim: figs3b-fs-faster
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs3b-fs-faster
   measured:
-  - 3.6
-  - 0.81
-  notes: 'FS units fire faster than RS units under every period reading (Mann-Whitney p from 4.3e-12 to
-    8.3e-67), but no reading puts both medians within tolerance: the first 5-min gray screen, which reproduces
-    the code''s fr_5min column exactly, gives FS 3.60 and RS 0.81 Hz (reading a), and the whole session
-    9.11 and 2.35 Hz, against 4.85 and 2.05 Hz. On the Source Data units and labels the same period gives
-    4.55 and 2.50 Hz. Reading (a2), all gray-screen intervals of 30 s or more, gives FS 5.04 (within tolerance)
-    and RS 1.40 Hz.'
+  - 4.26
+  - 2.29
+  notes: FS units fire faster than RS units under every period and isolation reading (Mann-Whitney p from
+    1.3e-05 to 2.3e-64), but no reading puts both medians within tolerance. Under reading (c) the first
+    5-min gray screen (the period of the code's fr_5min column) gives FS 4.26 and RS 2.29 Hz, the first
+    5 minutes FS 4.50 (within tolerance) and RS 2.38 Hz, against 4.85 and 2.05 Hz. On the Source Data
+    units and labels the gray-screen block gives 4.55 and 2.50 Hz.
   deviations:
   - Reading (a) of the criterion is shown as (a1), the first 5-min gray-screen block, which reproduces
     the code's fr_5min exactly on all 618 units of the code's tables, and (a2), all gray-screen intervals
     of 30 s or more.
   - The dandiset holds 13 of the paper's 25 wild-type sessions; the result is on those.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig2-rs-more-asymmetric
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig2-rs-more-asymmetric
-  notes: The median symmetry index is 1.645 for RS and 0.845 for FS (reading a; Mann-Whitney p = 3.6e-26),
-    and 1.729 against 0.848 under reading (b). Units with NaN 1/V above (14) are left out of the test.
+  notes: The median symmetry index is 1.599 for RS and 0.784 for FS (reading c; Mann-Whitney p = 2.3e-21),
+    and RS is higher under readings (a) and (b) as well (p = 3.6e-26 and 2.6e-53).
+  deviations:
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig2d-three-subclusters-each
   outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig2d-three-subclusters-each
   measured:
-  - 67
-  - 50
-  - 37
-  - 270
-  - 160
-  - 157
-  notes: RS gives K = 3 by both methods under both readings (270, 160 and 157 units, reading a; 46.0,
-    27.3 and 26.7% of RS against the paper's 51.9, 25.5 and 22.6%), but FS gives K = 2 by both methods
-    under reading (a) and K = 9 by f(K) (elbow 3) under reading (b). The six-cluster labels agree with
-    the Source Data on 80.5% of shared units (reading a). With the code's exclusions run literally, a
-    single outlier unit forms one of the three RS clusters. With K forced to 3, FS gives 67, 50 and 37
-    units (reading a).
+  - 59
+  - 41
+  - 31
+  - 180
+  - 95
+  - 110
+  notes: RS gives K = 3 by both methods under readings (c) and (a) (180, 95 and 110 units, reading c;
+    46.8, 24.7 and 28.6% of RS against the paper's 51.9, 25.5 and 22.6%), but FS gives K = 2 by both methods
+    under readings (c) and (a), and under reading (b) f(K) selects 9 for FS and 1 for RS. The six-cluster
+    labels agree with the Source Data on 80.7% of shared units (reading c). With K forced to 3, FS gives
+    59, 41 and 31 units (reading c). The same procedure on the paper's own features (Source Data sheet
+    Fig2d) selects K = 3 for FS and RS by both methods and returns the paper's labels for all 1204 units,
+    so the difference comes from the features recomputed here (see source-data-units-link), not from the
+    clustering. With the code's exclusions run literally, a single outlier unit forms one of the three
+    RS clusters (readings c and a).
   deviations:
-  - The FS counts given as measured are those with K forced to 3, as no FS3 exists at the K f(K) selects.
   - The dandiset holds 13 of the paper's 25 wild-type sessions; the result is on those.
   - Clusters are named by greatest overlap with the Source Data labels (one to one, greedy).
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  - The FS counts given as measured are those with K forced to 3 (reading c), as no FS3 exists at the
+    K f(K) selects.
 - claim: figs4-rs1-faster-above
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs4-rs1-faster-above
-  notes: The median 1/V above is 1.538 ms/mm in RS1 and 3.406 in RS2 (reading a; Kruskal-Wallis p = 1.1e-75,
-    Holm RS1 against RS2 p = 5.0e-66), so RS1 propagates faster above the soma; reading (b) and the Source
-    Data labels give the same.
+  notes: The median 1/V above is 1.468 ms/mm in RS1 and 3.259 in RS2 (reading c; Kruskal-Wallis p = 9.0e-47,
+    Holm RS1 against RS2 p = 2.8e-41), so RS1 propagates faster above the soma; readings (a), (b) and
+    the Source Data labels give the same.
   deviations:
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: figs4-rs-spread
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs4-rs-spread
-  notes: The spreads differ (Kruskal-Wallis H = 28.5, p = 6.4e-07, reading a) and RS3 is the most confined
-    (median 131.8 um against 154.4 and 149.3); reading (b) and the Source Data labels give the same order
-    with p = 2.9e-15 and 4.1e-05. RS3's 1/V below has the most negative median (-0.731), reported, not
-    judged.
+  notes: The spreads differ (Kruskal-Wallis H = 23.8, p = 6.8e-06, reading c) and RS3 is the most confined
+    (median 144.8 um against 171.3 and 150.8); readings (a), (b) and the Source Data labels give the same
+    order with p = 6.4e-07, 1.9e-18 and 4.1e-05. RS3's 1/V below has the most negative median (-0.618,
+    reading c), reported, not judged.
   deviations:
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: figs4-fs-spread-absent
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs4-fs-spread-absent
-  notes: On the FS clusters of reading (a) (K forced to 3) the Kruskal-Wallis test gives p = 0.978 (medians
-    159.2, 162.4 and 162.6 um), and on the Source Data labels p = 0.267; under reading (b) it gives p
-    = 0.013. The outcome is on reading (a); reading (b) would make it not reproduced.
+  notes: On the FS clusters of reading (c) (K forced to 3) the Kruskal-Wallis test gives p = 0.399 (medians
+    155.5, 168.4 and 166.2 um), reading (a) p = 0.978 and the Source Data labels p = 0.267; under reading
+    (b) p is below 0.001.
   deviations:
   - FS is clustered with K forced to 3, as f(K) selects 2 under reading (a); the FS1 to FS3 clusters rest
     on that choice.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
   assumed: true
 - claim: figs5-depth-distribution
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs5-depth-distribution
-  notes: With the CSD depth here the six clusters differ in depth (Kruskal-Wallis p = 0.011, reading a;
-    4.1e-06, reading b), but on the Source Data labels they do not (p = 0.363, and 0.337 with the code's
-    own depths). The CSD layer 4 centre here differs from the code's depths by a per-session median of
-    -340 to +420 um. The CSD measure here (the first VISp channel whose CSD reaches half its minimum within
-    0 to 150 ms of a flash) is a standard choice the criterion names; it does not reproduce the code's
-    depths, so the outcome rests on it.
+  notes: With the paper's layer 4 centres the six clusters do not differ in depth (Kruskal-Wallis p =
+    0.25, reading c; 0.29, reading a; 0.34 on the Source Data labels); only reading (b) gives p = 2.8e-05.
+    With the CSD centre computed here the test gives p = 0.044 (reading c) and 0.011 (reading a), but
+    that centre differs from the paper's by -420 to +340 um per probe, and on the Source Data labels it
+    gives p = 0.36. The CSD centre here is not reliable enough to decide the claim, and on the paper's
+    placement the difference is absent in these 13 sessions.
   deviations:
-  - Depth from the CSD computed here; the code's precomputed depths are shown as a variant on the units
-    its tables cover.
   - FS is clustered with K forced to 3, as f(K) selects 2 under reading (a); the FS1 to FS3 clusters rest
     on that choice.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  - Depth from the layer 4 centre the code's unit tables give for each probe (their depth is the probe
+    position minus one value per probe), the paper's own CSD placement, an assumption; the CSD centre
+    computed here, which differs from it by -420 to +340 um per probe, is shown as a variant.
   assumed: true
 - claim: fig6a-fs1-symmetric
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig6a-fs1-symmetric
-  notes: FS1 has the lowest symmetry index (median 0.379 against 1.052 and 1.320, reading a, K forced
-    to 3), Kruskal-Wallis p = 7.8e-15, Holm FS1 against FS2 p = 7.3e-10 and FS1 against FS3 p = 4.6e-12.
-    On the Source Data labels FS1 against FS3 gives p = 0.0026, below 0.05 but not 0.001. The ratio variant
-    separates the clusters less (p = 0.014).
+  notes: FS1 has the lowest symmetry index (median 0.391 against 1.019 and 1.084, reading c, K forced
+    to 3), Kruskal-Wallis p = 1.3e-09, Holm FS1 against FS2 p = 2.9e-06 and FS1 against FS3 p = 2.7e-08.
+    Readings (a) and (b) give the same at p below 1e-09. On the Source Data labels FS1 against FS3 gives
+    p = 0.0026, below 0.05 but not 0.001. The ratio variant separates the clusters less (p = 0.013, reading
+    c).
   deviations:
   - FS is clustered with K forced to 3, as f(K) selects 2 under reading (a); the FS1 to FS3 clusters rest
     on that choice.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
   assumed: true
 - claim: fig4g-experiment-classifier-fs-rs
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig4g-experiment-classifier-fs-rs
-  measured: 99.91
-  notes: The mean validation accuracy is 99.91% (reading a; 99.90 to 99.91% under the five seeds) and
-    98.69% on the Source Data labels.
+  measured: 99.34
+  notes: 'The mean validation accuracy is 99.34% (reading c; 99.34 to 99.37% under the five seeds) and
+    98.69% on the Source Data labels. The code''s procedure upsamples before it splits, so copies of a
+    unit can be in training and test; for this linear SVM that does not inflate the score: with permuted
+    labels it gives 53.18%, and splitting before upsampling gives 99.19% (balanced 99.44%) on reading
+    (c), against a balanced 52.93% with permuted labels. The FS and RS labels come from K-means on the
+    same two features, so a high accuracy is expected.'
   deviations:
-  - Resampling and split seeds come from the claim's generator, where the code uses fixed seeds; the five
-    seeds are run with 20 resamplings each.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  - Resampling and split seeds come from the claim's generator, where the code uses fixed seeds; 100 resamplings
+    for reading (c) and the Source Data labels, 20 for readings (a) and (b) and for each of the five seeds.
 - claim: fig5d-experiment-classifier-rs
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig5d-experiment-classifier-rs
-  measured: 98.29
-  notes: The random forest reaches 98.29% on RS1 to RS3 of reading (a) (98.16 to 98.36% under the five
-    seeds), above 95% but not 99%, and 93.27% on the Source Data labels.
+  measured: 98.55
+  notes: 'The random forest reaches 98.55% on RS1 to RS3 of reading (c) (98.55 to 98.73% under the five
+    seeds), above 95% but not 99%, and 93.27% on the Source Data labels. For the random forest the code''s
+    order (upsample, then split) inflates the score: permuted labels give 61.67% where chance is about
+    33%. Splitting before upsampling gives 97.53% (balanced 97.34%) on reading (c) and 84.55% on the Source
+    Data labels, against about a third with permuted labels.'
   deviations:
   - 20 resamplings of 100 splits, where the criterion follows the FS/RS notebook's 100 resamplings, to
-    keep within the time; the five seeds (5 resamplings each) vary by 0.2 points.
-  - 10 RS units with NaN 1/V above are left out.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+    keep within the time (5 for readings a and b); the five seeds (5 resamplings each) vary by 0.2 points.
+  - 8 RS units of reading (c) with NaN 1/V above are left out.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig3a-isi-fs-rs
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3a-isi-fs-rs
   measured:
-  - 22.67
-  - 52.93
-  - 1459205
-  - 2176565
-  notes: The pooled ISI median is 22.67 ms for FS and 52.93 ms for RS (reading a, ISIs within presentations;
-    Mann-Whitney p below the smallest number printed), against 19.63 and 53.37 ms. The RS median is within
-    10% but the FS median is 15% above, and neither lies in the paper's confidence interval; the block
-    reading gives 23.23 and 63.50 ms. On the Source Data labels the medians are 20.50 and 54.67 ms, both
-    within 10%. The spike counts (1.46 and 2.18 million) are about half the paper's, as are the sessions.
-    The bootstrap intervals are 22.63 to 22.73 and 52.80 to 53.00 ms, stable under the five seeds.
+  - 21.0
+  - 55.33
+  - 1329333
+  - 1914483
+  notes: 'Under reading (c), ISIs within presentations, the pooled median is 21.00 ms for FS and 55.33
+    ms for RS (Mann-Whitney p below the smallest number printed), against 19.63 and 53.37 ms: both within
+    10% (7.0% and 3.7%), neither in the paper''s confidence interval. The block reading gives 21.70 and
+    64.83 ms. On the Source Data labels the medians are 20.50 and 54.67 ms; under reading (a) 22.67 and
+    52.93 ms (FS 15% off). The spike counts (1.33 and 1.91 million, reading c) are about half the paper''s,
+    as are the sessions. The bootstrap intervals are stable under the five seeds.'
   deviations:
   - The dandiset holds 13 of the paper's 25 wild-type sessions; the result is on those. The spike counts
     are expected to be about half.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  assumed: true
 - claim: fig3a-rs1-excitability
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3a-rs1-excitability
-  notes: under the block reading of the period. With ISIs and rates over the drifting-grating blocks (reading
-    a units), RS1 fires faster (median 2.67 against 1.34 and 1.31 Hz) with lower CV (1.61 against 1.85
-    and 1.74) and LV (1.00 against 1.16 and 1.23), each omnibus p below 0.003 and each Holm RS1 comparison
-    p below 0.02. Within presentations only the rate holds (CV and LV RS1 against RS2 p = 0.12 and 0.064).
-    The unit counts (398, 247, 220 under reading b; fewer under a) come from 13 of 25 sessions. On the
-    Source Data labels under the block reading, RS1 differs from RS2 in all three measures and from RS3
-    only in CV. The rates and CVs here do not equal the Source Data values on shared units (median differences
-    0.83 Hz and 0.22 under the block reading), so the paper's period is neither reading exactly.
+  notes: Under reading (c) one of the three measures holds under each period reading. Over the drifting-grating
+    blocks (the period whose CV matches the Source Data best, Spearman 0.848 against 0.502), RS1 has the
+    lower CV (1.54 against 1.76 and 1.68; omnibus p = 1.8e-05, Holm 4.5e-05 and 0.0035), but the rate
+    (Holm p = 0.051 and 0.051) and LV (0.048 and 0.054) miss in one comparison each. Within presentations
+    only the rate holds (3.92 against 2.56 and 2.26 Hz, Holm p = 0.032 and 0.037). Reading (a) gives all
+    three under the block reading (each Holm p below 0.02); on the Source Data labels RS1 differs from
+    RS3 only in CV. The unit counts (166, 75, 87) come from 13 of 25 sessions.
   deviations:
   - The expected unit counts are of 25 sessions; the counts here come from 13 and are not judged.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  assumed: true
 - claim: fig3a-rs23-visual-responses
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3a-rs23-visual-responses
   notes: With the AllenSDK metrics (which reproduce the Source Data values exactly for 98.9 to 100% of
-    shared units), f1/f0 and lifetime sparseness are lowest in RS1 with omnibus and both Holm RS1 comparisons
-    below 0.05 (reading a), but the modulation index is not (omnibus p = 0.052). On the Source Data labels
-    only the RS1 against RS2 comparisons of f1/f0 and lifetime sparseness hold.
+    shared units), RS1 has the lowest f1/f0 and lifetime sparseness under reading (c), but in each the
+    RS1 against RS3 test fails (Holm p = 0.056 and 0.065), and the modulation index does not differ (omnibus
+    p = 0.21). On the Source Data labels also only the RS1 against RS2 comparisons hold. Under reading
+    (a), f1/f0 and lifetime sparseness hold in full (Holm p below 0.015), which would make the claim partially
+    reproduced.
   deviations:
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  assumed: true
 - claim: fig3a-fs-visual-absent
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3a-fs-visual-absent
-  notes: No metric differs across FS1 to FS3 (Kruskal-Wallis p = 0.898, 0.976 and 0.986, reading a; all
-    p above 0.16 under reading b and the Source Data labels).
+  notes: No metric differs across FS1 to FS3 (Kruskal-Wallis p = 0.833, 0.887 and 0.969, reading c; all
+    p above 0.13 under readings a and b and the Source Data labels).
   deviations:
   - FS is clustered with K forced to 3, as f(K) selects 2 under reading (a); the FS1 to FS3 clusters rest
     on that choice.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig3c-fs-more-phase-locked
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3c-fs-more-phase-locked
   measured:
-  - 98.3
-  - 94.4
-  - 86.1
-  - 78.6
-  - 96.5
-  - 81.6
-  - 92.2
-  - 73.0
-  - 95.7
-  - 77.7
-  notes: 'Under every combination of the LFP, cap and band readings, with the units of reading (a), a
-    larger share of FS than RS units is phase-locked in all five bands (LFP a, first spikes: theta 98.3
-    against 94.4%, alpha 86.1 against 78.6%, beta 96.5 against 81.6%, low gamma 92.2 against 73.0%, high
-    gamma 95.7 against 77.7%), but the Holm-corrected z test is above 0.05 for theta in every combination
-    and for alpha in some. Several RS percentages are above the paper''s tolerance (alpha 78.6 against
-    63.9 +- 6.39). Under reading (b) the theta share is lower for FS than RS (95.0 against 96.1%). Under
-    the random cap the percentages change by at most 2 points over the five seeds.'
+  - 98.0
+  - 96.3
+  - 85.7
+  - 82.3
+  - 94.9
+  - 84.7
+  - 91.8
+  - 77.4
+  - 93.9
+  - 85.6
+  notes: 'Under reading (c), in every combination of the LFP, cap and band readings, a larger share of
+    FS than RS units is phase-locked in all five bands (LFP a, first spikes: theta 98.0 against 96.3%,
+    alpha 85.7 against 82.3%, beta 94.9 against 84.7%, low gamma 91.8 against 77.4%, high gamma 93.9 against
+    85.6%), but the Holm-corrected z test gives p < 0.05 in only two bands (beta and low gamma), with
+    98 FS and 327 RS units. Several RS percentages are above the paper''s tolerance (alpha 82.3 against
+    63.9 +- 6.39). Reading (a) (115 FS, 485 RS) gives 3 to 5 significant bands, which would make it partially
+    reproduced; the Source Data labels give 2 or 3.'
   deviations:
   - Spikes inside the drifting-grating presentations; the LFP filtered over each whole block and Hilbert-transformed
     with zero padding to a fast FFT length (standard choices).
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
   seed_sensitive: false
+  assumed: true
 - claim: fig3c-rs-prefers-theta
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3c-rs-prefers-theta
-  notes: In every combination of readings the RS theta percentage is the highest (94.4% against 73.0 to
-    81.6% for beta and the gammas, reading a, LFP a), and the FS percentages vary over a smaller range
-    than the RS ones (12.2 against 21.4 points).
+  notes: In every combination of readings the RS theta percentage is the highest (96.3% against 77.4 to
+    85.6% for beta and the gammas, reading c, LFP a), and the FS percentages vary over a smaller range
+    than the RS ones (12.3 against 18.9 points). LFP (c), 100 um or more from the peak channel, gives
+    the same (10.2 against 31.1 points).
+  deviations:
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: figs7-spontaneous-less-locked
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs7-spontaneous-less-locked
   measured:
-  - 88.7
-  - 75.5
+  - 90.8
+  - 77.7
   notes: 'For units active in both periods, fewer units are phase-locked during the gray screen than during
-    gratings in every band, for FS and RS (reading a), but far more than the paper reports: theta 88.7%
-    of FS and 75.5% of RS against 19.5 and 4.7%. Under reading (b) and the Source Data labels the theta
-    percentages are as high; with the Source Data labels and the random cap one cell is not lower.'
+    gratings in every band, for FS and RS (reading c), but far more than the paper reports: theta 90.8%
+    of FS and 77.7% of RS against 19.5 and 4.7%. The LFP channel 100 um or more from the peak channel
+    gives as many (theta 92.9 and 81.0%), so the unit''s own spike waveform on the nearest channel does
+    not explain the high spontaneous locking; it does raise the RS high-gamma share (80.1% with LFP a,
+    46.8% with LFP c).'
   deviations:
   - The gray-screen intervals of 30 s or more are the spontaneous period (a standard choice); the paper
     does not say which part of the spontaneous activity it used.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig3c-fs-stronger-earlier
   outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3c-fs-stronger-earlier
-  notes: Among phase-locked units FS kappa is higher only in beta and the gammas, and only high gamma
-    differs after Holm correction (p = 4.4e-05, reading a, LFP a); theta and alpha are equal or lower
-    (0.534 against 0.537). The FS preferred phase is not earlier in beta or low gamma (180.5 against 177.0
-    and 183.1 against 180.4 degrees, Holm p 0.21 and 0.29). The resultant length gives the same tests.
-    Reading (b) and LFP (b) give the same; only high gamma kappa differs.
+  notes: Among phase-locked units FS kappa is higher than RS in all five bands (reading c, LFP a), but
+    only low and high gamma differ after Holm correction (p = 0.034 and 2.4e-06; theta, alpha and beta
+    p = 0.072, 0.12, 0.072). The FS preferred phase is not earlier in beta (176.1 against 174.3 degrees)
+    and is earlier in low gamma without significance (178.1 against 184.8, Holm p = 1.0). The resultant
+    length gives the same tests, and LFP (b) the same pattern.
   deviations:
   - Earlier in the cycle read as a lower preferred phase on 0 to 360 degrees.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig3d-rs2-gamma-locking
   outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3d-rs2-gamma-locking
-  notes: RS1 to RS3 do not differ in low or high gamma kappa (Kruskal-Wallis p = 0.13 and 0.24, reading
-    a, LFP a), and RS2 is not above RS1. The cluster mean phases lie between 162 and 220 degrees under
+  notes: RS1 to RS3 do not differ in low or high gamma kappa (Kruskal-Wallis p = 0.35 and 0.78, reading
+    c, LFP a), and RS2 is not above RS1. The cluster mean phases lie between 162 and 220 degrees under
     every reading.
   deviations:
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
 - claim: fig3e-fs-cluster-locking
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig3e-fs-cluster-locking
   measured:
-  - 50
-  - 36
-  - 27
-  notes: On FS clusters with K forced to 3 (reading a), FS3 does not lock more strongly than FS2 in high
-    gamma (Holm p = 1.0), and the preferred phases differ in alpha (p = 0.0048) but not in beta or low
-    gamma (p = 0.20 and 0.84). Under reading (b) the high-gamma kappa result holds (Holm p = 0.014). Phase-locked
-    units per cluster are 50, 36 and 27 (13 sessions).
+  - 46
+  - 28
+  - 22
+  notes: On FS clusters with K forced to 3 (reading c), FS3 does not lock more strongly than FS2 in high
+    gamma (Holm p = 1.0), and the preferred phases differ in alpha (Kruskal-Wallis p = 0.046) but not
+    in beta or low gamma (p = 0.24 and 0.96). The Source Data labels give the same kappa result.
   deviations:
   - FS is clustered with K forced to 3, as f(K) selects 2 under reading (a); the FS1 to FS3 clusters rest
     on that choice.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
   assumed: true
 - claim: figs6c-fs-stronger-across-depth
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs6c-fs-stronger-across-depth
-  notes: With regions from the CSD depth (reading b of the criterion; the CCF layer is not in the files),
-    the percentage of phase-locked FS units exceeds that of RS units in all 15 region and band cells (reading
-    a units), with Holm p below 0.05 in 3; kappa is higher for FS in 11 of 15. With the code's depths
-    kappa is higher in 12 of 15, significant in 8. Region counts (reading a) are 22, 36, 57 FS and 91,
-    152, 242 RS, against the legend's 37, 54, 112 and 107, 185, 453 for 25 sessions.
+  notes: With regions from the paper's layer 4 centres (reading b of the criterion; the CCF layer cannot
+    be read, see the data check) and the units of reading (c), the percentage of phase-locked FS units
+    exceeds that of RS units in 13 of 15 region and band cells (none with Holm p below 0.05), and kappa
+    is higher for FS in 12 of 15 (8 with p below 0.05). With the CSD centre here the percentage is higher
+    in 14 of 15; reading (a) with the CSD centre gives all 15 (3 significant), which would make it partially
+    reproduced. Region counts (reading c, paper's centres) are 16, 34, 42 FS and 60, 101, 155 RS, against
+    the legend's 37, 54, 112 and 107, 185, 453 for 25 sessions.
   deviations:
   - Reading (a) of the regions, the CCF layer of the peak channel, cannot be run, as the electrodes tables
     give the structure without the layer.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  - Depth from the layer 4 centre the code's unit tables give for each probe (their depth is the probe
+    position minus one value per probe), the paper's own CSD placement, an assumption; the CSD centre
+    computed here, which differs from it by -420 to +340 um per probe, is shown as a variant.
   assumed: true
 - claim: figs6d-rs3-supragranular-beta
   outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs6d-rs3-supragranular-beta
-  measured: 1.15
-  notes: In the supragranular region the ratio of RS3 to RS1 mean kappa in beta is 1.15 (Mann-Whitney
-    p = 0.21) and in low gamma 1.18 (p = 0.20), reading a with the CSD depth; with the code's depths the
-    beta ratio is 1.35 (p = 0.056).
+  measured: 1.31
+  notes: In the supragranular region the ratio of RS3 to RS1 mean kappa in beta is 1.31 (Mann-Whitney
+    p = 0.090) and in low gamma 1.22 (p = 0.18), reading c with the paper's layer 4 centres, against 2
+    +- 0.2; with the CSD centre here the beta ratio is 1.14 (p = 0.48). Reading (a) gives a beta ratio
+    of 1.26 with p = 0.045, still outside the tolerance.
   deviations:
-  - Regions from the CSD depth with granular within 100 um of the centre.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  - Depth from the layer 4 centre the code's unit tables give for each probe (their depth is the probe
+    position minus one value per probe), the paper's own CSD placement, an assumption; the CSD centre
+    computed here, which differs from it by -420 to +340 um per probe, is shown as a variant.
   assumed: true
 - claim: figs6c-granular-phase
   outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:figs6c-granular-phase
-  notes: In the granular region FS and RS phases do not differ in beta, low or high gamma (p = 0.20, 0.88
-    and 0.57, reading a, CSD depth), while the infragranular region shows differences (p = 0.036, 0.0063,
-    0.0035). With the code's depths the granular high gamma test gives p = 0.058.
+  notes: In the granular region FS and RS phases do not differ in beta, low or high gamma (p = 0.95, 0.31
+    and 0.098, reading c, paper's layer 4 centres), while the infragranular region shows a high-gamma
+    difference (p = 0.0012). With the CSD centre here the granular tests give p = 0.72, 0.35 and 0.53.
   deviations:
-  - Regions as figs6c-fs-stronger-across-depth.
-  - Isolation is open; reading (a), the AllenSDK default filter, is used for the claims that follow the
-    clustering, as all 566 Source Data units of the held sessions pass it; reading (b) is shown beside
-    it.
+  - Isolation is open. Reading (c), reading (a) with at least 100 spikes in the first 5-min gray screen,
+    is used for the claims that follow the clustering, an assumption taken from the Results (well-isolated
+    units during spontaneous activity, paragraph 1 of EAP recordings from in vivo experiments) and the
+    Methods' 100-spike rule (Single unit firing properties); it keeps all 603 reading (a) units of the
+    code's unit tables and adds 27, where reading (a) adds 297. Readings (a) and (b) and the Source Data
+    labels are shown beside it.
+  - Depth from the layer 4 centre the code's unit tables give for each probe (their depth is the probe
+    position minus one value per probe), the paper's own CSD placement, an assumption; the CSD centre
+    computed here, which differs from it by -420 to +340 um per probe, is shown as a variant.
   assumed: true
 - claim: fig7-opto-unit-counts
   outcome: not_reproduced
@@ -437,9 +577,11 @@ outcomes:
   measured:
   - 13
   - 8
-  notes: In the 5 Pvalb and 6 Sst sessions held, 13 Pvalb and 8 Sst units are tagged (isolation a, 6 ms
-    baseline), 2.60 and 1.33 per mouse against 3.0 to 3.1 and 1.5; isolation (b) gives 4.20 and 2.33 per
-    mouse. Two Pvalb sessions have no tagged unit. The same rule tags 6 of 900 wild-type units.
+  notes: In the 5 Pvalb and 6 Sst sessions held, isolation (a) with the 6 ms baseline tags 13 Pvalb and
+    8 Sst units, 2.60 and 1.33 per mouse, against 3.0 to 3.1 and 1.5; isolation (b) gives 4.80 and 2.33
+    per mouse (6 ms) or 5.00 and 2.00 (10 ms), and reading (c) 2.40 and 1.17. Two Pvalb sessions have
+    no tagged unit. The same rule tags 6 of 900 wild-type units (reading a). Of the 12 Pvalb and 7 Sst
+    units of reading (c), 2 and 2 fail the code's per-unit exclusions (4 have the peak channel off centre).
   deviations:
   - The dandiset holds 5 of 8 Pvalb and 6 of 12 Sst mice; counts per mouse are compared, as the criterion
     says.
@@ -448,54 +590,66 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig7d-pvalb-fs-sst-diffuse
-  notes: All 13 Pvalb units fall in FS by both readings, while the Sst units fall in both clusters (3
-    FS, 5 RS); 62.5% of Sst units are in RS against 0% of Pvalb units.
+  notes: All 10 Pvalb units fall in FS by both readings, while the Sst units fall in both clusters (2
+    FS, 3 RS); 60% of Sst units are in RS against 0% of Pvalb units.
   deviations:
-  - Tagged set of isolation (a) and the 6 ms baseline (see fig7g-pvalb-more-symmetric).
+  - Tagged set of isolation (c), the 6 ms baseline and the code's per-unit exclusions of the wild-type
+    units (peak channel at the centre, trough time within 0.1 ms, amplitude 15 to 300 uV), an assumption;
+    every other tagged set is shown in the readings table.
 - claim: fig7e-pvalb-sst-one-channel
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig7e-pvalb-sst-one-channel
-  notes: Pvalb units have lower TPW (median 0.221 against 0.498 ms, p = 4.4e-04) and REP (0.209 against
-    0.280 ms, p = 0.0077), but their rate is not higher under any period reading (p 0.41 to 0.86). The
-    other tagged-set readings give the same.
+  notes: Pvalb units have lower REP (median 0.209 against 0.302 ms, p = 0.0027) and lower TPW (0.212 against
+    0.448 ms, p = 0.013, above 0.01), and their rate is not higher under any period reading (p 0.37 to
+    0.86), so one of the three holds. Without the per-unit exclusions TPW gives p = 0.0012 and REP 0.00016
+    (isolation c), which would make it partially reproduced; no tagged set gives a rate difference.
   deviations:
-  - Tagged set of isolation (a) and the 6 ms baseline.
+  - Tagged set of isolation (c), the 6 ms baseline and the code's per-unit exclusions of the wild-type
+    units (peak channel at the centre, trough time within 0.1 ms, amplitude 15 to 300 uV), an assumption;
+    every other tagged set is shown in the readings table.
+  assumed: true
 - claim: fig7g-pvalb-more-symmetric
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig7g-pvalb-more-symmetric
-  notes: The Pvalb mean symmetry index is lower (0.945 against 2.473), but the t-test gives p = 0.079
-    (Mann-Whitney p = 0.008) on the tagged set of isolation (a) and the 6 ms baseline. With the 10 ms
-    baseline the t-test gives p = 0.043; under isolation (b) p = 0.18 and 0.15. The baseline window is
-    open; the 6 ms window is taken as the one the Methods' "corresponding time window" best supports,
-    as it matches the 6 ms response window.
+  notes: The Pvalb mean symmetry index is lower (0.963 against 1.565), t-test p = 0.0034 (Mann-Whitney
+    p = 0.008), close to the Source Data means (0.924 and 1.448). Without the per-unit exclusions the
+    Sst mean rises to 1.43 (isolation c) or 2.47 (isolation a), and the t-test gives 0.025 and 0.079;
+    isolation (b) gives p = 0.79 with the exclusions and 0.25 without.
   deviations:
-  - Tagged set of isolation (a) and the 6 ms baseline, an assumption; the other three tagged sets are
-    shown.
+  - Tagged set of isolation (c), the 6 ms baseline and the code's per-unit exclusions of the wild-type
+    units (peak channel at the centre, trough time within 0.1 ms, amplitude 15 to 300 uV), an assumption;
+    every other tagged set is shown in the readings table.
   assumed: true
 - claim: fig7h-pvalb-higher-cv
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig7h-pvalb-higher-cv
-  notes: Pvalb CV is higher within presentations (median 1.585 against 1.179) but the Mann-Whitney p is
-    0.053, and over whole blocks the medians are equal (p = 0.86). The other tagged sets give p = 0.0021
-    to 0.012 within presentations.
+  notes: Pvalb CV is higher within presentations (median 1.714 against 1.025, Mann-Whitney p = 0.0013,
+    10 and 5 units). Over whole blocks the medians are nearly equal (1.819 against 1.814, p = 0.31). In
+    the readings table, CV within presentations is higher for Pvalb in every tagged set, with p from 0.00011
+    to 0.053 (only isolation a without exclusions is above 0.05); over whole blocks no set gives p below
+    0.05, and under isolation (b) Sst is higher.
   deviations:
-  - Tagged set of isolation (a) and the 6 ms baseline, an assumption; the other tagged sets reproduce
-    the claim.
+  - Tagged set of isolation (c), the 6 ms baseline and the code's per-unit exclusions of the wild-type
+    units (peak channel at the centre, trough time within 0.1 ms, amplitude 15 to 300 uV), an assumption;
+    every other tagged set is shown in the readings table.
   assumed: true
 - claim: fig7h-pvalb-theta-sst-later
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig7h-pvalb-theta-sst-later
-  measured: 45.8
-  notes: Pvalb units lock more strongly to theta (median kappa 1.066 against 0.134, p = 3.1e-04 in the
-    readings table). Sst units spike later by 54.5 degrees in low gamma (p below 0.001) and 60.7 in high
-    gamma (p = 0.001), but by 22.3 degrees in beta (p = 0.21); only low gamma lies in 36 to 55 degrees.
+  measured: 47.9
+  notes: Pvalb units lock more strongly to theta (median kappa 1.289 against 0.134, p = 0.003). Sst units
+    spike later by 57.1 degrees in low gamma (p = 0.001) and 67.7 in high gamma (p = 0.005), both above
+    36 to 55 degrees, and by 19.0 degrees in beta (p = 0.30). In the other tagged sets the low-gamma difference
+    falls in 47.6 to 57.1 degrees and the beta difference stays below 23 degrees.
   deviations:
   - Measured is the mean of the three Sst minus Pvalb phase differences (22.3, 54.5, 60.7).
-  - Tagged set of isolation (a) and the 6 ms baseline.
+  - Tagged set of isolation (c), the 6 ms baseline and the code's per-unit exclusions of the wild-type
+    units (peak channel at the centre, trough time within 0.1 ms, amplitude 15 to 300 uV), an assumption;
+    every other tagged set is shown in the readings table.
 - claim: fig4d-ap-sp-models-tpw-rep
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
@@ -507,24 +661,27 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig4e-in-vitro-ap-sp
-  notes: The Allen API features equal the Source Data values. Spike width (Source Data), spike rate and
+  notes: 'The Allen API features equal the Source Data values. Spike width (Source Data), spike rate and
     f-I slope differ with p below 0.001 (1.1e-05, t-test 1.2e-04, 1.2e-06), and adaptation with p = 0.0013,
-    below 0.05 but not 0.001. Not every cell has every feature (adaptation 15 AP and 13 SP cells).
+    below 0.05 but not 0.001. Not every cell has every feature: spike width is missing for 6 cells, adaptation
+    for 5, rate for 3, and these are left out.'
 - claim: fig4f-model-classifier
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig4f-model-classifier
-  measured: 83.15
-  notes: The model-based classifier reaches 83.15% validation accuracy (82.77 to 83.68% under the five
-    seeds); applied to the in vivo units it labels 91.6% of FS units AP and 77.5% of RS units SP.
+  measured: 83.13
+  notes: The model-based classifier reaches 83.13% validation accuracy (81.86 to 83.68% under the five
+    seeds); applied to the in vivo units of reading (c) it labels 94.7% of FS units AP and 81.0% of RS
+    units SP. Splitting before upsampling gives 83.22% (balanced 81.60%) against 49.33% with permuted
+    labels.
   deviations:
-  - In vivo units of isolation reading (a).
+  - In vivo units of isolation reading (c).
 - claim: fig4g-models-map-to-fs-rs
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig4g-models-map-to-fs-rs
-  notes: The experiment-based classifier labels 17 of 18 AP models FS and 11 of 15 SP models RS, under
-    all five seeds.
+  notes: The experiment-based classifier labels 17 of 18 AP models FS and 11 of 15 SP models RS (16 of
+    18 under one of the five seeds).
 - claim: fig4h-cre-lines-map
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
@@ -546,13 +703,16 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig5c-sp-rs-two-way-mapping
-  measured: 93.3
-  notes: 'The model-based random forest reaches 93.30% (92.89 to 93.83% under the five seeds), just below
-    94%, while both mappings hold: the most frequent SP label of RS1, RS2 and RS3 is SP1, SP2 and SP3,
-    and SP1, SP2 and SP3 map back to RS1 (4 of 5), RS2 (7 of 7) and RS3 (3 of 3).'
+  measured: 93.48
+  notes: 'The model-based random forest reaches 93.48%, just below 94% (93.44 to 94.17% under the five
+    seeds, one above 94%), while both mappings hold: the most frequent SP label of RS1, RS2 and RS3 is
+    SP1, SP2 and SP3, and SP1, SP2 and SP3 map back to RS1 (4 of 5), RS2 (7 of 7) and RS3 (3 of 3). Splitting
+    before upsampling gives 85.25% (balanced 86.33%) against 24.50% with permuted labels, so the code''s
+    procedure inflates the accuracy.'
   deviations:
   - 20 resamplings of 100 splits.
-  - RS clusters of isolation reading (a).
+  - RS clusters of isolation reading (c).
+  seed_sensitive: true
 - claim: fig5e-ca-lva
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
@@ -586,12 +746,13 @@ outcomes:
   notes: The model symmetry index is lower for Pvalb than Sst (mean 2.692 against 7.739, t-test p = 9.98e-04),
     as the Source Data gives.
 - claim: fig6cf-kv31
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig6cf-kv31
   notes: on the Source Data values. Of the five conductances the sheet lists, three differ (dendritic
     Kv3.1 p = 0.0217, dendritic NaV 0.0423, axonal e_pas 0.0341), and dendritic Kv3.1 has the largest
-    effect (|d| = 1.29).
+    effect (|d| = 1.29). The criterion tests every conductance of the models, and only these five are
+    public, so "exactly three" cannot be checked.
   deviations:
   - Only the five conductances of Source Data sheet Fig6cf could be tested, not every parameter of the
     models.
@@ -617,14 +778,18 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_wei_2023.ipynb
   output: claim:fig6g-pvalb-sst-in-vitro
-  notes: From the Allen API features, maximum spike rate (p = 0.0011), rheobase (p = 0.0008) and resting
-    potential (p = 0.0081) differ between Pvalb and Sst cells. Two of 18 cells have no API rate.
+  notes: From the Allen API features, maximum spike rate (Mann-Whitney p = 0.0011), rheobase (0.0008)
+    and resting potential (0.0081) differ between Pvalb and Sst cells. The paper gives p = 0.0067 for
+    the rate; here the rate gives 0.0011 by either source, and 0.0068 is the t-test p of the resting potential,
+    so the paper's rate p may belong to another feature or test.
 - claim: figs8-rotation-symmetry
   outcome: blocked
   blocked_by: not_runnable
-  notes: Needs NEURON and BMTK simulations of the 18 inhibitory models at several angles; the paper's
-    model repository (yinawei/Mouse-all-active-models-EAP at commit f1a42686) holds the set-up and parameters
-    of one spiny model only, and the angles are given only in Fig S8a. Not attempted.
+  notes: Needs NEURON and BMTK simulations of the 18 inhibitory models at several angles. The claims file
+    puts its data elsewhere, in the paper's model repository (yinawei/Mouse-all-active-models-EAP at commit
+    f1a42686), which holds the set-up and parameters of one spiny model only (cell 395830185); the dandiset
+    holds no simulations, the Source Data give only five conductances of sheet Fig6cf, and the angles
+    are shown only in Fig S8a. The simulations cannot be run here for lack of the models.
 findings:
 - kind: data_missing
   about: data
@@ -652,9 +817,11 @@ findings:
     to 500) are microvolts.
 - kind: selection_undocumented
   about: paper
-  statement: The isolation criteria behind the paper's "well-isolated" units and the code's good flag
-    are not stated. The code's unit tables hold 618 units of the held sessions, of which 15 fail the AllenSDK
-    default filter, while that filter passes 900; neither reading reproduces the paper's counts.
+  statement: The isolation criteria behind the paper's well-isolated units and the code's good flag are
+    not stated. The code's unit tables hold 618 units of the held sessions, of which 15 fail the AllenSDK
+    default filter, while that filter passes 900; every unit of the code's tables has at least 100 spikes
+    in the first 5-min gray screen (fr_5min at least 0.35 Hz), and 270 of the 297 filter-passing units
+    outside the tables have fewer, so the paper appears to require activity during that block as well.
 - kind: methods_unavailable
   statement: Question for the authors. How were units selected as well-isolated (the good flag of the
     code's unit tables), how was the layer 4 centre placed from the CSD (the code starts from precomputed
@@ -677,3 +844,434 @@ findings:
   statement: The model parameters (conductances) of the 33 models are not public beyond the few columns
     of the Source Data; the model repository holds one example model. The in vitro features of the Source
     Data equal those of the Allen Cell Types Database API.
+- kind: metadata_error
+  about: data
+  severity: major
+  statement: The electrodes tables' CCF coordinates (x, y, z) are NaN on every channel in 6 of the 24
+    sessions used, and in the other 18 y equals z on every channel, so the coordinates cannot place a
+    channel in the CCF and the CCF layer of a unit cannot be read (the location column gives the structure,
+    VISp, without the layer).
+- kind: other
+  about: paper
+  statement: 'The code''s classifiers (ecp_func.classifier after upsampling) upsample the minority classes
+    before the 75/25 split, so copies of a unit fall in training and test. For the random forests of Fig
+    5c and 5d this inflates the validation accuracy: with permuted RS1 to RS3 labels the procedure scores
+    61.7% where chance is about 33%, and splitting first gives 97.5% against 98.6% (in vivo) and 85.3%
+    against 93.5% (SP models). For the linear SVM of Fig 4f and 4g the effect is small (53.2% on permuted
+    labels).'
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1, same harness, separate context, did not write
+    the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text. The verifier read the archive's assets and
+    metadata through the DANDI API and tested name_by_overlap and the classifier procedure on synthetic
+    inputs. It had no attempt record.
+  results:
+  - claim: source-data-units-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: '13 of 25 sessions are held. All 566 Source Data ids of those sessions are found among VISp
+      good units, with per-session counts equal to sheet Fig 1d. Problem 2: on matched units the features
+      equal the Source Data for only 85% of TPW/REP values and 68-72% of 1/V values, and the mismatch
+      is not diagnosed by session or cause.'
+    response: 'Added the per-session, per-feature table of matching units and the size of the TPW differences
+      (median 0.004 ms, IQR -0.017 to 0.024 ms): the 85 differing units differ in all four features and
+      are spread over the sessions. Added the check of the unit set against the code''s tables (every
+      Source Data unit has at least 100 spikes in the first 5-min gray screen). Outcome unchanged.'
+  - claim: fig1d-unit-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Mean units per mouse is 57.0 under reading (a) and 123.4 under (b), against 48 +- 4.8; the
+      paper''s own count for these 13 sessions is 43.5. The claims file quote ties isolation to during
+      spontaneous activity, but neither reading includes an activity criterion; this is a gap in the claims
+      file, reported and not corrected (problem 1). Problem 13: reading (b) keeps only quality good units,
+      probably equivalent, not checked.'
+    response: Reading (b) now holds every VISp unit of the units table, quality good or noise (465 wild-type
+      noise units), giving 1820 units, 140.0 per mouse. Reading (c), not a reading of the criterion, gives
+      39.7 per mouse and is shown as a variant. The gap in the claims file is added to questions/wei-2023.yaml.
+      Outcome unchanged.
+  - claim: fig2-one-channel-two-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Elbow and f(K) both pick K = 2 under both readings and all seeds. FS has the lower TPW and
+      the lower REP (0.251 against 0.302 ms).
+    response: Re-run on reading (c) as well (K = 2 by both, all seeds) and on the paper's own features
+      (K = 2). Outcome unchanged.
+  - claim: fig2-fs-rs-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'FS fraction is 20.8% under (a) and 17.9% under (b), against 23.3 +- 2.33 (floor 20.97), a
+      narrow miss. Labels agree 98.4% with the Source Data on shared units. Problem 1: reading (a) brings
+      in 248 units the paper did not use and loses 73 of its units, and the added units fire very little,
+      which pulls down the rates and the FS fraction.'
+    response: The unit set is now reading (c), reading (a) with at least 100 spikes in the first 5-min
+      gray screen, taken from the Results (well-isolated units during spontaneous activity) and the Methods'
+      100-spike rule; it keeps all 603 reading (a) units of the code's tables and adds 27 (cell of source-data-units-link).
+      Readings (a) and (b) are shown beside it, reading (b) now includes the units of quality noise as
+      the criterion words it, and the outcome is marked as resting on the assumption where the readings
+      differ. Under reading (c) the FS fraction is 25.4%, within tolerance, so the outcome changes to
+      reproduced, resting on the assumption; readings (a) and (b) give 20.8% and 20.5%.
+  - claim: figs3b-fs-faster
+    agrees: false
+    outcome: not_reproduced
+    reason: 'FS is faster under every reading with p < 1e-11, but no reading puts both medians in tolerance.
+      The best are (a)a2 with FS 5.04 / RS 1.40 and Source Data labels a1 with FS 4.55 / RS 2.50. Problem
+      1: reading (a) brings in 248 units the paper did not use and loses 73 of its units, and the added
+      units fire very little, which pulls down the rates and the FS fraction.'
+    response: 'The unit set is now reading (c), reading (a) with at least 100 spikes in the first 5-min
+      gray screen, taken from the Results (well-isolated units during spontaneous activity) and the Methods''
+      100-spike rule; it keeps all 603 reading (a) units of the code''s tables and adds 27 (cell of source-data-units-link).
+      Readings (a) and (b) are shown beside it, reading (b) now includes the units of quality noise as
+      the criterion words it, and the outcome is marked as resting on the assumption where the readings
+      differ. Under reading (c) the gray-screen block gives FS 4.26 and RS 2.29 Hz, and the first 5 minutes
+      FS 4.50 (within tolerance) and RS 2.38 Hz. The outcome is kept as partially reproduced: the direction
+      and the test hold under every reading (p from 1.3e-05 to 2.3e-64), and the criterion defines only
+      a reproduced outcome, so the effect being present with medians outside the tolerance is read as
+      holding in part. The disagreement is recorded.'
+  - claim: fig2-rs-more-asymmetric
+    agrees: true
+    outcome: reproduced
+    reason: Symmetry index median RS 1.645 against FS 0.845, Mann-Whitney p = 3.6e-26.
+    response: Re-run on reading (c) (1.599 against 0.784, p = 2.3e-21). Outcome unchanged.
+  - claim: fig2d-three-subclusters-each
+    agrees: true
+    outcome: not_reproduced
+    reason: 'f(K) picks K = 2 (a) or 9 (b) for FS; the elbow picks 2 (a) or 3 (b). Only RS gives K = 3.
+      Problem 4: FS is forced to K = 3, so every FS1 to FS3 outcome is conditional on clusters the paper''s
+      procedure does not produce here. Problem 5: name_by_overlap can return names outside names; the
+      reading (b) counts printed were therefore wrong. Section C asked to cluster the 1204 units of sheet
+      Fig2d.'
+    response: 'Fixed name_by_overlap to use only the reference labels among the names offered, so the
+      reading (b) counts are now correct. Added the clustering of the paper''s own Fig2d features: K =
+      3 for FS and RS by both methods, with the paper''s labels for all 1204 units, so the procedure is
+      reproduced and the difference comes from the recomputed features. Reading (c) also gives FS K =
+      2. The forced K = 3 stays a deviation and the FS1 to FS3 outcomes stay marked as resting on it.
+      Outcome unchanged.'
+  - claim: figs4-rs1-faster-above
+    agrees: true
+    outcome: reproduced
+    reason: 1/V above median RS1 1.54 against RS2 3.41, Holm p = 5e-66.
+    response: Re-run on reading (c) (1.468 against 3.259, Holm p = 2.8e-41). Outcome unchanged.
+  - claim: figs4-rs-spread
+    agrees: true
+    outcome: reproduced
+    reason: Kruskal-Wallis p = 6.4e-7 (a), 2.9e-15 (b), 4.1e-5 (Source Data labels). RS3 has the smallest
+      median in each.
+    response: Re-run on reading (c) (p = 6.8e-06, RS3 smallest). Outcome unchanged.
+  - claim: figs4-fs-spread-absent
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.978 (a) and 0.267 (Source Data labels), but p = 0.013 under (b). It rests on FS clusters
+      forced to K = 3.
+    response: Re-run on reading (c) (p = 0.399); reading (b), now with noise units, gives p below 0.001.
+      Outcome unchanged, marked as resting on an assumption.
+  - claim: figs5-depth-distribution
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Kruskal-Wallis p < 0.05 with the clusters found here (0.011 under (a), 4e-6 under (b)). With
+      the paper''s labels p = 0.36 on the CSD depth and 0.34 on the code''s own depth, and the CSD depth
+      is unreliable. Problem 3: the CSD layer 4 centre disagrees with the code''s depth, per-session median
+      offsets run from -340 to +420 um, only 29% of units fall within 100 um, and depth_csd ranges down
+      to -1000 um, implausible for V1. Section C asked for per-probe centres against the code''s offset,
+      with CSD plots.'
+    response: Added the per-probe table of the CSD centre here against the code's centre (the code's depth
+      is the probe position minus one value per probe, shown) and the CSD plots of the 13 probes. The
+      depth is now taken from the code's layer 4 centre for every unit of the probe, the paper's own CSD
+      placement, with the CSD here as a variant. With it the six clusters do not differ (p = 0.25, reading
+      c; 0.34, Source Data labels), so the outcome changes to not reproduced, resting on the assumption;
+      the CSD here gives p = 0.044. The verifier's partial outcome is not taken, as on the paper's own
+      placement neither the clusters here nor the paper's labels show the difference.
+  - claim: fig6a-fs1-symmetric
+    agrees: true
+    outcome: reproduced
+    reason: Under (a), Kruskal-Wallis p = 7.8e-15, Holm FS1-FS2 7e-10 and FS1-FS3 5e-12, FS1 lowest. FS
+      clusters are forced to K = 3.
+    response: Re-run on reading (c) (p = 1.3e-09, Holm 2.9e-06 and 2.7e-08). Outcome unchanged, resting
+      on the forced K.
+  - claim: fig4g-experiment-classifier-fs-rs
+    agrees: true
+    outcome: reproduced
+    reason: '99.91% under (a) (98.69% with Source Data labels). Inflated by leakage. Problem 6: upsample_index
+      runs before the split, so duplicated rows land in train and test; on pure noise the random forest
+      scored 91% where balanced chance is 50%. Problem 10: the classifiers are not run on reading (b).
+      Section C asked for a label-permutation baseline.'
+    response: Added reading (b) and reading (c) (99.34%), a label-permutation baseline under the code's
+      procedure (53.18% for this linear SVM) and a variant that splits before upsampling (99.19%, balanced
+      99.44%, against 52.93% with permuted labels). For the linear SVM the leakage does not inflate the
+      score. Outcome unchanged.
+  - claim: fig5d-experiment-classifier-rs
+    agrees: true
+    outcome: partially_reproduced
+    reason: '98.29% under (a), 93.27% with Source Data labels: above 95% but below 99%. Problem 6 (leakage)
+      and problem 10 (no reading b, 20 resamplings in place of 100) apply.'
+    response: Added reading (b), reading (c) (98.55%), a permutation baseline under the code's procedure
+      (61.67% against a chance of about 33%, so the procedure inflates the random forest's score) and
+      a split-first variant (97.53%, balanced 97.34%). Outcome unchanged; the inflation is recorded as
+      a finding about the paper's code.
+  - claim: fig3a-isi-fs-rs
+    agrees: false
+    outcome: partially_reproduced
+    reason: No median lies inside the CI tolerance. Within 10% only on Source Data labels (FS 20.50, RS
+      54.67 ms). With own clusters FS is 22.67 ms, 15% off. Mann-Whitney p about 0.
+    response: The unit set is now reading (c), reading (a) with at least 100 spikes in the first 5-min
+      gray screen, taken from the Results (well-isolated units during spontaneous activity) and the Methods'
+      100-spike rule; it keeps all 603 reading (a) units of the code's tables and adds 27 (cell of source-data-units-link).
+      Readings (a) and (b) are shown beside it, reading (b) now includes the units of quality noise as
+      the criterion words it, and the outcome is marked as resting on the assumption where the readings
+      differ. Under reading (c) the medians are 21.00 and 55.33 ms, both within 10%, so the outcome changes
+      to partially reproduced, as the verifier gives; it rests on the assumption, as reading (a) leaves
+      FS 15% off.
+  - claim: fig3a-rs1-excitability
+    agrees: true
+    outcome: reproduced
+    reason: 'Under reading (a) or (b) with period (b), rate, CV and LV all meet the omnibus and both Holm
+      RS1 tests in the right direction. With the Source Data labels, RS1 against RS3 fails for all three
+      measures. Problem 12: LV pairs straddle trial boundaries.'
+    response: Fixed LV to use only pairs of ISIs within one interval. The unit set is now reading (c),
+      reading (a) with at least 100 spikes in the first 5-min gray screen, taken from the Results (well-isolated
+      units during spontaneous activity) and the Methods' 100-spike rule; it keeps all 603 reading (a)
+      units of the code's tables and adds 27 (cell of source-data-units-link). Readings (a) and (b) are
+      shown beside it, reading (b) now includes the units of quality noise as the criterion words it,
+      and the outcome is marked as resting on the assumption where the readings differ. Under reading
+      (c) one measure holds under each period (CV over blocks, rate within presentations), so the outcome
+      changes to partially reproduced, resting on the assumption; reading (a) with the block period still
+      gives all three.
+  - claim: fig3a-rs23-visual-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under (a), f1/f0 and lifetime sparseness hold; modulation index fails (Kruskal-Wallis p =
+      0.052). Under (b) and Source Data labels, fewer metrics hold.
+    response: The unit set is now reading (c), reading (a) with at least 100 spikes in the first 5-min
+      gray screen, taken from the Results (well-isolated units during spontaneous activity) and the Methods'
+      100-spike rule; it keeps all 603 reading (a) units of the code's tables and adds 27 (cell of source-data-units-link).
+      Readings (a) and (b) are shown beside it, reading (b) now includes the units of quality noise as
+      the criterion words it, and the outcome is marked as resting on the assumption where the readings
+      differ. Under reading (c) the RS1 against RS3 tests of f1/f0 and lifetime sparseness miss (Holm
+      p = 0.056 and 0.065) and the modulation index does not differ, so the outcome changes to not reproduced,
+      resting on the assumption; the Source Data labels give the same pattern, and reading (a) would give
+      partial.
+  - claim: fig3a-fs-visual-absent
+    agrees: true
+    outcome: reproduced
+    reason: All omnibus p >= 0.17 under every label set. FS clusters are forced to K = 3.
+    response: Re-run on reading (c) (p = 0.833 to 0.969). Outcome unchanged.
+  - claim: fig3c-fs-more-phase-locked
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'FS > RS is significant in 3 to 4 bands, but never in theta (Holm p >= 0.085). RS percentages
+      are outside tolerance, e.g. alpha 78.6 against 63.9 +- 6.4. Problem 7: spontaneous phase locking
+      is 4 to 16 times the paper''s; the nearest LFP channel may carry the unit''s own spike waveform.
+      Problem 11: spikes are mapped to the next LFP sample, shifting phases by up to 0.8 ms.'
+    response: Spikes are now mapped to the nearest LFP sample. Added LFP channel (c), the nearest at least
+      100 um from the peak channel. The unit set is now reading (c), reading (a) with at least 100 spikes
+      in the first 5-min gray screen, taken from the Results (well-isolated units during spontaneous activity)
+      and the Methods' 100-spike rule; it keeps all 603 reading (a) units of the code's tables and adds
+      27 (cell of source-data-units-link). Readings (a) and (b) are shown beside it, reading (b) now includes
+      the units of quality noise as the criterion words it, and the outcome is marked as resting on the
+      assumption where the readings differ. Under reading (c) FS exceeds RS in all five bands but significantly
+      in only two (98 FS and 327 RS units), so the outcome changes to not reproduced, resting on the assumption;
+      reading (a) gives 3 to 5 bands.
+  - claim: fig3c-rs-prefers-theta
+    agrees: true
+    outcome: reproduced
+    reason: The criterion holds in every combination of readings. FS range is about 10 to 12 points against
+      an RS range of 19 to 25.
+    response: Re-run on reading (c) and LFP (c); it holds in every combination. Outcome unchanged.
+  - claim: figs7-spontaneous-less-locked
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Spontaneous locking is lower in every band under (a) and (b), but the theta shares are FS
+      88.7% and RS 75.5%, against 19.5% and 4.7%. Problem 7: the nearest LFP channel may carry the unit''s
+      own spike waveform, not investigated. Section C asked for spontaneous and drifting-grating locking
+      with an LFP channel at least 100 um from the peak.'
+    response: 'Added LFP (c), at least 100 um from the peak channel: spontaneous theta locking stays at
+      92.9% (FS) and 81.0% (RS), so the unit''s own waveform does not explain it; RS high-gamma locking
+      drops from 80.1 to 46.8%. Re-run on reading (c) (90.8 and 77.7%). Outcome unchanged.'
+  - claim: fig3c-fs-stronger-earlier
+    agrees: true
+    outcome: not_reproduced
+    reason: Kappa is significant in at most 2 bands (Source Data labels low and high gamma). There is
+      no significant phase lead in beta or low gamma under any reading.
+    response: 'Re-run on reading (c): kappa higher in all five bands, significant in low and high gamma
+      only; no phase lead. Outcome unchanged.'
+  - claim: fig3d-rs2-gamma-locking
+    agrees: true
+    outcome: not_reproduced
+    reason: No gamma omnibus test with RS2 > RS1 reaches significance. Only the phase range (167 to 215
+      degrees) holds.
+    response: Re-run on reading (c) (Kruskal-Wallis p = 0.35 and 0.78). Outcome unchanged.
+  - claim: fig3e-fs-cluster-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Only reading (b), on forced FS clusters, gives FS3 > FS2 in high gamma (Holm p = 0.014). There,
+      phase differs in alpha and beta but not low gamma.
+    response: 'Re-run on reading (c): kappa fails, alpha phase differs (p = 0.046). Outcome unchanged,
+      resting on the forced K.'
+  - claim: figs6c-fs-stronger-across-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Using the percentage phase-locked, FS > RS holds in all 15 cells (reading (a) and Source
+      Data labels, CSD depth), but only 3 or 0 of the Holm tests reach p < 0.05. Kappa holds in at most
+      12 of 15 cells. Problem 3 (the CSD depth) applies. Section C: the NWB electrodes table was not opened,
+      so whether its CCF coordinates allow the CCF-layer reading was not checked.'
+    response: 'Checked the electrodes tables: the CCF x, y, z are NaN in 6 of 24 sessions and where present
+      y equals z on every channel, so the CCF-layer reading cannot be run (data check; a new finding).
+      Regions now come from the paper''s layer 4 centres. Under reading (c) the percentage is higher for
+      FS in 13 of 15 cells and kappa in 12 of 15, so the outcome changes to not reproduced, resting on
+      the assumptions; reading (a) with the CSD centre still gives 15 of 15.'
+  - claim: figs6d-rs3-supragranular-beta
+    agrees: true
+    outcome: not_reproduced
+    reason: RS3/RS1 kappa ratio is 0.96 to 1.36 against 2 +- 0.2. All Mann-Whitney p > 0.05.
+    response: Re-run on reading (c) with the paper's layer 4 centres (ratio 1.31, p = 0.090). Outcome
+      unchanged.
+  - claim: figs6c-granular-phase
+    agrees: true
+    outcome: not_reproduced
+    reason: No granular FS-earlier result in either region reading the criterion names. Only the code-depth
+      variant under (b) gives high gamma p = 0.037. Infragranular differences are significant, against
+      the claim.
+    response: Re-run on reading (c) with the paper's layer 4 centres (granular p = 0.95, 0.31, 0.098).
+      Outcome unchanged.
+  - claim: fig7-opto-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Per mouse, Pvalb is 2.6 (a) or 4.2 to 4.4 (b) against 2.7 to 3.4; Sst is 1.17 to 1.33 (a)
+      or 2.0 to 2.33 (b) against 1.35 to 1.65.
+    response: Reading (b) now includes the noise units (4.80 to 5.00 Pvalb, 2.00 to 2.33 Sst per mouse);
+      reading (c) is shown. Outcome unchanged.
+  - claim: fig7d-pvalb-fs-sst-diffuse
+    agrees: true
+    outcome: reproduced
+    reason: Pvalb is 13 of 13 FS; Sst is 3 FS and 5 RS, under both placement readings.
+    response: Re-run on the new tagged set (10 of 10 Pvalb FS; Sst 2 FS and 3 RS). Outcome unchanged.
+  - claim: fig7e-pvalb-sst-one-channel
+    agrees: true
+    outcome: partially_reproduced
+    reason: TPW and REP have p < 0.01 in every tagged-set reading. Rate is not significant under any period.
+    response: The tagged set now passes the code's per-unit exclusions (problem 8). On it TPW gives p
+      = 0.013, above the criterion's 0.01, so only REP holds and the outcome changes to not reproduced,
+      resting on the assumption; without the exclusions TPW and REP both hold (partial).
+  - claim: fig7g-pvalb-more-symmetric
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Pvalb is lower in every tagged set, but the t-test gives p < 0.05 only for isolation (a)
+      with the 10 ms baseline (0.043). The main set gives p = 0.079. Problem 8: the tagged units include
+      6 whose peak is off centre and the wild-type exclusions are not applied; the Sst mean symmetry index
+      is 2.47 against 1.45 in the Source Data, and this could change the outcome.'
+    response: Applied the code's per-unit exclusions to the tagged units (4 of 19 off centre in reading
+      c, 2 more fail) and used isolation (c). The Sst mean falls to 1.565 (Source Data 1.448) and the
+      t-test gives p = 0.0034, so the outcome changes to reproduced, resting on the assumption; every
+      tagged set is printed.
+  - claim: fig7h-pvalb-higher-cv
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Main set Pvalb higher, p = 0.053 (period a) and 0.86 (period b). Other tagged sets give p
+      = 0.002 to 0.012, but no direction is printed. Problem 9: cell 76 prints no direction for CV in
+      the alternative tagged sets and omits cv_dg_b, the period that matches the Source Data CV.'
+    response: The readings table now prints the direction and both periods for every tagged set. On the
+      new tagged set Pvalb CV is higher within presentations (p = 0.0013) and in every tagged set; over
+      whole blocks no set reaches p < 0.05. The criterion reads the period as fig3a-isi-fs-rs, either
+      reading, so the outcome changes to reproduced, resting on the assumption.
+  - claim: fig7h-pvalb-theta-sst-later
+    agrees: true
+    outcome: partially_reproduced
+    reason: Theta kappa is higher for Pvalb (p < 0.001). Only the low-gamma phase lag (54.5 degrees, p
+      < 0.001) meets 36 to 55; beta (22, p = 0.21) and high gamma (60.7) fail.
+    response: Re-run on the new tagged set (theta p = 0.003; lags 19.0, 57.1, 67.7 degrees). Outcome unchanged.
+  - claim: fig4d-ap-sp-models-tpw-rep
+    agrees: true
+    outcome: reproduced
+    reason: TPW t-test p = 2.5e-4, REP Mann-Whitney p = 4.9e-4, AP lower.
+    response: No change.
+  - claim: fig4e-in-vitro-ap-sp
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Adaptation gives Mann-Whitney p = 1.26e-3, just above 0.001. The other three are below 0.001.
+      Problem 14: AP width has n = 13/14 of 18/15 cells, and NaN values are dropped silently.'
+    response: The cell now prints how many cells lack each value. Outcome unchanged.
+  - claim: fig4f-model-classifier
+    agrees: true
+    outcome: reproduced
+    reason: 83.15% accuracy; 91.6% of FS labelled AP and 77.5% of RS labelled SP. Problem 6 (leakage)
+      applies.
+    response: Added a split-first variant (83.22%, balanced 81.60%, against 49.33% with permuted labels).
+      Re-run on reading (c) (83.13%; 94.7% and 81.0%). Outcome unchanged.
+  - claim: fig4g-models-map-to-fs-rs
+    agrees: true
+    outcome: reproduced
+    reason: 17 of 18 AP models labelled FS, 11 of 15 SP models labelled RS, the same under all seeds.
+    response: 'Re-run on reading (c): the same, 16 of 18 under one seed. Outcome unchanged.'
+  - claim: fig4h-cre-lines-map
+    agrees: true
+    outcome: partially_reproduced
+    reason: Scnn1a is 2 FS / 2 RS, not a majority. Pooled, excitatory and inhibitory both hold.
+    response: No change.
+  - claim: fig5a-sp-models-three-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Elbow and f(K) both pick K = 3, with counts 5/7/3 equal to the paper's labels.
+    response: No change.
+  - claim: fig5c-sp-rs-two-way-mapping
+    agrees: true
+    outcome: partially_reproduced
+    reason: Model-based accuracy is 93.3% (92.9 to 93.8 across seeds), below 94%. All six majority mappings
+      match. Problem 6 (leakage) applies.
+    response: 'Re-run on reading (c): 93.48%, with one of the five seeds above 94% (seed_sensitive set).
+      Added a split-first variant (85.25% against 24.50% with permuted labels). Outcome unchanged.'
+  - claim: fig5e-ca-lva
+    agrees: true
+    outcome: reproduced
+    reason: Cohen's d is 2.07 and 2.12, SP2 lower; Source Data values.
+    response: No change.
+  - claim: fig5g-bifurcation-velocity-sp
+    agrees: true
+    outcome: reproduced
+    reason: Slope 2.71, r = 0.80, p = 1e-7.
+    response: No change.
+  - claim: fig5j-sp1-rate-tau
+    agrees: true
+    outcome: reproduced
+    reason: d = 0.89 for rate (SP1 higher) and 1.13 for tau.
+    response: No change.
+  - claim: fig6b-pvalb-sst-models-symmetry
+    agrees: true
+    outcome: reproduced
+    reason: Pvalb 2.69 against Sst 7.74, p = 9.98e-4.
+    response: No change.
+  - claim: fig6cf-kv31
+    agrees: false
+    outcome: partially_reproduced
+    reason: 3 of the 5 Source Data conductances give p < 0.05, and dendritic Kv3.1 has the largest |d|
+      (1.29). Every conductance cannot be tested because only 5 are published.
+    response: 'Outcome changed to partially reproduced, as the verifier gives: the criterion tests every
+      conductance, and only five are public.'
+  - claim: fig6d-sst-asymmetric-morphology
+    agrees: true
+    outcome: reproduced
+    reason: Pvalb p = 0.455; Sst p = 0.030 with |above| > |below|.
+    response: No change.
+  - claim: fig6e-bifurcation-velocity-inhibitory
+    agrees: true
+    outcome: reproduced
+    reason: Slope 2.68, r = 0.80, p = 5.1e-9.
+    response: No change.
+  - claim: fig6g-pvalb-sst-in-vitro
+    agrees: true
+    outcome: reproduced
+    reason: 'Rate p = 0.0011, rheobase 0.0008, resting potential 0.0081. The paper gives 0.0067 for rate
+      (problem 15: maximum spike rate may be a different feature from 1000/avg_isi; both values are below
+      0.01).'
+    response: 'The cell now prints the t-test as well: the resting potential''s t-test gives 0.0068, near
+      the paper''s rate p, which may belong to another feature or test (noted). Outcome unchanged.'
+  - claim: figs8-rotation-symmetry
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as data_missing: it needs simulations of rotated models; the GitHub tree at f1a4268
+      holds only examples/395830185, and the dandiset holds no simulations. No part can be tested.'
+    response: 'Kept as blocked by not_runnable. The verifier''s data_missing is the cause, but the claims
+      file gives this claim data: elsewhere (the model repository), and the protocol blocks such a claim
+      for the reason it cannot be tested there, never data_missing; the notes now say that the models''
+      parameters and the simulations are not public.'
