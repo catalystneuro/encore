@@ -5,13 +5,13 @@
   "label": "DANDI:000010"
  },
  "page": "datasets/dandi/000010/",
- "generated": "2026-11-22T17:01:54+00:00",
+ "generated": "2026-11-22T17:57:40+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 8,
   "partially_reproduced": 3,
-  "not_reproduced": 5,
-  "blocked": 11
+  "not_reproduced": 6,
+  "blocked": 44
  },
  "outcome_counts_with_outside_data": {
   "reproduced": 0,
@@ -982,6 +982,1331 @@
     }
    ],
    "paper_notes": []
+  },
+  {
+   "id": "gable-2026-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000010",
+    "version": "0.220126.1905",
+    "doi": "10.48324/dandi.000010/0.220126.1905",
+    "relation": "reuses"
+   },
+   "datasets": [
+    "dandi:000010"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000010",
+   "label": "DANDI:000010",
+   "dataset_version": "0.220126.1905",
+   "paper": "10.1523/jneurosci.0974-26.2026",
+   "paper_title": null,
+   "date": "2026-11-22",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-18"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/45034337289"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "gable-2026",
+   "inputs": [
+    {
+     "what": "The paper's analysis code (FigureS4.ipynb and Figures/sled_glutamate_functions.py), read for the coupling, pair and bootstrap procedure. The notebook reads the printed outputs of FigureS4.ipynb at this commit (neurons per session, same-range and different-range pair counts and mean differences per bin) and prints them beside its own; they are compared with each reading and support the assumed reading, and no expected value or data are taken from them.",
+     "source": "https://github.com/kerlin-lab/Gable_2026 at commit 688e662767ed32b6ea60a2827c3483408edf6deb"
+    }
+   ],
+   "entry_title": "Population coupling in ALM silicon-probe recordings (Gable et al. 2026, Figure S4)",
+   "summary": "None of the paper's main findings could be tested in this data. Its central results, that tuft dendrite spikes come with elevated, dendrite-specific glutamate input and that synapses grouped by population coupling differ in activity and task encoding, rest on the authors' own two-photon imaging, which is not public. The dataset holds earlier ALM silicon-probe recordings that the paper reanalyses only in a supplementary figure. There, the lowest-coupling neurons were more correlated with each other under every reading tried, but the effect's size and the higher and middle coupling results turned on firing-rate and trial choices the paper does not describe. The paper's selection could not be rebuilt (9 mice against its 11), and many units are stored twice.",
+   "description": "Tests the Figure S4 and Table 5 findings of Gable, Newman, Young, Scheib, Bliese, Miller and Kerlin (2026) on dandiset 000010, the ALM silicon-probe recordings of Li et al. (2015) that the paper reanalyses. It repeats the session selection, computes the population coupling of each neuron from trial-specific activity, and compares pairwise correlations within and across coupling bins with the paper's session bootstrap. The paper's own two-photon imaging is not public.",
+   "notebooks": [
+    {
+     "path": "reproduce_gable_2026.ipynb",
+     "title": "Reproducing Gable et al. (2026), Figure S4, from dandiset 000010",
+     "cells": {
+      "sanity": "7b494ca3",
+      "claim:figs4-session-selection": "4c113013",
+      "claim:figs4-lowest-couplers-correlated": "f216df60",
+      "claim:figs4-high-couplers-correlated": "55435697",
+      "claim:figs4-middle-couplers-not-correlated": "88b16191"
+     },
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "figs4-session-selection",
+     "statement": "The reanalysis of the Li et al. (2015) ALM silicon-probe recordings includes eight Sim1_KJ18-Cre and three Tlx_PL56-Cre mice, 20 sessions, and yields 753 same-coupling-range and 6,586 different-coupling-range neuron pairs.",
+     "source": "Methods, Secondary analysis of electrophysiology dataset; Table 5 footnote",
+     "quote": "Our analysis included eight Sim1_KJ18-Cre mice and three Tlx_PL56-Cre mice from this study",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_gable_2026.ipynb",
+     "output": "claim:figs4-session-selection",
+     "notes": "No reading of O1 to O3 matches, with units stored twice counted once or with every stored row. With units counted once every reading gives 9 mice (7 Sim1, 2 Tlx) and 15 or 16 sessions; with every stored row, 10 mice (7 Sim1, 3 Tlx) and 17 or 18 sessions, against 8 Sim1 and 3 Tlx mice and 20 sessions. The third Tlx mouse (sub-218453) enters only with every stored row, its session of 18 stored rows holding 16 distinct units. Nine of the ten KJ18 mice have a session of at least 18 stored units, but only seven have one with 18 units above 0.5 Hz under either rate, so no reading reaches eight Sim1 mice. Measured values are under the reading adopted for the other claims (baa), 9 mice, 16 sessions of 18 to 25 neurons (318 neurons), 501 same-range and 5,060 different-range pairs (paper 753 and 6,586). The output printed by FigureS4.ipynb (commit 688e662) shows 20 sessions of 18 to 25 neurons, 411 neurons in all, and 771 same-range and 6,586 different-range pairs; 12 of the 16 baa sessions have a neuron count that appears in the code's list. Over all sixteen readings the pair counts run from 452 to 893 and from 4,650 to 8,860. Without the Ai32 crosses the count is 7 mice under every reading. The outcome is the same under every reading, so it does not rest on an assumption. Before the second verification the measured values were under baa-r (10, 17, 575 and 5,686).",
+     "deviations": [
+      "The selection is run under the eight combinations of O1 to O3, as the criterion directs, each with units stored twice counted once and with every stored row.",
+      "Mice are counted by the strain in the subject record; the KJ18 and PL56 mice crossed with Ai32 are counted with their Cre line, and the count without them is shown. The selected sessions of these mice, and three selected sessions of KJ18 mice without Ai32 (sub-210862 ses-20130626, sub-210863 ses-20130626 and ses-20130628), hold no laser trace or photostimulation onsets, so any photostimulation in them could not be excluded.",
+      "Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length was set."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4-lowest-couplers-correlated",
+     "statement": "In the ALM silicon-probe recordings, neurons in the lowest population-coupling bin (0 to 14.29%) are more correlated with each other than with neurons of other coupling bins, as the synapses with the lowest coupling are.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 2; Figure S4B; Table 5",
+     "quote": "These enhanced correlations among the lowest couplers were also found in ... publicly available silicon probe recordings of ALM activity ( Fig. S4 ; Table 5 ; Li et al., 2015a )",
+     "statistics": [
+      {
+       "about": "same against different coupling range, bin 0.00 to 14.29%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.06 (rho)",
+       "p": 0.0007,
+       "corrected": "Holm, across 7 bins",
+       "n": "753 same-range and 6,586 different-range neuron pairs, 20 sessions, 11 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_gable_2026.ipynb",
+     "output": "claim:figs4-lowest-couplers-correlated",
+     "notes": "The analysis ran, but the outcome turns on O2, for which the paper gives no defensible choice. Under baa the lowest bin's mean difference is 0.048 (same 0.028, different -0.020; 60 same-range and 768 different-range pairs), Holm-corrected one-tailed p = 0.0007, positive and significant but below the tolerance of 0.054 to 0.066; over the five seeds it is 0.0478 to 0.0479 with p = 0.0007. It is significant under all sixteen readings (0.032 to 0.055) and partially reproduced under 15 of them. Only bba, with units counted once, is within tolerance (0.0548, 0.0546 to 0.0548 over the seeds, just inside the lower edge of 0.054) and gives reproduced; baa, bab and bbb, and all eight readings with every stored row, give partially reproduced. baa and bba differ only in O2, so the outcome is not the one every reading gives, and by the claims file's rule the claim is blocked. The readings split under every framing, with units counted once and O1 (b), with units counted once, and over all sixteen. The paper's code printed 0.0575. The difference is positive in each of the 8 mice with same-range pairs in the bin. The session selection did not match the paper's (figs4-session-selection), so the population differs from the paper's 20 sessions. Before the second verification the outcome rested on reading baa-r (0.041). It was partially reproduced until the third verification round, which agreed with blocked.",
+     "deviations": [
+      "Assumed reading baa. Units stored twice in a file (a repeated id with an identical spike train), a detail the claims file does not name, are counted once: the two rows are one recorded unit, and the protocol (Author, step 1.2) counts a recording deposited twice once. Every reading is also run with every stored row. The round-2 verifier found the earlier reading baa-r (every stored row) unreasonable, as the duplicated rows are not distinct neurons, so it was replaced. O1 (b), only units above 0.5 Hz enter a selected session, because the output printed by the paper's FigureS4.ipynb (commit 688e662) gives 18 to 25 neurons per session, which the O1 (b) readings give and the O1 (a) readings do not (up to 34). O2 and O3 are not assumed. The Methods' 'session-wide firing rate' can be the rate over the recording, but the same paragraph says the coupling was 'estimated session-wide from activity recorded between the tactile stimulus onset and 2 s after the GO signal'; the code's output does not tell the O3 readings apart. A claim whose outcome turns on O2 or O3 is blocked. Results under all sixteen readings are in the notebook.",
+      "Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length was set.",
+      "Bootstrap seed from the claim, as the protocol requires; the paper gives none."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4-high-couplers-correlated",
+     "statement": "In the ALM silicon-probe recordings, neurons in the three highest coupling bins (57.14 to 100%) are more correlated with neurons of the same bin than with neurons of other bins (Table 5 differences 0.02, 0.06 and 0.1), as for the synapses.",
+     "source": "Figure S4B; Table 5",
+     "quote": "Figure S4. Similar organization of population coupling in silicon probe recordings",
+     "statistics": [
+      {
+       "about": "bin 57.14 to 71.43%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.02 (rho)",
+       "p": 0.0007,
+       "corrected": "Holm, across 7 bins"
+      },
+      {
+       "about": "bin 71.43 to 85.71%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.06 (rho)",
+       "p": 0.0007,
+       "corrected": "Holm, across 7 bins"
+      },
+      {
+       "about": "bin 85.71 to 100.00%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.1 (rho)",
+       "p": 0.0007,
+       "corrected": "Holm, across 7 bins"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_gable_2026.ipynb",
+     "output": "claim:figs4-high-couplers-correlated",
+     "notes": "The analysis ran, but the outcome turns on O3, for which the paper gives no defensible choice. Under baa the 57.14 to 71.43% bin is not significant (0.008, Holm p 0.074; 0.066 to 0.090 over the five seeds), while the 71.43 to 85.71% and top bins are (0.021 and 0.067, Holm p 0.0007), which the criterion gives as not reproduced. With units counted once seven of eight readings give not reproduced; bab gives partially reproduced (all three bins significant, 0.012, 0.019 and 0.069, only the last within tolerance). baa and bab differ only in O3, so the outcome is not the one every reading gives, and by the claims file's rule the claim is blocked. With every stored row seven of eight readings give partially reproduced (baa-r 0.026, 0.035 and 0.130, each Holm p 0.0007) and abb-r not reproduced. Keeping the rows adds the session of sub-218453, moves the bin edges and changes the units in each bin; the duplicate pairs (r = 1) are 1 of the 69 same-range pairs of bin 5 and 12 of the 124 of bin 7 under baa-r. Under baa-r the bin 5 and bin 7 differences (0.026 and 0.130) lie nearer the values the paper's code printed (0.0188 and 0.122) than under baa (0.008 and 0.067), which is consistent with the paper's pipeline having kept the duplicated rows; the code does not show it. The 71.43 to 85.71% difference is below the paper's 0.06 under every reading (0.014 to 0.035). Per mouse, under baa, the difference is positive in 7 of 9, 6 of 7 and 5 of 5 mice in the three bins. The outcome was partially reproduced, verified in round 1 under reading baa-r; the round-2 verifier did not agree with it, and the third round agreed with blocked.",
+     "deviations": [
+      "Assumed reading baa. Units stored twice in a file (a repeated id with an identical spike train), a detail the claims file does not name, are counted once: the two rows are one recorded unit, and the protocol (Author, step 1.2) counts a recording deposited twice once. Every reading is also run with every stored row. The round-2 verifier found the earlier reading baa-r (every stored row) unreasonable, as the duplicated rows are not distinct neurons, so it was replaced. O1 (b), only units above 0.5 Hz enter a selected session, because the output printed by the paper's FigureS4.ipynb (commit 688e662) gives 18 to 25 neurons per session, which the O1 (b) readings give and the O1 (a) readings do not (up to 34). O2 and O3 are not assumed. The Methods' 'session-wide firing rate' can be the rate over the recording, but the same paragraph says the coupling was 'estimated session-wide from activity recorded between the tactile stimulus onset and 2 s after the GO signal'; the code's output does not tell the O3 readings apart. A claim whose outcome turns on O2 or O3 is blocked. Results under all sixteen readings are in the notebook.",
+      "Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length was set.",
+      "Bootstrap seed from the claim, as the protocol requires; the paper gives none."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4-middle-couplers-not-correlated",
+     "statement": "In the ALM silicon-probe recordings, the three middle coupling bins (14.29 to 57.14%) show no significant excess of same-bin over different-bin correlation.",
+     "source": "Figure S4B; Table 5",
+     "quote": "",
+     "statistics": [
+      {
+       "about": "bin 14.29 to 28.57%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.004 (rho)",
+       "p": 0.12,
+       "corrected": "Holm, across 7 bins"
+      },
+      {
+       "about": "bin 28.57 to 42.86%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.001 (rho)",
+       "p": 0.61,
+       "corrected": "Holm, across 7 bins"
+      },
+      {
+       "about": "bin 42.86 to 57.14%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference -0.002 (rho)",
+       "p": 0.76,
+       "corrected": "Holm, across 7 bins"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "Table 5 and the n.s. marks of Figure S4B give it; no sentence states it for the silicon-probe data.",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_gable_2026.ipynb",
+     "output": "claim:figs4-middle-couplers-not-correlated",
+     "notes": "The analysis ran, but the outcome turns on O2 or O3, for which the paper gives no defensible choice. With units counted once and O1 (b), baa and bba give reproduced (smallest Holm p 0.54 under baa), while bab and bbb give not reproduced (14.29 to 28.57% bin 0.008, Holm p 0.041, and 0.008, Holm p 0.020), so it turns on O3. With every stored row and O1 (b), baa-r and bab-r give reproduced and bba-r and bbb-r not (Holm p 0.0054 and 0.0008), so it turns on O2. Over all sixteen readings eight give reproduced and eight not reproduced. Where a middle bin is significant, the mean difference is at most 0.0084, against the paper's 0.004, 0.001 and -0.002 (the code printed 0.0042, 0.0013 and -0.0018). Under baa the three differences are -0.0010, -0.0030 and 0.0049. The open details are asked of the authors (methods_unavailable finding). The round-1 verifier found that on synthetic null data with independent pairs the paper's test rejects at about 11% at a nominal 0.05, and about 5% with session offsets, so small significant p-values in these bins carry little weight. Before the first verification the outcome was reproduced under the assumed reading baa.",
+     "deviations": [
+      "Run under all sixteen combinations of O1 to O3 and of the treatment of units stored twice (counted once or every stored row); no reading is assumed for O2, and the claim is blocked as the outcome turns on it.",
+      "Common window (O5) of 4.6 s from sample onset, the window of a trial with the task's 1.3 s sample and delay epochs and the shortest among the trials of the four types; trials whose GO + 2 s comes earlier, or whose window runs past the end of the trial's observation interval, are dropped. The paper does not say how a common length was set.",
+      "Bootstrap seed from the claim, as the protocol requires; the paper gives none."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-sd-input-elevated",
+     "statement": "Mean synaptic activity, Theta(dF/F0), on the spiking dendrite (SD) is higher than on simultaneously imaged other dendrites (OD) both before (by 2.5 Hz) and after (by 5.2 Hz) tuft spike onset.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 4; Figure 2E, F; Table 1",
+     "quote": "mean synaptic activity on the spiking dendrite (SD) was significantly elevated both before (MD = 2.5 Hz; p = 0.002) and after (MD = 5.2 Hz; p = 6.0 \u00d7 10 \u22124 ) the spike",
+     "statistics": [
+      {
+       "about": "SD pre against OD pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 2.5 Hz",
+       "p": 0.002,
+       "corrected": "Holm",
+       "n": "826 SD and 1,922 OD synapses"
+      },
+      {
+       "about": "SD post against OD post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 5.2 Hz",
+       "p": 0.0006,
+       "corrected": "Holm",
+       "n": "826 SD and 1,922 OD synapses"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "Rests on the paper's own two-photon imaging of L5 ET tuft synapses and dendrites, which is not in DANDI:000010 (it holds the Li et al. 2015 silicon-probe and calcium imaging data). The paper's Code and data availability names github.com/kerlin-lab/Gable_2026, which at commit 688e662 holds code only, its notebooks loading pickled data from the lab's servers; no deposit of the imaging was found on DANDI. The reader's answer (questions/gable-2026.yaml) changed this; the claims file now marks the claim data dataset, as data the paper names that are not public anywhere, so it is blocked as data_missing. Before the answer it was marked data elsewhere and blocked as other. The claim was not testable either way.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2j-tsa-dendrite-specific",
+     "statement": "Trial-specific activity, Theta(dF/F0)TSA, rises around tuft spikes at least five times more on the spiking dendrite than on other dendrites, before (MD 1.87 Hz) and after (MD 3.75 Hz) spike onset.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 5; Figure 2H to J; Table 1",
+     "quote": "were at least 5 \u00d7 larger on the spiking dendrite than others, both before (MD = 1.9 Hz; p = 6.0 \u00d7 10 \u22124 ) and after (MD = 3.8 Hz; p = 6.0 \u00d7 10 \u22124 ) the spike",
+     "statistics": [
+      {
+       "about": "SD pre against OD pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.87 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      },
+      {
+       "about": "SD post against OD post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 3.75 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2i-tsa-extended-kinetics",
+     "statement": "The spike-associated Theta(dF/F0)TSA elevation on the spiking dendrite rises (HWHM 176 ms) and decays (HWHM 278 ms) over hundreds of milliseconds, peaking at least 101 ms after spike onset, much longer than iGluSnFR3 kinetics and the signal's autocorrelation time constant.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 5; Figure 2I, K",
+     "quote": "dynamics were well-fitted by an exponential rise (176 \u00b1 79 ms, half-width at half-max; HWHM) and decay (278 \u00b1 79 ms, HWHM) with a peak that lagged (>101 \u00b1 38 ms) the tuft spike",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-controls-unchanged",
+     "statement": "Restricting to larger tuft spikes or excluding high-motion frames does not change the spike-associated synaptic activity.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 5; Figure S1E to J; Table 2",
+     "quote": "Restricting analysis to spikes with larger peak \u0394 F / F 0 ( Fig. S1 E \u2013 G ; Table 2 ) or excluding frames with large lateral brain motion ( Fig. S1 H \u2013 J ; Table 2 ) did not significantly change the spike-associated synaptic activity timecourses",
+     "statistics": [
+      {
+       "about": "low against high event threshold, pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.0 Hz",
+       "p": 0.3,
+       "corrected": "Holm"
+      },
+      {
+       "about": "low against high event threshold, post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.01 Hz",
+       "p": 1,
+       "corrected": "Holm"
+      },
+      {
+       "about": "control against motion removed, pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.2 Hz",
+       "p": 1,
+       "corrected": "Holm"
+      },
+      {
+       "about": "control against motion removed, post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.08 Hz",
+       "p": 1,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2n-abrupt-input-dendrite-specific",
+     "statement": "Abrupt increases in input, Theta(dF/dt)TSA, are elevated on the spiking dendrite over other dendrites before (MD 1.15 Hz) and after (MD 1.33 Hz) tuft spike onset, with no significant difference between pre and post.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 6; Figure 2L to N; Table 1",
+     "quote": "This increase was specific to the spiking dendrite ( Fig. 2 N ; Table 1 ), both before (MD = 1.1 Hz; p = 6.0 \u00d7 10 \u22124 ) and after (MD = 1.3 Hz; p = 6.0 \u00d7 10 \u22124 ) spike onset",
+     "statistics": [
+      {
+       "about": "SD pre against OD pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.15 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      },
+      {
+       "about": "SD post against OD post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.33 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      },
+      {
+       "about": "SD pre against SD post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.08 Hz",
+       "p": 0.75,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2m-abrupt-input-fast-kinetics",
+     "statement": "The spike-associated Theta(dF/dt)TSA rises (HWHM 68 ms) and decays (HWHM 71 ms) faster than Theta(dF/F0)TSA, with a peak 32 ms from spike onset.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 6; Figure 2M",
+     "quote": "exhibited a more rapid rise (68 \u00b1 49 ms, HWHM) and decay (71 \u00b1 26 ms, HWHM) than the spike-associated increase in ... with a peak that was closer (32 \u00b1 13 ms) to spike onset",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table1-both-sexes",
+     "statement": "The dendrite-specific elevation of Theta(dF/dt)TSA holds in male and in female mice analysed separately.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 6; Table 1",
+     "quote": "Furthermore, we confirmed that these results generalized to both male and female mice ( Table 1 )",
+     "statistics": [
+      {
+       "about": "male, SD pre against OD pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.4 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      },
+      {
+       "about": "male, SD post against OD post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.5 Hz",
+       "p": 0.0008,
+       "corrected": "Holm"
+      },
+      {
+       "about": "female, SD pre against OD pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.753 Hz",
+       "p": 0.005,
+       "corrected": "Holm"
+      },
+      {
+       "about": "female, SD post against OD post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.11 Hz",
+       "p": 0.01,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1l-multibranch-specific",
+     "statement": "For putative multi-branch tuft spikes, spike-associated synaptic activity remains dendrite-specific after spike onset.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 7; Figure S1K, L; Table 2",
+     "quote": "the synaptic activity associated with these confirmed multi-branch events was still dendrite-specific ( Fig. S1 K , L ; Table 2 )",
+     "statistics": [
+      {
+       "about": "SD post against OD post",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 2.0 Hz",
+       "p": 0.004,
+       "corrected": "Holm",
+       "n": "485 SD and 1,332 OD synapses"
+      },
+      {
+       "about": "SD pre against OD pre",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.9 Hz",
+       "p": 0.16,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2ab-correlation-declines-with-distance",
+     "statement": "Pairwise noise and signal correlations between synapses decline with distance.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 7; Figure S2A, B",
+     "quote": "pairwise trial-to-trial and task-driven correlations between synapses did decline as a function of distance ( Fig. S2 A , B",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-dendrite-correlation-bimodal",
+     "statement": "Pairwise calcium correlations between dendrite segments are bimodal with an antimode near 0.4.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 3; Figure 2C",
+     "quote": "This threshold was the approximate antimode within the bimodal distribution of correlations between segments ( Fig. 2 C )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1c-tuft-spikes-rare",
+     "statement": "Tuft spikes occur at rates about 100 times lower than synaptic events, about 0.01 Hz, with a unimodal amplitude distribution.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 3; Discussion, paragraph 1; Figure S1C, D",
+     "quote": "tuft spikes were detected at rates \u2248100 \u00d7 lower than synaptic activity ( Fig. S1 C ) with a unimodal amplitude distribution ( Fig. S1 D )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-coupling-distribution",
+     "statement": "Population coupling of synapses is centred near zero with a long tail of highly coupled synapses.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 1; Figure 3C",
+     "quote": "the coupling of synapses to the L5 ET tuft input population was centered near zero, with a long tail of highly coupled synapses ( Fig. 3 C )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-coupling-rank-robust",
+     "statement": "Coupling rank is robust to population size, session pooling, signal amplitude and brain motion.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 1; Figure S3A to D",
+     "quote": "This coupling rank estimate was robust to various potential technical artifacts, including synapses per FOV, signal amplitude, and brain motion ( Fig. S3 A \u2013 D )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3f-coupling-not-from-early-response",
+     "statement": "Coupling ranks stay stable after excluding the early response epoch (0 to 0.5 s from GO).",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 1; Figure S3F",
+     "quote": "coupling ranks remained stable after excluding this epoch ( Fig. S3 F )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-high-couplers-correlated",
+     "statement": "Highly coupled synapses are more correlated with each other than with synapses of other coupling bins.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 2; Figure 3D; Table 3",
+     "quote": "highly coupled synapses were more correlated with each other than with other synapses ( Fig. 3 D ; Table 3 )",
+     "statistics": [
+      {
+       "about": "bin 85.71 to 100.00%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.06 (rho)",
+       "p": 0.007,
+       "corrected": "Holm"
+      },
+      {
+       "about": "bin 71.43 to 85.71%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.02 (rho)",
+       "p": 0.007,
+       "corrected": "Holm"
+      },
+      {
+       "about": "bin 57.14 to 71.43%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.01 (rho)",
+       "p": 0.007,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-lowest-couplers-correlated",
+     "statement": "Synapses with the lowest coupling are also more correlated among themselves.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 2; Figure 3D; Table 3",
+     "quote": "Surprisingly, synapses with the lowest coupling also exhibited a higher correlation among themselves ( Fig. 3 D ; Table 3 )",
+     "statistics": [
+      {
+       "about": "bin 0.00 to 14.29%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.02 (rho)",
+       "p": 0.007,
+       "corrected": "Holm",
+       "n": "9,561 same-range and 71,212 different-range synapse pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3e-spontaneous-lowest-couplers",
+     "statement": "The higher correlation among the lowest couplers also appears in spontaneous synaptic activity.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 2; Figure S3E; Table 4",
+     "quote": "These enhanced correlations among the lowest couplers were also found in continuous imaging of spontaneous synaptic activity ( Fig. S3 E ; Table 4 )",
+     "statistics": [
+      {
+       "about": "bin 0.00 to 14.29%",
+       "test": "one-tailed hierarchical bootstrap mean difference test",
+       "statistic": "mean difference 0.1 (rho)",
+       "p": 0.0007,
+       "corrected": "Holm",
+       "n": "1,965 same-range and 22,424 different-range pairs, 3 sessions, 1 mouse"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-sc-most-active-at-spike",
+     "statement": "Strongly coupled (SC) synapses on the spiking dendrite show a higher rate of abrupt increases in activity at tuft spike onset than weakly (WC) or nonpositively (NC) coupled ones; NC and WC do not differ.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 4; Figure 3E, F; Table 6",
+     "quote": "SC synapses exhibited a higher rate of abrupt increases in activity at tuft spike onset (window",
+     "statistics": [
+      {
+       "about": "SC SD against WC SD",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.1 Hz",
+       "p": 0.002,
+       "corrected": "Holm"
+      },
+      {
+       "about": "SC SD against NC SD",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.0 Hz",
+       "p": 0.02,
+       "corrected": "Holm"
+      },
+      {
+       "about": "NC SD against WC SD",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.08 Hz",
+       "p": 0.7,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-dendrite-specific-every-group",
+     "statement": "Spike-associated abrupt input is dendrite-specific in every coupling group, SC included.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 4; Figure 3F; Table 6",
+     "quote": "Interestingly, this spike-associated increase in SC activity was still highly dendrite-specific",
+     "statistics": [
+      {
+       "about": "SC SD against SC OD",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 1.5 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      },
+      {
+       "about": "WC SD against WC OD",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.59 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      },
+      {
+       "about": "NC SD against NC OD",
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = 0.77 Hz",
+       "p": 0.0006,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3g-dff-groups-less-distinct",
+     "statement": "Differences between coupling groups at tuft spike onset are far less pronounced with Theta(dF/F0) than with Theta(dF/dt).",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 4; Figure S3G",
+     "quote": "The differences between coupler groups were far less pronounced using \u0398 (\u0394 F / F 0 ) activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2c-no-coupling-clustering",
+     "statement": "Synapses of the same coupling group do not significantly cluster on the same dendrite segment.",
+     "source": "Results, Inputs SC to the population are the most active at tuft spike onset, paragraph 4; Figure S2C",
+     "quote": "it was not statistically significant (same vs across dendrite MD = \u22120.053 a.u., p = 0.19; Fig. S2 C )",
+     "statistics": [
+      {
+       "test": "two-tailed hierarchical bootstrap mean difference test",
+       "statistic": "MD = -0.053 a.u.",
+       "p": 0.19,
+       "n": "461 synapses"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4df-group-timing",
+     "statement": "SC synapses are mostly active right after the GO cue, NC synapses later during reward collection, and WC in between.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 1; Figure 4D to F",
+     "quote": "SC synapses were predominantly active immediately following the GO cue ( Fig. 4 D ), whereas NC synapses were predominantly active during a later epoch when mice typically collected reward ( Fig. 4 F )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-go-mode-sc",
+     "statement": "GO-mode encoding is greater for SC than NC synapses.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 2; Figure 4G, H; Table 7",
+     "quote": "The encoding of the GO Mode was greater for SC synapses than NC synapses ( Fig. 4 G , H ; MD = 0.006 a.u.; p = 0.002)",
+     "statistics": [
+      {
+       "about": "SC against NC",
+       "test": "two-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.0060 a.u.",
+       "p": 0.002,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-outcome-nc",
+     "statement": "Outcome-direction encoding is greater for NC than SC synapses, and for WC than SC.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 2; Figure 4G, H; Table 7",
+     "quote": "encoding of the Outcome Direction was greater for NC synapses than SC synapses ( Fig. 4 G , H ; MD = 0.002 a.u.; p = 6 \u00d7 10 \u22124 )",
+     "statistics": [
+      {
+       "about": "NC against SC",
+       "test": "two-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.0020 a.u.",
+       "p": 0.0006,
+       "corrected": "Holm"
+      },
+      {
+       "about": "WC against SC",
+       "test": "two-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.0010 a.u.",
+       "p": 0.0006,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-response-similar",
+     "statement": "Response Direction encoding is similar across coupling groups.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 2; Figure 4G, H; Table 7",
+     "quote": "Response Direction encoding was similar across groups ( Fig. 4 G , H )",
+     "statistics": [
+      {
+       "about": "SC against WC",
+       "test": "two-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.0000 a.u.",
+       "p": 1.0,
+       "corrected": "Holm"
+      },
+      {
+       "about": "SC against NC",
+       "test": "two-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.0008 a.u.",
+       "p": 0.8,
+       "corrected": "Holm"
+      },
+      {
+       "about": "WC against NC",
+       "test": "two-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.0008 a.u.",
+       "p": 0.6,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-spike-go-mode-sc-wc",
+     "statement": "Around tuft spikes, GO-mode projections of SD activity are greater for SC and WC than for NC synapses.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 3; Figure 5A, B; Table 8",
+     "quote": "along the GO Mode for both SC SD synapses and WC SD synapses were greater than for NC SD synapses",
+     "statistics": [
+      {
+       "about": "SC SD against NC SD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.005 a.u.",
+       "p": 0.003,
+       "corrected": "Holm"
+      },
+      {
+       "about": "WC SD against NC SD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.002 a.u.",
+       "p": 0.007,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-spike-outcome-nc",
+     "statement": "Around tuft spikes, Outcome Direction projections of SD activity are greater for NC than for SC and WC synapses.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 3; Figure 5C, D; Table 8",
+     "quote": "spike-associated projections along the Outcome Direction were greater for NC SD synapses than the other two groups",
+     "statistics": [
+      {
+       "about": "NC SD against SC SD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.001 a.u.",
+       "p": 0.02,
+       "corrected": "Holm"
+      },
+      {
+       "about": "NC SD against WC SD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.001 a.u.",
+       "p": 0.02,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-go-mode-dendrite-specific",
+     "statement": "GO-mode projections around tuft spikes are dendrite-specific in all coupling groups.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 3; Figure 5B; Table 8",
+     "quote": "Projections were dendrite-specific for all coupling groups along the GO Mode ( Fig. 5 B ; Table 8",
+     "statistics": [
+      {
+       "about": "SC SD against SC OD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.004 a.u.",
+       "p": 0.02,
+       "corrected": "Holm"
+      },
+      {
+       "about": "WC SD against WC OD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.002 a.u.",
+       "p": 0.01,
+       "corrected": "Holm"
+      },
+      {
+       "about": "NC SD against NC OD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.0006 a.u.",
+       "p": 0.02,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5d-outcome-not-dendrite-specific",
+     "statement": "Outcome Direction projections around tuft spikes are not significantly dendrite-specific for any coupling group.",
+     "source": "Results, Spike-associated activity occurs along distinct dimensions, paragraph 3; Figure 5D; Table 8",
+     "quote": "Projections along the Outcome direction were not significantly dendrite-specific for any coupling group",
+     "statistics": [
+      {
+       "about": "NC SD against NC OD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = 0.001 a.u.",
+       "p": 0.05,
+       "corrected": "Holm"
+      },
+      {
+       "about": "WC SD against WC OD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = -0.0003 a.u.",
+       "p": 1,
+       "corrected": "Holm"
+      },
+      {
+       "about": "SC SD against SC OD",
+       "test": "one-tailed hierarchical bootstrap difference test",
+       "statistic": "MD = -0.0002 a.u.",
+       "p": 1,
+       "corrected": "Holm"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1efg-task-selective-synapses",
+     "statement": "Individual synapses show task selectivity like ALM neurons, including GO-driven, lick-direction-selective and outcome-selective synapses.",
+     "source": "Results, Tuft spikes are accompanied by dendrite-specific, temporally extended input episodes, paragraph 3; Figure 1E to G",
+     "quote": "including synapses consistently driven by the GO cue ( Fig. 1 E ), selective for lick direction ( Fig. 1 F ), and selective for task-outcome ( Fig. 1 G )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's own two-photon imaging is not public (see fig2f-sd-input-elevated). Blocked as data_missing after the reader's answer moved the claim from data elsewhere to data dataset; it was blocked as other before.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "format_error",
+     "statement": "In 50 of the 99 ecephys files the units table repeats a unit id (72 extra rows, for example ids 3, 4, 4, 5, 5), and in every case the repeated rows hold the identical spike train. A unit is stored twice, so an analysis that takes each row as a unit counts it twice. In this attempt the duplicates change which sessions reach the paper's 18-unit filter (9 or 10 mice and 15 to 18 sessions depending on whether they are counted once). In the population-coupling analysis each duplicated unit forms a pair at r = 1 with its copy and its coupling rises, as the copy is part of the summed activity of the other neurons; 12 of the 14 duplicated units in the sessions selected with every row kept fall in the top coupling bin. With every row kept the high-coupler outcome is partially reproduced under seven of eight readings, and with units counted once not reproduced under seven of eight. Whether another unit was lost in place of the copy cannot be told from the files.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "severity": "critical",
+     "changes_results": true,
+     "checked": "The outputs show the core statement: cell 5 prints 50 of 99 files, 72 extra rows, all with identical spike trains, and the example ids 3, 4, 4, 5, 5; cell 15 shows the selection effect (9 against 10 mice, 15 to 16 against 17 to 18 sessions); cell 22 shows 12 of 14 duplicated units in the top bin at r = 1. The causal clause about bin 5 is not shown. Critical is right: one unit deposited as two rows is one of the rubric's examples, the repeated id is the only trace, and an analysis that reads the table as stored comes out wrong, as this attempt's adopted reading did.",
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's selection (KJ18 and PL56 mice, sessions with at least 18 good units above 0.5 Hz, photostimulation trials excluded) gives 9 or 10 mice (7 Sim1, 2 or 3 Tlx) and 15 to 18 sessions under every reading tried, against the paper's 11 mice (8 Sim1, 3 Tlx) and 20 sessions, and the paper's code prints 411 neurons against 295 to 442 here. The dataset holds 10 KJ18 and 6 PL56 mice; nine KJ18 mice have a session of at least 18 stored units but only seven one with 18 above 0.5 Hz, so the difference lies in the units or rates, not in missing mice.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every trial's task is labelled 'audio delay', while the files' experiment description ('object location discrimination task') and the paper describe a tactile sample cue.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The units' quality column holds the single value 'good' for all 1,441 units, so it does not separate high-quality units from others as the paper's selection expects.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "format_error",
+     "statement": "140 photostimulation onsets in BehavioralEvents have a NaN timestamp, and 126 sample, 121 delay, 130 GO and 41 photostimulation events have a timestamp outside every trial, so these events cannot be placed in a trial. Among the sessions selected under the adopted reading, one file (sub-219036 ses-20131120) holds one NaN photostimulation onset; it also holds one trial with laser power and no onset.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The units' observation intervals start at a trial start and last 5.5 s, while the trials' stop times differ from their ends by up to 13 s, and 574 trials with a sample time (in 65 files) have no observation interval, so no spikes are stored for them. Neither is described in the files.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "format_error",
+     "statement": "Ten units in four files store spike times out of order, and two files hold spikes outside their units' observation intervals (10,895 in sub-214429 ses-20130806, 4,665 in sub-219031 ses-20131024).",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Spikes and trial events share a clock as far as decoding shows; the instructed side of correct trials is decoded at a median balanced accuracy of 0.52 before sample onset and 0.88 after GO, and near 0.5 with labels shifted by one trial. In 8 of the 10 selected sessions with a laser power trace the trials with a photostimulation onset are exactly the trials with laser power; in sub-219248 ses-20130919 121 of 122 onset trials have power, and in sub-219036 ses-20131120 one trial has power and no onset. No included trial has laser power. The published version and the draft hold the same 158 assets.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "severity": "none",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files of the KJ18 and PL56 mice crossed with Ai32 (ChR2), sub-218453, sub-218457 and sub-218693, hold no laser trace, no photostimulation onsets and no optogenetics metadata. Three selected sessions of KJ18 mice without Ai32 (sub-210862 ses-20130626, sub-210863 ses-20130626 and ses-20130628) have optogenetics metadata but no laser trace and no onsets, while the other selected sessions of these strains hold all three. Whether any trials of these seven sessions were photostimulated cannot be told from the files, so the paper's exclusion of photostimulation trials cannot be checked in them.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text (PMC13612898). The verifier read the archive's file list through the DANDI API, searched it for the paper's imaging, and tested the helpers on synthetic inputs (holm, coupling_bins, the smoothing kernel, pair_correlations, population_coupling, tsa, group_bootstrap and same_vs_diff_test). It could not see the paper's code at 688e662. It had no attempt record and took the claims from the claims file. Its other points and the replies. Problem 1 (the reading baa adopted where readings disagree) is answered by running sixteen readings, adopting only details with a basis and blocking the middle claim. Problem 2 (duplicate rows never run through the tests; the verifier raised the reading because it had not been tested, not as the analysis to adopt) is answered by running them; the revision adopted them, which round 2 found unreasonable. Problem 3 (per-mouse breakdown) is answered by the per-mouse table. Problem 4 (Ai32 sessions without laser data unchecked) is answered by checking every selected session, which shows that the four Ai32 sessions hold no laser trace, onsets or optogenetics metadata, recorded as a new finding. Problem 5 (the paper's test rejects about 11% under a null with independent pairs and about 5% with session offsets, and its acceptance rule biases the bootstrap mean toward sessions with more pairs, 0.046 against 0.039) is a property of the paper's method, noted in the middle claim. Problem 6 (single-trial types set to zero under O3 b) is allowed by the claims file and left as it is; the trial types per session are now printed. Problem 7 (helpers correct on synthetic inputs) and point 8 (no misreading of the paper in the claims file, so no question was added) need no change.",
+     "agreed": 33,
+     "of": 34,
+     "disagreements": [
+      {
+       "claim": "figs4-middle-couplers-not-correlated",
+       "outcome": "blocked",
+       "reason": "Cell 26, the readings split 4 to 4. aaa, aab, baa and bba give reproduced; aba, abb, bab and bbb give not reproduced, with Holm p from 0.007 to 0.04 for small positive differences of 0.003 to 0.008. The claims file says the outcome is the one every reading gives, and here there isn't one. bab is one of the two readings that match the code's 18 to 25 neurons per session, and it gives not reproduced, so adopting baa does not settle the outcome (problem 1). Blocked, methods_underspecified."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The second executed notebook in full, with its conclusions and summary, the helper module, the claims file and the attempt record. Its other points and the replies. Unsupported sentences: cell 6 (units counted once) now matches the adopted reading; cells 13 and 36 and finding 8 now give the two sessions where onsets and laser power differ by one trial, and the count of 10 sessions with a trace among 17 listed; the summary now says the top-bin placement covers the 14 duplicated units in the selected sessions; finding 11 names the three KJ18 sessions with optogenetics metadata and no laser trace; finding 1 no longer says the duplicate pairs change bin 5; finding 5 now counts NaN timestamps by event type, which the notebook prints (the earlier 558 counted events outside every trial as NaN; 140 photostimulation onsets are NaN), and names the one selected session with a NaN onset. Round-1 problem 5 is now recorded in full, and problem 2 as raised, not as a proposal to adopt the rows.",
+     "agreed": 33,
+     "of": 34,
+     "disagreements": [
+      {
+       "claim": "figs4-high-couplers-correlated",
+       "outcome": "not_reproduced",
+       "reason": "The adopted reading baa-r keeps every stored row, so each duplicated unit is analysed as two units, which the record's critical finding 1 and the notebook (cell 18, the duplicated rows are not distinct neurons) say is wrong. With units counted once 7 of 8 readings give not reproduced, the bin 5 Holm p 0.074 to 0.53 (cell 29); the one exception, bab, has bins 5 and 6 at 0.012 and 0.019, both far outside tolerance. Keeping the rows moves the duplicated units from bins 1 and 2 to bins 5 to 7 (cell 22). The basis is circular: the third Tlx mouse enters only because two copied rows pad 16 units to 18. It would rate the claim not_reproduced, or blocked if the handling of duplicates is open; in neither case partial. Under baa-r bins 5 and 7 (0.026, 0.130) sit nearer the code's printed 0.0188 and 0.122 than under baa (0.008, 0.067), so the paper may have kept the duplicates too, which is worth stating but does not justify adopting the reading."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. Only the two changes of outcome proposed after round 2 (figs4-lowest-couplers-correlated and figs4-high-couplers-correlated), with the analysis behind them in the executed notebook (cells 25, 27, 29 and 33), the claims file and the attempt record. Report in transcripts/gable-2026/verifier-3-report.md.",
+     "agreed": 2,
+     "of": 2,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the authors. The step that builds the Figure S4 input arrays (ephys_secondaryAna.PKL) from DANDI:000010 is not in the code at commit 688e662. Which units enter a selected session (all high-quality units, or only those above 0.5 Hz), how the session-wide rate is measured (over the recording, or within the analysis windows), which trials enter (only CL, CR, IL, IR, or also early-lick and no-response trials), how trial windows of different length were made common, and whether units stored twice in the files (a repeated id with an identical spike train) were counted once or kept as two rows all change which sessions pass. Keeping the duplicated rows decides the high-coupler outcome under most readings, the rate measure and the trial set decide whether the middle bins are significant, and the rate measure decides whether the lowest bin's difference is within the paper's value. This attempt assumed only units above 0.5 Hz (the code's printed 18 to 25 neurons per session support it) and counted units stored twice once, and blocked the claims whose outcome turns on the rate measure or the trial set. Could you confirm or correct these choices?",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The paper's Code and data availability says that code and data are available at github.com/kerlin-lab/Gable_2026, but the repository at commit 688e662 holds code only, its notebooks loading pickled data from the lab's servers. The two-photon imaging behind 30 of the 34 claims is not public in any archive found, so those claims cannot be tested.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
   }
  ],
  "entries": [
@@ -1036,6 +2361,36 @@
    "python": "3.13",
    "pinned": 20,
    "hashed": false
+  },
+  {
+   "name": "gable-2026",
+   "type": "reproduction",
+   "title": "Population coupling in ALM silicon-probe recordings (Gable et al. 2026, Figure S4)",
+   "description": "Tests the Figure S4 and Table 5 findings of Gable, Newman, Young, Scheib, Bliese, Miller and Kerlin (2026) on dandiset 000010, the ALM silicon-probe recordings of Li et al. (2015) that the paper reanalyses. It repeats the session selection, computes the population coupling of each neuron from trial-specific activity, and compares pairwise correlations within and across coupling bins with the paper's session bootstrap. The paper's own two-photon imaging is not public.",
+   "datasets": [
+    "dandi:000010"
+   ],
+   "papers": [
+    "10.1523/jneurosci.0974-26.2026"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_gable_2026.ipynb",
+     "title": "Reproducing Gable et al. (2026), Figure S4, from dandiset 000010",
+     "cells": {
+      "sanity": "7b494ca3",
+      "claim:figs4-session-selection": "4c113013",
+      "claim:figs4-lowest-couplers-correlated": "f216df60",
+      "claim:figs4-high-couplers-correlated": "55435697",
+      "claim:figs4-middle-couplers-not-correlated": "88b16191"
+     },
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 102,
+   "hashed": true
   },
   {
    "name": "li-2015-000010",
