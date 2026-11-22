@@ -13,11 +13,19 @@ items M1 to M10 cite the paper; "Methods" is a passage of the paper's Methods.
 
 - Session and unit selection (M1, M2; Methods, "Curation of Mesoscale Activity Map Dataset"): units
   classified 'good' whose CCF label is MOs on a probe described as targeting ALM, and units in IRN,
-  GRN or PARN; sessions with at least 30 such units in each region of interest.
+  GRN or PARN; sessions with at least 30 such units in each region of interest. This is reading G1
+  of 'good'. Reading G2 takes `unit_quality` good. Only units classified good carry a CCF label, so
+  under G2 (and under U2, all units) a unit takes the label of the nearest unit classified good on
+  the same probe, by the CCF coordinates of their electrodes (electrodes table x, y, z), within 20
+  um (`TRANSFER_DIST`, about one electrode row): an assumption. Among units classified good, the
+  nearest other such unit has the same label for 97% of units (shown in the notebook).
 - Trials. "X moving and X stationary contained data from all correct and error trials" (Methods,
   "Subspace identification"): outcome hit or miss. Ignore trials, photostimulation trials and
   early-lick trials are left out: an assumption, as the paper's own task has no photostimulation and
-  the paper does not say how MAP's early-lick and photostimulation trials were treated.
+  the paper does not say how MAP's early-lick and photostimulation trials were treated. Trials whose
+  sample cue does not start 1.85 s before the go cue (the 1.2 s delay of the paper's task) are left
+  out too: in the ALM and medulla sessions about 8% of trials have a 1.8 s or 0.3 s delay, which
+  would put the sample cue in the baseline window or the delay epoch (an assumption).
 - Rates: 5 ms bins, causal Gaussian kernel of 20 ms s.d. (Methods, both sections). The kernel is
   truncated at 4 s.d., a standard choice.
 - Z-scoring: baseline -2.1 to -1.85 s before the go cue (Methods, "Subspace identification"); mean and
@@ -81,6 +89,8 @@ RIDGE_LAMBDA = 0.01
 N_LAGS = 9
 D_CAP = 20
 TRACK_SMOOTH_FRAMES = 3   # Gaussian s.d. in frames (about 10 ms) on keypoint positions
+SAMPLE_ONSET = -1.85     # s from the go cue: 0.65 s sample and the 1.2 s delay of the paper's task
+TRANSFER_DIST = 20.0      # um, nearest labelled unit for reading G2 (about one electrode row)
 
 
 def _dec(values):
@@ -106,11 +116,13 @@ def unit_table(url):
     idx = u["electrodes_index"][:]
     first = el[np.r_[0, idx[:-1]]]
     target = [json.loads(loc[i])["brain_regions"] for i in first]
+    el_tab = f["general/extracellular_ephys/electrodes"]
+    xyz = np.c_[el_tab["x"][:], el_tab["y"][:], el_tab["z"][:]][first]
     anno = [a if isinstance(a, str) else "" for a in _dec(u["anno_name"][:])]
     tr = f["intervals/trials"]
     classification = [c if isinstance(c, str) else "missing" for c in _dec(u["classification"][:])]
     return dict(target=target, classification=classification,
-                quality=_dec(u["unit_quality"][:]), anno=anno,
+                quality=_dec(u["unit_quality"][:]), anno=anno, xyz=xyz,
                 n_trials=int(tr["start_time"].shape[0]),
                 subject=f["general/subject/subject_id"][()].decode())
 
@@ -130,13 +142,44 @@ def region_of(target, anno):
     return None
 
 
-def select_sessions(tables, min_units=MIN_UNITS):
-    """Sessions and units under M1 and M2 (U1): units classified good with a CCF region."""
+def transfer_labels(t, max_dist=TRANSFER_DIST):
+    """CCF label per unit: `anno_name` for units classified good; for the others, the label of the
+    nearest unit classified good on the same probe, by the CCF coordinates (x, y, z) of the units'
+    electrodes, when it is within `max_dist` um, else empty (an assumption, see the module docstring)."""
+    xyz = np.asarray(t["xyz"], float)
+    anno = np.array(t["anno"], dtype=object)
+    good = np.array(t["classification"]) == "good"
+    target = np.array(t["target"])
+    out = anno.copy()
+    for tg in set(target):
+        on = target == tg
+        lab = np.where(good & on & np.isfinite(xyz).all(1))[0]
+        unl = np.where(~good & on)[0]
+        if len(unl) == 0:
+            continue
+        if len(lab) == 0:
+            out[unl] = ""
+            continue
+        d = np.linalg.norm(xyz[unl][:, None] - xyz[lab][None], axis=2)
+        d = np.where(np.isnan(d), np.inf, d)
+        out[unl] = np.where(d.min(1) <= max_dist, anno[lab][d.argmin(1)], "")
+    return list(out)
+
+
+def select_sessions(tables, min_units=MIN_UNITS, label="classification", max_dist=TRANSFER_DIST):
+    """Sessions and units under M1 and M2. `label`: 'classification' (G1, U1: units classified good,
+    with their own CCF label), 'quality' (G2: `unit_quality` good, labels from `transfer_labels`) or
+    'all' (U2: every unit, labels from `transfer_labels`)."""
     bilateral, alm_med = {}, {}
     for path, t in tables.items():
         regions = {}
-        for i, (tg, cl, an) in enumerate(zip(t["target"], t["classification"], t["anno"])):
-            if cl != "good":
+        if label == "classification":
+            keep, annos = [c == "good" for c in t["classification"]], t["anno"]
+        else:
+            annos = transfer_labels(t, max_dist)
+            keep = [q == "good" for q in t["quality"]] if label == "quality" else [True] * len(annos)
+        for i, (tg, k, an) in enumerate(zip(t["target"], keep, annos)):
+            if not k:
                 continue
             r = region_of(tg, an)
             if r:
@@ -167,6 +210,8 @@ def load_session(url, unit_ids):
         spikes[i] = np.sort(block[s0:int(idx[i]) - a0])
     tr = f["intervals/trials"]
     trials = {k: _dec(tr[k][:]) for k in ("outcome", "trial_instruction", "early_lick", "photostim_duration")}
+    bev = f["acquisition/BehavioralEvents"]
+    trials["sample"] = bev["sample_start_times/timestamps"][:] if "sample_start_times" in bev else np.array([])
     trials["start_time"] = tr["start_time"][:]
     trials["stop_time"] = tr["stop_time"][:]
     go = f["acquisition/BehavioralEvents/go_start_times/timestamps"][:]
@@ -196,8 +241,17 @@ def trial_mask(sess, correct_only=False):
     ok = np.isin(out, ["hit"] if correct_only else ["hit", "miss"])
     ok &= np.array(t["photostim_duration"]) == "N/A"
     ok &= np.array(t["early_lick"]) == "no early"
-    ok &= np.isfinite(go_times(sess))
+    go = go_times(sess)
+    ok &= np.isfinite(go)
+    ok &= np.abs(sample_onset(sess, go) - SAMPLE_ONSET) < 0.02
     return ok
+
+
+def sample_onset(sess, go):
+    """Onset of the last sample cue before each go cue, relative to it (s); NaN where none."""
+    smp = sess["trials"]["sample"]
+    j = np.searchsorted(smp, np.nan_to_num(go, nan=-np.inf)) - 1
+    return np.where((j >= 0) & np.isfinite(go), smp[np.maximum(j, 0)] - go, np.nan)
 
 
 def causal_kernel():
@@ -326,11 +380,8 @@ def shuffle_dimension(x, rng, n_shuffle=N_SHUFFLE, step=SHUFFLE_STEP):
     x = np.asarray(x[::step], dtype=np.float32)
     ev = eig_desc(cov(x))
     null = np.empty((n_shuffle, x.shape[1]))
-    xs = x.copy()
     for s in range(n_shuffle):
-        for j in range(x.shape[1]):
-            xs[:, j] = x[rng.permutation(len(x)), j]
-        null[s] = eig_desc(cov(xs))
+        null[s] = eig_desc(cov(rng.permuted(x, axis=0)))
     thr = np.percentile(null, 95, axis=0)
     return int(np.sum(ev > thr)), ev
 
@@ -397,11 +448,14 @@ def lagged(p, lags=N_LAGS):
     return np.concatenate(out, axis=2)
 
 
-def ridge_r2(src, tgt, train, test, bins, standardize, pooled, lam=None):
-    """R2 on the test trials at each bin (claims, M8). src, tgt: (trials, bins, dims)."""
+def ridge_r2(src, tgt, train, test, bins, standardize, pooled, lam=None, span=False):
+    """R2 on the test trials at each bin (claims, M8). src, tgt: (trials, bins, dims).
+    With `span`, also the R2 over the whole span: residuals summed over bins, over the variance of the
+    test targets about their mean over all bins and trials (a variant; it keeps time-locked variance)."""
     lam = RIDGE_LAMBDA if lam is None else lam
     xl = lagged(src)
     r2 = np.empty(len(bins))
+    res_all = np.zeros(tgt.shape[2])
     for k, t in enumerate(bins):
         xtr, ytr = xl[train, t].astype(np.float64), tgt[train, t].astype(np.float64)
         xte, yte = xl[test, t].astype(np.float64), tgt[test, t].astype(np.float64)
@@ -414,18 +468,31 @@ def ridge_r2(src, tgt, train, test, bins, standardize, pooled, lam=None):
         res = ((yte - pred) ** 2).sum(0)
         tot = ((yte - yte.mean(0)) ** 2).sum(0)
         r2[k] = 1 - res.sum() / tot.sum() if pooled else np.mean(1 - res / tot)
-    return r2
+        res_all += res
+    if not span:
+        return r2
+    y = tgt[test][:, bins].astype(np.float64).reshape(-1, tgt.shape[2])
+    tot_all = ((y - y.mean(0)) ** 2).sum(0)
+    r2_span = 1 - res_all.sum() / tot_all.sum() if pooled else np.mean(1 - res_all / tot_all)
+    return r2, r2_span
 
 
-def selectivity_p(x, is_right, rng, n_shuffle=1000):
-    """AUROC and the share of label shuffles at least as far from 0.5 (Methods)."""
+def selectivity_p(x, is_right, rng, n_shuffle=1000, blocks=None):
+    """AUROC and the share of label shuffles at least as far from 0.5 (Methods). With `blocks` (a
+    block number per trial), labels are shuffled only within blocks of trials (a check for slow drift
+    over the session, not the paper's test)."""
     from scipy.stats import rankdata
     r = rankdata(x)
     n1 = int(is_right.sum())
     n2 = len(x) - n1
     obs = (r[is_right].sum() - n1 * (n1 + 1) / 2) / (n1 * n2)
-    perms = np.array([rng.permutation(len(x)) for _ in range(n_shuffle)])
-    lab = is_right[perms]
+    if blocks is None:
+        lab = rng.permuted(np.tile(is_right, (n_shuffle, 1)), axis=1)
+    else:
+        lab = np.tile(is_right, (n_shuffle, 1))
+        for b in np.unique(blocks):
+            cols = np.where(blocks == b)[0]
+            lab[:, cols] = rng.permuted(lab[:, cols], axis=1)
     sh = ((r[None, :] * lab).sum(1) - n1 * (n1 + 1) / 2) / (n1 * n2)
     p = np.mean(np.abs(sh - 0.5) >= abs(obs - 0.5))
     return obs, p
@@ -433,7 +500,8 @@ def selectivity_p(x, is_right, rng, n_shuffle=1000):
 
 def fit_region(z, mv, rng, dim_mode="D1", dims=None):
     """Subspaces of one region (claims, M5). z: (trials, bins, units) z-scored rates; mv: movement
-    mask (trials, bins). `dims` reuses (d_null, d_pot) from the shuffle; else they are estimated."""
+    mask (trials, bins). `dims` reuses (d_null, d_pot) from the shuffle; else they are estimated.
+    The total covariance C of the variance explained is taken over the bins with tracking."""
     x = z.reshape(-1, z.shape[2])
     m = mv.ravel()
     xs, xm = x[m == 0], x[m == 1]
@@ -443,7 +511,7 @@ def fit_region(z, mv, rng, dim_mode="D1", dims=None):
     else:
         dn_raw, dp_raw = dims
     dn, dp = cap_dims(dn_raw, dp_raw, x.shape[1], dim_mode)
-    cs, cm, c = cov(xs), cov(xm), cov(x)
+    cs, cm, c = cov(xs), cov(xm), cov(x[m >= 0])
     qn, qp = orthogonal_subspaces(cs, cm, dn, dp, rng)
     return dict(d_raw=(dn_raw, dp_raw), d=(dn, dp), qn=qn, qp=qp, C=c, Cs=cs, Cm=cm,
                 n_stat=len(xs), n_mov=len(xm))
