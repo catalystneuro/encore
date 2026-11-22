@@ -1,0 +1,363 @@
+schema_version: 3
+id: kim-2025-01
+datasets:
+- archive: dandi
+  id: "000248"
+  version: 0.240502.2344
+  doi: 10.48324/dandi.000248/0.240502.2344
+  relation: reuses
+paper: doi:10.1101/2025.06.30.662469
+date: '2026-11-21'
+entry: kim-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44962565814
+inputs:
+- what: Allen Brain Observatory Visual Coding Neuropixels, Brain Observatory 1.1 sessions (32 session
+    files, natural scenes, units, running speed and pupil area), the paper's main dataset, for the
+    claims with data elsewhere. Streamed at the pinned version, the only published one.
+  source: doi:10.48324/dandi.000021/0.251116.2246
+- what: Allen Brain Observatory Visual Coding Neuropixels, Functional Connectivity sessions (26 session
+    files, natural movie one), for figs5a-movie-slope-near-1. Streamed at the pinned version, the only
+    published one.
+  source: doi:10.48324/dandi.000022/0.251116.2247
+- what: The paper's analysis code, for method details the claims file and the Methods leave open
+    (names of the Illusion image codes, the example session, slope manipulation, overlap, geodesic
+    distance, orthogonal variance, alignment, RSM and decoding procedures).
+  source: https://github.com/jhk4839/Neural_variability_robustness at commit
+    ac3300b007c2348ccda73c0c87fb02f557791089
+- what: AllenSDK's default unit filter (units with quality label "good" only, filter_by_validity), the
+    software through which the paper read the Allen data, for the unit selection of data-v1-units and
+    fig1b-across-neuron-slope-near-1.
+  source: https://github.com/AllenInstitute/AllenSDK at commit a56bd8ea7613a812334602b64746cdd30c325a96
+    (allensdk/brain_observatory/ecephys/probes.py, lines 128 to 129)
+outcomes:
+- claim: illusion-data-link
+  outcome: reproduced
+  notebook: reproduce_kim_2025.ipynb
+  output: claim:illusion-data-link
+  notes: Session sub-630506 (the code's index 6) is in the dandiset with an ICwcfg1 block. Its trial
+    slots hold 12 stimuli with 400 repeats, the image codes 1 to 7 and 10 to 13 and 400 Blank trials,
+    as the code expects (num_trial_types 12). Codes 3, 4, 10 and 11 (Ic1, Lc1, Tre1, Tre2 by the
+    code's map) are among them, and the session has 75 V1 units (22 by the Allen quality criteria). The
+    dandiset names no image code; the 22 templates drawn in the notebook agree in kind with the
+    code's names (codes 8 to 13 carry a real bar, 14 to 21 one inducer at the named corner, in or out),
+    which cannot tell the variants 1 and 2 apart. All 11 subjects of the code are present, each with
+    12 stimuli of 400 repeats; a twelfth session, sub-619293, is in the dandiset and not in the code's
+    list.
+  deviations:
+  - The Blank trials are not marked in the files. They are recovered as gray frames (code 0) in trial
+    slots, after 60 leading gray frames, from the alternation of trials and gray inter-trial frames;
+    every session then has 400 Blank trials and no image frame outside a trial slot. The code read a
+    post-processed copy (v240130) that is not public.
+- claim: illusion-fig1c-isomap-geometry
+  outcome: reproduced
+  notebook: reproduce_kim_2025.ipynb
+  output: claim:illusion-fig1c-isomap-geometry
+  notes: Among Ic1, Lc1 and Tre1 in sub-630506 (75 V1 units), the largest strongly connected component
+    has 1 member at slope 0 and 3 as-is, and the mean of the six directed overlaps is 0.000 at slope 0,
+    0.221 as-is and 0.318 at slope 2 (N-neuron space, Methods threshold). All three tests hold under
+    every reading run, the N-neuron space and the 2D Isomap coordinates, the Methods and the code's
+    overlap threshold, all VISp units and the 22 quality units (in the 2D Isomap of the quality units
+    the slope-0 component has 2 members). Over all 12 sessions (variant) the three tests hold in 9; in
+    sub-619293, sub-620333 and sub-631570 the three stimuli still overlap at slope 0, while their
+    overlap rises with slope.
+- claim: illusion-fig3a-orthogonal-variance-example
+  outcome: reproduced
+  notebook: reproduce_kim_2025.ipynb
+  output: claim:illusion-fig3a-orthogonal-variance-example
+  notes: In sub-630506 the geodesic distance from Lc1 to Ic1 is 60.0 and to Tre2 17.6; the orthogonal
+    variance of Lc1 is 0.0270 toward Ic1 and 0.0161 toward Tre2 (ratio 1.67). With the 22 quality units,
+    40.1 against 25.8 and 0.0436 against 0.0295. The variant over all 132 ordered stimulus pairs gives a
+    weak Spearman correlation between geodesic distance and orthogonal variance (0.150, p = 0.086; 0.163,
+    p = 0.061 with the quality units).
+- claim: illusion-geometry-similar-across-datasets
+  outcome: reproduced
+  notebook: reproduce_kim_2025.ipynb
+  output: claim:illusion-geometry-similar-across-datasets
+  notes: Over the 12 sessions with an ICwcfg1 block, the mean effective dimensionality falls from 0.243
+    at slope 0 to 0.081 at slope 1 and 0.033 at slope 2 (as-is 0.073), and the mean overlap rises from
+    0.142 to 0.398 and 0.603 (as-is 0.429), at every 0.1 step; slopes 0 and 2 differ from as-is by the
+    Wilcoxon signed-rank test, p = 0.0005 each. The directions hold in each session and with the quality
+    units. The example session alone gives the same directions.
+  deviations:
+  - All 12 sessions of the dandiset are used, including sub-619293, which the paper's code does not list.
+- claim: data-v1-units
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:data-v1-units
+  measured:
+  - 30
+  - 66.9
+  - 25.5
+  - 2008
+  notes: Tested on the DANDI copy of the Allen data (dandiset 000021). Two of 32 sessions have more than
+    10% of natural scenes trials silent in all V1 units (index 0 and 9 in DANDI order, the first and
+    seventh by session id, the order AllenSDK uses; the code drops indices 0 and 6), leaving 30 sessions
+    of 30 mice with 119 stimuli each. With the units AllenSDK serves by default (the three criteria of
+    the Methods and the quality label good) there are 66.9 +- 25.5 V1 units per session, 14 to 112, 2008
+    in all, every value within tolerance. With the three criteria alone, 71.1 +- 27.1, 14 to 113, 2133 in
+    all; the mean and the total are outside their tolerances (57.6 to 70.4, 1728 to 2112) and the SD and
+    range inside.
+  deviations:
+  - Assumed that the paper's units are those of AllenSDK's default units table, which keeps only units
+    labelled good (filter_by_validity, AllenSDK probes.py lines 128 to 129) in addition to the three
+    criteria of the Methods. The paper reads the data through AllenSDK (Methods, Main dataset and visual
+    stimuli; its code's pickles are named allensdk) and states only the three criteria. The two readings
+    give different outcomes; both are shown.
+- claim: fig1b-across-neuron-slope-near-1
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig1b-across-neuron-slope-near-1
+  measured:
+  - 1.0489
+  - 0.0665
+  - 3570
+  notes: With AllenSDK's default units, the 3570 across-neuron slopes have mean 1.0489 (SEM 0.0011) and SD
+    0.0665, within 1.048 +- 0.001 and 0.07 +- 0.007. With the Methods' three criteria alone, mean 1.0552
+    (SEM 0.0011), outside the tolerance, and SD 0.0655, within it. Slopes range from 0.605 to 1.381.
+  deviations:
+  - The same assumption about the unit selection as data-v1-units.
+- claim: fig1b-across-stimulus-slope
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig1b-across-stimulus-slope
+  measured:
+  - 1.1344
+  - 0.2057
+  notes: Over 2133 V1 units (Methods' three criteria), across-stimulus slopes have mean 1.134 and SD 0.206,
+    larger than the across-neuron slopes in mean (1.134 against 1.055) and median (1.149 against 1.058);
+    two-sided Mann-Whitney U test p = 5e-105. No neuron was dropped.
+  deviations:
+  - Units by the Methods' three criteria; the AllenSDK reading with the label good was not run for this
+    claim.
+- claim: figs2-behavioral-state
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:figs2-behavioral-state
+  notes: Moving trials (trial mean speed >= 1 cm/s, 44.6% of trials) give lower across-neuron slopes than
+    stationary ones (medians 0.999 against 1.067, two-sided Mann-Whitney p = 1.5e-303; 3550 and 3264
+    fits). Over the 25 included sessions with eye tracking, pupil tertiles pooled over sessions (code)
+    give medians 1.077, 1.053 and 1.039, the largest tertile lowest, Kruskal-Wallis p = 2e-46; per-session
+    tertiles give 1.075, 1.053 and 1.043, p = 3e-42. All state medians lie in 0.9 to 1.1. Five included
+    sessions have no eye tracking and 10.5% of trials in the others have no pupil value. The pupil area
+    (processing/filtered_gaze_mapping/pupil_area) is labelled Pixels ^ 2 but ranges from 0.0002 to 0.012,
+    which cannot be pixels; the tertiles do not depend on the scale.
+  deviations:
+  - Pupil area is the blink-filtered series of the DANDI files, averaged over the 250 ms window; the
+    Methods say trial mean pupil area without naming the series. Stimulus and state cells with fewer
+    than 2 trials are dropped.
+- claim: figs3-higher-visual-areas
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:figs3-higher-visual-areas
+  measured:
+  - 24
+  - 28
+  - 24
+  - 20
+  - 26
+  notes: Over all 32 sessions, sessions with at least two quality units are LM 24, RL 28, AL 24, PM 20 and
+    AM 26, all within tolerance; median slopes 1.058, 1.061, 1.046, 1.004 and 1.026, all within 0.9 to
+    1.1. Over the 30 included sessions, 22, 26, 23, 18 and 25 sessions, medians also within 0.9 to 1.1.
+  deviations:
+  - A session counts for an area when it has at least two quality units there, the fewest a line can be
+    fitted to; with one unit or more the counts are the same.
+- claim: figs4ab-noise-correlation-under-manipulation
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:figs4ab-noise-correlation-under-manipulation
+  notes: Over 30 sessions, every pairwise noise correlation per stimulus at slopes 0, 1 and 2 equals the
+    as-is value to within 7.3e-15. The fraction of variance on PC1 differs from as-is for every stimulus
+    of every session at slopes 0 and 2 (pooled means 0.160 and 0.505 against 0.333 as-is).
+- claim: fig1d-dimensionality-falls-with-slope
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig1d-dimensionality-falls-with-slope
+  notes: Mean effective dimensionality falls at every 0.1 step, 0.282 at slope 0, 0.124 at slope 1, 0.061
+    at slope 2 (as-is 0.120); slopes 0 and 2 against as-is p = 1.9e-09 each (30 sessions).
+- claim: figs5c-space-occupancy-peak
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:figs5c-space-occupancy-peak
+  notes: The mean number of occupied unit voxels peaks at slope 0.8 (5949.9, of 5950 trials), inside both
+    windows; slope 0 (5674.3) and slope 2 (340.7) are lower than as-is (5949.9), p = 1.7e-06 each. The
+    measure is at its ceiling near the peak; in 28 of 30 sessions every as-is trial has a voxel of its
+    own and the maximum is shared by several slopes, so the peak marks a plateau from about 0.7 to 1.0.
+- claim: fig2a-overlap-rises-with-slope
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig2a-overlap-rises-with-slope
+  notes: Mean overlap over ordered pairs of distinct stimuli rises at every 0.1 step, 0.062 at slope 0,
+    0.276 at slope 1, 0.425 at slope 2 (as-is 0.286); p = 1.9e-09 for slopes 0 and 2 against as-is. The
+    code's variant (its threshold, the full matrix with the diagonal) gives 0.047, 0.222 and 0.321, also
+    rising at every step (p = 1.9e-09 and 3.2e-07).
+- claim: fig2c-continuity-from-slope-1
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig2c-continuity-from-slope-1
+  notes: The mean size of the largest strongly connected component first reaches 119 at slope 1.1 (1.2
+    with the code's threshold), inside both windows; at slope 0 it is 107.2 (103.0), against 118.9 as-is,
+    p = 5.7e-05 (4.0e-05). Sessions with all 119 stimuli connected rise from 9 at slope 0 to 29 at slope 1
+    and 30 from 1.1; 29 of 30 as-is.
+- claim: fig3bc-geodesic-orthogonal-correlation
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig3bc-geodesic-orthogonal-correlation
+  notes: The as-is Spearman correlation over 14042 ordered pairs is positive in all 30 sessions (mean 0.323,
+    0.034 to 0.558); one-sided Wilcoxon against 0 p = 9.3e-10.
+  deviations:
+  - Geodesic distances are the shortest paths of the 5-nearest-neighbour graph of trials and centroids,
+    the step of sklearn's Isomap that the code reads (dist_matrix_), computed without the embedding.
+- claim: fig3d-correlation-peaks-near-1
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig3d-correlation-peaks-near-1
+  notes: The mean correlation peaks at slope 1.2 (0.330); slope 0 (0.223) and slope 2 (0.305) are lower
+    than as-is (0.323), p = 2.6e-07 and 0.011.
+- claim: fig3e-local-alignment-peaks-near-1
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig3e-local-alignment-peaks-near-1
+  notes: Mean local alignment peaks at slope 1.0 (0.830); slope 0 (0.728) and slope 2 (0.804) are lower
+    than as-is (0.830), p = 1.0e-06 and 0.0047. With the neighbour taken from the slope-changed data the
+    peak is also at 1.0.
+  deviations:
+  - The nearest neighbour manifold is taken from the as-is geodesic distances at every slope, as
+    local_global_alignment.py does (lines 168 and 249 at ac3300b); the per-slope neighbour is a variant.
+- claim: fig3f-global-alignment-peaks-near-1
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig3f-global-alignment-peaks-near-1
+  notes: Mean global alignment peaks at slope 1.1 (0.844); slope 0 (0.697) and slope 2 (0.806) are lower
+    than as-is (0.844), p = 8.0e-08 and 0.00046.
+- claim: fig4a-overlap-consistency-within-mice
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig4a-overlap-consistency-within-mice
+  notes: The mean Spearman correlation between the overlap matrices of two random halves of the neurons
+    (10 partitions) peaks at slope 0.9 (0.650; 0.650 at 1.0); slope 0 (0.419) and slope 2 (0.369) are
+    lower than as-is (0.643), p = 1.9e-09 each. The off-diagonal variant also peaks at 0.9.
+  deviations:
+  - Only the claim's seed was run. The four further seeds the protocol asks for would have added about
+    30 minutes on 4 CPUs to a notebook already at 45 minutes; how much the seed matters is not known for
+    this claim. The curve is flat between 0.9 and 1.0 and the windows reach 0.7 and 0.8.
+  - Overlap matrices of the halves use the Methods threshold over distinct pairs.
+- claim: fig4c-rsm-similarity-within-mice
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig4c-rsm-similarity-within-mice
+  notes: The mean half-split RSM correlation peaks at slope 1.1 (0.448); slope 0 (0.418) and slope 2
+    (0.231) are lower than as-is (0.471), p = 1.2e-04 and 3.5e-08. The as-is value exceeds every changed
+    slope. Under the seed plus 1000, 2000, 3000 and 4000 the peak is at 1.1 each time (maximum 0.447 to
+    0.455).
+- claim: fig4d-overlap-consistency-across-mice
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig4d-overlap-consistency-across-mice
+  notes: Over 435 session pairs, the mean Spearman correlation of the full overlap matrices peaks at slope
+    1.2 (0.431); slope 0 (0.248) and slope 2 (0.352) are lower than as-is (0.412), p = 5.7e-70 and
+    6.3e-31. The off-diagonal variant also peaks at 1.2.
+- claim: fig4e-rsm-similarity-across-mice
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:fig4e-rsm-similarity-across-mice
+  notes: Over 435 session pairs, the mean RSM correlation peaks at slope 1.1 (0.397); slope 0 (0.356) and
+    slope 2 (0.185) are lower than as-is (0.406), p = 1.9e-51 and 3.3e-72. The as-is value exceeds every
+    changed slope. Under the four further seeds the peak is at 1.1 each time (maximum 0.397).
+  deviations:
+  - The RSM averages all 1225 unordered pairs of trial indices; the code samples at most 10000, which is
+    all of them. Trial order is randomized within stimulus with the claim's seed, not the code's
+    np.random.seed(0) sequence.
+- claim: figs6-higher-areas-consistency
+  outcome: reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:figs6-higher-areas-consistency
+  notes: Under reading (a) the mean at slope 1 lies within one SEM of the maximum in all four panels (LM
+    and PM, within sessions over 22 and 18 sessions, across 231 and 153 session pairs). Under reading
+    (b) the maximum lies in the window across pairs only (LM 1.2, PM 1.0); within sessions the curves are
+    nearly flat from slope 0 to 1.1 and peak at 0.3 (LM) and 0.4 (PM), so reading (b) holds in 2 of 4
+    panels. Reading (a) holds in all four panels under all five seeds; the within-session LM peak moves
+    between 0.2 and 1.0 with the seed.
+  deviations:
+  - Sessions with at least two quality units in the area are used.
+- claim: figs5a-movie-slope-near-1
+  outcome: partially_reproduced
+  notebook: reproduce_kim_2025_allen.ipynb
+  output: claim:figs5a-movie-slope-near-1
+  measured:
+  - 24
+  - 75
+  notes: Of the 26 Functional Connectivity sessions in dandiset 000022, none has an incomplete movie repeat
+    and 2 have no V1 quality units, so 24 are used where the paper used 23 (expected exactly); each has 75
+    bins. The 1800 pooled slopes have median 1.131, outside 0.9 to 1.1 (reading 1) and inside 0.85 to 1.15
+    (reading 2). The slope holds under one reading of the criterion and the session count differs by one.
+  deviations:
+  - The 60-repeat block of natural movie one is the table natural_movie_one_more_repeats_presentations in
+    these files. Bins run from the onset of their first frame to the end of their twelfth (0.37 to 0.50 s).
+  - The paper's third excluded session could not be identified; the "good" label was not applied here.
+- claim: fig2b-decoding-falls-with-slope
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_kim_2025_allen.ipynb
+  notes: Timed in the notebook on one session; one 10-fold linear SVC decoding takes about 11 s as-is and
+    about 108 s at slope 2, so the 660 session-conditions need about 2 to 20 CPU hours, about 30 to 300
+    minutes on 4 CPUs, over the sixty-minute notebook limit. The four further seeds would multiply it by
+    five.
+- claim: figs4c-shuffling-alters-dependence
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig2b-decoding-falls-with-slope, blocked as too large; the shuffled decoding doubles that
+    computation. The RSM parts were not run separately.
+- claim: figs1-gain-variance
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Not run within this attempt's five-hour limit. The negative binomial fits (poisson_multi_rs.py in
+    the paper's code) were not ported; the data they need, V1 counts of the 30 sessions, are loaded in the
+    notebook.
+- claim: fig2d-tangent-angle-rises-below-1
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Not run within this attempt's five-hour limit. The tangent space angle (tangent_angle.py in the
+    paper's code, points of tangency, local PCA, weighted angle) was not ported; the geodesic neighbours
+    it needs are computed in the notebook.
+findings:
+- kind: metadata_insufficient
+  severity: major
+  statement: The ICwcfg1 presentations table lists every 400 ms frame of the block, including the gray
+    inter-trial frames, under one column frame. The gray frames show the same image as the Blank stimulus
+    (template 0), and nothing marks which of them are Blank trials. The image codes 0 to 21 have no names
+    in the files or the dandiset metadata; the names come only from the paper's code. The trials can be
+    recovered from the sequence (60 leading gray frames, then trial and gray frame alternating, 400 Blank
+    trials in every session), and the templates agree in kind with the code's names.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The units table describes none of its columns (quality, isi_violations, firing_rate and the
+    others read "no description").
+- kind: other
+  about: data
+  severity: none
+  statement: The spikes share the clock of the ICwcfg1 table. The V1 population rate rises 75 ms after image
+    onsets and not after Blank onsets, and the image identity is decoded from the 400 ms after onset
+    (0.576, chance 0.083) and not from the 400 ms before (0.089). No session is deposited twice. All 11
+    sessions the paper's code lists are present, with a twelfth (sub-619293) that it does not list.
+- kind: methods_unavailable
+  statement: The Methods select units by isi_violations, amplitude_cutoff and presence_ratio. The unit counts
+    (64 +- 25, 1920 in all) and the across-neuron slope (1.048) match only when units not labelled good are
+    also dropped, as AllenSDK does by default (filter_by_validity). Question for the authors, were the
+    units those of AllenSDK's default units table? This attempt assumed so for data-v1-units and
+    fig1b-across-neuron-slope-near-1.
+- kind: methods_unavailable
+  statement: The paper excludes 3 of 26 Functional Connectivity sessions for truncated movies or no V1 units.
+    In dandiset 000022 no session has an incomplete repeat of natural movie one and 2 have no V1 quality
+    units. Question for the authors, which was the third session and why was it excluded?
