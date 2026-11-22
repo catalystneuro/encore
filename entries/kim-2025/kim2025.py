@@ -27,7 +27,14 @@ github.com/jhk4839/Neural_variability_robustness at commit ac3300b007c2348ccda73
 - Names of the image codes: the code's map, dict_trial_type in fit_slope_openscope.ipynb
   cell 5 (claims file header), `ILLUSION_NAMES`.
 - Natural scenes counts: spikes in the 250 ms from onset; units in VISp passing the Allen
-  quality criteria (Methods, "Main dataset and visual stimuli").
+  quality criteria (Methods, "Main dataset and visual stimuli"). `abo_session` returns these
+  units with their `quality` label; the notebooks keep only units labelled "good" (`restrict`),
+  an assumption: AllenSDK, through which the paper read the data, serves only those by default
+  (filter_by_validity, allensdk/brain_observatory/ecephys/probes.py lines 128 to 129 at commit
+  a56bd8ea7613a812334602b64746cdd30c325a96), and the paper's unit counts match only with it.
+- Natural movie sessions: excluded when a movie frame falls in an `invalid_times` interval
+  tagged "stimulus", as AllenSDK's invalid presentations, which the paper's code skips
+  (`movie_session`).
 - Slope fit (M1), slope manipulation (M2), overlap (M3), geodesic distance (M5), orthogonal
   variance, effective dimensionality: as the claims file header and criteria give them, checked
   against box_and_overlap.py and compute_geo_ortho.py of the code.
@@ -297,6 +304,15 @@ def largest_scc(O, nodes=None):
     return max(len(c) for c in nx.strongly_connected_components(g))
 
 
+def in_one_scc(O, nodes):
+    """Whether the given nodes lie in one strongly connected component of the graph over all
+    stimuli (edge a -> b when O[b, a] > 0), so that paths may pass through other stimuli."""
+    g = nx.DiGraph()
+    g.add_nodes_from(range(O.shape[0]))
+    g.add_edges_from((a, b) for b in range(O.shape[0]) for a in range(O.shape[0]) if a != b and O[b, a] > 0)
+    return any(set(nodes) <= c for c in nx.strongly_connected_components(g))
+
+
 def mean_offdiag(O, nodes=None):
     nodes = list(range(O.shape[0])) if nodes is None else list(nodes)
     sub = O[np.ix_(nodes, nodes)]
@@ -430,12 +446,20 @@ def rsm(X, labels, n_trials=None):
 
 
 def shuffle_within_stimulus(X, labels, rng):
-    """Permute the trial order within each stimulus (all neurons together)."""
+    """Permute the trial order within each stimulus, separately for each neuron, which destroys
+    pairwise noise correlations (Figure S4C; Discussion, paragraph 5, "shuffling the trial order
+    for each neuron within each trial type")."""
     Y = X.copy()
     for s in np.unique(labels):
         idx = np.where(labels == s)[0]
-        Y[idx] = X[rng.permutation(idx)]
+        for j in range(X.shape[1]):
+            Y[idx, j] = X[rng.permutation(idx), j]
     return Y
+
+
+def restrict(s, mask):
+    """A session of abo_session keeping only the units in mask (aligned with s["X"]'s columns)."""
+    return dict(s, X=s["X"][:, mask], area=s["area"][mask], good=s["good"][mask])
 
 
 def pc1_fraction(X, labels):
@@ -668,13 +692,30 @@ MOVIE_BIN_FRAMES = 12  # Methods: 12-frame (400 ms) bins of natural movie one, 7
 def movie_session(path):
     """V1 (VISp, quality criteria) spike counts in each 12-frame bin of every repeat of natural
     movie one, Functional Connectivity session of dandiset 000022. Returns counts (repeats*bins x
-    units), bin labels, and a report; a repeat is kept only when it holds all 900 frames in order."""
+    units), bin labels, the units' "good" label, and a report; a repeat is kept only when it holds
+    all 900 frames in order.
+
+    The report also gives, for the movie block, the longest repeat and the longest interval between
+    consecutive frames within a repeat (a 30 s repeat at 30 Hz has 33 ms frames), and the number of
+    movie frames inside an `invalid_times` interval tagged "stimulus". The paper's code skips the
+    sessions whose AllenSDK stimulus table marks movie one presentations as invalid
+    ("movie one presentation had trouble in some trials...stimtable.stimulus_name
+    'invalid_presentation' (session 5, 14, 43)", extract_natural_movie_neuropixels.m lines 19 and
+    101 at ac3300b); these are the intervals AllenSDK takes the invalid presentations from."""
     f = open_nwb(path, FC_ID, FC_VERSION)
     units = units_table(f)
     rows = np.where((units.location == "VISp").to_numpy() & units.passes_quality.to_numpy())[0]
     g = f["intervals/natural_movie_one_more_repeats_presentations"]  # 60 repeats, the "natural movie one" block of these sessions
     frame = g["frame"][:].astype(int)
     start, stop = g["start_time"][:], g["stop_time"][:]
+    invalid = 0
+    if "invalid_times" in f["intervals"]:
+        iv = f["intervals/invalid_times"]
+        tags, ti = _str(iv["tags"][:]), iv["tags_index"][:]
+        t0 = np.r_[0, ti[:-1]]
+        for s0, s1, i0, i1 in zip(iv["start_time"][:], iv["stop_time"][:], t0, ti):
+            if "stimulus" in tags[i0:i1]:
+                invalid += int(np.sum((start >= s0) & (start <= s1)))
     heads = np.where(frame == 0)[0]
     reps, bad = [], 0
     for h in heads:
@@ -683,6 +724,8 @@ def movie_session(path):
             reps.append(h)
         else:
             bad += 1
+    rep_dur = [stop[h + 899] - start[h] for h in reps]
+    gap = [np.diff(start[h:h + 900]).max() for h in reps]
     nb = 900 // MOVIE_BIN_FRAMES
     on, off, lab = [], [], []
     for h in reps:
@@ -696,10 +739,14 @@ def movie_session(path):
     for j, r in enumerate(rows):
         s = st[starts[r]:idx[r]]
         X[:, j] = np.searchsorted(s, off, "left") - np.searchsorted(s, on, "left")
+    good = units.quality.to_numpy()[rows] == "good"
     rep = dict(path=path, repeats_complete=len(reps), repeats_incomplete=bad, v1_units=len(rows),
-               bin_s=(float(np.min(off - on)) if len(on) else np.nan, float(np.max(off - on)) if len(on) else np.nan))
+               v1_good=int(good.sum()), invalid_stimulus_frames=invalid,
+               longest_repeat_s=round(float(max(rep_dur)), 3) if reps else np.nan,
+               longest_frame_gap_s=round(float(max(gap)), 3) if reps else np.nan,
+               bin_s=(round(float(np.min(off - on)), 3) if len(on) else np.nan, round(float(np.max(off - on)), 3) if len(on) else np.nan))
     f.close()
-    return X, np.array(lab), rep
+    return X, np.array(lab), good, rep
 
 
 def abo_pupil(path, onsets, window=SCENES_WINDOW):
