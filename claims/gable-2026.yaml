@@ -191,7 +191,7 @@ claims:
 - id: figs4-high-couplers-correlated
   statement: In the ALM silicon-probe recordings, neurons in the three highest coupling bins
     (57.14 to 100%) are more correlated with neurons of the same bin than with neurons of other
-    bins, the difference growing with coupling (0.02, 0.06 and 0.1), as for the synapses.
+    bins (Table 5 differences 0.02, 0.06 and 0.1), as for the synapses.
   source: Figure S4B; Table 5
   quote: Figure S4. Similar organization of population coupling in silicon probe recordings
   statistics:
@@ -326,10 +326,11 @@ claims:
     value: 3.75
     tolerance: 0.375
     unit: Hz
-  criterion: Not tested on the dandiset. M1 to M3, M6. "At least 5 times larger" is read either
-    as the SD mean over the OD mean in each window, or as the SD increase over the OD increase
-    from a pre-spike baseline; the paper does not say which. Reproduced when both differences are
-    significant and within tolerance and the ratio is 5 or more under one reading.
+  criterion: Not tested on the dandiset. M1 to M3, M6. "At least 5 times larger" is read as the
+    SD mean over the OD mean of Theta(dF/F0)TSA in each window; TSA has the trial-type mean
+    removed, so the window mean is the spike-associated increase. The paper defines no other
+    baseline and gives no test of the ratio. Reproduced when both differences are significant and
+    within tolerance and the ratio is 5 or more in both windows.
 - id: fig2i-tsa-extended-kinetics
   statement: The spike-associated Theta(dF/F0)TSA elevation on the spiking dendrite rises (HWHM
     176 ms) and decays (HWHM 278 ms) over hundreds of milliseconds, peaking at least 101 ms after
@@ -432,8 +433,10 @@ claims:
     value: 1.33
     tolerance: 0.133
     unit: Hz
-  criterion: Not tested on the dandiset. M1 to M3, M6. Reproduced when both SD minus OD differences
-    are significant and within tolerance.
+  criterion: Not tested on the dandiset. M1 to M3, M6 (two-tailed, Holm within the
+    Theta(dF/dt)TSA family of Table 1). Reproduced when both SD minus OD differences are
+    significant and within tolerance and the SD pre against SD post test is not significant
+    (alpha 0.05).
 - id: fig2m-abrupt-input-fast-kinetics
   statement: The spike-associated Theta(dF/dt)TSA rises (HWHM 68 ms) and decays (HWHM 71 ms) faster
     than Theta(dF/F0)TSA, with a peak 32 ms from spike onset.
@@ -533,7 +536,8 @@ claims:
     which at commit 688e662 holds code only
   criterion: Not tested on the dandiset. Single-exponential decay fit to bootstrap means of
     pairwise correlation against distance (Methods, Analysis of synapse clustering by function).
-    Reproduced when the fitted decay is negative for both noise and signal correlation.
+    Reproduced when the fitted exponential decreases with distance for both noise and signal
+    correlation.
 - id: fig2c-dendrite-correlation-bimodal
   statement: Pairwise calcium correlations between dendrite segments are bimodal with an antimode
     near 0.4.
@@ -546,7 +550,8 @@ claims:
     which at commit 688e662 holds code only
   criterion: Not tested on the dandiset. Floored dF/F0 correlations (Methods, Pairwise correlation
     and autocorrelation analyses), 5,078 pairs. Reproduced when the distribution has two modes
-    with the antimode between 0.3 and 0.5.
+    with the antimode between 0.3 and 0.5 (a range chosen here for the paper's "approximate
+    antimode" at 0.4).
 - id: figs1c-tuft-spikes-rare
   statement: Tuft spikes occur at rates about 100 times lower than synaptic events, about 0.01 Hz,
     with a unimodal amplitude distribution.
@@ -560,11 +565,13 @@ claims:
   expected:
     quantity: tuft spike rate
     value: 0.01
-    tolerance: 0.001
+    tolerance: 0.005
     unit: Hz
-  criterion: Not tested on the dandiset. Reproduced when the median synaptic event rate over the
-    median tuft spike rate is between 50 and 200 (read from "about 100") and the tuft spike rate
-    is within tolerance.
+  criterion: Not tested on the dandiset. Event rates per dendrite and per synapse as in Figure S1C.
+    The paper gives the rate as approximate (0.01 Hz, one significant figure), so the tolerance is
+    the rounding interval of that digit. Reproduced when the median synaptic event rate over the
+    median tuft spike rate is between 50 and 200 (the medians and this range are choices made
+    here for "about 100") and the median tuft spike rate is within tolerance.
 - id: fig3c-coupling-distribution
   statement: Population coupling of synapses is centred near zero with a long tail of highly
     coupled synapses.
@@ -735,8 +742,9 @@ claims:
     value: 1.0
     tolerance: 0.1
     unit: Hz
-  criterion: Not tested on the dandiset. M1 to M4, M6. Reproduced when both SC differences are
-    significant and within tolerance.
+  criterion: Not tested on the dandiset. M1 to M4, M6 (two-tailed, Holm within the
+    between-group SD family of Table 6). Reproduced when both SC differences are significant and
+    within tolerance and the NC SD against WC SD test is not significant (alpha 0.05).
 - id: fig3f-dendrite-specific-every-group
   statement: Spike-associated abrupt input is dendrite-specific in every coupling group, SC
     included.
@@ -859,8 +867,9 @@ claims:
     value: 0.002
     tolerance: 0.0002
     unit: a.u.
-  criterion: Not tested on the dandiset. M5, M6. Reproduced when NC exceeds SC significantly
-    within tolerance.
+  criterion: Not tested on the dandiset. M5, M6 (two-tailed, Holm within the Outcome Direction
+    family of Table 7). Reproduced when NC exceeds SC significantly and within tolerance and WC
+    exceeds SC significantly.
 - id: fig4h-response-similar
   statement: Response Direction encoding is similar across coupling groups.
   source: Results, Spike-associated activity occurs along distinct dimensions, paragraph 2; Figure
@@ -915,10 +924,12 @@ claims:
     unit: a.u.
   - quantity: WC SD minus NC SD GO-mode projection, -50 to 150 ms
     value: 0.002
-    tolerance: 0.0002
+    tolerance: 0.0005
     unit: a.u.
   criterion: Not tested on the dandiset. Theta(dF/dt)TSA projected on M5 weights, M3 window, M6.
-    Reproduced when both are significant and within tolerance.
+    Table 8 prints 0.002 with one significant figure, so its tolerance is the rounding interval
+    of that digit (0.0015 to 0.0025); 0.005 keeps 10%. Reproduced when both are significant and
+    within tolerance.
 - id: fig5d-spike-outcome-nc
   statement: Around tuft spikes, Outcome Direction projections of SD activity are greater for NC
     than for SC and WC synapses.
@@ -941,16 +952,17 @@ claims:
   where: Not in a public archive; Code and data availability names github.com/kerlin-lab/Gable_2026,
     which at commit 688e662 holds code only
   expected:
-  - quantity: NC SD minus SC SD Outcome projection
+  - quantity: NC SD minus SC SD Outcome projection, -50 to 150 ms
     value: 0.001
-    tolerance: 0.0001
+    tolerance: 0.0005
     unit: a.u.
-  - quantity: NC SD minus WC SD Outcome projection
+  - quantity: NC SD minus WC SD Outcome projection, -50 to 150 ms
     value: 0.001
-    tolerance: 0.0001
+    tolerance: 0.0005
     unit: a.u.
-  criterion: Not tested on the dandiset. As fig5b-spike-go-mode-sc-wc for the Outcome Direction.
-    Reproduced when both are significant and within tolerance.
+  criterion: Not tested on the dandiset. As fig5b-spike-go-mode-sc-wc for the Outcome Direction
+    (Figure 5C, D). Table 8 prints 0.001 with one significant figure, so the tolerance is the
+    rounding interval of that digit. Reproduced when both are significant and within tolerance.
 - id: fig5b-go-mode-dendrite-specific
   statement: GO-mode projections around tuft spikes are dendrite-specific in all coupling groups.
   source: Results, Spike-associated activity occurs along distinct dimensions, paragraph 3; Figure
@@ -1019,3 +1031,39 @@ claims:
     which at commit 688e662 holds code only
   criterion: Not tested on the dandiset. Shown by example synapses only; reproduced when at least
     one synapse of each kind is found by its trial-averaged Theta(dF/F0) (a qualitative check).
+checks:
+- date: 2026-11-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs4-high-couplers-correlated, statement no longer says the difference grows with coupling;
+    no sentence of the paper says so and the criterion does not judge it. The Table 5 values stay.
+  - fig2j-tsa-dendrite-specific, dropped the reading of "5 times larger" as an increase over a
+    pre-spike baseline; the paper defines no such baseline, and TSA already removes the trial-type
+    mean. The ratio is now judged as SD mean over OD mean in both windows.
+  - fig2n-abrupt-input-dendrite-specific, criterion now judges the statement's clause that pre and
+    post do not differ, on the paper's test (Table 1, SD pre against SD post, p = 0.75).
+  - fig3f-sc-most-active-at-spike, criterion now judges the statement's clause that NC and WC do
+    not differ, on the paper's test (Table 6, NC SD against WC SD, p = 0.7).
+  - fig4h-outcome-nc, criterion now judges the statement's clause that WC exceeds SC (Table 7,
+    p = 6.0 x 10^-4); before, it judged NC against SC only.
+  - fig5b-spike-go-mode-sc-wc, tolerance for 0.002 widened from 0.0002 to 0.0005, the rounding
+    interval of the one printed significant figure, as the file does for other such values.
+  - fig5d-spike-outcome-nc, tolerances for 0.001 widened from 0.0001 to 0.0005 for the same
+    reason; window -50 to 150 ms (Figure 5C, D legend) added to the quantities.
+  - figs1c-tuft-spikes-rare, tolerance on the approximate 0.01 Hz rate widened from 0.001 to 0.005
+    (one printed significant figure); the medians and the 50 to 200 ratio range are marked as
+    choices made here.
+  - fig2c-dendrite-correlation-bimodal, the 0.3 to 0.5 antimode range marked as a choice made
+    here.
+  - figs2ab-correlation-declines-with-distance, criterion reworded from "fitted decay is negative",
+    which could be read either way, to a fit that decreases with distance.
+  - Checked against the code at 688e662 (FigureS4.ipynb, sled_glutamate_functions.py) that E6 to
+    E8 match it (percentile bins, independent session draws with the acceptance rule, one-tailed
+    'greater', Holm) and that the different-range count of Table 5 is summed over the 7 bins. No
+    change.
+  - Open, table1-both-sexes and fig3f-sc-most-active-at-spike, the Holm families of Tables 1 and 6
+    are named by measure; whether the male and female rows join them is not stated.
+  - Open, the "no indication that this observation was sex specific" remark on Table 6 (male and
+    female SC SD against WC SD, p = 0.05 and 0.06) has no claim; it is a minor remark.
