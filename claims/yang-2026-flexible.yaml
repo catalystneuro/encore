@@ -189,11 +189,12 @@ claims:
   - table1-phenotype-spaces
   criterion: Loadings of PC1 from the SVD of the z-scored long-pulse feature matrix, features
     ranked by absolute loading, as the Extended Data Figure 1-2 legend says. Current features are
-    threshold_i, rheobase_i and rheobase_sweep.stim_amp; input resistance features are ri and
-    input_resistance. The paper does not say how far down the ranking "most strongly" reaches;
-    readings are (a) the two highest-ranked distinct quantities are a rheobase or threshold
-    current and an input resistance; (b) both kinds are among the five features with the
-    largest absolute loadings. Reproduced under either reading.
+    threshold_i, rheobase_i, rheobase_sweep.stim_amp and hero_sweep.stim_amp (IPFX picks the
+    hero sweep at a fixed offset above rheobase, so its amplitude is a rheobase-tied current);
+    input resistance features are ri and input_resistance. The paper does not say how far down
+    the ranking "most strongly" reaches; readings are (a) the two highest-ranked kinds of
+    feature are a rheobase or threshold current and an input resistance; (b) both kinds are
+    among the five features with the largest absolute loadings. Reproduced under either reading.
 - id: fig1b-distance-correlation
   statement: Pairwise cell-cell phenotypic distances are positively correlated across all three
     regime pairs, above shuffle and well below identity, strongest for long-pulse and ramp
@@ -530,13 +531,16 @@ claims:
     same 100-shuffle null and the same ordinal-rank Spearman as table2-alignment-ttype. The code
     does this on the cells with both a t-type and a Cre line (Table 2 prints the t-type counts as
     n); that set is the reading used, with all t-typed cells (those without a Cre line left
-    unresidualized) as a variant. The paper prints no residual eta squared value; "detectable"
-    is judged as residual eta squared greater than the mean of a 100-shuffle t-type label null on
-    the residualized scores, the null the Methods name for these analyses ("Label-shuffle null
-    distributions used 100 permutations"). Reproduced when the three A_t are within tolerance
-    with p < 0.05 and residual eta squared exceeds its null in each regime; partially reproduced
-    when every A_t has p < 0.05 but some value is out of tolerance. The brief-pulse tolerance
-    (0.0004) is 10% of a value that is itself small.
+    unresidualized) as a variant. The paper prints no residual eta squared value and no test for
+    it (Statistics, Methods; eta squared has no permutation p), so "detectable" is open; readings
+    are (a) the residual A_t exceeds its 100-shuffle label null (Table 2 rows g to i, the only
+    test the paper reports on residual structure); (b) residual eta squared exceeds the mean of a
+    100-shuffle t-type label null on the residualized scores (Methods, "Label-shuffle null
+    distributions used 100 permutations"). Residual eta squared is reported in each regime.
+    Reproduced when the three A_t are within tolerance with p < 0.05 and residual structure is
+    detectable under one reading in each regime; partially reproduced when every A_t has p <
+    0.05 but some value is out of tolerance. The brief-pulse tolerance (0.0004) is 10% of a
+    value that is itself small.
 - id: fig2d-knn-type-enrichment
   statement: Cells are enriched for phenotypic neighbors of their own t-type, most for
     long-pulse (6.59-fold), then ramp (3.44-fold) and brief-pulse (2.64-fold).
@@ -810,11 +814,12 @@ claims:
   criterion: The cutoff grids are those of the code's figure (scripts/figures_eneuro_supplement.py,
     Extended Data Figure 3-2D,E); selective rank-range cutoffs 0.45, 0.50, 0.55, 0.60 and 0.65,
     and stable rank-CV cutoffs 0.15, 0.20, 0.25, 0.30 and 0.35, each varied with the other held
-    at its default. The paper does not say what "stable" proportions means; readings are (a)
-    across each grid, the selective fraction stays below 20% and below the stable fraction
-    (the minority status the claim rests on); (b) across each grid, the varied fraction changes
-    by no more than 10 percentage points between neighboring cutoffs. Reproduced when both
-    readings hold; partially reproduced when one does. The fractions at every cutoff are shown.
+    at its default. The paper sets no bound on what "stable" proportions or "modest" variation
+    mean. The claim is judged on the pattern the Results describe ("a smaller subset" of
+    selective pairs against a shared backbone); reproduced when, at every cutoff of both grids,
+    the selective fraction is below both the stable and the intermediate fractions. The three
+    fractions at every cutoff, and their change from the default cutoff, are reported, not
+    judged.
 - id: type-level-exceeds-cell-level
   statement: Type-level conservation across regimes is much greater than the preservation of
     cell-level relationships and local neighborhoods.
@@ -828,10 +833,11 @@ claims:
   - fig1b-distance-correlation
   - fig1c-knn-jaccard
   - fig3a-type-map-concordance
-  criterion: Read from the paper's numbers, without a new test. Reproduced when, for each regime
-    pair, the type-map concordance (fig3a-type-map-concordance) exceeds the cell-cell distance
-    correlation (fig1b-distance-correlation) and the mean 15-NN Jaccard (fig1c-knn-jaccard) is
-    below 0.05 for each pair.
+  criterion: Read from the paper's numbers, without a new test; the paper gives none and no
+    threshold. The comparison on a common scale is the Spearman correlation at the two levels.
+    Reproduced when, for each regime pair, the type-map concordance (fig3a-type-map-concordance)
+    exceeds the cell-cell distance correlation (fig1b-distance-correlation). The mean 15-NN
+    Jaccard of fig1c-knn-jaccard is reported beside them, not judged against a bound.
 - id: fig4ab-rna-tracks-shared-map
   statement: Transcriptomic distance between t-types (500-gene primary panel, 10 PCs) tracks the
     cross-regime mean phenotypic separation much more strongly (rho 0.507) than the
@@ -931,9 +937,12 @@ claims:
     tolerance: 0.0105
   criterion: As fig4ab-rna-tracks-shared-map with the curated genes alone and with the 500
     highest-variance genes alone, 50 shuffles (scripts/q3bc_explain.py, which permutes the
-    phenotype values across pairs, two-sided; readings as there). Reproduced when the
-    correlations with mean S are within tolerance with p < 0.05 and each panel's correlation
-    with mean S exceeds its correlation with rank range by more than 0.3; partially reproduced
+    phenotype values across pairs, two-sided; readings as there). The asymmetry is judged with
+    the code's own rule for the primary panel (scripts/q3bc_explain.py, main, landing
+    "rna_tracks_phenotype_distance"; the paper states none), applied to each panel; rho with
+    mean S at least 0.25 and |rho| with rank range below 0.15. Reproduced when the
+    correlations with mean S are within tolerance with p < 0.05 and the asymmetry rule holds for
+    each panel; partially reproduced
     when the asymmetry holds but some value is out of tolerance. The tolerance on 0.011 is 10%
     of a value near zero; any value with |rho| < 0.05 is reported as near.
 - id: fig4c-joint-excitability-modules
@@ -1018,8 +1027,10 @@ claims:
     tolerance: 0.0053
   criterion: As fig4c-kv3-strongest, with rank range in place of mean S, over the nine
     excitability modules. Reproduced when the largest |rho| is within tolerance and belongs to
-    Cav; partially reproduced when every |rho| is below 0.1 but the largest is out of tolerance
-    or belongs to another module.
+    Cav; partially reproduced when every |rho| is below 0.10 but the largest is out of tolerance
+    or belongs to another module. The paper gives no bound for "negligible" here; 0.10 is the
+    bound it uses for a retained association in the WGCNA analysis (Results, paragraph 3; Table
+    2 row y), borrowed as an assumption.
 - id: pvalb-marker-control
   statement: A Pvalb marker control corresponds more strongly with mean phenotypic distance (rho
     0.543) than any single excitability module.
@@ -1123,3 +1134,19 @@ claims:
     unadjusted |rho| is within tolerance; partially reproduced when the residual test holds but
     the module count, beta or unadjusted value differ. Module identities are not expected to
     match one to one.
+checks:
+- date: 2026-11-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - pc1-long-pulse-loadings. The current features left out hero_sweep.stim_amp, which IPFX sets at a fixed offset above rheobase; it is a rheobase-tied current, and leaving it out could make reading (a) fail on a feature the paper's phrase covers. Added it and said why; reading (a) now compares kinds of feature.
+  - ttype-beyond-cre. The test for "residual t-type structure remained detectable" (residual eta squared above a shuffle-null mean) was given as the paper's, but the paper reports no residual eta squared and says eta squared has no permutation p. Now open, with two readings (residual A_t above its null, Table 2 rows g to i; residual eta squared above a label-shuffle null).
+  - type-level-exceeds-cell-level. Removed the bound "mean 15-NN Jaccard below 0.05"; it is not in the paper. The claim is judged on type-map concordance against cell-cell distance correlation, both Spearman; the Jaccard is reported.
+  - pair-tag-threshold-sensitivity. Removed the bounds "below 20%" and "no more than 10 percentage points"; neither is in the paper or the code. Judged now on the ordering the Results describe (selective below stable and intermediate at every cutoff of the code's grids), with the fractions reported.
+  - fig4-alternative-panels. Replaced the made-up margin "by more than 0.3" with the code's own asymmetry rule (scripts/q3bc_explain.py, rho with mean S at least 0.25 and |rho| with rank range below 0.15), cited as such.
+  - fig4c-no-module-tracks-rank-range. The 0.10 bound for the partial outcome had no source; said it is borrowed from the paper's WGCNA threshold (Table 2 row y) as an assumption.
+  - Checked, unchanged. Every quote, p-value, n and expected value against the text and Table 2; the criteria against the code at commit 61a5a41 (q1_describe_phenotype.py, q1_knn_scale.py, q2_anchor.py, q3a_explain.py, q3a_centroid_robustness.py, q3bc_explain.py, q3_mobility_modules.py, q3_wgcna_mobility.py, q3_wgcna_modules.R, figures_eneuro_supplement.py), including the ordinal-rank Spearman, the Cre cell set, the kNN enrichment as a ratio of means, the type-label null, the tag order, the subclass pair order (long-brief 0.579, ramp-brief 0.621), the module distances and the equal-N tolerances.
+  - Open. The Extended Data figures and the DOCX tables (1-1, 2-1, 3-1, 4-1, 4-3) are not in the text and no PDF was supplied; only their legends were read. No expected value rests on them.
+  - Open. The script that ran IPFX on all cells, and the one that made the 1,000-shuffle null of Table 2 rows m and n, are not in the code; the claims name readings for both (table1-phenotype-spaces, fig4ab-rna-tracks-shared-map).
+  - Open. The hierarchical subtype alignment and the Cre alignment of Extended Data Figure 2-1A have no number in the text and no claim.
