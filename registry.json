@@ -5100,6 +5100,10 @@
     "ready": true,
     "date": "2026-10-23"
    },
+   "dandi:001075": {
+    "ready": null,
+    "date": null
+   },
    "dandi:000006": {
     "ready": true,
     "date": "2026-10-20"
@@ -5795,10 +5799,6 @@
    "dandi:000945": {
     "ready": true,
     "date": "2026-10-22"
-   },
-   "dandi:001075": {
-    "ready": null,
-    "date": null
    },
    "crcns:nac-1": {
     "ready": true,
@@ -12309,6 +12309,10 @@
    "duszkiewicz-2024": {
     "ready": true,
     "date": "2026-10-23"
+   },
+   "dvali-2025": {
+    "ready": true,
+    "date": "2026-11-22"
    },
    "economo-2018": {
     "ready": true,
@@ -27544,6 +27548,424 @@
       "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 2; Extended Data Fig. 6",
       "quote": "The ADN is strongly innervated by inhibitory afferents from the thalamic reticular nucleus",
       "criterion": "Anatomy (ImageJ intensity of GFP in ROIs per nucleus) on images the paper does not deposit. Not testable from the dataset."
+     }
+    ]
+   }
+  ],
+  "dandi:001075": [
+   {
+    "path": "claims/dvali-2025.yaml",
+    "paper": "10.1103/6wgv-b9m6",
+    "check": {
+     "ready": true,
+     "date": "2026-11-22"
+    },
+    "claims": [
+     {
+      "id": "signaling-network-size",
+      "statement": "The binarized signaling network of the 188 head neurons, with an edge for each pair whose q-value is below 0.05, has 1151 edges and a density of 0.033.",
+      "source": "Results, paragraph 1; Methods, The Networks",
+      "quote": "We consider binarized directed connectome and signaling networks of the same head neurons (N = 188 head neurons from a total of 302 neurons in the entire nervous system), but each having different numbers of edges (corresponding to M = 1151 for signaling",
+      "criterion": "Directed edges from stimulated to responding neuron among the 188 head neurons, kept when q < 0.05 (Methods). Density is edges over 188 x 187 possible directed edges, which gives 0.0327 for 1151 edges. The q-values are read (a) recomputed from the dataset with the method of Randi et al. 2023 (reference 27), or (b) taken from that paper's released atlas; reproduced when both numbers are within tolerance under one reading."
+     },
+     {
+      "id": "signaling-clustering-small-world",
+      "statement": "The signaling network has an average clustering coefficient of 0.13 and is small world, with a small-world coefficient of 4.76.",
+      "source": "Results, paragraph 1",
+      "quote": "The signaling network has an average clustering coefficient of 0.13 ... we find that the signaling network is also small ... world (\u03c3s = 4.76",
+      "criterion": "As in motifs.py, clustering is networkx average_clustering on the directed graph; sigma is (C / C_ER) / (L / L_ER), with C_ER and L_ER the means over 100 directed Erdos-Renyi graphs of 188 nodes at density 0.033, and L the mean over source neurons of the mean shortest path length to the neurons they reach, the source itself counted at length 0 as networkx shortest_path_length returns it. Reproduced when both values are within tolerance and sigma > 1."
+     },
+     {
+      "id": "anatomy-network-properties",
+      "statement": "The binarized anatomical network has 3250 edges, a density of 0.092, an average clustering coefficient of 0.3 and a small-world coefficient of 2.52.",
+      "source": "Results, paragraph 1",
+      "quote": "M = 3250 for the connectome) ... (ds = 0.033 and da = 0.092) ... a bit less than half of the anatomical network\u2019s clustering coefficient of 0.3 ... \u03c3a = 2.52",
+      "criterion": ""
+     },
+     {
+      "id": "triad-distribution",
+      "statement": "The signaling and anatomical networks differ in their distribution of the 13 triad motifs, each compared with Erdos-Renyi graphs of matched density.",
+      "source": "Results, paragraph 1; Extended Data Figure 1",
+      "quote": "the networks differ in terms of their density (ds = 0.033 and da = 0.092) and their distribution of motifs (Extended Data Fig. 1)",
+      "criterion": "The paper reports counts only, without a test, and the counts in Extended Data Figure 1 cannot be assigned to triad types from the text. Triads counted with networkx triads_by_type in both networks and averaged over five Erdos-Renyi graphs at each density (legend; motifs.py and motifs_ER.py). The 13 types are the connected ones that motifs.py counts (021D, 021U, 021C, 111D, 111U, 030T, 030C, 201, 120D, 120U, 120C, 210, 300); 003, 012 and 102 are left out. Reproduced when the proportions of the 13 triad types differ between the two networks by a chi-square test at p < 0.05; this test is a choice, not the paper's. The signaling counts alone are reported whatever the outcome."
+     },
+     {
+      "id": "signaling-six-communities",
+      "statement": "The signaling network is optimally partitioned into six communities at the first hierarchical level, the smallest with 17 neurons and the largest with 47.",
+      "source": "Results, Hierarchical community structure differs, paragraph 2; Figure 1b; Table 1",
+      "quote": "the signal propagation network had fewer and was optimally partitioned into six communities in the first hierarchical level, the smallest of which contained 17 neurons and the largest of which contained 47 neurons",
+      "criterion": "Degree-corrected nested SBM in graph-tool, unweighted, as in SMB_posteriordist_mcmc.py (minimize_nested_blockmodel_dl, 100 multiflip sweeps of 10 iterations, mcmc_equilibrate with wait 1000, then 10000 iterations collected, PartitionModeState with get_max_nested for the consensus), first level of the hierarchy. A tolerance of 0 for the count, as 10% of 6 is below one community. The MCMC has no fixed seed; at least five runs are made and the result of each is shown, and the claim is reproduced when the majority of runs give six communities with sizes in tolerance."
+     },
+     {
+      "id": "table1-signaling-membership",
+      "statement": "The neurons of the six signaling communities are as listed in Table 1.",
+      "source": "Table 1",
+      "quote": "",
+      "criterion": "The paper gives no measure of agreement for a recomputed partition. Recomputed communities are matched to those of Table 1 by the paper's own module-matching (Jaccard similarity and the Hungarian method, Methods). The adjusted Rand score with Table 1 and the Jaccard similarity of each matched pair are reported. As a choice not in the paper, reproduced when every matched pair has a Jaccard similarity of at least 0.5, partially when four or five do."
+     },
+     {
+      "id": "anatomy-twenty-communities",
+      "statement": "The anatomical network is optimally partitioned into 20 communities at the first level, the smallest with one neuron and the largest with 20.",
+      "source": "Results, Hierarchical community structure differs, paragraph 2; Figure 1a; Table 2",
+      "quote": "it was optimally partitioned into 20 communities in the first hierarchical level, with the smallest containing only one neuron and the largest containing 20",
+      "criterion": ""
+     },
+     {
+      "id": "more-communities-anatomy-controls",
+      "statement": "The anatomical network has more communities than the signaling network, also when the two are thresholded to the same density or both more conservatively.",
+      "source": "Results, Hierarchical community structure differs, paragraph 2; Extended Data Figures 11, 12 and 13",
+      "quote": "In both sets of comparisons, the anatomical network had more communities (Extended Data Fig. 12, 13). This difference was also robust to the use of a more stringent thresholding",
+      "criterion": "The same SBM as signaling-six-communities on each pair of networks. Original signaling (q < 0.05) against anatomy with an average of at least 1.25 synapses across the four datasets; signaling at q <= 0.18 against the original anatomy; signaling at q < 0.01 against anatomy with at least three contacts in one dataset (Methods, Network Thresholding Controls). The 16 communities of the 1.25-synapse anatomy are from the legend of Extended Data Figure 12. Reproduced when the anatomical network has more first-level communities in all three pairs."
+     },
+     {
+      "id": "signaling-threshold-controls",
+      "statement": "At q < 0.01 the signaling network has a density of 0.021, and at q <= 0.18 a density of 0.091 and six communities at the first level.",
+      "source": "Methods, Network Thresholding Controls; Extended Data Figure 13",
+      "quote": "For the signaling network, we used a threshold of q = 0.01 instead of q = 0.05, leading to a density of ds = 0.021 ... The thresholded signaling network was also optimally partitioned into 6 communities",
+      "criterion": "As signaling-network-size and signaling-six-communities, at the two other q thresholds. Reproduced when all three values are within tolerance."
+     },
+     {
+      "id": "bilateral-same-community-signaling",
+      "statement": "In the signaling network, bilateral left-right pairs are twice as likely to be in the same community as in different ones (p = 4 x 10^-45).",
+      "source": "Results, Hierarchical community structure differs, paragraph 3; Extended Data Table 1",
+      "quote": "in the signaling network, they were twice as likely (p = 4\u00d710\u221245)",
+      "criterion": "As in LeftRight.py and Methods (Bilaterally symmetric neurons), over pairs of head neurons whose names differ only in a final L or R, the number in the same first-level community over the number in different ones. The p-value is a one-sided two-sample t-test of the observed ratio against the ratios of 100 shuffles of the community labels (code; the Methods give no count). Reproduced when the ratio is within tolerance and p < 0.05."
+     },
+     {
+      "id": "bilateral-controls-signaling",
+      "statement": "The same-community odds of bilateral pairs in the signaling network are 1.3 under the conservative threshold and 2.43 under the enforced-density threshold.",
+      "source": "Extended Data Table 1",
+      "quote": "",
+      "criterion": ""
+     },
+     {
+      "id": "bilateral-anatomy-stronger",
+      "statement": "In the anatomical network bilateral pairs are 38 times more likely to share a community (p = 1.5 x 10^-210), more than in the signaling network, and anatomy stays above signaling under the threshold controls (conservative, 8 against 1.3; 1.25-synapse anatomy against original signaling, 78 against 2; original anatomy against q <= 0.18 signaling, 38 against 2.43).",
+      "source": "Results, Hierarchical community structure differs, paragraphs 3 and 4; Extended Data Table 1",
+      "quote": "In the anatomical network, bilateral neuron pairs were 38 times more likely to be in the same community than in different communities (p = 1.5 \u00d7 10\u2212210) ... the degree of enrichment was higher for anatomy than for signaling (Extended Data Table 1)",
+      "criterion": "As bilateral-same-community-signaling. The three pairs are those the Methods compare (Network Thresholding Controls), conservative signaling against conservative anatomy, original signaling against 1.25-synapse anatomy, and q <= 0.18 signaling against original anatomy. Reproduced when the anatomical odds exceed the signaling odds in all three pairs; the anatomical values are compared with the expected values as well."
+     },
+     {
+      "id": "pharynx-community-overlap",
+      "statement": "Signaling community I and anatomical community 20 both correspond to the pharyngeal subnetwork and overlap strongly; otherwise the signaling communities do not map onto anatomical ones (adjusted Rand score 0.105).",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 1; Figure 2a, 2b",
+      "quote": "Signal propagation community I had large overlap with Anatomical Community 20 both of which correspond to the pharyngeal subnetwork. Other than the pharynx, signal propagation communities did not neatly map onto or wholly contain anatomical communities (adjusted rand score ARS = 0.105)",
+      "criterion": "The adjusted Rand score is not in the code; the standard adjusted Rand index of the two first-level partitions (sklearn adjusted_rand_score) is used. The pharyngeal community in each network is the one holding the most of the 20 pharyngeal neurons. Reproduced when the ARS is within tolerance and the overlap of the two pharyngeal communities is significantly enriched (z-score from 1000 label shuffles, one-sided t-test, FDR p < 0.05, as in SMB_compare_to_connectome.py)."
+     },
+     {
+      "id": "seven-enriched-pairings",
+      "statement": "Of all signaling-anatomy community pairings only seven are significantly enriched for shared neurons after correction for multiple comparisons.",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 2; Figure 2c",
+      "quote": "Of all possible signal-anatomy community pairings only seven were significantly enriched, considering multiple hypothesis testing",
+      "criterion": "As in SMB_compare_to_connectome.py and Methods (Enrichment Analysis), the overlap count of each pair against 1000 shuffles of the signaling labels, one-sided t-test, FDR over all pairs with a defined p-value, p < 0.05. Seven pairs are needed (a tolerance of 0.7 allows no other count)."
+     },
+     {
+      "id": "forced-same-number-ars",
+      "statement": "Forcing both networks to the same number of communities does not improve their overlap (adjusted Rand score 0.002 with six communities each and 0.014 with 20 each).",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 2; Extended Data Figure 4",
+      "quote": "Overlap was not improved by altering the stochastic block model algorithm to force it to partition each network into the same number of communities (ARSsame6 = 0.002 and ARSsame20 = 0.014",
+      "criterion": "How the SBM was forced to a number of communities is not in the code. The reading is graph-tool's minimize_nested_blockmodel_dl with the first level fixed to B blocks (multilevel_mcmc_args B_min = B_max = B). As in the legend of Extended Data Figure 4, ARSsame6 compares anatomy forced to 6 communities with the original signaling partition, and ARSsame20 compares signaling forced to 20 with the original anatomical partition. The tolerances are 10% of values near zero; the claim is reproduced when both ARS are below the original ARS, the paper's 0.105 and the recomputed value of pharynx-community-overlap (the paper's statement that overlap was not improved), and the values are compared with the expected ones as well."
+     },
+     {
+      "id": "pharynx-overlap-controls",
+      "statement": "The correspondence of the pharyngeal communities in the two networks persists in the conservative and enforced-density controls.",
+      "source": "Results, Anatomical and signal propagation communities, paragraph 3; Extended Data Figures 11, 12 and 13",
+      "quote": "The correspondence between pharyngeal communities in signaling and anatomy persists even in our conservative and enforced density controls",
+      "criterion": "For each of the three threshold pairs, the overlap of the signaling and anatomical communities that hold the most pharyngeal neurons is significantly enriched (as in pharynx-community-overlap). Reproduced when it holds for all three, partially for two."
+     },
+     {
+      "id": "fig3b-signaling-cell-type-enrichment",
+      "statement": "Each signaling community is significantly enriched for at most one of the sensory, inter- and motor neuron classes, and only community V is enriched for none.",
+      "source": "Results, Communities are enriched for neuron type and role, paragraph 2; Figure 3a, 3b",
+      "quote": "Each signaling community was statistically significantly enriched for no more than one of three previously defined cell type classes (Fig. 3 a,b; Extended Data Fig. 5 a; Table 1). Only one of the six communities, V, showed no significant enrichment for any cell type.",
+      "criterion": "Classes as listed in Extended Data Figure 5a and the code. Per community and class, the overlap count against 1000 shuffles of the community labels, one-sided t-test, FDR, p < 0.05 (Methods, Enrichment Analysis; Neuron_type_enrichment.py). Communities matched to Table 1 as in table1-signaling-membership. Reproduced when no community is enriched for two or more classes and exactly one community, the match of V, is enriched for none; partially when the first holds but the count of unenriched communities differs."
+     },
+     {
+      "id": "fig3c-signaling-role-enrichment",
+      "statement": "Signaling community I holds almost all pharyngeal neurons; all locomotory interneurons but one are in community VI, which is also enriched for amphid sensory neurons; community IV, the only one enriched for interneurons, is enriched for ring interneurons and VNC motor neurons.",
+      "source": "Results, Communities are enriched for neuron type and role, paragraphs 3 and 4; Figure 3c",
+      "quote": "community I contains almost all the pharyngeal neurons. All but one locomotory interneuron are members of community VI ... community VI was also enriched for the amphid sensory neurons ... Community IV, the only community that was enriched for interneurons, was not only specifically enriched for ring interneurons but also for VNC motor neurons.",
+      "criterion": "Roles as in Extended Data Figure 5b and the code (20 pharyngeal, 24 amphid sensory, 8 locomotory interneurons, 10 VNC motor, 31 ring interneurons), tested as in fig3b-signaling-cell-type-enrichment. Table 1 puts 15 of 20 pharyngeal neurons in I and 7 of 8 locomotory interneurons in VI. Reproduced when the matches of I, VI and IV show the stated memberships and enrichments (I pharyngeal, VI amphid sensory and locomotory, IV interneuron, ring interneuron and VNC motor) and no other community is enriched for interneurons; partially when three of these five enrichments hold."
+     },
+     {
+      "id": "fig3de-anatomy-enrichment",
+      "statement": "Each anatomical community is significantly enriched for at most one neuron class and at most one of the five roles.",
+      "source": "Results, Communities are enriched for neuron type and role, paragraph 1; Figure 3d, 3e",
+      "quote": "our modular clustering of the C. elegans anatomical network recapitulates anatomical communities that are each significantly enriched for no more than one of the three C. elegans neuron cell types classes",
+      "criterion": ""
+     },
+     {
+      "id": "ed6-signaling-not-feedforward",
+      "statement": "The signaling network is not appreciably feed-forward along the sensory to inter- to motor neuron path compared with shuffle controls.",
+      "source": "Results, Anatomy is net feed-forward along the sensorimotor path while signaling is ambiguous; Extended Data Figure 6b, 6c",
+      "quote": "By contrast, the signaling network is not appreciably feed-forward along this path compared to a shuffle control (Extended Data Fig. 6 b,c)",
+      "criterion": "A claim of absence, judged on the paper's test (Extended Data Figure 6 legend and SIM.py). For each leg (sensory to inter, inter to motor, sensory to motor), the log of the number of forward edges over backward edges, against (b) 1000 shuffles of the class labels keeping class sizes (SIM.py) and (c) 1000 degree-preserving rewired networks, each made with 2000 double-edge swaps (SIM_doubleedge.py), by a two-sided t-test of the observed value against the null values at p < 0.05. For the sensory to motor leg SIM.py tests the inter to motor value against the sensory to motor null, an apparent slip; the sensory to motor value is used, as in SIM_doubleedge.py. Reproduced when no leg is significantly above the null under either control; partially when one leg is; not reproduced when two or more are. The code's other measure (log ratio of the fractions of each class's out-edges) is shown as a variant."
+     },
+     {
+      "id": "ed6-anatomy-feedforward",
+      "statement": "Anatomical synaptic edges are enriched in a feed-forward direction from sensory to inter- to motor neurons.",
+      "source": "Results, Anatomy is net feed-forward along the sensorimotor path; Extended Data Figure 6b, 6c",
+      "quote": "Anatomically, synaptic edges are enriched in a feed-forward manner from sensory neurons to interneurons to motor neurons (Extended Data Fig. 6 b,c)",
+      "criterion": ""
+     },
+     {
+      "id": "fig4-community-motif-fractions",
+      "statement": "In the signaling network about 70% of community interactions are assortative and 30% core-periphery, with no disassortative interactions; per neuron, participation is 68% assortative, 14% core and 18% periphery.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraphs 2 and 3; Figure 4b; Figure 4 legend, panel d",
+      "quote": "the majority of community interactions in both signal propagation and anatomical networks are assortative (70% for both networks) ... Signaling network has no disassortative interactions ... in the signaling network, 30% of community interactions are core-periphery",
+      "criterion": "Densities and classes as in Methods (Community Motifs Analysis), within-community density over n(n-1) possible directed edges, between-community density over n_r n_s. The fraction of pairs is over the n(n-1) ordered community pairs, as in SMB_ADCP_Enrichment.py. The paper does not say which edges the between-community density counts; readings (a) edges from r to s only, (b) edges in both directions over 2 n_r n_s. Neuron participation is the fraction of each neuron's pair labels in each class, averaged over neurons (Figure 4b legend). The pie values in Figure 4b are assigned to signaling as the one without a disassortative slice. Reproduced when all values are within tolerance under one reading."
+     },
+     {
+      "id": "fig4d-pharynx-amphid-core",
+      "statement": "In the signaling network, pharyngeal and amphid sensory neurons are significantly enriched for the core of core-periphery interactions.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraph 4; Figure 4d",
+      "quote": "Strikingly pharyngeal and amphid sensory neurons were significantly enriched for participation in the \u201ccore\u201d component of the core-periphery interactions in the signal propagation network (Fig. 4 d)",
+      "criterion": "As in SMB_ADCP_Enrichment.py, per role the mean over its neurons of the fraction of core labels, against 1000 permutations of the neurons' label fractions, z-score, one-sided t-test, FDR over the roles and classes with a defined p-value, p < 0.05. Reproduced when both roles are significantly enriched for core under one reading of fig4-community-motif-fractions; partially when one is."
+     },
+     {
+      "id": "fig4d-anatomy-pharynx-amphid-assortative",
+      "statement": "In the anatomical network the same pharyngeal and amphid sensory neurons are impoverished for coreness and enriched for assortative interactions, and locomotory interneurons are enriched for disassortative interactions.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraphs 4 and 6; Figure 4d",
+      "quote": "in the anatomical network, these same neurons were impoverished for their coreness and instead were significantly enriched for participation in the assortative community motif",
+      "criterion": ""
+     },
+     {
+      "id": "fig4c-broadcaster-integrator",
+      "statement": "In the signaling network pharyngeal neurons act as broadcasters, with more outgoing than incoming edges, and amphid sensory neurons have more incoming than outgoing edges, each compared with shuffled role assignments.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraph 5; Figure 4c",
+      "quote": "we find that pharyngeal neurons show more broadcasting-like behavior ... (Fig. 4 c). Counterintuitively amphid sensory neurons have more incoming than outgoing edges in the signaling network",
+      "criterion": "As in broadcaster_integrator.py, for each group the number of edges into it from neurons outside it over the number of edges out of it to neurons outside it, against 1000 random disjoint pairs of groups of the same sizes (20 pharyngeal, 24 amphid sensory), by a one-sided t-test (pharynx lower than the null, amphid higher) at p < 0.05. Reproduced when both tests hold, the pharyngeal out-edges exceed its in-edges and the amphid in-edges exceed its out-edges; partially when one group holds."
+     },
+     {
+      "id": "ed9-sampling-not-confound",
+      "statement": "Pharyngeal neurons were not stimulated more often than other neurons (Kolmogorov-Smirnov p = 0.9), and amphid neurons were not observed more often (p = 0.38).",
+      "source": "Extended Data Figure 9c, 9d",
+      "quote": "Pharynx neurons do not have a larger than expected number of stimulations compared to all other neurons (Kolmogorov-Smirnoff test p-value = 0.9) ... Amphid neurons do not have a larger than expected number of observations compared to all other neurons (Kolmogorov-Smirnoff test p-value = 0.38)",
+      "criterion": "A claim of absence, judged on the paper's test, the two-sample Kolmogorov-Smirnov test (scipy ks_2samp, as in broadcaster_integrator.py) of the per-neuron counts of the group against those of all other head neurons, at p < 0.05. The counts of stimulations and observations per neuron are taken from the recordings that build the network (reference 27 does not define them here; the reading is the number of stimulation events of a neuron and the number of recordings in which a neuron was identified). Reproduced when neither test gives p < 0.05; the p-values and the median counts of each group are reported."
+     },
+     {
+      "id": "fig5a-signaling-rich-club",
+      "statement": "The signaling network has a dual rich club, with 16 neurons of degree 25 or more and a more exclusive tier of five neurons of degree 40 or more, at local maxima of the normalized rich club coefficient.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs of mostly non-overlapping neurons, paragraph 2; Figure 5a; Methods, Determining the Rich Club",
+      "quote": "The signaling network exhibited a \u201cdual rich club\u201d with two clear tiers: the first tier contained 16 neurons of degree 25 or higher, whereas the second and more exclusive tier contained five neurons of degree 40 or higher",
+      "criterion": "Degree is in-degree plus out-degree; the rich club coefficient at k is the number of directed edges among neurons of degree > k over N_k (N_k - 1), normalized by its mean over degree-preserving rewired networks (graph-tool random_rewire, configuration model; Methods and richclub.py). Number of rewired networks 1000 (Methods); 100 (legend) and 500 (code) are variants. Tiers read (a) degree > 25 and > 40 (legend and code), (b) degree >= 25 and >= 40 (Results). Reproduced when, under one reading, both counts are within tolerance, the normalized coefficient has local maxima at or within two of k = 25 and k = 40, and the coefficient exceeds the null mean by more than one null SD from k = 3 onwards. The Methods say the coefficient is significantly larger from k = 3 without naming a test; the one-SD rule (Figure 5a shows the null SD as error bars, and richclub.py has it in a commented line) and the window of two around each maximum are this file's choices. The code's list is ASHL, AVDL, AVEL, AVER, AVJL, AVJR, AWBL, AWBR, M3L, M3R, OLLR, OLQDR, RMDDL, RMDDR, RMDVL and RMDVR; membership is compared with it."
+     },
+     {
+      "id": "fig5c-rich-clubs-disjoint",
+      "statement": "The signaling and anatomical rich clubs are nearly disjoint; only AVEL and AVER are in both.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 3; Figure 5c",
+      "quote": "There were two neurons present in both rich clubs: command interneurons AVEL and AVER",
+      "criterion": "The anatomical rich club is degree > 62 in the anatomical network (richclub.py; 15 neurons in the code's list). Reproduced when the intersection of the signaling first tier and the anatomical rich club is exactly AVEL and AVER, under either reading of fig5a-signaling-rich-club."
+     },
+     {
+      "id": "fig5b-degree-correlation",
+      "statement": "Signaling and anatomical degree are weakly correlated across neurons (Pearson r = 0.22); the highest-degree anatomical neurons tend to have lower signaling degree.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 3; Figure 5b",
+      "quote": "Neurons that exhibited the highest degree in the anatomical network tended to have lower degrees in the signaling network (Pearson correlation r = 0.22)",
+      "criterion": "Degree is in-degree plus out-degree in each network, and r is the Pearson correlation over the 188 head neurons (degree.py, linregress of signaling on anatomical degree). Reproduced when r is within tolerance. The paper gives no measure for the second half of the statement (Figure 5b shading); the scatter is shown with the anatomical rich club (degree > 62) marked, and the half is not judged beyond fig5c-rich-clubs-disjoint."
+     },
+     {
+      "id": "rich-club-controls",
+      "statement": "The near disjointness of the rich clubs persists under the conservative and enforced-density controls, and every signaling rich club neuron at q <= 0.18 was in the original signaling rich club.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 3; Extended Data Figures 11b, 12a, 13a",
+      "quote": "We find that this result persists in both the conservative control and the enforced density controls",
+      "criterion": "The thresholds for the rich clubs of the control networks are not given in the paper or the code. Readings (a) the same degree thresholds as the originals (25 for signaling, 62 for anatomy); (b) for each control network, the degree at the local maximum of its normalized rich club coefficient, found as in fig5a-signaling-rich-club (Methods, Determining the Rich Club). Reading (a) may leave the sparser control networks with few or no rich club neurons; the legend of Extended Data Figure 12a reports that the 1.25-synapse anatomical rich club shares 9 of the 15 original neurons and has 4 new ones, which is shown for comparison. Reproduced when, under one reading, in all three threshold pairs the overlap of the two rich clubs is at most AVEL and AVER, and the q <= 0.18 signaling rich club is a subset of the original."
+     },
+     {
+      "id": "fig5d-community-vi-hubs",
+      "statement": "Signaling community VI holds 10 of the 16 rich club neurons, including AVEL and AVER, about 21% of its members, and is enriched for them; the others are M3L and M3R in I, OLLR and OLQDR in II, RMDDR in III and RMDDL in V.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraphs 4 and 5; Figure 5d",
+      "quote": "Community VI was highly enriched for hub neurons, containing 10 out of the 16 hub neurons, including AVEL and AVER. Rich club neurons also make up a large fraction of this community, approximately 21%.",
+      "criterion": "Enrichment as in Neuron_type_enrichment.py (overlap with the rich club against 1000 shuffles of the community labels, one-sided t-test, FDR over the six communities, p < 0.05). Reproduced when the match of VI holds the expected number and fraction and is significantly enriched."
+     },
+     {
+      "id": "ed10-rich-club-cell-classes",
+      "statement": "Signaling rich club neurons are spread fairly equally among sensory, inter- and motor neurons, unlike the anatomical rich club, which is mostly interneurons.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 5; Extended Data Figure 10b, 10c",
+      "quote": "Surprisingly, members of the rich club were fairly equally spread among sensory, inter-, and motor neurons (Extended Data Fig. 10 b). This is in contrast to the anatomical network where the rich club is primarily composed of interneurons",
+      "criterion": "Classes as in Extended Data Figure 5a. The code's signaling list has 5 sensory, 5 inter- and 6 motor neurons. The paper gives no test; reproduced when no class holds more than half of the recomputed first tier, and, for the anatomical part (outside data), when interneurons are more than half of the degree > 62 anatomical rich club."
+     },
+     {
+      "id": "fig5e-rich-club-core",
+      "statement": "In both networks the rich club neurons are enriched for the core of core-periphery interactions.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 6; Figure 5e",
+      "quote": "As predicted, in both the anatomical and signaling networks, each network\u2019s respective rich club members were enriched for coreness",
+      "criterion": "As fig4d-pharynx-amphid-core, for the group of signaling rich club neurons in the signaling network. Reproduced when its core enrichment has FDR p < 0.05. The anatomical half of the finding uses outside data and is shown when the connectome is used; it does not decide this claim."
+     },
+     {
+      "id": "ed9e-degree-observations",
+      "statement": "Signaling degree is correlated with the number of times a neuron was observed (Pearson r = 0.71), but rich club members have degrees well above what that correlation predicts.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 7; Extended Data Figure 9e, 9f",
+      "quote": "signal propagation degree is correlated with the number of empirical observations made of each neuron in ... our experimental dataset (pearsons correlation r = 0.71, Extended Data Fig. 9 e). We were reassured, however, that rich club members had large degrees well in excess of what we could explain from the correlation",
+      "criterion": "As in degree.py, a least-squares line of total degree on number of observations, the residual of each neuron, and a Gaussian fit to all residuals. Number of observations as in ed9-sampling-not-confound. The Results cite this as Extended Data Fig. 5 e,f, evidently Figure 9e,f. The paper gives no threshold for \"well in excess\"; the rule of more than one fitted SD above the line is this file's choice. Reproduced when r is within tolerance and every signaling rich club neuron lies more than one fitted SD above the line; partially when most do."
+     },
+     {
+      "id": "anatomy-community-motif-fractions",
+      "statement": "In the anatomical network about 70% of community interactions are assortative and 26% core-periphery; per neuron, participation is 77% assortative, 12% core, 7% periphery and 4% disassortative.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraphs 2 and 3; Figure 4b",
+      "quote": "the majority of community interactions in both signal propagation and anatomical networks are assortative (70% for both networks) ... We observed that in the anatomical network, 26% and in the signaling network, 30% of community interactions are core-periphery",
+      "criterion": "As fig4-community-motif-fractions, on the anatomical network and its 20 communities. The pie with a disassortative slice is the anatomical one (Figure 4 legend, bottom panel)."
+     },
+     {
+      "id": "community-vi-most-self-connected",
+      "statement": "Signaling community VI is the most highly self-interconnected of the six communities.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 4; Extended Data Figure 7",
+      "quote": "it is then consistent that community VI is also the most highly self-interconnected community (Extended Data Fig. 7)",
+      "criterion": "Self-interconnection is the fraction of all possible edges among the community's nodes (Extended Data Figure 7 legend), edges over n(n-1). The paper gives no test. Reproduced when the match of VI has the highest within-community density of the six."
+     },
+     {
+      "id": "pharynx-less-isolated-signaling",
+      "statement": "The pharyngeal community is much more highly connected to the other communities in the signaling network than in the anatomical network.",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 4; Figure 1a; Discussion, paragraph 5",
+      "quote": "in the signaling network, the community of pharyngeal neurons is much more highly connected to the other communities than it is in the anatomical network (Fig. 1 a)",
+      "criterion": "The paper shows this in the matrices of Figure 1 and gives no measure or test. The pharyngeal community is the one of pharynx-community-overlap in each network. Readings, both this file's choice, (a) the density of edges between the pharyngeal community and the rest of the network, in both directions, over 2 n (188 - n); (b) the fraction of the edges touching the pharyngeal community that leave or enter it from outside. Reproduced when the signaling value exceeds the anatomical value under both readings; the ratio is reported."
+     },
+     {
+      "id": "ave-most-connected-both",
+      "statement": "The most connected member of the signaling rich club is also the most connected member of the connectome, the bilateral pair AVEL and AVER.",
+      "source": "Introduction, last paragraph; Discussion, paragraph 2; Abstract; Figure 5b",
+      "quote": "the most connected member of the rich club of the signaling network is also the most connected member of the connectome, but there is little other overlap in rich club membership",
+      "criterion": "Degree is in-degree plus out-degree (degree.py). The abstract says AVEL/R have some of the highest degrees in the anatomical network, so the finding is read per bilateral class. Readings (a) the neuron of highest degree in each network is AVEL or AVER; (b) the class AVE has the highest summed degree of AVEL and AVER among bilateral classes in each network. Reproduced when it holds under one reading; the ranks of AVEL and AVER in both networks are reported."
+     }
+    ]
+   },
+   {
+    "path": "claims/randi-2023.yaml",
+    "paper": "10.1038/s41586-023-06683-4",
+    "check": null,
+    "claims": [
+     {
+      "id": "recordings-protocol",
+      "statement": "Activity was recorded from 113 WT-background animals, each for up to 40 min, while a neuron was stimulated once every 30 s with a 0.5 s train of light pulses.",
+      "source": "Results, \"Population imaging and single-cell activation\", paragraph 1; Methods, \"Stimulus delivery and pulsed laser\", paragraph 3",
+      "quote": "We recorded activity from 113 wild-type (WT)-background animals, each for up to 40 min, while stimulating a mostly randomly selected sequence of neurons one by one every 30 s ... a 500-ms (300-ms for the unc-31-mutant strain) train of light pulses was used to optogenetically stimulate that neuron",
+      "criterion": "Reproduced when 113 recordings hold both calcium traces and a stimulation table, the median interval between stimulations is within 10% of 30 s, and at least 90% of recordings last no more than 44 min (40 min plus 10%). Partially reproduced when the interval and duration conditions hold and between 100 and 112 recordings hold traces and stimulations. The stated 0.5 s duration is reported, with whether the files could show any other."
+     },
+     {
+      "id": "pairs-measured",
+      "statement": "Responses to stimulation were imaged for 23,433 pairs of neurons (66% of all possible pairs in the head), from 186 of the 188 head neurons, and some pairs were observed as many as 59 times.",
+      "source": "Results, \"Signal propagation map\", paragraph 1; Extended Data Fig. 4a",
+      "quote": "We imaged activity in response to stimulation for 23,433 pairs of neurons (66% of all possible pairs in the head). Measured pairs were imaged at least once, and some as many as 59 times ... This includes activity from 186 of 188 neurons in the head",
+      "criterion": "An observation of pair (i, j) is a stimulation of the neuron labelled j that evoked an autoresponse, while an ROI labelled i had a usable trace (5% NaN rule and a nonzero local standard deviation); both labels must be among the 188 head neurons. The paper's text allows these readings, (a) pairs including i = j (the Source Data count of 23,433 includes the diagonal), (b) pairs with i different from j, (c) as (a) without requiring the autoresponse. Reproduced when under one reading all three values are within tolerance; partially reproduced when one or two are. Counts per animal are reported."
+     },
+     {
+      "id": "fig1e-avjr-avdr",
+      "statement": "Stimulation of the interneuron AVJR evoked activity in AVDR.",
+      "source": "Fig. 1e",
+      "quote": "Stimulation of the interneuron AVJR evoked activity in AVDR (Fig. 1e)",
+      "criterion": "Over all AVJR stimulations with an autoresponse in which AVDR was observed, the mean <dF/F0>_t of AVDR is above 0 and the response classifier detects an AVDR response in at least one of them. Reproduced when both hold; not reproduced otherwise. The value per animal and the number of trials are reported."
+     },
+     {
+      "id": "fig1f-aver-avar",
+      "statement": "Activation of the premotor interneuron AVER evoked activity transients in AVAR.",
+      "source": "Fig. 1f",
+      "quote": "Activation of the premotor interneuron AVER evoked activity transients in AVAR (Fig. 1f)",
+      "criterion": "As for fig1e-avjr-avdr, with AVER stimulated and AVAR observed."
+     },
+     {
+      "id": "fig1g-saadl-ollr",
+      "statement": "Activation of SAADL inhibited the activity of the sensory neuron OLLR.",
+      "source": "Fig. 1g",
+      "quote": "Activation of the turning-associated neuron SAADL ... inhibited the activity of the sensory neuron OLLR",
+      "criterion": "Over all SAADL stimulations with an autoresponse in which OLLR was observed, the mean <dF/F0>_t of OLLR is below 0 and the classifier detects an OLLR response in at least one of them. Reproduced when both hold; not reproduced otherwise."
+     },
+     {
+      "id": "sourcedata-link",
+      "statement": "The per-pair measurements computed from the dandiset agree with the paper's published per-pair values, the number of observations (Extended Data Fig. 4a) and the mean response <dF/F0>_t (Extended Data Fig. 3a).",
+      "source": "Source Data of Extended Data Figs. 3a and 4a",
+      "quote": "",
+      "criterion": "Pairs are matched by the names of the responding and the stimulated neuron. Reproduced when at least 90% of the paper's observed pairs are observed here, the Spearman correlation of the observation counts over pairs observed in both is at least 0.9, and the Pearson correlation of mean <dF/F0>_t over pairs observed in both is at least 0.7. Partially reproduced when at least 70% are observed here and the two correlations are at least 0.7 and 0.5. Not reproduced otherwise. The mean over all observations is the main reading; the mean over detected responses only and the code's correction of decaying traces are shown as variants."
+     },
+     {
+      "id": "osf-link",
+      "statement": "The dandiset's recordings can be linked to the recordings the paper exported to its OSF repository, and the stimulated neuron found here from the target position agrees with the one the paper's pipeline assigned.",
+      "source": "Data availability (OSF doi 10.17605/OSF.IO/E2SYT, raw_extracted_data)",
+      "quote": "Machine-readable datasets containing the measurements from this work are publicly accessible through on Open Science Foundation repository at 10.17605/OSF.IO/E2SYT",
+      "criterion": "Recordings are matched by the date and time in the dandiset's session id and in the folder name the export gives for each recording. Reproduced when at least 95% of the 110 recordings with traces match one exported recording with the same number of stimulations and ROIs, and, over stimulations that both assign to an ROI, at least 80% are assigned to the same ROI. Partially reproduced when at least 80% of recordings match and the agreement is at least 60%. The labels of matched ROIs are compared as well, and the head-pair count of pairs-measured is shown with the exported assignment as a variant."
+     },
+     {
+      "id": "fig2d-inhibitory-fraction",
+      "statement": "11% of the functional connections at q < 0.05 are inhibitory.",
+      "source": "Results, \"Signal propagation map\", paragraph 5; Fig. 2d",
+      "quote": "Our measurements indicate that 11% of q < 0.05 functional connections are inhibitory (Fig. 2d)",
+      "criterion": "The q values cannot be computed from the dandiset (see fig2c-1310-connected), so the pairs with q < 0.05 are taken from the paper's Source Data (Extended Data Fig. 4b), and the sign of each pair's mean <dF/F0>_t is computed from the dandiset. Readings, (a) all q < 0.05 pairs observed here, including i = j; (b) excluding i = j. Reproduced when the fraction with a negative mean is within tolerance under one reading; the fraction from the paper's own Source Data means is given for reference."
+     },
+     {
+      "id": "edfig2ij-spatial-specificity",
+      "statement": "Stimulation does not elicit responses in most close neighbours of the targeted neuron; at 75% of the cumulative distribution, neighbours' responses are below a dF/F0 of 0.1.",
+      "source": "Extended Data Fig. 2i,j and legend; Methods, \"Characterization of the size of the two-photon excitation spot\", paragraph 2",
+      "quote": "Cross-hairs in j, 75% cumulative distribution at \u0394F/F0 = 0.1 ... we show that stimulations do not elicit responses in most of the close neighbours of the targeted neurons",
+      "criterion": "Over stimulations with an autoresponse, <dF/F0>_t of the targeted ROI (0 um) and of every other ROI with a usable trace whose centroid lies 4 to 10 um or 10 to 16 um away, with 0.42 um per pixel and the imaging file's plane spacing. The legend does not say which neighbours the 75% refers to; readings, (a) both bands pooled (4 to 16 um), (b) 4 to 10 um, (c) 10 to 16 um. Reproduced when under one reading the fraction below 0.1 is within tolerance and the median of the targeted ROI is at least three times that of the 4 to 10 um band. Partially reproduced when only the second condition holds."
+     },
+     {
+      "id": "fig2c-1310-connected",
+      "statement": "1,310 of the 23,433 measured neuron pairs (6%) are functionally connected at q < 0.05.",
+      "source": "Results, \"Signal propagation map\", paragraph 3; Fig. 2c",
+      "quote": "A total of 1,310 of the 23,433 measured neuron pairs, or 6%, pass our stringent criteria to be deemed functionally connected at q < 0.05 (Fig. 2c)",
+      "criterion": ""
+     },
+     {
+      "id": "fig2c-bilateral",
+      "statement": "Bilaterally symmetric neurons are eight times more likely to be functionally connected than pairs chosen at random.",
+      "source": "Results, \"Signal propagation map\", paragraph 4; Fig. 2c",
+      "quote": "As expected, bilaterally symmetric neurons are (eight times) more likely to be functionally connected than are pairs of neurons chosen at random (Fig. 2c)",
+      "criterion": ""
+     },
+     {
+      "id": "fig2efg-path-length",
+      "statement": "The probability of a functional connection decreases with the minimal anatomical path length, functionally connected pairs are on average 2.1 hops apart, and pairs with long paths are more often functionally non-connected.",
+      "source": "Results, \"Signal propagation map\", paragraph 6; Fig. 2e-g",
+      "quote": "the likelihood of functional connections decreased as the minimal path length through the anatomical network increased (Fig. 2e) ... neurons that had large minimal path lengths through the anatomical network were more likely to be functionally non-connected ... Functionally connected (q < 0.05) neurons were on average connected by a minimal anatomical path length of 2.1 hops",
+      "criterion": ""
+     },
+     {
+      "id": "fig3-anatomy-predictions",
+      "statement": "Signal propagation differs from predictions of a connectome-constrained model; pairs predicted to respond strongly respond more, but agreement over all pairs is poor (R2 < 0), improves when weights and signs are fitted, and is better in unc-31 animals.",
+      "source": "Results, \"Functional measurements differ from anatomy\", paragraphs 2 to 4; Fig. 3b-d",
+      "quote": "Neuron pairs that the model predicted to have large responses (\u0394V > 0.1) were significantly more likely to have larger measured responses ... poor agreement between anatomy-based prediction and measurement when considering the response amplitudes of all neuron pairs ... Fitting the weights and signs ... improved the agreement ... signal propagation in these animals showed better agreement with anatomy than it did in WT animals",
+      "criterion": ""
+     },
+     {
+      "id": "edfig6-kernel-stereotypy",
+      "statement": "Kernels of one neuron pair are more similar to each other than to kernels of other pairs, and kernel rise times characterize the speed of signal propagation.",
+      "source": "Results, \"Signal propagation map\", paragraph 7; Extended Data Fig. 6b-f",
+      "quote": "As expected, kernels from one neuron pair were more similar to each other than to kernels from other pairs (Extended Data Fig. 6f) ... Kernel rise time for each measured neuron pair in WT is a metric of signal propagation speed",
+      "criterion": ""
+     },
+     {
+      "id": "edfig7b-unc31-fewer",
+      "statement": "unc-31 mutants have a smaller proportion of functionally connected pairs than WT animals.",
+      "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 3; Extended Data Fig. 7b",
+      "quote": "Consistent with this, unc-31 animals had a smaller proportion of functional connections than did WT animals (Extended Data Fig. 7b)",
+      "criterion": ""
+     },
+     {
+      "id": "fig4-rid-wt",
+      "statement": "URX, ADL and AWB, predicted from anatomy to have no response, respond strongly to RID stimulation in WT animals.",
+      "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 4; Fig. 4a-d; Extended Data Fig. 7c",
+      "quote": "Many neurons responded to RID activation (Extended Data Fig. 7c), including URX, ADL and AWB, three neuron subtypes that were predicted from anatomy to have no response (Fig. 4a). These three neurons showed strong responses in WT animals",
+      "criterion": "RID stimulations are those whose stimulated ROI, found as in the other claims, carries the NeuroPAL label RID. As the Methods state for Fig. 4, no autoresponse is required and values of <dF/F0>_t beyond 2 in absolute value are excluded; the dandiset holds only the regular traces, not the matchless ones. Readings, (a) URX, ADL and AWB with left and right pooled; (b) the neurons shown in Fig. 4, URXL, ADLR and AWBR. For each of the three, over RID stimulations in which it is observed, the mean <dF/F0>_t is above 0 and the classifier detects a response in at least one trial. Reproduced when this holds for all three under one reading; partially reproduced when it holds for one or two; not reproduced when for none. Blocked (other) when none of the three is observed after a RID stimulation. Where each mean falls among the means of all head pairs is reported for \"strongly\"."
+     },
+     {
+      "id": "fig4-rid-unc31",
+      "statement": "The responses of URXL, ADLR and AWBR to RID stimulation are reduced or absent in unc-31 mutants.",
+      "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 4; Fig. 4b-d",
+      "quote": "These three neurons showed strong responses in WT animals but their responses were reduced or absent in unc-31 mutants (Fig. 4b\u2013d)",
+      "criterion": "In the 18 unc-31 recordings of the OSF export (exported_data_unc31.tar.gz), RID stimulations are those whose exported stimulated ROI carries the exported label RID. The exported traces are processed as the dandiset's, with the inclusion rules of fig4-rid-wt and the same two readings. A neuron's response is reduced when its mean <dF/F0>_t in unc-31 is below its WT mean in fig4-rid-wt. Reproduced when the response is reduced for every one of the three neurons observed in both strains under one reading; partially reproduced when for some; not reproduced when for none. Blocked (other) when none is observed in both. Because the WT values come from the dandiset and the unc-31 values from the export, the WT values computed in the same way from the WT export are shown as a variant."
+     },
+     {
+      "id": "fig5-extrasynaptic-screen",
+      "statement": "Fifty-three pairs are functionally connected in WT (q < 0.05) and functionally non-connected in unc-31 (q_eq < 0.05), with timescales similar to all functional connections.",
+      "source": "Results, \"Extrasynaptic-dependent signal propagation screen\", paragraph 1; Fig. 5a; Extended Data Fig. 9",
+      "quote": "Fifty-three pairs of neurons met our criteria (Extended Data Fig. 9) ... The timescales of signal propagation for those neuron pairs that passed our screen were similar to that of all functional connections (Fig. 5a)",
+      "criterion": ""
+     },
+     {
+      "id": "fig6-spontaneous",
+      "statement": "Correlations derived from the measured kernels predict spontaneous activity correlations better than anatomical weights or the connectome-constrained model.",
+      "source": "Results, \"Signal propagation predicts spontaneous activity\", paragraph 1; Fig. 6",
+      "quote": "We conclude that functionally derived predictions based on our measured signal propagation kernels better agree with spontaneous activity than do either a bare description of anatomical weights or an established model constrained by the connectome",
+      "criterion": ""
      }
     ]
    }
@@ -69621,148 +70043,6 @@
       "source": "Discussion, paragraph beginning 'One potential confound'; Methods 2.3",
       "quote": "In this study we additionally performed a sham condition delivering ultrasound off target to the front of the skull, and did not observe any significant response.",
       "criterion": "A claim of absence. The paper names no test of the sham against baseline; its only tests involving sham compare it with on-target conditions (Results 3.2, 3.3), and those are judged in their own claims. The Methods tests (Kruskal-Wallis with post hoc rank-sum) have no baseline group. What the sham is compared with is therefore open, and this file names no reading the text supports; the sham's mean normalized rates for RSU and FSU in each window and state are to be shown, and the claim is blocked as methods_underspecified."
-     }
-    ]
-   }
-  ],
-  "dandi:001075": [
-   {
-    "path": "claims/randi-2023.yaml",
-    "paper": "10.1038/s41586-023-06683-4",
-    "check": null,
-    "claims": [
-     {
-      "id": "recordings-protocol",
-      "statement": "Activity was recorded from 113 WT-background animals, each for up to 40 min, while a neuron was stimulated once every 30 s with a 0.5 s train of light pulses.",
-      "source": "Results, \"Population imaging and single-cell activation\", paragraph 1; Methods, \"Stimulus delivery and pulsed laser\", paragraph 3",
-      "quote": "We recorded activity from 113 wild-type (WT)-background animals, each for up to 40 min, while stimulating a mostly randomly selected sequence of neurons one by one every 30 s ... a 500-ms (300-ms for the unc-31-mutant strain) train of light pulses was used to optogenetically stimulate that neuron",
-      "criterion": "Reproduced when 113 recordings hold both calcium traces and a stimulation table, the median interval between stimulations is within 10% of 30 s, and at least 90% of recordings last no more than 44 min (40 min plus 10%). Partially reproduced when the interval and duration conditions hold and between 100 and 112 recordings hold traces and stimulations. The stated 0.5 s duration is reported, with whether the files could show any other."
-     },
-     {
-      "id": "pairs-measured",
-      "statement": "Responses to stimulation were imaged for 23,433 pairs of neurons (66% of all possible pairs in the head), from 186 of the 188 head neurons, and some pairs were observed as many as 59 times.",
-      "source": "Results, \"Signal propagation map\", paragraph 1; Extended Data Fig. 4a",
-      "quote": "We imaged activity in response to stimulation for 23,433 pairs of neurons (66% of all possible pairs in the head). Measured pairs were imaged at least once, and some as many as 59 times ... This includes activity from 186 of 188 neurons in the head",
-      "criterion": "An observation of pair (i, j) is a stimulation of the neuron labelled j that evoked an autoresponse, while an ROI labelled i had a usable trace (5% NaN rule and a nonzero local standard deviation); both labels must be among the 188 head neurons. The paper's text allows these readings, (a) pairs including i = j (the Source Data count of 23,433 includes the diagonal), (b) pairs with i different from j, (c) as (a) without requiring the autoresponse. Reproduced when under one reading all three values are within tolerance; partially reproduced when one or two are. Counts per animal are reported."
-     },
-     {
-      "id": "fig1e-avjr-avdr",
-      "statement": "Stimulation of the interneuron AVJR evoked activity in AVDR.",
-      "source": "Fig. 1e",
-      "quote": "Stimulation of the interneuron AVJR evoked activity in AVDR (Fig. 1e)",
-      "criterion": "Over all AVJR stimulations with an autoresponse in which AVDR was observed, the mean <dF/F0>_t of AVDR is above 0 and the response classifier detects an AVDR response in at least one of them. Reproduced when both hold; not reproduced otherwise. The value per animal and the number of trials are reported."
-     },
-     {
-      "id": "fig1f-aver-avar",
-      "statement": "Activation of the premotor interneuron AVER evoked activity transients in AVAR.",
-      "source": "Fig. 1f",
-      "quote": "Activation of the premotor interneuron AVER evoked activity transients in AVAR (Fig. 1f)",
-      "criterion": "As for fig1e-avjr-avdr, with AVER stimulated and AVAR observed."
-     },
-     {
-      "id": "fig1g-saadl-ollr",
-      "statement": "Activation of SAADL inhibited the activity of the sensory neuron OLLR.",
-      "source": "Fig. 1g",
-      "quote": "Activation of the turning-associated neuron SAADL ... inhibited the activity of the sensory neuron OLLR",
-      "criterion": "Over all SAADL stimulations with an autoresponse in which OLLR was observed, the mean <dF/F0>_t of OLLR is below 0 and the classifier detects an OLLR response in at least one of them. Reproduced when both hold; not reproduced otherwise."
-     },
-     {
-      "id": "sourcedata-link",
-      "statement": "The per-pair measurements computed from the dandiset agree with the paper's published per-pair values, the number of observations (Extended Data Fig. 4a) and the mean response <dF/F0>_t (Extended Data Fig. 3a).",
-      "source": "Source Data of Extended Data Figs. 3a and 4a",
-      "quote": "",
-      "criterion": "Pairs are matched by the names of the responding and the stimulated neuron. Reproduced when at least 90% of the paper's observed pairs are observed here, the Spearman correlation of the observation counts over pairs observed in both is at least 0.9, and the Pearson correlation of mean <dF/F0>_t over pairs observed in both is at least 0.7. Partially reproduced when at least 70% are observed here and the two correlations are at least 0.7 and 0.5. Not reproduced otherwise. The mean over all observations is the main reading; the mean over detected responses only and the code's correction of decaying traces are shown as variants."
-     },
-     {
-      "id": "osf-link",
-      "statement": "The dandiset's recordings can be linked to the recordings the paper exported to its OSF repository, and the stimulated neuron found here from the target position agrees with the one the paper's pipeline assigned.",
-      "source": "Data availability (OSF doi 10.17605/OSF.IO/E2SYT, raw_extracted_data)",
-      "quote": "Machine-readable datasets containing the measurements from this work are publicly accessible through on Open Science Foundation repository at 10.17605/OSF.IO/E2SYT",
-      "criterion": "Recordings are matched by the date and time in the dandiset's session id and in the folder name the export gives for each recording. Reproduced when at least 95% of the 110 recordings with traces match one exported recording with the same number of stimulations and ROIs, and, over stimulations that both assign to an ROI, at least 80% are assigned to the same ROI. Partially reproduced when at least 80% of recordings match and the agreement is at least 60%. The labels of matched ROIs are compared as well, and the head-pair count of pairs-measured is shown with the exported assignment as a variant."
-     },
-     {
-      "id": "fig2d-inhibitory-fraction",
-      "statement": "11% of the functional connections at q < 0.05 are inhibitory.",
-      "source": "Results, \"Signal propagation map\", paragraph 5; Fig. 2d",
-      "quote": "Our measurements indicate that 11% of q < 0.05 functional connections are inhibitory (Fig. 2d)",
-      "criterion": "The q values cannot be computed from the dandiset (see fig2c-1310-connected), so the pairs with q < 0.05 are taken from the paper's Source Data (Extended Data Fig. 4b), and the sign of each pair's mean <dF/F0>_t is computed from the dandiset. Readings, (a) all q < 0.05 pairs observed here, including i = j; (b) excluding i = j. Reproduced when the fraction with a negative mean is within tolerance under one reading; the fraction from the paper's own Source Data means is given for reference."
-     },
-     {
-      "id": "edfig2ij-spatial-specificity",
-      "statement": "Stimulation does not elicit responses in most close neighbours of the targeted neuron; at 75% of the cumulative distribution, neighbours' responses are below a dF/F0 of 0.1.",
-      "source": "Extended Data Fig. 2i,j and legend; Methods, \"Characterization of the size of the two-photon excitation spot\", paragraph 2",
-      "quote": "Cross-hairs in j, 75% cumulative distribution at \u0394F/F0 = 0.1 ... we show that stimulations do not elicit responses in most of the close neighbours of the targeted neurons",
-      "criterion": "Over stimulations with an autoresponse, <dF/F0>_t of the targeted ROI (0 um) and of every other ROI with a usable trace whose centroid lies 4 to 10 um or 10 to 16 um away, with 0.42 um per pixel and the imaging file's plane spacing. The legend does not say which neighbours the 75% refers to; readings, (a) both bands pooled (4 to 16 um), (b) 4 to 10 um, (c) 10 to 16 um. Reproduced when under one reading the fraction below 0.1 is within tolerance and the median of the targeted ROI is at least three times that of the 4 to 10 um band. Partially reproduced when only the second condition holds."
-     },
-     {
-      "id": "fig2c-1310-connected",
-      "statement": "1,310 of the 23,433 measured neuron pairs (6%) are functionally connected at q < 0.05.",
-      "source": "Results, \"Signal propagation map\", paragraph 3; Fig. 2c",
-      "quote": "A total of 1,310 of the 23,433 measured neuron pairs, or 6%, pass our stringent criteria to be deemed functionally connected at q < 0.05 (Fig. 2c)",
-      "criterion": ""
-     },
-     {
-      "id": "fig2c-bilateral",
-      "statement": "Bilaterally symmetric neurons are eight times more likely to be functionally connected than pairs chosen at random.",
-      "source": "Results, \"Signal propagation map\", paragraph 4; Fig. 2c",
-      "quote": "As expected, bilaterally symmetric neurons are (eight times) more likely to be functionally connected than are pairs of neurons chosen at random (Fig. 2c)",
-      "criterion": ""
-     },
-     {
-      "id": "fig2efg-path-length",
-      "statement": "The probability of a functional connection decreases with the minimal anatomical path length, functionally connected pairs are on average 2.1 hops apart, and pairs with long paths are more often functionally non-connected.",
-      "source": "Results, \"Signal propagation map\", paragraph 6; Fig. 2e-g",
-      "quote": "the likelihood of functional connections decreased as the minimal path length through the anatomical network increased (Fig. 2e) ... neurons that had large minimal path lengths through the anatomical network were more likely to be functionally non-connected ... Functionally connected (q < 0.05) neurons were on average connected by a minimal anatomical path length of 2.1 hops",
-      "criterion": ""
-     },
-     {
-      "id": "fig3-anatomy-predictions",
-      "statement": "Signal propagation differs from predictions of a connectome-constrained model; pairs predicted to respond strongly respond more, but agreement over all pairs is poor (R2 < 0), improves when weights and signs are fitted, and is better in unc-31 animals.",
-      "source": "Results, \"Functional measurements differ from anatomy\", paragraphs 2 to 4; Fig. 3b-d",
-      "quote": "Neuron pairs that the model predicted to have large responses (\u0394V > 0.1) were significantly more likely to have larger measured responses ... poor agreement between anatomy-based prediction and measurement when considering the response amplitudes of all neuron pairs ... Fitting the weights and signs ... improved the agreement ... signal propagation in these animals showed better agreement with anatomy than it did in WT animals",
-      "criterion": ""
-     },
-     {
-      "id": "edfig6-kernel-stereotypy",
-      "statement": "Kernels of one neuron pair are more similar to each other than to kernels of other pairs, and kernel rise times characterize the speed of signal propagation.",
-      "source": "Results, \"Signal propagation map\", paragraph 7; Extended Data Fig. 6b-f",
-      "quote": "As expected, kernels from one neuron pair were more similar to each other than to kernels from other pairs (Extended Data Fig. 6f) ... Kernel rise time for each measured neuron pair in WT is a metric of signal propagation speed",
-      "criterion": ""
-     },
-     {
-      "id": "edfig7b-unc31-fewer",
-      "statement": "unc-31 mutants have a smaller proportion of functionally connected pairs than WT animals.",
-      "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 3; Extended Data Fig. 7b",
-      "quote": "Consistent with this, unc-31 animals had a smaller proportion of functional connections than did WT animals (Extended Data Fig. 7b)",
-      "criterion": ""
-     },
-     {
-      "id": "fig4-rid-wt",
-      "statement": "URX, ADL and AWB, predicted from anatomy to have no response, respond strongly to RID stimulation in WT animals.",
-      "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 4; Fig. 4a-d; Extended Data Fig. 7c",
-      "quote": "Many neurons responded to RID activation (Extended Data Fig. 7c), including URX, ADL and AWB, three neuron subtypes that were predicted from anatomy to have no response (Fig. 4a). These three neurons showed strong responses in WT animals",
-      "criterion": "RID stimulations are those whose stimulated ROI, found as in the other claims, carries the NeuroPAL label RID. As the Methods state for Fig. 4, no autoresponse is required and values of <dF/F0>_t beyond 2 in absolute value are excluded; the dandiset holds only the regular traces, not the matchless ones. Readings, (a) URX, ADL and AWB with left and right pooled; (b) the neurons shown in Fig. 4, URXL, ADLR and AWBR. For each of the three, over RID stimulations in which it is observed, the mean <dF/F0>_t is above 0 and the classifier detects a response in at least one trial. Reproduced when this holds for all three under one reading; partially reproduced when it holds for one or two; not reproduced when for none. Blocked (other) when none of the three is observed after a RID stimulation. Where each mean falls among the means of all head pairs is reported for \"strongly\"."
-     },
-     {
-      "id": "fig4-rid-unc31",
-      "statement": "The responses of URXL, ADLR and AWBR to RID stimulation are reduced or absent in unc-31 mutants.",
-      "source": "Results, \"Extrasynaptic signalling also drives neural dynamics\", paragraph 4; Fig. 4b-d",
-      "quote": "These three neurons showed strong responses in WT animals but their responses were reduced or absent in unc-31 mutants (Fig. 4b\u2013d)",
-      "criterion": "In the 18 unc-31 recordings of the OSF export (exported_data_unc31.tar.gz), RID stimulations are those whose exported stimulated ROI carries the exported label RID. The exported traces are processed as the dandiset's, with the inclusion rules of fig4-rid-wt and the same two readings. A neuron's response is reduced when its mean <dF/F0>_t in unc-31 is below its WT mean in fig4-rid-wt. Reproduced when the response is reduced for every one of the three neurons observed in both strains under one reading; partially reproduced when for some; not reproduced when for none. Blocked (other) when none is observed in both. Because the WT values come from the dandiset and the unc-31 values from the export, the WT values computed in the same way from the WT export are shown as a variant."
-     },
-     {
-      "id": "fig5-extrasynaptic-screen",
-      "statement": "Fifty-three pairs are functionally connected in WT (q < 0.05) and functionally non-connected in unc-31 (q_eq < 0.05), with timescales similar to all functional connections.",
-      "source": "Results, \"Extrasynaptic-dependent signal propagation screen\", paragraph 1; Fig. 5a; Extended Data Fig. 9",
-      "quote": "Fifty-three pairs of neurons met our criteria (Extended Data Fig. 9) ... The timescales of signal propagation for those neuron pairs that passed our screen were similar to that of all functional connections (Fig. 5a)",
-      "criterion": ""
-     },
-     {
-      "id": "fig6-spontaneous",
-      "statement": "Correlations derived from the measured kernels predict spontaneous activity correlations better than anatomical weights or the connectome-constrained model.",
-      "source": "Results, \"Signal propagation predicts spontaneous activity\", paragraph 1; Fig. 6",
-      "quote": "We conclude that functionally derived predictions based on our measured signal propagation kernels better agree with spontaneous activity than do either a bare description of anatomical weights or an established model constrained by the connectome",
-      "criterion": ""
      }
     ]
    }
@@ -113746,6 +114026,284 @@
       "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 2; Extended Data Fig. 6",
       "quote": "The ADN is strongly innervated by inhibitory afferents from the thalamic reticular nucleus",
       "criterion": "Anatomy (ImageJ intensity of GFP in ROIs per nucleus) on images the paper does not deposit. Not testable from the dataset."
+     }
+    ]
+   }
+  ],
+  "dvali-2025": [
+   {
+    "path": "claims/dvali-2025.yaml",
+    "paper": "10.1103/6wgv-b9m6",
+    "check": {
+     "ready": true,
+     "date": "2026-11-22"
+    },
+    "claims": [
+     {
+      "id": "signaling-network-size",
+      "statement": "The binarized signaling network of the 188 head neurons, with an edge for each pair whose q-value is below 0.05, has 1151 edges and a density of 0.033.",
+      "source": "Results, paragraph 1; Methods, The Networks",
+      "quote": "We consider binarized directed connectome and signaling networks of the same head neurons (N = 188 head neurons from a total of 302 neurons in the entire nervous system), but each having different numbers of edges (corresponding to M = 1151 for signaling",
+      "criterion": "Directed edges from stimulated to responding neuron among the 188 head neurons, kept when q < 0.05 (Methods). Density is edges over 188 x 187 possible directed edges, which gives 0.0327 for 1151 edges. The q-values are read (a) recomputed from the dataset with the method of Randi et al. 2023 (reference 27), or (b) taken from that paper's released atlas; reproduced when both numbers are within tolerance under one reading."
+     },
+     {
+      "id": "signaling-clustering-small-world",
+      "statement": "The signaling network has an average clustering coefficient of 0.13 and is small world, with a small-world coefficient of 4.76.",
+      "source": "Results, paragraph 1",
+      "quote": "The signaling network has an average clustering coefficient of 0.13 ... we find that the signaling network is also small ... world (\u03c3s = 4.76",
+      "criterion": "As in motifs.py, clustering is networkx average_clustering on the directed graph; sigma is (C / C_ER) / (L / L_ER), with C_ER and L_ER the means over 100 directed Erdos-Renyi graphs of 188 nodes at density 0.033, and L the mean over source neurons of the mean shortest path length to the neurons they reach, the source itself counted at length 0 as networkx shortest_path_length returns it. Reproduced when both values are within tolerance and sigma > 1."
+     },
+     {
+      "id": "anatomy-network-properties",
+      "statement": "The binarized anatomical network has 3250 edges, a density of 0.092, an average clustering coefficient of 0.3 and a small-world coefficient of 2.52.",
+      "source": "Results, paragraph 1",
+      "quote": "M = 3250 for the connectome) ... (ds = 0.033 and da = 0.092) ... a bit less than half of the anatomical network\u2019s clustering coefficient of 0.3 ... \u03c3a = 2.52",
+      "criterion": ""
+     },
+     {
+      "id": "triad-distribution",
+      "statement": "The signaling and anatomical networks differ in their distribution of the 13 triad motifs, each compared with Erdos-Renyi graphs of matched density.",
+      "source": "Results, paragraph 1; Extended Data Figure 1",
+      "quote": "the networks differ in terms of their density (ds = 0.033 and da = 0.092) and their distribution of motifs (Extended Data Fig. 1)",
+      "criterion": "The paper reports counts only, without a test, and the counts in Extended Data Figure 1 cannot be assigned to triad types from the text. Triads counted with networkx triads_by_type in both networks and averaged over five Erdos-Renyi graphs at each density (legend; motifs.py and motifs_ER.py). The 13 types are the connected ones that motifs.py counts (021D, 021U, 021C, 111D, 111U, 030T, 030C, 201, 120D, 120U, 120C, 210, 300); 003, 012 and 102 are left out. Reproduced when the proportions of the 13 triad types differ between the two networks by a chi-square test at p < 0.05; this test is a choice, not the paper's. The signaling counts alone are reported whatever the outcome."
+     },
+     {
+      "id": "signaling-six-communities",
+      "statement": "The signaling network is optimally partitioned into six communities at the first hierarchical level, the smallest with 17 neurons and the largest with 47.",
+      "source": "Results, Hierarchical community structure differs, paragraph 2; Figure 1b; Table 1",
+      "quote": "the signal propagation network had fewer and was optimally partitioned into six communities in the first hierarchical level, the smallest of which contained 17 neurons and the largest of which contained 47 neurons",
+      "criterion": "Degree-corrected nested SBM in graph-tool, unweighted, as in SMB_posteriordist_mcmc.py (minimize_nested_blockmodel_dl, 100 multiflip sweeps of 10 iterations, mcmc_equilibrate with wait 1000, then 10000 iterations collected, PartitionModeState with get_max_nested for the consensus), first level of the hierarchy. A tolerance of 0 for the count, as 10% of 6 is below one community. The MCMC has no fixed seed; at least five runs are made and the result of each is shown, and the claim is reproduced when the majority of runs give six communities with sizes in tolerance."
+     },
+     {
+      "id": "table1-signaling-membership",
+      "statement": "The neurons of the six signaling communities are as listed in Table 1.",
+      "source": "Table 1",
+      "quote": "",
+      "criterion": "The paper gives no measure of agreement for a recomputed partition. Recomputed communities are matched to those of Table 1 by the paper's own module-matching (Jaccard similarity and the Hungarian method, Methods). The adjusted Rand score with Table 1 and the Jaccard similarity of each matched pair are reported. As a choice not in the paper, reproduced when every matched pair has a Jaccard similarity of at least 0.5, partially when four or five do."
+     },
+     {
+      "id": "anatomy-twenty-communities",
+      "statement": "The anatomical network is optimally partitioned into 20 communities at the first level, the smallest with one neuron and the largest with 20.",
+      "source": "Results, Hierarchical community structure differs, paragraph 2; Figure 1a; Table 2",
+      "quote": "it was optimally partitioned into 20 communities in the first hierarchical level, with the smallest containing only one neuron and the largest containing 20",
+      "criterion": ""
+     },
+     {
+      "id": "more-communities-anatomy-controls",
+      "statement": "The anatomical network has more communities than the signaling network, also when the two are thresholded to the same density or both more conservatively.",
+      "source": "Results, Hierarchical community structure differs, paragraph 2; Extended Data Figures 11, 12 and 13",
+      "quote": "In both sets of comparisons, the anatomical network had more communities (Extended Data Fig. 12, 13). This difference was also robust to the use of a more stringent thresholding",
+      "criterion": "The same SBM as signaling-six-communities on each pair of networks. Original signaling (q < 0.05) against anatomy with an average of at least 1.25 synapses across the four datasets; signaling at q <= 0.18 against the original anatomy; signaling at q < 0.01 against anatomy with at least three contacts in one dataset (Methods, Network Thresholding Controls). The 16 communities of the 1.25-synapse anatomy are from the legend of Extended Data Figure 12. Reproduced when the anatomical network has more first-level communities in all three pairs."
+     },
+     {
+      "id": "signaling-threshold-controls",
+      "statement": "At q < 0.01 the signaling network has a density of 0.021, and at q <= 0.18 a density of 0.091 and six communities at the first level.",
+      "source": "Methods, Network Thresholding Controls; Extended Data Figure 13",
+      "quote": "For the signaling network, we used a threshold of q = 0.01 instead of q = 0.05, leading to a density of ds = 0.021 ... The thresholded signaling network was also optimally partitioned into 6 communities",
+      "criterion": "As signaling-network-size and signaling-six-communities, at the two other q thresholds. Reproduced when all three values are within tolerance."
+     },
+     {
+      "id": "bilateral-same-community-signaling",
+      "statement": "In the signaling network, bilateral left-right pairs are twice as likely to be in the same community as in different ones (p = 4 x 10^-45).",
+      "source": "Results, Hierarchical community structure differs, paragraph 3; Extended Data Table 1",
+      "quote": "in the signaling network, they were twice as likely (p = 4\u00d710\u221245)",
+      "criterion": "As in LeftRight.py and Methods (Bilaterally symmetric neurons), over pairs of head neurons whose names differ only in a final L or R, the number in the same first-level community over the number in different ones. The p-value is a one-sided two-sample t-test of the observed ratio against the ratios of 100 shuffles of the community labels (code; the Methods give no count). Reproduced when the ratio is within tolerance and p < 0.05."
+     },
+     {
+      "id": "bilateral-controls-signaling",
+      "statement": "The same-community odds of bilateral pairs in the signaling network are 1.3 under the conservative threshold and 2.43 under the enforced-density threshold.",
+      "source": "Extended Data Table 1",
+      "quote": "",
+      "criterion": ""
+     },
+     {
+      "id": "bilateral-anatomy-stronger",
+      "statement": "In the anatomical network bilateral pairs are 38 times more likely to share a community (p = 1.5 x 10^-210), more than in the signaling network, and anatomy stays above signaling under the threshold controls (conservative, 8 against 1.3; 1.25-synapse anatomy against original signaling, 78 against 2; original anatomy against q <= 0.18 signaling, 38 against 2.43).",
+      "source": "Results, Hierarchical community structure differs, paragraphs 3 and 4; Extended Data Table 1",
+      "quote": "In the anatomical network, bilateral neuron pairs were 38 times more likely to be in the same community than in different communities (p = 1.5 \u00d7 10\u2212210) ... the degree of enrichment was higher for anatomy than for signaling (Extended Data Table 1)",
+      "criterion": "As bilateral-same-community-signaling. The three pairs are those the Methods compare (Network Thresholding Controls), conservative signaling against conservative anatomy, original signaling against 1.25-synapse anatomy, and q <= 0.18 signaling against original anatomy. Reproduced when the anatomical odds exceed the signaling odds in all three pairs; the anatomical values are compared with the expected values as well."
+     },
+     {
+      "id": "pharynx-community-overlap",
+      "statement": "Signaling community I and anatomical community 20 both correspond to the pharyngeal subnetwork and overlap strongly; otherwise the signaling communities do not map onto anatomical ones (adjusted Rand score 0.105).",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 1; Figure 2a, 2b",
+      "quote": "Signal propagation community I had large overlap with Anatomical Community 20 both of which correspond to the pharyngeal subnetwork. Other than the pharynx, signal propagation communities did not neatly map onto or wholly contain anatomical communities (adjusted rand score ARS = 0.105)",
+      "criterion": "The adjusted Rand score is not in the code; the standard adjusted Rand index of the two first-level partitions (sklearn adjusted_rand_score) is used. The pharyngeal community in each network is the one holding the most of the 20 pharyngeal neurons. Reproduced when the ARS is within tolerance and the overlap of the two pharyngeal communities is significantly enriched (z-score from 1000 label shuffles, one-sided t-test, FDR p < 0.05, as in SMB_compare_to_connectome.py)."
+     },
+     {
+      "id": "seven-enriched-pairings",
+      "statement": "Of all signaling-anatomy community pairings only seven are significantly enriched for shared neurons after correction for multiple comparisons.",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 2; Figure 2c",
+      "quote": "Of all possible signal-anatomy community pairings only seven were significantly enriched, considering multiple hypothesis testing",
+      "criterion": "As in SMB_compare_to_connectome.py and Methods (Enrichment Analysis), the overlap count of each pair against 1000 shuffles of the signaling labels, one-sided t-test, FDR over all pairs with a defined p-value, p < 0.05. Seven pairs are needed (a tolerance of 0.7 allows no other count)."
+     },
+     {
+      "id": "forced-same-number-ars",
+      "statement": "Forcing both networks to the same number of communities does not improve their overlap (adjusted Rand score 0.002 with six communities each and 0.014 with 20 each).",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 2; Extended Data Figure 4",
+      "quote": "Overlap was not improved by altering the stochastic block model algorithm to force it to partition each network into the same number of communities (ARSsame6 = 0.002 and ARSsame20 = 0.014",
+      "criterion": "How the SBM was forced to a number of communities is not in the code. The reading is graph-tool's minimize_nested_blockmodel_dl with the first level fixed to B blocks (multilevel_mcmc_args B_min = B_max = B). As in the legend of Extended Data Figure 4, ARSsame6 compares anatomy forced to 6 communities with the original signaling partition, and ARSsame20 compares signaling forced to 20 with the original anatomical partition. The tolerances are 10% of values near zero; the claim is reproduced when both ARS are below the original ARS, the paper's 0.105 and the recomputed value of pharynx-community-overlap (the paper's statement that overlap was not improved), and the values are compared with the expected ones as well."
+     },
+     {
+      "id": "pharynx-overlap-controls",
+      "statement": "The correspondence of the pharyngeal communities in the two networks persists in the conservative and enforced-density controls.",
+      "source": "Results, Anatomical and signal propagation communities, paragraph 3; Extended Data Figures 11, 12 and 13",
+      "quote": "The correspondence between pharyngeal communities in signaling and anatomy persists even in our conservative and enforced density controls",
+      "criterion": "For each of the three threshold pairs, the overlap of the signaling and anatomical communities that hold the most pharyngeal neurons is significantly enriched (as in pharynx-community-overlap). Reproduced when it holds for all three, partially for two."
+     },
+     {
+      "id": "fig3b-signaling-cell-type-enrichment",
+      "statement": "Each signaling community is significantly enriched for at most one of the sensory, inter- and motor neuron classes, and only community V is enriched for none.",
+      "source": "Results, Communities are enriched for neuron type and role, paragraph 2; Figure 3a, 3b",
+      "quote": "Each signaling community was statistically significantly enriched for no more than one of three previously defined cell type classes (Fig. 3 a,b; Extended Data Fig. 5 a; Table 1). Only one of the six communities, V, showed no significant enrichment for any cell type.",
+      "criterion": "Classes as listed in Extended Data Figure 5a and the code. Per community and class, the overlap count against 1000 shuffles of the community labels, one-sided t-test, FDR, p < 0.05 (Methods, Enrichment Analysis; Neuron_type_enrichment.py). Communities matched to Table 1 as in table1-signaling-membership. Reproduced when no community is enriched for two or more classes and exactly one community, the match of V, is enriched for none; partially when the first holds but the count of unenriched communities differs."
+     },
+     {
+      "id": "fig3c-signaling-role-enrichment",
+      "statement": "Signaling community I holds almost all pharyngeal neurons; all locomotory interneurons but one are in community VI, which is also enriched for amphid sensory neurons; community IV, the only one enriched for interneurons, is enriched for ring interneurons and VNC motor neurons.",
+      "source": "Results, Communities are enriched for neuron type and role, paragraphs 3 and 4; Figure 3c",
+      "quote": "community I contains almost all the pharyngeal neurons. All but one locomotory interneuron are members of community VI ... community VI was also enriched for the amphid sensory neurons ... Community IV, the only community that was enriched for interneurons, was not only specifically enriched for ring interneurons but also for VNC motor neurons.",
+      "criterion": "Roles as in Extended Data Figure 5b and the code (20 pharyngeal, 24 amphid sensory, 8 locomotory interneurons, 10 VNC motor, 31 ring interneurons), tested as in fig3b-signaling-cell-type-enrichment. Table 1 puts 15 of 20 pharyngeal neurons in I and 7 of 8 locomotory interneurons in VI. Reproduced when the matches of I, VI and IV show the stated memberships and enrichments (I pharyngeal, VI amphid sensory and locomotory, IV interneuron, ring interneuron and VNC motor) and no other community is enriched for interneurons; partially when three of these five enrichments hold."
+     },
+     {
+      "id": "fig3de-anatomy-enrichment",
+      "statement": "Each anatomical community is significantly enriched for at most one neuron class and at most one of the five roles.",
+      "source": "Results, Communities are enriched for neuron type and role, paragraph 1; Figure 3d, 3e",
+      "quote": "our modular clustering of the C. elegans anatomical network recapitulates anatomical communities that are each significantly enriched for no more than one of the three C. elegans neuron cell types classes",
+      "criterion": ""
+     },
+     {
+      "id": "ed6-signaling-not-feedforward",
+      "statement": "The signaling network is not appreciably feed-forward along the sensory to inter- to motor neuron path compared with shuffle controls.",
+      "source": "Results, Anatomy is net feed-forward along the sensorimotor path while signaling is ambiguous; Extended Data Figure 6b, 6c",
+      "quote": "By contrast, the signaling network is not appreciably feed-forward along this path compared to a shuffle control (Extended Data Fig. 6 b,c)",
+      "criterion": "A claim of absence, judged on the paper's test (Extended Data Figure 6 legend and SIM.py). For each leg (sensory to inter, inter to motor, sensory to motor), the log of the number of forward edges over backward edges, against (b) 1000 shuffles of the class labels keeping class sizes (SIM.py) and (c) 1000 degree-preserving rewired networks, each made with 2000 double-edge swaps (SIM_doubleedge.py), by a two-sided t-test of the observed value against the null values at p < 0.05. For the sensory to motor leg SIM.py tests the inter to motor value against the sensory to motor null, an apparent slip; the sensory to motor value is used, as in SIM_doubleedge.py. Reproduced when no leg is significantly above the null under either control; partially when one leg is; not reproduced when two or more are. The code's other measure (log ratio of the fractions of each class's out-edges) is shown as a variant."
+     },
+     {
+      "id": "ed6-anatomy-feedforward",
+      "statement": "Anatomical synaptic edges are enriched in a feed-forward direction from sensory to inter- to motor neurons.",
+      "source": "Results, Anatomy is net feed-forward along the sensorimotor path; Extended Data Figure 6b, 6c",
+      "quote": "Anatomically, synaptic edges are enriched in a feed-forward manner from sensory neurons to interneurons to motor neurons (Extended Data Fig. 6 b,c)",
+      "criterion": ""
+     },
+     {
+      "id": "fig4-community-motif-fractions",
+      "statement": "In the signaling network about 70% of community interactions are assortative and 30% core-periphery, with no disassortative interactions; per neuron, participation is 68% assortative, 14% core and 18% periphery.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraphs 2 and 3; Figure 4b; Figure 4 legend, panel d",
+      "quote": "the majority of community interactions in both signal propagation and anatomical networks are assortative (70% for both networks) ... Signaling network has no disassortative interactions ... in the signaling network, 30% of community interactions are core-periphery",
+      "criterion": "Densities and classes as in Methods (Community Motifs Analysis), within-community density over n(n-1) possible directed edges, between-community density over n_r n_s. The fraction of pairs is over the n(n-1) ordered community pairs, as in SMB_ADCP_Enrichment.py. The paper does not say which edges the between-community density counts; readings (a) edges from r to s only, (b) edges in both directions over 2 n_r n_s. Neuron participation is the fraction of each neuron's pair labels in each class, averaged over neurons (Figure 4b legend). The pie values in Figure 4b are assigned to signaling as the one without a disassortative slice. Reproduced when all values are within tolerance under one reading."
+     },
+     {
+      "id": "fig4d-pharynx-amphid-core",
+      "statement": "In the signaling network, pharyngeal and amphid sensory neurons are significantly enriched for the core of core-periphery interactions.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraph 4; Figure 4d",
+      "quote": "Strikingly pharyngeal and amphid sensory neurons were significantly enriched for participation in the \u201ccore\u201d component of the core-periphery interactions in the signal propagation network (Fig. 4 d)",
+      "criterion": "As in SMB_ADCP_Enrichment.py, per role the mean over its neurons of the fraction of core labels, against 1000 permutations of the neurons' label fractions, z-score, one-sided t-test, FDR over the roles and classes with a defined p-value, p < 0.05. Reproduced when both roles are significantly enriched for core under one reading of fig4-community-motif-fractions; partially when one is."
+     },
+     {
+      "id": "fig4d-anatomy-pharynx-amphid-assortative",
+      "statement": "In the anatomical network the same pharyngeal and amphid sensory neurons are impoverished for coreness and enriched for assortative interactions, and locomotory interneurons are enriched for disassortative interactions.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraphs 4 and 6; Figure 4d",
+      "quote": "in the anatomical network, these same neurons were impoverished for their coreness and instead were significantly enriched for participation in the assortative community motif",
+      "criterion": ""
+     },
+     {
+      "id": "fig4c-broadcaster-integrator",
+      "statement": "In the signaling network pharyngeal neurons act as broadcasters, with more outgoing than incoming edges, and amphid sensory neurons have more incoming than outgoing edges, each compared with shuffled role assignments.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraph 5; Figure 4c",
+      "quote": "we find that pharyngeal neurons show more broadcasting-like behavior ... (Fig. 4 c). Counterintuitively amphid sensory neurons have more incoming than outgoing edges in the signaling network",
+      "criterion": "As in broadcaster_integrator.py, for each group the number of edges into it from neurons outside it over the number of edges out of it to neurons outside it, against 1000 random disjoint pairs of groups of the same sizes (20 pharyngeal, 24 amphid sensory), by a one-sided t-test (pharynx lower than the null, amphid higher) at p < 0.05. Reproduced when both tests hold, the pharyngeal out-edges exceed its in-edges and the amphid in-edges exceed its out-edges; partially when one group holds."
+     },
+     {
+      "id": "ed9-sampling-not-confound",
+      "statement": "Pharyngeal neurons were not stimulated more often than other neurons (Kolmogorov-Smirnov p = 0.9), and amphid neurons were not observed more often (p = 0.38).",
+      "source": "Extended Data Figure 9c, 9d",
+      "quote": "Pharynx neurons do not have a larger than expected number of stimulations compared to all other neurons (Kolmogorov-Smirnoff test p-value = 0.9) ... Amphid neurons do not have a larger than expected number of observations compared to all other neurons (Kolmogorov-Smirnoff test p-value = 0.38)",
+      "criterion": "A claim of absence, judged on the paper's test, the two-sample Kolmogorov-Smirnov test (scipy ks_2samp, as in broadcaster_integrator.py) of the per-neuron counts of the group against those of all other head neurons, at p < 0.05. The counts of stimulations and observations per neuron are taken from the recordings that build the network (reference 27 does not define them here; the reading is the number of stimulation events of a neuron and the number of recordings in which a neuron was identified). Reproduced when neither test gives p < 0.05; the p-values and the median counts of each group are reported."
+     },
+     {
+      "id": "fig5a-signaling-rich-club",
+      "statement": "The signaling network has a dual rich club, with 16 neurons of degree 25 or more and a more exclusive tier of five neurons of degree 40 or more, at local maxima of the normalized rich club coefficient.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs of mostly non-overlapping neurons, paragraph 2; Figure 5a; Methods, Determining the Rich Club",
+      "quote": "The signaling network exhibited a \u201cdual rich club\u201d with two clear tiers: the first tier contained 16 neurons of degree 25 or higher, whereas the second and more exclusive tier contained five neurons of degree 40 or higher",
+      "criterion": "Degree is in-degree plus out-degree; the rich club coefficient at k is the number of directed edges among neurons of degree > k over N_k (N_k - 1), normalized by its mean over degree-preserving rewired networks (graph-tool random_rewire, configuration model; Methods and richclub.py). Number of rewired networks 1000 (Methods); 100 (legend) and 500 (code) are variants. Tiers read (a) degree > 25 and > 40 (legend and code), (b) degree >= 25 and >= 40 (Results). Reproduced when, under one reading, both counts are within tolerance, the normalized coefficient has local maxima at or within two of k = 25 and k = 40, and the coefficient exceeds the null mean by more than one null SD from k = 3 onwards. The Methods say the coefficient is significantly larger from k = 3 without naming a test; the one-SD rule (Figure 5a shows the null SD as error bars, and richclub.py has it in a commented line) and the window of two around each maximum are this file's choices. The code's list is ASHL, AVDL, AVEL, AVER, AVJL, AVJR, AWBL, AWBR, M3L, M3R, OLLR, OLQDR, RMDDL, RMDDR, RMDVL and RMDVR; membership is compared with it."
+     },
+     {
+      "id": "fig5c-rich-clubs-disjoint",
+      "statement": "The signaling and anatomical rich clubs are nearly disjoint; only AVEL and AVER are in both.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 3; Figure 5c",
+      "quote": "There were two neurons present in both rich clubs: command interneurons AVEL and AVER",
+      "criterion": "The anatomical rich club is degree > 62 in the anatomical network (richclub.py; 15 neurons in the code's list). Reproduced when the intersection of the signaling first tier and the anatomical rich club is exactly AVEL and AVER, under either reading of fig5a-signaling-rich-club."
+     },
+     {
+      "id": "fig5b-degree-correlation",
+      "statement": "Signaling and anatomical degree are weakly correlated across neurons (Pearson r = 0.22); the highest-degree anatomical neurons tend to have lower signaling degree.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 3; Figure 5b",
+      "quote": "Neurons that exhibited the highest degree in the anatomical network tended to have lower degrees in the signaling network (Pearson correlation r = 0.22)",
+      "criterion": "Degree is in-degree plus out-degree in each network, and r is the Pearson correlation over the 188 head neurons (degree.py, linregress of signaling on anatomical degree). Reproduced when r is within tolerance. The paper gives no measure for the second half of the statement (Figure 5b shading); the scatter is shown with the anatomical rich club (degree > 62) marked, and the half is not judged beyond fig5c-rich-clubs-disjoint."
+     },
+     {
+      "id": "rich-club-controls",
+      "statement": "The near disjointness of the rich clubs persists under the conservative and enforced-density controls, and every signaling rich club neuron at q <= 0.18 was in the original signaling rich club.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 3; Extended Data Figures 11b, 12a, 13a",
+      "quote": "We find that this result persists in both the conservative control and the enforced density controls",
+      "criterion": "The thresholds for the rich clubs of the control networks are not given in the paper or the code. Readings (a) the same degree thresholds as the originals (25 for signaling, 62 for anatomy); (b) for each control network, the degree at the local maximum of its normalized rich club coefficient, found as in fig5a-signaling-rich-club (Methods, Determining the Rich Club). Reading (a) may leave the sparser control networks with few or no rich club neurons; the legend of Extended Data Figure 12a reports that the 1.25-synapse anatomical rich club shares 9 of the 15 original neurons and has 4 new ones, which is shown for comparison. Reproduced when, under one reading, in all three threshold pairs the overlap of the two rich clubs is at most AVEL and AVER, and the q <= 0.18 signaling rich club is a subset of the original."
+     },
+     {
+      "id": "fig5d-community-vi-hubs",
+      "statement": "Signaling community VI holds 10 of the 16 rich club neurons, including AVEL and AVER, about 21% of its members, and is enriched for them; the others are M3L and M3R in I, OLLR and OLQDR in II, RMDDR in III and RMDDL in V.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraphs 4 and 5; Figure 5d",
+      "quote": "Community VI was highly enriched for hub neurons, containing 10 out of the 16 hub neurons, including AVEL and AVER. Rich club neurons also make up a large fraction of this community, approximately 21%.",
+      "criterion": "Enrichment as in Neuron_type_enrichment.py (overlap with the rich club against 1000 shuffles of the community labels, one-sided t-test, FDR over the six communities, p < 0.05). Reproduced when the match of VI holds the expected number and fraction and is significantly enriched."
+     },
+     {
+      "id": "ed10-rich-club-cell-classes",
+      "statement": "Signaling rich club neurons are spread fairly equally among sensory, inter- and motor neurons, unlike the anatomical rich club, which is mostly interneurons.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 5; Extended Data Figure 10b, 10c",
+      "quote": "Surprisingly, members of the rich club were fairly equally spread among sensory, inter-, and motor neurons (Extended Data Fig. 10 b). This is in contrast to the anatomical network where the rich club is primarily composed of interneurons",
+      "criterion": "Classes as in Extended Data Figure 5a. The code's signaling list has 5 sensory, 5 inter- and 6 motor neurons. The paper gives no test; reproduced when no class holds more than half of the recomputed first tier, and, for the anatomical part (outside data), when interneurons are more than half of the degree > 62 anatomical rich club."
+     },
+     {
+      "id": "fig5e-rich-club-core",
+      "statement": "In both networks the rich club neurons are enriched for the core of core-periphery interactions.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 6; Figure 5e",
+      "quote": "As predicted, in both the anatomical and signaling networks, each network\u2019s respective rich club members were enriched for coreness",
+      "criterion": "As fig4d-pharynx-amphid-core, for the group of signaling rich club neurons in the signaling network. Reproduced when its core enrichment has FDR p < 0.05. The anatomical half of the finding uses outside data and is shown when the connectome is used; it does not decide this claim."
+     },
+     {
+      "id": "ed9e-degree-observations",
+      "statement": "Signaling degree is correlated with the number of times a neuron was observed (Pearson r = 0.71), but rich club members have degrees well above what that correlation predicts.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 7; Extended Data Figure 9e, 9f",
+      "quote": "signal propagation degree is correlated with the number of empirical observations made of each neuron in ... our experimental dataset (pearsons correlation r = 0.71, Extended Data Fig. 9 e). We were reassured, however, that rich club members had large degrees well in excess of what we could explain from the correlation",
+      "criterion": "As in degree.py, a least-squares line of total degree on number of observations, the residual of each neuron, and a Gaussian fit to all residuals. Number of observations as in ed9-sampling-not-confound. The Results cite this as Extended Data Fig. 5 e,f, evidently Figure 9e,f. The paper gives no threshold for \"well in excess\"; the rule of more than one fitted SD above the line is this file's choice. Reproduced when r is within tolerance and every signaling rich club neuron lies more than one fitted SD above the line; partially when most do."
+     },
+     {
+      "id": "anatomy-community-motif-fractions",
+      "statement": "In the anatomical network about 70% of community interactions are assortative and 26% core-periphery; per neuron, participation is 77% assortative, 12% core, 7% periphery and 4% disassortative.",
+      "source": "Results, Linking neurobiological annotations to community motifs, paragraphs 2 and 3; Figure 4b",
+      "quote": "the majority of community interactions in both signal propagation and anatomical networks are assortative (70% for both networks) ... We observed that in the anatomical network, 26% and in the signaling network, 30% of community interactions are core-periphery",
+      "criterion": "As fig4-community-motif-fractions, on the anatomical network and its 20 communities. The pie with a disassortative slice is the anatomical one (Figure 4 legend, bottom panel)."
+     },
+     {
+      "id": "community-vi-most-self-connected",
+      "statement": "Signaling community VI is the most highly self-interconnected of the six communities.",
+      "source": "Results, Anatomy and signaling exhibit rich clubs, paragraph 4; Extended Data Figure 7",
+      "quote": "it is then consistent that community VI is also the most highly self-interconnected community (Extended Data Fig. 7)",
+      "criterion": "Self-interconnection is the fraction of all possible edges among the community's nodes (Extended Data Figure 7 legend), edges over n(n-1). The paper gives no test. Reproduced when the match of VI has the highest within-community density of the six."
+     },
+     {
+      "id": "pharynx-less-isolated-signaling",
+      "statement": "The pharyngeal community is much more highly connected to the other communities in the signaling network than in the anatomical network.",
+      "source": "Results, Anatomical and signal propagation communities have mostly non-overlapping membership, paragraph 4; Figure 1a; Discussion, paragraph 5",
+      "quote": "in the signaling network, the community of pharyngeal neurons is much more highly connected to the other communities than it is in the anatomical network (Fig. 1 a)",
+      "criterion": "The paper shows this in the matrices of Figure 1 and gives no measure or test. The pharyngeal community is the one of pharynx-community-overlap in each network. Readings, both this file's choice, (a) the density of edges between the pharyngeal community and the rest of the network, in both directions, over 2 n (188 - n); (b) the fraction of the edges touching the pharyngeal community that leave or enter it from outside. Reproduced when the signaling value exceeds the anatomical value under both readings; the ratio is reported."
+     },
+     {
+      "id": "ave-most-connected-both",
+      "statement": "The most connected member of the signaling rich club is also the most connected member of the connectome, the bilateral pair AVEL and AVER.",
+      "source": "Introduction, last paragraph; Discussion, paragraph 2; Abstract; Figure 5b",
+      "quote": "the most connected member of the rich club of the signaling network is also the most connected member of the connectome, but there is little other overlap in rich club membership",
+      "criterion": "Degree is in-degree plus out-degree (degree.py). The abstract says AVEL/R have some of the highest degrees in the anatomical network, so the finding is read per bilateral class. Readings (a) the neuron of highest degree in each network is AVEL or AVER; (b) the class AVE has the highest summed degree of AVEL and AVER among bilateral classes in each network. Reproduced when it holds under one reading; the ranks of AVEL and AVER in both networks are reported."
      }
     ]
    }
@@ -231848,7 +232406,7 @@
   "dandi:001193": "zhu-2022",
   "dandi:001177": "zhuang-2025"
  },
- "generated": "2026-11-22T07:58:38+00:00",
+ "generated": "2026-11-22T08:11:10+00:00",
  "queue_generated": "2026-11-17T15:59:44+00:00",
  "queue_counts": {
   "public_dandisets": 678,
@@ -700874,10 +701432,10 @@
    "000549",
    "000550",
    "002052",
-   "001075",
    "000020",
    "000010",
    "000630",
+   "001075",
    "000289",
    "001552",
    "001425",
@@ -700887,10 +701445,10 @@
   "claims": [
    "000727",
    "000232",
-   "001075",
    "000020",
    "000010",
    "000630",
+   "001075",
    "000289",
    "001552",
    "001425",
@@ -700908,6 +701466,7 @@
    "001609",
    "000939",
    "001280",
+   "001075",
    "crcns-bf-2",
    "crcns-ieeg-1",
    "000463",
@@ -700953,16 +701512,20 @@
   },
   "hours": {
    "full": 8.043888888888889,
-   "claims": 0.4473611111111111
+   "claims": 0.44666666666666666
   },
   "running": {
    "000248": {
     "kind": "full",
-    "hours": 1.4949172619444449
+    "hours": 1.2857376144444448
    },
    "000363": {
     "kind": "full",
-    "hours": 2.1899172619444447
+    "hours": 3.061015392222222
+   },
+   "001075": {
+    "kind": "full",
+    "hours": 7.903515392222222
    }
   },
   "papers": {
@@ -700971,7 +701534,6 @@
     "brezovec-2022",
     "kim-2022",
     "002052",
-    "dvali-2025",
     "yang-2026-flexible",
     "gable-2026",
     "mansvelder-2026",
@@ -700985,7 +701547,6 @@
    "claims": [
     "brezovec-2022",
     "chang-2023",
-    "dvali-2025",
     "yang-2026-flexible",
     "gable-2026",
     "mansvelder-2026",
@@ -701007,6 +701568,7 @@
     "capek-2025",
     "clark-2026",
     "coulter-2025",
+    "dvali-2025",
     "espinosa-2017",
     "fedele-2017",
     "gao-2025",
@@ -701043,11 +701605,15 @@
    "running": {
     "kim-2025": {
      "kind": "full",
-     "hours": 1.4949172619444449
+     "hours": 1.2857376144444448
     },
     "hasnain-2025": {
      "kind": "full",
-     "hours": 2.1899172619444447
+     "hours": 3.061015392222222
+    },
+    "dvali-2025": {
+     "kind": "full",
+     "hours": 7.903515392222222
     }
    }
   }
