@@ -74,6 +74,26 @@
 schema_version: 2
 paper: doi:10.1103/6wgv-b9m6
 claims:
+- id: atlas-dataset-link
+  kind: link
+  statement: The signaling network of the atlas released with Randi et al. 2023 (wild type, entries
+    kept where q < 0.05) can be matched to the recordings of dandiset 001075, the data the paper
+    names for the network.
+  source: Methods, The Networks; atlas/wild-type.pickle of github.com/leiferlab/worm-functional-connectivity
+    at commit 81af01c
+  data: with_inputs
+  criterion: Added by the author, as the dandiset holds the recordings but not the network, and the
+    control recordings needed to recompute the q-values are not in it. Records are matched by
+    neuron name (atlas names against the NeuroPAL labels of the recordings; the stimulated ROI of
+    each stimulation from target_pumpprobe_id of version 0.240930.1859). For each atlas edge from
+    j to i, an occurrence is a stimulation of j in a recording in which i is labeled. The link
+    holds (reproduced) when every atlas neuron is among the labels, at least 95% of atlas edges
+    have an occurrence, the atlas amplitude and the recordings' mean dF/F over the 30 s after
+    stimulation (against the 10 s before) are positively rank-correlated over the atlas edges
+    (Spearman, p < 0.05), and the absolute mean dF/F is larger on atlas edges than on measured
+    pairs that are not edges (one-sided Mann-Whitney, p < 0.05). It holds in part (partially
+    reproduced) when the amplitude tests hold but fewer edges have an occurrence, and not when
+    the amplitude tests fail.
 - id: signaling-network-size
   statement: The binarized signaling network of the 188 head neurons, with an edge for each pair
     whose q-value is below 0.05, has 1151 edges and a density of 0.033.
@@ -81,6 +101,8 @@ claims:
   quote: We consider binarized directed connectome and signaling networks of the same head neurons
     (N = 188 head neurons from a total of 302 neurons in the entire nervous system), but each having
     different numbers of edges (corresponding to M = 1151 for signaling
+  depends_on:
+  - atlas-dataset-link
   expected:
   - quantity: edges in the signaling network
     value: 1151
