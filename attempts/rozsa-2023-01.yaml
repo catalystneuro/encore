@@ -1,0 +1,1387 @@
+schema_version: 3
+id: rozsa-2023-01
+datasets:
+- archive: dandi
+  id: '000341'
+  version: 0.241220.1312
+  doi: 10.48324/dandi.000341/0.241220.1312
+  relation: primary
+paper: doi:10.1126/sciadv.ade4511
+date: 2026-11-20
+entry: rozsa-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-16
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44810181907
+inputs: []
+outcomes:
+- claim: fig1ab-raf-patterns
+  outcome: not_reproduced
+  notebook: reproduce_rozsa_2023_induction.ipynb
+  output: claim:fig1ab-raf-patterns
+  measured:
+  - 752.5
+  - 10.42
+  - 55.27
+  - 1020.0
+  - 0.014
+  - 7375
+  - 166
+  - 0.552
+  notes: '307 human files with induction sweeps. Under no reading or subset are more than two of the eight
+    values within tolerance; the measured values are those of the first reading (continuous-recording
+    RA-APs, one epoch per cell, all cells), with none within tolerance. The best rows have two of eight
+    (cells quiet before induction, RA-APs with the interstimulus intervals, one epoch per induction run:
+    maximum duration 2616 s and sporadic median frequency 0.294 Hz). Both patterns occur under every reading
+    (24 persistent and 119 sporadic epochs under the first). The reading (b) mixture fails its check (RA
+    component slope 6.94 against 1.86 mV/ms; its size is 87879 to 2453165 APs over the five seeds), so
+    its rows are not a reading of the paper''s classes. SDs are printed beside the medians.'
+  deviations:
+  - RA-APs by reading (c) for the main result; the dandiset carries no AP labels, and the reading (b)
+    mixture does not recover the paper's classes in these recordings.
+  - Induction sweeps are found from the stimulus (a sweep shorter than 1 s with one positive step of 50
+    to 300 ms), since the files do not mark the protocol. Some recordings use 350 ms sweeps with a 250
+    ms step, not the 100 ms pulses of the Methods.
+  - Rebound APs within 0.3 s of the end of a hyperpolarizing step are left out of the RA-APs (a standard
+    choice).
+  - The Methods count RA-APs "during continuous recording"; the main reading uses the sweeps with no stimulus
+    step, and the interstimulus intervals are added as a variant.
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - 'RA-APs need at most 5 pA at threshold both relative to the holding level and in absolute terms, so
+    that APs driven by a depolarizing holding current are not RA-APs (the paper, Results: steady current
+    was needed in some cells to reach AIS-AP threshold, and RA-APs were absent during these periods).'
+  - Each reading is also shown on the drug-free files and on the cells without spontaneous APs before
+    induction (verifier, round 1).
+- claim: fig1c-ra-lower-threshold-slope
+  outcome: reproduced
+  notebook: reproduce_rozsa_2023_induction.ipynb
+  output: claim:fig1c-ra-lower-threshold-slope
+  notes: 'Human, reading (c). Persistent cells (24): AIS-AP threshold median -44.1 mV against RA-AP -59.6
+    mV, slope 1.79 against 0.77 mV/ms; sporadic cells (119): -44.8 against -61.4 mV, 2.18 against 0.74
+    mV/ms. The paper''s rule picks the Mann-Whitney U test, P printed as 0 in all four (pooled APs, 93525
+    to 1136274 per group). Per-cell medians agree (P = 0.0006 and 1.4e-05 in persistent cells, 1.4e-16
+    and 1.5e-12 in sporadic cells; RA-AP median lower in 21 to 107 of the cells). Within each human sampling
+    rate that has both classes (10, 16.7, 25, 50 and 100 kHz) the RA-APs have the lower threshold and
+    slope, so the difference is not a sampling-rate effect. Rat gives the same direction pooled (sporadic
+    cells -61.6 against -41.2 mV, 0.58 against 1.67 mV/ms) and at each rate except 100 kHz, where the
+    RA-AP threshold is the higher one (-41.69 against -42.48 mV) while the slope is lower. Reading (a)
+    cannot be run (no labels).'
+  deviations:
+  - The pattern of a cell is that of its single epoch of continuous-recording RA-APs (fig1ab reading (i)).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - 'RA-APs need at most 5 pA at threshold both relative to the holding level and in absolute terms, so
+    that APs driven by a depolarizing holding current are not RA-APs (the paper, Results: steady current
+    was needed in some cells to reach AIS-AP threshold, and RA-APs were absent during these periods).'
+- claim: fig1d-human-raf-proportion
+  outcome: not_reproduced
+  notebook: reproduce_rozsa_2023_induction.ipynb
+  output: claim:fig1d-human-raf-proportion
+  measured: 0.98
+  notes: 'Of 307 human files with induction sweeps, 301 (0.980) have at least one RA-AP under reading
+    (c) with the interstimulus intervals and 159 (0.518) with continuous-recording RA-APs only; the drug-free
+    files give 0.976 and 0.446, and counting the 124 cells that fire spontaneously before induction as
+    without RAF gives 0.586 and 0.280. All are outside 0.226 +- 0.023 (87 of 385). Only variants outside
+    the criterion fall within tolerance: at least two continuous-recording RA-APs with the cells firing
+    before induction counted as without RAF (0.241), and a reading (b) row (0.238) whose mixture fails
+    its check. The folder is named Human_persistent_RAF and holds 313 files, not 385 cells; the dandiset
+    does not say how its cells were selected.'
+  deviations:
+  - Each file is taken as one cell; no two files share a sweep fingerprint.
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - 'RA-APs need at most 5 pA at threshold both relative to the holding level and in absolute terms, so
+    that APs driven by a depolarizing holding current are not RA-APs (the paper, Results: steady current
+    was needed in some cells to reach AIS-AP threshold, and RA-APs were absent during these periods).'
+  - 'Subsets shown in addition (verifier, round 1): drug-free files, and cells with spontaneous APs before
+    induction counted as without RAF or left out.'
+- claim: fig1f-human-raf-ngfc
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The human induction files carry no cell class (NGFC, non-NGFC, rosehip); their general/pharmacology
+    table lists only drugs and ion concentrations, and no other field names a morphology. It depends on
+    fig1d-human-raf-proportion, which ran.
+- claim: figs1b-rat-raf-proportion
+  outcome: not_reproduced
+  notebook: reproduce_rozsa_2023_induction.ipynb
+  output: claim:figs1b-rat-raf-proportion
+  measured: 0.975
+  notes: Of 118 rat files with induction sweeps, 115 (0.975) have RA-APs under reading (c) with the interstimulus
+    intervals and 97 (0.822) with continuous-recording RA-APs only; drug-free files 0.939 and 0.788 (33
+    files); the lowest fraction under any reading or subset is 0.500, against 0.394 (102 of 259). The
+    dandiset holds 132 rat files, not 259.
+- claim: figs1d-rat-raf-values
+  outcome: not_reproduced
+  notebook: reproduce_rozsa_2023_induction.ipynb
+  output: claim:figs1d-rat-raf-values
+  measured:
+  - 0.667
+  - 452
+  - 15.4
+  - 699.5
+  notes: Values listed for the first reading (continuous recording, one epoch per cell, all cells); no
+    value within tolerance. No reading (c) row in any subset has a value within tolerance; one reading
+    (b) row has one of four, and that mixture fails its check. Both patterns occur under the reading (c)
+    rows on all cells.
+- claim: fig1g-rat-raf-ngfc
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The rat induction files carry no cell class, as for fig1f-human-raf-ngfc.
+- claim: fig1hk-bleb-initiation-order
+  outcome: not_reproduced
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig1hk-bleb-initiation-order
+  notes: The two human NGFC dual recordings are found by their celltype field (220504 and 220505 recording
+    2). The mixture's classes agree with the paper's description (RA component threshold -64.5 against
+    -21.9 mV, slope 0.14 against 1.15 mV/ms; the same 74 RA-APs under all five seeds). In 220504, AIS-APs
+    (n = 340) have a median soma-to-bleb latency of -0.20 ms at threshold and -0.14 ms at peak, so the
+    bleb leads; RA-APs (n = 41) -0.18 ms and +0.20 ms. In 220505-2 all 62 somatic APs fall in the AIS
+    class (+0.16 ms at threshold, +0.12 ms at peak) and there are no RA-APs. Neither cell shows AIS-APs
+    positive and RA-APs negative. Split by the sign of the latency, which is not a reading of the criterion,
+    the bleb-first APs of 220504 (n = 141) have the lower threshold (-27.5 against -18.3 mV) and slope
+    (0.25 against 1.55 mV/ms). Soma and bleb sweeps of the same number start at the same time in every
+    file. The per-file median somatic thresholds lie at -30.4 to -11.2 mV, with or without current (the
+    RA-class APs of 220504 and 220616 have medians of -60.6 and -69.6 mV), and the voltage jump at step
+    onset implies 26 to 57 MOhm of uncompensated resistance, so the somatic thresholds of these files
+    are doubtful (verifier, round 1).
+  deviations:
+  - The bleb signal is small (peaks mostly below 0 mV), so bleb APs are not detected on their own; the
+    bleb peak is the maximum within 3 ms of the somatic peak in the bleb sweep of the same number, and
+    its threshold the start of the run with dV/dt at least 5 mV/ms before it (standard choices), with
+    the smoothed dV/dt of the somatic APs.
+  - The mixture of reading (b) is fitted to the somatic APs of the five human bleb recordings pooled.
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+- claim: fig2c-zd7288-reduces-raf
+  outcome: not_reproduced
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig2c-zd7288-reduces-raf
+  measured:
+  - 131.6
+  - 359.7
+  - 684.6
+  - 596.9
+  notes: 'Seven cells (4 human, 3 rat), split at the wash-in time the files give. No reading gives both
+    decreases at P < 0.05. One epoch per part with the interstimulus intervals: RAF duration rises from
+    a mean of 131.6 s (median 122.8) to 359.7 s (median 422.4), paired t P = 0.017, falling in 1 of 7
+    cells; RA-AP count 684.6 to 596.9 (median 915 to 36), P = 0.83. Continuous recording only: duration
+    85.1 to 195.5 s (P = 0.25), count 658.4 to 559.6 (P = 0.80). One epoch per induction run (per-cell
+    mean over the part''s epochs): duration 59.3 to 71.6 s (P = 0.45), count 478.0 to 163.3 (P = 0.22);
+    continuous only 29.6 to 22.7 s (P = 0.66), 463.8 to 155.7 (P = 0.23). Without the 20 uM file the picture
+    is the same (duration 133.1 to 324.0 s, P = 0.040, rising). At most one of the four values is within
+    tolerance under any reading. The three rat cells lose almost all RA-APs (363, 915, 180 to 13, 13,
+    16). Measured values are means under the first reading.'
+  deviations:
+  - Control is the recording before DrugWashinTime1 of general/pharmacology, ZD7288 the recording after
+    it; the paper does not say which epochs were compared, so one epoch per part and one per induction
+    run are both shown.
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - 'RA-APs need at most 5 pA at threshold both relative to the holding level and in absolute terms, so
+    that APs driven by a depolarizing holding current are not RA-APs (the paper, Results: steady current
+    was needed in some cells to reach AIS-AP threshold, and RA-APs were absent during these periods).'
+- claim: figs2-zd7288-passive-properties
+  outcome: not_reproduced
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:figs2-zd7288-passive-properties
+  measured:
+  - 146.2
+  - 141.0
+  - -63.6
+  - -63.4
+  - 0.056
+  - 0.047
+  notes: Medians over 7 cells. Input resistance from the -20 pA step 146.2 MOhm in control and 141.0 under
+    ZD7288 (means 245.5 and 252.5, paired t P = 0.78), so it does not rise significantly. Resting potential
+    -63.6 and -63.4 mV (P = 0.39), sag fraction 0.056 and 0.047 (reading (a), -100 pA step, P = 0.54).
+    Two of six values are within tolerance, the two resting potentials; input resistance does not rise.
+  deviations:
+  - Input resistance from the smallest hyperpolarizing step (-20 pA) as the criterion's standard choice;
+    resting potential as the median pre-step baseline.
+- claim: fig2e-sag-species
+  outcome: partially_reproduced
+  notebook: reproduce_rozsa_2023_induction.ipynb
+  output: claim:fig2e-sag-species
+  measured:
+  - 0.198
+  - 0.071
+  notes: Reading (a) on the most hyperpolarizing step (-100 pA in nearly all cells), 312 human and 129
+    rat cells, human median 0.198 against rat 0.071, Mann-Whitney P = 1.5e-26, human higher; drug-free
+    files 0.211 against 0.082, P = 8e-10. Neither median is within tolerance under any reading (b gives
+    0.248 and 0.076; the step nearest -90 mV gives 0.199 and 0.077 under (a)). The test holds, the medians
+    do not.
+  deviations:
+  - Sag is taken from step sweeps before the first induction sweep where there are any; baseline the up
+    to 50 ms before the step, peak the minimum after 1 ms smoothing, steady state the mean of the last
+    10% of the step (standard choices; the formula is not in the paper).
+- claim: fig2e-sag-raf-smaller
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_rozsa_2023_induction.ipynb
+  output: claim:fig2e-sag-raf-smaller
+  measured:
+  - 0.186
+  - 0.211
+  - 0.06
+  - 0.125
+  notes: 'On the tested cells (the denominator of fig1d; 6 human and 14 rat files with sag sweeps have
+    no induction sweeps), with RAF status from the RA-APs of the continuous recording (reading (c) without
+    the interstimulus intervals; 159 of 306 human and 95 of 115 rat cells with RAF), rat cells with RAF
+    have the lower sag (formula (a), most hyperpolarizing step: 0.060 against 0.125, Mann-Whitney P =
+    0.00039; formula (b) the same P), while human cells do not (0.186 against 0.211, P = 0.12). The rat
+    result is fragile: the step nearest -90 mV gives P = 0.0080 (formula (a)) and 0.0059 (formula (b)),
+    and the drug-free files P = 0.0061. Counting the untested files as without RAF, as the round-2 version
+    did, gives rat P = 2.8e-05. With the interstimulus intervals included neither species reaches P <
+    0.001 (rat 3 tested cells without RAF, P = 0.036; human 6, P = 0.54). No reading has more than one
+    of the four medians within tolerance. Reading (b) gives the human difference at P < 0.001 (0.176 against
+    0.261), but its mixture fails its check. Measured values are on the tested cells under the assumed
+    reading, formula (a), most hyperpolarizing step. The outcome changed from not_reproduced after verification
+    round 1; round 2 asked for the tested cells only, and the rat P stays below 0.001.'
+  deviations:
+  - 'Assumption: RAF status from the continuous-recording RA-APs. The criterion allows readings (a) to
+    (c); with the interstimulus intervals the claim is not reproduced, with the continuous recording it
+    is partially reproduced. The Methods count the RA-APs of an epoch "during continuous recording" ("Analysis
+    of RAF patterns"), and the continuous recording starts once APs appear in the interstimulus interval
+    ("Induction protocol of RAF"), so the interstimulus APs end the induction and the RA-APs counted for
+    RAF are those after it.'
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - 'RA-APs need at most 5 pA at threshold both relative to the holding level and in absolute terms, so
+    that APs driven by a depolarizing holding current are not RA-APs (the paper, Results: steady current
+    was needed in some cells to reach AIS-AP threshold, and RA-APs were absent during these periods).'
+  - Cells are the tested ones, those with induction sweeps, as in fig1d (verifier, round 2).
+- claim: fig2h-bleb-sag-higher
+  outcome: partially_reproduced
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig2h-bleb-sag-higher
+  measured:
+  - 0.024
+  - 0.115
+  - 106
+  notes: 'Reading (a), most hyperpolarizing step, each compartment from its own steps: soma median 0.024
+    (n = 11) against bleb 0.115 (n = 10), two-sample t P = 0.0082, paired P = 0.019; with the duplicated
+    rat soma counted once, P = 0.011; formula (b) P = 0.027; the step nearest -90 mV gives no difference
+    (P = 0.15). The bleb is higher with P < 0.05 but not 0.001, and neither value is within tolerance.
+    The difference rests on step sweeps whose sag peak lies below -150 mV: without them it vanishes (soma
+    0.055, n = 7, against bleb 0.061, n = 6, P = 0.28). The criterion''s variant, the bleb trace during
+    a somatic step, gives bleb values near 0.9 (n = 7, P < 0.0001), which reflects a bleb deflection too
+    small for the formula and is not taken as support. The median soma-bleb distance in the files is 106
+    um (9 cells, 44 to 218 um), matching the paper. One rat file has no bleb sweeps.'
+  deviations:
+  - The bleb stimulus series (and some somatic ones) are stored in pA under a unit of amperes; they are
+    divided by 1e12 where the values exceed 100 nA.
+  - 'Shown in addition (verifier, round 1): the bleb trace during a somatic step, step sweeps with a peak
+    below -150 mV left out, and the rat cell with two blebs counted once on the soma side.'
+- claim: fig2il-kcl-induces-ra-aps
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file of the dandiset names a KCl or potassium application in its metadata (general/pharmacology,
+    session and experiment descriptions were searched in all induction, ZD7288, bleb and active-slice
+    files, and all general, subject and electrode fields of the in vivo files), and no folder holds the
+    puff experiments.
+- claim: fig3-human-ap-states
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig3-human-ap-states
+  notes: The dandiset has no AP labels, so reading (a) cannot be run, and the reading (b) mixture on the
+    3101 APs without current of the 26 human files gives a lower-threshold component with the steeper
+    mean slope (3.54 against 2.18 mV/ms), the opposite of the paper's RA-APs (lower threshold and lower
+    slope). Its classes are therefore not the paper's, and no other reading has a basis in the paper.
+    For the record, with these classes 20 cells have AIS-APs and 12 RA-APs (expected 7 and 6); reading
+    (i) with the mean potential before threshold puts all AIS-APs in up states in 10 of 20 cells and RA-APs
+    in down or transition states in 6 of 12. The outcome changed from partially_reproduced after the component
+    check the verifier asked for. The authors are asked for the AP labels (findings). The claims file's
+    reading (b) does not ask for this check of the components; the blocking is a judgement on the classes
+    (verifier, round 2).
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+- claim: fig3f-human-pre-ap-fluctuation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig3f-human-pre-ap-fluctuation
+  notes: The classes are those of fig3-human-ap-states, whose mixture RA component has the steeper slope,
+    so they are not the paper's. For the record, with these classes the SD before RA-APs is the higher
+    one (window to threshold 5.43 against 3.18 mV, P = 2.2e-73; window to peak 7.13 against 4.97 mV, P
+    = 2e-79). The outcome changed from partially_reproduced. The claims file's reading (b) does not ask
+    for this check of the components; the blocking is a judgement on the classes (verifier, round 2).
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+- claim: fig3i-rat-lfp-rhythm
+  outcome: reproduced
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig3i-rat-lfp-rhythm
+  measured: 1.06
+  notes: 36 rat recordings with carbachol and SCH23390 and an LFP; median spectral peak in 0.5 to 4 Hz
+    1.06 Hz (SD 0.48), median cycle rate of the filtered LFP 1.01 Hz (SD 0.35); both within 1.1 +- 0.11.
+    Without the 6 recordings with extra drugs, 1.19 and 1.03 Hz. The synchronization to up states is not
+    judged (criterion). Many spectral peaks sit at the 0.5 Hz band edge, and the cycle rate of a 0.5 to
+    4 Hz band-passed signal is near 1 Hz by construction, so the match is weak evidence (verifier, round
+    1).
+- claim: fig3l-rat-spontaneous-ra-proportion
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig3l-rat-spontaneous-ra-proportion
+  measured: 29
+  notes: 36 recordings with carbachol and SCH23390 (paper 40). The mixture's RA component has the lower
+    threshold and slope, as the paper describes (-50.8 against -44.1 mV, 1.12 against 2.79 mV/ms; 14161
+    to 14164 RA-APs over the five seeds). It labels RA-APs in 29 cells (at least two in 27); without the
+    extra-drug recordings 23 of 30; without APs under a positive holding current 28 of 36. Expected 13.
+    The mixture labels 14161 of 18779 APs as RA, while the paper counts 76 RA-APs against 534 AIS-APs
+    (Figure 3M). The files have no cell class, so the morphology part cannot be checked. The mixture
+    classes fail the share check added after round 2, since the RA class holds 0.754 of the APs (0.70 after
+    the delta selection) against 0.125 in Figure 3M, and more than half of the APs in 28 of 32
+    recordings, so the classes are not the paper's and the numbers above do not test the claim. The
+    outcome changed from not_reproduced to blocked after verification round 3, where the verifier
+    agreed. The claims file's reading (b) has no share check; the blocking is a judgement on the
+    classes.
+  deviations:
+  - The AIS and RA classes rest on reading (b) of the claims file's header (the dandiset has no labels
+    for reading (a)); that is the assumption.
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+- claim: fig3k-rat-pre-ap-fluctuation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig3k-rat-pre-ap-fluctuation
+  notes: Window ending at peak, AIS-AP SD median 10.03 mV (n = 4579) against RA-AP 8.65 mV (n = 13649),
+    Mann-Whitney P = 5.9e-75; window ending at threshold 8.78 against 7.82 mV, P = 4.3e-65. APs with no
+    AP in the preceding 50 ms give AIS 2.23 against RA 0.87 mV (P = 7.1e-251). Per-cell medians do not
+    differ (P = 0.25 and 0.41). Both windows now give the paper's direction. The window to peak includes
+    the AP's own upstroke, which explains SDs well above the paper's (verifier, round 1). The result
+    rests on the mixture classes. The mixture classes fail the share check added after round 2, since the RA
+    class holds 0.754 of the APs (0.70 after the delta selection) against 0.125 in Figure 3M, and more
+    than half of the APs in 28 of 32 recordings, so the classes are not the paper's and the numbers
+    above do not test the claim. The outcome changed from reproduced to blocked after verification round
+    3, where the verifier agreed. The claims file's reading (b) has no share check; the blocking is a
+    judgement on the classes.
+  deviations:
+  - The AIS and RA classes rest on reading (b) of the claims file's header (the dandiset has no labels
+    for reading (a)); that is the assumption.
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+- claim: fig3m-rat-ais-phase-coupling
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig3m-rat-ais-phase-coupling
+  measured:
+  - 0.655
+  - 319
+  notes: All 36 recordings with carbachol and SCH23390 give 3867 AIS-APs from 15 cells after the delta
+    selection, vector length 0.313, angle 256 degrees, Rayleigh P = 5e-169; the angle is outside
+    tolerance. Without the six recordings with gabazine, kainate or 4-AP, 230 AIS-APs from 10 cells,
+    length 0.655, angle 319 degrees, P = 2.4e-49, so the coupling near the trough holds and the length
+    is seven times the paper's 0.093. Order 4 and leaving out APs under steady current change little
+    (255 and 251 degrees on all recordings). In 24 of the 39 rat recordings with an LFP every LFP series
+    starts at the same time as a Vm series (median fraction 1.000, lowest 0.667), but the AP count and
+    the LFP are no more correlated at lag 0 than at shifted lags (mean -0.046), and the AP-triggered LFP
+    average departs from its time-shifted value (|z| > 2) in 9 of 16 recordings, 7 below and 2 above it,
+    so the evidence for a shared clock is weak. Measured values are for the population without extra
+    drugs. The mixture classes fail the share check added after round 2, since the RA class holds 0.754 of the
+    APs (0.70 after the delta selection) against 0.125 in Figure 3M, and more than half of the APs in 28
+    of 32 recordings, so the classes are not the paper's and the numbers above do not test the claim.
+    The outcome changed from partially_reproduced to blocked after verification round 3, where the
+    verifier agreed. The claims file's reading (b) has no share check; the blocking is a judgement on
+    the classes.
+  deviations:
+  - The population is read as the recordings with carbachol and SCH23390 and no other drug, one of the
+    populations the criterion leaves open; it is the assumption.
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - The LFP is decimated to about 500 Hz as it is read (the same FIR filter as before), for memory.
+- claim: fig3m-rat-ra-no-phase
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:fig3m-rat-ra-no-phase
+  measured: 1.3e-144
+  notes: RA-APs are strongly coupled in every population (all recordings, 8896 RA-APs from 24 cells,
+    length 0.192, angle 293 degrees, Rayleigh P = 1.3e-144; without extra drugs 695 from 18 cells,
+    length 0.575, angle 319 degrees, P = 1.5e-110; APs under steady current left out, P = 6.3e-100). The
+    paper counts 76 RA-APs; the mixture labels far more. The mixture classes fail the share check added
+    after round 2, since the RA class holds 0.754 of the APs (0.70 after the delta selection) against 0.125 in
+    Figure 3M, and more than half of the APs in 28 of 32 recordings, so the classes are not the paper's
+    and the numbers above do not test the claim. The outcome changed from not_reproduced to blocked
+    after verification round 3, where the verifier agreed. The claims file's reading (b) has no share
+    check; the blocking is a judgement on the classes.
+  deviations:
+  - The AIS and RA classes rest on reading (b) of the claims file's header (the dandiset has no labels
+    for reading (a)); that is the assumption.
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+- claim: figs3-no-modulators
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_rozsa_2023_slices.ipynb
+  output: claim:figs3-no-modulators
+  notes: Only 2 recordings without carbachol and SCH23390 are in the dandiset (paper 90), both from one
+    rat. Their spectral peak in 0.05 to 4 Hz is at the lower edge of the band, 0.05 Hz, so no peak is
+    found; both cells have RA-APs (2 and 98). Two of 90 recordings cannot stand for the paper's sample,
+    so the claim is blocked; it was recorded as partially_reproduced before the first verification round,
+    and the verifier blocked it. The induction folders hold rat files bathed in in vivo-like ACSF, but
+    these are induction recordings without an LFP, not the paper's recordings without modulators.
+- claim: fig4b-invivo-ra-proportion
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:fig4b-invivo-ra-proportion
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes 193 of 259 cells
+    (0.745) have at least one RA-AP, against 0.31. The outcome was blocked as too_large before the first
+    verification round; the verifier found that block not justified. The claims file's reading (b) does
+    not ask for this check of the components; applied as written it would give mixed outcomes (fig4-invivo-up-down-balance
+    reproduced, fig4i and figs4i partially reproduced), as the verifier noted in round 2. The blocking
+    is a judgement on the classes, not a rule of the claims file. The mixture is fitted to a seeded draw
+    of 200,000 APs, and its counts differ slightly between runs (224419 AIS-APs in the coupled set in
+    the round-2 run against 224598 now); the numbers here are from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: fig4i-invivo-frequencies
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:fig4i-invivo-frequencies
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes the median AIS-AP
+    frequency is 0.356 Hz and the RA-AP median 0.0102 Hz over 259 cells (Mann-Whitney P = 3.4e-20). The
+    outcome was blocked as too_large before the first verification round; the verifier found that block
+    not justified. The claims file's reading (b) does not ask for this check of the components; applied
+    as written it would give mixed outcomes (fig4-invivo-up-down-balance reproduced, fig4i and figs4i
+    partially reproduced), as the verifier noted in round 2. The blocking is a judgement on the classes,
+    not a rule of the claims file. The mixture is fitted to a seeded draw of 200,000 APs, and its counts
+    differ slightly between runs (224419 AIS-APs in the coupled set in the round-2 run against 224598
+    now); the numbers here are from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: fig4g-invivo-ra-share
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:fig4g-invivo-ra-share
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes RA-APs are 7.45%
+    of all APs, 27 cells with APs have none, 9 have only RA-APs, and the share in cells with RA-APs is
+    16.5% on average. The outcome was blocked as too_large before the first verification round; the verifier
+    found that block not justified. The claims file's reading (b) does not ask for this check of the components;
+    applied as written it would give mixed outcomes (fig4-invivo-up-down-balance reproduced, fig4i and
+    figs4i partially reproduced), as the verifier noted in round 2. The blocking is a judgement on the
+    classes, not a rule of the claims file. The mixture is fitted to a seeded draw of 200,000 APs, and
+    its counts differ slightly between runs (224419 AIS-APs in the coupled set in the round-2 run against
+    224598 now); the numbers here are from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: fig4f-invivo-pre-ap-fluctuation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:fig4f-invivo-pre-ap-fluctuation
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes the SD before RA-APs
+    is the higher one (window to threshold 7.34 against 7.16 mV, P = 6.2e-15). The outcome was blocked
+    as too_large before the first verification round; the verifier found that block not justified. The
+    claims file's reading (b) does not ask for this check of the components; applied as written it would
+    give mixed outcomes (fig4-invivo-up-down-balance reproduced, fig4i and figs4i partially reproduced),
+    as the verifier noted in round 2. The blocking is a judgement on the classes, not a rule of the claims
+    file. The mixture is fitted to a seeded draw of 200,000 APs, and its counts differ slightly between
+    runs (224419 AIS-APs in the coupled set in the round-2 run against 224598 now); the numbers here are
+    from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: fig4j-invivo-ais-phase-coupling
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:fig4j-invivo-ais-phase-coupling
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes 224598 AIS-APs are
+    coupled at 332 degrees (Rayleigh P printed as 0), vector length 0.431 against 0.019. In 135 of the
+    245 files with an LFP every LFP series starts at the same time as a Vm series (median fraction 1.000;
+    in some files none does), and the AP-triggered LFP departs from its time-shifted value (|z| > 2) in
+    143 of 167 cells (median z -10.4). The outcome was blocked as too_large before the first verification
+    round; the verifier found that block not justified. The claims file's reading (b) does not ask for
+    this check of the components; applied as written it would give mixed outcomes (fig4-invivo-up-down-balance
+    reproduced, fig4i and figs4i partially reproduced), as the verifier noted in round 2. The blocking
+    is a judgement on the classes, not a rule of the claims file. The mixture is fitted to a seeded draw
+    of 200,000 APs, and its counts differ slightly between runs (224419 AIS-APs in the coupled set in
+    the round-2 run against 224598 now); the numbers here are from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: fig4j-invivo-ra-no-phase
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:fig4j-invivo-ra-no-phase
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes the 16985 RA-APs
+    are coupled too (323 degrees, length 0.379, Rayleigh P printed as 0). The outcome was blocked as too_large
+    before the first verification round; the verifier found that block not justified. The claims file's
+    reading (b) does not ask for this check of the components; applied as written it would give mixed
+    outcomes (fig4-invivo-up-down-balance reproduced, fig4i and figs4i partially reproduced), as the verifier
+    noted in round 2. The blocking is a judgement on the classes, not a rule of the claims file. The mixture
+    is fitted to a seeded draw of 200,000 APs, and its counts differ slightly between runs (224419 AIS-APs
+    in the coupled set in the round-2 run against 224598 now); the numbers here are from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: fig4-invivo-up-down-balance
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:fig4-invivo-up-down-balance
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes the RA-AP share
+    is higher in the down half of the cycle (0.082 against 0.066, Fisher P = 5.6e-41) and AIS-APs outnumber
+    RA-APs in the up half. The outcome was blocked as too_large before the first verification round; the
+    verifier found that block not justified. The claims file's reading (b) does not ask for this check
+    of the components; applied as written it would give mixed outcomes (fig4-invivo-up-down-balance reproduced,
+    fig4i and figs4i partially reproduced), as the verifier noted in round 2. The blocking is a judgement
+    on the classes, not a rule of the claims file. The mixture is fitted to a seeded draw of 200,000 APs,
+    and its counts differ slightly between runs (224419 AIS-APs in the coupled set in the round-2 run
+    against 224598 now); the numbers here are from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: figs4i-ais-ra-frequency-correlation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:figs4i-ais-ra-frequency-correlation
+  notes: The in vivo folder (259 files, 383 GB) is now analysed (`reproduce_rozsa_2023_invivo.ipynb`,
+    41.2 minutes in its final run). The dandiset has no AP labels, so reading (a) cannot be run, and the
+    reading (b) mixture on the 291968 in vivo APs gives a lower-threshold component with the steeper mean
+    slope (3.25 against 1.99 mV/ms), the opposite of the paper's RA-APs; its classes are not the paper's
+    and no other reading has a basis in the paper. For the record, with these classes Pearson R = 0.537
+    and Spearman R = 0.680 over 259 cells (P = 9.5e-21 and 1.4e-36). The outcome was blocked as too_large
+    before the first verification round; the verifier found that block not justified. The claims file's
+    reading (b) does not ask for this check of the components; applied as written it would give mixed
+    outcomes (fig4-invivo-up-down-balance reproduced, fig4i and figs4i partially reproduced), as the verifier
+    noted in round 2. The blocking is a judgement on the classes, not a rule of the claims file. The mixture
+    is fitted to a seeded draw of 200,000 APs, and its counts differ slightly between runs (224419 AIS-APs
+    in the coupled set in the round-2 run against 224598 now); the numbers here are from the final run.
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+  - Threshold where dV/dt, taken over 50 us of the trace smoothed with a 50 us boxcar, first reaches 5
+    mV/ms (approximating the Methods' 10 kHz filter, so that the threshold does not depend on the sampling
+    rate); APs with a threshold outside -80 to -10 mV or a peak above 100 mV are left out as artefacts
+    (standard choices, added after verification round 1).
+  - Each file is taken as one cell (259 files against the paper's 242 cells); APs of the Vm sweeps without
+    a current step.
+- claim: figs5-not-genotype-or-anesthesia
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_rozsa_2023_invivo.ipynb
+  output: claim:figs5-not-genotype-or-anesthesia
+  notes: No field of the in vivo files names the anesthesia condition (all general, subject, electrode
+    and pharmacology fields were read), so the condition part cannot be tested. The genotype is in subject/description
+    (mouse 5, mouse-ai9 17, mouse-vGATCreXai9 152, mouse-black6 6, mouse-GAD-GFP 79 files). The AP classes
+    also fail their check (fig4b-invivo-ra-proportion). For the record, with the mixture classes RA-AP
+    frequency does not differ by genotype (Kruskal-Wallis P = 0.27; smallest Bonferroni-corrected pairwise
+    P = 0.32).
+  deviations:
+  - The reading (b) mixture is fitted on features scaled by median and interquartile range, to a seeded
+    draw of at most 200,000 APs; its components are printed and checked against the paper's description
+    of RA-APs (lower threshold and lower slope).
+findings:
+- kind: metadata_error
+  statement: Every membrane potential series gives a conversion of 1e-12 with unit volts, but the stored
+    values are already in volts (medians near -0.065). Read with the stated conversion they are picovolts.
+- kind: metadata_error
+  statement: The stimulus series of the bleb recordings (731 sweeps) and some sweeps of other folders
+    (52 active human, 11 ZD7288, 3 rat oscillation, and in 21 induction files) are stored in pA although
+    their unit is amperes, giving values near 1e14 when read as stated.
+- kind: metadata_insufficient
+  statement: No file carries AP labels (AIS-AP or RA-AP), RAF status, or the induction protocol's sweeps,
+    so the classes and epochs the paper analyses must be rebuilt from the traces. The human and rat induction
+    files carry no morphological cell class (NGFC, non-NGFC, rosehip), which only the bleb files record.
+- kind: data_missing
+  statement: The local KCl application experiments (Figure 2I to 2L) are not identifiable in the dandiset,
+    and only 2 of the 90 rat recordings without carbachol and SCH23390 (Figure S3) are in it. The in vivo
+    folder records no anesthesia condition for any cell (Figure S5). The induction folders hold 313 human
+    and 132 rat files against the 385 and 259 cells the paper tested.
+- kind: selection_undocumented
+  about: data
+  statement: The induction folders are named Human_persistent_RAF and Rat_persistent_RAF, and nearly all
+    their cells fire APs without current after induction, but the paper reports RAF in a quarter to a
+    third of tested cells. 124 of 307 human and 33 of 118 rat cells already fire spontaneous APs before
+    induction, and 58 human and 94 rat files list drugs (including carbachol, SCH23390 and calcium changes)
+    that the induction experiments of the paper do not mention. The dandiset does not say how its cells
+    were selected from those the paper tested.
+- kind: other
+  about: data
+  statement: Sampling rates vary within and across files (5 to 200 kHz, mostly 16.7, 25, 50 and 100 kHz)
+    against the 50 kHz of the Methods; the long gap-free sweeps of the induction files are often at 5
+    kHz. One bleb file (sub-20220317) has no bleb sweeps.
+- kind: methods_unavailable
+  statement: How AIS-APs and RA-APs were separated (a threshold and pre-AP slope boundary, per preparation
+    or per cell), how a recording was cut into RAF epochs, and the sag fraction formula are not given.
+    A two-component mixture on threshold and slope gives a lower-threshold component with the steeper
+    slope in the human active slices, the in vivo recordings and the induction recordings, the opposite
+    of the paper's RA-APs, so the claims on spontaneous human and in vivo activity cannot be tested. Could
+    the authors give the per-AP labels or the boundary used, and the epoch definition?
+- kind: other
+  about: data
+  statement: 18 session identifiers name both an induction file and an active-slice file (2 human, 16
+    rat, for example ses-1611161tm-3-1-4 in Rat_persistent_RAF and in In_vitro_oscillation_Rat); the active-slice
+    files are larger and carry an LFP. Whether these are the same recordings deposited twice is not documented,
+    and 16 of the 18 induction files list drugs.
+- kind: other
+  about: data
+  statement: In the soma and bleb recordings the per-file median somatic AP thresholds lie at -30.4 to
+    -11.2 mV with and without current, the voltage jump at the onset of depolarizing steps implies 26
+    to 57 MOhm of uncompensated resistance, and hyperpolarizing steps of -700 to -950 pA drive the recorded
+    potential below -150 mV (sweep minima down to -434 mV). Bridge balance is not recorded.
+- kind: metadata_insufficient
+  statement: The in vivo files give the genotype only inside subject/description (five values, including
+    both 'mouse' and 'mouse-black6') and do not record the anesthesia condition; the folder holds 259
+    files from 149 mice against the paper's 242 cells, and some files also hold camera images ('Moovie').
+verifications:
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The first executed notebooks (slices and induction) with the conclusion cells and the summary
+    removed, the helper module raf.py and the claims file, with the paper's full text. The verifier read
+    the archive's file list and asset metadata through the DANDI API and tested helper functions on synthetic
+    inputs (the threshold walk and the mixture). It had no attempt record.
+  results:
+  - claim: fig1ab-raf-patterns
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The best reading matches 2 of 8 values (RA-APs including interstimulus intervals, epoch reading
+      ii). The continuous-only reading, which the criterion names, gets 0 or 1 of 8. Both RAF patterns
+      occur. The RA-AP set is suspect (problems 1 to 3): RA-APs are judged relative to the holding current,
+      spontaneous firing before induction is never measured, drug-treated files are kept, and the reading
+      (b) mixture is taken over by artefact APs.'
+    response: The threshold is now found on a 50 us smoothed dV/dt, artefact APs are removed, and RA-APs
+      need no positive current in absolute terms (problems 1, 3 and 5). Holding currents and pre-induction
+      firing are now printed per file, and every reading is shown on all cells, on drug-free files and
+      on cells quiet before induction. The mixture, refitted on clean robustly scaled features, still
+      gives an RA component with the steeper slope and a seed-dependent size, so its rows are marked as
+      not a reading of the paper's classes. At most 2 of 8 values match under any reading or subset; outcome
+      unchanged.
+  - claim: fig1c-ra-lower-threshold-slope
+    agrees: true
+    outcome: reproduced
+    reason: 'Under reading (c), human RA-APs have lower median threshold (-59.8 vs -44.2 mV persistent,
+      -61.2 vs -44.5 sporadic) and lower slope, with P near 0, and the per-cell variant agrees. This depends
+      on problem 5: the threshold walk stops early on noise at high sampling rates, and sampling rate
+      is never compared between AIS-AP and RA-AP sweeps.'
+    response: The threshold is now found on a 50 us smoothed dV/dt, artefact APs are removed, and RA-APs
+      need no positive current in absolute terms (problems 1, 3 and 5). A synthetic test in the data check
+      shows the threshold within about 1 mV of the true value from 5 to 200 kHz, and the comparison is
+      shown within each sampling rate; RA-APs have the lower threshold and slope at every human rate with
+      both classes. Outcome unchanged.
+  - claim: fig1d-human-raf-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.547 (continuous only), 0.528 (reading b) and 0.984 (with interstimulus intervals) against
+      0.226 +- 0.023. 98% of human cells end up with RAF because of problems 1 and 2.
+    response: The threshold is now found on a 50 us smoothed dV/dt, artefact APs are removed, and RA-APs
+      need no positive current in absolute terms (problems 1, 3 and 5). Added drug-free files (0.976 and
+      0.446) and cells firing before induction counted as without RAF (0.586 and 0.280) or left out. Only
+      variants outside the criterion (at least two RA-APs) fall within tolerance; outcome unchanged.
+  - claim: fig1f-human-raf-ngfc
+    agrees: true
+    outcome: blocked
+    reason: The archive's asset metadata has no cell class. The notebook searched only pharmacology keys
+      for one.
+    response: The data check now prints the counts of the session and subject descriptions of the files
+      and counts the files with a cell class field among the pharmacology keys (none). No change of outcome.
+  - claim: figs1b-rat-raf-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.746 to 0.975 against 0.394 +- 0.039.
+    response: The threshold is now found on a 50 us smoothed dV/dt, artefact APs are removed, and RA-APs
+      need no positive current in absolute terms (problems 1, 3 and 5). Added the same subsets as for
+      fig1d; the lowest fraction is 0.500. Outcome unchanged.
+  - claim: figs1d-rat-raf-values
+    agrees: true
+    outcome: not_reproduced
+    reason: At most 1 of 4 values matches under any reading.
+    response: The threshold is now found on a 50 us smoothed dV/dt, artefact APs are removed, and RA-APs
+      need no positive current in absolute terms (problems 1, 3 and 5). No reading (c) row matches any
+      value. Outcome unchanged.
+  - claim: fig1g-rat-raf-ngfc
+    agrees: true
+    outcome: blocked
+    reason: Same as fig1f.
+    response: No change.
+  - claim: fig1hk-bleb-initiation-order
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Not reproduced, and unreliable. NGFC 220504: AIS-AP latency is negative (-0.22 ms at threshold).
+      NGFC 220505-2: no RA-APs. The classification rests on somatic thresholds of -14 to -29 mV (problem
+      6), which were not examined, and soma and bleb sweeps are paired by index, not by start time.'
+    response: 'The pairing is now checked: every soma and bleb sweep of the same number starts at the
+      same time. The somatic thresholds are examined: they lie at -30 to -11 mV with and without current,
+      and the voltage jump at step onset implies 26 to 57 MOhm of uncompensated resistance; this is recorded
+      as a finding. Example soma and bleb traces with thresholds marked and a split by latency sign are
+      added. Outcome unchanged.'
+  - claim: fig2c-zd7288-reduces-raf
+    agrees: true
+    outcome: not_reproduced
+    reason: RAF duration rises under ZD7288 (mean 131.6 to 360.5 s, 1 of 7 cells decreasing). The RA-AP
+      count change has paired t P = 0.83. Epoch reading (ii) was not run (problem 9), and one human file
+      is 20 uM.
+    response: Epoch reading (ii) and a variant without the 20 uM file are added; no reading gives both
+      decreases at P < 0.05. Outcome unchanged.
+  - claim: figs2-zd7288-passive-properties
+    agrees: true
+    outcome: not_reproduced
+    reason: Input resistance 146 to 141 MOhm (median), P = 0.78. Only the 2 resting potential values are
+      within tolerance.
+    response: 'The paper''s test rule is printed beside the paired t test (problem 14: non-normal paired
+      data now get the Mann-Whitney U test the rule names). Outcome unchanged.'
+  - claim: fig2e-sag-species
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Human is higher, Mann-Whitney P = 1.5e-26. The medians miss under every reading: human 0.198
+      to 0.248 against 0.15, rat 0.071 to 0.083 against 0.04.'
+    response: Added the drug-free files (0.211 against 0.082, P = 8e-10). Outcome unchanged.
+  - claim: fig2e-sag-raf-smaller
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, incomplete. Under the one RAF reading run, human P = 0.8 (301 RAF cells against
+      11 without) and rat 0.062 vs 0.125, P = 0.0028, above 0.001. Two other allowed RAF readings, the
+      continuous-only split and reading (b), were not run (problem 8), and they could change the human
+      result.
+    response: 'Both readings are now run, over all files and drug-free files. With continuous-recording
+      RAF status the rat difference holds at P = 2.8e-05 (human P = 0.10); reading (b) gives a human difference
+      but its mixture fails its check. The outcome changes to partially_reproduced, resting on the continuous-recording
+      reading as a stated assumption (assumed: true).'
+  - claim: fig2h-bleb-sag-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Bleb higher, two-sample t P = 0.0082 (most hyperpolarizing step, formula a); soma 0.024 and
+      bleb 0.115 against 0.1 and 0.4; distance median 106 um matches. Problem 7: steps of -700 to -950
+      pA with sweep minima to -434 mV were not examined for artefact or bridge error, the variant with
+      the bleb trace during a somatic step was not run, and one rat cell enters the test twice.'
+    response: Added the somatic-step variant (bleb values near 0.9, too small a deflection for the formula),
+      a variant without step sweeps whose peak lies below -150 mV (the difference vanishes, P = 0.28),
+      and the duplicated soma counted once (P = 0.011). Outcome unchanged; the notes say it rests on the
+      sweeps below -150 mV.
+  - claim: fig2il-kcl-induces-ra-aps
+    agrees: true
+    outcome: blocked
+    reason: No folder, keyword or session description in the archive mentions KCl or potassium. Absence
+      inside the files is unverified.
+    response: The general, subject, electrode and pharmacology fields of every file, in vivo included,
+      were read; none mentions KCl. No change.
+  - claim: fig3-human-ap-states
+    agrees: true
+    outcome: partially_reproduced
+    reason: With the pre-AP potential, 10 of 11 cells have all AIS-APs in up states and 11 of 21 RA-AP
+      cells have RA-APs in down or transition states, which meets the partial rule. Counts are 11 and
+      21 against exact 7 and 6. The mixture's RA class has the steeper slope (problem 4), never checked
+      against the paper's description of RA-APs.
+    response: 'The mixture is refitted on clean, robustly scaled features and its components are printed:
+      the RA component still has the steeper slope (3.54 against 2.18 mV/ms), so its classes are not the
+      paper''s and reading (a) cannot be run. The outcome changes to blocked (methods_underspecified),
+      with the numbers under the mixture classes in the notes.'
+  - claim: fig3f-human-pre-ap-fluctuation
+    agrees: true
+    outcome: partially_reproduced
+    reason: AIS-APs higher, pooled P = 7e-9 (window to threshold) and 1e-11 (window to peak); medians
+      6.42/3.78 and 7.35/5.64 mV against 1.49/0.78. Among isolated APs, RA-APs are higher. Problem 4 applies.
+    response: Blocked (methods_underspecified) for the reason given under fig3-human-ap-states.
+  - claim: fig3i-rat-lfp-rhythm
+    agrees: true
+    outcome: reproduced
+    reason: 'Spectral peak median 1.06 Hz (36 recordings) or 1.19 Hz (30); cycle rate 1.01 or 1.03 Hz;
+      all within 1.1 +- 0.11. Weakly diagnostic (problem 12): 14 of 39 peaks sit at the 0.5 Hz band edge
+      and the cycle rate of a 0.5 to 4 Hz band-passed signal is near 1 Hz by construction. Problem 10:
+      Vm and LFP clock alignment is unverified.'
+    response: The Vm and LFP starting times are printed side by side (they coincide) and an AP-triggered
+      LFP average is added. The weakness is stated in the notes. Outcome unchanged.
+  - claim: fig3l-rat-spontaneous-ra-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: '30 of 36 or 24 of 30 cells have RA-APs, against 13 +- 1.3. Problem 4: in rat active slices
+      the RA class is 84% of APs while the paper reports 76 RA-APs against 534 AIS-APs.'
+    response: The refitted mixture's RA component has the lower threshold and slope, as the paper describes,
+      and is stable over the seeds; it labels RA-APs in 29 of 36 cells. Outcome unchanged.
+  - claim: fig3k-rat-pre-ap-fluctuation
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced but fragile. Window to peak: AIS 9.90 > RA 8.76 mV, P = 1e-33; window to threshold
+      gives RA higher; per-cell P = 0.22. Problem 11: the window to peak includes the AP''s own upstroke
+      and any preceding spikes; the claims file allows the reading.'
+    response: With the corrected threshold and clean classes both windows give AIS higher (10.03 against
+      8.65 and 8.78 against 7.82 mV, P below 1e-60). The upstroke caveat is in the notes. Outcome unchanged.
+  - claim: fig3m-rat-ais-phase-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Carbachol + SCH23390 only: angle 321 degrees (within 31.4 of 314), P = 5e-14, but vector
+      length 0.508 against 0.093. All modulator files: angle 245 degrees fails. n = 111 APs from 7 cells
+      or 2476 from 12, against 534 from 22. Problem 10 applies.'
+    response: Clock check added (see fig3i). Now 230 APs from 10 cells at 319 degrees, length 0.655; all
+      files 256 degrees. Outcome unchanged.
+  - claim: fig3m-rat-ra-no-phase
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Rayleigh P = 2.7e-186 (all) and 9.3e-145 (modulators only), against the criterion P >= 0.05.
+      Problem 13: the variant meant to drop APs fired under steady current removes nothing, because currents
+      are measured relative to the holding current.'
+    response: The steady-current variant now uses the absolute current and removes 548 APs; RA-APs stay
+      coupled (P = 6.3e-100). Outcome unchanged.
+  - claim: figs3-no-modulators
+    agrees: false
+    outcome: blocked
+    reason: Blocked (data_missing). The folder holds 2 of the paper's 90 recordings. Their 0.05 Hz peak
+      is the lower edge of the band, so no peak was found. The criterion applied mechanically would give
+      partially_reproduced on 2 cells. The drug fields of the induction folders might show where the missing
+      recordings sit; this was not checked.
+    response: Changed to blocked (data_missing), as the verifier gives. The Ca and Mg fields of the induction
+      files are now printed; the rat files in in vivo-like ACSF there are induction recordings without
+      an LFP, not recordings without modulators.
+  - claim: fig4b-invivo-ra-proportion
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15).
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: fig4i-invivo-frequencies
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15).
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: fig4g-invivo-ra-share
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15).
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: fig4f-invivo-pre-ap-fluctuation
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15).
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: fig4j-invivo-ais-phase-coupling
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15). Asset keywords list
+      LFP.
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: fig4j-invivo-ra-no-phase
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15).
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: fig4-invivo-up-down-balance
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15).
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: figs4i-ais-ra-frequency-correlation
+    agrees: false
+    reason: Not tested; block not justified. Marked too_large (383 GB), but the same pipeline read 260
+      GB of induction files in 66 min; the largest in vivo file is 7.2 GB and the median 1.15 GB. All
+      9 in vivo claims could be tested, at least on a subset of files (problem 15).
+    response: The in vivo folder is now read in full in a third notebook (files read in worker processes;
+      30.4 minutes in that run, 41.2 in the final one). The reading (b) mixture on the in vivo APs gives
+      an RA component with the steeper slope (3.24 against 1.99 mV/ms), so its classes are not the paper's;
+      the claim is blocked as methods_underspecified, with the numbers under the mixture classes in the
+      notes.
+  - claim: figs5-not-genotype-or-anesthesia
+    agrees: true
+    outcome: blocked
+    reason: Blocked (metadata_insufficient at archive level). Asset metadata has no genotype or anesthesia
+      field. Whether the files carry them was never checked.
+    response: 'The files are now read: the genotype is in subject/description, the anesthesia condition
+      in no field. Blocked as metadata_insufficient, with the genotype comparison under the mixture classes
+      in the notes.'
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of the revision after round 1 (slices, induction and in vivo),
+    the helper module raf.py, the claims file and the attempt record, with the paper's full text (transcripts/rozsa-2023/verifier-2-report.md).
+  results:
+  - claim: fig1ab-raf-patterns
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: fig1c-ra-lower-threshold-slope
+    agrees: true
+    outcome: reproduced
+    reason: Agreed (listed with the outcomes the verifier agrees with). The record's "Rat gives the same
+      direction" holds pooled, but at 100 kHz the rat RA-AP threshold is higher (-41.69 against -42.48
+      mV).
+    response: The notes now say that rat RA-APs have the lower threshold pooled and at each rate except
+      100 kHz. No change of outcome.
+  - claim: fig1d-human-raf-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The folders are an undocumented selection, which the record reports as a finding.
+    response: No change.
+  - claim: fig1f-human-raf-ngfc
+    agrees: true
+    outcome: blocked
+    reason: Agreed (listed with the outcomes the verifier agrees with). The round-1 response says the
+      data check prints the general and subject fields; it prints only the session and subject description
+      counts, not a dump of the fields.
+    response: The round-1 response is corrected to say what the data check prints. No change of outcome.
+  - claim: figs1b-rat-raf-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The folders are an undocumented selection, which the record reports as a finding.
+    response: No change.
+  - claim: figs1d-rat-raf-values
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: fig1g-rat-raf-ngfc
+    agrees: true
+    outcome: blocked
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: fig1hk-bleb-initiation-order
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed (listed with the outcomes the verifier agrees with). "Somatic thresholds lie at -30
+      to -11 mV in every file" describes per-file medians (-30.4 to -11.2 mV); the RA-class APs have median
+      thresholds of -60.6 mV (220504) and -69.6 mV (220616).
+    response: The sentence now gives per-file medians and the RA-class medians, in the notebook, the summary,
+      the notes and the finding. No change of outcome.
+  - claim: fig2c-zd7288-reduces-raf
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: figs2-zd7288-passive-properties
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: fig2e-sag-species
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: fig2e-sag-raf-smaller
+    agrees: false
+    reason: 'I do not agree yet. The comparison does not filter on tested cells, so cells with no induction
+      sweeps are counted as without RAF: under the assumed reading about 13 untested rat cells are in
+      the group of 34, and under the interstimulus reading the human group of 12 has only 6 tested cells.
+      The criterion takes RAF status as in fig1d, whose denominator is tested cells. The partial outcome
+      rests on the rat result alone (P = 2.8e-05), already fragile (P = 0.0020 drug-free, 0.0021 at the
+      step nearest -90 mV); rerun on tested cells only and check whether the rat P < 0.001 survives. The
+      assumption is stated and reasonable, but part of its rationale does not hold: stopping induction
+      when interstimulus APs appear does not imply that nearly every cell has them, and the 0.980 used
+      there is also used as evidence of an undocumented selection.'
+    response: 'Rerun on tested cells only (fig1d''s denominator; 6 human and 14 rat untested files left
+      out, and shown apart): the rat difference holds, 0.060 (n = 95) against 0.125 (n = 20), P = 0.00039,
+      with P = 0.0080 at the step nearest -90 mV and 0.0061 on drug-free files; human P = 0.12. The outcome
+      stays partially_reproduced. The assumption''s rationale now rests on the Methods passages alone,
+      without the 0.980.'
+  - claim: fig2h-bleb-sag-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree under the criterion's mechanical rule. As the notes say, the result rests on sweeps
+      whose sag peak lies below -150 mV.
+    response: No change.
+  - claim: fig2il-kcl-induces-ra-aps
+    agrees: true
+    outcome: blocked
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: fig3-human-ap-states
+    agrees: true
+    outcome: blocked
+    reason: I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file's reading (b) does not include this check. This is a gap in the
+      claims file; it does not misread the paper.
+    response: The notes now say that reading (b) as written has no component check and that the blocking
+      is a judgement on the classes. No change of outcome.
+  - claim: fig3f-human-pre-ap-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file's reading (b) does not include this check. This is a gap in the
+      claims file; it does not misread the paper.
+    response: As for fig3-human-ap-states. No change of outcome.
+  - claim: fig3i-rat-lfp-rhythm
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed (listed with the outcomes the verifier agrees with). Round-1 point 10 is partly resolved:
+      start times are identical where shown, but this is printed for 3 of 39 rat files only, and the 1
+      s correlation at lag 0 is no better than at shifted lags (mean -0.046); the 9 of 16 recordings with
+      |z| > 2 have mixed signs. The rat evidence is weak.'
+    response: The start times are now counted over all 39 rat recordings with an LFP (every LFP series
+      shares a start with a Vm series in 24; median fraction 1.000, lowest 0.667), and the text now calls
+      the rat clock evidence weak. No change of outcome.
+  - claim: fig3l-rat-spontaneous-ra-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the stated assumption, which is an allowed reading and is stated. The rat mixture
+      passes the slope check, but it labels 14161 of 18779 APs as RA, while the paper counts 76 RA-APs
+      against 534 AIS-APs. The human and in vivo claims were blocked because the mixture's classes are
+      not the paper's; the rat classes are not the paper's either, by proportion, so the two decisions
+      use different standards. Either apply the same validity standard used to block the human and in
+      vivo claims, or say in each note why the slope check alone is enough.
+    response: 'A check of the class share is added after the rat mixture fit: the RA class holds 0.754
+      of the APs against 0.125 in Figure 3M, and its classes lie 8 mV apart in threshold against about
+      20 mV for the protocol-defined rat classes of the induction recordings. Applying the standard used
+      for the human and in vivo claims, the outcome is kept as verified and a change to blocked (methods_underspecified)
+      is proposed for round 3.'
+  - claim: fig3k-rat-pre-ap-fluctuation
+    agrees: true
+    outcome: reproduced
+    reason: I agree under the stated assumption, which is an allowed reading and is stated. The rat mixture
+      passes the slope check, but it labels 14161 of 18779 APs as RA, while the paper counts 76 RA-APs
+      against 534 AIS-APs. The human and in vivo claims were blocked because the mixture's classes are
+      not the paper's; the rat classes are not the paper's either, by proportion, so the two decisions
+      use different standards. Either apply the same validity standard used to block the human and in
+      vivo claims, or say in each note why the slope check alone is enough.
+    response: 'A check of the class share is added after the rat mixture fit: the RA class holds 0.754
+      of the APs against 0.125 in Figure 3M, and its classes lie 8 mV apart in threshold against about
+      20 mV for the protocol-defined rat classes of the induction recordings. Applying the standard used
+      for the human and in vivo claims, the outcome is kept as verified and a change to blocked (methods_underspecified)
+      is proposed for round 3.'
+  - claim: fig3m-rat-ais-phase-coupling
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree under the stated assumption, which is an allowed reading and is stated. The rat mixture
+      passes the slope check, but it labels 14161 of 18779 APs as RA, while the paper counts 76 RA-APs
+      against 534 AIS-APs. The human and in vivo claims were blocked because the mixture's classes are
+      not the paper's; the rat classes are not the paper's either, by proportion, so the two decisions
+      use different standards. Either apply the same validity standard used to block the human and in
+      vivo claims, or say in each note why the slope check alone is enough. The population assumption
+      (no drugs beyond carbachol and SCH23390) is stated and reasonable. The notes give "256 and 251 degrees";
+      order 4 gives 255.
+    response: 'A check of the class share is added after the rat mixture fit: the RA class holds 0.754
+      of the APs against 0.125 in Figure 3M, and its classes lie 8 mV apart in threshold against about
+      20 mV for the protocol-defined rat classes of the induction recordings. Applying the standard used
+      for the human and in vivo claims, the outcome is kept as verified and a change to blocked (methods_underspecified)
+      is proposed for round 3. The order-4 angle is corrected to 255 degrees and the clock sentence to
+      the weaker evidence.'
+  - claim: fig3m-rat-ra-no-phase
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the stated assumption, which is an allowed reading and is stated. The rat mixture
+      passes the slope check, but it labels 14161 of 18779 APs as RA, while the paper counts 76 RA-APs
+      against 534 AIS-APs. The human and in vivo claims were blocked because the mixture's classes are
+      not the paper's; the rat classes are not the paper's either, by proportion, so the two decisions
+      use different standards. Either apply the same validity standard used to block the human and in
+      vivo claims, or say in each note why the slope check alone is enough.
+    response: 'A check of the class share is added after the rat mixture fit: the RA class holds 0.754
+      of the APs against 0.125 in Figure 3M, and its classes lie 8 mV apart in threshold against about
+      20 mV for the protocol-defined rat classes of the induction recordings. Applying the standard used
+      for the human and in vivo claims, the outcome is kept as verified and a change to blocked (methods_underspecified)
+      is proposed for round 3.'
+  - claim: figs3-no-modulators
+    agrees: true
+    outcome: blocked
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change.
+  - claim: fig4b-invivo-ra-proportion
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: fig4i-invivo-frequencies
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: fig4g-invivo-ra-share
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: fig4f-invivo-pre-ap-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: fig4j-invivo-ais-phase-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: fig4j-invivo-ra-no-phase
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: fig4-invivo-up-down-balance
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: figs4i-ais-ra-frequency-correlation
+    agrees: true
+    outcome: blocked
+    reason: 'I agree. This is a judgement, and it is the check asked for in round 1 (problem 4). The record
+      should say that the claims file''s reading (b) does not include this check. Applied mechanically,
+      reading (b) would give mixed outcomes: fig4-invivo-up-down-balance would be reproduced, and fig4i
+      and figs4i partially reproduced. This is a gap in the claims file; it does not misread the paper.'
+    response: The notes now say that reading (b) as written has no component check and what it would give
+      if applied mechanically. The run time ("about 41 minutes" against 28.9 and 30.4 printed) is corrected,
+      and the Vm and LFP start times are now counted over all 245 files with an LFP (every LFP series
+      shares a start in 135). No change of outcome.
+  - claim: figs5-not-genotype-or-anesthesia
+    agrees: true
+    outcome: blocked
+    reason: Agreed (listed with the outcomes the verifier agrees with).
+    response: No change of outcome; the numbers under the mixture classes are updated to the final run.
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3, the four proposed changes of outcome only (the rat active-slice claims on the reading
+    (b) mixture classes) and the share check behind them in the executed slices notebook, with the induction
+    notebook, the attempt record, the claims file and the paper (transcripts/rozsa-2023/verifier-3-report.md).
+  results:
+  - claim: fig3l-rat-spontaneous-ra-proportion
+    agrees: true
+    outcome: blocked
+    reason: The count of cells with RA-APs depends entirely on the mixture classes. In sl[32] the RA class
+      holds 0.754 of APs against 0.125 in the paper (0.70 after delta selection, sl[46]), and is more
+      than half of the APs in 28 of 32 recordings. The classes are not the paper's, and no reading of
+      the claims file can give the classes in these files.
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed. Following
+      the verifier's two wording points, the notebook now says that the human and in vivo
+      claims share only the conclusion that the mixture's classes are not the paper's (there the evidence
+      was an inverted slope), cite the delta-selected share (0.70), and call the 20 mV comparison from
+      the induction recordings weaker evidence than the share.
+  - claim: fig3k-rat-pre-ap-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: The AIS-AP vs RA-AP SD comparison (sl[42]) uses the same classes, which fail the share check
+      in sl[32]. The reproduced result loses its basis on the same grounds as the claims that went the
+      other way, so the change is not driven by the result.
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed. Following
+      the verifier's two wording points, the notebook now says that the human and in vivo
+      claims share only the conclusion that the mixture's classes are not the paper's (there the evidence
+      was an inverted slope), cite the delta-selected share (0.70), and call the 20 mV comparison from
+      the induction recordings weaker evidence than the share.
+  - claim: fig3m-rat-ais-phase-coupling
+    agrees: true
+    outcome: blocked
+    reason: The population assumption is separate, but the AIS-APs are still the mixture's minority class
+      (3867 of 12763 after delta selection, sl[46], against 534 of 610 in the paper). The coupling of
+      those APs does not test the paper's AIS-APs (sl[32]).
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed. Following
+      the verifier's two wording points, the notebook now says that the human and in vivo
+      claims share only the conclusion that the mixture's classes are not the paper's (there the evidence
+      was an inverted slope), cite the delta-selected share (0.70), and call the 20 mV comparison from
+      the induction recordings weaker evidence than the share.
+  - claim: fig3m-rat-ra-no-phase
+    agrees: true
+    outcome: blocked
+    reason: The strong RA-AP phase coupling (sl[46], sl[48]) is measured on 8896 mixture-labelled RA-APs
+      against the paper's 76. A class that holds most APs, including many coupled to the oscillation,
+      cannot test an absence claim about the paper's RA-APs (sl[32]).
+    response: Outcome changed to blocked (methods_underspecified) and the proposal removed. Following
+      the verifier's two wording points, the notebook now says that the human and in vivo
+      claims share only the conclusion that the mixture's classes are not the paper's (there the evidence
+      was an inverted slope), cite the delta-selected share (0.70), and call the 20 mV comparison from
+      the induction recordings weaker evidence than the share.
