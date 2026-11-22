@@ -14,7 +14,7 @@ cells are not in it).
 |---|---|
 | Labels and cell lists link to the dandisets (3 link claims) | 2 reproduced, 1 partially (461 of 628 mouse cells public) |
 | Sample size | Not reproduced (440 human acute cells from 76 donors, against 542 from 170) |
-| Human against mouse resonance, sag and input resistance (12 claims) | 4 reproduced, 6 partially reproduced, 2 not reproduced |
+| Human against mouse resonance, sag and input resistance (12 claims) | 3 reproduced, 6 partially reproduced, 3 not reproduced (a change of fig2d-subclass-proportion from partially to not reproduced is proposed) |
 | Sag ratio and input resistance against resonance (4 claims) | 1 reproduced, 1 partially reproduced, 2 not reproduced |
 | Slice culture against acute (4 claims) | 3 partially reproduced, 1 not reproduced |
 | Region and disease (1 claim) | Reproduced |
@@ -26,7 +26,8 @@ reasoning and the differences from the paper's method.
 
 The paper's analysis code is not public, so impedance, sag ratio and input resistance are
 computed as the IPFX package computes them, with the alternatives the claims file names shown
-beside them; several outcomes rest on the choice of the lowest chirp frequency (0.4 Hz here).
+beside them; several outcomes rest on the choice of the lowest chirp frequency (0.4 Hz here) and on the
+smoothing fraction the claims file fixes (0.04).
 Labels come from the analysis repositories of Chartrand et al. (2023) and Lee, Dalley et al.
 (2023) and from the Allen Institute's mouse metadata, each at a pinned commit, and from the
 paper's Tables S1 and S2b; the expression of the human cells comes from the same two analysis
