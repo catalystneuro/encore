@@ -77,14 +77,23 @@ def page_of(key: str) -> str:
 
 
 # GitHub's mark (Octicons, mark-github), drawn in the text colour.
-# The site's mark, drawn like the favicon: a loop that comes back round, a result run again, with a tick inside it.
-# The loop takes the text colour and the tick the brand colour, so it suits both themes.
+# The site's mark, drawn like the favicon: a loop that comes back round, a result run again, and a tick that starts
+# inside the loop and leaves through its gap. The loop takes the text colour and the tick the brand colour, so it
+# suits both themes. The two paths are also the badges' mark (badge_mark) and the favicon's.
+MARK_LOOP = "M20.2 5.9A11 11 0 1 0 27 16"
+MARK_TICK = "M10.4 16.2l4.4 4.4L26.6 7.2"
 ENCORE_MARK = ('<svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">'
-               '<path d="M21.6 8.3A9.5 9.5 0 1 0 25.5 16" fill="none" stroke="currentColor" stroke-width="2.8" '
-               'stroke-linecap="round"/><path d="M18.9 10.7 24.1 5.5 24.7 11.3z" fill="currentColor" '
-               'stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path class="tick" '
-               'd="M11.3 16.3l3.3 3.3 5.9-6.8" fill="none" stroke-width="3" stroke-linecap="round" '
+               f'<path d="{MARK_LOOP}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>'
+               f'<path class="tick" d="{MARK_TICK}" fill="none" stroke-width="3.4" stroke-linecap="round" '
                'stroke-linejoin="round"/></svg>')
+
+
+def badge_mark(cx: float, cy: float) -> str:
+    """The mark in a badge, 13 pixels across and centred on (cx, cy), inside a group that sets its stroke."""
+    return (f'<g transform="translate({cx - 6.72:.2f} {cy - 6.72:.2f}) scale(.42)" stroke-width="3.6">'
+            f'<path d="{MARK_LOOP}"/><path d="{MARK_TICK}"/></g>')
+
+
 GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 '
                '8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 '
                '3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2'
@@ -1504,7 +1513,7 @@ def outcomes_badge_svg(o: dict) -> str:
             f'<g clip-path="url(#r)"><rect width="{lw:.0f}" height="22" fill="#2b2333"/>'
             f'<rect x="{lw:.0f}" width="{w - lw:.0f}" height="22" fill="#f3f1f6"/></g>'
             f'<g fill="none" stroke="#c4a3e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
-            f'<circle cx="13" cy="11" r="5.6"/><path d="M10.4 11.2l1.9 1.9 3.3-3.8"/></g>'
+            f'{badge_mark(13, 11)}</g>'
             f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11" font-weight="bold">'
             f'<text x="24" y="15" fill="#fff" textLength="{_text_width("Encore"):.0f}">Encore</text>'
             f'<g fill="#2b2333">{legend}</g></g></svg>\n')
@@ -1529,7 +1538,7 @@ def card_badge_svg(o: dict) -> str:
             f'aria-label="{e(o["alt"])}"><title>{e(o["alt"])}</title>'
             f'<rect x=".5" y=".5" width="{w - 1}" height="95" rx="6" fill="#fff" stroke="#d9d4e0"/>'
             f'<g fill="none" stroke="#6a3d8f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
-            f'<circle cx="{pad + 6}" cy="19" r="5.6"/><path d="M{pad + 3.4} 19.2l1.9 1.9 3.3-3.8"/></g>'
+            f'{badge_mark(pad + 6, 19)}</g>'
             f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11">'
             f'<text x="{pad + 17}" y="23" font-weight="bold" fill="#2b2333" textLength="{_text_width("Encore"):.0f}">Encore</text>'
             f'<text x="{w - pad}" y="23" text-anchor="end" fill="#6b6475">{e(tested)}</text>'
@@ -1678,7 +1687,7 @@ def badge_svg(badge: dict) -> str:
             f'<g clip-path="url(#r)"><rect width="{lw:.0f}" height="22" fill="#2b2333"/>'
             f'<rect x="{lw:.0f}" width="{tw:.0f}" height="22" fill="#e6f4e6"/></g>'
             f'<g fill="none" stroke="#c4a3e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
-            f'<circle cx="13" cy="11" r="5.6"/><path d="M10.4 11.2l1.9 1.9 3.3-3.8"/></g>'
+            f'{badge_mark(13, 11)}</g>'
             f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11" font-weight="bold">'
             f'<text x="24" y="15" fill="#fff" textLength="{_text_width(label):.0f}">{e(label)}</text>'
             f'<text x="{lw + 9:.0f}" y="15" fill="#14601a" textLength="{_text_width(text):.0f}">{e(text)}</text></g></svg>\n')
@@ -2005,8 +2014,7 @@ def head_tags(data: dict, title: str, path: str, description: str, structured: d
         f'<meta property="og:image" content="{card}">',
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
-        f'<meta property="og:image:alt" content="{SITE_NAME}: can the findings of a paper be reproduced '
-        'from its open data?">',
+        f'<meta property="og:image:alt" content="{SITE_NAME}: do the deposited data support the paper?">',
         '<meta name="twitter:card" content="summary_large_image">',
         f'<meta name="twitter:title" content="{e(title)}">',
         f'<meta name="twitter:description" content="{e(description)}">',
