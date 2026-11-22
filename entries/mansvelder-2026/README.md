@@ -14,7 +14,7 @@ cells are not in it).
 |---|---|
 | Labels and cell lists link to the dandisets (3 link claims) | 2 reproduced, 1 partially (461 of 628 mouse cells public) |
 | Sample size | Not reproduced (440 human acute cells from 76 donors, against 542 from 170) |
-| Human against mouse resonance, sag and input resistance (12 claims) | 3 reproduced, 6 partially reproduced, 3 not reproduced (a change of fig2d-subclass-proportion from partially to not reproduced is proposed) |
+| Human against mouse resonance, sag and input resistance (12 claims) | 3 reproduced, 5 partially reproduced, 4 not reproduced |
 | Sag ratio and input resistance against resonance (4 claims) | 1 reproduced, 1 partially reproduced, 2 not reproduced |
 | Slice culture against acute (4 claims) | 3 partially reproduced, 1 not reproduced |
 | Region and disease (1 claim) | Reproduced |

@@ -152,7 +152,7 @@ outcomes:
   - The LOWESS fraction is 0.04, as O1 fixes it for both chirp readings; the outcome rests on it (LOWESS variant
     in the notebook, fractions 0.02 and 0.08).
 - claim: fig2d-subclass-proportion
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_mansvelder_2026.ipynb
   output: claim:fig2d-subclass-proportion
   measured:
@@ -168,7 +168,7 @@ outcomes:
     PV and SST cells are not in DANDI:000020 (mouse-specimen-link), so the PV and SST comparisons cannot be run.
     At LOWESS fraction 0.02 (O1 fixes 0.04) LAMP5 is 31.0% (within tolerance, p = 2.3e-9), VIP 20.4% (below tolerance,
     p = 1.2e-6) and PV 49.2% (above tolerance); at 0.08 every fraction is far below. The criterion is not met at
-    any fraction.'
+    any fraction, and it has no partial rule, so the claim is not reproduced.'
   deviations:
   - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
     11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
@@ -185,15 +185,6 @@ outcomes:
     own assignment, which is not published per cell.
   - The LOWESS fraction is 0.04, as O1 fixes it for both chirp readings; the outcome rests on it (LOWESS variant
     in the notebook, fractions 0.02 and 0.08).
-  proposed:
-    outcome: not_reproduced
-    reason: 'The criterion has no partial rule: it asks for all three fractions within tolerance and each test at
-      p < 0.001 with the human fraction higher. Under the main chirp reading (b) no subclass meets both parts: LAMP5
-      misses its test (p = 0.003) and its tolerance (19.5% against 31.25 +/- 3.125%), VIP meets its test (p = 1.8e-5)
-      but not its tolerance (12.2% against 25.0 +/- 2.5%), and PV cannot be tested, as the mouse PV cells are not
-      public. The round-2 verifier rated it not reproduced for this reason, and this revision agrees. The analysis
-      is the fig2d-subclass-proportion cell of the notebook (claim:fig2d-subclass-proportion); the LOWESS variant
-      shows that the criterion is not met at fractions 0.02 or 0.08 either.'
 - claim: fig2d-sst-similar
   outcome: blocked
   blocked_by: data_missing
@@ -1619,3 +1610,26 @@ verifications:
       and Sst-Cre cells of later releases, which no output showed (cell 14 prints only id ranges); they now say
       only that the matched cells include no PV or SST cell, so the paper's PV and SST cells are among the ids not
       found.
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3; same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig2d-subclass-proportion, partially reproduced to not reproduced)
+    and the analysis behind it in the executed notebook after the round-2 revision (cells 37, 38 and 106), with the
+    claims file and the paper. Nothing else was reviewed. Report in transcripts/mansvelder-2026/verifier-3-report.md.
+  results:
+  - claim: fig2d-subclass-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: 'There is no partial rule for this claim. Unlike other claims, the criterion does not define "partially
+      reproduced", so a failed condition means not reproduced. A cell counts as resonant when fres > 1 Hz and Q >
+      1.05 (resonance.py:284), the fig2c definition, and the test is R.chi2_gof, the reading the claims file names;
+      recomputed from the counts in cell 37, LAMP5 gives chi2 = 8.80 and VIP 18.38. Under chirp reading (b), LAMP5
+      19.5% fails tolerance and p = 0.003 fails the p < 0.001 bar, VIP 12.2% fails tolerance (p = 1.8e-5 passes),
+      and PV 43.1% passes but cannot be tested, as the mouse PV cells are not in DANDI:000020. The choices that move
+      the result fail the criterion either way: reading (a) gives VIP 16.3%, Sncg counted as LAMP5 leaves the VIP
+      test uncomputable, LOWESS 0.02 gives VIP 20.4% and PV 49.2%, and at 0.08 every fraction is far below tolerance.
+      So nothing was chosen to reach not_reproduced. Even without these checks, the untestable PV comparison alone
+      rules out "reproduced". The result cell (cell 38) and the notes agree with these numbers. I found no place
+      in this claim''s criterion that misreads the paper.'
+    response: Outcome changed to not_reproduced and the proposal removed. The notebook's result cell and summary,
+      the entry README and the attempt notes updated.
