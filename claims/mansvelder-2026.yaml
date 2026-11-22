@@ -1,0 +1,1422 @@
+# Claims for Shamugia, Weiler, ... Goriounova & Mansvelder (2026), "Ion Channels and Morphology
+# Drive Widespread Resonance in Human Cortical Interneurons", Research Square preprint
+# doi:10.21203/rs.3.rs-11136357/v1, tested on dandiset 000630.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-22, protocol pilot-18 as stated in docs/protocol.md (Reader).
+#
+# Text read. The preprint, version 1 (posted 2026-10-12), as text
+# (paper/10.21203-rs.3.rs-11136357-v1.txt): main text, Methods, Quantification and Statistical
+# Analysis, and the legends of Figures 1 to 8. The supplement
+# (paper/10.21203-rs.3.rs-11136357-v1.supp-Supplementary_Information.pdf, 56 pages) is in the
+# text file only up to Supplementary Table 2b; the text file is cut there. The rest of the PDF
+# (Supplementary Table 3, statistical tests, pages 38 to 52; Table 4, the donors of the blocker
+# experiments, page 53; Table 5, model parameters, pages 54 to 55; the end of the Fig. S6
+# legend, page 56) was read from the PDF's own text layer (extracted with pypdf 7.1.1), since no
+# page could be rendered. Statistics and medians taken from Table S3 cite it; they cannot be
+# quoted, as the checker reads the text file only, and tools/claims_check.py flags their
+# p-values as not found; each was confirmed against the PDF's text layer. No figure was opened (the main-text PDF is
+# not under paper/, and the supplement PDF could not be rendered), so the Fig. 3b schematic of
+# sag ratio and input resistance was not seen.
+#
+# Code read. The paper's code is given as github.com/nsham2/Shamugia_et_al_2026 (key resources
+# table; "Original code will be made available at" the same address under Open Access data and
+# code Availability). On 2026-11-22 that address returned HTTP 404 and the user nsham2 had no
+# public repository of that name, so no analysis code was read. The software the Methods name
+# for feature extraction, IPFX (key resources table, v2.0.0), was read at tag v2.0.0 (commit
+# 1ddc0e5): subthresh_features.sag ((v_peak - v_steady) / (v_peak - v_baseline), peak averaged
+# over 5 ms, baseline and steady state over 30 ms), the long-square analysis that reports the
+# sag of the hyperpolarizing sweep whose peak deflection is closest to -100 mV
+# (stimulus_protocol_analysis.py, SAG_TARGET), subthresh_features.input_resistance (least-squares
+# slope of peak deflection against current over the hyperpolarizing sweeps), and
+# chirp.chirp_amp_phase (chirp sweeps averaged, downsampled to 2 kHz, FFT over 0.6 to 20.6 s,
+# |Z| = |FFT(V)/FFT(I)| kept from 0.2 to 40 Hz, no smoothing). IPFX is cited, not the paper's
+# own code, so it is used only for details the Methods leave open, as a named reading.
+#
+# Data the paper used (Results, first section; Methods; Tables S1 to S4). Patch-seq
+# recordings of human and mouse cortical GABAergic interneurons: 1085 human interneurons from
+# 259 subjects (542 acute from 170 donors, 543 in organotypic slice culture from 89 donors) and
+# 619 acute mouse interneurons from 293 mice (the Methods say 224 donors and 292 mice). Most
+# human data are from Lee, Dalley et al. 2023 (ref. 2) and Chartrand et al. 2023 (ref. 27,
+# cited by the DOI of this dandiset); 21 new patients (12 at the Allen Institute, 9 at VU
+# Amsterdam). Table S1 lists every human donor with its dataset ("Chartrand", "AcuteLDPublished",
+# "PublishedLD_Cultured" and others), area, disease, sex, age and hemisphere; Table S2 lists the
+# mice and their cell specimen IDs and Cre lines. Human tissue from temporal, frontal, parietal
+# and occipital cortex resected for epilepsy or tumour. Subclasses LAMP5 (LAMP5/PAX6/Other), VIP,
+# PV and SST, from the MTG taxonomy with Patch-seq updates (SST FRZB counted as PV); mouse
+# subclasses from transcriptomic alignment or Cre line. Measures per cell: the response to a
+# chirp (constant amplitude, logarithmic sweep 0.4 to 40 Hz over 20 s, about +/- 5 mV, cell
+# biased to -65 mV), giving the impedance profile, peak resonance frequency fres, 3 dB cutoff
+# f3dB and resonance strength Q = Zmax/Z0; sag ratio and input resistance from hyperpolarizing
+# steps; baseline membrane potential Vm; pia-soma distance; total dendritic length for
+# reconstructed cells; Patch-seq gene expression (CPM). A resonant cell has fres > 1 Hz and
+# Q > 1.05. Chirp samples: 297 human acute (LAMP5 144, VIP 60, PV 78, SST 15) and 248 mouse
+# (LAMP5 120, VIP 49, PV 36, SST 43; the Fig. 2b legend says 268), 268 human cultured (LAMP5 21,
+# VIP 28, PV 125, SST 94, Fig. 5f). Also: ZD7288 (10 uM) wash-in on seven human interneurons
+# (Table S4 lists 8 cells exposed to ZD7288 from 5 donors) and 13 mouse cells from 9 mice; Allen
+# Brain Map single-nucleus SMART-seq (human MTG 2018, 4164 nuclei from 8 donors; mouse VISp and
+# ALM 2018, 10534 cells from 210 mice); and NEURON models of a fast-spiking PV interneuron
+# adapted from Wilbers et al. 2023 (DataverseNL doi:10.34894/TONOHA), parameters in Table S5.
+#
+# Where the data are. This dandiset ("Human L1 patch-seq electrophysiology", version
+# 0.230915.2257, 53 subjects, human only) holds the NWB electrophysiology of Chartrand et al.
+# 2023, which is a part of this paper's human acute sample (layer 1 interneurons, mostly of the
+# LAMP5 subclass). It holds no mouse, cultured or blocker recordings, no transcriptomes and no
+# morphologies. This paper's per-cell subclass assignment, Vm, pia-soma distance and gene
+# expression are not given with the paper; claims that need subclass labels only are
+# `with_labels`, claims that need other per-cell data or other recordings are `with_inputs`.
+# The paper says "Most of the data used in this paper is already open source" (refs 2 and 27)
+# and "The remaining data will be made available upon request"; it names no archive for the
+# mouse recordings, the cultured recordings, the Lee et al. 2023 recordings or the Patch-seq
+# transcriptomes. The new human recordings (including the ZD7288 experiments) are not public.
+# The Allen Brain Map reference data and the base model are public (`elsewhere`).
+#
+# Open details, and the readings named for each (criteria refer to these).
+#  - O1, chirp analysis. The Methods give the FFT ratio, LOWESS smoothing, fres at Zmax, f3dB
+#    where Z falls to Zmax/sqrt(2), and Q = Zmax/Z0, "Z0" being "the impedance at the lowest
+#    frequency" (Results, first section). They do not give the LOWESS fraction for recordings,
+#    the FFT window, the frequency range searched, or which side of the peak f3dB is taken on.
+#    Readings: (a) IPFX v2.0.0 chirp_amp_phase (sweeps averaged, as Fig. 1a says "From an
+#    averaged CHIRP sweep"), then LOWESS with frac 0.04 (the value the Methods give for the
+#    model chirp), Z0 at the lowest frequency kept, Zmax searched over the kept range, f3dB the
+#    frequency above the peak where the smoothed Z first falls below Zmax/sqrt(2); (b) as (a)
+#    with the profile restricted to the stimulus band 0.4 to 40 Hz. The paper's per-cell values
+#    are not public, so neither reading can be checked against them.
+#  - O2, sag ratio. Not defined in the text; Fig. 3b shows a schematic that was not seen. The
+#    representative traces use -100 pA (Fig. 5a), -110 pA (Fig. 5f) and -150 pA (Fig. S3i).
+#    Readings: (a) IPFX v2.0.0 sag on the hyperpolarizing long square whose peak deflection is
+#    closest to -100 mV; (b) the same formula on the -100 pA step, or the nearest step to it.
+#  - O3, input resistance. Not defined in the text (Fig. 3b schematic not seen). Readings: (a)
+#    IPFX v2.0.0 input_resistance over the hyperpolarizing long squares; (b) steady-state
+#    deflection over current for the step used in O2(b).
+#  - O4, Vm covariate. "baseline membrane potential differences (Vm)" (Quantification and
+#    Statistical Analysis). Readings: (a) the mean pre-stimulus membrane potential of the chirp
+#    sweeps; (b) the resting potential IPFX reports for the cell. A model without Vm is shown as
+#    a variant.
+#  - O5, mixed models. Type III Wald F-tests with Satterthwaite degrees of freedom, random
+#    intercept for donor, run in SPSS or Python (which for which is not said). Readings: (a)
+#    REML linear mixed model with Satterthwaite F-tests (SPSS MIXED, or lmerTest); (b)
+#    statsmodels MixedLM with Wald tests on the same terms. The paper confirmed its models with
+#    generalized estimating equations (exchangeable correlation within donor is not stated; use
+#    it, a standard choice), shown as a variant. Post-hoc species or preparation contrasts are
+#    two-sided Mann-Whitney U tests per subclass, uncorrected (no correction is stated).
+#  - O6, chi-square tests of proportions. The Methods say expected counts for human acute cells
+#    came from the mouse counts, and for cultured cells from the acute counts (goodness of fit).
+#    Table S3's per-subclass values (Fig. 2d) are reproduced by that goodness-of-fit test, but
+#    its overall values (Fig. 2c, 43.05 with 297 human and 248 mouse cells; Fig. 5i, 44.98 with
+#    268 cultured and 297 acute cells) are reproduced by a 2x2 Pearson test without continuity
+#    correction (checked by hand from the counts). Readings: (a) goodness of fit against the
+#    reference group's proportion; (b) 2x2 Pearson test without correction.
+#  - O7, ZD7288 sample. The text says seven human interneurons; Table S4 lists 8 exposed to
+#    ZD7288. With n = 7 an exact two-sided Wilcoxon signed-rank test cannot give p = 0.004 (its
+#    floor is 0.016), while 9 cells can; p = 0.031 is the floor for 6 cells. So the cells per
+#    measure differ from seven and are not stated. Readings: (a) all cells with both a baseline
+#    and a ZD7288 value for the measure; (b) the cells with all four measures.
+#  - O8, gene-resonance correlations. Pearson correlations on cells with CPM > 1, over "a
+#    subset of prevalent genes", BH-FDR per preparation. Table S3 lists the acute family: 10
+#    genes (KCNJ16, HCN1, CACNA1A, KCNQ3, SCN8A, KCNQ5, KCNH7, SCN1A, KCNQ2, CACNA1G) by 2
+#    measures (Q, fres). The scale of expression is not stated. Readings: (a) CPM; (b)
+#    log(CPM + 1).
+#  - O9, Fig. 4b regression. The legend says "Fixed: pia-soma distance", Table S3 says "Fixed:
+#    TDL" with an intercept of 1632.017. Readings: (a) TDL on pia-soma distance; (b) pia-soma
+#    distance on TDL. Judged on the sign and p of the slope.
+#  - O10, text and Table S3 disagree in places; the criteria name both values where it matters.
+#    Fig. 2c chi-square 42.76 (text) against 43.05 (table); mouse chirp n 268 (Fig. 2b legend)
+#    against 248 (table and Fig. 2e counts); Fig. 2d SST p = 0.544 (text) against 0.499
+#    (table); Fig. 2g VIP p < 0.001 (text) against 0.002 (table); Fig. 3e sag by subclass p =
+#    0.035 (text) against "0.35" (table, F(3, 254.894) = 2.912, which gives about 0.035); Fig.
+#    6c p-values (text) against FDR-corrected values (table, 0.001, 0.038, 0.044, 0.044); Fig. 5l
+#    "did not differ" (text) against VIP p = .046 and PV p = .031 (table); the acute medians of
+#    Fig. 5j (table) are those of Fig. 2e assigned to other subclasses.
+schema_version: 2
+paper: doi:10.21203/rs.3.rs-11136357/v1
+claims:
+- id: sample-size
+  statement: The dataset comprises 1085 human interneurons from 259 subjects (542 acute from 170
+    donors, 543 cultured from 89 donors) and 619 acutely recorded mouse interneurons from 293
+    mice.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 2; Fig. 1b
+  quote: In total, our dataset comprised 1085 human interneurons from 259 subjects (542 acute from
+    170 donors; 543 cultured from 89 donors; Table S1, Fig. S1a-b) and 619 acutely recorded mouse
+    interneurons from 293 mice
+  data: with_labels
+  expected:
+  - quantity: human acute interneurons
+    value: 542
+    tolerance: 54.2
+  - quantity: human acute donors
+    value: 170
+    tolerance: 17
+  criterion: Counts of human acute interneurons and of their donors in the data the attempt
+    assembles, against the paper's. The dandiset holds only part of the human acute sample (the
+    Table S1 donors whose dataset is "Chartrand"), so on the dandiset alone this is not
+    reproduced; the counts of dandiset subjects found among the Table S1 donors and of dandiset
+    cells with a chirp sweep are reported. The cultured and mouse totals are recorded as the
+    paper's.
+- id: fig2b-human-higher-fres-q
+  statement: Human cortical interneurons have higher peak resonance frequencies and resonance
+    strengths than mouse interneurons (Kolmogorov-Smirnov tests, p < 0.001 each).
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 3; Fig. 2b
+  quote: Human cortical interneurons had higher peak resonance frequencies ... resonance strengths
+  statistics:
+  - about: fres, human against mouse
+    test: two-sample Kolmogorov-Smirnov
+    statistic: D = 0.276
+    p: 1.32e-09
+    n: 297 human and 248 mouse interneurons (Table S3; the Fig. 2b legend says 268 mouse)
+  - about: Q, human against mouse
+    test: two-sample Kolmogorov-Smirnov
+    statistic: D = 0.274
+    p: 2.0843e-09
+    n: 297 human and 248 mouse interneurons
+  data: with_inputs
+  criterion: fres and Q per cell from the chirp (O1, each reading). Two-sample two-sided
+    Kolmogorov-Smirnov tests, human acute against mouse (Quantification and Statistical
+    Analysis). Reproduced when both tests give p < 0.001 and the human median exceeds the
+    mouse median for both measures. The dandiset holds only human layer 1 cells; mouse chirp
+    data are an outside input the paper does not locate.
+- id: fig2c-resonant-proportion
+  statement: A larger proportion of human than mouse interneurons are resonant (fres > 1 Hz and
+    Q > 1.05), 32.7% against 9.3%.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 3; Fig. 2c
+  quote: proportions of resonant cells (fres> 1Hz and ... Q > 1.05) compared to mouse cortical
+    interneurons (32.7% in human vs 9.3% in ... mouse
+  statistics:
+  - test: chi-square test
+    statistic: χ² (1) = 42.76 (text); χ² (1) = 43.05 (Table S3)
+    p: 0.001
+    p_relation: "<"
+    n: 297 human and 248 mouse interneurons (Table S3)
+  data: with_inputs
+  expected:
+  - quantity: resonant fraction, human acute interneurons
+    value: 32.7
+    tolerance: 3.27
+    unit: "%"
+  - quantity: resonant fraction, mouse interneurons
+    value: 9.3
+    tolerance: 0.93
+    unit: "%"
+  criterion: A cell is resonant when fres > 1 Hz and Q > 1.05 (Results; Quantification and
+    Statistical Analysis), with fres and Q under each reading of O1. Proportions over the cells
+    with a chirp; the chi-square test under both readings of O6. Reproduced when both fractions
+    are within tolerance and the test gives p < 0.001. Table S3's counts (97 of 297 human
+    resonant) are the check of the human fraction.
+- id: fig2d-subclass-proportion
+  statement: Human LAMP5, VIP and PV interneurons are more often resonant than their mouse
+    counterparts (p < 0.001 each).
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 3; Fig. 2d
+  quote: human LAMP5 (p < 0.001), VIP (p < 0.001), and ... PV interneurons (p < 0.001) were more
+    often resonant than their mouse counterparts
+  statistics:
+  - about: LAMP5, human observed against mouse-expected counts
+    test: chi-square test
+    statistic: χ² (1) = 84.34
+    p: 4.1654e-20
+    n: 144 human LAMP5 cells, 45 resonant
+  - about: VIP
+    test: chi-square test
+    statistic: χ² (1) = 158.20
+    p: 2.7942e-36
+    n: 60 human VIP cells, 15 resonant
+  - about: PV
+    test: chi-square test
+    statistic: χ² (1) = 57.53
+    p: 3.3261e-14
+    n: 78 human PV cells, 34 resonant
+  data: with_inputs
+  expected:
+  - quantity: resonant fraction, human LAMP5
+    value: 31.25
+    tolerance: 3.125
+    unit: "%"
+  - quantity: resonant fraction, human VIP
+    value: 25.0
+    tolerance: 2.5
+    unit: "%"
+  - quantity: resonant fraction, human PV
+    value: 43.6
+    tolerance: 4.36
+    unit: "%"
+  criterion: Fractions from Table S3's observed counts (45 of 144, 15 of 60, 34 of 78; no
+    sentence gives them). Resonance as in fig2c-resonant-proportion; per subclass the
+    goodness-of-fit chi-square of human counts against counts expected from the mouse fraction
+    of that subclass (O6 reading a, which reproduces Table S3's values). Reproduced when the
+    three fractions are within tolerance and each test gives p < 0.001 with the human fraction
+    higher.
+- id: fig2d-sst-similar
+  statement: SST interneurons show similar fractions of resonant cells in human and mouse.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 3; Fig. 2d
+  quote: In contrast, SST (p = 0.544) interneurons exhibited similar fractions of resonant cells
+    between species
+  statistics:
+  - test: chi-square test
+    statistic: χ² (1) = 0.46 (Table S3)
+    p: 0.544
+    n: 15 human SST cells, 3 resonant; mouse-expected 2.09
+  data: with_inputs
+  criterion: A claim of absence, judged on the paper's test, the goodness-of-fit chi-square of
+    the human SST counts against counts expected from the mouse SST fraction, at p < 0.05.
+    Reproduced when that test gives p >= 0.05; the two fractions are reported either way. Table
+    S3 prints p = 0.499 for the same test (O10).
+- id: fig2d-pv-highest
+  statement: Among human interneuron subclasses, PV cells have the highest proportion of resonant
+    cells.
+  source: Fig. 2 title and Fig. 2d; Abstract
+  quote: A high proportion of resonant cells among human PV interneurons
+  data: with_labels
+  criterion: Resonance as in fig2c-resonant-proportion. Reproduced when the human PV resonant
+    fraction exceeds those of LAMP5, VIP and SST (Table S3 gives 43.6% against 31.3%, 25.0% and
+    20.0%). The paper reports no test of this ordering.
+- id: figs2a-stringent-criteria
+  statement: Human interneurons are more often resonant than mouse interneurons also under the
+    stricter criteria fres > 1 Hz and Q > 1.1 or Q > 1.2.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 3; Fig. S2a
+  quote: Human interneurons consistently exhibited higher resonance prevalence compared to mouse
+    across a range of increasingly stringent resonance criteria
+  data: with_inputs
+  criterion: Fractions of cells with fres > 1 Hz and Q above 1.1, and above 1.2 (O1 readings).
+    Reproduced when the human fraction exceeds the mouse fraction at both thresholds. The paper
+    reports no test.
+- id: fig2e-fres-species-subclass
+  statement: Species differences in peak resonance frequency depend on subclass (species by
+    subclass interaction, p = 0.006); human PV and VIP interneurons have higher fres than mouse.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 4; Fig. 2e
+  quote: A linear mixed-effects model revealed species differences in ... peak resonance frequency
+    that were qualified by subclass (p = 0.006; Fig. 2e). ... human PV (p = 0.003) and VIP (p <
+    0.001) interneurons ... had significantly higher peak resonance frequencies than their mouse
+    counterparts
+  statistics:
+  - about: species by subclass interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 385.8) = 4.24
+    p: 0.006
+    n: 286 human cells from 92 donors; 245 mouse cells from 137 mice
+  - about: PV, human against mouse
+    test: Mann-Whitney U
+    statistic: U = 925.00
+    p: 0.003
+    n: 78 human, 36 mouse
+  - about: VIP, human against mouse
+    test: Mann-Whitney U
+    statistic: U = 756.50
+    p: 2.936e-06
+    n: 60 human, 49 mouse
+  data: with_inputs
+  expected:
+  - quantity: median fres, human PV
+    value: 2.18
+    tolerance: 0.218
+    unit: Hz
+  - quantity: median fres, mouse PV
+    value: 1.30
+    tolerance: 0.13
+    unit: Hz
+  - quantity: median fres, human VIP
+    value: 0.95
+    tolerance: 0.095
+    unit: Hz
+  - quantity: median fres, mouse VIP
+    value: 0.40
+    tolerance: 0.04
+    unit: Hz
+  criterion: Medians from Table S3. fres under O1. The mixed model has species, subclass, their
+    interaction and Vm (O4) as fixed effects and a random intercept for donor (Methods; Fig. 2e
+    legend), tested under O5. Reproduced when the interaction has p < 0.05, the PV and VIP
+    Mann-Whitney tests give p < 0.05 with human higher, and the four medians are within
+    tolerance; partially reproduced when the tests hold but a median does not.
+- id: fig2e-lamp5-sst-fres-similar
+  statement: Human and mouse LAMP5 and SST interneurons do not differ in peak resonance frequency.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 4; Fig. 2e
+  quote: human and mouse LAMP5 (p = 0.133) and SST (p = 0.701) ... interneurons did not differ in
+    peak resonance frequency
+  statistics:
+  - about: LAMP5
+    test: Mann-Whitney U
+    statistic: U = 7717.00
+    p: 0.133
+    n: 144 human, 120 mouse
+  - about: SST
+    test: Mann-Whitney U
+    statistic: U = 301.50
+    p: 0.701
+    n: 15 human, 43 mouse
+  data: with_inputs
+  criterion: A claim of absence, judged on the paper's test, two-sided Mann-Whitney U per
+    subclass at p < 0.05, fres under O1. Reproduced when neither test gives p < 0.05; the
+    medians are reported either way (Table S3, LAMP5 1.09 against 1.15 Hz, SST 0.40 against
+    0.40 Hz).
+- id: fig2f-f3db-species-subclass
+  statement: Species differences in 3 dB cutoff frequency are subclass-specific (p < 0.001);
+    human LAMP5, PV and SST interneurons have lower 3 dB cutoffs than mouse, while VIP cells are
+    similar.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 4; Fig. 2f
+  quote: the species ... differences in 3dB cutoff frequency were subclass-specific (p < 0.001;
+    Fig. 2f)
+  statistics:
+  - about: species by subclass interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 384.02) = 13.97
+    p: 1.1644e-08
+    n: 286 human cells from 92 donors; 245 mouse cells from 137 mice
+  - about: LAMP5
+    test: Mann-Whitney U
+    statistic: U = 15460.00
+    p: 0.001
+    p_relation: "<"
+  - about: PV
+    test: Mann-Whitney U
+    statistic: U = 2332.50
+    p: 1.5109e-08
+  - about: SST
+    test: Mann-Whitney U
+    statistic: U = 454.00
+    p: 0.020
+  - about: VIP
+    test: Mann-Whitney U
+    statistic: U = 1600.50
+    p: 0.427
+  data: with_inputs
+  expected:
+  - quantity: median f3dB, human LAMP5
+    value: 7.36
+    tolerance: 0.736
+    unit: Hz
+  - quantity: median f3dB, mouse LAMP5
+    value: 15.20
+    tolerance: 1.52
+    unit: Hz
+  - quantity: median f3dB, human PV
+    value: 13.03
+    tolerance: 1.303
+    unit: Hz
+  - quantity: median f3dB, mouse PV
+    value: 20.86
+    tolerance: 2.086
+    unit: Hz
+  criterion: Medians from Table S3. f3dB under O1; model as in fig2e-fres-species-subclass (O4,
+    O5). Reproduced when the interaction has p < 0.05, LAMP5, PV and SST each show human lower
+    at p < 0.05, VIP does not differ at p < 0.05, and the medians are within tolerance;
+    partially reproduced when the interaction and two of the three lower subclasses hold.
+- id: fig2g-q-species-subclass
+  statement: Human PV, VIP and LAMP5 interneurons, but not SST, show higher resonance strength
+    than mouse counterparts.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 4; Fig. 2g
+  quote: human ... PV (p < 0.001), VIP (p < 0.001), and LAMP5 (p < 0.001), but not SST (p = 0.419),
+    ... interneurons showed higher resonance strengths compared to mouse counterparts
+  statistics:
+  - about: species main effect (the interaction is not significant, F(3, 378.27) = 1.58, p =
+      .194)
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 188.00) = 24.31
+    p: 1.79e-06
+    n: 286 human cells from 92 donors; 244 mouse cells from 137 mice
+  - about: PV
+    test: Mann-Whitney U
+    statistic: U = 734.00, z = -4.08
+    p: 4.42e-05
+  - about: VIP
+    test: Mann-Whitney U
+    statistic: U = 960.50, z = -3.10
+    p: 0.002
+  - about: LAMP5
+    test: Mann-Whitney U
+    statistic: U = 6245.50, z = -3.78
+    p: 0.000155
+  - about: SST
+    test: Mann-Whitney U
+    statistic: U = 368.00, z = 0.81
+    p: 0.419
+  data: with_inputs
+  expected:
+  - quantity: median Q, human PV
+    value: 1.04
+    tolerance: 0.004
+  - quantity: median Q, mouse PV
+    value: 1.008
+    tolerance: 0.0008
+  - quantity: median Q, human LAMP5
+    value: 1.013
+    tolerance: 0.0013
+  criterion: Medians from Table S3. Q is a ratio near 1, so the tolerance is 10% of Q - 1, not
+    of Q, which would accept any value from a flat profile. Q under O1. Reproduced when PV,
+    VIP and LAMP5 each show human higher at p < 0.05 by two-sided Mann-Whitney U, SST does not
+    differ at p < 0.05, and the species effect of the mixed model (O4, O5) has p < 0.05;
+    partially reproduced when two of the three subclasses hold. The medians are reported
+    against their tolerances.
+- id: fig3c-sag-species
+  statement: Species differences in sag ratio are subclass-specific (p < 0.001), with higher sag
+    ratios in human LAMP5, VIP, PV and SST interneurons than in mouse.
+  source: Results, Voltage sag ratio and input resistance relate to resonance properties in human
+    interneurons, paragraph 1; Fig. 3c
+  quote: Sag ratios were higher in human LAMP5 (p < 0.001), VIP (p < ... 0.001), PV (p < 0.001),
+    and SST (p = 0.001) interneurons compared to mouse ... counterparts
+  statistics:
+  - about: species by subclass interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 848.14) = 8.33
+    p: 1.84e-05
+    n: 541 human cells from 130 donors; 619 mouse cells from 289 mice
+  - about: LAMP5
+    test: Mann-Whitney U
+    statistic: U = 24305.00, z = -13.39
+    p: 0.0001
+    p_relation: "<"
+    n: 276 human, 435 mouse
+  - about: VIP
+    test: Mann-Whitney U
+    statistic: U = 1678.00, z = -8.96
+    p: 0.0001
+    p_relation: "<"
+    n: 114 human, 101 mouse
+  - about: PV
+    test: Mann-Whitney U
+    statistic: U = 1096.00, z = -5.37
+    p: 7.9e-08
+    n: 130 human, 39 mouse
+  - about: SST
+    test: Mann-Whitney U
+    statistic: U = 246.00, z = -3.24
+    p: 0.0012
+    n: 22 human, 44 mouse
+  data: with_inputs
+  expected:
+  - quantity: median sag ratio, human LAMP5
+    value: 0.113
+    tolerance: 0.0113
+  - quantity: median sag ratio, mouse LAMP5
+    value: 0.044
+    tolerance: 0.0044
+  - quantity: median sag ratio, human VIP
+    value: 0.177
+    tolerance: 0.0177
+  - quantity: median sag ratio, human PV
+    value: 0.106
+    tolerance: 0.0106
+  criterion: Medians from Table S3. Sag ratio under O2; model as in fig2e-fres-species-subclass
+    with sag as outcome (O4, O5). Reproduced when the interaction has p < 0.05, all four
+    subclasses show human higher at p < 0.05 by two-sided Mann-Whitney U, and the medians are
+    within tolerance under one reading of O2; partially reproduced when three subclasses hold.
+- id: fig3d-input-resistance-species
+  statement: Species differences in input resistance are subclass-specific (p < 0.001); human
+    LAMP5 and PV interneurons have higher input resistance than mouse, VIP and SST do not differ.
+  source: Results, Voltage sag ratio and input resistance relate to resonance properties in human
+    interneurons, paragraph 1; Fig. 3d
+  quote: human LAMP5 (p < 0.001) and PV (p < 0.001) ... interneurons, but not VIP (p = 0.312) or
+    SST (p = 0.108) interneurons, had higher input ... resistances compared to mouse counterparts
+  statistics:
+  - about: species by subclass interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 849.85) = 25.64
+    p: 6.93e-16
+    n: 541 human cells from 130 donors; 619 mouse cells from 289 mice
+  - about: LAMP5
+    test: Mann-Whitney U
+    statistic: U = 10308.00, z = -18.63
+    p: 0.001
+    p_relation: "<"
+  - about: PV
+    test: Mann-Whitney U
+    statistic: U = 1476.00, z = -3.95
+    p: 0.001
+    p_relation: "<"
+  - about: VIP
+    test: Mann-Whitney U
+    statistic: U = 6217.00, z = 1.01
+    p: 0.312
+  - about: SST
+    test: Mann-Whitney U
+    statistic: U = 366.00, z = -1.61
+    p: 0.108
+  data: with_inputs
+  expected:
+  - quantity: median input resistance, human LAMP5
+    value: 231.26
+    tolerance: 23.13
+    unit: MOhm
+  - quantity: median input resistance, mouse LAMP5
+    value: 125.87
+    tolerance: 12.59
+    unit: MOhm
+  - quantity: median input resistance, human PV
+    value: 151.45
+    tolerance: 15.15
+    unit: MOhm
+  - quantity: median input resistance, mouse PV
+    value: 112.35
+    tolerance: 11.24
+    unit: MOhm
+  criterion: Medians from Table S3. Input resistance under O3; model as in
+    fig2e-fres-species-subclass (O4, O5). Reproduced when the interaction has p < 0.05, LAMP5 and
+    PV show human higher at p < 0.05, VIP and SST give p >= 0.05, and the medians are within
+    tolerance under one reading of O3.
+- id: fig3eg-human-fres-sag-rin
+  statement: In human interneurons, sag ratio and input resistance predict peak resonance
+    frequency in a subclass-specific way; fres rises with sag ratio in LAMP5 (beta 3.31), VIP
+    (4.79) and PV (6.13) cells and falls with input resistance in LAMP5 (-0.002) and PV (-0.006)
+    cells.
+  source: Results, Voltage sag ratio and input resistance relate to resonance properties in human
+    interneurons, paragraph 2; Fig. 3e and 3g
+  quote: Separate linear mixed-effects models ... per subclass showed positive relationships
+    between sag ratio and peak resonance ... frequency in human LAMP5 (β = 3.31, p < 0.001), VIP
+    (β = 4.79, p < 0.001), and PV ... (β = 6.13, p < 0.001) interneurons (Fig. 3e). Input
+    resistance was negatively related to ... peak resonance frequency in human LAMP5 (β = -0.002,
+    p < 0.001) and PV (β = - ... 0.006, p < 0.001) interneurons
+  statistics:
+  - about: sag by subclass interaction, all human cells
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 254.894) = 2.912
+    p: 0.035
+    n: 287 human cells from 92 donors (LAMP5 135, VIP 59, PV 78, SST 15)
+  - about: input resistance by subclass interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 255.621) = 3.052
+    p: 0.029
+  - about: sag slope, LAMP5
+    test: linear mixed-effects model per subclass
+    statistic: b = 3.305, SE = .633, t(128.068) = 5.220
+    p: 7.03e-07
+  - about: sag slope, VIP
+    test: linear mixed-effects model per subclass
+    statistic: b = 4.788, SE = 1.244, t(51.550) = 3.847
+    p: 0.00033
+  - about: sag slope, PV
+    test: linear mixed-effects model per subclass
+    statistic: b = 6.134, SE = 1.355, t(75) = 4.526
+    p: 2.22e-05
+  - about: input resistance slope, LAMP5
+    test: linear mixed-effects model per subclass
+    statistic: b = -.002, SE = .001, t(131.080) = -3.620
+    p: 0.00042
+  - about: input resistance slope, PV
+    test: linear mixed-effects model per subclass
+    statistic: b = -.006, SE = .002, t(75) = -3.470
+    p: 0.00087
+  data: with_labels
+  expected:
+  - quantity: sag slope, LAMP5
+    value: 3.31
+    tolerance: 0.331
+    unit: Hz per unit sag ratio
+  - quantity: sag slope, VIP
+    value: 4.79
+    tolerance: 0.479
+    unit: Hz per unit sag ratio
+  - quantity: sag slope, PV
+    value: 6.13
+    tolerance: 0.613
+    unit: Hz per unit sag ratio
+  - quantity: input resistance slope, LAMP5
+    value: -0.002
+    tolerance: 0.0002
+    unit: Hz per MOhm
+  - quantity: input resistance slope, PV
+    value: -0.006
+    tolerance: 0.0006
+    unit: Hz per MOhm
+  criterion: Human acute cells with fres, sag and input resistance (O1, O2, O3). Model of fres on
+    sag, input resistance, subclass, sag by subclass and input resistance by subclass, random
+    intercept for donor (Quantification and Statistical Analysis; Fig. 3 legend; no Vm term), and
+    per subclass fres on sag and input resistance with donor intercept, tested under O5.
+    Reproduced when both interactions have p < 0.05, the five per-subclass slopes have the
+    stated sign with p < 0.05, and the slopes are within tolerance; partially reproduced when
+    the signs and p-values hold but a slope does not, or when one interaction misses. Table S3
+    also gives VIP input resistance (p = 0.088) and SST (sag p = 0.393, input resistance p =
+    0.231) as not significant; these are reported.
+- id: fig3fh-mouse-fres
+  statement: In mouse interneurons, sag ratio does not predict peak resonance frequency
+    (p = .113); only input resistance does, with no difference between subclasses.
+  source: Results, Voltage sag ratio and input resistance relate to resonance properties in human
+    interneurons, paragraph 2; Fig. 3f and 3h
+  quote: Sag ratio was not predictive of ... peak resonance frequency among mouse interneurons (p =
+    .113, Fig. 3f) and only ... input resistance was a significant predictor of peak resonance
+    frequency, and this ... effect did not differ between subclasses
+  statistics:
+  - about: sag main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 232.375) = 2.525
+    p: 0.113
+    n: 245 mouse cells from 137 mice (LAMP5 118, VIP 49, PV 36, SST 42)
+  - about: input resistance main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 221.377) = 5.263
+    p: 0.023
+  - about: input resistance by subclass interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 216.592) = 0.535
+    p: 0.659
+  data: with_inputs
+  criterion: Model as in fig3eg-human-fres-sag-rin on mouse cells. The absence parts are judged
+    on the paper's test (sag main effect, input resistance by subclass interaction, each at p <
+    0.05). Reproduced when the sag main effect gives p >= 0.05, the input resistance main
+    effect gives p < 0.05, and its interaction with subclass gives p >= 0.05.
+- id: fig3ik-human-q-sag-rin
+  statement: In human interneurons, sag ratio strongly predicts resonance strength (beta 0.47,
+    p < 0.001) with no subclass difference, and input resistance is negatively related to it
+    (beta -0.0001, p = 0.005).
+  source: Results, Voltage sag ratio and input resistance relate to resonance properties in human
+    interneurons, paragraph 3; Fig. 3i and 3k
+  quote: sag ratio was strongly predictive of resonance ... strength among human interneurons (β =
+    .47, p < 0.001), and this effect did not differ ... between subclasses (Fig. 3i).
+    Correspondingly, input resistance was negatively ... related to resonance strength among
+    human interneurons (β = -0.0001, p = 0.005
+  statistics:
+  - about: sag main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 269.086) = 60.275
+    p: 0.001
+    p_relation: "<"
+    n: 287 human cells from 92 donors
+  - about: sag by subclass interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 272.054) = 1.801
+    p: 0.147
+  - about: input resistance main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 274.797) = 7.966
+    p: 0.005
+  data: with_labels
+  expected:
+  - quantity: sag slope on Q
+    value: 0.47
+    tolerance: 0.047
+    unit: per unit sag ratio
+  - quantity: input resistance slope on Q
+    value: -0.0001
+    tolerance: 0.00001
+    unit: per MOhm
+  criterion: Model of Q as in fig3eg-human-fres-sag-rin (O1, O2, O3, O5). The slopes are those
+    of sag and input resistance in a model without the non-significant interactions, which the
+    paper does not state; the slopes from the full model are shown as a variant. Reproduced
+    when sag has a positive effect at p < 0.001, its interaction with subclass gives p >= 0.05,
+    input resistance has a negative effect at p < 0.05, and the slopes are within tolerance
+    under one reading; partially reproduced when the tests hold but a slope does not.
+- id: fig3jl-mouse-q-sag-rin
+  statement: In mouse interneurons, sag ratio is only weakly related to resonance strength (beta
+    0.018, p = 0.021) and input resistance is not related to it (p = 0.820).
+  source: Results, Voltage sag ratio and input resistance relate to resonance properties in human
+    interneurons, paragraph 3; Fig. 3j and 3l
+  quote: In mouse interneurons, sag ratio was weakly related to resonance strength (β ... = .018, p
+    = 0.021, Fig. 3j), and input resistance did not relate to resonance strength ... (p = 0.820
+  statistics:
+  - about: sag main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 230.028) = 5.380
+    p: 0.021
+    n: 244 mouse cells from 137 mice
+  - about: input resistance main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 204.982) = 0.052
+    p: 0.82
+  data: with_inputs
+  criterion: Model as in fig3ik-human-q-sag-rin on mouse cells. Reproduced when sag has a
+    positive effect at p < 0.05 and input resistance gives p >= 0.05 (the absence judged on the
+    paper's test); the sag slope is reported against 0.018.
+- id: fig4b-tdl-depth
+  statement: Among reconstructed human interneurons, total dendritic length increases with
+    distance from the pia.
+  source: Results, Resonance dependence on cortical depth locations, paragraph 1; Fig. 4b
+  quote: we found that total dendritic length increased with ... distance from the pia (β = 1.35, p
+    < 0.002, Fig. 4b)
+  statistics:
+  - test: linear mixed-effects model
+    statistic: b = 1.350, SE = .408, t(56.294) = 3.305
+    p: 0.002
+    n: 61 human cells from 28 donors
+  data: with_inputs
+  criterion: Needs morphological reconstructions and pia-soma distances, which the dandiset does
+    not hold. Mixed model with donor intercept, under both readings of O9. Reproduced when the
+    slope is positive with p < 0.05 under the reading the data allow; the slope is reported
+    against 1.35.
+- id: fig4c-human-sag-depth
+  statement: Sag ratio decreases with distance from the pia in human LAMP5, VIP and SST
+    interneurons, but not in PV interneurons.
+  source: Results, Resonance dependence on cortical depth locations, paragraph 2; Fig. 4c
+  quote: sag ratio decreased with larger distance from pia in human ... LAMP5 (p = 0.001), VIP (p =
+    0.008), and SST (p = 0.002) interneurons, whereas it did ... not change in PV (p = .478)
+    interneurons
+  statistics:
+  - about: subclass by pia-soma distance interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(3, 422.347) = 7.962
+    p: 4.0e-05
+    n: LAMP5 218, VIP 107, PV 106, SST 18 human cells from 93 donors
+  - about: LAMP5
+    test: linear mixed-effects model per subclass
+    statistic: F(1, 203.49) = 10.62
+    p: 0.001
+  - about: VIP
+    test: linear mixed-effects model per subclass
+    statistic: F(1, 101.84) = 7.24
+    p: 0.008
+  - about: SST
+    test: linear mixed-effects model per subclass
+    statistic: F(1, 13.65) = 14.58
+    p: 0.002
+  - about: PV
+    test: linear mixed-effects model per subclass
+    statistic: F(1, 84.64) = .51
+    p: 0.478
+  data: with_inputs
+  criterion: Sag under O2, pia-soma distance per cell (an outside input). Model of sag on
+    pia-soma distance, subclass and their interaction with donor intercept, then per subclass
+    sag on distance (Fig. 4 legend; O5). Reproduced when the interaction has p < 0.05, LAMP5,
+    VIP and SST each have a negative slope at p < 0.05 and PV gives p >= 0.05; partially
+    reproduced when two of the three negative slopes hold.
+- id: fig4i-mouse-sag-depth
+  statement: In mouse interneurons sag ratio also decreases with cortical depth, without
+    difference between subclasses.
+  source: Results, Resonance dependence on cortical depth locations, paragraph 2; Fig. 4i
+  quote: An overall decrease in sag ratio ... with cortical depth was also evident in mouse
+    cortical interneurons (p < 0.001) and did ... not vary by subclass (p = 0.185, Fig. 4i)
+  statistics:
+  - about: pia-soma distance main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 469.40) = 12.526
+    p: 0.001
+    p_relation: "<"
+    n: LAMP5 391, VIP 90 mouse cells from 228 mice
+  - about: subclass by pia-soma distance interaction
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 473.46) = 1.762
+    p: 0.185
+  data: with_inputs
+  criterion: Model as in fig4c-human-sag-depth on mouse LAMP5 and VIP cells. Reproduced when the
+    distance effect is negative with p < 0.001 and the interaction gives p >= 0.05.
+- id: fig4df-human-no-depth
+  statement: In human interneurons, pia-soma distance does not correlate with input resistance,
+    peak resonance frequency or 3 dB cutoff frequency.
+  source: Results, Resonance dependence on cortical depth locations, paragraph 2; Fig. 4d-f
+  quote: the pia-soma distance in human interneurons did not correlate with input ... resistance,
+    peak resonance, or 3 dB cutoff frequency
+  statistics:
+  - about: input resistance, pia-soma distance main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 417.359) = 2.286
+    p: 0.131
+    n: LAMP5 218, VIP 107, PV 106, SST 18 cells from 93 donors
+  - about: fres, pia-soma distance main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 178.51) = 3.269
+    p: 0.072
+    n: LAMP5 110, VIP 56, PV 57, SST 11 cells from 64 donors
+  - about: f3dB, pia-soma distance main effect
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 169.60) = 0.394
+    p: 0.531
+  data: with_inputs
+  criterion: A claim of absence, judged on the paper's test, the model of each measure on
+    pia-soma distance, subclass and their interaction with donor intercept (Fig. 4 legend; O1,
+    O3, O5), at p < 0.05 for the distance main effect and the interaction (Table S3 gives
+    interactions p = 0.162, .304 and .599). Reproduced when neither term reaches p < 0.05 for
+    any of the three measures; the slopes are reported either way.
+- id: fig4g-human-q-decreases-depth
+  statement: Resonance strength decreases with distance from the pia when all human interneuron
+    subclasses are taken together.
+  source: Results, Resonance dependence on cortical depth locations, paragraph 2; Fig. 4g
+  quote: resonance ... strength even decreased with distance from pia when all interneuron
+    subclasses were ... taken together (p = 0.031, Fig. 4g)
+  statistics:
+  - test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 192.77) = 4.741
+    p: 0.031
+    n: LAMP5 110, VIP 56, PV 57, SST 11 cells from 64 donors
+  data: with_inputs
+  criterion: Model as in fig4df-human-no-depth with Q as outcome. Reproduced when the pia-soma
+    distance effect is negative with p < 0.05.
+- id: figs2-l23-no-depth
+  statement: In a sub-selection of human L2/L3 interneurons, resonance strength and frequency are
+    unrelated to distance from the pia.
+  source: Results, Resonance dependence on cortical depth locations, paragraph 2; Fig. S2b-e
+  quote: Resonance strength and frequency were also ... unrelated to distance from the pia in a
+    sub-selection of L2/L3 human cortical ... interneurons
+  statistics:
+  - about: Q
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 55) = 0.64
+    p: 0.427
+    n: 57 human L2/L3 cells from 23 donors
+  - about: fres
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 53.33) = 1.85
+    p: 0.179
+  data: with_inputs
+  criterion: A claim of absence, judged on the paper's test, the model of Q and of fres on
+    pia-soma distance with donor intercept (Fig. S2 legend), among L2/L3 cells, at p < 0.05.
+    How L2/L3 is assigned (layer label or depth bounds) is not stated; the layer label of each
+    cell is used, a standard choice. Reproduced when neither test gives p < 0.05. Table S3 gives
+    significant depth effects for f3dB (p = 0.008), sag (p = 0.005) and input resistance in this
+    subset, which the text does not claim; they are reported.
+- id: fig4km-mouse-no-depth
+  statement: None of the resonance parameters scale with cortical depth in mouse interneurons.
+  source: Results, Resonance dependence on cortical depth locations, paragraph 2; Fig. 4k-m
+  quote: none of the resonance parameters scaled with ... cortical depth in mouse cortical
+    interneurons (all p > .05, Fig. 4k-m)
+  statistics:
+  - about: fres, pia-soma distance
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 142) = 0.075
+    p: 0.784
+    n: LAMP5 105, VIP 41 mouse cells from 98 mice
+  - about: f3dB, pia-soma distance
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 103.60) = 0.995
+    p: 0.321
+  - about: Q, pia-soma distance
+    test: linear mixed-effects model, Type III Wald F-test
+    statistic: F(1, 140.28) = 1.550
+    p: 0.215
+  data: with_inputs
+  criterion: A claim of absence, judged on the paper's test, the models of fres, f3dB and Q on
+    pia-soma distance, subclass and their interaction with donor intercept, at p < 0.05 for the
+    distance effect and the interaction. Reproduced when none of these reaches p < 0.05.
+- id: fig5be-zd7288-human
+  statement: Blocking HCN channels with ZD7288 in human interneurons increases input resistance,
+    eliminates voltage sag and eliminates resonance (lower fres and Q).
+  source: Results, Ih supports resonance in human interneurons, paragraph 1; Fig. 5a-e
+  quote: Blocking ... HCN channels increased input resistance (p = 0.004; Fig. 5c) and eliminated
+    voltage ... sag (p = 0.004, Fig. 5b) as well as resonance
+  statistics:
+  - about: sag ratio, before against after
+    test: Wilcoxon matched-pairs signed rank test
+    p: 0.004
+    n: seven human interneurons (text); see O7
+  - about: input resistance
+    test: Wilcoxon matched-pairs signed rank test
+    p: 0.004
+  - about: fres
+    test: Wilcoxon matched-pairs signed rank test
+    p: 0.031
+  - about: Q
+    test: Wilcoxon matched-pairs signed rank test
+    p: 0.031
+  expected:
+  - quantity: median change in sag ratio
+    value: -0.26
+    tolerance: 0.026
+  - quantity: median change in input resistance
+    value: 74.95
+    tolerance: 7.5
+    unit: MOhm
+  - quantity: median change in fres
+    value: -2.065
+    tolerance: 0.2065
+    unit: Hz
+  criterion: Median changes from Table S3. These are new VU recordings that the paper says are
+    available on request; they are not in the dandiset. Measures at -65 mV before and after 10
+    uM ZD7288 (Methods, Patch-clamp ZD7288 experiments; O1, O2, O3), two-sided Wilcoxon
+    signed-rank tests per measure under both readings of O7. Reproduced when sag and fres fall,
+    input resistance and Q change in the stated direction (Q falls) with p < 0.05 each, and the
+    median changes are within tolerance.
+- id: figs3-zd7288-mouse
+  statement: In mouse cortical interneurons, HCN blockade also reduces sag ratio, resonance
+    strength and frequency measures.
+  source: Results, Ih supports resonance in human interneurons, paragraph 1; Fig. S3l-p
+  quote: HCN channel blockade reduced ... sag ratio, resonance strength and frequency measures
+    (Fig. S3)
+  statistics:
+  - about: sag ratio
+    test: Wilcoxon signed-rank test
+    statistic: V = 83
+    p: 0.010
+    n: 13 paired mouse cells from 9 mice
+  - about: input resistance
+    test: Wilcoxon signed-rank test
+    statistic: V = 16
+    p: 0.043
+  - about: Q
+    test: Wilcoxon signed-rank test
+    statistic: V = 21
+    p: 0.036
+  - about: fres
+    test: Wilcoxon signed-rank test
+    statistic: V = 80
+    p: 0.022
+  - about: f3dB
+    test: Wilcoxon signed-rank test
+    statistic: V = 28
+    p: 0.017
+  data: with_inputs
+  criterion: New mouse recordings (prefrontal cortex), not in the dandiset and not located by the
+    paper. Two-sided Wilcoxon signed-rank tests, baseline against ZD7288 (Fig. S3 legend).
+    Reproduced when sag ratio, Q and fres each fall with p < 0.05.
+- id: fig5g-culture-sag
+  statement: Cultured LAMP5 and PV interneurons have higher sag ratios than acutely recorded ones,
+    while input resistance does not differ between preparations.
+  source: Results, Ih supports resonance in human interneurons, paragraph 2; Fig. 5g-h
+  quote: we observed higher sag ratios in cultured neurons for LAMP5 and PV interneurons
+    ... Input resistance did not differ between preparations (p = 0.095, Fig. 5h)
+  statistics:
+  - about: sag, LAMP5, acute against cultured
+    test: Mann-Whitney U
+    statistic: U = 8237.00, Z = 5.03
+    p: 0.001
+    p_relation: "<"
+    n: 276 acute, 40 cultured
+  - about: sag, PV
+    test: Mann-Whitney U
+    statistic: U = 31851.00, Z = 12.51
+    p: 0.001
+    p_relation: "<"
+    n: 130 acute, 277 cultured
+  - about: input resistance, preparation
+    test: linear mixed-effects model
+    p: 0.095
+    n: 541 acute and 536 cultured cells from 192 donors
+  data: with_inputs
+  expected:
+  - quantity: median sag ratio, cultured LAMP5
+    value: 0.26
+    tolerance: 0.026
+  - quantity: median sag ratio, cultured PV
+    value: 0.28
+    tolerance: 0.028
+  criterion: Medians from Table S3. Cultured recordings (Lee et al. 2023 and new) are not in the
+    dandiset. Sag (O2) by two-sided Mann-Whitney U per subclass; input resistance (O3) in the
+    mixed model of preparation, subclass, their interaction and Vm with donor intercept (Fig. 5
+    legend; O4, O5). Reproduced when LAMP5 and PV sag are higher in culture at p < 0.001, the
+    preparation effect on input resistance gives p >= 0.05 (absence judged on that test), and
+    the medians are within tolerance. Table S3's per-subclass input resistance tests (LAMP5 p =
+    .018) are reported.
+- id: fig5i-culture-proportion
+  statement: A higher proportion of interneurons is resonant in organotypic slice culture than
+    in acute slices (60.8% against 32.7%), in LAMP5, PV and SST interneurons but not VIP.
+  source: Results, Ih supports resonance in human interneurons, paragraph 2; Fig. 5i
+  quote: We found a higher proportion of ... resonant cells among interneurons in organotypic brain
+    slice culture (60.8% in cultured ... vs 32.7% in acute, p < 0.001; Fig. 5i). This was true for
+    LAMP5 (p = 0.002), PV (p < ... 0.001) and SST (p < 0.001) interneurons but not VIP
+    interneurons, which showed ... equal proportions of resonant cells (p = 0.100)
+  statistics:
+  - about: all cells
+    test: chi-square test
+    statistic: χ² (1) = 44.98
+    p: 0.001
+    p_relation: "<"
+    n: 268 cultured (Fig. 5f) and 297 acute cells
+  - about: LAMP5
+    test: chi-square test
+    statistic: χ² (1) = 9.19
+    p: 0.002
+  - about: PV
+    test: chi-square test
+    statistic: χ² (1) = 79.76
+    p: 0.001
+    p_relation: "<"
+  - about: SST
+    test: chi-square test
+    statistic: χ² (1) = 27.13
+    p: 0.001
+    p_relation: "<"
+  - about: VIP
+    test: chi-square test
+    statistic: χ² (1) = 0
+    p: 0.100
+  data: with_inputs
+  expected:
+  - quantity: resonant fraction, cultured
+    value: 60.8
+    tolerance: 6.08
+    unit: "%"
+  - quantity: resonant fraction, acute
+    value: 32.7
+    tolerance: 3.27
+    unit: "%"
+  criterion: Resonance as in fig2c-resonant-proportion. Overall test under both readings of O6;
+    per subclass the goodness-of-fit chi-square against the acute fraction (O6 reading a).
+    Reproduced when both fractions are within tolerance, the overall test gives p < 0.001,
+    LAMP5, PV and SST are higher in culture at p < 0.05, and VIP gives p >= 0.05 (absence judged
+    on the paper's test). Table S3 prints χ² = 0 with p = 0.100 for VIP, which cannot both hold;
+    the value found is reported.
+- id: fig5jk-culture-fres-q
+  statement: Peak resonance frequency (LAMP5, PV) and resonance strength (LAMP5, PV, SST) are
+    higher in cultured than in acute interneurons.
+  source: Results, Ih supports resonance in human interneurons, paragraph 2; Fig. 5j-k
+  quote: an increase in peak ... resonance frequency ... and strength ... paralleled an increase in
+    sag ratio ... in cultured tissue
+  statistics:
+  - about: fres, LAMP5
+    test: Mann-Whitney U
+    statistic: U = 2061.00, Z = 2.69
+    p: 0.007
+    n: 144 acute, 21 cultured
+  - about: fres, PV
+    test: Mann-Whitney U
+    statistic: U = 6766.50, Z = 4.65
+    p: 3.37e-06
+    n: 78 acute, 125 cultured
+  - about: Q, LAMP5
+    test: Mann-Whitney U
+    statistic: U = 2151.00, Z = 3.13
+    p: 0.002
+  - about: Q, PV
+    test: Mann-Whitney U
+    statistic: U = 7998.00, Z = 7.67
+    p: 1.71e-14
+  - about: Q, SST
+    test: Mann-Whitney U
+    statistic: U = 964.00, Z = 2.28
+    p: 0.023
+    n: 15 acute, 94 cultured
+  data: with_inputs
+  expected:
+  - quantity: median fres, cultured LAMP5
+    value: 2.40
+    tolerance: 0.24
+    unit: Hz
+  - quantity: median Q, cultured PV
+    value: 1.17
+    tolerance: 0.017
+  criterion: Medians from Table S3 (the Q tolerance is 10% of Q - 1, as in
+    fig2g-q-species-subclass). Two-sided Mann-Whitney U per subclass, acute against cultured
+    (Fig. 5 legend; O1). Reproduced when the five comparisons show culture higher at p < 0.05;
+    partially reproduced when four do. Table S3's acute medians for Fig. 5j do not match those of
+    Fig. 2e (O10), so acute medians are not used as targets.
+- id: fig5l-culture-f3db-same
+  statement: The 3 dB cutoff frequency does not differ between acute and cultured interneurons.
+  source: Results, Ih supports resonance in human interneurons, paragraph 2; Fig. 5l
+  quote: the 3 dB cutoff frequency did not differ between ... acute and culture conditions (Fig. 5l)
+  statistics:
+  - about: LAMP5
+    test: Mann-Whitney U
+    statistic: U = 1795.50, Z = 1.3
+    p: 0.166
+  - about: VIP
+    test: Mann-Whitney U
+    statistic: U = 617.00, Z = -2.00
+    p: 0.046
+  - about: PV
+    test: Mann-Whitney U
+    statistic: U = 3995.50, Z = -2.16
+    p: 0.031
+  - about: SST
+    test: Mann-Whitney U
+    statistic: U = 885.50, Z = 1.59
+    p: 0.112
+  data: with_inputs
+  criterion: A claim of absence, judged on the paper's test, two-sided Mann-Whitney U per
+    subclass at p < 0.05 (Fig. 5 legend; O1). Reproduced when no subclass reaches p < 0.05; the
+    medians are reported. The paper's own Table S3 gives p < 0.05 for VIP and PV (O10), so the
+    claim does not hold on the paper's own numbers; this is recorded either way.
+- id: fig6a-hcn1-pex5l-human
+  statement: In Allen Brain Map single-nucleus data, HCN1 and the TRIP8b gene PEX5L are expressed
+    at higher levels in human than in mouse interneurons.
+  source: Results, Voltage-dependent ion channel gene expression associates with resonance,
+    paragraph 1; Fig. 6a
+  quote: with HCN1 showing higher levels ... in human versus mouse interneurons. Additionally, HCN1
+    modulator TRIP8b protein ... RNA readout, PEX5L, levels are elevated in human interneurons
+  statistics:
+  - about: HCN1
+    test: linear mixed-effects model, ln(CPM + 1) ~ species + (1 | donor)
+    statistic: t = 3.09
+    p: 0.002
+    corrected: Benjamini-Hochberg
+    n: 4164 human nuclei from 8 donors, 10534 mouse cells from 210 mice
+  - about: PEX5L
+    test: linear mixed-effects model
+    statistic: t = 13.58
+    p: 1.26e-41
+    corrected: Benjamini-Hochberg
+  data: elsewhere
+  where: Allen Brain Map RNA-Seq (portal.brain-map.org/atlases-and-data/rnaseq), human MTG
+    SMART-seq 2018 and mouse VISp and ALM SMART-seq 2018, as named in Methods, RNA-seq
+  criterion: All GABAergic interneurons, introns and exons, ln(CPM + 1), mixed model with species
+    fixed and donor or animal random intercept, BH over the five genes HCN1 to HCN4 and PEX5L
+    (Methods, RNA-seq). Reproduced when HCN1 and PEX5L are higher in human with BH-adjusted p <
+    0.05.
+- id: fig6b-channel-expression
+  statement: In acute and cultured human slices, all interneuron subclasses express high levels
+    of HCN1, KCNQ3/5 and CACNA1A/G transcripts.
+  source: Results, Voltage-dependent ion channel gene expression associates with resonance,
+    paragraph 3; Fig. 6b and Fig. S4a
+  quote: all interneuron types showed ... high levels of expression of HCN1, KCNQ3/5, and
+    CACNA1A/G gene transcripts
+  data: with_inputs
+  criterion: Needs the Patch-seq transcriptomes, which the dandiset does not hold and the paper
+    does not locate. Per gene and subclass, the fraction of cells with CPM > 1 and the mean CPM
+    (Methods, Patch-seq). "High" is not defined; read as the fraction expressing above one half
+    in every subclass for each of the five genes. Reproduced when that holds in acute cells.
+- id: fig6c-gene-resonance-correlation
+  statement: In acute human interneurons, KCNJ16 expression correlates positively with resonance
+    strength and frequency, and HCN1 and CACNA1A expression correlate positively with resonance
+    frequency, after FDR correction.
+  source: Results, Voltage-dependent ion channel gene expression associates with resonance,
+    paragraph 3; Fig. 6c
+  quote: we found significant positive relationships between KCNJ16 and ... resonance strength (n =
+    204, r = 0.28, p < 0.001) as well as resonance frequency (n ... = 204, r = 0.20, p = 0.004) in
+    the acute dataset. HCN1 (N = 240, r = 0.17, p = 0.007) ... and CACNA1A (n = 254, r = 0.16, p =
+    0.009) also positively correlated to resonance ... frequency
+  statistics:
+  - about: KCNJ16 against Q
+    test: Pearson correlation
+    statistic: r = 0.279
+    p: 0.00106
+    corrected: FDR (Table S3; the text gives p < 0.001)
+    n: 204 cells
+  - about: KCNJ16 against fres
+    test: Pearson correlation
+    statistic: r = 0.202
+    p: 0.038
+    corrected: FDR (Table S3; the text gives p = 0.004)
+    n: 204 cells
+  - about: HCN1 against fres
+    test: Pearson correlation
+    statistic: r = 0.174
+    p: 0.044
+    corrected: FDR (Table S3; the text gives p = 0.007)
+    n: 240 cells
+  - about: CACNA1A against fres
+    test: Pearson correlation
+    statistic: r = 0.164
+    p: 0.044
+    corrected: FDR (Table S3; the text gives p = 0.009)
+    n: 254 cells
+  data: with_inputs
+  expected:
+  - quantity: r, KCNJ16 and Q
+    value: 0.28
+    tolerance: 0.028
+  - quantity: r, KCNJ16 and fres
+    value: 0.20
+    tolerance: 0.02
+  - quantity: r, HCN1 and fres
+    value: 0.17
+    tolerance: 0.017
+  - quantity: r, CACNA1A and fres
+    value: 0.16
+    tolerance: 0.016
+  criterion: Needs Patch-seq transcriptomes (not in the dandiset). Pearson correlation of
+    expression with Q and fres over acute cells with CPM > 1 for the gene, BH-FDR over the 20
+    tests of the acute family (O8, both readings of the scale; O1). Reproduced when the four
+    correlations are positive with FDR-adjusted p < 0.05 and within tolerance; partially
+    reproduced when three are.
+- id: figs4-culture-mouse-genes
+  statement: No gene-resonance correlation survives correction in cultured human interneurons;
+    among mouse interneurons only HCN2 is significantly related to resonance.
+  source: Results, Voltage-dependent ion channel gene expression associates with resonance,
+    paragraph 3; Fig. S4a-b
+  quote: None of the correlations survived multiple correction in ... the cultured dataset (Fig.
+    S4a). In contrast, HCN2, but none of the other genes was ... significantly related to resonance
+    among mouse interneurons
+  statistics:
+  - about: mouse, HCN2 against Q
+    test: Pearson correlation
+    statistic: r = 0.265
+    p: 0.015
+    corrected: FDR
+    n: 168 mouse cells
+  data: with_inputs
+  criterion: As in fig6c-gene-resonance-correlation, on cultured human cells (family of Table S3,
+    Fig. S4A) and on mouse cells (Fig. S4B). The cultured part is a claim of absence judged on
+    FDR-adjusted p < 0.05. Reproduced when no cultured correlation reaches FDR p < 0.05 and, in
+    mouse, HCN2 against Q does while no other gene does.
+- id: fig7ae-model-ih
+  statement: In the human PV model, the baseline Ih gives a weak resonance peak (Q = 1.04),
+    removing Ih abolishes it, and doubling Ih raises resonance frequency and strength (Q = 1.09)
+    and lowers input resistance.
+  source: Results, Large human interneurons require increased active properties for resonance,
+    paragraph 1; Fig. 7a-e and Fig. S5a-h
+  quote: The baseline model ... showed a detectable, albeit weak (Q = 1.04), resonance peak in the
+    impedance profile, ... which was absent in the - Ih model (Fig. 7e). Increasing the baseline Ih
+    conductance ... (+ Ih * 2, orange trace) increased the resonance frequency and strength (Q =
+    1.09
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (the FS model of Wilbers et al. 2023 that the paper
+    adapted); the adapted model is not deposited and the paper's code address returns 404
+  expected:
+  - quantity: Q, baseline model
+    value: 1.04
+    tolerance: 0.004
+  - quantity: Q, doubled Ih
+    value: 1.09
+    tolerance: 0.009
+  criterion: Model with Table S5's conductances, chirp of 62 s from 0.4 to 40 Hz, dt 0.1, peak
+    deflection within +/- 5 mV, LOWESS frac 0.04 (Methods, CHIRP Experiments). Q tolerances are
+    10% of Q - 1. Reproduced when the -Ih model has no peak above Z0, Q of the baseline and
+    doubled models are within tolerance, and doubling raises fres and lowers input resistance.
+    The adapted model is not public, so this rests on rebuilding it from Table S5.
+- id: fig7-model-ca
+  statement: Adding a low-threshold calcium or M-type potassium conductance to the model raises
+    resonance frequency (5.89 Hz) and strength (Q = 1.25) with little change in sag ratio (0.22)
+    or input resistance (102.42 against 108.45 MOhm).
+  source: Results, Large human interneurons require increased active properties for resonance,
+    paragraph 2; Fig. 7b-e
+  quote: Both the M-type ... potassium and the calcium conductance increased resonance frequency
+    (fres = 5.89, ... Fig. 7d) and resonance strength (Q = 1.25, Fig. 7e), with little change in
+    sag ... ratio
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (base model); the calcium (McRory et al. 2001) and M-type
+    channels added are not deposited
+  expected:
+  - quantity: fres, +Ih +Ca model
+    value: 5.89
+    tolerance: 0.589
+    unit: Hz
+  - quantity: Q, +Ih +Ca model
+    value: 1.25
+    tolerance: 0.025
+  - quantity: sag ratio, +Ih and +Ih +Ca models
+    value: 0.22
+    tolerance: 0.022
+  - quantity: input resistance, +Ih model
+    value: 102.42
+    tolerance: 10.24
+    unit: MOhm
+  - quantity: input resistance, +Ih +Ca model
+    value: 108.45
+    tolerance: 10.85
+    unit: MOhm
+  criterion: As in fig7ae-model-ih. The calcium conductance density is not given in Table S5, so
+    it cannot be rebuilt as published; the claim is blocked unless the model is released.
+- id: figs5-model-gpas
+  statement: Varying passive leak conductance in the model changes peak resonance frequency but
+    not resonance strength.
+  source: Results, Large human interneurons require increased active properties for resonance,
+    paragraph 1; Fig. S5i-n
+  quote: we additionally varied the passive ... leak conductance in the baseline model and found an
+    increased peak resonance ... frequency but not resonance strength
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (base model)
+  criterion: Baseline model with passive conductance scaled 0.4 to 1.6 times (Fig. S5 legend).
+    Reproduced when fres rises with leak conductance and Q varies by less than its change under
+    doubled Ih (fig7ae-model-ih).
+- id: fig7fj-model-morphology
+  statement: With equal conductance densities, sag ratio and resonance strength increase with
+    morphology size, while 3 dB cutoff and resonance frequencies change with morphology, the human
+    model showing the sharpest resonance profile.
+  source: Results, Large human interneurons require increased active properties for resonance,
+    paragraph 3; Fig. 7f-j
+  quote: We found that the sag ratio and resonance strength increased as the morphology ...
+    increased in size (Fig. 7f, g, i). In contrast, the 3 dB cutoff and resonance frequencies ...
+    decreased (Fig. 7h, j) as the morphology approached the mouse model, with the ... human model
+    showing a sharper resonance profile
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (base model); morphologies from Table S5
+  criterion: Three idealized morphologies of Table S5 (reference, human, mouse) with the baseline
+    conductances. The direction of the frequency change is stated two ways in the paper; readings
+    (a) as the Results sentence says, fres and f3dB lower in the mouse than in the human model;
+    (b) as the Discussion says ("models with larger but less complex human-like morphological
+    features would exhibit lower peak resonance and 3 dB cutoff frequencies") and the next
+    paragraph implies (higher fres in the mouse model), lower in the human model. Reproduced when
+    sag and Q rise from mouse to reference to human (by size) and f3dB is lowest in the human
+    model, with the frequency ordering reported under both readings.
+- id: figs5-model-normalized-morphology
+  statement: With total conductance normalized across morphologies, the human model still has a
+    sharper impedance peak and the mouse model a higher peak resonance frequency, but resonance
+    strength is no longer higher in the human model.
+  source: Results, Large human interneurons require increased active properties for resonance,
+    paragraph 4; Fig. S6e-k
+  quote: we observed a sharper peak in the impedance ... profile in the human model and a higher
+    peak resonance frequency in the mouse ... model (Fig. S5). However, resonance strength was no
+    longer higher in the human ... model compared to the mouse model
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (base model); scaled conductances from Table S5
+  criterion: Dendritic conductances scaled by 0.822 (reference) and 0.428 (human) as in Table S5.
+    "Sharper" is read as a lower f3dB. Reproduced when the human model has the lowest f3dB, the
+    mouse model the highest fres, and Q of the human model is not above that of the mouse model.
+- id: fig8bc-firing-resonance
+  statement: The resonant model (+Ih +Ca) is more excitable than the non-resonant model (rheobase
+    130 against 150 pA) and is most excitable at 5 Hz, close to its subthreshold resonance
+    frequency, while the non-resonant model is most excitable at 1 Hz.
+  source: Results, Human resonant morphologies show firing-level resonance, paragraph 1; Fig. 8b-c
+  quote: the resonant cell was most excitable in response to the 5 Hz stimulus (Fig. 8c; 130 pA ...
+    for 5 Hz; 136 pA for 1 Hz), which corresponds approximately to its subthreshold ... resonance
+    frequency
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (base model); the resonant model is not deposited
+  expected:
+  - quantity: sinusoidal rheobase, resonant model, 5 Hz
+    value: 130
+    tolerance: 13
+    unit: pA
+  - quantity: sinusoidal rheobase, resonant model, 1 Hz
+    value: 136
+    tolerance: 13.6
+    unit: pA
+  - quantity: sinusoidal rheobase, non-resonant model, 1 Hz
+    value: 150
+    tolerance: 15
+    unit: pA
+  criterion: Rests on fig7-model-ca, whose model cannot be rebuilt from the paper. Reproduced when
+    the values are within tolerance and the resonant model's lowest rheobase is at 5 Hz. The text
+    gives "5 pA for 5 Hz" for the non-resonant model, which reads as a typing error; it is not
+    used.
+  depends_on:
+  - fig7-model-ca
+- id: fig8eg-noisy-modulation
+  statement: Under in vivo-like noise, the strongly resonant +Ih +Ca model shows a peak in the
+    normalized modulation index and signal gain that the +Ih and -Ih models lack, and only it
+    fires in phase with a 5 Hz input.
+  source: Results, Human resonant morphologies show firing-level resonance, paragraph 2; Fig. 8d-g
+  quote: The strongly resonating +Ih +Ca2+ model showed a peak in the ... normalized modulation index
+    (Fig. 8e) and the signal gain functions26 (Fig. 8f) which ... was absent in the +Ih and -Ih
+    models
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (base model); the resonant model is not deposited
+  criterion: Protocol of Methods, Modulation of firing, and Table S5 (sd, I0, I1, 10 cycles, 10 x
+    f trials, 20 bins per cycle, sine fit). "Peak" is read as a maximum of M/R and of gain at an
+    input frequency above 1 Hz. Reproduced when that holds for +Ih +Ca and not for +Ih or -Ih.
+    Rests on fig7-model-ca.
+  depends_on:
+  - fig7-model-ca
+- id: fig8hk-morphology-firing
+  statement: Among resonant morphological models, the human morphology responds most strongly to
+    a 5 Hz input (highest modulation index and signal gain) but fails to follow higher-frequency
+    inputs.
+  source: Results, Human resonant morphologies show firing-level resonance, paragraph 3; Fig. 8h-k
+  quote: the human interneuron morphology ... model showed the strongest response to this input, as
+    reflected by the highest ... modulation index and signal gain amplitude at 5 Hz (Fig. 8i-k)
+  data: elsewhere
+  where: DataverseNL doi:10.34894/TONOHA (base model); the resonant model is not deposited
+  criterion: Inputs of 1 to 50 Hz with noise (Table S5). Reproduced when at 5 Hz the human model
+    has the highest M/R and gain of the three, and its M/R at 50 Hz is the lowest of the three.
+    Rests on fig7-model-ca.
+  depends_on:
+  - fig7-model-ca
+- id: figs1-region-pathology
+  statement: Resonance metrics (fres, Q, 3 dB cutoff) and input resistance do not differ between
+    brain regions of resection or between epilepsy and tumour cases; sag ratio does.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 2; Fig.
+    S1e-n
+  quote: The primary resonance metrics did not ... differ between cortical regions of surgical
+    resection (frontal, temporal, parietal, or ... occipital; Fig. S1c, e-i) or donor’s disease
+    type (epilepsy vs tumor; Fig. S1d, j-n)
+  statistics:
+  - about: region, fres
+    test: Kruskal-Wallis
+    statistic: KW = 5.91
+    p: 0.116
+  - about: region, Q
+    test: Kruskal-Wallis
+    statistic: KW = 5.90
+    p: 0.117
+  - about: region, f3dB
+    test: Kruskal-Wallis
+    statistic: KW = 1.34
+    p: 0.719
+  - about: pathology, fres
+    test: Mann-Whitney U
+    statistic: U = 2757
+    p: 0.218
+  - about: pathology, Q
+    test: Mann-Whitney U
+    statistic: U = 2543
+    p: 0.664
+  - about: pathology, f3dB
+    test: Mann-Whitney U
+    statistic: U = 2611
+    p: 0.493
+  - about: region, sag ratio
+    test: Kruskal-Wallis
+    statistic: KW = 19.53
+    p: 0.001
+    p_relation: "<"
+  - about: pathology, sag ratio (lower in epilepsy)
+    test: Mann-Whitney U
+    statistic: U = 4845
+    p: 0.001
+    p_relation: "<"
+  data: with_labels
+  criterion: Region (lobe) and disease per donor from Table S1. The absence parts are judged on
+    the paper's tests, Kruskal-Wallis across the four lobes and Mann-Whitney U between epilepsy
+    and tumour, at p < 0.05 (Fig. S1 legend; O1). Reproduced when fres, Q and f3dB give p >=
+    0.05 in both tests; sag ratio (O2) is reported. Which cells enter (acute only, or acute and
+    cultured) is not stated; readings (a) acute cells, (b) all human cells.
