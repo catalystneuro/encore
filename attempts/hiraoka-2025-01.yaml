@@ -133,7 +133,11 @@ outcomes:
     so the outcome rests on the unbounded exponent. Reading (a) fails, as the complementary cumulative
     distributions of k over its mean differ by up to a factor of 12.54 (median 1.63) where all exceed
     10^-3. One pair of Figure 2 (delta'' 590 ms, delta 6490 ms) lies above the relevant range, with 89
-    bursts.'
+    bursts. The margin is small (0.538 unbounded and 0.490 capped, against 0.5). O3 (a) names the package''s
+    default, which in the locked powerlaw 2.0.0 is the capped fit, and read that way the claim would be
+    reproduced; the verifier reads the outcome as undetermined between the two. The unbounded exponent
+    is kept, as the method the paper cites has no cap and the cap clips the estimate that decides the
+    band, and whether the paper''s fits were capped is asked of the authors (findings).'
   deviations:
   - The pairs are the labels of Figure 2 as printed (55, 100, 180, 330 and 590 ms), as the criterion gives
     them. The comparison points for reading (a) are 200 values of k over its mean, log-spaced from 0.01
@@ -226,7 +230,10 @@ outcomes:
     the discrete KS fit gives 0.522 for the exponential gamma. Under the four further seeds the discrete
     KS fit holds for all three series under seeds + 1000, + 2000 and + 3000 and not under + 4000 (the
     linear series fails); the exponential gamma interquartile range runs from 0.203 to 0.544 over the
-    five seeds. Each series holds under some reading under every seed on grid (a).
+    five seeds. Each series holds under some reading under every seed on grid (a). The criterion defines
+    no partial outcome; partially reproduced is the protocol's outcome for a result that holds only in
+    part, and the criterion holds for two of its three series under the adopted reading. This differs
+    from fig2-neuron-beta-stable, which is not reproduced because no reading meets its single condition.
   deviations:
   - One reading of the fit is applied to all three series alike, the adopted discrete KS fit; taking for
     each series whichever reading holds would give reproduced.
@@ -256,7 +263,8 @@ outcomes:
     over the five seeds the values are within 10% in 2, 2 and 0 of 5. tau_min is 1.000 or 1.001 throughout,
     as in Figure 4. The comparison of shapes with the earthquake and Wikipedia sequences is not judged
     and cannot be made here; the model's P(tau) falls with log-log slopes of -2.27, -1.98 and -2.15 above
-    tau = 10.
+    tau = 10. The criterion defines no partial outcome; partially reproduced is used, as the protocol
+    defines it, because one of the three expected values is within its tolerance and two are not.
 - claim: model-decremental-equivalent
   outcome: not_reproduced
   seed_sensitive: true
@@ -279,7 +287,9 @@ outcomes:
     in all three series (p = 0.0079, the smallest possible, 0.024 after Bonferroni), two runs of one algorithm
     (N) differ in none (p 0.373 to 0.913), Z in none (p 0.429 to 0.857), and Q in the linear series only
     (p = 0.0079). It agrees with the criterion on L and finds the algorithms equivalent under Z; it does
-    not decide the outcome.'
+    not decide the outcome. Whether the criterion''s test can decide equivalence, since it rejects two
+    runs of one algorithm, is asked of a reader (questions); the outcome stands under the calibrated
+    test as well, as L differs there in all three series.'
   deviations:
   - The paper's "statistically equivalent" holds by construction when the decremental algorithm draws
     from the distribution whose memory function the incremental one uses. The three readings of the set-up
@@ -288,7 +298,7 @@ outcomes:
   - The relevant timescales of each comparison are those of the incremental sequence.
 findings:
 - kind: format_error
-  severity: major
+  severity: minor
   datasets:
   - '000044'
   statement: In Buddy-06272013, Cicero-09012014 and Gatsby-08022013 the spike train of unit id 2 is not
@@ -335,7 +345,8 @@ findings:
     unit (row 9 of Achilles-10252013) is labelled inhibitory in the cited version and interneuron in the
     latest. Which units the paper analysed, and whether it used the cell types, is not said. Under the
     KS fits the inhibitory units show the paper's pattern far more often than the pyramidal ones (0.68
-    to 0.74 of 128 against 0.08 to 0.45 of 562).
+    to 0.74 of 128 against 0.23 to 0.45 of 562; in Achilles-10252013 alone 0.76 to 0.88 of 17 against
+    0.08 to 0.34 of 120).
 - kind: paper_inconsistency
   statement: Section IV gives the zeta distribution (Eq. 15) as P(k) and calls Eq. 16 the memory function
     that Eq. 9 gives for it, but Eq. 9 applied to the zeta distribution gives q(1) = 0.255, not the 0.354
@@ -351,8 +362,10 @@ findings:
     default with xmin by the KS distance, 89% to 91% with the continuous fit from xmin = 1).
 - kind: methods_unavailable
   statement: Question for the authors. Which grid of timescales was used, and which units were meant by
-    "other sequences in the datasets"? The Figure 2 labels fit 41 log-spaced points over the relevant
-    range, which this attempt used; whether all units or the pyramidal ones were analysed is not said.
+    "other sequences in the datasets"? The Figure 2 labels fit a log-spaced grid of 40 steps of 0.0514
+    over the relevant range; this attempt used its 40 points below the upper end (55.2 to 5581.5 ms),
+    since the upper end has fewer than 100 bursts. Whether all units or the pyramidal ones were analysed
+    is not said.
     Which merging-number distribution did the decremental algorithm draw from, given that Eq. 16 is not
     the memory function of the zeta distribution?
 - kind: methods_unavailable
@@ -500,3 +513,117 @@ verifications:
     response: 'No change of outcome. A test calibrated across runs was added as a variant (problem 4):
       with the five runs of each algorithm as units and an exact permutation test, N differs in no series,
       L in all three (p = 0.0079 each), Z in none and Q in the linear series only.'
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebooks of the revised run (reproduce_hiraoka_2025.ipynb, other_neurons.ipynb,
+    other_neurons_cap3.ipynb, model.ipynb) with their conclusions and summary, the helper module, the claims
+    file and this attempt record, with the paper under paper/.'
+  results:
+  - claim: fig2-neuron-representative-sequence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (main 9).
+    response: No change.
+  - claim: fig2-iet-broad
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (main 12).
+    response: No change.
+  - claim: fig2-neuron-burst-size-heavy-tail
+    agrees: true
+    outcome: reproduced
+    reason: 8/8 and 40/40 under both KS fits, capped or not (main 18).
+    response: No change.
+  - claim: fig2-neuron-beta-stable
+    agrees: true
+    outcome: not_reproduced
+    reason: Range 1.079; capped KS ranges 0.552 to 0.705 (main 21).
+    response: No change.
+  - claim: fig2-neuron-beta-decrease-follows-gamma
+    agrees: true
+    outcome: reproduced
+    reason: Part (2) rests on 6 points at p = 0.0416 (main 33), and the record says so.
+    response: No change.
+  - claim: fig2-neuron-merging-heavy-tail
+    agrees: true
+    outcome: reproduced
+    reason: The round-1 objection is answered. Without the cap, ks_discrete IQR is 0.378 and 0.415, with
+      13/15 and 70/76 supported (main 24).
+    response: No change.
+  - claim: fig2-neuron-merging-collapse
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, with a caveat. The assumption (unbounded exponent) is stated and is methodologically
+      reasonable. The result is knife-edge, 0.538 unbounded against 0.490 capped, band 0.5 (main 27). O3(a)
+      says "the powerlaw package's default", and the locked 2.0.0 default is the capped fit, so a literal
+      O3 reading would give reproduced. The outcome is best read as undetermined between the two.
+    response: No change of outcome, and none proposed, as the verifier agrees with it and finds the assumption
+      reasonable. The caveat is now in the notes and in the result cell (main 28), which give the margin, the literal
+      reading of O3 (a) under which the claim would be reproduced, and why the unbounded exponent is kept.
+      The question of the cap is already put to the authors (findings).
+  - claim: fig2-exponents-above-two
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (main 30).
+    response: No change.
+  - claim: fig2-other-neurons-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the one-reading rule; fragile. Passes only under x1_continuous (0.883 to 0.906,
+      on 5). That reading also passes for inhibitory (0.781 to 0.836) and all units (0.872 to 0.893), so
+      the pass does not depend on the pyramidal restriction or on the cap (cap3 5). It rests solely on x1_continuous,
+      a poor fit for integer data whose median beta is about 1.75 against the paper's 2.35. The claims file
+      restricts the claim to pyramidal units, but the paper's own representative unit is labelled inhibitory.
+    response: No change. The fragility is stated in the notes, and the question of the set is in questions/hiraoka-2025.yaml.
+      The summary table now gives the KS fractions per set (0.233 to 0.454 over the pyramidal units of
+      all sessions, 0.083 to 0.342 in Achilles-10252013).
+  - claim: fig2-wikipedia-beta
+    agrees: true
+    outcome: blocked
+    reason: Blocked, yes. The record answers the data_missing objection with a protocol rule the verifier
+      cannot see, and the disagreement is recorded.
+    response: No change. The rule is the protocol's (author, step 1.4) for a claim with data elsewhere.
+  - claim: fig2-earthquake-beta
+    agrees: true
+    outcome: blocked
+    reason: The pinning rationale is stated and the disagreement is recorded. The earthquake n is not resolved;
+      the author declined, citing the pinning rule.
+    response: No change; the catalog has no versioned release, so the count was not made.
+  - claim: fig4-model-heavy-tails
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption (one fit reading applied to all three series) is stated and reasonable (model
+      4). The criterion defines no partial outcome, while the author's response on beta-stable changed
+      that outcome for exactly that reason. By that logic this claim would be not_reproduced under the
+      adopted reading. The record should say why "partially" is used here.
+    response: 'No change of outcome. The notes and the result cell (model 5) now say why: partially reproduced
+      is the protocol''s outcome for a result that holds only in part, and the criterion holds for two of
+      its three series under the adopted reading, while fig2-neuron-beta-stable is not reproduced because
+      no reading meets its single condition.'
+  - claim: fig4-model-iet-shapes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 1 of 3 values within tolerance (model 8). The same caveat about an undefined partial outcome
+      applies.
+    response: No change of outcome. The notes and the result cell (model 9) now say that partially reproduced
+      is used because one of the three expected values is within its tolerance and two are not.
+  - claim: model-decremental-equivalent
+    agrees: true
+    outcome: not_reproduced
+    reason: Under L every test rejects, and the calibrated variant also rejects in 3/3 series at p = 0.0079
+      (model 11, 14). The KS criterion rejects two runs of the same algorithm (N, 4 and 11 rejections, model
+      11), so it cannot test equivalence; the outcome stands only because L also fails the calibrated test.
+    response: No change of outcome. The point on the criterion is added to questions/hiraoka-2025.yaml as
+      a question for a reader, and the notes say so; the claim is not changed.
+  findings:
+  - finding: 1
+    agrees: false
+    severity: minor
+    reason: No finding is rated critical. On finding 1 (format_error, rated major), main 3 and on 3 show
+      it as stated; three unit-id-2 trains are two sorted runs, broken after index 65 535 (131 071 in Gatsby-08022013).
+      The fault shows in the values (negative IETs, min_iet -2x10^7 ms in main 3), so it would rate it minor.
+      Excluding the units changes no fraction by more than 0.003 (on 5). Major is defensible only on the
+      grounds that whether each train holds one unit's spikes cannot be checked.
+    response: Severity changed to minor, the verifier's. What the outputs show is spike times that need sorting,
+      evident from the values, and the protocol rates what was shown where the data cannot settle more.
