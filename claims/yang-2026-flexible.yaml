@@ -64,6 +64,21 @@
 schema_version: 2
 paper: doi:10.1523/eneuro.0275-26.2026
 claims:
+- id: join-link
+  kind: link
+  statement: The NWB files of the dandiset are the cells of the paper's metadata join
+    (results/m0/m0_molecular_join.csv of the paper's code at commit 61a5a41); matched by file stem,
+    they have the same session, subject and genotype, and the same membership of the three regimes.
+  source: Methods, Dataset and animals, last sentence; README of the paper's code, Data
+  quote: >-
+    n = 4,430 cells with a join row; n = 4,266 with a non-empty t-type
+  data: with_inputs
+  criterion: Added by the author (protocol, Author, step 1.4). Files are matched to join rows by NWB
+    file stem, the key the code uses. Reproduced when at least 99% of the join rows match a file,
+    every matched file agrees with its row on session id, subject id and full genotype, and the
+    regime membership computed here (claim table1-phenotype-spaces) agrees with the join's in_long_pulse,
+    in_ramp and in_brief_pulse columns for at least 99% of the cells; partially reproduced when the
+    match holds but some agreement falls short, naming it.
 - id: cohort-label-join
   statement: Of the cells, 4,430 have a row in the joined metadata table and 4,266 a non-empty
     t-type; the cells with a t-type number 4,183 in long-pulse, 3,988 in ramp and 4,266 in
@@ -74,6 +89,7 @@ claims:
     long-pulse 4,183; ramp 3,988; brief-pulse 4,266
   data: with_inputs
   depends_on:
+  - join-link
   - table1-phenotype-spaces
   expected:
   - quantity: cells with a metadata join row
@@ -405,6 +421,7 @@ claims:
     brief-pulse; Fig. 2 C )
   data: with_inputs
   depends_on:
+  - join-link
   - cohort-label-join
   expected:
   - quantity: eta squared of t-type, long-pulse
@@ -462,6 +479,7 @@ claims:
     n: 4,266 cells
   data: with_inputs
   depends_on:
+  - join-link
   - cohort-label-join
   expected:
   - quantity: A_t long-pulse
@@ -551,6 +569,7 @@ claims:
     brief-pulse (2.64-fold; Fig. 2 D )
   data: with_inputs
   depends_on:
+  - join-link
   - cohort-label-join
   expected:
   - quantity: same-t-type 15-NN enrichment, long-pulse
@@ -580,6 +599,7 @@ claims:
     finer t-type structure remained apparent within individual Cre-driver populations
   data: with_inputs
   depends_on:
+  - join-link
   - cohort-label-join
   criterion: The paper gives no test for Figure 2B. Its own statistic for t-type structure
     within a Cre line is the within-Cre analysis of scripts/q2_anchor.py, which the Figure 2
@@ -624,6 +644,7 @@ claims:
     n: 1,596 type pairs
   data: with_inputs
   depends_on:
+  - join-link
   - cohort-label-join
   expected:
   - quantity: t-types with at least 10 cells in every regime
