@@ -37,8 +37,8 @@ at commit 688e662, Figures/sled_glutamate_functions.py):
 - Spike times are sorted on loading; a few units store them out of order.
 - Units stored twice in a file (a repeated id with an identical spike train): `select_session`
   and `analyse` count them once with `dedupe=True`, or keep every stored row with
-  `dedupe=False`. The claims file does not name this detail; the notebook runs both and adopts
-  every stored row as an assumption (it says why).
+  `dedupe=False`. The claims file does not name this detail; the notebook runs both and counts
+  each unit once in its adopted reading, as the two rows are one recorded unit.
 """
 
 from __future__ import annotations
@@ -99,7 +99,7 @@ def load_session(path, url):
     })
     starts, stops = trials.start.to_numpy(), trials.stop.to_numpy()
     events = f["acquisition/BehavioralEvents"]
-    n_unmatched = {}
+    n_unmatched, n_nan = {}, {}
     for name in ["sample", "delay", "go", "photostim_start_time"]:
         col = np.full(len(trials), np.nan)
         if name in events:
@@ -108,6 +108,7 @@ def load_session(path, url):
             ok = (i >= 0) & (ts <= stops[np.clip(i, 0, None)])
             col[i[ok]] = ts[ok]
             n_unmatched[name] = int((~ok).sum())
+            n_nan[name] = int(np.isnan(ts).sum())
         trials[name] = col
     u = f["units"]
     ids = u["id"][:]
@@ -137,7 +138,7 @@ def load_session(path, url):
         "genotype": _dec(subj["genotype"][()]), "strains": _dec(subj["description"][()]),
         "sex": _dec(subj["sex"][()]),
         "trials": trials, "units": units, "spikes": spikes, "obs": obs,
-        "unmatched_events": n_unmatched, "unsorted_units": unsorted,
+        "unmatched_events": n_unmatched, "nan_events": n_nan, "unsorted_units": unsorted,
     }
 
 
