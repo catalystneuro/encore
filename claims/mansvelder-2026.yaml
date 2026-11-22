@@ -63,7 +63,12 @@
 # LAMP5 subclass). It holds no mouse, cultured or blocker recordings, no transcriptomes and no
 # morphologies. This paper's per-cell subclass assignment, Vm, pia-soma distance and gene
 # expression are not given with the paper; claims that need subclass labels only are
-# `with_labels`, claims that need other per-cell data or other recordings are `with_inputs`.
+# `with_labels`, claims that test the dandiset's recordings together with other per-cell data
+# or other recordings are `with_inputs`. Claims that use none of the dandiset's recordings
+# (mouse only, ZD7288, transcriptomes or morphologies alone) keep the default `dataset`: the
+# paper names no public source for those data (ref. 2 is a human study, and ref. 27 is cited by
+# this dandiset's DOI), so they are blocked as data_missing unless the author finds them
+# public; Table S2 gives the mouse cell specimen IDs.
 # The paper says "Most of the data used in this paper is already open source" (refs 2 and 27)
 # and "The remaining data will be made available upon request"; it names no archive for the
 # mouse recordings, the cultured recordings, the Lee et al. 2023 recordings or the Patch-seq
@@ -105,11 +110,15 @@
 #    its overall values (Fig. 2c, 43.05 with 297 human and 248 mouse cells; Fig. 5i, 44.98 with
 #    268 cultured and 297 acute cells) are reproduced by a 2x2 Pearson test without continuity
 #    correction (checked by hand from the counts). Readings: (a) goodness of fit against the
-#    reference group's proportion; (b) 2x2 Pearson test without correction.
+#    reference group's proportion; (b) 2x2 Pearson test without correction. The per-subclass
+#    values of Fig. 5i are also reproduced by reading (a), with cultured counts LAMP5 13 of 21,
+#    PV 104 of 125, SST 39 of 94 and VIP 7 of 28 (163 of 268, 60.8%); VIP then gives chi-square
+#    0 and p = 1 (checked by the second reader).
 #  - O7, ZD7288 sample. The text says seven human interneurons; Table S4 lists 8 exposed to
 #    ZD7288. With n = 7 an exact two-sided Wilcoxon signed-rank test cannot give p = 0.004 (its
-#    floor is 0.016), while 9 cells can; p = 0.031 is the floor for 6 cells. So the cells per
-#    measure differ from seven and are not stated. Readings: (a) all cells with both a baseline
+#    floor is 0.016), nor can n = 8 (floor 0.008), while 9 cells can; p = 0.031 is the floor for
+#    6 cells, or 7 cells with one discordant pair of rank 1. So the cells per measure are not
+#    all seven and are not stated. Readings: (a) all cells with both a baseline
 #    and a ZD7288 value for the measure; (b) the cells with all four measures.
 #  - O8, gene-resonance correlations. Pearson correlations on cells with CPM > 1, over "a
 #    subset of prevalent genes", BH-FDR per preparation. Table S3 lists the acute family: 10
@@ -174,6 +183,26 @@ claims:
     Analysis). Reproduced when both tests give p < 0.001 and the human median exceeds the
     mouse median for both measures. The dandiset holds only human layer 1 cells; mouse chirp
     data are an outside input the paper does not locate.
+- id: fig2ab-peak-range
+  statement: Both human and mouse interneurons show resonance peaks roughly in the 2 to 5 Hz
+    range.
+  source: Results, Human interneurons show widespread and stronger resonance, paragraph 3; Fig.
+    2a-b
+  quote: We found that both human and mouse interneurons exhibited resonance peaks roughly in the
+    2-5 Hz range
+  data: with_inputs
+  expected:
+  - quantity: peak resonance frequency of resonant cells, human and mouse (see criterion)
+    value: 3.65
+    tolerance: 1.85
+    unit: Hz
+  criterion: fres under O1, over resonant cells (fres > 1 Hz and Q > 1.05) of each species. The
+    paper does not say which summary of the fres distribution the range describes. Readings (a)
+    the median fres of resonant cells, per species, lies within 1.8 to 5.5 Hz (the range 2 to 5
+    widened by 10% of each bound, written as 3.65 +/- 1.85); (b) the interquartile range of fres of resonant cells, per species,
+    lies within 1.8 to 5.5 Hz. The Discussion gives "a clear peak detected between 1 and 6 Hz"
+    for human cells; it is reported. The mouse side needs mouse chirp data, which the paper does
+    not locate.
 - id: fig2c-resonant-proportion
   statement: A larger proportion of human than mouse interneurons are resonant (fres > 1 Hz and
     Q > 1.05), 32.7% against 9.3%.
@@ -644,7 +673,6 @@ claims:
     test: linear mixed-effects model, Type III Wald F-test
     statistic: F(3, 216.592) = 0.535
     p: 0.659
-  data: with_inputs
   criterion: Model as in fig3eg-human-fres-sag-rin on mouse cells. The absence parts are judged
     on the paper's test (sag main effect, input resistance by subclass interaction, each at p <
     0.05). Reproduced when the sag main effect gives p >= 0.05, the input resistance main
@@ -707,7 +735,6 @@ claims:
     test: linear mixed-effects model, Type III Wald F-test
     statistic: F(1, 204.982) = 0.052
     p: 0.82
-  data: with_inputs
   criterion: Model as in fig3ik-human-q-sag-rin on mouse cells. Reproduced when sag has a
     positive effect at p < 0.05 and input resistance gives p >= 0.05 (the absence judged on the
     paper's test); the sag slope is reported against 0.018.
@@ -722,7 +749,6 @@ claims:
     statistic: b = 1.350, SE = .408, t(56.294) = 3.305
     p: 0.002
     n: 61 human cells from 28 donors
-  data: with_inputs
   criterion: Needs morphological reconstructions and pia-soma distances, which the dandiset does
     not hold. Mixed model with donor intercept, under both readings of O9. Reproduced when the
     slope is positive with p < 0.05 under the reading the data allow; the slope is reported
@@ -779,7 +805,6 @@ claims:
     test: linear mixed-effects model, Type III Wald F-test
     statistic: F(1, 473.46) = 1.762
     p: 0.185
-  data: with_inputs
   criterion: Model as in fig4c-human-sag-depth on mouse LAMP5 and VIP cells. Reproduced when the
     distance effect is negative with p < 0.001 and the interaction gives p >= 0.05.
 - id: fig4df-human-no-depth
@@ -842,8 +867,10 @@ claims:
   data: with_inputs
   criterion: A claim of absence, judged on the paper's test, the model of Q and of fres on
     pia-soma distance with donor intercept (Fig. S2 legend), among L2/L3 cells, at p < 0.05.
-    How L2/L3 is assigned (layer label or depth bounds) is not stated; the layer label of each
-    cell is used, a standard choice. Reproduced when neither test gives p < 0.05. Table S3 gives
+    How L2/L3 is assigned is not stated, and it could change the outcome. The paper gives no
+    depth bounds, so the reading it allows is the layer label each cell carries in its source
+    data; the count is checked against the paper's 57 cells from 23 donors (114 for sag and
+    input resistance). Reproduced when neither test gives p < 0.05. Table S3 gives
     significant depth effects for f3dB (p = 0.008), sag (p = 0.005) and input resistance in this
     subset, which the text does not claim; they are reported.
 - id: fig4km-mouse-no-depth
@@ -865,7 +892,6 @@ claims:
     test: linear mixed-effects model, Type III Wald F-test
     statistic: F(1, 140.28) = 1.550
     p: 0.215
-  data: with_inputs
   criterion: A claim of absence, judged on the paper's test, the models of fres, f3dB and Q on
     pia-soma distance, subclass and their interaction with donor intercept, at p < 0.05 for the
     distance effect and the interaction. Reproduced when none of these reaches p < 0.05.
@@ -904,9 +930,8 @@ claims:
   criterion: Median changes from Table S3. These are new VU recordings that the paper says are
     available on request; they are not in the dandiset. Measures at -65 mV before and after 10
     uM ZD7288 (Methods, Patch-clamp ZD7288 experiments; O1, O2, O3), two-sided Wilcoxon
-    signed-rank tests per measure under both readings of O7. Reproduced when sag and fres fall,
-    input resistance and Q change in the stated direction (Q falls) with p < 0.05 each, and the
-    median changes are within tolerance.
+    signed-rank tests per measure under both readings of O7. Reproduced when sag, fres and Q fall
+    and input resistance rises, with p < 0.05 each, and the median changes are within tolerance.
 - id: figs3-zd7288-mouse
   statement: In mouse cortical interneurons, HCN blockade also reduces sag ratio, resonance
     strength and frequency measures.
@@ -935,10 +960,11 @@ claims:
     test: Wilcoxon signed-rank test
     statistic: V = 28
     p: 0.017
-  data: with_inputs
   criterion: New mouse recordings (prefrontal cortex), not in the dandiset and not located by the
     paper. Two-sided Wilcoxon signed-rank tests, baseline against ZD7288 (Fig. S3 legend).
-    Reproduced when sag ratio, Q and fres each fall with p < 0.05.
+    Reproduced when sag ratio, Q, fres and f3dB each fall with p < 0.05 (the legend's "ZD7288
+    reduced resonance parameters", panels n to p); the rise in input resistance (panel m) is
+    reported.
 - id: fig5g-culture-sag
   statement: Cultured LAMP5 and PV interneurons have higher sag ratios than acutely recorded ones,
     while input resistance does not differ between preparations.
@@ -1129,11 +1155,16 @@ claims:
     paragraph 3; Fig. 6b and Fig. S4a
   quote: all interneuron types showed ... high levels of expression of HCN1, KCNQ3/5, and
     CACNA1A/G gene transcripts
-  data: with_inputs
   criterion: Needs the Patch-seq transcriptomes, which the dandiset does not hold and the paper
     does not locate. Per gene and subclass, the fraction of cells with CPM > 1 and the mean CPM
-    (Methods, Patch-seq). "High" is not defined; read as the fraction expressing above one half
-    in every subclass for each of the five genes. Reproduced when that holds in acute cells.
+    (Methods, Patch-seq), in acute cells (Fig. 6b, LAMP5 256, VIP 116, PV 121, SST 20) and in
+    cultured cells (Fig. S4a, LAMP5 31, VIP 46, PV 271, SST 148). "High" is not defined by the
+    paper. Readings (a) for each of HCN1, KCNQ3, KCNQ5, CACNA1A and CACNA1G, more than half of
+    the cells express it (CPM > 1) in every subclass (a threshold not in the paper); (b) its
+    mean CPM exceeds that of KCNJ16, the gene the next sentence calls lower, in every subclass.
+    Reproduced when a reading holds in both preparations. The same sentence also lists CACNA1G
+    among the genes with lower mean expression, so the paper disagrees with itself on CACNA1G;
+    it is reported apart.
 - id: fig6c-gene-resonance-correlation
   statement: In acute human interneurons, KCNJ16 expression correlates positively with resonance
     strength and frequency, and HCN1 and CACNA1A expression correlate positively with resonance
@@ -1203,7 +1234,6 @@ claims:
     p: 0.015
     corrected: FDR
     n: 168 mouse cells
-  data: with_inputs
   criterion: As in fig6c-gene-resonance-correlation, on cultured human cells (family of Table S3,
     Fig. S4A) and on mouse cells (Fig. S4B). The cultured part is a claim of absence judged on
     FDR-adjusted p < 0.05. Reproduced when no cultured correlation reaches FDR p < 0.05 and, in
@@ -1229,7 +1259,8 @@ claims:
     value: 1.09
     tolerance: 0.009
   criterion: Model with Table S5's conductances, chirp of 62 s from 0.4 to 40 Hz, dt 0.1, peak
-    deflection within +/- 5 mV, LOWESS frac 0.04 (Methods, CHIRP Experiments). Q tolerances are
+    deflection within +/- 5 mV, LOWESS frac 0.04 (Methods, CHIRP Experiments; the Fig. 7 legend
+    gives 65 s, a variant). Q tolerances are
     10% of Q - 1. Reproduced when the -Ih model has no peak above Z0, Q of the baseline and
     doubled models are within tolerance, and doubling raises fres and lowers input resistance.
     The adapted model is not public, so this rests on rebuilding it from Table S5.
@@ -1276,8 +1307,10 @@ claims:
   data: elsewhere
   where: DataverseNL doi:10.34894/TONOHA (base model)
   criterion: Baseline model with passive conductance scaled 0.4 to 1.6 times (Fig. S5 legend).
-    Reproduced when fres rises with leak conductance and Q varies by less than its change under
-    doubled Ih (fig7ae-model-ih).
+    The paper gives no threshold for "not resonance strength". Reproduced when fres rises with
+    leak conductance and Q varies over that range by less than its change under doubled Ih
+    (fig7ae-model-ih, 1.04 to 1.09); this bound is a reading, not from the paper, and the Q
+    values are reported.
 - id: fig7fj-model-morphology
   statement: With equal conductance densities, sag ratio and resonance strength increase with
     morphology size, while 3 dB cutoff and resonance frequencies change with morphology, the human
@@ -1296,8 +1329,10 @@ claims:
     (b) as the Discussion says ("models with larger but less complex human-like morphological
     features would exhibit lower peak resonance and 3 dB cutoff frequencies") and the next
     paragraph implies (higher fres in the mouse model), lower in the human model. Reproduced when
-    sag and Q rise from mouse to reference to human (by size) and f3dB is lowest in the human
-    model, with the frequency ordering reported under both readings.
+    sag and Q rise from mouse to reference to human (by size, Results) and the fres and f3dB
+    ordering matches either reading; the ordering found is reported under both. The same
+    Discussion sentence also says the human-like model has lower resonance strength, against the
+    Results; the Q ordering is judged on the Results, and the conflict is recorded.
 - id: figs5-model-normalized-morphology
   statement: With total conductance normalized across morphologies, the human model still has a
     sharper impedance peak and the mouse model a higher peak resonance frequency, but resonance
@@ -1310,7 +1345,10 @@ claims:
   data: elsewhere
   where: DataverseNL doi:10.34894/TONOHA (base model); scaled conductances from Table S5
   criterion: Dendritic conductances scaled by 0.822 (reference) and 0.428 (human) as in Table S5.
-    "Sharper" is read as a lower f3dB. Reproduced when the human model has the lowest f3dB, the
+    "Sharper" is read as a lower f3dB, as the Discussion puts it ("Irrespective of conductance
+    scaling, however, computational models consistently predicted lower 3dB cutoffs in
+    human-like morphological models"). The Results cite Fig. S5 for this; the panels are Fig.
+    S6e-k (legend). Reproduced when the human model has the lowest f3dB, the
     mouse model the highest fres, and Q of the human model is not above that of the mouse model.
 - id: fig8bc-firing-resonance
   statement: The resonant model (+Ih +Ca) is more excitable than the non-resonant model (rheobase
@@ -1351,10 +1389,13 @@ claims:
     models
   data: elsewhere
   where: DataverseNL doi:10.34894/TONOHA (base model); the resonant model is not deposited
-  criterion: Protocol of Methods, Modulation of firing, and Table S5 (sd, I0, I1, 10 cycles, 10 x
-    f trials, 20 bins per cycle, sine fit). "Peak" is read as a maximum of M/R and of gain at an
-    input frequency above 1 Hz. Reproduced when that holds for +Ih +Ca and not for +Ih or -Ih.
-    Rests on fig7-model-ca.
+  criterion: Protocol of Methods, Modulation of firing, and Table S5 (sd, I0, I1, 10 cycles, 20
+    bins per cycle, sine fit; inputs of 1, 5, 7, 10, 12 and 20 Hz). The Methods give 10 x f
+    trials, while Table S5 lists 100 to 400 trials for 5 to 20 Hz, that is 20 x f; both are
+    readings. "Peak" is not defined; it is read as a maximum of M/R and of gain at an input
+    frequency above 1 Hz (a reading, not from the paper). Reproduced when that holds for +Ih +Ca
+    and not for +Ih or -Ih. "In phase" is not defined either; the phase of signal gain at 1 and
+    5 Hz is reported for the three models. Rests on fig7-model-ca.
   depends_on:
   - fig7-model-ca
 - id: fig8hk-morphology-firing
@@ -1404,6 +1445,14 @@ claims:
     test: Mann-Whitney U
     statistic: U = 2611
     p: 0.493
+  - about: region, input resistance
+    test: Kruskal-Wallis
+    statistic: KW = 3.72
+    p: 0.293
+  - about: pathology, input resistance
+    test: Mann-Whitney U
+    statistic: U = 8207
+    p: 0.780
   - about: region, sag ratio
     test: Kruskal-Wallis
     statistic: KW = 19.53
@@ -1417,6 +1466,30 @@ claims:
   data: with_labels
   criterion: Region (lobe) and disease per donor from Table S1. The absence parts are judged on
     the paper's tests, Kruskal-Wallis across the four lobes and Mann-Whitney U between epilepsy
-    and tumour, at p < 0.05 (Fig. S1 legend; O1). Reproduced when fres, Q and f3dB give p >=
-    0.05 in both tests; sag ratio (O2) is reported. Which cells enter (acute only, or acute and
+    and tumour, at p < 0.05 (Fig. S1 legend; O1, O3). Reproduced when fres, Q, f3dB and input
+    resistance give p >= 0.05 in both tests; sag ratio (O2) is reported. Which cells enter (acute only, or acute and
     cultured) is not stated; readings (a) acute cells, (b) all human cells.
+checks:
+- date: 2026-11-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2ab-peak-range. Added; the Results state that human and mouse interneurons show resonance peaks roughly in the 2 to 5 Hz range (Fig. 2a-b), a main finding with no claim. The range is written as 3.65 +/- 1.85 Hz (2 to 5 widened by 10% of each bound), and the summary it describes (median or interquartile range of resonant cells) is named as open.
+  - fig3fh-mouse-fres, fig3jl-mouse-q-sag-rin, fig4i-mouse-sag-depth, fig4km-mouse-no-depth, figs3-zd7288-mouse, figs4-culture-mouse-genes, fig6b-channel-expression, fig4b-tdl-depth. Removed `data with_inputs`; these use none of the dandiset's recordings (mouse only, mouse ZD7288, transcriptomes or morphologies), while with_inputs is for outside data that supplement an analysis run on the dataset (protocol, author step 4). The paper names no public source for these data (ref. 27 is cited by this dandiset's DOI, ref. 2 is human, the new recordings are on request), so they keep the default and are blocked as data_missing unless found public (protocol, reader step 3, papers that reuse datasets). Header updated to say so.
+  - figs3-zd7288-mouse. Criterion now also requires f3dB to fall; the statement says frequency measures, and the Fig. S3 legend says ZD7288 reduced the resonance parameters of panels n to p, which include f3dB (Table S3, V = 28, p = 0.017). The rise in input resistance is reported.
+  - fig5be-zd7288-human. Criterion said input resistance and Q change "in the stated direction (Q falls)"; rewritten to say sag, fres and Q fall and input resistance rises, as the Results and Fig. 5b-e state.
+  - figs1-region-pathology. The statement includes input resistance but the statistics and criterion left it out; added the Fig. S1 legend's tests (KW = 3.72, p = .293; U = 8207, p = .780) and input resistance to the criterion.
+  - fig6b-channel-expression. The criterion fixed "high" as more than half of cells expressing, a threshold not in the paper, and tested acute cells only while the statement covers both preparations. Now names two readings (fraction above one half, flagged as not from the paper; mean CPM above KCNJ16, which the paper calls lower), applies them to acute (Fig. 6b) and cultured (Fig. S4a) cells with the legends' counts, and records that the paper lists CACNA1G both as high and as lower.
+  - fig7fj-model-morphology. The criterion required f3dB to be lowest in the human model, which is reading (b) only and contradicts reading (a) it had just named. Now reproduced when sag and Q rise with size and the frequency ordering matches either reading. Recorded that the same Discussion sentence says human-like models have lower resonance strength, against the Results.
+  - figs5-model-gpas. The bound on Q (less than its change under doubled Ih) was given as if from the paper; now marked as a reading, with the Q values reported.
+  - fig8eg-noisy-modulation. The criterion cited 10 x f trials to the Methods and Table S5; Table S5 lists 100 to 400 trials for 5 to 20 Hz, that is 20 x f, so both are named as readings. The "peak" rule is marked as a reading not from the paper, and the phase at 5 Hz, which the statement includes, is now reported.
+  - figs5-model-normalized-morphology. The reading of "sharper" as a lower f3dB is now cited to the Discussion, and the Results' citation of Fig. S5 is noted as pointing at Fig. S6e-k.
+  - fig7ae-model-ih. Noted that the Fig. 7 and Fig. S6 legends give a 65 s chirp against the Methods' 62 s; 65 s is a variant.
+  - figs2-l23-no-depth. The L2/L3 assignment was called a standard choice; it can change the outcome, so it is now stated as open, with the layer label as the reading the paper allows and the paper's counts as the check.
+  - Header O6. Confirmed by computation that the goodness-of-fit reading reproduces every per-subclass chi-square of Fig. 5i (cultured LAMP5 13 of 21, PV 104 of 125, SST 39 of 94, VIP 7 of 28, 163 of 268 in all, 60.8%), and the 2x2 Pearson reading the overall values of Fig. 2c (43.05) and Fig. 5i (44.98). VIP gives chi-square 0 and p = 1, not the printed 0.100.
+  - Header O7. Corrected the exact Wilcoxon floors; n = 8 also cannot give p = 0.004 (floor 0.008), and p = 0.031 arises from 6 cells or from 7 cells with one discordant pair, so 0.031 does not show 6 cells.
+  - Checked. Every value the checker could not find (30, all from Table S3) was confirmed against the supplement PDF's text layer (pypdf), as were the other Table S3 statistics and medians in the file, the Table S4 counts and the Table S5 scaling factors.
+  - Open. The paper's code (github.com/nsham2/Shamugia_et_al_2026) was not available to the first reader; the chirp analysis (O1), sag (O2), input resistance (O3), Vm (O4) and model software (O5) remain readings from IPFX and standard practice.
+  - Open. The public source of the mouse recordings, the cultured recordings, the Lee et al. 2023 recordings, the Patch-seq transcriptomes and the reconstructions is not named by the paper; whether the claims that need them can be tested rests on the author finding them.
+  - Open. No figure was viewed (no main-text PDF; the Fig. 3b schematic of sag and input resistance is unseen), and the text and Table S3 disagree in the places listed under O10 (Fig. 2c chi-square, Fig. 2d SST p, Fig. 2g VIP p, Fig. 5l VIP and PV p, Fig. 5j acute medians, mouse n 248 against 268).
