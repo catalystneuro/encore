@@ -691,8 +691,9 @@ def test_the_about_page_names_the_archives_draws_the_steps_and_points_authors_an
     for k in archives:
         assert html.escape(site.ARCHIVES[k]["name"]) in about
     assert "the only archive" not in about
-    # The diagram: one box a step, labelled for screen readers, and the list still in full.
-    assert 'id="flow"' in about and 'role="img" aria-label="The six steps of an attempt' in about
+    # The diagram: one box a step, the last of them the authors' response, labelled for screen readers, and the list still in full.
+    assert 'id="flow"' in about and 'role="img" aria-label="The seven steps of an attempt' in about
+    assert site.ABOUT_STEPS[-1][0] == "The paper's authors respond" and "by the paper&#x27;s authors" in about
     for head, _ in site.ABOUT_STEPS:
         assert about.count(f">{html.escape(head)}<") >= 2
     assert html.escape(site.RESPOND_URL) in about and "docs/badges.md" in about

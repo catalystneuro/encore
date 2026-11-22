@@ -2498,6 +2498,9 @@ HOME_STEPS = [
     ("The result is a record anyone can check",
      "Every claim has an outcome and the reasoning behind it. The notebook runs again in a clean environment, and the "
      "agents' transcripts are kept with the record."),
+    ("The paper's authors can respond",
+     "An author of the paper who thinks a check is wrong, or who has something to add, responds from the paper's "
+     "page. Once we confirm who wrote the response, it is shown there with the check."),
 ]
 
 # The outcomes in a sentence each, as the protocol defines them (docs/protocol.md, "One outcome per claim").
@@ -2887,14 +2890,18 @@ ABOUT_STEPS = [
     ("Record and publish",
      "The attempt is added to the registry's records. The notebook runs again in a clean environment, "
      "and once the checks pass the attempt is merged and appears here."),
+    ("The paper's authors respond",
+     "At any time after, an author of the paper who thinks the attempt is wrong, or who has something to add, can "
+     "respond with the form on the paper's page. Once a maintainer confirms who wrote the response, it is shown on "
+     "the paper's page with the attempt."),
 ]
 # Who does each step, as the diagram on the About page labels it (docs/pipeline.md, "Steps").
 ABOUT_ROLES = ["Queue runner", "Reader agents", "Author agent", "Verifier agent", "Verifier agent",
-               "Checks, then the recorder agent"]
+               "Checks, then the recorder agent", "Paper's authors"]
 
 
 def about_flow() -> str:
-    """The six steps of ABOUT_STEPS as a picture: one box a step, with who does it, and the author's revision after
+    """The steps of ABOUT_STEPS as a picture: one box a step, with who does it, and the author's revision after
     each verification. Drawn with the site's colours, so that it follows the theme; the list beside it says the rest."""
     w, box, gap, pill, pgap = 300, 46, 22, 26, 18
     parts, y = [], 1
@@ -2915,7 +2922,7 @@ def about_flow() -> str:
             parts.append(f'<rect x="{w // 2 - 70}" y="{top + pgap}" width="140" height="{pill}" rx="{pill // 2}" class="fp"/>'
                          f'<text x="{w // 2}" y="{top + pgap + 17}" class="fq">Author revises</text>')
             y = top + pgap + pill + gap
-    label = ("The six steps of an attempt, in order: " + "; ".join(
+    label = ("The seven steps of an attempt, in order: " + "; ".join(
         f"{i + 1}, {head.lower()}, by the {ABOUT_ROLES[i][0].lower() + ABOUT_ROLES[i][1:]}"
         for i, (head, _) in enumerate(ABOUT_STEPS)) + ". The author revises after each verification.")
     h = y - gap + 1
