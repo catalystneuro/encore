@@ -186,6 +186,12 @@ outcomes:
     usual way to put Neuropixels 1.0 sites on one depth axis.
 - claim: speed-threshold-robust
   outcome: partially_reproduced
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion has no clause for a partial result and asks for EEG, LFP and CSD at every threshold. LFP
+      fails at 5 cm/s (p = 0.098) and CSD from 0.5 cm/s (p = 0.074 to 0.36), as the criterion check added to the
+      threshold cell shows. The same rule made fig3e-lf-synchrony-reduced not reproduced in round 1, and the verifier
+      of round 2 gives not reproduced.
   assumed: true
   notebook: reproduce_russo_2025.ipynb
   output: claim:speed-threshold-robust
@@ -331,12 +337,22 @@ outcomes:
     with an adaptive kernel (Methods, Unit analyses, ref. 138). Unit analyses use the trials the file marks valid.
 - claim: figs10a-fs-trn-no-modulation
   outcome: partially_reproduced
+  proposed:
+    outcome: reproduced
+    reason: The criterion fixes the test as the reading adopted in fig3a, (c), and under it neither FS (p = 0.35)
+      nor TRN (p = 0.88) gives p < 0.05. The partial outcome rested on a within-session check that the criterion
+      does not contain, applied to this claim only; the same check gives p = 0.19 for fig3a, whose outcome follows
+      reading (c). Following the criterion for both, as the verifier of round 2 recommends, figs10a is reproduced
+      and the assumption is dropped; the notes keep that the FS part does not hold within sessions (van Elteren
+      p = 1.3e-08), as fig3a's notes keep its p = 0.19. The table added to the FS and TRN cell sets the three tests
+      side by side.
   notebook: reproduce_russo_2025.ipynb
   output: claim:figs10a-fs-trn-no-modulation
   notes: 'TRN part holds, FS part does not. Under the per-trial reading (c) adopted for fig3a: FS 22.1 against 20.3
     Hz (p = 0.35), TRN 31.2 against 30.3 Hz (p = 0.88), which the criterion would count as reproduced. But FS rates
     are lower during running per unit (43 units, p = 0.0068), per mouse (8 mice, p = 0.039), and within sessions:
-    lower in 6 of 8 sessions, significantly in 5, session-stratified van Elteren p = 1.3e-08. The pooled per-trial
+    lower in 6 of 8 sessions, significantly in 5 (higher in 569069, 27.6 against 22.8 Hz, p = 0.0033), session-stratified
+    van Elteren p = 1.3e-08. The pooled per-trial
     test hides the decrease because sessions differ in rate and in their fractions of active trials, so it does
     not show an absence of modulation. TRN does not differ under any reading (p = 0.31 to 1; 18 units, 6 mice) nor
     within sessions (van Elteren p = 0.39). With the one responsive RT unit added to TRN, the pooled per-trial test
@@ -511,6 +527,11 @@ outcomes:
     (one responsive unit, in 546655), as the Methods classify thalamic units by width without naming the areas.
 - claim: fig2fg-opto-thalamic-inhibition-delays-rebound
   outcome: partially_reproduced
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion has no clause for a partial result and asks that all six signed-rank tests give p < 0.05;
+      SM-TH 75 against 125 ms gives p = 0.20, as the criterion check added to the delay cell shows. That the LFP
+      part cannot be tested does not change that a tested part fails. The verifier of round 2 gives not reproduced.
   notebook: opto_russo_2025.ipynb
   output: claim:fig2fg-opto-thalamic-inhibition-delays-rebound
   notes: 'Unit parts on the figshare deposit, light over the thalamus (4 mice): SM-TH relay delays 47.0 +- 13.0
@@ -541,8 +562,12 @@ outcomes:
     0.026), as the Figure S8B legend reports. Units from 3 (SM-TH, 206) and 4 (MOs, 227) mice; the deposit has light-over-MOs
     sessions in 5 mice, where the paper reports 2. 196 of the 206 SM-TH units are from 717477. By mouse the SM-TH
     shifts are -27.9 to -10.6 ms (75 ms light; -27.9 from the one unit of 717476) and -11.6 to 1.9 ms (125 ms),
-    the MOs shifts -11.5 to 17.7 and -12.8 to 23.9 ms, all smaller in size than the SM-TH shifts with thalamic light,
-    so no choice of two mice changes the outcome.'
+    the MOs shifts -11.5 to 17.7 and -12.8 to 23.9 ms, all smaller in size than the SM-TH shifts with thalamic light.
+    Over the ten pairs of the five mice the SM-TH shifts are smaller than with thalamic light in each of the nine
+    pairs with responsive relay units, but all six means are within the paper''s values in six pairs only: 670246
+    with 671439 and 671439 with 717476 put SM-TH means with light outside (156.9 to 162.5 ms), and 671439 with 673553
+    puts all three MOs means (150.4 to 162.4 ms, from 673553) and two SM-TH means outside; 670246 with 673553 has
+    no responsive relay units. So the outcome depends on which two mice the paper used.'
   deviations:
   - Responsive relay and RS units, as for fig2fg.
 - claim: fig2h-opto-gaba-suppresses-both
@@ -569,7 +594,8 @@ outcomes:
     here: the notebook fetches it at the commit, builds it with its Makefile and times 200 ms of the published network.
     The branch ships the rest parameters (thalamic acetylcholine 1.3, CX to TC and CX to RE miniEPSP 30), and the
     Methods give the active state (miniEPSP 50, acetylcholine 1). One simulated second takes about 123 s on one
-    thread and 83 s on four, so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
+    thread and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and
+    113 s in the run of round 2), so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
     stops 250 ms after its pulse, about 2.3 h with four single-thread runs at once (450 s and about 3.8 h for the Methods''
     15 s trials), against the notebook limit of one hour. The analysis (figshare doi:10.6084/m9.figshare.25773501.v1)
     is MATLAB and was not ported.'
@@ -582,7 +608,8 @@ outcomes:
     here: the notebook fetches it at the commit, builds it with its Makefile and times 200 ms of the published network.
     The branch ships the rest parameters (thalamic acetylcholine 1.3, CX to TC and CX to RE miniEPSP 30), and the
     Methods give the active state (miniEPSP 50, acetylcholine 1). One simulated second takes about 123 s on one
-    thread and 83 s on four, so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
+    thread and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and
+    113 s in the run of round 2), so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
     stops 250 ms after its pulse, about 2.3 h with four single-thread runs at once (450 s and about 3.8 h for the Methods''
     15 s trials), against the notebook limit of one hour. The analysis (figshare doi:10.6084/m9.figshare.25773501.v1)
     is MATLAB and was not ported.'
@@ -595,7 +622,8 @@ outcomes:
     here: the notebook fetches it at the commit, builds it with its Makefile and times 200 ms of the published network.
     The branch ships the rest parameters (thalamic acetylcholine 1.3, CX to TC and CX to RE miniEPSP 30), and the
     Methods give the active state (miniEPSP 50, acetylcholine 1). One simulated second takes about 123 s on one
-    thread and 83 s on four, so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
+    thread and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and
+    113 s in the run of round 2), so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
     stops 250 ms after its pulse, about 2.3 h with four single-thread runs at once (450 s and about 3.8 h for the Methods''
     15 s trials), against the notebook limit of one hour. The analysis (figshare doi:10.6084/m9.figshare.25773501.v1)
     is MATLAB and was not ported. This claim adds runs with TRN silenced, with IN silenced and over a grid of GABA-A
@@ -609,7 +637,8 @@ outcomes:
     here: the notebook fetches it at the commit, builds it with its Makefile and times 200 ms of the published network.
     The branch ships the rest parameters (thalamic acetylcholine 1.3, CX to TC and CX to RE miniEPSP 30), and the
     Methods give the active state (miniEPSP 50, acetylcholine 1). One simulated second takes about 123 s on one
-    thread and 83 s on four, so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
+    thread and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and
+    113 s in the run of round 2), so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
     stops 250 ms after its pulse, about 2.3 h with four single-thread runs at once (450 s and about 3.8 h for the Methods''
     15 s trials), against the notebook limit of one hour. The analysis (figshare doi:10.6084/m9.figshare.25773501.v1)
     is MATLAB and was not ported.'
@@ -622,7 +651,8 @@ outcomes:
     here: the notebook fetches it at the commit, builds it with its Makefile and times 200 ms of the published network.
     The branch ships the rest parameters (thalamic acetylcholine 1.3, CX to TC and CX to RE miniEPSP 30), and the
     Methods give the active state (miniEPSP 50, acetylcholine 1). One simulated second takes about 123 s on one
-    thread and 83 s on four, so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
+    thread and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and
+    113 s in the run of round 2), so the 30 trials (pulse at 8 to 9.75 s) need 274 s of simulation even when each trial
     stops 250 ms after its pulse, about 2.3 h with four single-thread runs at once (450 s and about 3.8 h for the Methods''
     15 s trials), against the notebook limit of one hour. The analysis (figshare doi:10.6084/m9.figshare.25773501.v1)
     is MATLAB and was not ported.'
@@ -649,8 +679,8 @@ findings:
   about: data
   severity: none
   statement: 'The EEG, the LFP, the units and the trial table share a clock: each trial onset is within 0.4 ms of
-    an EEG and LFP sample, the stimulation artifact in the raw trial-averaged EEG and LFP sits within one sample
-    of the onset in every session, and units fire at 18 to 41 Hz in 2 to 10 ms after the pulse against 2 to 7 Hz
+    an EEG and LFP sample, in the raw trial-averaged signals the stimulation artifact sits within 0.2 ms of the
+    onset in the EEG and within 0.6 ms (1.5 samples at 2.5 kHz) in the LFP of every session, and units fire at 18 to 41 Hz in 2 to 10 ms after the pulse against 2 to 7 Hz
     before it, in every mouse.'
 - kind: selection_undocumented
   about: data
@@ -933,57 +963,342 @@ verifications:
       the 6 rising SM-TH units with thalamic light are 5 VPM units under 0.35 ms in 627041 (196 to 387 Hz during
       the light) and one CL unit. Outcome unchanged.
   - claim: fig4e-model-latencies
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: Blocked (other). Not attempted. The notebook says only not runnable in cell 0, with no reason or attempt
       shown. The criteria ask for a rerun. The model's stim branch exists (refs/heads/stim 76ea885) and the figshare
       analysis article 25773501 resolves. The blocking is unsupported (problem 1).
     response: 'Kept blocked as not_runnable, now shown in the notebook: a model section fetches the branch at 76ea885,
       builds it and times 200 ms of the published network. One simulated second takes about 123 s on one thread
-      and 83 s on four, so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
+      and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and 113 s in the run
+      the round-2 verifier saw), so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
       against the one-hour notebook limit (fig4hi needs more runs). The notes give the numbers. The verifier''s
       outcome was blocked too, with blocked_by other.'
   - claim: fig4f-model-tc-hyperpolarization
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: Blocked (other). Not attempted. The notebook says only not runnable in cell 0, with no reason or attempt
       shown. The criteria ask for a rerun. The model's stim branch exists (refs/heads/stim 76ea885) and the figshare
       analysis article 25773501 resolves. The blocking is unsupported (problem 1).
     response: 'Kept blocked as not_runnable, now shown in the notebook: a model section fetches the branch at 76ea885,
       builds it and times 200 ms of the published network. One simulated second takes about 123 s on one thread
-      and 83 s on four, so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
+      and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and 113 s in the run
+      the round-2 verifier saw), so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
       against the one-hour notebook limit (fig4hi needs more runs). The notes give the numbers. The verifier''s
       outcome was blocked too, with blocked_by other.'
   - claim: fig4hi-model-gaba-contributions
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: Blocked (other). Not attempted. The notebook says only not runnable in cell 0, with no reason or attempt
       shown. The criteria ask for a rerun. The model's stim branch exists (refs/heads/stim 76ea885) and the figshare
       analysis article 25773501 resolves. The blocking is unsupported (problem 1).
     response: 'Kept blocked as not_runnable, now shown in the notebook: a model section fetches the branch at 76ea885,
       builds it and times 200 ms of the published network. One simulated second takes about 123 s on one thread
-      and 83 s on four, so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
+      and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and 113 s in the run
+      the round-2 verifier saw), so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
       against the one-hour notebook limit (fig4hi needs more runs). The notes give the numbers. The verifier''s
       outcome was blocked too, with blocked_by other.'
   - claim: figs14a-model-hf-more-input
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: Blocked (other). Not attempted. The notebook says only not runnable in cell 0, with no reason or attempt
       shown. The criteria ask for a rerun. The model's stim branch exists (refs/heads/stim 76ea885) and the figshare
       analysis article 25773501 resolves. The blocking is unsupported (problem 1).
     response: 'Kept blocked as not_runnable, now shown in the notebook: a model section fetches the branch at 76ea885,
       builds it and times 200 ms of the published network. One simulated second takes about 123 s on one thread
-      and 83 s on four, so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
+      and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and 113 s in the run
+      the round-2 verifier saw), so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
       against the one-hour notebook limit (fig4hi needs more runs). The notes give the numbers. The verifier''s
       outcome was blocked too, with blocked_by other.'
   - claim: figs14b-model-state-effects
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: Blocked (other). Not attempted. The notebook says only not runnable in cell 0, with no reason or attempt
       shown. The criteria ask for a rerun. The model's stim branch exists (refs/heads/stim 76ea885) and the figshare
       analysis article 25773501 resolves. The blocking is unsupported (problem 1).
     response: 'Kept blocked as not_runnable, now shown in the notebook: a model section fetches the branch at 76ea885,
       builds it and times 200 ms of the published network. One simulated second takes about 123 s on one thread
-      and 83 s on four, so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
+      and 82 s on four (121 to 123 s and 82 to 83 s in the runs of the second revision, 158 s and 113 s in the run
+      the round-2 verifier saw), so the 30 trials need at least 274 s of simulation, about 2.3 h with four runs at once,
       against the one-hour notebook limit (fig4hi needs more runs). The notes give the numbers. The verifier''s
       outcome was blocked too, with blocked_by other.'
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'The full re-executed notebooks after round 1 (main, 105 cells, and optogenetic, 18 cells) with their conclusions
+    and summaries, the helper modules, the attempt record and the claims file, with the paper. The record rates no finding
+    critical, and the verifier saw none that should be; it found finding 4 supported by cells 5 and 7 apart from the
+    ''one sample'' wording, and finding 1 rated correctly as major. It found no new misreading of the paper in the claims
+    file. Text points not tied to a claim, corrected in this revision: cell 8 gave waveform_duration as about 0.15 to
+    1.5 where cell 7 prints 0.110 to 2.074 (now quoted); cell 103 and finding 4 said the artifact sits within one sample
+    of every trial onset, where cell 5 prints an LFP lag of 0.6 ms in 7 sessions on the trial-averaged signal (now 0.2
+    ms in the EEG and 0.6 ms, 1.5 samples, in the LFP, on the trial-averaged signals). Round-1 point 8 (the EEG artifact
+    mask spans -3.2 to +2.4 ms): the helper''s module header and the docstring of mask_artifact_reversed state this span,
+    which lies outside every analysis window, so the code is unchanged.'
+  results:
+  - claim: source-data-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig1a-tms-late-rest-active
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig1b-ieeg-late-rest-active
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: figs2-tms-controls
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: figs2a-tms-early-component
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: figs3b-ieeg-early-no-modulation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig5a-human-mouse-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig1c-eeg-late-rest-larger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig1d-lfp-late-rest-larger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig1e-csd-late-rest-larger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The CSD row averaging is stated and reasonable.
+    response: No change of outcome.
+  - claim: figs1b-mouse-plf
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The CSD row averaging is stated and reasonable.
+    response: No change of outcome.
+  - claim: figs4-intensity-dependence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The CSD row averaging is stated and reasonable.
+    response: No change of outcome.
+  - claim: speed-threshold-robust
+    agrees: false
+    outcome: not_reproduced
+    reason: LFP fails at 5 cm/s and CSD fails from 0.5 cm/s (cell 27), and the criterion needs all three signals at every
+      threshold. The criterion has no partial clause, and in round 1 the verifier rejected partially reproduced for fig3e-lf
+      on that ground; accepting partial here in round 1 was inconsistent with that ruling. Marked as assumed, its only
+      stated assumption is the CSD row averaging, which is fine.
+    response: Outcome kept, as round 2 may not change it; not reproduced is proposed on the outcome. A check that applies
+      the criterion as written (each signal at each threshold) is added to cell 27, and cell 28 states the proposal.
+  - claim: figs5-early-component-mouse
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. This passes only because CSD gives p = 0.048 under reading (b); the record says so. The CSD row averaging
+      is stated and reasonable.
+    response: No change of outcome.
+  - claim: figs6-posterior-no-modulation
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: triphasic-pattern
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Baselines and smoothed versions are now shown; the outcome stays partial, as only the RS value at
+      20 ms smoothing falls in range and no width brings the relay value close.
+    response: No change of outcome.
+  - claim: fig2b-thalamus-leads
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The GFP variant over valid channels has been run. The CSD row averaging is stated and reasonable.
+      The GFP baseline window is stated and reasonable.
+    response: No change of outcome.
+  - claim: figs7a-active-shorter-latency
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The GFP baseline window is stated and reasonable.
+    response: No change of outcome.
+  - claim: figs7b-latency-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The GFP baseline window is stated and reasonable.
+    response: No change of outcome.
+  - claim: fig3a-thalamic-rate-higher-active
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced follows the criterion, which accepts reading (c); the record now says plainly that the session-stratified
+      test gives p = 0.19 (cell 48). But the within-session check that the record applies to figs10a would sink fig3a,
+      which stays reproduced; the two claims should be handled alike, and the verifier recommends following the criterion
+      for both, flagged as fragile.
+    response: Outcome kept, following the criterion. figs10a now carries a proposed change to reproduced on the same
+      rule, and a table added to cell 55 sets reading (c) and the van Elteren test of fig3a, FS and TRN side by side.
+  - claim: figs9-mos-rate-no-modulation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: figs10a-fs-trn-no-modulation
+    agrees: false
+    outcome: reproduced
+    reason: As written, the criterion gives reproduced under reading (c), with FS p = 0.35 and TRN p = 0.88 (cell 54).
+      The assumption that the pooled per-trial test does not show an absence of modulation is stated and sound on its
+      merits (session-stratified FS p = 1.3e-08, cell 55), but the record does not apply it to fig3a, which the same
+      check sinks (p = 0.19). Either follow the criterion for both (both reproduced, both flagged as fragile) or apply
+      the within-session check to both (fig3a not reproduced; figs10a not reproduced, since its FS part fails and there
+      is no partial clause); the verifier recommends following the criterion for both. Cell 56 also omits that FS is
+      significantly higher during running in 569069 (p = 0.0033, cell 55).
+    response: Outcome kept, as round 2 may not change it; reproduced is proposed on the outcome, following the criterion
+      as for fig3a and dropping the within-session assumption. Cell 55 now prints the criterion's result next to the
+      stratified test for fig3a, FS and TRN, and cell 56 states the proposal and the 569069 result; the notes add 569069.
+  - claim: fig3b-bimodal-isi
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The HF and LF group sizes are now stated in the text.
+    response: No change of outcome.
+  - claim: figs11d-hf-earlier-less-variable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: figs12-intensity-shifts-to-hf
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig3e-baseline-rate-doubles
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig3e-lf-synchrony-reduced
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: fig3e-hf-frequency-reduced
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: figs13-thalamic-features-predict-eeg
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: figs13d-lf-crosscorrelation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change of outcome.
+  - claim: discussion-orthodromic-initial-excitation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The TRN variant with RT units has been run.
+    response: No change of outcome.
+  - claim: fig2fg-opto-thalamic-inhibition-delays-rebound
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion needs all six signed-rank tests to pass, and SM-TH Opto75 against Opto125 gives p = 0.20 (cell
+      8 of the opto notebook). The criterion has no partial clause. The LFP part cannot be tested, but that does not
+      change the result. The pairing of units across folders is now checked (1432 of 1432).
+    response: Outcome kept, as round 2 may not change it; not reproduced is proposed on the outcome. A check that applies
+      the unit part of the criterion is added to cell 8 of the opto notebook, and cell 9 states the proposal.
+  - claim: figs8b-opto-cortical-inhibition-minimal
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. But ''no choice of two mice changes the outcome'' (opto cell 13 and the notes) is overstated: the
+      MOs means of 673553 (150.4, 159.6 and 162.4 ms, cell 12) are below the tolerance floors of 169, 173 and 176 ms,
+      so a pair in which 673553 supplies all the MOs units, for example 673553 with 671439, puts all three MOs means
+      outside tolerance. The sentence holds only for the shift part of the criterion.'
+    response: 'Outcome kept. Added to cell 12 the ten pairs of the five mice: the SM-TH shifts are smaller than with
+      thalamic light in all nine pairs with responsive relay units, but all six means are within tolerance in six pairs
+      only (three pairs put means outside, one has no relay units). Cell 13 and the notes now say this and that the outcome
+      depends on which two mice the paper used.'
+  - claim: fig2h-opto-gaba-suppresses-both
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The light-alone alignment is stated and now supported by the PSTH in cell 16. Cell 17 describes the
+      rising VPM units 'as expected of GABAergic units driven by the light'; nothing in the outputs shows they are GABAergic,
+      and they could be mislocated TRN units or a light artifact. Cell 17 also has a stray '**'.
+    response: Outcome kept. Cell 17 now says the outputs do not show what the rising units are and names the three possibilities;
+      the stray '**' is removed. The phrase was not in the record.
+  - claim: fig4e-model-latencies
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable is reasonable, since the re-executed timing in cell 101 shows the runs take longer
+      than the 1 h limit. But cell 102 says about 120 s on one thread and 80 s on four and about 2.3 h, while cell 101
+      prints 158 s and 113 s per simulated second, 3.0 h for four single-thread runs and 4.9 h for the 15 s trials; the
+      record's 123 s, 83 s, 2.3 h and 3.8 h appear nowhere in the outputs. The conclusion still holds, with more margin.
+      In round 1 the verifier gave blocked (other) and called the blocking unsupported, so the round-1 agrees flag overstates
+      the agreement.
+    response: Outcome kept. The two re-runs print 121 to 123 s and 82 to 83 s per simulated second, 2.3 h for four single-thread runs
+      and 3.8 h for the 15 s trials; cell 102, the notes and the round-1 responses now give these values and say that
+      the run the verifier saw gave 158 s and 113 s. The round-1 agrees flag of the five model claims is corrected to
+      false.
+  - claim: fig4f-model-tc-hyperpolarization
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable is reasonable, since the re-executed timing in cell 101 shows the runs take longer
+      than the 1 h limit. But cell 102 says about 120 s on one thread and 80 s on four and about 2.3 h, while cell 101
+      prints 158 s and 113 s per simulated second, 3.0 h for four single-thread runs and 4.9 h for the 15 s trials; the
+      record's 123 s, 83 s, 2.3 h and 3.8 h appear nowhere in the outputs. The conclusion still holds, with more margin.
+      In round 1 the verifier gave blocked (other) and called the blocking unsupported, so the round-1 agrees flag overstates
+      the agreement.
+    response: Outcome kept. The two re-runs print 121 to 123 s and 82 to 83 s per simulated second, 2.3 h for four single-thread runs
+      and 3.8 h for the 15 s trials; cell 102, the notes and the round-1 responses now give these values and say that
+      the run the verifier saw gave 158 s and 113 s. The round-1 agrees flag of the five model claims is corrected to
+      false.
+  - claim: fig4hi-model-gaba-contributions
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable is reasonable, since the re-executed timing in cell 101 shows the runs take longer
+      than the 1 h limit. But cell 102 says about 120 s on one thread and 80 s on four and about 2.3 h, while cell 101
+      prints 158 s and 113 s per simulated second, 3.0 h for four single-thread runs and 4.9 h for the 15 s trials; the
+      record's 123 s, 83 s, 2.3 h and 3.8 h appear nowhere in the outputs. The conclusion still holds, with more margin.
+      In round 1 the verifier gave blocked (other) and called the blocking unsupported, so the round-1 agrees flag overstates
+      the agreement.
+    response: Outcome kept. The two re-runs print 121 to 123 s and 82 to 83 s per simulated second, 2.3 h for four single-thread runs
+      and 3.8 h for the 15 s trials; cell 102, the notes and the round-1 responses now give these values and say that
+      the run the verifier saw gave 158 s and 113 s. The round-1 agrees flag of the five model claims is corrected to
+      false.
+  - claim: figs14a-model-hf-more-input
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable is reasonable, since the re-executed timing in cell 101 shows the runs take longer
+      than the 1 h limit. But cell 102 says about 120 s on one thread and 80 s on four and about 2.3 h, while cell 101
+      prints 158 s and 113 s per simulated second, 3.0 h for four single-thread runs and 4.9 h for the 15 s trials; the
+      record's 123 s, 83 s, 2.3 h and 3.8 h appear nowhere in the outputs. The conclusion still holds, with more margin.
+      In round 1 the verifier gave blocked (other) and called the blocking unsupported, so the round-1 agrees flag overstates
+      the agreement.
+    response: Outcome kept. The two re-runs print 121 to 123 s and 82 to 83 s per simulated second, 2.3 h for four single-thread runs
+      and 3.8 h for the 15 s trials; cell 102, the notes and the round-1 responses now give these values and say that
+      the run the verifier saw gave 158 s and 113 s. The round-1 agrees flag of the five model claims is corrected to
+      false.
+  - claim: figs14b-model-state-effects
+    agrees: true
+    outcome: blocked
+    reason: Blocked as not_runnable is reasonable, since the re-executed timing in cell 101 shows the runs take longer
+      than the 1 h limit. But cell 102 says about 120 s on one thread and 80 s on four and about 2.3 h, while cell 101
+      prints 158 s and 113 s per simulated second, 3.0 h for four single-thread runs and 4.9 h for the 15 s trials; the
+      record's 123 s, 83 s, 2.3 h and 3.8 h appear nowhere in the outputs. The conclusion still holds, with more margin.
+      In round 1 the verifier gave blocked (other) and called the blocking unsupported, so the round-1 agrees flag overstates
+      the agreement.
+    response: Outcome kept. The two re-runs print 121 to 123 s and 82 to 83 s per simulated second, 2.3 h for four single-thread runs
+      and 3.8 h for the 15 s trials; cell 102, the notes and the round-1 responses now give these values and say that
+      the run the verifier saw gave 158 s and 113 s. The round-1 agrees flag of the five model claims is corrected to
+      false.

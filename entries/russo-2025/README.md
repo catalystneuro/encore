@@ -13,7 +13,7 @@ have the deep MOs stimulation the paper analyses, about a third of the paper's m
 | Human and mouse responses are similar (Figure 5A) | Blocked: data missing |
 | The late EEG, LFP and CSD responses are larger at rest (Figure 1C to 1E, S1B) | Reproduced |
 | The modulation depends on intensity (Figure S4) | Reproduced |
-| The modulation holds for speed thresholds up to 5 cm/s | Partially reproduced |
+| The modulation holds for speed thresholds up to 5 cm/s | Partially reproduced (proposed: not reproduced) |
 | The early component is not modulated in the EEG (Figure S5) | Reproduced |
 | No modulation for posterior stimulation (Figure S6) | Blocked: data missing |
 | Triphasic spiking pattern with a 127.8 ms silence | Partially reproduced |
@@ -21,7 +21,7 @@ have the deep MOs stimulation the paper analyses, about a third of the paper's m
 | Latencies are shorter during running, and correlate on single trials (Figure S7) | Reproduced |
 | SM-TH late rate is higher during running (Figure 3A) | Reproduced |
 | MOs late rate is not modulated (Figure S9A) | Not reproduced |
-| FS and TRN late rates are not modulated (Figure S10A) | Partially reproduced |
+| FS and TRN late rates are not modulated (Figure S10A) | Partially reproduced (proposed: reproduced) |
 | Relay unit ISIs are bimodal (HF and LF, Figure 3B) | Not reproduced |
 | HF units respond earlier (Figure S11D) | Not reproduced |
 | Higher intensity recruits more HF units (Figure S12) | Reproduced |
@@ -31,13 +31,16 @@ have the deep MOs stimulation the paper analyses, about a third of the paper's m
 | Thalamic features predict the EEG amplitude (Figure S13) | Not reproduced |
 | LF cross-correlation differs by state (Figure S13D) | Not reproduced |
 | Initial latency is more variable in SM-TH than MOs | Reproduced |
-| Thalamic light delays the rebound (Figure 2F, 2G) | Partially reproduced |
+| Thalamic light delays the rebound (Figure 2F, 2G) | Partially reproduced (proposed: not reproduced) |
 | Cortical light barely shifts the rebound (Figure S8B) | Reproduced |
 | Thalamic or cortical light suppresses firing (Figure 2H) | Reproduced |
 | Model claims (Figure 4, S14; 5 claims) | Blocked: not runnable (built and timed; too slow for the time limit) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
+
+Three outcomes carry a change proposed after the second verification round (marked above), which
+a third round reviews; the attempt record gives the reasons.
 
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/russo-2025-01.yaml`](../../attempts/russo-2025-01.yaml).
