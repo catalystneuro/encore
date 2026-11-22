@@ -315,8 +315,8 @@ padding:10px 12px;cursor:pointer;white-space:nowrap}
 .answer{border-left:3px solid var(--accent);background:var(--hover);padding:8px 12px;margin-top:10px;max-width:80ch}
 .answer.open{border-left-color:var(--line);color:var(--muted)}
 .tag.open{border-color:var(--warning)}
-.claim{border-top:1px solid var(--line);padding:14px 0;scroll-margin-top:70px}
-.claim[data-outcome]{border-left:4px solid transparent;padding-left:12px}
+.claim{border-top:1px solid var(--line);padding:16px 0;scroll-margin-top:76px}
+.claim[data-outcome]{border-left:3px solid transparent;padding-left:14px}
 .claim[data-outcome=reproduced]{border-left-color:var(--good)}
 .claim[data-outcome=partially_reproduced]{border-left-color:var(--warning)}
 .claim[data-outcome=not_reproduced]{border-left-color:var(--unresolved)}
@@ -331,35 +331,53 @@ padding:10px 12px;cursor:pointer;white-space:nowrap}
 .outcome-head{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:1rem}
 .outcome-head .chip{font-size:.85rem}
 /* Under its outcome's heading a claim needs no label of its own; its stripe keeps the colour. */
-.outcome-group .claim-head>.chip{display:none}
+.claim-chip{margin:0 0 6px}
+.outcome-group .claim-chip{display:none}
 .claim:target{background:var(--hover);border-radius:0 3px 3px 0}
-.claim-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:4px}
-/* A claim's id, at the end of its first line: what the records and the response form call it. */
-.claim-ref{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right}
-.claim-id{font-size:.76rem;color:var(--muted);background:none;padding:0;white-space:nowrap}
-.claim-anchor{font-size:.72rem;color:var(--muted);white-space:nowrap}.claim-anchor:hover{color:var(--link)}
-.claim-link{margin:10px 0 0}
-.statement{margin:0 0 4px;font-weight:500;max-width:84ch}
+/* A claim, closed: the statement leads, then what was found in a line, then a quiet line with where the paper says
+   it, its tags, and at the end its id, which the records and the response form call it by and which links to it. */
+.statement{margin:0;font-size:1.02rem;font-weight:550;line-height:1.42;color:var(--text);max-width:82ch}
 /* Under a closed claim's statement, the first sentence of its notes: what was found. Open, the full notes show. */
-.gist{margin:0 0 2px;font-size:.86rem;color:var(--text2);max-width:98ch}
+.gist{margin:5px 0 0;font-size:.9rem;line-height:1.5;color:var(--text2);max-width:94ch}
 .claim details[open]>summary .gist{display:none}
+.claim-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:9px;font-size:.8rem;color:var(--muted)}
+.claim-meta .source{font-size:inherit}
+.claim-meta .why{font-size:inherit;font-weight:600;color:var(--text2)}
+.claim-meta .why+.source::before{content:"·";margin-right:10px}
+.claim-meta .tag{font-size:.74rem}
+.claim-id{margin-left:auto;padding-left:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.74rem;
+color:var(--muted);text-decoration:none;white-space:nowrap}
+.claim-id::before{content:"#";opacity:.6}
+.claim-id:hover,.claim-id:focus-visible{color:var(--link);text-decoration:underline}
 .notes{color:var(--text2);font-size:.92rem;margin:0;max-width:84ch}
 .caveat{font-size:.82rem;color:var(--muted);margin:4px 0 0}
-.claim details>summary{list-style:none;cursor:pointer;position:relative;padding-left:20px}
+.claim details>summary{list-style:none;cursor:pointer;position:relative;padding-left:24px}
 .claim details>summary::-webkit-details-marker{display:none}
-.claim details>summary::before{content:"";position:absolute;left:2px;top:.45em;width:7px;height:7px;
+.claim details>summary::before{content:"";position:absolute;left:3px;top:.5em;width:7px;height:7px;
 border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
 .claim details[open]>summary::before{transform:rotate(45deg)}
 .claim details>summary:hover .statement{text-decoration:underline;text-decoration-color:var(--muted);text-underline-offset:2px}
 .claim details>summary:focus-visible{outline:2px solid var(--accent,currentColor);outline-offset:3px;border-radius:4px}
-.claim-body{padding:6px 0 0 20px}
-.quote{margin:0 0 10px;padding:2px 0 2px 12px;border-left:3px solid var(--line);max-width:80ch}
-.quote p{margin:0;font-size:.9rem;color:var(--text2);font-style:italic}
-.quote cite{display:block;margin-top:2px;font-size:.78rem;color:var(--muted);font-style:normal}
-.inferred{font-size:.86rem;color:var(--muted);margin:0 0 10px;max-width:80ch}
-.stats{font-size:.86rem;color:var(--text2);margin:0 0 10px;padding-left:20px;max-width:80ch}
-.deviations-title{font-size:.82rem;color:var(--muted);margin:10px 0 2px}
-.deviations{font-size:.86rem;color:var(--text2);margin:0;padding-left:20px;max-width:80ch}
+/* A claim, open: the explanation in labelled parts (claim_sections), each label beside its text on a wide screen
+   and above it on a narrow one. The paper's own words are set in the serif, as a quotation from a printed page. */
+.claim-body{margin:14px 0 2px 24px;border-top:1px solid var(--line)}
+.claim-sec{display:grid;grid-template-columns:168px minmax(0,1fr);gap:4px 28px;padding:14px 0;border-bottom:1px solid var(--line)}
+.claim-sec:last-child{border-bottom:0}
+.claim-sec>h5{margin:1px 0 0;font-size:.8rem;font-weight:650;line-height:1.4;color:var(--text2)}
+.claim-sec>div{min-width:0;max-width:74ch}
+.claim-sec .notes{font-size:.93rem;line-height:1.62;color:var(--text);max-width:none}
+.claim-sec .notes+.notes{margin-top:10px}
+@media (max-width:760px){.claim-body{margin-left:0}.claim-sec{grid-template-columns:minmax(0,1fr)}}
+.claim-link{margin:0;padding:12px 0 2px;border-top:1px solid var(--line);font-size:.9rem}
+.claim-link a{font-weight:600}
+.quote{margin:0 0 10px;padding:2px 0 2px 14px;border-left:2px solid var(--text2);max-width:80ch}
+.quote p{margin:0;font-family:var(--serif);font-size:1rem;line-height:1.5;color:var(--text)}
+.claim-sec .quote:last-child,.claim-sec .stats:last-child,.claim-sec .inferred:last-child{margin-bottom:0}
+.inferred{font-size:.88rem;color:var(--text2);margin:0 0 10px;max-width:80ch}
+.stats{font-size:.9rem;color:var(--text2);margin:0 0 10px;padding-left:18px;max-width:80ch}
+.deviations{font-size:.9rem;line-height:1.55;color:var(--text2);margin:0;padding-left:18px;max-width:80ch}
+.deviations li+li,.stats li+li{margin-top:4px}
+.claim-sec ul{list-style:disc}
 .group{margin-top:8px}
 .group>summary{cursor:pointer;list-style:none;padding:10px 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;border-top:1px solid var(--line)}
 .group>summary::-webkit-details-marker{display:none}
