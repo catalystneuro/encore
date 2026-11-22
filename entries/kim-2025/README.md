@@ -20,9 +20,9 @@ and [DANDI:000022](https://dandiarchive.org/dandiset/000022/0.251116.2247)
 | Noise correlations, dimensionality, occupancy, overlap, continuity | elsewhere | Reproduced |
 | Geodesic and orthogonal variance, local and global alignment | elsewhere | Reproduced |
 | Representational consistency within and across mice, LM and PM | elsewhere | Reproduced |
-| Natural movie slope near 1 | elsewhere | Reproduced (23 sessions, median 1.116) |
+| Natural movie slope near 1 | elsewhere | Reproduced (assumed: the excluded movie session read from the paper's code; 23 sessions, median 1.116) |
 | Change of decoding and RSM similarity with shuffling | elsewhere | Reproduced |
-| Decoding falls with slope | elsewhere | Blocked: too large (run in part) |
+| Decoding falls with slope | elsewhere | Blocked: too large (run in part: slope 2 in four of 30 sessions) |
 | Gain variance, tangent space angle | elsewhere | Blocked: not ported in time |
 
 The attempt record, with the reasons and the differences from the paper's method, is

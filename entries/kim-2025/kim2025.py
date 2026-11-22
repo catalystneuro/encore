@@ -654,12 +654,14 @@ def random_measures(X, labels, seeds, areas=None, n_partitions=10, slopes=TARGET
     return out
 
 
-def decode_session(X, labels, target, seed, n_splits=10, shuffle_neurons=False):
+def decode_session(X, labels, target, seed, n_splits=10, shuffle_neurons=False, shuffle_seed=None):
     """Linear SVC (sklearn SVC, kernel linear, default C) accuracy of stimulus identity, 10-fold
     StratifiedKFold without shuffling after a random reordering of trials within stimulus, counts
     centred by the training mean per fold (RSA_decoding.py, decode_ABO). Trials are cut to the
     smallest repeat count. With shuffle_neurons, each neuron's trials are permuted within
-    stimulus before the slope change (Figure S4C). target None is the as-is data."""
+    stimulus before the slope change (Figure S4C), by a generator seeded with shuffle_seed, so
+    that the trial order and folds, set by seed, are those of the unshuffled decoding. target
+    None is the as-is data."""
     from sklearn.model_selection import StratifiedKFold
     from sklearn.svm import SVC
     rng = np.random.default_rng(seed)
@@ -667,8 +669,9 @@ def decode_session(X, labels, target, seed, n_splits=10, shuffle_neurons=False):
     R = n.min()
     T = np.stack([X[labels == c][:R] for c in stims])           # S x R x N
     if shuffle_neurons:
+        srng = np.random.default_rng(shuffle_seed)
         for j in range(T.shape[2]):            # one permutation per neuron, as the code
-            T[:, :, j] = T[:, rng.permutation(R), j]
+            T[:, :, j] = T[:, srng.permutation(R), j]
     Xc = T.reshape(-1, T.shape[2])
     lab = np.repeat(stims, R)
     if target is not None:
@@ -747,6 +750,28 @@ def movie_session(path):
                bin_s=(round(float(np.min(off - on)), 3) if len(on) else np.nan, round(float(np.max(off - on)), 3) if len(on) else np.nan))
     f.close()
     return X, np.array(lab), good, rep
+
+
+def movie_invalid_frames(path, dandiset_id, version):
+    """For each natural movie one table of a session file, the number of frames whose onset lies in
+    an `invalid_times` interval tagged "stimulus" (the rule of movie_session), and the tags of all
+    invalid_times intervals."""
+    f = open_nwb(path, dandiset_id, version)
+    out = dict(session=path.split("/")[0], intervals=[])
+    iv = []
+    if "invalid_times" in f["intervals"]:
+        g = f["intervals/invalid_times"]
+        tags, ti = _str(g["tags"][:]), g["tags_index"][:]
+        t0 = np.r_[0, ti[:-1]]
+        for s0, s1, i0, i1 in zip(g["start_time"][:], g["stop_time"][:], t0, ti):
+            out["intervals"].append((round(float(s0), 1), round(float(s1), 1), ",".join(tags[i0:i1])))
+            if "stimulus" in tags[i0:i1]:
+                iv.append((s0, s1))
+    for name in sorted(k for k in f["intervals"] if k.startswith("natural_movie_one")):
+        start = f[f"intervals/{name}/start_time"][:]
+        out[name] = int(sum(np.sum((start >= s0) & (start <= s1)) for s0, s1 in iv))
+    f.close()
+    return out
 
 
 def abo_pupil(path, onsets, window=SCENES_WINDOW):

@@ -100,7 +100,7 @@ outcomes:
   - 2008
   notes: Tested on the DANDI copy of the Allen data (dandiset 000021). Two of 32 sessions have more than 10% of
     natural scenes trials silent in all V1 units, under either unit reading (index 0 and 9 in DANDI order, the first
-    and seventh by session id, the order AllenSDK uses; the code drops indices 0 and 6), leaving 30 sessions of
+    and seventh by session id, the order AllenSDK uses, as the data check prints; the code drops indices 0 and 6), leaving 30 sessions of
     30 mice with 119 stimuli each. With the units AllenSDK serves by default (the three criteria of the Methods
     and the quality label good), used in every analysis of the Allen data, there are 66.9 +- 25.5 V1 units per session,
     14 to 112, 2008 in all, every value within tolerance. With the three criteria alone, 71.1 +- 27.1, 14 to 113,
@@ -170,12 +170,17 @@ outcomes:
   notes: With the good units, over all 32 sessions, sessions with at least two units are LM 24, RL 28, AL 24, PM
     20 and AM 26, all within tolerance; median slopes 1.056, 1.047, 1.045, 1.002 and 1.024, all within 0.9 to 1.1.
     The Methods' criteria alone give the same counts and medians 1.058, 1.061, 1.046, 1.004 and 1.026. Over the
-    30 included sessions, 22, 26, 23, 18 and 25 sessions, medians within 0.9 to 1.1 under both readings. The counts
-    over all 32 sessions match the paper's, which suggests the paper used all 32 sessions with its area-specific
-    exclusion; the outcome is the same over the 30.
+    30 included sessions, 22, 26, 23, 18 and 25 sessions, medians within 0.9 to 1.1 under both readings. Over all
+    32 sessions RL has one session more than the paper's 27. With the Methods' area-specific exclusion ("2 sessions
+    for V1 and 1 session for RL" with more than 10% of trials silent), applied over all 32 sessions as a variant,
+    the counts are 24, 27, 24, 20 and 26, the paper's exactly, under both unit readings, with medians 1.056, 1.044,
+    1.045, 1.002 and 1.024 (good units). This suggests the paper used all 32 sessions with its area-specific exclusion;
+    the outcome is the same under all three session sets.
   deviations:
   - A session counts for an area when it has at least two units there, the fewest a line can be fitted to; with
-    one unit or more the counts are the same. Units labelled good (the assumption of data-v1-units); the Methods'
+    one unit or more the counts are the same. The main count uses all 32 sessions without the area-specific exclusion
+    of the Methods (Main dataset and visual stimuli, "We excluded 2 sessions for V1 and 1 session for RL"); with it,
+    a variant, RL has 27 sessions. Units labelled good (the assumption of data-v1-units); the Methods'
     criteria alone give the same outcome.
 - claim: figs4ab-noise-correlation-under-manipulation
   outcome: reproduced
@@ -380,13 +385,16 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_kim_2025_allen.ipynb
   output: claim:figs5a-movie-slope-near-1
+  assumed: true
   measured:
   - 23
   - 75
   notes: 'The paper''s code skips sessions 5, 14 and 43 of AllenSDK''s session table for movie one presentations
     marked invalid (extract_natural_movie_neuropixels.m lines 19 and 101 at ac3300b). In ascending session id over
     the 58 sessions of dandisets 000021 and 000022 these are sub-718643564, sub-719828686 and sub-769319621, the
-    three sessions whose files hold an invalid_times interval tagged stimulus that overlaps natural movie one. Of
+    three sessions of the 58 whose files hold an invalid_times interval tagged stimulus that overlaps natural movie
+    one (239 and 954 frames of natural_movie_one_presentations in the two Brain Observatory 1.1 sessions; sub-703279277
+    and sub-716813540 have such intervals that miss the movie). Of
     the 26 Functional Connectivity sessions, sub-769319621 is the only such one: 1497 frames of its 60-repeat movie
     block fall in the interval, its longest repeat lasts 30.719 s (30.042 s at most elsewhere) and its longest gap
     between frames is 0.133 s (0.050 s at most elsewhere). No session has an incomplete repeat. Dropping it and
@@ -400,23 +408,29 @@ outcomes:
   - The excluded session is identified by AllenSDK's rule for invalid presentations (a presentation overlapping
     an invalid_times interval tagged stimulus, ecephys_session.py lines 645 to 680), which the paper's code relies
     on, and by putting the 58 session ids in ascending order, the order of AllenSDK's session table, to read the
-    code's indices; here a frame counts when its onset lies in the interval.
+    code's indices; here a frame counts when its onset lies in the interval. This is an assumption, since the Methods
+    say only that 3 sessions were excluded "due to truncation of movies or absence of V1 units", and no repeat
+    in dandiset 000022 is incomplete. The count of 23 sessions is reached only with this reading of the paper's code.
   - Units labelled good as well as passing the Methods' criteria (the assumption of data-v1-units); the Methods'
     criteria alone give the same outcome.
 - claim: fig2b-decoding-falls-with-slope
   outcome: blocked
   blocked_by: too_large
   notebook: reproduce_kim_2025_decoding.ipynb
-  notes: 'Run in part, at as-is and slopes 0 and 1 over the 30 sessions (good units, claim''s seed); the 150 decodings
-    took 14.1 minutes on 4 CPUs (median 22 s as-is, 13 s at slope 0, 21 s at slope 1 per 10-fold decoding, up to
-    105 s). Decoding slows steeply with the slope: in the first round''s notebook one decoding took 14 s as-is and
-    131 s at slope 2 in one session, on one CPU, so the criterion''s 22 conditions over 30 sessions would take about
-    2.5 to 24 CPU hours, over the sixty-minute notebook limit (protocol, Develop on a subset). A four-session test
-    run with slope 2, made while preparing and not in the entry, was slower still; the header of reproduce_kim_2025_decoding.ipynb
-    quotes its times, which no outcome rests on. In the part that ran, accuracy is higher at slope 0 than at slope
-    1 in 30 of 30 sessions (means 0.787 against 0.424, Wilcoxon p = 1.9e-09) and higher at slope 0 than as-is (0.403,
-    p = 1.9e-09), and every session is above the chance level 1/119 = 0.0084 at every condition run (lowest 0.169).
-    The criterion needs slope 2 and every 0.1 step, so the claim is not judged.'
+  notes: 'Run in part, at as-is and slopes 0 and 1 over the 30 sessions and at slope 2 over the first four included
+    sessions (good units, claim''s seed). The 150 decodings at as-is, slopes 0 and 1 and the shuffled data took 17.8
+    minutes on 4 CPUs (medians 28 s as-is, 16 s at slope 0 and 27 s at slope 1 per 10-fold decoding of the original
+    data; at most 115 s original and 138 s shuffled). At slope 2 the four decodings took 342 to 496 s (median 398
+    s, 8.3 minutes in parallel), so slope 2 over the 30 sessions is estimated at 50 minutes on 4 CPUs and the criterion''s
+    22 conditions at about 5.4 hours (time between slopes 1 and 2 interpolated linearly, a rough estimate), over
+    the sixty-minute notebook limit (protocol, Develop on a subset). In the part that ran, accuracy is higher at
+    slope 0 than at slope 1 in 30 of 30 sessions (means 0.787 against 0.424, Wilcoxon p = 1.9e-09) and higher at
+    slope 0 than as-is (0.403, p = 1.9e-09); in the four sessions run at slope 2 it is below as-is in each (0.212,
+    0.188, 0.132 and 0.134 against 0.356, 0.255, 0.185 and 0.446). Every session is above the chance level 1/119
+    = 0.0084 at every condition run (lowest 0.132). The criterion needs slope 2 in every session and every 0.1 step,
+    so the claim is not judged. Slope 2 alone over 30 sessions, which would allow the criterion''s partial judgement,
+    fits a notebook of its own by this estimate but was not run in this revision: with it the entry''s run would
+    have passed the time left.'
   output: claim:fig2b-decoding-falls-with-slope
 - claim: figs4c-shuffling-alters-dependence
   outcome: reproduced
@@ -424,8 +438,8 @@ outcomes:
   notebook: reproduce_kim_2025_decoding.ipynb
   output: claim:figs4c-shuffling-alters-dependence
   notes: 'Each neuron''s trials shuffled within stimulus before the slope change. Decoding (2B), at the conditions
-    run: 0.435 shuffled against 0.403 original as-is (Wilcoxon p = 5e-05) and 0.765 against 0.787 at slope 0 (p
-    = 0.035). Within-session RSM similarity (4C): different at 16 of 21 slopes and as-is (as-is p = 3.9e-07); the
+    run, with the same trial order and folds for original and shuffled data: 0.435 shuffled against 0.403 original
+    as-is (Wilcoxon p = 5e-05) and 0.764 against 0.787 at slope 0 (p = 0.029). Within-session RSM similarity (4C): different at 16 of 21 slopes and as-is (as-is p = 3.9e-07); the
     shuffled curve peaks at 1.0, the original at 1.1. Across-session RSM similarity (4E): different at all 21 slopes
     and as-is (p = 1.4e-29 as-is); the shuffled curve peaks at 1.3, the original at 1.1. All three analyses differ
     at one or more slopes. The claims file makes this claim depend on fig2b-decoding-falls-with-slope, blocked for
@@ -434,7 +448,8 @@ outcomes:
   deviations:
   - Decoding compared at as-is and slope 0 only, for the cost given under fig2b-decoding-falls-with-slope. The shuffle
     uses the claim's second generator for the RSMs and its first for the decoding, not the code's np.random.seed(0)
-    sequence.
+    sequence. Since round 2 the decoding of the shuffled data uses the seed of fig2b-decoding-falls-with-slope for
+    the trial order and folds, as the original does, and the claim's seed only for the shuffle.
   - Units are those passing the Methods' three criteria and labelled good, as AllenSDK serves them by default; the
     same assumption as data-v1-units. The Methods' criteria alone were not run for this claim.
 - claim: figs1-gain-variance
@@ -474,7 +489,7 @@ findings:
   statement: The Methods select units by isi_violations, amplitude_cutoff and presence_ratio. The unit counts (64
     +- 25, 1920 in all) and the across-neuron slope (1.048) match only when units not labelled good are also dropped,
     as AllenSDK does by default (filter_by_validity). Question for the authors, were the units those of AllenSDK's
-    default units table? This attempt assumed so for data-v1-units and fig1b-across-neuron-slope-near-1.
+    default units table? This attempt assumed so for every claim on the Allen data.
 - kind: methods_unavailable
   statement: 'The paper excludes 3 of 26 Functional Connectivity sessions for truncated movies or no V1 units, without
     naming them. In dandiset 000022 no session has an incomplete repeat of natural movie one and 2 have no V1 quality
@@ -766,3 +781,204 @@ verifications:
       only the decoding at the conditions run, so it is tested although fig2b-decoding-falls-with-slope stays blocked.
       The unused shuffle_within_stimulus, which permuted all neurons together (problem 8), now permutes each neuron
       separately and is used for the RSMs.'
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks (reproduce_kim_2025.ipynb, reproduce_kim_2025_allen.ipynb and reproduce_kim_2025_decoding.ipynb)
+    with their conclusions and summaries, the helper module kim2025.py, the claims file, the attempt record and
+    the paper. The report counts 24 reproduced and 4 blocked outcomes but names three blocked claims; the record
+    has 25 reproduced (figs4c-shuffling-alters-dependence among them) and 3 blocked. No finding is rated critical,
+    so none was reviewed for its rating; the report says none of the findings describes a data error that would
+    qualify, and that the no-defect statements of finding 3 are supported by nb1 cells 3, 5 and 6.
+  results:
+  - claim: illusion-data-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 28 outcomes; no point raised on this claim.
+    response: No change.
+  - claim: illusion-fig1c-isomap-geometry
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 28 outcomes. Round-1 point 6 (trio component) is resolved by the full-graph column.
+    response: No change.
+  - claim: illusion-fig3a-orthogonal-variance-example
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 28 outcomes; no point raised on this claim.
+    response: No change.
+  - claim: illusion-geometry-similar-across-datasets
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. In nb1 cell 21, "The same holds in each of the 12 sessions" is supported for slopes 0, 1 and
+      2 (cell 20 table), but not for "every 0.1 step" per session. This is minor.
+    response: The sentence now says that the directions at slopes 0, 1 and 2 against as-is hold in each session
+      (the table) and that the step-by-step change is shown for the across-session mean only. Outcome unchanged.
+  - claim: data-v1-units
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable; the paper's counts match only
+      with the label (nb2 cell 7). "the first and seventh by session id" (nb2 cell 8 and the record) and "removes
+      the same two sessions as the paper's code" (nb2 cell 59) are not supported by the outputs; cell 3 prints DANDI
+      indices 0 and 9 only and the session-id order is not printed. The verifier confirmed it on the archive in round
+      1.
+    response: The data check (nb2 cell 3) now prints the excluded sessions' positions in ascending session id, 0
+      and 6 (the first and seventh). The text cites that output. Outcome unchanged.
+  - claim: fig1b-across-neuron-slope-near-1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the assumption (the good unit label) is stated and reasonable.
+    response: No change.
+  - claim: fig1b-across-stimulus-slope
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 28 outcomes; no point raised on this claim.
+    response: No change.
+  - claim: figs2-behavioral-state
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with all 28 outcomes; no point raised on this claim.
+    response: No change.
+  - claim: figs3-higher-visual-areas
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. "The counts over all 32 sessions match the paper's" (record) and "the sessions per higher visual
+      area match the paper" (nb2 cell 59) are not supported. RL is 28 against the paper's 27 (nb2 cell 18); it matches
+      only after the paper's one excluded RL session, which the notebook does not apply.
+    response: Added the Methods' area-specific exclusion (sessions with more than 10% of trials silent in all units
+      of the area) over all 32 sessions as a variant in nb2 cell 18. It removes one RL session and the two V1 sessions
+      and gives 24, 27, 24, 20 and 26 sessions, the paper's exactly, under both unit readings; the medians stay in
+      0.9 to 1.1. The notes, nb2 cell 19 and the summary now say that RL is 28 without this exclusion. Measured values
+      (the main reading) and outcome unchanged.
+  - claim: figs4ab-noise-correlation-under-manipulation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig1d-dimensionality-falls-with-slope
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: figs5c-space-occupancy-peak
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. Round-1 point 3 is resolved,
+      compute_percent_filled is cited and the plateau is described.
+    response: No change.
+  - claim: fig2a-overlap-rises-with-slope
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig2c-continuity-from-slope-1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig3bc-geodesic-orthogonal-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig3d-correlation-peaks-near-1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig3e-local-alignment-peaks-near-1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig3f-global-alignment-peaks-near-1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig4a-overlap-consistency-within-mice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig4c-rsm-similarity-within-mice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig4d-overlap-consistency-across-mice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: fig4e-rsm-similarity-across-mice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The assumption (the good unit label) is stated and reasonable. The slope measures were not rerun
+      with the Methods criteria alone, but in round 1 they all came out the same under that reading.
+    response: No change.
+  - claim: figs6-higher-areas-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced under reading (a). This is correct by the criterion, and the weakness is disclosed (nb2 cell
+      54).
+    response: No change; the question to a reader in questions/kim-2025.yaml stands.
+  - claim: figs5a-movie-slope-near-1
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but the outcome should be marked assumed: true. The count of 23 sessions (tolerance 0) is reached
+      only by reading the paper''s code, AllenSDK''s invalid-presentation rule and ascending session-id order, and
+      the record''s own finding says the Methods'' word "truncated" does not describe this. The reading is well supported.
+      "these are the sessions whose files hold an invalid_times interval tagged stimulus that overlaps natural movie
+      one" (record and nb2 cell 58) is shown only for the 26 sessions in 000022 (cell 57); nothing printed checks
+      sub-718643564 or sub-719828686.'
+    response: Marked assumed, with a deviation that states the assumption. nb2 cell 57 now prints, for the 32 sessions
+      of dandiset 000021, every invalid_times interval tagged stimulus and the natural movie one frames inside one.
+      Four sessions have such intervals; only sub-718643564 (239 frames) and sub-719828686 (954 frames) overlap the
+      movie. With sub-769319621 in 000022 these are the three of 58, as the text said. Numbers and outcome unchanged.
+  - claim: fig2b-decoding-falls-with-slope
+    agrees: true
+    outcome: blocked
+    reason: 'The claim is blocked, which the verifier agrees with; it cannot check the category against the protocol.
+      The too_large estimate rests on a test run that is not in the entry ("The times of this run are printed below"
+      in nb3 cell 0 is not so; cell 5 prints only the 30-session times). Slope 2 alone was estimated at about 65
+      min on 4 CPUs, and in its own notebook it would have allowed the criterion''s partial judgement. The record''s
+      times (14.1 minutes, median 22 s as-is, up to 105 s) differ from nb3 cell 5 (14.4 min, as-is median 21 s,
+      maxima 100 s original and 119 s shuffled). nb2 cell 0 says "slopes 0, 1 and 2", but slope 2 was not run.'
+    response: 'The decoding notebook now runs slope 2 in the first four included sessions and computes the estimate
+      from those times: 342 to 496 s per decoding, so 50 minutes for slope 2 over the 30 sessions and about 5.4 hours
+      for the criterion''s 22 conditions; the header no longer quotes the test run. Slope 2 is below as-is in all
+      four sessions. The criterion needs slope 2 in every session, so the claim stays blocked. Slope 2 over the
+      30 sessions in a notebook of its own was not run: with the full run of the entry this revision needs, it would
+      have passed the time left. The record''s times now match the printed ones of the new run, and nb2 cell 0 says
+      what was run. Outcome unchanged.'
+  - claim: figs4c-shuffling-alters-dependence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with one caveat. Original and shuffled decoding use different seeds (SEED_2B and SEED_4C in decode_session),
+      so the trial order and folds also differ. The slope-0 difference (0.787 against 0.765, p = 0.035, nb3 cell
+      9) is small, from one seed, and could partly reflect fold noise. Using the same seed for original and shuffled
+      decoding would settle it. As-is (p = 5e-05) and both RSM analyses are robust.
+    response: decode_session now takes the shuffle from its own generator (the claim's seed) and the trial order
+      and folds from the seed of the original decoding, so the two differ only by the shuffle. At slope 0 the shuffled
+      accuracy is 0.764 against 0.787, p = 0.029; as-is 0.435 against 0.403, p = 5e-05. Outcome unchanged.
+  - claim: figs1-gain-variance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 28 outcomes; no point raised on this claim.
+    response: No change.
+  - claim: fig2d-tangent-angle-rises-below-1
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 28 outcomes; no point raised on this claim.
+    response: No change.
