@@ -111,7 +111,8 @@ claims:
   criterion: As in motifs.py, clustering is networkx average_clustering on the directed graph;
     sigma is (C / C_ER) / (L / L_ER), with C_ER and L_ER the means over 100 directed Erdos-Renyi
     graphs of 188 nodes at density 0.033, and L the mean over source neurons of the mean
-    shortest path length to the neurons they reach. Reproduced when both values are within
+    shortest path length to the neurons they reach, the source itself counted at length 0 as
+    networkx shortest_path_length returns it. Reproduced when both values are within
     tolerance and sigma > 1.
 - id: anatomy-network-properties
   statement: The binarized anatomical network has 3250 edges, a density of 0.092, an average
@@ -147,7 +148,9 @@ claims:
   criterion: The paper reports counts only, without a test, and the counts in Extended Data Figure
     1 cannot be assigned to triad types from the text. Triads counted with networkx
     triads_by_type in both networks and averaged over five Erdos-Renyi graphs at each density
-    (legend). Reproduced when the proportions of the 13 triad types differ between the two
+    (legend; motifs.py and motifs_ER.py). The 13 types are the connected ones that motifs.py
+    counts (021D, 021U, 021C, 111D, 111U, 030T, 030C, 201, 120D, 120U, 120C, 210, 300); 003, 012
+    and 102 are left out. Reproduced when the proportions of the 13 triad types differ between the two
     networks by a chi-square test at p < 0.05; this test is a choice, not the paper's. The
     signaling counts alone are reported whatever the outcome.
 - id: signaling-six-communities
@@ -201,6 +204,9 @@ claims:
   - quantity: number of first-level communities, anatomy
     value: 20
     tolerance: 2
+  - quantity: size of the smallest community, anatomy
+    value: 1
+    tolerance: 0
   - quantity: size of the largest community, anatomy
     value: 20
     tolerance: 2
@@ -214,12 +220,17 @@ claims:
   data: with_inputs
   depends_on:
   - signaling-six-communities
+  expected:
+  - quantity: first-level communities, anatomy with an average of at least 1.25 synapses
+    value: 16
+    tolerance: 1.6
   criterion: The same SBM as signaling-six-communities on each pair of networks. Original
     signaling (q < 0.05) against anatomy with an average of at least 1.25 synapses across the
     four datasets; signaling at q <= 0.18 against the original anatomy; signaling at q < 0.01
     against anatomy with at least three contacts in one dataset (Methods, Network Thresholding
-    Controls). Reproduced when the anatomical network has more first-level communities in all
-    three pairs.
+    Controls). The 16 communities of the 1.25-synapse anatomy are from the legend of Extended
+    Data Figure 12. Reproduced when the anatomical network has more first-level communities in
+    all three pairs.
 - id: signaling-threshold-controls
   statement: At q < 0.01 the signaling network has a density of 0.021, and at q <= 0.18 a density
     of 0.091 and six communities at the first level.
@@ -277,7 +288,9 @@ claims:
 - id: bilateral-anatomy-stronger
   statement: In the anatomical network bilateral pairs are 38 times more likely to share a
     community (p = 1.5 x 10^-210), more than in the signaling network, and anatomy stays above
-    signaling under the threshold controls (8 against 1.3, 78 against 2.43).
+    signaling under the threshold controls (conservative, 8 against 1.3; 1.25-synapse anatomy
+    against original signaling, 78 against 2; original anatomy against q <= 0.18 signaling, 38
+    against 2.43).
   source: Results, Hierarchical community structure differs, paragraphs 3 and 4; Extended Data
     Table 1
   quote: In the anatomical network, bilateral neuron pairs were 38 times more likely to be in the
@@ -301,9 +314,11 @@ claims:
   - quantity: odds, enforced-density anatomy (1.25 synapses)
     value: 78
     tolerance: 7.8
-  criterion: As bilateral-same-community-signaling. Reproduced when the anatomical odds exceed the
-    signaling odds in all three threshold pairs of Extended Data Table 1; the anatomical values
-    are compared with the expected values as well.
+  criterion: As bilateral-same-community-signaling. The three pairs are those the Methods compare
+    (Network Thresholding Controls), conservative signaling against conservative anatomy, original
+    signaling against 1.25-synapse anatomy, and q <= 0.18 signaling against original anatomy.
+    Reproduced when the anatomical odds exceed the signaling odds in all three pairs; the
+    anatomical values are compared with the expected values as well.
 - id: pharynx-community-overlap
   statement: Signaling community I and anatomical community 20 both correspond to the pharyngeal
     subnetwork and overlap strongly; otherwise the signaling communities do not map onto
@@ -335,12 +350,6 @@ claims:
     membership, paragraph 2; Figure 2c
   quote: Of all possible signal-anatomy community pairings only seven were significantly enriched,
     considering multiple hypothesis testing
-  statistics:
-  - test: one-sided t-test against 1000 shuffled community assignments
-    p: 0.05
-    p_relation: "<"
-    corrected: FDR
-    n: 6 signaling by 20 anatomical communities
   data: with_inputs
   depends_on:
   - pharynx-community-overlap
@@ -372,10 +381,13 @@ claims:
     tolerance: 0.0014
   criterion: How the SBM was forced to a number of communities is not in the code. The reading
     is graph-tool's minimize_nested_blockmodel_dl with the first level fixed to B blocks
-    (multilevel_mcmc_args B_min = B_max = B), anatomy at 6 and signaling at 20, as in the legend
-    of Extended Data Figure 4. The tolerances are 10% of values near zero; the claim is
-    reproduced when both ARS are below the original 0.105 (the paper's statement that overlap
-    was not improved), and the values are compared with the expected ones as well.
+    (multilevel_mcmc_args B_min = B_max = B). As in the legend of Extended Data Figure 4,
+    ARSsame6 compares anatomy forced to 6 communities with the original signaling partition,
+    and ARSsame20 compares signaling forced to 20 with the original anatomical partition. The
+    tolerances are 10% of values near zero; the claim is reproduced when both ARS are below the
+    original ARS, the paper's 0.105 and the recomputed value of pharynx-community-overlap (the
+    paper's statement that overlap was not improved), and the values are compared with the
+    expected ones as well.
 - id: pharynx-overlap-controls
   statement: The correspondence of the pharyngeal communities in the two networks persists in the
     conservative and enforced-density controls.
@@ -397,11 +409,6 @@ claims:
   quote: Each signaling community was statistically significantly enriched for no more than one of
     three previously defined cell type classes (Fig. 3 a,b; Extended Data Fig. 5 a; Table 1). Only
     one of the six communities, V, showed no significant enrichment for any cell type.
-  statistics:
-  - test: one-sided t-test against 1000 shuffled community assignments, z-score
-    p: 0.05
-    p_relation: "<"
-    corrected: FDR
   data: with_labels
   depends_on:
   - table1-signaling-membership
@@ -460,8 +467,11 @@ claims:
   criterion: A claim of absence, judged on the paper's test (Extended Data Figure 6 legend and
     SIM.py). For each leg (sensory to inter, inter to motor, sensory to motor), the log of the
     number of forward edges over backward edges, against (b) 1000 shuffles of the class labels
-    keeping class sizes and (c) degree-preserving rewired networks, by a two-sided t-test of the
-    observed value against the null values at p < 0.05. Reproduced when no leg is significantly
+    keeping class sizes (SIM.py) and (c) 1000 degree-preserving rewired networks, each made with
+    2000 double-edge swaps (SIM_doubleedge.py), by a two-sided t-test of the observed value
+    against the null values at p < 0.05. For the sensory to motor leg SIM.py tests the inter to
+    motor value against the sensory to motor null, an apparent slip; the sensory to motor value
+    is used, as in SIM_doubleedge.py. Reproduced when no leg is significantly
     above the null under either control; partially when one leg is; not reproduced when two or
     more are. The code's other measure (log ratio of the fractions of each class's out-edges) is
     shown as a variant.
@@ -552,18 +562,15 @@ claims:
   quote: we find that pharyngeal neurons show more broadcasting-like behavior ... (Fig. 4 c).
     Counterintuitively amphid sensory neurons have more incoming than outgoing edges in the
     signaling network
-  statistics:
-  - test: comparison with shuffled neuron role assignments
-    p: 0.05
-    p_relation: "<"
   data: with_labels
   depends_on:
   - signaling-network-size
   criterion: As in broadcaster_integrator.py, for each group the number of edges into it from
-    other neurons over the number of edges out of it to other neurons, against 1000 random
-    groups of the same size (20 pharyngeal, 24 amphid sensory), by a one-sided t-test (pharynx
-    lower than the null, amphid higher) at p < 0.05. Reproduced when both tests hold and the
-    amphid in-edges exceed its out-edges; partially when one group holds.
+    neurons outside it over the number of edges out of it to neurons outside it, against 1000
+    random disjoint pairs of groups of the same sizes (20 pharyngeal, 24 amphid sensory), by a
+    one-sided t-test (pharynx lower than the null, amphid higher) at p < 0.05. Reproduced when
+    both tests hold, the pharyngeal out-edges exceed its in-edges and the amphid in-edges exceed
+    its out-edges; partially when one group holds.
 - id: ed9-sampling-not-confound
   statement: Pharyngeal neurons were not stimulated more often than other neurons
     (Kolmogorov-Smirnov p = 0.9), and amphid neurons were not observed more often (p = 0.38).
@@ -612,7 +619,10 @@ claims:
     variants. Tiers read (a) degree > 25 and > 40 (legend and code), (b) degree >= 25 and >= 40
     (Results). Reproduced when, under one reading, both counts are within tolerance, the
     normalized coefficient has local maxima at or within two of k = 25 and k = 40, and the
-    coefficient exceeds the null mean by more than one null SD from k = 3 onwards. The code's
+    coefficient exceeds the null mean by more than one null SD from k = 3 onwards. The Methods
+    say the coefficient is significantly larger from k = 3 without naming a test; the one-SD
+    rule (Figure 5a shows the null SD as error bars, and richclub.py has it in a commented line)
+    and the window of two around each maximum are this file's choices. The code's
     list is ASHL, AVDL, AVEL, AVER, AVJL, AVJR, AWBL, AWBR, M3L, M3R, OLLR, OLQDR, RMDDL, RMDDR,
     RMDVL and RMDVR; membership is compared with it.
 - id: fig5c-rich-clubs-disjoint
@@ -640,6 +650,11 @@ claims:
     quantity: Pearson correlation of signaling and anatomical total degree over 188 neurons
     value: 0.22
     tolerance: 0.022
+  criterion: Degree is in-degree plus out-degree in each network, and r is the Pearson
+    correlation over the 188 head neurons (degree.py, linregress of signaling on anatomical
+    degree). Reproduced when r is within tolerance. The paper gives no measure for the second
+    half of the statement (Figure 5b shading); the scatter is shown with the anatomical rich club
+    (degree > 62) marked, and the half is not judged beyond fig5c-rich-clubs-disjoint.
 - id: rich-club-controls
   statement: The near disjointness of the rich clubs persists under the conservative and
     enforced-density controls, and every signaling rich club neuron at q <= 0.18 was in the
@@ -653,9 +668,14 @@ claims:
   - fig5c-rich-clubs-disjoint
   - signaling-threshold-controls
   criterion: The thresholds for the rich clubs of the control networks are not given in the
-    paper or the code; the reading is the same degree thresholds as the originals (25 for
-    signaling, 62 for anatomy). Reproduced when, in all three threshold pairs, the overlap of
-    the two rich clubs is at most AVEL and AVER, and the q <= 0.18 signaling rich club is a
+    paper or the code. Readings (a) the same degree thresholds as the originals (25 for
+    signaling, 62 for anatomy); (b) for each control network, the degree at the local maximum of
+    its normalized rich club coefficient, found as in fig5a-signaling-rich-club (Methods,
+    Determining the Rich Club). Reading (a) may leave the sparser control networks with few or
+    no rich club neurons; the legend of Extended Data Figure 12a reports that the 1.25-synapse
+    anatomical rich club shares 9 of the 15 original neurons and has 4 new ones, which is shown
+    for comparison. Reproduced when, under one reading, in all three threshold pairs the overlap
+    of the two rich clubs is at most AVEL and AVER, and the q <= 0.18 signaling rich club is a
     subset of the original.
 - id: fig5d-community-vi-hubs
   statement: Signaling community VI holds 10 of the 16 rich club neurons, including AVEL and AVER,
@@ -735,5 +755,110 @@ claims:
     tolerance: 0.071
   criterion: As in degree.py, a least-squares line of total degree on number of observations, the
     residual of each neuron, and a Gaussian fit to all residuals. Number of observations as in
-    ed9-sampling-not-confound. Reproduced when r is within tolerance and every signaling rich
-    club neuron lies more than one fitted SD above the line; partially when most do.
+    ed9-sampling-not-confound. The Results cite this as Extended Data Fig. 5 e,f, evidently
+    Figure 9e,f. The paper gives no threshold for "well in excess"; the rule of more than one
+    fitted SD above the line is this file's choice. Reproduced when r is within tolerance and
+    every signaling rich club neuron lies more than one fitted SD above the line; partially when
+    most do.
+- id: anatomy-community-motif-fractions
+  statement: In the anatomical network about 70% of community interactions are assortative and 26%
+    core-periphery; per neuron, participation is 77% assortative, 12% core, 7% periphery and 4%
+    disassortative.
+  source: Results, Linking neurobiological annotations to community motifs, paragraphs 2 and 3;
+    Figure 4b
+  quote: the majority of community interactions in both signal propagation and anatomical networks
+    are assortative (70% for both networks) ... We observed that in the anatomical network, 26% and
+    in the signaling network, 30% of community interactions are core-periphery
+  data: elsewhere
+  where: EM connectomes of White et al. 1986 and Witvliet et al. 2021, as for
+    anatomy-network-properties
+  expected:
+  - quantity: fraction of community pairs assortative, anatomy
+    value: 0.70
+    tolerance: 0.07
+  - quantity: fraction of community pairs core-periphery, anatomy
+    value: 0.26
+    tolerance: 0.026
+  - quantity: mean neuron participation, assortative, anatomy
+    value: 0.77
+    tolerance: 0.077
+  - quantity: mean neuron participation, core, anatomy
+    value: 0.12
+    tolerance: 0.012
+  - quantity: mean neuron participation, periphery, anatomy
+    value: 0.07
+    tolerance: 0.007
+  - quantity: mean neuron participation, disassortative, anatomy
+    value: 0.04
+    tolerance: 0.004
+  criterion: As fig4-community-motif-fractions, on the anatomical network and its 20 communities.
+    The pie with a disassortative slice is the anatomical one (Figure 4 legend, bottom panel).
+- id: community-vi-most-self-connected
+  statement: Signaling community VI is the most highly self-interconnected of the six communities.
+  source: Results, Anatomy and signaling exhibit rich clubs, paragraph 4; Extended Data Figure 7
+  quote: it is then consistent that community VI is also the most highly self-interconnected
+    community (Extended Data Fig. 7)
+  depends_on:
+  - table1-signaling-membership
+  criterion: Self-interconnection is the fraction of all possible edges among the community's
+    nodes (Extended Data Figure 7 legend), edges over n(n-1). The paper gives no test. Reproduced
+    when the match of VI has the highest within-community density of the six.
+- id: pharynx-less-isolated-signaling
+  statement: The pharyngeal community is much more highly connected to the other communities in
+    the signaling network than in the anatomical network.
+  source: Results, Anatomical and signal propagation communities have mostly non-overlapping
+    membership, paragraph 4; Figure 1a; Discussion, paragraph 5
+  quote: in the signaling network, the community of pharyngeal neurons is much more highly
+    connected to the other communities than it is in the anatomical network (Fig. 1 a)
+  data: with_inputs
+  depends_on:
+  - pharynx-community-overlap
+  criterion: The paper shows this in the matrices of Figure 1 and gives no measure or test. The
+    pharyngeal community is the one of pharynx-community-overlap in each network. Readings, both
+    this file's choice, (a) the density of edges between the pharyngeal community and the rest
+    of the network, in both directions, over 2 n (188 - n); (b) the fraction of the edges
+    touching the pharyngeal community that leave or enter it from outside. Reproduced when the
+    signaling value exceeds the anatomical value under both readings; the ratio is reported.
+- id: ave-most-connected-both
+  statement: The most connected member of the signaling rich club is also the most connected
+    member of the connectome, the bilateral pair AVEL and AVER.
+  source: Introduction, last paragraph; Discussion, paragraph 2; Abstract; Figure 5b
+  quote: the most connected member of the rich club of the signaling network is also the most
+    connected member of the connectome, but there is little other overlap in rich club membership
+  data: with_inputs
+  depends_on:
+  - fig5a-signaling-rich-club
+  criterion: Degree is in-degree plus out-degree (degree.py). The abstract says AVEL/R have some
+    of the highest degrees in the anatomical network, so the finding is read per bilateral
+    class. Readings (a) the neuron of highest degree in each network is AVEL or AVER; (b) the
+    class AVE has the highest summed degree of AVEL and AVER among bilateral classes in each
+    network. Reproduced when it holds under one reading; the ranks of AVEL and AVER in both
+    networks are reported.
+checks:
+- date: 2026-11-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - seven-enriched-pairings. Removed the statistics entry (FDR p < 0.05); the threshold counts which community pairs are enriched, a method and not a result. The criterion keeps it.
+  - fig3b-signaling-cell-type-enrichment. Removed the statistics entry for the same reason; the threshold counts which communities are enriched for a class.
+  - fig4c-broadcaster-integrator. Removed the statistics entry (p < 0.05 against shuffled roles); the text reports no p-value and the stars of Figure 4c cannot be read from the text. Added the condition that pharyngeal out-edges exceed in-edges, which the statement makes and the criterion left out, and described the null as in broadcaster_integrator.py (edges crossing the group boundary, 1000 random disjoint group pairs).
+  - bilateral-anatomy-stronger. The statement paired the enforced-density anatomy (78) with the enforced-density signaling (2.43); the Methods compare 1.25-synapse anatomy with the original signaling (78 against 2) and q <= 0.18 signaling with the original anatomy (38 against 2.43). Statement and criterion now use the Methods' pairs.
+  - forced-same-number-ars. Said what each ARS compares, per the legend of Extended Data Figure 4 (forced anatomy with the original signaling partition, forced signaling with the original anatomical one), and added the recomputed original ARS as a comparison.
+  - triad-distribution. Named the 13 triad types as the connected ones counted in motifs.py, since networkx triads_by_type returns 16.
+  - signaling-clustering-small-world. Said that the mean path length counts the source at length 0, as networkx and motifs.py do.
+  - anatomy-twenty-communities. Added the smallest community (1 neuron, tolerance 0), stated in the quote but missing from expected.
+  - more-communities-anatomy-controls. Added the 16 communities of the 1.25-synapse anatomy from the legend of Extended Data Figure 12.
+  - ed6-signaling-not-feedforward. Added the rewired control's counts from SIM_doubleedge.py (1000 networks, 2000 double-edge swaps) and noted that SIM.py tests the sensory to motor null against the inter to motor value; the correct value is used.
+  - fig5a-signaling-rich-club. Marked the one-SD rule for "significantly larger from k = 3" and the window of two around the maxima as this file's choices; the Methods name no test.
+  - fig5b-degree-correlation. Added a criterion; the statement's second half ("tended to") had none. It is shown and not judged beyond fig5c-rich-clubs-disjoint.
+  - rich-club-controls. The single reading (same degree thresholds as the originals) could leave the sparser controls with no rich club; added the reading from each control's own normalized coefficient, as in the Methods, and the 9 of 15 overlap reported in the legend of Extended Data Figure 12a.
+  - ed9e-degree-observations. Marked the one-SD rule for "well in excess" as this file's choice, and noted the Results cite Extended Data Fig. 5 e,f for Figure 9e,f.
+  - Added anatomy-community-motif-fractions (elsewhere); the anatomical 70% and 26% and the Figure 4b anatomy pie had no claim.
+  - Added community-vi-most-self-connected; the Results state it (Extended Data Figure 7) and no claim covered it.
+  - Added pharynx-less-isolated-signaling; a finding of the Results and Discussion with no claim. The paper gives no measure, so both readings are this file's choices.
+  - Added ave-most-connected-both; the Introduction and Discussion state that the most connected members of both networks coincide, and no claim covered it.
+  - Code checked at the same commit (35e87ca); the KS test against all other neurons, the 100 bilateral shuffles, 500 rewires in richclub.py, five Erdos-Renyi graphs for triads, and the one-sided t-tests and FDR of SMB_ADCP_Enrichment.py match the criteria.
+  - Open. No PDF was supplied; values only in panels (Figure 2c stars, Figure 3 and 4d enrichments, Extended Data Figure 6 outcomes and Figure 1 triad counts by type) cannot be read. The heading "signaling is ambiguous" suggests some leg of Extended Data Figure 6 may be significant in the paper's own data, which the strict criterion of ed6-signaling-not-feedforward would count against.
+  - Open. The q-values (recomputed or from the atlas of reference 27) and which strains enter the network are not stated in this paper.
+  - Open. fig4-community-motif-fractions; under the symmetric reading (b) of between-community density, ordered-pair counts come in even numbers, so 30% of 30 pairs (9) is only reachable under reading (a).
