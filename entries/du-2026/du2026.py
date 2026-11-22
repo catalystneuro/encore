@@ -955,14 +955,13 @@ class _BlockRidge:
 
     The release solves this Ridge with solver="lsqr", tol=1e-6; here it is solved
     exactly (solver="cholesky"), which minimizes the same objective about seven
-    times faster. On one session (2021-10-15 CO, SBP geometry by phase) the two
-    gave gains 0.0261219 and 0.0261224 with the same penalties (a deviation
-    recorded in the attempt; it cannot change a sign or a count)."""
+    times faster (a deviation recorded in the attempt). solver="lsqr" gives the
+    release's solver; 03_link_estimators.ipynb compares the two on one session."""
 
-    def __init__(self, cp, xp):
+    def __init__(self, cp, xp, solver="cholesky"):
         self.cp, self.xp = float(cp), float(xp)
         self.cs, self.xs = StandardScaler(), StandardScaler()
-        self.model = Ridge(alpha=1.0, solver="cholesky")
+        self.model = Ridge(alpha=1.0, solver="cholesky") if solver == "cholesky" else Ridge(alpha=1.0, solver=solver, tol=1e-6)
 
     def _design(self, c, x, fit):
         if fit:
@@ -979,7 +978,7 @@ class _BlockRidge:
         return self.model.predict(self._design(c, x, False))
 
 
-def block_ridge(ds: TrialDataset, *, seed: int = 20260726) -> dict:
+def block_ridge(ds: TrialDataset, *, seed: int = 20260726, solver: str = "cholesky") -> dict:
     """Port of specification_estimators.py evaluate_block_ridge_audit: context-only
     penalty and the pair (lambda_C, lambda_X) over the grid squared on an inner
     80/20 split (random_state seed+11), refit on all outer-training trials."""
@@ -992,14 +991,14 @@ def block_ridge(ds: TrialDataset, *, seed: int = 20260726) -> dict:
     best, best_score = (ALPHA_GRID[0], ALPHA_GRID[0]), -np.inf
     for cp in ALPHA_GRID:
         for xp in ALPHA_GRID:
-            score = _vw_r2(yv, _BlockRidge(cp, xp).fit(ci, xi, yi).predict(cv, xv))
+            score = _vw_r2(yv, _BlockRidge(cp, xp, solver).fit(ci, xi, yi).predict(cv, xv))
             if score > best_score:
                 best, best_score = (cp, xp), score
     ctr, cte = _flat(ds.context, tr), _flat(ds.context, te)
     xtr, xte = _flat(ds.neural, tr), _flat(ds.neural, te)
     ytr, yte = _flat(ds.behavior, tr), _flat(ds.behavior, te)
     cpred = _ridge(ca).fit(ctr, ytr).predict(cte)
-    joint = _BlockRidge(*best).fit(ctr, xtr, ytr).predict(cte, xte)
+    joint = _BlockRidge(*best, solver).fit(ctr, xtr, ytr).predict(cte, xte)
     return dict(gain=normalized_gain(yte, cpred, joint), context_alpha=ca, penalties=best)
 
 

@@ -19,9 +19,11 @@ v1.0-jne-submission, commit b042fbe), reading the NWB files by streaming them.
 | MC_RTT (4) | `06_mc_rtt.ipynb` | Reproduced |
 | MC_Maze (2) | `07_mc_maze.ipynb` | Reproduced, seed sensitive |
 
-Almost every value equals the paper's at its printed precision. The confirmation values hold only
-under the paper's split seed; under other split seeds the pattern holds but the values move outside
-their 10% tolerances. The MC_Maze gains (about 0.0005 and smaller) likewise match the paper under its
-estimator seed and move outside the tolerances under others. `07_mc_maze.ipynb` also runs the
+Almost every value equals the paper's at its printed precision. The confirmation values hold under
+the paper's split seed; under other split seeds the pattern holds but most values move outside their
+10% tolerances. The MC_Maze gains (about 0.0005 and smaller) likewise match the paper under its
+estimator seed; under the four other estimator seeds the replacement gain and the lowest nonlinear-map
+gain are outside their tolerances under every one, and the fully nested gain under one. The MC_Maze
+outcome rests on an assumed rule (every value within its tolerance), as its criterion states none. `07_mc_maze.ipynb` also runs the
 release's own estimator code next to the ports, which give the same values. The attempt record, with the deviations and findings, is
 [`attempts/du-2026-01.yaml`](../../attempts/du-2026-01.yaml).

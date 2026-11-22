@@ -193,9 +193,10 @@ outcomes:
   notes: All four means negative and within tolerance (-0.00714, -0.00407, -0.00905, -0.00537); 14 to 16
     of 18 sessions negative per configuration. Under split seeds plus 1000 to 4000 the SBP means are
     -0.00887, -0.00714, -0.00831, -0.00776 (geometry) and -0.00496, -0.00478, -0.00428, -0.00428
-    (history); with seeds plus 1000 and plus 3000 both SBP values fall outside their 10% tolerances, so
-    at most two of four could be within and the outcome there would be partially reproduced (TCR was
-    not re-run). All are still negative.
+    (history); both SBP values are outside their 10% tolerances under plus 1000, the history value under
+    plus 2000, the geometry value under plus 3000, and neither under plus 4000. Under the first three of
+    these at most three of four values could be within, and the outcome there would be partially
+    reproduced (TCR was not re-run). All are still negative.
 - claim: replacement-source-diagnostics
   outcome: reproduced
   notebook: 02_link_development.ipynb
@@ -295,8 +296,9 @@ outcomes:
     context). Values from the run in the executed notebook.
   deviations:
   - The block Ridge is solved exactly (Cholesky) where the release uses lsqr with tolerance 1e-6, to fit
-    the time limit (lsqr took 58 min for this notebook); on one session the gains were 0.0261224 and
-    0.0261219 with the same penalties, and a full lsqr run made while preparing gave the same signs.
+    the time limit. On one session (2021-10-15 CO, SBP, geometry by phase) the two solvers choose the
+    same penalties and give gains of 0.0261224 and 0.0261222 (03_link_estimators.ipynb); the other
+    sessions were not run under lsqr.
   - Reading (b) of the nonlinear context, every setting of Methods 4.6 (27 combinations), was not run;
     estimated about 9 h on four processes. The outcome rests on reading (a), the release's setting.
 - claim: temporal-offset
@@ -424,6 +426,7 @@ outcomes:
   outcome: reproduced
   notebook: 07_mc_maze.ipynb
   output: claim:maze-gain
+  assumed: true
   measured:
   - 0.90533
   - 0.000513
@@ -437,8 +440,14 @@ outcomes:
     The release's own estimator code gives the same values on the same arrays. Under estimator seeds plus
     1000 to 4000 the gain is -0.000138, 0.000479, 0.000528 and 0.000509 and the replacement gain
     -0.0027212, 0.0000294, -0.0000190 and 0.0000075; the replacement gain is outside its tolerance under
-    each of these seeds and the gain under the first.
+    each of these seeds and the gain under the first, and the replacement gain changes sign under two
+    of them. The replacement gain's tolerance (0.000004) is narrower than the rounding of the paper's
+    printed -0.00004; this is asked of a reader in questions/du-2026.yaml.
   deviations:
+  - Assumption. The criterion states no reproduction rule ("Not on this attempt's datasets"). The rule
+    used is that of rtt-gain, the claim of the same Table 1 on the other NLB dataset, every expected
+    value within its tolerance. The outcome rests on this rule; the values under it and under other
+    estimator seeds are printed in 07_mc_maze.ipynb.
   - Tested in the revision after verification round 1; the first version of the attempt had blocked it
     without reading the file. The loader is a port of the release's mc_maze.py (template context,
     neural_lead_ms 80, as run_primary_analyses.py _run_nlb calls it).
@@ -466,9 +475,10 @@ findings:
   datasets:
   - "001201"
   statement: The LINK velocity series (index_velocity, mrs_velocity, described as "Velocity of index
-    flexion" in "flexion units per time bin") are exactly the forward first difference of the released
-    position, velocity[t] = position[t+1] - position[t] (correlation 1.000 in all 18 development
-    sessions), so each velocity bin uses the position of the next bin. The files do not say so, and the
+    flexion" in "flexion units per time bin") are the forward first difference of the released position,
+    velocity[t] = position[t+1] - position[t] (correlation 1.000 and SD ratio 1.00 for both components
+    in 17 of the 18 development sessions; in 2021-10-15 CO, the session with the 1094 ms timestamp gap,
+    1.000 and 0.987), so each velocity bin uses the position of the next bin. The files do not say so, and the
     paper states the differentiation recipe could not be verified.
 - kind: metadata_error
   about: data
@@ -514,7 +524,10 @@ findings:
 - kind: other
   about: paper
   statement: The paper's released code, ported here, reproduces its reported values at their printed
-    precision for every claim tested; run next to the ports on MC_Maze and on one LINK session, the
+    precision for almost every claim tested. The exceptions are the date-clustered intervals of
+    nested-geometry-gain (0.02401 against 0.02404, 0.00711 to 0.01591 against 0.00709 to 0.01594),
+    reading (b) of rff-link, the session tie of representative-trial (it matches under one reading only)
+    and RD-change reading (a) of temporal-offset under the fully nested estimator. Run next to the ports on MC_Maze and on one LINK session, the
     release's estimator functions give identical values. The confirmation-set values are those of one
     outer split (seed 20260726); under four other split seeds the combined geometry-by-phase mean is
     0.0148 to 0.0207 and the history mean 0.0034 to 0.0082, so the exact values reported rest on that
@@ -748,3 +761,226 @@ verifications:
     response: Outcome changed to reproduced, on DANDI:000139 as for maze-gain. The three map gains are
       0.0000448, 0.0000772 and 0.0001386, and the lowest and highest are within tolerance. Under other
       estimator seeds the lowest falls outside, so the outcome is marked seed_sensitive.
+- date: '2026-11-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full re-executed notebooks 01 to 07 with their conclusions and summaries, the helper module,
+    the claims file, the README and the attempt record, with the paper under paper/ (transcripts/du-2026/verifier-2-report.md).
+    No finding is rated critical; the verifier found the four minor ratings correct.
+  results:
+  - claim: synthetic-template-null
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: synthetic-signal-ordering
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: synthetic-pair-breaking
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: link-development-sample
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged. Finding 1, the 02 Summary
+      (cell 61) and the finding about the data checks say velocity is "exactly" the forward difference, with "correlation
+      1.000 in all 18 development sessions"; 02 cell 5 shows 2021-10-15 CO second component at 0.987 (SD ratio 0.99),
+      probably the session with the 1094 ms gap. Minor.
+    response: Finding 1 and the 02 Summary now give correlation 1.000 and SD ratio 1.00 for both components in 17
+      sessions and 1.000 and 0.987 in 2021-10-15 CO, the session with the timestamp gap; "exactly" is removed. Outcome
+      unchanged.
+  - claim: link-neural-only-r2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: link-context-ladder-gain
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: link-context-only-r2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: link-phase-only-replacement
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: link-task-contrast-by-context
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: nested-geometry-gain
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged. The finding about the
+      paper says the code reproduces its reported values at their printed precision for every claim tested; not
+      so for the date intervals in 02 cell 29 (0.02401 against 0.02404, 0.00711 to 0.01591 against 0.00709 to 0.01594),
+      rff-link reading (b) (02 cell 59), representative-trial (02 cell 53, one tie reading only) and temporal-offset
+      reading (a) under the fully nested estimator (04 cell 5).
+    response: The finding about the paper now names these four exceptions. Outcome unchanged.
+  - claim: nested-history-gain
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: nested-replacement-negative
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged. 02 cell 36 says "so two
+      of those seeds put both SBP values outside their 10% tolerances", and the record says both fall outside with
+      seeds plus 1000 and plus 3000. Per 02 cell 35 only +1000 has both outside (-0.00887 and -0.00496); at +3000
+      the history value, -0.00428, is inside [-0.00448, -0.00366]. The outcome at the fixed seed is unaffected.
+    response: '02 cell 35 now prints, for each seed, whether each SBP value is within tolerance: both outside under
+      plus 1000, the history value under plus 2000, the geometry value under plus 3000, neither under plus 4000.
+      02 cell 36 and the notes say this. Outcome unchanged.'
+  - claim: replacement-source-diagnostics
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: permutation-negative
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: replacement-penalty-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: replacement-ranks-lower
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: practical-mse-reduction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: representative-trial
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: The finding about the paper now names this claim among the exceptions to printed-precision agreement
+      (see nested-geometry-gain). Outcome unchanged.
+  - claim: split-seed-stability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: rff-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: The finding about the paper now names this claim among the exceptions to printed-precision agreement
+      (see nested-geometry-gain). Outcome unchanged.
+  - claim: estimator-family-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged. The deviation's "0.0261224
+      and 0.0261219", "lsqr took 58 min" and "a full lsqr run ... gave the same signs" have no printed output, and
+      03 cell 6 states the 5e-7 agreement without output. Cholesky in place of lsqr does not bear on a conclusion;
+      reading (b) of the nonlinear context is still not run.
+    response: '03_link_estimators.ipynb now runs the block-penalty fit with lsqr (tolerance 1e-6) and with Cholesky
+      on 2021-10-15 CO, SBP, geometry by phase: same penalties, gains 0.0261224 and 0.0261222. The earlier figure
+      0.0261219 and the statements about the 58 min run and the full lsqr run, which had no output, are removed.
+      A full lsqr run on all 18 sessions was tried in this revision and exceeded the one-hour cell limit, so it
+      is not in the notebook. Reading (b) is still not run. Outcome unchanged.'
+  - claim: temporal-offset
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: The finding about the paper now names this claim among the exceptions to printed-precision agreement
+      (see nested-geometry-gain). Outcome unchanged.
+  - claim: context-capacity-contrast
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: confirm-geometry-gain
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged. The README ("under other
+      split seeds ... the values move outside their 10% tolerances") and the 05 Summary ("the 10% tolerances do
+      not hold under other split seeds") overgeneralize: per 05 cells 6 and 9, at seed +3000 the geometry mean 0.02070
+      and the history mean 0.00818 are within tolerance.'
+    response: The README now says most values move outside their tolerances, and the 05 Summary says the geometry
+      and history means are inside only under seed plus 3000 and the replacement mean under none. Outcome unchanged.
+  - claim: confirm-history-contraction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: Text corrected as for confirm-geometry-gain. Outcome unchanged.
+  - claim: confirm-replacement
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: confirm-table1-values
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: rtt-data
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: rtt-gain
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: rff-rtt
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1; the numbers in the re-executed notebooks are unchanged.
+    response: No change.
+  - claim: estimator-family-nlb
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The MC_Maze part is now reported (07 cell 10, 0.000455 and -0.000243) and correctly kept out
+      of the outcome.
+    response: No change.
+  - claim: maze-gain
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, provided author step 1.4 of the protocol says what the round-1 response says (the verifier
+      could not see docs/protocol.md). 07 cell 4 gives 0.90533, 0.000513, 0.542% and -0.0000371, all within tolerance,
+      and the interval 0.00026 to 0.00076; 07 cell 13 shows the release''s own code gives identical values. The
+      criterion states no reproduction rule ("Not on this attempt''s datasets"); the rule used, all four values
+      within tolerance as for rtt-gain, is the author''s (07 cell 3). It is reasonable, but the outcome rests on
+      it, so it should be marked assumed: true. The replacement tolerance (+-0.000004) is narrower than the rounding
+      of the paper''s printed -0.00004 (+-0.000005), a claims-file problem; under the other four estimator seeds
+      the replacement gain is -0.0027212, +0.0000294, -0.0000190 and +0.0000075, so it changes sign, and the seed_sensitive
+      marking is warranted. 07 cell 14''s "none of the analysis windows reaches a gap" is only indirectly supported:
+      07 cell 2 shows every trial runs at least 959 ms past movement onset, longer than the 800 ms window, and unlike
+      06 it prints no NaN count for the analysis arrays. The README says "The MC_Maze gains ... move outside the
+      tolerances under others"; per 07 cell 4 the gain stays within tolerance under 3 of the 4 other seeds, and
+      it is the replacement gain and the lowest map gain (07 cell 7) that move outside under every one.'
+    response: 'Outcome kept. The outcome is now marked assumed: true, with a deviation that states the rule, and
+      07 cells 3 and 5 say so. The tolerance against the paper''s rounding is added to questions/du-2026.yaml for
+      a reader, and 07 cell 4 now also prints whether each seed''s replacement gain lies within the rounding of
+      -0.00004 (only under seed 20260726). Protocol author step 1.4 says of a data: elsewhere claim "Test the claim
+      on those data, listing them under inputs, as for any other claim" and "If it cannot be tested here, block
+      it for the reason that applies (too_large, not_runnable, data_unreadable and so on), never data_missing".
+      07 cell 2 now prints the NaN count of the analysis arrays (0 in neural, context and behaviour), and the 07
+      Summary says the arrays hold no missing value. The README''s sentence on the MC_Maze gains is corrected: under
+      the four other estimator seeds the replacement gain and the lowest map gain are outside their tolerances under
+      every one and the gain under one.'
+  - claim: rff-maze
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, provided author step 1.4 says what the response says. 07 cell 7 gives 0.0000448 and 0.0001386,
+      both inside the widened range, with all three map gains positive.
+    response: Outcome kept. The passage of author step 1.4 is quoted under maze-gain.
