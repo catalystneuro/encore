@@ -1,0 +1,293 @@
+schema_version: 3
+id: hasnain-2025-01
+datasets:
+- archive: dandi
+  id: "000363"
+  version: 0.231012.2129
+  doi: 10.48324/dandi.000363/0.231012.2129
+  relation: reuses
+paper: doi:10.1101/2025.10.17.682917
+date: 2026-11-22
+entry: hasnain-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/44974161321
+outcomes:
+- claim: own-recordings-cohort
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's own cell-type-specific recordings (9 mice, 27 sessions in ALM and tjM1) are not in
+    DANDI:000363, which holds the MAP recordings of Chen et al. (2024) only. The paper says "Data will be
+    made publicly available upon publication". A search of the DANDI archive for Hasnain, Economo,
+    subspace and extratelencephalic found no dandiset with them; DANDI:001472 holds the data of the
+    authors' earlier paper (ref 39, Nat Neurosci 2025), not these recordings.
+- claim: fig1i-selectivity-proportions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own L-ETN and UN recordings, which are not public (see own-recordings-cohort).
+- claim: fig2c-subspace-variance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings and video, which are not public (see own-recordings-cohort).
+- claim: fig2e-potent-only-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings, which are not public (see own-recordings-cohort).
+- claim: fig2f-letn-preference-like-un
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the phototagged L-ETNs of the paper's own recordings, which are not public (see
+    own-recordings-cohort).
+- claim: fig2gh-letn-span-subspaces
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings, which are not public (see own-recordings-cohort).
+- claim: ed2f-false-negatives
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings and raw waveforms, which are not public (see
+    own-recordings-cohort).
+- claim: fig3c-network-beats-linear
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings and the 400 Hz videos, which are not public (see
+    own-recordings-cohort).
+- claim: fig3d-letn-un-movement-encoding
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings and videos, which are not public (see own-recordings-cohort).
+- claim: ed3-letn-fast-switch
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings and tongue tracking, which are not public (see
+    own-recordings-cohort).
+- claim: ed3a-cd-early-un-not-letn
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's own recordings, which are not public (see own-recordings-cohort).
+- claim: map-session-selection
+  outcome: not_reproduced
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:map-session-selection
+  measured:
+  - 17
+  - 858
+  - 1001
+  - 300
+  - 340
+  notes: Units classified good (`classification`) with a CCF label of MOs on a probe described as
+    targeting ALM, or of IRN, GRN or PARN; sessions with at least 30 such units in each region. This
+    gives 17 bilateral ALM sessions from 9 mice (paper 20 from 10), with 858 right and 1001 left ALM
+    units (paper 961 and 1055; the left count is within tolerance, the right is not), and 5 ALM and
+    medulla sessions from 4 mice (paper 16 in the Results, 11 from 7 mice in the Methods), with 300
+    ALM and 340 medulla units (paper 604 and 724). The session counts match neither reading, so the
+    claim is not reproduced. Reading U2 (all units of a region) cannot be formed, as only good units
+    carry a CCF label; all units on the region's probes give 3668 medulla-probe units in the 5
+    sessions and 18784 ALM-probe units in the 17 bilateral sessions, far above the paper's counts.
+    With 20 good units as the threshold there are 31 bilateral and 14 ALM and medulla sessions, with
+    25 there are 26 and 9. The dataset holds 60 sessions with probes in both ALMs (18 mice) and 36
+    with an ALM and a medulla probe (8 mice).
+  deviations:
+  - The claims file's U1 is applied with `classification` as the 'good' label, the only label whose
+    units carry a CCF annotation; `unit_quality` also has a value 'good' but its units have no CCF
+    label unless `classification` is good.
+- claim: fig4b-medulla-selectivity
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:fig4b-medulla-selectivity
+  measured:
+  - 34.1
+  - 52.9
+  - 86.5
+  notes: 340 medulla units of the 5 ALM and medulla sessions, correct trials, 60 to 157 trials per side
+    per session. Under E1 with the Bonferroni threshold (p < 0.01) 34.1% are selective in the sample
+    epoch, 52.9% in the delay epoch and 86.5% in the response epoch (paper 7, 21 and 49%). The order
+    holds (response highest, sample lowest) under every reading and seed, so the claim is partially
+    reproduced; no reading puts a value within tolerance (E2 sub-epochs 31.2 to 67.4%; uncorrected
+    p < 0.05 higher still). Over the five seeds E1 Bonferroni gives 31.8 to 34.7%, 51.5 to 52.9% and
+    85.9 to 87.1%. By session the sample value runs from 1.7% to 48.4%. The selection holds fewer
+    sessions and units than the paper's (map-session-selection), so the units differ from the paper's.
+  deviations:
+  - Ignore, photostimulation and early-lick trials are left out (assumed; the paper does not say how
+    MAP's photostimulation and early-lick trials were treated).
+  - Epoch rates are the means of the smoothed 5 ms rates (Methods, "Identifying selective neurons"),
+    not z-scored.
+- claim: fig4c-alm-null-potent-similar
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:fig4c-alm-null-potent-similar
+  measured:
+  - 54.5
+  - 77.3
+  notes: 5 sessions, 40 to 85 ALM units each. Under the main reading (W1, B1, D1, baseline z-score) the
+    paired t test of null against potent variance finds no difference (V1 54.5 against 77.3%,
+    p = 0.126; V2 24.0 against 34.1%, p = 0.181; V3 73.8 against 86.0%, p = 0.245), nor under W2 or D2,
+    but no reading of M3 to M6 puts both means within tolerance, so the absence holds and the values do
+    not, a partial reproduction. Under B2 the test finds potent above null (V1 43.9 against 84.9%,
+    p = 0.024; V2 p = 0.023), with means out of tolerance, which the criterion does not count against
+    the claim. The z-score of example.m, a variant in the claims file, matches in full under V2 (30.7
+    against 29.1%, p = 0.119). With 5 sessions the test has little power; the main-reading V1
+    difference is 22.8 points. Over the five seeds the main-reading V1 p is 0.099 to 0.126, the B2 V1
+    p 0.023 to 0.027. Movement-null dimensions are 4 to 11, potent 4 to 9; 30 to 50% of bins are
+    moving.
+  deviations:
+  - 5 sessions where the paper has 16 (map-session-selection).
+  - The movement threshold is Otsu's threshold on log10 speed, a standard choice for the value between
+    the two modes that the paper set by hand; the keypoint positions are first smoothed with a Gaussian
+    of 3 frames, as unsmoothed tracking jitter makes the speed histogram unimodal.
+  - Ignore, photostimulation and early-lick trials are left out (assumed).
+  - The dimensions come from 100 shuffles of every 4th 5 ms bin, where the paper uses 1000 shuffles, to
+    fit the time limit.
+  - The readings W2, B2, D2 and the example.m z-score were each run with the others at the main
+    reading, not in every combination.
+- claim: fig4c-medulla-null-smaller
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:fig4c-medulla-null-smaller
+  measured:
+  - 28.5
+  - 51.2
+  notes: Reproduced under reading B2 (supra-threshold runs shorter than 100 ms counted as moving) with
+    V2, as the criterion accepts any one reading. There the medulla null subspace explains 28.5% and the
+    potent 51.2% (tolerances 26.4 +- 3.9 and 44.8 +- 7.12), paired t p = 0.0097 over 5 sessions, the same
+    under the five seeds; V1 gives p = 0.0025 with the potent mean (85.3%) out of tolerance. Under the
+    main reading B1 the difference is not significant (V1 54.6 against 66.9%, p = 0.445; V2 34.0
+    against 41.6%, p = 0.380), nor under W2 or D2; the example.m z-score gives V2 p = 0.042 with the
+    null mean (31.5%) out of tolerance. The outcome therefore rests on B2, which the paper does not
+    settle; under B2 the ALM difference is also significant (fig4c-alm-null-potent-similar). 31 to 128
+    medulla units per session.
+  deviations:
+  - The outcome rests on reading B2 of M4 and V2 of M6, which the paper leaves open (asked of the
+    authors under findings).
+  - 5 sessions where the paper has 16; the threshold, trial and shuffle deviations of
+    fig4c-alm-null-potent-similar apply.
+- claim: fig4d-alm-predicts-medulla-null
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:fig4d-alm-predicts-medulla-null
+  measured:
+  - -228.5
+  - -4585.2
+  notes: With lambda = 0.01, as the Methods give it, held-out R2 is far below zero under every reading
+    (T1 or T2, R1 or R2, standardized or not), from -228.5 to -149.8% for ALM to medulla (5 sessions)
+    and from -7333 to -2712% for ALM to ALM (A1, 17 sessions), against 40 and 54%; the values given as
+    measured are T1, unstandardized, R1. It stays negative under the five seeds. The nine lagged copies
+    of the smoothed projections are nearly collinear (condition number 1e6 in one bin), so the fit
+    barely regularized overfits the training trials. As variants with larger penalties, standardized
+    and pooled, R2 is at most 21.3% (ALM to medulla, lambda 100), with ALM to ALM at 5.8%, below ALM
+    to medulla, the reverse of the paper.
+  deviations:
+  - Subspaces from the main reading only; the bilateral sessions are 17, not 20.
+  - Larger penalties are shown as variants only; the claim's lambda decides the outcome.
+- claim: fig4d-decoding-asymmetry
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:fig4d-decoding-asymmetry
+  measured: -346.3
+  notes: Under every reading the paired t test of ALM to medulla against medulla to ALM gives p = 0.46 to
+    0.90 over 5 sessions, and medulla to ALM R2 is -378 to -185% (T1, unstandardized, R1 -346.3%),
+    against 21 +- 6.7%. In the lambda = 100 variant ALM to medulla exceeds medulla to ALM by 13.5 points
+    (p = 0.040), with medulla to ALM at 7.8%, outside tolerance.
+  deviations:
+  - As for fig4d-alm-predicts-medulla-null.
+- claim: fig4e-medulla-null-lower-dimension
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:fig4e-medulla-null-lower-dimension
+  notes: N1 (shuffle dimension of the stationary activity) is 6.8 in the medulla and 7.4 in ALM, p = 0.646,
+    lower in 2 of 5 sessions; 0.577 to 0.646 over the five seeds, and p = 0.077 to 0.646 under the other
+    readings of M3 to M5 (under B2 the medulla is higher, 10.0 against 8.0). N2 (participation ratio of
+    the movement-null covariance) is 3.13 against 5.09, p = 0.0915, lower in 4 of 5; per unit p = 0.31.
+    Neither reading gives p < 0.05. The medulla has 31 to 128 units and ALM 40 to 85; the medulla has
+    fewer units in 2 sessions.
+  deviations:
+  - 5 sessions; dimensions from 100 shuffles of every 4th bin.
+  - N2 is the claims file's stand-in for the scale-dependent measure of ref 70, which the paper does not
+    specify.
+- claim: fig4f-medulla-null-not-spanning-alm
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_hasnain_2025.ipynb
+  output: claim:fig4f-medulla-null-not-spanning-alm
+  notes: Test-set UMAP of 300 ALM and 340 medulla units. 20.0% of ALM units have no medulla unit among
+    their 10 nearest neighbours (0.1% with shuffled labels; 20.0 to 25.7% over the five seeds), so ALM
+    holds patterns without a medulla counterpart, as the paper reports. The criterion's second part does
+    not hold; only 55.9% of medulla units have an ALM neighbour (shuffled 99.8%; 52.1 to 60.6% over
+    seeds) and 7 of the 39 grid cells that hold medulla units hold no ALM unit, so the medulla also
+    occupies regions without ALM units. The judgment rests on these counts and the plot.
+  deviations:
+  - umap-learn with the Methods' parameters stands in for MATLAB's run_umap (claims, M10); the
+    neighbour counts are this attempt's description of the embedding, the paper judges by inspection.
+  - Units pooled over the 5 sessions; subspaces from the main reading.
+findings:
+- kind: other
+  about: data
+  severity: major
+  statement: With the dataset's own CCF labels and quality classification, the paper's selection (at least
+    30 good units in each region) gives 5 ALM and medulla sessions from 4 mice, with 300 ALM and 340
+    medullary reticular units, where the paper reports 16 sessions (or 11 from 7 mice) with 604 and 724
+    units; and 17 bilateral ALM sessions from 9 mice where the paper reports 20 from 10. The files do not
+    hold the CCF labels that would let a user recover the paper's selection.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The units' CCF annotation (`anno_name`) is filled only for units whose `classification` is
+    good (69453 of 272227 units); the others have an empty label and only the probe's target region. The
+    column description does not say this.
+- kind: metadata_insufficient
+  severity: minor
+  statement: Units carry two quality labels, `unit_quality` (good or multi, no description) and
+    `classification` (good or unlabelled), with no statement of how they differ; 1852 units have no
+    `classification` value.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The jaw, nose and tongue tracking are stored with unit 'a.u.'; the values are pixel positions
+    of the side camera (about 294 Hz, one segment per trial) and a likelihood.
+- kind: other
+  about: data
+  severity: none
+  statement: The spike, video and trial clocks agree in all 22 selected sessions. The tongue becomes
+    visible a median 56 to 271 ms after the go cue, lick direction is decoded from spike counts after
+    the go cue well above shuffled labels, and jaw and nose speed rises at the go cue. The units of the
+    session compared are the same in versions 0.230822.0128 and 0.231012.2129.
+- kind: paper_inconsistency
+  statement: The paper gives two counts for the ALM and medulla sessions of the MAP data (16 sessions in
+    the Results and the Figure 4 statistics, 11 sessions from 7 mice in the Methods), two counts for the
+    bilateral ALM units (1116 in the Results, 2016 in the Methods), and two decoding windows (the
+    previous 40 ms in the Results, t and 8 preceding 5 ms bins, 45 ms, in the Methods).
+- kind: methods_unavailable
+  statement: Cross-region decoding (Figure 4d). With ridge lambda = 0.01 and the source projections at t
+    and 8 preceding bins of 20 ms-smoothed rates, the predictors are nearly collinear and held-out R2 is
+    far below zero on these data. Was lambda applied to standardized predictors, was R2 computed on
+    held-out single trials at each bin, and were trials or bins pooled before the fit?
+- kind: methods_unavailable
+  statement: Movement and stationary bins in the MAP data (Figure 4c to f). How was the hand-set
+    threshold placed, were the keypoints smoothed before taking velocity, and do supra-threshold runs
+    shorter than 100 ms count as moving? The medulla null against potent result here holds only when
+    they count as moving.
+- kind: methods_unavailable
+  statement: MAP trials and units. Were photostimulation, early-lick and ignore trials used, and is the
+    'good' label of the selection the `classification` or the `unit_quality` column, with CCF regions
+    assigned to which units?
+- kind: methods_unavailable
+  statement: Variance explained and dimensionality (Figure 4c, e). Which covariance and which d normalise
+    the variance explained of each subspace (the reported null and potent values add to the total, which
+    the Methods' formula does not give), and which measure of dimensionality, at which scale, does
+    Figure 4e use?
+- kind: methods_unavailable
+  statement: The baseline z-score (Methods, Subspace identification) divides by the baseline s.d. across
+    trials; for MAP units with near-silent baselines this gives values up to 213 s.d. Were such units
+    excluded, or was a floor applied?
