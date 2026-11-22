@@ -103,17 +103,19 @@ def pairwise_euclidean(x):
     return d
 
 
-def ordinal_ranks(x, axis=-1):
-    return np.argsort(np.argsort(x, axis=axis), axis=axis).astype(float)
+def ordinal_ranks(x, axis=-1, kind=None):
+    return np.argsort(np.argsort(x, axis=axis, kind=kind), axis=axis, kind=kind).astype(float)
 
 
-def spearman(a, b):
-    """The code's Spearman: Pearson correlation of np.argsort(np.argsort(.)) ranks."""
+def spearman(a, b, kind=None):
+    """The code's Spearman: Pearson correlation of np.argsort(np.argsort(.)) ranks. ``kind`` is
+    numpy's sort kind; the code uses the default, and kind="stable" (tied values ranked in their
+    order of input) is a variant that shows how much the order of tied ranks matters."""
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
     if a.size < 3:
         return float("nan")
-    ra, rb = ordinal_ranks(a), ordinal_ranks(b)
+    ra, rb = ordinal_ranks(a, kind=kind), ordinal_ranks(b, kind=kind)
     if ra.std() == 0 or rb.std() == 0:
         return float("nan")
     return float(np.corrcoef(ra, rb)[0, 1])
@@ -293,21 +295,21 @@ def _code_pairs(n, rng, n_pairs=80000):
     return i[:take], j[:take]
 
 
-def _code_align(x, labels, ii, jj, rng, n_shuffle=100):
+def _code_align(x, labels, ii, jj, rng, n_shuffle=100, kind=None):
     ua = np.sqrt(np.sum((x[ii] - x[jj]) ** 2, axis=1))
-    rho = spearman(ua, (labels[ii] != labels[jj]).astype(float))
-    null = np.array([spearman(ua, (labels[p[ii]] != labels[p[jj]]).astype(float))
+    rho = spearman(ua, (labels[ii] != labels[jj]).astype(float), kind)
+    null = np.array([spearman(ua, (labels[p[ii]] != labels[p[jj]]).astype(float), kind)
                      for p in (rng.permutation(x.shape[0]) for _ in range(n_shuffle))])
     return {"A": rho, "p": emp_p(null, rho), "null_mean": float(null.mean())}
 
 
-def code_q2_sequence(spaces, join, seed=0, n_shuffle=100, min_cre=80):
+def code_q2_sequence(spaces, join, seed=0, n_shuffle=100, min_cre=80, kind=None):
     """A_t and the Cre-residual A_t with the draws of the code's q2_anchor.py main(): one generator
     of seed 0 shared by the three regimes in the code's order, and, per regime, the pairs of the
     t-typed cells, the t-type and hierarchical shuffles, the pairs of the cells with a Cre line, the
     Cre and residual shuffles, then each Cre line of at least 80 cells and two t-types. Cells are
     taken in the space's order. The hierarchical, Cre and within-Cre draws are made only to keep the
-    generator where the code has it."""
+    generator where the code has it. ``kind`` is the sort kind of the ranks (see ``spearman``)."""
     rng = np.random.default_rng(seed)
     out = {}
     for p in REGIMES:
@@ -318,7 +320,7 @@ def code_q2_sequence(spaces, join, seed=0, n_shuffle=100, min_cre=80):
         xi = np.array([i for i, _, _ in keep], dtype=int)
         lab = np.array([t for _, t, _ in keep], dtype=object)
         ii, jj = _code_pairs(xi.size, rng)
-        a_t = _code_align(x_all[xi], lab, ii, jj, rng, n_shuffle)
+        a_t = _code_align(x_all[xi], lab, ii, jj, rng, n_shuffle, kind)
         for _ in range(n_shuffle):  # hierarchical distance (A_hier)
             rng.permutation(xi.size)
         cre_ok = [(i, t, c) for i, t, c in keep if c]
@@ -328,7 +330,7 @@ def code_q2_sequence(spaces, join, seed=0, n_shuffle=100, min_cre=80):
         ii_c, jj_c = _code_pairs(xc.shape[0], rng)
         for _ in range(n_shuffle):  # A_cre
             rng.permutation(xc.shape[0])
-        a_res = _code_align(residualize(xc, cre), lab_c, ii_c, jj_c, rng, n_shuffle)
+        a_res = _code_align(residualize(xc, cre), lab_c, ii_c, jj_c, rng, n_shuffle, kind)
         by_cre = {}
         for k, c in enumerate(cre.tolist()):
             by_cre.setdefault(c, []).append(k)
