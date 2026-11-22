@@ -19,8 +19,8 @@ The outcomes, the reasons and the differences from the paper's method are in the
 [`attempts/yang-2026-flexible-01.yaml`](../../attempts/yang-2026-flexible-01.yaml), and in the
 notebook's summary.
 
-- `reproduce_yang_2026.ipynb`: the analysis. It takes about 45 minutes, most of it the one pass
-  that streams the 142 GB of the dandiset and runs IPFX on each file, in six processes.
+- `reproduce_yang_2026.ipynb`: the analysis. It takes about 45 to 78 minutes, most of it the one pass
+  that streams the 142 GB of the dandiset and runs IPFX on each file, in eight processes.
 - `patchseq.py`: streaming a file into memory, the IPFX feature extraction per regime and for split
   halves of the long squares, and the values of the data check. Other notebooks on this dandiset
   can import it.

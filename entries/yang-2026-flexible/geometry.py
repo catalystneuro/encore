@@ -13,7 +13,8 @@ or its code, https://github.com/zy-neuro/protocol-response-geometry at commit 61
 - Pairs of cells: 80,000 sampled pairs (Methods, "Cross-regime phenotypic organization"); unique
   pairs are the main reading, the code's draw of random i < j pairs, which may repeat, a variant.
 - kNN: 15 neighbours, self excluded, Euclidean distance, ties as np.argpartition leaves them.
-- Every random draw uses a generator the notebook makes from the claim's seed (protocol).
+- Every random draw uses a generator the notebook makes from the claim's seed (protocol), except
+  ``code_q2_sequence``, a variant that repeats the draws of the code's q2_anchor.py under its seed 0.
 """
 
 from __future__ import annotations
@@ -276,6 +277,69 @@ def alignment(x, labels, rng, n_shuffle=100, average_ranks=False):
     if not n_shuffle:
         null = np.array([np.nan])
     return {"A": rho, "p": emp_p(null, rho), "null_mean": float(null.mean()), "null_max": float(null.max()), "n": n}
+
+
+def _code_pairs(n, rng, n_pairs=80000):
+    """The code's sample_pairs (scripts/q2_anchor.py), with its fallback when too few i < j are drawn."""
+    take = min(n_pairs, n * (n - 1) // 2)
+    i = rng.integers(0, n, size=take * 3)
+    j = rng.integers(0, n, size=take * 3)
+    m = i < j
+    i, j = i[m], j[m]
+    if i.size < take:
+        ii, jj = np.triu_indices(n, k=1)
+        pick = rng.choice(ii.size, size=take, replace=False)
+        return ii[pick], jj[pick]
+    return i[:take], j[:take]
+
+
+def _code_align(x, labels, ii, jj, rng, n_shuffle=100):
+    ua = np.sqrt(np.sum((x[ii] - x[jj]) ** 2, axis=1))
+    rho = spearman(ua, (labels[ii] != labels[jj]).astype(float))
+    null = np.array([spearman(ua, (labels[p[ii]] != labels[p[jj]]).astype(float))
+                     for p in (rng.permutation(x.shape[0]) for _ in range(n_shuffle))])
+    return {"A": rho, "p": emp_p(null, rho), "null_mean": float(null.mean())}
+
+
+def code_q2_sequence(spaces, join, seed=0, n_shuffle=100, min_cre=80):
+    """A_t and the Cre-residual A_t with the draws of the code's q2_anchor.py main(): one generator
+    of seed 0 shared by the three regimes in the code's order, and, per regime, the pairs of the
+    t-typed cells, the t-type and hierarchical shuffles, the pairs of the cells with a Cre line, the
+    Cre and residual shuffles, then each Cre line of at least 80 cells and two t-types. Cells are
+    taken in the space's order. The hierarchical, Cre and within-Cre draws are made only to keep the
+    generator where the code has it."""
+    rng = np.random.default_rng(seed)
+    out = {}
+    for p in REGIMES:
+        sp = spaces[p]
+        x_all = sp["scores"][:, : sp["k80"]]
+        keep = [(i, join[s]["t_type"].strip(), join[s]["cre_line"].strip()) for i, s in enumerate(sp["stems"])
+                if s in join and join[s]["t_type"].strip()]
+        xi = np.array([i for i, _, _ in keep], dtype=int)
+        lab = np.array([t for _, t, _ in keep], dtype=object)
+        ii, jj = _code_pairs(xi.size, rng)
+        a_t = _code_align(x_all[xi], lab, ii, jj, rng, n_shuffle)
+        for _ in range(n_shuffle):  # hierarchical distance (A_hier)
+            rng.permutation(xi.size)
+        cre_ok = [(i, t, c) for i, t, c in keep if c]
+        xc = x_all[np.array([i for i, _, _ in cre_ok], dtype=int)]
+        lab_c = np.array([t for _, t, _ in cre_ok], dtype=object)
+        cre = np.array([c for _, _, c in cre_ok], dtype=object)
+        ii_c, jj_c = _code_pairs(xc.shape[0], rng)
+        for _ in range(n_shuffle):  # A_cre
+            rng.permutation(xc.shape[0])
+        a_res = _code_align(residualize(xc, cre), lab_c, ii_c, jj_c, rng, n_shuffle)
+        by_cre = {}
+        for k, c in enumerate(cre.tolist()):
+            by_cre.setdefault(c, []).append(k)
+        for c, idx in by_cre.items():
+            if len(idx) < min_cre or len(set(lab_c[idx].tolist())) < 2:
+                continue
+            _code_pairs(len(idx), rng)
+            for _ in range(n_shuffle):
+                rng.permutation(len(idx))
+        out[p] = {"A_t": a_t, "A_res": a_res, "n_t": int(xi.size), "n_c": int(xc.shape[0])}
+    return out
 
 
 def residualize(x, groups):

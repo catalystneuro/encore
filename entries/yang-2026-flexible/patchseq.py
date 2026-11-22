@@ -25,8 +25,10 @@ Where each parameter comes from:
   failed. Assumption, recorded.
 - The split-half extraction (claim split-half-reliability) is the code's ``extract_one_split``:
   at least four usable long squares, candidate splits in the code's order, at least two sweeps per
-  half, the subthreshold minimum amplitude from the coarse long squares. Its random split uses the
-  claim's seed (protocol), not the code's seed 0.
+  half, the subthreshold minimum amplitude from the coarse long squares. Its random split is run
+  under the seed the criterion and the code give, 0 (the code makes a fresh ``default_rng(0)`` for
+  each cell), and under the four seeds 1000 to 4000 and the claim's seed (protocol), to show how
+  much the pool depends on it.
 - The clock check takes, for each cell, the long square with the most negative amplitude, and
   the mean voltage, relative to a baseline 100 to 50 ms before stimulus onset, in the 10 ms just
   before the onset ("pre"), 15 to 25 ms after it ("post"), and in the last 100 ms of the stimulus
@@ -297,8 +299,10 @@ def open_data_set(data: bytes, fast: bool = True):
     return EphysDataSet(sweep_info=None, data=nwb_data)
 
 
-def extract_cell(asset: dict, split_seed: int | None = None, fast: bool = True) -> dict:
-    """Stream one NWB file into memory (never to disk) and compute everything the notebook needs from it."""
+def extract_cell(asset: dict, split_seed: int | list[int] | None = None, fast: bool = True) -> dict:
+    """Stream one NWB file into memory (never to disk) and compute everything the notebook needs from it.
+
+    ``split_seed`` is one seed or a list of seeds for the split halves (``_split_half``)."""
     warnings.filterwarnings("ignore")
     logging.disable(logging.WARNING)
     stem = asset["path"].split("/")[-1].rsplit(".", 1)[0]
@@ -385,7 +389,8 @@ def extract_cell(asset: dict, split_seed: int | None = None, fast: bool = True) 
             rec["clock_error"] = f"{type(exc).__name__}: {exc}"[:200]
         # split halves of the long squares (claim split-half-reliability)
         if split_seed is not None:
-            rec["split"] = _split_half(ds, dsf, names, cc, usable, allowed, split_seed)
+            seeds = [split_seed] if np.isscalar(split_seed) else list(split_seed)
+            rec["split"] = _split_half(ds, dsf, names, cc, usable, allowed, seeds)
     except Exception as exc:
         rec["error"] = f"{type(exc).__name__}: {exc}"[:300]
     finally:
@@ -400,8 +405,14 @@ def extract_cell(asset: dict, split_seed: int | None = None, fast: bool = True) 
     return rec
 
 
-def _split_half(ds, dsf, names, cc, usable, allowed, seed):
-    out = {"n_usable": len(usable), "ok": 0, "rule": "", "reason": "", "a": {}, "b": {}}
+def _split_half(ds, dsf, names, cc, usable, allowed, seeds):
+    """The code's extract_one_split, under each seed in ``seeds``; the first gives the result kept
+    under "split", and "by_seed" holds every seed's rule and, for a random split, its halves.
+
+    The candidate splits other than the random one do not depend on the seed, so each half (a set of
+    sweeps) is extracted once and reused, and a candidate whose first half fails is not extracted
+    further: either way it fails, with the same message as the code gives (its first half's)."""
+    out = {"n_usable": len(usable), "ok": 0, "rule": "", "reason": "", "a": {}, "b": {}, "by_seed": {}}
     allowed["set"] = None
     if len(usable) < MIN_USABLE:
         out["reason"] = f"n_usable={len(usable)}<{MIN_USABLE}"
@@ -412,10 +423,6 @@ def _split_half(ds, dsf, names, cc, usable, allowed, seed):
         amp_map = {int(a): float(b) for a, b in zip(tab["sweep_number"], tab["stimulus_amplitude"])}
     except Exception:
         amp_map = {}
-    splits = candidate_splits(usable, np.random.default_rng(seed), amp_map or None)
-    if not splits:
-        out["reason"] = "could_not_split"
-        return out
     clsq = ds.filtered_sweep_table(clamp_mode=cc, stimuli=ds.ontology.coarse_long_square_names)
     try:
         if clsq is not None and len(clsq) > 0 and "stimulus_amplitude" in clsq:
@@ -425,28 +432,47 @@ def _split_half(ds, dsf, names, cc, usable, allowed, seed):
     except Exception as exc:
         out["reason"] = f"{type(exc).__name__}: {exc}"
         return out
+    memo = {}
 
     def half(sweeps):
+        key = tuple(sweeps)
+        if key in memo:
+            return memo[key]
         allowed["set"] = set(sweeps)
         try:
             feats, state = dsf.extract_cell_long_square_features(ds, subthresh_min_amp=smin)
+            if (state or {}).get("failed_fx") or not feats:
+                res = None, str((state or {}).get("fail_fx_message") or "failed_fx")[:120]
+            else:
+                res = pack({"long_squares": feats}), ""
         except Exception as exc:
-            return None, f"{type(exc).__name__}"
+            res = None, f"{type(exc).__name__}"
         finally:
             allowed["set"] = None
-        if (state or {}).get("failed_fx") or not feats:
-            return None, str((state or {}).get("fail_fx_message") or "failed_fx")[:120]
-        return pack({"long_squares": feats}), ""
+        memo[key] = res
+        return res
 
-    last = ""
-    for a, b, rule in splits:
-        fa, ea = half(a)
-        fb, eb = half(b)
-        if fa is not None and fb is not None:
-            out.update(ok=1, rule=rule, a=fa, b=fb, reason="")
-            return out
-        last = ea or eb
-    out["reason"] = last or "half_failed"
+    def run(splits):
+        if not splits:
+            return {"ok": 0, "rule": "", "reason": "could_not_split", "a": {}, "b": {}}
+        last = ""
+        for a, b, rule in splits:
+            fa, ea = half(a)
+            if fa is None:
+                last = ea
+                continue
+            fb, eb = half(b)
+            if fb is not None:
+                return {"ok": 1, "rule": rule, "reason": "", "a": fa, "b": fb}
+            last = eb
+        return {"ok": 0, "rule": "", "reason": last or "half_failed", "a": {}, "b": {}}
+
+    for k, seed in enumerate(seeds):
+        res = run(candidate_splits(usable, np.random.default_rng(seed), amp_map or None))
+        if k == 0:
+            out.update(res)
+        keep = res if res["rule"] == "random" else {**res, "a": {}, "b": {}}
+        out["by_seed"][int(seed)] = keep
     return out
 
 
@@ -457,7 +483,7 @@ def _init():
     logging.disable(logging.WARNING)
 
 
-def extract_all(assets: list[dict], split_seed: int | None, workers: int = 6, chunk: int = 300,
+def extract_all(assets: list[dict], split_seed: int | list[int] | None, workers: int = 6, chunk: int = 300,
                 progress: int = 500) -> list[dict]:
     """Run ``extract_cell`` over the assets in forked processes, a fresh pool for every ``chunk`` files.
 
