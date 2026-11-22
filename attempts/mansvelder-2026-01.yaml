@@ -2,7 +2,7 @@ schema_version: 3
 id: mansvelder-2026-01
 datasets:
 - archive: dandi
-  id: "000630"
+  id: '000630'
   version: 0.230915.2257
   doi: 10.48324/dandi.000630/0.230915.2257
   relation: reuses
@@ -21,292 +21,694 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/45037099324
 inputs:
-- what: Per-cell labels of the human layer 1 cells (session id through nwb_path, donor name, subclass,
-    t-type, structure, medical condition, donor sex and age), from data/human_l1_dataset_2023_02_06.csv
-    of the analysis repository of Chartrand et al. (2023), which the dandiset's description names.
-    Labels only; no measurements are taken from it.
+- what: Per-cell labels of the human layer 1 cells (session id through nwb_path, donor name, subclass, t-type, structure,
+    medical condition, donor sex and age), from data/human_l1_dataset_2023_02_06.csv of the analysis repository
+    of Chartrand et al. (2023), which the dandiset's description names. Labels only; no measurements are taken from
+    it.
   source: https://github.com/AllenInstitute/patchseq_human_L1 at commit 7777857c1b89b19735e45fd9c9bd7493cc1d805c
-- what: Supplementary Table 1 of the paper (donor name, dataset, area, disease category, lobe), read from
-    the preprint's supplement and written into resonance.py as TABLE_S1; donor labels only.
+- what: Supplementary Table 1 of the paper (donor name, dataset, area, disease category, lobe), read from the preprint's
+    supplement and written into resonance.py as TABLE_S1; donor labels only.
   source: doi:10.21203/rs.3.rs-11136357/v1 (Supplementary Information, Table 1)
+- what: 'DANDI:000636 version 0.241120.0510, "Human interneuron patch-seq electrophysiology" (Lee, Dalley et al.
+    2023, the paper''s reference 2): electrophysiology of human acute and slice-culture interneurons, 690 of its
+    706 files read (those the Lee, Dalley et al. table lists). Used for the human acute cells beyond layer 1 and
+    for the cultured cells.'
+  source: doi:10.48324/dandi.000636/0.241120.0510
+- what: Per-cell labels of Lee, Dalley et al. (2023) (subclass, acute or culture, donor, layer), data/LeeDalley_manuscript_metadata_v2.csv,
+    matched to the 000636 files by nwb_id; and the Allen Institute's chirp features of the same cells (data/LeeDalley_ephys_fx.csv),
+    used only as a check of the impedance computation.
+  source: https://github.com/AllenInstitute/human_patchseq_gaba at commit 5eb357a1cea246c7c847b5608a8fc7e87ea95b58
+- what: 'DANDI:000020 version 0.210913.1639, "Patch-seq recordings from mouse visual cortex" (Gouwens et al. 2020):
+    the 461 files whose cells are among the paper''s mouse cells (Table S2b). Used for every mouse comparison.'
+  source: doi:10.48324/dandi.000020/0.210913.1639
+- what: 'The Allen Institute''s per-cell metadata of the mouse Patch-seq release (20200711_patchseq_metadata_mouse.csv:
+    cell specimen id, ephys session id, T-type, Cre line, sex), copied in a third-party repository; the Allen portal
+    gives the file at no fixed address. Labels and the specimen-to-file map only.'
+  source: https://github.com/keon-arbabi/patch-seq-microglia at commit bb5c0e206c6f01a0a5639fa3ef843641ecf4cb7e
+    (data/patchseq/20200711_patchseq_metadata_mouse.csv)
+- what: 'Patch-seq expression of the human cells: data/ps_human.RData of the Chartrand et al. repository (CPM, layer
+    1 cells) at the commit above, and data/complete_patchseq_data_sets1.RData and complete_patchseq_data_sets2.RData
+    of the Lee, Dalley et al. repository (log2(CPM + 1)) at the commit above, read in memory and matched by specimen
+    id. Used for fig6b, fig6c and figs4.'
+  source: https://github.com/AllenInstitute/patchseq_human_L1 at commit 7777857c1b89b19735e45fd9c9bd7493cc1d805c;
+    https://github.com/AllenInstitute/human_patchseq_gaba at commit 5eb357a1cea246c7c847b5608a8fc7e87ea95b58
+- what: Supplementary Table 2b of the paper (cell specimen id and mouse of each mouse cell, 628 rows), read from
+    the preprint's supplement (PDF text layer) and written into resonance.py as TABLE_S2B.
+  source: doi:10.21203/rs.3.rs-11136357/v1 (Supplementary Information, Table 2b)
 outcomes:
 - claim: chartrand-label-link
   outcome: reproduced
   notebook: reproduce_mansvelder_2026.ipynb
   output: claim:chartrand-label-link
-  notes: All 210 files match one row of the Chartrand table by session id. No NWB subject has more
-    than one donor name and no donor name more than one subject. Sex agrees for 209 files (71 F, 138 M);
-    one file gives "unknown" where the table gives M. Age in the files (days / 365.25) is 0.01 to 0.06
-    years below the table's whole years over 208 files. All 53 dandiset donors are in Table S1, 43
-    under the dataset "AcuteLDPublished" (Lee, Dalley et al. 2023) and 10 under "Chartrand"; of the 31
-    donors of chirp cells, 28 and 3. The 85 chirp cells are LAMP5/PAX6/Other 67 and VIP 18 in the table
-    (3 of the LAMP5/PAX6/Other cells have the t-type SST CHRNA4).
+  notes: All 210 files match one row of the Chartrand table by session id. No NWB subject has more than one donor
+    name and no donor name more than one subject. Sex agrees for 209 files (71 F, 138 M); one file gives "unknown"
+    where the table gives M. Age in the files (days / 365.25) is 0.01 to 0.06 years below the table's whole years
+    over 208 files. All 53 dandiset donors are in Table S1, 43 under the dataset "AcuteLDPublished" (Lee, Dalley
+    et al. 2023) and 10 under "Chartrand"; of the 31 donors of chirp cells, 28 and 3. The 85 chirp cells are LAMP5/PAX6/Other
+    67 and VIP 18 in the table (3 of the LAMP5/PAX6/Other cells have the t-type SST CHRNA4). The Chartrand table's
+    Depth_from_Pia_microns is 0 for all 210 dandiset cells, so it gives no pia-soma distance.
 - claim: sample-size
   outcome: not_reproduced
   notebook: reproduce_mansvelder_2026.ipynb
   output: claim:sample-size
   measured:
-  - 210
-  - 53
-  notes: The dandiset holds 210 human acute interneurons from 53 donors, against 542 from 170, as the
-    criterion foresees for the dandiset alone. 85 of them, from 31 donors, have a usable 20 s chirp
-    (paper 297 human acute cells with a chirp), LAMP5 67 and VIP 18 (paper LAMP5 144, VIP 60, PV 78,
-    SST 15). Of the 87 Table S1 donors under "Chartrand", 10 are dandiset donors; the other 43 dandiset
-    donors are listed under "AcuteLDPublished". No mouse or cultured cells are in the dandiset; the
-    paper's cultured and mouse totals are not checked.
+  - 440
+  - 76
+  notes: The data assembled hold 440 human acute interneurons (210 from 000630, 230 from 000636 after the 4 shared
+    cells) from 76 donors, against 542 +/- 54.2 from 170 +/- 17. 212 have a usable chirp (LAMP5 87, PV 65, VIP 49,
+    SST 11; paper 297, LAMP5 144, VIP 60, PV 78, SST 15). The dandiset alone holds 210 cells from 53 donors, 43
+    of them under "AcuteLDPublished" in Table S1. There are 456 cultured cells from 54 donors (paper 543 from 89;
+    181 with a chirp against 268) and 461 mouse cells from 221 mice (paper 619 from 293; 139 with a chirp against
+    248). The criterion's premise that the dandiset holds the "Chartrand" donors is asked as a question (questions/mansvelder-2026.yaml).
 - claim: fig2b-human-higher-fres-q
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the mouse chirp recordings, which are not in the dandiset; the paper names no archive
-    for them. Table S2b lists the mouse cells by Allen specimen id, and they appear to be in
-    DANDI:000020 (Gouwens et al. 2020; specimen 637381329 sits next to its session 637381314), but the
-    paper gives no specimen to file map and linking and streaming 619 mouse cells was not attempted in
-    this run's five hours. The human acute sample is also only partly here (85 layer 1 cells with a
-    chirp of 297). A later attempt should test this on DANDI:000020.
+  outcome: reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2b-human-higher-fres-q
+  notes: 'Kolmogorov-Smirnov, human acute (212) against mouse (139) cells, chirp reading (b): fres D = 0.239, p
+    = 1.0e-4; Q D = 0.244, p = 6.6e-5; human medians above mouse (fres 1.20 against 0.40 Hz, Q 1.010 against 1.000).
+    Reading (a): p = 4.7e-7 and 1.5e-5, medians 1.08 against 0.20 Hz and 1.010 against 1.000. The paper''s mouse
+    PV and SST cells are not in DANDI:000020 (mouse-specimen-link), so the PV and SST comparisons cannot be run.
+    With LAMP5 and VIP cells only in both species, fres still differs (p = 2.8e-4, medians 0.401 and 0.400) but
+    Q does not (p = 0.25, medians 1.000 and 1.000), so the Q difference rests on the human PV and SST cells, which
+    have no mouse counterpart here.'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - 'Sweep exclusions not in the paper (standard choices): chirp sweeps that were not 20 s, were stopped early (zero-filled)
+    or spiked above -20 mV, and long squares stopped early, are dropped (counts in the data check).'
 - claim: fig2ab-peak-range
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse chirp recordings (see fig2b-human-higher-fres-q). For the human side only, under
-    chirp reading (a), the 26 resonant layer 1 cells are in the notebook's chirp section (resonant
-    fraction 30.6%); their fres range is not tested as a claim.
+  outcome: not_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2ab-peak-range
+  notes: 'Chirp reading (b): human resonant cells (54) have median fres 2.58 Hz (IQR 1.93 to 3.09, range 1.15 to
+    4.55), which meets both readings of the criterion; mouse resonant cells (11) have median 1.70 Hz (IQR 1.45 to
+    2.63), below 1.8 Hz. Reading (a): human 2.40 (IQR 1.70 to 2.93), mouse 1.75 (IQR 1.31 to 2.49, 14 cells). The
+    mouse side fails under every reading. The mouse sample is small and has no PV cells (Table S3 mouse PV median
+    fres 1.30 Hz).'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
 - claim: fig2c-resonant-proportion
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse chirp recordings (see fig2b-human-higher-fres-q). On the dandiset's 85 human layer
-    1 cells 26 are resonant under chirp reading (a) (30.6%) and 17 under reading (b) (20.0%), against
-    the paper's 32.7% over 297 human acute cells of all subclasses; these are not the paper's sample.
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2c-resonant-proportion
+  measured:
+  - 25.5
+  - 7.9
+  notes: 'Chirp reading (b): 54 of 212 human acute cells (25.5%) and 11 of 139 mouse cells (7.9%) are resonant;
+    goodness of fit chi2 = 89.68, p = 2.8e-21, 2x2 chi2 = 17.15, p = 3.5e-5. Both tests pass, but neither fraction
+    is within tolerance (32.7 +/- 3.27%, 9.3 +/- 0.93%). Chirp reading (a) gives 31.1% and 10.1%, both within tolerance,
+    with p = 2.2e-24 and 4.2e-6, which would reproduce the claim. The outcome rests on the chirp reading. The human
+    sample has fewer LAMP5 cells (41% against 48% in the paper''s 297).'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
 - claim: fig2d-subclass-proportion
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse recordings and PV cells, neither in the dandiset (see fig2b-human-higher-fres-q).
-    The human fractions it can give are LAMP5 22 of 67 (32.8%) and VIP 4 of 18 (22.2%) under chirp
-    reading (a), against Table S3's 31.25% and 25.0%; under reading (b) 20.9% and 16.7%.
+  outcome: partially_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2d-subclass-proportion
+  measured:
+  - 19.5
+  - 12.2
+  - 43.1
+  notes: 'Chirp reading (b), goodness of fit against the mouse fraction: LAMP5 17/87 = 19.5% against mouse 10.0%,
+    chi2 = 8.80, p = 0.003; VIP 6/49 = 12.2% against 2.6%, chi2 = 18.38, p = 1.8e-5; PV 28/65 = 43.1% (within tolerance),
+    with no mouse PV cells to test against. Human cells are more often resonant in both testable subclasses, but
+    LAMP5 misses p < 0.001 and the LAMP5 and VIP fractions are below tolerance (31.25 +/- 3.125%, 25.0 +/- 2.5%).
+    Reading (a): LAMP5 29.9% (within tolerance, p = 2.8e-6), VIP 16.3% (p = 1.1e-9), PV 46.2%. With Sncg counted
+    as LAMP5 the VIP test cannot be computed (no resonant mouse VIP cell, expected count 0). The paper''s mouse
+    PV and SST cells are not in DANDI:000020 (mouse-specimen-link), so the PV and SST comparisons cannot be run.'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
 - claim: fig2d-sst-similar
   outcome: blocked
-  blocked_by: other
-  notes: Needs mouse recordings and human SST cells; the dandiset has neither (the 3 cells of t-type SST
-    CHRNA4 are in the LAMP5/PAX6/Other subclass of the Chartrand table).
+  blocked_by: data_missing
+  notes: Needs the mouse SST cells of Table S2b (Sst-Cre cells, specimen ids above 1.2e9), which are not in DANDI:000020
+    or in any other public archive found (mouse-specimen-link). A search outside the notebook (not run here) of
+    the Allen mouse Patch-seq dandisets 001351, 001534, 001748, 001858 and 001938, for a session id up to 1600 below
+    each missing specimen id (the offset seen in 000020), found 1 candidate for the 167 missing cells. The human
+    SST fraction is 3/11 = 27.3% under chirp reading (b) (18.2% under (a)), against Table S3's 3/15 = 20.0%.
 - claim: fig2d-pv-highest
-  outcome: blocked
-  blocked_by: other
-  notes: The dandiset holds layer 1 cells only, with no PV or SST cells. The paper's other human acute
-    cells (Lee, Dalley et al. 2023) may be in DANDI:000636, which was not used in this run.
+  outcome: reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2d-pv-highest
+  notes: 'Human acute resonant fractions, chirp reading (b): PV 28/65 = 43.1%, SST 3/11 = 27.3%, LAMP5 17/87 = 19.5%,
+    VIP 6/49 = 12.2%; reading (a): PV 46.2%, LAMP5 29.9%, SST 18.2%, VIP 16.3%. PV is highest under both, and within
+    the 000636 cells alone (43.1% and 46.2%).'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - 'Sweep exclusions not in the paper (standard choices): chirp sweeps that were not 20 s, were stopped early (zero-filled)
+    or spiked above -20 mV, and long squares stopped early, are dropped (counts in the data check).'
 - claim: figs2a-stringent-criteria
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse chirp recordings (see fig2b-human-higher-fres-q). On the human layer 1 cells, 11.8%
-    have fres > 1 Hz and Q > 1.1 and none Q > 1.2 under chirp reading (a).
+  outcome: reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:figs2a-stringent-criteria
+  notes: 'Chirp reading (b): fres > 1 Hz and Q > 1.1, human 7.1% against mouse 2.2%; Q > 1.2, 1.4% against 0.7%
+    (3 and 1 cells). Reading (a): 12.7% against 2.9%, and 1.9% against 0.0%. Human above mouse at both thresholds
+    under both readings; with human LAMP5 and VIP only, 4.4% and 0.7% (reading b).'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
 - claim: fig2e-fres-species-subclass
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse chirp recordings and human PV cells (see fig2b-human-higher-fres-q). Human medians
-    under chirp reading (a) are LAMP5 0.20 Hz and VIP 0.95 Hz (Table S3 human VIP 0.95 Hz).
-- claim: fig2e-lamp5-sst-fres-similar
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse chirp recordings and human SST cells (see fig2b-human-higher-fres-q).
-- claim: fig2f-f3db-species-subclass
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse chirp recordings and human PV and SST cells (see fig2b-human-higher-fres-q). Human
-    median f3dB under chirp reading (a) is 6.36 Hz for LAMP5 (Table S3 7.36 Hz) and 6.68 Hz for VIP.
-- claim: fig2g-q-species-subclass
-  outcome: blocked
-  blocked_by: other
-  notes: Needs mouse chirp recordings and human PV and SST cells (see fig2b-human-higher-fres-q). Human
-    median Q under chirp reading (a) is 1.000 for LAMP5 (Table S3 1.013) and 1.007 for VIP.
-- claim: fig3c-sag-species
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the mouse long-square recordings (see fig2b-human-higher-fres-q) and human PV and SST
-    cells. Human median sag under reading (a) is 0.120 for LAMP5 (Table S3 0.113) and 0.187 for VIP
-    (0.177), over the 85 chirp cells.
-- claim: fig3d-input-resistance-species
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the mouse recordings (see fig2b-human-higher-fres-q) and human PV and SST cells. Human
-    median input resistance under reading (a) is 242.4 MOhm for LAMP5 (Table S3 231.26) over the 85
-    chirp cells.
-- claim: fig3eg-human-fres-sag-rin
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_mansvelder_2026.ipynb
-  output: claim:fig3eg-human-fres-sag-rin
-  notes: Under readings (a) of O1 to O3 (LMM, donor intercept, 85 cells from 31 donors), fres rises with
-    sag in LAMP5 (b = 3.70, p = 0.0004, 67 cells from 26 donors) and VIP cells (b = 4.40, p = 0.024, 18
-    cells from 15 donors) and falls with input resistance in LAMP5 cells (b = -0.0037, p = 0.023); VIP
-    input resistance gives p = 0.14 (paper p = 0.088). The VIP sag slope is within tolerance (4.79 +/-
-    0.479); the LAMP5 sag slope (3.31 +/- 0.331) and the LAMP5 input resistance slope (-0.002 +/-
-    0.0002) are not. The interactions with subclass are not significant (sag p = 0.82, input resistance
-    p = 0.33), but with LAMP5 and VIP only they are not the paper's four-subclass test; the PV slopes
-    cannot be tested. The signs hold in all four combinations of readings and in GEE. Significance
-    changes with the reading. The VIP sag slope gives p = 0.063 and 0.23 under sag and input resistance
-    reading (b), and the LAMP5 input resistance slope p = 0.058 under chirp reading (b) with sag reading
-    (a). GEE gave no estimate for the VIP model. No measured list is given, as the two PV values
-    cannot be measured. The outcome follows the criterion's partial rule (signs and p-values hold, a slope does
-    not) applied to the parts the dandiset can test.
+  output: claim:fig2e-fres-species-subclass
+  notes: 'Mixed model on LAMP5 and VIP cells (275 cells, 134 donors and mice), chirp reading (b), Vm reading (a):
+    species by subclass interaction b = -0.146, Satterthwaite p = 0.004 (Wald p = 0.004); Vm reading (b) p = 0.003;
+    chirp reading (a) p = 0.006. Human VIP cells have higher fres than mouse (Mann-Whitney U = 1369.5, p = 0.0005),
+    though both medians are at the floor (0.40 Hz). The PV test cannot be run. Medians: mouse VIP 0.40 Hz within
+    tolerance; human PV 2.50 Hz (2.18 +/- 0.218) and human VIP 0.40 Hz (0.95 +/- 0.095) outside. The tests that
+    can be run hold and medians do not, the criterion''s partial rule. With Sncg counted as LAMP5 the interaction
+    gives p = 0.086 and the outcome would be not reproduced; the outcome rests on the subclass mapping. The paper''s
+    mouse PV and SST cells are not in DANDI:000020 (mouse-specimen-link), so the PV and SST comparisons cannot be
+    run.'
   deviations:
-  - Tested on the dandiset's 85 human layer 1 cells (LAMP5/PAX6/Other 67, VIP 18) where the paper uses
-    287 human acute cells of four subclasses; the PV slopes and the four-subclass interactions cannot
-    be tested, and the interaction terms here compare LAMP5 with VIP only.
-  - Assumed chirp reading (a) of O1 (IPFX v2.0.0 chirp_amp_phase, 0.2 to 40 Hz, LOWESS frac 0.04, Z0 at
-    the lowest frequency kept). The Methods say the recordings were "analysed using IPFX python package
-    and custom-built Python scripts" (Patch-clamp ZD7288 experiments), and the resonant fractions under
-    reading (a) (LAMP5 32.8%, VIP 22.2%) are near Table S3's human fractions (31.25%, 25.0%) while
-    reading (b)'s are not (20.9%, 16.7%). Reading (b) is shown.
-  - Assumed sag and input resistance readings (a) of O2 and O3 (IPFX v2.0.0 sag on the step whose peak
-    is closest to -100 mV, input resistance as the slope over hyperpolarizing steps), as the Methods name
-    IPFX for these measures; readings (b) are shown.
-  - Mixed models fitted with statsmodels MixedLM (REML) with Wald tests (O5 reading b); the
-    Satterthwaite F tests of reading (a) were not run, as they need SPSS or R (lmerTest), not in the
-    entry's environment. GEE with exchangeable correlation within donor is shown.
-  - Sweep exclusions not in the paper (standard choices); chirp sweeps that were stopped early
-    (zero-filled, 50 sweeps), spiked above -20 mV (18) or were not 20 s chirps (162, the 10 s and 40 s
-    chirps of the 2017 protocol), and long squares stopped early (211 in chirp cells), are dropped.
-  - Subclass labels from the Chartrand et al. (2023) table, not the paper's own assignment, which is
-    not published per cell.
-- claim: fig3fh-mouse-fres
-  outcome: blocked
-  blocked_by: other
-  notes: Mouse recordings only; not in the dandiset (see fig2b-human-higher-fres-q).
-- claim: fig3ik-human-q-sag-rin
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
+- claim: fig2e-lamp5-sst-fres-similar
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2e-lamp5-sst-fres-similar
+  notes: 'Chirp reading (b): human and mouse LAMP5 cells do not differ in fres (U = 4781.5, p = 0.24; medians 0.40
+    and 1.15 Hz, Table S3 1.09 and 1.15). The SST part cannot be tested, as the mouse SST cells are not public.
+    Under chirp reading (a) the LAMP5 cells differ (p = 0.009), and with Sncg counted as LAMP5 p = 0.063. The outcome
+    rests on the chirp reading; partially reproduced because only the LAMP5 half can be tested.'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
+- claim: fig2f-f3db-species-subclass
+  outcome: partially_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2f-f3db-species-subclass
+  notes: 'Chirp reading (b): interaction on LAMP5 and VIP cells p = 7e-14 (Satterthwaite; Wald 2e-15); human LAMP5
+    f3dB below mouse (6.71 against 15.18 Hz, U = 376, p = 5e-27); VIP not different (6.30 against 6.81 Hz, p = 0.067).
+    Medians within tolerance: human LAMP5 6.71 (7.36 +/- 0.736), mouse LAMP5 15.18 (15.20 +/- 1.52), human PV 13.66
+    (13.03 +/- 1.303). The PV and SST comparisons cannot be run, so the criterion''s two of three lower subclasses
+    cannot be met; every testable part holds under every reading (chirp (a): interaction p = 5e-12, VIP p = 0.095;
+    Sncg as LAMP5: p = 0.0006 and 0.28).'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
+- claim: fig2g-q-species-subclass
   outcome: not_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig2g-q-species-subclass
+  notes: 'Chirp reading (b): human VIP cells have higher Q than mouse (U = 1276, p = 0.001), but LAMP5 cells do
+    not differ (p = 0.77, medians 1.000 and 1.004), and the species effect in the mixed model on LAMP5 and VIP is
+    not significant (Satterthwaite p = 0.56). PV and SST cannot be compared. Reading (a): VIP p = 3e-5, LAMP5 p
+    = 0.25, species p = 0.82. Medians: human PV 1.041 within 1.04 +/- 0.004, human LAMP5 1.000 outside 1.013 +/-
+    0.0013. Only one of the three subclasses holds, under every reading.'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
+- claim: fig3c-sag-species
+  outcome: partially_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig3c-sag-species
+  notes: 'All cells with a sag ratio (human acute LAMP5 210, VIP 94, PV 115, SST 19; mouse LAMP5 374, VIP 86), sag
+    reading (a): human LAMP5 0.112 against mouse 0.044 (p = 8e-35), VIP 0.175 against 0.051 (p = 2e-16); interaction
+    on LAMP5 and VIP p = 0.007 (Satterthwaite; Vm reading b). Medians within tolerance: human LAMP5 0.112, mouse
+    LAMP5 0.044, human VIP 0.175, human PV 0.106. PV and SST cannot be compared; partially reproduced as two of
+    the four subclasses can be tested, and both hold, under sag reading (b) (interaction p = 0.012) and with Sncg
+    counted as LAMP5 (p = 0.002) as well.'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
+  - Vm reading (b) of O4 (pre-step potential), as reading (a) exists only for cells with a chirp.
+- claim: fig3d-input-resistance-species
+  outcome: partially_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig3d-input-resistance-species
+  notes: 'Input resistance reading (a): interaction on LAMP5 and VIP p = 1e-19; human LAMP5 258 against mouse 126
+    MOhm (p = 5e-69); VIP not different (305 against 334 MOhm, p = 0.13). Medians: mouse LAMP5 126.4 (125.87 +/-
+    12.59) and human PV 142.0 (151.45 +/- 15.15) within tolerance; human LAMP5 258.4 above 231.26 +/- 23.13 (reading
+    (b) 268.7, also above; PV 131.5 below under (b)). PV and SST cannot be compared. The tests that can be run hold
+    under every reading; a median does not.'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297) and the Table S2b mouse cells in 000020 (139 with a chirp, LAMP5 100, VIP 39; paper 248 of four
+    subclasses).
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
+  - Vm reading (b) of O4, as for fig3c-sag-species. One cultured cell with a non-positive input resistance under
+    reading (a) is left out of tests that use it.
+- claim: fig3eg-human-fres-sag-rin
+  outcome: not_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig3eg-human-fres-sag-rin
+  notes: '212 human acute cells from 49 donors (LAMP5 87, PV 65, VIP 49, SST 11), chirp reading (b), sag and input
+    resistance reading (a), Satterthwaite tests: sag by subclass F(3, 197.8) = 0.20, p = 0.90; input resistance
+    by subclass F(3, 198.9) = 0.67, p = 0.57 (paper 0.035, 0.029). Per subclass: LAMP5 sag b = 3.62, p = 8.5e-5;
+    VIP sag 4.34, p = 3.3e-5; PV sag 4.44, p = 0.006; LAMP5 input resistance -0.0020, p = 0.094; PV input resistance
+    -0.0048, p = 0.023; VIP input resistance -0.0020, p = 0.0005 (paper p = 0.088); SST sag p = 0.18, input resistance
+    p = 0.69 (11 cells from 11 donors; paper n.s.). Slopes within tolerance: LAMP5 and VIP sag, LAMP5 input resistance;
+    outside: PV sag (4.44 against 6.13 +/- 0.613) and PV input resistance (-0.0048 against -0.006 +/- 0.0006). In
+    every combination of readings both interactions give p >= 0.29 and the LAMP5 input resistance slope p = 0.052
+    to 0.094, so the criterion''s partial rule (signs and p-values hold, or one interaction misses) is not met.
+    All fits converged (conv_a, conv_b); GEE on the full model gives sag p = 9e-6 and input resistance p = 3e-4.
+    On the 000630 cells alone (round 1''s sample) the main readings give LAMP5 sag 3.75 (p = 2e-4), VIP sag 4.47
+    (p = 0.033), LAMP5 input resistance p = 0.055.'
+  deviations:
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Sag and input resistance readings (a) of O2 and O3 (IPFX v2.0.0); readings (b) shown.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
+  - 'Sweep exclusions not in the paper (standard choices): chirp sweeps that were not 20 s, were stopped early (zero-filled)
+    or spiked above -20 mV, and long squares stopped early, are dropped (counts in the data check).'
+- claim: fig3fh-mouse-fres
+  outcome: not_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig3fh-mouse-fres
+  notes: '139 mouse cells from 93 mice (LAMP5 100, VIP 39), chirp reading (b), sag and input resistance reading
+    (a): sag main effect p = 0.056 (the paper''s absence holds), input resistance main effect b = -0.0001, p = 0.93
+    (paper p = 0.023), input resistance by subclass p = 0.41. Input resistance does not predict fres, so the claim
+    fails. Under the other readings input resistance gives p = 0.17 to 0.63 and sag reaches p < 0.05 (0.006 to 0.046).
+    The paper''s mouse PV and SST cells are not in DANDI:000020 (mouse-specimen-link), so the PV and SST comparisons
+    cannot be run. The claim uses none of the dandiset''s recordings; whether its `data` should be with_inputs is
+    asked (questions/mansvelder-2026.yaml).'
+  deviations:
+  - Tested on the 139 Table S2b mouse cells in DANDI:000020 with a usable chirp (paper 245, of four subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Mouse subclass is the subclass of the Allen T-type, with Sncg types counted as VIP (assumed; LAMP5 374 of the
+    paper's 435 and VIP 86 of 101 are then covered evenly), and the Cre line for 2 cells without a T-type; Sncg
+    counted as LAMP5 is shown. Human subclass from the Chartrand et al. and Lee, Dalley et al. tables, not the paper's
+    own assignment, which is not published per cell.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
+- claim: fig3ik-human-q-sag-rin
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_mansvelder_2026.ipynb
   output: claim:fig3ik-human-q-sag-rin
   measured:
-  - 0.15
-  - -0.00005
-  notes: Under readings (a) (85 cells, 31 donors), in the model without interactions Q rises with sag (b
-    = 0.150, p = 0.0046) and is not related to input resistance (b = -0.00005, p = 0.24); the sag by
-    subclass interaction gives p = 0.43. The criterion needs sag at p < 0.001 and input resistance
-    negative at p < 0.05, so the tests fail; the sag slope is about a third of 0.47. The LMM without
-    interactions did not converge under this reading; GEE on the same terms gives sag b = 0.138 (p =
-    0.0006) and input resistance p = 0.11, and its sag by subclass interaction p = 0.034. Under chirp
-    reading (b) with sag and input resistance reading (a) the three tests hold (sag b = 0.134, p =
-    3e-05; input resistance b = -0.00006, p = 0.047; interaction p = 0.63), which would make it
-    partially reproduced (slope outside tolerance); under the other two combinations input resistance
-    gives p = 0.58 and 0.10. In no reading is the sag slope near 0.47. Only LAMP5 and VIP cells are
-    in the dandiset.
+  - 0.31
+  - -0.00024
+  notes: '212 human acute cells, chirp reading (b), sag and input resistance reading (a), model without interactions:
+    sag b = 0.310, Satterthwaite p = 0.0004; input resistance b = -0.00024, p = 0.002; full model sag by subclass
+    F(3, 176.8) = 2.13, p = 0.099. The three tests hold; both slopes are outside tolerance (0.47 +/- 0.047, -0.0001
+    +/- 0.00001), so partially reproduced. The readings differ: with sag and input resistance reading (b), sag p
+    = 0.022 (fails p < 0.001); under chirp reading (a), sag p = 0.13 and input resistance p = 0.26 (not reproduced).
+    GEE on the full model gives sag p = 0.17 and input resistance p = 0.12. All fits converged. On the 000630 cells
+    alone the main readings give sag 0.134 (p = 7e-5) and input resistance -0.00006 (p = 0.049).'
   deviations:
-  - Tested on the dandiset's 85 human layer 1 cells (LAMP5/PAX6/Other 67, VIP 18) where the paper uses
-    287 human acute cells of four subclasses.
-  - Assumed chirp reading (a) of O1 and readings (a) of O2 and O3, for the reasons given under
-    fig3eg-human-fres-sag-rin; the readings give different outcomes (chirp reading (b) gives partially
-    reproduced), and every combination is shown.
-  - Mixed models with statsmodels Wald tests in place of Satterthwaite F tests (O5 reading b), GEE
-    shown; the same sweep exclusions and labels as for fig3eg-human-fres-sag-rin.
+  - Tested on the human acute cells of 000630 and 000636 (212 with a usable chirp, LAMP5 87, PV 65, VIP 49, SST
+    11; paper 297).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim. The outcome rests on this choice and on sag and input resistance reading (a).
+  - Sag and input resistance readings (a) of O2 and O3 (IPFX v2.0.0); readings (b) shown.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
 - claim: fig3jl-mouse-q-sag-rin
-  outcome: blocked
-  blocked_by: other
-  notes: Mouse recordings only; not in the dandiset (see fig2b-human-higher-fres-q).
+  outcome: reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig3jl-mouse-q-sag-rin
+  notes: '139 mouse cells, chirp reading (b), sag and input resistance reading (a), model without interactions:
+    sag b = 0.208, Satterthwaite p = 0.004; input resistance p = 0.56. Every combination of readings gives sag p
+    = 0.004 to 0.016 and input resistance p >= 0.39. The sag slope is about ten times the paper''s 0.018. One mouse
+    cell has Q = 16.8 (the next largest is 1.14); without it the sag slope is 0.113 (p = 0.011) and input resistance
+    p = 0.75. The paper''s mouse PV and SST cells are not in DANDI:000020 (mouse-specimen-link), so the PV and SST
+    comparisons cannot be run.'
+  deviations:
+  - Tested on the 139 Table S2b mouse cells in DANDI:000020 with a usable chirp (paper 244, of four subclasses).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
 - claim: fig4b-tdl-depth
   outcome: blocked
-  blocked_by: other
-  notes: Needs morphological reconstructions and pia-soma distances across cortical depth; the dandiset
-    holds neither, and all its cells are in layer 1. Reconstructions of Lee, Dalley et al. (2023) and
-    Chartrand et al. (2023) may be public but were not sought in this run.
+  blocked_by: data_missing
+  notes: 'No public source found gives the pia-soma distance of the cells: the Lee, Dalley et al. table gives a
+    layer but no distance; the Chartrand table''s Depth_from_Pia_microns is 0 for all 210 cells of 000630 (all layer
+    1); the Allen mouse metadata''s depth_from_pia_um is empty for all cells, and its normalized soma depth is filled
+    for 55 of the 461 mouse cells (20 with a chirp). The Lee, Dalley et al. repository has morphological features
+    for 140 cells (dendritic lengths) without a pia-soma distance.'
 - claim: fig4c-human-sag-depth
   outcome: blocked
-  blocked_by: other
-  notes: Needs human cells across cortical depth (the paper's 22 to 2379 um) and PV and SST cells; the
-    dandiset holds layer 1 cells of LAMP5/PAX6/Other and VIP only, so the depth relation it tests is
-    not in the data. The other human acute cells may be in DANDI:000636, not used in this run.
+  blocked_by: data_missing
+  notes: 'No public source found gives the pia-soma distance of the cells: the Lee, Dalley et al. table gives a
+    layer but no distance; the Chartrand table''s Depth_from_Pia_microns is 0 for all 210 cells of 000630 (all layer
+    1); the Allen mouse metadata''s depth_from_pia_um is empty for all cells, and its normalized soma depth is filled
+    for 55 of the 461 mouse cells (20 with a chirp). The human acute cells carry layer labels (layer 1 210, 2 42,
+    3 123, 4 35, 5 18, 5_6 2, 6 1).'
 - claim: fig4i-mouse-sag-depth
   outcome: blocked
-  blocked_by: other
-  notes: Mouse recordings only; not in the dandiset (see fig2b-human-higher-fres-q).
+  blocked_by: data_missing
+  notes: 'No public source found gives the pia-soma distance of the cells: the Lee, Dalley et al. table gives a
+    layer but no distance; the Chartrand table''s Depth_from_Pia_microns is 0 for all 210 cells of 000630 (all layer
+    1); the Allen mouse metadata''s depth_from_pia_um is empty for all cells, and its normalized soma depth is filled
+    for 55 of the 461 mouse cells (20 with a chirp).'
 - claim: fig4df-human-no-depth
   outcome: blocked
-  blocked_by: other
-  notes: Needs human cells across cortical depth (see fig4c-human-sag-depth).
+  blocked_by: data_missing
+  notes: 'No public source found gives the pia-soma distance of the cells: the Lee, Dalley et al. table gives a
+    layer but no distance; the Chartrand table''s Depth_from_Pia_microns is 0 for all 210 cells of 000630 (all layer
+    1); the Allen mouse metadata''s depth_from_pia_um is empty for all cells, and its normalized soma depth is filled
+    for 55 of the 461 mouse cells (20 with a chirp).'
 - claim: fig4g-human-q-decreases-depth
   outcome: blocked
-  blocked_by: other
-  notes: Needs human cells across cortical depth (see fig4c-human-sag-depth).
+  blocked_by: data_missing
+  notes: 'No public source found gives the pia-soma distance of the cells: the Lee, Dalley et al. table gives a
+    layer but no distance; the Chartrand table''s Depth_from_Pia_microns is 0 for all 210 cells of 000630 (all layer
+    1); the Allen mouse metadata''s depth_from_pia_um is empty for all cells, and its normalized soma depth is filled
+    for 55 of the 461 mouse cells (20 with a chirp).'
 - claim: figs2-l23-no-depth
   outcome: blocked
-  blocked_by: other
-  notes: Needs human layer 2 and 3 cells; the dandiset holds layer 1 cells only.
+  blocked_by: data_missing
+  notes: 'No public source found gives the pia-soma distance of the cells: the Lee, Dalley et al. table gives a
+    layer but no distance; the Chartrand table''s Depth_from_Pia_microns is 0 for all 210 cells of 000630 (all layer
+    1); the Allen mouse metadata''s depth_from_pia_um is empty for all cells, and its normalized soma depth is filled
+    for 55 of the 461 mouse cells (20 with a chirp). L2/L3 cells can be selected by their layer label (165 human
+    acute cells in layers 2 and 3), but the test is on pia-soma distance.'
 - claim: fig4km-mouse-no-depth
   outcome: blocked
-  blocked_by: other
-  notes: Mouse recordings only; not in the dandiset (see fig2b-human-higher-fres-q).
+  blocked_by: data_missing
+  notes: 'No public source found gives the pia-soma distance of the cells: the Lee, Dalley et al. table gives a
+    layer but no distance; the Chartrand table''s Depth_from_Pia_microns is 0 for all 210 cells of 000630 (all layer
+    1); the Allen mouse metadata''s depth_from_pia_um is empty for all cells, and its normalized soma depth is filled
+    for 55 of the 461 mouse cells (20 with a chirp).'
 - claim: fig5be-zd7288-human
   outcome: blocked
   blocked_by: data_missing
-  notes: The ZD7288 recordings are new VU Amsterdam recordings that the paper says are available on
-    request ("The remaining data will be made available upon request"); they are not in the dandiset
-    and no public deposit is named.
+  notes: The ZD7288 recordings are new VU Amsterdam recordings that the paper says are available on request ("The
+    remaining data will be made available upon request"); they are not in the dandiset and no public deposit is
+    named. No ZD7288 recordings were found on DANDI.
 - claim: figs3-zd7288-mouse
   outcome: blocked
   blocked_by: data_missing
-  notes: New VU Amsterdam mouse recordings, available on request only; not in the dandiset.
+  notes: New VU Amsterdam mouse recordings, available on request only; no ZD7288 recordings were found on DANDI.
 - claim: fig5g-culture-sag
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the cultured recordings (Lee, Dalley et al. 2023 and new ones), not in the dandiset. The
-    published cultured recordings may be in DANDI:000636, not used in this run; the new ones are on
-    request.
+  outcome: partially_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig5g-culture-sag
+  measured:
+  - 0.256
+  - 0.283
+  notes: 'Sag reading (a), cultured (000636) against acute: LAMP5 0.256 against 0.112 (24 and 210 cells, U = 3972,
+    p = 3.8e-6), PV 0.283 against 0.106 (251 and 115, p = 1e-35); cultured medians within tolerance (0.26 +/- 0.026,
+    0.28 +/- 0.028). Input resistance in the mixed model of preparation, subclass, their interaction and Vm (893
+    cells, 112 donors): preparation effect b = 17.6, Satterthwaite p = 0.004 (reading (b) of O3: p = 0.0002), where
+    the paper finds p = 0.095. The sag part holds and the input resistance part does not. Per subclass, input resistance
+    differs in LAMP5 (p = 0.008; paper p = 0.018). Sag reading (b) gives the same sag results.'
+  deviations:
+  - Cultured cells from DANDI:000636 (456 with a sag ratio; paper 536) against the human acute cells of 000630 and
+    000636; the paper's new cultured recordings are not public.
+  - Vm reading (b) of O4, the pre-step potential, as most cells have no chirp.
+  - Mixed models fitted by REML with Satterthwaite t and F tests computed in the helper (O5 reading a; checked outside
+    the notebook, not run here, on synthetic designs whose df are known, giving 18.0 and 99.0); statsmodels Wald
+    tests (reading b) shown beside them. Type III terms with sum-coded subclass. Species by subclass models on LAMP5
+    and VIP cells only, the subclasses both species have.
 - claim: fig5i-culture-proportion
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the cultured recordings (see fig5g-culture-sag).
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig5i-culture-proportion
+  measured:
+  - 63.0
+  - 25.5
+  notes: 'Chirp reading (b): cultured 114/181 = 63.0% (within 60.8 +/- 6.08%), acute 54/212 = 25.5% (outside 32.7
+    +/- 3.27%); overall goodness of fit p = 5e-31, 2x2 p = 7e-14. Per subclass against the acute fraction: LAMP5
+    6/8 = 75.0%, p = 8e-5; PV 84/98 = 85.7%, p = 2e-17; SST 21/54 = 38.9% against 27.3%, p = 0.055; VIP 3/21 = 14.3%
+    against 12.2%, p = 0.78. SST misses and the acute fraction is out, so partially reproduced. Chirp reading (a):
+    65.2% and 31.1%, both within tolerance; LAMP5 p = 0.005, PV p = 2e-14, SST p = 6e-7, VIP p = 0.35, which reproduces
+    the claim. The outcome rests on the chirp reading.'
+  deviations:
+  - 'Cultured cells from DANDI:000636 with a usable chirp (181: PV 98, SST 54, VIP 21, LAMP5 8; paper 268) against
+    the human acute cells.'
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
 - claim: fig5jk-culture-fres-q
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the cultured recordings (see fig5g-culture-sag).
+  outcome: partially_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig5jk-culture-fres-q
+  measured:
+  - 2.75
+  - 1.188
+  notes: 'Chirp reading (b), cultured against acute: fres LAMP5 2.75 against 0.40 Hz (8 and 87 cells, p = 0.004),
+    PV 3.53 against 2.50 Hz (p = 3e-7); Q LAMP5 1.135 against 1.000 (p = 0.002), PV 1.188 against 1.041 (p = 2e-13),
+    SST 1.000 against 1.000 (p = 0.33). Four of five comparisons hold. Cultured medians outside tolerance: LAMP5
+    fres 2.75 (2.40 +/- 0.24, from 8 cells), PV Q 1.188 (1.17 +/- 0.017). Chirp reading (a) gives the same four
+    (SST Q p = 0.11).'
+  deviations:
+  - Cultured cells from DANDI:000636 with a usable chirp against the human acute cells; only 8 cultured LAMP5 cells
+    (paper 21).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
 - claim: fig5l-culture-f3db-same
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the cultured recordings (see fig5g-culture-sag).
+  outcome: not_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig5l-culture-f3db-same
+  notes: 'Chirp reading (b), Mann-Whitney cultured against acute: LAMP5 p = 0.28, VIP p = 0.055, PV p = 0.014, SST
+    p = 0.002; reading (a): LAMP5 0.31, VIP 0.040, PV 0.024, SST 0.003. f3dB differs in PV and SST under both readings,
+    so the absence fails. The paper''s own Table S3 gives VIP p = 0.046 and PV p = 0.031.'
+  deviations:
+  - Cultured cells from DANDI:000636 against the human acute cells.
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
 - claim: fig6a-hcn1-pex5l-human
   outcome: blocked
   blocked_by: other
-  notes: Uses the Allen Brain Map single-nucleus SMART-seq data (human MTG 2018, mouse VISp and ALM
-    2018), which are public but were not fetched or analysed in this run, given the five-hour limit;
-    a later attempt should test it.
+  notes: 'The claim is `data: elsewhere`, on the public Allen Brain Map single-nucleus SMART-seq data (human MTG
+    2018, mouse VISp and ALM 2018). The data were not fetched or analysed: the revision spent its time on the recordings
+    of DANDI:000636 and 000020, and the claim was not reached before the run''s time limit (protocol, Author, Time).
+    A later attempt should test it.'
 - claim: fig6b-channel-expression
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the Patch-seq transcriptomes of the acute and cultured cells, which the dandiset does not
-    hold. The Chartrand et al. repository holds counts for its layer 1 cells (data/ps_human.RData), a
-    small part of the sample; the full set was not located in this run.
+  outcome: reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig6b-channel-expression
+  notes: 'Expression from the Chartrand et al. (CPM) and Lee, Dalley et al. (log2(CPM + 1), converted; column sums
+    of CPM 1e6) matrices, matched by specimen id (43 cells in both, identical). Acute cells with expression: LAMP5
+    208, PV 115, VIP 82, SST 19 (paper 256, 121, 116, 20); cultured: PV 251, SST 139, VIP 42, LAMP5 24 (paper 271,
+    148, 46, 31). Reading (a): HCN1, KCNQ3, KCNQ5, CACNA1A and CACNA1G are expressed (CPM > 1) by more than half
+    the cells of every subclass in both preparations (lowest 0.67, cultured LAMP5 KCNQ5 and CACNA1G). Reading (b):
+    each has a higher mean CPM than KCNJ16 (3.8 to 9.7) in every subclass and preparation (lowest, CACNA1G, 33.4
+    to 101.0). Both readings hold. CACNA1G, which the same sentence also lists as lower, has the lowest mean of
+    the five.'
+  deviations:
+  - Expression of the human cells of 000630 and 000636 from the Chartrand et al. and Lee, Dalley et al. repositories;
+    the paper's other cells are not public.
+  - Reading (a) of the criterion uses a threshold not in the paper (more than half the cells), as the criterion
+    says.
 - claim: fig6c-gene-resonance-correlation
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the Patch-seq transcriptomes of 204 to 254 acute cells (see fig6b-channel-expression).
+  outcome: not_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:fig6c-gene-resonance-correlation
+  notes: 'Acute cells with a chirp and expression (LAMP5 86, PV 65, VIP 40, SST 11), chirp reading (b), CPM scale,
+    BH over the 20 tests of the family: KCNJ16 with Q r = -0.023 (n = 165, FDR p = 0.94), KCNJ16 with fres r = -0.042
+    (FDR p = 0.94), HCN1 with fres r = 0.326 (n = 189, FDR p = 1e-4, outside 0.17 +/- 0.017), CACNA1A with fres
+    r = 0.140 (n = 197, raw p = 0.049, FDR p = 0.24). One of four holds. Under log(CPM + 1) and chirp reading (a)
+    the same: KCNJ16 |r| <= 0.07, HCN1 r = 0.28 to 0.33, CACNA1A FDR p >= 0.24. SCN8A with fres (r = 0.204) and
+    KCNQ3 with Q (negative, log scale) also pass FDR in some readings. The sample (165 to 197 cells) is smaller
+    than the paper''s (204 to 254).'
+  deviations:
+  - Expression as for fig6b-channel-expression; chirp measures as for the other claims.
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
 - claim: figs4-culture-mouse-genes
-  outcome: blocked
-  blocked_by: other
-  notes: Needs the transcriptomes of cultured human and of mouse cells, not in the dandiset (see
-    fig6b-channel-expression).
+  outcome: not_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:figs4-culture-mouse-genes
+  notes: 'Cultured cells with a chirp and expression (181): under every reading several correlations survive FDR
+    correction, among them HCN1 with Q (r = 0.262, n = 172) and fres (r = 0.317) and CACNA1A with fres (r = 0.201)
+    under chirp reading (b) and CPM (smallest FDR p = 5e-4); the claim''s absence in cultured cells fails. The mouse
+    part (only HCN2 related to resonance) is not tested, as the mouse Patch-seq expression of Gouwens et al. (2020)
+    was not read.'
+  deviations:
+  - Cultured cells of 000636 with expression from the Lee, Dalley et al. repository; the paper's cultured sample
+    is larger (Fig. S4a).
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim.
+  - The family of tests is the acute family of fig6c (10 genes by 2 measures); the cultured family of Table S3 was
+    not checked against it.
 - claim: fig7ae-model-ih
   outcome: blocked
   blocked_by: other
-  notes: Rests on rebuilding the paper's adapted NEURON model from the base model of Wilbers et al.
-    (2023, DataverseNL doi:10.34894/TONOHA) and Table S5. The adapted model is not deposited and the
-    paper's code address (github.com/nsham2/Shamugia_et_al_2026) returned 404 to the reader. Not
-    attempted in this run.
+  notes: Rests on rebuilding the paper's adapted NEURON model from the base model of Wilbers et al. (2023, DataverseNL
+    doi:10.34894/TONOHA) and Table S5; the adapted model is not deposited and the paper's code address returned
+    404 to the reader. NEURON is not in the entry's environment and the rebuild was not attempted before the run's
+    time limit (protocol, Author, Time).
 - claim: fig7-model-ca
   outcome: blocked
   blocked_by: methods_underspecified
-  notes: The calcium conductance density is not in Table S5, and the model with the added calcium and
-    M-type channels is not deposited (the code address returned 404 to the reader), so the model cannot
-    be rebuilt as published, as the criterion says; any density chosen here would be arbitrary.
+  notes: The calcium conductance density is not in Table S5, and the model with the added calcium and M-type channels
+    is not deposited (the code address returned 404 to the reader), so the model cannot be rebuilt as published,
+    as the criterion says; any density chosen here would be arbitrary.
 - claim: figs5-model-gpas
   outcome: blocked
   blocked_by: other
-  notes: Rests on rebuilding the adapted model (see fig7ae-model-ih); not attempted in this run.
+  notes: Rests on rebuilding the adapted model (see fig7ae-model-ih); not attempted before the run's time limit.
 - claim: fig7fj-model-morphology
   outcome: blocked
   blocked_by: other
-  notes: Rests on rebuilding the adapted model with the morphologies of Table S5 (see fig7ae-model-ih);
-    not attempted in this run.
+  notes: Rests on rebuilding the adapted model with the morphologies of Table S5 (see fig7ae-model-ih); not attempted
+    before the run's time limit.
 - claim: figs5-model-normalized-morphology
   outcome: blocked
   blocked_by: other
-  notes: Rests on rebuilding the adapted model (see fig7ae-model-ih); not attempted in this run.
+  notes: Rests on rebuilding the adapted model (see fig7ae-model-ih); not attempted before the run's time limit.
 - claim: fig8bc-firing-resonance
   outcome: blocked
   blocked_by: methods_underspecified
@@ -324,78 +726,506 @@ outcomes:
   assumed: true
   notebook: reproduce_mansvelder_2026.ipynb
   output: claim:figs1-region-pathology
-  notes: With Table S1's lobe and disease per donor (temporal 74, frontal 8, parietal 1 cell, 2 cells
-    without a lobe; epilepsy 67 cells from 25 donors, tumour 18 from 6), under chirp reading (a) fres,
-    Q, f3dB and input resistance differ neither between lobes (Kruskal-Wallis p = 0.37, 0.65, 0.76,
-    0.23) nor between epilepsy and tumour (Mann-Whitney p = 0.097, 0.35, 1.00, 0.84). None reaches p <
-    0.05 under chirp reading (b), input resistance reading (b), or with the Chartrand table's labels
-    (47 cells with a disease). Sag, which the paper finds different by region and lower in epilepsy
-    (both p < 0.001), differs between lobes (p = 0.044) but not between epilepsy and tumour (p = 0.94,
-    medians 0.131 and 0.125); with the Chartrand table's labels it is lower in epilepsy (0.132 against
-    0.214, p = 0.014) and not different between lobes (p = 0.067). Both readings of the criterion's cell
-    set are the same here, as there are no cultured cells.
+  notes: 'Criterion reading (a), human acute cells, Table S1 labels: chirp cells temporal 173, frontal 34, parietal
+    2, 3 without a lobe (occipital 1 cell among all acute cells); epilepsy 171, tumour 41. Chirp reading (b): Kruskal-Wallis
+    across lobes fres p = 0.92, Q 0.51, f3dB 0.38; Mann-Whitney epilepsy against tumour fres 0.54, Q 0.052, f3dB
+    0.88. Input resistance over 438 cells with a sag ratio, reading (a): lobes p = 0.34, disease p = 0.31. All >=
+    0.05, so reproduced. Q is near the threshold: under chirp reading (a) the disease test gives p = 0.043. Sag
+    differs between lobes (p = 0.012) and is lower in epilepsy (0.117 against 0.162, p = 0.001), as the paper reports.
+    Criterion reading (b), all human cells: fres and Q differ by lobe (p = 0.016, 0.008) and disease (p = 0.048,
+    0.008), and input resistance by lobe (p = 0.005). Reading (a) is adopted because the paper''s input resistance
+    test (U = 8207, p = 0.78) implies about 16400 epilepsy-tumour pairs, near the acute cells (29192 here) and far
+    from all cells (157680). The criterion''s Table S1 columns are asked about (questions/mansvelder-2026.yaml).'
   deviations:
-  - Tested on 85 human layer 1 cells, nearly all temporal (74) and 18 from tumour cases, where the paper
-    uses the whole human sample across four lobes; occipital cells are absent.
-  - Table S1's Lobe column is blank for many donors; there the lobe is taken from its Area by anatomy
-    (MTG, STG, ITG temporal; SFG, MFG, IFGtr, PRG, LOrG frontal; SPL, AnG parietal), a standard choice.
-    Disease categories other than epilepsy and tumour are left out.
-  - Assumed chirp reading (a) of O1 and input resistance reading (a) of O3 (see fig3eg-human-fres-sag-rin);
-    the outcome is the same under the other readings.
+  - Tested on the human acute cells of 000630 and 000636 (212 with a chirp, 438 with a sag ratio), mostly temporal;
+    the occipital lobe has 1 cell.
+  - Assumed criterion reading (a), acute cells only, for the reason in the notes; reading (b) is shown and gives
+    not reproduced.
+  - Assumed chirp reading (b) of O1, the profile kept from 0.4 Hz. Table S3 gives medians of exactly 0.40 Hz (human
+    SST, mouse VIP and SST), which only a 0.4 Hz floor gives; reading (b) matches the mouse LAMP5 medians (fres
+    1.15 Hz, f3dB 15.18 Hz against 1.15 and 15.20) where reading (a) gives 0.20 Hz; and the Allen Institute's own
+    chirp features for the 000636 cells (LeeDalley_ephys_fx.csv) have 0.4 Hz as their lowest peak frequency, with
+    medians and a resonant fraction (51.2% against 49.2%) close to reading (b)'s. Reading (a) is shown for every
+    claim. The outcome also holds under input resistance reading (b) (p = 0.45, 0.89) but not under chirp reading
+    (a) (Q disease p = 0.043).
+  - Table S1's Lobe column is blank for many donors; there the lobe is taken from its Area by anatomy (MTG, STG,
+    ITG, PLP temporal; SFG, MFG, IFGtr, PRG, LOrG, PaCG frontal; SPL, AnG parietal; IOG, SOG occipital), a standard
+    choice. Disease categories other than epilepsy and tumour are left out.
+- claim: lee-label-link
+  outcome: reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:lee-label-link
+  notes: 690 of the 706 files of DANDI:000636 (97.7%) match one row of the Lee, Dalley et al. table by session id
+    (its nwb_id); the other 16 match no row (44 table rows have no nwb_id). Each matched session has one row. Subject
+    ids and donor names map one to one. Every acute cell's donor is in Table S1 under "AcuteLDPublished" (234 cells).
+    Cultured cells come from donors under "PublishedLD_Cultured" (272), "AcuteLDPublished" (147), "Chartrand" (17)
+    or not in Table S1 (20 cells, donor H19.03.002). The table gives LAMP5 40, PV 115, SST 19 and VIP 60 acute cells
+    and LAMP5 24, PV 251, SST 139 and VIP 42 cultured cells with a file. Four sessions are in both 000630 and 000636,
+    with identical measures in both copies; they are counted once, from 000630.
+- claim: mouse-specimen-link
+  outcome: partially_reproduced
+  notebook: reproduce_mansvelder_2026.ipynb
+  output: claim:mouse-specimen-link
+  notes: 461 of the 628 Table S2b specimen ids (73.4%) are in the Allen metadata (20200711_patchseq_metadata_mouse.csv),
+    whose ephys session id names a 000020 file. For all 461 the Allen cell name carries the Table S2b mouse number,
+    the file's sex and genotype agree with the metadata, and each of the 221 mice is one 000020 subject. Of the
+    167 ids not found, 90 are above 1.2e9 (later Allen releases, among them the Pvalb-Cre and Sst-Cre cells), 29
+    between 1.1e9 and 1.2e9, 10 between 0.9e9 and 1.1e9 and 38 below 0.9e9. The cells found are LAMP5 374 and VIP
+    86 (Sncg T-types counted as VIP; T-type words Lamp5 372, Vip 44, Sncg 42) and 1 without a subclass; the paper's
+    are LAMP5 435, VIP 101, PV 39, SST 44. Partially reproduced as fewer than 90% are found; every agreement holds
+    for the cells found.
 findings:
 - kind: data_missing
-  statement: The dandiset holds the electrophysiology of 210 human layer 1 interneurons from 53 donors,
-    85 of them with a usable chirp, where the paper's human acute sample has 542 cells from 170 donors
-    (297 with a chirp) across all layers and four subclasses. It holds no mouse, cultured or ZD7288
-    recordings, no PV or SST cells, no transcriptomes and no morphologies, so 40 of the paper's 44
-    findings cannot be tested on it. The dandiset was deposited for Chartrand et al. (2023) and is
-    complete for that use; this describes its coverage of this paper.
+  statement: Dandiset 000630 holds the electrophysiology of 210 human layer 1 interneurons from 53 donors, 85 of
+    them with a usable chirp, where the paper's human acute sample has 542 cells from 170 donors (297 with a chirp)
+    across all layers and four subclasses. It holds no mouse, cultured or ZD7288 recordings, no PV or SST cells,
+    no transcriptomes and no morphologies, so most of the paper's findings cannot be tested on it alone; this attempt
+    adds dandisets 000636 and 000020 for them. The dandiset was deposited for Chartrand et al. (2023) and is complete
+    for that use; this describes its coverage of this paper.
   about: data
   severity: major
 - kind: metadata_insufficient
-  statement: The NWB files carry no subclass, t-type, donor name, brain structure, disease, layer or
-    depth, and session_description is "PLACEHOLDER". These labels had to be taken from the Chartrand
-    et al. repository (linked by the session id in its nwb_path column) and from the paper's Table S1.
-    The dandiset's description names the repository, so the labels can be found.
+  statement: The NWB files carry no subclass, t-type, donor name, brain structure, disease, layer or depth, and
+    session_description is "PLACEHOLDER". These labels had to be taken from the Chartrand et al. repository (linked
+    by the session id in its nwb_path column) and from the paper's Table S1. The dandiset's description names the
+    repository, so the labels can be found. The Chartrand table's Depth_from_Pia_microns column is 0 for all 210
+    dandiset cells, so no pia-soma distance is available for them.
   about: data
   severity: minor
 - kind: other
   about: data
-  statement: Many sweeps were stopped before their stimulus ended and are zero-filled to full length
-    without a flag in the file; among the 93 files with chirp sweeps, 50 chirp sweeps and 211
-    hyperpolarizing long squares end in zeros. An analysis that does not drop them reads 0 mV as data.
-    The zeros are evident in the values.
+  statement: Many sweeps were stopped before their stimulus ended and are zero-filled to full length without a flag
+    in the file; over all 210 files, 50 chirp sweeps and 1763 hyperpolarizing long squares end in zeros (in 000636,
+    130 and 2561; in the 000020 files read, 73 and 201). No chirp sweep has zeros only before its chirp, so recordings
+    with a leading zero are not what is dropped. An analysis that does not drop them reads 0 mV as data. The zeros
+    are evident in the values.
   severity: minor
 - kind: metadata_error
-  statement: The species is spelled "Homo Sapiens" in 192 files and "Homo sapiens" in 18, and one file
-    gives the donor's sex as "unknown" where the Chartrand table gives M.
+  statement: The species is spelled "Homo Sapiens" in 192 files and "Homo sapiens" in 18, and one file gives the
+    donor's sex as "unknown" where the Chartrand table gives M.
   about: data
   severity: minor
 - kind: other
   about: data
-  statement: Checks that passed. Every file links to one row of the Chartrand table by its session id;
-    subject ids and donor names map one to one; sex agrees for 209 of 210 files and age (days in the
-    files, years in the table) within 0.06 years; all 53 donors are in the paper's Table S1; every one
-    of 579 hyperpolarizing steps drives the voltage below its baseline inside the stimulus window; no
-    two chirp cells share their measures or their first second of chirp response.
+  statement: Checks that passed. Every file links to one row of the Chartrand table by its session id; subject ids
+    and donor names map one to one; sex agrees for 209 of 210 files and age (days in the files, years in the table)
+    within 0.06 years; all 53 donors are in the paper's Table S1; every one of the 1699 hyperpolarizing steps of
+    the 210 files drives the voltage below its baseline inside the stimulus window; no two chirp cells share their
+    measures or their first second of chirp response.
   severity: none
 - kind: methods_unavailable
-  statement: Questions for the paper's authors. The paper's code address
-    (github.com/nsham2/Shamugia_et_al_2026) returned 404, and the Methods leave open (1) the frequency
-    range of the impedance profile and so which frequency gives Z0 (0.2 Hz, IPFX's default, or 0.4 Hz,
-    the stimulus start), the LOWESS fraction for recordings, and the side of the peak where f3dB is
-    taken; (2) how sag ratio and input resistance are computed (which step or steps); (3) whether the
-    mixed models were fitted in SPSS or Python. This attempt assumed the IPFX v2.0.0 computations
-    (0.2 to 40 Hz, LOWESS frac 0.04, f3dB above the peak, sag on the step nearest -100 mV, input
-    resistance as the slope over hyperpolarizing steps) because the Methods name IPFX and because the
-    resulting human LAMP5 and VIP resonant fractions (32.8%, 22.2%) are near Table S3's (31.25%,
-    25.0%), while 0.4 to 40 Hz gives 20.9% and 16.7%. The outcome of fig3ik-human-q-sag-rin depends on
-    the frequency range.
+  statement: 'Questions for the paper''s authors. The paper''s code address (github.com/nsham2/Shamugia_et_al_2026)
+    returned 404, and the Methods leave open (1) the frequency range of the impedance profile and so which frequency
+    gives Z0 (0.2 Hz, IPFX''s default, or 0.4 Hz, the stimulus start), the LOWESS fraction for recordings, and the
+    side of the peak where f3dB is taken; (2) how sag ratio and input resistance are computed (which step or steps);
+    (3) whether the mixed models were fitted in SPSS or Python. This attempt assumed 0.4 to 40 Hz, as Table S3''s
+    medians of exactly 0.40 Hz, the mouse LAMP5 medians and the Allen Institute''s own chirp features point to it;
+    0.2 to 40 Hz gives resonant fractions nearer the paper''s and changes the outcomes of fig2c, fig2e-lamp5, fig3ik,
+    fig5i and figs1. The LOWESS fraction matters as much: at 0.02 in place of 0.04 the human acute LAMP5 resonant
+    fraction is 31.0% (paper 31.25%) in place of 19.5%, and at 0.08 it is 3.4%. Sag and input resistance were taken
+    as IPFX v2.0.0 computes them.'
   about: paper
 - kind: other
   about: paper
-  statement: Table S1 lists 43 of the 53 donors of this dandiset (Chartrand et al. 2023) under the
-    dataset "AcuteLDPublished" and only 10 under "Chartrand", so the paper's dataset column does not say
-    which of its cells come from this dandiset, and cells deposited both here and with Lee, Dalley et al.
-    (2023) may be counted under either. The paper cites this dandiset (reference 27) but does not say
-    which of its cells are in it.
+  statement: Table S1 lists 43 of the 53 donors of this dandiset (Chartrand et al. 2023) under the dataset "AcuteLDPublished"
+    and only 10 under "Chartrand", so the paper's dataset column does not say which of its cells come from this
+    dandiset, and cells deposited both here and with Lee, Dalley et al. (2023) may be counted under either. The
+    paper cites this dandiset (reference 27) but does not say which of its cells are in it.
+- kind: other
+  about: data
+  severity: minor
+  statement: Four cells are deposited in both dandiset 000630 and dandiset 000636 (the same session ids, with identical
+    measures), and 41 donors have cells in both. An analysis that combines the two counts these cells twice unless
+    it matches session ids, which both dandisets carry.
+- kind: other
+  about: paper
+  statement: The paper lists its mouse cells by Allen cell specimen id (Table S2b) and names no archive for them.
+    461 of the 628 are in DANDI:000020, whose files carry the ephys session id but not the specimen id; the map
+    between them is in an Allen metadata file that the Allen portal gives at no fixed address (a copy in a third-party
+    repository was used). The other 167, among them all the mouse PV and SST cells, were not found (a search of
+    the later Allen mouse Patch-seq dandisets by session id found 1 candidate), so the paper's species comparisons
+    of PV and SST cells cannot be repeated.
+- kind: other
+  about: paper
+  statement: The human recordings of Lee, Dalley et al. (2023), the paper's reference 2 and most of its human acute
+    and cultured cells, are public as DANDI:000636 (version 0.241120.0510), with per-cell labels in github.com/AllenInstitute/human_patchseq_gaba;
+    the paper cites the Science article but not this dandiset, and says only that most data are open source.
+verifications:
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text. The verifier searched DANDI for the paper's other data (000020,
+    000636), parsed Table S2b from the PDF, and tested the helper on synthetic chirps and steps. It had no attempt
+    record.
+  results:
+  - claim: chartrand-label-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 9: all 210 files match a row, and NWB subjects map one-to-one to donor names. Sex agrees (one
+      NWB "unknown"), age differs by -0.06 to -0.01 y over 208 files, and all 53 donors are in Table S1.'
+    response: No change in outcome. The notes now add that the table's Depth_from_Pia_microns is 0 for every dandiset
+      cell.
+  - claim: sample-size
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 11: 210 cells from 53 donors, against 542 +/- 54.2 and 170 +/- 17. This is the outcome the criterion
+      itself expects on the dandiset alone.'
+    response: Outcome unchanged; now counted on the data assembled (440 cells from 76 donors with 000636). The criterion's
+      premise that the dandiset holds the "Chartrand" donors is asked as a question.
+  - claim: fig2b-human-higher-fres-q
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now reproduced.
+  - claim: fig2ab-peak-range
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now not_reproduced.
+  - claim: fig2c-resonant-proportion
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now not_reproduced.
+  - claim: fig2d-subclass-proportion
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now partially_reproduced.
+  - claim: fig2d-sst-similar
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now blocked (data_missing).
+  - claim: figs2a-stringent-criteria
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now reproduced.
+  - claim: fig2e-fres-species-subclass
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now partially_reproduced.
+  - claim: fig2e-lamp5-sst-fres-similar
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now partially_reproduced.
+  - claim: fig2f-f3db-species-subclass
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now partially_reproduced.
+  - claim: fig2g-q-species-subclass
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now not_reproduced.
+  - claim: fig3c-sag-species
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now partially_reproduced.
+  - claim: fig3d-input-resistance-species
+    agrees: false
+    outcome: blocked
+    reason: 'The notebook says mouse recordings are missing. The archive appears to hold them: DANDI:000020 matches
+      451 of the 505 Table S2b rows parsed from the PDF (same sex, age and Cre line; session id 14 to 1494 below
+      the specimen id). Human PV/SST cells are on DANDI:000636. Chirp sweeps in these files were not checked.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now partially_reproduced.
+  - claim: fig3eg-human-fres-sag-rin
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 17, main reading (a,a): LAMP5 sag b = 3.70, p = 3.7e-4 (outside 3.31 +/- 0.331); VIP sag 4.40,
+      p = 0.024 (inside); LAMP5 Rin -0.0037, p = 0.023 (outside +/-0.0002). PV is absent, so the paper''s 3-df interactions
+      cannot be tested; the LAMP5-vs-VIP interactions are p = 0.82 and 0.34. Under chirp reading (b), one of the
+      three testable effects fails: LAMP5 Rin p = 0.058, or VIP sag p = 0.228. Reading (a) is called "main" with
+      its reason removed; under chirp reading (b) the fig3eg pattern does not hold.'
+    response: 'Outcome changed to not_reproduced. With 000636 the claim is now tested on 212 human acute cells of
+      all four subclasses, with Satterthwaite tests. Neither 3-df interaction is significant (p = 0.90 and 0.57)
+      and LAMP5 input resistance gives p = 0.052 to 0.094 in every combination of readings, so the criterion''s
+      partial rule is not met. Chirp reading (b) is now the main reading, with its reasons stated in the notebook
+      (Table S3''s 0.40 Hz medians, the mouse LAMP5 medians, the Allen chirp features). Problems 3 to 9 and the
+      items not checked: chirp readings are now set against Table S3''s medians and resonant fractions with fres
+      and Q histograms and the count of cells with fres > 1 Hz and Q <= 1.05 (problem 3, cell ''readings''); chirp
+      reading (b) is the main reading with its reasons (problem 4); Satterthwaite tests are computed (problem 5);
+      convergence of every fit is printed, per-subclass GEE dropped and GEE kept for the full model (problem 6);
+      input resistance reading (a) uses the peak deflection because that is IPFX v2.0.0''s input_resistance as the
+      claims file''s O3 reading (a) names it, so sag and input resistance share the peak, and reading (b), which
+      uses the steady state, is shown in every model (problem 7, no change); the LOWESS fraction''s effect is shown
+      for 0.02, 0.04 and 0.08 and recorded in the methods finding, 0.04 kept as O1 names it (problem 8); Depth_from_Pia_microns
+      is now used and found to be 0 for all cells (problem 9); the three misreadings of problem 10 are asked in
+      questions/mansvelder-2026.yaml; the stimulus names of every file read from 000636 and 000020 and a per-file
+      table of dropped sweeps are printed, with a count of chirp sweeps with zeros only before the chirp (none).'
+  - claim: fig3fh-mouse-fres
+    agrees: false
+    outcome: blocked
+    reason: 'Same as above: the mouse cells appear to be on DANDI:000020.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now not_reproduced.
+  - claim: fig3ik-human-q-sag-rin
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 19: sag slope is 0.10 to 0.15 in all 8 fits, against 0.47 +/- 0.047. In the main reading sag p
+      = 0.0046 (criterion needs < 0.001) and Rin p = 0.239. Rin reaches p < 0.05 only under (b,a) LMM/GEE, p = 0.047/0.016,
+      and the LMM 0.047 would be about 0.05 with t df. The sag x subclass interaction is >= 0.05 except GEE (a,a),
+      p = 0.034. Only LAMP5 and VIP cells are in the test.'
+    response: 'Outcome changed to partially_reproduced. On 212 human acute cells of four subclasses, under chirp
+      reading (b) (now the main reading) with Satterthwaite tests, sag b = 0.31 (p = 0.0004), input resistance b
+      = -0.00024 (p = 0.002), sag by subclass p = 0.099: the three tests hold and both slopes are outside tolerance.
+      The outcome rests on the readings (chirp (a) gives not reproduced), marked assumed.'
+  - claim: fig3jl-mouse-q-sag-rin
+    agrees: false
+    outcome: blocked
+    reason: 'Same as above: the mouse cells appear to be on DANDI:000020.'
+    response: Tested. DANDI:000020 and DANDI:000636 are now read (outside inputs, pinned). The mouse cells are found
+      through the Allen metadata (461 of 628 Table S2b ids, checked by the new link claim mouse-specimen-link; the
+      files hold 20 s chirps for 139 of them), and the 000636 cells are labelled from the Lee, Dalley et al. table
+      (new link claim lee-label-link). The paper's mouse PV and SST cells are not in 000020, so the PV and SST parts
+      are missing. Outcome now reproduced.
+  - claim: figs1-region-pathology
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: fres, Q, f3dB and Rin give KW p >= 0.225 and MWU p >= 0.066 under both readings and both label
+      sources. Only 3 lobes are present (74/8/1 cells, no occipital), so the region test has little power. Sag:
+      KW p = 0.044, but epilepsy vs tumour p = 0.94 against the paper''s p < 0.001 (reported, not part of the criterion).'
+    response: 'Outcome unchanged, now on 212 human acute chirp cells (438 with sag) with 000636, and resting on
+      two assumptions shown in the notebook: acute cells only (criterion reading a; the paper''s U = 8207 supports
+      it) and chirp reading (b) (under (a) Q differs by disease, p = 0.043). Sag is now lower in epilepsy (p = 0.001),
+      as the paper reports.'
+  - claim: fig4i-mouse-sag-depth
+    agrees: false
+    outcome: blocked
+    reason: Mouse recordings are on 000020. I did not check where mouse pia-soma distances come from.
+    response: 'Still blocked, now as data_missing: the Allen mouse metadata''s depth_from_pia_um is empty for all
+      cells and its normalized depth is filled for 55 of 461 (printed).'
+  - claim: fig4km-mouse-no-depth
+    agrees: false
+    outcome: blocked
+    reason: Mouse recordings are on 000020. I did not check where mouse pia-soma distances come from.
+    response: Still blocked as data_missing, for the reason given under fig4i-mouse-sag-depth.
+  - claim: fig2d-pv-highest
+    agrees: false
+    outcome: blocked
+    reason: DANDI:000636 ("human neocortical interneurons from acute and slice culture", 706 files, 109 subjects,
+      45 shared with 000630) should hold PV and SST cells. Not used.
+    response: Tested on 000636 with the Lee, Dalley et al. labels; reproduced (PV 43.1% against LAMP5 19.5%, SST
+      27.3%, VIP 12.2%).
+  - claim: fig4c-human-sag-depth
+    agrees: false
+    outcome: blocked
+    reason: The Chartrand table has Depth_from_Pia_microns for all 419 rows, so an L1-only partial test was possible.
+      Other layers would come from 000636 with its labels.
+    response: Still blocked, now as data_missing. The Chartrand table's Depth_from_Pia_microns is 0 for all 210
+      dandiset cells (printed), so no L1 test is possible, and the Lee, Dalley et al. table gives layers but no
+      distances.
+  - claim: fig4df-human-no-depth
+    agrees: false
+    outcome: blocked
+    reason: The Chartrand table has Depth_from_Pia_microns for all 419 rows, so an L1-only partial test was possible.
+      Other layers would come from 000636 with its labels.
+    response: Still blocked, now as data_missing. The Chartrand table's Depth_from_Pia_microns is 0 for all 210
+      dandiset cells (printed), so no L1 test is possible, and the Lee, Dalley et al. table gives layers but no
+      distances.
+  - claim: fig4g-human-q-decreases-depth
+    agrees: false
+    outcome: blocked
+    reason: The Chartrand table has Depth_from_Pia_microns for all 419 rows, so an L1-only partial test was possible.
+      Other layers would come from 000636 with its labels.
+    response: Still blocked, now as data_missing. The Chartrand table's Depth_from_Pia_microns is 0 for all 210
+      dandiset cells (printed), so no L1 test is possible, and the Lee, Dalley et al. table gives layers but no
+      distances.
+  - claim: figs2-l23-no-depth
+    agrees: false
+    outcome: blocked
+    reason: Needs L2/3 cells, which 000636 should hold. Layer labels not checked.
+    response: 000636 has layer labels (165 human acute cells in layers 2 and 3, printed), but no pia-soma distances;
+      still blocked, as data_missing.
+  - claim: fig4b-tdl-depth
+    agrees: true
+    outcome: blocked
+    reason: No morphologies on DANDI.
+    response: 'blocked_by changed to data_missing: no public pia-soma distance; the Lee, Dalley et al. repository
+      has dendritic features for 140 cells without one.'
+  - claim: fig5be-zd7288-human
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no ZD7288 data found on DANDI.'
+    response: No change.
+  - claim: figs3-zd7288-mouse
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: no ZD7288 data found on DANDI.'
+    response: No change.
+  - claim: fig5g-culture-sag
+    agrees: false
+    outcome: blocked
+    reason: DANDI:000636 describes slice-culture recordings from Lee, Dalley et al. 2023, the paper's "PublishedLD_Cultured"
+      set. Not used.
+    response: Tested on the cultured cells of 000636 against the human acute cells; outcome now partially_reproduced.
+  - claim: fig5i-culture-proportion
+    agrees: false
+    outcome: blocked
+    reason: DANDI:000636 describes slice-culture recordings from Lee, Dalley et al. 2023, the paper's "PublishedLD_Cultured"
+      set. Not used.
+    response: Tested on the cultured cells of 000636 against the human acute cells; outcome now partially_reproduced.
+  - claim: fig5jk-culture-fres-q
+    agrees: false
+    outcome: blocked
+    reason: DANDI:000636 describes slice-culture recordings from Lee, Dalley et al. 2023, the paper's "PublishedLD_Cultured"
+      set. Not used.
+    response: Tested on the cultured cells of 000636 against the human acute cells; outcome now partially_reproduced.
+  - claim: fig5l-culture-f3db-same
+    agrees: false
+    outcome: blocked
+    reason: DANDI:000636 describes slice-culture recordings from Lee, Dalley et al. 2023, the paper's "PublishedLD_Cultured"
+      set. Not used.
+    response: Tested on the cultured cells of 000636 against the human acute cells; outcome now not_reproduced.
+  - claim: fig6a-hcn1-pex5l-human
+    agrees: false
+    outcome: blocked
+    reason: 'Wrongly blocked as "transcriptomes not in the dandiset". The claim is `data: elsewhere` on public Allen
+      Brain Map data.'
+    response: The notes now say that the claim is elsewhere and its data public; it stays blocked (other) because
+      it was not reached before the run's time limit, which the protocol's Time rule covers. Not analysed.
+  - claim: fig6b-channel-expression
+    agrees: true
+    outcome: blocked
+    reason: Patch-seq transcriptomes are not on DANDI. The Chartrand repository has ps_human.RData and ps_mouse.RData;
+      I did not check them.
+    response: Tested on the expression in ps_human.RData (Chartrand et al.) and the Lee, Dalley et al. RData matrices,
+      read in memory at pinned commits and matched by specimen id; outcome now reproduced.
+  - claim: fig6c-gene-resonance-correlation
+    agrees: true
+    outcome: blocked
+    reason: Patch-seq transcriptomes are not on DANDI. The Chartrand repository has ps_human.RData and ps_mouse.RData;
+      I did not check them.
+    response: Tested on the expression in ps_human.RData (Chartrand et al.) and the Lee, Dalley et al. RData matrices,
+      read in memory at pinned commits and matched by specimen id; outcome now not_reproduced.
+  - claim: figs4-culture-mouse-genes
+    agrees: true
+    outcome: blocked
+    reason: Patch-seq transcriptomes are not on DANDI. The Chartrand repository has ps_human.RData and ps_mouse.RData;
+      I did not check them.
+    response: Tested on the expression in ps_human.RData (Chartrand et al.) and the Lee, Dalley et al. RData matrices,
+      read in memory at pinned commits and matched by specimen id; outcome now not_reproduced (cultured part; the
+      mouse part is not tested).
+  - claim: fig7-model-ca
+    agrees: true
+    outcome: blocked
+    reason: Calcium conductance density is missing from Table S5 (claims file).
+    response: No change.
+  - claim: fig8bc-firing-resonance
+    agrees: true
+    outcome: blocked
+    reason: They depend on fig7-model-ca.
+    response: No change.
+  - claim: fig8eg-noisy-modulation
+    agrees: true
+    outcome: blocked
+    reason: They depend on fig7-model-ca.
+    response: No change.
+  - claim: fig8hk-morphology-firing
+    agrees: true
+    outcome: blocked
+    reason: They depend on fig7-model-ca.
+    response: No change.
+  - claim: fig7ae-model-ih
+    agrees: false
+    outcome: blocked
+    reason: '"Not attempted" is not an allowed reason. The base model is named as public (DataverseNL).'
+    response: Still blocked as other; the notes now give the reason under the protocol's Time rule (not reached
+      before the run's time limit, NEURON not in the environment), not "not attempted" alone.
+  - claim: figs5-model-gpas
+    agrees: false
+    outcome: blocked
+    reason: '"Not attempted" is not an allowed reason. The base model is named as public (DataverseNL).'
+    response: Still blocked as other; the notes now give the reason under the protocol's Time rule (not reached
+      before the run's time limit, NEURON not in the environment), not "not attempted" alone.
+  - claim: fig7fj-model-morphology
+    agrees: false
+    outcome: blocked
+    reason: '"Not attempted" is not an allowed reason. The base model is named as public (DataverseNL).'
+    response: Still blocked as other; the notes now give the reason under the protocol's Time rule (not reached
+      before the run's time limit, NEURON not in the environment), not "not attempted" alone.
+  - claim: figs5-model-normalized-morphology
+    agrees: false
+    outcome: blocked
+    reason: '"Not attempted" is not an allowed reason. The base model is named as public (DataverseNL).'
+    response: Still blocked as other; the notes now give the reason under the protocol's Time rule (not reached
+      before the run's time limit, NEURON not in the environment), not "not attempted" alone.

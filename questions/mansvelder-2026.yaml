@@ -1,0 +1,41 @@
+questions:
+- claim: sample-size
+  question: The criterion says the dandiset holds "the Table S1 donors whose dataset is 'Chartrand'", and
+    the header says the dandiset holds the electrophysiology of Chartrand et al. 2023. Of the 53 donors of
+    dandiset 000630, Table S1 lists 43 under the dataset "AcuteLDPublished" and only 10 under "Chartrand"
+    (the verifier checked the dataset and disease of every donor against the PDF's text layer). Should the
+    criterion describe the dandiset's part of the sample by its donors as Table S1 lists them, and say that
+    most of them are filed under "AcuteLDPublished"?
+  passage: Supplementary Table 1, Dataset column (for example H17.03.002, H18.03.002 and H19.03.301,
+    "AcuteLDPublished", all donors of 000630); Results, first section, "Most of the human data used in this
+    paper is already open source" (refs 2 and 27).
+  why: The outcome stays not reproduced, as the counts are far from 542 and 170. But the criterion asks
+    for "the counts of dandiset subjects found among the Table S1 donors", and its premise that these are
+    the "Chartrand" donors is wrong for 43 of 53, so the count reported against it (10 of 87 "Chartrand"
+    donors) reads as a coverage the dandiset does not have.
+- claim: fig5g-culture-sag
+  question: The header says the paper "names no archive for the mouse recordings, the cultured recordings,
+    the Lee et al. 2023 recordings", and the criteria of the culture claims (fig5g, fig5i, fig5jk, fig5l)
+    say the cultured recordings "are not in the dandiset" as if they were not public. DANDI:000636
+    (version 0.241120.0510, "Human interneuron patch-seq electrophysiology", Lee, Dalley et al. 2023, the
+    paper's reference 2) holds the acute and slice-culture recordings, and DANDI:000020 holds 461 of the
+    628 mouse cells of Table S2b. The mouse-only claims (fig3fh-mouse-fres, fig3jl-mouse-q-sag-rin,
+    fig4i-mouse-sag-depth, fig4km-mouse-no-depth) keep `data` at its default, `dataset`, which counts them
+    towards dandiset 000630 although none of its recordings enter. Should the header name these dandisets,
+    and should the mouse-only claims be `with_inputs`?
+  passage: Results, first section, "Most of the data used in this paper is already open source" (refs 2
+    and 27); Methods, "The remaining data will be made available upon request"; Supplementary Table 2b,
+    spec_id column.
+  why: This attempt tested the culture and mouse claims on 000636 and 000020 as outside inputs. The
+    `data` field decides whether an outcome counts towards what is said about dandiset 000630; the
+    mouse-only claims, now tested (fig3fh not reproduced, fig3jl reproduced), are counted towards 000630
+    under `dataset` though they use none of its recordings.
+- claim: figs1-region-pathology
+  question: The criterion takes region (lobe) per donor from Table S1. Table S1 has both an "Area" and a
+    "Structure" column besides "Lobe", and the criterion does not say which gives the lobe where "Lobe" is
+    blank. Should the lobe come from "Structure" where "Lobe" and "Area" leave it open?
+  passage: Supplementary Table 1, columns Area, Structure and Lobe; Fig. S1 legend, cortical regions of
+    surgical resection (frontal, temporal, parietal, occipital).
+  why: The attempt reads "Lobe", then "Area"; 3 human acute chirp cells (and 24 human chirp cells in all)
+    are left without a lobe. Read from "Structure" some of them would get a lobe, which could move the
+    Kruskal-Wallis tests, though with so few cells it is unlikely to change the outcome.
