@@ -47,13 +47,22 @@ Where the parameters come from:
   PyPI distribution). `rewire_configuration` is a substitute that does what graph-tool's
   default does (one sweep of target swaps over every edge, no self-loops or parallel edges,
   every node's in- and out-degree kept). This is a substitution, recorded as a deviation.
+- Rich club thresholds of the control networks (rich-club-controls, reading b). The paper
+  reads the thresholds off local maxima of the normalized coefficient "by eye" (richclub.py,
+  comment before `neurons_k_gr_3`) and gives no rule. The notebook takes, among the local
+  maxima that leave at least 10 neurons, the one with the largest normalized coefficient. This
+  is an assumption: it is the simplest rule that gives back the paper's own thresholds on the
+  original networks (25 for signaling, 62 for anatomy), which the notebook shows.
 """
 
 from __future__ import annotations
 
+import ast
 import io
+import json
 import pickle
 import urllib.request
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
@@ -151,6 +160,60 @@ def load_atlas(strain: str = "wild-type"):
     """Neuron names (188 head neurons) and the scalar atlas, NaN where q > 0.05."""
     fa = _AtlasUnpickler(io.BytesIO(_raw(WFC_REPO, WFC_COMMIT, f"atlas/{strain}.pickle"))).load()
     return [str(n) for n in fa.neu_ids], np.asarray(fa.scalar_atlas, dtype=float)
+
+
+def atlas_attributes(strain: str = "wild-type") -> dict:
+    """Every attribute the atlas pickle holds, with its type and shape (to show what it lacks)."""
+    fa = _AtlasUnpickler(io.BytesIO(_raw(WFC_REPO, WFC_COMMIT, f"atlas/{strain}.pickle"))).load()
+    return {k: (type(v).__name__, getattr(v, "shape", None)) for k, v in fa.__dict__.items()}
+
+
+def repo_files(repo: str, commit: str) -> dict:
+    """Path and size of every file of a GitHub repository at a commit (GitHub API)."""
+    url = f"https://api.github.com/repos/{repo}/git/trees/{commit}?recursive=1"
+    with urllib.request.urlopen(url, timeout=120) as r:
+        tree = json.load(r)
+    if tree.get("truncated"):
+        raise RuntimeError(f"file list of {repo} truncated by the GitHub API")
+    return {e["path"]: e["size"] for e in tree["tree"] if e["type"] == "blob"}
+
+
+def pypi_files(package: str) -> int:
+    """Number of distribution files of a package on PyPI, over all its releases."""
+    with urllib.request.urlopen(f"https://pypi.org/pypi/{package}/json", timeout=120) as r:
+        d = json.load(r)
+    return sum(len(v) for v in d["releases"].values())
+
+
+def code_lists() -> dict:
+    """The neuron lists as written in the paper's code (FNA_COMMIT), parsed from the source, to
+    compare with the lists of this module: {(file, variable): list}."""
+    out = {}
+    for fname, variables in (("SIM.py", ("sensory", "inter", "motor")),
+                             ("SIM_doubleedge.py", ("sensory", "inter", "motor")),
+                             ("richclub.py", ("sensory", "inter", "motor", "pharynx")),
+                             ("broadcaster_integrator.py", ("Amphid", "pharynx"))):
+        with warnings.catch_warnings():  # the scripts hold LaTeX labels with backslashes in plain strings
+            warnings.simplefilter("ignore", SyntaxWarning)
+            tree = ast.parse(_raw(FNA_REPO, FNA_COMMIT, fname).decode())
+        for node in tree.body:
+            if (isinstance(node, ast.Assign) and len(node.targets) == 1
+                    and isinstance(node.targets[0], ast.Name) and node.targets[0].id in variables
+                    and isinstance(node.value, ast.List)):
+                out[(fname, node.targets[0].id)] = ast.literal_eval(node.value)
+    return out
+
+
+def code_function_source(fname: str, name: str) -> str:
+    """Source text of a function in the paper's code (FNA_COMMIT)."""
+    text = _raw(FNA_REPO, FNA_COMMIT, fname).decode()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", SyntaxWarning)
+        body = ast.parse(text).body
+    for node in body:
+        if isinstance(node, ast.FunctionDef) and node.name == name:
+            return ast.get_source_segment(text, node)
+    raise KeyError(name)
 
 
 def signaling_adjacency(scalar_atlas: np.ndarray) -> np.ndarray:

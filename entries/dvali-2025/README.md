@@ -25,7 +25,7 @@ comes from the EM connectomes stored with Randi et al.'s code.
 | The signaling rich club spans all classes, the anatomical one is interneurons | Reproduced |
 | Degree correlates with observations (r = 0.71), rich club well above | Partially reproduced |
 | AVE is the most connected in both networks | Reproduced (assumed) |
-| Threshold controls at q < 0.01 and q <= 0.18 (three claims) | Blocked: data missing |
+| Threshold controls at q < 0.01 and q <= 0.18 (three claims) | Blocked: data missing (one rich club pair holds) |
 | Stochastic block model communities and what rests on them (21 claims) | Blocked: not runnable |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the

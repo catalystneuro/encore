@@ -129,7 +129,11 @@ outcomes:
   notes: The degree-corrected nested stochastic block model runs in graph-tool (SMB_posteriordist_mcmc.py;
     Methods, Stochastic Block Modeling). graph-tool has no PyPI distribution (uv pip install graph-tool
     finds no version), so it cannot be installed in the entry's locked environment, which the
-    registry builds with uv. No other implementation of the paper's model was substituted.
+    registry builds with uv; PyPI holds no distribution file for any of its releases (the notebook's
+    data check prints the count, 0). No other implementation of the paper's model was substituted.
+    The paper prints the first-level memberships of both networks (Tables 1 and 2), but they are the
+    output of the model that cannot be run; they are not typed in as an input, as the entry computes
+    every result from the data, so the claims that rest on the partitions stay blocked.
 - claim: table1-signaling-membership
   outcome: blocked
   blocked_by: not_runnable
@@ -150,8 +154,10 @@ outcomes:
     build_wfc_atlas.py writes it), and the q-values cannot be recomputed from the dandiset, which
     lacks the control recordings without stimulation (see signaling-network-size). No public source
     of the q-value matrix was found in the paper's code, worm-functional-connectivity or pumpprobe
-    (which reads it from a cache file on the lab's cluster). The community count at q <= 0.18 also
-    needs graph-tool.
+    (which reads it from a cache file on the lab's cluster). The notebook's data check lists every
+    attribute of the atlas pickle (names, fitted kernels ec, the thresholded scalar atlas) and every
+    file other than code in the three repositories at their pinned commits; none holds q-values or an
+    unthresholded atlas. The community count at q <= 0.18 also needs graph-tool.
 - claim: bilateral-same-community-signaling
   outcome: blocked
   blocked_by: not_runnable
@@ -255,8 +261,9 @@ outcomes:
   notes: Pharyngeal neurons were stimulated a median of 6.5 times, as were the others (KS D = 0.093,
     p = 0.994). Amphid neurons were observed in a median of 27.5 recordings against 32.0 for the
     others (KS D = 0.171, p = 0.518); counted from the NeuroPAL labels, 49.0 against 46.0, p = 0.673.
-    The counts use 1813 stimulations with a labeled head-neuron target; 23 neurons, 2 of them
-    pharyngeal, have none. No random draws.
+    The counts use 1813 stimulations with a labeled head-neuron target, a subset of the stimulations
+    behind the atlas; 23 neurons (2 pharyngeal, 2 amphid) have none, yet the atlas gives them 46
+    out-edges. No random draws.
   deviations:
   - The stimulated ROI of each stimulation is read from version 0.240930.1859 (target_pumpprobe_id);
     the cited version does not hold it. Only 2815 of 5614 stimulations have a target id there.
@@ -288,7 +295,8 @@ outcomes:
   notebook: reproduce_dvali_2025.ipynb
   output: claim:fig5c-rich-clubs-disjoint
   notes: The anatomical rich club (degree > 62) has 14 neurons (AIBL, AIBR, AVAL, AVAR, AVBL, AVBR,
-    AVEL, AVER, RIBL, RIBR, RIH, RIML, RIMR, RIS), one fewer than the code's list, and its
+    AVEL, AVER, RIBL, RIBR, RIH, RIML, RIMR, RIS), one fewer than the 15 of the legend of Extended Data
+    Figure 12a, and its
     intersection with the signaling first tier is AVEL and AVER under both readings of the tiers.
     The anatomical variants give 10 and 8 neurons and the same intersection, so the outcome does not
     rest on the choice of EM datasets.
@@ -310,8 +318,29 @@ outcomes:
 - claim: rich-club-controls
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_dvali_2025.ipynb
+  output: claim:rich-club-controls
   notes: Depends on signaling-threshold-controls; the signaling networks at q < 0.01 and q <= 0.18
-    cannot be built (no q-values other than q < 0.05 are available).
+    cannot be built (no q-values other than q < 0.05 are available), so two of the three pairs and
+    the q <= 0.18 subset test cannot be run. The one pair that can be built, the original signaling
+    network against the anatomical network with an average of at least 1.25 contacts over the four
+    sources (1161 edges, density 0.0330 against the paper's 0.033), holds under both readings. Under
+    (a) no neuron of that network has degree above 62 (largest degree 39), so the overlap is empty.
+    Under (b) the threshold is k = 28 under all five seeds, a club of 13 neurons (AIZR, AVAL, AVAR,
+    AVEL, AVER, RIAL, RIAR, RIBL, RIBR, RIGL, RIGR, RIML, RIMR) whose overlap with the signaling rich
+    club (k = 25 under the same rule) is AVEL and AVER. It keeps 8 of the 14 original anatomical rich
+    club neurons and adds 5, where the legend of Extended Data Figure 12a gives 9 of 15 and 4 new.
+    With the White N2U adult the overlap under (b) is AVER only, with gap junctions in one direction
+    AVEL and AVER. The conservative anatomical network has density 0.0288 (one type, at least three
+    contacts in one source) or 0.0306 (both types summed), against the paper's 0.028; its signaling
+    partner at q < 0.01 cannot be built.
+  deviations:
+  - Assumption for reading (b). The paper picks rich club thresholds at local maxima of the normalized
+    coefficient by eye (richclub.py, "bye eye k = 3 k = 25, and k = 40") and gives no rule. The
+    threshold is the local maximum with the largest normalized coefficient among those that leave at
+    least 10 neurons, the simplest rule that gives back the paper's 25 and 62 on the original networks
+    (the notebook shows both). All local maxima are printed.
+  - The anatomical networks rest on the assumed four EM datasets (anatomy-network-properties).
 - claim: fig5d-community-vi-hubs
   outcome: blocked
   blocked_by: not_runnable
@@ -439,3 +468,289 @@ findings:
     "five neurons of degree 40 or higher". In the network 22 and 7 neurons have degree 25 or higher
     and 40 or higher; 16 and 5 have degree above 25 and above 40, as the Figure 5 legend and
     richclub.py define them.
+- kind: methods_unavailable
+  statement: The paper reads the rich club thresholds off local maxima of the normalized coefficient by eye
+    (richclub.py) and does not give the thresholds of the control networks' rich clubs (Extended Data Figures 11b,
+    12a and 13a). For the 1.25-contact anatomical network the attempt takes the local maximum with the largest
+    normalized coefficient among those leaving at least 10 neurons (k = 28, 13 neurons), a rule that gives back
+    25 and 62 on the original networks; the legend's 9 of 15 kept and 4 new is close to the 8 of 14 and 5 new found.
+    Question for the authors. Which degree thresholds define the rich clubs of the control networks?
+verifications:
+- date: '2026-11-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier tested the helper functions on synthetic inputs
+    (problems 7 and 8) and checked the archive for the control recordings. Its outcome agrees with the record for
+    all 39 claims; it found no place where the claims file misreads the paper, so no question was added for a
+    reader. In reply the notebook now lists what the atlas pickle and the three repositories hold (no q-values),
+    compares the helper's neuron lists with those parsed from the paper's code (identical) and prints the code's
+    swapping_edges beside its port, prints the number of graph-tool files on PyPI (0), and runs the one pair of
+    rich-club-controls that the data allow, with the edge counts and rich clubs of the 1.25-contact and conservative
+    anatomical networks. No outcome changed. Report in transcripts/dvali-2025/verifier-1-report.md.
+  results:
+  - claim: atlas-dataset-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: The amplitude tests hold, Spearman rho = 0.524 (p = 3.7e-73) and Mann-Whitney p = 1.7e-45. The coverage
+      tests fail, 184 of 188 atlas neurons appear among the labels and 88.4% of edges have an occurrence against
+      the 95% required; the criterion's "in part" clause applies. Problem 5, coverage is limited by the missing
+      target ids and by ROIs labeled without a side, barely separates the two orientations (0.884 against 0.870
+      transposed), and the orientation rests on the asymmetry check (0.626); the responses use the cited version's
+      GreenSignal, in which 42% of frames are interpolated without a marker. Does not affect a conclusion.
+    response: Outcome kept. The points of problem 5 were already in the notes and the findings; no change.
+  - claim: signaling-network-size
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b) gives 1154 edges and density 0.0328, both within tolerance. Reading (a) cannot be run,
+      because the control recordings are not on the archive (checked). It did not check whether the atlas
+      repository or pumpprobe holds a q-value matrix or an unthresholded atlas, and asked for a cell listing the
+      atlas pickle's attributes and the files at that commit.
+    response: Outcome kept. Added that cell to the data check. The pickle holds the names, the fitted kernels (ec),
+      the scalar atlas thresholded at q < 0.05 and four scalars; neither worm-functional-connectivity, pumpprobe
+      nor the paper's code holds a q-value matrix or an unthresholded atlas at the pinned commits.
+  - claim: signaling-clustering-small-world
+    agrees: true
+    outcome: reproduced
+    reason: C = 0.1347; sigma = 4.62 to 4.72 across five seeds, all within 4.76 +/- 0.48 and above 1.
+    response: No change.
+  - claim: anatomy-network-properties
+    agrees: true
+    outcome: reproduced
+    reason: Main reading 3223 edges, density 0.0917, C = 0.306, sigma = 2.515, all within tolerance; under the
+      White-A variant C = 0.233 fails. Problem 3, the anatomy-dependent outcomes rest on one assumed source set,
+      pumpprobe's aconn_sources with gap junctions symmetrized; the choice is reasonable, since it is the co-author's
+      lab code, but not stated in the paper, and these claims hold under the main reading only.
+    response: Outcome kept, marked assumed as before. The assumption, the variants and the question to the authors
+      (findings) were already recorded; the verifier found the choice reasonable.
+  - claim: triad-distribution
+    agrees: true
+    outcome: reproduced
+    reason: chi2 = 6009 with 12 degrees of freedom, p near 0. Problem 6, the chi2 treats overlapping triads as
+      independent counts and with about 56,000 triads it cannot fail; this is the claims file's choice, reported,
+      not corrected.
+    response: Outcome kept. The test is the claims file's criterion, which the author does not change; the
+      verifier did not report it as a misreading of the paper, so no question was added.
+  - claim: signaling-six-communities
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM itself. The notebook's reason, not_runnable, is not one of the allowed reasons; graph-tool
+      is available on conda-forge, so the block is the author's environment, not the data (problem 1). It would
+      give blocked, other.
+    response: Kept blocked as not_runnable. Protocol step 1.5 lists not_runnable for a method whose software cannot
+      be installed in a locked environment, and the schema allows it. The registry builds entries with uv from
+      PyPI, where graph-tool has no distribution file in any release; the notebook now prints that count (0).
+  - claim: table1-signaling-membership
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part. Tables 1 and 2 print the paper's community memberships, and with them
+      this claim could be tested on the atlas without the SBM (problem 1).
+    response: Kept blocked. The memberships are the output of the model that cannot be run. Typing them in would
+      embed the paper's results as an input, which the protocol rules out ("Compute every result from the data. No
+      embedded numbers, arrays"), and a test on them would check the paper's partition against the atlas, not
+      reproduce it. The notes now say so.
+  - claim: anatomy-twenty-communities
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM itself; not_runnable is not an allowed reason, and graph-tool is on conda-forge (problem
+      1). It would give blocked, other.
+    response: Kept as not_runnable, for the reason given under signaling-six-communities.
+  - claim: more-communities-anatomy-controls
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM itself; not_runnable is not an allowed reason, and graph-tool is on conda-forge (problem
+      1). It would give blocked, other.
+    response: Kept as not_runnable, for the reason given under signaling-six-communities.
+  - claim: signaling-threshold-controls
+    agrees: true
+    outcome: blocked
+    reason: The atlas keeps only q < 0.05, and the archive holds no unstimulated control recordings, so q cannot be
+      recomputed. The q <= 0.18 community count would also need the SBM. Blocked, data_missing.
+    response: Kept. The data check now shows that no pinned outside source holds q-values (see
+      signaling-network-size).
+  - claim: bilateral-same-community-signaling
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part; with the memberships of Table 1 it could be tested on the atlas (problem
+      1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: bilateral-controls-signaling
+    agrees: true
+    outcome: blocked
+    reason: Same reason as signaling-threshold-controls, and it also needs the SBM. Blocked, data_missing.
+    response: No change.
+  - claim: bilateral-anatomy-stronger
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM itself; not_runnable is not an allowed reason, and graph-tool is on conda-forge (problem
+      1). It would give blocked, other.
+    response: Kept as not_runnable, for the reason given under signaling-six-communities.
+  - claim: pharynx-community-overlap
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part; the ARS between Table 1 and Table 2 could be computed from the printed
+      memberships (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: seven-enriched-pairings
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part; the 7 enriched pairings could be tested from the printed memberships
+      (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: forced-same-number-ars
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM itself; not_runnable is not an allowed reason, and graph-tool is on conda-forge (problem
+      1). It would give blocked, other.
+    response: Kept as not_runnable, for the reason given under signaling-six-communities.
+  - claim: pharynx-overlap-controls
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM itself; not_runnable is not an allowed reason, and graph-tool is on conda-forge (problem
+      1). It would give blocked, other.
+    response: Kept as not_runnable, for the reason given under signaling-six-communities.
+  - claim: fig3b-signaling-cell-type-enrichment
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part; the cell-class enrichments could be tested on the atlas given the paper's
+      partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: fig3c-signaling-role-enrichment
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part; the role enrichments could be tested on the atlas given the paper's
+      partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: fig3de-anatomy-enrichment
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM on outside data; Table 2 would allow a conditional test. Blocked, other.
+    response: Kept blocked as not_runnable, for the reasons given under signaling-six-communities and
+      table1-signaling-membership.
+  - claim: ed6-signaling-not-feedforward
+    agrees: true
+    outcome: reproduced
+    reason: No leg is significantly above either null under any seed. The S to I leg is significantly below the
+      label-shuffle null (z = -2.6, p = 0.009), which fits the paper's word "ambiguous".
+    response: No change.
+  - claim: ed6-anatomy-feedforward
+    agrees: true
+    outcome: partially_reproduced
+    reason: No criterion. Against the label-shuffle null all three legs are above; against the edge-swap null only
+      S to M is.
+    response: No change.
+  - claim: fig4-community-motif-fractions
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part; the community motif fractions could be tested on the atlas given the
+      paper's partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: fig4d-pharynx-amphid-core
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part given the paper's partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: fig4d-anatomy-pharynx-amphid-assortative
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM on outside data; Table 2 would allow a conditional test. Blocked, other.
+    response: Kept blocked as not_runnable, for the reasons given under signaling-six-communities and
+      table1-signaling-membership.
+  - claim: fig4c-broadcaster-integrator
+    agrees: true
+    outcome: partially_reproduced
+    reason: Amphid 160 edges in, 100 out, p = 0.0025 to 0.0054. Pharynx 60 out exceeds 40 in, but p = 0.051 to
+      0.073 across the five seeds, so it is not significant.
+    response: No change.
+  - claim: ed9-sampling-not-confound
+    agrees: true
+    outcome: reproduced
+    reason: KS p = 0.994 for pharynx stimulations and 0.518 for amphid observations (NeuroPAL variant 0.673);
+      neither is below 0.05. Problem 4, only 1813 of 5614 stimulations are counted, because only 2815 have a target
+      id and only 1813 of those carry an exact head-neuron label; 23 neurons have zero counted stimulations yet hold
+      46 atlas out-edges, so the counts are a subset of what built the atlas. With KS p = 0.99 the outcome is very
+      unlikely to change. Does not affect a conclusion.
+    response: Outcome kept. The notes and the notebook's conclusion now say that the counts are a subset of the
+      stimulations behind the atlas, with the 23 neurons and their 46 out-edges.
+  - claim: fig5a-signaling-rich-club
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading (a) gives tiers of 16 and 5, the same set as the code's list; local maxima at 25 and at 42 (40
+      for one seed). The one-SD rule fails at k = 4 (0.88 SD, with a null SD near 0) in every seed. Reading (b)
+      fails the counts (22 and 7). Problem 7, the rewiring keeps in- and out-degree with no self-loops or parallel
+      edges and one sweep replaces about 84% of edges; the null SD near 0 at small k comes from N_k near N, which
+      makes the one-SD rule at k = 3 to 4 nearly degenerate, and is the cause of the shortfall.
+    response: Outcome kept. The one-SD rule is the claims file's criterion; the verifier did not report it as a
+      misreading of the paper.
+  - claim: fig5c-rich-clubs-disjoint
+    agrees: true
+    outcome: reproduced
+    reason: The intersection is exactly AVEL and AVER under both readings and both anatomy variants.
+    response: Outcome kept. The notebook said the anatomical rich club had one fewer neuron than "the code's list";
+      the 15 come from the legend of Extended Data Figure 12a, and the text now says so.
+  - claim: fig5b-degree-correlation
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.2186. This depends on the anatomy reading; the White-A variant gives 0.169 (problem 3).
+    response: Outcome kept, marked assumed as before (see anatomy-network-properties).
+  - claim: rich-club-controls
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), partly testable. anatomy_adjacency defines the avg125, three_total and
+      three_type modes, but they are never used. The pair "original signaling against 1.25-synapse anatomy" is
+      computable from data in hand, and so is the check against Extended Data Fig. 12a's "9 of 15 shared, 4 new";
+      the claim is partly testable, not wholly blocked (problem 2). The notebook prints no edge count or rich club
+      for the 1.25-synapse network.
+    response: Ran the pair in a new section tagged claim:rich-club-controls, with the edge counts and densities of
+      the 1.25-contact and conservative anatomical networks. It holds under both readings (overlap empty under
+      (a), AVEL and AVER under (b), 8 of 14 kept and 5 new against the legend's 9 of 15 and 4 new). Kept blocked,
+      data_missing, because the criterion needs all three pairs and the q <= 0.18 subset, which cannot be built;
+      the notes give the partial result. Reading (b) rests on a stated rule for picking the maximum.
+  - claim: fig5d-community-vi-hubs
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part given the paper's partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: ed10-rich-club-cell-classes
+    agrees: true
+    outcome: reproduced
+    reason: Signaling rich club split 5/5/6 (largest share 0.375); the anatomical rich club is 12 of 14 interneurons.
+      It could not verify the class and role lists against the paper's code and asked for a printed comparison.
+    response: Outcome kept. The data check now compares each list with the one parsed from the paper's code at the
+      pinned commit; all are identical. Extended Data Figure 5 is an image whose names are not in the text, so the
+      comparison is with the code.
+  - claim: fig5e-rich-club-core
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part given the paper's partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: ed9e-degree-observations
+    agrees: true
+    outcome: partially_reproduced
+    reason: r = 0.702 is within tolerance, but only 10 of 16 rich club neurons sit more than 1 SD above the line
+      ("partially when most do").
+    response: No change.
+  - claim: anatomy-community-motif-fractions
+    agrees: true
+    outcome: blocked
+    reason: Needs the SBM on outside data; Table 2 would allow a conditional test. Blocked, other.
+    response: Kept blocked as not_runnable, for the reasons given under signaling-six-communities and
+      table1-signaling-membership.
+  - claim: community-vi-most-self-connected
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part; VI being the densest community could be tested on the atlas given the
+      paper's partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: pharynx-less-isolated-signaling
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but testable in part given the paper's partition (problem 1).
+    response: Kept blocked, for the reason given under table1-signaling-membership.
+  - claim: ave-most-connected-both
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (fragile). Reading (a) fails, because AWBL (52) tops the signaling network. Reading (b) holds,
+      AVE leads the summed degrees in both networks (97 vs AWB 94; 170 vs AIB 166). Under both anatomy variants AIB
+      leads instead (problem 3).
+    response: Outcome kept, marked assumed as before (see anatomy-network-properties).
