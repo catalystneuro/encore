@@ -13,7 +13,7 @@ here: the notebooks when it works, and the reason when it does not.
 Status: pilot. All eight pilot targets have been attempted and checked by an
 independent agent.
 
-**Dashboard:** <https://encorescience.org/>
+**Site:** <https://encorescience.org/>, with the registry's dashboard at <https://encorescience.org/registry/> and what Encore offers a journal at <https://encorescience.org/journals/>.
 
 ## Reading the outcomes
 
@@ -123,10 +123,11 @@ python tools/entry.py run   entries/<name>   # execute from a clean environment
 python tools/entry.py handover entries/<name>  # the verifier's package, without the conclusions
 ```
 
-The dashboard is a static site built from these files by
-`python tools/build_site.py` and republished on every push to `main`: an
-overview, a filterable list of dandisets, and a page per attempted dandiset
-with its claims and its findings about the data. Every filtered view is a link. `python tools/build_site.py
+The site is static, built from these files by
+`python tools/build_site.py` and republished on every push to `main`: a home
+page, a page for journals, an overview of the registry, a filterable list of
+papers and of datasets, and a page per attempted paper and dataset with its
+claims and its findings about the data. Every filtered view is a link. `python tools/build_site.py
 --demo 150 --output /tmp/demo` builds it from made-up attempts, to see how it
 behaves at scale.
 
