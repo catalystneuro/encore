@@ -2072,11 +2072,11 @@ def footer(data: dict, root: str) -> str:
         column("Registry", [("Overview", f"{root}registry/"), ("Papers", f"{root}papers/"),
                             ("Datasets", f"{root}datasets/"), ("Authors", f"{root}authors/"),
                             ("Pipeline", f"{root}pipeline/"), ("Data as JSON", f"{root}registry.json")])
-        + column("Method", [("Steps of a check", f"{root}about/"), ("Protocol", PROTOCOL_URL),
+        + column("Method", [("Steps of a check", f"{root}method/"), ("Protocol", PROTOCOL_URL),
                             ("Reading an outcome", f"{root}registry/#caution"),
                             ("Badges", f"{REPO_URL}/blob/main/docs/badges.md"), ("Agent runs", f"{REPO_URL}/actions")])
         + column("Use Encore", [("For journals", f"{root}journals/"), ("Check your own data", f"{root}check/"),
-                                ("For authors", f"{root}about/#authors"), ("Contact", CONTACT_URL),
+                                ("For authors", f"{root}method/#authors"), ("Contact", CONTACT_URL),
                                 ("Repository", REPO_URL)]))
     return f'''<footer><div class="wrap">
 <div class="foot-grid">
@@ -2105,7 +2105,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
     in_registry = active in REGISTRY_PAGES
     nav = ""
-    for key, label, href in [("registry", "Registry", f"{root}registry/"), ("about", "Method", f"{root}about/"),
+    for key, label, href in [("registry", "Registry", f"{root}registry/"), ("method", "Method", f"{root}method/"),
                              ("journals", "For journals", f"{root}journals/")]:
         # The registry's tab is lit on every page of the registry; only its overview is the tab's own page.
         current = (' aria-current="page"' if key == active or (key == "registry" and active == "overview")
@@ -2463,7 +2463,7 @@ def page_overview(data: dict) -> str:
   <h1>The Encore registry</h1>
   <p class="lede">Can the findings of a paper be reproduced from its open data? AI agents try, on the datasets in
   public archives. Independent agents check each attempt, and every finding gets an outcome, whether or not it
-  reproduced. <a href="../about/">The method</a> ·
+  reproduced. <a href="../method/">The method</a> ·
   <a href="../check/">Run the same check on your own data</a></p>
   <form class="home-search" method="get" action="../papers/" role="search">
     <input name="q" type="search" placeholder="Search papers" aria-label="Search papers">
@@ -2519,7 +2519,8 @@ HOME_STEPS = [
      "agents' transcripts are kept with the record."),
     ("The paper's authors can respond",
      "An author of the paper who thinks a check is wrong, or who has something to add, responds from the paper's "
-     "page. Once we confirm who wrote the response, it is shown there with the check."),
+     "page. Once we confirm who wrote the response, it is shown there with the check, and a new check is run "
+     "with what the response adds."),
 ]
 
 # The outcomes in a sentence each, as the protocol defines them (docs/protocol.md, "One outcome per claim").
@@ -2658,7 +2659,7 @@ def page_home(data: dict) -> str:
   <p class="band-lede">Each check follows a <a href="{PROTOCOL_URL}">written protocol</a>, in a fixed sequence of
   roles. The readers, the author and the verifiers are separate runs that do not share their reasoning.</p>
   <ol class="how-steps">{steps}</ol>
-  <p class="band-more"><a href="about/">The method in full</a></p>
+  <p class="band-more"><a href="method/">The method in full</a></p>
 </div></section>
 <section class="band alt" id="returns"><div class="wrap">
   <h2>The report</h2>
@@ -2688,7 +2689,7 @@ def page_home(data: dict) -> str:
     <div class="audience"><h3>Archives</h3>
       <p>Each dataset in the registry has a page with what the checks found about its data, a badge the archive can
       show, and a JSON file with the same numbers.</p>
-      <p><a href="about/#archives">Encore for archives</a></p></div>
+      <p><a href="method/#archives">Encore for archives</a></p></div>
   </div>
 </div></section>
 <section class="band alt" id="limits"><div class="wrap split">
@@ -2767,7 +2768,7 @@ def page_journals(data: dict) -> str:
   enough to support the paper.</p>
   {evidence}
   <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
-  <a class="button secondary" href="{root}about/">The method</a></p>
+  <a class="button secondary" href="{root}method/">The method</a></p>
 </header>
 <main class="journals">
   <div class="panel" id="report"><h2>The report</h2>
@@ -2913,7 +2914,9 @@ ABOUT_STEPS = [
     ("The paper's authors respond",
      "At any time after, an author of the paper who thinks the attempt is wrong, or who has something to add, can "
      "respond with the form on the paper's page. Once a maintainer confirms who wrote the response, it is shown on "
-     "the paper's page with the attempt."),
+     "the paper's page with the attempt. What the response adds, such as how something was computed or where some "
+     "data are, goes to a new attempt as notes. Its author reads the notes with the paper, does not see the earlier "
+     "attempts, and tests every claim against the same criterion."),
 ]
 # Who does each step, as the diagram on the About page labels it (docs/pipeline.md, "Steps").
 ABOUT_ROLES = ["Queue runner", "Reader agents", "Author agent", "Verifier agent", "Verifier agent",
@@ -2921,15 +2924,17 @@ ABOUT_ROLES = ["Queue runner", "Reader agents", "Author agent", "Verifier agent"
 
 
 def about_flow() -> str:
-    """The steps of ABOUT_STEPS as a picture: one box a step, with who does it, and the author's revision after
-    each verification. Drawn with the site's colours, so that it follows the theme; the list beside it says the rest."""
-    w, box, gap, pill, pgap = 300, 46, 22, 26, 18
-    parts, y = [], 1
+    """The steps of ABOUT_STEPS as a picture: one box a step, with who does it, the author's revision after each
+    verification, and a line from the authors' response back to the first step, for the new attempt a response
+    can start. Drawn with the site's colours, so that it follows the theme; the list beside it says the rest."""
+    w, box, gap, pill, pgap, side = 300, 46, 22, 26, 18, 44
+    parts, y, tops = [], 1, []
     arrow = lambda y0, y1: (f'<line x1="{w // 2}" y1="{y0}" x2="{w // 2}" y2="{y1 - 2}" class="fa" '
                             f'marker-end="url(#flow-arrow)"/>')
     for i, (head, _) in enumerate(ABOUT_STEPS):
         if i:
             parts.append(arrow(y - gap, y))
+        tops.append(y)
         parts.append(f'<rect x="1" y="{y}" width="{w - 2}" height="{box}" rx="4" class="fb"/>'
                      f'<circle cx="19" cy="{y + box // 2}" r="11" class="fc"/>'
                      f'<text x="19" y="{y + box // 2 + 4}" class="fn">{i + 1}</text>'
@@ -2942,11 +2947,18 @@ def about_flow() -> str:
             parts.append(f'<rect x="{w // 2 - 70}" y="{top + pgap}" width="140" height="{pill}" rx="{pill // 2}" class="fp"/>'
                          f'<text x="{w // 2}" y="{top + pgap + 17}" class="fq">Author revises</text>')
             y = top + pgap + pill + gap
+    # From the last step round to the first: out of its right side, up beside the boxes, and in at the first's.
+    first, last, x = tops[0] + box // 2, tops[-1] + box // 2, w + side - 20
+    parts.append(f'<path d="M{w} {last}H{x - 8}a8 8 0 0 0 8-8V{first + 8}a8 8 0 0 0-8-8H{w + 3}" class="fl" '
+                 f'marker-end="url(#flow-arrow)"/>'
+                 f'<text transform="translate({x + 15} {(first + last) // 2}) rotate(-90)" class="fq">'
+                 f'New attempt, with the authors’ notes</text>')
     label = ("The seven steps of an attempt, in order: " + "; ".join(
         f"{i + 1}, {head.lower()}, by the {ABOUT_ROLES[i][0].lower() + ABOUT_ROLES[i][1:]}"
-        for i, (head, _) in enumerate(ABOUT_STEPS)) + ". The author revises after each verification.")
+        for i, (head, _) in enumerate(ABOUT_STEPS)) + ". The author revises after each verification. After the "
+        "authors respond, a new attempt can start again at the first step, with the authors' notes.")
     h = y - gap + 1
-    return (f'<figure class="flow" id="flow"><svg viewBox="0 0 {w} {h}" role="img" aria-label="{e(label)}">'
+    return (f'<figure class="flow" id="flow"><svg viewBox="0 0 {w + side} {h}" role="img" aria-label="{e(label)}">'
             f'<title>{e(label)}</title><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" '
             f'markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="fm"/></marker></defs>'
             + "".join(parts) + "</svg></figure>")
@@ -3233,7 +3245,7 @@ def page_about(data: dict) -> str:
       with the same numbers (<a href="{REPO_URL}/blob/main/docs/badges.md">how to use the badges</a>).</p>{example}</div>
   </div>
 </main>'''
-    return shell(data, f"The method · {SITE_NAME}", root, "about", body, path="about/",
+    return shell(data, f"The method · {SITE_NAME}", root, "method", body, path="method/",
                  description="How AI agents attempt to reproduce papers from their open data in public archives: "
                              "the claims, the reader, author and verifier roles, and where the agents run.")
 
@@ -4514,8 +4526,11 @@ def build(data: dict, output: Path) -> None:
     for sub, page in (("registry", page_overview), ("journals", page_journals), ("check", page_check)):
         (output / sub).mkdir(exist_ok=True)
         (output / sub / "index.html").write_text(page(data))
+    (output / "method").mkdir(exist_ok=True)
+    (output / "method" / "index.html").write_text(page_about(data))
+    # The page was at about/ until it was named for what it holds; links to it there are kept working.
     (output / "about").mkdir(exist_ok=True)
-    (output / "about" / "index.html").write_text(page_about(data))
+    (output / "about" / "index.html").write_text(redirect_page("method/", "../"))
     (output / "pipeline").mkdir(exist_ok=True)
     (output / "pipeline" / "index.html").write_text(page_pipeline(data))
     (output / "data" / "pipeline.json").write_text(json.dumps(pipeline_rows(data), separators=(",", ":")) + "\n")
@@ -4712,7 +4727,7 @@ def page_not_found(data: dict) -> str:
 
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dataset page dated by its latest attempt."""
-    pages = [(p, data["generated"][:10]) for p in ("", "registry/", "journals/", "check/", "about/", "pipeline/")]
+    pages = [(p, data["generated"][:10]) for p in ("", "registry/", "journals/", "check/", "method/", "pipeline/")]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]

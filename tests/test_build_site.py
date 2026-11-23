@@ -676,22 +676,28 @@ def test_a_preview_is_kept_out_of_search_results(tmp_path):
 
 def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     data, out = built
-    about = (out / "about" / "index.html").read_text()
+    about = (out / "method" / "index.html").read_text()
     assert "<h1>The method</h1>" in about and "First verification" in about
     assert 'aria-current="page">Method' in about
-    assert 'href="about/">Method' in (out / "index.html").read_text()
-    assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
+    assert 'href="method/">Method' in (out / "index.html").read_text()
+    assert f"<loc>{site.SITE_URL}method/</loc>" in (out / "sitemap.xml").read_text()
+    # The page was at about/: that address sends its readers on, anchor and all.
+    old = (out / "about" / "index.html").read_text()
+    assert 'url=../method/"' in old and "location.hash" in old
 
 
 def test_the_about_page_names_the_archives_draws_the_steps_and_points_authors_and_archives_on(built):
     data, out = built
-    about = (out / "about" / "index.html").read_text()
+    about = (out / "method" / "index.html").read_text()
     archives = {site.split_key(a["key"])[0] for a in data["attempts"]}
     assert archives and site.attempted_archives(data)
     for k in archives:
         assert html.escape(site.ARCHIVES[k]["name"]) in about
     assert "the only archive" not in about
     # The diagram: one box a step, the last of them the authors' response, labelled for screen readers, and the list still in full.
+    # A response can start a new attempt: the picture has the line back to the first step, and the step says so.
+    assert 'class="fl"' in about and "New attempt, with the authors’ notes" in about
+    assert "goes to a new attempt as notes" in about and "does not see the earlier" in about
     assert 'id="flow"' in about and 'role="img" aria-label="The seven steps of an attempt' in about
     assert site.ABOUT_STEPS[-1][0] == "The paper's authors respond" and "by the paper&#x27;s authors" in about
     for head, _ in site.ABOUT_STEPS:
@@ -710,7 +716,7 @@ def test_the_bar_is_the_sites_and_the_registrys_pages_have_a_bar_of_their_own(bu
     home = (out / "index.html").read_text()
     bar = home[home.index('<nav class="top"'):home.index("</nav>")]
     footer = home[home.index("<footer>"):home.index("</footer>")]
-    assert [h for _, h in re.findall(r'<a class="(tab)" href="([^"]*)"', bar)] == ["registry/", "about/", "journals/"]
+    assert [h for _, h in re.findall(r'<a class="(tab)" href="([^"]*)"', bar)] == ["registry/", "method/", "journals/"]
     assert "pipeline" not in bar and 'href="pipeline/">Pipeline</a>' in footer
     # "Check your data" is a page of the site, which points on to the command's full documentation.
     assert '<a class="tab quiet" href="check/" title="Run the same check' in bar
@@ -737,9 +743,9 @@ def test_the_bar_is_the_sites_and_the_registrys_pages_have_a_bar_of_their_own(bu
             f"{root}registry/", f"{root}papers/", f"{root}datasets/", f"{root}authors/", f"{root}pipeline/"]
     paper = next(q for q in site.papers_of(data) if q["attempts"])
     assert 'class="regnav"' in (out / "papers" / paper["key"] / "index.html").read_text()
-    for path in ("about", "journals"):
+    for path in ("method", "journals"):
         assert 'class="regnav"' not in (out / path / "index.html").read_text()
-    assert 'href="../pipeline/">pipeline</a>' in (out / "about" / "index.html").read_text()
+    assert 'href="../pipeline/">pipeline</a>' in (out / "method" / "index.html").read_text()
 
 
 def test_the_home_page_says_what_encore_does_and_shows_the_registrys_own_numbers(built):
