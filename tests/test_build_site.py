@@ -677,9 +677,9 @@ def test_a_preview_is_kept_out_of_search_results(tmp_path):
 def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     data, out = built
     about = (out / "about" / "index.html").read_text()
-    assert "How the registry works" in about and "First verification" in about
-    assert 'aria-current="page">How it works' in about
-    assert 'href="about/">How it works' in (out / "index.html").read_text()
+    assert "<h1>The method</h1>" in about and "First verification" in about
+    assert 'aria-current="page">Method' in about
+    assert 'href="about/">Method' in (out / "index.html").read_text()
     assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
 
 
@@ -775,6 +775,10 @@ def test_the_journals_page_lists_the_journals_of_the_papers_attempted(built):
     page = (out / "journals" / "index.html").read_text()
     assert "<h1>Encore for journals</h1>" in page and 'aria-current="page">For journals' in page
     assert site.CAUTION in page and f'href="{site.CONTACT_URL}"' in page
+    # The four ways to work with us are numbered, and what follows them has a heading of its own.
+    offers = page[page.index('id="offers"'):page.index('id="terms"')]
+    assert re.findall(r'<span class="offer-n">(\d)</span>', offers) == ["1", "2", "3", "4"] and offers.count('class="panel"') == 4
+    assert page.index('id="terms"') < page.index('id="confidential"') < page.index('id="limits"')
     journals = site.journal_counts(data)
     rows = [p for p in site.rows_cache(data)["papers"] if p["status"] == "attempted"]
     assert all(name not in ("Preprint", "Other journals") for name, _ in journals)

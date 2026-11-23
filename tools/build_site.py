@@ -2072,7 +2072,7 @@ def footer(data: dict, root: str) -> str:
         column("Registry", [("Overview", f"{root}registry/"), ("Papers", f"{root}papers/"),
                             ("Datasets", f"{root}datasets/"), ("Authors", f"{root}authors/"),
                             ("Pipeline", f"{root}pipeline/"), ("Data as JSON", f"{root}registry.json")])
-        + column("Method", [("How it works", f"{root}about/"), ("Protocol", PROTOCOL_URL),
+        + column("Method", [("Steps of a check", f"{root}about/"), ("Protocol", PROTOCOL_URL),
                             ("Reading an outcome", f"{root}registry/#caution"),
                             ("Badges", f"{REPO_URL}/blob/main/docs/badges.md"), ("Agent runs", f"{REPO_URL}/actions")])
         + column("Use Encore", [("For journals", f"{root}journals/"), ("Check your own data", f"{root}check/"),
@@ -2105,7 +2105,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
     in_registry = active in REGISTRY_PAGES
     nav = ""
-    for key, label, href in [("registry", "Registry", f"{root}registry/"), ("about", "How it works", f"{root}about/"),
+    for key, label, href in [("registry", "Registry", f"{root}registry/"), ("about", "Method", f"{root}about/"),
                              ("journals", "For journals", f"{root}journals/")]:
         # The registry's tab is lit on every page of the registry; only its overview is the tab's own page.
         current = (' aria-current="page"' if key == active or (key == "registry" and active == "overview")
@@ -2430,7 +2430,7 @@ def page_overview(data: dict) -> str:
 
     panels = "".join([
         technique_panel,
-        breakdown("Why claims could not be tested",
+        breakdown("Blocked claims by reason",
                   ordered(blocked, BLOCKED_BY, lambda k: f"../papers/?blocked_by={k}"),
                   "../papers/?has=blocked"),
         breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"../datasets/?found={k}"),
@@ -2463,7 +2463,7 @@ def page_overview(data: dict) -> str:
   <h1>The Encore registry</h1>
   <p class="lede">Can the findings of a paper be reproduced from its open data? AI agents try, on the datasets in
   public archives. Independent agents check each attempt, and every finding gets an outcome, whether or not it
-  reproduced. <a href="../about/">How it works</a> ·
+  reproduced. <a href="../about/">The method</a> ·
   <a href="../check/">Run the same check on your own data</a></p>
   <form class="home-search" method="get" action="../papers/" role="search">
     <input name="q" type="search" placeholder="Search papers" aria-label="Search papers">
@@ -2620,7 +2620,7 @@ def page_home(data: dict) -> str:
         note = (f' Of the {counts["blocked"]:,} claims that could not be tested, {missing:,} were blocked because data '
                 f'they need are not in the dataset.' if missing else "")
         record = f'''<section class="band alt" id="record"><div class="wrap">
-  <h2>What the registry shows so far</h2>
+  <h2>The registry so far</h2>
   <p class="band-lede">The registry is the public record of these checks on published papers and their datasets in
   {e(", ".join(names[:-1]) + " and " + names[-1] if len(names) > 1 else (names[0] if names else "public archives"))}.{note}</p>
   <div class="record">
@@ -2654,14 +2654,14 @@ def page_home(data: dict) -> str:
 <main class="home">
 {record}
 <section class="band" id="how"><div class="wrap">
-  <h2>How a check is made</h2>
+  <h2>The method</h2>
   <p class="band-lede">Each check follows a <a href="{PROTOCOL_URL}">written protocol</a>, in a fixed sequence of
   roles. The readers, the author and the verifiers are separate runs that do not share their reasoning.</p>
   <ol class="how-steps">{steps}</ol>
   <p class="band-more"><a href="about/">The method in full</a></p>
 </div></section>
 <section class="band alt" id="returns"><div class="wrap">
-  <h2>What a check returns</h2>
+  <h2>The report</h2>
   <div class="returns">
     <div><h3>An outcome for every claim</h3>
       <ul class="means">{means}</ul></div>
@@ -2675,7 +2675,7 @@ def page_home(data: dict) -> str:
   </div>
 </div></section>
 <section class="band" id="for"><div class="wrap">
-  <h2>Who uses Encore</h2>
+  <h2>For journals, authors and archives</h2>
   <div class="audiences">
     <div class="audience"><h3>Journals</h3>
       <p>See whether the data deposited with a manuscript support its findings, before or after publication. The
@@ -2692,7 +2692,7 @@ def page_home(data: dict) -> str:
   </div>
 </div></section>
 <section class="band alt" id="limits"><div class="wrap split">
-  <h2>How to read an outcome</h2>
+  <h2>Reading an outcome</h2>
   <div><p>{CAUTION} An outcome says what one attempt could recover from the data in a dataset, with the methods available
   to it. A claim may fail to reproduce because of a mistake or a limitation in the agent's analysis, because the paper
   does not describe its methods fully, or because the dataset differs from what the paper analysed.</p>
@@ -2701,7 +2701,7 @@ def page_home(data: dict) -> str:
   is shown on the paper's page. <a href="registry/#caution">More on reading outcomes</a></p></div>
 </div></section>
 <section class="band" id="behind"><div class="wrap behind">
-  <div><h2>Who is behind Encore</h2>
+  <div><h2>Built by CatalystNeuro</h2>
     <p>{SITE_NAME} is built by <a href="{CN_URL}">CatalystNeuro</a>, a team of research software engineers who trained
     as neuroscientists. CatalystNeuro converts lab data to the NWB standard and publishes them on the DANDI Archive.</p>
     <p>We believe recent advances in AI make it possible to raise the standard for open science: for the first time,
@@ -2714,10 +2714,10 @@ def page_home(data: dict) -> str:
     are in the public domain.</p></div>
 </div></section>
 <section class="band ink" id="contact"><div class="wrap">
-  <h2>See what a check finds on your papers</h2>
+  <h2>Try it on your own papers</h2>
   <p>Send us a few papers with deposited data, published or in review, and we will return a full report on each.</p>
   <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
-  <a class="button secondary" href="journals/">What a journal gets</a></p>
+  <a class="button secondary" href="journals/">Encore for journals</a></p>
 </div></section>
 </main>'''
     # A link to #attempt-<id> on the home page was a link to an attempt, from when the overview listed them here.
@@ -2767,10 +2767,10 @@ def page_journals(data: dict) -> str:
   enough to support the paper.</p>
   {evidence}
   <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
-  <a class="button secondary" href="{root}about/">How a check is made</a></p>
+  <a class="button secondary" href="{root}about/">The method</a></p>
 </header>
 <main class="journals">
-  <div class="panel" id="report"><h2>What an editor receives</h2>
+  <div class="panel" id="report"><h2>The report</h2>
     <ul class="receives">
       <li>Each key finding of the paper as a claim, with an outcome: reproduced, partially reproduced, not reproduced,
       or blocked.</li>
@@ -2781,24 +2781,25 @@ def page_journals(data: dict) -> str:
     </ul></div>
   <h2 class="section-head" id="offers">Four ways to work with us</h2>
   <div class="grid2">
-    <div class="panel"><h2>A pilot on your own papers</h2>
+    <div class="panel"><h2><span class="offer-n">1</span>A pilot on your own papers</h2>
       <p>Send us a few papers with deposited data, published or in review. We run a full check on each and return
       the reports, so you see what a check finds on your journal's papers before you decide anything.</p></div>
-    <div class="panel"><h2>Checks during review</h2>
+    <div class="panel"><h2><span class="offer-n">2</span>Checks during review</h2>
       <p>At the stage of review you choose, your editorial office sends us the manuscript and the location of its
       data. We return the report for the editor to share with the reviewers and the authors. A quick check takes one
       to three hours of computing. A full check, with two rounds of independent verification, takes several hours
       more.</p></div>
-    <div class="panel"><h2>A public record for published papers</h2>
+    <div class="panel"><h2><span class="offer-n">3</span>A public record for published papers</h2>
       <p>For accepted papers, we add the check to the public registry. The paper gets a page with every claim, its
       outcome and the code behind it, and a <a href="{REPO_URL}/blob/main/docs/badges.md">badge</a> for the article
       page that links there. Authors can <a href="{REPO_URL}/blob/main/docs/author-responses.md">respond</a>, and
       their response is shown beside the check.</p></div>
-    <div class="panel"><h2>Run it yourselves</h2>
+    <div class="panel"><h2><span class="offer-n">4</span>Run it yourselves</h2>
       <p>The <a href="{root}check/"><code>encore</code> command</a> is open source and runs on your own machines,
       with your own Claude account, on files in a directory, files at a URL, or a draft dataset in an archive. We
       help your team set it up.</p></div>
   </div>
+  <h2 class="section-head" id="terms">Confidentiality and limits</h2>
   <div class="grid2">
     <div class="panel" id="confidential"><h2>Confidential manuscripts</h2>
       <p>A manuscript under review does not go through the public registry. We run its check with the
@@ -2810,7 +2811,7 @@ def page_journals(data: dict) -> str:
       (<a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>). Nothing goes on the public registry unless the
       journal and the authors ask for it.</p>
       <p>If the manuscript must stay on your own systems, your team can run the same check itself.</p></div>
-    <div class="panel"><h2>What a check does and does not say</h2>
+    <div class="panel" id="limits"><h2>Limits of a check</h2>
       <p>{CAUTION} A check reports what one attempt could recover from the deposited data, and the agents that make
       it can be mistaken.</p>
       <p>A blocked claim usually points to data the authors still need to deposit. A claim that did not reproduce is
@@ -2855,26 +2856,26 @@ encore check DANDI:001234 --draft --paper paper.pdf      # a dataset in an archi
     independent agent verifies the work, and takes several hours more. If a run stops, run the same command again and
     it goes on from where it stopped.</p></div>
   <div class="grid2">
-    <div class="panel"><h2>What you need</h2>
+    <div class="panel"><h2>Requirements</h2>
       <ul class="receives">
         <li><a href="https://docs.claude.com/en/docs/claude-code">Claude Code</a>, signed in to a Claude account or
         with an API key. The run counts against that account's usage.</li>
         <li>Python 3.10 or later, and git.</li>
         <li>The paper, as a PDF or a text file. A preprint is fine.</li>
       </ul></div>
-    <div class="panel"><h2>What you get</h2>
+    <div class="panel"><h2>The report</h2>
       <p>The run writes <code>report.md</code>, which lists every claim with its outcome (reproduced, partially
       reproduced, not reproduced, or blocked) and every finding about the data, and points to the notebooks that
       tested them. A failure to reproduce may be the agent's: read the notes and the notebooks before acting on
       one.</p></div>
-    <div class="panel"><h2>What stays on your machine</h2>
+    <div class="panel"><h2>On your own machine</h2>
       <p>A check you run yourself stays on your machine. The agents' commands run in a sandbox: they can write only
       inside the run's directory and can reach only the archives, Python's package index, GitHub and doi.org. A
       local dataset is read in place and never changed.</p></div>
     <div class="panel"><h2>Put a dataset on the record</h2>
       <p>To have a published dataset checked in the public registry, ask for a run with
       <code>encore request</code>: a first attempt on a dataset with a paper, or a repeat after its data were
-      fixed. <a href="{REPO_URL}/blob/main/docs/queue.md">How the queue works</a></p></div>
+      fixed. <a href="{REPO_URL}/blob/main/docs/queue.md">The queue</a></p></div>
   </div>
   <div class="panel contact-panel"><h2>The full documentation</h2>
     <p>Every command and option is in the <a href="{ENCORE_DOCS}">documentation of the <code>encore</code>
@@ -3187,7 +3188,7 @@ def page_about(data: dict) -> str:
     else:
         example = ""
     body = f'''<header class="page">
-  <h1>How the registry works</h1>
+  <h1>The method</h1>
   <p class="lede">Every attempt here is made by AI agents, in a fixed sequence of roles, following a
   <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The readers, the author and the verifiers are
   separate runs that do not share their reasoning.</p>
@@ -3196,7 +3197,7 @@ def page_about(data: dict) -> str:
   <div class="panel"><h2>An attempt, step by step</h2>
     <div class="flowwrap">{about_flow()}<ol class="steps">{steps}</ol></div></div>
   <div class="grid2" style="margin-top:16px">
-    <div class="panel"><h2>Where the agents run</h2>
+    <div class="panel"><h2>The agents' environment</h2>
       <p>Each role runs in GitHub Actions on a fresh machine with no personal configuration. The agent's commands
       cannot see the credentials it runs on, and a verifier sees only the materials it is given: the repository is
       removed before it starts. Each run commits its work, its cleaned transcript and its report, so every step can
@@ -3232,7 +3233,7 @@ def page_about(data: dict) -> str:
       with the same numbers (<a href="{REPO_URL}/blob/main/docs/badges.md">how to use the badges</a>).</p>{example}</div>
   </div>
 </main>'''
-    return shell(data, f"How the registry works · {SITE_NAME}", root, "about", body, path="about/",
+    return shell(data, f"The method · {SITE_NAME}", root, "about", body, path="about/",
                  description="How AI agents attempt to reproduce papers from their open data in public archives: "
                              "the claims, the reader, author and verifier roles, and where the agents run.")
 
@@ -3581,7 +3582,7 @@ def responses_block(data: dict, paper: dict, attempt: dict | None = None, root: 
     return (f'<div class="author-responses"><h2>Responses from the paper&rsquo;s authors</h2>'
             f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">An author can say whether the '
             f'outcomes are right with the form linked under this ("Respond to this attempt"). '
-            f'<a href="{REPO_URL}/blob/main/docs/author-responses.md">How responses are handled</a>.</p></div>')
+            f'<a href="{REPO_URL}/blob/main/docs/author-responses.md">Handling of responses</a>.</p></div>')
 
 
 def summary_para(text: str, label: str | None = None) -> str:
@@ -4129,7 +4130,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         actions += [f'<a href="{root}papers/{e(q["key"])}/">{e(q["byline"])}: the paper&rsquo;s page</a>'
                     for q in papers_of(data) if q["doi"] in papers_here and q["attempts"]]
         actions += [f'<a href="{root}api/{page_of(dandiset).rstrip("/")}.json">JSON</a>']
-    actions += [f'<a href="{root}registry/#caution">How to read outcomes</a>']
+    actions += [f'<a href="{root}registry/#caution">Reading outcomes</a>']
     # The author response form (docs/author-responses.md), filled in for the paper and, on an attempt's page or the
     # page of a paper with one current attempt, for the attempt. A response is to a paper's attempt, so the link is
     # on those two pages and not on a dataset's.
@@ -4335,7 +4336,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         others_side = (f'<div class="srcs"><p class="srcs-head">Other data and code used</p><ul>'
                        + "".join(_src(o) for o in others[:SHOWN])
                        + (f'<li class="muted">and {len(others) - SHOWN} more</li>' if len(others) > SHOWN else "")
-                       + f'</ul><p class="small"><a href="#provenance">What was taken from each</a></p></div>'
+                       + f'</ul><p class="small"><a href="#provenance">Details of each source</a></p></div>'
                        ) if others else ""
         missing = [m for a in atts for m in a.get("missing_datasets") or []]
         # Why an attempt left a dataset out, in its own words: long, so on request.
