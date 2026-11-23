@@ -1,7 +1,7 @@
 # Author responses
 
 Authors of a paper can respond to a reproduction attempt with the
-[Respond to an attempt](https://github.com/catalystneuro/encore/issues/new?template=author-response.yml)
+[Respond to an attempt](https://github.com/encorescience/encore-registry/issues/new?template=author-response.yml)
 issue form. Each submission opens a GitHub issue with the label `author-response`.
 
 ## Links to the form

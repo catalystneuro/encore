@@ -12,7 +12,7 @@ A notes file:
 
     paper: doi:10.1016/j.neuron.2020.05.023
     notes:
-    - issue: https://github.com/catalystneuro/encore/issues/900
+    - issue: https://github.com/encorescience/encore-registry/issues/900
       date: 2026-11-20
       from: A. Author
       role: first author
@@ -38,7 +38,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import paper_records  # noqa: E402
 
-REPO = "catalystneuro/encore"
+REPO = "encorescience/encore-registry"
 NOTES = ROOT / "papers" / "author-notes"
 CONFIRMED = {"author-confirmed": True, "confirmed": False}   # label -> whether the writer is an author
 
