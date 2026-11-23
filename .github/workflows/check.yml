@@ -30,6 +30,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
+        run: |
+          bash tools/protocol.sh
+          # Every file the protocol lays must be ignored (.gitignore), so that no commit takes it in by mistake.
+          dirty=$(git status --porcelain)
+          [ -z "$dirty" ] || { echo "::error::Laid by the protocol but not in .gitignore: $dirty"; exit 1; }
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -78,6 +85,9 @@ jobs:
         entry: ${{ fromJSON(needs.check.outputs.entries) }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
+        run: bash tools/protocol.sh
 
       - uses: actions/setup-python@v5
         with:

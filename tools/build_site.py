@@ -57,7 +57,11 @@ REPO_URL = "https://github.com/encorescience/encore-registry"
 CN_URL = "https://www.catalystneuro.com"
 # Encore Science is the project: the `encore` tool (docs/encore.md) and this site, the Encore registry.
 SITE_NAME = "Encore Science"
-ENCORE_DOCS = REPO_URL + "/blob/main/docs/encore.md"
+# The protocol, the agents' instructions and the `encore` tool are in encore-protocol, at the version protocol.lock
+# names: the one the records were made under, linked as such.
+PROTOCOL_REPO_URL = "https://github.com/encorescience/encore-protocol"
+PROTOCOL_BLOB = f"{PROTOCOL_REPO_URL}/blob/{(ROOT / 'protocol.lock').read_text().strip()}"
+ENCORE_DOCS = PROTOCOL_BLOB + "/docs/encore.md"
 SITE_URL = "https://encorescience.org/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from their open data, and record every "
                     "outcome and what they find about the data.")
@@ -2054,7 +2058,7 @@ def beacon(data: dict) -> str:
 
 # Who to write to about a check for a journal: CatalystNeuro's contact page, until the site has an address of its own.
 CONTACT_URL = CN_URL + "/contact"
-PROTOCOL_URL = REPO_URL + "/blob/main/docs/protocol.md"
+PROTOCOL_URL = PROTOCOL_BLOB + "/docs/protocol.md"
 # What Anthropic does with what is sent to its models, by kind of account: the source of the journals page's
 # statement on training and retention, read on 2026-11-22.
 DATA_USAGE_URL = "https://code.claude.com/docs/en/data-usage"
@@ -2710,7 +2714,7 @@ def page_home(data: dict) -> str:
     direction.</p>
     <p>Encore is led by Ben Dichter, founder and CEO of CatalystNeuro.</p></div>
   <div><h2>Open by design</h2>
-    <p>The <a href="{PROTOCOL_URL}">protocol</a> the agents follow, the <a href="{REPO_URL}">code</a> that runs them
+    <p>The <a href="{PROTOCOL_URL}">protocol</a> the agents follow, the <a href="{PROTOCOL_REPO_URL}">code</a> that runs them
     and the transcript of every run are public. The code is under the Apache-2.0 license and the registry's records
     are in the public domain.</p></div>
 </div></section>
@@ -2793,7 +2797,7 @@ def page_journals(data: dict) -> str:
     <div class="panel"><h2><span class="offer-n">3</span>A public record for published papers</h2>
       <p>For accepted papers, we add the check to the public registry. The paper gets a page with every claim, its
       outcome and the code behind it, and a <a href="{REPO_URL}/blob/main/docs/badges.md">badge</a> for the article
-      page that links there. Authors can <a href="{REPO_URL}/blob/main/docs/author-responses.md">respond</a>, and
+      page that links there. Authors can <a href="{PROTOCOL_BLOB}/docs/author-responses.md">respond</a>, and
       their response is shown beside the check.</p></div>
     <div class="panel"><h2><span class="offer-n">4</span>Run it yourselves</h2>
       <p>The <a href="{root}check/"><code>encore</code> command</a> is open source and runs on your own machines,
@@ -2880,7 +2884,7 @@ encore check DANDI:001234 --draft --paper paper.pdf      # a dataset in an archi
   </div>
   <div class="panel contact-panel"><h2>The full documentation</h2>
     <p>Every command and option is in the <a href="{ENCORE_DOCS}">documentation of the <code>encore</code>
-    command</a>, and the source is in the <a href="{REPO_URL}">repository</a>. Editors who want checks run for
+    command</a>, and the source is in the <a href="{PROTOCOL_REPO_URL}">protocol's repository</a>. Editors who want checks run for
     their journal can read <a href="{root}journals/">Encore for journals</a>.</p></div>
 </main>'''
     return shell(data, f"Check your own data · {SITE_NAME}", root, "check", body, path="check/",
@@ -3140,7 +3144,7 @@ def page_pipeline(data: dict) -> str:
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
   <p class="lede">Every paper, and where it stands in the
-  <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: the match to its datasets, its text, the claims
+  <a href="{PROTOCOL_BLOB}/docs/pipeline.md">pipeline</a>: the match to its datasets, its text, the claims
   read from it and their check, the attempt, the questions it raised, and verification. A dataset whose paper
   match is still to make is listed under the paper its archive names. {len(waiting):,}
   paper{"s are" if len(waiting) != 1 else " is"} waiting on a person, {papers_missing:,} of them for a text to
@@ -3202,7 +3206,7 @@ def page_about(data: dict) -> str:
     body = f'''<header class="page">
   <h1>The method</h1>
   <p class="lede">Every attempt here is made by AI agents, in a fixed sequence of roles, following a
-  <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The readers, the author and the verifiers are
+  <a href="{PROTOCOL_BLOB}/docs/protocol.md">written protocol</a>. The readers, the author and the verifiers are
   separate runs that do not share their reasoning.</p>
 </header>
 <main class="about">
@@ -3235,7 +3239,7 @@ def page_about(data: dict) -> str:
     <div class="panel" id="authors"><h2>For authors</h2>
       <p>Each paper's page and each attempt's page link to a <a href="{RESPOND_URL}">form for responding</a> to the
       attempt. Once a maintainer confirms who wrote a response, it is shown on the paper's page
-      (<a href="{REPO_URL}/blob/main/docs/author-responses.md">how responses are handled</a>). Each author whose
+      (<a href="{PROTOCOL_BLOB}/docs/author-responses.md">how responses are handled</a>). Each author whose
       ORCID iD the registry knows has a page with their papers, their datasets and their badges. Find yours in the
       <a href="{root}authors/">list of authors</a>.</p></div>
     <div class="panel" id="archives"><h2>For archives</h2>
@@ -3594,7 +3598,7 @@ def responses_block(data: dict, paper: dict, attempt: dict | None = None, root: 
     return (f'<div class="author-responses"><h2>Responses from the paper&rsquo;s authors</h2>'
             f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">An author can say whether the '
             f'outcomes are right with the form linked under this ("Respond to this attempt"). '
-            f'<a href="{REPO_URL}/blob/main/docs/author-responses.md">Handling of responses</a>.</p></div>')
+            f'<a href="{PROTOCOL_BLOB}/docs/author-responses.md">Handling of responses</a>.</p></div>')
 
 
 def summary_para(text: str, label: str | None = None) -> str:

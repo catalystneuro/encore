@@ -21,7 +21,7 @@ on:
     paths:
       - "targets/**"
       - "papers/triage.yaml"
-      - "tools/papers_manifest.py"
+      - "protocol.lock"   # tools/papers_manifest.py comes with the protocol
   workflow_dispatch:
 
 permissions:
@@ -41,6 +41,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+
+      - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
+        run: bash tools/protocol.sh
 
       - uses: actions/setup-python@v5
         with:
