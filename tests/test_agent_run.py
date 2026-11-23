@@ -45,7 +45,7 @@ def test_an_author_is_given_the_notes_the_papers_authors_sent(monkeypatch, tmp_p
     import author_notes
     assert "author-notes" not in tool.fill("author", "senzai-2017", "m")
     monkeypatch.setattr(author_notes, "NOTES", tmp_path)
-    issue = {"url": "https://github.com/catalystneuro/encore/issues/900", "createdAt": "2026-11-20T10:00:00Z",
+    issue = {"url": "https://github.com/encorescience/encore-registry/issues/900", "createdAt": "2026-11-20T10:00:00Z",
              "labels": [{"name": "author-response"}, {"name": "author-confirmed"}],
              "body": "### Paper\n\nsenzai-2017\n\n### Your name\n\nA. Author\n\n### Your role in the paper\n\nfirst author\n\n"
                      "### ORCID iD\n\n0000-0002-1825-0097\n\n### Claims you are responding to\n\nunit-counts, all\n\n"

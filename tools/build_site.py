@@ -53,7 +53,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
-REPO_URL = "https://github.com/catalystneuro/encore"
+REPO_URL = "https://github.com/encorescience/encore-registry"
 CN_URL = "https://www.catalystneuro.com"
 # Encore Science is the project: the `encore` tool (docs/encore.md) and this site, the Encore registry.
 SITE_NAME = "Encore Science"
@@ -212,7 +212,7 @@ def asset(name: str) -> str:
 
 # --- collecting ---------------------------------------------------------------
 
-COLAB_URL = "https://colab.research.google.com/github/catalystneuro/encore/blob/colab/entries"
+COLAB_URL = "https://colab.research.google.com/github/encorescience/encore-registry/blob/colab/entries"
 
 
 def environment_of(entry_dir: Path) -> dict:

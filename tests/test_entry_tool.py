@@ -405,7 +405,7 @@ def test_claim_outputs_are_compared_cell_by_cell(tmp_path):
 
 def test_the_colab_copy_sets_itself_up_only_on_colab():
     import colab
-    code = colab.SETUP.format(branch="colab", repo="catalystneuro/encore", name="demo")
+    code = colab.SETUP.format(branch="colab", repo="encorescience/encore-registry", name="demo")
     compile(code, "setup", "exec")
     assert 'if "google.colab" in sys.modules:' in code and "entries/demo" in code
     exec(code, {})   # outside Colab: nothing happens
