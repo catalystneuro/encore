@@ -47,3 +47,22 @@ def test_papers_come_from_the_doi_given_and_related_articles_and_code_from_githu
     assert [p["doi"] for p in papers] == ["10.1/given", "10.7554/elife.41877", "10.1101/2020.01.01.000001"]
     assert papers[0]["relation"] == "given" and papers[2]["preprint"] and not papers[1]["preprint"]
     assert code == ["https://github.com/lab/code/tree/v1"]
+
+
+def test_a_data_paper_the_record_is_published_in_is_a_paper(monkeypatch):
+    # ZENODO:15878620 names its Data in Brief article this way.
+    monkeypatch.setattr(tool, "title_of", lambda doi: ("T", False))
+    meta = {"related_identifiers": [{"identifier": "10.1016/j.dib.2025.111305", "relation": "isPublishedIn",
+                                     "scheme": "doi", "resource_type": "publication-article"}]}
+    papers, _ = tool.papers_of("", meta)
+    assert [(p["doi"], p["relation"]) for p in papers] == [("10.1016/j.dib.2025.111305", "isPublishedIn")]
+
+
+def test_every_version_is_listed_oldest_first_page_by_page_at_most_25_to_a_page(monkeypatch):
+    # Zenodo answers size=100 with 400 Bad Request, which left only the record itself in version_ids.
+    first = f"{tool.API}/records/30/versions?size=25&sort=oldest"
+    second = f"{tool.API}/records/30/versions?page=2&size=25&sort=oldest"
+    responses = {first: {"hits": {"hits": [{"id": 10}, {"id": 20}]}, "links": {"next": second}},
+                 second: {"hits": {"hits": [{"id": 30}]}, "links": {}}}
+    monkeypatch.setattr(tool, "get", lambda url: responses[url])
+    assert tool.version_ids({"id": 30}) == ["10", "20", "30"]

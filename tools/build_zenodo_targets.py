@@ -12,7 +12,8 @@ For each, the builder reads Zenodo's public REST API (no account needed for an o
 description, license, keywords and resource type; every file, with its key, size and MD5; the deposit's concept id
 and the ids of all its versions; and the papers. Each version of a deposit is a record of its own whose files
 cannot change, so the record id pins it, and published_version is the record id. The papers are the DOI given and
-the related identifiers marked isSupplementTo, isDescribedBy, isCitedBy or isReferencedBy that are not GitHub
+the related identifiers marked isSupplementTo, isDescribedBy, isPublishedIn, isCitedBy, isReferencedBy or
+isDocumentedBy that are not GitHub
 repositories or other Zenodo records, titled from Crossref; GitHub repositories go under code.
 
 A dataset is named by its record id (ZENODO:3924718, folder zenodo-3924718). Reading the files needs no account
@@ -32,7 +33,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 API = "https://zenodo.org/api"
-PAPER_RELATIONS = {"issupplementto", "isdescribedby", "iscitedby", "isreferencedby", "isdocumentedby"}
+PAPER_RELATIONS = {"issupplementto", "isdescribedby", "iscitedby", "isreferencedby", "isdocumentedby",
+                   "ispublishedin"}
+# Zenodo refuses an anonymous listing with more than 25 items to a page (400 Bad Request).
+PAGE_SIZE = 25
 
 
 def get(url: str) -> dict:
@@ -88,12 +92,19 @@ def resource_type(meta: dict) -> str:
 
 
 def version_ids(record: dict) -> list[str]:
-    """The ids of every version of the record's deposit, oldest first."""
+    """The ids of every version of the record's deposit, oldest first, following links.next from page to page.
+    (sort=version gives the newest first.)"""
+    ids, url = [], f"{API}/records/{record['id']}/versions?size={PAGE_SIZE}&sort=oldest"
     try:
-        hits = get(f"{API}/records/{record['id']}/versions?size=100&sort=version")["hits"]["hits"]
-        return [str(h["id"]) for h in hits]
-    except Exception:
+        while url:
+            page = get(url)
+            ids += [str(h["id"]) for h in page["hits"]["hits"]]
+            url = (page.get("links") or {}).get("next")
+    except Exception as err:
+        print(f"warning: ZENODO:{record['id']}: could not list its versions ({err}); listing it alone",
+              file=sys.stderr)
         return [str(record["id"])]
+    return ids or [str(record["id"])]
 
 
 def papers_of(paper: str, meta: dict) -> tuple[list[dict], list[str]]:
