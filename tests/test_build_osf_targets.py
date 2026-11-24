@@ -132,6 +132,10 @@ def osf(monkeypatch):
     ("https://osf.io/abcde/", ("abcde", "")),
     ("https://osf.io/abcde/files/osfstorage", ("abcde", "")),
     ("osf.io/abcde=https://doi.org/10.1038/S41586-020-0001-0", ("abcde", "10.1038/s41586-020-0001-0")),
+    # A preprint, by its versioned GUID or its page on a preprint server.
+    ("uwge3_v3", ("uwge3", "")),
+    ("https://osf.io/preprints/psyarxiv/uwge3_v3", ("uwge3", "")),
+    ("https://osf.io/preprints/psyarxiv/uwge3/", ("uwge3", "")),
 ])
 def test_the_osf_builder_takes_a_guid_a_doi_or_a_page(text, expected):
     assert b.parse(text) == expected
@@ -172,7 +176,37 @@ def test_a_project_is_listed_with_every_file_in_every_folder_provider_and_compon
 def test_a_project_is_pinned_by_when_it_was_last_modified_and_each_file_by_its_version(osf):
     t = b.target("abcde")
     assert t["published_version"] == "2024-05-06T07:08:09.000000" and t["published"] == "2021-03-01"
-    assert all(f["version"] for f in t["files"]) and all(f["sha256"] for f in t["files"])
+    stored = [f for f in t["files"] if f["provider"] == "osfstorage"]
+    assert all(f["version"] for f in stored) and all(f["sha256"] for f in stored)
+
+
+def test_a_file_in_a_storage_add_on_has_no_version(osf):
+    # OSF gives a GitHub file current_version 1, but its download address answers ?version=1 with 404.
+    t = b.target("abcde")
+    github = next(f for f in t["files"] if f["provider"] == "github")
+    assert github["path"] == "github/analysis.py" and github["version"] is None
+
+
+def test_crossref_is_asked_for_json_and_osf_for_json_api(monkeypatch):
+    # Crossref answers a request that accepts only application/vnd.api+json with 406 Not Acceptable.
+    asked = {}
+
+    class Response(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    def urlopen(req, timeout=None):
+        asked[req.full_url] = req.get_header("Accept")
+        return Response(b'{"message": {"title": ["Place cells"], "type": "journal-article"}}')
+
+    monkeypatch.setattr(b.urllib.request, "urlopen", urlopen)
+    assert b.title_of("10.1016/j.neuron.2024.01.001") == ("Place cells", False)
+    b.get(f"{API}/nodes/abcde/")
+    assert asked == {"https://api.crossref.org/works/10.1016/j.neuron.2024.01.001": "application/json",
+                     f"{API}/nodes/abcde/": "application/vnd.api+json"}
 
 
 def test_the_project_metadata_names_the_license_and_the_cited_contributors(osf):
