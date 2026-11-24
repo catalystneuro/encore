@@ -13,5 +13,5 @@ implanted sensors, and a code map for Monkey P's events are not in the dataset).
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
 
-Run with `python tools/entry.py all entries/amjad-2025`; it takes about 4 minutes and 3.5 GB of
+Run with `python tools/entry.py all entries/amjad-2025`; it takes about 2 to 4 minutes and 4.4 GB of
 memory.

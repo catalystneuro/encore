@@ -195,14 +195,25 @@ def window_mean(x, i_cue, window, reref=True):
 
 # ------------------------------------------------------------------------ LFP (09/26/2024)
 
-def beta_power(x, fs=LFP_RATE):
+def beta_power(x, fs=LFP_RATE, order="envelope_squared", smooth=True):
     """Beta power of the continuous bipolar LFP: 13 to 28 Hz 4th-order Butterworth run forwards and
     backwards, squared Hilbert envelope, smoothed with a 0.25 s Hanning window of unit sum
     (claims file, method choices; paper, Methods: "bandpass filtered around 13 to 28 Hz, squared,
-    enveloped, and then smoothed with a Hanning window of 0.25 s"). Unit sum keeps the units V^2."""
+    enveloped, and then smoothed with a Hanning window of 0.25 s"). Unit sum keeps the units V^2.
+
+    order="squared_enveloped" is the paper's order read literally, a variant: the band-passed signal
+    is squared and then enveloped as MATLAB's envelope() does by default (the magnitude of the
+    analytic signal of the mean-removed input, plus the mean). smooth=False skips the Hanning
+    window, a variant for the burst claim."""
     b, a = signal.butter(4, [13, 28], btype="bandpass", fs=fs)
     y = signal.filtfilt(b, a, x)
-    env = np.abs(signal.hilbert(y)) ** 2
+    if order == "envelope_squared":
+        env = np.abs(signal.hilbert(y)) ** 2
+    else:
+        y2 = y ** 2
+        env = y2.mean() + np.abs(signal.hilbert(y2 - y2.mean()))
+    if not smooth:
+        return env
     w = np.hanning(int(0.25 * fs))
     return np.convolve(env, w / w.sum(), mode="same")
 

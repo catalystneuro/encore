@@ -21,28 +21,29 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/encorescience/encore-registry/actions/runs/45504266872
 inputs:
-- what: The paper's processed data on Zenodo; the four trial lists of session 09/26/2024 (large reward, small
-    reward, left, right; successful trials) and the example beta power trace of the 35th large-reward trial,
-    used by zenodo-link only. session126_events.mat was inspected for a code map of Monkey P's events and has
-    none.
+- what: The paper's processed data on Zenodo; the four trial lists of session 09/26/2024 (large reward, small reward,
+    left, right; successful trials) and the example beta power trace of the 35th large-reward trial, used by zenodo-link
+    only. session126_events.mat was inspected for a code map of Monkey P's events and has none.
   source: doi:10.5281/zenodo.14826579
-- what: The paper's spike plotting code (spikes_PCA.m, ISI_Plot.m), read for the sorted unit (unit 1) and the
-    8 samples before threshold of the stored waveforms, used to align the spike-triggered average in the data
-    check.
+- what: The paper's spike plotting code (spikes_PCA.m, ISI_Plot.m), read for the sorted unit (unit 1) and the 8
+    samples before threshold of the stored waveforms, used to align the spike-triggered average in the data check.
   source: doi:10.5281/zenodo.10397773
 outcomes:
 - claim: insertion-yield
   outcome: blocked
   blocked_by: data_missing
-  notes: The criterion needs the list of implanted sensors per monkey and whether each kept recording. The
-    files hold only the recorded sites (c8dg; c3bs and c3a; cl3, named ch33 in the units), and neither the
-    files nor the dandiset metadata list the implanted sensors (14 in monkey T and 9 in monkey P by the paper).
+  notes: The criterion needs the list of implanted sensors per monkey and whether each kept recording. The files
+    hold only the recorded sites (c8dg; c3bs and c3a; cl3, named ch33 in the units), and neither the files nor the
+    dandiset metadata list the implanted sensors (14 in monkey T and 9 in monkey P by the paper). The asset metadata
+    gives no list of sensors either.
 - claim: chronic-duration
   outcome: blocked
   blocked_by: data_missing
-  notes: The criterion needs the implantation date of each site. No text field or attribute of the three files
+  notes: 'The criterion needs the implantation date of each site. No text field or attribute of the three files
     and nothing in the dandiset metadata gives one; the fields that mention implants are descriptions (notebook
-    cell claim:chronic-duration). The subjects' ages (P11Y, P8Y) are not implantation dates.
+    cell claim:chronic-duration). The subjects'' ages (P11Y, P8Y) are not implantation dates. The release notes
+    of the pinned version say so too: "The implant dates are not given, so the days after implant that the paper
+    reports cannot be checked".'
 - claim: fscv-waveform
   outcome: partially_reproduced
   notebook: reproduce_amjad_2025.ipynb
@@ -52,12 +53,13 @@ outcomes:
   - 1.3395
   - 400.46
   - 9.9999
-  notes: Three of four values are within tolerance. Highest applied potential 1.3395 V, sweep rate 400.46 V/s
-    (median step of the rising ramp times 24999.7 Hz), scan frequency 9.9999 Hz. The lowest stored potential
-    is -0.3470 V, outside -0.4 +- 0.04 V, and the same across the session (-0.3479 to -0.3474 V over 11 blocks
-    of 1000 scans). The dandiset description gives -0.35 to 1.34 V, as the stored voltage does. The holding
-    potential between scans is not stored (the series has a gap between the 214-sample scans), so whether the
-    electrode was held at -0.4 V between scans cannot be seen.
+  notes: Three of four values are within tolerance. Highest applied potential 1.3395 V, sweep rate 400.46 V/s (median
+    step of the rising ramp times 24999.7 Hz), scan frequency 9.9999 Hz. The lowest stored potential is -0.3470
+    V, outside -0.4 +- 0.04 V, and the same across the session (-0.3479 to -0.3474 V over 11 blocks of 1000 scans).
+    The dandiset description gives -0.35 to 1.34 V, as the stored voltage does. The holding potential between scans
+    is not stored (the series has a gap between the 214-sample scans), so whether the electrode was held at -0.4
+    V between scans cannot be seen. Each stored scan starts at its lowest potential (sample 0, -0.347 V), peaks
+    at sample 107 and ends at -0.3205 V.
 - claim: ephys-acquisition
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
@@ -68,69 +70,84 @@ outcomes:
   - 0.1
   - 8000
   notes: Monkey P 29999.9997 Hz from the median timestamp interval of the first 2e6 samples; Monkey T 31999.9624
-    Hz from the rate of the 09/26/2024 raw series; the Neuralynx settings of both 09/26/2024 channels give
-    DspLowCutFrequency 0.1 Hz and DspHighCutFrequency 8000 Hz. All four are within tolerance. The stored high
-    cut is 8000 Hz where the paper and the dandiset description state 7500 Hz. Monkey P's electrodes table
-    stores no filter settings, and the 09/13/2024 file holds no raw EPhys.
+    Hz from the rate of the 09/26/2024 raw series; the Neuralynx settings of both 09/26/2024 channels give DspLowCutFrequency
+    0.1 Hz and DspHighCutFrequency 8000 Hz. All four are within tolerance. The stored high cut is 8000 Hz where
+    the paper and the dandiset description state 7500 Hz. Monkey P's electrodes table stores no filter settings,
+    and the 09/13/2024 file holds no raw EPhys.
 - claim: shape-task-structure
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
   output: claim:shape-task-structure
   measured:
   - 24.39
-  notes: Forced trials (code 119) are 358 of 1468, 24.39%. In the 303 successful forced trials (142 with image
-    81, 161 with image 88, none with both) the large-reward image changes 9 times, giving 8 complete blocks
-    of 71, 93, 121, 136, 153, 172, 194 and 273 trials (in session order 172, 153, 121, 71, 194, 93, 136, 273),
-    all within 45 to 330; the first and last blocks, cut by the file, are 61 and 194 trials. Forced and choice
-    trials (code 120) are disjoint and cover every trial.
+  notes: Forced trials (code 119) are 358 of 1468, 24.39%. In the 303 successful forced trials (142 with image 81,
+    161 with image 88, none with both) the large-reward image changes 9 times, giving 8 complete blocks of 71, 93,
+    121, 136, 153, 172, 194 and 273 trials (in session order 172, 153, 121, 71, 194, 93, 136, 273), all within 45
+    to 330; the first and last blocks, cut by the file, are 61 and 194 trials. Forced and choice trials (code 120)
+    are disjoint and cover every trial.
 - claim: zenodo-link
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
   output: claim:zenodo-link
-  notes: Trials matched by number. The Zenodo small and left lists agree with the selections decoded here for
-    all 602 and 594 trials; the large and right lists for 569 of 570 and 577 of 578 (99.82% and 99.83%). The
-    one trial only here is trial 1501, whose 60 s window ends at 24978.4 s, after the end of the LFP at 24965.4
-    s, which likely explains its absence from the paper's lists. The beta power computed here for the 35th
-    large-reward trial (trial 84) correlates with the Zenodo trace at r = 0.9421 at lag 0 and 0.9427 at the
-    best lag of 6 ms, median ratio 0.943. The dataset's measures match the paper's published values (the trace)
-    and the dataset's own trial codes give the paper's lists, so the link holds on both sides. The example
-    file's field trial35bigrewardata holds the time axis, not the LFP, so the raw example trace could not be
-    compared.
+  notes: Trials matched by number. The Zenodo small and left lists agree with the selections decoded here for all
+    602 and 594 trials; the large and right lists for 569 of 570 and 577 of 578 (99.82% and 99.83%). The one trial
+    only here is trial 1501, whose 60 s window ends at 24978.4 s, after the end of the LFP at 24965.4 s, which likely
+    explains its absence from the paper's lists. The beta power computed here for the 35th large-reward trial (trial
+    84) correlates with the Zenodo trace at r = 0.9421 at lag 0 and 0.9427 at the best lag of 6 ms, median ratio
+    0.943. The dataset's measures match the paper's published values (the trace) and the dataset's own trial codes
+    give the paper's lists, so the link holds on both sides. The example file's field trial35bigrewardata holds
+    the time axis, not the LFP, so the raw example trace could not be compared. The four Zenodo lists are in ascending
+    trial order without repeats, so their 35th entry is the 35th trial. The trace criterion was written after r
+    = 0.94 was known, so that part is not an independent check. With the paper's order read literally (squared,
+    then enveloped), r = 0.9132 at lag 0 and the median ratio is 1.689; the claims file's order matches the Zenodo
+    trace more closely, though its range (14.1 to 2184.5e-12 V^2) is wider than Zenodo's (36.0 to 1559.6e-12).
   deviations:
-  - The 35th trial of the large-reward list is read as the 35th entry of the Zenodo list (trial 84), as the
-    file name and the claims file say.
+  - The 35th trial of the large-reward list is read as the 35th entry of the Zenodo list (trial 84), as the file
+    name and the claims file say; the list is in ascending order.
 - claim: fig3a-dual-channel
   outcome: blocked
   blocked_by: data_missing
-  notes: The criterion needs the trial-aligned dopamine of both c8dg and c8ds. The 09/13/2024 file holds c8dg
-    only, and the paper's Zenodo deposit holds only a c8dg file (FSCV_trlists_c8dg_09132024_firsthalf.mat).
-    Not deciding, the c8dg half alone has a mean change above zero over 0 to 3 s in 65.9% of 85 forced large-reward
-    trials with a value.
+  notes: The criterion needs the trial-aligned dopamine of both c8dg and c8ds. The 09/13/2024 file holds c8dg only,
+    and the paper's Zenodo deposit holds only a c8dg file (FSCV_trlists_c8dg_09132024_firsthalf.mat). Not deciding,
+    the c8dg half alone has a mean change above zero over 0 to 3 s in 65.9% of 85 forced large-reward trials with
+    a value. The release notes of the pinned version list it as a known gap ("The second FSCV site of Figure 3A
+    (c8ds) is not in the dandiset").
 - claim: fig3a-redox-peaks
   outcome: not_reproduced
   notebook: reproduce_amjad_2025.ipynb
   output: claim:fig3a-redox-peaks
-  notes: In the mean background-subtracted voltammogram of the 164 successful forced large-reward trials, the
-    largest rising-sweep value (0.074 nA) is at 0.512 V, inside 0.45 to 0.75 V, but the most negative falling-sweep
-    value (-0.048 nA) is at 0.897 V, outside -0.35 to -0.05 V. At 0.608 V the mean change is -0.014 +- 0.020
-    nA and at -0.192 V -0.006 +- 0.018 nA (SEM). With the 87 trials of the trial-aligned table (trials 0 to
-    733) neither peak is in range (1.152 and 0.865 V); 8 of 164 single trials meet both ranges. Small-reward
-    trials (reference) peak at 1.217 and -0.321 V. With the cue moved by 5 s either way the peaks fall elsewhere.
-    The raw current is on the trial clock (session-wide cross-correlation of the raw 0.6 V current with the
-    table's iox peaks at lag 0 to 1 scan, z 18.4 to 19.3). Figure 3A shows a single trial that cannot be identified
-    in the files, so the mean over trials is the criterion's test, not the paper's display.
+  notes: 'In the mean background-subtracted voltammogram of the 164 successful forced large-reward trials, the most
+    negative falling-sweep value (-0.048 nA) is at 0.897 V, outside -0.35 to -0.05 V, so the criterion fails. The
+    largest rising-sweep value (0.074 nA) is at 0.512 V, inside 0.45 to 0.75 V, but the mean is flat within its
+    noise and this is not an oxidation peak: at 0.608 V the mean change is -0.014 +- 0.020 nA and at -0.192 V -0.006
+    +- 0.018 nA (SEM), and with the cue moved by -10, -5, +5 and +10 s the rising maxima fall at 0.864, -0.240,
+    1.329 and -0.144 V. No redox signal is detectable: the single-trial change at 0.608 V has an SD of 0.259 nA
+    over trials, so the mean would show about 0.04 nA or more. Over 2 to 3 s, where the table''s da differs most,
+    the change at 0.608 V is -0.045 +- 0.023 nA for large and -0.049 +- 0.025 nA for small reward (p = 0.938). With
+    the 87 trials of the trial-aligned table neither extreme is in range (1.152 and 0.865 V); 8 of 164 single trials
+    meet both ranges; with the cue moved one scan (0.1 s) either way the falling minimum is at -0.080 V and the
+    rising maximum at 1.329 V, so one condition still fails. The raw current is on the trial clock (cross-correlation
+    of the raw 0.6 V current with the table''s iox, z 19.3 at lag -1 scan and 18.4 at lag 0). The stored PCA da
+    shows a reward contrast (fig4a-dopamine-reward) where the raw current and the stored iox show none; the PCA
+    weights are not in the dataset, so the source of that contrast cannot be checked. Figure 3A shows a single trial
+    that cannot be identified in the files, so the mean over trials is the criterion''s test, not the paper''s display.'
   deviations:
-  - All 164 successful forced large-reward trials of the session are averaged, as the raw current covers the
-    whole session; the 87 in the trial-aligned table are shown as a variant and give the same outcome.
+  - All 164 successful forced large-reward trials of the session are averaged, as the raw current covers the whole
+    session; the 87 in the trial-aligned table are shown as a variant and give the same outcome.
 - claim: fig3b-beta-bursts
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
   output: claim:fig3b-beta-bursts
-  notes: With the 75th percentile threshold (356.2e-12 V^2) and bursts of at least 50 ms, the burst rate over
-    570 successful large-reward trials is 1.512 bursts/s in -1 to 0 s and 1.207 in 0 to 1 s from the value
-    cue (240 trials fewer after, 123 more, 207 equal), Wilcoxon p = 9.5e-10. The variants also differ, at the
-    50th percentile 0.695 to 1.421 (p = 2.5e-47) and at the 90th 1.475 to 0.661 (p = 2.4e-45), so the rate
-    changes at every threshold but its direction depends on the threshold.
+  notes: With the 75th percentile threshold (356.2e-12 V^2) and bursts of at least 50 ms, the burst rate over 570
+    successful large-reward trials is 1.512 bursts/s in -1 to 0 s and 1.207 in 0 to 1 s from the value cue (240
+    trials fewer after, 123 more, 207 equal), Wilcoxon p = 9.5e-10. The variants also differ, at the 50th percentile
+    0.695 to 1.421 (p = 2.5e-47) and at the 90th 1.475 to 0.661 (p = 2.4e-45), so the rate changes at every threshold
+    but its direction depends on the threshold. With the claims file's 0.25 s Hanning smoothing the runs above the
+    75th percentile last 206 ms at the median (10th to 90th percentile 70 to 583 ms) and 4.9% are shorter than 50
+    ms, so the minimum length removes almost nothing and these events are longer than the paper's bursts of one
+    to a few cycles. Variants, not deciding; without the smoothing (median run 67 ms) the rate falls at the 75th
+    percentile (3.074 to 2.105, p = 6.8e-34); with the paper's order read literally (squared, then enveloped) it
+    falls at the 75th (1.318 to 1.077, p = 4.3e-07), rises at the 50th and falls at the 90th.
   deviations:
   - The threshold is the percentile over all trial windows, read as the union of the 60 s windows of the trials
     table; they cover every LFP sample, so it is the percentile of the whole series.
@@ -139,107 +156,243 @@ outcomes:
   notebook: reproduce_amjad_2025.ipynb
   output: claim:fig4a-dopamine-reward
   notes: 168 successful forced trials have a row in the trial-aligned table (87 large, 81 small); 3 are dropped
-    for a NaN at the value cue. Mean re-referenced da over 0 to 3 s, median 1.367 for large (n=85) and 0.191
-    for small (n=80), P(large > small) 0.603, Mann-Whitney p = 0.0226. Variants, not deciding; 1.5 to 3 s p
-    = 0.00636, 0 to 1.5 s p = 0.334, da as stored p = 0.298, and the re-referenced iox shows no difference
-    (large -0.015, small -0.001, p = 0.446). With the cue moved by -10, -5 and +5 s there is no difference
-    (p 0.46 to 0.95); at +10 s small is higher (p = 0.00577). The table covers only trials 0 to 733 of 1468,
-    as the paper's Zenodo file does.
+    for a NaN at the value cue. Mean re-referenced da over 0 to 3 s, median 1.367 for large (n=85) and 0.191 for
+    small (n=80), P(large > small) 0.603, Mann-Whitney p = 0.0226. Variants, not deciding; 1.5 to 3 s p = 0.00636,
+    0 to 1.5 s p = 0.334, da as stored p = 0.298, and the re-referenced iox shows no difference (large -0.015, small
+    -0.001, p = 0.446). With the cue moved by -10, -5 and +5 s there is no difference (p 0.46 to 0.95); at +10 s
+    small is higher (p = 0.00577). The table covers only trials 0 to 733 of 1468, as the paper's Zenodo file does.
+    The window ends before feedback, which comes 3.75 to 4.03 s after the value cue in every successful forced trial.
+    With the cue moved one scan either way p = 0.0272 (-0.1 s) and 0.0175 (+0.1 s). The evidence is weak; the p-value
+    is near 0.05, three of four variants are not significant, the +10 s control also gives p < 0.05 (in the other
+    direction), and the raw current shows no reward contrast at 0.6 V (fig3a-redox-peaks).
   deviations:
-  - The window 0 to 3 s takes the 30 samples after the cue sample (samples +1 to +30), a standard choice; the
-    cue sample is the nearest 10 Hz sample, as the claims file says.
+  - The window 0 to 3 s takes the 30 samples after the cue sample (samples +1 to +30), a standard choice; the cue
+    sample is the nearest 10 Hz sample, as the claims file says.
 - claim: fig4b-beta-reward
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
   output: claim:fig4b-beta-reward
-  notes: Mean beta power over 0 to 0.5 s after the value cue, median 275.1e-12 V^2 for large reward (n=570)
-    against 327.2e-12 for small (n=602), P(large < small) 0.597, p = 1.03e-08; divided by the -0.5 to 0 s baseline
-    0.455 against 0.553 (p = 1.09e-06). The difference is confined to the brief window; over 0 to 1 s (p =
-    0.09, large median higher) and 0.25 to 0.75 s (p = 0.658) it is not significant, with or without the baseline.
+  notes: Mean beta power over 0 to 0.5 s after the value cue, median 275.1e-12 V^2 for large reward (n=570) against
+    327.2e-12 for small (n=602), P(large < small) 0.597, p = 1.03e-08; divided by the -0.5 to 0 s baseline 0.455
+    against 0.553 (p = 1.09e-06). The difference is confined to the brief window; over 0 to 1 s (p = 0.09, large
+    median higher) and 0.25 to 0.75 s (p = 0.658) it is not significant, with or without the baseline. The side
+    of the big reward is fixed within 16 blocks of 50 to 93 successful trials ("The big and small reward locations
+    were changed on every block", Methods, Behavioral Tasks), so large against small is also one side against the
+    other within a block. With the side fixed the difference holds (left cues 244.5 against 290.3, p = 0.00164;
+    right cues 301.9 against 394.2, p = 9.91e-08), and the large median is below the small one in 12 of 16 blocks
+    (Wilcoxon over blocks p = 0.025). With the paper's order read literally (squared, then enveloped) 378.8 against
+    409.0, p = 5.42e-06.
 - claim: fig4c-beta-side
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
   output: claim:fig4c-beta-side
-  notes: In successful large-reward trials, mean beta power over 0 to 0.5 s, median 244.5e-12 V^2 for left
-    cues (n=282) against 301.9e-12 for right (n=288), P(left < right) 0.616, p = 1.61e-06; with the baseline
-    0.389 against 0.546 (p = 2.07e-09). Over 0 to 1 s left is also lower (p = 0.0188; 0.000136 with the baseline),
-    over 0.25 to 0.75 s not (p = 0.75 and 0.0751). Small-reward trials show the same side difference (290.3
-    against 394.2, p = 1.48e-10).
+  notes: In successful large-reward trials, mean beta power over 0 to 0.5 s, median 244.5e-12 V^2 for left cues
+    (n=282) against 301.9e-12 for right (n=288), P(left < right) 0.616, p = 1.61e-06; with the baseline 0.389 against
+    0.546 (p = 2.07e-09). Over 0 to 1 s left is also lower (p = 0.0188; 0.000136 with the baseline), over 0.25 to
+    0.75 s not (p = 0.75 and 0.0751). Small-reward trials show the same side difference (290.3 against 394.2, p
+    = 1.48e-10). Large-reward left and right trials come from different blocks of the side-reward mapping. Taking
+    each block's median as one value, the 8 left blocks are lower than the 8 right blocks (251.0 against 306.8,
+    p = 0.000622); within blocks over both rewards left is below right in 12 of 16 (Wilcoxon p = 0.00336). With
+    the paper's order read literally (squared, then enveloped) 363.2 against 393.4, p = 0.00734.
 - claim: fig5a-spike-reward
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The criterion needs the value cue time and reward size of each trial. Monkey P's file has no trials
-    table, and its 36 event codes are stored as 'TTL code N' with the description 'The code map for this session
-    is not available'. The paper's Zenodo deposit holds the same 20812 events (session126_events.mat, inspected
-    while preparing, not in the notebook) as Neuralynx TTL strings without names, and the paper's code (doi:10.5281/zenodo.10397773,
-    spikes_PCA.m, ISI_Plot.m, percent_recovery.mlx) does not name them. The direction-task code map of the
-    2024 sessions cannot be carried over, as the 2018 codes differ (for example no code 128 and no code 101).
+  notes: The criterion needs the value cue time and reward size of each trial. Monkey P's file has no trials table,
+    and its 36 event codes are stored as 'TTL code N' with the description 'The code map for this session is not
+    available'. The paper's Zenodo deposit holds the same 20812 events (session126_events.mat, inspected while preparing,
+    not in the notebook) as Neuralynx TTL strings without names, and the paper's code (doi:10.5281/zenodo.10397773,
+    spikes_PCA.m, ISI_Plot.m, percent_recovery.mlx) does not name them. The direction-task code map of the 2024
+    sessions cannot be carried over, as the 2018 codes differ (for example no code 128 and no code 101). The release
+    notes of the pinned version confirm that no code map exists for that session.
 - claim: fig5bc-unit-isolation
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
   output: claim:fig5bc-unit-isolation
-  notes: Unit ch33#1 (Plexon unit 1, identical to thresholded unit 1) has 1 interspike interval under 1 ms
-    of 31246 (0.0032%). Its mean stored waveform has a trough of 30.6 uV, 4.58 times the noise of 6.69 uV (MAD/0.6745
-    of the 300 to 6000 Hz signal) over the first 600 s of the recording, and 5.62 and 5.50 times in two later
-    600 s segments. The unsorted cluster ch33#0 has 11.633% of its intervals under 1 ms. In the first segment
-    10.7% of raw samples sit at the +-1 mV input limit.
+  notes: Unit ch33#1 (Plexon unit 1, identical to thresholded unit 1) has 1 interspike interval under 1 ms of 31246
+    (0.0032%). Its mean stored waveform has a trough of 30.6 uV, 4.58 times the noise of 6.69 uV (MAD/0.6745 of
+    the 300 to 6000 Hz signal) over the first 600 s of the recording, and 5.62 and 5.50 times in two later 600 s
+    segments. The unsorted cluster ch33#0 has 11.633% of its intervals under 1 ms. In the first segment 10.7% of
+    raw samples sit at the +-1 mV input limit. Leaving out samples within 1 ms of the input limit the ratio is 4.48,
+    5.90 and 5.78; the trough of the spike-triggered average of the same 300 to 6000 Hz signal is 34.9 to 35.5 uV,
+    5.21 to 6.50 times the noise.
   deviations:
   - The 600 s of the noise estimate are the first 600 s of the recording, a standard choice; two later segments
-    are shown and give the same outcome. The band-pass is a 4th-order Butterworth run forwards and backwards,
-    a standard choice.
+    are shown and give the same outcome. The band-pass is a 4th-order Butterworth run forwards and backwards, a
+    standard choice.
 findings:
 - kind: data_missing
   severity: major
-  statement: The second channel of the dual-channel probe (site c8ds), whose dopamine the paper shows with
-    c8dg in Figure 3A, is not in the dataset; the 09/13/2024 file holds c8dg only.
+  statement: The second channel of the dual-channel probe (site c8ds), whose dopamine the paper shows with c8dg
+    in Figure 3A, is not in the dataset; the 09/13/2024 file holds c8dg only.
 - kind: metadata_insufficient
   severity: major
-  statement: Monkey P's session (08/13/2018) has no trials table and its event codes have no names ('The code
-    map for this session is not available'), so the value cue, the reward size and the trials of the direction
-    task cannot be identified, and the reward-related spiking of Figure 5A cannot be tested.
+  statement: Monkey P's session (08/13/2018) has no trials table and its event codes have no names ('The code map
+    for this session is not available'), so the value cue, the reward size and the trials of the direction task
+    cannot be identified, and the reward-related spiking of Figure 5A cannot be tested.
 - kind: data_missing
   severity: minor
-  statement: No implantation dates and no list of implanted sensors are given in the files or the dandiset
-    metadata, so the days post-implant and the insertion yields the paper reports cannot be checked.
+  statement: No implantation dates and no list of implanted sensors are given in the files or the dandiset metadata,
+    so the days post-implant and the insertion yields the paper reports cannot be checked.
 - kind: metadata_error
   severity: minor
-  statement: The Neuralynx settings stored for both 09/26/2024 channels give a high cut of 8000 Hz, while the
-    dandiset description (and the paper) state a band-pass of 0.1 to 7500 Hz.
+  statement: The Neuralynx settings stored for both 09/26/2024 channels give a high cut of 8000 Hz, while the dandiset
+    description (and the paper) state a band-pass of 0.1 to 7500 Hz.
 - kind: other
   about: data
   severity: minor
-  statement: The stored FSCV applied voltage runs from -0.347 to 1.340 V, as the dandiset description says
-    (-0.35 to 1.34 V), where the paper states -0.4 to 1.3 V. The holding potential between scans is not stored.
+  statement: The stored FSCV applied voltage runs from -0.347 to 1.340 V, as the dandiset description says (-0.35
+    to 1.34 V), where the paper states -0.4 to 1.3 V. The holding potential between scans is not stored.
 - kind: metadata_insufficient
   severity: minor
-  statement: Monkey P's recording site is named cl3 in the electrodes table and the descriptions, while the
-    sorted units are named ch33#0 and ch33#1 and the paper names the site c33.
+  statement: Monkey P's recording site is named cl3 in the electrodes table and the descriptions, while the sorted
+    units are named ch33#0 and ch33#1 and the paper names the site c33.
 - kind: metadata_insufficient
   severity: minor
-  statement: The trial-aligned FSCV series (da, iox, ph, m) are stored with 'Units unknown', and the table
-    covers only trials 0 to 733 of the 1468 trials of 09/13/2024 without saying so. The regression slope of
-    the iox change on the raw current change in nA is about 0.001.
+  statement: The trial-aligned FSCV series (da, iox, ph, m) are stored with 'Units unknown', and the table covers
+    only trials 0 to 733 of the 1468 trials of 09/13/2024 without saying so. The regression slope of the iox change
+    on the raw current change in nA is about 0.001.
 - kind: other
   about: data
   severity: minor
   statement: The raw FSCV current of c8dg, which is on the trial clock, shows no dopamine redox signature after
-    large-reward value cues on average (falling-sweep minimum at 0.897 V, change at 0.6 V of -0.014 +- 0.020
-    nA), and the stored iox shows no reward difference, while the stored PCA dopamine of the same trials does
-    (p = 0.0226). The data do not show whether this is an error or a small signal.
+    large-reward value cues on average (falling-sweep minimum at 0.897 V, change at 0.6 V of -0.014 +- 0.020 nA),
+    and the stored iox shows no reward difference, while the stored PCA dopamine of the same trials does (p = 0.0226).
+    The data do not show whether this is an error or a small signal.
 - kind: other
   about: data
   severity: minor
-  statement: Monkey P's raw signal reaches the +-1 mV limit of the input range in 2.9 to 10.7% of samples in
-    the three 600 s segments checked.
+  statement: Monkey P's raw signal reaches the +-1 mV limit of the input range in 2.9 to 10.7% of samples in the
+    three 600 s segments checked.
 - kind: other
   about: data
   severity: none
-  statement: The events, the trials tables, the bipolar LFP, the raw EPhys and the raw FSCV current agree on
-    one clock (raw against LFP at lag 0 to 1 ms, raw FSCV against the trial-aligned table within 0.1 s), Monkey
-    P's spikes lie on its raw signal within 0.1 ms, the events are stored once each, and the trial selections
-    of 09/26/2024 match the paper's Zenodo lists except the last trial.
+  statement: The events, the trials tables, the bipolar LFP, the raw EPhys and the raw FSCV current agree on one
+    clock (raw against LFP at lag 0 to 1 ms, raw FSCV against the trial-aligned table within 0.1 s), Monkey P's
+    spikes lie on its raw signal within 0.1 ms, the events are stored once each, and the trial selections of 09/26/2024
+    match the paper's Zenodo lists except the last trial.
 - kind: other
   about: paper
-  statement: In the paper's Zenodo deposit the file 09262024_c3bs-c3a_data_trial35bigrewardexample.mat stores
-    the time axis in the field meant for the example LFP (trial35bigrewardata equals trial35bigrewardataTS),
-    so the example trace of Figure 3B is not deposited.
+  statement: In the paper's Zenodo deposit the file 09262024_c3bs-c3a_data_trial35bigrewardexample.mat stores the
+    time axis in the field meant for the example LFP (trial35bigrewardata equals trial35bigrewardataTS), so the
+    example trace of Figure 3B is not deposited.
+verifications:
+- date: '2026-11-24'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebook with the conclusion cells and the summary removed, the helper module
+    and the claims file, with the paper''s full text under paper/. The verifier queried the DANDI API for the version''s
+    assets, metadata and release notes, listed the Zenodo deposit, and tested waveform_parameters, burst_onsets,
+    window_mean, cue_sample, window_power, beta_power, noise_level and decode_trials on synthetic inputs.'
+  results:
+  - claim: insertion-yield
+    agrees: true
+    outcome: blocked
+    reason: 'No file and no dandiset metadata lists the implanted sensors (cell 5). I checked the archive API: the
+      asset metadata has none either, and nothing mentions a yield.'
+    response: No change of outcome. The notes now say that the asset metadata has no list either.
+  - claim: chronic-duration
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 26 finds no implant date. The release notes of 0.261120.1306 say so directly: "The implant dates
+      are not given". The asset metadata gives only ages (P11Y, P8Y).'
+    response: No change of outcome. The data check now prints the release notes' known gaps, and the claim's section
+      and notes cite them (problem 8).
+  - claim: fscv-waveform
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 29 meets 3 of 4 values: the high point is 1.3395 V, the sweep 400.46 V/s and the scan rate 9.9999
+      Hz, but the low point is -0.347 V against -0.4 +- 0.04. The low point is stable across the session (-0.3479
+      to -0.3474 V), and the dandiset description also gives -0.35 V.'
+    response: 'No change of outcome. The data check now prints the first and last sample of a scan and the samples
+      of its extremes: each scan starts at its lowest potential (sample 0, -0.347 V), peaks at sample 107 and ends
+      at -0.3205 V (point C4).'
+  - claim: ephys-acquisition
+    agrees: true
+    outcome: reproduced
+    reason: Cell 31 measures 29999.9997 Hz (P), 31999.96 Hz (T), and a low cut of 0.1 Hz. The stored high cut is
+      8000 Hz, not 7500 Hz. It passes only because it falls inside the +-750 Hz tolerance.
+    response: No change. The notes and the finding already record the 8000 Hz high cut.
+  - claim: shape-task-structure
+    agrees: true
+    outcome: reproduced
+    reason: Forced trials are 24.39% (358 of 1468). The 8 complete blocks are 71 to 273 trials, all within 45 to
+      330 (cell 33).
+    response: No change.
+  - claim: zenodo-link
+    agrees: true
+    outcome: reproduced
+    reason: The lists agree at 99.82%, 100%, 100% and 99.83%; the only mismatch is trial 1501, whose window runs
+      past the end of the LFP. The beta power of the example trial gives r = 0.942 at lag 0 and 0.943 at 6 ms (cell
+      35). The claims file admits this criterion was written after r = 0.94 was known.
+    response: No change of outcome. The cell now checks that the Zenodo lists are in ascending order without repeats
+      (they are), and the conclusion and notes say that the trace criterion is not an independent check (problem
+      6). The paper's order of the beta power steps is shown as a variant (r = 0.913).
+  - claim: fig3a-dual-channel
+    agrees: true
+    outcome: blocked
+    reason: 'c8ds is not in the files, and the release notes say so ("Known gaps"). The c8dg half can be tested
+      and passes: 65.9% of 85 forced large-reward trials are above zero (cell 37). It cannot decide a two-site claim.'
+    response: No change of outcome. The section and notes now cite the release notes.
+  - claim: fig3a-redox-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 39: the reduction minimum is at 0.897 V, outside -0.35 to -0.05 V. The rising maximum at 0.512
+      V lands in range by chance, because the mean voltammogram is flat noise (figure range +-0.06 nA; at 0.608
+      V it is -0.014 +- 0.020 nA). The first-half variant fails both conditions.'
+    response: No change of outcome. The conclusion and notes now say that no redox signal is detectable and that
+      the rising maximum in range is not an oxidation peak, with cue shifts of -10, -5, +5 and +10 s as references
+      (problem 1). Added the per-trial SD at 0.6 V (0.259 nA) and the voltammograms over 2 to 3 s, where the table's
+      da differs most (no reward contrast at 0.6 V, p = 0.938) (point C2), and one-scan cue shifts (problem 5).
+      The conclusion discusses the mismatch with the stored PCA da.
+  - claim: fig3b-beta-bursts
+    agrees: true
+    outcome: reproduced
+    reason: At the 75th percentile, burst rate is 1.512/s before the cue and 1.207/s after, Wilcoxon p = 9.5e-10,
+      n = 570 (cell 41). Both variants are also significant, but the 50th percentile one changes in the opposite
+      direction. The claim only says the rate changes.
+    response: No change of outcome. The cell now prints the length of the runs above threshold (median 206 ms, 4.9%
+      under 50 ms), and the conclusion says these events are longer than the paper's bursts (problem 4). Variants
+      without the smoothing and with the paper's order of the beta power steps are shown; all change significantly.
+  - claim: fig4a-dopamine-reward
+    agrees: true
+    outcome: reproduced
+    reason: 'Medians are 1.367 (large) and 0.191 (small), Mann-Whitney p = 0.0226, n = 85 and 80 (cell 43). The
+      result is fragile: the stored da gives p = 0.30, iox gives p = 0.45 with large below small, and the 0 to 1.5
+      s window gives p = 0.33. Only the 1.5 to 3 s window agrees (p = 0.006).'
+    response: No change of outcome; the criterion is met. The conclusion and notes now say the evidence is weak,
+      including the +10 s control at p = 0.006 (problem 2). The data check now shows that feedback comes 3.75 to
+      4.03 s after the value cue in every successful forced trial, so the 0 to 3 s window ends before it (point
+      C1). One-scan cue shifts give p = 0.0272 and 0.0175 (problem 5).
+  - claim: fig4b-beta-reward
+    agrees: true
+    outcome: reproduced
+    reason: Over 0 to 0.5 s the medians are 275.1 (large) and 327.2 (small), in 1e-12 V^2, p = 1.0e-8. Dividing
+      by the pre-cue baseline keeps it (p = 1.1e-6). The 0 to 1 s and 0.25 to 0.75 s windows are not significant
+      (cell 45).
+    response: 'No change of outcome. Added the block structure asked for (point C3): the side of the big reward
+      is fixed in 16 blocks; with the side fixed the reward difference holds (p = 0.00164 and 9.91e-08), and over
+      blocks the large median is lower in 12 of 16 (p = 0.025). The paper''s order of the beta power steps gives
+      p = 5.42e-06 (problem 3).'
+  - claim: fig4c-beta-side
+    agrees: true
+    outcome: reproduced
+    reason: The medians are 244.5 (left) and 301.9 (right), p = 1.6e-6, and the baseline-divided variant gives p
+      = 2.1e-9 (cell 47). The paper confirms that left is contralateral (Methods, Behavioral Tasks).
+    response: 'No change of outcome. Added a per-block summary (point C3): block medians of large-reward trials
+      are lower in the 8 left blocks (p = 0.000622), and within blocks left is below right in 12 of 16 (p = 0.00336).
+      The paper''s order of the beta power steps gives p = 0.00734 (problem 3).'
+  - claim: fig5a-spike-reward
+    agrees: true
+    outcome: blocked
+    reason: 'Monkey P''s 36 event codes have no names, and the release notes confirm no code map exists. I listed
+      the Zenodo deposit: it has no trial lists for Monkey P, only session126_events.mat. Assigning value-cue and
+      reward codes would be a guess, so no part can be tested.'
+    response: No change of outcome. The section and notes now cite the release notes.
+  - claim: fig5bc-unit-isolation
+    agrees: true
+    outcome: reproduced
+    reason: 0.0032% of ISIs are under 1 ms. The 30.6 uV trough is 4.58 times the noise in the first 600 s, and 5.5
+      to 5.6 times in the two later segments (cell 50).
+    response: No change of outcome. Added the noise without samples within 1 ms of the input limit (ratios 4.48
+      to 5.90) and the trough of the spike-triggered average on the same 300 to 6000 Hz filter as the noise (5.21
+      to 6.50 times) (problem 7).
