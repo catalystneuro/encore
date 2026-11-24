@@ -1851,3 +1851,27 @@ def test_summaries_hold_no_agent_chatter():
     found = [p.name for p in (Path(site.ROOT) / "summaries").glob("*.md")
              if p.name != "README.md" and chatter.search(p.read_text())]
     assert found == []
+
+
+@pytest.mark.parametrize("url,owner", [
+    ("https://github.com/acme-lab/encore-registry/actions/runs/1", "acme-lab"),
+    ("https://github.com/catalystneuro/encore/actions/runs/1", None),
+    ("https://github.com/CatalystNeuro/reproduction-registry/actions/runs/1", None),
+    ("https://github.com/encorescience/encore-registry/actions/runs/1", None),
+    (None, None),
+])
+def test_an_outside_run_is_known_by_its_runner(url, owner):
+    assert site.outside_of({"runner": {"url": url} if url else None}) == owner
+
+
+def test_an_outside_run_says_who_ran_it_under_provenance(tmp_path):
+    # An outside organization's attempt (encore-protocol docs/outside-runs.md): its paper's page names the
+    # organization and says that Encore's verifiers check it here.
+    data = site.collect()
+    attempt = next(a for a in data["attempts"] if not a.get("deprecated") and a["kind"] == "agent")
+    attempt.update(accountable="Acme Lab", outside="acme-lab",
+                   runner={"platform": "GitHub Actions", "url": "https://github.com/acme-lab/encore-registry/actions/runs/1"})
+    site.build(data, tmp_path)
+    page = _paper_page(data, tmp_path, attempt)
+    assert "run by Acme Lab in its own GitHub organization (acme-lab)" in page
+    assert "https://github.com/acme-lab/encore-registry/actions/runs/1" in page
