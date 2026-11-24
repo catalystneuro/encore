@@ -187,6 +187,18 @@ def tier_of(attempt: dict) -> str:
     return VERIFICATION_TIER.get(latest["kind"], "runs") if claims <= agreed else "runs"
 
 
+# The GitHub organizations whose runs are Encore's own. A run from any other is an outside organization's, made in
+# its fork of encore-runner with its own API key and taken here by the intake (encore-protocol docs/outside-runs.md).
+CENTRAL_OWNERS = ("catalystneuro", "encorescience")
+
+
+def outside_of(provenance: dict) -> str | None:
+    """The GitHub organization an attempt was run in, when that is not Encore's own; None for Encore's runs."""
+    url = (provenance.get("runner") or {}).get("url") or ""
+    m = re.match(r"https://github\.com/([A-Za-z0-9-]+)/", url)
+    return m.group(1) if m and m.group(1).lower() not in CENTRAL_OWNERS else None
+
+
 def squash(text) -> str:
     return " ".join((text or "").split())
 
@@ -349,6 +361,7 @@ def collect(executed: Path | None = None) -> dict:
             "accountable": a["provenance"]["accountable"]["name"],
             "agent": a["provenance"].get("agent"),
             "runner": a["provenance"].get("runner"),
+            "outside": outside_of(a["provenance"]),
             "tier": tier_of(a),
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
@@ -4119,7 +4132,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         rows_ = [("Attempt record", record), ("Paper", f'<a href="https://doi.org/{e(a["paper"])}">'
                                                      f'{e(a.get("paper_title") or a["paper"])}</a>'),
                  ("Date", e(a["date"])),
-                 ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}')]
+                 ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}'
+                  + (f' in its own GitHub organization ({e(a["outside"])}), with its own API key. Encore&rsquo;s '
+                     f'verifiers check it here like any other attempt.' if a.get("outside") else ""))]
         # The datasets the attempt used, each with its version: a paper's attempt can use several.
         for x in (attempt_sets(data, a) if paper else [a]):
             rows_ += [("Dataset", (f'<a href="{root}{e(page_of(x["key"]))}">{e(x["label"])}</a> ' if paper else "")
