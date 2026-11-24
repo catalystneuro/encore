@@ -594,8 +594,8 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
                           {"path": "behaviour.ipynb", "title": "Behaviour", "executed": None}],
             "outcomes": outcomes,
             "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30)),
-                          "severity": None, "changes_results": False, "checked": None}
-                         for _ in range(rng.randint(1, 10))],
+                          "severity": None, "changes_results": False, "checked": None, "n": i}
+                         for i in range(1, rng.randint(1, 10) + 1)],
             "verifications": [] if tier == "runs" else [{
                 "date": date, "kind": "agent", "by": "Demo verifier", "reviewed": "Demo",
                 "agreed": n_claims, "of": n_claims, "disagreements": []}],
@@ -3700,12 +3700,32 @@ def finding_tags(f: dict) -> str:
     return tags
 
 
-def findings_list(findings: list[dict], root: str, note=None) -> str:
+def finding_anchor(attempt: dict, f: dict) -> str:
+    """A finding's anchor on a page: the id of the attempt that found it and the finding's number in that attempt's
+    record (`n`, the number a reconciliation and a verifier name it by). Neither changes when a page orders its
+    findings differently, so a link to one finding keeps working, and an attempt lists a finding once on any page."""
+    return f'finding-{attempt["id"]}-{f["n"]}'
+
+
+def finding_open(anchor: str | None) -> str:
+    """The opening tag of a finding's list item: with its anchor, when it has one."""
+    return f'<li class="finding" id="{e(anchor)}">' if anchor else "<li>"
+
+
+def finding_link(anchor: str | None) -> str:
+    """A small link to the finding itself, for copying its address."""
+    return (f'<a class="finding-link" href="#{e(anchor)}" title="Link to this finding" '
+            f'aria-label="Link to this finding">#</a>') if anchor else ""
+
+
+def findings_list(findings: list[dict], root: str, note=None, anchor=None) -> str:
     """Findings about the data as a list, each with its kind (a link to the datasets with an open finding of that
-    kind) and, given `note`, a line under it (which attempt found it)."""
+    kind), given `note`, a line under it (which attempt found it), and given `anchor` (finding -> its id on the page,
+    finding_anchor), an id and a link to itself."""
     return "".join(
-        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
+        f'{finding_open(anchor(f) if anchor else None)}<span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
+        f'{finding_link(anchor(f) if anchor else None)}'
         + (f'<br><span class="muted small">Checked: {e(f["checked"])}</span>' if f.get("checked") else "")
         + (f'<br><span class="muted small">{note(f)}</span>' if note else "") + '</span></li>'
         for f in findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
@@ -3751,7 +3771,8 @@ def page_dataset(data: dict, key: str) -> str:
         # about the version it was found on, these as much as the others.
         worst = [(f, a) for a in group for f in a["findings"] if f["changes_results"]]
         rest = [(f, a) for a in group for f in a["findings"] if not f["changes_results"]]
-        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f)) for f, a in pairs)
+        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f),
+                                                     anchor=lambda f, a=a: finding_anchor(a, f)) for f, a in pairs)
         findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
                           f'{n} open finding{"" if n == 1 else "s"}</span></h3>')
         if worst:
@@ -4009,13 +4030,14 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                             f'<span class="muted small">{e(why)}</span></summary>'
                             f'{by_outcome(blocked, root, a, asked)}</details>')
 
-    all_findings = [f for a in atts for f in a["findings"]]
+    all_findings = [(f, a) for a in atts for f in a["findings"]]
 
-    all_findings.sort(key=lambda f: not f["changes_results"])   # stable: the record's order within each
+    all_findings.sort(key=lambda fa: not fa[0]["changes_results"])   # stable: the record's order within each
     findings_html = "".join(
-        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
-        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}</span></li>'
-        for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
+        f'{finding_open(finding_anchor(a, f))}<span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
+        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
+        f'{finding_link(finding_anchor(a, f))}</span></li>'
+        for f, a in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
     for a in atts:
         rec = a.get("reconciliation")
         if not rec:
@@ -4255,14 +4277,16 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                       f'<ul class="questions">{question_items}</ul>') if questions else ""
 
     # What the attempts found about the paper itself (its methods, its code, its own consistency): on its page.
-    notes = [f for a in atts for f in a.get("paper_notes") or []] if paper else []
+    notes = [(f, a) for a in atts for f in a.get("paper_notes") or []] if paper else []
     notes_panel = (f'<section class="tabpanel" id="notes"><h2>Notes on the paper</h2>'
                    f'<p class="sub small" style="margin-top:12px">What the attempts found about the paper itself: a '
                    f'method or rule it does not give, a place where it disagrees with itself, published code that '
                    f'does something else. What they found about the data is on each dataset&rsquo;s page.</p>'
                    f'<ul class="findings">' + "".join(
-                       f'<li><span><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span></span>'
-                       f'<span>{finding_tags(f)}{e(f["statement"])}</span></li>' for f in notes)
+                       f'{finding_open(finding_anchor(a, f))}<span><span class="kind">'
+                       f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span></span>'
+                       f'<span>{finding_tags(f)}{e(f["statement"])}{finding_link(finding_anchor(a, f))}</span></li>'
+                       for f, a in notes)
                    + '</ul>'
                    # The questions asked about the paper's text are notes on the paper too: one tab holds both.
                    + (f'<h3 id="questions" style="margin-top:28px">Questions about the claims '

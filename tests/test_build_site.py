@@ -263,6 +263,22 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
         assert '<a href="../../../datasets/">Datasets</a> / ' in page
 
 
+def test_every_finding_has_its_own_anchor_on_its_datasets_page(built):
+    """Each finding about the data can be linked to on its dataset's page by an id made of the attempt's id and the
+    finding's number in the attempt's record, so the link survives the page ordering findings differently."""
+    data, out = built
+    for dandiset, attempts in site.current_attempts(data).items():
+        page = (out / site.page_of(dandiset) / "index.html").read_text()
+        ids = re.findall(r'<li class="finding" id="(finding-[^"]+)"', page)
+        assert len(ids) == len(set(ids))
+        for a in attempts:
+            if a.get("deprecated"):
+                continue
+            for f in a["findings"]:
+                anchor = f'finding-{a["id"]}-{f["n"]}'
+                assert anchor in ids and f'href="#{anchor}"' in page
+
+
 def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
     counts = {key: {"done": 3, "waiting": 1} if key == "paper" else {"todo": 2, "none": 2}
               for key, _ in site.PAPER_STEPS}
