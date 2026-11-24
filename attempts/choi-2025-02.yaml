@@ -1,0 +1,191 @@
+schema_version: 3
+id: choi-2025-02
+datasets:
+- archive: dandi
+  id: "002014"
+  version: 0.261120.0528
+  doi: 10.48324/dandi.002014/0.261120.0528
+  relation: primary
+paper: doi:10.1016/j.jneumeth.2025.110467
+date: '2026-11-24'
+entry: choi-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45507101381
+inputs:
+- what: The paper's lists of large and small successful trials (1-based ids, files "09272024_nlx_c8c_value
+    object start_big rew and success_tr1-1411.mat" and "..._small rew and success_tr1-1411.mat", md5
+    d3199b1d6d5d7a2e4e2ce2b23d2cb8bb and 21b6ec1119ff8924a3dd98a8537bbb68), from the Zenodo record the paper's
+    Data availability statement names. Used only to check the trial classes built from the dandiset's events.
+  source: doi:10.5281/zenodo.14825992
+outcomes:
+- claim: fig8a-single-trial-dopamine
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig8a-single-trial-dopamine
+  notes: In trial id 133 (row 132, a large successful trial) the SD of the dopamine trace referenced at V is
+    4.414 over 0 to 5 s after V and 2.180 over the 5 s before, ratio 2.025. Under the other reading (row 133,
+    a small trial, with 17 and 22 NaN samples in the two windows) the ratio is 2.199. Over the successful trials
+    the median ratio is 1.257 (IQR 0.801 to 1.884), 62.7% are above 1, and trial 133 lies at the 0.775 quantile.
+  deviations:
+  - The stored PCA estimate (`da`, units not given) is used; the paper's color plot of the voltammograms cannot
+    be compared, as the background-subtracted voltammograms of the trial are not in the file.
+- claim: fig8b-dopamine-large-vs-small
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig8b-dopamine-large-vs-small
+  notes: From V to RW the referenced dopamine averages 1.846 in 449 large and 1.095 in 498 small successful
+    trials, difference of means 0.751, two-sided Mann-Whitney p = 0.0031; 4 trials dropped as their window holds
+    only NaN. Variants, RW to RW + 3 s 1.526 (p = 0.00015); 0 to 2 s after V 0.085 (p = 0.59). V to RW in the
+    first half of the session 0.778 (p = 0.051) and in the second 0.732 (p = 0.020). By 1 s windows the large
+    minus small difference is 0.32 or less until 2 s after V and 1.14 to 1.66 from 2 to 8 s, so the difference
+    lies in the later part of the V to RW interval (RW is 4.72 to 5.50 s after V) and continues after RW. The
+    paper reports no test.
+  deviations:
+  - The trace is referenced at V by subtracting the stored estimate's value there, as the criterion says, in
+    place of the paper's background subtraction of the voltammograms at V.
+  - Trials are classed from the events; this gives the paper's Zenodo lists exactly (451 large, 499 small) plus
+    the last trial (id 1411, large), which the lists leave out.
+- claim: fig9a-spikes-task-aligned
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig9a-spikes-task-aligned
+  notes: All 951 successful trials have a spike from 1 s before to 3 s after V. The variance across the 40
+    bins of the PSTH is 0.4825 (spikes/s)^2; the 95th percentile over 200 random alignments is 0.0556 under the
+    claim's seed and 0.0564 to 0.0616 under the seed plus 1000 to 4000, and no random alignment reached the
+    observed value under any of the five seeds. The rate falls to 3.8 spikes/s 0.1 to 0.2 s after V and rises
+    to 7.8 spikes/s 0.3 to 0.5 s after V (baseline about 5.5). The stored times (0.4715) and the Plexon unit
+    (0.4847) give the same result. The large and small PSTHs differ by at most 2.01 spikes/s in a bin, mean
+    difference -0.051 spikes/s over -1 to 3 s; the paper states no difference, and none is judged.
+  deviations:
+  - Spike times are moved by the offset measured in the data check, 0.5 ms (raw ephys clock later than the
+    trial clock), not by the 11812.1 s the claims file's opening comment reports for an earlier version of the
+    dandiset; in this version every stream is on one clock.
+  - For the random alignments, the last trial's span, which has no next trial start, ends 30 s after its start,
+    at the end of its stored window; a detail the criterion does not fix that touches one trial of 951 and
+    cannot change the outcome.
+- claim: fig9bc-unit-waveform-isi
+  outcome: reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig9bc-unit-waveform-isi
+  notes: None of the 101732 interspike intervals of thresholded unit 1 is shorter than 1 ms (shortest 1.562 ms,
+    fraction under 2 ms 0.00008). The mean waveform's largest absolute value is 56.36 uV (negative) at sample 10
+    of 48, 4.79 times the SD across spikes at that sample (11.76 uV); 4.78 and 5.05 in the two halves of the
+    session. The refractory test cannot fail on these spikes, as the shortest interval is about the waveform
+    length (1.50 ms), so the detector may not report a second spike within one waveform. The Plexon unit has 2
+    intervals under 1 ms (0.00002). Both tests of the criterion hold, so the outcome is reproduced; that the
+    unit is a single neuron is not shown by them.
+- claim: fig9d-beta-suppression-large
+  outcome: partially_reproduced
+  notebook: reproduce_choi_2025.ipynb
+  output: claim:fig9d-beta-suppression-large
+  notes: Median log10 ratio of 13 to 30 Hz power over 0 to 0.5 s after V to the 0.5 s before is -0.158 in 452
+    large and -0.125 in 499 small trials, difference of medians -0.033, two-sided Mann-Whitney p = 0.109; no
+    trial dropped. Both medians are below 0 and large is lower, with p >= 0.05, which the criterion calls
+    partially reproduced. Variants with the N = 4 filter, 0 to 0.3 s +0.0003 (p = 0.59), 0 to 1 s -0.009 (p =
+    0.83), 1 s baseline -0.025 (p = 0.11), 15 to 30 Hz -0.028 (p = 0.064), 12 to 25 Hz -0.019 (p = 0.20). With
+    N = 2 the 15 to 30 Hz band gives -0.037 (p = 0.0496) and the others p 0.11 to 0.82. First half of the session
+    -0.183 against -0.134 (p = 0.116), second half -0.126 against -0.115 (p = 0.527).
+  deviations:
+  - The 4th order Butterworth band-pass of the criterion is designed with N = 4 (scipy's and MATLAB's
+    convention, a standard choice); N = 2 is shown as a variant.
+  - The stored LFP carries 0.14 to 0.17 of the raw bipolar signal's SD in 13 to 30 Hz (data check), consistent
+    with the FSCV artifact removal the Zenodo record calls spectral interpolation; the paper's preprocessing is
+    not described, and the stored series is used as the criterion says.
+- claim: recordings-two-monkeys
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds one session of monkey T, with dopamine (c8ds), spikes (c5d) and LFP (c7b-c5c), so
+    the monkey T part is present. No recording of monkey J is in it, in the paper's Zenodo record (one session
+    of monkey T), or in any other dandiset or Zenodo record of the lab found by searching both archives for
+    Schwerdt (dandiset 002013 is another study).
+- claim: scfe-functional-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The background current and noise of each implanted electrode are not in the dandiset or the Zenodo
+    record. The file holds one FSCV electrode (c8ds).
+- claim: scfe-background-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As for scfe-functional-yield, the per-electrode background currents and noise levels are not public.
+- claim: mcfe-functional-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The per-electrode functionality of the mCFEs is not in the dandiset or the Zenodo record.
+- claim: dopamine-signal-yield
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Only one FSCV site (c8ds) of one monkey is in the dandiset; the 24 and 15 functional CFEs are not.
+- claim: asepsis-cultures
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The culture results are not in the dandiset or the Zenodo record.
+- claim: fig6-drainage-volume
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The aspirated volumes are not in the dandiset or the Zenodo record.
+- claim: fig7-bone-growth-margins
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The photographs of bone growth and chamber margins are not in the dandiset or the Zenodo record.
+findings:
+- kind: data_missing
+  severity: major
+  statement: The dandiset holds one session of monkey T (09/27/2024), the session of Figures 8 and 9. The
+    electrode yields, cultures, drainage volumes, bone growth and margin observations, and every recording of
+    monkey J are not in it, so 8 of the 13 claims cannot be tested. The version's release
+    notes state this gap.
+- kind: other
+  about: data
+  severity: none
+  statement: All streams share one clock. The stored bipolar LFP matches the raw c7b minus c5c in 1 to 8 Hz at
+    a lag of 0 to 1 ms (r 0.89 to 0.94 in four trials, over a search of 5 s either way); the raw c5d trough
+    falls 8 samples after the thresholded spike times, within 2 samples of the stored waveforms' trough (sample 10); the
+    spike-free gap sits 46 to 50 ms after each stored FSCV scan time throughout the session, consistent with
+    the stated mapping of scans to within one scan; the large minus small dopamine difference appears only
+    after V; and the spike rate is modulated at V far beyond random alignments. How the trial-aligned
+    oxidation current relates to the raw scans was not established.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The PCA-extracted dopamine, pH and motion components and the oxidation current have no units, and
+    their reference window is not given (the file says so). The dopamine values range from -53.6 to 42.4, so
+    their size cannot be compared with the paper's concentration changes.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The bipolar LFP's preprocessing is described in the file as not documented, while the Zenodo record
+    it comes from calls it downsampled after spectral interpolation. The data show what it does to the signal,
+    it equals the raw c7b minus c5c below 8 Hz (SD ratio 0.87 to 1.02) and keeps 0.14 to 0.17 of the raw SD in
+    13 to 30 Hz and 0.07 in 60 to 200 Hz, consistent with removal of the FSCV artifact.
+- kind: other
+  about: data
+  severity: minor
+  statement: The thresholded spikes have no interspike interval shorter than 1.562 ms, about the length of a
+    stored waveform (48 samples, 1.50 ms), so their interval distribution cannot show refractory violations.
+    The thresholded unit 1 and the Plexon unit ch75#1 hold the same spikes (99.5% of Plexon spikes within 0.1
+    ms of a thresholded one) and were counted once.
+- kind: other
+  about: data
+  severity: minor
+  statement: Classing trials from the events gives the paper's Zenodo lists of large (451) and small (499)
+    successful trials exactly, plus the last trial (id 1411, large, with no later trial start), which the
+    lists leave out. The first trial-start event (4640.33 s) has no row in the trials table, as the table's
+    description says.
+- kind: metadata_error
+  severity: minor
+  statement: The version's release notes say the eye tracking was re-timed with the raw ephys, but the file
+    holds no eye tracking series.
+- kind: methods_unavailable
+  statement: The paper describes none of the analyses of Figures 8 and 9 beyond the legends and reports no test
+    of the large against small differences. For Figure 9D it gives no beta band, filter, power measure, baseline
+    or window for "the brief time window immediately following the cue". Questions for the authors, which band,
+    filter and windows were used, and was the difference in Figure 9D tested? Here the claims file's choices
+    (13 to 30 Hz, 0 to 0.5 s against the 0.5 s before V) give a smaller suppression for large than small trials
+    that is not significant (p = 0.109).
