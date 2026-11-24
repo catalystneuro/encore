@@ -36,7 +36,7 @@ the dandiset, YutaMouse57, is not in the paper and is left out).
 | GC and MC maps are not correlated within the GC field | Reproduced |
 | MC lie deeper than GC relative to the DS2 reversal | Reproduced |
 | K-means on the four features separates GC and MC | Reproduced |
-| GC sit 59 um above their MC partners; GC spikes back-propagate | Blocked: metadata insufficient (two claims); a change to methods underspecified, as the claims file gives no criterion, is proposed |
+| GC sit 59 um above their MC partners; GC spikes back-propagate | Blocked: methods underspecified, as the claims file gives no criterion (two claims) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
