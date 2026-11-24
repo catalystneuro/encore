@@ -99,10 +99,11 @@ claims:
     unit: trials
   criterion: Sessions are Tree-Maze sessions with at least 1 unit and at least 50 trials
     (Results). Accuracy is correct trials over correct and incorrect trials, change-of-mind
-    trials left out (Methods, Behavioral training). "Across subject median" can be read as (a)
-    the median over all included sessions pooled, or (b) the median of the five subjects'
-    median session accuracies. Reproduced when, under one reading, both values are within
-    tolerance.
+    trials left out (Methods, Behavioral training). "Across subject median" is the median of
+    the five subjects' median session values, as the code computes it (Notebooks/TM/fig1.ipynb,
+    perf grouped by subject, median, then median; its output is 0.726 and 110.25); the median
+    over all included sessions pooled is shown as a variant. Reproduced when both values are
+    within tolerance.
 - id: fig1-switch-performance
   statement: Performance on Switch trials (cue differs from the previous trial) was similar to
     non-Switch trials, with a median Switch-trial accuracy of 76.9% and a median of 54 Switch
@@ -121,11 +122,12 @@ claims:
     tolerance: 5.4
     unit: trials
   criterion: A Switch trial is trial N+1 whose cue differs from trial N (Results). Same
-    sessions and the same two readings of the median as fig1d-task-performance. "Similar" has
-    no test in the paper; it is judged as the median Switch-trial accuracy lying within 10
-    percentage points of the median accuracy of non-Switch trials, a threshold fixed here.
-    Reproduced when both expected values are within tolerance under one reading and the
-    similarity holds.
+    sessions and the same median of subject medians as fig1d-task-performance (fig1.ipynb gives
+    pct_sw_correct 0.769 and n_sw_trials 54); the pooled median is a variant. "Similar" has no
+    test or threshold in the paper; it is judged as the median Switch-trial accuracy lying
+    within 10 percentage points of the median accuracy of non-Switch trials, a threshold fixed
+    here and not from the paper, so that part of the outcome rests on an assumption. Reproduced
+    when both expected values are within tolerance and the similarity holds.
 - id: fig1-training-to-criterion
   statement: Subjects took an average of 25 training sessions (range 11 to 50) to reach the
     criterion for surgery (accuracy of at least 70% with at least 80 trials).
@@ -202,12 +204,9 @@ claims:
   quote: There was a significant negative relationship between performance accuracy on a given
     session p s e and the degree of cue remapping calculated for single units
   statistics:
-  - test: Kendall correlation
-    statistic: tau = -0.27
-    p: 8.84e-13
   - about: LMEM slope of performance on remapping score
     test: LMEM likelihood ratio test
-    statistic: chi2(1) = 51.09
+    statistic: chi2(1) = 51.09; Kendall tau = -0.27
     p: 8.84e-13
     ci:
       level: 0.95
@@ -236,12 +235,9 @@ claims:
   quote: when considering co-recorded units in a session, the correlation between cue remapping and
     behavioral performance was even more pronounced
   statistics:
-  - test: Kendall correlation
-    statistic: tau = -0.41
-    p: 1.4e-4
   - about: LMEM slope of performance on session mean remapping score
     test: LMEM likelihood ratio test
-    statistic: chi2(1) = 14.34
+    statistic: chi2(1) = 14.34; Kendall tau = -0.41
     p: 1.4e-4
     ci:
       level: 0.95
@@ -281,7 +277,9 @@ claims:
     remapping was observed in all but one subject, which had a small number of units
   criterion: Per subject, the Kendall correlation between session performance and session mean
     cue remapping, with the bootstrapped standard deviation over 500 resamples of sessions
-    (Figure 2h legend). Reproduced when at least four of the five subjects have a negative
+    (Figure 2h legend; plot_functions.py, plot_subject_remap_beh_slope, which averages unit
+    scores by session, logit transforms performance and bootstraps the Kendall correlation over
+    each subject's sessions). Reproduced when at least four of the five subjects have a negative
     correlation and the exception, if any, is the subject with fewest units.
 - id: fig2-remap-behaviour-controls
   statement: The relation between cue remapping and behaviour holds when the remapping score
@@ -339,16 +337,21 @@ claims:
     statistic: chi2(2) = 214.31
     p: 2.9e-47
   criterion: Multinomial logistic regression of zone on population activity, with and without
-    cue (Methods, Decoder; zone_decoder_analyses). The unit groupings are not defined; the text
-    names "8 or fewer" and "20 or more" units and the chi2 has 2 df, so they are read as three
-    groups (at most 8, 9 to 19, at least 20 units). Reproduced when the model by grouping
+    cue (Methods, Decoder; zone_decoder_analyses). The unit groupings are the tertiles of the
+    sessions' unit counts, isolated units and MUA together (Figure 3e legend;
+    Notebooks/enco_deco_paper_plots_stats.ipynb, pd.qcut(n_units, 3)). Outbound error distance
+    averaged by session, subject, zone, grouping, model and fold; LMEM dist ~ grouping * model,
+    groups subject, variance components zone and fold, fit by maximum likelihood, LRT against
+    dist ~ grouping + model; and dist ~ grouping * model * post_dec (post_dec for zones after
+    the Decision-well) against the same model without the triple term (same notebook, whose
+    printed LRTs are 17.05 and 214.31, as in the paper). Reproduced when the model by grouping
     interaction has p < 0.05 with the V+C error lower than V only in the largest grouping, and
     the triple interaction has p < 0.05 with the larger reduction after the decision well.
 - id: fig3f-decision-decoder
   statement: Decoding of the Left or Right decision from population activity is at chance on
     the stem before the decision point and rises beyond it, more so in sessions with more than 8
-    units; 19 of 42 sessions with 8 or fewer units and 23 of 36 sessions with 20 or more units
-    decoded the decision above chance.
+    units; in the stem, 19 of 42 sessions with 8 or fewer units and 23 of 36 sessions with 20 or
+    more units decoded the decision above chance.
   source: Results, Remapping of spatial representations relates to greater task performance,
     paragraph 4; Figure 3f
   quote: Prospective decoding of the decision prior to the decision point (stem) was at chance,
@@ -370,12 +373,15 @@ claims:
     unit: of 36 sessions
   criterion: Logistic decision decoder on population activity, sample-wise probabilities
     averaged by zone and trial and integrated as logits across zones (Methods, Decoder);
-    performance as balanced accuracy by zone. "Above chance" is not defined; the readings are
-    (a) balanced accuracy above 0.5 and (b) above the 95th percentile of a label-shuffle null.
-    Which zone the session counts are taken in is not said either; the readings are the
-    stem, and the last zone of the maze. Reproduced when the interaction has p < 0.05 with
-    post-decision accuracy higher in larger groupings, and the two counts are within tolerance
-    under one reading.
+    performance as balanced accuracy (BAC) by zone, unit groupings as in fig3e-zone-decoder-cue.
+    LMEM bac ~ grouping * post_dec, groups subject, variance components zone and fold, maximum
+    likelihood, LRT against bac ~ 1 + grouping + post_dec
+    (Notebooks/enco_deco_paper_plots_stats.ipynb). The session counts are for the stem, as the
+    Results say. BAC is averaged over the zones before the decision point, by session and fold, and
+    a session counts as above chance when the one-sample t statistic of its fold BACs against
+    0.5 is positive (same notebook, which prints 19 of 42 and 23 of 36 for the lowest and
+    highest tertiles). Reproduced when the interaction has p < 0.05 with post-decision accuracy
+    higher in larger groupings, and the two counts are within tolerance.
 - id: fig3g-decoder-tracks-behaviour
   statement: Trial-wise decoder choices compared with the cue give a performance that relates to
     the subject's performance after the decision point, modulated by the number of co-recorded
@@ -392,10 +398,15 @@ claims:
     p: 3.61e-10
   depends_on:
   - fig3f-decision-decoder
-  criterion: Decoder performance per session and zone is the fraction of trials whose decoded
-    decision matches the cue; LMEM of subject performance on it with unit grouping and pre or
-    post decision as covariates, as in the paper. Reproduced when the triple interaction has p <
-    0.05 and the post-decision relation is positive and grows with unit grouping.
+  criterion: Decoder performance per session, zone and fold is the fraction of trials whose
+    decoded decision matches the cue (cue_match); subject performance is the fraction correct
+    (Results; Notebooks/enco_deco_paper_plots_stats.ipynb). LMEM correct ~ cue_match * grouping
+    * post_dec, groups subject, variance components zone and fold, maximum likelihood. The null
+    model is open. The paper's chi2 has 2 df, which fits (a) the full model against it without
+    the triple term; the notebook's printed test (b) compares it with correct ~ cue_match *
+    grouping + cue_match * post_dec (4 df) and prints 65.91, not the paper's 43.48. Both are
+    run. Reproduced when the triple interaction has p < 0.05 under one reading and the
+    post-decision relation is positive and grows with unit grouping.
 - id: fig4c-reward-error-coding
   statement: On inbound runs, unrewarded trials tend to have higher firing rates than rewarded
     trials in all maze segments (left 386/565, stem 340/565, right 412/565 units), with a
@@ -425,8 +436,10 @@ claims:
     unit: of 565
   criterion: U_Z of correct against incorrect inbound segment rates (rate_segment_comp_analysis,
     comp 'rw'); a unit counts when U_Z <= 0, as paper_stats.py, _segment_rates tabulates it.
-    LMEM and LRT as in fig2c-cue-error-coding. Unit set readings (i) and (ii); the paper's 565
-    is matched by one of them. Reproduced when, under one reading, every count is within
+    LMEM and LRT as in fig2c-cue-error-coding. The code tabulates the counts within one unit
+    type only (the crosstab selects seg_rates.unit_type == unit_type, which is empty for 'all'),
+    so the counts are read under (i), isolated units, with MUA alone as a variant; the LRT under
+    (i) or (ii). Reproduced when, under one reading, every count is within
     tolerance and above half the units, and the LRT has p < 0.05.
 - id: fig4d-reward-remapping
   statement: Across units the reward remapping score (rewarded against unrewarded inbound maps,
@@ -450,8 +463,8 @@ claims:
     both null balancings shown). Tolerance is the CI half-width. Reproduced when the intercept
     is within tolerance and its 95% CI excludes zero, under one unit set reading.
 - id: fig4ef-reward-remap-behaviour
-  statement: Reward remapping correlates with session task performance at the level of single
-    units and of session means across co-recorded units.
+  statement: Reward remapping correlates negatively with session task performance at the level
+    of single units and of session means across co-recorded units.
   source: Results, Absence of reward leads to higher activity and spatial remapping, paragraph 2;
     Figure 4e to 4h
   quote: Statistical analyses of these results were indicative of a strong relationship between
@@ -460,6 +473,7 @@ claims:
   - about: unit level
     test: LMEM likelihood ratio test
     statistic: chi2(1) = 84.9; Kendall tau = -0.28
+    # Printed "p = 3.06 − 20" in the text (exponent sign without "e"); read as 3.06e-20.
     p: 3.06e-20
     ci:
       level: 0.95
@@ -490,6 +504,32 @@ claims:
     remapping score. Slope tolerances are the CI half-widths. Reproduced when both LRTs have p <
     0.05 with negative slopes and the four values are within tolerance under one unit set
     reading; partially when the LRTs and signs hold.
+- id: fig4gh-reward-remap-population-subject
+  statement: Reward remapping also relates negatively to session performance at the population
+    level and within individual subjects.
+  source: Results, Absence of reward leads to higher activity and spatial remapping, paragraph 2;
+    Figure 4g and 4h; Discussion, paragraph 3
+  quote: The extent of reward related remapping correlated with performance accuracy for a session
+    at the level of individual units, across co-recorded units, and individual subjects
+  depends_on:
+  - fig4d-reward-remapping
+  criterion: As fig2g-population-remap-behaviour and fig2h-subject-remap-behaviour with the
+    reward remapping score (Figure 4g and 4h legends; the Discussion lists population
+    correlations among the levels, Figures 2 to 4). The paper gives no number or test for
+    either. For subjects, the text does not say whether every subject shows it; reproduced
+    when the population LRT has p < 0.05 with a negative slope and at least four of the five
+    subjects have a negative correlation, and the number of subjects is reported.
+- id: fig4-reward-remap-behaviour-controls
+  statement: The relation between reward remapping and behaviour holds when the remapping score
+    uses Pearson in place of Kendall correlation, when 500 ms after reward delivery are removed,
+    and when periods of speed below 2 cm/s are removed, for isolated units and with MUA.
+  source: Figure 4, figure supplements 3 and 4
+  quote: Reward remapping vs behavior control analyses for isolated units ... For all control
+    analyses, we observed a significant relationship between remapping and behavior
+  depends_on:
+  - fig4ef-reward-remap-behaviour
+  criterion: As fig2-remap-behaviour-controls with the reward remapping score. Reproduced when
+    every control gives LRT p < 0.05 with a negative slope; partially when most do.
 - id: fig5-reward-rate-remapping-model
   statement: On inbound runs, a reward rate-remapping encoder fits most units better than the
     zone-only and reward global-remapping models.
@@ -537,13 +577,17 @@ claims:
     test: Kolmogorov-Smirnov two-sample tests
     p: 0.17
     p_relation: ">"
-  criterion: Correct or incorrect coding from the signs of U_Z by segment (cue on outbound,
-    reward on inbound); strict needs all three segments, liberal two of three (legend). Which
-    sign pattern is incorrect coding for the cue follows fig2c (RC higher on the left, LC
-    higher on the right, unrewarded higher). The legend gives no U_Z magnitude threshold; the
-    readings are (a) sign only and (b) |U_Z| > 1.96. The absence part is judged on the paper's
-    two-sample KS tests at p > 0.05 between groupings. Reproduced when both Fisher tests have p <
-    0.05 with incorrect overlap greater, and no KS test has p < 0.05, under one reading.
+  criterion: Correct or incorrect coding from the pattern of U_Z over segments (cue on outbound,
+    reward on inbound); strict needs all three segments, liberal two of three (legend). The code
+    fixes the patterns (experiment_info.py, fr_uz_tau_cue_correct and fr_uz_tau_rw_correct;
+    plot_functions.py, plot_cue_rw_correct_rate_coding_overlap_x_of_cluster). The cue score is
+    the Kendall tau between the left, stem and right U_Z and (-1, 0, 1), and the reward score is
+    (number of segments with U_Z > 0 - 1.5) / 1.5; strict correct is a score of 1 and strict
+    incorrect -1, liberal correct a score above 0 and liberal incorrect below 0. No magnitude
+    threshold is used. The table of the Fisher tests is not given; it is read as overlapping
+    and non-overlapping units for incorrect against correct coding. The absence part is judged
+    on the paper's two-sample KS tests between groupings, at p < 0.05. Reproduced when both
+    Fisher tests have p < 0.05 with incorrect overlap greater, and no KS test has p < 0.05.
 - id: fig4s7-error-signal-persists
   statement: Higher activity on incorrect than correct outbound runs predicts higher activity
     on the following incorrect inbound runs, and the reverse inference also holds, so the error
@@ -591,6 +635,7 @@ claims:
   - about: rate map correlation r_p
     test: LMEM likelihood ratio test, main effect of model
     statistic: chi2(4) = 878.84
+    # Printed "p = 3.44 − 190" in the text (exponent sign without "e"); read as 3.44e-190.
     p: 3.44e-190
   criterion: Speed, head-direction and position models by linear regression on binned features
     (Methods, Open-field encoding models), with the code's bins (3 cm position bins, PCA to 95%
@@ -622,8 +667,9 @@ claims:
   criterion: Matching as in Methods, Across session unit matching, on tetrodes at the same
     depth, 1000 waveforms per unit, 2-D UMAP, minimum covariance determinant Gaussians and the
     misclassification distance d with threshold 0.5 (Figure 7a legend). UMAP is not
-    deterministic and its parameters are not given; the paper's own matches are in the
-    repository's metadata/unit_table.csv, which is shown alongside. Reproduced when the three
+    deterministic and the Methods give no parameters; the code's defaults (n_neighbors 30,
+    min_dist 0, seed 0; cluster_match_functions.py, dim_reduction) are used. The paper's own
+    matches are in the repository's metadata/unit_table.csv, which is shown alongside. Reproduced when the three
     counts are within tolerance.
 - id: fig7de-hd-speed-tradeoff
   statement: Clustering the aggregate model coefficients of matched units into three groups
@@ -660,14 +706,11 @@ claims:
     remap, paragraph 1; Figure 7f
   quote: For completeness, OF tuning score metrics were also computed for these clusters with
     results qualitatively matching the model coefficients
-  statistics:
-  - test: Mann-Whitney U tests, paired comparisons of clusters
-    p: 0.05
-    p_relation: "<"
   depends_on:
   - fig7de-hd-speed-tradeoff
   criterion: Scores as in Methods, Open-field tuning metrics (immobility below 2 cm/s left out
-    of the head-direction score). Reproduced when the head-direction cluster has the highest
+    of the head-direction score). Paired comparisons by Mann-Whitney U as in the Figure 7f
+    legend, which gives only its significance key. Reproduced when the head-direction cluster has the highest
     median resultant vector length and the speed cluster the highest median speed score, each
     against the other clusters by Mann-Whitney U at p < 0.05.
 - id: fig7g-hd-cluster-remaps-more
@@ -694,8 +737,11 @@ claims:
     remap type * cluster against score ~ 1 + remap type + cluster, and the main effect test,
     groups subject, variance components Tree-Maze session, open-field session and match id
     (paper_stats.py, _of_cluster_TM_comps, score_group tm_remap). Clusters from the paper's
-    metadata/unit_table.csv; recomputed clusters are a variant. Reproduced when the interaction
-    has p < 0.05 and cluster 0 has the most negative mean remapping score for cue or reward.
+    metadata/unit_table.csv; recomputed clusters are a variant. The paper gives no test for
+    remapping remaining significant on matched units; it is judged as in fig2d-cue-remapping
+    and fig4d-reward-remapping on the matched units. Reproduced when the cue and reward
+    intercepts have 95% CIs below zero, the interaction has p < 0.05, and cluster 0 has the
+    most negative mean remapping score for cue or reward.
 - id: fig7h-hd-cluster-encoder-scores
   statement: Tree-Maze rate and global remapping encoder scores are higher for the
     head-direction cluster 0.
@@ -711,7 +757,8 @@ claims:
   - fig3d-cue-rate-remapping-model
   - fig5-reward-rate-remapping-model
   - fig7de-hd-speed-tradeoff
-  criterion: Test R2 of the rate and global encoders for cue and reward of matched units; LMEM
+  criterion: Test R2 of the rate (Z+C, Zi+R) and global (ZxC, ZixR) encoders for cue and reward
+    of matched units, values with |R2| > 1 left out (experiment_info.py, encoder table); LMEM
     score ~ 1 + rate + cue + cluster against score ~ 1 + rate + cue, same random structure as
     fig7g (paper_stats.py, _of_cluster_TM_comps, score_group tm_enc_r2, test main). Reproduced
     when the LRT has p < 0.05 and cluster 0 has the highest mean score.
@@ -725,3 +772,30 @@ claims:
     (zone_encoder_comps_dict 'lag'), compared by the same LMEM. The paper gives no statistic.
     Reproduced when Z50 has the highest mean test R2 and the comparisons against Z0 and Z-50
     favour it at p < 0.05.
+checks:
+- date: 2026-11-24
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1d-task-performance, the median reading is settled by the code (Notebooks/TM/fig1.ipynb takes the median of subject medians and prints 0.726 and 110.25); the pooled median is now a variant.
+  - fig1-switch-performance, same median reading from fig1.ipynb (prints 0.769 and 54); the 10 point similarity threshold is not from the paper and is now marked as an assumption the outcome rests on.
+  - fig2e-unit-remap-behaviour and fig2f-session-remap-behaviour, the Kendall entries carried the LRT's p-value, which the paper gives for the LRT only; the tau now sits with the LRT entry, as in fig4ef-reward-remap-behaviour.
+  - fig2h-subject-remap-behaviour, cited the code that computes the per-subject bootstrap (plot_functions.py, plot_subject_remap_beh_slope).
+  - fig3e-zone-decoder-cue, the unit groupings were guessed as at most 8, 9 to 19 and at least 20 units; the code uses tertiles of session unit counts (enco_deco_paper_plots_stats.ipynb, pd.qcut), and the LMEM and LRT models are now taken from that notebook, whose printed LRTs match the paper.
+  - fig3f-decision-decoder, the Results say the session counts are for the stem, so the made-up last-zone reading is removed and the statement now says stem; the shuffle-null reading of above chance is replaced by the notebook's rule (positive one-sample t of fold BAC against 0.5 before the decision point), which prints the paper's 19 of 42 and 23 of 36; LMEM taken from the notebook.
+  - fig3g-decoder-tracks-behaviour, the model is now taken from the notebook; the null model is named as open with two readings, since the paper's chi2 has 2 df and the notebook's printed test has 4 df and a different value.
+  - fig4c-reward-error-coding, the code tabulates the counts within one unit type only, so the counts are read on isolated units with MUA alone as a variant.
+  - fig4ef-reward-remap-behaviour, the statement now says negatively, as the paper's values are; added a note on the printed p 3.06 − 20.
+  - fig6cd-of-aggregate-model, added a note on the printed p 3.44 − 190.
+  - fig4s6-incorrect-coding-overlap, the |U_Z| > 1.96 reading was made up; the code defines correct and incorrect coding (experiment_info.py, fr_uz_tau_cue_correct and fr_uz_tau_rw_correct), and the criterion now uses it; the Fisher table is named as open.
+  - fig7b-matched-units, the code gives the UMAP defaults for waveform matching (cluster_match_functions.py, dim_reduction); the criterion now uses them.
+  - fig7f-tuning-metrics-match, removed the statistics entry; "p < 0.05" is the legend's significance key, not a reported result.
+  - fig7g-hd-cluster-remaps-more, the criterion did not test the stated part that cue and reward remapping remain significant on matched units; added.
+  - fig7h-hd-cluster-encoder-scores, named which encoders are rate and global and the |R2| > 1 exclusion, from experiment_info.py.
+  - Added fig4gh-reward-remap-population-subject; the Results and Discussion report reward remapping relating to performance at the population and subject levels (Figure 4g, 4h), and no claim covered it.
+  - Added fig4-reward-remap-behaviour-controls; Figure 4, figure supplements 3 and 4 report the reward control analyses, and no claim covered them.
+  - Open, fig1-switch-performance, "similar" has no test in the paper; the threshold stays an assumption.
+  - Open, fig3d-cue-rate-remapping-model, 5 folds in the Methods and 10 in the code; both are run.
+  - Open, fig3g-decoder-tracks-behaviour, which null model gives the paper's chi2(2) = 43.48 is not settled; both readings are run.
+  - Open, fig3g-decoder-tracks-behaviour, the p-value is printed "3.61 − 10" and the checker cannot find it; read as 3.61e-10.
