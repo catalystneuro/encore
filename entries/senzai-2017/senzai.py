@@ -21,14 +21,24 @@ result):
   a sample beyond 20000 steps) left out (S); channel of largest peak-to-peak
   amplitude (M "recording site with the maximum amplitude"; peak-to-peak is S);
   cubic spline to 100 kHz (M "up-sampled to 100kHz with a spline
-  interpolation"); trough-to-peak = trough to the largest later sample (S).
+  interpolation"); trough-to-peak = trough to the largest later sample (S),
+  and, as a variant, trough to the first local maximum after it (S), which
+  slow drift of an unfiltered mean does not move. The files do not say
+  whether the stored waveforms (the lab's .spk files) were filtered; the
+  paper measures the latency on "the unfiltered waveform" (Results).
   Second derivative from the trough to 0.8 ms after it, waveform normalised to
   its trough (C, gc-mc-classification; M "0 to 0.8ms period of the second
   derivative").
 - Wide-band site: in files holding the 20 kHz wide-band signal, the mean
   300 Hz high-passed signal around the unit's spikes in up to four 52 s
   blocks; the site is the channel of largest peak-to-peak (C, mc-deeper). The
-  300 Hz cut-off and 4th-order Butterworth are S.
+  300 Hz cut-off and 4th-order Butterworth are S. The unit's waveform at the
+  site is the mean of the unfiltered wide band (C, gc-mc-classification),
+  over -1 to +2 ms (S: long enough for the peak after the trough); the
+  high-passed mean is kept as a variant.
+- Electrodes: each LFP column's shank and place in its shank's list
+  (shank_electrode_number), to check against the DS2 profile whether the list
+  is in depth order.
 - DS2 amplitude per channel: LFP at the DS2 peak minus the mean of -36 to -16
   ms, the baseline of M ("lower than the baseline value (-36 ms to -16 ms)"),
   averaged over up to 600 DS2 events of the file (S: a sample for speed).
@@ -45,7 +55,10 @@ result):
 - Optogenetic suppression: 20 ms pulses; rate in +2 to +15 ms against the
   20 ms before onset, or 50 to 200 ms after onset (C); suppressed when at
   least 20% below baseline (M "decreased by >= 20% of the baseline PETH in
-  +2 to +15ms bins").
+  +2 to +15ms bins"). The PETH in 1 ms bins from -20 to +200 ms is kept for
+  the per-bin and significance readings of the same passage (notebook).
+- Gamma phases of each unit's spikes are kept, for a control with equal
+  spike counts (MRL is biased upward at low counts).
 - Cross-correlograms: 0.5 ms bins, baseline from convolution with a Gaussian
   of 10 ms SD, threshold the 99.9999 percentile of the Poisson distribution
   at the baseline rate, at least two consecutive bins within +1.5 to +5 ms
@@ -191,12 +204,17 @@ def waveform_features(mw):
     ip = it + int(np.argmax(yy[it:]))
     tp = (ip - it) * 1e-2  # ms
     at_end = ip >= len(yy) - 3
+    # trough to the first local maximum after it (S): unlike the largest later
+    # sample, it is not moved by slow drift of an unfiltered mean
+    dy = np.diff(yy[it:])
+    up = np.flatnonzero((dy[:-1] > 0) & (dy[1:] <= 0))
+    tp_first = (up[0] + 1) * 1e-2 if len(up) else np.nan
     yn = yy / abs(yy[it]) if yy[it] != 0 else yy
     d2 = np.gradient(np.gradient(yn))
     seg = d2[it:it + 81]
     if len(seg) < 81:
         seg = np.concatenate([seg, np.full(81 - len(seg), np.nan)])
-    return tp, ch, at_end, seg
+    return tp, ch, at_end, seg, tp_first
 
 
 # ---------------------------------------------------------------- LFP
@@ -280,6 +298,8 @@ def phase_modulation(f, hil_col, awake, spikes, max_s=3600.0):
             R = n * r
             p = np.exp(np.sqrt(1 + 4 * n + 4 * (n ** 2 - R ** 2)) - (1 + 2 * n))
             out[(u, k)] = dict(n=n, mrl=r, p=min(p, 1.0), kappa=_kappa(r, n), phase=float(np.angle(z)))
+            if k == "gamma":
+                out[(u, k)]["ph"] = ph.astype(np.float32)  # for the count-matched control
     return out, tot
 
 
@@ -296,39 +316,50 @@ def _kappa(r, n):
 
 
 # ---------------------------------------------------------------- wide band
+WB_PRE, WB_POST = 20, 40  # samples before and after the spike time: -1 to +2 ms (S)
+
+
 def wideband_sites(f, spikes, n_blocks=4):
-    """Channel (LFP column) of largest mean spike in the 300 Hz high-passed wide band."""
+    """Channel (LFP column) of largest mean spike in the 300 Hz high-passed wide band.
+
+    Returns, per unit, (column, spikes used, filtered mean at the column,
+    unfiltered mean at the column); the means span -1 to +2 ms around the
+    spike time. The unfiltered mean is the wide-band signal as stored (C,
+    gc-mc-classification: "the unfiltered wide-band waveform")."""
     d = f["acquisition/ElectricalSeries/data"]
     n = d.shape[0]
     block = 1048576
     nb = n // block
     picks = np.linspace(1, max(nb - 2, 1), n_blocks).astype(int)
     bb, aa = signal.butter(4, 300 / (FS_WB / 2), btype="high")
-    sums = {u: np.zeros((40, d.shape[1])) for u in spikes}
+    nw = WB_PRE + WB_POST
+    sums = {u: np.zeros((nw, d.shape[1])) for u in spikes}
+    raws = {u: np.zeros((nw, d.shape[1])) for u in spikes}
     cnt = {u: 0 for u in spikes}
     for b in np.unique(picks):
         i0, i1 = b * block, min((b + 1) * block, n)
         sel = {}
         for u, spk in spikes.items():
             s = np.round(spk * FS_WB).astype(np.int64) - i0
-            sel[u] = s[(s >= 20) & (s < i1 - i0 - 20)][:300]
+            sel[u] = s[(s >= WB_PRE) & (s < i1 - i0 - WB_POST)][:300]
             cnt[u] += len(sel[u])
         for c0 in range(0, d.shape[1], 16):  # 16 columns at a time, for memory
-            x = d[i0:i1, c0:c0 + 16].astype(np.float32)
-            x = signal.filtfilt(bb, aa, x, axis=0).astype(np.float32)
+            xr = d[i0:i1, c0:c0 + 16].astype(np.float32)
+            x = signal.filtfilt(bb, aa, xr, axis=0).astype(np.float32)
             for u, s in sel.items():
                 if len(s):
-                    idx = s[:, None] + np.arange(-20, 20)[None, :]
+                    idx = s[:, None] + np.arange(-WB_PRE, WB_POST)[None, :]
                     sums[u][:, c0:c0 + 16] += x[idx].sum(axis=0)
-            del x
+                    raws[u][:, c0:c0 + 16] += xr[idx].sum(axis=0)
+            del x, xr
     out = {}
     for u in spikes:
         if cnt[u] >= 10:
             m = sums[u] / cnt[u]
             col = int(np.argmax(m.max(axis=0) - m.min(axis=0)))
-            out[u] = (col, cnt[u], m[:, col])
+            out[u] = (col, cnt[u], m[:, col], raws[u][:, col] / cnt[u])
         else:
-            out[u] = (-1, cnt[u], None)
+            out[u] = (-1, cnt[u], None, None)
     return out
 
 
@@ -339,6 +370,9 @@ EDGES = np.arange(-HALF, HALF + BIN / 2, BIN)
 CENTRES = (EDGES[:-1] + EDGES[1:]) / 2
 CONN = (CENTRES > 0.0015) & (CENTRES < 0.005)
 SYNC = (CENTRES > -0.001) & (CENTRES < 0.001)
+
+
+PETH_EDGES = np.round(np.arange(-0.020, 0.2005, 0.001), 6)  # 1 ms bins, -20 to +200 ms (S)
 
 
 def ccg(a, b):
@@ -657,16 +691,23 @@ def process_file(asset, do_waveforms=True, do_lfp=True, do_space=True):
     e0 = np.concatenate([[0], ei[:-1]])
     lfp_el = f["processing/ecephys/LFP/lfp/electrodes"][:]
     el_to_col = {int(e): j for j, e in enumerate(lfp_el)}
+    et = f["general/extracellular_ephys/electrodes"]
+    gname = et["group_name"][:].astype(str)
+    sen = et["shank_electrode_number"][:]
+    res["electrodes"] = [dict(col=j, shank=gname[int(e)], shank_electrode_number=int(sen[int(e)]))
+                         for j, e in enumerate(lfp_el)]
     res["has_waveforms"] = "waveforms_index_index" in u
     if do_waveforms and res["has_waveforms"]:
         for k in interest:
-            if typ[k] not in ("GC", "MC", "nI", "wI"):
-                continue
             mw = mean_waveform(u, k)
             if mw is None:
                 continue
-            tp, ch, at_end, seg = waveform_features(mw)
+            rows[k]["mw"] = mw.astype(np.float32)  # for the same-day check
+            if typ[k] not in ("GC", "MC", "nI", "wI"):
+                continue
+            tp, ch, at_end, seg, tp1 = waveform_features(mw)
             rows[k]["tp_ms"] = tp
+            rows[k]["tp_first_ms"] = tp1
             rows[k]["tp_at_end"] = bool(at_end)
             rows[k]["d2"] = seg
             unit_el = elec[e0[k]:ei[k]]
@@ -674,16 +715,26 @@ def process_file(asset, do_waveforms=True, do_lfp=True, do_space=True):
     wide = "acquisition/ElectricalSeries" in f
     res["wideband"] = wide
     if do_waveforms and wide:
-        exc = {k: spikes[k] for k in interest if typ[k] in ("GC", "MC")}
+        exc = {k: spikes[k] for k in interest if typ[k] in ("GC", "MC", "nI", "wI")}
         if exc:
             ws = wideband_sites(f, exc)
-            for k, (col, n, w) in ws.items():
+            for k, (col, n, w, wr) in ws.items():
                 rows[k]["site_wb"] = col
                 rows[k]["site_wb_n"] = n
                 if w is not None:
-                    tp, _, at_end, seg = waveform_features(w[None, :])
+                    # filtered (300 Hz high-pass) mean at the site
+                    tp, _, at_end, seg, tp1 = waveform_features(w[None, :])
+                    rows[k]["tp_wbf_ms"] = tp
+                    rows[k]["tp_wbf_first_ms"] = tp1
+                    rows[k]["tp_wbf_at_end"] = bool(at_end)
+                    rows[k]["d2_wbf"] = seg
+                    # unfiltered mean at the site (C, gc-mc-classification)
+                    tp, _, at_end, seg, tp1 = waveform_features(wr[None, :])
                     rows[k]["tp_wb_ms"] = tp
+                    rows[k]["tp_wb_first_ms"] = tp1
+                    rows[k]["tp_wb_at_end"] = bool(at_end)
                     rows[k]["d2_wb"] = seg
+                    rows[k]["wb_raw"] = wr.astype(np.float32)
 
     # LFP: DS2 amplitude profile, DS2 histograms, phase modulation
     ds = f["processing/ecephys/dentate_spikes"]
@@ -748,6 +799,10 @@ def process_file(asset, do_waveforms=True, do_lfp=True, do_space=True):
                 rows[k]["light_resp"] = resp
                 rows[k]["light_pre"] = pre
                 rows[k]["light_post"] = post
+                # PETH in 1 ms bins from -20 to +200 ms, spike counts summed over pulses
+                rows[k]["light_peth"] = np.histogram(lag_counts(on, spk, -0.020, 0.200),
+                                                     PETH_EDGES)[0].astype(np.int64)
+                rows[k]["light_n_pulses"] = len(on)
 
     # pairs: CCG tests on excitatory pairs recorded together
     pairs = []
@@ -846,11 +901,16 @@ def tmaze_session(f, sp_units):
 
 
 def _splitter_test(per_run, k, fields):
-    """Two-way ANOVA (position x choice) on per-run rates in each central field (M)."""
+    """Two-way ANOVA (position x choice) on per-run rates in each central field (M).
+
+    Returns the smallest choice P over the unit's fields; fields with too little
+    to fit, a failed fit or a NaN P (a degenerate fit) are counted in n_failed
+    and do not enter it."""
     import pandas as pd
     import statsmodels.api as sm
     from statsmodels.formula.api import ols
     best = None
+    n_failed = 0  # fields with too little to fit, a failed fit or a NaN p
     for a, b in fields:
         rows = []
         for j, r in enumerate(per_run):
@@ -859,14 +919,19 @@ def _splitter_test(per_run, k, fields):
                     rows.append(dict(rate=r["counts"][k][x] / r["occ"][x], pos=x, choice=int(r["left"])))
         d = pd.DataFrame(rows)
         if d.empty or d.choice.nunique() < 2 or d.pos.nunique() < 2:
+            n_failed += 1
             continue
         try:
             t = sm.stats.anova_lm(ols("rate ~ C(pos) + C(choice)", data=d).fit(), typ=2)
             p = float(t.loc["C(choice)", "PR(>F)"])
         except Exception:
+            n_failed += 1
+            continue
+        if not np.isfinite(p):  # a degenerate fit (no variance) gives NaN; it is not a test
+            n_failed += 1
             continue
         best = p if best is None else min(best, p)
-    return dict(n_fields=len(fields), p=best)
+    return dict(n_fields=len(fields), p=best, n_failed=n_failed)
 
 
 OF_SESSIONS = ["Old", "New", "Oldlast", "Old_Curtain", "New_Curtain", "Lroom_Old", "Lroom_New"]

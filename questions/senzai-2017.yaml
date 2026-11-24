@@ -1,0 +1,48 @@
+questions:
+- claim: optotag-drd2
+  question: The criterion counts a unit as suppressed when "the rate in +2 to +15 ms after pulse
+    onset is at least 20% below the baseline", that is, the mean over the window. The Methods say
+    the PETH "decreased by >= 20% of the baseline PETH in +2 to +15ms bins", which can also be read
+    per bin, every 1 ms bin of the window at least 20% below the baseline. Does the criterion misread
+    the Methods by fixing the mean, and should the per-bin reading be allowed as a reading?
+  passage: 'STAR Methods, Optogenetic tagging, "For DRD2-Cre::Ai35 mice, putative mossy cells were
+    identified if the PETH triggered by 60,000-100,000 repetitions of 20ms light pulses decreased
+    by >= 20% of the baseline PETH in +2 to +15ms bins." Results, Optogenetic validation, paragraph
+    1, "29 out of 107 putative mossy cells were light responsive ... whereas only eight of 68 w-I
+    interneurons and none of the putative granule cells (n = 202) or n-I interneurons (n = 69) were
+    suppressed significantly by green light".'
+  why: With the mean over the window, 68 of 106 MC (0.642) are suppressed under the 20 ms
+    pre-pulse baseline and 71 (0.670) under the 50 to 200 ms baseline, far from 0.271, so the claim
+    is partially reproduced. Read per bin against the pre-pulse baseline, 28 of 106 MC (0.264,
+    within 0.271 +- 0.027), 0 of 198 GC, 7 of 62 wide- and 0 of 68 narrow-waveform interneurons are
+    suppressed (paper 29 of 107, 0 of 202, 8 of 68, 0 of 69), and 28 of the 29 MC the files'
+    drd2_tagged column marks are among them. Under that reading the claim would be reproduced.
+- claim: first-stage-labels
+  question: The criterion takes the trough-to-peak latency from "the mean of each unit's first 200
+    stored waveforms". The paper measures "the unfiltered waveform", and the Methods use the same
+    average waveforms for the latency and for the waveform PCA, which the gc-mc-classification
+    criterion takes from the unfiltered wide-band signal. The stored waveforms are the lab's .spk
+    files, and the files do not say whether they were filtered. Should the latency be taken from
+    the unfiltered wide-band waveform, as for the PCA, where the files hold it?
+  passage: 'Results, Identification of granule cells and mossy cells in extracellular recordings,
+    paragraph 1, "The unfiltered waveform was quantified by the trough-to-peak latency of the
+    extracellular spike." STAR Methods, Unit classification, "To calculate the TP latency, the
+    average waveforms were taken from the recording site with the maximum amplitude for the averaged
+    waveforms of a given unit. The same average waveforms were also used for the waveform PCA".'
+  why: On the stored waveforms 89.9% of dentate narrow-waveform units are below 0.425 ms, just short
+    of the 90% the criterion asks, so the claim is partially reproduced. In the 17 files with the
+    wide band, the unfiltered mean gives 0.744 (latency to the largest later sample) or 0.949 (to
+    the first local peak), and with the first local peak 0.848 of GC and MC and 0.868 of
+    wide-waveform interneurons pass. The source of the waveform, and the definition of the peak,
+    can move each group across 90%.
+- claim: gc-narrower-waveform
+  question: The criterion takes the latency "as in first-stage-labels", from the stored waveforms.
+    For the same reason as the question on first-stage-labels, should it use the unfiltered
+    wide-band waveform, where the files hold it?
+  passage: 'Results, Identification of granule cells and mossy cells in extracellular recordings,
+    paragraph 1, "The unfiltered waveform was quantified by the trough-to-peak latency of the
+    extracellular spike"; paragraph 3, "Overall, the waveform of granule cells was narrower".'
+  why: The stored waveforms give GC 0.710 ms against MC 0.740 ms (P = 3.6e-14), but the peak falls at
+    the end of the stored 1.6 ms for 44% of GC and 69% of MC. With the unfiltered wide-band waveform
+    in 17 files, the latency to the largest later sample gives 0.770 against 0.800 ms (P = 0.175, not
+    reproduced), and to the first local peak 0.610 against 0.700 ms (P = 7.9e-10, reproduced).
