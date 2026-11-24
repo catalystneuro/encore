@@ -42,7 +42,9 @@ PAGE_SIZE = 100
 
 
 def get(url: str) -> dict:
-    req = urllib.request.Request(url, headers={"Accept": "application/vnd.api+json"})
+    # OSF's API speaks JSON:API; Crossref refuses that media type with 406 Not Acceptable, so it is asked for JSON.
+    osf = urllib.parse.urlsplit(url).hostname == "api.osf.io"
+    req = urllib.request.Request(url, headers={"Accept": "application/vnd.api+json" if osf else "application/json"})
     with urllib.request.urlopen(req, timeout=120) as r:
         return json.load(r)
 
@@ -87,9 +89,10 @@ def parse(spec: str) -> tuple[str, str]:
     found_paper = re.fullmatch(r"(.+?)=((?:https?://(?:dx\.)?doi\.org/)?10\.\S+)", spec.strip(), re.I)
     item, paper = found_paper.groups() if found_paper else (spec.strip(), "")
     item = item.strip()
-    found = (re.fullmatch(r"(?:osf:)?([a-z0-9]{5})", item, re.I)
+    # A preprint's GUID may carry its version (uwge3_v3), and its page is osf.io/preprints/<server>/<GUID>.
+    found = (re.fullmatch(r"(?:osf:)?([a-z0-9]{5})(?:_v\d+)?", item, re.I)
              or re.search(r"10\.17605/osf\.io/([a-z0-9]{5})\b", item, re.I)
-             or re.search(r"osf\.io/([a-z0-9]{5})(?:[/?#]|$)", item, re.I))
+             or re.search(r"osf\.io/(?:preprints/[a-z0-9-]+/)?([a-z0-9]{5})(?:_v\d+)?(?:[/?#]|$)", item, re.I))
     if not found:
         raise SystemExit(f"error: not an OSF GUID, DOI or page: {item!r}")
     return found.group(1).lower(), clean_doi(paper)
@@ -126,11 +129,15 @@ def file_record(item: dict, prefix: str = "") -> dict:
     provider first (github/..., googledrive/...); one in a component, with the component's GUID first."""
     a = item["attributes"]
     path = a["materialized_path"].lstrip("/")
-    if a["provider"] != "osfstorage":
+    versioned = a["provider"] == "osfstorage"
+    if not versioned:
         path = f'{a["provider"]}/{path}'
     hashes = (a.get("extra") or {}).get("hashes") or {}
+    # OSF gives an add-on's file a current_version of 1, but does not version it: its download address answers
+    # ?version=1 with 404 Not Found. So only a file in OSF Storage is pinned by a version.
     return {"path": prefix + path, "provider": a["provider"], "size": a.get("size"), "file_id": item["id"],
-            "version": a.get("current_version"), "md5": hashes.get("md5"), "sha256": hashes.get("sha256"),
+            "version": a.get("current_version") if versioned else None, "md5": hashes.get("md5"),
+            "sha256": hashes.get("sha256"),
             "modified": a.get("date_modified"), "download": (item.get("links") or {}).get("download")}
 
 
