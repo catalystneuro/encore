@@ -49,3 +49,6 @@ The attempt record, with the reasons and the differences from the paper's method
 - `senzai.py`: loading, and the per-unit and per-pair measures (rates by state, burst index,
   waveforms, DS2 amplitude and histograms, theta and gamma phase, optogenetic suppression,
   cross-correlogram tests, T-maze and open-field maps, with variants on the T-maze run). Other notebooks on this dandiset can import it.
+- `earlier_findings.ipynb`: the findings of the earlier attempt, senzai-2017-01 (version 0.260218.2052),
+  checked on this version, one section each, for the reconciliation in the attempt record. It takes about
+  ten minutes.
