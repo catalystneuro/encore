@@ -1,0 +1,450 @@
+schema_version: 3
+id: senzai-2017-02
+datasets:
+- archive: dandi
+  id: "000003"
+  version: 0.261122.2143
+  doi: 10.48324/dandi.000003/0.261122.2143
+  relation: primary
+paper: doi:10.1016/j.neuron.2016.12.011
+date: 2026-11-23
+entry: senzai-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45284759424
+outcomes:
+- claim: unit-counts
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:unit-counts
+  measured:
+  - 583
+  - 503
+  notes: The cell_type labels give 583 granule cells and 503 mossy cells in the 15 mice of the
+    paper, each with its own global_id (no repeats), within 10% of 586 and 500. With YutaMouse57,
+    which is not in the paper, the labels give 609 and 568.
+  deviations:
+  - The labels are the authors' (the files' cell_type, from their unit summary); the second-stage
+    k-means is repeated separately under gc-mc-classification.
+- claim: first-stage-labels
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:first-stage-labels
+  notes: Under both thresholds 98.5% of the 1086 GC and MC are at or above 0.425 ms with a burst
+    index above the threshold, and 90.6% (1.2) or 92.6% (1.8) of the 256 dentate wide-waveform
+    interneurons with a waveform are at or above 0.425 ms with a burst index at or below it. Of 247
+    dentate narrow-waveform interneurons, 222 (89.9%) are below 0.425 ms, just short of 90%. Two of
+    three groups meet the criterion. CA3 interneurons, judged on their own 0.525 ms threshold, are
+    shown apart (93.8% of narrow ones below it). For 668 units the peak of the waveform falls at
+    the end of the stored 1.6 ms, so their latency is a lower bound.
+  deviations:
+  - The groups are the dentate units, as the 0.425 ms threshold is the dentate one (Methods, "CA3
+    region units were also classified in a similar way into n-I cells (TP latency < 0.525ms)").
+  - The channel of largest amplitude is taken by peak-to-peak amplitude, a standard choice; damaged
+    stored waveforms are left out of the mean.
+- claim: interneuron-rates
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:interneuron-rates
+  measured:
+  - 7.65
+  - 2.053
+  notes: Among the 248 narrow-waveform and 258 wide-waveform dentate interneurons, the median rate
+    over the recording span (reading a) is 7.65 and 2.05 Hz, both within tolerance, Kruskal-Wallis
+    P = 1.4e-13. In awake periods (reading b) the medians are 9.23 and 2.87 Hz, outside tolerance.
+    With the CA3 interneurons included the narrow-waveform median is 5.80 Hz (span) or 7.79 Hz
+    (awake).
+  deviations:
+  - The interneurons are the dentate ones, as the paper's counts are ("narrow-waveform (n = 248)
+    and wide-waveform (n = 268) putative interneurons ... Units recorded in CA3 were separately
+    classified", Results, Identification of granule cells and mossy cells, paragraph 1); all
+    labelled interneurons are shown as a variant.
+- claim: gc-narrower-waveform
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:gc-narrower-waveform
+  notes: Trough-to-peak latency from the stored waveforms has a median of 0.710 ms for 583 GC and
+    0.740 ms for 503 MC, Mann-Whitney P = 3.6e-14. The peak falls at the end of the stored 1.6 ms
+    for 44% of GC and 69% of MC, so many latencies are lower bounds. With the wide-band waveform at
+    the unit's site, in the 17 files that hold it, the medians are 0.700 (136 GC) and 0.710 ms (240
+    MC), P = 0.43, so the difference rests on the truncated stored waveforms.
+- claim: optotag-drd2
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:optotag-drd2
+  measured: 0.642
+  notes: In 26 DRD2-Cre::Ai35 files with 20 ms pulses (median 96542 pulses per file), a 20% or
+    larger decrease at +2 to +15 ms against the 20 ms before each pulse is found in 68 of 106 MC
+    (0.642), 6 of 198 GC (0.030), 15 of 62 dentate wide-waveform and 4 of 68 narrow-waveform
+    interneurons. Against 50 to 200 ms after onset, 71 of 106 MC (0.670) and 13 of 198 GC (0.066).
+    The GC fraction is below 0.05 and the MC fraction more than four times it, but the MC fraction
+    is far above 0.271. The unit counts are close to the paper's (107 MC, 202 GC, 68 w-I, 69 n-I).
+    The files' drd2_tagged column marks 29 MC, as the paper, and all 29 are among the MC suppressed
+    here (median response over baseline 0.57, against 0.79 for untagged MC). The Methods' 20% rule
+    alone admits many more units than the paper counts; the paper says "suppressed significantly",
+    and the test behind that is asked of the authors.
+  deviations:
+  - No significance test is applied beyond the 20% decrease, as the claim's criterion has it.
+  - Interneurons are the dentate ones, as for interneuron-rates.
+- claim: mc-more-active
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:mc-more-active
+  notes: Median rates in awake periods are 0.726 Hz for MC and 0.079 Hz for GC (Kruskal-Wallis P =
+    4e-102; with quiet periods added P = 3e-100), and in NREM 0.907 and 0.398 Hz (P = 1e-23). By
+    mouse, the MC median is higher in wake in 13 of the 14 mice with both types, but in NREM in 8
+    of 14 (in YutaMouse20, 38, 44, 45, 51 and 55 the GC median is higher).
+- claim: gc-nrem-highest
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:gc-nrem-highest
+  notes: GC medians are 0.398 Hz in NREM, 0.079 in wake (awake) and 0.205 in REM (583 units);
+    Kruskal-Wallis P printed as 0, and NREM exceeds wake and REM with Bonferroni-adjusted P
+    printed as 0. Wake and REM also differ (adjusted P printed as 0), so the "similar rates during
+    wake and REM" part does not hold, under both readings of wake (awake+quiet median 0.083 Hz).
+    REM exceeds wake in every mouse.
+- claim: ca3-wake-highest
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:ca3-wake-highest
+  notes: CA3 pyramidal cell medians are 0.450 Hz in wake (awake), 0.473 in NREM and 0.305 in REM
+    (568 units). REM is the lowest (adjusted P printed as 0 against both), but wake is not the
+    highest, and wake does not differ from NREM (adjusted P = 0.77; 0.69 with quiet periods, wake
+    median 0.445). By mouse, wake is the highest in 3 of 6 (YutaMouse41, 42, 55).
+- claim: nrem-wake-ratio
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:nrem-wake-ratio
+  notes: The median NREM to wake rate ratio is 4.67 for 583 GC and 1.09 for 503 MC (wake as awake),
+    Mann-Whitney P = 1e-130; with quiet periods 4.31 and 1.10. The GC median ratio is above 2.7 in
+    every mouse. MC NREM and wake rates do differ by a Wilcoxon test (P = 0.0002), though the MC
+    median ratio is near 1.
+- claim: theta-modulation
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:theta-modulation
+  notes: Of the units with theta phases (566 GC, 501 MC), 464 GC and 470 MC pass Rayleigh P < 0.05
+    and kappa > 0.1. Their median MRL is 0.429 for GC and 0.347 for MC, Kruskal-Wallis P = 7e-16.
+    GC fire later (circular mean 0.536 rad against 0.246; under reading a, (-pi, pi], medians
+    0.508 and 0.201, P = 8e-13). Under reading b, [0, 2 pi), the medians are 0.828 and 0.719 and P
+    = 0.59, as the phases lie near 0. The GC MRL median is higher in 12 of the 13 mice with both
+    types.
+  deviations:
+  - Phases are from the file's hilus_reference channel, which the files describe as the channel
+    the lab used for theta and gamma phase; up to one hour of awake time per file (the median file
+    used the full hour).
+- claim: gamma-modulation
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:gamma-modulation
+  notes: Of the units with gamma phases (566 GC, 499 MC), 327 GC and 419 MC pass the Rayleigh and
+    kappa test. Median MRL is 0.323 for GC and 0.217 for MC, Kruskal-Wallis P = 3e-34. GC fire
+    earlier (circular mean -0.470 rad against -0.062; reading a medians -0.504 and -0.190, P =
+    2e-23); under reading b P = 0.67.
+  deviations:
+  - As for theta-modulation.
+- claim: gamma-rate-correlation
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:gamma-rate-correlation
+  measured:
+  - -0.234
+  - -0.119
+  notes: Reading (a), all units with a gamma MRL, gives GC r = -0.234 (566 units, P = 2e-8) and MC r
+    = -0.119 (499 units, P = 0.0076); reading (b), units passing the Rayleigh and kappa test, GC r
+    = -0.413 (327, P = 7e-15) and MC r = -0.182 (419, P = 0.00019). Both correlations are negative
+    under both readings, but no reading puts both within tolerance, and the MC P is above 0.0001
+    under both, so neither the full nor the partial criterion holds. The MC r of reading (b) is
+    within tolerance of -0.184.
+- claim: ds2-recruitment
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:ds2-recruitment
+  notes: The median peak ratio around DS2 is 6.70 for 573 GC and 5.04 for 489 MC, Kruskal-Wallis P =
+    1.9e-6; the median peak time is -3 ms for GC and +1 ms for MC, P = 3e-8. With the DS2 times
+    shifted by 0.5 s the ratios are 1.69 and 1.63. 24 units with no spikes in the baseline window
+    are left out.
+- claim: monosyn-gc-to-mc
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:monosyn-gc-to-mc
+  measured: 0.108
+  notes: Of 4425 GC-MC pairs recorded together, the Methods' automatic test finds 63 GC to MC pairs
+    and 8 MC to GC pairs. The fraction is 63/583 = 0.108 (reading a), 47/583 = 0.081 (reading b)
+    or 63/4425 = 0.014 (reading c), none within 0.055 +- 0.0055, and MC to GC pairs are found;
+    GC to MC pairs outnumber them 63 to 8. The authors' monosynaptic table in the files holds
+    exactly 32 excitatory GC to MC pairs and no MC to GC pair, as the paper reports (32/583 =
+    0.055), and the automatic test finds all 32, so the difference is the paper's manual
+    inspection, not repeated here. 34 of the 63 pairs are on one shank.
+  deviations:
+  - The paper's manual inspection of detected pairs is not repeated (criterion); its effect is
+    shown by the authors' table.
+  - The CCG spans +-50 ms and the Gaussian baseline is reflected at its ends, a standard choice.
+- claim: burst-facilitation
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:burst-facilitation
+  notes: Over the 63 detected GC to MC pairs, the median transmission probability is 0.0067 for the
+    first burst spike and 0.032 for the second; the second is higher in 56 pairs, paired Wilcoxon P
+    = 2.9e-9. On the authors' 32 pairs, 0.0083 and 0.051, higher in 32 of 32, P = 4.7e-10.
+- claim: state-transmission
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:state-transmission
+  notes: Over the 63 detected pairs the median transmission probability is 0.0125 in wake and 0.0111
+    in NREM; NREM is lower in 32 of 63, paired Wilcoxon P = 0.52. On the authors' 32 pairs (the
+    paper's n is 31) the medians are 0.0191 and 0.0129, NREM lower in 19, P = 0.018, which would
+    meet the partial level (P < 0.05) but not P < 0.005. The difference between the two sets is
+    the 31 pairs the paper's manual inspection removed.
+  deviations:
+  - Tested on the pairs the automatic test finds (criterion); the authors' curated pairs are a
+    variant.
+- claim: zero-lag-synchrony
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:zero-lag-synchrony
+  measured:
+  - 0.0822
+  - 0.0107
+  - 0.0013
+  notes: GC pairs are synchronous in 4 of 3105 (0.0013), within the claim's bound of 0.0022. MC and
+    CA3 are synchronous in 0.082 and 0.011 of pairs (reading a) and 216 of 503 MC (0.429) and 46
+    of 568 CA3 (0.081) have a synchronous partner (reading b); none is within tolerance (CA3
+    0.0810 falls just outside 0.081 to 0.099). Under reading (b) both exceed the GC pair fraction
+    more than ten times; under (a) CA3 does not (8 times). No pair on one shank is synchronous by
+    the test; over pairs on different shanks MC 0.133 and CA3 0.029. The authors' zero-lag table
+    gives 111 of 503 MC (0.221) and 30 of 568 CA3 (0.053) with a same-type partner, and no GC pair.
+  deviations:
+  - The paper's manual inspection is not repeated.
+- claim: tmaze-central-active
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:tmaze-central-active
+  notes: In 33 files with at least 4 light-free runs, the median fraction of units above 1 Hz is
+    0.328 in central-arm bins and 0.239 in side-arm bins for MC (238 units, Kruskal-Wallis P =
+    5e-10), 0.018 and 0.022 for GC (225 units, P = 0.41) and 0.233 and 0.219 for CA3 (253 units, P
+    = 0.21). The claim holds at P < 0.00001 for MC only.
+  deviations:
+  - Runs start at the mouse's last entry into the central arm before the lab's arm_start, which
+    lies about 27 cm into the arm, and end within 10 cm of the reward port (claims file header);
+    the Methods start at the gate opening, which the files do not mark.
+  - Units are pooled across sessions and the fraction is taken per bin over the units with a value
+    in it.
+- claim: tmaze-multiple-fields
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:tmaze-multiple-fields
+  measured:
+  - 0.049
+  - 0.626
+  - 0.486
+  notes: Two or more fields are found in 11 of 225 GC (0.049), 149 of 238 MC (0.626) and 123 of
+    253 CA3 (0.486) (reading a); of units with a field, 0.275, 0.819 and 0.741 (reading b). Only
+    the MC fraction is within tolerance under reading (a). GC have the lowest fraction, and the
+    GC against MC Kolmogorov-Smirnov test on field counts gives P = 2e-37.
+  deviations:
+  - Assumed that fields are found from the highest local maximum down (the highest remaining bin,
+    its region above 50% of it, then the next), as the Methods' "50% of the local maximum firing
+    rate" does not say how local maxima are found; asked of the authors.
+  - Runs as in tmaze-central-active.
+- claim: tmaze-peak-info
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:tmaze-peak-info
+  notes: The median within-field peak rate is 2.54 Hz for 40 GC with a field and 4.89 Hz for 182 MC
+    (KS P = 0.0005; 3.78 Hz for CA3). The median spatial information is 0.033 bits/s for GC, 0.424
+    for MC and 0.240 for CA3, KS P = 2e-41 (GC against MC) and 2e-28 (GC against CA3).
+  deviations:
+  - Runs and fields as in tmaze-multiple-fields; the peak is each unit's highest field peak.
+- claim: tmaze-splitters
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:tmaze-splitters
+  notes: Splitters (choice P < 0.001) are 0 of 17 GC, 5 of 158 MC and 3 of 127 CA3 units with a
+    central-arm field, chi-square P = 0.72; over all units (225, 238, 253) P = 0.098. Neither
+    reading finds a difference at P < 0.05. Splitters are few (8), and with no GC splitter the
+    comparison has little power.
+  deviations:
+  - The denominator of the fraction is not given; units with a central-arm field (the units the
+    Methods test) and all units were both run and agree.
+- claim: remap-positive
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:remap-positive
+  notes: Place cells (24 GC, 102 MC, 141 CA3) have median remapping indices of 0.161 (Wilcoxon P =
+    0.0025), 0.281 (P = 3e-10) and 0.233 (P = 1e-14), each at the paper's level. The open-field
+    files hold 246 GC, 182 MC and 317 CA3 units (paper 247, 181, 317).
+  deviations:
+  - Open fields A, B and A' are the lab's Old, New and Oldlast sessions.
+- claim: remap-gc-lt-mc
+  outcome: not_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:remap-gc-lt-mc
+  notes: The GC median index (0.161) is below the MC median (0.281; CA3 0.233), but the
+    Kruskal-Wallis test across the three types gives P = 0.69 and the Bonferroni-corrected
+    Mann-Whitney GC against MC P = 1.
+- claim: remap-fractions
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:remap-fractions
+  measured:
+  - 0.458
+  - 0.549
+  - 0.546
+  notes: 11 of 24 GC (0.458), 56 of 102 MC (0.549) and 77 of 141 CA3 (0.546) place cells have an
+    index of at least 0.2. Only the CA3 fraction is within tolerance (MC lies 0.003 below its
+    bound); GC have the lowest fraction. The place-cell counts are 24, 102 and 141 against the
+    paper's 30, 111 and 144.
+- claim: pv-remap
+  outcome: reproduced
+  seed_sensitive: true
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:pv-remap
+  notes: Under the claim's seed, the GC median population-vector remapping index is below the MC and
+    CA3 medians at every size, with Kruskal-Wallis P from 2e-11 (n = 5) to 2e-47 (n = 20). At n = 5,
+    10 and 15 the gap to MC is 0.03 to 0.05; at n = 20 the medians are GC 0.2877, MC 0.2902 and
+    CA3 0.3461, and the Bonferroni GC against MC test gives P = 0.84. Over the five seeds the n =
+    20 GC median ranges from 0.2858 to 0.2914 and the MC one from 0.2872 to 0.2959; under seeds
+    +2000 (0.2874 against 0.2872) and +4000 (0.2903 against 0.2888) the GC median is above the MC
+    one, so the outcome at n = 20 depends on the draws.
+  deviations:
+  - Draws are from place cells pooled across sessions, without replacement within a draw; pixels
+    count where every drawn cell's maps are defined.
+- claim: inheritance-tmaze
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:inheritance-tmaze
+  notes: 28 detected GC to MC pairs are in T-maze files; their GC have 19 fields, of which 5 overlap
+    a field of the partner MC (0.263, within a third). On the authors' pairs, 18 are in T-maze
+    files, as the paper's 18 (Figure 7A), and 3 of their 14 GC fields overlap.
+  deviations:
+  - Fields as in tmaze-multiple-fields (assumed).
+- claim: inheritance-openfield
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:inheritance-openfield
+  notes: Over 18 comparisons (detected pairs, open-field sessions where the GC has a field) the
+    median correlation of the GC and MC maps within the GC field is -0.005, Wilcoxon P = 0.25. On
+    the authors' pairs, 14 comparisons, median -0.117, P = 0.90.
+- claim: mc-deeper
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:mc-deeper
+  notes: At the wide-band site, in the 17 files with the wide-band signal, the median DS2 amplitude
+    is 1144 uV for 240 MC and 451 uV for 136 GC, Mann-Whitney P = 5e-44; all MC sites and 82% of GC
+    sites have a positive DS2. The MC median is higher in each of the 15 files with both types but
+    one (YutaMouse33-150223, 1104 against 1187 uV). The stored-waveform site, on all files, gives
+    1130 and 401 uV, P = 9e-114.
+  deviations:
+  - The DS2 amplitude is the LFP at the DS2 peak minus its mean at -36 to -16 ms (the baseline of
+    the Methods' DS2 detection), averaged over up to 600 DS2 events per file.
+  - The wide-band site uses up to four 52 s blocks of the wide band per file (median 94 spikes per
+    unit).
+- claim: gc-mc-classification
+  outcome: reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:gc-mc-classification
+  notes: K-means on the four standardised features of 376 units (136 GC, 240 MC) agrees with the
+    labels for 94.9%, under all five seeds. Without the waveform components 89.9%; the DS2
+    amplitude alone 85.1%, the waveform components alone 85.4%, the rate ratio alone 68.9%. The
+    variant with the stored waveforms (first 0.4 ms after the trough, as the stored 1.6 ms often
+    ends sooner) and the table site on all files gives 92.7% of 1086 units.
+- claim: gc-mc-distance
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The distance needs the vertical position of each recording site. The electrodes table holds
+    channel_id, group_name, location, hilus_reference and shank_electrode_number (a channel's place
+    in its shank's list in the lab's .xml file) and no coordinate, and the files do not say which
+    list position is which depth. The claims file gives no criterion for the claim.
+- claim: gc-backpropagation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The soma to dendrite delay needs the order of the sites along the shank, which the files do
+    not give (see gc-mc-distance); the claim's figure (S3D to S3F) is in the supplement, and the
+    claims file gives no criterion for it.
+findings:
+- kind: metadata_insufficient
+  about: data
+  severity: major
+  statement: The electrodes table gives no position for the recording sites, only each channel's
+    place in its shank's list in the lab's .xml file, and does not say which place is which depth.
+    The paper's GC to MC distance (Figure 3D) and the spike delay along the shank (Figure S3) cannot
+    be computed.
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: The trials' arm_start is described as the time the mouse entered the central arm, but
+    at that time the lab's central-arm position is 27.3 cm into the 65 cm arm (median over 1246
+    light-free runs; 10th to 90th percentile 24.6 to 29.2 cm).
+- kind: other
+  about: data
+  severity: minor
+  statement: The stored spike waveforms span 1.6 ms (32 samples), and for 44% of granule cells and
+    69% of mossy cells the waveform peak after the trough falls at the end of that window, so
+    trough-to-peak latencies from them are lower bounds. With the wide-band waveform, in the 17
+    files that hold it, the GC and MC latencies do not differ (0.700 against 0.710 ms, P = 0.43),
+    while the stored waveforms give 0.710 against 0.740 ms (P = 4e-14). One file
+    (YutaMouse33-150218) has no stored waveforms, as its description says.
+- kind: other
+  about: data
+  severity: minor
+  statement: 13 of the 101 files have no monosynaptic_connections table, and the files do not say
+    whether the authors found no pair in those sessions or did not analyse them.
+- kind: other
+  about: data
+  severity: none
+  statement: The files agree with the paper's counts. The labels give 583 GC and 503 MC (paper 586
+    and 500) and 248 dentate narrow-waveform interneurons (paper 248; wide-waveform 258 against
+    268). The DRD2-Cre::Ai35 files hold 106 MC, 198 GC, 62 wide- and 68 narrow-waveform dentate
+    interneurons (paper 107, 202, 68, 69), and drd2_tagged marks 29 MC, as the paper, all of them
+    suppressed by light in the data. The authors' monosynaptic table holds the paper's 32 GC to MC
+    pairs and no MC to GC pair, 18 of them in T-maze files as in Figure 7A; its zero-lag table gives
+    22.1% of MC with a same-type partner (paper 23%). The open-field files hold 246 GC, 182 MC and
+    317 CA3 units (paper 247, 181, 317).
+- kind: other
+  about: data
+  severity: none
+  statement: Checks that passed. The seven same-day 'b' files are separate recordings (different
+    spans, no shared spike counts, distinct global_ids), not duplicates, and no global_id repeats.
+    The channel of the largest stored waveform, through the electrodes table, is the channel of the
+    largest wide-band spike for 335 of 376 GC and MC (89%), with a median DS2 amplitude difference
+    of 0 uV between the two. Spikes share the clock of the DS2 events (the GC and MC peak ratio
+    falls with DS2 times shifted by 0.5 s in 80 of 81 files; in YutaMouse44-151130, with few GC
+    and MC, it could not be shown), of the positions (spatial information falls from 0.100 and
+    0.323 to 0.048 and 0.057 bits/s with spikes shifted 60 s, in two T-maze files) and of the light
+    pulses (all 29 tagged MC suppressed at +2 to +15 ms).
+- kind: methods_unavailable
+  about: paper
+  statement: The Methods define a T-maze place field as a region "above 50% of the local maximum
+    firing rate" but not how local maxima are found when a map has several peaks. This attempt takes
+    the highest remaining bin, its region, then the next; the count of fields per unit, and so
+    tmaze-multiple-fields and inheritance-tmaze, depend on this. How were local maxima found?
+- kind: methods_unavailable
+  about: paper
+  statement: For DRD2-Cre::Ai35 mice the Methods identify mossy cells by a decrease of at least 20%
+    at +2 to +15 ms, and the Results say "suppressed significantly". The 20% rule alone, against
+    either baseline, finds 68 of 106 MC suppressed (paper 29 of 107). What baseline window and what
+    significance test were used?
+- kind: methods_unavailable
+  about: paper
+  statement: The automatic CCG test of the Methods finds 63 GC to MC and 8 MC to GC pairs; the
+    authors' curated table holds 32 and 0. The manual inspection that "excluded the contamination
+    from the long-time scale trend" changes the fraction (monosyn-gc-to-mc) and the state result
+    (state-transmission, P = 0.52 on the 63 pairs, 0.018 on the 32). What criteria did the
+    inspection apply?
+- kind: methods_unavailable
+  about: paper
+  statement: The T-maze analysis window runs "from the gate opening to the arrival to the reward
+    location", but the files mark no gate opening; this attempt starts each run at the mouse's
+    entry into the central arm. Where does the gate opening fall relative to the files' trial
+    times?
