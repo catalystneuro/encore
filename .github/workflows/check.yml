@@ -76,8 +76,11 @@ jobs:
     needs: check
     if: needs.check.outputs.entries != '[]'
     runs-on: ubuntu-latest
-    # The environment, then each notebook of the entry: up to 80 minutes each, as for the verifier's re-run
-    # (attempt.yml); authors aim for 60 (docs/protocol.md).
+    # The environment, then each notebook of the entry: up to 120 minutes each. Authors aim for 60
+    # (docs/protocol.md) and the verifier's re-run allows 80 (encore-protocol's attempt.yml). This check allows
+    # more because a hosted runner can be much slower than the one the verifier ran on (hiraoka-2025,
+    # 2026-11-22: every notebook of the entry took 1.4 to 1.65 times as long here as in the verifier's run, and
+    # a notebook that took 50 minutes there stopped at 80 here; kay-2008, 2026-11-14, stopped at 89 minutes).
     timeout-minutes: 300
     strategy:
       fail-fast: false
@@ -121,7 +124,7 @@ jobs:
           key: clean-run-${{ matrix.entry }}-${{ steps.entry.outputs.hash }}
 
       - name: Execute the entry's notebooks
-        run: python tools/entry.py run "entries/${{ matrix.entry }}" --max-minutes 80 --timeout 4800
+        run: python tools/entry.py run "entries/${{ matrix.entry }}" --max-minutes 120 --timeout 7200
 
       - name: Keep the executed copies for the next clean run of this entry
         if: steps.cache.outputs.cache-hit != 'true'
