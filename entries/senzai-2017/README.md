@@ -24,19 +24,19 @@ the dandiset, YutaMouse57, is not in the paper and is left out).
 | GC to MC transmission rises from the first to the second burst spike | Reproduced |
 | GC to MC transmission is lower in NREM than in wake | Not reproduced |
 | Zero-lag synchrony in 23% of MC, 9% of CA3, under 0.2% of GC pairs | Partially reproduced |
-| More units active in the T-maze central arm, for each type | Partially reproduced |
-| Two or more T-maze fields in 6.6% of GC, 57.8% of MC, 36.1% of CA3 | Partially reproduced |
-| GC have the lowest field peak rate and spatial information | Reproduced |
-| Splitter fractions are comparable across types | Reproduced |
+| More units active in the T-maze central arm, for each type | Partially reproduced (rests on an assumption) |
+| Two or more T-maze fields in 6.6% of GC, 57.8% of MC, 36.1% of CA3 | Partially reproduced (rests on an assumption) |
+| GC have the lowest field peak rate and spatial information | Reproduced (rests on an assumption) |
+| Splitter fractions are comparable across types | Reproduced (rests on an assumption) |
 | Remapping index above zero in each type | Reproduced |
 | GC remap less than MC | Not reproduced |
 | 36.7% of GC, 61.3% of MC and 55.6% of CA3 place cells remap | Partially reproduced |
 | Population-vector remapping is smallest for GC | Reproduced (seed sensitive) |
-| MC rarely inherit T-maze fields from single GC | Reproduced |
+| MC rarely inherit T-maze fields from single GC | Reproduced (rests on an assumption) |
 | GC and MC maps are not correlated within the GC field | Reproduced |
 | MC lie deeper than GC relative to the DS2 reversal | Reproduced |
 | K-means on the four features separates GC and MC | Reproduced |
-| GC sit 59 um above their MC partners; GC spikes back-propagate | Blocked: metadata insufficient (two claims) |
+| GC sit 59 um above their MC partners; GC spikes back-propagate | Blocked: metadata insufficient (two claims); a change to methods underspecified, as the claims file gives no criterion, is proposed |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -48,4 +48,4 @@ The attempt record, with the reasons and the differences from the paper's method
   about half an hour, most of it reading the files.
 - `senzai.py`: loading, and the per-unit and per-pair measures (rates by state, burst index,
   waveforms, DS2 amplitude and histograms, theta and gamma phase, optogenetic suppression,
-  cross-correlogram tests, T-maze and open-field maps). Other notebooks on this dandiset can import it.
+  cross-correlogram tests, T-maze and open-field maps, with variants on the T-maze run). Other notebooks on this dandiset can import it.

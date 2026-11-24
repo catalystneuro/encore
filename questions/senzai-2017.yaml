@@ -46,3 +46,50 @@ questions:
     the end of the stored 1.6 ms for 44% of GC and 69% of MC. With the unfiltered wide-band waveform
     in 17 files, the latency to the largest later sample gives 0.770 against 0.800 ms (P = 0.175, not
     reproduced), and to the first local peak 0.610 against 0.700 ms (P = 7.9e-10, reproduced).
+- claim: pv-remap
+  question: The claim's statistics list a Bonferroni post hoc test (P < 0.00001 at 20 place cells, P
+    < 0.05 at 5, 10, 15 and 20), and the statement says granule cells remap less than mossy cells,
+    which only the post hoc GC against MC test addresses. The criterion asks only that the GC median
+    be below the MC and CA3 medians with Kruskal-Wallis P < 0.00001 across the three types. Does the
+    criterion misread the paper by leaving out the post hoc test, and should it require the GC
+    against MC and GC against CA3 post hoc P values the statistics give?
+  passage: 'Results, Spatial and memory properties of granule cells and mossy cells, paragraph 3,
+    "The magnitude of population remapping was significantly smaller for granule cells compared to
+    mossy cells and CA3 pyramidal cells (P < 0.00001; Kruskal-Wallis test with Bonferroni post hoc;
+    P < 0.00001; Figure 6F) ... (P < 0.00001 for n = 5, 10, 15, 20 sampling number, Kruskal-Wallis
+    test with Bonferroni post hoc; P < 0.05; Figure 6G)".'
+  why: Under the claim's seed the GC median is below the MC and CA3 medians at every size with
+    Kruskal-Wallis P at most 2e-11, so the claim is reproduced on the criterion. The Bonferroni GC
+    against MC test gives P at most 1e-6 at 5, 10 and 15 cells but P = 0.84 at 20 cells, where the
+    medians are 0.2877 and 0.2902. With the post hoc test in the criterion the claim would be
+    partially reproduced (raised by the verifier, round 2, point 3).
+- claim: gc-mc-distance
+  question: The claims file gives no criterion for gc-mc-distance or gc-backpropagation, so neither
+    can be judged. The files hold each channel's place in its shank's list, and the DS2 profile is
+    smooth in list order on 0.83 of the shanks where it reverses, so a site's depth can be read
+    from it with the lab's convention. Can criteria be written for the two claims (for example, the
+    mean GC to MC vertical offset of connected same-shank pairs against 59 +- 35 um, and the
+    soma to dendrite delay of GC spikes against MC spikes)?
+  passage: 'Results, Granule cell-mossy cell spike transmission, paragraph 1, "Granule cells
+    resided 59±35 μm above their driven mossy cell partners (Figure 3B, D)". Results,
+    Identification of granule cells and mossy cells in extracellular recordings, paragraph 3,
+    "Indeed, the spikes of granule cells showed a delay from the soma to the proximal dendrites
+    (corresponding to ~ 0.2–0.3 m/s, Krueppel et al., 2011), whereas no such delays were observed in
+    putative mossy cells (Figure S3D-F)".'
+  why: Both claims are blocked. With a criterion they could be tested. Read as depth from the top
+    at 20 um per list place, the MC site lies 13 +- 49 um below its GC partner's on the authors' 17
+    same-shank pairs, against the paper's 59 +- 35 um.
+- claim: zero-lag-synchrony
+  question: The claims file's header says "Only 17 files say which shank each unit was recorded on",
+    the zero-lag-synchrony criterion says units on one shank cannot be told apart "as the files do
+    not say which shank a unit is on", and the mc-deeper criterion uses only the 17 files "whose
+    units carry their shank". Every file's units table gives the shank (the electrode_group of each
+    unit). Should these sentences be corrected, and should the zero-lag criterion say how pairs on
+    one shank are treated?
+  passage: 'STAR Methods, Detection of short-time scale interactions (the CCG test for monosynaptic
+    and zero-lag pairs); the claims file header and the criteria of zero-lag-synchrony and
+    mc-deeper.'
+  why: No pair on one shank is synchronous by the test, and those pairs enlarge the denominators.
+    Over pairs on different shanks MC give 0.133 and CA3 0.029 of pairs; the outcome, partially
+    reproduced, is the same. For mc-deeper the 17 files are the ones with the wide-band signal, so
+    the outcome does not change (raised by the verifier, round 2).

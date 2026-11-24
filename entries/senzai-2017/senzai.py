@@ -82,7 +82,12 @@ result):
   the 102 cm side arm (M, Behavioral procedures). The lab's `arm_start` lies
   about 27 cm into the central arm, so the run starts at the mouse's last
   entry into the arm before it (A: the Methods start at the gate opening,
-  which the files do not mark; the entry is the nearest marked point).
+  which the files do not mark; the entry is the nearest marked point). Runs
+  from arm_start itself, and runs without the side-arm samples on the arm not
+  chosen (the sign of side_arm_angle opposite to the run's end), are kept as
+  variants, and so is a linearisation that puts each side-arm sample on the
+  arm its angle's sign gives (positive is the left arm) in place of the
+  trial's arm.
 - Interneurons are the dentate ones (region DG) wherever the paper's counts
   are dentate counts: "narrow-waveform (n = 248) and wide-waveform (n = 268)
   putative interneurons ... Units recorded in CA3 were separately classified"
@@ -530,8 +535,7 @@ RADIUS_CM = 32.5
 PORT_CM = SIDE_CM - 18.0
 
 
-def tmaze_runs(f):
-    """Linearised outbound runs: list of (times, lin_cm, arm, speed, left)."""
+def _tmaze_arrays(f):
     tr = f["intervals/trials"]
     T = {k: tr[k][:] for k in ["arm_start", "arm_end", "sens_pass", "left_run", "stim_run", "error_run", "stop_time"]}
     g = f["processing/behavior/t_maze_position"]
@@ -544,7 +548,21 @@ def tmaze_runs(f):
         t = g["position/starting_time"][()] + np.arange(len(pos)) / rate
     ca = g["central_arm_position/data"][:] * 32.5  # cm, 65 at entry, 0 at junction
     ang = f["processing/behavior/side_arm_angle/data"][:]
-    v = speed(t, pos)
+    return T, t, rate, ca, ang, speed(t, pos)
+
+
+def tmaze_runs(f, start="entry", drop_other_arm=False, arm_by_angle=False, arrays=None):
+    """Linearised outbound runs: list of (times, lin_cm, arm, speed, left).
+
+    start="entry": from the mouse's last entry into the central arm before the
+    lab's arm_start (A, main); start="arm_start": from arm_start itself (the
+    other reading, a variant). Side-arm samples whose angle has the sign
+    opposite to the run's end (an excursion into the arm not chosen) are
+    counted in n_other; drop_other_arm=True leaves them out of the run's
+    occupancy and spikes (a variant); arm_by_angle=True puts each side-arm
+    sample on the arm the sign of its angle gives, not the trial's arm (a
+    variant)."""
+    T, t, rate, ca, ang, v = arrays if arrays is not None else _tmaze_arrays(f)
     runs = []
     for k in range(len(T["arm_start"])):
         if T["stim_run"][k]:
@@ -553,8 +571,9 @@ def tmaze_runs(f):
         i0 = np.searchsorted(t, a)
         at_start = CENTRAL_CM - ca[min(i0, len(ca) - 1)]  # cm into the central arm at arm_start
         # arm_start is ~27 cm into the central arm; go back to the entry (A)
-        while i0 > 0 and ca[i0 - 1] > 0:
-            i0 -= 1
+        if start == "entry":
+            while i0 > 0 and ca[i0 - 1] > 0:
+                i0 -= 1
         i_end = np.searchsorted(t, T["stop_time"][k])
         side = np.abs(ang[i0:i_end]) * RADIUS_CM
         reach = np.flatnonzero((side >= PORT_CM - 10) & (ca[i0:i_end] == 0))
@@ -566,11 +585,17 @@ def tmaze_runs(f):
         cen = CENTRAL_CM - ca[i0:i1]
         sd = np.abs(ang[i0:i1]) * RADIUS_CM
         on_side = (ca[i0:i1] == 0) & (sd > 0)
+        other = on_side & (np.sign(ang[i0:i1]) != np.sign(ang[i1]))
         lin = np.where(on_side, CENTRAL_CM + sd, np.clip(cen, 0, CENTRAL_CM))
         valid = (on_side | (ca[i0:i1] > 0)) & np.isfinite(lin)
+        if drop_other_arm:
+            valid &= ~other
         lin = np.where(valid, lin, 0.0)
         runs.append(dict(t=t[i0:i1], lin=lin, side=on_side, v=np.where(valid, v[i0:i1], 0.0), left=bool(T["left_run"][k]),
-                         error=bool(T["error_run"][k]), dt=1 / rate, arm_start_cm=float(at_start)))
+                         error=bool(T["error_run"][k]), dt=1 / rate, arm_start_cm=float(at_start),
+                         n_side=int(on_side.sum()), n_other=int(other.sum()),
+                         other_max_cm=float(sd[other].max()) if other.any() else 0.0,
+                         end_left=bool(ang[i1] > 0), side_left=(ang[i0:i1] > 0) if arm_by_angle else None))
     return runs
 
 
@@ -583,6 +608,8 @@ def tmaze_bin(run):
     lin = run["lin"]
     b = np.where(run["side"], N_CEN + np.minimum(((lin - CENTRAL_CM) / TM_BIN).astype(int), N_SIDE - 1),
                  np.minimum((lin / TM_BIN).astype(int), N_CEN - 1))
+    if run.get("side_left") is not None:  # each sample on the arm its angle gives (variant)
+        return np.where(run["side"] & ~run["side_left"], b + N_SIDE, b)
     if not run["left"]:
         b = np.where(run["side"], b + N_SIDE, b)
     return b
@@ -870,14 +897,27 @@ def process_file(asset, do_waveforms=True, do_lfp=True, do_space=True):
 
 
 def tmaze_session(f, sp_units):
-    runs = tmaze_runs(f)
+    arrays = _tmaze_arrays(f)
+    runs = tmaze_runs(f, arrays=arrays)
     out = dict(n_runs=len(runs), n_left=sum(r["left"] for r in runs),
-               arm_start_cm=[r["arm_start_cm"] for r in runs])
+               arm_start_cm=[r["arm_start_cm"] for r in runs],
+               other_arm=[(r["n_side"], r["n_other"], r["other_max_cm"], r["left"], r["end_left"], r["error"]) for r in runs])
     if len(runs) < 4:
         return out
+    out.update(_tmaze_analyse(runs, sp_units))
+    # variants on the run: from the lab's arm_start, and without excursions into the arm not chosen
+    out["variants"] = {}
+    for name, kw in [("arm_start", dict(start="arm_start")), ("chosen_arm_only", dict(drop_other_arm=True)),
+                     ("arm_by_angle", dict(arm_by_angle=True))]:
+        rv = tmaze_runs(f, arrays=arrays, **kw)
+        if len(rv) >= 4:
+            out["variants"][name] = _tmaze_analyse(rv, sp_units)
+    return out
+
+
+def _tmaze_analyse(runs, sp_units):
     occ, sc, per_run = tmaze_maps(runs, sp_units)
-    out["occ"] = occ
-    out["maps"], out["fields"], out["info"], out["splitter"] = {}, {}, {}, {}
+    out = dict(occ=occ, maps={}, fields={}, info={}, splitter={})
     ok = occ > 0
     for k in sp_units:
         raw = np.where(ok, sc[k] / np.where(ok, occ, 1), np.nan)
