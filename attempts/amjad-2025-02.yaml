@@ -283,6 +283,13 @@ findings:
   statement: In the paper's Zenodo deposit the file 09262024_c3bs-c3a_data_trial35bigrewardexample.mat stores the
     time axis in the field meant for the example LFP (trial35bigrewardata equals trial35bigrewardataTS), so the
     example trace of Figure 3B is not deposited.
+- kind: metadata_insufficient
+  severity: minor
+  found: on_prompt
+  statement: The trials tables of both Monkey T sessions hold only 60 s windows around each trial start and one tag,
+    with no trial conditions, so the conditions must be decoded from the event codes. Session 09/13/2024 has no
+    small-reward code (100), and codes 35 and 36 are labelled 'right cue reward condition 1' and '2' without saying
+    that they mark large and small reward, which they do in all 303 successful forced trials (164 and 139).
 verifications:
 - date: '2026-11-24'
   kind: agent
@@ -534,3 +541,107 @@ verifications:
     agrees: true
     reason: None of the 11 findings is rated critical, and none should be. The clock checks support the "none" finding
       (cells 7, 13, 17, 21, 22).
+reconciliation:
+  earlier: amjad-2025-01
+  date: '2026-11-25'
+  blind: false
+  blind_note: The author saw no record, entry, notebook or transcript of amjad-2025-01, but it saw summaries of that
+    attempt's results through two texts left in its checkout. The claims file's opening comment, written by the earlier
+    author after its data check, says that the events repeat about five times, that the raw 09/26/2024 ephys and Monkey
+    P's spikes are offset from the trial clock, and that the raw FSCV could not be matched to the trial-aligned traces
+    and shows no reward contrast (earlier findings 1, 6, 8 and 9); the author's report says it read this before its
+    own analysis (transcripts/amjad-2025/author-report.md, "Earlier results"). The release notes of 0.261120.1306,
+    printed in its data check, list the problems "found by a reproduction attempt" and their fixes (earlier findings
+    1 and 5 to 10, and part of 13) and the known gaps. The three lines printed by tools/blind.sh audit are a link to
+    the pilot notes and the run's own URL.
+  findings:
+  - finding: 1
+    status: fixed
+    note: Each event is now stored once, in time order, in both Monkey T sessions (19158 stored and 19158 distinct
+      times in 09/13/2024, 15437 and 15437 in 09/26/2024; earlier_findings.ipynb, finding 1).
+  - finding: 2
+    status: still_present
+    now: 12
+    note: The trials tables still hold only start, stop and midpoint times and one tag ('initial cue display'); 09/13/2024
+      has no code 100, and codes 35 and 36 keep their labels while marking the 164 large-reward and 139 other successful
+      forced trials (earlier_findings.ipynb, finding 2).
+  - finding: 3
+    status: still_present
+    now: 1
+    note: Finding 1 of amjad-2025-02 reports that c8ds is missing, and its finding 7 that the trial-aligned table covers
+      only trials 0 to 733 of 1468; the release notes list both as known gaps.
+  - finding: 4
+    status: still_present
+    now: 7
+    note: The four trial-aligned FSCV columns are now described as 'Units unknown' (finding 7 of amjad-2025-02), and
+      the reference window of da is still not given, as the release notes' known gaps say.
+  - finding: 5
+    status: fixed
+    note: The raw FSCV current is still labelled amperes but now has a conversion of 1e-9, so its stored values (-1526.5
+      to 1557.0 in the first 2e6 samples) read as nA (earlier_findings.ipynb, finding 5).
+  - finding: 6
+    status: fixed
+    note: The scans now run from 1717.97 to 25838.11 s, not from the first trial start (6920.17 s), and the scan-to-scan
+      change of the raw current at 0.608 V correlates positively with that of the stored iox in 0.963 of 734 rows at
+      shift 0 against 0.398 and 0.519 at shifts of -50 and +50 scans (earlier_findings.ipynb, finding 6).
+  - finding: 7
+    status: fixed
+    note: The bipolar LFP now has a conversion of 1.0, and its values are in volts (median absolute value 6.44e-05;
+      earlier_findings.ipynb, finding 7).
+  - finding: 8
+    status: fixed
+    note: The raw ephys of 09/26/2024 now starts at 2631.345 s on the session clock, and its 13 to 28 Hz bipolar signal
+      matches the stored LFP at a lag of 0 to 1 ms (r 0.707 to 0.727) in two 60 s segments (earlier_findings.ipynb,
+      finding 8).
+  - finding: 9
+    status: fixed
+    note: Monkey P's raw timestamps (6800.666 to 18786.083 s) and spike times (6800.666 to 18785.219 s) now share one
+      clock, and the spike-triggered average of the 300 to 6000 Hz signal has its trough of -29.9 uV 1 sample after
+      the spike time (earlier_findings.ipynb, finding 9).
+  - finding: 10
+    status: fixed
+    note: Unit ch33#0 still holds the unsorted and poor-quality spikes, and the units table's description now says
+      so; no unit has a spike time below 1 s or a repeated time, and every unit is in time order (earlier_findings.ipynb,
+      finding 10).
+  - finding: 11
+    status: partly_fixed
+    now: 2
+    note: Monkey P's file now holds its 36 event codes (20812 events), but still no trials table and no names for the
+      codes, so the trials and reward conditions still cannot be identified (finding 2 of amjad-2025-02).
+  - finding: 12
+    status: still_present
+    now: 3
+    note: Finding 3 of amjad-2025-02 reports that no implantation date is given in the files or the dandiset metadata,
+      and adds that no list of implanted sensors is given either.
+  - finding: 13
+    status: partly_fixed
+    now: 6
+    note: The three files now cite the article as well as the preprint (earlier_findings.ipynb, finding 13). The site
+      is still named cl3 (finding 6 of amjad-2025-02) and the stored high cut is still 8000 Hz where the description
+      says 7500 Hz (its finding 4).
+  - finding: 14
+    status: still_present
+    now: 5
+    note: Finding 5 of amjad-2025-02 reports the same applied waveform, -0.347 to 1.340 V against the paper's -0.4 to
+      1.3 V.
+  outcomes:
+  - claim: fig3a-redox-peaks
+    earlier: blocked
+    cause: dataset_changed
+    note: On 0.261012.0921 the raw FSCV scan times were a 0.1 s grid from the first trial start and the raw current
+      matched the stored iox at no offset (|r| below 0.06), so the earlier attempt blocked the claim as metadata_insufficient;
+      0.261120.1306 places each scan on the session clock (release notes, "Raw FSCV"), and the later attempt found
+      it on the trial clock (cross-correlation z 19.3 at lag -1 scan) and tested the criterion. Its voltammogram of
+      164 trials has its falling-sweep minimum at 0.897 V, outside -0.35 to -0.05 V, and is flat within noise, as the
+      earlier voltammogram at the old times also was (not deciding there).
+    supports: not_reproduced
+    confidence: high
+  protocol: The attempts ran under pilot-7 and pilot-18. pilot-8 added quotes and reported statistics to claims files;
+    this claims file got its quotes on 2026-10-19 and the paper reports no statistics, the 14 claim ids are the same,
+    and nothing in either record points to a changed criterion. pilot-9 and pilot-10 had no effect here, as the paper was read from
+    its full text and the claims file was kept, so its criteria are still those written by the earlier author after
+    its data check. pilot-12 made this attempt blind and moved the comparison into this block; the claims file's comment
+    and the release notes still carried the earlier results to the author. pilot-13 (one hour a notebook) and pilot-14
+    (records filed by paper) changed nothing here. The pilot notes have no section after pilot-14; the protocol now
+    asks the author to rate each finding's severity (from pilot-18), which amjad-2025-02 did and amjad-2025-01 did
+    not, its findings being rated later under findings_review.
