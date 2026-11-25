@@ -23,8 +23,8 @@ single-electrode datasets, the EMG and the leech and walking-monkey recordings a
 | Shuffle controls remove the rotations | Partially reproduced (assumed onset column) |
 | PMd and M1 each capture 28 to 32% in the jPCA plane | Not reproduced |
 | Rotations are faster in M1 than in PMd | Reproduced |
-| A velocity-tuned simulated population does not rotate | Not reproduced (assumed model) |
-| A complex kinematic simulated population does not rotate | Partially reproduced (assumed model, seed sensitive) |
+| A velocity-tuned simulated population does not rotate | Partially reproduced (assumed model) |
+| A complex kinematic simulated population does not rotate | Not reproduced (assumed model) |
 | Leech, walking monkey, single electrodes, EMG, generator model, speed task (six claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -33,7 +33,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/churchland-2012-02.yaml`](../../attempts/churchland-2012-02.yaml).
 
-- `reproduce_churchland_2012.ipynb`: the analysis. It takes about eleven minutes, most of it
+- `reproduce_churchland_2012.ipynb`: the analysis. It takes about sixteen minutes, most of it
   streaming the spikes and simulating the kinematic populations.
 - `reach.py`: loading the files, condition-averaged rates aligned on movement onset, jPCA as in the
   paper's Methods, the shuffle controls of Supplementary Figure 2 and the simulated kinematic

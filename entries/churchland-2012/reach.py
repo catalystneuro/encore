@@ -111,7 +111,8 @@ def unit_groups(f):
 
 
 def load_rates(f, trials, onset_cols=("offline_move_onset_time", "move_begins_time"),
-               target_bins=(-500, 500, 50), move_bins=(-1000, 700, 50), n_blocks=6):
+               target_bins=(-500, 500, 50), move_bins=(-1000, 700, 50), n_blocks=6,
+               event_window=(-200, 500)):
     """Condition-mean spike counts at 1 ms, aligned on each movement onset column.
 
     Returns a dict with, per onset column, `sum` (units x conditions x ms) of
@@ -119,8 +120,11 @@ def load_rates(f, trials, onset_cols=("offline_move_onset_time", "move_begins_ti
     counts in 50 ms bins aligned on target onset and on movement onset (for
     the clock check), and `block_sum`: counts aligned on the first onset column
     summed over the trials of each of `n_blocks` consecutive blocks of the
-    session (units x blocks x ms), to look for a drift between arrays. Spikes
-    are read one unit at a time.
+    session (units x blocks x ms), to look for a drift between arrays, and
+    `event_sum`: condition-summed counts at 1 ms over `event_window` around
+    target onset and the go cue (units x conditions x ms), to compare the
+    arrays' latencies on events that do not depend on the movement onset.
+    Spikes are read one unit at a time.
     """
     si = f["units/spike_times_index"][:]
     st = f["units/spike_times"]
@@ -142,6 +146,10 @@ def load_rates(f, trials, onset_cols=("offline_move_onset_time", "move_begins_ti
     out["block_sum"] = np.zeros((nu, n_blocks, nbin), np.float32)
     out["target_counts"] = np.zeros((len(trials), nu, len(tb)), np.uint16)
     out["move_counts"] = np.zeros((len(trials), nu, len(mb)), np.uint16)
+    events = {"target_presentation_time": tgt, "go_cue_time": trials.go_cue_time.values}
+    ne = event_window[1] - event_window[0]
+    out["event_sum"] = {e: np.zeros((nu, ncond, ne), np.float32) for e in events}
+    out["event_window"] = event_window
     for col in onset_cols:
         a = trials[col].values
         lo = a + (T0 - PAD) / 1000.0
@@ -178,6 +186,16 @@ def load_rates(f, trials, onset_cols=("offline_move_onset_time", "move_begins_ti
             b = np.floor((s[idx] - ref[tri] - edges[0]) / w + 1e-9).astype(int)
             ok = (b >= 0) & (b < len(edges))
             np.add.at(out[key][:, u, :], (tri[ok], b[ok]), 1)
+        for e, ref in events.items():
+            l = np.searchsorted(s, ref + event_window[0] / 1000.0)
+            h = np.searchsorted(s, ref + event_window[1] / 1000.0)
+            cnt = h - l
+            if cnt.sum() == 0:
+                continue
+            tri = np.repeat(np.arange(len(ref)), cnt)
+            idx = np.concatenate([np.arange(x, y) for x, y in zip(l, h)])
+            b = np.clip(np.floor((s[idx] - ref[tri]) * 1000.0 - event_window[0]).astype(int), 0, ne - 1)
+            np.add.at(out["event_sum"][e][u], (cidx[tri], b), 1)
     out["target_edges"] = tb
     out["move_edges"] = mb
     return out
@@ -195,22 +213,29 @@ def ms_index(t_ms):
     return np.asarray(t_ms) - T0
 
 
-def load_hand(f, trials, col="offline_move_onset_time", t0=-200, t1=700):
-    """Hand position (mm) from t0 to t1 ms around movement onset, per trial, at 1 ms."""
+def load_hand(f, trials, cols=("offline_move_onset_time", "move_begins_time"), t0=-200, t1=700):
+    """Hand position (mm) from t0 to t1 ms around movement onset, per trial, at 1 ms.
+
+    Returns a dict, one array (trials x ms x 2) per onset column, and the times.
+    Each trial's samples are read once, over the span both alignments need.
+    """
     ts = f["processing/behavior/Position/Hand/timestamps"][:]
-    a = trials[col].values
-    lo = np.searchsorted(ts, a + t0 / 1000.0 - 0.005)
-    hi = np.searchsorted(ts, a + t1 / 1000.0 + 0.005)
+    al = {c: trials[c].values for c in cols}
+    a_lo = np.min([al[c] for c in cols], axis=0)
+    a_hi = np.max([al[c] for c in cols], axis=0)
+    lo = np.searchsorted(ts, a_lo + t0 / 1000.0 - 0.005)
+    hi = np.searchsorted(ts, a_hi + t1 / 1000.0 + 0.005)
     grid = np.arange(t0, t1) / 1000.0
-    out = np.full((len(a), len(grid), 2), np.nan)
+    out = {c: np.full((len(a_lo), len(grid), 2), np.nan) for c in cols}
     hd = f["processing/behavior/Position/Hand/data"]
-    for i in range(len(a)):
+    for i in range(len(a_lo)):
         if hi[i] - lo[i] < 10:
             continue
         x = hd[lo[i]:hi[i]]
-        tt = ts[lo[i]:hi[i]] - a[i]
-        for k in range(2):
-            out[i, :, k] = np.interp(grid, tt, x[:, k], left=np.nan, right=np.nan)
+        for c in cols:
+            tt = ts[lo[i]:hi[i]] - al[c][i]
+            for k in range(2):
+                out[c][i, :, k] = np.interp(grid, tt, x[:, k], left=np.nan, right=np.nan)
     return out, np.arange(t0, t1)
 
 
@@ -222,12 +247,13 @@ def analysis_times():
     return np.arange(s, e + 1, d)
 
 
-def preprocess(rates, norm_window=None, times=None):
+def preprocess(rates, norm_window=None, times=None, out_times=None):
     """Soft-normalise, subtract the cross-condition mean, cut the analysed times.
 
     rates: units x conditions x ms (T0..T1). norm_window: (start, stop) in ms for
     the firing-rate range; None for the analysed window. Returns units x
-    conditions x analysed times.
+    conditions x analysed times (or x `out_times`, normalised as for the
+    analysed times).
     """
     times = analysis_times() if times is None else times
     if norm_window is None:
@@ -237,7 +263,15 @@ def preprocess(rates, norm_window=None, times=None):
     rng = rng_src.max(axis=(1, 2)) - rng_src.min(axis=(1, 2))
     r = rates / (rng + SOFT_NORM)[:, None, None]
     r = r - r.mean(axis=1, keepdims=True)
-    return r[:, :, ms_index(times)]
+    return r[:, :, ms_index(times if out_times is None else out_times)]
+
+
+def project(X, o, plane=0):
+    """Project preprocessed data X (units x conditions x times) onto plane
+    `plane` of an earlier jpca result `o` (its PCs and plane basis)."""
+    A = X - o["pc_mean"][:, None, None]
+    scores = np.tensordot(o["load"], A, axes=(1, 0))
+    return np.tensordot(o["bases"][plane], scores, axes=(1, 0))
 
 
 def pca(X, k):
@@ -310,9 +344,7 @@ def jpca(X, k=6, n_planes=1):
             continue
         used.append(idx)
         v1 = V[:, idx]
-        v2 = np.conj(v1)
-        if np.sign(v1.real.sum()) != np.sign(v2.real.sum()):
-            v2 = -v2
+        v2 = np.conj(v1)    # the plane's orientation is set below
         j1 = (v1 + v2).real
         j2 = (1j * (v1 - v2)).real
         j1 /= np.linalg.norm(j1)
@@ -338,7 +370,8 @@ def jpca(X, k=6, n_planes=1):
     out = {"planes": planes, "bases": bases, "plane_var": np.array(pvar),
            "pc_var": var[:k] / total, "pc_var_all": var / total, "M": M, "Mskew": Mk,
            "R2_M": r2(M, Xs, dX), "R2_skew": r2(Mk, Xs, dX), "eig": ev, "scores": scores,
-           "plane_eig": np.array(freqs)}
+           "plane_eig": np.array(freqs), "load": load,
+           "pc_mean": X.reshape(X.shape[0], -1).mean(axis=1)}
     # fits within the first plane
     Z = planes[0]
     Xp, dXp = state_and_derivative(Z)
@@ -416,14 +449,20 @@ def kinematics(hand_mean, t_ms, sd=20.0):
 
 
 def simulate_population(model, kin, t_kin, rates, n_trials, rng, lag_ms=100,
-                        prep="switch"):
+                        prep="lead"):
     """Simulated spikes for a velocity or complex kinematic population.
 
     Assumptions (the Methods do not give them): the movement term leads the
-    hand by `lag_ms` (100 ms; 0 is the other reading), the preparatory term
-    holds before movement and falls linearly to zero from -50 to +50 ms around
-    movement onset (`prep="switch"`; `"persist"`, the other reading, keeps it
-    throughout), and the movement term is added to it; before movement the hand
+    hand by `lag_ms` (100 ms, the usual lead of motor cortical activity in
+    velocity-tuning models such as ref. 27; 0 is the other reading). The
+    preparatory term holds during the delay and falls linearly to zero over
+    100 ms centred on the time the movement term starts, `lag_ms` before hand
+    onset (`prep="lead"`, the main reading: in the model both terms are neural,
+    so preparatory activity gives way when movement activity begins). The
+    other readings are `"switch"`, the same fall centred on hand onset, which
+    with a 100 ms lead overlaps the two terms inside the analysed window, and
+    `"persist"`, which keeps it throughout. The movement term is added to the
+    preparatory term; before movement the hand
     kinematics are those at its start. Preferred directions are drawn
     uniformly for the preparatory and the movement terms (Methods). Velocity
     model: movement term = velocity along the PD + speed, each factor scaled to
@@ -453,6 +492,8 @@ def simulate_population(model, kin, t_kin, rates, n_trials, rng, lag_ms=100,
     peak_speed = np.linalg.norm(v, axis=2).max(axis=1)
     if prep == "switch":
         w_prep = np.clip(0.5 - t / 100.0, 0, 1)
+    elif prep == "lead":
+        w_prep = np.clip(0.5 - (t + lag_ms) / 100.0, 0, 1)
     elif prep == "persist":
         w_prep = np.ones(len(t))
     else:
