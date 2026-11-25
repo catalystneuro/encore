@@ -408,6 +408,15 @@ findings:
     angle distribution peaks at 0.47 pi (J-array) and 0.08 pi (N-array); with the term ending at hand
     onset at 0.42 and 0.64 pi; with no lead and the falling term near 0 in both (-0.08 and 0.08 pi);
     with no lead and a persisting term at 0.25 and 0.36 pi. M_skew fits poorly under every choice.
+- kind: metadata_insufficient
+  severity: minor
+  found: on_prompt
+  statement: Nothing in the dandiset's metadata or its files says which of the ten sessions are the paper's
+    datasets. The dandiset description names only the areas, the arrays and the task, every session_description
+    is empty, and no file names J-array, N-array or any other dataset of the paper. The two array datasets
+    can be found only by their dates (sub-Jenkins ses-20090918 and sub-Nitschke ses-20100923), and the eight
+    other sessions (five 27-condition maze sessions, two without condition columns, and sub-Nitschke ses-20100910
+    with 108 conditions) are not described.
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -782,3 +791,129 @@ verifications:
       column is the paper's onset, and the choice changes five outcomes (cells 20, 25, 28, 42, 45).
     response: Changed to major, as the verifier rated it; the statement now says that the choice changes
       the outcomes of five claims.
+reconciliation:
+  earlier: churchland-2012-01
+  date: '2026-11-25'
+  blind: false
+  blind_note: The author saw no record, entry, notebook, question or transcript of churchland-2012-01, and
+    tools/blind.sh audit finds only links to the pilot notes and the site in the protocol and README it was
+    given, and its own record. It did read the header of the claims file, which churchland-2012-01's author
+    wrote and which the protocol lets it keep. That header names two faults that attempt found in the files
+    (the wrapped first entry of spike_times_index and the clock resets of the 2010 file) and says that sub-Nitschke
+    ses-20090910 is consistent with the N-9-10-2010 dataset; the author said in its report that it could not
+    check either fault against that attempt and tested the clock itself. It saw none of the earlier outcomes
+    or numbers.
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that the Units tables hold 192 units per session, one per electrode, and not the paper's
+      146 and 218 sorted isolations. The rest of the earlier finding (the single-electrode datasets, the EMG,
+      the leech and the walking-monkey data are not in the dandiset) is reported in finding 2.
+  - finding: 2
+    status: fixed
+    note: In earlier_findings.ipynb the first entry of spike_times_index is above 65536 in all ten files (257638
+      in J-array, the corrected end of unit 0 the earlier attempt gave), and units 0 and 1 are sorted and each
+      spans the trials of its session.
+  - finding: 3
+    status: fixed
+    note: In earlier_findings.ipynb no trial starts before the one before it and no two trials overlap in any
+      of the ten files, and units 0, 95, 96 and 191 of each file have no backward step in their spike times,
+      with all their spikes inside a trial.
+  - finding: 4
+    status: fixed
+    note: In earlier_findings.ipynb hand position is stated in meters with conversion 0.001 in all ten files.
+      The stored values (-210.4 to 150.1 over the first 300000 samples) are on the scale of the hit targets
+      (-144 to 145), and the converted 99th percentile speed is 0.692 to 0.903 m/s.
+  - finding: 5
+    status: fixed
+    note: The trial table now has a cursor_offset column, described as the offset in mm of the displayed cursor
+      from the hand, (0, 35) in J-array and (0, 60) in N-array. In earlier_findings.ipynb the hand ends a median
+      -35.2 and -53.3 mm from the target in y, and -0.2 and 6.7 mm from the target minus the offset.
+  - finding: 6
+    status: fixed
+    note: In earlier_findings.ipynb the Units table of every file is described as threshold crossings on each
+      electrode, not sorted (Blackrock unit code 0), one unit per electrode; finding 1 of the blind attempt
+      cites this description.
+  - finding: 7
+    status: still_present
+    now: 9
+    note: In earlier_findings.ipynb the dandiset description is unchanged from version 0.260528.0919, every
+      session_description is empty, and neither the dandiset metadata nor any file names J-array, N-array or
+      another dataset of the paper.
+  - finding: 8
+    status: fixed
+    note: The five Nitschke files named with 2009 at version 0.260528.0919 are now ses-20100812, 20100819, 20100910,
+      20100920 and 20100922, with session_start_time in 2010. In earlier_findings.ipynb ses-20100910 has the
+      same reached target as N-array in all 108 conditions, consistent with the N-9-10-2010 dataset.
+  outcomes:
+  - claim: var-captured-jpc-plane
+    earlier: reproduced
+    cause: dataset_changed
+    note: Version 0.261122.2046 adds the trial column offline_move_onset_time, which the blind attempt took
+      as movement onset; version 0.260528.0919 has only move_begins_time, which the earlier attempt used. On
+      move_begins_time the blind attempt's J-array plane captures 18.7 to 19.0%, inside 18 to 38.5% like the
+      earlier 20.0%, and the earlier attempt's code run here on the new version gives 19.98% in J-array on move_begins_time
+      and 16.67% on offline_move_onset_time.
+    confidence: high
+  - claim: pc23-variance
+    earlier: partially_reproduced
+    cause: dataset_changed
+    note: The value part fails in both. The ratio part turns on the onset column the new version adds; in J-array
+      the jPCA plane captures 0.78 of the PC2 and PC3 variance on offline_move_onset_time and 0.84 to 0.95 on
+      move_begins_time (earlier 0.93), and the earlier attempt's code on the new version gives 0.925 and 0.778.
+    confidence: high
+  - claim: rotation-frequency
+    earlier: partially_reproduced
+    cause: dataset_changed
+    note: J-array decides it. On the new offline_move_onset_time column the blind attempt gets 1.344 Hz, inside
+      1.26 to 2.75 Hz, and on move_begins_time 1.063 to 1.098 Hz, below it like the earlier 1.03 Hz; the earlier
+      attempt's code on the new version gives 1.033 Hz on move_begins_time and 1.447 Hz on offline_move_onset_time.
+    confidence: high
+  - claim: suppfig3-shuffle-controls
+    earlier: not_reproduced
+    cause: dataset_changed
+    note: J-array shuffle 3 decides it. Aligned on the new offline_move_onset_time column its median is 0.745
+      of the original R2(M_skew), just inside the 0.75 limit (0.725 to 0.745 over five seeds), and on move_begins_time
+      0.77 to 0.79, outside it like the earlier 0.81, which makes the blind attempt's move_begins readings not
+      reproduced as well. The two attempts' shuffles follow the same legend, and the dividing points differ
+      only by the onset (-277 and -268 ms against -301 and -320 ms).
+    confidence: medium
+  - claim: suppfig5-areas-variance
+    earlier: partially_reproduced
+    cause: error
+    error_in: earlier
+    note: N-array PMd decides it against the 18% floor, at 18.1% in the earlier attempt and 17.6 to 17.9% under
+      the blind attempt's four readings. Run on the new version, the earlier code gives 18.16% on move_begins_time,
+      and 17.70% when the rates are computed over a longer span and the range is still taken over -800 to +500
+      ms, because earlier-entry/reach.py (condition_rates, then jpca) takes each unit's normalisation range over
+      the whole rate window, whose first and last bins are Gaussian-smoothed with mode nearest from single 1
+      ms bins.
+    supports: not_reproduced
+    confidence: medium
+  - claim: fig6-velocity-model
+    earlier: not_reproduced
+    cause: reading
+    choice: When the simulated preparatory term ends; the earlier attempt let it decay with a 100 ms time constant
+      from hand movement onset, and the blind attempt, in its main reading, let it fall to zero over 100 ms centred
+      on the start of the movement term, 100 ms before hand onset.
+    note: Both simulate rates leading the hand by 100 ms. Under the blind attempt's main reading the angle peaks
+      are 0.472 pi (J-array) and 0.083 pi (N-array), so the criterion holds in N-array; with the fall centred
+      on hand onset, its first reading, close to the earlier decay, they are 0.417 and 0.639 pi and the claim
+      is not reproduced, as in the earlier attempt (0.806 and 0.361 pi). The blind attempt changed its main
+      reading after round 1 of verification, as its record says.
+    confidence: high
+  protocol: The earlier attempt was made under pilot-7 and the blind one under pilot-18. docs/pilot-notes.md
+    has sections for pilot-8, 9, 10, 12, 13 and 14 and none for pilot-11 or pilot-15 to 18. pilot-8 added quotes
+    to claims; this claims file got them on 2026-10-19 and kept its criteria. pilot-9 and pilot-10 take every
+    method from the paper and give the claims file to a reader, so that the author may not change it, runs every
+    reading a detail allows and asks the open ones; the claims file here is still the one churchland-2012-01's
+    author wrote under pilot-7, so its criteria did not change, and the blind attempt ran four readings of the
+    onset column and the normalisation window, marked seven outcomes assumed, and asked three questions of a reader
+    and two of the paper's authors. pilot-12 made this attempt blind and added this block. pilot-13 raised the
+    notebook limit to 60 minutes; the blind notebook ran in about 20. pilot-14 files records by paper; this
+    paper rests on one dandiset, so only the layout changed. tools/entry.py adds that from pilot-15 a finding
+    of kind other says what it is about, from pilot-17 an attempt names the author notes it used (there are
+    none for this paper), and from pilot-18 a finding about the data gives its severity, which the blind attempt's
+    findings do and the earlier ones carry only in a later review. None of these rules changed an outcome;
+    the changed outcomes come from the new onset column, a choice of model and one implementation detail.
