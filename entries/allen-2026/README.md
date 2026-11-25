@@ -10,11 +10,13 @@ count matrix and R workspace with their DESeq2, sva and GSEA results for the opt
 |---|---|
 | Metabolic rate, ammonia excretion, blood pH, PCO2 and bicarbonate (Fig. 1B to 1F) | Reproduced |
 | Distance, velocity, time in upper, left and front zones (Fig. 2C to 2F, Supplementary Fig. 2) | Reproduced |
-| Attack willingness, logistic regression (Fig. 2G) | Not reproduced |
-| Hunt duration and strike attempts (Fig. 2H, 2I); prey shrimp velocity (Supplementary Fig. 3) | Reproduced |
+| Attack willingness, logistic regression (Fig. 2G) | Reproduced, on the counts of the workspace's Figure 2G table |
+| Hunt duration and strike attempts (Fig. 2H, 2I) | Reproduced |
+| Prey shrimp velocity (Supplementary Fig. 3) | Partially reproduced |
 | ERG ratio declines above 40 Hz (Fig. 3C) | Not reproduced |
 | CFF unchanged, CFF variance (Fig. 3D) | Reproduced |
-| Assembly statistics, sample distances, shared down-regulated sets (Fig. 4B), GSEA families, chronic up-regulated counts (Fig. 4F to 4H), nAChR subunits | Reproduced |
+| Assembly statistics (mapping rate not deposited) | Partially reproduced |
+| Sample distances, shared down-regulated sets (Fig. 4B), GSEA families, chronic up-regulated counts (Fig. 4F to 4H), nAChR subunits | Reproduced, on the authors' saved DESeq2 and GSEA results |
 | PCA (Fig. 4A) | Partially reproduced |
 | No change in acid-base or ion regulatory transcripts | Not reproduced |
 | Body size, seawater chemistry, mean depth, ERG amplitude | Blocked: data missing |
