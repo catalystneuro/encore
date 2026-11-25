@@ -1,0 +1,833 @@
+# Claims for Vijayan, Wang, Chandra, Chakravorty, Li, Sarbanes, Akhlaghpour & Maimon (2022),
+# "An internal expectation guides Drosophila egg-laying decisions", Science Advances 8,
+# eabn3852, on DANDI 000212 ("Tracking of Drosophila during egg-laying decisions").
+#
+# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-25, protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the version of record as served by Europe PMC (PMC9616500), in
+# paper/10.1126-sciadv.abn3852.txt, with the main text, figure legends, Materials and Methods,
+# and the supplement PDF (sciadv.abn3852_sm.pdf, Figs. S1 to S7 with legends and the legends of
+# Tables S1 and S2 and Movies S1 to S3), extracted into the same file. No page of a PDF was
+# opened. Not available here: Tables S1 (summary of all tracking data) and S2 (the Gal4 screen),
+# which are separate spreadsheets, and the main-text PDF, so numbers printed only inside main
+# figures (most bin p-values, merge-arrow positions, bar heights) could not be read. The Methods
+# defer the chamber design, tracking and egg annotation to ref. 16 (Vijayan et al., the
+# rise-to-threshold study), which is not under paper/.
+#
+# Code read: none. The paper links no code; "All data analyses were done using MATLAB" (Data
+# analysis software). No method detail below is settled by code.
+#
+# Data the paper used (Results; Materials and Methods). Single mated females, overnight in dark
+# egg-laying choice chambers, agarose islands (1% agarose, 1.6% ethanol, 0.8% acetic acid, with
+# sucrose at 0, 200 or 500 mM; 1.2% agarose for D. suzukii; 0.8% or 1.4% agarose in Fig. 6)
+# separated by 2.5-mm plastic barriers (fig. S1). Video at 2 frames per second; measured
+# variables are the xy position of the fly's centroid, the island the fly is on, and the times
+# of egg deposition events. Chamber types: two-choice 0/200, 0/500, 200/500 mM (CS data from
+# ref. 16); three- and five-island chambers 0/200/200 and others (Fig. 2B, C); 0/500/200 (Fig.
+# 2D, E); 0/500/500/500/200 (Fig. 2F); 0/500/200/500/200 (Fig. 2G to I); 0/200 mM with a 4-mm
+# tunnel, a 2-mm tunnel, and a 2-mm tunnel with bounce walls (Fig. 3); 500/0/500, 500/0/200,
+# 0/500/500 (Fig. 4); 0.8% against 1.4% agarose with and without sucrose, and 0.8/0.8 and
+# 1.4/1.4 (Fig. 6). Genotypes: wild-type Canton-S (CS), DL and TUT D. melanogaster strains, D.
+# suzukii (Fig. 5); DDC-Gal4 with tub-Gal80ts and UAS-Kir2.1, pretreated at 18, 27, 29/29.5 or
+# 31 C for 23 h before the assay at 24 C, with TH-Gal80, R58E02-Gal80, TSH-Gal80 or OTD-FLP
+# with TUB-FRT-Gal80-FRT (Fig. 7); 115 Gal4 lines in a screen (Fig. 7A, Table S2); dopamine
+# and serotonin receptor mutants (Fig. 8). Other experiments: chambers with movable boundaries
+# (Fig. 1D, E), glued sensory organs (Fig. 1F), and the latency to feeding assay, groups of
+# three to six food-deprived flies filmed at 15 frames per second and scored by hand (Figs. 7B,
+# 8B). The archive says the dandiset holds "All fly tracking data used in the paper" (Data and
+# materials availability); whether it holds the untracked or hand-scored experiments, and the
+# ref. 16 CS data, is the author's to find.
+#
+# Shared methods, cited once here and named in the criteria by label.
+# M1 Island assignment. The fly is on a substrate by whether its centroid is above or below the
+#   chamber midline in two-choice chambers (Results, A framework, paragraph 1). For chambers
+#   with more islands the boundaries are not given in the text; they follow from the
+#   dimensions in fig. S1 (open; the author takes the barrier positions from the chamber
+#   geometry the dataset records, or from fig. S1).
+# M2 Locomotor speed. Not defined in the text beyond being from the tracked position;
+#   frame-to-frame centroid displacement times 2 frames per second, in mm/s, is the standard
+#   choice. Speed traces in figures are smoothed with a 5-s boxcar (Fig. 1 legend).
+# M3 Search period. For each egg, the speed before deposition smoothed with an 18.5-s boxcar;
+#   the search starts at the first frame before the egg where the smoothed speed is below 0.1
+#   mm/s, and ends at deposition; minimum 9 s (Methods, Automated determination of egg-laying
+#   search). "First frame before" is read as the last frame, going back from the egg, where the
+#   smoothed speed is below 0.1 mm/s; the 9-s minimum implies a centred filter. For rate
+#   functions, searches shorter than 30 s are set to 30 s (Methods, Calculation of egg-laying
+#   rate); extending the start back to 30 s before the egg is the reading taken.
+# M4 Egg-laying rate function. All flies of a chamber type pooled. For each bin of time since
+#   leaving the other (indicated) substrate, while the fly is on the current substrate during a
+#   search period, rate = (# eggs in bin)/(# frames in bin) x 120 eggs/min; 90% CI by
+#   Clopper-Pearson on # eggs/# visits, scaled by 120 x # visits/# frames (Methods, Calculation
+#   of egg-laying rate). Bin edges are not stated in the text; the x-axis ticks of fig. S2 read
+#   0, 5, 10, 15, 20, 25, 30, 45, 60, 90, 150, 300, 600, 1200, 7200 s, taken as the edges (a
+#   reading; the Methods say other binnings do not change the conclusions).
+# M5 Bin test. Two-sided Wilcoxon rank sum test on 0/1 trials, a trial with an egg being 1
+#   (Methods, Statistics). What a trial is is open; readings (a) one visit to the bin during a
+#   search, the unit of the CI; (b) one search period that enters the bin. Merge point, as
+#   Fig. 5A legend defines it, is the first bin past 5 s for which P > 0.05.
+# M6 Choice fraction. Eggs on the named option over all eggs, pooled over flies, with a 95%
+#   Clopper-Pearson CI; group comparisons are two-sided Wilcoxon rank sum tests on per-fly
+#   fractions of flies that laid at least 5 eggs (Fig. 1F and Fig. 7 legends; Methods,
+#   Statistics).
+# M7 Pause time. Time from the last moment before deposition that the 1-s boxcar smoothed
+#   speed rose above 0.1 mm/s to the deposition, compared between groups of eggs with the
+#   two-sided Wilcoxon rank sum test (Methods, Statistics). Read as the duration of the final
+#   stop before the egg.
+# M8 Egg-aligned speed. Mean locomotor speed (M2) aligned to egg deposition; eggs within the
+#   first or last few minutes of a video left out to avoid partial traces (Fig. 3F legend; the
+#   window is not given, the plotted window from the figure is a standard choice).
+schema_version: 2
+paper: doi:10.1126/sciadv.abn3852
+claims:
+- id: leave-higher-stay-lower
+  statement: In two-choice sucrose chambers, flies leave the higher sucrose substrate in 964 of
+    1205 (80%) searches that start on it, and leave the lower sucrose substrate in only 918 of
+    2744 (33%) searches that start on it.
+  source: Results, A framework for understanding how previous substrate experiences guide
+    egg-laying choices, paragraph 4
+  quote: flies leave higher sucrose in 964 of 1205 or 80% of searches initiated on higher
+    sucrose), whereas flies that start a search on lower sucrose know to stay (flies leave lower
+    sucrose in only 918 of 2744 or 33% of searches initiated on lower sucrose) ( P < 0.001,
+    two-sided Wilcoxon rank sum test
+  statistics:
+  - test: two-sided Wilcoxon rank sum test on searches as 0/1 trials
+    p: 0.001
+    p_relation: "<"
+    n: 1205 searches started on higher sucrose and 2744 on lower sucrose
+  expected:
+  - quantity: searches started on higher sucrose
+    value: 1205
+    tolerance: 120.5
+  - quantity: fraction of searches started on higher sucrose that leave it
+    value: 0.80
+    tolerance: 0.08
+  - quantity: searches started on lower sucrose
+    value: 2744
+    tolerance: 274.4
+  - quantity: fraction of searches started on lower sucrose that leave it
+    value: 0.33
+    tolerance: 0.033
+  criterion: Searches by M3 (the 30-s minimum not applied, as this is not a rate function), CS
+    flies in two-choice sucrose chambers; island at search start and whether the fly crosses to
+    the other island before the egg, by M1. Which chambers are pooled is open; readings (a) the
+    0/200, 0/500 and 200/500 mM chambers of ref. 16, as for fig. S3; (b) those three with any
+    CS two-choice sucrose chamber of this paper. Reproduced when, under one reading, both
+    fractions are within tolerance and the two-sided Wilcoxon rank sum test on 0/1 trials
+    (Methods, Statistics) gives p < 0.001; partially reproduced when the fractions differ in the
+    stated direction at p < 0.001 but are out of tolerance.
+- id: fig1d-no-substrate-marking
+  statement: When a previously preferred 200 mM island carrying eggs from earlier flies is paired
+    with 0 mM, new flies lay eggs normally on 0 mM, and likewise for a nonpreferred option, so
+    flies do not rely on previously laid eggs or other lasting chemical marks.
+  source: Results, Flies continuously make sucrose assessments, paragraph 2; Figure 1D and 1E
+  quote: Flies laid eggs normally on 0 mM, although 200 mM had many eggs from the start ...
+    Thus, our flies did not seem to rely on previously laid eggs, or other long-lasting chemical
+    cues, which mark either the preferred ( Fig. 1D ) or nonpreferred ( Fig. 1E ) option
+  criterion: Fraction of eggs on the lower sucrose option, M6. Reproduced when, in the second
+    assay of each pair (Fig. 1D right bar, Fig. 1E second bar), the pooled fraction on the
+    lower sucrose option is above 0.5 with its 95% Clopper-Pearson CI above 0.5. The paper
+    reports no test; the first-night fractions are reported alongside.
+- id: fig1f-tarsi-proboscis
+  statement: Gluing the front tarsi or the proboscis significantly reduces the bias to lay eggs
+    on 0 over 200 mM, gluing both leaves no detectable population preference, and gluing the
+    back tarsi does not significantly affect choice.
+  source: Results, Flies continuously make sucrose assessments, paragraph 3; Figure 1F
+  quote: When we applied glue to the front tarsi (front leg tips) or proboscis, the bias to
+    laying eggs on 0 mM was significantly reduced, and when both these body parts had glue, we
+    could not detect a population-level preference for 0 over 200 mM
+  statistics:
+  - about: three displayed comparisons, top to bottom
+    test: two-sided Wilcoxon rank sum test, flies that laid at least 5 eggs
+    p: 0.005
+    p_relation: "<"
+    corrected: Bonferroni for seven comparisons (P < 0.05/7 = 0.007)
+    n: 18, 13, 12, 41, 20, 13, 28 and 9 flies with at least 5 eggs in the eight groups
+  - about: third displayed comparison
+    test: two-sided Wilcoxon rank sum test, flies that laid at least 5 eggs
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: mean eggs per fly in the eight groups (25, 24, 29, 25, 29, 18, 23, 14)
+    value: 25
+    tolerance: 2.5
+    unit: eggs per fly, first group
+  criterion: M6 on the eight groups of Fig. 1F. The group names and which pairs the three
+    p-values compare are shown only in the figure, which could not be read; readings (a) each
+    glued group against the unglued control; (b) each glued group against its own control.
+    Reproduced when front tarsi, proboscis, and front tarsi with proboscis each differ from
+    their control at p < 0.007 with a lower fraction on 0 mM, the fraction with both glued has
+    a 95% CI that includes 0.5, and back tarsi does not differ at p < 0.007. The eight mean
+    egg counts and the eight counts of flies with at least 5 eggs are reported against the
+    legend.
+- id: fig2bc-larger-chambers-two-options
+  statement: In three- and five-island chambers with two sucrose concentrations, flies choose
+    the low sucrose option with egg-laying rate dynamics similar to standard two-choice chambers.
+  source: Results, Flies lay eggs on the best of three options, paragraph 1; Figure 2B and 2C
+  quote: flies effectively chose the low sucrose option when presented with two sucrose
+    concentrations, and they did so with similar egg-laying rate dynamics to those observed in
+    standard two-choice chambers
+  criterion: Rate functions M4 for each chamber (0/200/200 mM for Fig. 2B as Fig. 4B legend
+    names it; Fig. 2C's five-island layout is not named in the text and is taken from Table S1
+    or the dataset). Reproduced when, in each chamber, the rate on the higher sucrose option
+    since leaving the lower one is below the rate on the lower option since leaving the higher
+    one in the bins from 5 to 60 s, with at least one bin significant by M5 at p < 0.05, as for
+    two-choice chambers (Fig. 2A). The paper gives no test of similarity to two-choice
+    dynamics; the merge point M5 of each chamber is reported.
+- id: fig2d-three-choice-inhibit-200
+  statement: In a 0/500/200 mM chamber flies inhibit egg laying upon entering 200 mM from 500
+    mM, although 200 mM is strongly preferred after the same transition in two-choice chambers.
+  source: Results, Flies lay eggs on the best of three options, paragraphs 2 and 3; Figure 2D
+  quote: However, we observed that flies inhibited egg laying upon entering 200 mM in this
+    chamber
+  criterion: M4 in the 0/500/200 chamber, rate on 200 mM since leaving 500 mM, against the rate
+    on 200 mM since leaving 500 mM in the CS 200/500 two-choice chamber (ref. 16 data), bins 5
+    to 60 s. Reproduced when the three-choice rate is lower in most of these bins and at least
+    one bin differs by M5 at p < 0.05. The paper prints no test for this comparison; the
+    criterion uses the Methods' bin test.
+- id: fig2e-200-recovers-with-time
+  statement: In the 0/500/200 mM chamber, the egg-laying rate on 200 mM rises gradually with time
+    since the last visit to 0 mM.
+  source: Results, Flies lay eggs on the best of three options, paragraph 2; Figure 2E
+  quote: As time passed since the last visit to 0 mM, the egg-laying rate on 200 mM gradually
+    increased
+  criterion: M4, rate on 200 mM by time since leaving 0 mM. The paper gives no test; the measure
+    fixed here is the pooled rate over bins from 300 s onward against the pooled rate over bins
+    5 to 30 s, compared by M5. Reproduced when the later rate is higher at p < 0.05 and the
+    rate is non-decreasing across most successive bins.
+- id: fig2efg-inhibit-200-after-0
+  statement: In all three-choice chambers flies inhibit egg laying on 200 mM nearly completely if
+    they visited 0 mM in the last ~30 s, and this holds with a larger distance between 0 and 200
+    mM (0/500/500/500/200) and with several 500 to 200 mM transitions along the path
+    (0/500/200/500/200).
+  source: Results, Flies lay eggs on the best of three options, paragraph 2; Figure 2E to 2G
+  quote: In all these three-choice chambers, flies inhibited egg laying nearly completely on 200
+    mM if they had visited 0 mM in the last ~30 s
+  criterion: M4 in the 0/500/200, 0/500/500/500/200 and 0/500/200/500/200 chambers, rate on 200
+    mM and on 0 mM by time since leaving the other of the two, pooled over 5 to 30 s.
+    "Nearly completely" has no threshold in the paper; readings (a) the 200 mM rate at most 10%
+    of the 0 mM rate over that window; (b) at most 20%. Reproduced when, under one reading, it
+    holds in all three chambers and the difference is significant by M5 at p < 0.05 in each;
+    partially reproduced when it holds in two. Bins below 5 s are left out as the paper
+    describes a low rate for every curve in the first seconds after a transition.
+- id: fig2-earlier-merge-three-choice
+  statement: The 0 and 200 mM rate functions merge at an earlier time in three-choice chambers
+    than in two-choice chambers.
+  source: Results, Flies lay eggs on the best of three options, paragraph 3; Figure 2A to 2G
+  quote: the 0 and 200 mM egg-laying rate functions did appear to merge at an earlier time point
+    in three-choice ( Fig. 2, E to G ) compared to two-choice chambers
+  criterion: Merge point by M5 (first bin past 5 s with P > 0.05) of the 0 mM and 200 mM curves
+    (each since leaving the other) in each three-choice chamber of claim fig2efg against the CS
+    0/200 two-choice chamber. Reproduced when the merge bin is earlier in at least two of the
+    three three-choice chambers.
+- id: fig3ab-2mm-tunnel-faster
+  statement: With a 2-mm tunnel between 200 mM and 0 mM, flies lay eggs at a higher rate in the
+    5 to 10 s after entering 0 mM than with a 4-mm tunnel.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates that they visit rarely
+    or briefly, paragraph 1; Figure 3A and 3B
+  quote: In chambers with a tiny (2 mm) tunnel between substrates, flies laid eggs at a higher
+    rate in the 5- to 10-s window after a transition to 0 mM compared to very similar chambers
+    with a 4-mm tunnel
+  criterion: M4, rate on 0 mM since leaving 200 mM in the 5 to 10 s bin; 2-mm against 4-mm
+    tunnel chambers by M5. The paper's p-value is shown only in Fig. 3B. Reproduced when the
+    2-mm rate is higher at p < 0.05.
+- id: fig3c-bounce-faster
+  statement: With angled walls that bounce flies away from the 2-mm tunnel, flies lay eggs even
+    more rapidly on entering 0 mM than in the 2-mm and 4-mm tunnel chambers.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 1; Figure 3C
+  quote: In this chamber, flies laid eggs even more rapidly upon entering the 0 mM side
+  criterion: As fig3ab-2mm-tunnel-faster, the bounce chamber's 5 to 10 s bin against the same
+    bin of each tunnel chamber by M5 (Fig. 3 legend). Reproduced when it is higher than both at
+    p < 0.05; partially reproduced when it is higher than the 4-mm chamber only. Methods,
+    Statistics notes that the second p-value of Fig. 3C is 0.058 by Fisher's exact test, so a
+    weak second comparison is expected.
+- id: fig3d-dwell-before-fast-eggs
+  statement: Across the 4-mm, 2-mm and 2-mm bounce chambers, flies spend progressively more time
+    on 200 mM before entering 0 mM and laying a fast egg (within 10 s), with medians of 54, 96 and
+    576 s over 36, 44 and 23 eggs.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 2; Figure 3D
+  quote: Medians are 54, 96, and 576 s for increasing shades of gray. Thirty-six, 44, and 23 eggs
+    for increasing shades of gray.
+  expected:
+  - quantity: median time on 200 mM before a fast egg, 4-mm tunnel
+    value: 54
+    tolerance: 5.4
+    unit: s
+  - quantity: median, 2-mm tunnel
+    value: 96
+    tolerance: 9.6
+    unit: s
+  - quantity: median, 2-mm tunnel with bounce
+    value: 576
+    tolerance: 57.6
+    unit: s
+  - quantity: fast eggs, 4-mm tunnel
+    value: 36
+    tolerance: 3.6
+  - quantity: fast eggs, 2-mm tunnel
+    value: 44
+    tolerance: 4.4
+  - quantity: fast eggs, 2-mm tunnel with bounce
+    value: 23
+    tolerance: 2.3
+  criterion: A fast egg is laid on 0 mM within 10 s of entering it from 200 mM; its dwell time is
+    the duration of the preceding visit to 200 mM (M1). The order of shades is read as Fig. 3A,
+    B, C (4-mm, 2-mm, bounce), from "progressively more time" in the text. Whether "within 10 s"
+    counts from crossing the midline or from leaving 200 mM is open; both are run. Dwell times
+    compared between chambers by the two-sided Wilcoxon rank sum test (Methods, Statistics);
+    the paper's p-values are only in the figure. Reproduced when all six values are within
+    tolerance under one reading and the medians increase in that order.
+- id: fig3e-rate-after-long-absence
+  statement: Pooling the three tunnel chambers, the egg-laying rate in the 10 s after entering 0
+    mM rises when flies have not experienced 0 mM for more than about 4 min.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 2; Figure 3E
+  quote: we observe that flies increase their egg-laying rate upon entering 0 mM specifically if
+    they have not experienced 0 mM for >~4 min
+  criterion: Rate during search (M4 counting) in the first 10 s on 0 mM, binned by the time spent
+    on 200 mM in the preceding visit, all eggs of the three chambers pooled. Bin edges for the
+    x-axis of Fig. 3E are not in the text; the M4 edges are used as a standard choice.
+    Reproduced when the pooled rate for previous visits longer than 240 s is higher than for
+    shorter visits by M5 at p < 0.05, and the bins below 240 s show no rising trend.
+- id: fig3f-motor-program-not-faster
+  statement: The delay between the dip in locomotor speed and egg deposition is similar for fast
+    eggs and for all eggs in the three tunnel chambers, so the decision and not the deposition
+    motor program is faster.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 2; Figure 3F
+  quote: is similar for fast eggs ( Fig. 3F , pink) and all eggs in these three chambers
+  expected:
+  - quantity: eggs in the egg-aligned average, 4-mm tunnel
+    value: 979
+    tolerance: 97.9
+  - quantity: eggs, 2-mm tunnel
+    value: 918
+    tolerance: 91.8
+  - quantity: eggs, 2-mm tunnel with bounce
+    value: 675
+    tolerance: 67.5
+  criterion: Egg-aligned speed M8 and pause time M7. The paper gives no test; a claim of
+    similarity is judged by M7 pause times of fast eggs against all eggs of each chamber with
+    the two-sided Wilcoxon rank sum test. Reproduced when no chamber differs at p < 0.05 and
+    the median pause times differ by less than 10%; the egg counts are reported against the
+    legend.
+- id: fig4a-shorter-middle-transits
+  statement: Because flies follow the walls, transits through middle islands are shorter (median
+    ~4.5 s) than through edge islands (median ~13 s).
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 3; Figure 4A
+  quote: they had shorter transit times through the middle islands of rectangular chambers
+    (median, ~4.5 s) compared to the edge islands (median, ~13 s)
+  expected:
+  - quantity: median transit time, middle islands
+    value: 4.5
+    tolerance: 0.45
+    unit: s
+  - quantity: median transit time, edge islands
+    value: 13
+    tolerance: 1.3
+    unit: s
+  - quantity: transits on 0, 500 and 200 mM in the 0/500/200 chamber (2637, 5694, 2903), the 0 mM count
+    value: 2637
+    tolerance: 263.7
+  criterion: Transit time is the duration of a visit to an island during a search period (M1,
+    M3), in the 0/500/200, 500/0/500 and 500/0/200 chambers. Whether a transit is every visit or
+    only a pass from one neighbour to another is open; readings (a) every visit; (b) visits that
+    enter from one side and leave by the other (middle islands) or return (edges). Whether the
+    medians pool chambers is open; readings (i) pooled over the three chambers; (ii) each
+    chamber. Reproduced when, under one reading, both medians are within tolerance; the eight
+    transit counts of the legend are reported.
+- id: fig4b-faster-middle-preferred
+  statement: When the preferred 0 mM substrate is in the middle island, flies lay eggs more
+    quickly after entering it than in three-island chambers with the preferred substrate at an
+    edge.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 3; Figure 4B
+  quote: We found that flies lay eggs more quickly after a transition to the preferred substrate
+    in these chambers
+  statistics:
+  - about: indicated bin against a 0/500/500 chamber (Table S1)
+    test: two-sided Wilcoxon rank sum test
+    p: 0.001
+    p_relation: "<"
+  criterion: M4, rate on 0 mM since leaving the other substrate in the 500/0/500 and 500/0/200
+    chambers, against the pooled 0/200/200, 0/500/200 and 0/500/500 chambers. The indicated bin
+    is shown only in the figure; readings (a) 5 to 10 s, as in Fig. 3; (b) 0 to 5 s; (c) 10 to
+    15 s. Reproduced when, under one reading, the middle-preferred rate is higher by M5 at p <
+    0.05 against the pooled edge chambers and at p < 0.001 against 0/500/500.
+- id: fig4d-anomalous-eggs-alternative
+  statement: With 0 mM in the middle (500/0/200), flies also have a higher egg-laying rate than
+    in other three-choice chambers on the closest alternative, 200 mM, from 0 to 90 s after
+    leaving 0 mM.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 3; Figure 4D
+    against Figure 2E
+  quote: flies also had a higher egg-laying rate than expected (from our other three-choice
+    experiments) on the closest alternative
+  criterion: M4, rate on 200 mM since leaving 0 mM pooled over 0 to 90 s, 500/0/200 against
+    0/500/200 (Fig. 2E) by M5. The paper gives no test. Reproduced when the 500/0/200 rate is
+    higher at p < 0.05.
+- id: fig4e-inter-egg-not-longer
+  statement: The interval between eggs is not increased when the preferred substrate is in the
+    middle island (medians 5.1, 4.1 and 4.4 min over 2262, 922 and 1901 intervals), so flies are
+    not abandoning searches there.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 4; Figure 4E
+  quote: Medians are 5.1, 4.1, and 4.4 min. In total, 2262, 922, and 1901 inter-egg intervals,
+    respectively.
+  expected:
+  - quantity: median inter-egg interval, first chamber
+    value: 5.1
+    tolerance: 0.51
+    unit: min
+  - quantity: median, second chamber
+    value: 4.1
+    tolerance: 0.41
+    unit: min
+  - quantity: median, third chamber
+    value: 4.4
+    tolerance: 0.44
+    unit: min
+  - quantity: intervals, first chamber
+    value: 2262
+    tolerance: 226.2
+  - quantity: intervals, second chamber
+    value: 922
+    tolerance: 92.2
+  - quantity: intervals, third chamber
+    value: 1901
+    tolerance: 190.1
+  criterion: Intervals between successive eggs of the same fly. Which chamber is which shade is
+    shown only in the figure; reading taken, the order of Fig. 4A (0/500/200, 500/0/500,
+    500/0/200), with the counts of Fig. 4F (2312, 943, 1946 eggs) as a check that the order is
+    the same; all six orders are shown if that one fails. Reproduced when the values are within
+    tolerance under one order and neither middle-preferred chamber has a longer median than
+    the edge-preferred chamber.
+- id: fig4f-motor-program-not-accelerated
+  statement: With the preferred substrate in the middle, the egg deposition motor program, proxied
+    by the dip in locomotor speed, is not clearly accelerated.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, paragraph 4; Figure 4F
+  quote: As in our previous experiments, the egg deposition motor program (as proxied by the dip
+    in locomotor speed) is not clearly accelerated
+  expected:
+  - quantity: eggs in the egg-aligned average, first chamber (2312, 943, 1946)
+    value: 2312
+    tolerance: 231.2
+  criterion: M7 and M8 in the three chambers of Fig. 4E. The paper gives no test. Reproduced when
+    the median pause time in each middle-preferred chamber is not shorter than in 0/500/200 by
+    the two-sided Wilcoxon rank sum test at p < 0.05, or is shorter by less than 10%.
+- id: fig5ab-strains-release-faster
+  statement: The DL and TUT wild-type strains release inhibition of egg laying on 200 mM faster
+    than CS in 0/200 mM chambers; TUT shows no detectable effect of substrate history after about
+    20 s on a new substrate, while the CS curves do not merge within the plotted interval.
+  source: Results, Different Drosophila strains and species, paragraph 1; Figure 5A and 5B
+  quote: found that both released inhibition of egg laying on 200 mM faster than did CS flies
+    ... the TUT strain showed no statistically detectable evidence of substrate history after
+    only ~20 s of being on a new substrate
+  expected:
+  - quantity: TUT merge point
+    value: 20
+    tolerance: 5
+    unit: s
+  criterion: Merge point by M5 for 0 against 200 mM rate functions (M4) per strain. Tolerance of
+    one bin of M4 near 20 s (15 to 25 s), as the merge point is a bin edge. Reproduced when the
+    TUT merge point is within tolerance, the DL merge point is earlier than the CS one, and CS
+    does not merge within the plotted interval (up to 7200 s by M4).
+- id: fig5c-suzukii-no-preference
+  statement: D. suzukii shows no measurable egg-laying preference for lower sucrose; its rates on
+    0 and 200 mM are similar in a two-choice chamber.
+  source: Results, Different Drosophila strains and species, paragraph 2; Figure 5C
+  quote: D. suzukii did not exhibit a measurable egg-laying preference for lower sucrose
+    substrates in our paradigm, i.e., the egg-laying rates on 0 and 200 mM were similar in a
+    two-choice chamber
+  criterion: A claim of absence, judged on the paper's bin test M5 at p < 0.05. Reproduced when no
+    bin past 5 s shows a significantly higher rate on 0 than on 200 mM; not reproduced when any
+    does. The size of the difference in each bin is reported.
+- id: fig5de-suzukii-more-on-200
+  statement: D. suzukii lays slightly more eggs on 200 mM than on 0 mM, consistent with spending
+    more time on high sucrose.
+  source: Results, Different Drosophila strains and species, paragraph 2; Figure 5D and 5E
+  quote: D. suzukii actually laid slightly more eggs on the higher (200 mM) sucrose substrate (
+    Fig. 5D ), consistent with their overall preference toward spending more time on high
+    sucrose
+  criterion: Pooled fraction of eggs on 0 mM (M6) below 0.5, and per-fly fraction of time on 0
+    mM (M1, whole recording) with a median below 0.5. No test is reported; "slightly" is not
+    judged.
+- id: fig5f-egg-numbers-differ
+  statement: Different strains and species lay different numbers of eggs.
+  source: Results, Different Drosophila strains and species, paragraph 3; Figure 5F
+  quote: different strains/species laid a different number of eggs
+  criterion: Eggs per fly for D. suzukii, TUT, DL and CS. No test is reported; the paper's test
+    for groups of flies is the two-sided Wilcoxon rank sum test (Methods, Statistics), used
+    pairwise. Reproduced when at least one pair differs at p < 0.05.
+- id: fig5gh-search-and-pause
+  statement: All strains and species raise their locomotor speed before pausing to lay an egg,
+    and they differ from one another in the delay between the speed dip and egg deposition.
+  source: Results, Different Drosophila strains and species, paragraph 3; Figure 5G and 5H
+  quote: they exhibit different time delays between the dip in average locomotor speed and egg
+    deposition ( P < 0.001 all comparisons, two-sided Wilcoxon rank sum test
+  statistics:
+  - test: two-sided Wilcoxon rank sum test on pause times, all pairwise comparisons
+    p: 0.001
+    p_relation: "<"
+    n: 214, 1184, 766 and 1862 eggs for D. suzukii, TUT, DL and CS
+  expected:
+  - quantity: eggs, D. suzukii
+    value: 214
+    tolerance: 21.4
+  - quantity: eggs, TUT
+    value: 1184
+    tolerance: 118.4
+  - quantity: eggs, DL
+    value: 766
+    tolerance: 76.6
+  - quantity: eggs, CS
+    value: 1862
+    tolerance: 186.2
+  criterion: M7 pause times compared in all six pairs; M8 for the rise in speed, judged as the
+    mean speed over the 60 s before the pause higher than the mean over the preceding 60 s (a
+    window fixed here; the paper gives none). Reproduced when all six pairs differ at p <
+    0.001 and the speed rises in all four groups; partially reproduced when four or five pairs
+    differ.
+- id: fig6b-softer-preferred
+  statement: Flies prefer to lay eggs on 0.8% over 1.4% agarose (about 80% of eggs); sucrose on
+    the softer option shifts preference to the harder one, equal sucrose on both has little
+    effect, and 500 mM on the softer with 200 mM on the harder gives about 50%.
+  source: Results, Flies do not strongly modulate their egg-laying rates in all substrate choice
+    environments, paragraph 2; Figure 6B
+  quote: found that, as expected, flies prefer to lay eggs on the softer option ( Fig. 6B , first
+    bar). Adding sucrose to the softer option shifts the preference to the harder option ( Fig.
+    6B , bars 2 and 3), and adding equal amounts of sucrose to both options has little effect
+  expected:
+  - quantity: fraction of eggs on 0.8% agarose, 0.8% against 1.4% without sucrose
+    value: 0.8
+    tolerance: 0.08
+  - quantity: fraction on the softer option, 500 mM on 0.8% against 200 mM on 1.4%
+    value: 0.5
+    tolerance: 0.05
+  - quantity: mean eggs per fly, six groups (38, 36, 38, 36, 30, 33), first group
+    value: 38
+    tolerance: 3.8
+  criterion: M6 per condition, fraction on the softer (0.8%) option. The sucrose levels of bars 2
+    to 5 are shown only in the figure and are taken from the dataset's condition labels. The
+    ~80% is from Results, paragraph 4 ("they lay ~80% of their eggs on the softer option").
+    Reproduced when both fractions are within tolerance, bars 2 and 3 are below 0.5, and bars 4
+    and 5 are within 0.1 of bar 1; the six mean egg counts are reported.
+- id: fig6cd-hardness-fast-merge
+  statement: Unlike sucrose, flies do not strongly repress egg laying for minutes on the harder
+    option; the 0.8% and 1.4% rate curves merge within about 20 s, also with equal sucrose on
+    both.
+  source: Results, Flies do not strongly modulate their egg-laying rates, paragraph 2; Figure 6C
+    and 6D
+  quote: The egg-laying rates on 0.8 and 1.4% agarose merge within just ~20 s of being on a new
+    substrate ( Fig. 6C , filled arrow), and this result is robust to adding equal amounts of
+    sucrose to both options
+  expected:
+  - quantity: merge point, 0.8% against 1.4% agarose
+    value: 20
+    tolerance: 5
+    unit: s
+  criterion: Merge point by M5 of the 0.8% and 1.4% rate functions (M4) in the chamber without
+    sucrose and in the chambers with equal sucrose on both sides. Tolerance of one bin, as for
+    fig5ab. Reproduced when every chamber merges at or before 25 s.
+- id: fig6ef-pause-longer-hard
+  statement: Flies pause longer to lay eggs on harder substrates, and egg-laying rates are lower
+    for about 15 s after crossing the boundary in a 1.4%/1.4% chamber than in a 0.8%/0.8% chamber.
+  source: Results, Flies do not strongly modulate their egg-laying rates, paragraph 3; Figure 6E
+    and 6F
+  quote: We noticed that flies pause for a longer duration to lay eggs on harder substrates ( P <
+    0.001, two-sided Wilcoxon rank sum test
+  statistics:
+  - about: pause times, 1.4% against 0.8% agarose
+    test: two-sided Wilcoxon rank sum test
+    p: 0.001
+    p_relation: "<"
+    n: 831 and 795 eggs for 0.8% versus 0.8% and 1.4% versus 1.4%
+  expected:
+  - quantity: eggs, 0.8% versus 0.8% chamber
+    value: 831
+    tolerance: 83.1
+  - quantity: eggs, 1.4% versus 1.4% chamber
+    value: 795
+    tolerance: 79.5
+  criterion: M7 pause times of eggs in the 1.4%/1.4% against the 0.8%/0.8% chambers, and M4 rates
+    since crossing the barrier in both. Reproduced when pause times are longer on 1.4% at p <
+    0.001 and the 1.4% rate is lower than the 0.8% rate in the bins up to 15 s, with at least one
+    of them significant by M5 at p < 0.05.
+- id: fig6g-more-time-softer
+  statement: Flies spend more time on the softer option in 0.8% against 1.4% chambers.
+  source: Results, Flies do not strongly modulate their egg-laying rates, paragraph 4; Figure 6G
+  quote: At least part of the answer is that flies simply spend more time on the softer option
+  criterion: Per-fly fraction of recording time on 0.8% (M1). Whether time is all frames or only
+    search frames is open; both are run. Reproduced when the median over flies is above 0.5
+    under one reading. No test is reported.
+- id: fig7a-screen-ddc-hits
+  statement: Of 115 Gal4 lines in a Kir2.1 screen of 0 against 200 mM choice, 110 controls (96%)
+    laid more eggs on 0 mM and 111 (97%) laid at least five eggs per fly, and the top 8 hits had
+    Gal4 driven by a Ddc-related enhancer.
+  source: Results, Dopa decarboxylase-expressing neurons are a strong candidate, paragraph 2;
+    Figure 7A; fig. S5; Table S2
+  quote: Of the 115 Gal4 lines tested, in the control condition, 110 (96%) laid more eggs on 0
+    than 200 mM (fig. S5A) and 111 (97%) laid five or more eggs per fly
+  expected:
+  - quantity: Gal4 lines tested
+    value: 115
+    tolerance: 0
+  - quantity: control lines with more eggs on 0 than 200 mM
+    value: 110
+    tolerance: 11
+  - quantity: control lines laying at least 5 eggs per fly
+    value: 111
+    tolerance: 11.1
+  criterion: Per line, pooled fraction of eggs on 0 mM (M6) in experimental (31 C pre) and control
+    (18 C pre) flies; fold change is experimental over control fraction, and p is the two-sided
+    Wilcoxon rank sum test between groups (Fig. 7A legend). Ranking of hits is open; readings
+    (a) by fold change, lowest first; (b) by p, lowest first. The line identities and enhancers
+    come from Table S2, not available here, so the Ddc part needs those labels from the
+    dataset. Reproduced when the counts are within tolerance and, under one reading, the top 8
+    lines are Ddc-related. The count of 115 is exact as it counts lines.
+  data: with_labels
+- id: fig7b-ddc-kir-sense-sucrose
+  statement: Food-deprived DDC>Kir (31 C pre) flies extend the proboscis or enter a feeding
+    posture soon after crossing onto 200 mM, so they can still sense sucrose; flies not food
+    deprived show no proboscis extension.
+  source: Results, Dopa decarboxylase-expressing neurons, paragraph 3; Figure 7B; fig. S6
+  quote: DDC > Kir (31°C pre) food-deprived flies either extended their proboscis or, in cases
+    where our camera could not see their proboscis clearly, entered an obvious feeding posture
+    quickly after crossing onto 200 mM
+  criterion: Latency from the first tarsus crossing to proboscis extension or feeding posture,
+    scored by hand from 15 frames per second video (Methods, Latency to feeding assay). The
+    paper reports no threshold for "quickly"; fig. S6 shows all pictured flies within 10.93 s.
+    Reproduced when the latencies of food-deprived DDC>Kir (31 C pre) flies are similar to
+    those of controls (median within a factor of 2, as a working bound fixed here) and all are
+    finite. Needs video or annotations of this assay; if the dataset holds only tracking, the
+    claim cannot be tested.
+- id: fig7cf-kir-merge-earlier
+  statement: The more Kir2.1 is expressed in DDC-Gal4 neurons (pretreatment at 18, 27, 29/29.5 and
+    31 C), the earlier the 0 and 200 mM rate curves merge; at 31 C they are nearly superimposable
+    throughout, while at the two intermediate temperatures rates stay properly biased just after
+    a transition.
+  source: Results, Dopa decarboxylase-expressing neurons, paragraphs 4 and 5; Figure 7C to 7F
+  quote: The more Kir2.1 we expressed, the earlier in time after a substrate transition did the 0
+    and 200 mM egg-laying rate curves begin to merge
+  criterion: Merge point by M5 for each pretreatment temperature, rate functions M4.
+    "Nearly superimposable throughout" has no threshold; readings (a) the merge point at 31 C is
+    the first bin past 5 s; (b) at most one bin past 5 s differs at p < 0.05. Reproduced when the
+    merge point does not move later with temperature (18 >= 27 >= 29/29.5 >= 31 C, strictly
+    earlier at 31 than at 18 C), the 31 C curves satisfy one reading, and at 27 and 29/29.5 C
+    the 0 mM rate exceeds the 200 mM rate at p < 0.05 in at least one bin between 5 and 30 s.
+- id: fig7df-overall-rate-drops
+  statement: The overall egg-laying rate during search tends to fall as Kir2.1 expression
+    increases, meaning flies search longer before laying an egg.
+  source: Results, Dopa decarboxylase-expressing neurons, paragraph 5; Figure 7D to 7F
+  quote: The overall egg-laying rate during search tended to drop as Kir2.1 expression was
+    increased
+  criterion: Overall rate during search as all eggs over all search frames (M3, M4 counting over
+    all bins) times 120, per temperature. No test is reported. The text points to Fig. 7D to F,
+    so the comparison is over 27, 29/29.5 and 31 C. Reproduced when the rate decreases from 27
+    to 29/29.5 to 31 C; the 18 C value and the median search duration per temperature are
+    reported.
+- id: fig7gh-choice-falls
+  statement: Increasing Kir2.1 induction progressively lowers the fraction of eggs on 0 mM, and
+    DDC>Kir (31 C pre) flies lay more eggs on 200 than on 0 mM, consistent with spending more
+    time on the 200 mM side.
+  source: Results, Dopa decarboxylase-expressing neurons, paragraph 6; Figure 7G and 7H
+  quote: we found that increased induction of kir2.1 resulted in a progressive decrease in the
+    fraction of eggs laid on 0 mM
+  criterion: M6 per temperature; per-fly fraction of time on 0 mM (M1). Reproduced when the pooled
+    fraction decreases from 18 to 27 to 29/29.5 to 31 C, is below 0.5 at 31 C, and the median
+    time fraction on 0 mM at 31 C is below 0.5. The p-values of Fig. 7G are shown only in the
+    figure.
+- id: fig7ik-not-egg-number-or-motor
+  statement: The loss of preference in DDC>Kir flies is unrelated to the number of eggs laid or to
+    changes in the egg deposition motor program.
+  source: Results, Dopa decarboxylase-expressing neurons, paragraph 6; Figure 7I to 7K
+  quote: The decrease in egg-laying preference of DDC > Kir flies ( Fig. 7, C to F ) was
+    unrelated to the number of eggs laid ( Fig. 7I ) or to changes in the egg deposition motor
+    program
+  expected:
+  - quantity: eggs in the egg-aligned average at 18, 27, 29/29.5 and 31 C (1029, 761, 540, 533), 18 C
+    value: 1029
+    tolerance: 102.9
+  - quantity: eggs at 31 C
+    value: 533
+    tolerance: 53.3
+  criterion: Eggs per fly per temperature (Fig. 7I) and M7, M8 (Fig. 7J, K). No test is reported.
+    Reproduced when the Spearman correlation across flies between eggs laid and fraction on 0
+    mM within the 31 C group is not significant at p < 0.05 (a measure fixed here for
+    "unrelated"), and median pause times at 31 C are within 20% of 18 C (a working bound).
+- id: fig7l-dopamine-gal80-rescue
+  statement: Gal80 driven by TH or by R58E02 partially rescues the choice defect of DDC>Kir (31 C
+    pre) flies, and both together rescue it fully.
+  source: Results, Dopamine neurons within the Ddc-expressing population may be important,
+    paragraph 1; Figure 7L
+  quote: Expression of Gal80 by either of the abovementioned enhancers partially rescued the
+    choice defect in DDC > Kir (31°C pre) flies. With both enhancers driving Gal80, the choice
+    defect was fully rescued
+  statistics:
+  - test: two-sided Wilcoxon rank sum test, flies that laid at least 5 eggs, all displayed values
+    p: 0.001
+    p_relation: "<"
+  criterion: M6 for each genotype at 18 and 31 C pretreatment. "Rescue" is read as the 31 C
+    fraction relative to its 18 C sibling control. Reproduced when the 31 C fraction with TH-Gal80
+    or R58E02-Gal80 alone lies between that of DDC>Kir 31 C and its control, lower than its own
+    control at p < 0.001, and with both Gal80s does not differ from its control at p < 0.05.
+- id: fig7mn-brain-neurons
+  statement: Biasing Kir2.1 to DDC-Gal4 neurons in the brain (TSH-Gal80, or OTD-FLP with
+    TUB-FRT-Gal80-FRT) still leaves a choice defect, though smaller.
+  source: Results, Dopamine neurons within the Ddc-expressing population may be important,
+    paragraph 2; Figure 7M and 7N
+  quote: Flies still retain an egg-laying choice defect after Kir2.1 expression in the ventral
+    nerve cord is minimized with TSH-Gal80
+  statistics:
+  - test: two-sided Wilcoxon rank sum test, flies that laid at least 5 eggs, all displayed values
+    p: 0.001
+    p_relation: "<"
+  criterion: M6, 31 C against 18 C pretreatment within each genotype. Reproduced when both
+    brain-biased genotypes show a lower fraction on 0 mM at 31 C at p < 0.001, and the drop is
+    smaller than in DDC>Kir without the restricting transgene.
+- id: fig8a-d1-receptor-mutants
+  statement: Mutants of either dopamine D1-like receptor, Dop1R1 or Dop1R2, lower the fraction of
+    eggs on 0 mM below 0.5, as in DDC>Kir (31 C pre); mutants of the other dopamine and
+    serotonin receptors do not bring choice below 0.5.
+  source: Results, Dopamine signaling via Dop1R1 and Dop1R2, paragraph 1; Figure 8A
+  quote: decreased the fraction of eggs laid on 0 mM below 0.5 similar to the effect observed in
+    DDC > Kir (31°C pre) flies ( Fig. 7G , last bar). Mutants of other receptors did not bring
+    choice below 0.5.
+  statistics:
+  - test: two-sided Wilcoxon rank sum test, flies that laid at least 5 eggs, all displayed values
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: mean eggs per fly for the 13 genotypes (40, 14, 7, 10, 10, 11, 12, 23, 15, 25, 19, 2, 16), CS
+    value: 40
+    tolerance: 4
+  criterion: M6 per genotype (Dop1R1-, Dop1R1 f02676, Dop1R2 attP, Dop1R2-, DopEcR-, DopEcR c02142,
+    Dop2R-, 5HT1a-, 5HT1b-, 5HT2a-, 5HT2b-, 5HT7-, and CS). Reproduced when the pooled fraction
+    on 0 mM is below 0.5 for all four Dop1R1 and Dop1R2 alleles and at or above 0.5 for the
+    others. The order of genotypes for the mean egg counts is shown only in the figure.
+- id: fig8b-mutants-sense-sucrose
+  statement: Starved Dop1R1-, Dop1R2 attP and Dop1R2- flies start feeding after touching sucrose
+    with their front tarsi, so they can sense sucrose.
+  source: Results, Dopamine signaling via Dop1R1 and Dop1R2, paragraph 2; Figure 8B
+  quote: When starved, all three mutant genotypes initiate feeding after touching sucrose with
+    their front tarsi
+  criterion: As fig7b-ddc-kir-sense-sucrose, for the three mutants.
+- id: fig8ce-mutants-flat-rates
+  statement: Dop1R1 and Dop1R2 mutants show similar egg-laying rate curves on 0 and 200 mM; the
+    Dop1R1 curves resemble the CS 0 mM curve and the Dop1R2 curves the CS 200 mM curve.
+  source: Results, Dopamine signaling via Dop1R1 and Dop1R2, paragraph 2; Figure 8C to 8E
+  quote: Dop1R1 mutant flies showed similar egg-laying rate curves on 0 and 200 mM, highlighting
+    an inability to compare the two options ( Fig. 8C ). Likewise, Dop1R2 mutant flies showed
+    similar rate curves on 0 and 200 mM sucrose
+  criterion: M4 and M5 per mutant. Similarity is judged, as for fig7cf reading (b), as at most one
+    bin past 5 s with the 0 mM rate above the 200 mM rate at p < 0.05. The resemblance to CS is
+    judged by the mean rate over bins 5 to 300 s; reproduced in full when, in addition, both
+    Dop1R1- curves are nearer the CS 0 mM curve and both Dop1R2 curves nearer the CS 200 mM
+    curve (a measure fixed here; the paper says "look more like").
+- id: fig8fg-time-and-eggs
+  statement: Dop1R1- and Dop1R2 attP flies spend more time on 200 mM, and the three mutants lay a
+    similar number of eggs and raise their speed before pausing to lay.
+  source: Results, Dopamine signaling via Dop1R1 and Dop1R2, paragraph 2; Figure 8F to 8I
+  quote: All three mutants, on average, lay a similar number of eggs ( Fig. 8G ) and increase
+    their locomotor speed (search) before pausing to deposit an egg
+  expected:
+  - quantity: eggs in the egg-aligned average, CS, Dop1R1-, Dop1R2 attP, Dop1R2- (1862, 498, 586, 323), Dop1R1-
+    value: 498
+    tolerance: 49.8
+  - quantity: eggs, Dop1R2 attP
+    value: 586
+    tolerance: 58.6
+  - quantity: eggs, Dop1R2-
+    value: 323
+    tolerance: 32.3
+  criterion: Per-fly fraction of time on 0 mM (M1) with median below 0.5 for Dop1R1- and Dop1R2
+    attP; eggs per fly compared among the three mutants by pairwise two-sided Wilcoxon rank sum
+    tests with no pair at p < 0.05 (a claim of similarity; no test is reported); speed rise as
+    in fig5gh.
+- id: fig8j-200-500-defect
+  statement: Dop1R1 and Dop1R2 mutants and DDC>Kir (31 C pre) flies are also defective in 200
+    against 500 mM choice.
+  source: Results, Dopamine signaling via Dop1R1 and Dop1R2, paragraph 3; Figure 8J
+  quote: Dop1R1 mutant, Dop1R2 mutant, and DDC > Kir (31°C pre) flies are, as expected, also
+    defective in 200 mM versus 500 mM sucrose choice
+  statistics:
+  - test: two-sided Wilcoxon rank sum test, flies that laid at least 5 eggs (P values as in Fig.
+      8A)
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: mean eggs per fly in Fig. 8J and 8K (45, 15, 12, 17, 6, 38, 6, 3, 11, 2), first group
+    value: 45
+    tolerance: 4.5
+  criterion: Fraction of eggs on 200 mM (M6) against CS (mutants) or 18 C sibling controls (DDC>Kir).
+    Reproduced when each is lower than its control at p < 0.001.
+- id: fig8k-agarose-intact
+  statement: The same flies are not defective in 0.8% against 1.4% agarose choice, still laying a
+    large fraction of their eggs on 0.8%.
+  source: Results, Dopamine signaling via Dop1R1 and Dop1R2, paragraph 3; Figure 8K
+  quote: these flies are not defective in 0.8% versus 1.4% agarose choice
+  criterion: A claim of absence on the paper's test, M6 per-fly two-sided Wilcoxon rank sum test
+    against the control at p < 0.001 (the level printed for Fig. 8 P values). Reproduced when no
+    genotype has a lower fraction on 0.8% at that level; the fractions and the effect sizes are
+    reported. Few eggs were laid (as low as 2 per fly), so flies with fewer than 5 eggs are left
+    out of the test, as M6 says.
+- id: dop1r1-84714-no-defect
+  statement: A Dop1R1 mutant whose exon 1 is replaced by Gal4 (BDSC 84714) had no appreciable
+    choice defect, laying 87% of eggs on plain substrate over 90 flies, and was excluded from Fig.
+    8A.
+  source: Materials and Methods, Flies, paragraph 2
+  quote: "A single Dop1R1 mutant (BDSC #84714) ( 41 ) assayed did not have an appreciable choice
+    defect (87% of eggs laid on plain; n = 90 flies)"
+  expected:
+  - quantity: fraction of eggs on 0 mM
+    value: 0.87
+    tolerance: 0.087
+  - quantity: flies
+    value: 90
+    tolerance: 9
+  criterion: M6 for that genotype in 0 against 200 mM chambers, pooled fraction on 0 mM.
+- id: figs2-search-definition-robust
+  statement: The conclusions drawn from the rate functions hold under alternative definitions of
+    the search period (no 30-s minimum; 90 s before each egg; 15 min before each egg, each cut
+    at the previous egg plus 1 min).
+  source: Results, A framework, paragraph 3; fig. S2
+  quote: That said, all our conclusions are robust to varying definitions of the search period
+    (fig. S2).
+  depends_on:
+  - fig3ab-2mm-tunnel-faster
+  - fig4b-faster-middle-preferred
+  - fig5ab-strains-release-faster
+  - fig7cf-kir-merge-earlier
+  criterion: The rate-function claims listed are rerun under the three alternate definitions of
+    fig. S2's legend. Reproduced when each claim that is reproduced under the working
+    definition keeps its outcome under all three; partially reproduced when it keeps it under
+    two.
+- id: figs3-long-searches
+  statement: Flies still lay most eggs on low sucrose even after long searches with many
+    transitions (3979 eggs from 95 flies in 0/200, 0/500 and 200/500 mM chambers).
+  source: Results, A framework, paragraph 5; fig. S3
+  quote: flies still lay eggs on low sucrose even after very long searches that have many
+    transitions (fig. S3)
+  expected:
+  - quantity: eggs
+    value: 3979
+    tolerance: 397.9
+  - quantity: flies
+    value: 95
+    tolerance: 9.5
+  criterion: Searches M3 (no 30-s minimum), binned by duration (0, 30, 60, 90, 120, 240, 360, 1500
+    s, the ticks of fig. S3A) and by number of transitions (0, 1, 2, 3, 4, 5 to 9, 10 to 24, 25+),
+    fraction of eggs on the lower option with 95% Clopper-Pearson CI. Reproduced when the
+    fraction is above 0.5 in the longest-duration bin and the 25+ transitions bin, and the
+    counts are within tolerance.
+- id: figs4-models-fail
+  statement: Models that map sucrose history to egg-laying rate without a comparison to an
+    internal expectation (a history kernel, or an integral controller with a set point) fail to
+    reproduce key features of the rate functions.
+  source: Results, Flies lay eggs more rapidly on high-quality substrates, last paragraph;
+    Materials and Methods, Mathematical models; fig. S4
+  quote: Models that attempt to explain the observed behavior as a function of sucrose
+    concentration alone, without a comparison to an internal expectation, fail to reproduce
+    important aspects of the data
+  criterion: The kernel is fit with code and concepts from ref. 82 (not given here) and neither
+    the fit procedure nor the constants k1, k2 of model 2 are stated, and the failure is
+    described in words (model 1 overestimates the rate on transition from 500 to 0 mM in a
+    0/500 chamber when fit to 0/200). The method is not fixed by the paper; the author fits a
+    zero-area kernel to the 0/200 rate functions by least squares as one reading and judges
+    whether it overestimates the 500 to 0 mM rate in 0/500, and blocks the claim if no fit is
+    defensible.
