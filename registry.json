@@ -5984,6 +5984,10 @@
     "ready": true,
     "date": "2026-10-20"
    },
+   "dryad:1rn8pk129": {
+    "ready": true,
+    "date": "2026-11-25"
+   },
    "dandi:000691": {
     "ready": true,
     "date": "2026-10-20"
@@ -6623,7 +6627,7 @@
    "sparc:82": 5,
    "crcns:ssc-1": 1,
    "crcns:ssc-11": 7,
-   "dandi:000055": 1,
+   "dandi:000055": 3,
    "dandi:000056": 3,
    "dandi:000054": 4,
    "dandi:001710": 3,
@@ -10288,11 +10292,22 @@
    ],
    "dandi:000055": [
     {
+     "claim": "roi-projection-link",
+     "question": "The criterion gives the code's rule for matching the rows of the projection matrices to electrodes as \"drop all-zero rows\". The code also drops the first of the rows that are not all zero. Should the criterion give the code's full rule?",
+     "passage": "tfr_utils.load_project_spectral_power (commit 04c6faf), `np.nonzero(df.transpose().mean().values != 0)[0][1:]`; Methods, \"Projecting power into regions of interest\".",
+     "why": "Under the rule as worded, every subject keeps one row more than it has electrodes (the first row holds the electrode density of each region), so the counts never match and the claim would fail. The attempt used the code's full rule, under which the rows match the electrodes with a position in all 12 subjects. The verifier of round 1 reported this."
+    },
+    {
      "claim": "fig2-reach-shape",
-     "asked": "2026-11-07",
-     "question": "The criterion judges the angle part on a Gaussian KDE with Scott's bandwidth evaluated on -90 to 90, with peaks required within 15 degrees of +-90. For angles bounded at +-90 such a KDE without boundary correction cannot place its peaks near +-90. Should the criterion use a boundary-corrected density (for example reflection at +-90), a histogram, or a wider window around +-90?",
-     "passage": "For reach angle, the distributions tend to be bimodal, with peaks at +-90 (Results, Behavior during naturalistic movements, paragraph 3; Figure 2, drawn with seaborn kdeplot in the code)",
-     "why": "On synthetic folded angles whose density peaks at +-90 the criterion's KDE puts the peaks at -72.5 and 70.0 (n = 250) and -73.5 and 74.0 degrees (n = 900), so the test is biased against the claim. In this attempt the angle part fails in 0 of 12 subjects with the criterion's KDE and holds in 6 of 12 (and pooled) with reflection, still not more than half, so the outcome does not change here, but a criterion that a true peak at +-90 can pass would be judged differently on other data."
+     "question": "The criterion evaluates a Gaussian kernel density with Scott's bandwidth on the folded angle and asks for its two highest maxima within 15 degrees of -90 and +90. The folded angle ends at +-90, and a kernel density without boundary correction moves a maximum that sits at the boundary inward by about one bandwidth. Should the window allow for this, or should the criterion use a boundary-corrected density or a histogram?",
+     "passage": "Results, Behavior during naturalistic movements, paragraph 3, \"For reach angle, the distributions tend to be bimodal, with peaks at +-90\"; Figure 2 (seaborn kdeplot).",
+     "why": "The angle part decides the outcome (partially reproduced). In every subject the density at +75 degrees is above that at +90, and the pooled maxima are at -71.5 and +75 degrees, just outside the window. A boundary-corrected reading could pass the +90 side. The -90 side may still fail, as only 6.4% of the pooled events lie within 15 degrees of -90 and the density at -75 degrees is below that at 0. The verifier of round 1 reported this."
+    },
+    {
+     "claim": "fig2-event-counts",
+     "question": "The Methods keep only movement events lasting 0.5 to 4 s. The criterion's readings count all events in the dataset, or those left after the segment rejection, and neither applies this filter. Should the readings include it?",
+     "passage": "Methods, \"In addition, we only retained movement events where (1) movement durations were between 0.5-4 s; (2) the confidence scores from DeepLabCut were >0.4 ... and (3) wrist movements followed a parabolic trajectory\".",
+     "why": "The dataset holds events as short as 0.233 s. With the filter the fewest events in a subject are 208 (all events) or 207 (after the segment rejection), still outside 151 +- 15.1, so the outcome (not reproduced) would not change here; it could for another dataset version. The verifier of round 1 reported this."
     }
    ],
    "dandi:000056": [
@@ -13268,6 +13283,10 @@
     "ready": true,
     "date": "2026-10-20"
    },
+   "schapiro-2024": {
+    "ready": true,
+    "date": "2026-11-25"
+   },
    "scherrer-2023": {
     "ready": true,
     "date": "2026-10-20"
@@ -13786,7 +13805,7 @@
    "pelot-2020": 5,
    "peron-2015": 1,
    "peron-2020": 7,
-   "peterson-2021": 1,
+   "peterson-2021": 3,
    "peyrache-2015": 3,
    "plitt-2021": 4,
    "plitt-2023": 3,
@@ -73986,6 +74005,193 @@
       "source": "Main text, paragraph 6; Fig. 4C",
       "quote": "The yintercept of the regression line was positive in 422 out of 423 cells (Fig. 4C). Average rates at the lowest velocity (0 to 3 cm/s) were 2.26 T 0.03 Hz (grid cells), 2.50 T 0.02 Hz (headdirection cells) and 2.39 T 0.05 Hz (grid ... head-direction cells).",
       "criterion": "Regressions and readings as in the speed claim. The tolerances on the rates are the paper's printed spread, whose kind (SEM or SD) is not stated. The paper does not say how the average was taken; readings are (a) the mean over cells of each cell's mean rate in the 1-s bins with speed from 0 to 3 cm/s; (b) the mean over all such bins of all cells of a class pooled. Reproduced when, under a reading, the fraction is within tolerance and the three rates are within their tolerances; partially reproduced when the fraction holds and the rates are within 10% of the printed values."
+     }
+    ]
+   }
+  ],
+  "dryad:1rn8pk129": [
+   {
+    "path": "claims/schapiro-2024.yaml",
+    "paper": "10.7554/elife.98844",
+    "check": {
+     "ready": true,
+     "date": "2026-11-25"
+    },
+    "claims": [
+     {
+      "id": "figs1-ih-reduced-11c",
+      "statement": "At 11 degrees C and -110 mV, Ih in PD and LP cells was 1.5 nA in saline and 0.23 nA in Cs+, a reduction of 93% (4 PD and 3 LP cells, paired t-test p = 0.0005).",
+      "source": "Results, The steady-state frequency increase in response to elevated temperature was decreased by Cs+, paragraph 1; Figure 1-figure supplement 1A and 1C",
+      "quote": "At 11\u00b0C and \u2013110 mV, I h was 1.5\u00b10.83 nA in saline and 0.23\u00b1.5 nA in Cs + , a reduction of 93\u00b130% (4 PD cells, 3 LP cells, paired Student\u2019s t-test; p=0.0005)",
+      "criterion": "Ih is the difference between the initial current needed to hold the step to -110 mV and the steady-state current (Results, paragraph 1; Figure 1-figure supplement 1 legend). The paper does not fix the windows. Readings are (a) initial current as the mean over the first 100 ms after the capacitive transient, steady state as the mean over the last 1 s of the 12 s step; (b) initial current as the extreme current in the first 500 ms after the transient, steady state as the last 1 s. Reduction per cell is 100 * (1 - Ih Cs / Ih saline), averaged over cells; the ratio of the means is a variant. Reproduced when, under one reading, the values are within tolerance and a paired t-test of saline against Cs+ gives p < 0.05."
+     },
+     {
+      "id": "figs1-ih-reduced-21c",
+      "statement": "At 21 degrees C and -110 mV, Ih was 3.2 nA in saline and 0.6 nA in Cs+, a reduction of 78% (5 LP and 3 PD cells, paired t-test p = 0.02).",
+      "source": "Results, The steady-state frequency increase in response to elevated temperature was decreased by Cs+, paragraph 1; Figure 1-figure supplement 1B and 1D",
+      "quote": "At 21\u00b0C and \u2013110 mV, I h was 3.2\u00b12.3 nA in saline and 0.6\u00b1.8 nA in Cs + , a reduction of 78\u00b120% (5 LP cells, 3 PD cells, paired Student\u2019s t-test; p=0.02)",
+      "criterion": "As figs1-ih-reduced-11c, on the cells clamped at 21 degrees C."
+     },
+     {
+      "id": "fig1-cs-lower-frequency-11c",
+      "statement": "At 11 degrees C pyloric frequency was lower in Cs+ than in saline (0.9 against 1.2 Hz, paired t-test p < 0.001).",
+      "source": "Results, The steady-state frequency increase in response to elevated temperature was decreased by Cs+, paragraph 2",
+      "quote": "In Cs + at 11\u00b0C, the pyloric frequency was significantly decreased compared to control conditions (saline ... 1.2\u00b10.2 Hz; Cs + 0.9\u00b10.2 Hz, paired Student\u2019s t-test; p < 0.001)",
+      "criterion": "Per experiment and condition, the mean PD burst frequency over times within 0.3 degrees C of 11 degrees C, at the first 11 degrees C hold of the condition (O2). The sentence gives no N; 21 is read from the design (Figures 1D and 1E). Reproduced when both means are within tolerance and a paired t-test over the 21 experiments gives p < 0.05 with Cs+ lower."
+     },
+     {
+      "id": "fig1d-difference-grows-with-temperature",
+      "statement": "The difference between a preparation's frequency in saline and in Cs+ increased significantly as temperature increased.",
+      "source": "Results, The steady-state frequency increase, paragraph 3; Figure 1D legend",
+      "quote": "As temperature increased, the difference between a preparation\u2019s frequency in saline and Cs + significantly increased (one-way repeated measures ANOVA [F(5,85) = 43.259, p<0.001, N=21])",
+      "criterion": "Per experiment, saline minus Cs+ mean frequency at each of the six holding temperatures (within 0.3 degrees C of 11, 13, 15, 17, 19 and 21 degrees C); a one-way repeated-measures ANOVA on temperature. The printed degrees of freedom, F(5,85), imply 18 experiments, not 21; readings are (a) every experiment with values at all six temperatures in both conditions; (b) the 21 experiments, with any missing value handled as MATLAB ranova does (dropping the experiment). Reproduced when, under one reading, the temperature effect has p < 0.05 and the mean difference at 21 degrees C exceeds that at 11 degrees C. The number of experiments entering is reported."
+     },
+     {
+      "id": "fig1e-q10-lower-in-cs",
+      "statement": "The Q10 of pyloric frequency was lower in Cs+ (1.3) than in saline (1.7), paired t-test p < 0.001, N=21.",
+      "source": "Results, The steady-state frequency increase, paragraph 3; Figure 1E",
+      "quote": "The mean Q 10 of the pyloric frequency was significantly lower in Cs + (1.3\u00b10.5) than in control (1.7\u00b10.3) ( Figure 1E )",
+      "criterion": "Q10 per experiment and condition from the six holding-temperature mean frequencies, under the readings of O1. Reproduced when, under one reading, both means are within tolerance and a paired t-test gives p < 0.05 with Cs+ lower."
+     },
+     {
+      "id": "fig1f-two-saline-frequency-change-same",
+      "statement": "In experiments with two consecutive saline step protocols, the frequency change from 11 to 21 degrees C did not differ between the first (0.9 Hz) and second (0.8 Hz) protocol.",
+      "source": "Results, The steady-state frequency increase, paragraph 4; Figure 1F",
+      "quote": "The mean difference in frequency between 21\u00b0C and 11\u00b0C for the first (0.9\u00b10.3 Hz) and second temperature changes (0.8\u00b10.3 Hz) were not significantly different ( Figure 1F )",
+      "criterion": "A claim of absence. Per experiment and protocol, mean frequency within 0.3 degrees C of 21 degrees C minus that of 11 degrees C (the first 11 degrees C hold of the protocol, O2); a paired t-test over the 6 experiments, the paper's test (Figure 1F legend). Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference is reported either way."
+     },
+     {
+      "id": "fig1e-two-saline-q10-same",
+      "statement": "In the two-saline experiments the Q10 of the first protocol (2.0) did not differ from that of the second (1.8).",
+      "source": "Results, The steady-state frequency increase, paragraph 4; Figure 1E legend",
+      "quote": "the mean Q 10 of the first temperature increase (2.0\u00b10.4) was not significantly different than the mean Q 10 of the second temperature increase (1.8\u00b10.4)",
+      "criterion": "A claim of absence, judged on a paired t-test of the two Q10 values over the 6 experiments (Figure 1E legend). Q10 under reading (a) of O1, the one the Figure 1C legend supports, marked as resting on that reading; (b) and (c) are shown as variants. Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference is reported either way."
+     },
+     {
+      "id": "fig1e-saline-q10-same-across-designs",
+      "statement": "The saline Q10 did not differ between experiments with two saline protocols and those with one saline and one Cs+ protocol.",
+      "source": "Results, The steady-state frequency increase, paragraph 4; Figure 1E legend",
+      "quote": "Q 10 was also not significantly different between the mean Q 10 of the experiments with two saline temperature changes those that experienced one saline and one Cs + temperature change (two-sample t-test, p=0.26)",
+      "criterion": "A claim of absence, judged on a two-sample t-test. The legend's \"mean Q 10 of the experiments with two saline temperature changes\" is read as each of the 6 experiments' mean of its two saline Q10 values, against the 21 saline Q10 values; the first saline Q10 alone and the 12 pooled values are variants. The paper gives no N for this test; the n recorded is this file's reading of the two designs. Q10 under reading (a) of O1 (Figure 1C legend), (b) and (c) as variants. Reproduced when p >= 0.05, not reproduced when p < 0.05."
+     },
+     {
+      "id": "fig2c-decrease-by-depolarizing-phase",
+      "statement": "In an example preparation in Cs+, the frequency decrease right after the temperature step from 13 toward 15 degrees C came from an elongation of the PD depolarizing phase, not of the bursting, repolarization or inhibitory phases; a Cs+ + PTX example showed the same.",
+      "source": "Results, Cs+ revealed dynamic transitory frequency response, paragraph 1; Figure 2C legend; Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 3, and Figure 4G for Cs+ + PTX; Discussion, The jags in frequency, paragraph 2",
+      "quote": "Alignment of each PD cycle during this window to the first PD spike reveals that the decrease in frequency was due to elongation of the depolarizing phase and not the bursting, repolarization, or inhibitory phases",
+      "criterion": "The paper shows this in one example preparation, not identified, for the step from 13 toward 15 degrees C, and gives no measure; the Discussion treats it as general (\"the frequency decrease is associated with an elongation of the depolarizing phase\", Figures 2C and 4G). The phase boundaries and windows are open; the paper names the phases (bursting, repolarization, inhibitory, depolarizing in the Results; bursting, repolarization, depolarizing in the Figure 2C legend) without defining them. Readings for the phases on the intracellular PD trace, per cycle, are (a) three phases as in the legend, burst (first to last PD spike), repolarization (last PD spike to the voltage minimum), depolarization (voltage minimum to the next first PD spike); (b) four phases as in the Results, burst (first to last PD spike), repolarization (last PD spike to the first LP spike), inhibition (first to last LP spike), depolarization (last LP spike to the next first PD spike). Windows, from the Discussion's \"~30 s of temperature increase\", are the cycles of the 30 s before the 13 to 15 degrees C step against the cycles of the first 30 s of warming whose period exceeds the pre-step mean. In each Cs+ experiment with intracellular PD, the share of the period increase carried by each phase. Reproduced when, under one reading, in most such experiments the depolarizing phase accounts for more than half of the period increase; partially reproduced when this holds only in the experiments with the largest frequency decrease. Not testable without intracellular PD traces."
+     },
+     {
+      "id": "fig3d-freq-decrease-while-warming",
+      "statement": "Among temperature-increasing cycles, the percent with a frequency decrease was higher in Cs+ (31.4%) than in saline (7.5%), and higher in Cs+ in 20 of 21 experiments.",
+      "source": "Results, Cs+ revealed dynamic transitory frequency response, paragraph 2; Figure 3D",
+      "quote": "In Cs + , the mean percent of temperature-increasing pyloric cycles in which the frequency decreased (31.4\u00b115%) was significantly higher than in control (7.5\u00b15%) ( Figure 3D , paired Student\u2019s t-test, N=21, p<0.001)",
+      "criterion": "The jag measure as the Methods fix it (header), under the readings of O3. Reproduced when, under one reading, both means and the count are within tolerance and a paired t-test gives p < 0.05 with Cs+ higher."
+     },
+     {
+      "id": "fig3e-freq-increase-when-stable",
+      "statement": "Among temperature-stable cycles, the percent with a frequency increase was higher in Cs+ (27.6%) than in saline (14.1%), and higher in Cs+ in 20 of 21 experiments.",
+      "source": "Results, Cs+ revealed dynamic transitory frequency response, paragraph 2; Figure 3E",
+      "quote": "In Cs + , the mean percent of temperature-stable cycles in which frequency increased in Cs + (27.6\u00b16%) was significantly higher than in control (14.1\u00b15%) ( Figure 3E , paired Student\u2019s t-test, N=21, p<0.001)",
+      "criterion": "As fig3d-freq-decrease-while-warming, for stable cycles and increases of more than 0.002 Hz per cycle."
+     },
+     {
+      "id": "fig4c-ptx-restores-frequency-change",
+      "statement": "The frequency change from 11 to 21 degrees C differed by condition; it was smaller in Cs+ than in saline or in Cs+ + PTX, with no difference between saline and Cs+ + PTX.",
+      "source": "Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 1; Figure 4C",
+      "quote": "change in frequency in Cs + was significantly lower than in either control or Cs + +PTX ( Figure 4C ) with no significant difference between control and Cs + +PTX",
+      "criterion": "Per experiment and condition, mean frequency within 0.3 degrees C of 21 degrees C minus that of 11 degrees C (O2); a one-way repeated-measures ANOVA on condition over the 6 picrotoxin experiments, then Tukey HSD under the readings of O5. Reproduced when, under one reading, the condition effect has p < 0.05, Cs+ is significantly lower than both saline and Cs+ + PTX, and saline against Cs+ + PTX is not significant (the paper's test, as a claim of absence)."
+     },
+     {
+      "id": "fig4d-ptx-keeps-decrease-while-warming",
+      "statement": "The percent of temperature-increasing cycles with a frequency decrease differed by condition; it was higher in Cs+ and in Cs+ + PTX than in saline, with no difference between Cs+ and Cs+ + PTX.",
+      "source": "Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 2; Figure 4D",
+      "quote": "The probability of frequency decrease while temperature increased was lower in control than in either Cs + or Cs + +PTX ( Figure 4D ), with no difference between Cs + and Cs + +PTX",
+      "criterion": "The jag measure (header) under the readings of O3, per experiment and condition; a one-way repeated-measures ANOVA on condition, then Tukey HSD under O5. Reproduced when, under one reading, the condition effect has p < 0.05, both Cs+ conditions are significantly above saline, and Cs+ against Cs+ + PTX is not significant."
+     },
+     {
+      "id": "fig4e-stable-increase-ordering",
+      "statement": "The percent of temperature-stable cycles with a frequency increase differed between all three conditions, lowest in saline, middle in Cs+ and highest in Cs+ + PTX.",
+      "source": "Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 2; Figure 4E",
+      "quote": "the probability of frequency increase while temperature was stable was significantly different between all three conditions... control was lowest, Cs + was in the middle, and Cs + +PTX was greatest",
+      "criterion": "As fig4d-ptx-keeps-decrease-while-warming, for stable cycles with an increase. The legend names the Cs+ against saline and Cs+ + PTX against Cs+ comparisons; the Results say all three differ. Reproduced when, under one reading, the condition effect has p < 0.05, the means are ordered saline < Cs+ < Cs+ + PTX, and all three Tukey pairs are significant; partially reproduced when the condition effect and the two pairs the legend names (Cs+ above saline, Cs+ + PTX above Cs+) are significant but saline against Cs+ + PTX is not."
+     },
+     {
+      "id": "fig5b-pd-burst-shorter",
+      "statement": "At 11 degrees C the PD burst was modestly shorter in Cs+ (144 ms) than in saline (164 ms).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Figure 5B",
+      "quote": "The time of PD bursting was significantly but modestly shorter in Cs + ( Figure 5B , saline ... 164\u00b134 ms, Cs + ... 144\u00b118 ms)",
+      "criterion": "PD burst duration is first to last spike of the burst; per experiment the mean over the 11 degrees C cycles under O2 and O4. Reproduced when both means are within tolerance and a Wilcoxon signed-rank test gives p < 0.05 with Cs+ shorter."
+     },
+     {
+      "id": "table1-pd-off-advanced",
+      "statement": "At 11 degrees C, PD OFF phase was advanced in Cs+ (0.12) compared with saline (0.19).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Table 1; Figure 5C",
+      "quote": "the phase of PD OFF (percentage of period at which PD stops firing) was significantly advanced in Cs + compared to control",
+      "criterion": "Phase as the Methods define it, per experiment the mean over 11 degrees C cycles under O2 and O4, onsets and offsets as O6. Reproduced when, under one reading, both means are within tolerance and a paired t-test (Table 1, T) gives p < 0.05 with Cs+ lower."
+     },
+     {
+      "id": "table1-lp-on-advanced",
+      "statement": "At 11 degrees C, LP ON phase was advanced in Cs+ (0.29) compared with saline (0.40).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Table 1; Figure 5C",
+      "quote": "LP onset, which follows PD offset, was also phase advanced in Cs + conditions compared to control",
+      "criterion": "As table1-pd-off-advanced, for LP onset."
+     },
+     {
+      "id": "table1-lp-off-advanced",
+      "statement": "At 11 degrees C, LP OFF phase was advanced in Cs+ (0.56) compared with saline (0.66).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 2; Table 1; Figure 5C",
+      "quote": "LP OFF was also significantly advanced in Cs +",
+      "criterion": "As table1-pd-off-advanced, for LP offset."
+     },
+     {
+      "id": "table1-py-phase-unchanged",
+      "statement": "At 11 degrees C, PY ON (0.58 against 0.60) and PY OFF (0.87 against 0.90) phases did not differ between saline and Cs+.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 2; Table 1",
+      "quote": "PY ON and PY OFF were not significantly different between Cs + and control",
+      "criterion": "A claim of absence, judged on the paper's tests (Table 1), a paired t-test for PY ON and a Wilcoxon signed-rank test for PY OFF over the 12 experiments with PY. Phases as table1-pd-off-advanced. Reproduced when both give p >= 0.05; not reproduced when either gives p < 0.05; the mean differences are reported either way."
+     },
+     {
+      "id": "fig5d-pdoff-lpon-delay-smaller",
+      "statement": "The phase delay between PD OFF and LP ON was smaller in Cs+ (0.17) than in saline (0.21), so LP ON advanced more than the PD OFF advance explains.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Figure 5D",
+      "quote": "the delay between PD OFF and LP ON phase was significantly smaller in Cs + compared to control ( Figure 5D , saline ... 0.21\u00b10.06, Cs + ... 0.17\u00b10.04)",
+      "criterion": "Per experiment, the mean of LP ON phase minus PD OFF phase over 11 degrees C cycles (O2, O4; the difference of the two means is a variant). Reproduced when both means are within tolerance and a paired t-test gives p < 0.05 with Cs+ smaller."
+     },
+     {
+      "id": "lp-duty-cycle-preserved",
+      "statement": "LP duty cycle did not differ between saline and Cs+ at 11 degrees C.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 2",
+      "quote": "LP OFF was also significantly advanced in Cs + , and subsequently duty cycle (percent of the period a neuron is firing) was preserved (paired Student\u2019s t-test, N=21, p=0.448)",
+      "criterion": "A claim of absence. LP duty cycle per cycle is (last LP spike minus first LP spike) over the period, the mean over 11 degrees C cycles (O2, O4). A paired t-test over 21 experiments, the paper's test. Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference is reported either way."
+     },
+     {
+      "id": "matched-period-lp-earlier",
+      "statement": "In cycles of matched period between saline at 11 degrees C and Cs+, PD bursts were 51 ms shorter in Cs+ while LP fired 91 ms earlier and PY latency did not change (1.9 ms), and the PD offset advance did not correlate with the LP onset advance.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 3",
+      "quote": "Although PD burst duration was only 51\u00b130 ms shorter in Cs + , LP fired 91\u00b168 ms earlier. Conversely, PY latency did not change in these matched frequency samples (1.9\u00b1100 ms earlier). There was no correlation between how advanced PD\u2019s offset was between control and Cs + conditions and how much LP\u2019s onset advanced in these matched period samples (Pearson correlation; r(21)=0.26, p=0.2928)",
+      "criterion": "The paper does not say how periods were matched. Readings are (a) per experiment, the Cs+ holding temperature whose mean period is nearest the saline 11 degrees C mean period, with latencies and durations as means over those holds; (b) per experiment, Cs+ cycles whose period is within 2% of the saline 11 degrees C mean period (a standard choice, the paper gives no bound). Latencies are from the first PD spike to the first LP or PY spike (O6); advance is saline minus Cs+. Reproduced when, under one reading, the three means are within tolerance, LP advance exceeds PD shortening, and the Pearson correlation across experiments of PD offset advance (ms) with LP onset advance (ms) has p >= 0.05 (a claim of absence, the paper's test). The printed r(21) implies 23 pairs by the degrees-of-freedom convention, while r = 0.26 with p = 0.2928 fits about 18 pairs; the number of pairs used is reported."
+     },
+     {
+      "id": "fig6a-lp-off-advances-saline",
+      "statement": "In saline, LP OFF phase advanced modestly with temperature, by 0.07 per 10 degrees C; all other phases were constant.",
+      "source": "Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 1; Figure 6A and 6B",
+      "quote": "In control conditions, LP OFF modestly advanced with temperature, with a mean advance of 0.07\u00b10.07 per 10\u00b0C (Wilcoxon signed-rank test, N=21, p<0.01)",
+      "criterion": "Per experiment, a line of phase on temperature under O4; slope per 10 degrees C, an advance being a negative slope. Wilcoxon signed-rank test against zero over 21 experiments, p multiplied by 10 (Bonferroni, Methods). Reproduced when, under one reading, the mean advance is within tolerance and the adjusted p < 0.01, with the slope negative."
+     },
+     {
+      "id": "fig6a-lp-advances-cs",
+      "statement": "In Cs+, LP ON and LP OFF advanced with temperature, by 0.05 and 0.14 per 10 degrees C.",
+      "source": "Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 2; Figure 6A and 6C",
+      "quote": "In Cs + , LP ON and LP OFF advanced with temperature, with a mean advance of 0.05\u00b10.05 per 10\u00b0C and 0.14\u00b10.09 per 10\u00b0C respectively (Wilcoxon signed-rank test, N=21, p<0.01)",
+      "criterion": "As fig6a-lp-off-advances-saline, for LP ON and LP OFF in Cs+. Reproduced when both hold; partially reproduced when one does."
+     },
+     {
+      "id": "fig6a-pd-py-phase-constant",
+      "statement": "PD and PY phases were constant with temperature in both saline and Cs+.",
+      "source": "Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 2; Figure 6A",
+      "quote": "PD and PY phase constancy was not significantly altered in either condition",
+      "criterion": "A claim of absence, on the paper's test. For PD OFF, PY ON and PY OFF in each condition (6 tests; N=21 for PD, 12 for PY), the slope of phase on temperature (O4) tested against zero by Wilcoxon signed-rank or one-sample t-test as Shapiro-Wilk on the slopes decides, p multiplied by 10. Reproduced when none has adjusted p < 0.05; not reproduced when any does, naming it. LP ON in saline, which the Results also count as constant, is reported the same way. Mean slopes are reported either way."
      }
     ]
    }
@@ -159465,6 +159671,193 @@
     ]
    }
   ],
+  "schapiro-2024": [
+   {
+    "path": "claims/schapiro-2024.yaml",
+    "paper": "10.7554/elife.98844",
+    "check": {
+     "ready": true,
+     "date": "2026-11-25"
+    },
+    "claims": [
+     {
+      "id": "figs1-ih-reduced-11c",
+      "statement": "At 11 degrees C and -110 mV, Ih in PD and LP cells was 1.5 nA in saline and 0.23 nA in Cs+, a reduction of 93% (4 PD and 3 LP cells, paired t-test p = 0.0005).",
+      "source": "Results, The steady-state frequency increase in response to elevated temperature was decreased by Cs+, paragraph 1; Figure 1-figure supplement 1A and 1C",
+      "quote": "At 11\u00b0C and \u2013110 mV, I h was 1.5\u00b10.83 nA in saline and 0.23\u00b1.5 nA in Cs + , a reduction of 93\u00b130% (4 PD cells, 3 LP cells, paired Student\u2019s t-test; p=0.0005)",
+      "criterion": "Ih is the difference between the initial current needed to hold the step to -110 mV and the steady-state current (Results, paragraph 1; Figure 1-figure supplement 1 legend). The paper does not fix the windows. Readings are (a) initial current as the mean over the first 100 ms after the capacitive transient, steady state as the mean over the last 1 s of the 12 s step; (b) initial current as the extreme current in the first 500 ms after the transient, steady state as the last 1 s. Reduction per cell is 100 * (1 - Ih Cs / Ih saline), averaged over cells; the ratio of the means is a variant. Reproduced when, under one reading, the values are within tolerance and a paired t-test of saline against Cs+ gives p < 0.05."
+     },
+     {
+      "id": "figs1-ih-reduced-21c",
+      "statement": "At 21 degrees C and -110 mV, Ih was 3.2 nA in saline and 0.6 nA in Cs+, a reduction of 78% (5 LP and 3 PD cells, paired t-test p = 0.02).",
+      "source": "Results, The steady-state frequency increase in response to elevated temperature was decreased by Cs+, paragraph 1; Figure 1-figure supplement 1B and 1D",
+      "quote": "At 21\u00b0C and \u2013110 mV, I h was 3.2\u00b12.3 nA in saline and 0.6\u00b1.8 nA in Cs + , a reduction of 78\u00b120% (5 LP cells, 3 PD cells, paired Student\u2019s t-test; p=0.02)",
+      "criterion": "As figs1-ih-reduced-11c, on the cells clamped at 21 degrees C."
+     },
+     {
+      "id": "fig1-cs-lower-frequency-11c",
+      "statement": "At 11 degrees C pyloric frequency was lower in Cs+ than in saline (0.9 against 1.2 Hz, paired t-test p < 0.001).",
+      "source": "Results, The steady-state frequency increase in response to elevated temperature was decreased by Cs+, paragraph 2",
+      "quote": "In Cs + at 11\u00b0C, the pyloric frequency was significantly decreased compared to control conditions (saline ... 1.2\u00b10.2 Hz; Cs + 0.9\u00b10.2 Hz, paired Student\u2019s t-test; p < 0.001)",
+      "criterion": "Per experiment and condition, the mean PD burst frequency over times within 0.3 degrees C of 11 degrees C, at the first 11 degrees C hold of the condition (O2). The sentence gives no N; 21 is read from the design (Figures 1D and 1E). Reproduced when both means are within tolerance and a paired t-test over the 21 experiments gives p < 0.05 with Cs+ lower."
+     },
+     {
+      "id": "fig1d-difference-grows-with-temperature",
+      "statement": "The difference between a preparation's frequency in saline and in Cs+ increased significantly as temperature increased.",
+      "source": "Results, The steady-state frequency increase, paragraph 3; Figure 1D legend",
+      "quote": "As temperature increased, the difference between a preparation\u2019s frequency in saline and Cs + significantly increased (one-way repeated measures ANOVA [F(5,85) = 43.259, p<0.001, N=21])",
+      "criterion": "Per experiment, saline minus Cs+ mean frequency at each of the six holding temperatures (within 0.3 degrees C of 11, 13, 15, 17, 19 and 21 degrees C); a one-way repeated-measures ANOVA on temperature. The printed degrees of freedom, F(5,85), imply 18 experiments, not 21; readings are (a) every experiment with values at all six temperatures in both conditions; (b) the 21 experiments, with any missing value handled as MATLAB ranova does (dropping the experiment). Reproduced when, under one reading, the temperature effect has p < 0.05 and the mean difference at 21 degrees C exceeds that at 11 degrees C. The number of experiments entering is reported."
+     },
+     {
+      "id": "fig1e-q10-lower-in-cs",
+      "statement": "The Q10 of pyloric frequency was lower in Cs+ (1.3) than in saline (1.7), paired t-test p < 0.001, N=21.",
+      "source": "Results, The steady-state frequency increase, paragraph 3; Figure 1E",
+      "quote": "The mean Q 10 of the pyloric frequency was significantly lower in Cs + (1.3\u00b10.5) than in control (1.7\u00b10.3) ( Figure 1E )",
+      "criterion": "Q10 per experiment and condition from the six holding-temperature mean frequencies, under the readings of O1. Reproduced when, under one reading, both means are within tolerance and a paired t-test gives p < 0.05 with Cs+ lower."
+     },
+     {
+      "id": "fig1f-two-saline-frequency-change-same",
+      "statement": "In experiments with two consecutive saline step protocols, the frequency change from 11 to 21 degrees C did not differ between the first (0.9 Hz) and second (0.8 Hz) protocol.",
+      "source": "Results, The steady-state frequency increase, paragraph 4; Figure 1F",
+      "quote": "The mean difference in frequency between 21\u00b0C and 11\u00b0C for the first (0.9\u00b10.3 Hz) and second temperature changes (0.8\u00b10.3 Hz) were not significantly different ( Figure 1F )",
+      "criterion": "A claim of absence. Per experiment and protocol, mean frequency within 0.3 degrees C of 21 degrees C minus that of 11 degrees C (the first 11 degrees C hold of the protocol, O2); a paired t-test over the 6 experiments, the paper's test (Figure 1F legend). Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference is reported either way."
+     },
+     {
+      "id": "fig1e-two-saline-q10-same",
+      "statement": "In the two-saline experiments the Q10 of the first protocol (2.0) did not differ from that of the second (1.8).",
+      "source": "Results, The steady-state frequency increase, paragraph 4; Figure 1E legend",
+      "quote": "the mean Q 10 of the first temperature increase (2.0\u00b10.4) was not significantly different than the mean Q 10 of the second temperature increase (1.8\u00b10.4)",
+      "criterion": "A claim of absence, judged on a paired t-test of the two Q10 values over the 6 experiments (Figure 1E legend). Q10 under reading (a) of O1, the one the Figure 1C legend supports, marked as resting on that reading; (b) and (c) are shown as variants. Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference is reported either way."
+     },
+     {
+      "id": "fig1e-saline-q10-same-across-designs",
+      "statement": "The saline Q10 did not differ between experiments with two saline protocols and those with one saline and one Cs+ protocol.",
+      "source": "Results, The steady-state frequency increase, paragraph 4; Figure 1E legend",
+      "quote": "Q 10 was also not significantly different between the mean Q 10 of the experiments with two saline temperature changes those that experienced one saline and one Cs + temperature change (two-sample t-test, p=0.26)",
+      "criterion": "A claim of absence, judged on a two-sample t-test. The legend's \"mean Q 10 of the experiments with two saline temperature changes\" is read as each of the 6 experiments' mean of its two saline Q10 values, against the 21 saline Q10 values; the first saline Q10 alone and the 12 pooled values are variants. The paper gives no N for this test; the n recorded is this file's reading of the two designs. Q10 under reading (a) of O1 (Figure 1C legend), (b) and (c) as variants. Reproduced when p >= 0.05, not reproduced when p < 0.05."
+     },
+     {
+      "id": "fig2c-decrease-by-depolarizing-phase",
+      "statement": "In an example preparation in Cs+, the frequency decrease right after the temperature step from 13 toward 15 degrees C came from an elongation of the PD depolarizing phase, not of the bursting, repolarization or inhibitory phases; a Cs+ + PTX example showed the same.",
+      "source": "Results, Cs+ revealed dynamic transitory frequency response, paragraph 1; Figure 2C legend; Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 3, and Figure 4G for Cs+ + PTX; Discussion, The jags in frequency, paragraph 2",
+      "quote": "Alignment of each PD cycle during this window to the first PD spike reveals that the decrease in frequency was due to elongation of the depolarizing phase and not the bursting, repolarization, or inhibitory phases",
+      "criterion": "The paper shows this in one example preparation, not identified, for the step from 13 toward 15 degrees C, and gives no measure; the Discussion treats it as general (\"the frequency decrease is associated with an elongation of the depolarizing phase\", Figures 2C and 4G). The phase boundaries and windows are open; the paper names the phases (bursting, repolarization, inhibitory, depolarizing in the Results; bursting, repolarization, depolarizing in the Figure 2C legend) without defining them. Readings for the phases on the intracellular PD trace, per cycle, are (a) three phases as in the legend, burst (first to last PD spike), repolarization (last PD spike to the voltage minimum), depolarization (voltage minimum to the next first PD spike); (b) four phases as in the Results, burst (first to last PD spike), repolarization (last PD spike to the first LP spike), inhibition (first to last LP spike), depolarization (last LP spike to the next first PD spike). Windows, from the Discussion's \"~30 s of temperature increase\", are the cycles of the 30 s before the 13 to 15 degrees C step against the cycles of the first 30 s of warming whose period exceeds the pre-step mean. In each Cs+ experiment with intracellular PD, the share of the period increase carried by each phase. Reproduced when, under one reading, in most such experiments the depolarizing phase accounts for more than half of the period increase; partially reproduced when this holds only in the experiments with the largest frequency decrease. Not testable without intracellular PD traces."
+     },
+     {
+      "id": "fig3d-freq-decrease-while-warming",
+      "statement": "Among temperature-increasing cycles, the percent with a frequency decrease was higher in Cs+ (31.4%) than in saline (7.5%), and higher in Cs+ in 20 of 21 experiments.",
+      "source": "Results, Cs+ revealed dynamic transitory frequency response, paragraph 2; Figure 3D",
+      "quote": "In Cs + , the mean percent of temperature-increasing pyloric cycles in which the frequency decreased (31.4\u00b115%) was significantly higher than in control (7.5\u00b15%) ( Figure 3D , paired Student\u2019s t-test, N=21, p<0.001)",
+      "criterion": "The jag measure as the Methods fix it (header), under the readings of O3. Reproduced when, under one reading, both means and the count are within tolerance and a paired t-test gives p < 0.05 with Cs+ higher."
+     },
+     {
+      "id": "fig3e-freq-increase-when-stable",
+      "statement": "Among temperature-stable cycles, the percent with a frequency increase was higher in Cs+ (27.6%) than in saline (14.1%), and higher in Cs+ in 20 of 21 experiments.",
+      "source": "Results, Cs+ revealed dynamic transitory frequency response, paragraph 2; Figure 3E",
+      "quote": "In Cs + , the mean percent of temperature-stable cycles in which frequency increased in Cs + (27.6\u00b16%) was significantly higher than in control (14.1\u00b15%) ( Figure 3E , paired Student\u2019s t-test, N=21, p<0.001)",
+      "criterion": "As fig3d-freq-decrease-while-warming, for stable cycles and increases of more than 0.002 Hz per cycle."
+     },
+     {
+      "id": "fig4c-ptx-restores-frequency-change",
+      "statement": "The frequency change from 11 to 21 degrees C differed by condition; it was smaller in Cs+ than in saline or in Cs+ + PTX, with no difference between saline and Cs+ + PTX.",
+      "source": "Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 1; Figure 4C",
+      "quote": "change in frequency in Cs + was significantly lower than in either control or Cs + +PTX ( Figure 4C ) with no significant difference between control and Cs + +PTX",
+      "criterion": "Per experiment and condition, mean frequency within 0.3 degrees C of 21 degrees C minus that of 11 degrees C (O2); a one-way repeated-measures ANOVA on condition over the 6 picrotoxin experiments, then Tukey HSD under the readings of O5. Reproduced when, under one reading, the condition effect has p < 0.05, Cs+ is significantly lower than both saline and Cs+ + PTX, and saline against Cs+ + PTX is not significant (the paper's test, as a claim of absence)."
+     },
+     {
+      "id": "fig4d-ptx-keeps-decrease-while-warming",
+      "statement": "The percent of temperature-increasing cycles with a frequency decrease differed by condition; it was higher in Cs+ and in Cs+ + PTX than in saline, with no difference between Cs+ and Cs+ + PTX.",
+      "source": "Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 2; Figure 4D",
+      "quote": "The probability of frequency decrease while temperature increased was lower in control than in either Cs + or Cs + +PTX ( Figure 4D ), with no difference between Cs + and Cs + +PTX",
+      "criterion": "The jag measure (header) under the readings of O3, per experiment and condition; a one-way repeated-measures ANOVA on condition, then Tukey HSD under O5. Reproduced when, under one reading, the condition effect has p < 0.05, both Cs+ conditions are significantly above saline, and Cs+ against Cs+ + PTX is not significant."
+     },
+     {
+      "id": "fig4e-stable-increase-ordering",
+      "statement": "The percent of temperature-stable cycles with a frequency increase differed between all three conditions, lowest in saline, middle in Cs+ and highest in Cs+ + PTX.",
+      "source": "Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph 2; Figure 4E",
+      "quote": "the probability of frequency increase while temperature was stable was significantly different between all three conditions... control was lowest, Cs + was in the middle, and Cs + +PTX was greatest",
+      "criterion": "As fig4d-ptx-keeps-decrease-while-warming, for stable cycles with an increase. The legend names the Cs+ against saline and Cs+ + PTX against Cs+ comparisons; the Results say all three differ. Reproduced when, under one reading, the condition effect has p < 0.05, the means are ordered saline < Cs+ < Cs+ + PTX, and all three Tukey pairs are significant; partially reproduced when the condition effect and the two pairs the legend names (Cs+ above saline, Cs+ + PTX above Cs+) are significant but saline against Cs+ + PTX is not."
+     },
+     {
+      "id": "fig5b-pd-burst-shorter",
+      "statement": "At 11 degrees C the PD burst was modestly shorter in Cs+ (144 ms) than in saline (164 ms).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Figure 5B",
+      "quote": "The time of PD bursting was significantly but modestly shorter in Cs + ( Figure 5B , saline ... 164\u00b134 ms, Cs + ... 144\u00b118 ms)",
+      "criterion": "PD burst duration is first to last spike of the burst; per experiment the mean over the 11 degrees C cycles under O2 and O4. Reproduced when both means are within tolerance and a Wilcoxon signed-rank test gives p < 0.05 with Cs+ shorter."
+     },
+     {
+      "id": "table1-pd-off-advanced",
+      "statement": "At 11 degrees C, PD OFF phase was advanced in Cs+ (0.12) compared with saline (0.19).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Table 1; Figure 5C",
+      "quote": "the phase of PD OFF (percentage of period at which PD stops firing) was significantly advanced in Cs + compared to control",
+      "criterion": "Phase as the Methods define it, per experiment the mean over 11 degrees C cycles under O2 and O4, onsets and offsets as O6. Reproduced when, under one reading, both means are within tolerance and a paired t-test (Table 1, T) gives p < 0.05 with Cs+ lower."
+     },
+     {
+      "id": "table1-lp-on-advanced",
+      "statement": "At 11 degrees C, LP ON phase was advanced in Cs+ (0.29) compared with saline (0.40).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Table 1; Figure 5C",
+      "quote": "LP onset, which follows PD offset, was also phase advanced in Cs + conditions compared to control",
+      "criterion": "As table1-pd-off-advanced, for LP onset."
+     },
+     {
+      "id": "table1-lp-off-advanced",
+      "statement": "At 11 degrees C, LP OFF phase was advanced in Cs+ (0.56) compared with saline (0.66).",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 2; Table 1; Figure 5C",
+      "quote": "LP OFF was also significantly advanced in Cs +",
+      "criterion": "As table1-pd-off-advanced, for LP offset."
+     },
+     {
+      "id": "table1-py-phase-unchanged",
+      "statement": "At 11 degrees C, PY ON (0.58 against 0.60) and PY OFF (0.87 against 0.90) phases did not differ between saline and Cs+.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 2; Table 1",
+      "quote": "PY ON and PY OFF were not significantly different between Cs + and control",
+      "criterion": "A claim of absence, judged on the paper's tests (Table 1), a paired t-test for PY ON and a Wilcoxon signed-rank test for PY OFF over the 12 experiments with PY. Phases as table1-pd-off-advanced. Reproduced when both give p >= 0.05; not reproduced when either gives p < 0.05; the mean differences are reported either way."
+     },
+     {
+      "id": "fig5d-pdoff-lpon-delay-smaller",
+      "statement": "The phase delay between PD OFF and LP ON was smaller in Cs+ (0.17) than in saline (0.21), so LP ON advanced more than the PD OFF advance explains.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 1; Figure 5D",
+      "quote": "the delay between PD OFF and LP ON phase was significantly smaller in Cs + compared to control ( Figure 5D , saline ... 0.21\u00b10.06, Cs + ... 0.17\u00b10.04)",
+      "criterion": "Per experiment, the mean of LP ON phase minus PD OFF phase over 11 degrees C cycles (O2, O4; the difference of the two means is a variant). Reproduced when both means are within tolerance and a paired t-test gives p < 0.05 with Cs+ smaller."
+     },
+     {
+      "id": "lp-duty-cycle-preserved",
+      "statement": "LP duty cycle did not differ between saline and Cs+ at 11 degrees C.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 2",
+      "quote": "LP OFF was also significantly advanced in Cs + , and subsequently duty cycle (percent of the period a neuron is firing) was preserved (paired Student\u2019s t-test, N=21, p=0.448)",
+      "criterion": "A claim of absence. LP duty cycle per cycle is (last LP spike minus first LP spike) over the period, the mean over 11 degrees C cycles (O2, O4). A paired t-test over 21 experiments, the paper's test. Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference is reported either way."
+     },
+     {
+      "id": "matched-period-lp-earlier",
+      "statement": "In cycles of matched period between saline at 11 degrees C and Cs+, PD bursts were 51 ms shorter in Cs+ while LP fired 91 ms earlier and PY latency did not change (1.9 ms), and the PD offset advance did not correlate with the LP onset advance.",
+      "source": "Results, Phase of PD and LP advanced in Cs+, paragraph 3",
+      "quote": "Although PD burst duration was only 51\u00b130 ms shorter in Cs + , LP fired 91\u00b168 ms earlier. Conversely, PY latency did not change in these matched frequency samples (1.9\u00b1100 ms earlier). There was no correlation between how advanced PD\u2019s offset was between control and Cs + conditions and how much LP\u2019s onset advanced in these matched period samples (Pearson correlation; r(21)=0.26, p=0.2928)",
+      "criterion": "The paper does not say how periods were matched. Readings are (a) per experiment, the Cs+ holding temperature whose mean period is nearest the saline 11 degrees C mean period, with latencies and durations as means over those holds; (b) per experiment, Cs+ cycles whose period is within 2% of the saline 11 degrees C mean period (a standard choice, the paper gives no bound). Latencies are from the first PD spike to the first LP or PY spike (O6); advance is saline minus Cs+. Reproduced when, under one reading, the three means are within tolerance, LP advance exceeds PD shortening, and the Pearson correlation across experiments of PD offset advance (ms) with LP onset advance (ms) has p >= 0.05 (a claim of absence, the paper's test). The printed r(21) implies 23 pairs by the degrees-of-freedom convention, while r = 0.26 with p = 0.2928 fits about 18 pairs; the number of pairs used is reported."
+     },
+     {
+      "id": "fig6a-lp-off-advances-saline",
+      "statement": "In saline, LP OFF phase advanced modestly with temperature, by 0.07 per 10 degrees C; all other phases were constant.",
+      "source": "Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 1; Figure 6A and 6B",
+      "quote": "In control conditions, LP OFF modestly advanced with temperature, with a mean advance of 0.07\u00b10.07 per 10\u00b0C (Wilcoxon signed-rank test, N=21, p<0.01)",
+      "criterion": "Per experiment, a line of phase on temperature under O4; slope per 10 degrees C, an advance being a negative slope. Wilcoxon signed-rank test against zero over 21 experiments, p multiplied by 10 (Bonferroni, Methods). Reproduced when, under one reading, the mean advance is within tolerance and the adjusted p < 0.01, with the slope negative."
+     },
+     {
+      "id": "fig6a-lp-advances-cs",
+      "statement": "In Cs+, LP ON and LP OFF advanced with temperature, by 0.05 and 0.14 per 10 degrees C.",
+      "source": "Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 2; Figure 6A and 6C",
+      "quote": "In Cs + , LP ON and LP OFF advanced with temperature, with a mean advance of 0.05\u00b10.05 per 10\u00b0C and 0.14\u00b10.09 per 10\u00b0C respectively (Wilcoxon signed-rank test, N=21, p<0.01)",
+      "criterion": "As fig6a-lp-off-advances-saline, for LP ON and LP OFF in Cs+. Reproduced when both hold; partially reproduced when one does."
+     },
+     {
+      "id": "fig6a-pd-py-phase-constant",
+      "statement": "PD and PY phases were constant with temperature in both saline and Cs+.",
+      "source": "Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 2; Figure 6A",
+      "quote": "PD and PY phase constancy was not significantly altered in either condition",
+      "criterion": "A claim of absence, on the paper's test. For PD OFF, PY ON and PY OFF in each condition (6 tests; N=21 for PD, 12 for PY), the slope of phase on temperature (O4) tested against zero by Wilcoxon signed-rank or one-sample t-test as Shapiro-Wilk on the slopes decides, p multiplied by 10. Reproduced when none has adjusted p < 0.05; not reproduced when any does, naming it. LP ON in saline, which the Results also count as constant, is reported the same way. Mean slopes are reported either way."
+     }
+    ]
+   }
+  ],
   "scherrer-2023": [
    {
     "path": "claims/scherrer-2023.yaml",
@@ -232452,6 +232845,26 @@
    "verifier-2.md"
   ],
   "dandi:000055": [
+   "author-report.md",
+   "author-revise-1-report.md",
+   "author-revise-1.md",
+   "author-revise-2-report.md",
+   "author-revise-2.md",
+   "author-revise-3-report.md",
+   "author-revise-3.md",
+   "author.md",
+   "reconcile-report.md",
+   "reconcile.md",
+   "recorder-report.md",
+   "recorder.md",
+   "verifier-1-report.md",
+   "verifier-1.md",
+   "verifier-2-report.md",
+   "verifier-2.md",
+   "verifier-3-report.md",
+   "verifier-3.md"
+  ],
+  "dandi:000055/attempt-01": [
    "answer-report.md",
    "answer.md",
    "author-answers-report.md",
@@ -235456,6 +235869,7 @@
   "dandi:000059": "petersen-2020",
   "dandi:000059/attempt-01": "petersen-2020/attempt-01",
   "dandi:000055": "peterson-2021",
+  "dandi:000055/attempt-01": "peterson-2021/attempt-01",
   "crcns:pfc-6": "peyrache-2009",
   "dandi:000056": "peyrache-2015",
   "dandi:000056/attempt-01": "peyrache-2015/attempt-01",
@@ -235586,8 +236000,8 @@
   "dandi:001193": "zhu-2022",
   "dandi:001177": "zhuang-2025"
  },
- "generated": "2026-11-25T18:18:12+00:00",
- "records_updated": "2026-11-25T18:09:41+00:00",
+ "generated": "2026-11-25T18:25:53+00:00",
+ "records_updated": "2026-11-25T18:16:37+00:00",
  "queue_generated": "2026-11-17T15:59:44+00:00",
  "queue_counts": {
   "public_dandisets": 678,
@@ -550122,40 +550536,48 @@
    ],
    "entry_title": "Behavioral and neural variability of naturalistic arm movements (Peterson et al. 2021)",
    "summary": "The paper's main findings hold up in this data: at the onset of naturalistic arm movements, low-frequency power falls and high-frequency power rises, most in precentral, postcentral and inferior parietal cortex, and behavior and this power vary significantly across subjects and recording days. Regression models of single-event power explain little variance (largest withheld R2 0.189), with reach angle and recording day the most informative features. The per-subject event counts did not reproduce, likely because the files hold 8088 events with none marked as a false positive. Whether low-frequency decreases are more widespread could not be tested, as the paper does not say how this was measured. A few minor details, such as the reach angle peaks, partly differ.",
-   "description": "Tests the findings of Peterson, Singh, Wang, Rao and Brunton (2021) on dandiset 000055 (AJILE12), which holds 55 days of ECoG and pose from 12 people in clinical epilepsy monitoring, with their wrist movement events and event features. It compares the behavioural features across subjects and days, the group and per-subject movement-related spectral power in eight cortical regions, the variation of precentral band power across subjects and recording days, and the regression of single-event band power on the behavioural features (Figure 6).",
+   "description": "Tests the findings of Peterson, Singh, Wang, Rao and Brunton (2021) on dandiset 000055 (AJILE12), which holds the ECoG, pose and wrist movement events of the paper's 12 subjects over 55 days. It checks the cohort and the events, the behavioural features of Figure 2, the movement-related spectral power of Figures 3 to 5 and Table 1, projected to regions with the paper's projection matrices from Figshare, and the single-event regression models of Figure 6.",
    "notebooks": [
     {
      "path": "reproduce_peterson_2021.ipynb",
      "title": "Reproducing Peterson et al. (2021) from dandiset 000055",
      "cells": {
-      "sanity": "fa19d835",
-      "claim:subject-days": "bf934a61",
-      "claim:roi-projection-link": "95a669f5",
-      "claim:cohort": "647f2383",
-      "claim:fig2-event-counts": "8c46e841",
-      "claim:fig2-features-differ-across-subjects": "677684ba",
-      "claim:fig2-reach-shape": "e8f2f975",
-      "claim:fig2-bimanual-skew": "0856d8af",
-      "claim:extfig2-1c-contralateral-larger": "a6cc8920",
-      "claim:extfig2-2-feature-correlations": "d305e175",
-      "claim:fig2-days-and-waking": "3bc74c77",
-      "claim:fig3-group-lfb-decrease-hfb-increase": "ed5eeeef",
-      "claim:fig3-sensorimotor-largest": "1fcdde8b",
-      "claim:fig3-lfb-more-widespread": "9fada1b9",
-      "claim:fig4-precentral-subject-variability": "a8d51cf7",
-      "claim:fig5-band-power-differs-across-subjects": "b7cbf3a4",
-      "claim:table1-subject-band-power-ci": "c997fab1",
-      "claim:fig5-recording-day-effects": "5c43ce20",
-      "claim:extfig5-1-baseline-reduces-day-variability": "ba248280",
-      "claim:discussion-day-changes-small": "149b7854",
-      "claim:fig6-r2-at-most-025": "85f98dc8",
-      "claim:fig6b-best-models-sensorimotor": "ca4305fd",
-      "claim:fig6c-angle-and-day-most-informative": "a4fdf65e",
-      "claim:extfig6-2-angle-most-retained": "f4074a96",
-      "claim:fig6d-upward-reaches-enhance-pattern": "6cf85957",
-      "claim:fig6d-angle-and-day-largest-coefficients": "339f24eb"
+      "sanity": "df1421b2",
+      "claim:roi-projection-link": "d4b6d113",
+      "claim:subject-days": "4a6dc3c5",
+      "claim:cohort": "7f658067",
+      "claim:fig2-event-counts": "79da27ba",
+      "claim:fig2-features-differ-across-subjects": "ad4f8d38",
+      "claim:fig2-reach-shape": "197465b7",
+      "claim:fig2-bimanual-skew": "7bf8bb23",
+      "claim:extfig2-1c-contralateral-larger": "5d26a56f",
+      "claim:extfig2-2-feature-correlations": "98f74dfd",
+      "claim:fig2-days-and-waking": "46bf19ad",
+      "claim:fig3-group-lfb-decrease-hfb-increase": "ff5986d2",
+      "claim:fig3-sensorimotor-largest": "eb5c63b9",
+      "claim:fig3-lfb-more-widespread": "6bfabaf2",
+      "claim:fig4-precentral-subject-variability": "67634c2b",
+      "claim:fig5-band-power-differs-across-subjects": "08a046c2",
+      "claim:table1-subject-band-power-ci": "dc5cf39b",
+      "claim:fig5-recording-day-effects": "02c48acb",
+      "claim:extfig5-1-baseline-reduces-day-variability": "0a770ad5",
+      "claim:discussion-day-changes-small": "55793edb",
+      "claim:fig6-r2-at-most-025": "3d601f63",
+      "claim:fig6b-best-models-sensorimotor": "2662dcec",
+      "claim:fig6c-angle-and-day-most-informative": "ef78d5ba",
+      "claim:extfig6-2-angle-most-retained": "24beb2d2",
+      "claim:fig6d-upward-reaches-enhance-pattern": "b5c90a0b",
+      "claim:fig6d-angle-and-day-largest-coefficients": "30ad0f01"
      },
      "executed": "notebooks/peterson-2021/reproduce_peterson_2021.html"
+    },
+    {
+     "path": "earlier_findings.ipynb",
+     "title": "Findings of the earlier attempt peterson-2021-01, checked on this version",
+     "cells": {
+      "sanity": "accb0e77"
+     },
+     "executed": null
     }
    ],
    "outcomes": [
@@ -550178,7 +550600,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=bf934a61"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=4a6dc3c5"
     },
     {
      "claim": "roi-projection-link",
@@ -550201,7 +550623,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=95a669f5"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=d4b6d113"
     },
     {
      "claim": "cohort",
@@ -550224,7 +550646,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=647f2383"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=7f658067"
     },
     {
      "claim": "fig2-event-counts",
@@ -550248,7 +550670,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=8c46e841"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=79da27ba"
     },
     {
      "claim": "fig2-features-differ-across-subjects",
@@ -550278,7 +550700,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=677684ba"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ad4f8d38"
     },
     {
      "claim": "fig2-reach-shape",
@@ -550301,7 +550723,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=e8f2f975"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=197465b7"
     },
     {
      "claim": "fig2-bimanual-skew",
@@ -550324,7 +550746,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=0856d8af"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=7bf8bb23"
     },
     {
      "claim": "extfig2-1c-contralateral-larger",
@@ -550345,7 +550767,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=a6cc8920"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=5d26a56f"
     },
     {
      "claim": "extfig2-2-feature-correlations",
@@ -550366,7 +550788,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=d305e175"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=98f74dfd"
     },
     {
      "claim": "fig2-days-and-waking",
@@ -550389,7 +550811,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=3bc74c77"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=46bf19ad"
     },
     {
      "claim": "fig3-group-lfb-decrease-hfb-increase",
@@ -550425,7 +550847,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ed5eeeef"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ff5986d2"
     },
     {
      "claim": "fig3-sensorimotor-largest",
@@ -550448,7 +550870,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=1fcdde8b"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=eb5c63b9"
     },
     {
      "claim": "fig3-lfb-more-widespread",
@@ -550469,7 +550891,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=9fada1b9"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=6bfabaf2"
     },
     {
      "claim": "fig4-precentral-subject-variability",
@@ -550493,7 +550915,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=a8d51cf7"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=67634c2b"
     },
     {
      "claim": "fig5-band-power-differs-across-subjects",
@@ -550523,7 +550945,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=b7cbf3a4"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=08a046c2"
     },
     {
      "claim": "table1-subject-band-power-ci",
@@ -550546,7 +550968,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=c997fab1"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=dc5cf39b"
     },
     {
      "claim": "fig5-recording-day-effects",
@@ -550630,7 +551052,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=5c43ce20"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=02c48acb"
     },
     {
      "claim": "extfig5-1-baseline-reduces-day-variability",
@@ -550653,7 +551075,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ba248280"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=0a770ad5"
     },
     {
      "claim": "discussion-day-changes-small",
@@ -550676,7 +551098,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=149b7854"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=55793edb"
     },
     {
      "claim": "fig6-r2-at-most-025",
@@ -550704,7 +551126,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=85f98dc8"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=3d601f63"
     },
     {
      "claim": "fig6b-best-models-sensorimotor",
@@ -550727,7 +551149,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ca4305fd"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=2662dcec"
     },
     {
      "claim": "fig6c-angle-and-day-most-informative",
@@ -550750,7 +551172,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=a4fdf65e"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ef78d5ba"
     },
     {
      "claim": "extfig6-2-angle-most-retained",
@@ -550773,7 +551195,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=f4074a96"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=24beb2d2"
     },
     {
      "claim": "fig6d-upward-reaches-enhance-pattern",
@@ -550796,7 +551218,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=6cf85957"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=b5c90a0b"
     },
     {
      "claim": "fig6d-angle-and-day-largest-coefficients",
@@ -550820,7 +551242,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=339f24eb"
+     "cell": "../../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=30ad0f01"
     }
    ],
    "findings": [
@@ -551126,6 +551548,1197 @@
      "found": null,
      "status": null,
      "n": 13,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    }
+   ]
+  },
+  {
+   "id": "peterson-2021-02",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000055",
+    "version": "0.261123.1703",
+    "doi": "10.48324/dandi.000055/0.261123.1703",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000055"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000055",
+   "label": "DANDI:000055",
+   "dataset_version": "0.261123.1703",
+   "paper": "10.1523/eneuro.0007-21.2021",
+   "paper_title": "Behavioral and Neural Variability of Naturalistic Arm Movements",
+   "date": "2026-11-25",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-18"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/encorescience/encore-registry/actions/runs/45551254647"
+   },
+   "outside": null,
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "peterson-2021",
+   "inputs": [
+    {
+     "what": "The paper's projection matrices from electrodes to AAL regions and the region centroids (aal_XX_elecs2ROI.csv and aal_XX_ROIcentroids_Lside.csv for the 12 subjects), read at run time. Used for every claim on regions and for the link claim roi-projection-link.",
+     "source": "doi:10.6084/m9.figshare.12114408.v1"
+    }
+   ],
+   "entry_title": "Behavioral and neural variability of naturalistic arm movements (Peterson et al. 2021)",
+   "summary": "The paper's main neural findings held up in this data: at movement onset low-frequency power fell and high-frequency power rose, most in sensorimotor regions, power differed across subjects, and reach angle and recording day were the most informative features of single-event power. Day-to-day changes in power matched only in part, likely because this attempt read the neural data of three recordings about 8 h late. Per-subject event counts did not reproduce, as the files hold more events than the paper analysed and mark none as removed. Whether low-frequency decreases are more widespread could not be tested, as the paper gives no measure. Several minor details, such as per-subject band power, matched only in part.",
+   "description": "Tests the findings of Peterson, Singh, Wang, Rao and Brunton (2021) on dandiset 000055 (AJILE12), which holds the ECoG, pose and wrist movement events of the paper's 12 subjects over 55 days. It checks the cohort and the events, the behavioural features of Figure 2, the movement-related spectral power of Figures 3 to 5 and Table 1, projected to regions with the paper's projection matrices from Figshare, and the single-event regression models of Figure 6.",
+   "notebooks": [
+    {
+     "path": "reproduce_peterson_2021.ipynb",
+     "title": "Reproducing Peterson et al. (2021) from dandiset 000055",
+     "cells": {
+      "sanity": "df1421b2",
+      "claim:roi-projection-link": "d4b6d113",
+      "claim:subject-days": "4a6dc3c5",
+      "claim:cohort": "7f658067",
+      "claim:fig2-event-counts": "79da27ba",
+      "claim:fig2-features-differ-across-subjects": "ad4f8d38",
+      "claim:fig2-reach-shape": "197465b7",
+      "claim:fig2-bimanual-skew": "7bf8bb23",
+      "claim:extfig2-1c-contralateral-larger": "5d26a56f",
+      "claim:extfig2-2-feature-correlations": "98f74dfd",
+      "claim:fig2-days-and-waking": "46bf19ad",
+      "claim:fig3-group-lfb-decrease-hfb-increase": "ff5986d2",
+      "claim:fig3-sensorimotor-largest": "eb5c63b9",
+      "claim:fig3-lfb-more-widespread": "6bfabaf2",
+      "claim:fig4-precentral-subject-variability": "67634c2b",
+      "claim:fig5-band-power-differs-across-subjects": "08a046c2",
+      "claim:table1-subject-band-power-ci": "dc5cf39b",
+      "claim:fig5-recording-day-effects": "02c48acb",
+      "claim:extfig5-1-baseline-reduces-day-variability": "0a770ad5",
+      "claim:discussion-day-changes-small": "55793edb",
+      "claim:fig6-r2-at-most-025": "3d601f63",
+      "claim:fig6b-best-models-sensorimotor": "2662dcec",
+      "claim:fig6c-angle-and-day-most-informative": "ef78d5ba",
+      "claim:extfig6-2-angle-most-retained": "24beb2d2",
+      "claim:fig6d-upward-reaches-enhance-pattern": "b5c90a0b",
+      "claim:fig6d-angle-and-day-largest-coefficients": "30ad0f01"
+     },
+     "executed": "notebooks/peterson-2021/reproduce_peterson_2021.html"
+    },
+    {
+     "path": "earlier_findings.ipynb",
+     "title": "Findings of the earlier attempt peterson-2021-01, checked on this version",
+     "cells": {
+      "sanity": "accb0e77"
+     },
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "subject-days",
+     "statement": "The dataset's subjects and recording days are the paper's subjects S01 to S12 and the recording days the paper lists for each.",
+     "source": "Table 2; Methods, Data collection",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:subject-days",
+     "notes": "The dataset's subjects 01 to 12 have exactly the days of Table 2 (S01 days 3, 4, 5 and 7; S02 and S03 days 3 to 6; S05 days 3, 4 and 7; the others days 3 to 7), 55 subject-days. The subjects are taken as S01 to S12 in order.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=4a6dc3c5"
+    },
+    {
+     "claim": "roi-projection-link",
+     "statement": "The rows of the paper's projection matrices from electrodes to the eight regions, deposited on Figshare, can be matched one to one to the dataset's electrodes, and their weights fit the electrodes' positions.",
+     "source": "Methods, Projecting power into regions of interest; Figshare item 12114408 version 1 (aal_XX_elecs2ROI.csv and aal_XX_ROIcentroids_Lside.csv)",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:roi-projection-link",
+     "notes": "The paper's code rule (keep the rows that are not all zero and drop the first of them, tfr_utils.load_project_spectral_power) leaves exactly as many rows as electrodes with a position in all 12 subjects. The dropped first row is the electrode density of each region (the other rows sum to 1 per region), and the regions with mean density above 3 are exactly the eight of the claims file. After the density row, the zero rows of S03 (16) and S12 (8) sit exactly at the indices of the electrodes without a position, and S01's 4 extra zero rows follow its last electrode. The largest-weight region is the region whose centroid is nearest the mirrored electrode position for 36 to 55% of electrodes per subject, against at most 14 electrodes in 200 shuffles of the electrode order; all 12 subjects beat every shuffle under all five seeds. Shifting the rows by 1 to 3 places lowers the fraction in all 12 subjects.",
+     "deviations": [
+      "The criterion's rule as worded (drop all-zero rows) leaves one row too many in every subject and drops the zero rows of the 24 electrodes without a position in S03 and S12. The code's rule (tfr_utils.load_project_spectral_power, commit 04c6faf, `np.nonzero(df.transpose().mean().values != 0)[0][1:]`) also drops the first non-zero row; it is used, and the rows are applied in order to the electrodes with a position. Electrodes without a position get no weight. The wording is asked about in questions/peterson-2021.yaml."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=d4b6d113"
+    },
+    {
+     "claim": "cohort",
+     "statement": "Twelve subjects (8 male, 4 female, 29.4 +- 7.9 years) had on average 87.0 +- 12.9 surface electrodes; five also had 23.2 +- 12.1 depth electrodes; five were implanted in the right hemisphere and seven in the left.",
+     "source": "Methods, Subject information, paragraph 1",
+     "quote": "We analyzed opportunistic clinical recordings from 12 subjects (8 males, 4 females) during their clinical epilepsy monitoring. Subjects were (mean \u00b1 SD) 29.4 \u00b1 7.9 years old ... resulting in 87.0 \u00b1 12.9 total surface electrodes per subject (mean \u00b1 SD). In addition, five subjects had 23.2 \u00b1 12.1 intracortical depth electrodes (mean \u00b1 SD). Electrodes were implanted primarily within one hemisphere for each subject (five right hemisphere, seven left hemisphere)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:cohort",
+     "notes": "Twelve subjects, 8 male, mean age 29.42 years (SD 7.94), 84.83 surface electrodes on average (SD 11.61) and 5 right-hemisphere implants match. Electrode groups described in the files as depth are in 7 subjects (S01 8, S02 16, S03 16, S09 28, S10 48, S11 18, S12 32), not 5; their mean of 23.71 (SD 13.39) is within the stated 23.2 +- 12.1. Counting only the grid as surface gives 63.08 electrodes on average (SD 3.18), outside 87.0 +- 12.9, so that reading is not kept. The ages are the files' ages, which may not be the ages at recording.",
+     "deviations": [
+      "Surface and depth electrodes are told apart by the description of each electrode group (depth when it says depth). The hemisphere is the side of the mean MNI x of the subject's electrodes."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=7f658067"
+    },
+    {
+     "claim": "fig2-event-counts",
+     "statement": "Each subject contributed between 151 and 947 movement events (median 640 across subjects).",
+     "source": "Figure 2 legend",
+     "quote": "The total number of events for each subject was between 151 and 947 (median, 640 across subjects).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig2-event-counts",
+     "notes": "Under reading (a), all events in the files, the counts per subject are 211 to 996 with median 770.5. Under reading (b), after the segment rejection, they are 210 to 976 with median 692. With only the events that have ECoG without missing samples, 211 to 986, median 700.5. Under reading (b) the median and the largest count are within tolerance, but in every reading the fewest events (210 or 211, in S09) are outside 151 +- 15.1. The dataset has no false-positive flag, so reading (b) cannot drop those events. Keeping only events of 0.5 to 4 s, as the Methods do (not a reading of the criterion), leaves 208 to 984 (median 735.5) and 207 to 964 (median 670); the fewest are still outside the tolerance.",
+     "deviations": [
+      "The dataset has no flag for the events the paper removed as false positives; none are dropped for it.",
+      "Reading (b) uses the assumed pooling of the segment rejection (see the deviation of fig3-group-lfb-decrease-hfb-increase); 125 events with NaN ECoG samples, 237 without ECoG and 1 whose two event times disagree count as missing data."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=79da27ba"
+    },
+    {
+     "claim": "fig2-features-differ-across-subjects",
+     "statement": "All ten behavioural and environmental features differ significantly across subjects.",
+     "source": "Results, Behavior during naturalistic movements, paragraph 3; Figure 2",
+     "quote": "All 10 metadata features significantly differed across subjects ( p < 0.001 for every feature, one-way Kruskal\u2013Wallis test).",
+     "statistics": [
+      {
+       "test": "one-way Kruskal-Wallis test, one per feature",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "12 subjects, events pooled within subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig2-features-differ-across-subjects",
+     "notes": "One-way Kruskal-Wallis across the 12 subjects on the 7649 events of reading (b) gives p < 0.001 for all ten features; the largest p is 7.0e-33 (reach duration). Reading (a), all 8088 events, gives the same.",
+     "deviations": [
+      "Time of day is the event time in hours after the file's midnight (the files' session description); reach duration is stop_time minus start_time; reach angle is the stored angle negated and folded to -90..90, as the code does, because the stored angle is in image coordinates (checked against the pose)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ad4f8d38"
+    },
+    {
+     "claim": "fig2-reach-shape",
+     "statement": "Reach duration and reach magnitude vary little across subjects, with most reaches lasting under 2 s and covering under 200 pixels, and reach angle distributions tend to be bimodal with peaks near +90 and -90 degrees, with few side-to-side reaches.",
+     "source": "Results, Behavior during naturalistic movements, paragraph 3; Figure 2",
+     "quote": "Reach duration and reach magnitude show minimal intersubject variability, with most reaches lasting <2 s and covering <200 pixels ... For reach angle, the distributions tend to be bimodal, with peaks at \u00b190",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig2-reach-shape",
+     "notes": "Most reaches last under 2 s (88 to 95% per subject, 91.8% pooled) and cover under 200 pixels (59 to 100% per subject, 91.3% pooled), in 12 of 12 subjects. The angle part holds in 0 of 12 subjects and not pooled. Pooled, the two highest maxima of the folded-angle density are at -71.5 and +75 degrees, and the density at 0 degrees (0.00407) is above the lower maximum (0.004). The density at +75 degrees is above that at +90 in every subject, which the kernel's smoothing at the boundary can cause; but only 6.4% of pooled events lie within 15 degrees of -90 (19.7% of +90), and the pooled density at -75 degrees (0.00395) is below that at 0. Reading (a) gives the same outcome. Whether the criterion should allow for the boundary is asked in questions/peterson-2021.yaml.",
+     "deviations": [
+      "The density is evaluated on a 0.5 degree grid, and the end points of the grid count as maxima when they exceed their neighbour (standard choices, stated in the notebook)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=197465b7"
+    },
+    {
+     "claim": "fig2-bimanual-skew",
+     "statement": "Bimanual ratio and bimanual overlap are skewed toward unimanual movement of the contralateral arm, less so for subjects 02, 04 and 05, while the bimanual class is mostly bimanual.",
+     "source": "Results, Behavior during naturalistic movements, paragraph 4; Figure 2",
+     "quote": "For bimanual ratio and overlap features, the distributions are skewed toward unimanual movements of the contralateral limb, as expected from Extended Data Fig. 2-1 c , with less skew for subjects 02, 04, and 05. In contrast, the bimanual class categorical feature is primarily skewed toward bimanual movements",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig2-bimanual-skew",
+     "notes": "The median bimanual ratio is below 0.5 in 12 of 12 subjects (0.14 pooled) and the overlap skewness positive in 12 of 12 (1.11 pooled); more than half the events are bimanual in 12 of 12 (73% pooled). The five highest median ratios are S04, S07, S05, S02 and S03, and the five lowest overlap skewnesses S07, S05, S02, S03 and S04, so S02, S04 and S05 are among both.",
+     "deviations": [
+      "The files hold no missing bimanual ratios, so the code's fill value of 0.5 is never used."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=7bf8bb23"
+    },
+    {
+     "claim": "extfig2-1c-contralateral-larger",
+     "statement": "Across all 12 subjects, the median displacement of the contralateral wrist after movement onset is substantially greater than that of the ipsilateral wrist, confirming that event detection mainly picked contralateral movements.",
+     "source": "Extended Data Figure 2-1c legend; Results, Behavior during naturalistic movements, paragraph 2",
+     "quote": "Because we selected movement initiation events of the wrist contralateral to the hemisphere with implanted electrodes, the median contralateral wrist displacements (orange lines) across all 12 subjects are substantially greater than ipsilateral wrist displacements (gray lines).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:extfig2-1c-contralateral-larger",
+     "notes": "In all 12 subjects and under both readings of the rest position, the peak over 0 to 1.5 s of the median contralateral displacement exceeds that of the ipsilateral wrist. The ratio is 1.06 to 42.0 under reading (b) and 1.12 to 38.1 under reading (a); it is smallest for S05 and S04 (1.06 to 1.30), a margin the criterion does not judge. The contralateral wrist is the one the ReachEvents description of each file names. 56 of 7649 events have missing pose in the window and are left out of the medians.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=5d26a56f"
+    },
+    {
+     "claim": "extfig2-2-feature-correlations",
+     "statement": "Over all events, reach magnitude correlates with reach duration (r = 0.26) and onset speed (r = 0.56), reach duration with bimanual overlap (r = 0.48), and the bimanual features with one another (overlap and ratio 0.51, class and ratio 0.50, overlap and class 0.61).",
+     "source": "Results, Behavior during naturalistic movements, paragraph 5; Extended Data Figure 2-2",
+     "quote": "Reach magnitude positively correlates with reach duration ( r = 0.26) and onset speed ( r = 0.56) ... Reach duration is also positively correlated with bimanual overlap ( r = 0.48) ... overlap vs ratio, r = 0.51; class vs ratio, r = 0.50; and overlap vs class, r = 0.61",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:extfig2-2-feature-correlations",
+     "notes": "Five of the six Pearson correlations over the pooled events of reading (b) are within 10% of the paper's; reach magnitude and duration correlate at 0.232, below 0.234. Reading (a) gives 0.231 for that pair and the same five matches.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=98f74dfd"
+    },
+    {
+     "claim": "fig2-days-and-waking",
+     "statement": "Reach counts were fairly even across recording days except for subjects 04, 05 and 09, each with one day holding most events, and events occurred mostly during waking hours.",
+     "source": "Results, Behavior during naturalistic movements, paragraph 3; Figure 2",
+     "quote": "The number of reaches detected across days of recording was fairly consistent, with the exceptions of subjects 04, 05, and 09, who each had 1 d representing most of the total events. As expected, detected movement events often occurred mostly during waking hours.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig2-days-and-waking",
+     "notes": "The waking part holds; 64 to 96% of each subject's events fall between 08:00 and 24:00. The busiest day holds more than half of the events for S05 (0.606, day 7) and S09 (0.519, day 5) and for none of the other subjects; for S04 it holds 0.400 (day 7), so the day part does not hold. Reading (a) gives the same two subjects.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=46bf19ad"
+    },
+    {
+     "claim": "fig3-group-lfb-decrease-hfb-increase",
+     "statement": "At the group level, low-frequency power decreases and high-frequency power increases at movement initiation in several cortical regions, as in controlled movement experiments.",
+     "source": "Figure 3; Results, Intracortical spectral power during naturalistic movements, paragraph 1",
+     "quote": "Generally, we find the expected pattern of low-frequency (\u223c4\u201330 Hz) spectral power decrease and high-frequency (\u223c50\u2013120 Hz) power increases during movement initiation across multiple cortices ( Fig.",
+     "statistics": [
+      {
+       "test": "two-sided bootstrap against baseline time points, 2000 permutations",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR (Benjamini-Hochberg)",
+       "n": "12 subjects"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig3-group-lfb-decrease-hfb-increase",
+     "notes": "Over 0 to 0.5 s the masked group power over 4-30 Hz and 50-120 Hz is -0.728 and +0.411 dB in precentral, -0.743 and +0.426 in postcentral, and -0.556 and +0.200 in inferior parietal; at the bin of 0 s the signs are the same. All three hold under both readings, all five seeds, unmasked, and under each of the three electrode variants. Middle frontal shows the pattern too; in supramarginal and the temporal regions the masked high-frequency values are at most 0.008 dB.",
+     "deviations": [
+      "Spectral power is computed from the dataset's continuous ECoG, not from the paper's curated Figshare epochs, with the Methods' and the code's parameters (helper docstring).",
+      "Assumed, as the Methods do not say how power is pooled for the segment rejection; Welch power of the 10 s segment averaged over the subject's good electrodes, 10*log10 of its mean over 1-200 Hz (below 0 dB drops) and over 115-125 Hz (above the subject's mean + 3 SD drops). Segments with NaN samples or without ECoG count as missing data, and so does the one event whose ReachEvents time and start_time disagree. 75 events drop for high-frequency power and 1 for low power; the rest of the 439 dropped events have no ECoG, NaN samples or the time disagreement.",
+      "Assumed, as the good-electrode flags differ between a subject's files; the good electrodes are those marked good in every file of the subject, for the segment rejection, the projection and the regression, as the claims file's opening comment renormalises the weights per subject. The weights are renormalised to sum 1 per region (code). Three variants are shown for every region claim, on the same events; the flags of each event's own file (the assumption of round 1), the electrodes good in at least one file (only those bad in every file removed), and the main set with the electrodes holding a 50 ms run of zeros left out of each event. The main set removes 12.6 +- 8.4 surface electrodes per subject, each file's flags 4.2 +- 2.1 and the electrodes bad in every file 1.2 +- 0.4, against the paper's 4.9 +- 4.9 (Methods, ECoG data processing).",
+      "An electrode whose wavelet power is not finite in an event gets weight 0 in that event and the weights are renormalised (standard choice); no kept event needed it.",
+      "The bootstrap mask's Benjamini-Hochberg correction runs over the bins computed here (-1.5 to +1.0 s in 0.1 s steps, 25 frequencies); the paper's time range is not stated."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ff5986d2"
+    },
+    {
+     "claim": "fig3-sensorimotor-largest",
+     "statement": "Spectral power changes are largest in precentral, postcentral and inferior parietal regions, and the three temporal regions show minimal movement-related changes.",
+     "source": "Results, Intracortical spectral power during naturalistic movements, paragraph 2; Figure 3",
+     "quote": "Spectral power deviations are largest in magnitude in precentral, postcentral, and inferior parietal regions, which are located in sensorimotor areas of the brain ... As expected, all three temporal cortical regions contain minimal movement-related spectral power fluctuations.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig3-sensorimotor-largest",
+     "notes": "Under readings (a), (b) and (c) and all five seeds, the three largest regions are postcentral, precentral and inferior parietal, and each temporal region is below all three. Reading (a) gives 0.429, 0.418 and 0.251 dB for the three, 0.177 for middle frontal, and at most 0.034 for the temporal regions. Each of the three electrode variants gives the same under all three readings.",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=eb5c63b9"
+    },
+    {
+     "claim": "fig3-lfb-more-widespread",
+     "statement": "Low-frequency power decreases are more spatially widespread than high-frequency increases and are also present in supramarginal and superior temporal regions.",
+     "source": "Results, Intracortical spectral power during naturalistic movements, paragraph 2; Figure 3",
+     "quote": "In addition, low-frequency power decreases appear more spatially widespread than high-frequency power increases and are also present in supramarginal and superior temporal regions.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig3-lfb-more-widespread",
+     "notes": "The two readings the criterion names disagree, so the claim is blocked as the criterion says. Reading (b), significant bins per frequency bin over 0 to 0.5 s summed over the eight regions, gives 36.0 for low-frequency decreases against 22.2 for high-frequency increases, and holds under all five seeds (35.8 to 36.6 against 22.1 to 22.4). Reading (a), regions with any significant bin, gives 8 against 8 under the claim's seed, and 7 or 8 against 8 under the others, so the low count is never larger. Supramarginal (30 bins) and superior temporal (27 bins) have significant low-frequency decreases. The electrode variants give the same disagreement; 7 against 8 and 34.6 against 24.0 with each file's flags, 8 against 8 and 35.0 against 25.2 with the electrodes good in at least one file, 8 against 8 and 36.6 against 22.1 without the zero-run electrodes. The question of which measure the paper meant is recorded for its authors.",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=6bfabaf2"
+    },
+    {
+     "claim": "fig4-precentral-subject-variability",
+     "statement": "In the precentral region every subject shows the low/high-frequency pattern, but amplitudes and frequency bands vary; subjects 03, 06, 07, 08 and 11 have increases up to 120 Hz, subjects 09 and 12 mainly at 60-80 Hz, and subjects 04 and 08 have narrower low-frequency decreases.",
+     "source": "Results, Intracortical spectral power during naturalistic movements, paragraph 3; Figure 4",
+     "quote": "For instance, the precentral region shows the same low/high-frequency power pattern for each subject ( Fig. 4 ), but the amplitudes and frequency bands of maximal power deviation differ widely across subjects. Subjects 03, 06, 07, 08, and 11 show increased power at high frequencies up to 120 Hz, while subjects 09 and 12 have increased power primarily between 60 and 80 Hz. For subjects 04 and 08, low-frequency power decreases occur across narrower frequency bands compared with the other subjects.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig4-precentral-subject-variability",
+     "notes": "Two of four parts hold. Part 2, S03, S06, S07, S08 and S11 have positive power at 116 and 121 Hz. Part 3, S09 and S12 peak among 56-121 Hz at 76 and 66 Hz, with means over 101-121 Hz below half the peak. Part 4 fails; the narrowest low-frequency decreases are S07 and S09 (2 bins), and S04 and S08 are among six subjects tied at 3 bins, so they are not among the three fewest. Part 1 fails in one subject; S09 has a mean of -0.039 dB over 76-100 Hz (its 8-32 Hz mean is -0.09). The other 11 subjects show the pattern. With each file's own flags (variant), parts 2 to 4 hold and part 1 fails for S09 only (-0.030 dB), also partially reproduced. With the electrodes good in at least one file all four parts hold, which would be reproduced, but that set removes 1.2 surface electrodes per subject against the paper's 4.9; each file's flags are closest to the paper's count. Without the electrodes holding 50 ms runs of zeros two parts hold and S09 stays at -0.029 dB over 76-100 Hz, so the zeros do not explain its failure of part 1.",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=67634c2b"
+    },
+    {
+     "claim": "fig5-band-power-differs-across-subjects",
+     "statement": "Precentral LFB and HFB power in the 0.5 s after movement onset differs significantly across subjects.",
+     "source": "Results, Intracortical spectral power during naturalistic movements, paragraph 4; Figure 5; Table 1",
+     "quote": "For both frequency bands, spectral power significantly differed across subjects ( p < 0.001 for both bands, one-way Kruskal\u2013Wallis test).",
+     "statistics": [
+      {
+       "test": "one-way Kruskal-Wallis test, one per band",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "12 subjects, events pooled within subject"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig5-band-power-differs-across-subjects",
+     "notes": "Kruskal-Wallis across the 12 subjects on 7649 events gives H = 740 (LFB) and 1028 (HFB) for band means, and 786 and 953 for band medians, with p printed as 0 (below the smallest double). Under the three electrode variants, H = 740 to 760 (LFB) and 1028 to 1089 (HFB).",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=08a046c2"
+    },
+    {
+     "claim": "table1-subject-band-power-ci",
+     "statement": "Each subject's precentral band power lies in the 95% bootstrap interval Table 1 gives; LFB power is below baseline and HFB power above it for most subjects.",
+     "source": "Table 1",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Values read from Table 1; no sentence states them. The statement is a reading of the table.",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:table1-subject-band-power-ci",
+     "notes": "Under the best of the four readings (the median over events of the band median), 18 of 24 subject and band values lie inside Table 1's intervals; the other readings give 14 (mean of band mean), 16 and 16. Outside are S02 LFB (-0.103 against -1.12 to -0.31), S03 LFB (-1.584 against -2.11 to -1.73), S03 HFB (1.044 against 1.39 to 1.67), S06 LFB (-0.647 against -1.63 to -1.11), S06 HFB (1.874 against 2.02 to 2.37) and S10 LFB (-0.196 against -0.87 to -0.35). The median band mean is below 0 for LFB in 12 of 12 subjects and above 0 for HFB in 11 of 12. With each file's own flags (variant) the mean of the band mean puts 21 of 24 inside, with the electrodes good in at least one file 22 of 24, and without the zero-run electrodes at best 18 of 24; partially reproduced under each. The attempt's own 5000-replicate bootstrap intervals are printed beside the paper's.",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=dc5cf39b"
+    },
+    {
+     "claim": "fig5-recording-day-effects",
+     "statement": "Precentral band power differs significantly across recording days in LFB for subjects 03, 05, 06, 07, 08 and 11, and in HFB for subjects 03, 04, 07, 08 and 10, despite baseline subtraction.",
+     "source": "Results, Intracortical spectral power during naturalistic movements, paragraph 4; Figure 5; Table 2",
+     "quote": "We also found a significant effect of recording day in LFBs for subjects 03 ( p < 0.001, Kruskal\u2013Wallis test), 05 ( p = 0.013), 06 ( p < 0.001), 07 ( p = 0.041), 08 ( p = 0.013), and 11 ( p < 0.001), as well as in HFBs for subjects 03 ( p = 0.002), 04 ( p < 0.001), 07 ( p < 0.001), 08 ( p = 0.004), and 10 ( p = 0.006).",
+     "statistics": [
+      {
+       "about": "LFB, S03",
+       "test": "Kruskal-Wallis test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "LFB, S05",
+       "test": "Kruskal-Wallis test",
+       "p": 0.013
+      },
+      {
+       "about": "LFB, S06",
+       "test": "Kruskal-Wallis test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "LFB, S07",
+       "test": "Kruskal-Wallis test",
+       "p": 0.041
+      },
+      {
+       "about": "LFB, S08",
+       "test": "Kruskal-Wallis test",
+       "p": 0.013
+      },
+      {
+       "about": "LFB, S11",
+       "test": "Kruskal-Wallis test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "HFB, S03",
+       "test": "Kruskal-Wallis test",
+       "p": 0.002
+      },
+      {
+       "about": "HFB, S04",
+       "test": "Kruskal-Wallis test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "HFB, S07",
+       "test": "Kruskal-Wallis test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "HFB, S08",
+       "test": "Kruskal-Wallis test",
+       "p": 0.004
+      },
+      {
+       "about": "HFB, S10",
+       "test": "Kruskal-Wallis test",
+       "p": 0.006
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig5-recording-day-effects",
+     "notes": "The outcome rests on each file's own good-electrode flags. Under them 20 of 24 subject and band pairs agree with the paper with band means, the criterion's threshold for a partial reproduction, and 19 with band medians. A day effect is found where the paper has none for S01 LFB (p = 0.047), S01 HFB (p = 0.023) and S06 HFB (p = 6.7e-11), and is not found for S10 HFB (p = 0.094), where the paper reports one. With the main set of good electrodes (good in every file) 18 of 24 agree under both band statistics, below the 20 the criterion asks; S07 HFB (p = 0.073) and S08 LFB (p = 0.31) also lose their day effect, and S10 HFB has p = 0.054. Removing only the electrodes bad in every file gives 21 and 20 (S10 HFB p = 0.015); without the electrodes holding 50 ms runs of zeros 18 and 18, and S10 HFB keeps p = 0.054. The paper removes 4.9 +- 4.9 surface electrodes per subject; each file's flags remove 4.2 +- 2.1, the main set 12.6 +- 8.4 and removing only the electrodes bad in every file 1.2 +- 0.4. The day medians of the band mean lie inside Table 2's per-day intervals for 41 of 55 subject-days in LFB and 42 of 55 in HFB. S01 lost 132 events of day 7, where its ECoG ends early. Not reproduced was verified in round 2; partially reproduced was proposed after it and the round-3 verifier agreed.",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.",
+      "The paper's per-day intervals (Table 2) are compared with the day medians of the band mean here, for comparison only; the criterion's count uses the Kruskal-Wallis tests.",
+      "Assumed, as the good-electrode flags differ between a subject's files; the outcome uses each file's own flags, whose count of removed surface electrodes (4.2 +- 2.1 per subject) is closest to the paper's 4.9 +- 4.9 (Methods, ECoG data processing). These flags change the electrodes from day to day, which can add or hide day effects. The main set of the notebook (electrodes good in every file) gives 18 of 24 and would make the claim not reproduced."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=02c48acb"
+    },
+    {
+     "claim": "extfig5-1-baseline-reduces-day-variability",
+     "statement": "Subtracting the -1.5 to -1 s baseline reduces the variability of band power across recording days, though clear variability remains.",
+     "source": "Results, Intracortical spectral power during naturalistic movements, paragraph 4; Extended Data Figure 5-1 legend",
+     "quote": "Baseline subtraction reduces the variation across recording days, as expected, but clear variability remains.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:extfig5-1-baseline-reduces-day-variability",
+     "notes": "Reading (a), baseline subtraction lowers the SD of the precentral day means in 10 of 12 subjects for LFB and 12 of 12 for HFB. Reading (b), it lowers it at 91.3% of good electrodes for LFB and 90.2% for HFB. Variability remains; 11 subject and band pairs have a significant day effect (fig5-recording-day-effects), and the SDs after subtraction are 0.03 to 0.83 dB.",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase. Reading (b) uses the electrodes good in every file of the subject."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=0a770ad5"
+    },
+    {
+     "claim": "discussion-day-changes-small",
+     "statement": "Day-to-day changes in baseline-subtracted spectral power are small (about 1-2 dB) compared with spectral power without baseline subtraction (about 10-50 dB).",
+     "source": "Discussion, paragraph 3",
+     "quote": "It is also worth noting that these day-to-day changes in ECoG spectral power are small in magnitude (\u00b11\u20132 dB) relative to spectral power without any baseline values subtracted",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:discussion-day-changes-small",
+     "notes": "The largest deviation of a day mean from the subject's mean is 1.49 dB (S06 HFB), and every subject and band is at most 2.2 dB (1.49 dB under each electrode variant too); the largest range of day means is 2.04 dB (S06 LFB). Without baseline subtraction the precentral band power is 11.7 to 36.9 dB in microvolts squared (the files' stored unit), inside 9 to 55 dB; in volts squared it would be -108 to -83 dB.",
+     "deviations": [
+      "The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=55793edb"
+    },
+    {
+     "claim": "fig6b-best-models-sensorimotor",
+     "statement": "Regression models with the highest withheld R2 are mainly at electrodes over frontoparietal sensorimotor areas, for both bands.",
+     "source": "Figure 6b; Results, Modeling single-event spectral power with behavioral features, paragraph 2; Extended Data Figure 6-1",
+     "quote": "For both frequency bands, intracortical activity variability is best explained by the fit of our models to electrodes located in frontoparietal sensorimotor areas ( Fig. 6 b , Extended Data Fig. 6-1 ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig6b-best-models-sensorimotor",
+     "notes": "14 LFB and 14 HFB models have withheld R2 above 0.05, of 976 per band. Reading (a), all 14 LFB and 13 of 14 HFB electrodes are in the five frontoparietal regions (the other in superior temporal), and the median R2 of sensorimotor electrodes exceeds that of temporal ones (LFB -0.0093 against -0.0150, HFB -0.0117 against -0.0157). Reading (b), the three regions with the highest projected R2 are precentral, postcentral and middle frontal in both bands. Under the four other seeds 12 to 14 models per band pass 0.05 (12 LFB at seed + 4000); their regions were not recomputed.",
+     "deviations": [
+      "Assumed, as the good-electrode flags differ between a subject's files; the models use the electrodes good in every file of the subject (976 electrodes), on the 7649 events of reading (b). The paper reports 4.9 +- 4.9 surface electrodes removed per subject; the files mark 1 to 17 bad in every file and 3 to 32 in at least one.",
+      "Forward selection over single design columns starting from an adjusted R2 of 0, on all of the subject's events, as the code does (_forward_selected_new) and the claims file prescribes; the test events of each split take part in choosing the features, which can raise R2 a little. 200 day-balanced splits with 10% test events (Methods). The splits use the seed of this claim, and the other Figure 6 claims use the same fits.",
+      "The variants refit the models with R2 above 0.03 under the main fits (45 electrodes, both bands) with the Methods' splits; models below 0.03 are taken not to pass 0.05 under them."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=2662dcec"
+    },
+    {
+     "claim": "fig6-r2-at-most-025",
+     "statement": "All regression models explain at most 25% of the variance of withheld single-event power.",
+     "source": "Results, Modeling single-event spectral power with behavioral features, paragraph 2",
+     "quote": "However, all R 2 scores are at most 0.25, indicating that even the best models cannot explain >75% of the variance in the withheld data.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig6-r2-at-most-025",
+     "notes": "The largest split-averaged withheld R2 is 0.177 (S07, HFB), at most 0.275. It is 0.184 with the code's 80/20 splits, 0.158 with band medians, 0.167 to 0.182 under the four other seeds, 0.174 with log(onset speed + 1), and at most 0.151 at the electrodes bad in at least one file. No Huber fit failed to converge. This is an upper bound and is easy to pass.",
+     "deviations": [
+      "As for fig6b-best-models-sensorimotor."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=3d601f63"
+    },
+    {
+     "claim": "fig6c-angle-and-day-most-informative",
+     "statement": "Reach angle and day of recording are the most informative features for single-event power, especially for low-frequency power.",
+     "source": "Figure 6c and legend; Results, Modeling single-event spectral power with behavioral features, paragraph 2",
+     "quote": "Among individual features, we find that reach angle and day of recording are the most informative ( Fig. 6 c ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig6c-angle-and-day-most-informative",
+     "notes": "Over the 14 LFB models with R2 above 0.05, recording day (median Delta R2 0.0374) and reach angle (0.0307) rank first and second; the eight other features have medians of at most 0.0001. In HFB the same two lead (0.0616 and 0.0224). The code's Delta R2 (80/20, test events shuffled) and the code's selection by LFB R2 give the same two in both bands (with selection by LFB R2 the HFB order is angle, then day). The same two lead in both bands under the four other seeds, with log(onset speed + 1), and with the code's inclusion of bad electrodes (21 models per band).",
+     "deviations": [
+      "As for fig6b-best-models-sensorimotor. The code's Delta R2 variant is run with the code's 80/20 splits, combining two of the criterion's variants."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=ef78d5ba"
+    },
+    {
+     "claim": "extfig6-2-angle-most-retained",
+     "statement": "Reach angle is the feature most often retained by forward selection in sensorimotor regions, followed by reach duration, reach magnitude, bimanual ratio and bimanual overlap.",
+     "source": "Extended Data Figure 6-2 legend; Results, Modeling single-event spectral power with behavioral features, paragraph 2",
+     "quote": "Reach angle is the feature most often retained, followed by reach duration, reach magnitude, bimanual ratio, and bimanual overlap.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:extfig6-2-angle-most-retained",
+     "notes": "Reach angle has the highest retention probability in precentral, postcentral and inferior parietal regions for both bands (0.516 averaged over these). The order of the next four does not hold under either reading; over the three sensorimotor regions it is magnitude (0.356), speech ratio (0.355), duration (0.354) and onset speed (0.350), and over all eight regions speech ratio, bimanual class, bimanual ratio and onset speed.",
+     "deviations": [
+      "As for fig6b-best-models-sensorimotor. Forward selection runs once per model on all events (the code runs it in every split on all events, which gives the same selection each time), so the retention does not depend on the seed."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=24beb2d2"
+    },
+    {
+     "claim": "fig6d-upward-reaches-enhance-pattern",
+     "statement": "Upward reaches are associated with lower low-frequency power and higher high-frequency power, that is, a larger version of the average movement response.",
+     "source": "Figure 6d and legend; Results, Modeling single-event spectral power with behavioral features, paragraph 2",
+     "quote": "The coefficients for reach angle indicate that upward reaches are associated with decreased low-frequency power and increased high-frequency power compared with the average response.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig6d-upward-reaches-enhance-pattern",
+     "notes": "Over models with R2 above 0.05, the median reach angle coefficient is -0.712 for LFB (13 of 14 negative) and +0.531 for HFB (13 of 14 positive). With the code's selection by LFB R2 the HFB median is +0.231. It is -0.59 to -0.72 (LFB) and +0.51 to +0.53 (HFB) under the four other seeds, -0.70 and +0.53 with log(onset speed + 1), and -0.47 and +0.39 with the bad electrodes included. Positive angles are upward because the stored image-coordinate angle is negated before folding, as the code does; the convention was checked against the pose.",
+     "deviations": [
+      "As for fig6b-best-models-sensorimotor."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=b5c90a0b"
+    },
+    {
+     "claim": "fig6d-angle-and-day-largest-coefficients",
+     "statement": "Reach angle and day of recording have the largest coefficient magnitudes among the features, and the SD of the recording-day coefficients is large.",
+     "source": "Figure 6d and legend; Results, Modeling single-event spectral power with behavioral features, paragraph 2",
+     "quote": "In addition, both reach angle and day of recording have the largest coefficient magnitudes among behavioral features in the regression models ( Fig. 6 c ).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_peterson_2021.ipynb",
+     "output": "claim:fig6d-angle-and-day-largest-coefficients",
+     "notes": "Under both readings, recording day (SD of its one-hot coefficients) and reach angle have the two largest magnitudes in both bands; LFB 0.969 and 0.712, HFB 0.713 and 0.531 (the next is magnitude, 0.283). With the code's selection by LFB R2 the same two lead (HFB 0.241 and 0.231). Under reading (a) the same two lead under the four other seeds, with log(onset speed + 1), and with the bad electrodes included.",
+     "deviations": [
+      "As for fig6b-best-models-sensorimotor."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/peterson-2021/reproduce_peterson_2021.html#cell-id=30ad0f01"
+    }
+   ],
+   "findings": [
+    {
+     "kind": "selection_undocumented",
+     "statement": "The files hold 8088 movement events, 211 to 996 per subject (median 770.5), where the paper analysed 151 to 947 per subject (median 640). Nothing in the files marks the events the paper used or the false positives it removed, so the paper's event set cannot be rebuilt; dropping the events without usable ECoG still leaves 210 to 976 per subject (median 692).",
+     "found": null,
+     "status": "still_present",
+     "n": 1,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The ECoG of three files ends hours before the day ends while the pose and the events go on to 24 h; sub-01 day 7 (15.5 h), sub-04 day 3 (15.7 h) and sub-06 day 3 (15.9 h). 237 events (132, 22 and 83) have no neural data.",
+     "found": null,
+     "status": "new",
+     "n": 2,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The ECoG holds stretches of NaN samples, which the files do not describe; 125 events have NaN samples within 5 s of onset (47 of them in sub-10).",
+     "found": null,
+     "status": "still_present",
+     "n": 3,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The bimanual overlap is described as a fraction of the contralateral movement duration, but 1708 of 8088 values are above 1 (up to 3.83); the values are consistent with seconds.",
+     "found": null,
+     "status": "still_present",
+     "n": 4,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The pose series are labelled in meters, but the values are pixels; the reach magnitudes computed from the pose equal the stored pixel magnitudes (median ratio 1.007).",
+     "found": null,
+     "status": "still_present",
+     "n": 5,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The reach angle has no stated convention. It is the angle in image coordinates (y downward), -180 to 180 degrees, matching the pose to a median of 1.6 degrees, so upward reaches are negative. The paper's code negates and folds it.",
+     "found": null,
+     "status": "still_present",
+     "n": 6,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The `good` flags of the electrodes differ between the files of a subject (bad in at least one file 3 to 32 per subject, bad in every file 1 to 17), and nothing says how they were set or which applies to the subject's analyses. The paper reports 4.9 +- 4.9 surface electrodes removed per subject; the surface electrodes bad in at least one file number 12.6 +- 8.4 per subject, those bad in every file 1.2 +- 0.4, and those bad in a file 4.2 +- 2.1 on average over a subject's files.",
+     "found": null,
+     "status": "still_present",
+     "n": 7,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The electrodes table carries low_freq_R2 and high_freq_R2 columns with no description of the model or data they come from.",
+     "found": null,
+     "status": "new",
+     "n": 8,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "24 electrodes have no position (NaN x, y, z), the 16 depth electrodes of sub-03 and 8 of sub-12; the paper's projection matrices give them all-zero rows at their places.",
+     "found": null,
+     "status": "new",
+     "n": 9,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "One event of sub-08 day 4 is at 40.3 s in ReachEvents and at 86440.3 s in the reaches table, past the end of the 86400 s recording; the other 8087 agree to 1 ms.",
+     "found": null,
+     "status": "new",
+     "n": 10,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "other",
+     "statement": "Electrode groups described as depth electrodes are in 7 subjects (sub-01, 02, 03, 09, 10, 11 and 12), where the paper reports depth electrodes in 5.",
+     "found": null,
+     "status": "still_present",
+     "n": 11,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "other",
+     "statement": "The coarse behavioural labels (epochs) are empty at 4767 of the 8088 event times, and 17 events fall in epochs labelled sleep or blocklist, which the Methods say were excluded.",
+     "found": null,
+     "status": "new",
+     "n": 12,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "other",
+     "statement": "Checks that passed. The subjects and days are the paper's; the paper's projection matrices match the electrodes of all 12 subjects; ECoG is at 500 Hz in microvolts and pose at 30 Hz. Band power at the event onsets differs from that at pseudo-onsets 3 s earlier in the same segments in 10 of 12 subjects for LFB and 8 of 12 for HFB, consistent with ECoG and events sharing a clock; for sub-09 neither band differs, so the alignment could not be established there, also with the electrodes holding 50 ms runs of zeros left out (p = 0.84 and 0.87).",
+     "found": null,
+     "status": "new",
+     "n": 13,
+     "severity": "none",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "In sub-09 and sub-10 every analysed event has, on 1 to 15 electrodes marked good in every file, a run of at least 25 exact zero samples (50 ms) within the 10 s around it; no other subject has such runs. The files do not say what the zeros mean. Leaving those electrodes out of each event changes no outcome of this attempt.",
+     "found": null,
+     "status": "new",
+     "n": 17,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The electrode group descriptions and the data descriptor's Table 2 (doi 10.1038/s41597-022-01280-y) disagree for two subjects. sub-11 has groups LATD, LMTD and LTPD described as depth (18 electrodes), where the descriptor gives 106 surface and no depth electrodes; sub-10 has 78 electrodes in groups not described as depth and 48 in depth groups, where the descriptor gives 86 and 40.",
+     "found": "on_prompt",
+     "status": "still_present",
+     "n": 18,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261123.1703"
+     ],
+     "newest": "0.220127.0436"
+    }
+   ],
+   "reconciliation": {
+    "earlier": "peterson-2021-01",
+    "blind": true,
+    "blind_note": "",
+    "gone": [
+     {
+      "status": "fixed",
+      "note": "earlier_findings.ipynb finds the ECoG starting_time of the three files now set to 30682.414, 30048.322 and 29240.566 s, so all 55 files end at 86400 s on the clock of the events, and S06 day 3 gives precentral HFB +1.95 dB with the ECoG read from its starting_time against -0.10 dB from 0 s. Finding 2 of peterson-2021-02 names the same three files, but its helper reads their ECoG from 0 s (ajile.py, session_spectral), so the ECoG it reports as ending early starts late.",
+      "statement": "In three files (sub-01 ses-7, sub-04 ses-3, sub-06 ses-3) the ECoG holds 15.5 to 15.9 h and its starting_time is 0, while the reaches table and the pose run on a clock from midnight. The ECoG starts 29241 to 30682 s after midnight, the time missing from 24 h; ReachEvents and the session start time agree, and the movement response appears only with this shift (S06 day 3, precentral HFB +1.98 dB with it, -0.07 dB without). Read with starting_time as given, the event times point at the wrong ECoG or past its end.",
+      "kind": "metadata_error",
+      "about": "data"
+     },
+     {
+      "status": "fixed",
+      "note": "earlier_findings.ipynb finds session_start_time at 00:00:00+00:00 of its day in all 55 files, the three files whose ECoG starts later included; their delay is now in the ECoG starting_time.",
+      "statement": "session_start_time is 19:00 at UTC-5 for files that start at local midnight (midnight UTC written in another zone), and 03:07 to 03:31 at UTC-5 for the three files whose ECoG starts later.",
+      "kind": "metadata_error",
+      "about": "data"
+     },
+     {
+      "status": "fixed",
+      "note": "earlier_findings.ipynb finds sex and age in every file, 8 male and 4 female subjects with a mean age of 29.42 years (SD 7.94), the paper's values.",
+      "statement": "The subjects' sex and age, which the paper reports, are not in the files or the archive's metadata.",
+      "kind": "data_missing",
+      "about": "data"
+     }
+    ],
+    "outcomes": [
+     {
+      "claim": "fig4-precentral-subject-variability",
+      "earlier": "reproduced",
+      "note": "The outcome turns on part 1 for S09, whose precentral 76-100 Hz mean on this version with this attempt's code is 0.097 dB with the first file's flags, against -0.039 dB with the electrodes good in every file and -0.030 with each file's flags (earlier_findings.ipynb). Part 4 needs a tie-break under every set, as S04 has 3 bins, tied with S03 and S05 behind S07 and S08 under the first file's flags; the earlier attempt passed it with its interpolated width. This attempt's 2 bins for S04 under each file's flags come from the ECoG of S04 day 3 read from 0 s (3 bins when it is read from its starting_time)."
+     },
+     {
+      "claim": "fig5-recording-day-effects",
+      "earlier": "reproduced",
+      "note": "ajile.py, session_spectral, places each event at sample event time x 500 (\"series starts at 0 s\") and ignores the ECoG starting_time of sub-01 day 7, sub-04 day 3 and sub-06 day 3 (29240.566 to 30682.414 s), so their events were read about 8 h late, which gives the day effects of S01 LFB (p = 0.047), S01 HFB (0.023) and S06 HFB (6.7e-11) where the paper has none. Read from the starting_time with each file's flags, these give p = 0.777, 0.0546 and 0.847, and 23 of 24 pairs agree, S10 HFB (p = 0.0935) the one left; with the first file's flags, the earlier attempt's set, 24 of 24 agree (earlier_findings.ipynb), so the choice of electrodes decides the rest."
+     }
+    ]
+   },
+   "verifications": [
+    {
+     "date": "2026-11-25",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text under paper/. The verifier checked the version's 55 files and 845.87 GB on the DANDI API and tested the angle folding, the day-balanced splits, the band statistics, the one-hot design matrix and the Morlet bank on synthetic inputs.",
+     "agreed": 25,
+     "of": 25,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-25",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision, with its conclusions and summary, the helper module, the claims file, the README and the attempt record, with the paper's full text under paper/. The record has no finding rated critical, so no finding was reviewed for its rating.",
+     "agreed": 24,
+     "of": 25,
+     "disagreements": [
+      {
+       "claim": "fig5-recording-day-effects",
+       "outcome": null,
+       "reason": "The outcome changed from round 1 only because the main analysis now uses the electrodes marked good in every file of a subject. The claims header's \"renormalised to sum to 1 per subject\" does not say which electrodes count as bad. Excluding every electrode bad in any file removes 3 to 32 per subject (mean about 17.3), against the paper's 4.9 +- 4.9 surface electrodes; removing only the electrodes bad in every file gives a mean of 3.0 (SD about 4.6), much closer, and is also per subject and keeps the electrode mix the same across days. That set was not run. The result is 18/24 under the chosen set and 20/24 under each file's flags, so the outcome flips on an open choice; undecided between partially and not reproduced until that set is run. The criterion also asks for Table 2's per-day intervals for comparison, and cell 67 prints day means only. S10's HFB day effect (p = 0.054) may bear on its runs of zeros (round-1 problem 3, partly open)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-25",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 3. The proposed change of outcome for fig5-recording-day-effects and the analysis behind it (cells 4, 67, 68, 76 and 77 of the executed notebook of the final revision), with the paper's Methods, ECoG data processing.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The Methods drop segments with power below 0 dB or with 115-125 Hz power more than 3 SD above all segments, but do not say how power is pooled over electrodes and frequencies, or whether the SD is per subject. This attempt assumed the Welch power of the 10 s segment averaged over the subject's good electrodes, 1-200 Hz for the 0 dB test and 115-125 Hz for the 3 SD test per subject; it drops 76 events. Please confirm or correct.",
+     "found": null,
+     "status": "still_present",
+     "n": 14,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The Results say low-frequency decreases are more spatially widespread than high-frequency increases (Figure 3) without a measure. Counting regions with any significant bin gives a tie (8 against 8), and counting significant bins per frequency bin favours the low frequencies (36.0 against 22.2). Which measure was meant?",
+     "found": null,
+     "status": "still_present",
+     "n": 15,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The dataset's good-electrode flags differ between a subject's days. Were bad electrodes removed per day or per subject, and did the analyses use the electrodes good on every day? This attempt used the electrodes good on every day for the projection and the regression; with each day's own flags, the recording-day effects of 20 of 24 subject and band pairs agree with the paper, against 18, and removing only the electrodes bad on every day gives 21. Each day's flags remove 4.2 surface electrodes per subject on average, the closest to the paper's 4.9.",
+     "found": null,
+     "status": "new",
+     "n": 16,
      "severity": null,
      "changes_results": false,
      "checked": null,
@@ -737000,11 +738613,12 @@
    "name": "peterson-2021",
    "type": "reproduction",
    "title": "Behavioral and neural variability of naturalistic arm movements (Peterson et al. 2021)",
-   "description": "Tests the findings of Peterson, Singh, Wang, Rao and Brunton (2021) on dandiset 000055 (AJILE12), which holds 55 days of ECoG and pose from 12 people in clinical epilepsy monitoring, with their wrist movement events and event features. It compares the behavioural features across subjects and days, the group and per-subject movement-related spectral power in eight cortical regions, the variation of precentral band power across subjects and recording days, and the regression of single-event band power on the behavioural features (Figure 6).",
+   "description": "Tests the findings of Peterson, Singh, Wang, Rao and Brunton (2021) on dandiset 000055 (AJILE12), which holds the ECoG, pose and wrist movement events of the paper's 12 subjects over 55 days. It checks the cohort and the events, the behavioural features of Figure 2, the movement-related spectral power of Figures 3 to 5 and Table 1, projected to regions with the paper's projection matrices from Figshare, and the single-event regression models of Figure 6.",
    "datasets": [
     "dandi:000055"
    ],
    "papers": [
+    "10.6084/m9.figshare.12114408.v1",
     "10.1523/eneuro.0007-21.2021"
    ],
    "derived_from": [],
@@ -737013,39 +738627,47 @@
      "path": "reproduce_peterson_2021.ipynb",
      "title": "Reproducing Peterson et al. (2021) from dandiset 000055",
      "cells": {
-      "sanity": "fa19d835",
-      "claim:subject-days": "bf934a61",
-      "claim:roi-projection-link": "95a669f5",
-      "claim:cohort": "647f2383",
-      "claim:fig2-event-counts": "8c46e841",
-      "claim:fig2-features-differ-across-subjects": "677684ba",
-      "claim:fig2-reach-shape": "e8f2f975",
-      "claim:fig2-bimanual-skew": "0856d8af",
-      "claim:extfig2-1c-contralateral-larger": "a6cc8920",
-      "claim:extfig2-2-feature-correlations": "d305e175",
-      "claim:fig2-days-and-waking": "3bc74c77",
-      "claim:fig3-group-lfb-decrease-hfb-increase": "ed5eeeef",
-      "claim:fig3-sensorimotor-largest": "1fcdde8b",
-      "claim:fig3-lfb-more-widespread": "9fada1b9",
-      "claim:fig4-precentral-subject-variability": "a8d51cf7",
-      "claim:fig5-band-power-differs-across-subjects": "b7cbf3a4",
-      "claim:table1-subject-band-power-ci": "c997fab1",
-      "claim:fig5-recording-day-effects": "5c43ce20",
-      "claim:extfig5-1-baseline-reduces-day-variability": "ba248280",
-      "claim:discussion-day-changes-small": "149b7854",
-      "claim:fig6-r2-at-most-025": "85f98dc8",
-      "claim:fig6b-best-models-sensorimotor": "ca4305fd",
-      "claim:fig6c-angle-and-day-most-informative": "a4fdf65e",
-      "claim:extfig6-2-angle-most-retained": "f4074a96",
-      "claim:fig6d-upward-reaches-enhance-pattern": "6cf85957",
-      "claim:fig6d-angle-and-day-largest-coefficients": "339f24eb"
+      "sanity": "df1421b2",
+      "claim:roi-projection-link": "d4b6d113",
+      "claim:subject-days": "4a6dc3c5",
+      "claim:cohort": "7f658067",
+      "claim:fig2-event-counts": "79da27ba",
+      "claim:fig2-features-differ-across-subjects": "ad4f8d38",
+      "claim:fig2-reach-shape": "197465b7",
+      "claim:fig2-bimanual-skew": "7bf8bb23",
+      "claim:extfig2-1c-contralateral-larger": "5d26a56f",
+      "claim:extfig2-2-feature-correlations": "98f74dfd",
+      "claim:fig2-days-and-waking": "46bf19ad",
+      "claim:fig3-group-lfb-decrease-hfb-increase": "ff5986d2",
+      "claim:fig3-sensorimotor-largest": "eb5c63b9",
+      "claim:fig3-lfb-more-widespread": "6bfabaf2",
+      "claim:fig4-precentral-subject-variability": "67634c2b",
+      "claim:fig5-band-power-differs-across-subjects": "08a046c2",
+      "claim:table1-subject-band-power-ci": "dc5cf39b",
+      "claim:fig5-recording-day-effects": "02c48acb",
+      "claim:extfig5-1-baseline-reduces-day-variability": "0a770ad5",
+      "claim:discussion-day-changes-small": "55793edb",
+      "claim:fig6-r2-at-most-025": "3d601f63",
+      "claim:fig6b-best-models-sensorimotor": "2662dcec",
+      "claim:fig6c-angle-and-day-most-informative": "ef78d5ba",
+      "claim:extfig6-2-angle-most-retained": "24beb2d2",
+      "claim:fig6d-upward-reaches-enhance-pattern": "b5c90a0b",
+      "claim:fig6d-angle-and-day-largest-coefficients": "30ad0f01"
      },
      "executed": "notebooks/peterson-2021/reproduce_peterson_2021.html"
+    },
+    {
+     "path": "earlier_findings.ipynb",
+     "title": "Findings of the earlier attempt peterson-2021-01, checked on this version",
+     "cells": {
+      "sanity": "accb0e77"
+     },
+     "executed": null
     }
    ],
    "python": "3.13",
-   "pinned": 39,
-   "hashed": false
+   "pinned": 51,
+   "hashed": true
   },
   {
    "name": "peyrache-2009",
@@ -753838,16 +755460,16 @@
  ],
  "demo": false,
  "outcome_counts": {
-  "reproduced": 3744,
-  "partially_reproduced": 1421,
-  "not_reproduced": 1578,
+  "reproduced": 3751,
+  "partially_reproduced": 1425,
+  "not_reproduced": 1579,
   "blocked": 3784
  },
  "outcome_counts_with_outside_data": {
-  "reproduced": 150,
-  "partially_reproduced": 71,
+  "reproduced": 156,
+  "partially_reproduced": 75,
   "not_reproduced": 66,
-  "blocked": 212
+  "blocked": 213
  },
  "outcome_counts_elsewhere": {
   "reproduced": 370,
@@ -753856,7 +755478,7 @@
   "blocked": 421
  },
  "outcome_counts_links": {
-  "reproduced": 108,
+  "reproduced": 110,
   "partially_reproduced": 37,
   "not_reproduced": 12,
   "blocked": 1
@@ -753962,28 +755584,24 @@
   },
   "hours": {
    "full": 7.5465277777777775,
-   "claims": 0.5137499999999999
+   "claims": 0.5163888888888889
   },
   "running": {
    "001425": {
     "kind": "full",
-    "hours": 1.4409797961111113
+    "hours": 1.3138971805555562
    },
    "zenodo-17624449": {
     "kind": "full",
-    "hours": 6.759174240555557
+    "hours": 6.632091625000001
    },
    "zenodo-17794764": {
     "kind": "full",
-    "hours": 6.759174240555557
-   },
-   "dryad-t1g1jwtb0": {
-    "kind": "full",
-    "hours": 7.282229796111112
+    "hours": 6.632091625000001
    },
    "dryad-1rn8pk129": {
     "kind": "full",
-    "hours": 7.397785351666667
+    "hours": 7.270702736111112
    }
   },
   "papers": {
@@ -754051,7 +755669,6 @@
     "mizuseki-2009",
     "okubo-2015",
     "paula-2026",
-    "peterson-2021",
     "powell-2021",
     "qu-2025",
     "salahshour-2026",
@@ -754070,19 +755687,15 @@
    "running": {
     "komori-2026": {
      "kind": "full",
-     "hours": 1.4409797961111113
+     "hours": 1.3138971805555562
     },
     "carrier-2026": {
      "kind": "full",
-     "hours": 6.759174240555557
-    },
-    "longcore-2024": {
-     "kind": "full",
-     "hours": 7.282229796111112
+     "hours": 6.632091625000001
     },
     "schapiro-2024": {
      "kind": "full",
-     "hours": 7.397785351666667
+     "hours": 7.270702736111112
     }
    }
   }
