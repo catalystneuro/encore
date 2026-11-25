@@ -34,7 +34,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons, the differences from the paper's method and what was found
 about the data, is [`attempts/carrier-2026-01.yaml`](../../attempts/carrier-2026-01.yaml).
 
-- `reproduce_carrier_2026.ipynb`: the analysis. It takes about seven minutes, most of it reading the
+- `reproduce_carrier_2026.ipynb`: the analysis. It takes seven to nine minutes, most of it reading the
   in vivo recordings.
 - `stns.py`: reading the records' files, the Prism files and the authors' tables, the semi-log Q10
   fits and their F tests, the in vivo spectra and band rules, and a look at the start of a zip

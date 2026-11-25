@@ -70,8 +70,8 @@ outcomes:
     inner zip show that they hold the salinity-series preparations (888_144, 888_139, 888_138 and 888_143
     open four of them), one zip per preparation of ABF files named by preparation or date and a sequence
     number, with no salinity or step in the name. Each inner zip is deflated inside the outer one, so
-    listing it means decompressing it from the start; at the measured 1 to 5 MB/s that is 2 to 10 h of
-    reading before mapping files to salinities without a protocol log and detecting bursts by criteria
+    listing it means decompressing it from the start; at the measured 1.6 MB/s (four inner zips read at
+    once, 0.4 MB/s each) the 37 GB take about 6 h to read, before mapping files to salinities without a protocol log and detecting bursts by criteria
     the paper does not give. Not run.
   output: claim:fig1e-cb-salinity-crash-fractions
 - claim: fig2b-cb-crash-temp-075-unchanged
@@ -309,9 +309,10 @@ outcomes:
   output: finding-lobster-unit-crash-missing
   notes: The deposited tables give the lobster rhythm crash only (a Crash mark per ramp in Sheet4, unlabelled
     crash temperatures in the Prism file); the LP and PY crash temperatures per ramp are not tabulated.
-    LP and PY burst files exist for 6 of the 19 preparations (the For Analysis folders, 226 of 390 non-empty).
-    The rest would need LP and PY identified on the lvn in 33 GB of Spike2 recordings (13.9 GB compressed,
-    about 15 min to read with eight connections) by burst criteria the paper does not give; not attempted.
+    LP and PY burst files exist for 8 of the 19 preparations (six For Analysis folders and two 1X TEXT FILES
+    folders, 238 of 402 files non-empty), below the paper's n of 12 to 18. The rest would need LP and PY
+    identified on the lvn in 33.1 GB of Spike2 recordings by burst criteria the paper does not give; not
+    attempted.
 - claim: fig5c-ha-mixed-model
   outcome: partially_reproduced
   notebook: reproduce_carrier_2026.ipynb
@@ -452,7 +453,8 @@ outcomes:
   - 24.26
   notes: '0.75x: crab 30.62 C (n = 11), lobster 31.07 C (n = 14), Mann-Whitney P = 1.000 (paper 0.99).
     1.25x: crab 27.28 C (n = 9), lobster 24.26 C (n = 14), Welch P = 0.145 (paper 0.08). The crab 1.25x
-    mean includes the 36.0 C value the unit table gives as 26.0 C; with the unit table it is 26.17 C.'
+    mean includes the 36.0 C value the unit table gives as 26.0 C; with the unit table it is 26.17 C,
+    the difference 1.91 C and Welch P = 0.262, so the outcome holds under either value.'
   deviations:
   - Tested on the authors' per-preparation values in the deposited tables (Crab Metadata.xlsx, Lobster
     Pyloric Frequencies.xlsx, the Prism files), not on burst detection repeated on the raw recordings
@@ -471,7 +473,8 @@ outcomes:
     18 and 10 at 0.25x and 0.5x, crab 12 at 1.25x), 58 of 58 with the 1-min mean ratio, and 46 of 58 with
     the 1-min peak prominence (46 to 52 over the seeds; twelve crab exposures below). Every lobster exposure
     keeps its band under all four rules. Crab 18 at 0.25x has a narrow line at 2.4 Hz in 0.81 of its windows
-    and no power at 1.2 Hz; at 0.75x its band is at 1.3 Hz with a harmonic at 2.6 Hz. The paper judged
+    and no power at 1.2 Hz; at 0.75x its band is at 1.3 Hz with a harmonic at 2.6 Hz (median power 349
+    and 47 times the window median). The paper judged
     spectrograms by eye and gives no rule, so whether the faint crab bands are a rhythm cannot be settled;
     all 58 spectrograms are shown. Each "1-h" exposure holds 30 to 32 min (finding), so B-a cannot be
     applied as written. The 58 exposures are 51 distinct recordings (7 crab and 5 lobster animals with
@@ -549,7 +552,7 @@ findings:
   datasets:
   - zenodo-17624449
   statement: The LP and PY crash temperatures of the lobster ramps (Figs. 5B, 6A, 6B) are not tabulated;
-    the tables give the rhythm crash only. LP and PY burst files exist for 6 of the 19 preparations.
+    the tables give the rhythm crash only. LP and PY burst files exist for 8 of the 19 preparations.
   notebook: reproduce_carrier_2026.ipynb
   output: finding-lobster-unit-crash-missing
 - kind: data_missing
@@ -851,3 +854,221 @@ verifications:
     reason: The deposit has one 32-min "15Hours" recording and no survival records. The Zenodo descriptions,
       which the verifier queried, mention none.
     response: No change.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook after the round-1 revision, with the attempt record, the
+    helper module stns.py, the claims file and the paper''s full text. Other points of its report and the
+    replies: the Summary said the deposited tables and Prism files reproduce the paper''s Q10 statistics
+    exactly, which cells 58 and 63 contradict (now limited to Figs. 2G, 2H, 3B and 7A to 7C, with Fig. 5D
+    and the PY-on phase named as differing); the Summary said the analysis scripts are not in either record,
+    though the 21 inner crab zips were read only at their start (now says no script was found in the files
+    read); the count of preparations with LP and PY burst files was 6, counting only the For Analysis folders
+    (now counted over every folder, 8, in cell 86, and corrected in cell 6, the Blocked claims cell, the
+    fig5b notes and finding 5; the words "the phase subset" were removed); "329.541 s" in finding 1 had no
+    output (cell 15 now prints the first header line of both burst tables, both naming 0.75x_ramp.smr from
+    START= 329.541); the "1 to 5 MB/s" of the fig1e notes had no output (cell 5 now times the reads of
+    the 21 inner zips, 1.6 MB/s in all, 0.4 MB/s per zip in the final run, and the notes give that rate); "33 GB ... about
+    15 min to read" of the fig5b notes had no output (cell 86 now prints the 33.1 GB; the reading time
+    was removed); cell 76 said the in vivo section takes about five minutes where cell 77 printed 6.8 min
+    (the time is now only printed); cell 55 called the Wald interval [1.29, 1.59] the paper''s (now "close
+    to" the paper''s [1.30, 1.59]); cell 71 called 10 to 28 C the range of the deposited Prism fit, which
+    is not printed (now "the range that gives the paper''s F(1,175)"); the 2.6 Hz harmonic of crab 18
+    at 0.75x was shown only in the figure (cell 84 now prints the power at twice the peak, 47 times the
+    window median). The verifier noted that fig2i is recorded agrees false in round 1 although its round-1
+    outcome was reproduced; that is right as recorded, since the round-1 notebook gave not_reproduced
+    and the verifier''s reproduced differed from it.'
+  results:
+  - claim: fig1b-cb-075-frequency-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig1d-cb-125-frequency-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig1e-cb-salinity-crash-fractions
+    agrees: true
+    outcome: blocked
+    reason: 'I accept the change (blocked, too_large; I had said data_missing). Cell 5 shows the 21 inner
+      zips hold salinity-series preparations, so the data are deposited. Cell 32''s three counts are reported
+      and match the paper. The notes'' "the measured 1 to 5 MB/s" is printed by no cell.'
+    response: Cell 5 now times the reads of the inner zips' first 8 MB and prints the rate (1.6 MB/s in all,
+      0.4 MB/s per zip, in the final run); the notes give that rate and the reading time it implies for
+      37 GB, about 6 h.
+  - claim: fig2b-cb-crash-temp-075-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig2e-cb-crash-temp-125-lower
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig2f-cb-125-frequency-rises
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig2g-cb-q10-075-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig2h-cb-q10-125-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig2f-cb-mixed-model
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51 now tests fixed effects only. Under S-c, with frequency as the response and salinity
+      as a number, temperature P = 1.5e-19, the interaction P = 0.00042 and salinity P = 0.158, which meets
+      the criterion''s "under one reading" with salinity at 1 df. Satterthwaite tests would raise the P values,
+      which cannot push salinity below 0.05 or plausibly push 0.0004 above it. The notes say openly that
+      the reading whose n matches the paper''s (S-b, n = 11) gives salinity P = 0.022.'
+    response: No change.
+  - claim: fig2i-cb-neuron-crash-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'The assumption is stated, and it is reasonable. Cell 39 shows that in all 9 ramps where all
+      three neurons crashed, the spread is at most 1.0 C, and readings ii and iii both give 9. Reading i,
+      which requires exactly equal temperatures, gives 4, and the record says so.'
+    response: No change.
+  - claim: fig2i-cb-neuron-crash-temps-similar
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig3b-ha-frequency-q10
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged from round 1, and I agree. Cell 55 says the Wald interval [1.29, 1.59] is "the interval
+      the paper gives for n = 19"; the paper''s is [1.30-1.59], so the wording should not say they are the
+      same.'
+    response: Cell 55 now says the interval is close to the paper's [1.30, 1.59].
+  - claim: species-frequency-at-10c
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig3c-ha-phase-constant
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig4b-ha-075-frequency-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig4d-ha-125-frequency-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig4e-ha-salinity-crash-fractions
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig5b-ha-lp-crashes-before-py
+    agrees: true
+    outcome: blocked
+    reason: 'Unchanged from round 1, and I agree. "LP and PY burst files exist for 6 of the 19 preparations"
+      is wrong: cell 5 lists them in 7 folders, including 061223/1X TEXT FILES, and ghfhd_LP/PY_bursts.txt
+      in 021423, so at least 7, possibly 8, preparations have them; cell 86 counts only the For Analysis
+      folders. The outcome does not change, because 7 or 8 is still below the paper''s n of 12 to 18. "33
+      GB of Spike2 recordings ... about 15 min to read" is printed by no cell.'
+    response: Cell 86 now counts LP and PY burst files in every folder and lists them per preparation, 8
+      (six For Analysis folders, 061223 and 021423 in 1X TEXT FILES, 238 of 402 files non-empty); the count
+      is corrected to 8 in the notes, finding 5, cell 6 and the Blocked claims cell. Cell 86 prints the 33.1
+      GB; the reading time was removed. Outcome unchanged.
+  - claim: fig5c-ha-mixed-model
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree, from cell 61.
+    response: No change.
+  - claim: fig5d-ha-q10-salinity-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree, from cell 63. The miss depends on which point the paper dropped: leaving one point
+      out at a time, P is above 0.05 in only 60 of 214 cases. The notes say this.'
+    response: No change.
+  - claim: fig6a-ha-py-crash-temp-salinity
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig6b-ha-lp-crash-temp-salinity
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig7a-species-q10-075
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig7b-species-q10-1x-similar
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  - claim: fig7c-species-q10-125
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1, and I agree. Cell 71 calls 10 to 28 C "the range of the deposited Prism
+      fit", but the 1.25x Prism CSV is not printed.
+    response: Cell 71 now calls 10 to 28 C the range that gives the paper's F(1,175), which cell 70 prints.
+  - claim: fig7e-species-crash-temp-1x
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree, from cell 72.
+    response: No change.
+  - claim: fig7df-species-crash-temp-075-125-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged from round 1, and I agree. The crab 1.25x test was not re-run with the unit-table
+      value for 963_106 (26.0 C in place of 36.0 C). It would narrow the difference from 3.0 to 1.9 C, so
+      P can only rise and the "similar" outcome holds.'
+    response: 'Added the test with 26.0 C for 963_106 to cell 74: crab 26.17 C, difference 1.91 C, Welch
+      P = 0.262, Mann-Whitney P = 0.270. Outcome unchanged.'
+  - claim: fig8-invivo-rhythm-maintained
+    agrees: true
+    outcome: blocked
+    reason: 'I agree (methods_underspecified; my round-1 outcome was partially reproduced). By the letter
+      of the claims file''s rule it would be reproduced (58 of 58), but cell 83 shows shuffled traces pass
+      the same rule in 0.901 to 0.992 of windows, so the rule cannot detect a crash. The three calibrated
+      rules give 53, 58 and 46 of 58. Cell 84''s spectrograms show near-flat crab traces, and crab 18 at
+      0.25x has a perfectly steady 2.4 Hz line with no subharmonic, which could be a rhythm or an artifact.
+      Without the paper''s visual criterion, none of these can be decided. The 2.6 Hz harmonic is visible
+      only in the cell 84 figure (I checked it and it does show it).'
+    response: Cell 84 now prints the power of crab 18 at twice its peak frequency (at 0.75x, 47 times the
+      window median at 2.6 Hz), and the notes give it. Outcome unchanged.
+  - claim: fig9-15h-mortality
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1, and I agree.
+    response: No change.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: 'The output shows identical Sheet4 values from 10 to 28 C, identical columns (5, 8) in Lobster_Q10s_1x&075x.mat
+      low and the Prism Homam 0.75x sheet, the two burst tables equal in all 4730 numbers, different recordings
+      (910,496,768 and 703,075,328 bytes, different CRCs), and 111122''s own 28 C burst file giving 1.130
+      Hz where the table has 1.657 Hz. The only unsupported part is the "329.541 s" detail. Critical is
+      right: data are filed under the wrong preparation and one recording is counted twice in Figs. 5D and
+      7A, with nothing in the tables to show it.'
+    response: Cell 15 now prints the first header line of both burst tables, which name 0.75x_ramp.smr from
+      START= 329.541. Severity kept.
+  - finding: 2
+    agrees: true
+    reason: 'The output shows exactly the seven pairs listed and "Exposures: 59; distinct recordings: 52".
+      Critical is right: recordings are deposited under two animals or salinities, which changes the per-salinity
+      counts of animals, and the file names give no sign of it.'
+    response: Severity kept.
