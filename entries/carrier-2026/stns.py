@@ -43,19 +43,26 @@ Where the parameters come from:
   the claims file's standard choices, not the paper's (criterion of
   fig8-invivo-rhythm-maintained). Decimating each 2-min file to 50 Hz before the transform is a
   standard choice that cannot change the 0 to 3 Hz spectrum beyond the file edges. The shuffled
-  trace (a flat spectrum with the same values) is a reference for the rule, and the 99th
-  percentile of its peak ratio a stricter variant; both are this attempt's, not the paper's.
+  trace (a flat spectrum with the same values) is a reference for the rule. Three variants
+  calibrated on it are this attempt's, not the paper's: the per-window peak ratio above the
+  99th percentile of the shuffled trace's, and, on mean spectra of 1-min blocks (the time over
+  which a band is seen on a spectrogram), the peak ratio or the peak's prominence over its
+  neighbourhood above the shuffled trace's 99th percentile. No variant has a basis in the paper,
+  which judged the spectrograms by eye.
 - Zenodo answered some range requests with HTTP 500 under load; `read_member` retries them.
 """
 
 from __future__ import annotations
 
+import datetime
 import hashlib
 import io
 import json
 import re
+import struct
 import time
 import zipfile
+import zlib
 
 import fsspec
 import numpy as np
@@ -117,6 +124,36 @@ def read_member(record: str, key: str, member: str, tries: int = 6) -> bytes:
             if k == tries - 1:
                 raise
             time.sleep(10 * 2 ** k)
+
+
+def member_head_names(record: str, key: str, member: str, nbytes: int = 8 * 2**20, tries: int = 6) -> list[str]:
+    """Names in the local file headers found in the first nbytes of a deflated member of a remote
+    zip (a zip inside a zip), decompressed from its start. Listing the whole inner zip would mean
+    decompressing all of it; its first entries show what it begins with."""
+    for k in range(tries):   # retried as in read_member (Zenodo answers 429 or 500 under load)
+        try:
+            f, z = open_zip(record, key)
+            try:
+                info = z.getinfo(member)
+                f.seek(info.header_offset)
+                h = f.read(30)
+                nl, el = struct.unpack("<HH", h[26:30])
+                f.seek(info.header_offset + 30 + nl + el)
+                comp = f.read(min(nbytes, info.compress_size))
+            finally:
+                f.close()
+            break
+        except Exception:
+            if k == tries - 1:
+                raise
+            time.sleep(10 * 2 ** k)
+    out = zlib.decompressobj(-15).decompress(comp) if info.compress_type == zipfile.ZIP_DEFLATED else comp
+    names, pos = [], 0
+    while (i := out.find(b"PK\x03\x04", pos)) >= 0 and i + 30 <= len(out):
+        nl = struct.unpack("<H", out[i + 26:i + 28])[0]
+        names.append(out[i + 30:i + 30 + nl].decode("utf-8", "replace"))
+        pos = i + 4
+    return names
 
 
 # ---------------------------------------------------------------- Prism files
@@ -359,9 +396,10 @@ def shared_slope_test(groups: dict[str, tuple], reading: str = "Q-a") -> dict:
 
 # ---------------------------------------------------------------- in vivo PPG
 
-def abf_signal(b: bytes) -> tuple[np.ndarray, float]:
+def abf_signal(b: bytes) -> tuple[np.ndarray, float, datetime.datetime]:
     """Read the first channel of an ABF2 file held in memory, with pyabf's own header and data
-    readers (pyabf opens only paths, so the file object is handed to its readers directly)."""
+    readers (pyabf opens only paths, so the file object is handed to its readers directly).
+    Returns the signal, the sampling rate and the file's start time."""
     import pyabf
     abf = pyabf.ABF.__new__(pyabf.ABF)
     abf._preLoadData = True
@@ -409,6 +447,39 @@ def band_present(f, S, lo=0.3, hi=3.0, ratio=3.0) -> np.ndarray:
     return S[band].max(axis=0) > ratio * np.median(S, axis=0)
 
 
+BLOCK_WINDOWS = 12   # this attempt's choice: 12 windows at a 5-s step, about 1 min
+
+
+def block_means(S: np.ndarray, nb: int = BLOCK_WINDOWS) -> np.ndarray:
+    """Mean spectrum of consecutive blocks of nb windows (columns); a last partial block is dropped."""
+    k = S.shape[1] // nb
+    return S[:, :k * nb].reshape(S.shape[0], k, nb).mean(axis=2)
+
+
+def peak_ratio(f, S, lo=0.3, hi=3.0) -> np.ndarray:
+    """Per column: peak power between lo and hi Hz over the median power over 0 to 3 Hz (the
+    statistic of band_present)."""
+    band = (f >= lo) & (f <= hi)
+    return S[band].max(axis=0) / np.median(S, axis=0)
+
+
+def peak_prominence(f, S, lo=0.4, hi=2.8) -> np.ndarray:
+    """Per column: the largest ratio, over local maxima between lo and hi Hz, of the peak's power
+    to the mean power 0.3 to 0.5 Hz away on both sides. A band that stands out of its
+    neighbourhood scores high; a smooth (white or 1/f) spectrum scores near 1. This attempt's
+    choice, after the paper's 'distinct high-power band'."""
+    df = f[1] - f[0]
+    near, far = int(round(0.3 / df)), int(round(0.5 / df))
+    out = np.ones(S.shape[1])
+    for j in np.where((f >= lo) & (f <= hi))[0]:
+        if j - far < 0 or j + far >= len(f):
+            continue
+        flank = np.r_[S[j - far:j - near + 1], S[j + near:j + far + 1]].mean(axis=0)
+        is_max = (S[j] >= S[j - 1]) & (S[j] >= S[j + 1])
+        out = np.where(is_max, np.maximum(out, S[j] / flank), out)
+    return out
+
+
 INVIVO_ZIPS = ["Crab In Vivo Data 1.zip", "Crab In Vivo Data 2.zip",
                "Lobster In Vivo Data 1.zip", "Lobster In Vivo Data 2.zip"]
 
@@ -425,7 +496,12 @@ def process_exposure(outer_key: str, member: str, seeds=(), seconds_first: float
     """Read one in vivo exposure (a zip of 2-min ABF files inside an outer zip of record
     17794764), decimate each file, join them in time order, and summarise the 0 to 3 Hz
     spectrogram. `seeds`: generators for a reference, the same trace with its samples shuffled
-    (a flat spectrum), to which the same band rule is applied."""
+    (a flat spectrum), to which each band rule is applied. Three rules calibrated on the
+    shuffled trace (this attempt's, not the paper's): per 10-s window, the peak ratio above the
+    99th percentile of the shuffled trace's (`cal`); per 1-min block mean spectrum, the peak ratio
+    (`avg`) or the peak prominence (`prom`) above the 99th percentile of the shuffled trace's.
+    Files are joined across the gaps between them; windows that span a gap of more than 5 s are
+    counted (`windows_over_gap`)."""
     b = read_member(PART2, outer_key, member)
     zi = zipfile.ZipFile(io.BytesIO(b))
     parts = []
@@ -440,26 +516,38 @@ def process_exposure(outer_key: str, member: str, seeds=(), seconds_first: float
     gaps = [(parts[i + 1][0] - parts[i][0]).total_seconds() - parts[i][4] for i in range(len(parts) - 1)]
     yd = np.concatenate([p[2] for p in parts])
     fsd = parts[0][3]
+    joins = np.cumsum([len(p[2]) for p in parts])[:-1] / fsd   # join times on the joined trace
     fr, t, S = ppg_spectrogram(yd, fsd)
+    half = STFT_WINDOW_S / 2
+    over_gap = sum(int(((t - half < j) & (t + half > j)).sum()) for j, g in zip(joins, gaps) if g > 5)
     present = band_present(fr, S)
     first = t <= seconds_first
     band = (fr >= 0.3) & (fr <= 3.0)
     peak_f = fr[band][S[band].argmax(axis=0)]
-    ratio = S[band].max(axis=0) / np.median(S, axis=0)
-    null, null_p99, frac_cal = [], [], []
+    ratio = peak_ratio(fr, S)
+    M = block_means(S)
+    tb = block_means(t[None, :])[0]
+    first_b = tb <= seconds_first
+    ratio_b, prom_b = peak_ratio(fr, M), peak_prominence(fr, M)
+    out = {k: [] for k in ("null_frac_present", "null_ratio_p99", "cal", "cal_first30", "avg", "avg_first30",
+                           "prom", "prom_first30")}
     for seed in seeds:
         sh = np.random.default_rng(seed).permutation(yd)
         f0, t0, S0 = ppg_spectrogram(sh, fsd)
-        null.append(float(band_present(f0, S0).mean()))
-        r0 = S0[band].max(axis=0) / np.median(S0, axis=0)
-        null_p99.append(float(np.percentile(r0, 99)))
-        frac_cal.append(float((ratio > null_p99[-1]).mean()))
+        out["null_frac_present"].append(float(band_present(f0, S0).mean()))
+        p99 = float(np.percentile(peak_ratio(f0, S0), 99))
+        out["null_ratio_p99"].append(p99)
+        M0 = block_means(S0)
+        for name, x, x0, sel in (("cal", ratio, p99, first),
+                                 ("avg", ratio_b, np.percentile(peak_ratio(f0, M0), 99), first_b),
+                                 ("prom", prom_b, np.percentile(peak_prominence(f0, M0), 99), first_b)):
+            out[name].append(float((x > x0).mean()))
+            out[name + "_first30"].append(float((x[sel] > x0).mean()))
     return {**parse_exposure(member), "member": member, "files": len(parts),
             "fs": sorted({p[5] for p in parts}), "start": parts[0][0],
             "duration_min": sum(p[4] for p in parts) / 60, "max_gap_s": max(gaps) if gaps else 0.0,
-            "windows": len(t), "frac_present": float(present.mean()),
+            "windows": len(t), "windows_over_gap": over_gap, "frac_present": float(present.mean()),
             "frac_present_first30": float(present[first].mean()),
             "median_peak_hz": float(np.median(peak_f)), "median_ratio": float(np.median(ratio)),
-            "null_frac_present": null, "null_ratio_p99": null_p99, "frac_above_null_p99": frac_cal,
-            "frac_above_null_p99_first30": None if not seeds else float((ratio[first] > null_p99[0]).mean()),
-            "file_md5": [p[6] for p in parts], "spectrogram": (fr, t, S.astype(np.float32))}
+            "median_prom_1min": float(np.median(prom_b)), **out,
+            "file_md5": [p[6] for p in parts], "spectrogram": (fr, t, S.astype(np.float32)), "peak_hz": peak_f}
