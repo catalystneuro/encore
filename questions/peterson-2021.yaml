@@ -1,0 +1,35 @@
+questions:
+- claim: roi-projection-link
+  question: The criterion gives the code's rule for matching the rows of the projection matrices
+    to electrodes as "drop all-zero rows". The code also drops the first of the rows that are not
+    all zero. Should the criterion give the code's full rule?
+  passage: 'tfr_utils.load_project_spectral_power (commit 04c6faf), `np.nonzero(df.transpose().mean().values
+    != 0)[0][1:]`; Methods, "Projecting power into regions of interest".'
+  why: Under the rule as worded, every subject keeps one row more than it has electrodes (the
+    first row holds the electrode density of each region), so the counts never match and the
+    claim would fail. The attempt used the code's full rule, under which the rows match the
+    electrodes with a position in all 12 subjects. The verifier of round 1 reported this.
+- claim: fig2-reach-shape
+  question: The criterion evaluates a Gaussian kernel density with Scott's bandwidth on the folded
+    angle and asks for its two highest maxima within 15 degrees of -90 and +90. The folded angle
+    ends at +-90, and a kernel density without boundary correction moves a maximum that sits at
+    the boundary inward by about one bandwidth. Should the window allow for this, or should the
+    criterion use a boundary-corrected density or a histogram?
+  passage: 'Results, Behavior during naturalistic movements, paragraph 3, "For reach angle, the
+    distributions tend to be bimodal, with peaks at +-90"; Figure 2 (seaborn kdeplot).'
+  why: The angle part decides the outcome (partially reproduced). In every subject the density at
+    +75 degrees is above that at +90, and the pooled maxima are at -71.5 and +75 degrees, just
+    outside the window. A boundary-corrected reading could pass the +90 side. The -90 side may
+    still fail, as only 6.4% of the pooled events lie within 15 degrees of -90 and the density at
+    -75 degrees is below that at 0. The verifier of round 1 reported this.
+- claim: fig2-event-counts
+  question: The Methods keep only movement events lasting 0.5 to 4 s. The criterion's readings
+    count all events in the dataset, or those left after the segment rejection, and neither
+    applies this filter. Should the readings include it?
+  passage: 'Methods, "In addition, we only retained movement events where (1) movement durations
+    were between 0.5-4 s; (2) the confidence scores from DeepLabCut were >0.4 ... and (3) wrist
+    movements followed a parabolic trajectory".'
+  why: The dataset holds events as short as 0.233 s. With the filter the fewest events in a
+    subject are 208 (all events) or 207 (after the segment rejection), still outside 151 +- 15.1,
+    so the outcome (not reproduced) would not change here; it could for another dataset version.
+    The verifier of round 1 reported this.

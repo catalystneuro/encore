@@ -26,12 +26,18 @@ Where each parameter comes from:
   compared with the mean + 3 SD over all of the subject's segments. Segments that run past the
   ends of the recording, or that hold exact zeros on every electrode (the preprocessing zeroes
   artifacts and breaks), count as missing data.
-- Good electrodes: the `good` column of each session's electrodes table (Methods: bad
-  electrodes removed). It differs between sessions of a subject; each event uses the flags of
-  its own session (assumption, stated in the notebook).
+- Good electrodes: the `good` column of the electrodes tables (Methods: bad electrodes
+  removed). It differs between sessions of a subject. The claims file's opening comment says
+  bad electrodes get weight 0 and the weights are renormalised per subject, so the electrodes
+  good in every file of the subject are used for the segment rejection, the projection and the
+  regression (assumption, stated in the notebook). The flags of each event's own file are a
+  variant for the projection.
 - Region projection (claims file; Methods "Projecting power into regions of interest"): the
   paper's own projection matrices from Figshare item 12114408 v1, rows matched to the
   electrodes by order, bad electrodes weight 0, each region's weights renormalised to sum 1.
+  An electrode whose power is not finite somewhere in an event's window (a stretch of zeros
+  gives -inf dB) gets weight 0 in that event, and the region's weights are renormalised again
+  (standard choice; the counts are printed in the notebook).
 - Pose windows for Extended Data Figure 2-1c: -1.5 to +1.5 s around onset at 30 Hz (claims
   file criterion: baseline -1.5 to -1 s, window 0 to 1.5 s).
 """
@@ -303,12 +309,24 @@ def chunk_index(ds, url, sess, n_threads=16):
     return out
 
 
-def session_spectral(asset_id, event_times, good, weights, n_threads=6, batch_chunks=6,
+def project(weights, db):
+    """Region power of one event: db (n_ch, n_freq, n_bins), weights (n_ch, n_roi) with bad
+    electrodes 0. Electrodes with any non-finite value get weight 0 and each region's weights
+    are renormalised. Returns (region power (n_roi, n_freq, n_bins), weighted electrodes dropped)."""
+    fin = np.isfinite(db).all(axis=(1, 2))
+    w = weights * fin[:, None]
+    w = w / w.sum(axis=0)
+    dropped = int(((weights > 0).any(axis=1) & ~fin).sum())
+    return np.einsum("cr,cfb->rfb", w, np.where(np.isfinite(db), db, 0.0)), dropped
+
+
+def session_spectral(asset_id, event_times, good, weights, weights_alt=None, n_threads=6, batch_chunks=6,
                      wrist_names=("L_Wrist", "R_Wrist")):
     """Spectral measures, segment checks and wrist windows for the events of one file.
 
-    good: bool (n_ch,) good electrodes of this session. weights: (n_ch, n_roi) projection
-    weights with bad electrodes already 0 and columns summing to 1.
+    good: bool (n_ch,) good electrodes (here those good in every file of the subject).
+    weights: (n_ch, n_roi) projection weights with bad electrodes already 0 and columns summing
+    to 1; weights_alt: a second set (the variant with the file's own flags).
     Returns a dict of arrays, one row per event.
     """
     f, url = open_nwb(asset_id)
@@ -324,6 +342,10 @@ def session_spectral(asset_id, event_times, good, weights, n_threads=6, batch_ch
     inside = (seg_lo >= 0) & (seg_hi <= n_t)
     nb, nf, nr = len(BIN_T), len(FREQS), weights.shape[1]
     region = np.full((n_ev, nr, nf, nb), np.nan, np.float32)
+    region_alt = np.full((n_ev, nr, nf, nb), np.nan, np.float32) if weights_alt is not None else None
+    n_dropped = np.zeros(n_ev, int)      # weighted electrodes with non-finite power in the event
+    n_zero_el = np.zeros(n_ev, int)      # good electrodes with any exact zero sample in the segment
+    n_zero_run = np.zeros(n_ev, int)     # good electrodes with a run of at least 25 zero samples (50 ms)
     elec = {k: np.full((n_ev, n_ch), np.nan, np.float32) for k in
             ["lfb_mean", "hfb_mean", "lfb_median", "hfb_median", "lfb_mean_raw", "hfb_mean_raw",
              "lfb_mean_shift", "hfb_mean_shift"]}
@@ -375,6 +397,10 @@ def session_spectral(asset_id, event_times, good, weights, n_threads=6, batch_ch
                 seg = block[seg_lo[i] - start: seg_hi[i] - start].T.astype(np.float64)  # (n_ch, 5000), uV
                 done[i] = True
                 allzero[i] = bool(np.all(seg[good] == 0, axis=0).any())
+                z = seg[good] == 0
+                n_zero_el[i] = int(z.any(axis=1).sum())
+                cz = np.concatenate([np.zeros((z.shape[0], 1), int), np.cumsum(z, axis=1)], axis=1)
+                n_zero_run[i] = int(((cz[:, 25:] - cz[:, :-25]) == 25).any(axis=1).sum())
                 fr, p = _segment_psd(seg[good])
                 pm = p.mean(axis=0)
                 seg_db[i] = 10 * np.log10(pm[(fr >= 1) & (fr <= 200)].mean())
@@ -399,8 +425,9 @@ def session_spectral(asset_id, event_times, good, weights, n_threads=6, batch_ch
                 raw = band_stats(db)
                 elec["lfb_mean_raw"][i] = raw["lfb_mean"]
                 elec["hfb_mean_raw"][i] = raw["hfb_mean"]
-                dbg = np.where(np.isfinite(db), db, 0.0)
-                region[i] = np.einsum("cr,cfb->rfb", weights, dbg)
+                region[i], n_dropped[i] = project(weights, db)
+                if weights_alt is not None:
+                    region_alt[i] = project(weights_alt, db)[0]
             # keep only chunks needed later
             keep = {batch[-1]}
             for c in list(cache):
@@ -420,8 +447,8 @@ def session_spectral(asset_id, event_times, good, weights, n_threads=6, batch_ch
             if c - 45 >= 0 and c + 46 <= n_p:
                 wrist[w][i] = d[c - 45:c + 46, :]
     f.close()
-    return dict(region=region, elec=elec, seg_db=seg_db, hf_db=hf_db, inside=inside, allzero=allzero,
-                wrist=wrist, wrist_t=k / prate)
+    return dict(region=region, region_alt=region_alt, elec=elec, seg_db=seg_db, hf_db=hf_db, inside=inside,
+                allzero=allzero, n_dropped=n_dropped, n_zero_el=n_zero_el, n_zero_run=n_zero_run, wrist=wrist, wrist_t=k / prate)
 
 
 # ----------------------------------------------------------------------------- regression
@@ -585,7 +612,8 @@ def coef_summary(coef, names):
 
 def regress_subject(args):
     """All models of one subject. args: dict with X, names, Y (n_ev, n_el, n_targets), days,
-    seed, target names, which targets get Delta R2. Returns a list of per-model dicts."""
+    seed, target names, which targets get Delta R2. With "variant" set, only the 90/10 fits and
+    the Methods' Delta R2 are run (for the variants). Returns a list of per-model dicts."""
     import os
     os.environ["OMP_NUM_THREADS"] = "1"
     X, names, Y, days, seed = args["X"], args["names"], args["Y"], args["days"], args["seed"]
@@ -606,14 +634,16 @@ def regress_subject(args):
                 row["r2"] = main["r2"]
                 row["nonconverged"] = main["nonconverged"]
                 row["coef"] = coef_summary(main["coef"], names)
-                row["r2_80"] = fit_models(X, names, y, splits80, chosen)["r2"]
+                if not args.get("variant"):
+                    row["r2_80"] = fit_models(X, names, y, splits80, chosen)["r2"]
                 if tname.startswith("lfb"):
                     r2_lfb = main["r2"]
                 # Delta R2 where the band's own R2 passes, or the LFB R2 (the code's selection)
                 if max(main["r2"], r2_lfb) > args["delta_min_r2"]:
                     row["delta"] = fit_models(X, names, y, splits90, chosen, delta=True, shuffle_rng=shuf)["delta"]
-                    row["delta_code"] = fit_models(X, names, y, splits80, chosen, delta=True, shuffle_rng=shuf,
-                                                   code_shuffle=True)["delta"]
+                    if not args.get("variant"):
+                        row["delta_code"] = fit_models(X, names, y, splits80, chosen, delta=True, shuffle_rng=shuf,
+                                                       code_shuffle=True)["delta"]
             else:
                 row["r2"] = fit_models(X, names, y, splits90, chosen)["r2"]
             out.append(row)
@@ -630,12 +660,12 @@ def run_regression(jobs, workers=4):
 def _spectral_job(args):
     import os
     os.environ.setdefault("OMP_NUM_THREADS", "1")
-    asset_id, times, good, weights = args
-    return session_spectral(asset_id, times, good, weights)
+    asset_id, times, good, weights, weights_alt = args
+    return session_spectral(asset_id, times, good, weights, weights_alt)
 
 
 def run_spectral(jobs, workers=8):
-    """jobs: list of (asset_id, event_times, good, weights). Runs files in parallel processes."""
+    """jobs: list of (asset_id, event_times, good, weights, weights_alt). Runs files in parallel processes."""
     from concurrent.futures import ProcessPoolExecutor
     import multiprocessing as mp
     with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:

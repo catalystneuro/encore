@@ -24,7 +24,7 @@ from [Figshare](https://doi.org/10.6084/m9.figshare.12114408.v1).
 | Precentral pattern per subject | Partially reproduced |
 | Band power differs across subjects | Reproduced |
 | Table 1 intervals | Partially reproduced |
-| Recording-day effects per subject | Partially reproduced |
+| Recording-day effects per subject | Not reproduced |
 | Baseline subtraction reduces day variability | Reproduced |
 | Day-to-day changes are 1-2 dB | Reproduced |
 | Best models over sensorimotor areas | Reproduced |
