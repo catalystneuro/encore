@@ -30,7 +30,7 @@ things, that the deposited count matrix has lost a column and is mislabelled whe
 authors' script reads it, that the prey shrimp table repeats the control column for the CO2 group,
 and that the prey capture file lacks 11 chronic-OA squid.
 
-- `reproduce_allen_2026.ipynb`: the analysis. It takes about a minute and about 4 GB of memory,
+- `reproduce_allen_2026.ipynb`: the analysis. It takes one to two minutes (66 to 111 s in recent runs) and about 4 GB of memory,
   most of it reading the R workspace.
 - `squidoa.py`: reading the staged files, a streaming reader for R's serialization format that
   builds only the workspace objects asked for, and the tests the paper names (Welch's ANOVA,
