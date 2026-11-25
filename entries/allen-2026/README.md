@@ -14,8 +14,8 @@ count matrix and R workspace with their DESeq2, sva and GSEA results for the opt
 | Hunt duration and strike attempts (Fig. 2H, 2I); prey shrimp velocity (Supplementary Fig. 3) | Reproduced |
 | ERG ratio declines above 40 Hz (Fig. 3C) | Not reproduced |
 | CFF unchanged, CFF variance (Fig. 3D) | Reproduced |
-| Assembly statistics, sample distances, GSEA families, nAChR subunits | Reproduced |
-| PCA (Fig. 4A), shared down-regulated sets (Fig. 4B), chronic up-regulated counts (Fig. 4F to 4H) | Partially reproduced |
+| Assembly statistics, sample distances, shared down-regulated sets (Fig. 4B), GSEA families, chronic up-regulated counts (Fig. 4F to 4H), nAChR subunits | Reproduced |
+| PCA (Fig. 4A) | Partially reproduced |
 | No change in acid-base or ion regulatory transcripts | Not reproduced |
 | Body size, seawater chemistry, mean depth, ERG amplitude | Blocked: data missing |
 
