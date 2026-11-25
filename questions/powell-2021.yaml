@@ -1,0 +1,68 @@
+# Questions from attempt powell-2021-01 (author revision after verifier round 1, 2026-11-25) about
+# the claims file claims/powell-2021.yaml. Asked under docs/protocol.md, "Hand over for
+# verification": the round-1 verifier reported these as places where the claims file may misread
+# the paper. The attempt tested the claims as the file has them.
+dataset: zenodo:3924718
+paper: doi:10.7554/elife.60454
+questions:
+- claim: fig4c-q10-about-2
+  asked: 2026-11-25
+  question: The criterion makes the Methods' Q10 (one Q10 per temperature from the mean frequency,
+    averaged per preparation) the main analysis and the code's per-burst Q10 (fig_burst_period.m)
+    a variant. The paper's own statistic for the same Q10s, the paired t-test of
+    fig4c-q10-pd-lg-not-different (t = 1.272, p = 0.235), is matched exactly by the code's per-burst
+    Q10 with the code's burst rule, and by no reading of the Methods' formula. Should the code's Q10
+    be the main analysis for this claim, since the figure and its count were evidently made with it?
+  passage: Q 10 = f T f 11 10 T - 11 where f T is the mean burst frequency at temperature T and f 11
+    is the mean burst frequency at 11 C (the reference temperature). (Materials and methods,
+    Estimation and comparison of Q10s); "Figure 4c shows that most preparations (8 of 10) exhibited
+    a cycle period Q 10 of ~2 for both the pyloric and gastric mill rhythms" (Results)
+  why: Under the Methods' Q10, 1 to 3 of 10 preparations have both Q10s near 2, so the claim is not
+    reproduced; under the code's per-burst Q10, 8 of 10 have both within 1.5 to 2.5 (both burst
+    rules), which would reproduce it under reading (b).
+- claim: fig6b-lg-start-counts
+  asked: 2026-11-25
+  question: The criterion counts burst starts with the Methods' burst rule (at least 5 spikes). The
+    paper's counts are matched by the code's rule (crabsort.computePeriods keeps bursts of at least
+    5 inter-spike intervals, 6 spikes) and the archived code's sample (temperatures with at least
+    100 pooled starts), which gives exactly 3816 LG starts. Other reported numbers also follow the
+    code's rule exactly (n = 3799 and p = 0.88 in Figure 5f, rho = -0.31 and p = 0.46 in Figure 6b).
+    Should the code's burst rule be the main reading for this count, or at least a reading the
+    outcome can rest on?
+  passage: Spikes were considered to be part of a burst only if there were at least n spikes per
+    burst, with n = 5 for LG and DG and n = 2 for PD. (Materials and methods, Detection of bursts
+    and measurement of burst metrics); A total of n = 3816 LG burst starts and n = 3228 DG burst
+    starts across nine temperature points and 10 preparations are plotted in Figure 6b,d (Materials
+    and methods, Analysis of distribution of LG/DG burst starts in PD phase)
+  why: Under the Methods' rule the DG total is 3573, 22 above the tolerance, and the claim is not
+    reproduced. Under the code's rule the totals are 3865 LG and 3448 DG, both within tolerance,
+    with the fraction of combinations under 40 starts at 0.34 (LG), so the claim would be
+    reproduced.
+- claim: fig6b-lg-phase-locked
+  asked: 2026-11-25
+  question: The criterion follows the Methods' sample, the first 40 burst starts per preparation
+    and temperature, and notes that under it z cannot exceed 40, so the reported upper bound of 45
+    cannot be met. The reported ranges are matched by the later code's sample (first 50 starts,
+    marderlab/gastric commit 7a82b1f) with the code's burst rule, z 7.49 to 45.44, largest p 4.5e-4.
+    Should the first-50 sample, with which the paper's numbers were evidently produced, be the main
+    reading?
+  passage: we analyzed the first 40 burst starts for each preparation at each temperature step.
+    (Materials and methods, Analysis of distribution of LG/DG burst starts in PD phase);
+    "significantly different from a uniform distribution ( Figure 6b , dashed line, p < 4x10-4,
+    7.5<z<45, Rayleigh test for non-uniformity)" (Results)
+  why: Under the first 40, four combinations miss p < 4.4e-4 and z falls to 4.74, so the claim is
+    partially reproduced. Under the first 50 with the Methods' burst rule every combination is
+    within the widened bounds (p up to 2.1e-4, z 8.20 to 45.31), which would reproduce it.
+- claim: fig5d-lg-pd-integer-coupled
+  asked: 2026-11-25
+  question: The criterion's "reproduced" clause asks p < 0.05/9 with D > 0.216 in every bin, while
+    its "partially reproduced" clause applies when "some D or p miss the reported bounds", and the
+    reported bound on p is p < 1e-5. Read together, a result with every p below 0.0056 but some p
+    above 1e-5 meets both clauses. Which bound on p decides reproduced, 0.05/9 or 1e-5?
+  passage: LG and PD were significantly integer-coupled, at temperatures from 7 C to 21 C
+    (p < 10-5, D > 0.24) (Results, Integer coupling is maintained across a physiological
+    temperature range)
+  why: With the code's shuffle every bin from 7 to 21 C has p < 0.05/9 and D > 0.216, but p is 2.6e-5
+    and 4.9e-4 at 17 and 21 C (median over 1000 draws); with the permutation shuffle every p is below 1e-5 but D at 21 C is
+    0.199. The attempt applied the explicit reproduced clause (reproduced); if p < 1e-5 decides, no
+    reading meets both bounds and the claim would be partially reproduced.
