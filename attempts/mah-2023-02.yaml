@@ -533,6 +533,37 @@ findings:
     run to 2023-06-29. 22 of the rats have fewer final-stage sessions in the deposit than in the dandiset.
     Figure 4 uses each rat's first 50 final-stage sessions, so only the 10 of these rats with fewer than
     50 deposit sessions can be affected, and fig4a gives the same result without the 49 rats.
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: No file gives a subject age. The 21,852 files of 275 rats give a date of birth, and the 1,181
+    files of the other 16 rats give only the range P6M/P24M as the age, so the age of these 16 rats is
+    not known.
+- kind: code_mismatch
+  about: paper
+  found: on_prompt
+  statement: Equation 6 lets a mixed block become a low (or high) block with probability H0, while the wait
+    time model script uses H0/2 for each (p_b in GenerateSynthData_Bayes.m at b7b68ca8c107). Question for
+    the authors - which was used for the fits?
+- kind: code_mismatch
+  about: paper
+  found: on_prompt
+  statement: Figure5.m lists 16 rats but 20 start dates and pairs startDates(rr) with rat rr, so the first
+    16 dates are used, and the Methods' offset of 30 pre-cue sessions for switched rats is not in it. With
+    that pairing, the first session with center_port_cue true is on the rat's date or the day after for
+    9 of the 12 rats with earlier sessions, and 14, 34 and 41 days later for E005, S042 and S050. Question
+    for the authors - are the dates paired with the rats in order, and were sessions before the 30th pre-cue
+    session left out?
+- kind: code_mismatch
+  about: paper
+  found: on_prompt
+  statement: myTauShuffleTest.m fits the shuffled groups' mean coefficients times 10 with the amplitude bounded
+    at 1, and the observed groups' coefficients unscaled within other bounds. For wait times the coefficients
+    start at the current offer (regress_wt_vs_rew.m), whose mean coefficient over the 291 rats is 0.211
+    here, 2.108 after scaling, above the bound, so the null is not on the observed scale. The Methods describe
+    the fits on previous trial coefficients only. Question for the authors - was the wait time test meant
+    to include the current offer?
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -1029,3 +1060,160 @@ verifications:
       initiation times depend on the offer only in flagged sessions: on flagged sessions S050 has ANOVA p = 0.45
       and a slope of -0.0084, against -0.0076 on its other sessions, and the finding now says so.'
   findings: []
+reconciliation:
+  earlier: mah-2023-01
+  date: '2026-11-25'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that the dandiset holds only the sessions that pass the inclusion criterion, unsaid,
+      so that Figure 4 and the pre-cue analyses cannot be run on it alone; finding 1 adds the jumps of
+      trials_in_stage between deposited sessions (2,586 of 22,742 pairs).
+  - finding: 2
+    status: still_present
+    now: 2
+    note: The pre-cue sessions are still marked only by the task argument center_port_cue, which has no
+      description (finding 2). The argument was already in the earlier version's files (true in sub-M041's
+      session of 2022-10-06), so the earlier statement that nothing marks the sessions was too strong.
+  - finding: 3
+    status: fixed
+    note: Version 0.260825.1909 holds sub-L011_ses-RWTautowait2-20221004-095612 twice, with and without
+      the -x suffix; version 0.261120.1450 holds it once and no session twice (earlier_findings.ipynb,
+      Finding 3), as finding 5 also says.
+  - finding: 4
+    status: fixed
+    note: The processed trial table of all 23,033 files now has the catch probability as catch_percentage,
+      and no column named prob_* (earlier_findings.ipynb, Finding 4).
+  - finding: 5
+    status: fixed
+    note: The two flags still differ, on 176,006 trials (the 3 others were in the removed duplicate), but
+      both column descriptions now say what each flag is and that they can differ (earlier_findings.ipynb,
+      Finding 5).
+  - finding: 6
+    status: still_present
+    now: 11
+    note: The age field is unchanged, absent in 21,852 files and P6M/P24M in the 1,181 files of 16 rats.
+      The other 275 rats have a date of birth, as they already had in the earlier version, so the problem
+      holds for the 16 rats only (earlier_findings.ipynb, Finding 6).
+  - finding: 7
+    status: still_present
+    now: 4
+    note: Finding 4 reports the same 8 rats with catch probability 0.3, counted in trials (180,591) where
+      the earlier finding counted sessions (360).
+  - finding: 8
+    status: still_present
+    now: 8
+    note: Finding 8 reports the same missing model fitting code and asks the same questions on the free
+      parameters, bounds, starts and folds.
+  - finding: 9
+    status: still_present
+    now: 12
+    note: GenerateSynthData_Bayes.m at b7b68ca8c107 still uses H0/2 for mixed to low and mixed to high, where
+      Equation 6 gives H0 (earlier_findings.ipynb, Finding 9).
+  - finding: 10
+    status: still_present
+    now: 13
+    note: Figure5.m still lists 16 rats and 20 dates and has no 30-session offset. The center_port_cue flags
+      fit the in-order pairing within a day for 9 of the 12 rats with earlier sessions, and not for E005,
+      S042 and S050 (earlier_findings.ipynb, Finding 10).
+  - finding: 11
+    status: still_present
+    now: 7
+    note: Finding 7 reports the same disagreement between the Results (r = 0.08, p = 0.18) and the Figure 2f
+      legend (r = -0.03, p = 0.53).
+  - finding: 12
+    status: still_present
+    now: 14
+    note: myTauShuffleTest.m still fits the shuffled coefficients times 10 under an amplitude bound of 1
+      and the observed ones unscaled; the mean current offer coefficient on this version is 0.211, 2.108
+      after scaling (earlier_findings.ipynb, Finding 12). The shuffled fits were not re-run.
+  outcomes:
+  - claim: fig2k-initiation-sensitive-to-previous-offer
+    earlier: reproduced
+    cause: error
+    error_in: earlier
+    note: Under the Methods' reading (20 uL trials) the earlier attempt keeps each session's first trial,
+      whose inter_trial_interval runs from the session start, and gives it the last offer of the session
+      before (earlier-entry/mah2023.py, rat_arrays line 193 and iti_by_previous line 631, used in cell 52).
+      These long times fall mostly after small offers and give +0.000 against -0.083 z; without them, as
+      in this attempt (mah2023.py, add_measures), the population is faster after small offers (-0.161 against
+      -0.094 z), and on 11 rats the earlier helper with the first trials removed gives the same direction.
+    supports: partially_reproduced
+    confidence: high
+  - claim: fig2l-sensitivity-greater-for-initiation
+    earlier: reproduced
+    cause: error
+    error_in: earlier
+    note: The Methods' reading gives an initiation sensitivity of +0.083 in the earlier attempt and -0.067
+      here, from the same session-first trials as in fig2k (earlier-entry/mah2023.py, iti_by_previous,
+      used in cell 55). Under the code's reading both find it larger for initiation times (+0.248 and +0.239,
+      p = 6.09e-38 and 1.6e-36).
+    supports: partially_reproduced
+    confidence: high
+  - claim: fig3j-inferential-beats-retrospective-for-wait-times
+    earlier: blocked
+    cause: reading
+    choice: Whether the wait time models may be refitted from fewer random starts than the Methods' 100
+      to fit within the time limit; the earlier attempt kept 100 starts and blocked the claim, this attempt
+      used 2 starts of L-BFGS-B.
+    note: The earlier attempt estimated the refit with 100 starts on all data and 5 folds at about 3.3 h
+      (5.5 h in its verifier's run) and recorded too_large. This attempt fitted from 2 starts in a separate
+      notebook (models_mah_2023.ipynb) and found the inferential model better by BIC, AIC and cross-validated
+      nLL in 290 of 291 rats, with p < 1e-45 under all five seeds.
+    supports: reproduced
+    confidence: medium
+  - claim: suppfig8-belief-state-not-distinguished
+    earlier: blocked
+    cause: reading
+    choice: Whether the wait time models may be refitted from fewer random starts than the Methods' 100
+      to fit within the time limit; the earlier attempt kept 100 starts and blocked the claim, this attempt
+      used 2 starts of L-BFGS-B.
+    note: Blocked with fig3j in the earlier attempt on the same estimate. This attempt's 2-start fits give
+      BIC and AIC p = 0.163 under the claim's seed, 0.0305 under seed +3000 and 0.0507 from 6 starts under
+      that seed, so its outcome rests on few starts and is seed sensitive.
+    confidence: medium
+  - claim: fig4a-wait-time-block-sensitivity-emerges
+    earlier: blocked
+    cause: error
+    error_in: earlier
+    note: The earlier attempt blocked the Figure 4 claims as data_missing without reading the paper's Zenodo
+      deposit (A_Structs_all), which it named, though the protocol keeps data_missing for data not public
+      anywhere. This attempt read A_Structs_all and tested the claim; it is partial because the first pair's
+      mean wait time ratio (1.187) is not closer to 1 than its mean over pairs 16-25 (0.936).
+    confidence: medium
+  - claim: fig4c-initiation-previous-reward-stable
+    earlier: blocked
+    cause: error
+    error_in: earlier
+    note: Blocked as data_missing with fig4a in the earlier attempt, without reading A_Structs_all. On that
+      deposit this attempt finds a previous reward coefficient of -0.588 over sessions 1-10 and -0.469 over
+      41-50, a relative change of 0.252 against 0.389 for the wait time block coefficient.
+    confidence: medium
+  - claim: fig4d-overshoot-grows-with-training
+    earlier: blocked
+    cause: error
+    error_in: earlier
+    note: Blocked as data_missing with fig4a in the earlier attempt, without reading A_Structs_all. On that
+      deposit this attempt finds an overshoot of 0.025 z in the first 10 and 0.046 z in the last 10 final-stage
+      sessions.
+    confidence: medium
+  - claim: fig5b-pre-cue-initiation-sensitive-to-offer
+    earlier: reproduced
+    cause: reading
+    choice: Whether the 99th percentile cut on initiation times, and the z-scoring, are taken over the pre-cue
+      sessions analysed (earlier, as iti_by_reward.m) or over all of the rat's sessions (this attempt, as
+      the claims file's rule for initiation times).
+    note: Sessions, trials and test are the same in both, and both methods run on version 0.261120.1450
+      give each attempt's numbers. The cut over all sessions keeps more long initiation times in 6 of the
+      11 rats with sessions after 30 pre-cue sessions, so that mean rises from 5 to 10 uL (0.016 to 0.024)
+      where the code's cut gives 0.117 to 0.100; from the switch date both fall at every step with 14 of
+      16 rats significant.
+    confidence: high
+  protocol: docs/pilot-notes.md has no section after pilot-14, so the changes are read from docs/protocol.md
+    and tools/entry.py. From pilot-15 a finding of kind other or selection_undocumented says whether it is
+    about the data or the paper; from pilot-17 an attempt names the notes from the paper's authors it used;
+    from pilot-18 each finding about the data has a severity, which this attempt gives and the earlier one
+    has only from a later review (findings_review). Nothing found for pilot-16. None of these changes
+    bears on an outcome that differs here.
