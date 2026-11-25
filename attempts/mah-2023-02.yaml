@@ -163,8 +163,10 @@ outcomes:
     offers (+0.370 against -0.249 z), while the code''s trials without them give 287 significant rats,
     20 slower after small offers, and a population faster after small offers (-0.164 against -0.096 z,
     p = 2.4e-32), as the Methods reading. The 20 uL reading holds no post-violation trials, since a repeated
-    offer has a previous offer of 20 uL. The count and direction hold only on trials where the rat can
-    know the coming offer.'
+    offer has a previous offer of 20 uL. The count and direction hold only with the post-violation trials.
+    Why is not tested: on those trials the previous offer is also the coming offer, so a rat that uses
+    the repeat and a rat whose initiation after a violation depends on the violated trial''s offer give
+    the same result.'
   deviations:
   - 'The Methods (20 uL trials) and latency_post20ul_by_previous_vol.m (all mixed block trials) differ;
     both were run, as the criterion asks. They give opposite directions, so the outcome is partial: the
@@ -216,10 +218,10 @@ outcomes:
   outcome: reproduced
   notebook: models_mah_2023.ipynb
   output: claim:fig3j-inferential-beats-retrospective-for-wait-times
-  notes: Claim's seed, inferential minus retrospective BIC -1039 (290 of 291 rats better, p = 3.6e-48),
-    AIC -1051 (p = 3.6e-48), cross-validated nLL -454 (284 rats, p = 4.3e-44); best-fold test nLL variant
-    -85 (p = 4.2e-18). The four other seeds give p < 1e-45 for all three. Fitted k_high > k_low in 249
-    of 291 rats.
+  notes: Claim's seed, inferential minus retrospective BIC -1039.5 (290 of 291 rats better, p = 3.6e-48),
+    AIC -1051.6 (p = 3.6e-48), cross-validated nLL -454.3 (284 rats, p = 5.6e-44); best-fold test nLL
+    variant -85.2 (p = 4.5e-18). The four other seeds give p < 1e-45 for all three. Fitted k_high > k_low
+    in 249 of 291 rats.
   deviations:
   - The paper's fitting code is not public. The models follow the Methods (Equations 1, 3 to 10) and the
     generative functions of the paper's repository (BehavioralModel/, b7b68ca8c107); this attempt chose
@@ -234,11 +236,14 @@ outcomes:
   outcome: reproduced
   notebook: models_mah_2023.ipynb
   output: claim:suppfig8-belief-state-not-distinguished
-  notes: Claim's seed, BIC and AIC p = 0.156, cross-validated nLL p = 0.563 (mean differences +11.3 and
-    +19.4). Over the five seeds BIC/AIC p = 0.156, 0.071, 0.809, 0.062, 0.100 and cross-validated p =
-    0.38 to 0.92, none below 0.05; the lowest, 0.062 under seed +3000, is near the threshold. The first
-    run, on another runner, gave p = 0.031 under seed +3000, so the result depends on fit noise near the
-    threshold. The best-fold test nLL variant reaches p = 0.0082 under seed +2000.
+  notes: Claim's seed, BIC and AIC p = 0.163, cross-validated nLL p = 0.569 (mean differences +11.0 and
+    +19.9). Over the five seeds BIC/AIC p = 0.163, 0.068, 0.693, 0.031, 0.062 and cross-validated p =
+    0.41 to 0.997; under seed +3000 BIC and AIC reach p = 0.0305 (inferential better in 125 of 291 rats,
+    mean difference +2.81), so the outcome is seed sensitive. The 2-start fits differ slightly between
+    machines; the previous run, on another runner, gave p = 0.156 under the claim's seed and 0.062 under
+    seed +3000. Refitted from 6 starts under seed +3000 (starts_mah_2023.ipynb), BIC and AIC give p = 0.0507
+    (127 rats) and cross-validated nLL p = 0.561, so more starts leave the result near the threshold
+    under that seed. The best-fold test nLL variant reaches p = 0.0081 under seed +2000.
   deviations:
   - The paper's fitting code is not public. The models follow the Methods (Equations 1, 3 to 10) and the
     generative functions of the paper's repository (BehavioralModel/, b7b68ca8c107); this attempt chose
@@ -247,16 +252,22 @@ outcomes:
     and the summed test nLL as the cross-validated nLL; the best-fold parameters (Zenodo README) give
     BIC and AIC on all data. These are assumptions, chosen as the simplest reading of the Methods and
     the README.
+  - The check with more starts uses 6 starts of L-BFGS-B, the most that fits in the time of a run of
+    the entry, still far from the paper's 100.
   assumed: true
+  seed_sensitive: true
 - claim: fig3f-inferential-model-not-sensitive-to-previous-offer
   outcome: not_reproduced
   notebook: models_mah_2023.ipynb
   output: claim:fig3f-inferential-model-not-sensitive-to-previous-offer
   notes: Claim's seed, the model's 20 uL wait times are longer after offers below 20 uL (sensitivity +0.048
-    z), rank-sum p = 3.5e-05; the rats' sensitivity is -0.009 z, p = 0.575. Over the five noise draws
-    p = 3.5e-05, 0.324, 3.7e-07, 1.4e-05 and 3.6e-04 (sensitivity +0.010 to +0.062). Without the 14 rats
-    with an inferential parameter at a bound, +0.041, p = 8.5e-04; the model's mean wait time without
-    noise, +0.425, p = 6.5e-62, so the fitted model itself depends on the previous offer.
+    z), rank-sum p = 3.7e-05; the rats' sensitivity is -0.009 z, p = 0.575. Over the five noise draws
+    p = 3.7e-05, 0.332, 4.3e-07, 1.5e-05 and 4.0e-04 (sensitivity +0.010 to +0.062). Without the 14 rats
+    with an inferential parameter at a bound, +0.037, p = 1.5e-03; the model's mean wait time without
+    noise, +0.424, p = 1.1e-61, so the fitted model itself depends on the previous offer. Fits from 6
+    starts (starts_mah_2023.ipynb) give the same, +0.048 and p = 3.6e-05 under the claim's draw, 0.328,
+    4.7e-07, 1.6e-05 and 4.2e-04 under the others, +0.424 and p = 9.2e-62 without noise, so the failure
+    does not come from too few starts.
   deviations:
   - The paper's fitting code is not public. The models follow the Methods (Equations 1, 3 to 10) and the
     generative functions of the paper's repository (BehavioralModel/, b7b68ca8c107); this attempt chose
@@ -282,14 +293,17 @@ outcomes:
   outcome: not_reproduced
   notebook: models_mah_2023.ipynb
   output: claim:fig3l-lambda-groups-wait-time-dynamics
-  notes: 20/80 split, 58 rats per group. Wait time C at mixed to low p = 0.453 (0.417 to 0.453 over five
-    seeds), at mixed to high C p = 0.355 (0.354 to 0.371) and D p = 0.307 (0.300 to 0.319), so neither
-    the Results' reading (C) nor the legend's (D) holds. Initiation C at mixed to low p = 0.041 (0.041
-    to 0.052), at mixed to high C p = 0.349 and D p = 0.157. 40/60 split, wait time C at mixed to low
-    p = 0.076, at mixed to high C 0.376 and D 0.262; initiation C at mixed to low 0.015. The logistic
-    now has the bounds of my_fit_sigmoid.m (C >= 0) and continuous parameters; under the claim's seed
-    no tested difference is tied with a shuffle and no shuffle fit has C at its bound. The first run,
-    with an unbounded grid fit that could swap A and D, gave wait time C p = 0.009 and 0.026.
+  notes: 20/80 split, 58 rats per group. Wait time C at mixed to low p = 0.337 (0.337 to 0.364 over five
+    seeds), at mixed to high C p = 0.332 (0.319 to 0.342) and D p = 0.335 (0.330 to 0.357), so neither
+    the Results' reading (C) nor the legend's (D) holds. The wait time D at mixed to low, which the criterion
+    does not test, gives p = 0.021. Initiation C at mixed to low p = 0.047 (0.032 to 0.057), at mixed
+    to high C p = 0.320 and D p = 0.314. 40/60 split, wait time C at mixed to low p = 0.178, at mixed
+    to high C 0.472 and D 0.224; initiation C at mixed to low 0.012. The logistic has the bounds of my_fit_sigmoid.m
+    (C in [0, 5]) and continuous parameters; under the claim's seed no tested difference is tied with
+    a shuffle and no shuffle fit has C at either bound (0 or 5). The one-start lambda fits differ slightly
+    between machines (4 rats at lambda 0 here, 3 in the previous run on another runner, where wait time
+    C at mixed to low gave p = 0.453); the outcome is the same. The first run, with an unbounded grid fit
+    that could swap A and D, gave wait time C p = 0.009 and 0.026.
   deviations:
   - Lambda from the five-parameter model (GenerateSynthData_Bayes_subopt_onlylambda_flat.m) fitted once
     on all data from one random start, without cross-validation, for time.
@@ -347,7 +361,13 @@ outcomes:
     put the first pair closer to 1. Block coefficient -0.432 over sessions 1-10 and -0.706 over 41-50
     (linear offer -0.393 and -0.633). 21,302 of 23,033 dandiset sessions are found in the deposit by their
     initiation times, none twice; the matches follow the dandiset's dates in 281 rats, and in 10 rats
-    1 or 2 step back (without them the first pair's mean ratio is 1.200).
+    1 or 2 step back (without them the first pair's mean ratio is 1.200). The 1,731 not found are 1,718
+    sessions of 49 rats dated after the rat's last session found in the deposit (21 to 23 November 2022
+    for 42 of them; the later sessions run to 2023-06-29) and 13 with a NaN in the initiation times used
+    for the match. The 22 rats with fewer deposit than dandiset sessions are all among the 49. Part (2)
+    still fails without the 49 rats (mean first pair 1.201 against 0.932 over pairs 16-25), with only
+    the 263 rats that have at least 50 final-stage deposit sessions (1.200 against 0.929) and with both
+    (1.217 against 0.928).
   deviations:
   - The dandiset holds only included sessions; the test uses the paper's Zenodo deposit (doi:10.5281/zenodo.10031483,
     A_Structs_all), trials with trainingstage 9, sessions in file order (the dates are Matlab datetime
@@ -450,20 +470,23 @@ findings:
     of Figures 1 to 3), and nothing in it says so. The rig's trial counter (trials_in_stage) jumps between
     consecutive deposited sessions in 2,586 of 22,742 pairs (284 rats), and the first deposited session
     of a rat starts at a median of 1,543 final-stage trials. The paper's Zenodo deposit holds a median
-    of 95 final-stage sessions per rat against 71 here. Figure 4 and the pre-cue analyses, which use all
-    sessions, cannot be run on the dandiset alone.
+    of 95 final-stage sessions per rat against 71 here (its file of all sessions ends earlier than the
+    dandiset for 49 rats, see the last finding). Figure 4 and the pre-cue analyses, which use all sessions,
+    cannot be run on the dandiset alone.
 - kind: metadata_insufficient
   about: data
   severity: minor
   statement: The task argument center_port_cue has no description. It marks the pre-initiation cue sessions
-    of Figure 5 (True in 762 sessions, all of the 16 rats Figure5.m names; initiation times depend on
-    the offer only in those sessions), which the session description and dandiset metadata do not mention.
+    of Figure 5 (True in 762 sessions, all of the 16 rats Figure5.m names), which the session description
+    and dandiset metadata do not mention. On flagged sessions all 16 rats have initiation times that fall
+    with the offer (slopes -0.008 to -0.069 per log2 offer), against -0.008 to +0.004 on other sessions;
+    for S050 the slopes on flagged and other sessions are close (-0.0084 and -0.0076).
 - kind: other
   about: data
   severity: minor
   statement: wait_time_threshold equals the mean + 1 SD of all catch trials with a wait time, including
-    16,086 timed-out catch trials at 100 s; over opt-out catch trials alone it would be a median 5.2 s
-    lower. The description says 'wait-times of the subject on catch trials' without saying that timeouts
+    16,086 timed-out catch trials at 100 s; over opt-out catch trials alone it would be lower in all
+    291 rats, by a median of 5.19 s. The description says 'wait-times of the subject on catch trials' without saying that timeouts
     are included.
 - kind: other
   about: data
@@ -482,9 +505,9 @@ findings:
   statement: For the previous-offer sensitivity of initiation times (Fig. 2k, 2l, 5c) the Methods use
     20 uL trials in mixed blocks, while latency_post20ul_by_previous_vol.m uses all mixed block trials.
     Only the code's version reproduces the result, and only through the trials after violations, on which
-    the task repeats the offer (100% of them), so the rat can know the coming offer. Without those trials,
-    and with the Methods' trials, the population initiates faster after small offers (-0.164 against -0.096
-    z and -0.161 against -0.094 z).
+    the task repeats the offer (100% of them), so that their previous offer is also their coming offer.
+    Without those trials, and with the Methods' trials, the population initiates faster after small offers
+    (-0.164 against -0.096 z and -0.161 against -0.094 z).
 - kind: paper_inconsistency
   about: paper
   statement: Fig. 2f is reported as r = 0.08, p = 0.18 in the Results and r = -0.03, p = 0.53 in the legend;
@@ -501,6 +524,15 @@ findings:
   statement: Fig. 3c cohort sizes (3, 183, 61, 151, 39) sum to 437 for 291 rats. Question for the authors
     - is each rat counted at every catch probability it ran? Counting so gives 3, 188, 61, 151 and 40
     rats here; assigning each rat to one probability does not.
+- kind: other
+  about: paper
+  statement: The paper's Zenodo deposit (doi:10.5281/zenodo.10031483, A_Structs_all), which its README
+    describes as all sessions that ended on the final training stage, stops earlier than the dandiset
+    for 49 rats. 1,718 dandiset sessions of these rats are dated after the rat's last session found in
+    the deposit; that last session is on 21 to 23 November 2022 for 42 of them, and the later sessions
+    run to 2023-06-29. 22 of the rats have fewer final-stage sessions in the deposit than in the dandiset.
+    Figure 4 uses each rat's first 50 final-stage sessions, so only the 10 of these rats with fewer than
+    50 deposit sessions can be affected, and fig4a gives the same result without the 49 rats.
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -760,3 +792,240 @@ verifications:
     reason: p = 1.5e-44 unthresholded; the unthresholded mean is longer in 11 of 11 offer-block cells
       (cell 21).
     response: No change of outcome.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks of the revision after round 1 (reproduce_mah_2023.ipynb and models_mah_2023.ipynb,
+    with conclusions and summaries), the helper module, the claims file and this record, with the paper under paper/.
+    The verifier also said that finding 3 says the threshold 'would be a median 5.2 s lower' while cell 5 printed
+    only a median absolute difference of 5.189 s, so the direction was not shown; cell 5 now prints it (lower in
+    all 291 rats, median 5.19 s) and finding 3 says so. No finding is rated critical; the verifier agreed that none
+    should be (finding 1 correctly major, findings 2 to 4 correctly minor, the offer repeating after violations
+    a feature of the task, not a data error).
+  results:
+  - claim: cohort-size
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig1e-wait-time-increases-with-reward
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig1f-wait-time-block-effect
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig1i-initiation-block-effect
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: suppfig2-initiation-block-effect-after-unrewarded
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: suppfig3-wait-time-not-affected-by-previous-outcome
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig2a-wait-time-converges-in-mixed-blocks
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: suppfig5-mixed-to-adaptation-transitions
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig2c-d-regression-on-previous-rewards
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig2e-tau-differ
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig2f-tau-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig2g-h-fast-slow-tau-groups
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig2j-wait-time-not-sensitive-to-previous-offer
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig2k-initiation-sensitive-to-previous-offer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Changed since round 1, and I agree; it matches my round-1 outcome. Cell 56, the fig2k notes and the
+      code_mismatch finding say 'only on trials where the rat can know the coming offer'. Cell 55 shows that the
+      offer repeats after violations (1.0000) and that the effect comes only from post-violation trials. It does
+      not test whether the rat uses the repeat. The effect could also come from how initiation times after a violation
+      depend on the violated offer. Post-violation trials are also unevenly distributed, 51% of trials after small
+      offers against 30% after large ones. The supported wording is 'only with post-violation trials'.
+    response: 'No change of outcome. Cell 56, the notes, the comment in cell 55 and the code_mismatch finding now
+      say that the count and direction hold only with the post-violation trials, and that why is not tested: on
+      those trials the previous offer is also the coming offer, so a rat that uses the repeat and a rat whose initiation
+      after a violation depends on the violated trial''s offer give the same result.'
+  - claim: fig2l-sensitivity-greater-for-initiation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Changed since round 1, and I agree; it matches my round-1 outcome. The outcome stands, but the explanation
+      'rat can know the offer' is not shown (see fig2k).
+    response: No change of outcome. The explanation is reworded as in fig2k.
+  - claim: suppfig6-results-without-detrending
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: fig3c-wait-time-by-catch-probability
+    agrees: true
+    outcome: reproduced
+    reason: 'Rests on an assumption: reading A, each rat counted at every catch probability it ran. This is stated,
+      and the 437 total for 291 rats supports it. Round-1 point 7 (first 1000 trials) is resolved, justified from
+      Figure3.m and A_Structs_Final.'
+    response: No change of outcome.
+  - claim: bayes-observer-offer-reduces-uncertainty
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with every outcome (section 1). Round-1 point 6 (reading i) is resolved: the sign is stated
+      openly.'
+    response: No change of outcome.
+  - claim: fig4a-wait-time-block-sensitivity-emerges
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. Finding 1 and the Summary say 'Only included sessions are deposited'. Cell 80 shows that 22
+      rats have fewer final-stage sessions in the Zenodo deposit than in the dandiset, and that 1,731 of the 23,033
+      dandiset sessions are not found in the deposit. The text mentions neither, and both are hard to square with
+      the dandiset being a subset of the deposit. They are unexplained, so 'first 50 final-stage sessions' may be
+      off for some rats. fig4a part (2) fails on the mean and passes on the median and the pooled ratio (cell 82),
+      so it is sensitive to this.
+    response: 'No change of outcome. Cell 80 now shows where the 1,731 sessions lie: 1,718 sessions of 49 rats are
+      dated after the rat''s last session found in the deposit (that session is on 21 to 23 November 2022 for 42
+      of them; the later sessions run to 2023-06-29), and 13 have a NaN in the initiation times used for the match.
+      The 22 rats with fewer deposit sessions are all among the 49. So the deposit''s A_Structs_all stops earlier
+      than the dandiset for these rats; the dandiset is not a subset of it. Cell 82 reruns part (2) without the
+      49 rats (mean first pair 1.201 against 0.932), with only the 263 rats with at least 50 deposit sessions (1.200
+      against 0.929) and with both (1.217 against 0.928); it fails on the mean in each and the medians put the first
+      pair closer to 1, as before. Finding 1 and the Summary are corrected, and a new finding (the last) reports
+      the deposit''s coverage.'
+  - claim: fig4c-initiation-previous-reward-stable
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome. The coverage check of fig4a applies.
+  - claim: fig4d-overshoot-grows-with-training
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome. The coverage check of fig4a applies.
+  - claim: fig3j-inferential-beats-retrospective-for-wait-times
+    agrees: true
+    outcome: reproduced
+    reason: Rests on assumptions. The bounds, 2 starts against the paper's 100, and the fold scheme are all stated.
+      They are reasonable for fig3j, which wins by p <= 4.3e-44 under every seed.
+    response: No change of outcome. In this run (another runner) the claim's seed gives p = 3.6e-48, 3.6e-48 and
+      5.6e-44.
+  - claim: suppfig8-belief-state-not-distinguished
+    agrees: true
+    outcome: reproduced
+    reason: 'Rests on assumptions (bounds, 2 starts against the paper''s 100, fold scheme), which are weak for an
+      outcome that sits near a threshold: lowest p is 0.062 in this run and was 0.031 in the first run. Problem
+      4 (fit starts) remains: still 2 starts.'
+    response: 'No change of outcome. A new notebook, starts_mah_2023.ipynb, refits the inferential and belief state
+      models from 6 starts under seed +3000, three times the starts of the main fits and the most that fits in a
+      run of the entry (100 would take about 17 times as long). This run, on a runner like the first run''s, gives
+      the first run''s numbers with 2 starts: claim''s seed p = 0.163 and 0.569, seed +3000 BIC and AIC p = 0.0305.
+      seed_sensitive is set again. From 6 starts, seed +3000 gives BIC and AIC p = 0.0507 and cross-validated p
+      = 0.561, so the result stays near the threshold under that seed. The claim''s seed is the one the outcome
+      is measured on, and it gives p = 0.163, so the outcome stands.'
+  - claim: fig3f-inferential-model-not-sensitive-to-previous-offer
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Rests on the same fitting assumptions, weak for an outcome that turns on fitted gaps: 4 of 5 draws
+      give p < 0.05. fig3f''s failure rests on the same fits as suppfig8 (problem 4).'
+    response: 'No change of outcome. starts_mah_2023.ipynb refits the inferential model under the claim''s seed
+      from 6 starts: the model''s sensitivity is +0.048 z, p = 3.6e-05 under the claim''s draw, 0.328, 4.7e-07,
+      1.6e-05 and 4.2e-04 under the others, and +0.424, p = 9.2e-62 without noise, the same as from 2 starts.'
+  - claim: suppfig9-wait-times-reflect-misinferences
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1). Round-1 point 8 (thresholded wait time and single C) is resolved,
+      matched to the code's lines.
+    response: No change of outcome.
+  - claim: fig3l-lambda-groups-wait-time-dynamics
+    agrees: true
+    outcome: not_reproduced
+    reason: Changed since round 1, and I agree. With the bounded, continuous logistic, wait time C at mixed to low
+      has p = 0.417 to 0.453. At mixed to high, C has p = 0.354 to 0.371 and D has p = 0.300 to 0.319. Neither reading
+      of the criterion holds. The initiation absence also fails (C at mixed to low, p = 0.041). The lambda model
+      is fitted once, from one start, without the cross-validation the criterion's 'as in fig3j' asks for; this
+      is stated, and the wait time p-values are far from 0.05, so the outcome would not plausibly change. The notes
+      and models cell 27 say 'no shuffle fit has C at its bound', but the printout checks only 'C at 5'; the lower
+      bound C = 0 is not counted.
+    response: 'No change of outcome. Cell 26 now counts shuffle fits with C at 0 as well: none at either bound under
+      the claim''s seed. The one-start lambda fits differ slightly between machines (4 rats at lambda 0 in this
+      run, 3 before), so the p-values moved: wait time C at mixed to low p = 0.337 (0.337 to 0.364 over seeds),
+      at mixed to high C 0.332 and D 0.335; initiation C at mixed to low 0.047. The outcome is the same; the notes
+      and cell 27 give both runs.'
+  - claim: fig3i-retrospective-model-captures-initiation
+    agrees: true
+    outcome: partially_reproduced
+    reason: The overshoot is read with no size floor, and the 50 log-normal simulations use a normal approximation;
+      both are stated, and the exact 50-draw check gives the same result. The partial outcome rests on overshoots
+      of 0.0002 to 0.0058 z. That is the criterion applied as written, but 'lacks one of the two' with no size floor
+      reads Supplementary Fig. 7 strictly. The paper judges by eye, and a floor of a tenth of the Equation 10 overshoot
+      would exclude every alternative (a claims-file issue, reported and not corrected).
+    response: No change of outcome. Added to questions/mah-2023.yaml as a question for a reader; the claim is not
+      changed. The numbers are the same in this run.
+  - claim: fig5b-pre-cue-initiation-sensitive-to-offer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Changed since round 1, and I agree; it matches my round-1 outcome.
+    response: No change of outcome.
+  - claim: fig5c-pre-cue-initiation-still-sensitive-to-previous-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: Changed since round 1, and I agree; it matches my round-1 outcome. The outcome stands, but the explanation
+      'rat can know the offer' is not shown (see fig2k).
+    response: No change of outcome. The notes already say the count and direction hold only with the post-violation
+      trials; the fig2k wording applies.
+  - claim: fig5d-pre-cue-initiation-depends-on-previous-block
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: suppfig12-no-sex-differences
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: suppfig14-contextual-effects-without-threshold
+    agrees: true
+    outcome: reproduced
+    reason: I agree with every outcome (section 1).
+    response: No change of outcome.
+  - claim: pre-cue-session-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with every outcome (section 1). Claims-file issue, reported as instructed and not corrected:
+      the statement that ''nothing in the files marks'' the pre-cue sessions is contradicted by center_port_cue
+      (cell 67). This was problem 9 in round 1 and is now a question to a reader.'
+    response: 'No change of outcome. The question stays in questions/mah-2023.yaml. Finding 2 no longer says that
+      initiation times depend on the offer only in flagged sessions: on flagged sessions S050 has ANOVA p = 0.45
+      and a slope of -0.0084, against -0.0076 on its other sessions, and the finding now says so.'
+  findings: []

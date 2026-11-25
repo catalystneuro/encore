@@ -6,9 +6,12 @@ support rapid sequential decisions", Nature Communications 14, 7573
 
 - `reproduce_mah_2023.ipynb`: the data check and the behavioural claims (Figures 1, 2, 3c, 4, 5
   and the Supplementary Figures). Figure 4 reads the paper's Zenodo deposit
-  (doi:10.5281/zenodo.10031483), which holds the sessions that fail the inclusion criterion.
+  (doi:10.5281/zenodo.10031483), which holds the sessions that fail the inclusion criterion
+  (for 49 rats it ends before their last dandiset sessions).
 - `models_mah_2023.ipynb`: the wait time models (Figure 3j, 3f, 3l, Supplementary Figures 8 and 9)
   and simulations of the initiation time models (Figure 3i).
+- `starts_mah_2023.ipynb`: the inferential and belief state models refitted from 6 starts, for
+  Supplementary Figure 8 and Figure 3f (the models notebook uses 2).
 - `mah2023.py`: loading (each NWB file is fetched into memory and read with h5py) and the shared
   measures and models.
 
