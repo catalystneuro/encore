@@ -6673,6 +6673,7 @@
    "crcns:hc-13": 2,
    "dandi:001882": 1,
    "dandi:001436": 1,
+   "dandi:000718": 2,
    "dandi:001538": 1,
    "dandi:001193": 1,
    "dandi:000128": 1,
@@ -11434,6 +11435,28 @@
      "why": "On the 7 macaque images of the White Matter Microscopy Database whose masks fit them, the predicted myelin area is 0.352 to 0.512 of the ground truth's, so the direction holds on every image and the claim is reproduced as the criterion stands. An underestimate of about half is not slight; with a bound on the size, the claim would not be reproduced on these images."
     }
    ],
+   "dandi:000718": [
+    {
+     "claim": "offline-bursts-above-shuffle",
+     "question": "The criterion compares the true burst frequency with surrogates whose mean population trace is \"recomputed and z-scored as for the data\". Does the paper say the surrogate trace is z-scored again before the z = 2 threshold is applied? The Extended Data Fig. 3l legend says only that the \"mean population activity was re-computed each time\" and that \"The burst frequency was computed for each of these shuffles\". A second reading the text allows is that each surrogate is thresholded at the level that defines a burst in the true trace (its mean plus 2 SD). Should the criterion list both readings, as reader step 3 asks for a detail that could change the outcome?",
+     "passage": "Extended Data Fig. 3l legend, \"Neuron activities were circularly shuffled 1000 times relative to one another and the mean population activity was re-computed each time. This shuffling method preserved the autocorrelations for each neuron while disrupting the co-firing relationships between neurons. The burst frequency was computed for each of these shuffles to produce a shuffled burst frequency distribution\"; Methods, Burst participation analysis, \"the mean population activity across the whole population was computed across the session and that one-dimensional trace was z-scored. Time periods when the mean population activity reached above a threshold of z = 2 were considered to be burst events\".",
+     "why": "The two readings give opposite outcomes. With the surrogate trace z-scored again, a trace of decorrelated cells crosses z = 2 more often than the skewed true trace, and the true frequency is below the surrogate mean in all three deposited offline recordings (8.73 against 10.94, 6.42 against 8.81, 5.31 against 8.48 bursts per minute), so the claim is not reproduced. With the true trace's threshold the surrogates hold almost no bursts (means 0.11, 0.01 and 0.00) and the claim would be reproduced. The attempt tests the criterion as written and shows the other reading as a variant.",
+     "answer": "Changed. The paper does not fix this detail, and it can decide the outcome, so the criterion now names both readings and is reproduced under either, as reader step 3 asks. The Methods z-score the true mean trace and call frames above z = 2 bursts, while the Extended Data Fig. 3l legend says only that \"the mean population activity was re-computed each time\" and that \"The burst frequency was computed for each of these shuffles\", without saying whether the surrogate trace is z-scored again or held to the true trace's threshold. The analysis code is not public, so nothing settles it. The criterion's earlier \"z-scored as for the data\" was a choice the paper does not make. It now lists (a) re-z-scoring each surrogate and (b) thresholding it at the true trace's mean plus 2 SD, and the outcome is marked as resting on the reading that gives it. The skew claim is unaffected, since skewness does not depend on the scale of the trace.",
+     "answered": "2026-11-25"
+    },
+    {
+     "claim": "offline-bursts-above-shuffle",
+     "question": "The verifier of attempt zaki-2024-02 (round 1) reports that reading (b) of the amended criterion, each surrogate held to the true trace's mean plus 2 SD, cannot tell burst structure from any positive co-variation of the cells, and that the Extended Data Fig. 3l legend reads most naturally as reading (a), the full detection, z-scoring included, run on each surrogate. Should reading (b) stay in the criterion as a reading that alone can give reproduced?",
+     "passage": "Extended Data Fig. 3l legend, \"Neuron activities were circularly shuffled 1000 times relative to one another and the mean population activity was re-computed each time ... The burst frequency was computed for each of these shuffles to produce a shuffled burst frequency distribution\"; Methods, Burst participation analysis, \"that one-dimensional trace was z-scored. Time periods when the mean population activity reached above a threshold of z = 2 were considered to be burst events\".",
+     "why": "A circular shift keeps each cell's mean, so a surrogate mean trace has the true trace's mean and, when the cells co-vary positively, a smaller SD; it then rarely reaches the true trace's threshold whether the cells burst or not. On synthetic cells with no bursts and only a slow shared drift, reading (b) gives the true frequency above the surrogates (5.90 against a 95th percentile of 2.60 bursts per minute) and reading (a) below them (5.90 against a mean of 8.55), the pattern of the deposited recordings. The outcome is reproduced under (b) and not reproduced under (a), so whether (b) stays in the criterion decides it."
+    },
+    {
+     "claim": "fig5c-wake-overlap-neutral-coburst",
+     "question": "The criterion reads wake two ways, (a) wake and quiet wake together and (b) wake alone, and lets either decide. The paper's scoring has wake, NREM and REM only, its source data (Fig_5c.csv) have only those three states, and the Results place the effect \"during brief periods of quiet wake\". Does the paper allow reading (b), which leaves out quiet wake, as a reading of its wake?",
+     "passage": "Methods, Sleep recordings and sleep scoring, \"the EMG data were fit with a Gaussian mixture model with two states, in which the lower state represented sleep and the higher state represented wake\"; Results, Co-reactivation occurs more during wake, \"suggest that this preferential ensemble co-reactivation occurs during brief periods of quiet wake\".",
+     "why": "The dataset's sleep_state column defines quiet wake as a waking state (\"awake and alert but at rest\"), and the Methods' sleep/wake split scores 64 of the 68 quiet-wake epochs of the deposited recording as wake. Under reading (a) overlap-neutral co-bursting is below overlap-aversive (25.9% against 35.3% of 85 bursts), which gives not reproduced; the partial outcome rests on reading (b) alone (33.3% against 29.2% of 24 bursts, 2 against 1 discordant bursts). Raised by the verifier of attempt zaki-2024-02 (round 1)."
+    }
+   ],
    "dandi:001538": [
     {
      "claim": "fig5f-ach-off-elevated",
@@ -13796,6 +13819,7 @@
    "yu-2017": 2,
    "yuan-2025": 1,
    "zaimi-2018": 1,
+   "zaki-2024": 2,
    "zhai-2025": 1,
    "zhu-2022": 1,
    "churchland-2010": 3,
@@ -91205,7 +91229,7 @@
       "statement": "During offline periods, hippocampal population bursts occur more often than expected from shuffled neuronal activity, so CA1 neurons fire in a more coordinated way than chance.",
       "source": "Results, Neutral ensemble recruited into population bursts, paragraph 1; Extended Data Figure 3l and 3m",
       "quote": "True burst frequencies were greater than shuffled burst frequencies in every mouse ... suggesting that during the offline period, hippocampal CA1 neurons fire in a more coordinated manner than would be expected from shuffled neuronal activities",
-      "criterion": "In each of the three deposited offline recordings, burst frequency (events per minute) of the population trace, compared with 1000 surrogates in which each cell's trace is circularly shifted by an independent random offset and the population trace is recomputed and z-scored as for the data. Reproduced when the true frequency exceeds the 95th percentile of the surrogates in all three recordings; partially reproduced when it exceeds the surrogate mean in all three but the 95th percentile in fewer; not reproduced otherwise."
+      "criterion": "In each of the three deposited offline recordings, burst frequency (events per minute) of the population trace, compared with 1000 surrogates in which each cell's trace is circularly shifted by an independent random offset and the mean population trace is recomputed (Extended Data Fig. 3l legend). The paper does not say how a surrogate's bursts are thresholded, and the two readings its text allows are both run, (a) the surrogate mean trace is z-scored again and thresholded at z = 2, as for the data, and (b) the surrogate mean trace is thresholded at the level that defines a burst in the true trace (the true mean trace's mean plus 2 SD). Reproduced when, under one reading, the true frequency exceeds the 95th percentile of the surrogates in all three recordings; partially reproduced when, under one reading, it exceeds the surrogate mean in all three but the 95th percentile in fewer; not reproduced otherwise. The outcome is marked as resting on the reading that gives it."
      },
      {
       "id": "offline-skew-above-shuffle",
@@ -177268,7 +177292,7 @@
       "statement": "During offline periods, hippocampal population bursts occur more often than expected from shuffled neuronal activity, so CA1 neurons fire in a more coordinated way than chance.",
       "source": "Results, Neutral ensemble recruited into population bursts, paragraph 1; Extended Data Figure 3l and 3m",
       "quote": "True burst frequencies were greater than shuffled burst frequencies in every mouse ... suggesting that during the offline period, hippocampal CA1 neurons fire in a more coordinated manner than would be expected from shuffled neuronal activities",
-      "criterion": "In each of the three deposited offline recordings, burst frequency (events per minute) of the population trace, compared with 1000 surrogates in which each cell's trace is circularly shifted by an independent random offset and the population trace is recomputed and z-scored as for the data. Reproduced when the true frequency exceeds the 95th percentile of the surrogates in all three recordings; partially reproduced when it exceeds the surrogate mean in all three but the 95th percentile in fewer; not reproduced otherwise."
+      "criterion": "In each of the three deposited offline recordings, burst frequency (events per minute) of the population trace, compared with 1000 surrogates in which each cell's trace is circularly shifted by an independent random offset and the mean population trace is recomputed (Extended Data Fig. 3l legend). The paper does not say how a surrogate's bursts are thresholded, and the two readings its text allows are both run, (a) the surrogate mean trace is z-scored again and thresholded at z = 2, as for the data, and (b) the surrogate mean trace is thresholded at the level that defines a burst in the true trace (the true mean trace's mean plus 2 SD). Reproduced when, under one reading, the true frequency exceeds the 95th percentile of the surrogates in all three recordings; partially reproduced when, under one reading, it exceeds the surrogate mean in all three but the 95th percentile in fewer; not reproduced otherwise. The outcome is marked as resting on the reading that gives it."
      },
      {
       "id": "offline-skew-above-shuffle",
@@ -234751,6 +234775,26 @@
    "verifier-2.md"
   ],
   "dandi:000718": [
+   "answer-report.md",
+   "answer.md",
+   "author-answers-report.md",
+   "author-answers.md",
+   "author-report.md",
+   "author-revise-1-report.md",
+   "author-revise-1.md",
+   "author-revise-2-report.md",
+   "author-revise-2.md",
+   "author.md",
+   "reconcile-report.md",
+   "reconcile.md",
+   "recorder-report.md",
+   "recorder.md",
+   "verifier-1-report.md",
+   "verifier-1.md",
+   "verifier-2-report.md",
+   "verifier-2.md"
+  ],
+  "dandi:000718/attempt-01": [
    "author-report.md",
    "author-revise-1-report.md",
    "author-revise-1.md",
@@ -235276,6 +235320,7 @@
   "dandi:001882": "yuan-2025",
   "dandi:001436": "zaimi-2018",
   "dandi:000718": "zaki-2024",
+  "dandi:000718/attempt-01": "zaki-2024/attempt-01",
   "crcns:v1v2-1": "zandvakili-2015",
   "dandi:001538": "zhai-2025",
   "dandi:001538/attempt-01": "zhai-2025/attempt-01",
@@ -235284,8 +235329,8 @@
   "dandi:001193": "zhu-2022",
   "dandi:001177": "zhuang-2025"
  },
- "generated": "2026-11-25T17:05:47+00:00",
- "records_updated": "2026-11-25T16:57:42+00:00",
+ "generated": "2026-11-25T17:14:32+00:00",
+ "records_updated": "2026-11-25T17:02:51+00:00",
  "queue_generated": "2026-11-17T15:59:44+00:00",
  "queue_counts": {
   "public_dandisets": 678,
@@ -274020,7 +274065,7 @@
      "cells": {
       "sanity": "4087961d"
      },
-     "executed": null
+     "executed": "notebooks/choi-2025/earlier_findings.html"
     }
    ],
    "outcomes": [
@@ -274657,7 +274702,7 @@
      "cells": {
       "sanity": "4087961d"
      },
-     "executed": null
+     "executed": "notebooks/choi-2025/earlier_findings.html"
     }
    ],
    "outcomes": [
@@ -343163,7 +343208,7 @@
       "claim:fig5bc-gaussian-ct-td-best": "e22ca5ce",
       "claim:fig5d-tonic-term-and-gaussian-contribute": "946cb020"
      },
-     "executed": null
+     "executed": "notebooks/garud-2026/reproduce_garud_2026.html"
     }
    ],
    "outcomes": [
@@ -343188,7 +343233,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=eccee0e3"
     },
     {
      "claim": "fig4a-lick-short-above-long",
@@ -343209,7 +343254,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=d30711ef"
     },
     {
      "claim": "fig4b-long-iti-dip-below-baseline",
@@ -343235,7 +343280,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=5e532e45"
     },
     {
      "claim": "fig4d-dip-deepens-with-training",
@@ -343265,7 +343310,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=a0abd773"
     },
     {
      "claim": "fig4c-lick-rate-rises-with-training",
@@ -343292,7 +343337,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=2045312e"
     },
     {
      "claim": "krausz-included-observations",
@@ -343315,7 +343360,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=7bd17588"
     },
     {
      "claim": "fig2a-ramp-toward-goal",
@@ -343338,7 +343383,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=9d072ada"
     },
     {
      "claim": "fig2b-ramp-scales-with-reward",
@@ -343359,7 +343404,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=24fc3d1c"
     },
     {
      "claim": "fig2c-ramp-similar-early-late",
@@ -343382,7 +343427,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=0b2854d7"
     },
     {
      "claim": "fig2d-ramp-scales-with-velocity",
@@ -343403,7 +343448,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=b72abedf"
     },
     {
      "claim": "fig2e-velocity-covaries-with-distance",
@@ -343424,7 +343469,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=7faff919"
     },
     {
      "claim": "fig2f-coupling-grows-near-goal",
@@ -343453,7 +343498,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=03a56a49"
     },
     {
      "claim": "fig2gh-stationary-dip",
@@ -343483,7 +343528,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=fa247ad9"
     },
     {
      "claim": "fig3-recovered-value-increases",
@@ -343509,7 +343554,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=e9ee59a8"
     },
     {
      "claim": "fig3cd-gaussian-shape-wins",
@@ -343532,7 +343577,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=269f1258"
     },
     {
      "claim": "fig5bc-gaussian-ct-td-best",
@@ -343555,7 +343600,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=e22ca5ce"
     },
     {
      "claim": "fig5d-tonic-term-and-gaussian-contribute",
@@ -343578,7 +343623,7 @@
      "data": "elsewhere",
      "where": "Mendeley Data doi:10.17632/m59zdjpm9h.1 (hexLevelDf)",
      "proposed": null,
-     "cell": null
+     "cell": "../../notebooks/garud-2026/reproduce_garud_2026.html#cell-id=946cb020"
     },
     {
      "claim": "figs2-no-velocity-coupling-without-goal",
@@ -710299,23 +710344,33 @@
      "source": "https://github.com/catalystneuro/cai-lab-to-nwb at commit a37dadafecaec507669c25baa705333460e0f48d"
     }
    ],
-   "entry_title": "Offline ensemble co-reactivation in the EEG/EMG experiment (Zaki et al. 2024)",
+   "entry_title": "Offline ensemble co-reactivation in the calcium imaging and EEG/EMG mice (Zaki et al. 2024)",
    "summary": "Most of the paper's main findings, including retrospective linking and offline ensemble recruitment, could not be tested here, because the dandiset holds only two of nine mice and one 10 min offline recording per period. Burst skew above shuffled data held, but burst frequency above shuffle was blocked, as the Methods do not say how bursts are counted in surrogates. Preferential co-bursting of the overlap and neutral ensembles during wake did not reproduce in the one usable mouse, and the slowing before bursts was not seen in a telemetry proxy for movement. Minor checks held: the mice match the source data and the high-shock mouse froze more (64% against 9%).",
-   "description": "Tests the findings of Zaki et al. (2024) that can be tested on dandiset 000718, which holds two of the nine mice of the paper's calcium imaging and EEG/EMG experiment (one high-shock, one low-shock) with their encoding and recall sessions, the first offline recording after encoding, and cell registration for the high-shock mouse. It checks the deposited freezing against the paper's per-mouse values, compares freezing between the two mice, tests offline population bursts and their skew against shuffled activity and against movement, and compares overlap-neutral with overlap-aversive co-bursting in wake. The one-hour offline, behaviour-only, inhibitory tagging and no-shock experiments are not in the dandiset.",
+   "description": "Tests Zaki et al. (2024) on dandiset 000718, which holds two of the nine mice of the paper's calcium imaging and EEG/EMG experiment, one high-shock and one low-shock, with one offline recording per offline period. It links the mice to the paper's source data by their freezing, compares their aversive recall, tests offline population bursts and skew against circular-shift surrogates, movement around bursts, and overlap-neutral against overlap-aversive co-bursting in wake. The one-hour offline experiments and the behaviour-only experiments are not in the dandiset.",
    "notebooks": [
     {
      "path": "reproduce_zaki_2024.ipynb",
-     "title": "Reproducing Zaki et al. (2024) from dandiset 000718",
+     "title": "Zaki et al. (2024) on dandiset 000718",
      "cells": {
-      "sanity": "28fd7222",
-      "claim:source-data-link": "b22d39ce",
-      "claim:ed9b-aversive-freezing-high-vs-low": "eab88586",
-      "claim:offline-bursts-above-shuffle": "c7ab7637",
-      "claim:offline-skew-above-shuffle": "650bfbd7",
-      "claim:burst-locomotion-pause": "20ba3544",
-      "claim:fig5c-wake-overlap-neutral-coburst": "6e061458"
+      "sanity": "0a3ca8a6",
+      "claim:source-data-link": "e35a6848",
+      "claim:ed9b-aversive-freezing-high-vs-low": "f71dc60f",
+      "claim:offline-bursts-above-shuffle": "dc9d140f",
+      "claim:offline-skew-above-shuffle": "242f1bd9",
+      "claim:burst-locomotion-pause": "4395905d",
+      "claim:fig5c-wake-overlap-neutral-coburst": "ef84abf4",
+      "claim:ed9c-eeg-cohort-linking": "fd0d39a7",
+      "claim:ed9-ed10-sleep-unchanged": "ddd6598e"
      },
      "executed": "notebooks/zaki-2024/reproduce_zaki_2024.html"
+    },
+    {
+     "path": "earlier_findings.ipynb",
+     "title": "Earlier findings of zaki-2024-01, checked on this version",
+     "cells": {
+      "sanity": "113b6eba"
+     },
+     "executed": null
     }
    ],
    "outcomes": [
@@ -710340,7 +710395,7 @@
      "data": "with_inputs",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=b22d39ce"
+     "cell": "../../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=e35a6848"
     },
     {
      "claim": "ed9b-aversive-freezing-high-vs-low",
@@ -710369,7 +710424,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=eab88586"
+     "cell": "../../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=f71dc60f"
     },
     {
      "claim": "offline-bursts-above-shuffle",
@@ -710399,7 +710454,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=c7ab7637"
+     "cell": "../../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=dc9d140f"
     },
     {
      "claim": "offline-skew-above-shuffle",
@@ -710428,7 +710483,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=650bfbd7"
+     "cell": "../../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=242f1bd9"
     },
     {
      "claim": "burst-locomotion-pause",
@@ -710452,7 +710507,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=20ba3544"
+     "cell": "../../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=4395905d"
     },
     {
      "claim": "fig5c-wake-overlap-neutral-coburst",
@@ -710485,7 +710540,7 @@
      "data": "dataset",
      "where": null,
      "proposed": null,
-     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=6e061458"
+     "cell": "../../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=ef84abf4"
     },
     {
      "claim": "fig1bc-retrospective-not-prospective",
@@ -711465,6 +711520,1290 @@
      "statement": "The analysis code repository the paper names (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) returns 404, so how bursts are counted, in the data and in shuffled surrogates, could not be checked; the surrogate burst rates here differ from the paper's chance level.",
      "found": null,
      "status": null,
+     "n": 10,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    }
+   ]
+  },
+  {
+   "id": "zaki-2024-02",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000718",
+    "version": "0.261122.2159",
+    "doi": "10.48324/dandi.000718/0.261122.2159",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000718"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000718",
+   "label": "DANDI:000718",
+   "dataset_version": "0.261122.2159",
+   "paper": "10.1038/s41586-024-08168-4",
+   "paper_title": "Offline ensemble co-reactivation links memories across days",
+   "date": "2026-11-25",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-18"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/encorescience/encore-registry/actions/runs/45540899064"
+   },
+   "outside": null,
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "zaki-2024",
+   "inputs": [
+    {
+     "what": "The paper's per-mouse source data (Data availability), files ExtendedData9/ExtData9b.csv and ExtendedData9/ExtData9c.csv for the link claim, and Figure5/Fig_5c.csv, shown as a reference value for fig5c-wake-overlap-neutral-coburst and not used for its outcome.",
+     "source": "https://github.com/denisecailab/RetrospectiveMemoryLinkingData_2024 at commit a5081645d3d3e5743ade58ea632c28b003794345"
+    }
+   ],
+   "entry_title": "Offline ensemble co-reactivation in the calcium imaging and EEG/EMG mice (Zaki et al. 2024)",
+   "summary": "Most of this paper's main findings could not be tested, because the dataset holds only 2 of the 9 mice of one experiment and none behind the retrospective memory linking, burst recruitment and recall results. The overlap ensemble co-bursting more with the neutral than the aversive ensemble during offline wake held only weakly in one mouse. It reversed when the files' quiet wake, a state the paper does not mention, was counted as wake. The brief slowing of movement before population bursts did not reproduce with telemetry, the files' only movement measure. Of the minor claims, higher freezing after a strong shock and offline bursts above shuffled data held, the burst frequency only under a lenient reading.",
+   "description": "Tests Zaki et al. (2024) on dandiset 000718, which holds two of the nine mice of the paper's calcium imaging and EEG/EMG experiment, one high-shock and one low-shock, with one offline recording per offline period. It links the mice to the paper's source data by their freezing, compares their aversive recall, tests offline population bursts and skew against circular-shift surrogates, movement around bursts, and overlap-neutral against overlap-aversive co-bursting in wake. The one-hour offline experiments and the behaviour-only experiments are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_zaki_2024.ipynb",
+     "title": "Zaki et al. (2024) on dandiset 000718",
+     "cells": {
+      "sanity": "0a3ca8a6",
+      "claim:source-data-link": "e35a6848",
+      "claim:ed9b-aversive-freezing-high-vs-low": "f71dc60f",
+      "claim:offline-bursts-above-shuffle": "dc9d140f",
+      "claim:offline-skew-above-shuffle": "242f1bd9",
+      "claim:burst-locomotion-pause": "4395905d",
+      "claim:fig5c-wake-overlap-neutral-coburst": "ef84abf4",
+      "claim:ed9c-eeg-cohort-linking": "fd0d39a7",
+      "claim:ed9-ed10-sleep-unchanged": "ddd6598e"
+     },
+     "executed": "notebooks/zaki-2024/reproduce_zaki_2024.html"
+    },
+    {
+     "path": "earlier_findings.ipynb",
+     "title": "Earlier findings of zaki-2024-01, checked on this version",
+     "cells": {
+      "sanity": "113b6eba"
+     },
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "source-data-link",
+     "statement": "The two deposited mice are the mice of the same names in the paper's per-mouse source data, with the same shock group, and the freezing computed from the dandiset's freezing intervals agrees with the per-mouse freezing the paper reports for them.",
+     "source": "Extended Data Figure 9b and 9c; source-data repository denisecailab/RetrospectiveMemoryLinkingData_2024",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:source-data-link",
+     "notes": "Both deposited mice, Ca_EEG2-1 and Ca_EEG3-4, are in ExtData9b.csv and ExtData9c.csv under the same names. Their FC session descriptions give shocks \"of 1.5\" and \"of 0.25\", the source data's High Shock (1.5mA) and Low Shock (0.25mA) groups. The recall contexts come from the session descriptions (Recall1 shock context, Recall2 Novel, Recall3 Neutral for Ca_EEG3-4). Under reading (a), frames inside a freezing interval, freezing is 64.09, 8.82, 17.40 and 15.06% against 63.87, 8.46, 16.90 and 14.60; under reading (b), summed interval duration, 63.45, 8.46, 16.90 and 14.60, the three values of Ca_EEG3-4 equal to the source data to two decimals. All four are within tolerance under both readings; measured gives reading (a), the first the criterion lists.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=e35a6848"
+    },
+    {
+     "claim": "ed9b-aversive-freezing-high-vs-low",
+     "statement": "In the calcium imaging and EEG/EMG experiment, high-shock mice froze more during aversive recall than low-shock mice (t7 = 8.99, p = 0.020).",
+     "source": "Extended Data Figure 9b",
+     "quote": "High-shock mice froze more during Aversive recall than low-shock mice",
+     "statistics": [
+      {
+       "statistic": "t7 = 8.99",
+       "p": 0.02,
+       "n": "4 low-shock and 5 high-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:ed9b-aversive-freezing-high-vs-low",
+     "notes": "In Recall1 (aversive context) the high-shock mouse froze in 64.09% of frames and the low-shock mouse in 8.82%. Over ten 30-s bins each, the high-shock mouse froze more in all 10 (bins 32.0 to 87.0% against 2.2 to 13.4%), Mann-Whitney U = 100, two-sided p = 1.8e-04. The paper's t-test over 5 and 4 mice cannot be run with one mouse per group; the result compares two animals.",
+     "deviations": [
+      "One mouse per group of the paper's 5 high-shock and 4 low-shock mice; bins within a session stand in for mice, as the criterion says.",
+      "The last of the ten bins holds 29.9 s, as the sessions hold 8998 and 8999 frames at 30 Hz.",
+      "The 30 s bins of one session are autocorrelated, so the criterion's Mann-Whitney test treats dependent samples as independent and its p-value is too small; the direction (all 10 bins) does not depend on it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=f71dc60f"
+    },
+    {
+     "claim": "offline-bursts-above-shuffle",
+     "statement": "During offline periods, hippocampal population bursts occur more often than expected from shuffled neuronal activity, so CA1 neurons fire in a more coordinated way than chance.",
+     "source": "Results, Neutral ensemble recruited into population bursts, paragraph 1; Extended Data Figure 3l and 3m",
+     "quote": "True burst frequencies were greater than shuffled burst frequencies in every mouse ... suggesting that during the offline period, hippocampal CA1 neurons fire in a more coordinated manner than would be expected from shuffled neuronal activities",
+     "statistics": [
+      {
+       "statistic": "t7 = 6.159",
+       "p": 0.000463,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:offline-bursts-above-shuffle",
+     "notes": "Under reading (b), each surrogate thresholded at the true trace's mean plus 2 SD, the true burst frequency is above the 95th percentile of 1000 circular-shift surrogates in all three deposited offline recordings (Ca_EEG2-1 Day 2, 8.73 against a surrogate mean of 0.11 bursts per minute, 95th percentile 0.30, maximum 0.50; Ca_EEG3-4 Day 1, 6.42 against 0.01, 0.10 and 0.30; Ca_EEG3-4 Day 2, 5.31 against 0.00, 0.00 and 0.20), and no surrogate reaches the true value. Under the second generator's seed (the claim's plus 1) and that seed plus 1000 to 4000 the surrogate means range 0.10 to 0.11, 0.00 to 0.01 and 0.00, the 95th percentiles 0.30, 0.00 to 0.10 and 0.00, the maxima 0.50 to 0.70, 0.20 to 0.30 and 0.10 to 0.20, the fraction of surrogates at or above the true value 0 in every recording, and the outcome is the same under all five. Under reading (a), each surrogate z-scored again, the true frequency is below the surrogate mean in all three (10.94, 8.81 and 8.48, 95th percentiles 12.14, 9.92 and 9.52; fraction of surrogates at or above the true value 0.999, 1.000 and 1.000), with surrogate means 10.91 to 10.96, 8.78 to 8.85 and 8.48 to 8.57 and fractions 0.998 to 1.000 under the claim's seed and the four others; that reading alone gives not reproduced. What the answer changed. This attempt first tested the criterion as it then stood, reading (a) only, and recorded not reproduced, with reading (b) as a variant, and asked a reader whether the criterion should list both. The reader answered (questions/zaki-2024.yaml, 2026-11-25) that the paper does not fix the detail and amended the criterion to name both readings, reproduced under either, with the outcome marked as resting on the reading that gives it. The outcome changes from not reproduced to reproduced, resting on reading (b). All 625, 711 and 858 cells have activity and none is dropped. Reading (b) is a weak test, as the verifier found. A circular shift keeps each cell's mean, so a surrogate trace has the true trace's mean and, for positively co-varying cells, a smaller SD. On synthetic cells with no bursts (600 AR(1) cells, 9000 frames) sharing a slow drift, reading (b) puts the true frequency above the surrogates (5.90 against a 95th percentile of 2.60) and reading (a) below them (5.90 against a mean of 8.55), the pattern of the real data; on independent cells neither does (8.30 against 95th percentiles of 9.80 and 11.40). The result under (b) therefore shows that the cells co-vary positively, not that they burst together; the reading that tests burst structure, (a), does not hold here. The outcome is the criterion's, and a reader is asked whether reading (b) belongs in it (questions/zaki-2024.yaml).",
+     "deviations": [
+      "The paper shows this on the eight mice of the one-hour offline experiment (Extended Data Fig. 3), none of which is in the dataset; it is tested on the three offline recordings of the two EEG/EMG mice, each 10 min at 15 Hz, as the criterion says.",
+      "Assumed that each shuffled mean population trace is held to the burst threshold of the true trace (its mean plus 2 SD), reading (b) of the criterion. The Extended Data Fig. 3l legend says only that \"the mean population activity was re-computed each time\" and that \"The burst frequency was computed for each of these shuffles\", and the Methods (Burst participation analysis) z-score the true trace and threshold it at z = 2, without saying what is done to a shuffle. The criterion names both readings and is met under either. Reading (b) is not the better-supported one. The legend's \"The burst frequency was computed for each of these shuffles\" reads most naturally as the full detection, z-scoring included (the verifier's reading), and reading (b) is passed by cells that only share a slow drift (notes). The outcome is kept as the criterion gives it, marked as resting on reading (b), and a reader is asked whether that reading belongs in the criterion. The analysis code is not public, so the authors are asked which was done (a methods_unavailable finding). Under reading (a) the outcome would be not reproduced.",
+      "The circular-shift offsets are drawn uniformly from 0 to T-1 frames, independently for each cell; the legend gives no range (\"circularly shuffled 1000 times relative to one another\"). This is the standard choice; under either reading the true value lies beyond every surrogate or nearly every one, so no range of offsets that decorrelates the cells is likely to change the outcome."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=dc9d140f"
+    },
+    {
+     "claim": "offline-skew-above-shuffle",
+     "statement": "The mean population activity during offline periods is more right-skewed than in shuffled data, showing brief burst-like activations that need coordinated activity of groups of neurons.",
+     "source": "Extended Data Figure 3n and 3o",
+     "quote": "The true skew was greater than the shuffled skew in every mouse ... supporting the idea that the mean population activity undergoes brief burst-like activations requiring the coordinated activity of groups of neurons",
+     "statistics": [
+      {
+       "statistic": "t7 = 13.36",
+       "p": 3e-06,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:offline-skew-above-shuffle",
+     "notes": "The true skew of the population trace is 1.645, 1.339 and 1.721 in the three recordings, against surrogate means of 0.601, 0.404 and 0.360, 95th percentiles of 0.708, 0.508 and 0.466, and maxima of 0.798, 0.682 and 0.633; no surrogate reaches the true value. Under the five seeds the surrogate means range 0.596 to 0.604, 0.401 to 0.404 and 0.360 to 0.369, and the outcome is the same under all five; the surrogate maxima range 0.798 to 0.879, 0.598 to 0.682 and 0.581 to 0.633, and no surrogate under any seed reaches the true value. Skew is unchanged by z-scoring, so the question on the burst claim does not bear on this one. The reader's answer on that claim (questions/zaki-2024.yaml) says the same, and this claim is unchanged by it. Unlike reading (b) of the burst claim, this test is not passed by co-variation alone. On the synthetic cells with a shared slow drift and no bursts the true skew is -0.276 against a surrogate 95th percentile of 0.105, and on independent cells 0.095 against 0.103 (200 surrogates each).",
+     "deviations": [
+      "Tested on the EEG/EMG mice's offline recordings, not the one-hour experiment's mice of Extended Data Fig. 3n and 3o, as for offline-bursts-above-shuffle; offsets drawn uniformly, the same standard choice."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=242f1bd9"
+    },
+    {
+     "claim": "burst-locomotion-pause",
+     "statement": "Offline population bursts coincide with the mouse briefly slowing down about 1 s before the burst and resuming its movement about 1 to 2 s later.",
+     "source": "Figure 2d and 2e; Extended Data Figure 6e; Results, Co-reactivation occurs more during wake, paragraph 1",
+     "quote": "Mice showed a robust and brief slowing down around 1 s before each burst event, before increasing locomotion back up around 2 s later.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:burst-locomotion-pause",
+     "notes": "Under neither reading of time zero is movement in the second before a burst significantly lower than 3 to 5 s before it in any recording. With the peak frame, one-sided Wilcoxon p = 0.763, 0.922 and 0.452 (85, 62 and 51 bursts; medians 0.0303 against 0.0356, 0.0430 against 0.0364, 0.0761 against 0.0917); with the first frame, p = 0.885, 0.920 and 0.481 (medians in Ca_EEG3-4 Day 2 0.0847 against 0.1002). The medians are lower before the burst in two recordings, not significantly, and higher in Ca_EEG3-4 Day 1. Two bursts per recording near its edges are dropped. In all three recordings the mean absolute ActivitySignal at -5 and -1 s around bursts (0.13 to 0.36) is higher than around 1000 random times (0.08 to 0.21). Around random times movement in the later window is lower in Ca_EEG2-1 (p = 0.000 with the claim's generator, 0.003 with the second), where movement declines over the recording (mean |ActivitySignal| 0.183, 0.154, 0.140 and 0.023 by quarter; Spearman rho with time -0.459), and not in the other two (p = 1.000 and 0.511), although movement also declines in Ca_EEG3-4 Day 1 (rho -0.236); in Day 2 it rises (rho +0.168). The test assumes that imaging and telemetry in the offline files share a clock; the data check found this consistent (population activity and movement correlate positively at lag 0, +0.03 to +0.15, with peaks 1.5 to 6.5 s later) but could not show it. With the telemetry moved to each recording's lag of peak correlation (+1.5, +5.5 and +6.5 s), p = 0.805, 0.982 and 0.863 (peak) and 0.798, 0.977 and 0.853 (onset). Over shifts of -8 to +8 s in 1 s steps, Ca_EEG3-4 Day 1 never reaches p < 0.05 (smallest 0.514), so no shift gives the result in all three recordings; two recordings reach it at -3 s (peak) and at -3 and -4 s (onset), shifts that move movement earlier, against the direction of the correlation. With a 1 s baseline (-4 to -3 s) in place of the criterion's 2 s, p = 0.809, 0.997 and 0.306 at lag 0 (random times 0.009, 1.000 and 0.307). The file describes ActivitySignal as \"the motion of the probe relative to the receiver\" that \"can be used as a proxy for locomotion\", unit n.a.",
+     "deviations": [
+      "The paper shows this on webcam locomotion of the one-hour offline experiment (Fig. 2d,e, Extended Data Fig. 6e), whose mice are not in the dataset; the movement measure here is the telemetry ActivitySignal of the EEG/EMG mice, the only one in the offline files, as the criterion says."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=4395905d"
+    },
+    {
+     "claim": "fig5c-wake-overlap-neutral-coburst",
+     "statement": "After a strong (high-shock) aversive experience, during wake in the offline period the overlap ensemble co-bursts more with the neutral ensemble than with the aversive ensemble (t4 = 4.94, P = 0.016).",
+     "source": "Figure 5c (left); Methods, \"Ensemble co-participation analysis\"",
+     "quote": "Left, wake high-shock mice had higher co-bursting of overlap \u00d7 neutral than overlap \u00d7 aversive",
+     "statistics": [
+      {
+       "statistic": "t4 = 4.94",
+       "p": 0.016,
+       "n": "5 high-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:fig5c-wake-overlap-neutral-coburst",
+     "notes": "In the one deposited offline recording of Ca_EEG2-1 there are 87 bursts, 61 peaking in quiet wake, 24 in wake and 2 outside any sleep interval. Under reading (b), wake alone, OxN exceeds OxA under both co-participation readings (i, 33.3% against 29.2%; ii, 8.3% against 4.2%), with 2 bursts having OxN only and 1 OxA only, exact McNemar p = 1.0. Under reading (a), wake and quiet wake (85 bursts), OxN is below OxA (i, 25.9% against 35.3%; ii, 8.2% against 17.6%; 7 against 15 discordant bursts, p = 0.134). The criterion's partial outcome is met under reading (b) alone, on 3 discordant bursts. The paper's source data give this mouse 10.37% against 8.39% in wake over all 24 recordings, the direction of reading (b); NREM and REM are not in the deposited recording. Reading (a) is the better match to the paper's wake. The file's sleep_state description defines quiet wake as a waking state (\"awake and alert but at rest\"); the Methods' sleep/wake split (two-state Gaussian mixture on the EMG, 6 s epochs) scores 64 of the 68 quiet-wake epochs of this recording as wake; and the Results place the effect \"during brief periods of quiet wake\". Under reading (a) OxN is below OxA. The outcome is kept as the criterion gives it, and a reader is asked whether reading (b) belongs in the criterion (questions/zaki-2024.yaml). Outside bursts, in wake and quiet wake, overlap and neutral are above z = 2 together in 0.18% of frames and overlap and aversive in 0.27%.",
+     "deviations": [
+      "One of the paper's five high-shock mice and one of its 24 offline recordings; ensembles are z-scored over this recording alone, where the paper z-scores over the 24 concatenated recordings (Methods, Ensemble co-participation analysis).",
+      "The ensemble mean trace is the mean over the ensemble's cells of each cell's z-scored trace, then z-scored (Methods, Ensemble reactivation analysis and Ensemble co-participation analysis); the Methods do not say whether the cells are z-scored before averaging for Fig. 5.",
+      "The outcome rests on wake reading (b) of the criterion, wake alone without the files' quiet wake. The paper scores only wake, NREM and REM (Methods, Sleep recordings and sleep scoring) and does not say where the epochs the files label quiet wake fall in its Fig. 5c. Reading (b) is not the better-supported one. The files define quiet wake as a waking state, the Methods' sleep/wake split scores 64 of its 68 epochs here as wake, and the Results place the effect \"during brief periods of quiet wake\", all of which favour reading (a), under which OxN is below OxA (25.9% against 35.3% and 8.2% against 17.6%) and the outcome would be not reproduced. The criterion accepts either reading, so the outcome is kept as it gives it and marked as resting on reading (b); a reader is asked whether that reading belongs in the criterion, and the authors which states their wake holds (a methods_unavailable finding)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=ef84abf4"
+    },
+    {
+     "claim": "fig5c-sleep-no-coburst-difference",
+     "statement": "During NREM and REM sleep, overlap-neutral and overlap-aversive co-bursting do not differ in either shock group.",
+     "source": "Figure 5c (middle and right)",
+     "quote": "Middle, for NREM, there was no difference in high-shock ... or low-shock ... co-bursting. Right, for REM, there was no difference in high-shock ... or low-shock ... co-bursting",
+     "statistics": [
+      {
+       "about": "NREM, high-shock mice",
+       "statistic": "t4 = 0.53",
+       "p": 0.66,
+       "n": "5 high-shock mice"
+      },
+      {
+       "about": "NREM, low-shock mice",
+       "statistic": "t3 = -0.49",
+       "p": 0.66,
+       "n": "4 low-shock mice"
+      },
+      {
+       "about": "REM, high-shock mice",
+       "statistic": "t4 = 1.04",
+       "p": 0.63,
+       "n": "5 high-shock mice"
+      },
+      {
+       "about": "REM, low-shock mice",
+       "statistic": "t3 = -0.53",
+       "p": 0.63,
+       "n": "4 low-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The three deposited offline recordings hold only wake (115 to 249 s) and quiet wake (348 to 483 s); there is no NREM or REM epoch. The paper's 24 recordings per mouse, where sleep occurs, are 1 of 24 deposited for Ca_EEG2-1 (its Week file holds cell registration for 19 offline recordings of day 2 whose imaging is not in the dataset). Seven of the nine mice are not in the dataset, and the paper names no other archive for them (Data availability, \"available ... upon reasonable request\").",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig5c-low-shock-wake-no-difference",
+     "statement": "In low-shock mice, overlap-neutral and overlap-aversive co-bursting during wake do not differ (t3 = 1.20, P = 0.32).",
+     "source": "Figure 5c (left)",
+     "quote": "low-shock mice had no difference in co-bursting between these ensembles",
+     "statistics": [
+      {
+       "statistic": "t3 = 1.20",
+       "p": 0.32,
+       "n": "4 low-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The low-shock mouse Ca_EEG3-4 has no cell registration in the dataset, so its offline cells cannot be assigned to neutral, aversive and overlap ensembles; and one of four low-shock mice cannot be tested by the paper's paired t-test across mice. Its two offline files hold the processing modules ophys (Fluorescence, ImageSegmentation, SegmentationImages) and sleep only, and the one cell_registration module in the dataset is in Ca_EEG2-1's Week file (data check).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed9c-eeg-cohort-linking",
+     "statement": "In the calcium imaging and EEG/EMG experiment, high-shock mice froze more in the neutral than in the novel context (t4 = 4.02, p = 0.03), while low-shock mice did not.",
+     "source": "Extended Data Figure 9c",
+     "quote": "High-shock mice froze more during Neutral vs Novel recall ... whereas low-shock mice froze no differently in Neutral vs Novel recall",
+     "statistics": [
+      {
+       "about": "high-shock mice",
+       "statistic": "t4 = 4.02",
+       "p": 0.03,
+       "n": "5 high-shock mice"
+      },
+      {
+       "about": "low-shock mice",
+       "statistic": "t3 = 1.08",
+       "p": 0.36,
+       "n": "4 low-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:ed9c-eeg-cohort-linking",
+     "notes": "The high-shock mouse Ca_EEG2-1 has no neutral or novel recall in the dataset (only Recall1, aversive). The low-shock half is shown descriptively. Ca_EEG3-4 froze 17.40% (reading a) or 16.90% (reading b) in neutral recall and 15.06% or 14.60% in novel recall, about 2 points apart, but one mouse cannot test the paper's paired t-test over 4 low-shock mice, and the high-shock half is missing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=fd0d39a7"
+    },
+    {
+     "claim": "ed9-ed10-sleep-unchanged",
+     "statement": "Mice wearing a Miniscope sleep normally, the intermittent recording scheme captures the time spent in each state, and sleep structure is not changed by neutral or aversive encoding.",
+     "source": "Extended Data Figure 9d to 9g and Extended Data Figure 10; Results, Co-reactivation occurs more during wake, paragraph 1",
+     "quote": "We first validated that mice could wear the Miniscope without disruptions to their sleep ... We confirmed that our calcium recording scheme reliably captured all sleep states ... There were no differences in sleep features ... after the neutral or aversive encoding compared to pre-experiment sleep",
+     "statistics": [
+      {
+       "about": "sleep duration, Miniscope against no Miniscope (Extended Data Figure 9d)",
+       "statistic": "F1,10 = 0.54",
+       "p": 0.48,
+       "n": "8 Miniscope and 4 no-Miniscope mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_zaki_2024.ipynb",
+     "output": "claim:ed9-ed10-sleep-unchanged",
+     "notes": "Needs sleep scoring over whole days, before and after encoding, for 9 Miniscope mice and 4 mice without a Miniscope. The dataset holds sleep labels only inside its three 10-min offline recordings (wake and quiet wake only) and 9.36 days of unscored telemetry for Ca_EEG2-1; the no-Miniscope mice are not in it, so the Miniscope comparison (Extended Data Fig. 9d to 9f) cannot be made, and the paper's tests across mice cannot be run on one. One mouse is described instead, scored by the Methods' procedure (6 s epochs, two-state Gaussian mixtures on the EMG and on the theta/delta ratio of the sleep epochs; the EMG feature, log RMS, is an assumption). The encoding periods are taken from the telemetry dropouts, when the mouse is off its home-cage receiver. Time asleep is 47.81% in the 24 h before neutral encoding, 53.12% after it and 57.15% after aversive encoding; mean wake bouts 88, 83 and 60 s, NREM bouts 33 to 35 s. In the first 30 min back in the home cage the mouse is awake 67% (after neutral) and 49% (after aversive) of the time, against 93% and 83% at the same clock times one day earlier (the day before neutral encoding, and the day after it). The REM split is not determined. The REM share is 10.9% or 21.1% of all epochs depending on whether the ratio or its log is fitted, REM bouts last about 10 s and 40 to 46% of wake bouts are followed by REM, which is not physiological. On day 2 the 19 imaging epochs hold 27.4% wake, 59.7% NREM and 12.9% REM against 25.8%, 59.9% and 14.3% over the span they sample, in line with Extended Data Fig. 9g.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": "../../notebooks/zaki-2024/reproduce_zaki_2024.html#cell-id=ddd6598e"
+    },
+    {
+     "claim": "fig1bc-retrospective-not-prospective",
+     "statement": "Fear spreads from an aversive context to a neutral context experienced 2 days before (retrospective linking) but not to one experienced 2 days after (prospective), with no difference in aversive recall between the groups.",
+     "source": "Figure 1a to 1c; Results, Retrospective memory linking across days, paragraph 1",
+     "quote": "There was no difference in freezing in the aversive context between groups ... In the retrospective group, mice froze more in the neutral context compared with in the novel context ... in the prospective group, there was no difference in freezing between the neutral and novel contexts",
+     "statistics": [
+      {
+       "about": "aversive recall freezing, prospective against retrospective (Figure 1b)",
+       "statistic": "t34 = 0.36",
+       "p": 0.72,
+       "n": "16 retrospective and 20 prospective mice"
+      },
+      {
+       "about": "direction by context interaction (Figure 1c)",
+       "statistic": "F1,32 = 4.90",
+       "p": 0.034,
+       "n": "8 retrospective neutral, 8 retrospective novel, 12 prospective neutral and 8 prospective novel mice"
+      },
+      {
+       "about": "neutral against novel, retrospective group (Figure 1c)",
+       "test": "post hoc test",
+       "statistic": "t32 = 2.586",
+       "p": 0.029
+      },
+      {
+       "about": "neutral against novel, prospective group (Figure 1c)",
+       "test": "post hoc test",
+       "statistic": "t32 = 0.452",
+       "p": 0.6546
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The behaviour-only prospective and retrospective mice are not in the dataset, which holds two mice of the calcium imaging and EEG/EMG experiment only.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig1ef-high-shock-drives-linking",
+     "statement": "High-shock mice froze more than low-shock mice in the aversive context, and froze more in the neutral than in the novel context, while low-shock mice did not.",
+     "source": "Figure 1d to 1f",
+     "quote": "Mice froze more in the aversive context after receiving a high shock versus low shock ... High-shock mice froze more in the neutral versus novel contexts ... and low-shock mice froze no differently",
+     "statistics": [
+      {
+       "about": "aversive recall freezing, high against low shock (Figure 1e)",
+       "statistic": "t18,8 = 5.877",
+       "p": 1.2e-05,
+       "n": "10 low-shock and 12 high-shock mice"
+      },
+      {
+       "about": "effect of context (Figure 1f)",
+       "statistic": "F1,20 = 17.32",
+       "p": 4.8e-05,
+       "n": "10 low-shock and 12 high-shock mice"
+      },
+      {
+       "about": "context by amplitude interaction (Figure 1f)",
+       "statistic": "F1,20 = 4.99",
+       "p": 0.037
+      },
+      {
+       "about": "neutral against novel, high-shock mice (Figure 1f)",
+       "statistic": "t11 = 4.37",
+       "p": 0.002
+      },
+      {
+       "about": "neutral against novel, low-shock mice (Figure 1f)",
+       "statistic": "t9 = 1.23",
+       "p": 0.249
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 22 low- and high-shock mice of Fig. 1d to 1g (calcium imaging with one-hour offline recordings) are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig1g-aversive-freezing-predicts-linking",
+     "statement": "In high-shock mice, aversive recall freezing correlates with the strength of retrospective memory linking (R2 = 0.45, P = 0.016), but not in low-shock mice.",
+     "source": "Figure 1g",
+     "quote": "Aversive memory strength was correlated with the strength of retrospective memory linking in high-shock mice ... but not in low-shock mice",
+     "statistics": [
+      {
+       "about": "high-shock mice",
+       "statistic": "R2 = 0.45",
+       "p": 0.016,
+       "n": "12 high-shock mice"
+      },
+      {
+       "about": "low-shock mice",
+       "statistic": "R2 = 0.0003",
+       "p": 0.963,
+       "n": "10 low-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 22 mice of Fig. 1d to 1g are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed1n-offline-hippocampus-needed",
+     "statement": "Chemogenetic inhibition of the hippocampus in the 12 h after aversive encoding prevents retrospective memory linking and leaves the aversive memory intact.",
+     "source": "Extended Data Figure 1l to 1p; Results, Retrospective memory linking across days, paragraph 3",
+     "quote": "We found that this prevented retrospective memory linking (that is, selective freezing in the neutral context compared with in the novel context) while leaving the aversive memory intact",
+     "statistics": [
+      {
+       "about": "group by context interaction (Extended Data Figure 1n)",
+       "statistic": "F1,42 = 4.00",
+       "p": 0.05,
+       "n": "12 saline neutral, 10 saline novel, 12 PSEM neutral and 12 PSEM novel mice"
+      },
+      {
+       "about": "neutral against novel, saline group (Extended Data Figure 1n)",
+       "test": "post hoc test",
+       "statistic": "t19.84 = 2.57",
+       "p": 0.03
+      },
+      {
+       "about": "neutral against novel, PSEM group (Extended Data Figure 1n)",
+       "test": "post hoc test",
+       "statistic": "t22 = 0.31",
+       "p": 0.76
+      },
+      {
+       "about": "aversive recall freezing, PSEM against saline (Extended Data Figure 1p)",
+       "statistic": "t13.9 = 0.32",
+       "p": 0.748,
+       "n": "7 saline and 9 PSEM mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The chemogenetic (PSEM) behaviour experiment is not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed2-cocaine-retrospective-linking",
+     "statement": "A cocaine experience also drives retrospective memory linking to a neutral context experienced 2 days before.",
+     "source": "Extended Data Figure 2g to 2i; Results, Retrospective memory linking across days, paragraph 2",
+     "quote": "we also found evidence that a highly salient, appetitive experience (that is, cocaine exposure) also drove retrospective memory linking to a neutral context memory formed 2 days before",
+     "statistics": [
+      {
+       "about": "locomotion during neutral recall, cocaine against saline (Extended Data Figure 2i)",
+       "statistic": "t54 = 2.85",
+       "p": 0.01,
+       "n": "28 cocaine and 28 saline mice"
+      },
+      {
+       "about": "locomotion during novel recall, cocaine against saline (Extended Data Figure 2i)",
+       "statistic": "t54 = 1.83",
+       "p": 0.07,
+       "n": "28 cocaine and 28 saline mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The cocaine behaviour experiment is not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed3-aversive-ensemble-reactivated",
+     "statement": "Cells active during aversive encoding are reactivated offline and preferentially during aversive recall.",
+     "source": "Extended Data Figure 3e to 3k; Results, Offline reactivation of a past neutral ensemble, paragraph 2",
+     "quote": "we found that the ensemble of cells active during aversive encoding was reactivated offline and preferentially reactivated during aversive memory recall",
+     "statistics": [
+      {
+       "about": "recall reactivation of offline-reactivated against other aversive encoding cells (Extended Data Figure 3f)",
+       "statistic": "t7 = 19.41",
+       "p": 2e-07,
+       "n": "8 mice"
+      },
+      {
+       "about": "fraction previously active in aversive encoding, aversive against novel recall (Extended Data Figure 3g)",
+       "statistic": "t7 = 6.897",
+       "p": 0.0002,
+       "n": "8 mice"
+      },
+      {
+       "about": "offline activity, aversive against remaining ensemble (Extended Data Figure 3h)",
+       "statistic": "t7 = 8.538",
+       "p": 6e-05,
+       "n": "8 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The eight mice of the Extended Data Fig. 3 experiment (aversive encoding, one-hour offline, aversive and novel recall) are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed4f-neutral-ensemble-reactivated-high-shock",
+     "statement": "During offline 2 the neutral ensemble is less active than the aversive and overlap ensembles in low-shock mice but no differently active in high-shock mice.",
+     "source": "Extended Data Figure 4f",
+     "quote": "The Neutral ensemble was less active than the Aversive and Overlap ensembles ... In high-shock mice ... these three ensembles were no differently active from each other",
+     "statistics": [
+      {
+       "about": "ensemble by amplitude interaction",
+       "statistic": "F3,331 = 5.36",
+       "p": 0.0013,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "neutral against aversive and overlap, low-shock mice",
+       "statistic": "t12 = 2.83",
+       "p": 0.03
+      },
+      {
+       "about": "neutral, aversive and overlap, high-shock mice",
+       "statistic": "F2,14 = 1.52",
+       "p": 0.25
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 15 mice of the one-hour offline low- and high-shock experiment are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig3c-offline1-neutral-participation",
+     "statement": "During offline 1 a greater percentage of the neutral ensemble participates in bursts than of the remaining ensemble, in both shock groups.",
+     "source": "Figure 3c",
+     "quote": "During offline 1 in the low- and high-shock groups, a greater percentage of the neutral ensemble participated in bursts than the remaining ensemble",
+     "statistics": [
+      {
+       "about": "ensemble",
+       "statistic": "F1,13 = 16.33",
+       "p": 0.001,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "ensemble by amplitude interaction",
+       "statistic": "F1,13 = 0.0058",
+       "p": 0.94
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 15 mice of the one-hour offline experiment are not in the dataset. The low-shock EEG/EMG mouse's offline 1 recording is, but without cell registration to its neutral encoding, and the paper's test is across the 15 mice.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig3f-neutral-recruited-high-shock",
+     "statement": "During offline 2 the neutral ensemble preferentially participates in bursts relative to the remaining ensemble in high-shock mice (t7 = 4.88) but not in low-shock mice.",
+     "source": "Figure 3d to 3f",
+     "quote": "High-shock mice showed higher neutral ensemble participation relative to the remaining ensemble ... low-shock mice showed no difference in ensemble participation",
+     "statistics": [
+      {
+       "about": "ensemble by amplitude interaction",
+       "statistic": "F1,13 = 5.186",
+       "p": 0.04,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "neutral against remaining, high-shock mice",
+       "statistic": "t7 = 4.88",
+       "p": 0.0036
+      },
+      {
+       "about": "neutral against remaining, low-shock mice",
+       "statistic": "t6 = 1.33",
+       "p": 0.23
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 15 mice of the one-hour offline experiment are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig4b-overlap-independent-participation",
+     "statement": "During burst periods the overlap ensemble participates independently in more bursts than the aversive and neutral ensembles, with no difference between shock groups.",
+     "source": "Figure 4b and 4c",
+     "quote": "During burst periods, the overlap ensemble participated independently in more bursts than the aversive ensemble ... and more than the neutral ensemble ... but there was no difference in participation across low- versus high-shock mice",
+     "statistics": [
+      {
+       "about": "overlap against aversive",
+       "statistic": "t14 = 7.95",
+       "p": 2e-06,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "overlap against neutral",
+       "statistic": "t14 = 5.59",
+       "p": 0.0001
+      },
+      {
+       "about": "low- against high-shock",
+       "statistic": "F1,13 = 1.43",
+       "p": 0.25
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 15 mice of the one-hour offline experiment are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig4e-overlap-neutral-coburst",
+     "statement": "In the one-hour offline experiment, high-shock mice show more overlap-neutral than overlap-aversive co-bursting during bursts (t7 = 4.95), low-shock mice do not, and there is no such difference outside bursts.",
+     "source": "Figure 4e and 4f; Extended Data Figure 4k to 4o",
+     "quote": "Overlap ensemble preferentially co-participated with the neutral ensemble (N) rather than with the aversive ensemble (A) ... whereas in the low-shock group, there was no difference in overlap ensemble participation with the neutral and aversive ensembles",
+     "statistics": [
+      {
+       "about": "burst periods, ensemble combination by shock interaction (Figure 4e)",
+       "statistic": "F1,13 = 12.2",
+       "p": 0.004,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "burst periods, overlap-neutral against overlap-aversive, high-shock mice (Figure 4e)",
+       "statistic": "t7 = 4.95",
+       "p": 0.003
+      },
+      {
+       "about": "burst periods, overlap-neutral against overlap-aversive, low-shock mice (Figure 4e)",
+       "statistic": "t6 = 0.99",
+       "p": 0.36
+      },
+      {
+       "about": "non-burst periods, ensemble combination (Figure 4f)",
+       "statistic": "F1,13 = 0.027",
+       "p": 0.87
+      },
+      {
+       "about": "non-burst periods, interaction (Figure 4f)",
+       "statistic": "F1,13 = 1.11",
+       "p": 0.31
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The claim is about the one-hour offline experiment, whose 15 mice are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed6-overlap-inhibitory",
+     "statement": "The overlap ensemble is enriched in putative inhibitory neurons identified by chemotagging.",
+     "source": "Extended Data Figure 5; Extended Data Figure 6b and 6c",
+     "quote": "Here, the Overlap ensemble comprised a larger fraction of the inhibitory neuron population than any of the other ensembles ... the Overlap ensemble was composed more of inhibitory neurons than the other ensembles were",
+     "statistics": [
+      {
+       "about": "fraction of the inhibitory population per ensemble (Extended Data Figure 6b)",
+       "statistic": "F3,12 = 26.17",
+       "p": 1.5e-05,
+       "n": "5 mice"
+      },
+      {
+       "about": "fraction of each ensemble that is inhibitory (Extended Data Figure 6c)",
+       "statistic": "F3,12 = 15.29",
+       "p": 0.0002,
+       "n": "5 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The inhibitory chemotagging experiment (Gad2-cre mice) is not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed8-no-shock-no-coburst",
+     "statement": "Without a shock, overlap-neutral co-bursting does not exceed overlap-aversive co-bursting and no memory linking occurs.",
+     "source": "Extended Data Figure 8d, 8f and 8g; Results, Co-bursting of the overlap and neutral ensemble, paragraph 4",
+     "quote": "the co-bursting of the overlap and neutral ensembles was not different from the co-bursting of the overlap and aversive ensembles during the offline period ... these mice showed no differences in freezing in the neutral versus novel contexts during recall",
+     "statistics": [
+      {
+       "about": "co-bursting between ensemble pairs, normalized by chance (Extended Data Figure 8g)",
+       "statistic": "F2,10 = 1.29",
+       "p": 0.32,
+       "n": "6 mice"
+      },
+      {
+       "about": "freezing, neutral against novel recall (Extended Data Figure 8d)",
+       "statistic": "t5 = 1.52",
+       "p": 0.19,
+       "n": "6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The no-shock experiment is not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "ed7-contexts-discriminable",
+     "statement": "Neural activity during neutral and aversive encoding is highly discriminable, with no difference between low- and high-shock mice.",
+     "source": "Extended Data Figure 7; Results, Co-bursting of the overlap and neutral ensemble, paragraph 4",
+     "quote": "We found that the neural activity patterns for neutral and aversive contexts were highly discriminable. There were no differences between the low- and high-shock groups during encoding",
+     "statistics": [
+      {
+       "about": "SVM accuracy, true against shuffled (Extended Data Figure 7a)",
+       "statistic": "F1,12 = 38.49",
+       "p": 4.6e-05,
+       "n": "6 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "SVM accuracy, low- against high-shock (Extended Data Figure 7a)",
+       "statistic": "F1,12 = 0.015",
+       "p": 0.22
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The SVM decoding is on the 14 mice of the one-hour offline experiment, which are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig6a-overlap-reactivated-neutral-recall",
+     "statement": "The overlap ensemble is reactivated more during neutral recall than during novel-context exposure in high-shock mice compared with low-shock mice (t12 = 3.2, P = 0.007).",
+     "source": "Figure 6a; Extended Data Figure 4q to 4s; Results, Ensemble co-reactivation in neutral context recall, paragraph 2",
+     "quote": "the cells that were active during both neutral and aversive encoding (overlap ensemble) were reactivated more during neutral recall than novel-context exposure in the high-shock but not the low-shock group",
+     "statistics": [
+      {
+       "about": "overlap reactivation index, high- against low-shock (Figure 6a)",
+       "statistic": "t12 = 3.2",
+       "p": 0.007
+      },
+      {
+       "about": "overlap reactivation, neutral against novel, high-shock mice (Extended Data Figure 4s)",
+       "statistic": "t7 = 8.53",
+       "p": 0.00012,
+       "n": "8 high-shock mice"
+      },
+      {
+       "about": "overlap reactivation, neutral against novel, low-shock mice (Extended Data Figure 4s)",
+       "statistic": "t5 = 0.55",
+       "p": 0.61,
+       "n": "6 low-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 14 mice of the one-hour offline experiment's recall sessions are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    },
+    {
+     "claim": "fig6b-neutral-representation-changed",
+     "statement": "In high-shock mice the neutral encoding-to-recall population correlation is lower than in low-shock mice and lower than the aversive encoding-to-recall correlation.",
+     "source": "Figure 6b",
+     "quote": "During neutral recall in high-shock mice, population activity vectors were less correlated with the average neutral encoding population vector than aversive recall activity was with the average aversive encoding population vector ... Neutral encoding-to-recall correlations were also lower in high- versus low-shock mice",
+     "statistics": [
+      {
+       "about": "neutral against aversive encoding-to-recall correlation, high-shock mice",
+       "statistic": "t7 = 4.10",
+       "p": 0.009,
+       "n": "8 high-shock mice"
+      },
+      {
+       "about": "neutral encoding-to-recall correlation, high- against low-shock",
+       "statistic": "t6,92 = 2.98",
+       "p": 0.042,
+       "n": "6 low-shock and 8 high-shock mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "output": null,
+     "notes": "The 14 mice of the one-hour offline experiment's recall sessions are not in the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null,
+     "cell": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "In sub-Ca-EEG2-1 the behaviour sessions are timestamped about 1 h later than the offline recordings and the telemetry. The offline file's EEG is the Week file's EEG from the OfflineDay2Session1 epoch start (offset +0.002 s, difference 0 V), so they share one clock. On it the telemetry drops out (EEG constant, the mouse off its home-cage receiver) from 3780 to 2560 s before the NeutralExposure start time, 3710 to 2930 s before FC's and 3730 to 2850 s before Recall1's, and is normal during the FC epoch itself; each session fits in its dropout if it started 1 h before its timestamp. By the timestamps (session_start_time and the Week file's epochs), OfflineDay2Session1, described as recorded after fear conditioning, starts at 09:24:27, 47 min before FC (10:11:24), and 113 s after the telemetry dropout ends; OfflineDay2Session2 also precedes FC, and OfflineDay1Session1 to 4 precede NeutralExposure. The files do not say which clock is right. No analysis here combines sessions in time, but one that orders the offline recordings by FC's time would drop the first two after aversive encoding.",
+     "found": null,
+     "status": "still_present",
+     "n": 1,
+     "severity": "critical",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "other",
+     "statement": "The sleep_state column of SleepIntervals in the offline files uses four states, \"quiet wake\", \"wake\", \"sws\" and \"rem\", where the paper scores wake, NREM and REM (Methods, Sleep recordings and sleep scoring) and names no quiet wake state. The column's description defines quiet wake as a waking state (\"The animal is awake and alert but at rest\"), and the Methods' sleep/wake split scores 64 of the 68 quiet-wake epochs of Ca_EEG2-1's offline recording as wake, so quiet wake is part of the paper's wake. A user who takes \"wake\" for the paper's wake leaves out 61 of 87 bursts in Ca_EEG2-1, and the overlap-neutral against overlap-aversive comparison of Fig. 5c reverses. (The first version of this finding said the column had no description of quiet wake; it has one.)",
+     "found": null,
+     "status": "still_present",
+     "n": 2,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The dataset holds 2 of the 9 mice of the calcium imaging and EEG/EMG experiment and one offline recording per offline period (for Ca_EEG2-1, 1 of the 24 recordings after aversive encoding, with cell-registration tables for 19 recordings of that day whose imaging is not deposited). Ca_EEG3-4 has no cell registration, Ca_EEG2-1 has no neutral or novel recall, and the deposited recordings hold no NREM or REM. The mice of the one-hour offline, behaviour-only, chemogenetic, cocaine, inhibitory tagging and no-shock experiments are not in it; 20 of the 26 claims cannot be tested, and the paper names no archive for the rest of its data.",
+     "found": null,
+     "status": "still_present",
+     "n": 3,
+     "severity": "major",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The telemetry (ActivitySignal, EEGSignal, EMGSignal, TemperatureSignal) is stored at a rate of 500 Hz, and the sample counts match the recordings' durations at that rate (299931 to 300065 samples for 600 s); the Methods say the HD-X02 implants recorded at 100 Hz.",
+     "found": null,
+     "status": "still_present",
+     "n": 4,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The FC session descriptions give the shock amplitude as \"three 2s foot shocks of 1.5\" and \"of 0.25\", without a unit; the experiment description gives the two amplitudes in mA.",
+     "found": null,
+     "status": "still_present",
+     "n": 5,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The session_start_time of sub-Ca-EEG2-1_ses-Week.nwb is 2021-10-08T07:00:00+00:00, but its epochs fall at the local (-04:00) clock times of the session files (OfflineDay2Session1 at 09:24:27.677 on both), so the start is local time labelled UTC, 4 h off.",
+     "found": null,
+     "status": "new",
+     "n": 6,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "other",
+     "statement": "Checks that passed. The cell registration of Ca_EEG2-1 gives 97 neutral, 80 aversive, 166 overlap and 282 remaining cells in its offline recording, each of its 625 ROIs once; the freezing of both mice agrees with the paper's source data (reading b equal to two decimals for Ca_EEG3-4); the FC shock times of the description show in Ca_EEG2-1's motion (3387 to 3848 in the 2 s after each shock against a 95th percentile of 843 elsewhere); no asset shares a digest and no two sessions of equal length have correlated motion (largest r 0.131), so no recording is deposited twice; and the three files that changed since version 0.260825.1902 hold the same values in every array used here. A shared clock for imaging and behaviour could not be established in four sessions (Ca_EEG2-1 FC and NeutralExposure, Ca_EEG3-4 Recall2 and Recall3), where the correlation of population activity with motion peaks away from lag 0; no claim here uses imaging and behaviour together. The offline file's sleep labels of Ca_EEG2-1 agree with a scoring of the Week telemetry by the Methods' procedure (70 of 74 epochs labelled wake or quiet wake are scored wake).",
+     "found": null,
+     "status": "new",
+     "n": 7,
+     "severity": "none",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The session descriptions of the three offline files (OfflineDay2Session1 of Ca_EEG2-1, OfflineDay1Session1 and OfflineDay2Session1 of Ca_EEG3-4) describe the one-hour webcam experiment (\"The homecage was placed in a dark grey storage bin with a webcam on top of the bin ... Mouse behavior and calcium were recorded for an hour\"). The files hold 10-min recordings with home-cage telemetry and sleep labels, the EEG/EMG protocol the Methods describe (10 min of imaging every 30 min, with continuous telemetry).",
+     "found": null,
+     "status": "still_present",
+     "n": 9,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset's description is the paper's abstract, and neither it nor the experiment description of the files says why mice Ca_EEG2-1 and Ca_EEG3-4, and only the first 10 min recording of each offline period, were deposited, or which recordings the paper analysed. The release notes list the two mice and the first offline recordings under \"Known gaps\", without a reason.",
+     "found": "on_prompt",
+     "status": "still_present",
+     "n": 11,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "In the 11 files with imaging the fluorescence series carry placeholder descriptions (\"description of baseline traces\", \"description of deconvolved traces\", \"description of denoised traces\", \"Array of neuropil traces.\") and unit \"n.a.\", and the session description of sub-Ca-EEG2-1_ses-Week.nwb is empty.",
+     "found": "on_prompt",
+     "status": "new",
+     "n": 12,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "current",
+     "seen_in": [
+      "0.261122.2159"
+     ],
+     "newest": "0.260825.1902"
+    }
+   ],
+   "reconciliation": {
+    "earlier": "zaki-2024-01",
+    "blind": true,
+    "blind_note": "",
+    "gone": [
+     {
+      "status": "fixed",
+      "note": "On 0.261122.2159 the three files have one OnePhotonSeries timestamp per frame (17770, 17876 and 8934) over the whole recording, ending at 599.973, 600.126 and 299.938 s, 0.034 s after the last deconvolved sample, with a median step of 34.0 ms (earlier_findings.ipynb, finding 5); the release notes say these files were re-converted with the Miniscope frame times.",
+      "statement": "The OnePhotonSeries timestamps of three files (Ca_EEG2-1 NeutralExposure, Ca_EEG3-4 OfflineDay1Session1, Ca_EEG3-4 Recall2) run at 16.7 ms and end at half the recording's length, while their frame counts fit 30 Hz over the full length given by the deconvolved timestamps.",
+      "kind": "format_error",
+      "about": "data"
+     }
+    ],
+    "outcomes": [
+     {
+      "claim": "offline-bursts-above-shuffle",
+      "earlier": "blocked",
+      "note": "zaki-2024-01 tested the one procedure its criterion named (each surrogate z-scored again), found the true rate below the surrogate mean (5.30, 6.40 and 8.71 against 8.48 to 10.94 per min), and blocked the claim as methods_underspecified because this chance level is far from the paper's source data for Extended Data Fig. 3m (surrogate over true 0.72 to 0.96, here 1.26 to 1.60). During zaki-2024-02 a reader amended the criterion to accept also reading (b), surrogates held to the true trace's mean plus 2 SD, under which it gets 8.73, 6.42 and 5.31 against surrogate means of 0.11, 0.01 and 0.00, as zaki-2024-01's own variant did (at most 0.50 per min); the numbers agree under both readings. Neither reading comes near the paper's chance level of 3.38 to 4.39 per min, which zaki-2024-02 did not compare with, and reading (b) is also passed by cells that share only a slow drift (its synthetic check)."
+     },
+     {
+      "claim": "fig5c-wake-overlap-neutral-coburst",
+      "earlier": "not_reproduced",
+      "note": "The numbers are essentially the same (wake with quiet wake, OxN 26.4 against OxA 35.6% of 87 bursts in zaki-2024-01 and 25.9 against 35.3% of 85 in zaki-2024-02; wake alone, 32.0 against 28.0% of 25 and 33.3 against 29.2% of 24, McNemar p = 1.0 in both); the 2 bursts that differ fall between sleep intervals, which earlier-entry/memlink.py state_of_frames labels by extending each interval by 0.1 s. zaki-2024-01 judged the outcome on wake with quiet wake alone after its first verification, while the criterion counts any of its readings, under which OxN above OxA in wake alone without p < 0.05 is partially reproduced, as zaki-2024-02 applied it."
+     }
+    ]
+   },
+   "verifications": [
+    {
+     "date": "2026-11-25",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text under paper/. The verifier checked the blocked claims against the archive's asset list and metadata, and tested burst_events, burst_frequency, the circular shift, binned_freezing and the McNemar test on synthetic inputs. It also reported metadata problems (the offline-session descriptions describe the one-hour webcam protocol, the telemetry is stored at 500 Hz, the Week file's start time is local time labelled UTC); the first is a new finding (9), the other two were findings already.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-25",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision, with its conclusions and summary, the helper module, the claims file, the attempt record, the entry's README and the verifier's round-1 report, with the paper's full text under paper/. It checked every sentence of the Result cells, the summary, the README and the record's notes against the printed outputs, and reviewed the record's finding ratings.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "The Extended Data Fig. 3l legend does not say whether the shuffled mean population activity is z-scored again before bursts are counted at z = 2, or thresholded at the true trace's level. On the deposited recordings the two give opposite results (true burst frequency below the re-z-scored surrogates in all three recordings, far above the others). The paper's analysis code (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) is not public, so the authors are asked which was done. A reader found that the paper does not settle it and amended the claims file to run both; the outcome, reproduced, rests on thresholding at the true trace's level, a test that cells sharing only a slow drift also pass (the notebook's synthetic check).",
+     "found": null,
+     "status": "still_present",
+     "n": 8,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper scores sleep as wake, NREM and REM (Methods, Sleep recordings and sleep scoring), while the deposited sleep labels add a quiet wake state. The paper does not say whether the wake of Fig. 5c holds the epochs the files label quiet wake, and the overlap-neutral against overlap-aversive comparison in wake reverses with it (25.9% against 35.3% of 85 bursts with quiet wake, 33.3% against 29.2% of 24 without, in Ca_EEG2-1's deposited recording). The analysis code is not public, so the authors are asked which states their wake holds.",
+     "found": null,
+     "status": "new",
      "n": 10,
      "severity": null,
      "changes_results": false,
@@ -723782,7 +725121,7 @@
      "cells": {
       "sanity": "4087961d"
      },
-     "executed": null
+     "executed": "notebooks/choi-2025/earlier_findings.html"
     }
    ],
    "python": "3.13",
@@ -726422,7 +727761,7 @@
       "claim:fig5bc-gaussian-ct-td-best": "e22ca5ce",
       "claim:fig5d-tonic-term-and-gaussian-contribute": "946cb020"
      },
-     "executed": null
+     "executed": "notebooks/garud-2026/reproduce_garud_2026.html"
     }
    ],
    "python": "3.13",
@@ -740293,8 +741632,8 @@
   {
    "name": "zaki-2024",
    "type": "reproduction",
-   "title": "Offline ensemble co-reactivation in the EEG/EMG experiment (Zaki et al. 2024)",
-   "description": "Tests the findings of Zaki et al. (2024) that can be tested on dandiset 000718, which holds two of the nine mice of the paper's calcium imaging and EEG/EMG experiment (one high-shock, one low-shock) with their encoding and recall sessions, the first offline recording after encoding, and cell registration for the high-shock mouse. It checks the deposited freezing against the paper's per-mouse values, compares freezing between the two mice, tests offline population bursts and their skew against shuffled activity and against movement, and compares overlap-neutral with overlap-aversive co-bursting in wake. The one-hour offline, behaviour-only, inhibitory tagging and no-shock experiments are not in the dandiset.",
+   "title": "Offline ensemble co-reactivation in the calcium imaging and EEG/EMG mice (Zaki et al. 2024)",
+   "description": "Tests Zaki et al. (2024) on dandiset 000718, which holds two of the nine mice of the paper's calcium imaging and EEG/EMG experiment, one high-shock and one low-shock, with one offline recording per offline period. It links the mice to the paper's source data by their freezing, compares their aversive recall, tests offline population bursts and skew against circular-shift surrogates, movement around bursts, and overlap-neutral against overlap-aversive co-bursting in wake. The one-hour offline experiments and the behaviour-only experiments are not in the dandiset.",
    "datasets": [
     "dandi:000718"
    ],
@@ -740305,22 +741644,32 @@
    "notebooks": [
     {
      "path": "reproduce_zaki_2024.ipynb",
-     "title": "Reproducing Zaki et al. (2024) from dandiset 000718",
+     "title": "Zaki et al. (2024) on dandiset 000718",
      "cells": {
-      "sanity": "28fd7222",
-      "claim:source-data-link": "b22d39ce",
-      "claim:ed9b-aversive-freezing-high-vs-low": "eab88586",
-      "claim:offline-bursts-above-shuffle": "c7ab7637",
-      "claim:offline-skew-above-shuffle": "650bfbd7",
-      "claim:burst-locomotion-pause": "20ba3544",
-      "claim:fig5c-wake-overlap-neutral-coburst": "6e061458"
+      "sanity": "0a3ca8a6",
+      "claim:source-data-link": "e35a6848",
+      "claim:ed9b-aversive-freezing-high-vs-low": "f71dc60f",
+      "claim:offline-bursts-above-shuffle": "dc9d140f",
+      "claim:offline-skew-above-shuffle": "242f1bd9",
+      "claim:burst-locomotion-pause": "4395905d",
+      "claim:fig5c-wake-overlap-neutral-coburst": "ef84abf4",
+      "claim:ed9c-eeg-cohort-linking": "fd0d39a7",
+      "claim:ed9-ed10-sleep-unchanged": "ddd6598e"
      },
      "executed": "notebooks/zaki-2024/reproduce_zaki_2024.html"
+    },
+    {
+     "path": "earlier_findings.ipynb",
+     "title": "Earlier findings of zaki-2024-01, checked on this version",
+     "cells": {
+      "sanity": "113b6eba"
+     },
+     "executed": null
     }
    ],
    "python": "3.13",
-   "pinned": 104,
-   "hashed": false
+   "pinned": 20,
+   "hashed": true
   },
   {
    "name": "zandvakili-2015",
@@ -750614,10 +751963,10 @@
  ],
  "demo": false,
  "outcome_counts": {
-  "reproduced": 3729,
-  "partially_reproduced": 1413,
-  "not_reproduced": 1571,
-  "blocked": 3754
+  "reproduced": 3732,
+  "partially_reproduced": 1414,
+  "not_reproduced": 1572,
+  "blocked": 3774
  },
  "outcome_counts_with_outside_data": {
   "reproduced": 150,
@@ -750632,7 +751981,7 @@
   "blocked": 421
  },
  "outcome_counts_links": {
-  "reproduced": 106,
+  "reproduced": 107,
   "partially_reproduced": 37,
   "not_reproduced": 12,
   "blocked": 1
@@ -750736,7 +752085,6 @@
    "001282",
    "001212",
    "000020",
-   "000718",
    "000207"
   ],
   "lanes": {
@@ -750744,17 +752092,13 @@
    "claims": 1
   },
   "hours": {
-   "full": 7.558888888888889,
+   "full": 7.5465277777777775,
    "claims": 0.5137499999999999
   },
   "running": {
    "001425": {
     "kind": "full",
-    "hours": 2.6923351677777783
-   },
-   "zenodo-3924718": {
-    "kind": "full",
-    "hours": 1.784279612222222
+    "hours": 2.502774108055556
    }
   },
   "papers": {
@@ -750843,23 +752187,19 @@
     "windolf-2025",
     "yang-2025",
     "yang-2026-electrophysiological",
-    "zaki-2024",
     "zhong-2026"
    ],
    "running": {
     "komori-2026": {
      "kind": "full",
-     "hours": 2.6923351677777783
-    },
-    "powell-2021": {
-     "kind": "full",
-     "hours": 1.784279612222222
+     "hours": 2.502774108055556
     }
    }
   }
  },
  "responses": {},
  "issues": {
+  "ZENODO:3924718": "https://github.com/encorescience/encore-registry/issues/981",
   "DANDI:000055": "https://github.com/encorescience/encore-registry/issues/884",
   "DANDI:000237": "https://github.com/encorescience/encore-registry/issues/955",
   "DANDI:000238": "https://github.com/encorescience/encore-registry/issues/954",
@@ -750897,6 +752237,7 @@
   "DANDI:000574": "https://github.com/encorescience/encore-registry/issues/290"
  },
  "issues_by_name": {
+  "powell-2021": "https://github.com/encorescience/encore-registry/issues/981",
   "peterson-2021": "https://github.com/encorescience/encore-registry/issues/978",
   "DANDI:000237": "https://github.com/encorescience/encore-registry/issues/955",
   "DANDI:000238": "https://github.com/encorescience/encore-registry/issues/954",
