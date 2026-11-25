@@ -45,7 +45,11 @@ Where each parameter comes from:
 - Moving 15 cm/s or more, stationary below 5 cm/s, destination reward 80 or more against 20 or
   less, quartile splits within rat: Methods, "Krausz (2023) dataset".
 - Model forms and parameter counts: Methods, "Model Comparison". BIC = n ln(SSE/n) + k ln n:
-  assumption named in the criteria (standard for least squares).
+  assumption named in the criteria (standard for least squares). The Methods' Nelder-Mead is
+  unconstrained, so the exponential rate λ may be negative and σ is searched up to 10,000 hexes,
+  where the Gaussian is flat over the maze. The Figure 3 profiles keep their scale positive (decaying
+  with distance), as the paper reads A > 0 as a net increase toward the goal, which holds only for
+  a decaying profile; their scale is searched from 1e-6 (and σ from 0.1) up to the same wide limits.
 """
 import hashlib
 import io
@@ -405,8 +409,8 @@ PROFILES = {
     "power-law": lambda d, A, p, c: A * (d + 1) ** (-p) + c,
     "gaussian": lambda d, A, p, c: A * np.exp(-d ** 2 / (2 * p ** 2)) + c,
 }
-PROFILE_BOUNDS = {"exponential": (1e-4, 5), "hyperbolic": (1e-4, 50), "power-law": (1e-4, 10),
-                  "gaussian": (0.3, 60)}
+PROFILE_BOUNDS = {"exponential": (1e-6, 20), "hyperbolic": (1e-6, 1e3), "power-law": (1e-6, 20),
+                  "gaussian": (0.1, 1e4)}
 
 
 def _linear_given_shape(basis, y):
@@ -435,7 +439,8 @@ def fit_profile(name, d, V):
     n = len(V)
     sst = float(np.sum((V - V.mean()) ** 2))
     return {"A": coef[0], "p": p, "c": coef[1], "sse": sse,
-            "r2": 1 - sse / sst if sst > 0 else np.nan, "bic": bic(sse, n, 3)}
+            "r2": 1 - sse / sst if sst > 0 else np.nan, "bic": bic(sse, n, 3),
+            "at_bound": i in (0, len(grid) - 1)}
 
 
 def bic(sse, n, k):
@@ -444,7 +449,10 @@ def bic(sse, n, k):
 
 # Six models of Methods, "Model Comparison". For the nonlinear spatial scale the SSE is profiled
 # over the linear parameters (A, B, c by least squares), which finds the same optimum as a
-# Nelder-Mead search over all parameters.
+# Nelder-Mead search over all parameters; nelder_mead_check runs that search from the optimum.
+# λ may be negative (unconstrained, as Nelder-Mead is); σ is searched from 0.3 to 10,000 hexes.
+LAMBDA_GRID = np.concatenate([-np.geomspace(1e-5, 5, 150)[::-1], [0.0], np.geomspace(1e-5, 5, 150)])
+SIGMA_GRID = np.geomspace(0.3, 1e4, 200)
 MODEL_K = {"CT TD exp": 4, "CT TD gauss": 4, "dV/dt exp": 3, "dV/dt gauss": 3, "Value": 3,
            "Velocity": 2}
 
@@ -456,13 +464,13 @@ def _bases(model, d, v, p):
             "dV/dt gauss": [gss * v], "Value": [e]}[model]
 
 
-def fit_model(model, d, v, y):
+def fit_model(model, d, v, y, grid=None):
     n = len(y)
     if model == "Velocity":
         _, sse = _linear_given_shape([v], y)
         return {"sse": sse, "p": np.nan, "bic": bic(sse, n, 2)}
-    gauss = "gauss" in model
-    grid = np.geomspace(0.3, 100, 120) if gauss else np.geomspace(1e-4, 5, 120)
+    if grid is None:
+        grid = SIGMA_GRID if "gauss" in model else LAMBDA_GRID
 
     def sse_of(p):
         return _linear_given_shape(_bases(model, d, v, p), y)[1]
@@ -472,8 +480,46 @@ def fit_model(model, d, v, y):
     a, b = grid[max(i - 1, 0)], grid[min(i + 1, len(grid) - 1)]
     res = optimize.minimize_scalar(sse_of, bounds=(a, b), method="bounded")
     p, sse = (res.x, res.fun) if res.fun <= vals[i] else (grid[i], vals[i])
-    return {"sse": float(sse), "p": float(p), "bic": bic(sse, n, MODEL_K[model]),
+    coef, _ = _linear_given_shape(_bases(model, d, v, p), y)
+    return {"sse": float(sse), "p": float(p), "coef": coef, "bic": bic(sse, n, MODEL_K[model]),
             "at_bound": i in (0, len(grid) - 1)}
+
+
+def nelder_mead_check(model, d, v, y, fit):
+    """SSE after a Nelder-Mead search over all parameters started from the profiled optimum."""
+    def sse(theta):
+        b = _bases(model, d, v, theta[-1])
+        pred = sum(c * x for c, x in zip(theta[:-2], b)) + theta[-2]
+        return float(np.sum((y - pred) ** 2))
+    res = optimize.minimize(sse, np.r_[fit["coef"], fit["p"]], method="Nelder-Mead",
+                            options={"maxiter": 20000, "maxfev": 20000, "xatol": 1e-10,
+                                     "fatol": 1e-10})
+    return res.fun
+
+
+def cue_locked(t, sig, cues, before=5, after=15):
+    """Mean signal in 1 s bins from `before` s before to `after` s after each cue."""
+    edges = np.arange(-before, after + 1)
+    rows = []
+    for c in cues:
+        i0, i1 = np.searchsorted(t, [c - before, c + after])
+        k = ((t[i0:i1] - c + before) // 1.0).astype(int)
+        v = sig[i0:i1]
+        ok = np.isfinite(v) & (k >= 0) & (k < len(edges) - 1)
+        cnt = np.bincount(k[ok], minlength=len(edges) - 1)
+        s = np.bincount(k[ok], weights=v[ok], minlength=len(edges) - 1)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            rows.append(np.where(cnt > 0, s / cnt, np.nan))
+    return np.nanmean(rows, 0) if rows else np.full(len(edges) - 1, np.nan)
+
+
+def file_contents(asset_id):
+    """Acquisition series and processing groups of one file."""
+    with h5py.File(remfile.File(s3_url(asset_id)), "r") as h:
+        proc = []
+        if "processing" in h:
+            h["processing"].visit(proc.append)
+        return {"acquisition": sorted(h["acquisition"].keys()), "processing": proc}
 
 
 def clock_contrast(t, sig, times, shift=0.0):
@@ -521,6 +567,8 @@ def session_summary(asset_id):
                                    for sh in (-6.0, -3.0, 3.0, 6.0)]
             s["dff_range"] = (float(np.nanmin(sig)), float(np.nanmax(sig)))
             s["dff_pct"] = tuple(float(x) for x in np.nanpercentile(sig, [0.1, 50, 99.9]))
+            s["dff_mean"] = float(np.nanmean(sig))
+            s["cue_trace"] = cue_locked(d["t"], sig, d["cue"])
         means, counts = reward_bins(d["t"], sig, trials)
         for obs in ("trials", "samples"):
             m = kept_bins(means, counts, obs)
