@@ -25,7 +25,9 @@ inputs:
     into the entry's helper (maze zones, trial windows, blanking, balanced resampling, remapping scores,
     segment rate comparisons, zone encoders, statistics). The notebook also reads the repository's
     metadata/session_table.csv and metadata/perf_table.csv, to compare the session list and trial
-    counts with the dandiset; no outcome rests on them.
+    counts with the dandiset (no outcome rests on them), and metadata/unit_table.csv, the paper's own
+    unit matches and open-field clusters, on which the proposed outcomes of fig7g-hd-cluster-remaps-more
+    and fig7h-hd-cluster-encoder-scores rest.
   source: https://github.com/alexgonzl/TMA at commit 6f935935d93a9a27f931f6e73c05d965dfbb862a
 outcomes:
 - claim: fig1d-task-performance
@@ -42,7 +44,9 @@ outcomes:
     and the trial and unit counts of every session agree between it and the dandiset, so the paper's 110
     did not come from these session tables. The paper's notebook printed 110.25, which as a median of
     five subject medians of whole or half trial counts cannot arise; it suggests the printed table held a
-    different set of subjects or sessions. The aggregation the claims file gives for the 110 is asked
+    different set of subjects or sessions. No other selection in the notebook's table reaches it; the
+    median of subject medians ranges from 133.5 (all sessions) to 190.0 (at least 100 trials), the mean
+    of subject medians from 125.2 to 194.5. The aggregation the claims file gives for the 110 is asked
     of a reader (questions/gonzalez-2024.yaml).
   deviations:
   - The dandiset lacks 12 Tree-Maze sessions with units that the repository's session table lists; one
@@ -59,12 +63,15 @@ outcomes:
     Switch trials per session 69.0 (expected 54 +- 5.4). Non-Switch accuracy is 71.4%, 2.4 points below,
     so the similarity holds under the claims file's 10-point threshold. The sw column equals "cue differs
     from the previous trial" in every session. Per session, Switch accuracy is a median 7.6 points higher
-    than non-Switch (Wilcoxon p = 4.8e-11, not the paper's test). The helper's Switch accuracy
-    (tma.session_perf, pct_sw_correct) divides by all Switch trials, including change-of-mind trials
-    that have no correct flag, so it is biased slightly downward (the round-1 verifier showed 1/3 where
-    the answer is 1/2 on synthetic input); the fix was written in the revision but not run (see
-    verifications), so 73.8% is a slight underestimate. The outcome rests on the trial count, which
-    the fix does not change.
+    than non-Switch (Wilcoxon p = 4.8e-11, not the paper's test). Switch accuracy divides by all Switch
+    trials, change-of-mind trials without a correct flag included (69 such trials over the included
+    sessions, a median of 0 per session), as the paper's code does (tree_maze_functions.py, line 1688,
+    (df.sw * df.correct).sum() / n_sw_trials), and the repository's perf_table.csv gives the same 73.8%.
+    Over the Switch trials with a correct flag only, the median of subject medians is 75.2%, 3.8 points
+    above non-Switch, so the similarity still holds; pooled over sessions that variant gives 81.6%
+    against 71.6%, a difference of 10.00 points, at the threshold. Switch trials per session range from
+    64.0 to 95.0 over the other selections of fig1d-task-performance, all outside 54 +- 5.4, so the
+    outcome rests on the trial count.
   deviations:
   - The 10-point threshold for "similar" is the claims file's, not the paper's; the paper gives no test,
     so this part rests on that assumption, as the criterion says.
@@ -145,7 +152,9 @@ outcomes:
   output: claim:fig2-remap-behaviour-controls
   notes: All 12 tests (Pearson score, 500 ms after reward blanked, speed outside 2 to 100 cm/s blanked;
     isolated units and with MUA; unit and session-mean levels) give LRT p below 2e-4 with negative slopes
-    (-0.107 to -0.410). Speed blanking removes a median 45% of samples per session, reward blanking 9%.
+    (-0.107 to -0.410). Speed blanking removes 33% to 68% of the samples of a session (median 45%;
+    subject medians 39% to 54%), reward blanking 4% to 16% (median 9%), and the default blanking a
+    median 0.5%.
   deviations:
   - The control scores were computed under the claim's seed only, not under four more seeds, to keep the
     notebook within its time; the main scores vary little with the seed (fig2d-cue-remapping).
@@ -158,8 +167,10 @@ outcomes:
     isolated units, with Z+C above Z (fixed_v_none 0.846) and above ZxC (inter_v_fixed -1.016); with MUA
     4361 and the same signs. The mean test R2 of Z+C over 510 isolated units is 0.123 (Z 0.113, ZxC
     0.109); five seeds give 0.1225 to 0.1236 and 10 folds 0.1229; 82% of all units are best fitted by
-    Z+C. On the R2 reading the LRT is 6.0, p = 0.0499 with Z+C highest, and 0.050 to 0.067 under the
-    other seeds and 10 folds. The single comparisons are weaker (fixed_v_none p = 0.056, inter_v_fixed
+    Z+C. On the R2 reading the LRT is 6.0, p = 0.0499 with Z+C highest, 0.050 to 0.067 under the other
+    four seeds and 0.073 with 10 folds; its Wald contrasts put Z+C above Z by 0.010 (p = 0.094) and above
+    ZxC by 0.015 (p = 0.017) for isolated units, and with MUA above both (p = 0.0061 and 1.5e-5). On the
+    Mann-Whitney reading the single comparisons are weaker (fixed_v_none p = 0.056, inter_v_fixed
     p = 0.022). The paper reports chi2(3) = 962.05. The criterion is judged on the raw mean R2 of
     isolated units (0.123); the LMEM estimate of the Z+C mean is 0.107, just below the tolerance bound
     of 0.108.
@@ -174,12 +185,13 @@ outcomes:
     the data. The decoders are multinomial logistic regressions on population activity with the code's
     cumulative evidence tables (tree_maze_functions.py, ZoneDecoder, zone_neural_decoder_analyses and
     zone_decoder_dec_rw_analyses; statistics in Notebooks/enco_deco_paper_plots_stats.ipynb). The first
-    run did not port them in its time. The revision after round 1 ported them into a second notebook
-    and ran it in development over the 123 sessions (about 40 minutes), but the entry could not be run
-    again within the revision's time, after a failed development run of the main notebook, so nothing
-    from it is in the executed notebook and no number from it is recorded. The dandiset holds what
-    the decoders need (rates, tracking and trial tables of every Tree-Maze session), so a later
-    attempt can test the claim.
+    run did not port them in its time. The revision after round 1 ported them and ran them in
+    development, but could not run the entry again, and that code was taken out. The revision after
+    round 2 did not port them again, as a port with its development run and the two full runs of a second
+    notebook (about 40 minutes each) did not fit in its five hours beside the two full runs of the main
+    notebook (36 minutes each). No number from the decoders is recorded. The dandiset holds what the
+    decoders need (rates, tracking and trial tables of every Tree-Maze session), so a later attempt can
+    test the claim.
 - claim: fig3f-decision-decoder
   outcome: blocked
   blocked_by: other
@@ -201,7 +213,8 @@ outcomes:
   - 374
   notes: Of 510 isolated units, U_Z <= 0 (unrewarded above rewarded, inbound) in 357 left, 326 stem and
     374 right (70%, 64%, 73%), each within 10% of 386, 340 and 412 and above half. The paper counts 565
-    isolated units; the dandiset lacks 11 recorded sessions with 65 isolated units (see deviations). The
+    isolated units; the dandiset lacks 12 Tree-Maze sessions with units that the repository's session
+    table lists, 8 of them holding 65 isolated units (see deviations and the second finding). The
     segment effect has LRT 45.3, df 2, p = 1.4e-10 (with MUA 113.1, p = 2.8e-25). MUA alone give 828,
     762 and 862 of 1234.
   deviations:
@@ -250,8 +263,10 @@ outcomes:
   output: claim:fig5-reward-rate-remapping-model
   notes: On the Mann-Whitney reading the LRT is 813, p = 2.9e-177 for isolated units, with Zi+R above Zi
     (0.967) and above ZixR (-0.812), and 2994 with MUA. On the R2 reading the LRT is 13.2, p = 0.0014,
-    with Zi+R highest (0.123 against 0.102 and 0.101); 77% of all units are best fitted by Zi+R. Five
-    seeds and 10 folds give the same signs. The paper reports chi2(3) = 856.9.
+    with Zi+R highest (0.123 against 0.102 and 0.101), and its Wald contrasts put Zi+R above Zi by 0.021
+    (p = 0.0018) and above ZixR by 0.022 (p = 0.0014), with p below 0.007 under every seed and with 10
+    folds; 77% of all units are best fitted by Zi+R. Five seeds and 10 folds give the same signs. The
+    paper reports chi2(3) = 856.9.
   deviations:
   - As for fig3d-cue-rate-remapping-model.
 - claim: fig4s5-cue-reward-remap-correlated
@@ -272,7 +287,11 @@ outcomes:
     449 against 58 of 244 (p = 6.1e-19). Under the claim's seed none of the 12 two-sample KS tests between
     the four coding groups has p < 0.05 (smallest 0.073); under the seed plus 1000, 2000, 3000 and 4000,
     2, 0, 1 and 0 of the 12 have p < 0.05 (smallest 0.030). With MUA the Fisher tests hold (p = 4.7e-13
-    and 3.1e-58) but 5 of 12 KS tests have p < 0.05.
+    and 3.1e-58) but 5 of 12 KS tests have p < 0.05. In the liberal table every unit has a nonzero
+    coding score, so the units incorrect in one coding only are by construction the units correct in
+    one only (186 and 186 isolated units, 609 and 609 with MUA); the liberal test thus compares 263
+    units incorrect in both with 58 correct in both against the same mixed units, and adds little to
+    the strict test, on which the outcome rests (p = 0.0028).
   deviations:
   - The Fisher table is read, as the claims file does, as overlapping against non-overlapping units of
     the union, for incorrect against correct coding.
@@ -281,13 +300,14 @@ outcomes:
   notebook: reproduce_gonzalez_2024.ipynb
   output: claim:fig4s7-error-signal-persists
   notes: On 510 isolated units with more than 5 incorrect outbound trials, inbound runs conditioned on
-    outbound give incorrect above correct (coefficient 0.146, LRT 4.04, p = 0.045) and the conditioning
+    outbound give incorrect above correct (coefficient 0.146, LRT 4.04, p = 0.044) and the conditioning
     effect (0.280, LRT 10.5, p = 0.0012); outbound runs conditioned on inbound give incorrect above
     correct (0.391, LRT 25.4, p = 4.7e-7) and the conditioning effect (0.186, LRT 4.12, p = 0.042). With
     MUA the inbound conditioning effect is not significant (p = 0.17). The legend's N is 500. Units are
     kept with more than 5 incorrect outbound trials, where the legend says at least 5; all units pass
-    either rule, so the selection removes none. Two of the four LRTs are close to 0.05 (0.045 and
-    0.042), so the outcome is fragile.
+    either rule, so the selection removes none. Two of the four LRTs are close to 0.05 (0.044 and
+    0.042), so the outcome is fragile. The first run printed LRT 4.12, p = 0.043 for the first test;
+    both runs of the revision after round 2 give 4.04, p = 0.044.
   deviations:
   - The z measure, the unit rule and the conditioning variables are taken from the code
     (tree_maze_functions.py, mean_segment_rates_analysis; experiment_info.py,
@@ -325,48 +345,92 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Not tested in this attempt. The matching of fig7b-matched-units cannot be rerun, but the
-    paper's own matches (metadata/unit_table.csv in the paper's repository) name the dandiset's units by
-    cl_name and uuid, so the aggregate coefficients of the matched open-field units could be clustered.
-    The code clusters the coefficients of its 'orig' open-field models (unsmoothed rates, not z-scored,
-    20 s blocks; experiment_info.py, get_of_scores and get_of_encoding_models_scores), not those of the
-    models tested in fig6cd-of-aggregate-model. The revision after round 1 wrote this analysis, with a
-    check of the unit table's names against the dandiset's unit tables, but the entry could not be run again within the revision's time, so
-    it is not in the executed notebook. Blocked earlier as data_missing through fig7b-matched-units;
-    the round-1 verifier showed it can be tested with the paper's matches.
+    paper's own matches (metadata/unit_table.csv in the paper's repository) name the dandiset's units;
+    the notebook shows that all 306 open-field units of the table, and the Tree-Maze units of its 274
+    rows whose session is in the dandiset, have the same unit name, uuid and session there. So the
+    aggregate coefficients of the matched open-field units could be clustered. The code clusters the
+    coefficients of its 'orig' open-field models (unsmoothed rates, not z-scored, 20 s blocks;
+    experiment_info.py, get_of_scores and get_of_encoding_models_scores), not those of the models
+    tested in fig6cd-of-aggregate-model, with UMAP (cross_task_functions.py, umap_cluster). Neither
+    revision ran it, as the port of those models and of the UMAP step (umap-learn is not in the entry's
+    environment) did not fit in the revisions' time. Blocked earlier as data_missing through
+    fig7b-matched-units; the round-1 verifier showed it can be tested with the paper's matches.
 - claim: fig7f-tuning-metrics-match
   outcome: blocked
   blocked_by: other
-  notes: Not tested in this attempt, for the reason given under fig7de-hd-speed-tradeoff. The tuning
-    scores (Methods, Open-field tuning metrics) can be computed from the open-field rates and tracking
-    in the dandiset for the clusters of the paper's matched units.
+  notes: Not tested in this attempt, for the reason given under fig7de-hd-speed-tradeoff, on which it
+    depends. The tuning scores (Methods, Open-field tuning metrics) can be computed from the open-field
+    rates and tracking in the dandiset for the clusters of the paper's matched units.
 - claim: fig7g-hd-cluster-remaps-more
   outcome: blocked
   blocked_by: other
-  notes: Not tested in this attempt. Blocked earlier as data_missing through fig7de-hd-speed-tradeoff,
-    which was wrong. The claim takes its clusters from the paper's metadata/unit_table.csv (data
-    with_labels), whose of_cluster_id, cl_name_T3 and uuid_T3 name the dandiset's units, and the cue
-    and reward remapping scores of those units are computed in this notebook (fig2d-cue-remapping,
-    fig4d-reward-remapping). The revision after round 1 wrote the test, but the entry could not be run
-    again within the revision's time, so it is not in the executed notebook; a later attempt can test
-    it.
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig7g-hd-cluster-remaps-more
+  notes: Blocked in the verified record (not tested before round 2). Blocked earlier as data_missing
+    through fig7de-hd-speed-tradeoff, which was wrong; the claim takes its clusters from the paper's
+    metadata/unit_table.csv (data with_labels). The revision after round 2 tested it on that table; the
+    result is under proposed. 255 rows of the table (185 matched units, all isolated) have their
+    Tree-Maze session among the 123 of the neural analyses and 253 have both scores. Cluster 0 has the
+    most negative mean cue (-0.717 against -0.624 and -0.626) and reward (-1.289 against -1.024 and
+    -0.859) remapping score under all five seeds, but the interaction of remap type and cluster has LRT
+    5.74, df 2, p = 0.057 (paper chi2(2) = 6.87, p = 0.032), and p = 0.057 to 0.19 over the five seeds;
+    the main effect has p = 0.85 (paper p = 0.47). Judged as in fig2d-cue-remapping on the matched
+    units, the reward intercept is -0.877 with a 95% CI up to 0.093 (p = 0.076), not below zero under
+    any seed, and the cue intercept's CI could not be computed under the claim's seed (below zero under
+    the other four, up to -0.195). With the random structure of the fig7g model both intercepts have CIs
+    below zero (cue up to -0.439, reward up to -0.221), and Wilcoxon tests of the matched units' scores
+    give p below 1e-21. The remapping scores are those of fig2d-cue-remapping and
+    fig4d-reward-remapping, under their seeds and four more.
+  deviations:
+  - The paper's clusters and matches (metadata/unit_table.csv) are used, as the criterion says; the
+    clusters are not recomputed (fig7de-hd-speed-tradeoff is not tested). The cluster is categorical in
+    the LMEM, as in the code's notebook (Notebooks/TM/paper_stats.ipynb, cell 14), which fits the
+    paper's df 2.
+  - The dandiset lacks 7 of the table's Tree-Maze sessions (32 rows), and 19 more rows fall in sessions
+    left out of the neural analyses (fewer than 50 trials, or the invalid session); 2 more rows have no
+    remapping score.
+  proposed:
+    outcome: partially_reproduced
+    reason: Tested in the revision after round 2 on the paper's own clusters. Cluster 0 remaps most for
+      both cue and reward under all five seeds, as the claim says, and both scores stay below zero on
+      the matched units under the fig7g model's random structure, but the criterion's interaction test
+      has p = 0.057 (0.057 to 0.19 over the seeds) and, judged as in fig2d-cue-remapping, the reward
+      intercept's CI reaches 0.093, so the criterion is not met in full while the effect is present in
+      its direction.
 - claim: fig7h-hd-cluster-encoder-scores
   outcome: blocked
   blocked_by: other
-  notes: Not tested in this attempt, for the reason given under fig7g-hd-cluster-remaps-more; the
-    encoder scores it needs are those of fig3d-cue-rate-remapping-model and
-    fig5-reward-rate-remapping-model.
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig7h-hd-cluster-encoder-scores
+  notes: Blocked in the verified record (not tested before round 2), for the reason given under
+    fig7g-hd-cluster-remaps-more. The revision after round 2 tested it on the paper's clusters; the
+    result is under proposed. Over 255 rows (185 matched units), with the test R2 of the encoders of
+    fig3d-cue-rate-remapping-model and fig5-reward-rate-remapping-model, cluster 0 has the highest mean
+    score (0.178 against 0.086 and 0.063), and the highest for each of the four scores, under every
+    fold seed and with 10 folds, but the cluster effect has LRT 4.05, df 2, p = 0.13 (0.12 to 0.19 over
+    the runs), against the paper's chi2(2) = 13.89, p = 0.00096.
+  deviations:
+  - As for fig7g-hd-cluster-remaps-more. Rate and global scores are the mean test R2 of Z+C and ZxC
+    (cue) and Zi+R and ZixR (reward), values of absolute value above 1 left out, as in
+    experiment_info.py, get_tm_scores.
+  proposed:
+    outcome: partially_reproduced
+    reason: Tested in the revision after round 2 on the paper's own clusters. Cluster 0 has about twice
+      the mean encoder score of the other clusters under every run, as the claim says, but the LRT of
+      the cluster effect has p = 0.13, not below 0.05, so the criterion is met only in part.
 - claim: methods-lookahead-encoder-best
   outcome: partially_reproduced
   notebook: reproduce_gonzalez_2024.ipynb
   output: claim:methods-lookahead-encoder-best
   notes: Z50 has the highest mean test R2 over isolated units (0.114, against 0.109 for Z0 and 0.099 for
-    Z-50), in the same order under all five seeds and with 10 folds, but neither comparison favours it at
-    p < 0.05 (Z50 against Z0 0.018, p = 0.98; Z-50 against Z50 -0.687, p = 0.36). With MUA included Z0
-    has the higher raw mean among MUA (0.046 against 0.045) and Z50 against Z0 is -0.195 (p = 0.80). On
-    the R2 reading the notebook prints only each model's effect against zero, not a test of Z50 against
-    Z0 or Z-50, so that reading has no comparison; the claim's comparisons are judged on the
-    Mann-Whitney reading alone, where neither is significant. The round-1 verifier would give
-    not_reproduced (see verifications).
+    Z-50), in the same order under all five seeds and with 10 folds, but it is not favoured over Z0 at
+    p < 0.05 under either reading. On the Mann-Whitney reading neither comparison favours it (Z50 against
+    Z0 0.018, p = 0.98; Z-50 against Z50 -0.687, p = 0.36). On the R2 reading the Wald contrasts put Z50
+    above Z-50 by 0.015 (p = 0.011) and above Z0 by 0.0045 (p = 0.44), with p 0.011 to 0.022 and 0.39 to
+    0.44 over the seeds and 10 folds. With MUA included Z0 has the higher raw mean among MUA (0.046
+    against 0.045), Z50 against Z0 on the Mann-Whitney reading is -0.195 (p = 0.80), and on the R2 reading
+    Z50 is 0.0085 above Z-50 (p = 0.00066) and 0.0002 above Z0 (p = 0.93). The round-1 verifier would
+    give not_reproduced (see verifications); round 2 accepted partially_reproduced.
   deviations:
   - As for fig3d-cue-rate-remapping-model.
 findings:
@@ -383,8 +447,8 @@ findings:
     in the dandiset (Li_T3i_061218_0001, Li_T3g_070518_0001, NE_T3g_053018_0001, Ne_T3g_060118_0001,
     NE_T3g_062618_0001, NE_T3gj_062718_0001, NE_T3gj_062818_0001, Cl_T3g_112118_0001, Cl_T3g_120118_0001,
     Cl_T3g_121218_0001, Al_T3g_101018_0002, Ca_T3g_031419), with 224 units, 65 of them isolated. The
-    attempt has 510 isolated units where the paper counts 565 (Figure 4c), and the repository's unit
-    match table refers to Li_T3i_061218_0001.
+    attempt has 510 isolated units where the paper counts 565 (Figure 4c), and 7 of the missing sessions
+    hold the Tree-Maze units of 32 of the 306 rows of the repository's unit match table (Figure 7).
 - kind: metadata_insufficient
   about: data
   severity: major
@@ -444,6 +508,23 @@ findings:
   statement: The Figure 4d paragraph says the reward null has "an equal number of rewarded and unrewarded
     trials", while the Methods and the code balance the null by left and right cue. Both give a mean
     reward remapping score below zero (-1.02 and -0.61 for isolated units).
+- kind: code_mismatch
+  about: paper
+  statement: The code computes Switch-trial accuracy as (df.sw * df.correct).sum() / n_sw_trials
+    (tree_maze_functions.py, line 1688), so change-of-mind trials, which have no correct flag, count as
+    incorrect, while the overall accuracy leaves them out. The median of subject medians is 73.8% this
+    way and 75.2% over Switch trials with a correct flag; the paper reports 76.9%.
+- kind: code_mismatch
+  about: paper
+  statement: In the repository's metadata/unit_table.csv the open-field clusters 0, 1 and 2 hold 98, 59
+    and 60 matched units, where the paper gives n = 98 for cluster 0 and n = 59 for cluster 2, the speed
+    cluster (Results, Units encoding head direction, paragraph 1).
+- kind: other
+  about: data
+  severity: none
+  statement: The paper's unit match table (metadata/unit_table.csv) names the dandiset's units. All 306
+    open-field units, and the Tree-Maze units of the 274 rows whose session is in the dandiset, have the
+    same unit name (cl_name), uuid and session in the dandiset's unit tables.
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -689,3 +770,240 @@ verifications:
       comparisons the criterion asks for are not significant under the reading that has them; the notes now
       say that the R2 reading has no pairwise test (problem 3). The Wald contrasts of Z50 against Z0 and Z-50
       on the R2 reading were written but not run.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the first run, with its conclusions and summary, the helper
+    module, the claims file and this record as revised after round 1, with the paper. Report in
+    transcripts/gonzalez-2024/verifier-2-report.md. No finding of the record is rated critical; the
+    verifier found that none should be (finding 6, Cl_T3g_121418_0, is a second recording with different
+    trials and units, not a duplicate, and the code and the notebook exclude it; finding 4, the 20 ms
+    track offset, is shown by the track's own clock column) and agreed with the ratings as given. The
+    revision re-ran the entry twice (a run for the numbers, then the final run, 36 minutes each; every
+    output of the earlier cells is the same in both). Points without a claim of their own, with the
+    response. The README and the notebook's header, Claims not tested and Summary gave fig7de to fig7h
+    as blocked, data_missing, against the record's other; corrected in all three. B5 (Switch accuracy
+    with change-of-mind trials in the denominator): the helper follows the paper's code
+    (tree_maze_functions.py, line 1688), whose perf_table.csv gives the same 73.8%, so the measure is
+    kept and the variant over Switch trials with a correct flag is now in the notebook (75.2%, 3.8
+    points above non-Switch; pooled, 10.00 points), and the code's definition is a new finding about the
+    paper. B8 (the liberal Fisher groups are the same units): now printed in the notebook (186 and 186,
+    609 and 609) and stated in the notes of fig4s6-incorrect-coding-overlap. The outputs asked for, now
+    in the notebook: the session selections for the trial counts of fig1d (none reaches 110 or 54), the
+    per-session distribution of blanked samples (speed 33% to 68%, median 45%), the Wald contrasts of
+    the R2 reading for the three encoder claims, and the paper's Figure 7 matches in the dandiset (274 of
+    306 rows, all with the same names, uuids and sessions). B1: fig7g and fig7h are now tested on the
+    paper's clusters, and the change of outcome is proposed for a third round; fig7de and fig7f are
+    still not run (the port of the code's 'orig' open-field models and of the UMAP step did not fit in
+    the revision's time). B2: the decoders of fig3e to fig3g are still not run (a port and two full
+    runs of a second notebook did not fit beside the two runs of the main notebook). Not checked by
+    the verifier and still not shown: none beyond these.
+  results:
+  - claim: fig1d-task-performance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the outcome as stated. Still not checked: the session selection that would give 110
+      and 54 trials.'
+    response: The notebook now prints the trial counts per subject under six selections (all sessions, the
+      rule, at least one isolated unit, T3g only, the invalid session left out, at least 100 trials); none
+      gives 110 (133.5 to 190.0) or 54 Switch trials (64.0 to 95.0). The notes say so.
+  - claim: fig1-switch-performance
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Its assumption, the claims file''s 10-point "similar" threshold, is stated in the notes and
+      deviations and is reasonable. Caveat: pct_sw_correct is biased downward (my round-1 B5) and the fix
+      was not run. The true Switch accuracy is therefore higher than 73.8%, so the Switch minus non-Switch
+      difference is larger than 2.4 points. Pooled, the gap is already 9.2 points (80.8 against 71.6, cell
+      18). So the "similarity" part sits closer to the threshold than the notes say. The outcome is
+      unaffected, because the trial count (69 against 54 ± 5.4) fails anyway.'
+    response: The measure is kept as the paper's code computes it (tree_maze_functions.py, line 1688; the
+      repository's perf_table.csv gives the same 73.8%), and the variant over Switch trials with a
+      correct flag is now in the notebook. It gives 75.2%, 3.8 points above non-Switch, under the
+      criterion's median of subject medians, and pooled 81.6% against 71.6%, 10.00 points, at the
+      threshold; the notes give both. The outcome is unchanged, as it rests on the trial count. The code's
+      definition is added as a finding about the paper.
+  - claim: fig1-training-to-criterion
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome as stated.
+    response: No change.
+  - claim: fig2c-cue-error-coding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated.
+    response: No change.
+  - claim: fig2d-cue-remapping
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated.
+    response: No change.
+  - claim: fig2e-unit-remap-behaviour
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated; the seed ranges were checked against the outputs.
+    response: No change.
+  - claim: fig2f-session-remap-behaviour
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome as stated; the seed ranges were checked against the outputs.
+    response: No change.
+  - claim: fig2g-population-remap-behaviour
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated; the seed ranges were checked against the outputs.
+    response: No change.
+  - claim: fig2h-subject-remap-behaviour
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated; the per-subject taus were checked against the outputs.
+    response: No change.
+  - claim: fig2-remap-behaviour-controls
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the outcome as stated; the control p bounds and slope ranges match cell 46. Still
+      not checked: the per-session blanking distribution.'
+    response: The notebook now prints the blanked fraction per session under each blanking (quantiles and
+      subject medians); speed blanking removes 33% to 68% of a session's samples (median 45%). The notes
+      give the range.
+  - claim: fig3d-cue-rate-remapping-model
+    agrees: true
+    outcome: reproduced
+    reason: 'The record''s notes say "0.050 to 0.067 under the other seeds and 10 folds". Cell 76 prints p =
+      0.073 for 10 folds and 0.04993 for seed+3000. Cell 77''s narrower "under the five seeds" is correct.
+      The outcome rests on the Mann-Whitney (U_Z) reading, so it does not change.'
+    response: Corrected to 0.050 to 0.067 under the other four seeds and 0.073 with 10 folds, in the notes
+      and the notebook's conclusion. The Wald contrasts of the R2 reading are added (Z+C above Z, p = 0.094;
+      above ZxC, p = 0.017).
+  - claim: fig3e-zone-decoder-cue
+    agrees: true
+    outcome: blocked
+    reason: 'B2 not resolved: fig3e, fig3f and fig3g are still untested. The decoders were ported but not
+      run, so no fig3f chance-level comparison exists.'
+    response: Still not run, and the notes say why. The port from round 1 had been taken out, and a new port
+      with its development run and two full runs of a second notebook (about 40 minutes each) did not fit
+      in this revision's five hours beside the two full runs of the main notebook (36 minutes each). The
+      claim stays blocked as other; the data are in the dandiset.
+  - claim: fig3f-decision-decoder
+    agrees: true
+    outcome: blocked
+    reason: As for fig3e (B2); no fig3f chance-level comparison exists.
+    response: As for fig3e-zone-decoder-cue.
+  - claim: fig3g-decoder-tracks-behaviour
+    agrees: true
+    outcome: blocked
+    reason: As for fig3e (B2).
+    response: As for fig3e-zone-decoder-cue.
+  - claim: fig4c-reward-error-coding
+    agrees: true
+    outcome: reproduced
+    reason: 'The record''s notes say "the dandiset lacks 11 recorded sessions with 65 isolated units". Cell 6
+      lists 12 missing sessions. The 65 isolated units are in 8 of them, and 11 of the 12 have trials. The
+      wording should match the second finding (12 sessions).'
+    response: Corrected; the notes now say the dandiset lacks 12 Tree-Maze sessions with units that the
+      repository lists, 8 of them holding the 65 isolated units.
+  - claim: fig4d-reward-remapping
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated; the seed ranges were checked against the outputs.
+    response: No change.
+  - claim: fig4ef-reward-remap-behaviour
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome as stated; the seed ranges were checked against the outputs.
+    response: No change.
+  - claim: fig4gh-reward-remap-population-subject
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated; the seed ranges and per-subject taus were checked against
+      the outputs.
+    response: No change.
+  - claim: fig4-reward-remap-behaviour-controls
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated; the control p bounds and slope ranges match cell 61.
+    response: No change.
+  - claim: fig5-reward-rate-remapping-model
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated.
+    response: The Wald contrasts of the R2 reading are added (Zi+R above Zi, p = 0.0018; above ZixR,
+      p = 0.0014).
+  - claim: fig4s5-cue-reward-remap-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated.
+    response: No change.
+  - claim: fig4s6-incorrect-coding-overlap
+    agrees: true
+    outcome: reproduced
+    reason: 'I now accept it. The criterion is applied under the claim''s seed and on the unit set of the
+      code''s figure function, and seed_sensitive is set. It is fragile: with MUA, 5 of 12 KS tests have
+      p < 0.05, and 2 of the 4 other seeds fail (cell 67). B8 only partly addressed: the notes and
+      deviation keep the claims file''s reading of the table but do not say that the liberal "incorrect in
+      one only" and "correct in one only" groups are the same units by construction (609 = 609 and 186 =
+      186, cell 67). This bears on how much the liberal Fisher test supports the outcome.'
+    response: The notebook now prints that the two groups are the same units (186 and 186 isolated units,
+      609 and 609 with MUA), and the notes and the conclusion say that the liberal test therefore compares
+      units incorrect in both with units correct in both and adds little to the strict test, on which the
+      outcome rests (p = 0.0028).
+  - claim: fig4s7-error-signal-persists
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 72 and the record''s notes say "coefficient 0.146, LRT 4.04, p = 0.045", and "Two of the four
+      LRTs are close to 0.05 (0.045 and 0.042)". Cell 71 prints lrt_incorrect 4.115, p_incorrect 0.04251,
+      so the value should read LRT 4.12, p = 0.043. The outcome does not change.'
+    response: Both runs of this revision print LRT 4.04, p = 0.044 for that test (the first run printed 4.12,
+      p = 0.043); the notes and the conclusion now give 4.04, p = 0.044, and say that the first run
+      differed.
+  - claim: fig6cd-of-aggregate-model
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as stated; the fig6cd values were checked against the outputs.
+    response: No change.
+  - claim: fig7b-matched-units
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome as stated (blocked, data_missing). Still not checked: the counts of the
+      paper''s Figure 7 matches in the dandiset.'
+    response: The notebook now prints them. 274 of the table's 306 rows have their Tree-Maze session in the
+      dandiset, all 306 open-field units are there, and every one has the same name, uuid and session; 7
+      of the 12 missing sessions hold the other 32 rows.
+  - claim: fig7de-hd-speed-tradeoff
+    agrees: true
+    outcome: blocked
+    reason: 'Changing fig7de to fig7h from data_missing to other is correct now. These four were testable with
+      the paper''s matches, and the notes say so. B1 not resolved: fig7de, fig7f, fig7g and fig7h are
+      still untested, although they can be tested. They are now honestly labelled.'
+    response: Still not run, and the notes say why (the port of the code's 'orig' open-field models and the
+      UMAP step did not fit in the revision's time). The README and the notebook now give blocked, other.
+  - claim: fig7f-tuning-metrics-match
+    agrees: true
+    outcome: blocked
+    reason: As for fig7de (B1).
+    response: As for fig7de-hd-speed-tradeoff.
+  - claim: fig7g-hd-cluster-remaps-more
+    agrees: true
+    outcome: blocked
+    reason: As for fig7de (B1); testable with the paper's matches, still untested.
+    response: Tested in this revision on the paper's clusters (metadata/unit_table.csv). The outcome is kept
+      as verified, blocked, and the change to partially_reproduced is proposed for a third round, with the
+      analysis in the notebook (claim:fig7g-hd-cluster-remaps-more). Cluster 0 remaps most under every
+      seed, but the interaction has p = 0.057 and the reward intercept's CI reaches 0.093.
+  - claim: fig7h-hd-cluster-encoder-scores
+    agrees: true
+    outcome: blocked
+    reason: As for fig7de (B1); testable with the paper's matches, still untested.
+    response: Tested in this revision on the paper's clusters. The outcome is kept as verified, blocked, and
+      the change to partially_reproduced is proposed for a third round (claim:fig7h-hd-cluster-encoder-scores).
+      Cluster 0 has the highest mean score under every run, but the cluster LRT has p = 0.13.
+  - claim: methods-lookahead-encoder-best
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I now accept partially_reproduced over my round-1 not_reproduced. The "highest mean R2" part holds
+      under every run (cell 82). The "p < 0.05" part fails on the only reading that has pairwise tests (p =
+      0.98 and 0.36). The notes say this plainly. B3 not resolved: there are still no pairwise Wald
+      contrasts on the mean-R2 reading. The contrasts were written but not run.'
+    response: The Wald contrasts of the R2 reading are now in the notebook. Z50 is above Z-50 (p = 0.011)
+      but not above Z0 (0.0045, p = 0.44; with MUA p = 0.93), so under both readings Z50 is not favoured
+      over Z0 at p < 0.05. The outcome is unchanged and the notes give the contrasts.

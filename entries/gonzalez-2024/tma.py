@@ -303,11 +303,17 @@ TMZ = TreeMazeZones()
 
 def session_perf(trials):
     """BehaviorData.get_session_perf: fraction correct over trials with a
-    correct flag (change-of-mind trials carry none), Switch trials from sw."""
+    correct flag (change-of-mind trials carry none), Switch trials from sw.
+    Switch accuracy (pct_sw_correct) is the code's, (df.sw * df.correct).sum()
+    / n_sw_trials (tree_maze_functions.py, line 1688), which divides by all
+    Switch trials, change-of-mind trials included; pct_sw_correct_flagged is
+    the fraction correct over the Switch trials that have a correct flag, as
+    for the overall accuracy, shown as a variant."""
     df = trials
     n_sw = df.sw.sum()
     return dict(n_trials=len(df), n_sw_trials=int(n_sw), pct_correct=df.correct.mean(),
                 pct_sw_correct=(df.sw * df.correct).sum() / n_sw if n_sw else np.nan,
+                pct_sw_correct_flagged=df.correct[df.sw == 1].mean(),
                 pct_nsw_correct=df.correct[df.sw == 0].mean())
 
 
