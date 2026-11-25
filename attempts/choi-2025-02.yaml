@@ -218,6 +218,15 @@ findings:
     with 5.0 s the edge of the search). Responses in the trial-aligned series are therefore spread over about 2 s after the
     raw change, and a latency measured on them comes out late by about 1.5 s or more. How the PCA components
     were derived from the scans is not documented.
+- kind: metadata_insufficient
+  severity: minor
+  found: on_prompt
+  statement: The paper says the reward size depends on whether the target is at the top or bottom of the
+    screen. The events code left (117) and right (118) conditions, and both reward conditions occur on both
+    sides (left 233 trials with condition 1 and 499 with condition 2, right 250 and 429), and no event codes
+    the target's vertical position. The reward condition codes 41 and 40 are described as giving the big and
+    small reward, so each trial's reward size is known, but the target position that the paper says sets it is
+    not in the dandiset.
 verifications:
 - date: '2026-11-24'
   kind: agent
@@ -461,3 +470,86 @@ verifications:
     response: Raised to major, as the rating is about harm to a user of the dataset and a latency measured on the
       trial-aligned FSCV comes out late by about 1.5 s. The statement now adds that da follows iox by a further
       0.1 to 0.4 s, so it carries at least the same delay, and gives the kernel as positive from about -2.8 s.
+reconciliation:
+  earlier: choi-2025-01
+  date: '2026-11-25'
+  blind: false
+  blind_note: The author saw no record, entry, questions, transcript or note of choi-2025-01; the audit lines
+    are links to the pilot notes and the repository's README. Two inputs the protocol gives the author carried
+    a summary of that attempt's results. The dandiset's release notes, read under step 1.1, list the
+    conversion fixes made after "a reproduction attempt" (one clock for all streams, events no longer stored
+    several times, Plexon timestamps, units), and the claims file's opening comment reports the 11812.1 s
+    clock offset found in the earlier data check. The author disclosed both in its report and tested the
+    offset, which does not hold on this version (its finding 2 and the fig9a deviation).
+  findings:
+  - finding: 1
+    status: fixed
+    note: The raw ephys now starts at 4612.10 s on the session clock and lines up with the stored LFP at a lag of
+      1 ms at the first and last trial (r 0.972 and 0.872, earlier_findings.ipynb); choi-2025-02 finds the same
+      over four trials (its finding 2).
+  - finding: 2
+    status: fixed
+    note: The raw samples now run from 10:06:44 to 15:12:20, ending 3.9 s before the Neuralynx header's close at
+      15:12:24, and their start 4612 s after the recording was opened accounts for the longer header span
+      (earlier_findings.ipynb).
+  - finding: 3
+    status: fixed
+    note: The raw c5d trough now falls 0.000 to 0.344 ms after the stored spike times on average at the start,
+      middle and end of the recording, close to the stored waveforms' trough at 0.312 ms (earlier_findings.ipynb);
+      the 7.1 ms lag is gone.
+  - finding: 4
+    status: fixed
+    note: The series is no longer described as beta-band, and it carries a conversion of 1.0 in volts (median
+      absolute value 24.2 uV, earlier_findings.ipynb). Its preprocessing, now described as not documented, is
+      choi-2025-02's finding 4, a new finding.
+  - finding: 5
+    status: fixed
+    note: The waveforms now hold volts (mean trough -5.636e-05), and the raw FSCV current carries a conversion of
+      1e-09 to amperes on values around 1000 (earlier_findings.ipynb).
+  - finding: 6
+    status: still_present
+    now: 3
+    note: The da, ph, m and iox columns still state "Units unknown" (choi-2025-02 finding 3), and `good` is still
+      true for all 1411 trials, which choi-2025-02 does not state (earlier_findings.ipynb).
+  - finding: 7
+    status: fixed
+    note: The subject, session and experiment descriptions and the keywords now describe this paper's chamber
+      implant and the 09/27/2024 session of monkey T (earlier_findings.ipynb).
+  - finding: 8
+    status: fixed
+    note: The event table now stores 14117 events, 1412 trial starts, with no repeated time and no decreasing
+      step within a label, and the Plexon spike times are sorted (earlier_findings.ipynb).
+  - finding: 9
+    status: still_present
+    now: 6
+    note: The trial tags are still "initial cue display" for all 1411 rows and the trials table has no trial type
+      column (earlier_findings.ipynb); choi-2025-02 rebuilds the classes from the events and finds the same match
+      with the Zenodo lists apart from trial 1411.
+  - finding: 10
+    status: still_present
+    now: 10
+    note: Left and right conditions still occur with both reward conditions and no event codes the target's
+      vertical position (earlier_findings.ipynb). The reward condition codes 41 and 40 are now described as the
+      big and small reward, so only the target position is missing.
+  - finding: 11
+    status: partly_fixed
+    now: 9
+    note: The raw FSCV now has a timestamp per sample, and the spike-free gap sits 46 to 50 ms after each scan
+      time throughout the session (choi-2025-02 finding 2), so its clock is established. The trial-aligned
+      oxidation current is now located in the raw scans, as a smoothed copy that matches the raw current best
+      about 1.5 s earlier, which the file does not document (finding 9).
+  - finding: 12
+    status: still_present
+    now: 1
+    note: The dandiset still holds only the 09/27/2024 session of monkey T, and the same 8 of 13 claims are
+      blocked with data_missing in both attempts (choi-2025-02 finding 1).
+  protocol: Between pilot-6 and pilot-18 the claims file gained quotes and statistics from the paper's full text
+    (pilot-8, added 2026-10-19), the protocol required methods taken from the paper and split the reader, who
+    writes the claims, from the author (pilot-9 and pilot-10), repeat attempts became blind with this
+    reconciliation (pilot-12), the notebook time limit rose to 60 minutes (pilot-13), records were filed by
+    paper (pilot-14), and findings about the data were given a severity (pilot-18, in docs/protocol.md; the
+    pilot notes have no section for pilot-15 to pilot-18). The claims file was not written again, so both
+    attempts applied the same criteria, whose method choices the earlier author made from the data check, and
+    all 13 outcomes agree. The changes show in the record, which carries severities on its findings, and in
+    the blind run, which saw the earlier attempt only through the release notes and the claims file's opening
+    comment.
