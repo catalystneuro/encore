@@ -1,0 +1,342 @@
+schema_version: 3
+id: powell-2021-01
+datasets:
+- archive: zenodo
+  id: "3924718"
+  version: "3924718"
+  doi: 10.5281/zenodo.3924718
+  relation: primary
+paper: doi:10.7554/elife.60454
+date: 2026-11-25
+entry: powell-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45641154026
+outcomes:
+- claim: fig2-spontaneous-11-to-30
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The nine preparations with spontaneous rhythms (crabs of July 2013, recordings of Haddad and
+    Marder 2018) are not in the record. Its only spike annotations, evoked_data.mat, are the ten evoked
+    preparations of getEvokedData.m, and its zips hold raw files of nine of those ten and of 941_003
+    and 941_006, recorded in June 2019. The paper's data statement names only this record. A search
+    of Zenodo (queries on Haddad, Marder, Powell, stomatogastric, temperature) and DANDI
+    (stomatogastric) found no deposit of them; Zenodo record 5139650 (Haddad and Marder) holds six
+    ABF files of notebooks 845 and 857 recorded in the decentralized condition, with no spike
+    annotations and not the example preparation 830_116.
+- claim: fig2a-less-regular-at-high-temperature
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The example preparation 830_116_2 belongs to the spontaneous set, which is not in the record
+    (see fig2-spontaneous-11-to-30).
+- claim: fig3-evoked-7-to-21-in-9-of-10
+  outcome: not_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig3-evoked-7-to-21-in-9-of-10
+  measured:
+  - 8
+  - 10
+  notes: Under reading (a) (at least one LG burst period in a bin), 8 of 10 preparations have an LG
+    rhythm at every held bin from 7 to 21 C, under both burst rules; under reading (b) (at least 30
+    significands) 2 of 10. 901_062 never reaches 21 C (warmest LG burst start 19.1 C). 901_086 spent
+    330 s in the 21 C bin, with 70 s of stimulation there, and has no LG spike in it; its warmest LG
+    burst start is at 19.1 C. All ten preparations are in the record (10 of 10 evoked). Counting
+    every bin the temperature passed through gives 3 (reading a) and 1 (reading b) of 10.
+  deviations:
+  - The claims file leaves open which bins a preparation "was held at". A bin counts as held when the
+    recording spends at least 120 s in it, the 2-minute minimum step of the Methods ("a given
+    temperature step was held for at least 2 minutes") and the code's (BurstPeriodsVsTime.m, "temperature
+    held for less than 2 minutes"); every bin with any time in it is shown as well, and gives fewer
+    preparations, so the outcome does not depend on the choice.
+- claim: fig3s1-spontaneous-and-evoked-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The four preparations of fig_within_prep_spont_evoked_comparison.m are 941_006, 901_086,
+    901_080 and 901_062. The record holds 941_006 only as raw ABF files (941_006.zip), without spike
+    annotations, and its spontaneous and evoked LG spikes would have to be sorted anew with the
+    paper's trained crabsort network; the criterion counts similar preparations among all four, so it
+    cannot be judged on the other three. 941_006 is not among the ten evoked preparations of the
+    paper, and was recorded on 12 June 2019 by its ABF header.
+- claim: fig4b-periods-decrease-all-preps
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig4b-periods-decrease-all-preps
+  measured: 10
+  notes: In all 10 preparations the mean PD and LG periods in the warmest bin are below those in the
+    coldest (PD 0.77 to 2.00 s at 7 C against 0.28 to 0.56 s at the warmest; LG 12.5 to 40.2 s
+    against 5.0 to 12.6 s), and the Spearman correlation of bin means with temperature is negative
+    for both (PD -0.976 to -1, LG -0.643 to -1). The same holds under the code's burst rule.
+- claim: fig4c-q10-about-2
+  outcome: not_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig4c-q10-about-2
+  measured: 1
+  notes: Under the Methods' Q10 over every bin, 1 of 10 preparations has both Q10s within 1.8 to 2.2
+    and 2 of 10 within 1.5 to 2.5; over the held steps only, 1 and 3 of 10. Per-preparation LG Q10s
+    reach 16.6 and 39.0 when every bin is used, from bins at 9 and 13 C crossed during ramps (per-bin
+    LG Q10s up to 98.7 and 180.8). The code's per-burst Q10 (variant) gives 3 of 10 within 1.8 to 2.2
+    and 8 of 10 within 1.5 to 2.5 (Methods burst rule; 1 and 8 with the code's), so the paper's count
+    matches the code's computation under the wider reading of "~2".
+  deviations:
+  - The claims file does not say which temperatures enter the Methods' Q10. Two readings were run,
+    every bin with bursts and only the bins held at least 120 s (the temperature steps of the
+    Methods, "Spontaneous and evoked gastric mill rhythm temperature ranges"); both give the same
+    outcome. T is the bin centre, f_T the mean of 1/period over bursts starting in the bin.
+  - PD periods above 5 s and LG periods above 50 s are removed before the Q10, as fig_burst_period.m
+    does (the outlier filter the claims file cites for fig4b-periods-decrease-all-preps).
+- claim: fig4c-q10-pd-lg-not-different
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig4c-q10-pd-lg-not-different
+  notes: Paired t-test on the Methods' Q10s (every bin), t = -1.418, p = 0.190, n = 10, mean PD minus
+    LG -5.35 (driven by the two large LG Q10s); held steps only, t = -0.739, p = 0.479. The code's
+    per-burst Q10 gives t = 1.204, p = 0.259 with the Methods burst rule and t = 1.272, p = 0.235 with
+    the code's, the paper's values. No version reaches p < 0.05.
+- claim: fig4s1-slowdown-after-stimulation
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig4s1-slowdown-after-stimulation
+  notes: 64 stretches from 10 preparations. The slope of the mean LG period on time is positive at 8 of
+    9 temperatures under both burst rules (code's 7 ISIs and the Methods' 5 spikes), negative only at
+    13 C (-0.0006 s per s, two stretches). At 7, 11, 15, 19 and 21 C (8 to 17 stretches) the slopes
+    are 0.0055 to 0.0171 s per s, r 0.63 to 0.87, and the mean period rises from 6.7 to 15.4 s in the
+    first minute to 10.1 to 19.6 s at 9 to 10 minutes.
+  deviations:
+  - A stimulation block is taken as running to the end of the recording when no stimulation follows,
+    as MATLAB's temperature(stim:[]) is empty in BurstPeriodsVsTime.m; the mask's meaning
+    (stimulation where 0) is taken from the code (findStimulationTimes.m, BurstPeriodsVsTime.m), as the
+    record does not describe it.
+- claim: fig4s2-gastric-without-pyloric-pacemaker
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The nine preparations with the PD neurons hyperpolarized (2020, including 999_017 of
+    PD_hyp.m) are not in the record; no zip or annotation carries a 999 notebook number, and the two
+    preparations not among the evoked ten (941_003, 941_006) were recorded in June 2019.
+- claim: fig4s2-rhythm-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig4s2-gastric-without-pyloric-pacemaker; the PD-hyperpolarized set is not in the record.
+- claim: fig5a-example-ratios
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig5a-example-ratios
+  measured:
+  - 10.96
+  - 10.87
+  notes: Reading (a), the LG cycle closest to the labelled T_LG; at 7 C (file 0006, 6.92 C) T_LG 9.244 s,
+    mean T_PD 0.843 s, ratio 10.961 (0.04 from an integer); at 23 C (file 0079, 23.07 C) T_LG 3.438 s,
+    mean T_PD 0.316 s, ratio 10.873 (0.13 from an integer). A second 7 C cycle with T_LG 9.245 s has
+    mean T_PD 0.923 s and ratio 10.016, closer to the label's 0.911 s and 10.06. Reading (b), the
+    median ratio of the file, gives 10.76 and 14.02 and misses. LG bursts start a median 0.17 s (7 C)
+    and 0.13 s (23 C) after the last PD burst end; this part of the statement is shown, not judged.
+- claim: fig5d-lg-pd-integer-coupled
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig5d-lg-pd-integer-coupled
+  notes: With the code's shuffle (100 draws, reading a) every bin from 7 to 21 C has median p below
+    0.05/9 (1.5e-8 to 4.9e-4) and median D above 0.216 (0.223 at 21 C to 0.351), Methods burst rule.
+    D at 21 C under the five seeds is 0.2233, 0.2239, 0.2207, 0.2221 and 0.2214, all above the bound,
+    so the outcome does not depend on the seed. The reported p < 1e-5 is not met at 17, 19 and 21 C
+    with the code's draws. With the permutation shuffle (reading b) every bin from 7 to 21 C has p
+    below 1e-5 but D at 21 C is 0.199. 23 C is not significant (D 0.162, p 0.31). The code's burst rule
+    gives the same results within 0.01 in D.
+  deviations:
+  - The paper used one shuffle draw per temperature; here the median D and p over 1000 draws are
+    reported, as the criterion sets. p is the asymptotic p of MATLAB's kstest2.
+- claim: fig5d-dg-pd-not-coupled
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig5d-dg-pd-not-coupled
+  notes: With the code's shuffle no bin reaches p < 0.05/9 (median p 0.082 to 0.925, D 0.115 to 0.160,
+    Methods burst rule); the smallest p over bins is 0.078 to 0.084 under the five seeds. D is below
+    0.16 except at 23 C (12 DG cycles, D 0.160, or 0.19 with the code's burst rule). With the
+    permutation shuffle (variant) the 11 and 15 C bins are significant (p 5.1e-4 and 5.8e-4, D 0.084
+    and 0.104), so the absence rests on the code's shuffle, which the criterion names. 901_005 has no
+    DG spikes, so nine preparations enter.
+- claim: fig5e-lg-area-exceeds-dg
+  outcome: partially_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig5e-lg-area-exceeds-dg
+  notes: The LG area exceeds the DG area in all 8 bins where both exist (LG 0.127 to 0.193, DG 0.050 to
+    0.079) under all five seeds. The DG area (mean plus or minus SEM over preparations) overlaps the
+    shuffled area in 1 of 8 bins under the claim's seed (7 C) and 1, 4, 2, 2 and 1 of 8 under the five
+    seeds, never in most; in every other bin the DG area lies above the shuffled one. Against the
+    shuffle of the LG call (the other gray line), DG overlaps in 3 of 8. With the code's burst rule,
+    2 of 7.
+  deviations:
+  - Bins with a single preparation have no SEM; their interval is taken as the value itself (the code
+    draws them without an error bar).
+- claim: fig5f-ratio-independent-of-temperature
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig5f-ratio-independent-of-temperature
+  notes: Spearman over all cycles, rho = 0.016, p = 0.311, n = 3850 (Methods burst rule); with the
+    code's burst rule rho = 0.002, p = 0.880, n = 3799, the paper's numbers. Prep-by-prep means per
+    bin, rho = 0.21, p = 0.10 (64 means).
+- claim: fig5f-ratio-range
+  outcome: not_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig5f-ratio-range
+  measured:
+  - 7.04
+  - 26.03
+  notes: Reading (a), 7 C bin, 283 ratios; 2.5th and 97.5th percentiles 7.04 and 26.03 (minimum 5.76,
+    maximum 39.91, 1st percentile 6.81). Reading (b), 7 to 11 C, 1609 ratios; 7.03 and 25.99 (1st
+    percentile 6.07). Both lie within 4.5 to 27.5 but neither reaches down to 5.5, so the lower end of
+    the bulk is about 7, not 5. The code's burst rule gives the same percentiles within 0.05.
+- claim: fig6b-lg-phase-locked
+  outcome: partially_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig6b-lg-phase-locked
+  notes: Methods sample (a), first 40 starts, 41 preparation and temperature combinations; all p <
+    0.05 (largest 0.008), 4 combinations not below 4.4e-4, z 4.74 to 35.77 (Methods burst rule). With
+    the code's burst rule one combination has p = 0.082. The later code's sample (b), first 50, gives p
+    up to 2.1e-4 and z 8.20 to 45.31 (Methods burst rule, within the bounds) and p up to 4.5e-4 and
+    z 7.49 to 45.44 (code's burst rule), the reported p < 4e-4 and 7.5 < z < 45 within rounding. The
+    archived code's pooled sample (c) gives z 67 to 577.
+  deviations:
+  - The reported ranges match the sample of the later code (commit 7a82b1f, first 50 starts), not
+    the Methods' first 40, as the claims file anticipated; the outcome follows the Methods, as the
+    criterion sets.
+- claim: fig6b-lg-start-counts
+  outcome: not_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig6b-lg-start-counts
+  measured:
+  - 3908
+  - 3573
+  - 0.36
+  notes: Methods burst rule, all starts with a defined PD phase in the bins 7 to 23 C; LG 3908 (within
+    3816 plus or minus 381.6), DG 3573 (above 3228 plus or minus 322.8 by 22). Fraction of combinations
+    with fewer than 40 starts, reading (a), over combinations with any start, 0.339 (LG), 0.386 (DG),
+    0.361 (both); over all 90 per neuron 0.54 to 0.61; reading (b), of starts, 0.086 to 0.100. With
+    the code's burst rule the totals are LG 3865 and DG 3448, both within tolerance, and with the code's
+    burst rule and the archived code's sample (temperatures with at least 100 pooled starts) LG 3816,
+    the paper's number, and DG 3220.
+  deviations:
+  - The claims file's reading (a) does not say over which combinations the fraction is taken; both
+    those with any start and all 90 are shown. The outcome is decided by the DG total, whichever is
+    used.
+- claim: fig6b-lg-phase-constant
+  outcome: partially_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig6b-lg-phase-constant
+  measured: 0.45
+  notes: No trend from 7 to 21 C; all starts, rho = -0.190, p = 0.651; first 40, rho = -0.429,
+    p = 0.289 (Methods burst rule). With the code's burst rule and all starts, rho = -0.310,
+    p = 0.456, the paper's values. The bin means (all starts) are 0.416 to 0.494, mean 0.45, with 7, 9,
+    17 and 21 C below 0.45; first 40, 0.337 to 0.504. The phase part fails under both samples, the
+    trend part holds under both.
+- claim: fig6c-lg-spiking-drops-near-pd-end
+  outcome: not_reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig6c-lg-spiking-drops-near-pd-end
+  notes: The LG spike p.d.f. at the mean PD burst-end phase (about 0.19 to 0.22) is below 1 at every
+    temperature with at least 1000 spikes (reading a, 0.45 to 0.81 from 7 to 21 C, 0.23 at 23 C), but
+    its Spearman correlation with temperature is positive (reading a, rho = 0.150, p = 0.70; reading
+    b, 0.167, p = 0.67; without 23 C, 0.64 and 0.67). The value rises from 0.62 at 11 C to 0.81 at
+    21 C; only the 23 C bin, from the two preparations that reach it, shows a low value. The code's
+    burst rule gives the same picture.
+- claim: fig6e-dg-not-phase-locked
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig6e-dg-not-phase-locked
+  notes: Methods sample (first 40), 35 DG combinations; 16 with p >= 0.05, median z 3.38 against 22.59
+    for LG (Methods burst rule). DG p 1.4e-8 to 0.82 and z 0.21 to 16.25, beyond the reported 0.001 to
+    0.85 and 0.15 to 13 at the significant end; with the first 50, z 0.16 to 12.27 (Methods burst
+    rule) or 13.65 (code's), p from 2.3e-6 to 0.85.
+- claim: fig6f-dg-spiking-no-drop
+  outcome: reproduced
+  notebook: reproduce_powell_2021.ipynb
+  output: claim:fig6f-dg-spiking-no-drop
+  notes: At the eight temperatures with at least 1000 DG spikes (7 to 21 C) the DG p.d.f. at the PD
+    burst-end bin is 0.888 to 1.089, above 1 minus half the LG drop at every one (thresholds 0.725 to
+    0.906). The same holds under the code's burst rule (0.912 to 1.089).
+findings:
+- kind: data_missing
+  about: data
+  severity: major
+  statement: The record holds spike annotations and raw data only for the evoked preparations. The
+    nine preparations with spontaneous gastric mill rhythms (Figure 2 and its supplement) and the nine
+    with the pyloric pacemaker hyperpolarized (Figure 4, figure supplement 2) are not in it, although
+    the paper's data statement names only this record for its raw data and spike annotations. Four of
+    the paper's findings cannot be tested.
+- kind: data_missing
+  about: data
+  severity: major
+  statement: 941_003.zip and 941_006.zip hold raw ABF recordings of two preparations recorded on 11 and
+    12 June 2019 (ABF header dates), with no spike annotations and no description. Neither is among
+    the ten evoked preparations of evoked_data.mat, and they belong to none of the three sets the
+    Methods describe (2013, 2017, 2020). 941_006 is one of the four preparations of Figure 3, figure
+    supplement 1, which therefore cannot be tested from the record.
+- kind: data_missing
+  about: data
+  severity: minor
+  statement: There is no zip of raw recordings for 901_005, one of the ten evoked preparations; its
+    spike times, temperature and mask are in evoked_data.mat.
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  statement: The record has no README and its description is the paper's abstract. The fields of
+    evoked_data.mat are not described; the mask (0 in runs of about 7 s, stimulation by the paper's
+    code) and the 1 kHz sampling of temperature and mask are evident only from the values and the
+    code. The preparation and file names are MATLAB categorical objects, readable outside MATLAB only
+    by decoding the file's MCOS subsystem, and the fields T and time_offset are empty in every
+    preparation. Zenodo types the record as a journal article, not a dataset.
+- kind: other
+  about: data
+  severity: minor
+  statement: 932_151, one of the ten evoked preparations, was recorded on 2 May 2019 by the header of
+    932_151_0000.abf, while the Methods say the evoked preparations came from crabs caught in 2017.
+    901_046 and 901_098 carry 2017 dates as described.
+- kind: other
+  about: data
+  severity: minor
+  statement: Seven zips hold raw recordings as crabsort .crab files and four as ABF files. The .crab
+    zip of 901_062 holds 101 files, while evoked_data.mat stacks 58 files of that preparation; the
+    other zips hold as many files as are stacked.
+- kind: other
+  about: data
+  severity: minor
+  statement: In the data, 8 of the 10 evoked preparations have an LG rhythm at every held temperature
+    from 7 to 21 C, where the paper says 9 of 10. 901_062 never reaches 21 C, and 901_086 was held and
+    stimulated at 21 C for 330 s with no LG spike.
+- kind: other
+  about: data
+  severity: none
+  statement: evoked_data.mat matches the paper's analysis. Its ten preparations are those of
+    getEvokedData.m, no recording is deposited twice, the stimulation mask and LG spikes and the
+    temperature and PD spikes share their clocks, and with the code's burst rule and computations
+    the paper's reported numbers are obtained exactly (Q10 paired t-test t = 1.27, p = 0.235; 3799
+    cycles and Spearman p = 0.88 in Figure 5f; LG phase trend rho = -0.31, p = 0.46; 3816 LG burst
+    starts).
+- kind: code_mismatch
+  statement: The Methods keep bursts of at least n spikes (5 for LG and DG, 2 for PD), but the
+    paper's burst detection, crabsort.computePeriods, compares n with the number of inter-spike
+    intervals in a burst, keeping bursts of at least n + 1 spikes. The paper's reported numbers
+    follow the code's rule (for example 3799 cycles in Figure 5f, against 3850 under the Methods' rule,
+    and 3228 DG burst starts, which the Methods' rule exceeds by more than 10%).
+- kind: code_mismatch
+  statement: The Methods test the first 40 LG and DG burst starts of each preparation and temperature
+    for non-uniformity, but the reported ranges (LG p < 4e-4, 7.5 < z < 45; DG z up to 13) are those of
+    the first 50, the sample of the later code (marderlab/gastric commit 7a82b1f). The archived commit
+    the paper cites (fa07d36) pools all starts of a temperature over preparations, which gives z of
+    67 to 577. With 40 starts z cannot exceed 40.
+- kind: code_mismatch
+  statement: The Methods compute the Q10 from the mean burst frequency at each temperature against
+    11 C, but fig_burst_period.m computes a Q10 for every burst at its own temperature, against the
+    bursts within 0.1 C of 11 C, removes Q10s above 10 and averages per preparation. The reported count
+    of 8 of 10 preparations near 2 and the paired t-test (t = 1.27, p = 0.235) follow the code; the
+    Methods' formula gives 1 to 3 of 10 and LG Q10s up to 39 from temperatures crossed during ramps.
+- kind: paper_inconsistency
+  statement: Figure 3, figure supplement 1 says that 4 of the 10 evoked preparations had spontaneous
+    rhythms, but one of the four preparations its script uses (941_006) is not among the ten evoked
+    preparations and was recorded in June 2019, not 2017.
