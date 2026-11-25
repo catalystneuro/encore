@@ -99,12 +99,59 @@ jobs:
       - name: Install dependencies
         run: pip install --no-cache-dir uv pyyaml jsonschema nbformat
 
+      # The files of archives that need credentials, for the datasets the entry's paper is tested on (as in
+      # attempt.yml), not every target: with eight Dryad targets, staging them all for each entry made about a
+      # hundred requests, and Dryad answered 429 Too Many Requests (vijayan-2022, 2026-11-25). A version's files
+      # never change, so they are kept in the cache under the dataset and version, and a later check that finds
+      # them there asks Dryad for nothing (the stage skips a file already in place with its SHA-256).
+      - name: Which datasets' files the entry needs staged
+        id: staged
+        env:
+          ENTRY: ${{ matrix.entry }}
+        run: |
+          found=$(python tools/paper_records.py datasets "$ENTRY" --available 2>/dev/null | paste -sd' ' - || true)
+          python - $found >> "$GITHUB_OUTPUT" <<'PY'
+          import sys
+          sys.path.insert(0, "tools")
+          import datasets
+          from archives import ALL, STAGED
+          targets = {t["key"]: t for t in datasets.targets()}
+          keys, paths = [], []
+          for d in sys.argv[1:]:
+              key = datasets.parse(d)
+              archive = ALL.get(datasets.split_key(key)[0])
+              if archive and archive.stage and key in targets:
+                  version = str(targets[key]["published_version"])
+                  keys.append(f"{datasets.folder(key)}@{version}")
+                  paths.append(str(STAGED / archive.key / targets[key]["id"] / version))
+          print("datasets=" + " ".join(d for d in sys.argv[1:]))
+          print("key=" + ("staged-" + "-".join(sorted(keys)) if keys else ""))
+          print("paths<<EOF\n" + "\n".join(paths) + "\nEOF")
+          PY
+
+      - name: The staged files, from an earlier check
+        id: stagecache
+        if: steps.staged.outputs.key != ''
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ steps.staged.outputs.paths }}
+          key: ${{ steps.staged.outputs.key }}
+
       - name: Put the files of archives that need credentials in place
+        if: steps.staged.outputs.key != ''
         env:
           # As in attempt.yml: the secrets of each archive adapter with a stage() (tools/archives/).
           DRYAD_CLIENT_ID: ${{ secrets.DRYAD_CLIENT_ID }}
           DRYAD_CLIENT_SECRET: ${{ secrets.DRYAD_CLIENT_SECRET }}
-        run: python tools/stage_files.py --all
+          FOUND: ${{ steps.staged.outputs.datasets }}
+        run: python tools/stage_files.py $FOUND
+
+      - name: Keep the staged files for the next check
+        if: steps.staged.outputs.key != '' && steps.stagecache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ steps.staged.outputs.paths }}
+          key: ${{ steps.staged.outputs.key }}
 
       # A clean run of the entry as it is, made before by this job or by a verifier's run (attempt.yml, where this
       # is explained), is reused: the same key and the same paths as there.
