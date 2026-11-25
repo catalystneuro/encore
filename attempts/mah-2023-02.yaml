@@ -1,0 +1,459 @@
+schema_version: 3
+id: mah-2023-02
+datasets:
+- archive: dandi
+  id: "001169"
+  version: 0.261120.1450
+  doi: 10.48324/dandi.001169/0.261120.1450
+  relation: primary
+paper: doi:10.1038/s41467-023-43250-x
+date: '2026-11-24'
+entry: mah-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45502816457
+inputs:
+- what: Rat behavioural data of all final-stage sessions (A_Structs_all) and the rat list (ratList.mat)
+    from the paper's own deposit, read for Figure 4 only.
+  source: doi:10.5281/zenodo.10031483 (published.zip, version v1)
+- what: Names and switch dates of the 16 pre-initiation cue rats (Figure5.m ratListAll, startDates, secondGroup),
+    and the parameter values of the initiation time simulations (Figure3.m params_mf 0.1042 and 0.2527).
+  source: https://github.com/constantinoplelab/published at commit b7b68ca8c107d8ce4a061e16da214307f175c3e5
+outcomes:
+- claim: cohort-size
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:cohort-size
+  measured:
+  - 291
+  - 33493
+  - 71
+  notes: 291 rats; median 33,493 trials and 71 sessions per rat, the paper's numbers exactly (ranges 5,266
+    to 129,864 trials and 15 to 232 sessions).
+  deviations:
+  - Counted over the deposited sessions, which are the sessions that pass the inclusion criterion (data
+    check).
+- claim: fig1e-wait-time-increases-with-reward
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig1e-wait-time-increases-with-reward
+  notes: Population mean wait time on mixed block opt-out catch trials 10.45, 10.77, 11.11, 13.03 and
+    13.81 s for 5 to 80 uL; 171 of 291 rats rise at every step on their own.
+- claim: fig1f-wait-time-block-effect
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig1f-wait-time-block-effect
+  measured:
+  - 0.894
+  notes: Mean ratio high over low 0.894 (median 0.890; 279 of 291 rats below 1). Signed-rank p = 4.6e-47
+    on z-scored means (Methods) and 8.2e-47 on raw means (Figure1.m); the paper prints 8.26e-49. 244 of
+    291 rats have per-rat one-tailed rank-sum p < 0.05.
+- claim: fig1i-initiation-block-effect
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig1i-initiation-block-effect
+  notes: Mean ratio high over low 0.568, below 1 in all 291 rats; signed-rank p = 1.8e-49 on z-scored
+    and on raw means (the paper prints 1.82e-49). 248 rats have per-rat rank-sum p < 0.05.
+- claim: suppfig2-initiation-block-effect-after-unrewarded
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:suppfig2-initiation-block-effect-after-unrewarded
+  notes: After unrewarded trials high minus low is -0.359 z, all 291 rats faster in high blocks, two-tailed
+    p = 1.8e-49, one-tailed p = 9.0e-50 (paper 9.07e-50). After rewarded trials the one-tailed test gives
+    p = 1 (paper 1); the two-tailed test finds a small difference the other way (+0.018 z, p = 8.5e-10).
+    All trials give one-tailed p = 9.0e-50 (paper 9.17e-50), which supports the claims file's note that
+    the legend's tests are one-tailed.
+  deviations:
+  - Previous trials and lags are taken within the session; the paper's code concatenates sessions, which
+    differs only at session starts.
+- claim: suppfig3-wait-time-not-affected-by-previous-outcome
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:suppfig3-wait-time-not-affected-by-previous-outcome
+  notes: Mean ratio 0.899 after rewarded and 0.897 after unrewarded trials; difference 0.002, signed-rank
+    p = 0.63 (variant).
+- claim: fig2a-wait-time-converges-in-mixed-blocks
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2a-wait-time-converges-in-mixed-blocks
+  notes: Gap between the high-to-mixed and low-to-mixed curves over trials 1-20 relative to trials -20
+    to -1, wait time 0.341, initiation time 1.90 (trials 10-20, 0.086 and 2.10; with the code's pooled
+    detrending 2.22 and 2.45). Mixed block initiation after high +0.048 z, after low -0.102 z, 290 of
+    291 rats, signed-rank p = 1.8e-49 (pooled detrending 291 rats, p = 1.8e-49).
+  deviations:
+  - Transition windows are kept within the session; the code indexes the concatenated sessions. The code's
+    overwrite of the transition trial's value with a neighbour (a plotting step) is left out.
+  - Each rat's curve is smoothed with a centred 10-trial moving average; Matlab's smooth with an even
+    span uses 9 points (a standard choice).
+- claim: suppfig5-mixed-to-adaptation-transitions
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:suppfig5-mixed-to-adaptation-transitions
+  notes: Over trials -20 to -1 the initiation curve before low blocks lies above the one before high blocks
+    by +0.046 z (+0.059 pooled detrending). Wait time gap pre/post 0.125, initiation 0.197 (0.239).
+- claim: fig2c-d-regression-on-previous-rewards
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2c-d-regression-on-previous-rewards
+  notes: Wait time current offer coefficient 0.212 (95% interval across rats 0.205 to 0.219; own interval
+    above 0 in 289 rats), previous offer coefficients at most 0.013 in size. Initiation coefficients 1-3
+    back -0.029, -0.024, -0.012 (9 lags; the same to three decimals with 10); 261 of 291 rats have a negative
+    1-back coefficient.
+  deviations:
+  - Previous trials and lags are taken within the session; the paper's code concatenates sessions, which
+    differs only at session starts.
+  - Initiation times are z-scored over the rat's mixed block trials after the 99th percentile cut over
+    all its trials; regress_latency_vs_rew.m repeats the cut within mixed blocks.
+- claim: fig2e-tau-differ
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2e-tau-differ
+  notes: Methods reading, mean tau 0.065 for wait times (0 in 249 of 291 rats) and 1.875 for initiation
+    times, signed-rank p = 3.5e-45; code reading 0.620 and 1.914, p = 2.7e-35. Six initiation taus (seven,
+    code reading) are at the upper bound 10.
+  deviations:
+  - The exponential is fitted by a dense grid over tau with the bounded optimal D in closed form, in place
+    of fmincon from 10 random starts (a standard choice; no random draws remain).
+- claim: fig2f-tau-uncorrelated
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2f-tau-uncorrelated
+  notes: Methods reading r = -0.037, p = 0.535 (the legend prints r = -0.03, p = 0.53; the Results r =
+    0.08, p = 0.18); code reading r = 0.111, p = 0.059.
+- claim: fig2g-h-fast-slow-tau-groups
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2g-h-fast-slow-tau-groups
+  notes: 58 rats per group (116 in all). Code coefficients, initiation p = 0.000 under all five seeds,
+    wait time p = 0.215 (claim's seed; 0.203 to 0.217 over five seeds). Methods coefficients, 0.000 and
+    0.394. Observed initiation tau difference -2.66.
+  deviations:
+  - Fits by grid search, as in fig2e.
+- claim: fig2j-wait-time-not-sensitive-to-previous-offer
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2j-wait-time-not-sensitive-to-previous-offer
+  measured:
+  - 38
+  notes: 38 of 291 rats have p < 0.05 (253 not, the paper's 87%). Population rank-sum p = 0.575 on per-rat
+    means (paper 0.8), signed-rank variant p = 0.629; sensitivity -0.009 z.
+  deviations:
+  - Previous trials and lags are taken within the session; the paper's code concatenates sessions, which
+    differs only at session starts.
+- claim: fig2k-initiation-sensitive-to-previous-offer
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2k-initiation-sensitive-to-previous-offer
+  measured:
+  - 256
+  notes: Code reading (all mixed block trials) 256 rats with p < 0.05, 255 slower after small offers;
+    population +0.091 against -0.148 z, rank-sum p = 9.9e-97, signed-rank p = 1.9e-49. Methods reading
+    (20 uL trials) 276 rats with p < 0.05 but only 17 slower after small offers, and the population is
+    faster after small offers (-0.161 against -0.094 z, rank-sum p = 6.6e-30). The claim holds under the
+    code's reading only.
+  deviations:
+  - The Methods (20 uL trials) and latency_post20ul_by_previous_vol.m (all mixed block trials) differ;
+    both were run, as the criterion asks, and the outcome rests on the code's. Recorded as a code_mismatch
+    finding.
+  - Previous trials and lags are taken within the session; the paper's code concatenates sessions, which
+    differs only at session starts.
+- claim: fig2l-sensitivity-greater-for-initiation
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig2l-sensitivity-greater-for-initiation
+  notes: Code reading of fig2k, initiation sensitivity +0.239 against wait time -0.009, 245 of 291 rats,
+    signed-rank p = 1.6e-36. Methods reading, initiation sensitivity -0.067, larger than the wait time
+    sensitivity in 103 rats (p = 2.2e-06, in the opposite direction).
+  deviations:
+  - Rests on the code's reading of fig2k (see there).
+- claim: suppfig6-results-without-detrending
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:suppfig6-results-without-detrending
+  notes: Without detrending, high-to-mixed above low-to-mixed over trials 1-20 by +0.246 z; mixed block
+    after high +0.094, after low -0.085 z, p = 1.8e-49. Median per-session trend 0.069 z per 100 trials.
+- claim: fig3c-wait-time-by-catch-probability
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig3c-wait-time-by-catch-probability
+  measured:
+  - 3
+  - 188
+  - 61
+  - 151
+  - 40
+  notes: Reading A (each rat counted at every probability it has data at, after its first 1000 deposited
+    trials) gives 3, 188, 61, 151 and 40 rats, all within tolerance, and wait times fall from 0.15 to
+    0.2 to 0.25 at all 5 offers (20 uL 12.10, 11.08, 10.61 s). Reading B (each rat at its main probability)
+    gives 105, 43 and 128 rats at 0.15 to 0.25 and a fall at 3 of 5 offers. 8 rats have data at 0.3, which
+    the paper does not list; 149 rats have data at more than one probability.
+  deviations:
+  - The paper does not say how rats are assigned to cohorts. Its cohort sizes sum to 437, more than 291
+    rats, so rats are counted at more than one probability; reading A follows that and is adopted as an
+    assumption, with reading B shown.
+  - The first 1000 deposited trials are dropped (Figure3.m drops the first 1000 stage 8 trials); the dandiset
+    starts at the first included session, so the trials dropped are later ones than the code's.
+  assumed: true
+- claim: fig3j-inferential-beats-retrospective-for-wait-times
+  outcome: reproduced
+  notebook: models_mah_2023.ipynb
+  output: claim:fig3j-inferential-beats-retrospective-for-wait-times
+  notes: Claim's seed, inferential minus retrospective BIC -1040 (290 of 291 rats better, p = 3.6e-48),
+    AIC -1052 (p = 3.6e-48), cross-validated nLL -454 (284 rats, p = 5.6e-44); best-fold test nLL variant
+    -85 (p = 4.5e-18). The four other seeds give p <= 7.9e-47 for all three. Fitted k_high > k_low in
+    249 of 291 rats.
+  deviations:
+  - The paper's fitting code is not public. The models follow the Methods (Equations 1, 3 to 10) and the
+    generative functions of the paper's repository (BehavioralModel/, b7b68ca8c107); this attempt chose
+    the parameter bounds (k in [0.01, min(0.999/C, 5)], D-scale in [0.01, 10], alpha0 in [0.001, 1]),
+    2 random starts of L-BFGS-B in place of 100 fmincon starts, 5 folds over sessions drawn at random,
+    and the summed test nLL as the cross-validated nLL; the best-fold parameters (Zenodo README) give
+    BIC and AIC on all data. These are assumptions, chosen as the simplest reading of the Methods and
+    the README.
+  - The deposited fits on Zenodo were not used; the models are refitted to the dandiset.
+  assumed: true
+- claim: suppfig8-belief-state-not-distinguished
+  outcome: reproduced
+  notebook: models_mah_2023.ipynb
+  output: claim:suppfig8-belief-state-not-distinguished
+  notes: Claim's seed, BIC and AIC p = 0.163, cross-validated nLL p = 0.569 (mean differences +11.0 and
+    +19.9). Over the five seeds BIC/AIC p = 0.163, 0.068, 0.693, 0.031, 0.062 and cross-validated p =
+    0.41 to 0.997; under seed +3000 BIC and AIC reach p = 0.031 (mean +2.8 units, inferential better in
+    125 rats).
+  deviations:
+  - The paper's fitting code is not public. The models follow the Methods (Equations 1, 3 to 10) and the
+    generative functions of the paper's repository (BehavioralModel/, b7b68ca8c107); this attempt chose
+    the parameter bounds (k in [0.01, min(0.999/C, 5)], D-scale in [0.01, 10], alpha0 in [0.001, 1]),
+    2 random starts of L-BFGS-B in place of 100 fmincon starts, 5 folds over sessions drawn at random,
+    and the summed test nLL as the cross-validated nLL; the best-fold parameters (Zenodo README) give
+    BIC and AIC on all data. These are assumptions, chosen as the simplest reading of the Methods and
+    the README.
+  assumed: true
+  seed_sensitive: true
+- claim: fig3f-inferential-model-not-sensitive-to-previous-offer
+  outcome: not_reproduced
+  notebook: models_mah_2023.ipynb
+  output: claim:fig3f-inferential-model-not-sensitive-to-previous-offer
+  notes: Claim's seed, the model's 20 uL wait times are longer after offers below 20 uL (sensitivity +0.048
+    z), rank-sum p = 3.8e-05; the rats' sensitivity is -0.009 z, p = 0.575. Over the five noise draws
+    p = 3.8e-05, 0.332, 4.3e-07, 1.5e-05 and 4.0e-04 (sensitivity +0.010 to +0.062).
+  deviations:
+  - The paper's fitting code is not public. The models follow the Methods (Equations 1, 3 to 10) and the
+    generative functions of the paper's repository (BehavioralModel/, b7b68ca8c107); this attempt chose
+    the parameter bounds (k in [0.01, min(0.999/C, 5)], D-scale in [0.01, 10], alpha0 in [0.001, 1]),
+    2 random starts of L-BFGS-B in place of 100 fmincon starts, 5 folds over sessions drawn at random,
+    and the summed test nLL as the cross-validated nLL; the best-fold parameters (Zenodo README) give
+    BIC and AIC on all data. These are assumptions, chosen as the simplest reading of the Methods and
+    the README.
+  - One log-normal draw (variance 8) per trial from the fitted inferential model replaces the rat's wait
+    time, as Figure3.m does with WTMdl; the draws come from this attempt's fits, not the deposited ones.
+  assumed: true
+  seed_sensitive: true
+- claim: suppfig9-wait-times-reflect-misinferences
+  outcome: reproduced
+  notebook: models_mah_2023.ipynb
+  output: claim:suppfig9-wait-times-reflect-misinferences
+  notes: Mixed block 20 uL catch trials labelled high 10.85 s, labelled low 11.90 s; 230 of 291 rats shorter
+    on high; signed-rank p = 9.7e-23. 8,540 trials labelled high and 7,688 low.
+  deviations:
+  - The model's labels depend on no fitted parameter (H0 fixed), so held-out labels equal those of the
+    full run; no fit is needed.
+- claim: fig3l-lambda-groups-wait-time-dynamics
+  outcome: reproduced
+  notebook: models_mah_2023.ipynb
+  output: claim:fig3l-lambda-groups-wait-time-dynamics
+  notes: 20/80 split, 58 rats per group. Wait time C at mixed to low p = 0.009 (0.009 to 0.018 over five
+    seeds), at mixed to high C p = 0.026 (0.026 to 0.039) and D p = 0.120 (0.104 to 0.120). Initiation
+    C at mixed to low p = 0.147, at mixed to high C p = 0.339 and D p = 0.374. Holds under the Results'
+    reading (C at mixed to high), not under the legend's (D). 40/60 split, wait time C at mixed to low
+    p = 0.391.
+  deviations:
+  - Lambda from the five-parameter model (GenerateSynthData_Bayes_subopt_onlylambda_flat.m) fitted once
+    on all data from one random start, without cross-validation, for time.
+  - Logistic fits by a grid over C and x0 with A and D solved exactly, in place of fmincon from 10 starts.
+  - The paper's fitting code is not public. The models follow the Methods (Equations 1, 3 to 10) and the
+    generative functions of the paper's repository (BehavioralModel/, b7b68ca8c107); this attempt chose
+    the parameter bounds (k in [0.01, min(0.999/C, 5)], D-scale in [0.01, 10], alpha0 in [0.001, 1]),
+    2 random starts of L-BFGS-B in place of 100 fmincon starts, 5 folds over sessions drawn at random,
+    and the summed test nLL as the cross-validated nLL; the best-fold parameters (Zenodo README) give
+    BIC and AIC on all data. These are assumptions, chosen as the simplest reading of the Methods and
+    the README.
+  assumed: true
+- claim: fig3i-retrospective-model-captures-initiation
+  outcome: partially_reproduced
+  notebook: models_mah_2023.ipynb
+  output: claim:fig3i-retrospective-model-captures-initiation
+  notes: Equation 10 model at alpha0 0.1042, overshoot 0.200 z and gap after high minus after low +1.398
+    z over trials 10-20. Static and |delta| models at alpha0 0.05 lack both (overshoot 0, gap -0.456 and
+    -0.175), but at 0.4 and 0.8 each has a small overshoot (0.0002 to 0.0058 z) and a gap (+0.09 to +0.13),
+    so they are not excluded at every alpha0 as the criterion asks. Noise 8 gives the same pattern. Fig.
+    3i part, simulated initiation slower after offers below 20 uL (+0.015 against -0.009 z, 232 of 291
+    rats, p = 1.8e-29; noise 1.5, 258 rats, p = 2.8e-39).
+  deviations:
+  - The mean of 50 log-normal simulations is drawn from its normal approximation (mean TI, variance noise/50).
+  - Persistent gap is read as a positive mean difference over trials 10-20, and the overshoot as any excess
+    of the maximum over trials 1-20 above trial 20; the criterion gives no size. Under a size threshold
+    of, say, a tenth of the Equation 10 overshoot, every alternative would lack it.
+  - For the Fig. 3i part, each rat's retrospective parameters come from this attempt's fits (fig3j assumptions).
+  assumed: true
+- claim: bayes-observer-offer-reduces-uncertainty
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:bayes-observer-offer-reduces-uncertainty
+  notes: Variance of block probabilities, prior 0.157, posterior 0.169 (higher means less uncertain);
+    variance of block value, prior 0.104, posterior 0.082. Per-rat means signed-rank p = 1.8e-49 for both;
+    over trials p < 0.001 in all 291 rats under both readings.
+- claim: fig4a-wait-time-block-sensitivity-emerges
+  outcome: partially_reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig4a-wait-time-block-sensitivity-emerges
+  notes: On the Zenodo deposit's A_Structs_all (first 50 final-stage sessions). First pair initiation
+    ratio 0.802 (273 rats), signed-rank against 1 p = 5.8e-16. Wait time ratio first pair 1.187, mean
+    over pairs 16-25 0.936, so the first pair is not closer to 1 and part (2) fails; the ratio falls from
+    above 1 to about 0.92. Block coefficient -0.432 over sessions 1-10 and -0.706 over 41-50 (linear offer
+    -0.393 and -0.633).
+  deviations:
+  - The dandiset holds only included sessions; the test uses the paper's Zenodo deposit (doi:10.5281/zenodo.10031483,
+    A_Structs_all), trials with trainingstage 9, sessions in file order (the dates are not decoded).
+  - The wait time regression uses log2 offer (linear shown as a variant); per-session regressions need
+    at least 5 catch trials and two blocks (a standard choice).
+- claim: fig4c-initiation-previous-reward-stable
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig4c-initiation-previous-reward-stable
+  notes: Previous reward coefficient -0.588 over sessions 1-10 and -0.469 over 41-50, same sign, relative
+    change 0.252 against 0.389 for the wait time block coefficient.
+  deviations:
+  - Data from the Zenodo deposit, as fig4a. The previous reward is log2 offer times hit (0 when unrewarded),
+    as in fig2c-d.
+- claim: fig4d-overshoot-grows-with-training
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig4d-overshoot-grows-with-training
+  notes: Overshoot 0.025 z in the first 10 and 0.046 z in the last 10 final-stage sessions. Per 5-session
+    chunk 0.008 rising to about 0.06 over the first 100 sessions (smoothed 0.008 to 0.055).
+  deviations:
+  - Data from the Zenodo deposit, as fig4a; the paper's Figure4.m reads the raw database structs, which
+    are not public.
+- claim: fig5b-pre-cue-initiation-sensitive-to-offer
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig5b-pre-cue-initiation-sensitive-to-offer
+  notes: Sessions from Figure5.m's dates (reading b), mean z by offer -0.041, -0.051, -0.088, -0.156,
+    -0.178, falling at every step; 14 of 16 rats ANOVA p < 0.05 against 0 of 12 on the original task.
+    After 30 pre-cue sessions (reading a, 11 rats have such sessions) 11 of 11 reach p < 0.05 but the
+    mean rises from 5 to 10 uL (0.016 to 0.024).
+  deviations:
+  - The Methods (after 30 pre-cue sessions) and Figure5.m (from the dated switch) differ; both run, the
+    outcome rests on the code's.
+  - The dandiset holds only included sessions, so the paper's 'no session exclusion' for these rats cannot
+    be applied.
+  - Initiation times are z-scored over all of the rat's trials (iti_by_reward.m was not read).
+- claim: fig5c-pre-cue-initiation-still-sensitive-to-previous-reward
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig5c-pre-cue-initiation-still-sensitive-to-previous-reward
+  measured:
+  - 12
+  notes: Sessions from the dates, all mixed block trials, 12 of 16 rats with p < 0.05 (11 slower after
+    small offers), population +0.065 against -0.128 z, rank-sum p = 4.7e-06. Methods' 20 uL reading, 15
+    of 16 rats but a population faster after small offers (rank-sum p = 0.337). After 30 pre-cue sessions,
+    11 rats, 9 significant, rank-sum p = 6.4e-04.
+  deviations:
+  - Rests on the code's readings of fig2k and of the sessions (see there).
+- claim: fig5d-pre-cue-initiation-depends-on-previous-block
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:fig5d-pre-cue-initiation-depends-on-previous-block
+  notes: Sessions from the dates, trials 1-20 of mixed blocks after high +0.136, after low -0.114 z, all
+    16 rats, signed-rank p = 3.1e-05; after 30 pre-cue sessions all 11 rats with data, p = 9.8e-04.
+- claim: suppfig12-no-sex-differences
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:suppfig12-no-sex-differences
+  notes: 184 males and 107 females (subject metadata). Wait time ratio 0.892 and 0.898, rank-sum p = 0.238
+    (paper 0.23); initiation ratio 0.572 and 0.561, p = 0.343 (paper 0.59).
+- claim: suppfig14-contextual-effects-without-threshold
+  outcome: reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:suppfig14-contextual-effects-without-threshold
+  notes: Unthresholded 20 uL wait times high 12.51 s, low 14.47 s, signed-rank p = 1.5e-44 (z-scored),
+    1.0e-43 (raw). Unthresholded means are longer in all 11 block and offer cells, by 2.61 s on average
+    in low blocks, 1.42 s in mixed and 1.34 s in high.
+- claim: pre-cue-session-link
+  outcome: partially_reproduced
+  notebook: reproduce_mah_2023.ipynb
+  output: claim:pre-cue-session-link
+  notes: 14 of 16 rats linked; S042 and S050 are not (ANOVA p = 0.151 and 0.597 after the date; slopes
+    -0.009 and -0.015). The task argument center_port_cue is True only in sessions of these 16 rats; on
+    those sessions every rat has a negative slope of initiation time on log2 offer (-0.008 to -0.069),
+    against -0.008 to +0.004 elsewhere. Some sessions after the dates are not flagged (S042 13 of 25,
+    S050 6 of 11, E005 15 of 21), and the first flagged session is usually the day after the date.
+  deviations:
+  - The rat names and dates are copied from Figure5.m at b7b68ca8c107 (first 16 of its 20 dates, paired
+    by position).
+findings:
+- kind: selection_undocumented
+  about: data
+  severity: major
+  statement: The dandiset holds only the sessions that pass the paper's inclusion criterion (the data
+    of Figures 1 to 3), and nothing in it says so. The rig's trial counter (trials_in_stage) jumps between
+    consecutive deposited sessions in 2,586 of 22,742 pairs (284 rats), and the first deposited session
+    of a rat starts at a median of 1,543 final-stage trials. The paper's Zenodo deposit holds a median
+    of 95 final-stage sessions per rat against 71 here. Figure 4 and the pre-cue analyses, which use all
+    sessions, cannot be run on the dandiset alone.
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  statement: The task argument center_port_cue has no description. It marks the pre-initiation cue sessions
+    of Figure 5 (True in 762 sessions, all of the 16 rats Figure5.m names; initiation times depend on
+    the offer only in those sessions), which the session description and dandiset metadata do not mention.
+- kind: other
+  about: data
+  severity: minor
+  statement: wait_time_threshold equals the mean + 1 SD of all catch trials with a wait time, including
+    16,086 timed-out catch trials at 100 s; over opt-out catch trials alone it would be a median 5.2 s
+    lower. The description says 'wait-times of the subject on catch trials' without saying that timeouts
+    are included.
+- kind: other
+  about: data
+  severity: minor
+  statement: Catch probability 0.3 occurs in 180,591 trials of 8 rats, a cohort the paper does not list,
+    and two block transitions go directly between high and low blocks.
+- kind: other
+  about: data
+  severity: none
+  statement: 'The counts match the paper exactly: 291 rats (184 male, 107 female), a median of 33,493
+    trials and 71 sessions per rat, all in the final training stage (code stage 9); the same 291 rats
+    are in the Zenodo deposit''s ratList. No session is deposited twice, and hit trial wait times equal
+    the reward delays.'
+- kind: code_mismatch
+  about: paper
+  statement: For the previous-offer sensitivity of initiation times (Fig. 2k, 2l, 5c) the Methods use
+    20 uL trials in mixed blocks, while latency_post20ul_by_previous_vol.m uses all mixed block trials.
+    Only the code's version reproduces the result; with the Methods' trials the population initiates faster
+    after small offers (-0.161 against -0.094 z).
+- kind: paper_inconsistency
+  about: paper
+  statement: Fig. 2f is reported as r = 0.08, p = 0.18 in the Results and r = -0.03, p = 0.53 in the legend;
+    the Methods' tau procedure on the dandiset gives r = -0.037, p = 0.535, close to the legend.
+- kind: methods_unavailable
+  about: paper
+  statement: The model fitting code is not public. Questions for the authors - which parameters were free
+    and with what bounds and starts, whether the 5 folds split sessions or trials, and whether the reported
+    cross-validated nLL is the summed test nLL or the best fold's. This attempt's choices are stated in
+    the deviations of fig3j, suppfig8, fig3f, fig3i and fig3l; fig3f fails with them and suppfig8 depends
+    on the seed.
+- kind: methods_unavailable
+  about: paper
+  statement: Fig. 3c cohort sizes (3, 183, 61, 151, 39) sum to 437 for 291 rats. Question for the authors
+    - is each rat counted at every catch probability it ran? Counting so gives 3, 188, 61, 151 and 40
+    rats here; assigning each rat to one probability does not.
