@@ -50,7 +50,10 @@
 #   percent with an increase of more than 0.002 Hz per cycle.
 # - Phase constancy: per experiment and condition, a line fitted to mean phase against temperature;
 #   slopes tested against zero across experiments by Wilcoxon signed-rank (non-normal) or one-sample
-#   t-test (normal), Bonferroni-adjusted for 10 tests (5 phases by 2 conditions).
+#   t-test (normal), Bonferroni-adjusted for 10 tests (5 phases by 2 conditions). The Figure 6
+#   legend names a "paired Student's t-test" for the normal case; a test of slopes against zero is
+#   a one-sample test, as the Methods say, and the two coincide when the paired values are slope
+#   and zero.
 # - Normality by Shapiro-Wilk decides parametric or non-parametric tests; where the paper names the
 #   test used for a comparison, that test is used.
 # - Summary values are mean +- SD over experiments or cells.
@@ -59,7 +62,8 @@
 # - O1, Q10. "as described previously (Tang et al., 2010)", with no formula. Readings are (a) a fit
 #   of f = f11 * Q10^((T - 11)/10) to the six holding-temperature mean frequencies by nonlinear least
 #   squares; (b) a straight-line fit of log10 frequency on temperature, Q10 = 10^(10 * slope);
-#   (c) the two-point ratio (f21/f11)^(10/10).
+#   (c) the two-point ratio (f21/f11)^(10/10). The Figure 1C legend ("Line represents the best fit
+#   Q 10 equations for each condition") supports (a) as the main reading; (b) and (c) are variants.
 # - O2, which 11 degrees C. The holding period at 11 degrees C is read as the first one of each
 #   condition's step protocol (the 2 min before the first step); the return to 11 degrees C after
 #   21 degrees C is a variant.
@@ -163,13 +167,14 @@ claims:
     tolerance: 0.2
     unit: Hz
   criterion: Per experiment and condition, the mean PD burst frequency over times within 0.3 degrees
-    C of 11 degrees C, at the first 11 degrees C hold of the condition (O2). Reproduced when both
+    C of 11 degrees C, at the first 11 degrees C hold of the condition (O2). The sentence gives no
+    N; 21 is read from the design (Figures 1D and 1E). Reproduced when both
     means are within tolerance and a paired t-test over the 21 experiments gives p < 0.05 with Cs+
     lower.
 - id: fig1d-difference-grows-with-temperature
   statement: The difference between a preparation's frequency in saline and in Cs+ increased
     significantly as temperature increased.
-  source: Results, The steady-state frequency increase, paragraph 3; Figure 1D
+  source: Results, The steady-state frequency increase, paragraph 3; Figure 1D legend
   quote: As temperature increased, the difference between a preparation’s frequency in saline and Cs
     + significantly increased (one-way repeated measures ANOVA [F(5,85) = 43.259, p<0.001, N=21])
   statistics:
@@ -227,7 +232,7 @@ claims:
     tolerance: 0.3
     unit: Hz
   criterion: A claim of absence. Per experiment and protocol, mean frequency within 0.3 degrees C of
-    21 degrees C minus that of 11 degrees C; a paired t-test over the 6 experiments, the paper's
+    21 degrees C minus that of 11 degrees C (the first 11 degrees C hold of the protocol, O2); a paired t-test over the 6 experiments, the paper's
     test (Figure 1F legend). Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean
     difference is reported either way.
 - id: fig1e-two-saline-q10-same
@@ -248,8 +253,9 @@ claims:
     value: 1.8
     tolerance: 0.4
   criterion: A claim of absence, judged on a paired t-test of the two Q10 values over the 6
-    experiments (Figure 1E legend). Q10 under the readings of O1; the absence is judged under each
-    and reported for all. Reproduced when p >= 0.05, not reproduced when p < 0.05.
+    experiments (Figure 1E legend). Q10 under reading (a) of O1, the one the Figure 1C legend
+    supports, marked as resting on that reading; (b) and (c) are shown as variants. Reproduced
+    when p >= 0.05, not reproduced when p < 0.05; the mean difference is reported either way.
 - id: fig1e-saline-q10-same-across-designs
   statement: The saline Q10 did not differ between experiments with two saline protocols and those
     with one saline and one Cs+ protocol.
@@ -264,26 +270,36 @@ claims:
   criterion: A claim of absence, judged on a two-sample t-test. The legend's "mean Q 10 of the
     experiments with two saline temperature changes" is read as each of the 6 experiments' mean of
     its two saline Q10 values, against the 21 saline Q10 values; the first saline Q10 alone and the
-    12 pooled values are variants. Q10 under O1. Reproduced when p >= 0.05, not reproduced when
-    p < 0.05.
+    12 pooled values are variants. The paper gives no N for this test; the n recorded is this
+    file's reading of the two designs. Q10 under reading (a) of O1 (Figure 1C legend), (b) and (c)
+    as variants. Reproduced when p >= 0.05, not reproduced when p < 0.05.
 - id: fig2c-decrease-by-depolarizing-phase
-  statement: In Cs+, the frequency decrease right after a temperature increase came from an
-    elongation of the PD depolarizing phase, with bursting and repolarization phases maintained.
-  source: Results, Cs+ revealed dynamic transitory frequency response, paragraph 1; Figure 2C; also
-    Figure 4G for Cs+ + PTX
+  statement: In an example preparation in Cs+, the frequency decrease right after the temperature
+    step from 13 toward 15 degrees C came from an elongation of the PD depolarizing phase, not of
+    the bursting, repolarization or inhibitory phases; a Cs+ + PTX example showed the same.
+  source: Results, Cs+ revealed dynamic transitory frequency response, paragraph 1; Figure 2C
+    legend; Results, In Cs+, follower neurons determined frequency-temperature sensitivity,
+    paragraph 3, and Figure 4G for Cs+ + PTX; Discussion, The jags in frequency, paragraph 2
   quote: Alignment of each PD cycle during this window to the first PD spike reveals that the
     decrease in frequency was due to elongation of the depolarizing phase and not the bursting,
     repolarization, or inhibitory phases
   criterion: The paper shows this in one example preparation, not identified, for the step from 13
-    toward 15 degrees C, and gives no measure. A measure is fixed here from the legend's phases. On
-    the intracellular PD trace, per cycle, burst duration (first to last spike), repolarization
-    (last spike to the voltage minimum), and depolarization (voltage minimum to the next first
-    spike). In each Cs+ experiment with intracellular PD, cycles of the 30 s before the 13 to 15
-    degrees C step are compared with the cycles of the first 30 s of warming in which the period
-    exceeds the pre-step mean. Reproduced when, in most such experiments, the depolarizing phase
-    accounts for more than half of the period increase. Partially reproduced when this holds in the
-    example-like experiments with the largest decrease only. Not testable without intracellular PD
-    traces.
+    toward 15 degrees C, and gives no measure; the Discussion treats it as general ("the frequency
+    decrease is associated with an elongation of the depolarizing phase", Figures 2C and 4G). The
+    phase boundaries and windows are open; the paper names the phases (bursting, repolarization,
+    inhibitory, depolarizing in the Results; bursting, repolarization, depolarizing in the Figure 2C
+    legend) without defining them. Readings for the phases on the intracellular PD trace, per
+    cycle, are (a) three phases as in the legend, burst (first to last PD spike), repolarization
+    (last PD spike to the voltage minimum), depolarization (voltage minimum to the next first PD
+    spike); (b) four phases as in the Results, burst (first to last PD spike), repolarization (last
+    PD spike to the first LP spike), inhibition (first to last LP spike), depolarization (last LP
+    spike to the next first PD spike). Windows, from the Discussion's "~30 s of temperature
+    increase", are the cycles of the 30 s before the 13 to 15 degrees C step against the cycles of the
+    first 30 s of warming whose period exceeds the pre-step mean. In each Cs+ experiment with
+    intracellular PD, the share of the period increase carried by each phase. Reproduced when,
+    under one reading, in most such experiments the depolarizing phase accounts for more than half
+    of the period increase; partially reproduced when this holds only in the experiments with the
+    largest frequency decrease. Not testable without intracellular PD traces.
 - id: fig3d-freq-decrease-while-warming
   statement: Among temperature-increasing cycles, the percent with a frequency decrease was higher
     in Cs+ (31.4%) than in saline (7.5%), and higher in Cs+ in 20 of 21 experiments.
@@ -351,12 +367,8 @@ claims:
     statistic: F(2,10) = 12.272
     p: 0.002
     n: 6 experiments
-  - about: pairwise comparisons of conditions
-    test: post hoc Tukey's honestly significant difference
-    p: 0.05
-    p_relation: "<"
   criterion: Per experiment and condition, mean frequency within 0.3 degrees C of 21 degrees C minus
-    that of 11 degrees C; a one-way repeated-measures ANOVA on condition over the 6 picrotoxin
+    that of 11 degrees C (O2); a one-way repeated-measures ANOVA on condition over the 6 picrotoxin
     experiments, then Tukey HSD under the readings of O5. Reproduced when, under one reading, the
     condition effect has p < 0.05, Cs+ is significantly lower than both saline and Cs+ + PTX, and
     saline against Cs+ + PTX is not significant (the paper's test, as a claim of absence).
@@ -373,10 +385,6 @@ claims:
     statistic: F(2,10) = 13.077
     p: 0.002
     n: 6 experiments
-  - about: pairwise comparisons of conditions
-    test: Tukey's honestly significant difference
-    p: 0.05
-    p_relation: "<"
   criterion: The jag measure (header) under the readings of O3, per experiment and condition; a
     one-way repeated-measures ANOVA on condition, then Tukey HSD under O5. Reproduced when, under
     one reading, the condition effect has p < 0.05, both Cs+ conditions are significantly above
@@ -395,17 +403,12 @@ claims:
     p: 0.001
     p_relation: "<"
     n: 6 experiments
-  - about: pairwise comparisons of conditions
-    test: Tukey's honestly significant difference
-    p: 0.05
-    p_relation: "<"
   criterion: As fig4d-ptx-keeps-decrease-while-warming, for stable cycles with an increase. The
     legend names the Cs+ against saline and Cs+ + PTX against Cs+ comparisons; the Results say all
     three differ. Reproduced when, under one reading, the condition effect has p < 0.05, the means
-    are ordered saline < Cs+ < Cs+ + PTX, and all three pairs are significant; partially reproduced
-    when the two pairs the legend names are significant and saline against Cs+ + PTX also is, but
-    the ordering is not as stated, or when two of the three pairs are significant with the stated
-    ordering.
+    are ordered saline < Cs+ < Cs+ + PTX, and all three Tukey pairs are significant; partially
+    reproduced when the condition effect and the two pairs the legend names (Cs+ above saline,
+    Cs+ + PTX above Cs+) are significant but saline against Cs+ + PTX is not.
 - id: fig5b-pd-burst-shorter
   statement: At 11 degrees C the PD burst was modestly shorter in Cs+ (144 ms) than in saline
     (164 ms).
@@ -638,3 +641,23 @@ claims:
     decides, p multiplied by 10. Reproduced when none has adjusted p < 0.05; not reproduced when
     any does, naming it. LP ON in saline, which the Results also count as constant, is reported
     the same way. Mean slopes are reported either way.
+checks:
+- date: 2026-11-25
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4c-ptx-restores-frequency-change, fig4d-ptx-keeps-decrease-while-warming, fig4e-stable-increase-ordering. Removed the Tukey HSD statistics entries (p < 0.05); the paper prints no p-value for the post hoc comparisons, only that they were significant, so the bound was this file's significance threshold and not a reported result. The criteria keep the Tukey tests through O5.
+  - fig4e-stable-increase-ordering. The partial rule allowed the two legend pairs and the third pair all significant with the ordering not as stated, which cannot happen when the legend pairs are directional. Partial is now the condition effect and the two legend pairs significant, saline against Cs+ + PTX not.
+  - Header O1. The Figure 1C legend ("best fit Q 10 equations") supports the fitted Q10 equation; reading (a) is now named the main reading, (b) and (c) variants.
+  - fig1e-two-saline-q10-same, fig1e-saline-q10-same-across-designs. These are claims of absence, judged on the paper's test alone; judging under every Q10 reading left the outcome undecided. Now judged under O1 reading (a), marked as resting on it, others shown as variants.
+  - fig1e-saline-q10-same-across-designs. Said the paper gives no N for the two-sample test and the n recorded is this file's reading.
+  - fig1-cs-lower-frequency-11c. Said the sentence gives no N and 21 is read from the design.
+  - fig2c-decrease-by-depolarizing-phase. The statement generalized from one example; it now says an example preparation (and the Cs+ + PTX example), and names the inhibitory phase the Results list. Source adds the Figure 4G paragraph and the Discussion. The criterion's phase boundaries were fixed as if from the paper; they are now named as open, with readings (a) the legend's three phases and (b) the Results' four phases using LP spikes, and the 30 s windows are cited to the Discussion.
+  - fig1d-difference-grows-with-temperature. Source names the Figure 1D legend, where the quote and statistic are.
+  - fig1f-two-saline-frequency-change-same, fig4c-ptx-restores-frequency-change. The 11 degrees C hold now cites O2.
+  - Header, phase constancy. Noted that the Figure 6 legend names a paired t-test where the Methods name a one-sample t-test of slopes against zero.
+  - Open. Whether the reported Figure 6 p-values (p < 0.01) are Bonferroni-adjusted is not stated beyond the Methods' statement that p-values were adjusted; the file reads them as adjusted.
+  - Open. F(5,85) for Figure 1D and r(21) for the matched-period correlation do not fit N=21 (about 18 experiments each); the paper does not say which experiments entered.
+  - Open. How periods were matched (matched-period-lp-earlier) and whether PD offset advance is in ms or phase are not given; the readings in the criterion are this file's.
+  - Open. Ih window definitions (figs1 claims), the jag smoothing alignment and span (O3), and cycles forming a phase (O4) remain open with the readings named; the deposited scripts in the dataset may settle them.
