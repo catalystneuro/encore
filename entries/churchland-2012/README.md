@@ -33,7 +33,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/churchland-2012-02.yaml`](../../attempts/churchland-2012-02.yaml).
 
-- `reproduce_churchland_2012.ipynb`: the analysis. It takes about sixteen minutes, most of it
+- `reproduce_churchland_2012.ipynb`: the analysis. It takes about twenty minutes, most of it
   streaming the spikes and simulating the kinematic populations.
 - `reach.py`: loading the files, condition-averaged rates aligned on movement onset, jPCA as in the
   paper's Methods, the shuffle controls of Supplementary Figure 2 and the simulated kinematic
