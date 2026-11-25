@@ -274,35 +274,33 @@ outcomes:
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
 - claim: fig5-recording-day-effects
-  outcome: not_reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_peterson_2021.ipynb
   output: claim:fig5-recording-day-effects
-  notes: With band means 18 of 24 subject and band pairs agree with the paper, and 18 with band
-    medians, below the 20 the criterion asks for a partial reproduction. A day effect is found where
-    the paper has none for S01 LFB (p = 0.043), S01 HFB (p = 0.022) and S06 HFB (p = 6.9e-11), and is
-    not found for S07 HFB (p = 0.073), S08 LFB (p = 0.31) and S10 HFB (p = 0.054), where the paper
-    reports one. The other eight significant pairs of the paper are significant here. The outcome
-    rests on the choice of good electrodes. With each file's own flags (variant, the main analysis
-    of round 1) 20 of 24 agree with band means and 19 with band medians; with the electrodes good in
-    at least one file 21 and 20; both would be partially reproduced. Without the electrodes holding
-    50 ms runs of zeros 18 and 18, and S10 HFB keeps p = 0.054. The day medians of the band mean lie
-    inside Table 2's per-day intervals for 41 of 55 subject-days in LFB and 42 of 55 in HFB. S01
-    lost 132 events of day 7, where its ECoG ends early.
-  proposed:
-    outcome: partially_reproduced
-    reason: The main set of good electrodes (good in every file) removes 12.6 +- 8.4 surface
-      electrodes per subject, against the paper's 4.9 +- 4.9 (Methods, ECoG data processing); each
-      file's own flags remove 4.2 +- 2.1, closest to the paper, and give 20 of 24 agreeing pairs with
-      band means, at the criterion's threshold for a partial reproduction. Removing only the
-      electrodes bad in every file (1.2 +- 0.4), which keeps the electrodes the same across days,
-      gives 21. Only the main set gives fewer than 20 (18). The other region claims keep their
-      outcomes under each file's flags. Analysis in the notebook, section "Region results under
-      other electrode choices" and the cell after it.
+  notes: The outcome rests on each file's own good-electrode flags. Under them 20 of 24 subject and
+    band pairs agree with the paper with band means, the criterion's threshold for a partial
+    reproduction, and 19 with band medians. A day effect is found where the paper has none for S01
+    LFB (p = 0.047), S01 HFB (p = 0.023) and S06 HFB (p = 6.7e-11), and is not found for S10 HFB
+    (p = 0.094), where the paper reports one. With the main set of good electrodes (good in every
+    file) 18 of 24 agree under both band statistics, below the 20 the criterion asks; S07 HFB
+    (p = 0.073) and S08 LFB (p = 0.31) also lose their day effect, and S10 HFB has p = 0.054.
+    Removing only the electrodes bad in every file gives 21 and 20 (S10 HFB p = 0.015); without the
+    electrodes holding 50 ms runs of zeros 18 and 18, and S10 HFB keeps p = 0.054. The paper removes
+    4.9 +- 4.9 surface electrodes per subject; each file's flags remove 4.2 +- 2.1, the main set
+    12.6 +- 8.4 and removing only the electrodes bad in every file 1.2 +- 0.4. The day medians of the
+    band mean lie inside Table 2's per-day intervals for 41 of 55 subject-days in LFB and 42 of 55 in
+    HFB. S01 lost 132 events of day 7, where its ECoG ends early. Not reproduced was verified in
+    round 2; partially reproduced was proposed after it and the round-3 verifier agreed.
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
   - The paper's per-day intervals (Table 2) are compared with the day medians of the band mean here,
     for comparison only; the criterion's count uses the Kruskal-Wallis tests.
+  - Assumed, as the good-electrode flags differ between a subject's files; the outcome uses each
+    file's own flags, whose count of removed surface electrodes (4.2 +- 2.1 per subject) is closest to
+    the paper's 4.9 +- 4.9 (Methods, ECoG data processing). These flags change the electrodes from day
+    to day, which can add or hide day effects. The main set of the notebook (electrodes good in every
+    file) gives 18 of 24 and would make the claim not reproduced.
 - claim: extfig5-1-baseline-reduces-day-variability
   outcome: reproduced
   assumed: true
@@ -906,3 +904,34 @@ verifications:
     outcome: reproduced
     reason: Agrees with the outcome.
     response: No change.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome for fig5-recording-day-effects and the analysis
+    behind it (cells 4, 67, 68, 76 and 77 of the executed notebook of the final revision), with the
+    paper's Methods, ECoG data processing.
+  results:
+  - claim: fig5-recording-day-effects
+    agrees: true
+    outcome: partially_reproduced
+    reason: The criterion is applied as written. In cell 76, under each file's own flags, the band mean
+      disagrees with the paper in 4 pairs (S01 LFB p = 0.047, S01 HFB 0.023, S06 HFB 6.7e-11, S10 HFB
+      0.094), leaving 20 of 24, exactly the threshold for partially reproduced; removing only the
+      electrodes bad in every file gives 21 of 24. The analysis asked for in round 2 was run, and Table
+      2's per-day intervals are now printed in cell 67 (41 of 55 and 42 of 55 inside). The choice of
+      electrodes does not look made to reach the result. The proposal rests on a count that does not
+      depend on the outcome, the paper's 4.9 +- 4.9 surface electrodes per subject (confirmed in the
+      Methods), against 4.2 +- 2.1 with each file's flags, 12.6 +- 8.4 for the main set and 1.2 +- 0.4
+      with only the electrodes bad in every file removed (cell 4). The paper's flagging by SD and
+      kurtosis against the median over channels is naturally done per recording. Two of the three
+      defensible sets give partially reproduced, and each file's flags were the main analysis in round
+      1. The other region claims keep their outcomes under each file's flags (cell 76 and 77); the
+      regression claims were not refit and cell 77 says so. Caveats that do not change the verdict, 20
+      of 24 is exactly the threshold and the band median variant gives 19; S10 HFB depends on the
+      electrode set (0.094, 0.015 and 0.054); cell 68 and the record's notes still describe the main
+      set's 18 of 24 as the result and should state that the outcome rests on each file's own flags.
+    response: Set the outcome to partially reproduced and removed the proposal. Cell 68, cell 77, the
+      summary, cell 0, the README and the record's notes now state that the outcome rests on each
+      file's own flags (20 of 24 with band means, 19 with band medians), give the main set's 18 of 24
+      as the alternative, and give S10 HFB's p under each electrode set. A deviation on the outcome
+      states the assumption.
