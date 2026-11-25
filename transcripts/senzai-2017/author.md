@@ -1,3372 +1,112 @@
-# 000003 · author · run 38838816186
+# senzai-2017 · author · run 45284759424
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; ls; ls entries claims attempts tools
+date -u; ls; ls docs entries claims attempts paper | head -80; wc -l docs/*.md README.md
 ```
 
 ```
-# Protocol for an attempt
-
-Version: `pilot-7`. Record this version in the attempt's provenance.
-
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 427 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat README.md docs/design.md | head -400; ls entries/001453-fouke-2025 claims/001453; cat entries/001453-fouke-2025/entry.yaml entries/001453-fouke-2025/requirements.in
-```
-
-```
-# Reproduction registry (working name)
-
-Agents, and people, try to reproduce the key findings of papers from the open
-data on the [DANDI Archive](https://dandiarchive.org), and register the result
-here: the notebooks when it works, and the reason when it does not.
-
-- **For the archive:** evidence of whether each dandiset is complete and
-  accurate enough to support the findings of its paper.
-- **For analysts:** working notebooks to build new analyses on.
-
-Status: pilot. All eight pilot targets have been attempted and checked by an
-independent agent.
-
-**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
-
-## Reading the outcomes
-
-An outcome says what one attempt could recover from the data in a dandiset,
-with the methods available to it. **A "not reproduced" or "partially
-reproduced" outcome is not a finding that the paper is wrong.** It can come
-[... 404 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat claims/001453/*.yaml attempts/001453-fouke-2025-01.yaml; cat entries/001453-fouke-2025/README.md 2>/dev/null | head -50
-```
-
-```
-<persisted-output>
-Output too large (49KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/c0d3ee2c-1c71-45f5-8a47-f9aef2565870/tool-results/b9cq11s3d.txt
-
-Preview (first 2KB):
-# Claims for Fouke, He, Loring & Naumann (2025) on dandiset 001453.
-# Source: the accepted author manuscript in PubMed Central (PMC12218792), full text, read
-# from its Results, figure legends and STAR Methods. The version of record is not open access.
-#
-# When these criteria were written, the author had seen the data check only: the file list,
-# subject metadata, frame rates, units, trial structure and stimulus codes of every file, and
-# the extent of positions. No claim's analysis had been run. The author had also read the
-# outputs printed in the paper's own analysis notebook (Fig1-S1.ipynb, GitLab commit 33a5c29),
-# which include per-stimulus median speeds and angular velocities and its statistics.
-#
-# The dandiset holds only the freely swimming tracking data of Figure 1 and Figure S1. Its
-# stimulus codes 0 to 20 carry no names. The names come from the paper's code and from the
-# stimulus software's protocol file (see stimulus-code-link), so the claims that need them
-# use outside data and depend on that claim.
-#
-# Method choices fixed here, from the paper's Fig1-S1.ipynb where the Methods are silent: a
-[... 15 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/c0d3ee2c-1c71-45f5-8a47-f9aef2565870/tool-results/b9cq11s3d.txt"
-}
-```
-
-```
-1	# Claims for Fouke, He, Loring & Naumann (2025) on dandiset 001453.
-2	# Source: the accepted author manuscript in PubMed Central (PMC12218792), full text, read
-3	# from its Results, figure legends and STAR Methods. The version of record is not open access.
-4	#
-5	# When these criteria were written, the author had seen the data check only: the file list,
-6	# subject metadata, frame rates, units, trial structure and stimulus codes of every file, and
-7	# the extent of positions. No claim's analysis had been run. The author had also read the
-8	# outputs printed in the paper's own analysis notebook (Fig1-S1.ipynb, GitLab commit 33a5c29),
-9	# which include per-stimulus median speeds and angular velocities and its statistics.
-10	#
-11	# The dandiset holds only the freely swimming tracking data of Figure 1 and Figure S1. Its
-12	# stimulus codes 0 to 20 carry no names. The names come from the paper's code and from the
-13	# stimulus software's protocol file (see stimulus-code-link), so the claims that need them
-14	# use outside data and depend on that claim.
-15	#
-16	# Method choices fixed here, from the paper's Fig1-S1.ipynb where the Methods are silent: a
-17	# trial is one stim_index; tracked frames only; positions smoothed with a Savitzky-Golay filter
-18	# (21 frames, order 2); trials rejected when the absolute cumulative heading change exceeds
-19	# 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or the mean speed exceeds
-20	# 100 mm/s; measures taken from 3 s to 35 s after the first frame (the 3 s stationary phase is
-[... 838 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001453-fouke-2025; python -c "
-import nbformat
-nb=nbformat.read('reproduce_fouke_2025.ipynb',4)
-for i,c in enumerate(nb.cells[:8]):
-    print('---',i,c.cell_type,c.metadata.get('tags'))
-    print(c.source[:2500])
-print(len(nb.cells))
-for i,c in enumerate(nb.cells):
-    print(i,c.cell_type,c.metadata.get('tags'),c.source[:80].replace('\n',' '))
-"; head -80 omr.py
-```
-
-```
---- 0 markdown None
-# Reproducing Fouke et al. (2025) from dandiset 001453
-
-**Paper.** Fouke KE, He Z, Loring MD, Naumann EA (2025). Neural circuits underlying divergent
-visuomotor strategies of zebrafish and *Danionella cerebrum*. *Current Biology*.
-[doi:10.1016/j.cub.2025.04.027](https://doi.org/10.1016/j.cub.2025.04.027). This attempt used the
-full text of the accepted author manuscript in PubMed Central (PMC12218792); the version of record
-is not open access.
-
-**Dandiset.** [DANDI:001453](https://dandiarchive.org/dandiset/001453/0.250518.1950), version
-0.250518.1950. The paper cites no DANDI version (its data statement points to a GitLab repository
-that holds code only). This is the only published version. The draft holds the same 37 files
-(same blobs and sizes); it differs only in metadata added later (authors, keywords, and a
-`relatedResource` link to the paper), none of which the analysis uses.
-
-**What the dandiset holds.** Freely swimming tracking of 25 zebrafish (ZF) and 12 *D. cerebrum*
-(DC) larvae during the optomotor protocol of Figure 1 and Figure S1. The two-photon imaging and the
-head-fixed tail tracking of Figures 2 to 4 are not in it.
-
-**Outside inputs.** The stimulus codes in the files have no names. The names come from the paper's
-[... 284 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  curl -s https://api.dandiarchive.org/api/dandisets/000003/ | python -m json.tool | head -50; curl -s "https://api.dandiarchive.org/api/dandisets/000003/versions/" | python -m json.tool
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  curl -s "https://api.dandiarchive.org/api/dandisets/000003/versions/0.260218.2052/" > $TMPDIR/meta.json; python -c "
-import json;m=json.load(open('$TMPDIR/meta.json'))
-for k in m: print(k, json.dumps(m[k])[:1500])
-"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  for v in 0.210812.1448 0.230629.1955 0.250624.0409 0.260218.2052; do curl -s "https://api.dandiarchive.org/api/dandisets/000003/versions/$v/assets/?page_size=200&order=path" | python -c "
-import json,sys;d=json.load(sys.stdin)
-print('$v',d['count'])
-open('$TMPDIR/assets_$v.txt','w').write('\n'.join(f\"{a['path']} {a['size']} {a['blob'] if 'blob' in a else ''} {a['asset_id']}\" for a in d['results']))
-"; done; head -110 $TMPDIR/assets_0.260218.2052.txt
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; for v in 0.210812.1448 0.230629.1955 0.250624.0409; do echo $v; diff <(awk '{print $1,$2,$3}' assets_$v.txt) <(awk '{print $1,$2,$3}' assets_0.260218.2052.txt) | head; done; python - <<'EOF'
-import json,urllib.request
-vs=['0.210812.1448','0.230629.1955','0.250624.0409','0.260218.2052']
-ms={v:json.load(urllib.request.urlopen(f'https://api.dandiarchive.org/api/dandisets/000003/versions/{v}/')) for v in vs}
-keys=set().union(*[m.keys() for m in ms.values()])
-for k in sorted(keys):
-    vals=[json.dumps(ms[v].get(k),sort_keys=True) for v in vs]
-    if len(set(vals))>1 and k not in ('id','doi','url','version','citation','publishedBy','datePublished','manifestLocation','dateModified'):
-        print(k); [print('  ',v,x[:600]) for v,x in zip(vs,vals)]
-EOF
-```
-
-```
-0.210812.1448
-0.230629.1955
-0.250624.0409
-@context
-   0.210812.1448 "https://raw.githubusercontent.com/dandi/schema/master/releases/0.4.4/context.json"
-   0.230629.1955 "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json"
-   0.250624.0409 "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json"
-   0.260218.2052 "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json"
-contributor
-   0.210812.1448 [{"affiliation": [], "includeInCitation": true, "name": "Senzai, Yuta", "roleName": ["dcite:Author", "dcite:ContactPerson", "dcite:DataCollector", "dcite:FormalAnalysis"], "schemaKey": "Person"}, {"affiliation": [], "identifier": "0000-0001-8481-0796", "includeInCitation": true, "name": "Fernandez-Ruiz, Antonio", "roleName": ["dcite:Author", "dcite:FormalAnalysis"], "schemaKey": "Person"}, {"affiliation": [{"identifier": "https://ror.org/005dvqh91", "name": "New York University Langone Medical Center", "schemaKey": "Affiliation"}], "identifier": "0000-0002-3100-4800", "includeInCitation": true
-   0.230629.1955 [{"affiliation": [], "includeInCitation": true, "name": "Senzai, Yuta", "roleName": ["dcite:Author", "dcite:ContactPerson", "dcite:DataCollector", "dcite:FormalAnalysis"], "schemaKey": "Person"}, {"affiliation": [], "identifier": "0000-0001-8481-0796", "includeInCitation": true, "name": "Fernandez-Ruiz, Antonio", "roleName": ["dcite:Author", "dcite:FormalAnalysis"], "schemaKey": "Person"}, {"affiliation": [{"identifier": "https://ror.org/005dvqh91", "name": "New York University Langone Medical Center", "schemaKey": "Affiliation"}], "identifier": "0000-0002-3100-4800", "includeInCitation": true
-   0.250624.0409 [{"affiliation": [{"identifier": "https://ror.org/005dvqh91", "name": "New York University Langone Medical Center", "schemaKey": "Affiliation"}, {"identifier": "https://ror.org/0190ak572", "name": "New York University", "schemaKey": "Affiliation"}], "email": "yuta.senzai@northwes
-[... 37 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1016/j.neuron.2016.12.011&format=json&resultType=core" | python -c "
-import json,sys;d=json.load(sys.stdin)
-for r in d['resultList']['result']: print({k:r.get(k) for k in ['pmid','pmcid','isOpenAccess','inPMC','hasPDF','title']}); print(r.get('fullTextUrlList'))"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p paper; curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5293146/fullTextXML" -o paper/senzai2017.xml; ls -la paper; python - <<'EOF'
-import re
-x=open('paper/senzai2017.xml').read()
-print(len(x))
-# crude text conversion
-t=re.sub(r'<xref[^>]*>(.*?)</xref>',r'\1',x)
-t=re.sub(r'<title>(.*?)</title>',r'\n\n## \1\n',t)
-t=re.sub(r'</p>','\n',t)
-t=re.sub(r'<[^>]+>','',t)
-t=re.sub(r'\n\s*\n+','\n\n',t)
-open('paper/senzai2017.txt','w').write(t)
-print(len(t))
-EOF
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cat paper/senzai2017.xml; echo; curl -sL "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC5293146/unicode" -o paper/bioc.xml; ls -la paper; head -c 600 paper/bioc.xml
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-rm paper/senzai2017.xml paper/senzai2017.txt; python - <<'EOF'
-import xml.etree.ElementTree as ET
-r=ET.parse('paper/bioc.xml').getroot()
-out=[]
-for p in r.iter('passage'):
-    inf={i.get('key'):i.text for i in p.findall('infon')}
-    t=p.findtext('text') or ''
-    typ=inf.get('type','')
-    sec=inf.get('section_type','')
-    if typ.startswith('title') : out.append(f"\n## [{sec}] {t}\n")
-    elif typ in ('ref',): continue
-    else: out.append(f"[{sec}/{typ}] {t}\n")
-open('paper/senzai2017.txt','w').write('\n'.join(out))
-EOF
-wc paper/senzai2017.txt
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "paper/senzai2017.txt"
-}
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-python --version; python -c "import h5py, remfile, dandi, pynwb; print('ok')" 2>&1; which uv; sed -n 1,80p tools/entry.py
-```
-
-```
-Python 3.13.16
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import h5py, remfile, dandi, pynwb; print('ok')
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'h5py'
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-[... 67 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q -p 3.13 work && . work/bin/activate && uv pip install -q h5py remfile dandi pynwb numpy scipy pandas matplotlib pyyaml jsonschema nbformat 2>&1 | tail -3; python -c "import h5py,remfile,dandi;print('ok')"
-```
-
-```
-ok
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/ls1.py <<'EOF'
-import h5py, remfile, sys, time
-from dandi.dandiapi import DandiAPIClient
-path=sys.argv[1]
-t=time.time()
-with DandiAPIClient() as c:
-    a=c.get_dandiset('000003','0.260218.2052').get_asset_by_path(path)
-    url=a.get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-def show(name,obj):
-    if isinstance(obj,h5py.Dataset):
-        print(name, obj.shape, obj.dtype, dict((k,(v if not hasattr(v,'shape') or v.size<5 else '...')) for k,v in obj.attrs.items() if k not in('namespace','object_id')))
-    else:
-        print(name+'/', {k:v for k,v in obj.attrs.items() if k in('neurodata_type','description','colnames')})
-f.visititems(show)
-print('time',time.time()-t)
-EOF
-. $TMPDIR/work/bin/activate; python $TMPDIR/ls1.py sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140321_behavior+ecephys.nwb 2>&1 | tail -150
-```
-
-```
-acquisition/position_sensor1/data (1209783, 2) float64 {'conversion': np.float64(1.0), 'resolution': np.float64(nan), 'unit': 'meters'}
-acquisition/position_sensor1/reference_frame () object {}
-acquisition/position_sensor1/starting_time () float64 {'rate': np.float64(39.0625), 'unit': 'seconds'}
-analysis/ {}
-file_create_date (1,) object {}
-general/ {}
-general/devices/ {}
-general/devices/Device/ {'description': 'YutaMouse20-140321.xml', 'neurodata_type': 'Device'}
-general/devices/Implant/ {'description': 'Silicon electrodes on Intan probe.', 'neurodata_type': 'Device'}
-general/experimenter (1,) object {}
-general/extracellular_ephys/ {}
-general/extracellular_ephys/electrodes/ {'colnames': array(['x', 'y', 'z', 'imp', 'location', 'filtering', 'group',
-       'group_name', 'shank_electrode_number', 'theta_reference'],
-      dtype=object), 'description': 'metadata about extracellular electrodes', 'neurodata_type': 'DynamicTable'}
-general/extracellular_ephys/electrodes/filtering (65,) object {'description': 'description of hardware filtering', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/group (65,) object {'description': 'a reference to the ElectrodeGroup this electrode is a part of', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/group_name (65,) object {'description': 'the name of the ElectrodeGroup this electrode is a part of', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/id (65,) int64 {'neurodata_type': 'ElementIdentifiers'}
-general/extracellular_ephys/electrodes/imp (65,) float64 {'description': 'the impedance of the channel', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/location (65,) object {'description': 'the location of channel within the subject e.g. brain region', 'neurodata_type': 'VectorData'}
-[... 130 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/ls2.py <<'EOF'
-import h5py, remfile, sys, time, numpy as np
-from dandi.dandiapi import DandiAPIClient
-path=sys.argv[1]
-with DandiAPIClient() as c:
-    a=c.get_dandiset('000003','0.260218.2052').get_asset_by_path(path)
-    url=a.get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-print(list(f['acquisition'].keys()))
-for k in f['acquisition']: 
-    g=f['acquisition'][k]; print(k, dict(g.attrs), list(g.keys()) if isinstance(g,h5py.Group) else g.shape)
-    if isinstance(g,h5py.Group):
-        for kk in g: print('  ',kk, g[kk].shape if isinstance(g[kk],h5py.Dataset) else list(g[kk].keys()), dict(g[kk].attrs) if isinstance(g[kk],h5py.Dataset) else '')
-for k in ['session_description','identifier','session_start_time','general/session_id','general/experimenter','general/institution','general/lab','general/related_publications','general/subject/age','general/subject/genotype','general/subject/species','general/subject/subject_id']:
-    print(k, f[k][()])
-u=f['units']
-print('cell_type', np.unique(u['cell_type'][:].astype(str), return_counts=True))
-print('global_id', u['global_id'][:]); print('shank', u['shank_id'][:]); print('id', u['id'][:])
-idx=u['spike_times_index'][:]; print('nspk', np.diff(np.r_[0,idx]))
-st=u['spike_times'][:idx[0]]; print('unit0 times', st[:5], st[-5:], 'sorted', np.all(np.diff(st)>=0))
-s=f['processing/behavior/states']; print(list(zip(s['label'][:].astype(str), s['start_time'][:], s['stop_time'][:])))
-e=f['general/extracellular_ephys/electrodes']
-for c in e: 
-    if c!='group': print(c, e[c][:10] if e[c].dtype!=object else e[c][:].astype(str)[:10])
-print(f['general/devices/Device'].attrs['description'])
-print('LFP dec bands', f['processing/ecephys/LFPDecompositionSeries/bands/band_name'][:], f['processing/ecephys/LFPDecompositionSeries/bands/band_limits'][:], f['processing/ecephys/LFPDecompositionSeries/metric'][()])
-for k in f['stimulus/presentation']: 
-    g=f['stimulus/presentation'][k]; print(k, g['data'][:3], g['timestamps'][:3])
-print('intervals' in f, list(f.keys()), list(f['analysis'].keys()))
-EOF
-. $TMPDIR/work/bin/activate; python $TMPDIR/ls2.py sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140321_behavior+ecephys.nwb 2>&1 | tail -80
-```
-
-```
-['position_sensor0', 'position_sensor1']
-position_sensor0 {'comments': 'no comments', 'description': 'raw sensor data from sensor 0', 'namespace': 'core', 'neurodata_type': 'SpatialSeries', 'object_id': '25087aee-19fd-47e7-80ad-917655a0770d'} ['data', 'reference_frame', 'starting_time']
-   data (1209783, 2) {'conversion': np.float64(1.0), 'resolution': np.float64(nan), 'unit': 'meters'}
-   reference_frame () {}
-   starting_time () {'rate': np.float64(39.0625), 'unit': 'seconds'}
-position_sensor1 {'comments': 'no comments', 'description': 'raw sensor data from sensor 1', 'namespace': 'core', 'neurodata_type': 'SpatialSeries', 'object_id': '07386e73-51dd-41e1-a03d-230461579e88'} ['data', 'reference_frame', 'starting_time']
-   data (1209783, 2) {'conversion': np.float64(1.0), 'resolution': np.float64(nan), 'unit': 'meters'}
-   reference_frame () {}
-   starting_time () {'rate': np.float64(39.0625), 'unit': 'seconds'}
-session_description b'Mouse in open exploration and theta maze.'
-identifier b'23647bce-e14c-4498-a45d-8b5dcd572360'
-session_start_time b'2014-03-21T00:00:00-04:00'
-general/session_id b'YutaMouse20-140321'
-general/experimenter [b'Yuta Senzai']
-general/institution b'NYU'
-general/lab b'Buzsaki'
-general/related_publications [b'DOI:10.1016/j.neuron.2016.12.011']
-general/subject/age b'207 days, 0:00:00'
-general/subject/genotype b'SST-Cre'
-general/subject/species b'Mus musculus'
-[... 45 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/survey.py <<'EOF'
-import h5py, remfile, sys, time, json, numpy as np
-from concurrent.futures import ThreadPoolExecutor
-from dandi.dandiapi import DandiAPIClient
-with DandiAPIClient() as c:
-    assets=sorted((a.path,a.get_content_url(follow_redirects=1, strip_query=True)) for a in c.get_dandiset('000003','0.260218.2052').get_assets())
-def s(x): 
-    v=x[()]; return v.decode() if isinstance(v,bytes) else str(v)
-def one(pu):
-    p,u=pu
-    t=time.time()
-    try:
-        f=h5py.File(remfile.File(u),'r')
-        r={'path':p}
-        r['top']=list(f.keys())
-        r['desc']=s(f['session_description']); r['start']=s(f['session_start_time'])
-        r['subject']={k:s(f['general/subject'][k]) for k in f['general/subject']}
-        r['acq']={k:(dict(f['acquisition'][k].attrs).get('neurodata_type'), f['acquisition'][k]['data'].shape if 'data' in f['acquisition'][k] else None, float(f['acquisition'][k]['starting_time'].attrs['rate']) if 'starting_time' in f['acquisition'][k] else None) for k in f['acquisition']}
-        r['proc']={m:list(f['processing'][m].keys()) for m in f['processing']}
-        r['stim']={k:int(f['stimulus/presentation'][k]['timestamps'].shape[0]) for k in f['stimulus/presentation']}
-        r['intervals']=list(f['intervals'].keys()) if 'intervals' in f else []
-        r['analysis']=list(f['analysis'].keys())
-        if 'units' in f:
-            U=f['units']; r['unit_cols']=list(U.attrs['colnames'])
-            ct=U['cell_type'][:].astype(str); a,b=np.unique(ct,return_counts=True); r['cell_types']=dict(zip(a.tolist(),b.tolist()))
-            r['n_units']=len(ct)
-            idx=U['spike_times_index'][:]; r['n_spikes']=int(idx[-1]) if len(idx) else 0
-            st=U['spike_times']; r['spk_range']=[float(st[0]), float(st[idx[0]-1])] if len(idx) else None
-            r['global_id']=U['global_id'][:].tolist()
-            if 'waveforms' in U: r['wf_shape']=list(U['waveforms'].shape)
-        if 'behavior' in f['processing'] and 'states' in f['processing/behavior']:
-            S=f['processing/behavior/states']; lab=S['label'][:].astype(str); d=S['stop_time'][:]-S['start_time'][:]
-            r['states']={l:float(d[lab==l].sum()) for l in np.unique(lab)}
-        if 'ecephys' in f['processing'] and 'LFP' in f['processing/ecephys']:
-            L=f['processing/ecephys/LFP/LFP/data']; r['lfp_shape']=list(L.shape)
-        r['n_electrodes']=int(f['general/extracellular_ephys/electrodes/id'].shape[0])
-        r['secs']=time.time()-t
-        return r
-    except Exception as e:
-        return {'path':p,'error':repr(e)}
-with ThreadPoolExecutor(12) as ex: res=list(ex.map(one,assets))
-json.dump(res,open(sys.argv[1],'w'),indent=1)
-EOF
-. $TMPDIR/work/bin/activate; time python $TMPDIR/survey.py $TMPDIR/survey.json 2>&1 | tail -5
-```
-
-```
-real	9m29.570s
-user	0m13.224s
-sys	0m2.097s
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python - <<'EOF'
-import json,collections, os
-R=json.load(open(os.environ['TMPDIR']+'/survey.json'))
-print(sum('error' in r for r in R)); [print(r) for r in R if 'error' in r]
-R=[r for r in R if 'error' not in r]
-ct=collections.Counter()
-for r in R: ct.update(r.get('cell_types',{}))
-print(ct)
-print(collections.Counter(tuple(sorted(r['acq'])) for r in R))
-print(collections.Counter(tuple(sorted(r['proc'].get('behavior',[]))) for r in R))
-print(collections.Counter(tuple(sorted(r['proc'].get('ecephys',[]))) for r in R))
-print(collections.Counter(r['desc'] for r in R))
-print(collections.Counter(tuple(r['intervals']) for r in R), collections.Counter(tuple(r['analysis']) for r in R))
-print(collections.Counter(r['subject']['genotype'] for r in R))
-st=collections.Counter()
-for r in R: st.update(r['stim'].keys())
-print(st)
-for r in R:
-    print(r['path'].split('/')[1][4:-4], r['subject']['genotype'][:12], r['n_units'], r.get('cell_types'), {k:round(v) for k,v in r.get('states',{}).items()}, {k:v[1] for k,v in r['acq'].items()}, r['n_electrodes'], round(r['secs']))
-EOF
-```
-
-```
-<persisted-output>
-Output too large (65.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/c0d3ee2c-1c71-45f5-8a47-f9aef2565870/tool-results/b2e4sqne7.txt
-
-Preview (first 2KB):
-1
-{'path': 'sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150218_behavior+ecephys.nwb', 'error': "KeyError('Unable to synchronously open object (component not found)')"}
-Counter({'unknown': 1102, 'pyramidal cell': 649, 'granule cell': 609, 'mossy cell': 568, 'narrow waveform cell': 536, 'missing': 237, 'wide waveform cell (narrower, exclude opto tagged SST cell)': 191, 'wide waveform cell (wider)': 182, 'positive waveform unit (bursty)': 60, 'positive waveform unit (non-bursty)': 31, 'optogenetically tagged SST cell': 21, 'positive negative waveform unit': 18})
-Counter({('ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait', 'position_sensor0', 'position_sensor1'): 73, ('ElectricalSeries', 'ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait', 'position_sensor0', 'position_sensor1'): 15, ('position_sensor0', 'position_sensor1'): 8, ('ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait'): 2, ('ElectricalSeries', 'ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait'): 2})
-...
-</persisted-output>
-```
-
-**Agent calls Bash**
-
-```bash
-cut -c1-700 /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/c0d3ee2c-1c71-45f5-8a47-f9aef2565870/tool-results/b2e4sqne7.txt | sed -n 3,20p
-```
-
-```
-Counter({'unknown': 1102, 'pyramidal cell': 649, 'granule cell': 609, 'mossy cell': 568, 'narrow waveform cell': 536, 'missing': 237, 'wide waveform cell (narrower, exclude opto tagged SST cell)': 191, 'wide waveform cell (wider)': 182, 'positive waveform unit (bursty)': 60, 'positive waveform unit (non-bursty)': 31, 'optogenetically tagged SST cell': 21, 'positive negative waveform unit': 18})
-Counter({('ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait', 'position_sensor0', 'position_sensor1'): 73, ('ElectricalSeries', 'ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait', 'position_sensor0', 'position_sensor1'): 15, ('position_sensor0', 'position_sensor1'): 8, ('ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait'): 2, ('ElectricalSeries', 'ch_SsolL', 'ch_SsolR', 'ch_arm', 'ch_dig1', 'ch_dig2', 'ch_entL', 'ch_entR', 'ch_solL', 'ch_solR', 'ch_wait'): 2})
-Counter({('states',): 39, ('EightMazePosition_position', 'states'): 19, ('OpenFieldPosition_New_position', 'OpenFieldPosition_Old_position', 'OpenFieldPosition_Oldlast_position', 'states'): 17, ('EightMazePosition_position', 'OpenFieldPosition_New_Curtain_position', 'OpenFieldPosition_New_position', 'OpenFieldPosition_Old_Curtain_position', 'OpenFieldPosition_Old_position', 'OpenFieldPosition_Oldlast_position', 'states'): 7, ('EightMazePosition_position', 'OpenFieldPosition_ExtraLarge_position', 'OpenFieldPosition_New_Curtain_position', 'OpenFieldPosition_New_position', 'OpenFieldPosition_Old_Curtain_position', 'OpenFieldPosition_Old_position', 'OpenFieldPosition_Oldlast_position', 'states')
-Counter({('LFP',): 60, ('LFP', 'LFPDecompositionSeries'): 40})
-Counter({'Mouse in open exploration and theta maze.': 100})
-Counter({('epochs', 'trials'): 41, (): 38, ('epochs',): 20, ('trials',): 1}) Counter({(): 100})
-Counter({'POMC-Cre::Arch': 36, 'Drd2-Cre:
-[... 11 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python - <<'EOF'
-import json,collections, os
-R=json.load(open(os.environ['TMPDIR']+'/survey.json'))
-R=[r for r in R if 'error' not in r]
-ab={'granule cell':'GC','mossy cell':'MC','pyramidal cell':'PYR','narrow waveform cell':'nI','wide waveform cell (narrower, exclude opto tagged SST cell)':'wIn','wide waveform cell (wider)':'wIw','unknown':'unk','missing':'miss','optogenetically tagged SST cell':'SST','positive waveform unit (bursty)':'posB','positive waveform unit (non-bursty)':'posN','positive negative waveform unit':'posneg'}
-for r in R:
-    c={ab[k]:v for k,v in r.get('cell_types',{}).items()}
-    print(r['path'].split('_ses-')[1][:-4].replace('_behavior+ecephys','').replace('_ecephys','(e)'), r['subject']['genotype'][:8], r['subject']['age'][:9], r['n_units'], c, 'beh:',[k.replace('Position_','').replace('_position','') for k in r['proc'].get('behavior',[]) if k!='states'], r['intervals'], 'gid',min(r['global_id']),max(r['global_id']), 'ecephys:',r['proc'].get('ecephys'), 'ES' if 'ElectricalSeries' in r['acq'] else '')
-EOF
-```
-
-```
-Exit code 1
-YutaMouse20-140321 SST-Cre 207 days, 22 {'GC': 1, 'MC': 6, 'nI': 5, 'unk': 7, 'wIn': 1, 'wIw': 2} beh: [] [] gid 1 22 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse20-140324 SST-Cre 210 days, 42 {'miss': 4, 'MC': 15, 'nI': 6, 'SST': 3, 'posB': 1, 'posN': 1, 'unk': 8, 'wIn': 1, 'wIw': 3} beh: [] [] gid 23.0 60.0 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse20-140325 SST-Cre 211 days, 36 {'GC': 2, 'miss': 17, 'MC': 5, 'nI': 4, 'SST': 3, 'unk': 5} beh: [] [] gid 61.0 79.0 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse20-140327 SST-Cre 213 days, 14 {'miss': 8, 'nI': 1, 'posN': 2, 'unk': 3} beh: [] [] gid 80.0 85.0 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse20-140328 SST-Cre 214 days, 22 {'miss': 21, 'unk': 1} beh: [] [] gid nan nan ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse23-140804 SST-Cre 201 days, 11 {'GC': 4, 'miss': 1, 'MC': 1, 'nI': 2, 'unk': 3} beh: [] [] gid 87.0 96.0 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse23-140805 SST-Cre 202 days, 29 {'GC': 10, 'MC': 3, 'nI': 7, 'SST': 1, 'posB': 1, 'unk': 4, 'wIn': 1, 'wIw': 2} beh: [] [] gid 97 125 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse23-140806 SST-Cre 203 days, 34 {'GC': 13, 'MC': 8, 'nI': 3, 'SST': 1, 'posB': 1, 'unk': 5, 'wIn': 1, 'wIw': 2} beh: [] [] gid 126 159 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse33-150219 POMC-Cre 253 days, 35 {'GC': 3, 'miss': 11, 'nI': 5, 'posneg': 1, 'unk': 10, 'wIn': 1, 'wIw': 4} beh: ['EightMazeposition', 'OpenFieldNew_Curtain', 'OpenFieldNew', 'OpenFieldOld_Curtain', 'OpenFieldOld'] ['epochs', 'trials'] gid 165.0 188.0 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse33-150220 POMC-Cre 254 days, 41 {'GC': 3, 'miss': 13, 'MC': 2, 'nI': 7, 'posB': 1, 'unk': 10, 'wIn': 1, 'wIw': 4} beh: [] [] gid 189.0 216.0 ecephys: ['LFP', 'LFPDecompositionSeries'] 
-YutaMouse33-150221 POMC-Cre 255 days, 53 {'GC': 6, 'miss': 16, 'MC': 5, 'nI': 7, 'posneg': 1, 'unk': 11, 'wIn': 2, 'wIw': 5} beh: [] [] gid 217.0
-[... 47 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-curl -s "https://api.github.com/search/code?q=YutaMouse" | head -5; curl -s https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb | python -c "import json,sys;d=json.load(sys.stdin);print(d.get('full_name'),d.get('default_branch'),d.get('pushed_at'))"; curl -s "https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/git/trees/HEAD?recursive=1" | python -c "
-import json,sys;d=json.load(sys.stdin)
-for t in d.get('tree',[]):
-  if 'yuta' in t['path'].lower() or 'senzai' in t['path'].lower(): print(t['path'])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p $TMPDIR/code && cd $TMPDIR/code; sha=$(curl -s https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/commits/master | python -c "import json,sys;print(json.load(sys.stdin)['sha'])"); echo $sha; for f in convert_yuta.py yutabehaviordatainterface.py yutanwbconverter.py yutapositiondatainterface.py yutalfpdatainterface.py; do curl -s https://raw.githubusercontent.com/catalystneuro/buzsaki-lab-to-nwb/$sha/buzsaki_lab_to_nwb/yuta_mossy_cell/$f -o $f; done; wc -l *; cat yutanwbconverter.py convert_yuta.py | head -250
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/code; cat yutabehaviordatainterface.py yutapositiondatainterface.py; sed -n 1,150p yutalfpdatainterface.py; sed -n 60,91p convert_yuta.py
-```
-
-```
-"""Authors: Cody Baker and Ben Dichter."""
-from pathlib import Path
-import numpy as np
-from scipy.io import loadmat
-
-from nwb_conversion_tools.basedatainterface import BaseDataInterface
-from pynwb import NWBFile
-from pynwb.file import TimeIntervals
-from pynwb.behavior import SpatialSeries, Position
-from hdmf.backends.hdf5.h5_utils import H5DataIO
-
-from ..utils.neuroscope import get_events, find_discontinuities, check_module
-
-
-class YutaBehaviorInterface(BaseDataInterface):
-    """Interface for converting processed behavioral data for the Yuta experiments (visual cortex)."""
-
-    @classmethod
-    def get_source_schema(cls):
-        return dict(properties=dict(folder_path=dict(type="string")))
-[... 305 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-curl -s "https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/commits?path=buzsaki_lab_to_nwb/yuta_mossy_cell&per_page=50" | python -c "
-import json,sys
-for c in json.load(sys.stdin): print(c['sha'][:7], c['commit']['author']['date'], c['commit']['message'][:70].replace('\n',' '))"; curl -s "https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/commits?path=buzsaki_lab_to_nwb/yuta&per_page=50" | python -c "
-import json,sys
-for c in json.load(sys.stdin): print(c['sha'][:7], c['commit']['author']['date'], c['commit']['message'][:70].replace('\n',' '))"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-curl -s "https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/commits?sha=c5ddf39&per_page=100&until=2020-04-01T00:00:00Z" | python -c "
-import json,sys
-for c in json.load(sys.stdin)[:30]: print(c['sha'][:7], c['commit']['author']['date'], c['commit']['message'][:70].replace('\n',' '))"; curl -s "https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/git/trees/c5ddf39~1?recursive=1" | head -3
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-curl -s "https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/git/trees/e4652c1?recursive=1" | python -c "
-import json,sys
-for t in json.load(sys.stdin)['tree']: print(t['path'])" | grep -i -E "yuta|senzai|neuroscope"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/code; curl -s https://raw.githubusercontent.com/catalystneuro/buzsaki-lab-to-nwb/e4652c1/buzsaki_lab_to_nwb/original_code/convert_yuta.py -o convert_yuta_2020.py; wc -l convert_yuta_2020.py; grep -n -i -E "celltype|cell_type|region|global_id|shank_id|unitID|waveform|states|EightMaze|OpenField|conversion|trials|epoch|add_unit|position_sensor|DS2|Decomposition|electrode_group" convert_yuta_2020.py | head -80
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/code; sed -n 20,60p convert_yuta_2020.py; sed -n 80,170p convert_yuta_2020.py; sed -n 270,432p convert_yuta_2020.py
-```
-
-```
-import to_nwb.neuroscope as ns
-from to_nwb.utils import find_discontinuities
-
-
-# taken from ReadMe
-celltype_dict = {
-    0: 'unknown',
-    1: 'granule cells (DG) or pyramidal cells (CA3)  (need to use region info. see below.)',
-    2: 'mossy cell',
-    3: 'narrow waveform cell',
-    4: 'optogenetically tagged SST cell',
-    5: 'wide waveform cell (narrower, exclude opto tagged SST cell)',
-    6: 'wide waveform cell (wider)',
-    8: 'positive waveform unit (non-bursty)',
-    9: 'positive waveform unit (bursty)',
-    10: 'positive negative waveform unit'
-}
-
-max_shanks = 8
-
-[... 277 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/ls3.py <<'EOF'
-import h5py, remfile, sys, time, numpy as np
-from dandi.dandiapi import DandiAPIClient
-path=sys.argv[1]
-with DandiAPIClient() as c:
-    url=c.get_dandiset('000003','0.260218.2052').get_asset_by_path(path).get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-B=f['processing/behavior']
-for k in B:
-    if k=='states': continue
-    for kk in B[k]:
-        d=B[k][kk]
-        print(k,kk,{a:d[a].shape for a in d if isinstance(d[a],h5py.Dataset)}, dict(d['data'].attrs))
-        x=d['data'][:]; t=d['timestamps'][:]
-        print('   t',t[:2],t[-2:],'dt med',np.median(np.diff(t)),' data min',np.nanmin(x,0),'max',np.nanmax(x,0),'nan frac',np.isnan(x).mean(0))
-for k in f['intervals']:
-    I=f['intervals'][k]; print(k, list(I.attrs['colnames']))
-    for c in I.attrs['colnames']:
-        v=I[c][:]; print('  ',c, v[:8] if v.dtype!=object else v.astype(str)[:12], len(v))
-    if k=='epochs':
-        print(list(zip(I['tags'][:].astype(str) if 'tags' in I else I['label'][:].astype(str), I['start_time'][:], I['stop_time'][:])))
-if 'tags_index' in f['intervals/epochs']: print('tags_index', f['intervals/epochs/tags_index'][:])
-U=f['units']
-t=time.time(); st=U['spike_times'][:]; print('spike_times', st.shape, 'read secs', time.time()-t, U['spike_times'].chunks, U['spike_times'].compression)
-print('wf', U['waveforms'].shape, U['waveforms'].chunks, U['waveforms'].compression, 'wfidx', U['waveforms_index'].shape, U['waveforms_index'][:3], U['waveforms_index_index'][:3])
-t=time.time(); w=U['waveforms'][:200]; print('wf read', time.time()-t); print(np.round(w[:10,:],1))
-print('LFP chunks', f['processing/ecephys/LFP/LFP/data'].chunks, f['processing/ecephys/LFP/LFP/data'].compression)
-if 'LFPDecompositionSeries' in f['processing/ecephys']: print('decomp chunks', f['processing/ecephys/LFPDecompositionSeries/data'].chunks)
-print('pos sensor', f['acquisition/position_sensor0/data'][100000:100005])
-print('stim keys', list(f['stimulus/presentation'].keys()))
-EOF
-. $TMPDIR/work/bin/activate; python $TMPDIR/ls3.py sub-YutaMouse42/sub-YutaMouse42_ses-YutaMouse42-151113_behavior+ecephys.nwb 2>&1 | tail -60
-```
-
-```
-t [11326.72   11326.7456] [12395.5712 12395.5968] dt med 0.025600000000849832  data min [8.39675986e-06 6.13765350e-05] max [0.99778299 0.99991003] nan frac [0. 0.]
-OpenFieldPosition_New_position OpenFieldPosition_New_twhl_norm_spatial_series {'data': (41285, 2), 'reference_frame': (), 'timestamps': (41285,)} {'conversion': np.float64(0.46), 'resolution': np.float64(nan), 'unit': 'meters'}
-   t [12396.6208 12396.6464] [13489.8688 13489.8944] dt med 0.025600000000849832  data min [1.44052470e-05 3.10607727e-03] max [0.99823001 0.99993996] nan frac [0. 0.]
-OpenFieldPosition_Old_Curtain_position OpenFieldPosition_Old_Curtain_twhl_norm_spatial_series {'data': (40720, 2), 'reference_frame': (), 'timestamps': (40720,)} {'conversion': np.float64(0.46), 'resolution': np.float64(nan), 'unit': 'meters'}
-   t [10253.7472 10253.7728] [11325.6704 11325.696 ] dt med 0.025600000000849832  data min [5.75343358e-06 3.48230520e-04] max [0.99999257 0.99999286] nan frac [0. 0.]
-OpenFieldPosition_Old_position OpenFieldPosition_Old_twhl_norm_spatial_series {'data': (43456, 2), 'reference_frame': (), 'timestamps': (43456,)} {'conversion': np.float64(0.46), 'resolution': np.float64(nan), 'unit': 'meters'}
-   t [9106.2784 9106.304 ] [10252.5696 10252.5952] dt med 0.025600000000849832  data min [0.00021841 0.00191862] max [0.99996654 0.99970893] nan frac [0. 0.]
-OpenFieldPosition_Oldlast_position OpenFieldPosition_Oldlast_twhl_norm_spatial_series {'data': (40189, 2), 'reference_frame': (), 'timestamps': (40189,)} {'conversion': np.float64(0.46), 'resolution': np.float64(nan), 'unit': 'meters'}
-   t [13490.9184 13490.944 ] [14559.36   14559.3856] dt med 0.025600000000849832  data min [1.44052470e-05 4.08653858e-03] max [0.99925212 0.99978853] nan frac [0. 0.]
-epochs ['start_time', 'stop_time', 'tags']
-   start_time [11326.72   12396.6208 10253.7472  9106.2784 13490.9184  7510.8096
- 14560.4096 37664.9216] 8
-   stop_time [12395.5968 13489.8944 11325.696  10252.5952 14559.3856  9105.0752
- 16367.
-[... 46 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python $TMPDIR/ls3.py sub-YutaMouse42/sub-YutaMouse42_ses-YutaMouse42-151113_behavior+ecephys.nwb 2>&1 | head -6
-```
-
-```
-EightMazePosition_position EightMazePosition_twhl_linearized_spatial_series {'data': (251429, 2), 'reference_frame': (), 'timestamps': (251429,)} {'conversion': np.float64(0.325), 'resolution': np.float64(nan), 'unit': 'meters'}
-   t [7510.8096 7510.8352] [40699.9552 40699.9808] dt med 0.025600000000849832  data min [ 0.         -3.14148543] max [2.00009315 3.14152529] nan frac [0.00344829 0.00344829]
-EightMazePosition_position EightMazePosition_twhl_norm_spatial_series {'data': (251429, 2), 'reference_frame': (), 'timestamps': (251429,)} {'conversion': np.float64(0.325), 'resolution': np.float64(nan), 'unit': 'meters'}
-   t [7510.8096 7510.8352] [40699.9552 40699.9808] dt med 0.025600000000849832  data min [-1.23640694 -1.08110754] max [1.28936846 1.18999145] nan frac [0.00344829 0.00344829]
-OpenFieldPosition_New_Curtain_position OpenFieldPosition_New_Curtain_twhl_norm_spatial_series {'data': (39826, 2), 'reference_frame': (), 'timestamps': (39826,)} {'conversion': np.float64(0.46), 'resolution': np.float64(nan), 'unit': 'meters'}
-   t [11326.72   11326.7456] [12395.5712 12395.5968] dt med 0.025600000000849832  data min [8.39675986e-06 6.13765350e-05] max [0.99778299 0.99991003] nan frac [0. 0.]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python - <<'EOF'
-import json,os,numpy as np
-R=json.load(open(os.environ['TMPDIR']+'/survey.json'))
-R=[r for r in R if 'error' not in r]
-print('total spikes', sum(r.get('n_spikes',0) for r in R)/1e6, 'M')
-print('lfp decomposition files', sum('LFPDecompositionSeries' in r['proc'].get('ecephys',[]) for r in R))
-print('subjects', len({r['subject'].get('subject_id') for r in R}))
-import collections
-print(collections.Counter((r['subject'].get('subject_id'), r['subject']['genotype']) for r in R))
-print([ (r['path'].split('_ses-')[1][:20], r['subject']) for r in R if 'age' not in r['subject']])
-EOF
-python $TMPDIR/ls1.py sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150218_behavior+ecephys.nwb 2>&1 | grep -v "^specifications\|stimulus/presentation" | head -60
-```
-
-```
-total spikes 411.119355 M
-lfp decomposition files 40
-subjects 16
-Counter({('YutaMouse42', 'POMC-Cre::Arch'): 15, ('YutaMouse41', 'POMC-Cre::Arch'): 10, ('YutaMouse55', 'Drd2-Cre::Ai35'): 9, ('YutaMouse56', 'Drd2-Cre::Ai35'): 9, ('YutaMouse33', 'POMC-Cre::Arch'): 8, ('YutaMouse57', 'POMC-Cre::Ai35'): 8, ('YutaMouse39', 'SST-Cre'): 7, ('YutaMouse20', 'SST-Cre'): 5, ('YutaMouse37', 'SST-Cre'): 5, ('YutaMouse45', 'Drd2-Cre::Ai35'): 5, ('YutaMouse54', 'Drd2-Cre::Ai35'): 5, ('YutaMouse51', 'Drd2-Cre::Ai35'): 4, ('YutaMouse23', 'SST-Cre'): 3, ('YutaMouse40', 'SST-Cre'): 3, ('YutaMouse44', 'POMC-Cre::Arch'): 3, ('YutaMouse38', 'SST-Cre'): 1})
-[('YutaMouse55-160901_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55-160902_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55-160906_e', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55-160907_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55-160908_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55-160909_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55-160910_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55-160911_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse55b160907_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse55'}), ('YutaMouse56-160911_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse56'}), ('YutaMouse56-160912_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'YutaMouse56'}), ('YutaMouse56-160913_b', {'genotype': 'Drd2-Cre::Ai35', 'species': 'Mus musculus', 'subject_id': 'Yuta
-[... 60 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python $TMPDIR/ls1.py sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150218_behavior+ecephys.nwb 2>&1 | grep -v "^specifications\|stimulus/presentation\|^acquisition\|^general/extracellular_ephys/shank" | sed -n 12,80p
-```
-
-```
-general/extracellular_ephys/electrodes/filtering (64,) object {'description': 'description of hardware filtering', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/group (64,) object {'description': 'a reference to the ElectrodeGroup this electrode is a part of', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/group_name (64,) object {'description': 'the name of the ElectrodeGroup this electrode is a part of', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/id (64,) int64 {'help': 'unique identifiers for a list of elements', 'neurodata_type': 'ElementIdentifiers'}
-general/extracellular_ephys/electrodes/imp (64,) float64 {'description': 'the impedance of the channel', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/location (64,) object {'description': 'the location of channel within the subject e.g. brain region', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/shank_electrode_number (64,) int64 {'description': '1-indexed channel within a shank', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/theta_reference (64,) bool {'description': 'this electrode was used to calculate LFP canonical bands', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/x (64,) float64 {'description': 'the x coordinate of the channel location', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/y (64,) float64 {'description': 'the y coordinate of the channel location', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-general/extracellular_ephys/electrodes/z (64,) float64 {
-[... 58 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python $TMPDIR/ls1.py sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150218_behavior+ecephys.nwb 2>&1 | grep -E "^units|^processing/ecephys|^processing/behavior/states|^session|^time|^nwb|^specifications/core/[0-9.]+/$"
-```
-
-```
-processing/behavior/states/ {'colnames': array([b'start_time', b'stop_time', b'label'], dtype='|S13'), 'description': 'sleep states of animal', 'neurodata_type': 'TimeIntervals'}
-processing/behavior/states/id (12,) int64 {'help': 'unique identifiers for a list of elements', 'neurodata_type': 'ElementIdentifiers'}
-processing/behavior/states/label (12,) object {'description': 'sleep state', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-processing/behavior/states/start_time (12,) float32 {'description': 'Start time of epoch, in seconds', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-processing/behavior/states/stop_time (12,) float32 {'description': 'Stop time of epoch, in seconds', 'help': 'Values for a list of elements', 'neurodata_type': 'VectorData'}
-processing/ecephys/ {'description': 'intermediate data from extracellular electrophysiology recordings, e.g., LFP', 'neurodata_type': 'ProcessingModule'}
-processing/ecephys/LFP/ {'neurodata_type': 'LFP'}
-processing/ecephys/LFP/lfp/ {'description': 'lfp signal for all shank electrodes', 'neurodata_type': 'ElectricalSeries'}
-processing/ecephys/LFP/lfp/data (51437625, 64) int16 {'conversion': np.float64(nan), 'resolution': np.float64(nan), 'unit': 'volt'}
-processing/ecephys/LFP/lfp/electrodes (64,) int64 {'description': 'electrode table reference', 'help': 'a subset (i.e. slice or region) of a DynamicTable', 'neurodata_type': 'DynamicTableRegion', 'table': <HDF5 object reference>}
-processing/ecephys/LFP/lfp/starting_time () float64 {'rate': np.float64(1250.0), 'unit': 'Seconds'}
-processing/ecephys/LFPDecompositionSeries/ {'description': 'Theta and Gamma phase for reference LFP', 'neurodata_type': 'DecompositionSeries'}
-processing/ecephys/LFPDecompositionSeries/bands/ {'colnames': array([b'band_name', b'band_limits'], dtype='|S14'), 'description': 'data about the frequency bands that the signal was decomposed into', 'neurodata_type': 'DynamicTable'}
-processing/ecephys/LF
-[... 50 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python - <<'EOF'
-import json,os,collections
-R=json.load(open(os.environ['TMPDIR']+'/survey.json'))
-R=[r for r in R if 'error' not in r]
-for r in R:
-    if 'Drd2' in r['subject']['genotype'] or 'POMC-Cre::Ai35' in r['subject']['genotype']:
-        print(r['path'].split('_ses-')[1][:18], r['subject']['genotype'][:6], {k:v for k,v in r['stim'].items() if v>1000 and not k.startswith('DS') and k!='Ripple'}, r.get('cell_types',{}).get('mossy cell'))
-EOF
-```
-
-```
-YutaMouse45-160301 Drd2-C {'PulseStim_2.5V_10ms_LD12': 1600, 'PulseStim_3.5V_10ms_LD12': 1600, 'PulseStim_5V_10ms_LD12': 1600, 'PulseStim_5V_500ms_LD1': 3600, 'PulseStim_5V_500ms_LD2': 3600} None
-YutaMouse45-160302 Drd2-C {'PulseStim_2.5V_10ms_LD12': 1600, 'PulseStim_3.5V_10ms_LD12': 1600, 'PulseStim_5V_10ms_LD12': 1600, 'PulseStim_5V_500ms_LD1': 3600, 'PulseStim_5V_500ms_LD2': 3600} None
-YutaMouse45-160303 Drd2-C {'PulseStim_2.5V_10ms_LD12': 1600, 'PulseStim_3.5V_10ms_LD12': 1600, 'PulseStim_5V_10ms_LD12': 1600, 'PulseStim_5V_500ms_LD1': 3598, 'PulseStim_5V_500ms_LD2': 3600} 1
-YutaMouse45-160304 Drd2-C {'PulseStim_2.5V_10ms_LD12': 1600, 'PulseStim_3.5V_10ms_LD12': 1600, 'PulseStim_5V_10ms_LD12': 1600, 'PulseStim_5V_500ms_LD1': 3600, 'PulseStim_5V_500ms_LD2': 3600} 3
-YutaMouse45-160305 Drd2-C {'PulseStim_2.5V_10ms_LD12': 1600, 'PulseStim_3.5V_10ms_LD12': 1600, 'PulseStim_5V_10ms_LD12': 1600, 'PulseStim_5V_500ms_LD1': 3600, 'PulseStim_5V_500ms_LD2': 3600} 3
-YutaMouse51-160515 Drd2-C {'PulseStim_5V_20ms_LD12': 64719} None
-YutaMouse51-160516 Drd2-C {'PulseStim_5V_20ms_LD12': 64794} None
-YutaMouse51b160514 Drd2-C {'PulseStim_5V_20ms_LD12': 93431} 2
-YutaMouse51b160516 Drd2-C {'PulseStim_5V_20ms_LD12': 92552} 1
-YutaMouse54-160630 Drd2-C {'PulseStim_5V_20ms_LD12': 89401} 1
-YutaMouse54-160701 Drd2-C {'PulseStim_5V_20ms_LD12': 97190} 16
-YutaMouse54-160702 Drd2-C {'PulseStim_5V_20ms_LD12': 97191} 19
-YutaMouse54b160701 Drd2-C {'PulseStim_5V_20ms_LD12': 97191} 13
-YutaMouse54b160702 Drd2-C {'PulseStim_5V_20ms_LD12': 97191} 6
-YutaMouse55-160901 Drd2-C {'PulseStim_5V_20ms_LD12': 97190} None
-YutaMouse55-160902 Drd2-C {'PulseStim_5V_20ms_LD12': 97191} None
-YutaMouse55-160906 Drd2-C {'PulseStim_5V_20ms_LD12': 67718} None
-YutaMouse55-160907 Drd2-C {'PulseStim_5V_20ms_LD12': 47610} None
-YutaMouse55-160908 Drd2-C {'PulseStim_5V_20ms_LD12': 97191} 1
-YutaMouse55-160909 Drd2-C {'PulseStim_5V_20ms_LD12': 95894} 3
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-mkdir -p entries/000003-senzai-2017 && cat > $TMPDIR/proto_load.py <<'EOF'
-import h5py, remfile, time, numpy as np, json, os, sys
-from concurrent.futures import ThreadPoolExecutor
-from dandi.dandiapi import DandiAPIClient
-KEEP={'granule cell','mossy cell','pyramidal cell','narrow waveform cell','wide waveform cell (narrower, exclude opto tagged SST cell)','wide waveform cell (wider)','optogenetically tagged SST cell'}
-with DandiAPIClient() as c:
-    assets=sorted((a.path,a.get_content_url(follow_redirects=1, strip_query=True)) for a in c.get_dandiset('000003','0.260218.2052').get_assets())
-def load(pu):
-    p,u=pu; t=time.time()
-    f=h5py.File(remfile.File(u),'r')
-    U=f['units']; ct=U['cell_type'][:].astype(str); idx=U['spike_times_index'][:].astype(np.int64)
-    st=U['spike_times'][:]
-    starts=np.r_[0,idx[:-1]]
-    keep=[i for i in range(len(ct)) if ct[i] in KEEP]
-    n=sum(idx[i]-starts[i] for i in keep)
-    return p, time.time()-t, len(st), n
-t=time.time()
-with ThreadPoolExecutor(int(sys.argv[1])) as ex: res=list(ex.map(load,assets[:int(sys.argv[2])]))
-print('total', time.time()-t)
-print(sum(r[2] for r in res)/1e6, sum(r[3] for r in res)/1e6)
-print(sorted(round(r[1]) for r in res))
-EOF
-. $TMPDIR/work/bin/activate; python $TMPDIR/proto_load.py 8 20
-```
-
-```
-total 50.50524711608887
-87.481252 50.549732
-[10, 10, 10, 11, 12, 14, 16, 16, 16, 17, 17, 17, 17, 18, 18, 19, 20, 21, 22, 22]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/maze.py <<'EOF'
-import h5py, remfile, numpy as np
-from dandi.dandiapi import DandiAPIClient
-path='sub-YutaMouse42/sub-YutaMouse42_ses-YutaMouse42-151113_behavior+ecephys.nwb'
-with DandiAPIClient() as c:
-    url=c.get_dandiset('000003','0.260218.2052').get_asset_by_path(path).get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-g=f['processing/behavior/EightMazePosition_position']
-L=g['EightMazePosition_twhl_linearized_spatial_series/data'][:]; N=g['EightMazePosition_twhl_norm_spatial_series/data'][:]; t=g['EightMazePosition_twhl_norm_spatial_series/timestamps'][:]
-print(np.histogram(L[:,0][~np.isnan(L[:,0])],20))
-print(np.histogram(L[:,1][~np.isnan(L[:,1])],12))
-# relation: sample rows
-ii=np.arange(0,4000,100)
-for i in ii: print(round(t[i],2), np.round(N[i],3), np.round(L[i],3))
-tr=f['intervals/trials']; s=tr['start_time'][:]; e=tr['stop_time'][:]; cond=tr['condition'][:].astype(str)
-print(s[:3],e[:3])
-# in trial 0, does col0 go monotonic?
-m=(t>=s[1])&(t<e[1]); print(cond[1]); print(np.round(L[m][::20],2).tolist()[:60])
-d=f['processing/ecephys/LFPDecompositionSeries/data'] if 'LFPDecompositionSeries' in f['processing/ecephys'] else None
-print('decomp', None if d is None else (d.chunks,d.compression))
-print('epochs', f['intervals/epochs/tags'][:].astype(str))
-EOF
-. $TMPDIR/work/bin/activate; python $TMPDIR/maze.py
-```
-
-```
-(array([215157,   1360,    539,    529,    590,    583,    618,    633,
-          590,    507,    507,    608,    516,    621,   2390,   3710,
-         1467,   4017,  12048,   3572]), array([0.        , 0.10000466, 0.20000932, 0.30001397, 0.40001863,
-       0.50002329, 0.60002795, 0.7000326 , 0.80003726, 0.90004192,
-       1.00004658, 1.10005124, 1.20005589, 1.30006055, 1.40006521,
-       1.50006987, 1.60007452, 1.70007918, 1.80008384, 1.9000885 ,
-       2.00009315]))
-(array([30217, 32053,  1972,  2317,  2055, 51317, 45382, 23740,  5820,
-        2360, 37321, 16008]), array([-3.14148543e+00, -2.61790121e+00, -2.09431698e+00, -1.57073275e+00,
-       -1.04714852e+00, -5.23564298e-01,  1.99289817e-05,  5.23604156e-01,
-        1.04718838e+00,  1.57077261e+00,  2.09435684e+00,  2.61794106e+00,
-        3.14152529e+00]))
-7510.81 [0.42  0.224] [1.363 0.   ]
-7513.37 [ 0.36  -0.094] [ 1.303 -0.   ]
-7515.93 [-0.752 -0.096] [ 0.191 -0.   ]
-7518.49 [-0.958 -0.056] [-0.    -0.059]
-7521.05 [-0.869  0.015] [0.074 0.   ]
-7523.61 [-0.972 -0.062] [-0.    -0.064]
-7526.17 [-1.035  0.056] [-0.     0.054]
-7528.73 [-0.91   0.118] [0.    0.129]
-[... 40 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/dec.py <<'EOF'
-import h5py, remfile, numpy as np, time
-from dandi.dandiapi import DandiAPIClient
-path='sub-YutaMouse41/sub-YutaMouse41_ses-YutaMouse41-150831_behavior+ecephys.nwb'
-with DandiAPIClient() as c:
-    url=c.get_dandiset('000003','0.260218.2052').get_asset_by_path(path).get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-d=f['processing/ecephys/LFPDecompositionSeries/data']; print(d.shape,d.chunks,d.compression)
-t=time.time(); x=d[1000000:1000000+750000]; print('read 10min', time.time()-t, x.shape)
-print(np.round(x[:20,0,:],2))
-print(f['intervals/epochs/tags'][:].astype(str) if 'epochs' in f['intervals'] else None)
-pr=f['stimulus/presentation/PulseStim_5V_20ms_LD12/timestamps'][:] if 'PulseStim_5V_20ms_LD12' in f['stimulus/presentation'] else None
-print(list(f['stimulus/presentation'].keys()))
-EOF
-. $TMPDIR/work/bin/activate; python $TMPDIR/dec.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/dec.py", line 7, in <module>
-    d=f['processing/ecephys/LFPDecompositionSeries/data']; print(d.shape,d.chunks,d.compression)
-      ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
-    return self._get(name)
-           ~~~~~~~~~^^^^^^
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/h5py/_hl/group.py", line 421, in _get
-    oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "h5py/h5o.pyx", line 255, in h5py.h5o.open
-KeyError: 'Unable to synchronously open object (component not found)'
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate; python - <<'EOF'
-import json,os
-R=json.load(open(os.environ['TMPDIR']+'/survey.json'))
-for r in R:
-    if 'error' in r: continue
-    if 'LFPDecompositionSeries' in r['proc'].get('ecephys',[]): print(r['path'].split('/')[1], r.get('cell_types',{}).get('granule cell'), r.get('cell_types',{}).get('mossy cell'))
-EOF
-```
-
-```
-sub-YutaMouse20_ses-YutaMouse20-140321_behavior+ecephys.nwb 1 6
-sub-YutaMouse20_ses-YutaMouse20-140324_behavior+ecephys.nwb None 15
-sub-YutaMouse20_ses-YutaMouse20-140325_behavior+ecephys.nwb 2 5
-sub-YutaMouse20_ses-YutaMouse20-140327_behavior+ecephys.nwb None None
-sub-YutaMouse20_ses-YutaMouse20-140328_behavior+ecephys.nwb None None
-sub-YutaMouse23_ses-YutaMouse23-140804_behavior+ecephys.nwb 4 1
-sub-YutaMouse23_ses-YutaMouse23-140805_behavior+ecephys.nwb 10 3
-sub-YutaMouse23_ses-YutaMouse23-140806_behavior+ecephys.nwb 13 8
-sub-YutaMouse33_ses-YutaMouse33-150219_behavior+ecephys.nwb 3 None
-sub-YutaMouse33_ses-YutaMouse33-150220_behavior+ecephys.nwb 3 2
-sub-YutaMouse33_ses-YutaMouse33-150221_behavior+ecephys.nwb 6 5
-sub-YutaMouse33_ses-YutaMouse33-150222_behavior+ecephys.nwb 7 15
-sub-YutaMouse33_ses-YutaMouse33-150223_behavior+ecephys.nwb 1 17
-sub-YutaMouse33_ses-YutaMouse33-150224_behavior+ecephys.nwb 2 16
-sub-YutaMouse33_ses-YutaMouse33-150225_behavior+ecephys.nwb 6 15
-sub-YutaMouse33_ses-YutaMouse33-150226_behavior+ecephys.nwb 7 4
-sub-YutaMouse37_ses-YutaMouse37-150609_behavior+ecephys.nwb 5 1
-sub-YutaMouse37_ses-YutaMouse37-150610_behavior+ecephys.nwb 5 1
-sub-YutaMouse37_ses-YutaMouse37-150611_behavior+ecephys.nwb 8 1
-sub-YutaMouse37_ses-YutaMouse37-150612_behavior+ecephys.nwb 4 4
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i "s#^path=.*#path='sub-YutaMouse54/sub-YutaMouse54_ses-YutaMouse54b160701_behavior+ecephys.nwb'#" $TMPDIR/dec.py; . $TMPDIR/work/bin/activate; python $TMPDIR/dec.py
-```
-
-```
-Exit code 1
-(51192625, 1, 2) None None
-read 10min 0.6904335021972656 (750000, 1, 2)
-[[3.41 5.85]
- [3.43 6.19]
- [3.46 0.25]
- [3.49 0.61]
- [3.52 0.97]
- [3.54 1.33]
- [3.57 1.7 ]
- [3.6  2.07]
- [3.63 2.43]
- [3.65 2.8 ]
- [3.68 3.16]
- [3.71 3.51]
- [3.74 3.86]
- [3.77 4.2 ]
- [3.8  4.53]
- [3.82 4.86]
- [3.85 5.19]
-[... 18 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/dup.py <<'EOF'
-import h5py, remfile, numpy as np, sys
-from dandi.dandiapi import DandiAPIClient
-pairs=[('sub-YutaMouse54/sub-YutaMouse54_ses-YutaMouse54-160701_behavior+ecephys.nwb','sub-YutaMouse54/sub-YutaMouse54_ses-YutaMouse54b160701_behavior+ecephys.nwb'),
-('sub-YutaMouse51/sub-YutaMouse51_ses-YutaMouse51-160516_behavior+ecephys.nwb','sub-YutaMouse51/sub-YutaMouse51_ses-YutaMouse51b160516_behavior+ecephys.nwb')]
-c=DandiAPIClient(); ds=c.get_dandiset('000003','0.260218.2052')
-def op(p): return h5py.File(remfile.File(ds.get_asset_by_path(p).get_content_url(follow_redirects=1, strip_query=True)),'r')
-for a,b in pairs:
-    A,B=op(a),op(b)
-    for f in (A,B):
-        U=f['units']; idx=U['spike_times_index'][:]; st=U['spike_times'][:]
-        print(f.filename if hasattr(f,'filename') else '', 'nunits',len(idx),'nspk',idx[-1],'range',st.min(),st.max(), 'electrodes', f['general/extracellular_ephys/electrodes/id'].shape, f['processing/ecephys/LFP/LFP/data'].shape, 'pos', f['acquisition/position_sensor0/data'].shape if 'position_sensor0' in f['acquisition'] else None, 'states', f['processing/behavior/states/start_time'][:5])
-        print('   genotype', f['general/subject/genotype'][()], f['general/devices/Device'].attrs.get('description'), 'groups', [k for k in f['general/extracellular_ephys'] if k.startswith('shank')])
-    def trains(f):
-        U=f['units']; idx=U['spike_times_index'][:].astype(int); st=U['spike_times'][:]; s=np.r_[0,idx[:-1]]
-        return [st[s[i]:idx[i]] for i in range(len(idx))]
-    TA,TB=trains(A),trains(B)
-    best=[]
-    for i,x in enumerate(TA):
-        m=0
-        for y in TB:
-            if len(x)==0 or len(y)==0: continue
-            j=np.searchsorted(y,x); j=np.clip(j,1,len(y)-1); d=np.minimum(abs(y[j]-x),abs(y[j-1]-x))
-            m=max(m,(d<0.0005).mean())
-        best.append(m)
-    print('max fraction of A spikes within 0.5 ms of a B unit spike:', np.round(sorted(best)[-5:],3))
-    pa=A['acquisition/position_sensor0/data'][:1000] ; pb=B['acquisition/position_sensor0/data'][:1000]
-    print('pos equal first 1000', np.array_equal(pa,pb, equal_nan=True))
-    la=A['processing/ecephys/LFP/LFP/data'][:2000,0]; lb=B['processing/ecephys/LFP/LFP/data'][:2000,0]; print('lfp ch0 corr', np.corrcoef(la,lb)[0,1])
-EOF
-. $TMPDIR/work/bin/activate; python $TMPDIR/dup.py
-```
-
-```
-<remfile.RemFile.RemFile object at 0x7f4a8125b230> nunits 58 nspk 4566753 range 0.0574 33503.68105 electrodes (64,) (41879625, 64) pos (1308739, 2) states [23443. 23510. 23520. 23660. 26082.]
-   genotype b'Drd2-Cre::Ai35' YutaMouse54-160701.xml groups ['shank1', 'shank2', 'shank3', 'shank4', 'shank5', 'shank6', 'shank7', 'shank8']
-<remfile.RemFile.RemFile object at 0x7f4a7ee06e90> nunits 68 nspk 9166181 range 0.00325 40954.08925 electrodes (64,) (51192625, 64) pos (1599770, 2) states [23443. 23706. 24410. 26288. 26885.]
-   genotype b'Drd2-Cre::Ai35' YutaMouse54b160701.xml groups ['shank1', 'shank2', 'shank3', 'shank4', 'shank5', 'shank6', 'shank7', 'shank8']
-max fraction of A spikes within 0.5 ms of a B unit spike: [0.029 0.031 0.032 0.032 0.034]
-pos equal first 1000 True
-lfp ch0 corr 0.02644522333208799
-<remfile.RemFile.RemFile object at 0x7f4a7ee07750> nunits 44 nspk 3928464 range 0.0524 43068.2733 electrodes (64,) (53835375, 64) pos (1682358, 2) states [16304. 16803. 16815. 16907. 17466.]
-   genotype b'Drd2-Cre::Ai35' YutaMouse51-160516.xml groups ['shank1', 'shank2', 'shank3', 'shank4', 'shank5', 'shank6', 'shank7']
-<remfile.RemFile.RemFile object at 0x7f4a7eb2c640> nunits 31 nspk 1541893 range 0.00835 32587.06025 electrodes (64,) (40733875, 64) pos (1272935, 2) states [   2.  806. 1112. 1118. 1250.]
-   genotype b'Drd2-Cre::Ai35' YutaMouse51b160516.xml groups ['shank1', 'shank2', 'shank3', 'shank4', 'shank5', 'shank6', 'shank7']
-max fraction of A spikes within 0.5 ms of a B unit spike: [0.016 0.016 0.016 0.018 0.019]
-pos equal first 1000 True
-lfp ch0 corr -0.20278346670572564
-```
-
-**Agent calls Bash**
-
-```bash
-ls entries/001453-fouke-2025/; cat schemas/*.json | python -c "import sys; print(sys.stdin.read()[:100])"; ls schemas; python - <<'EOF'
-import json
-for n in ['claims','attempt','entry']:
-    try:
-        s=json.load(open(f'schemas/{n}.schema.json')); print(n, json.dumps(s)[:3000]); print()
-    except Exception as e: print(n,e)
-EOF
-```
-
-```
+Mon Nov 23 23:02:23 UTC 2026
+LICENSE
+LICENSE-data
 README.md
-entry.yaml
-omr.py
-reproduce_fouke_2025.ipynb
-requirements.in
-requirements.lock.txt
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "One attempt at reproducin
-attempt.schema.json
-claims.schema.json
-entry.schema.json
-claims {"$schema": "https://json-schema.org/draft/2020-12/schema", "title": "Claims proposed for one target (a dandiset and one of its papers)", "description": "Draft. To be revised after the pilot.", "type": "object", "additionalProperties": false, "required": ["schema_version", "dandiset", "paper", "claims"], "properties": {"schema_version": {"const": 1}, "dandiset": {"type": "string", "pattern": "^[0-9]{6}$"}, "paper": {"type": "string", "pattern": "^doi:10\\.[0-9]{4,9}/.+$"}, "claims": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "statement", "source"], "properties": {"id": {"description": "Stable within the file, e.g. fig2b.", "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"}, "statement": {"description": "The finding in one or two sentences, in words. Not a copy of the figure.", "type": "string", "minLength": 1}, "source": {"description": "Where the paper shows it, e.g. 'Figure 2B' or 'Results, paragraph 3'.", "type": "string"}, "expected": {"description": "The reported numbers the claim rests on, each with a tolerance: one, or a list.", "oneOf": [{"$ref": "#/$defs/expected"}, {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/expected"}}]}, "criterion": {"description": "For a claim without a number, how it will be judged. Written before the analysis is run.", "type": "string"}, "depends_on": {"description": "Ids of claims in this file whose result this one uses.", "type": "array", "items": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"}}, "data": {"description": "What the claim's test uses: the dandiset alone (the default); the dandiset with names for its own codes taken from elsewhere (`with_labels`), which counts as the 
-[... 4 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000003-senzai-2017/dg.py",
- "content": "\"\"\"Loading and measures for dandiset 000003 (Senzai & Buzsaki 2017, Neuron 93:691).\n\ndoi:10.1016/j.neuron.2016.12.011. Each NWB file holds one recording day of one mouse: sorted units\nwith a `cell_type` label from the authors' unit summary, spike times, per-spike waveforms on the\nchannels of the unit's shank, sleep and wake periods (`processing/behavior/states`), dentate\nspike events (`stimulus/presentation/DS2.*`), light pulse times (`stimulus/presentation/PulseStim_*`),\nthe LFP at 1250 Hz, and, for sessions with behaviour, the positions in the T-maze and open fields\n(`processing/behavior/*Position_position`), the T-maze trials and the epochs.\nFiles are streamed from the archive at the pinned version; nothing is written to disk.\n\nWhere the parameters come from:\n\n- From the paper's STAR Methods: trough-to-peak latency below 0.425 ms for narrow-waveform\n  interneurons, burst index (spikes at 3 to 5 ms over spikes at 200 to 300 ms of the\n  autocorrelogram) with the threshold 1.2 of the Methods (the Figure 1A legend says 1.8);\n  theta 4 to 10 Hz and gamma 30 to 80 Hz, periods above median + 0.5 SD (theta) or + 1 SD (gamma)\n  of the amplitude, Rayleigh p < 0.05 and kappa > 0.1 for inclusion; cross-correlograms in 0.5 ms\n  bins, baseline from a Gaussian of SD 10 ms, threshold at the 99.9999th percentile of a Poisson\n  at the baseline rate, two consecutive bins at +1.5 to +5 ms (monosynaptic) or -1 to +1 ms\n  (synchrony); speed above 3 cm/s; open-field pixels of 0.92 cm, Gaussian smoothing SD 1.84 cm,\n  place field of at least 100 pixels above max(20% of the local peak, 1 Hz); T-maze bins of\n  1.86 cm, Gaussian smoothing SD 5.57 cm, place field of at least 5 bins above 50% of the local\n  peak, peak above 1 Hz; remapping index r(AA') - mean(r(AB), r(BA')); optogenetic suppression of\n  at least 20% in +2 to +15 ms after 20 ms light pulses.\n- From the dandiset's own conventions, checked in the notebook: open-field positions are\n  normalised to 0..1 and scaled by 0.46 m (the stored `conversion`); T-maze linearised\n  positions are a central-arm coordinate (0 to 2, scaled by 0.325 m, so 65 cm) and an angle on\n  the circular side arms (radius 32.5 cm, so pi radians is 102 cm), matching the maze of the\n  Methods.\n- Choices made here where the Methods are silent (a common choice, stated in the notebook):\n  the baseline window of the light-pulse and dentate-spike histograms, the hollowing of the CCG\n  baseline (none, as the Methods describe a plain Gaussian), the burst definition (spikes\n  within 6 ms), the T-maze run segment (trial start to the first arrival at the reward port,\n  stimulation trials left out), and the waveform reading (the mean of the first 200 stored\n  spike waveforms, on the channel with the largest amplitude).\n\"\"\"\n\nfrom __future__ import annotations\n\nimport re\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import signal, stats\nfrom scipy.interpolate import CubicSpline\nfrom scipy.ndimage import gaussian_filter, gaussian_filter1d, label\n\nDANDISET_ID = \"000003\"\nDANDISET_VERSION = \"0.260218.2052\"\n\nSPIKE_HZ = 20000.0\nLFP_HZ = 1250.0\nKEEP = {\n    \"granule cell\": \"GC\", \"mossy cell\": \"MC\", \"pyramidal cell\": \"CA3\",\n    \"narrow waveform cell\": \"nI\",\n    \"wide waveform cell (narrower, exclude opto tagged SST cell)\": \"wI\",\n    \"wide waveform cell (wider)\": \"wI\",\n    \"optogenetically tagged SST cell\": \"SST\",\n}\nN_WAVEFORMS = 200\nTHETA, GAMMA = (4.0, 10.0), (30.0, 80.0)\nTHETA_SD, GAMMA_SD = 0.5, 1.0\nTP_NARROW_MS = 0.425\nBURST_THRESHOLDS = (1.2, 1.8)        # Methods, Figure 1A legend\nSPEED_MIN = 3.0                      # cm/s\nOF_SIZE_CM, OF_BINS = 46.0, 50       # 0.92 cm pixels\nOF_SMOOTH_CM = 1.84\nOF_FIELD_PIXELS, OF_FIELD_FRAC = 100, 0.2\nTM_BIN_CM, TM_SMOOTH_CM = 1.86, 5.57\nTM_FIELD_BINS, TM_FIELD_FRAC = 5, 0.5\nCENTRAL_CM, RADIUS_CM = 65.0, 32.5\nREWARD_CM = 102.0 - 18.0             # reward port 18 cm from the end of a 102 cm side arm\nOPEN_FIELDS = {\"A\": \"OpenFieldPosition_Old\", \"B\": \"OpenFieldPosition_New\", \"A2\": \"OpenFieldPosition_Oldlast\",\n               \"Ac\": \"OpenFieldPosition_Old_Curtain\", \"Bc\": \"OpenFieldPosition_New_Curtain\"}\n\n\ndef _s(x) -> str:\n    v = x[()]\n    if isinstance(v, bytes):\n        return v.decode()\n    if isinstance(v, np.ndarray):\n        return \", \".join(e.decode() if isinstance(e, bytes) else str(e) for e in v.ravel())\n    return str(v)\n\n\ndef asset_urls() -> list[tuple[str, str]]:\n    \"\"\"(path, streaming URL) of every NWB file at the pinned version.\"\"\"\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))\n                      for a in dandiset.get_assets() if a.path.endswith(\".nwb\"))\n\n\ndef _intervals(group) -> pd.DataFrame:\n    cols = {}\n    for c in (\"start_time\", \"stop_time\"):\n        cols[c] = group[c][:].astype(float)\n    for c in (\"label\", \"tags\", \"condition\", \"error_run\", \"stim_run\", \"both_visit\"):\n        if c in group:\n            v = group[c][:]\n            cols[c] = v.astype(str) if v.dtype == object else v\n    return pd.DataFrame(cols)\n\n\ndef _mean_waveforms(U, rows_per_spike_index, unit_spike_ends, keep, n=N_WAVEFORMS):\n    \"\"\"Mean of the first n stored waveforms of each kept unit: (channels, 32) arrays.\"\"\"\n    out = {}\n    wi = U[\"waveforms_index\"]\n    wf = U[\"waveforms\"]\n    for u in keep:\n        s0 = 0 if u == 0 else int(unit_spike_ends[u - 1])\n        s1 = min(int(unit_spike_ends[u]), s0 + n)\n        if s1 <= s0:\n            continue\n        ends = wi[max(s0 - 1, 0):s1].astype(np.int64)\n        r0 = 0 if s0 == 0 else int(ends[0])\n        ends = ends if s0 == 0 else ends[1:]\n        r1 = int(ends[-1])\n        nch = int(ends[0] - r0)\n        block = wf[r0:r1]\n        if nch <= 0 or block.shape[0] != nch * (s1 - s0):\n            continue\n        out[u] = block.reshape(s1 - s0, nch, block.shape[1]).mean(axis=0)\n    return out\n\n\ndef _awake_lfp(f, states: pd.DataFrame, max_s=3600.0):\n    \"\"\"Theta-reference LFP (volts) during 'awake' periods, up to max_s seconds, with sample times.\"\"\"\n    lfp = f[\"processing/ecephys/LFP\"]\n    series = lfp[list(lfp.keys())[0]]\n    data = series[\"data\"]\n    conv = float(data.attrs[\"conversion\"])\n    ref = f[\"general/extracellular_ephys/electrodes/theta_reference\"][:]\n    region = series[\"electrodes\"][:]\n    cols = np.flatnonzero(ref[region]) if ref.any() else []\n    if len(cols) != 1 or not np.isfinite(conv):\n        return None\n    col = int(cols[0])\n    rate = float(series[\"starting_time\"].attrs[\"rate\"])\n    t0 = float(series[\"starting_time\"][()])\n    pieces, total = [], 0.0\n    awake = states[states.label == \"awake\"].sort_values(\"start_time\")\n    for a, b in zip(awake.start_time, awake.stop_time):\n        if b - a < 10 or total >= max_s:\n            continue\n        b = min(b, a + max_s - total)\n        i0, i1 = int((a - t0) * rate), int((b - t0) * rate)\n        i1 = min(i1, data.shape[0])\n        if i1 - i0 < rate * 10:\n            continue\n        x = data[i0:i1, col].astype(float) * conv\n        pieces.append((t0 + np.arange(i0, i1) / rate, x))\n        total += (i1 - i0) / rate\n    return {\"rate\": rate, \"pieces\": pieces, \"column\": col}\n\n\ndef load_session(path: str, url: str, waveforms=True, lfp=True) -> dict:\n    \"\"\"Everything the notebook uses from one file, reduced as it loads.\"\"\"\n    f = h5py.File(remfile.File(url), \"r\")\n    s = {\"path\": path, \"session\": path.split(\"_ses-\")[1].split(\"_\")[0]}\n    subj = f[\"general/subject\"]\n    s[\"subject\"] = _s(subj[\"subject_id\"])\n    s[\"genotype\"] = _s(subj[\"genotype\"]) if \"genotype\" in subj else \"\"\n    s[\"age\"] = _s(subj[\"age\"]) if \"age\" in subj else \"\"\n    s[\"format\"] = \"electrode_group\" if \"electrode_group\" in f[\"units\"] else \"standard\"\n    U = f[\"units\"]\n    ct = U[\"cell_type\"][:].astype(str)\n    ends = U[\"spike_times_index\"][:].astype(np.int64)\n    starts = np.r_[0, ends[:-1]]\n    st = U[\"spike_times\"]\n    keep = [i for i, c in enumerate(ct) if c in KEEP]\n    units = pd.DataFrame({\"unit\": np.arange(len(ct)), \"cell_type\": ct,\n                          \"global_id\": U[\"global_id\"][:].astype(float),\n                          \"shank_id\": U[\"shank_id\"][:], \"n_spikes\": ends - starts})\n    units[\"type\"] = units.cell_type.map(KEEP).fillna(\"other\")\n    s[\"units_all\"] = units\n    allst = st[:]\n    s[\"spike_time_range\"] = (float(allst.min()), float(allst.max())) if len(allst) else (np.nan, np.nan)\n    s[\"spikes_sorted\"] = bool(all(np.all(np.diff(allst[a:b]) >= 0) for a, b in zip(starts, ends)))\n    s[\"spikes\"] = {i: allst[starts[i]:ends[i]].copy() for i in keep}\n    del allst\n    s[\"units\"] = units[units.unit.isin(keep)].reset_index(drop=True)\n    s[\"wf_rows_per_spike\"] = None\n    if waveforms and \"waveforms\" in U:\n        wfi = U[\"waveforms_index_index\"][:].astype(np.int64)\n        s[\"waveforms\"] = _mean_waveforms(U, None, wfi, keep)\n    else:\n        s[\"waveforms\"] = {}\n    beh = f[\"processing/behavior\"] if \"behavior\" in f[\"processing\"] else {}\n    s[\"states\"] = _intervals(beh[\"states\"]) if \"states\" in beh else pd.DataFrame(columns=[\"start_time\", \"stop_time\", \"label\"])\n    s[\"epochs\"] = _intervals(f[\"intervals/epochs\"]) if \"intervals\" in f and \"epochs\" in f[\"intervals\"] else None\n    s[\"trials\"] = _intervals(f[\"intervals/trials\"]) if \"intervals\" in f and \"trials\" in f[\"intervals\"] else None\n    pos = {}\n    for k in (beh.keys() if hasattr(beh, \"keys\") else []):\n        if not k.endswith(\"_position\"):\n            continue\n        for kk in beh[k]:\n            ser = beh[k][kk]\n            pos[kk.replace(\"_spatial_series\", \"\")] = {\n                \"t\": ser[\"timestamps\"][:], \"xy\": ser[\"data\"][:],\n                \"conversion\": float(ser[\"data\"].attrs[\"conversion\"]), \"unit\": ser[\"data\"].attrs[\"unit\"]}\n    s[\"positions\"] = pos\n    stim = f[\"stimulus/presentation\"]\n    ds2 = []\n    for k in stim:\n        if k.startswith(\"DS2\"):\n            lab = stim[k][\"data\"][:].astype(str)\n            ts = stim[k][\"timestamps\"][:]\n            ds2.append(ts[np.char.find(lab, \"peak\") >= 0])\n    s[\"ds2\"] = np.sort(np.concatenate(ds2)) if ds2 else np.array([])\n    s[\"ds2_series\"] = [k for k in stim if k.startswith(\"DS2\")]\n    s[\"stim_names\"] = {k: int(stim[k][\"timestamps\"].shape[0]) for k in stim}\n    s[\"pulse20\"] = stim[\"PulseStim_5V_20ms_LD12/timestamps\"][:] if \"PulseStim_5V_20ms_LD12\" in stim else np.array([])\n    s[\"n_electrodes\"] = int(f[\"general/extracellular_ephys/electrodes/id\"].shape[0])\n    s[\"has_raw\"] = \"ElectricalSeries\" in f[\"acquisition\"]\n    s[\"lfp\"] = _awake_lfp(f, s[\"states\"]) if lfp else None\n    return s\n\n\ndef load_all(threads=8, **kw) -> list[dict]:\n    assets = asset_urls()\n    with ThreadPoolExecutor(threads) as ex:\n        return list(ex.map(lambda pu: load_session(*pu, **kw), assets))\n"
-}
-```
-
-```
-File created successfully at: entries/000003-senzai-2017/dg.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000003-senzai-2017 && . $TMPDIR/work/bin/activate && python - <<'EOF'
-import time, dg, numpy as np
-A=dict(dg.asset_urls())
-for p in ['sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140321_behavior+ecephys.nwb','sub-YutaMouse42/sub-YutaMouse42_ses-YutaMouse42-151113_behavior+ecephys.nwb','sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150218_behavior+ecephys.nwb']:
-    t=time.time(); s=dg.load_session(p,A[p]); print(p.split('/')[0], 'secs', round(time.time()-t,1))
-    print(s['units'].type.value_counts().to_dict(), s['format'], s['genotype'], s['age'], s['spikes_sorted'])
-    print('wf', len(s['waveforms']), [w.shape for w in list(s['waveforms'].values())[:3]])
-    if s['waveforms']:
-        w=list(s['waveforms'].values())[0]; ch=np.argmax(np.ptp(w,1)); print(np.round(w[ch]*1e6,1))
-    print('states', s['states'].label.value_counts().to_dict())
-    print('pos', list(s['positions']))
-    print('ds2', len(s['ds2']), s['ds2_series'], 'pulse20', len(s['pulse20']))
-    if s['lfp']: print('lfp pieces', len(s['lfp']['pieces']), sum(len(x) for _,x in s['lfp']['pieces'])/1250, np.std(np.concatenate([x for _,x in s['lfp']['pieces']]))*1e6, 'uV sd')
-    if s['epochs'] is not None: print(s['epochs'])
-EOF
-```
-
-```
-sub-YutaMouse20 secs 17.6
-{'MC': 6, 'nI': 5, 'wI': 3, 'GC': 1} standard SST-Cre 207 days, 0:00:00 True
-wf 15 [(10, 32), (10, 32), (10, 32)]
-[  54.9   53.4   52.7   53.7   56.1   56.3   61.    60.9   62.7   60.7
-   59.4   45.2    6.1  -64.1 -134.1 -208.7 -257.  -220.8 -177.5 -132.8
-  -91.   -52.5  -20.2    5.4   32.5   52.8   72.2   88.8   97.1  101.7
-  109.9  111.1]
-states {'nrem': 8, 'quiet': 6, 'awake': 3, 'transit': 2, 'rem': 2}
-pos []
-ds2 5612 ['DS2.ch4'] pulse20 0
-lfp pieces 3 2642.0 142.80903468567988 uV sd
-sub-YutaMouse42 secs 37.0
-{'CA3': 20, 'nI': 13, 'MC': 12, 'GC': 7, 'wI': 3} standard POMC-Cre::Arch 391 days, 0:00:00 True
-wf 55 [(8, 32), (8, 32), (8, 32)]
-[ -17.6  -12.9  -10.4   -8.7   -6.     1.4   10.3   17.1   32.8   43.9
-   49.2   44.1   35.9   16.4  -12.9  -60.2 -101.4  -69.5  -38.5  -17.2
-   -1.9    3.2   14.1   19.3   21.7   17.6   15.8   11.     8.2    3.8
-   -1.5   -7.4]
-states {'nrem': 12, 'awake': 6, 'transit': 5, 'rem': 5, 'quiet': 3}
-pos ['EightMazePosition_twhl_linearized', 'EightMazePosition_twhl_norm', 'OpenFieldPosition_New_Curtain_twhl_norm', 'OpenFieldPosition_New_twhl_norm', 'OpenFieldPosition_Old_Curtain_twhl_norm', 'OpenFieldPosition_Old_twhl_norm', 'OpenFieldPosition_Oldlast_twhl_norm']
-[... 23 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import re
-src=open('dg.py').read()
-src=src.replace('''    s["spikes"] = {i: allst[starts[i]:ends[i]].copy() for i in keep}
-    del allst''','''    # spike times are stored on the 20 kHz sample grid; kept as int32 sample numbers to halve memory
-    s["spikes"] = {i: np.round(allst[starts[i]:ends[i]] * SPIKE_HZ).astype(np.int32) for i in keep}
-    s["spike_grid_error"] = max((float(np.max(np.abs(allst[starts[i]:ends[i]] * SPIKE_HZ - s["spikes"][i])))
-                                 for i in keep if ends[i] > starts[i]), default=0.0)
-    del allst''')
-src=src.replace('''    s["lfp"] = _awake_lfp(f, s["states"]) if lfp else None
-    return s''','''    s["phases"] = spike_phases(_awake_lfp(f, s["states"]), s["spikes"]) if lfp else None
-    return s
-
-
-def times(s: dict, u: int) -> np.ndarray:
-    """Spike times of unit u in seconds."""
-    return s["spikes"][u] / SPIKE_HZ
-
-
-def _band(x, rate, band):
-    b, a = signal.butter(3, [band[0] / (rate / 2), band[1] / (rate / 2)], btype="band")
-    z = signal.hilbert(signal.filtfilt(b, a, x))
-    return np.angle(z), np.abs(z)
-
-
-def spike_phases(lfp, spikes: dict):
-    """Theta and gamma phase (radians, 0 = peak of the filtered LFP) of each unit's spikes in awake
-    periods where the band's amplitude exceeds median + k SD, as in the Methods. The LFP is the
-    file's theta-reference channel (`electrodes.theta_reference`)."""
-    if lfp is None or not lfp["pieces"]:
-        return None
-    out = {"seconds": sum(len(x) for _, x in lfp["pieces"]) / lfp["rate"], "units": {}}
-    bands = {}
-    for name, band, k in (("theta", THETA, THETA_SD), ("gamma", GAMMA, GAMMA_SD)):
-        ph, amp, tt = [], [], []
-        for t, x in lfp["pieces"]:
-            p, a = _band(x, lfp["rate"], band)
-            ph.append(p); amp.append(a); tt.append(t)
-        amp_all = np.concatenate(amp)
-        thr = np.median(amp_all) + k * amp_all.std()
-        bands[name] = (tt, ph, amp, thr)
-        out[f"{name}_fraction_above"] = float((amp_all > thr).mean())
-    for u, smp in spikes.items():
-        st = smp / SPIKE_HZ
-        res = {}
-        for name, (tt, ph, amp, thr) in bands.items():
-            sel = []
-            for t, p, a in zip(tt, ph, amp):
-                i = np.searchsorted(t, st[(st >= t[0]) & (st < t[-1])])
-                i = np.clip(i, 0, len(t) - 1)
-                sel.append(p[i][a[i] > thr])
-            res[name] = np.concatenate(sel).astype(np.float32) if sel else np.array([], np.float32)
-        out["units"][u] = res
-    return out''')
-open('dg.py','w').write(src)
-EOF
-grep -n "spike_grid_error\|def spike_phases\|def times" dg.py
-```
-
-```
-186:    s["spike_grid_error"] = max((float(np.max(np.abs(allst[starts[i]:ends[i]] * SPIKE_HZ - s["spikes"][i])))
-227:def times(s: dict, u: int) -> np.ndarray:
-238:def spike_phases(lfp, spikes: dict):
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import time, dg, pickle, os, resource
-t=time.time()
-S=dg.load_all(threads=8)
-print('load secs', time.time()-t)
-print('maxrss GB', resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
-pickle.dump(S, open(os.environ['TMPDIR']+'/S.pkl','wb'))
-EOF
-ls -la $TMPDIR/S.pkl
-```
-
-```
-load secs 3031.2101459503174
-maxrss GB 5.440444
--rw-r--r-- 1 runner runner 1789337106 Oct 16 03:34 /tmp/claude-1001/S.pkl
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import time, dg, h5py, remfile, numpy as np
-A=dict(dg.asset_urls())
-p='sub-YutaMouse42/sub-YutaMouse42_ses-YutaMouse42-151113_behavior+ecephys.nwb'
-t=time.time(); s=dg.load_session(p,A[p],waveforms=False,lfp=False); print('base', time.time()-t)
-f=h5py.File(remfile.File(A[p]),'r'); U=f['units']
-keep=list(s['spikes'].keys())
-t=time.time(); w=dg._mean_waveforms(U,None,U['waveforms_index_index'][:].astype(np.int64),keep); print('wf', time.time()-t, len(keep))
-t=time.time(); L=dg._awake_lfp(f,s['states']); print('lfp read', time.time()-t)
-t=time.time(); P=dg.spike_phases(L,s['spikes']); print('phases', time.time()-t)
-EOF
-```
-
-```
-base 9.230106592178345
-wf 12.100114583969116 55
-lfp read 12.949217557907104
-phases 0.7442593574523926
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-src=open('dg.py').read()
-src=src.replace("from concurrent.futures import ThreadPoolExecutor","from concurrent.futures import ProcessPoolExecutor")
-src=src.replace('''def load_all(threads=8, **kw) -> list[dict]:
-    assets = asset_urls()
-    with ThreadPoolExecutor(threads) as ex:
-        return list(ex.map(lambda pu: load_session(*pu, **kw), assets))''','''def _load(pu):
-    return load_session(*pu)
-
-
-def load_all(workers=10) -> list[dict]:
-    """Every file, in separate processes (h5py serialises threads, so threads do not overlap)."""
-    assets = asset_urls()
-    with ProcessPoolExecutor(workers) as ex:
-        return list(ex.map(_load, assets))''')
-open('dg.py','w').write(src)
-EOF
-grep -n "N_WAVEFORMS =\|max_s=" dg.py
-```
-
-```
-64:N_WAVEFORMS = 200
-131:def _awake_lfp(f, states: pd.DataFrame, max_s=3600.0):
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, collections
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-print(len(S))
-U=pd.concat([s['units_all'].assign(session=s['session'],subject=s['subject'],genotype=s['genotype']) for s in S])
-print(pd.crosstab(U.cell_type,U.genotype,margins=True))
-print('subjects with GC/MC', U[U.type.isin(['GC','MC'])].subject.nunique())
-print('global_id dup', U.global_id.dropna().duplicated().sum(), U.global_id.isna().sum())
-print('grid err', max(s['spike_grid_error'] for s in S), all(s['spikes_sorted'] for s in S))
-# states
-st=collections.Counter(); 
-for s in S: st.update(s['states'].label.tolist())
-print(st)
-print('sessions with Tmaze trials', sum(s['trials'] is not None for s in S), 'with A,B,A2', sum(all(f'{dg}_twhl_norm' in s['positions'] for dg in ['OpenFieldPosition_Old','OpenFieldPosition_New','OpenFieldPosition_Oldlast']) for s in S))
-print('pulse20 sessions', sum(len(s['pulse20'])>0 for s in S))
-print('phases', sum(s['phases'] is not None for s in S))
-for s in S:
-    if s['phases'] is None: print('no phase', s['session'], s['units'].type.value_counts().to_dict())
-EOF
-```
-
-```
-Exit code 1
-101
-Traceback (most recent call last):
-  File "<stdin>", line 5, in <module>
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/pandas/core/reshape/pivot.py", line 1099, in crosstab
-    df = DataFrame(data, index=common_idx)
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/pandas/core/frame.py", line 769, in __init__
-    mgr = dict_to_mgr(data, index, columns, dtype=dtype, copy=copy)
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/pandas/core/internals/construction.py", line 460, in dict_to_mgr
-    return arrays_to_mgr(arrays, columns, index, dtype=dtype, consolidate=copy)
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/pandas/core/internals/construction.py", line 118, in arrays_to_mgr
-    arrays, refs = _homogenize(arrays, index, dtype)
-                   ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/pandas/core/internals/construction.py", line 568, in _homogenize
-    val = val.reindex(index)
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/pandas/core/series.py", line 5525, in reindex
-    return super().reindex(
-           ~~~~~~~~~~~~~~~^
-        index=index,
-        ^^^^^^^^^^^^
-[... 22 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, collections
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-U=pd.concat([s['units_all'].assign(session=s['session'],subject=s['subject'],genotype=s['genotype']) for s in S], ignore_index=True)
-pd.set_option('display.width',250)
-print(pd.crosstab(U.cell_type,U.genotype,margins=True))
-print('subjects with GC/MC', U[U.type.isin(['GC','MC'])].subject.nunique(), 'subjects', U.subject.nunique())
-print('global_id dup', U.global_id.dropna().duplicated().sum(), U.global_id.isna().sum())
-print('grid err', max(s['spike_grid_error'] for s in S), all(s['spikes_sorted'] for s in S))
-st=collections.Counter()
-for s in S: st.update(s['states'].label.tolist())
-print(st)
-print('sessions with Tmaze trials', sum(s['trials'] is not None for s in S), 'with A,B,A2', sum(all(f'{k}_twhl_norm' in s['positions'] for k in ['OpenFieldPosition_Old','OpenFieldPosition_New','OpenFieldPosition_Oldlast']) for s in S))
-print('pulse20 sessions', sum(len(s['pulse20'])>0 for s in S))
-print('phases', sum(s['phases'] is not None for s in S))
-for s in S:
-    if s['phases'] is None: print('no phase', s['session'], s['units'].type.value_counts().to_dict())
-EOF
-```
-
-```
-genotype                                            Drd2-Cre::Ai35  ...   All
-cell_type                                                           ...      
-granule cell                                                   225  ...   609
-missing                                                         16  ...   237
-mossy cell                                                     114  ...   568
-narrow waveform cell                                           143  ...   537
-optogenetically tagged SST cell                                  0  ...    21
-positive negative waveform unit                                  0  ...    18
-positive waveform unit (bursty)                                  9  ...    60
-positive waveform unit (non-bursty)                              3  ...    31
-pyramidal cell                                                 236  ...   649
-unknown                                                        530  ...  1104
-wide waveform cell (narrower, exclude opto tagg...              42  ...   191
-wide waveform cell (wider)                                      49  ...   184
-All                                                           1367  ...  4209
-
-[13 rows x 5 columns]
-subjects with GC/MC 16 subjects 16
-global_id dup 0 237
-grid err 1.1920928955078125e-07 False
-[... 7 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-for s in S:
-    if not s['spikes_sorted']:
-        bad=[(u,int((np.diff(x)<0).sum()),len(x)) for u,x in s['spikes'].items() if (np.diff(x)<0).any()]
-        print(s['session'], s['format'], bad[:5], s['units'].type.value_counts().to_dict())
-    # duplicate spike times within unit
-EOF
-```
-
-```
-YutaMouse20-140325 standard [] {'MC': 5, 'nI': 4, 'SST': 3, 'GC': 2}
-YutaMouse20-140327 standard [] {'nI': 1}
-YutaMouse20-140328 standard [] {}
-YutaMouse23-140805 standard [(1, 1, 277857)] {'GC': 10, 'nI': 7, 'wI': 3, 'MC': 3, 'SST': 1}
-YutaMouse33-150223 electrode_group [] {'MC': 17, 'wI': 12, 'nI': 9, 'GC': 1}
-YutaMouse37-150609 standard [(1, 1, 66905)] {'GC': 5, 'MC': 1}
-YutaMouse37-150610 standard [(1, 1, 135450)] {'GC': 5, 'nI': 3, 'wI': 2, 'MC': 1}
-YutaMouse37-150611 standard [(1, 1, 138632)] {'GC': 8, 'wI': 4, 'nI': 2, 'MC': 1}
-YutaMouse39-150729 standard [(1, 1, 152495)] {'CA3': 9, 'GC': 6, 'MC': 5, 'nI': 4, 'wI': 2}
-YutaMouse40-150812 standard [(1, 1, 1107024)] {'GC': 8, 'wI': 2, 'nI': 1}
-YutaMouse41-150831 standard [] {'GC': 18, 'MC': 8, 'wI': 7, 'CA3': 4, 'nI': 4}
-YutaMouse41-150901 standard [] {'GC': 16, 'MC': 8, 'wI': 5, 'nI': 3, 'CA3': 3}
-YutaMouse41-150903 electrode_group [(1, 1, 116652)] {'GC': 25, 'MC': 11, 'wI': 6, 'CA3': 4, 'nI': 3}
-YutaMouse45-160302 standard [] {'GC': 8, 'nI': 3, 'wI': 1}
-YutaMouse51-160516 standard [] {'GC': 13, 'wI': 3, 'nI': 1}
-YutaMouse54-160701 electrode_group [(1, 1, 66919)] {'MC': 16, 'nI': 8, 'GC': 8, 'CA3': 6, 'wI': 2}
-YutaMouse55-160910 standard [(1, 1, 76010)] {'nI': 12, 'CA3': 5, 'wI': 5, 'GC': 3, 'MC': 1}
-YutaMouse55b160907 standard [(1, 1, 76424)] {'GC': 5, 'nI': 3, 'CA3': 3, 'MC': 1, 'wI': 1}
-YutaMouse56-160914 standard [(1, 1, 71557)] {'GC': 2, 'nI': 1}
-YutaMouse56-160916 standard [(1, 1, 578073)] {'CA3': 10, 'nI': 3, 'wI': 2}
-[... 4 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-for s in S:
-    for u,x in s['spikes'].items():
-        d=np.diff(x); i=np.flatnonzero(d<0)
-        if len(i): print(s['session'], u, s['units'].set_index('unit').loc[u,'type'], len(x), i, x[max(i[0]-2,0):i[0]+3]/20000, x[0]/20000, x[-1]/20000)
-EOF
-```
-
-```
-YutaMouse23-140805 1 MC 277857 [262143] [2.90488750e+04 2.90489836e+04 2.90489964e+04 2.31200000e+00
- 2.69725000e+00] 1035.98825 29043.80245
-YutaMouse37-150609 1 GC 66905 [65535] [26184.2508  26184.349   26184.70235    30.0351     98.1711 ] 15909.78735 25227.629
-YutaMouse37-150610 1 GC 135450 [131071] [3.19376179e+04 3.19376302e+04 3.19376368e+04 2.49594000e+01
- 3.76525500e+01] 10844.9632 31932.0965
-YutaMouse37-150611 1 GC 138632 [131071] [3.44204772e+04 3.44208408e+04 3.44209917e+04 1.07510000e+00
- 2.24830000e+00] 12651.14845 34343.86245
-YutaMouse39-150729 1 CA3 152495 [65535] [3.82242987e+04 3.82249666e+04 3.82275098e+04 1.07950000e-01
- 2.22750000e-01] 7927.2848 38228.0721
-YutaMouse40-150812 1 nI 1107024 [196607] [3.63545145e+04 3.63717144e+04 3.63946977e+04 1.15000000e-02
- 4.44000000e-02] 513.39895 36416.76465
-YutaMouse41-150903 1 CA3 116652 [65535] [4.03650638e+04 4.03655851e+04 4.03661304e+04 6.79250000e-01
- 3.90745000e+00] 10397.59055 40365.24645
-YutaMouse54-160701 1 CA3 66919 [65535] [33495.2144  33499.2129  33503.00505   866.3115    866.34385] 2308.1136 33487.6281
-YutaMouse55-160910 1 nI 76010 [65535] [4.81435430e+04 4.81436012e+04 4.81438503e+04 6.27615000e+00
- 1.04245000e+01] 9280.16065 48131.3373
-YutaMouse55b160907 1 CA3 76424 [65535] [4.41410854e+04 4.41483075e+04 4.41564384e+04 9.71915000e+00
- 4.77257500e+01] 4333.16885 44101.65765
-YutaMouse56-160914 1 GC 71557 [65535] [44613.40625 44800.8459  44909.41975    60.5335     71.6493 ] 10150.25615 44861.0285
-YutaMouse56-160916 1 nI 578073 [65535] [3.34371158e+04 3.34374120e+04 3.34375139e+04 1.20200000e-01
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, dg
-A=dict(dg.asset_urls())
-for p in ['sub-YutaMouse37/sub-YutaMouse37_ses-YutaMouse37-150609_behavior+ecephys.nwb','sub-YutaMouse40/sub-YutaMouse40_ses-YutaMouse40-150812_behavior+ecephys.nwb']:
-    f=h5py.File(remfile.File(A[p]),'r'); U=f['units']
-    idx=U['spike_times_index'][:]; print(U['spike_times_index'].dtype, idx[:4], U['cell_type'][:3])
-    st=U['spike_times'][:idx[1]]
-    u0=st[:idx[0]]; u1=st[idx[0]:idx[1]]
-    print('u0', len(u0), u0[:3], u0[-3:], 'sorted', np.all(np.diff(u0)>=0))
-    k=np.flatnonzero(np.diff(u1)<0)[0]+1
-    print('u1 seg1', k, u1[:2], u1[k-2:k], 'seg2', u1[k:k+2], u1[-2:])
-    print('u0 last < u1 seg1 first?', u0[-1] < u1[0], 'gap', u1[0]-u0[-1])
-    if 'waveforms_index_index' in U: print('wii', U['waveforms_index_index'][:3], U['waveforms_index_index'].dtype)
-EOF
-```
-
-```
-uint32 [ 48412 115317 172114 180199] [b'unknown' b'granule cell' b'unknown']
-u0 48412 [0.1733  0.372   0.76065] [15909.1656  15909.2563  15909.32065] sorted True
-u1 seg1 65536 [15909.78735 15909.84415] [26184.349   26184.70235] seg2 [30.0351 98.1711] [25221.462 25227.629]
-u0 last < u1 seg1 first? True gap 0.46670000000085565
-wii [ 48412 115317 172114] uint32
-uint32 [   1612 1108636 1115155 1122956] [b'wide waveform cell (narrower, exclude opto tagged SST cell)'
- b'narrow waveform cell' b'granule cell']
-u0 1612 [0.272   0.278   0.40525] [513.23615 513.3076  513.3165 ] sorted True
-u1 seg1 196608 [513.39895 513.45375] [36371.71445 36394.6977 ] seg2 [0.0115 0.0444] [36416.75895 36416.76465]
-u0 last < u1 seg1 first? True gap 0.08244999999999436
-wii [   1612 1108636 1115155] uint32
+attempts
+bunfig.toml
+claims
+docs
+entries
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+protocol.lock
+[... 105 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "entries/000003-senzai-2017/dg.py",
- "offset": 95,
- "limit": 100
+ "file_path": "docs/protocol.md"
 }
 ```
 
 ```
-95	                      for a in dandiset.get_assets() if a.path.endswith(".nwb"))
-96	
-97	
-98	def _intervals(group) -> pd.DataFrame:
-99	    cols = {}
-100	    for c in ("start_time", "stop_time"):
-101	        cols[c] = group[c][:].astype(float)
-102	    for c in ("label", "tags", "condition", "error_run", "stim_run", "both_visit"):
-103	        if c in group:
-104	            v = group[c][:]
-105	            cols[c] = v.astype(str) if v.dtype == object else v
-106	    return pd.DataFrame(cols)
-107	
-108	
-109	def _mean_waveforms(U, rows_per_spike_index, unit_spike_ends, keep, n=N_WAVEFORMS):
-110	    """Mean of the first n stored waveforms of each kept unit: (channels, 32) arrays."""
-111	    out = {}
-112	    wi = U["waveforms_index"]
-113	    wf = U["waveforms"]
-114	    for u in keep:
-[... 80 more lines not kept]
+1	# Protocol for an attempt
+2	
+3	Version: `pilot-18`. Record this version in the attempt's provenance.
+4	
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+10	
+11	An attempt has three roles, each a separate run with a separate context:
+12	
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 760 more lines not kept]
 ```
 
-**Agent**
-
-Now I'll rewrite the unit-loading part with the boundary repair.
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-src=open('dg.py').read()
-old_wf=src[src.index('def _mean_waveforms'):src.index('def _awake_lfp')]
-new_wf='''def _mean_waveforms(U, starts, ends, keep, n=N_WAVEFORMS):
-    """Mean of the first n stored waveforms of each kept unit, as (channels, 32 samples) arrays.
-    Each spike has one row per channel of its shank in `waveforms`; `waveforms_index` gives the
-    end row of each spike, in the same order as `spike_times`."""
-    out = {}
-    wi = U["waveforms_index"]
-    wf = U["waveforms"]
-    for u in keep:
-        s0, s1 = int(starts[u]), min(int(ends[u]), int(starts[u]) + n)
-        if s1 <= s0:
-            continue
-        row_ends = wi[max(s0 - 1, 0):s1].astype(np.int64)
-        r0 = 0 if s0 == 0 else int(row_ends[0])
-        row_ends = row_ends if s0 == 0 else row_ends[1:]
-        nch = int(row_ends[0] - r0)
-        block = wf[r0:int(row_ends[-1])]
-        if nch <= 0 or block.shape[0] != nch * (s1 - s0):
-            continue
-        out[u] = block.reshape(s1 - s0, nch, block.shape[1]).mean(axis=0)
-    return out
-
-
-def repair_boundaries(allst: np.ndarray, starts: np.ndarray, ends: np.ndarray):
-    """Find units whose spike train restarts after exactly k * 65536 spikes while that first block
-    continues the previous unit's train, and give the block back to the previous unit.
-
-    In some files the end index of a unit is short by a multiple of 65536 (an integer overflow at
-    conversion), so the next unit's train begins with the previous unit's last spikes. Returns the
-    corrected starts and ends and a list of the repairs."""
-    starts, ends = starts.copy(), ends.copy()
-    repairs = []
-    for i in range(1, len(ends)):
-        seg = allst[starts[i]:ends[i]]
-        drops = np.flatnonzero(np.diff(seg) < 0)
-        if len(drops) != 1:
-            continue
-        p = int(drops[0]) + 1
-        prev_ok = ends[i - 1] > starts[i - 1] and allst[ends[i - 1] - 1] <= seg[0]
-        if p % 65536 == 0 and prev_ok:
-            repairs.append({"unit": i - 1, "moved_spikes": p, "gap_s": float(seg[0] - allst[ends[i - 1] - 1])})
-            ends[i - 1] += p
-            starts[i] += p
-    return starts, ends, repairs
-
-
-'''
-src=src.replace(old_wf,new_wf)
-old=src[src.index('    U = f["units"]\n    ct = U["cell_type"]'):src.index('    beh = f["processing/behavior"]')]
-new='''    U = f["units"]
-    ct = U["cell_type"][:].astype(str)
-    ends = U["spike_times_index"][:].astype(np.int64)
-    starts = np.r_[0, ends[:-1]]
-    allst = U["spike_times"][:]
-    s["unsorted_units_stored"] = [i for i in range(len(ct)) if np.any(np.diff(allst[starts[i]:ends[i]]) < 0)]
-    starts, ends, s["repairs"] = repair_boundaries(allst, starts, ends)
-    s["unsorted_units_repaired"] = [i for i in range(len(ct)) if np.any(np.diff(allst[starts[i]:ends[i]]) < 0)]
-    keep = [i for i, c in enumerate(ct) if c in KEEP]
-    units = pd.DataFrame({"unit": np.arange(len(ct)), "cell_type": ct,
-                          "global_id": U["global_id"][:].astype(float),
-                          "shank_id": U["shank_id"][:], "n_spikes": ends - starts})
-    if "electrode_group" in U:
-        units["electrode_group"] = U["electrode_group"][:].astype(str)
-    units["type"] = units.cell_type.map(KEEP).fillna("other")
-    s["units_all"] = units
-    s["spike_time_range"] = (float(allst.min()), float(allst.max())) if len(allst) else (np.nan, np.nan)
-    # spike times lie on the 20 kHz sample grid; kept as sorted int32 sample numbers to halve memory
-    s["spikes"] = {i: np.sort(np.round(allst[starts[i]:ends[i]] * SPIKE_HZ)).astype(np.int32) for i in keep}
-    s["spike_grid_error"] = max((float(np.max(np.abs(allst[starts[i]:ends[i]] * SPIKE_HZ
-                                                     - np.round(allst[starts[i]:ends[i]] * SPIKE_HZ))))
-                                 for i in keep if ends[i] > starts[i]), default=0.0)
-    del allst
-    s["units"] = units[units.unit.isin(keep)].reset_index(drop=True)
-    s["waveforms"] = _mean_waveforms(U, starts, ends, keep) if waveforms and "waveforms" in U else {}
-'''
-src=src.replace(old,new)
-open('dg.py','w').write(src)
-EOF
-. $TMPDIR/work/bin/activate && python -c "import dg" && grep -n "s\[\"waveforms\"\]\|else:" dg.py | head
-```
-
-```
-217:    s["waveforms"] = _mean_waveforms(U, starts, ends, keep) if waveforms and "waveforms" in U else {}
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 205,240p dg.py
-```
-
-```
-if "electrode_group" in U:
-        units["electrode_group"] = U["electrode_group"][:].astype(str)
-    units["type"] = units.cell_type.map(KEEP).fillna("other")
-    s["units_all"] = units
-    s["spike_time_range"] = (float(allst.min()), float(allst.max())) if len(allst) else (np.nan, np.nan)
-    # spike times lie on the 20 kHz sample grid; kept as sorted int32 sample numbers to halve memory
-    s["spikes"] = {i: np.sort(np.round(allst[starts[i]:ends[i]] * SPIKE_HZ)).astype(np.int32) for i in keep}
-    s["spike_grid_error"] = max((float(np.max(np.abs(allst[starts[i]:ends[i]] * SPIKE_HZ
-                                                     - np.round(allst[starts[i]:ends[i]] * SPIKE_HZ))))
-                                 for i in keep if ends[i] > starts[i]), default=0.0)
-    del allst
-    s["units"] = units[units.unit.isin(keep)].reset_index(drop=True)
-    s["waveforms"] = _mean_waveforms(U, starts, ends, keep) if waveforms and "waveforms" in U else {}
-    beh = f["processing/behavior"] if "behavior" in f["processing"] else {}
-    s["states"] = _intervals(beh["states"]) if "states" in beh else pd.DataFrame(columns=["start_time", "stop_time", "label"])
-    s["epochs"] = _intervals(f["intervals/epochs"]) if "intervals" in f and "epochs" in f["intervals"] else None
-    s["trials"] = _intervals(f["intervals/trials"]) if "intervals" in f and "trials" in f["intervals"] else None
-    pos = {}
-    for k in (beh.keys() if hasattr(beh, "keys") else []):
-        if not k.endswith("_position"):
-[... 16 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import time, dg, pickle, os, resource
-from concurrent.futures import ProcessPoolExecutor
-t=time.time()
-S=dg.load_all(workers=12)
-print('load secs', time.time()-t)
-print('maxrss GB (parent)', resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, 'children', resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss/1e6)
-pickle.dump(S, open(os.environ['TMPDIR']+'/S.pkl','wb'))
-print([ (s['session'], s['repairs']) for s in S if s['repairs']])
-print([ (s['session'], s['unsorted_units_repaired']) for s in S if s['unsorted_units_repaired']])
-EOF
-```
-
-```
-load secs 266.93278765678406
-maxrss GB (parent) 1.999672 children 0.916708
-[('YutaMouse20-140325', [{'unit': 0, 'moved_spikes': 196608, 'gap_s': 0.002300000000104774}]), ('YutaMouse20-140327', [{'unit': 0, 'moved_spikes': 327680, 'gap_s': 0.026649999999790452}]), ('YutaMouse20-140328', [{'unit': 0, 'moved_spikes': 131072, 'gap_s': 0.003699999999753345}]), ('YutaMouse23-140805', [{'unit': 0, 'moved_spikes': 262144, 'gap_s': 0.20970000000011169}]), ('YutaMouse33-150223', [{'unit': 0, 'moved_spikes': 327680, 'gap_s': 0.027150000001711305}]), ('YutaMouse37-150609', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.46670000000085565}]), ('YutaMouse37-150610', [{'unit': 0, 'moved_spikes': 131072, 'gap_s': 0.11735000000044238}]), ('YutaMouse37-150611', [{'unit': 0, 'moved_spikes': 131072, 'gap_s': 0.2095500000013999}]), ('YutaMouse39-150729', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.2953000000006796}]), ('YutaMouse40-150812', [{'unit': 0, 'moved_spikes': 196608, 'gap_s': 0.08244999999999436}]), ('YutaMouse41-150831', [{'unit': 0, 'moved_spikes': 131072, 'gap_s': 0.26830000000018117}]), ('YutaMouse41-150901', [{'unit': 0, 'moved_spikes': 458752, 'gap_s': 0.009749999999939973}]), ('YutaMouse41-150903', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.01209999999991851}]), ('YutaMouse45-160302', [{'unit': 0, 'moved_spikes': 393216, 'gap_s': 0.07309999999961292}]), ('YutaMouse51-160516', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.02289999999993597}]), ('YutaMouse54-160701', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.503950000000259}]), ('YutaMouse55-160910', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.19399999999950523}]), ('YutaMouse55b160907', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.028949999999895226}]), ('YutaMouse56-160914', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.02809999999954016}]), ('YutaMouse56-160916', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.30635000000074797}]), ('YutaMouse56b160915', [{'unit': 0, 'moved_spikes': 65536, 'gap_s': 0.0
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> dg.py <<'EOF'
-
-
-# ---------------------------------------------------------------- unit measures
-
-def interval_mask_count(t: np.ndarray, starts, stops) -> int:
-    """Number of times t (sorted) inside the union of [start, stop) intervals."""
-    return int(sum(np.searchsorted(t, b) - np.searchsorted(t, a) for a, b in zip(starts, stops)))
-
-
-def state_rates(s: dict) -> pd.DataFrame:
-    """Firing rate of each kept unit in each state label of `states` (spikes / total duration)."""
-    st = s["states"]
-    rows = []
-    dur = {lab: float((g.stop_time - g.start_time).sum()) for lab, g in st.groupby("label")}
-    for u in s["spikes"]:
-        t = times(s, u)
-        r = {"unit": u}
-        for lab, g in st.groupby("label"):
-            r[f"rate_{lab}"] = interval_mask_count(t, g.start_time, g.stop_time) / dur[lab] if dur[lab] > 0 else np.nan
-        span = s["spike_time_range"][1] - s["spike_time_range"][0]
-        r["rate_overall"] = len(t) / span if span > 0 else np.nan
-        rows.append(r)
-    out = pd.DataFrame(rows)
-    for lab in ("awake", "quiet", "nrem", "rem"):
-        out[f"dur_{lab}"] = dur.get(lab, 0.0)
-        if f"rate_{lab}" not in out:
-            out[f"rate_{lab}"] = np.nan
-    wake = dur.get("awake", 0) + dur.get("quiet", 0)
-    out["rate_wake_all"] = ((out.rate_awake.fillna(0) * dur.get("awake", 0) + out.rate_quiet.fillna(0) * dur.get("quiet", 0))
-                            / wake) if wake > 0 else np.nan
-    return out
-
-
-def burst_index(t: np.ndarray) -> float:
-    """Mean autocorrelogram count per ms at 3-5 ms over that at 200-300 ms (Methods)."""
-    def n_in(lo, hi):
-        return float(np.sum(np.searchsorted(t, t + hi, side="right") - np.searchsorted(t, t + lo, side="right")))
-    near, far = n_in(0.003, 0.005) / 2.0, n_in(0.200, 0.300) / 100.0
-    return near / far if far > 0 else np.nan
-
-
-def trough_to_peak_ms(w: np.ndarray, hz=SPIKE_HZ, up=100000.0):
-    """Trough-to-peak latency (ms) of a mean waveform (channels x samples) on the channel with the
-    largest amplitude, after cubic-spline upsampling to 100 kHz. Also returns whether the peak is
-    at the last sample (latency then a lower bound) and the upsampled normalised waveform."""
-    ch = int(np.argmax(np.ptp(w, axis=1)))
-    x = w[ch] - np.median(w[ch][:5])
-    n = len(x)
-    tt = np.arange(n) / hz
-    fine = np.arange(0, tt[-1], 1 / up)
-    y = CubicSpline(tt, x)(fine)
-    if abs(y.min()) < abs(y.max()):        # positive-going spike: no trough to measure
-        return np.nan, False, y / np.abs(y).max()
-    i = int(np.argmin(y))
-    j = i + int(np.argmax(y[i:]))
-    return (fine[j] - fine[i]) * 1000.0, j >= len(y) - 2, y / abs(y[i])
-EOF
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, time
-from scipy import stats
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-t=time.time()
-rows=[]
-for s in S:
-    r=dg.state_rates(s)
-    r['bi']=[dg.burst_index(dg.times(s,u)) for u in r.unit]
-    tp=[dg.trough_to_peak_ms(s['waveforms'][u]) if u in s['waveforms'] else (np.nan,False,None) for u in r.unit]
-    r['tp']=[x[0] for x in tp]; r['tp_edge']=[x[1] for x in tp]
-    r=r.merge(s['units'][['unit','type','cell_type']],on='unit'); r['session']=s['session']; r['subject']=s['subject']
-    rows.append(r)
-R=pd.concat(rows,ignore_index=True); print('secs',time.time()-t)
-pd.set_option('display.width',250)
-print(R.groupby('type')[['rate_awake','rate_quiet','rate_nrem','rate_rem','rate_overall','bi','tp']].median().round(3))
-print(R.groupby('type').tp_edge.mean())
-for ty in ['nI','wI','GC','MC','CA3','SST']:
-    x=R[R.type==ty]; print(ty, len(x), 'tp<0.425', (x.tp<0.425).mean().round(3), 'bi>1.2', (x.bi>1.2).mean().round(3), 'bi>1.8', (x.bi>1.8).mean().round(3), 'nan tp', x.tp.isna().sum())
-R.to_pickle(os.environ['TMPDIR']+'/R.pkl')
-EOF
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "<stdin>", line 8, in <module>
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/pandas/core/generic.py", line 6194, in __getattr__
-    return object.__getattribute__(self, name)
-           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
-AttributeError: 'DataFrame' object has no attribute 'unit'
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-src=open('dg.py').read()
-src=src.replace('''    out = pd.DataFrame(rows)
-    for lab in ("awake",''','''    out = pd.DataFrame(rows, columns=["unit"] + (list(rows[0]) [1:] if rows else []))
-    for lab in ("awake",''')
-open('dg.py','w').write(src)
-EOF
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, time
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-t=time.time()
-rows=[]
-for s in S:
-    if not s['spikes']: continue
-    r=dg.state_rates(s)
-    r['bi']=[dg.burst_index(dg.times(s,u)) for u in r.unit]
-    tp=[dg.trough_to_peak_ms(s['waveforms'][u]) if u in s['waveforms'] else (np.nan,False,None) for u in r.unit]
-    r['tp']=[x[0] for x in tp]; r['tp_edge']=[x[1] for x in tp]
-    r=r.merge(s['units'][['unit','type','cell_type']],on='unit'); r['session']=s['session']; r['subject']=s['subject']
-    rows.append(r)
-R=pd.concat(rows,ignore_index=True); print('secs',time.time()-t)
-pd.set_option('display.width',250)
-print(R.groupby('type')[['rate_awake','rate_quiet','rate_nrem','rate_rem','rate_overall','bi','tp']].median().round(3))
-print(R.groupby('type').tp_edge.mean())
-for ty in ['nI','wI','GC','MC','CA3','SST']:
-    x=R[R.type==ty]; print(ty, len(x), 'tp<0.425', (x.tp<0.425).mean().round(3), 'bi>1.2', (x.bi>1.2).mean().round(3), 'bi>1.8', (x.bi>1.8).mean().round(3), 'nan tp', x.tp.isna().sum())
-R.to_pickle(os.environ['TMPDIR']+'/R.pkl')
-EOF
-```
-
-```
-secs 36.29703187942505
-      rate_awake  rate_quiet  rate_nrem  rate_rem  rate_overall      bi    tp
-type                                                                         
-CA3        0.441       0.265      0.459     0.287         0.441   9.818  0.74
-GC         0.077       0.139      0.391     0.198         0.234  11.927  0.71
-MC         0.736       0.612      0.913     0.784         0.803   9.582  0.74
-SST        5.544       4.641      1.532     4.465         4.653   0.422  0.54
-nI         8.748       4.779      4.584     7.499         5.963   0.858  0.33
-wI         3.083       1.755      1.732     2.319         2.574   0.193  0.60
-type
-CA3    0.779661
-GC     0.433498
-MC     0.670775
-SST    0.047619
-nI     0.016760
-wI     0.157333
-Name: tp_edge, dtype: float64
-nI 537 tp<0.425 0.825 bi>1.2 0.305 bi>1.8 0.138 nan tp 14
-wI 375 tp<0.425 0.051 bi>1.2 0.027 bi>1.8 0.003 nan tp 5
-GC 609 tp<0.425 0.013 bi>1.2 1.0 bi>1.8 1.0 nan tp 1
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> dg.py <<'EOF'
-
-
-def peth(t: np.ndarray, events: np.ndarray, lo: float, hi: float, binsize: float) -> np.ndarray:
-    """Spike counts of t in bins of `binsize` s from lo to hi s around each event, summed over events."""
-    edges = np.arange(lo, hi + binsize / 2, binsize)
-    i0 = np.searchsorted(t, events + lo)
-    i1 = np.searchsorted(t, events + hi)
-    n = i1 - i0
-    if n.sum() == 0:
-        return np.zeros(len(edges) - 1)
-    rel = t[np.repeat(i1 - n.cumsum(), 0) if False else np.concatenate([np.arange(a, b) for a, b in zip(i0, i1) if b > a])] \
-        - np.repeat(events, n)
-    return np.histogram(rel, edges)[0].astype(float)
-
-
-DS2_WINDOW, DS2_BIN, DS2_PEAK = 0.1, 0.002, 0.02
-DS2_BASE = (0.05, 0.1)
-
-
-def ds2_response(t: np.ndarray, ds2: np.ndarray) -> dict:
-    """Peri-DS2 histogram (2 ms bins, +-100 ms). Peak ratio: the largest rate within +-20 ms over
-    the mean rate at 50-100 ms on both sides (a choice; the paper does not give its baseline).
-    Peak time: the bin centre of that largest rate."""
-    c = peth(t, ds2, -DS2_WINDOW, DS2_WINDOW, DS2_BIN) / (len(ds2) * DS2_BIN)
-    centres = np.arange(-DS2_WINDOW, DS2_WINDOW, DS2_BIN) + DS2_BIN / 2
-    base = c[(np.abs(centres) >= DS2_BASE[0]) & (np.abs(centres) <= DS2_BASE[1])].mean()
-    near = np.abs(centres) <= DS2_PEAK
-    k = np.argmax(np.where(near, c, -np.inf))
-    return {"peak_ratio": c[k] / base if base > 0 else np.nan, "peak_ms": centres[k] * 1000,
-            "base_hz": base, "peak_hz": c[k], "n_spikes_window": int(c.sum() * len(ds2) * DS2_BIN), "curve": c}
-
-
-OPTO_BASE, OPTO_TEST = (-0.020, 0.0), (0.002, 0.015)
-OPTO_DROP = 0.2
-
-
-def opto_response(t: np.ndarray, pulses: np.ndarray) -> dict:
-    """Rate in +2 to +15 ms after 20 ms light pulses against the rate in the 20 ms before
-    (the baseline window is a choice; the Methods say 'baseline PETH'). Suppressed when the rate
-    falls by at least 20% (Methods); a one-sided Poisson test of the counts is given as well."""
-    def count(lo, hi):
-        return float(np.sum(np.searchsorted(t, pulses + hi) - np.searchsorted(t, pulses + lo)))
-    nb, nt = count(*OPTO_BASE), count(*OPTO_TEST)
-    db, dt = OPTO_BASE[1] - OPTO_BASE[0], OPTO_TEST[1] - OPTO_TEST[0]
-    rb, rt = nb / (len(pulses) * db), nt / (len(pulses) * dt)
-    expected = nb * dt / db
-    p = stats.poisson.cdf(nt, expected) if expected > 0 else np.nan
-    return {"base_hz": rb, "test_hz": rt, "change": rt / rb - 1 if rb > 0 else np.nan,
-            "p_decrease": p, "n_base": nb, "n_test": nt}
-EOF
-python - <<'EOF'
-src=open('dg.py').read()
-src=src.replace('''    rel = t[np.repeat(i1 - n.cumsum(), 0) if False else np.concatenate([np.arange(a, b) for a, b in zip(i0, i1) if b > a])] \\
-        - np.repeat(events, n)''','''    idx = np.repeat(i0 - np.r_[0, n.cumsum()[:-1]], n) + np.arange(n.sum())
-    rel = t[idx] - np.repeat(events, n)''')
-open('dg.py','w').write(src)
-EOF
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import numpy as np, dg
-t=np.sort(np.random.default_rng(0).uniform(0,1000,50000)); ev=np.array([10.,20.,500.])
-c=dg.peth(t,ev,-0.1,0.1,0.002)
-# brute
-b=np.zeros(100)
-for e in ev:
-    r=t[(t>=e-0.1)&(t<e+0.1)]-e; b+=np.histogram(r,np.arange(-0.1,0.1+0.001,0.002))[0]
-print(np.array_equal(c,b), c.sum())
-EOF
-```
-
-```
-True 33.0
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> dg.py <<'EOF'
-
-
-# ---------------------------------------------------------------- pairs of units
-
-CCG_BIN, CCG_HALF = 0.0005, 0.05
-CCG_SD = 0.010
-CCG_PCTL = 0.999999
-MONO_WINDOW, SYNC_WINDOW = (0.0015, 0.005), (-0.001, 0.001)
-
-
-def ccg(ref: np.ndarray, tgt: np.ndarray, binsize=CCG_BIN, half=CCG_HALF) -> np.ndarray:
-    """Counts of tgt spikes at each lag (tgt - ref) in bins of `binsize` from -half to +half."""
-    return peth(tgt, ref, -half, half, binsize)
-
-
-def ccg_test(counts: np.ndarray, binsize=CCG_BIN, half=CCG_HALF):
-    """Baseline from a Gaussian of SD 10 ms, threshold at the 99.9999th percentile of a Poisson at
-    the baseline (Methods). Returns the bin left edges, baseline, upper threshold, and for the
-    monosynaptic (+1.5 to +5 ms) and synchrony (-1 to +1 ms) windows whether two consecutive bins
-    exceed the threshold, and the excess count over the baseline in the window."""
-    left = np.arange(-half, half - binsize / 2, binsize)
-    base = gaussian_filter1d(counts, CCG_SD / binsize, mode="reflect")
-    hi = stats.poisson.ppf(CCG_PCTL, base)
-    above = counts > hi
-    out = {"left": left, "base": base, "hi": hi}
-    for name, (a, b) in (("mono", MONO_WINDOW), ("sync", SYNC_WINDOW)):
-        w = (left >= a - 1e-9) & (left + binsize <= b + 1e-9)
-        x = above[w]
-        out[name] = bool(np.any(x[1:] & x[:-1]))
-        out[f"{name}_excess"] = float((counts[w] - base[w]).sum())
-        out[f"{name}_peak_ms"] = float((left[w][np.argmax(counts[w])] + binsize / 2) * 1000)
-    return out
-
-
-def transmission(ref: np.ndarray, tgt: np.ndarray) -> float:
-    """Spike transmission probability: excess tgt spikes at +1.5 to +5 ms over the baseline, per ref spike."""
-    if len(ref) == 0:
-        return np.nan
-    return ccg_test(ccg(ref, tgt))["mono_excess"] / len(ref)
-
-
-BURST_ISI = 0.006
-
-
-def burst_positions(t: np.ndarray, isi=BURST_ISI) -> np.ndarray:
-    """0 for a single spike, else the spike's position (1, 2, 3, ...) within a burst of spikes
-    separated by at most `isi` (a choice: the paper does not define its bursts)."""
-    d = np.diff(t)
-    joined = np.r_[False, d <= isi]                 # spike follows the previous one closely
-    starts_next = np.r_[d <= isi, False]
-    pos = np.zeros(len(t), int)
-    run = 0
-    for i in range(len(t)):
-        run = run + 1 if joined[i] else (1 if starts_next[i] else 0)
-        pos[i] = run
-    return pos
-EOF
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import numpy as np, dg, time
-rng=np.random.default_rng(1)
-pre=np.sort(rng.uniform(0,3000,3000)); post=np.sort(np.r_[rng.uniform(0,3000,20000), pre[rng.random(3000)<0.3]+0.002+rng.normal(0,0.0003,(rng.random(3000)<0.3).sum())])
-c=dg.ccg(pre,post); r=dg.ccg_test(c); print(r['mono'], r['sync'], r['mono_excess']/len(pre), r['mono_peak_ms'])
-c=dg.ccg(post,pre); r=dg.ccg_test(c); print('reverse',r['mono'], r['sync'])
-x=np.sort(rng.uniform(0,3000,3000)); y=np.sort(rng.uniform(0,3000,20000)); r=dg.ccg_test(dg.ccg(x,y)); print('indep', r['mono'], r['sync'])
-print(dg.burst_positions(np.array([0,0.003,0.005,0.1,0.2,0.204,0.5])))
-t=time.time(); a=np.sort(rng.uniform(0,40000,200000)); b=np.sort(rng.uniform(0,40000,400000)); dg.ccg(a,b); print('ccg time', time.time()-t)
-EOF
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "<stdin>", line 3, in <module>
-ValueError: operands could not be broadcast together with shapes (891,) (896,)
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import numpy as np, dg, time
-rng=np.random.default_rng(1)
-pre=np.sort(rng.uniform(0,3000,3000)); m=rng.random(3000)<0.3
-post=np.sort(np.r_[rng.uniform(0,3000,20000), pre[m]+0.002+rng.normal(0,0.0003,m.sum())])
-c=dg.ccg(pre,post); print(len(c)); r=dg.ccg_test(c); print(r['mono'], r['sync'], r['mono_excess']/len(pre), r['mono_peak_ms'])
-c=dg.ccg(post,pre); r=dg.ccg_test(c); print('reverse',r['mono'], r['sync'])
-x=np.sort(rng.uniform(0,3000,3000)); y=np.sort(rng.uniform(0,3000,20000)); r=dg.ccg_test(dg.ccg(x,y)); print('indep', r['mono'], r['sync'])
-print(dg.burst_positions(np.array([0,0.003,0.005,0.1,0.2,0.204,0.5])))
-t=time.time(); a=np.sort(rng.uniform(0,40000,200000)); b=np.sort(rng.uniform(0,40000,400000)); dg.ccg(a,b); print('ccg time', time.time()-t)
-EOF
-```
-
-```
-200
-True False 0.2383295889592222 1.750000000000043
-reverse False False
-indep False False
-[1 2 3 0 1 2 0]
-ccg time 0.06473875045776367
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> dg.py <<'EOF'
-
-
-# ---------------------------------------------------------------- phase locking
-
-def phase_stats(ph: np.ndarray) -> dict:
-    """Mean resultant length, mean phase, Rayleigh p (with the usual small-sample correction) and the
-    concentration kappa estimated from the resultant length (Fisher's approximation)."""
-    n = len(ph)
-    if n < 10:
-        return {"n": n, "mrl": np.nan, "phase": np.nan, "p": np.nan, "kappa": np.nan}
-    z = np.exp(1j * ph.astype(float)).mean()
-    r = float(np.abs(z))
-    R = n * r
-    p = float(np.exp(np.sqrt(1 + 4 * n + 4 * (n ** 2 - R ** 2)) - (1 + 2 * n)))
-    if r < 0.53:
-        k = 2 * r + r ** 3 + 5 * r ** 5 / 6
-    elif r < 0.85:
-        k = -0.4 + 1.39 * r + 0.43 / (1 - r)
-    else:
-        k = 1 / (r ** 3 - 4 * r ** 2 + 3 * r)
-    return {"n": n, "mrl": r, "phase": float(np.angle(z)), "p": min(p, 1.0), "kappa": k}
-
-
-# ---------------------------------------------------------------- positions and place fields
-
-def speed_cm_s(t: np.ndarray, x_cm: np.ndarray, y_cm: np.ndarray, smooth_s=0.25) -> np.ndarray:
-    """Speed from positions smoothed with a Gaussian of SD 0.25 s (a common choice)."""
-    dt = np.median(np.diff(t))
-    xs = gaussian_filter1d(x_cm, smooth_s / dt)
-    ys = gaussian_filter1d(y_cm, smooth_s / dt)
-    return np.hypot(np.gradient(xs, t), np.gradient(ys, t))
-
-
-def _smooth_nan(m: np.ndarray, sd: float) -> np.ndarray:
-    """Gaussian smoothing that ignores unvisited (NaN) bins (normalised convolution)."""
-    ok = np.isfinite(m)
-    num = gaussian_filter(np.where(ok, m, 0.0), sd, mode="constant")
-    den = gaussian_filter(ok.astype(float), sd, mode="constant")
-    with np.errstate(invalid="ignore", divide="ignore"):
-        out = num / den
-    out[~ok] = np.nan
-    return out
-
-
-def open_field_maps(s: dict, key: str, units, split=False):
-    """Smoothed rate maps (Hz, 50 x 50 pixels of 0.92 cm) of the given units in one open-field
-    epoch, from samples with speed above 3 cm/s. With split=True also the maps of the first and
-    second halves of the epoch. Returns dict unit -> map (or (full, first, second))."""
-    p = s["positions"][f"{key}_twhl_norm"]
-    t, xy = p["t"], p["xy"]
-    ok = np.all(np.isfinite(xy), axis=1)
-    t, xy = t[ok], xy[ok] * OF_SIZE_CM
-    sp = speed_cm_s(t, xy[:, 0], xy[:, 1])
-    dt = np.median(np.diff(t))
-    run = sp > SPEED_MIN
-    edges = np.linspace(0, OF_SIZE_CM, OF_BINS + 1)
-    ix = np.clip(np.digitize(xy[:, 0], edges) - 1, 0, OF_BINS - 1)
-    iy = np.clip(np.digitize(xy[:, 1], edges) - 1, 0, OF_BINS - 1)
-    halves = [np.ones(len(t), bool)]
-    if split:
-        mid = (t[0] + t[-1]) / 2
-        halves += [t < mid, t >= mid]
-    occ = []
-    for h in halves:
-        o = np.zeros((OF_BINS, OF_BINS))
-        np.add.at(o, (ix[run & h], iy[run & h]), dt)
-        occ.append(o)
-    sd = OF_SMOOTH_CM / (OF_SIZE_CM / OF_BINS)
-    out = {}
-    for u in units:
-        st = times(s, u)
-        st = st[(st >= t[0]) & (st <= t[-1])]
-        k = np.clip(np.searchsorted(t, st), 0, len(t) - 1)
-        maps = []
-        for h, o in zip(halves, occ):
-            sel = run[k] & h[k]
-            c = np.zeros((OF_BINS, OF_BINS))
-            np.add.at(c, (ix[k[sel]], iy[k[sel]]), 1)
-            with np.errstate(invalid="ignore", divide="ignore"):
-                raw = np.where(o > 0, c / o, np.nan)
-            maps.append(_smooth_nan(raw, sd))
-        out[u] = tuple(maps) if split else maps[0]
-    return out
-
-
-def map_corr(a: np.ndarray, b: np.ndarray) -> float:
-    ok = np.isfinite(a) & np.isfinite(b)
-    if ok.sum() < 10 or np.std(a[ok]) == 0 or np.std(b[ok]) == 0:
-        return np.nan
-    return float(np.corrcoef(a[ok], b[ok])[0, 1])
-
-
-def open_field_fields(m: np.ndarray) -> list[np.ndarray]:
-    """Place fields of a 2-D map: connected regions (4-neighbour) of at least 100 pixels above the
-    larger of 20% of the map's peak and 1 Hz, whose peak is at least 1 Hz. The 'local maximum' of
-    the Methods is taken as the map's peak (a choice)."""
-    if not np.isfinite(m).any():
-        return []
-    peak = np.nanmax(m)
-    if peak < 1.0:
-        return []
-    lab, n = label(np.nan_to_num(m, nan=0.0) > max(OF_FIELD_FRAC * peak, 1.0))
-    return [lab == i for i in range(1, n + 1) if (lab == i).sum() >= OF_FIELD_PIXELS]
-
-
-def tmaze_linear(s: dict):
-    """T-maze samples as (time, segment, distance cm): segment 0 is the central arm, 1 and 2 the
-    side arms with negative and positive angle. Central-arm distance runs from the start of the
-    arm (linearised coordinate 2) to the junction (0); side-arm distance from the junction along
-    the circle (|angle| x 32.5 cm)."""
-    p = s["positions"]["EightMazePosition_twhl_linearized"]
-    t, a = p["t"], p["xy"]
-    ok = np.all(np.isfinite(a), axis=1)
-    t, a = t[ok], a[ok]
-    seg = np.where(a[:, 0] > 0, 0, np.where(a[:, 1] < 0, 1, 2))
-    dist = np.where(seg == 0, (2.0 - a[:, 0]) * RADIUS_CM, np.abs(a[:, 1]) * RADIUS_CM)
-    return t, seg, dist
-
-
-def tmaze_runs(s: dict, reward_cm=REWARD_CM - 10.0):
-    """Outbound runs: for each trial without light stimulation, samples from the last time on the
-    first 5 cm of the central arm to the first arrival on a side arm within 10 cm of the reward
-    port (84 cm). Returns a list of (t0, t1, side) and the side at arrival (1 or 2)."""
-    t, seg, dist = tmaze_linear(s)
-    tr = s["trials"]
-    runs = []
-    for _, r in tr.iterrows():
-        if "stim_run" in tr and r.get("stim_run", 0) == 1:
-            continue
-        m = (t >= r.start_time) & (t < r.stop_time)
-        tt, sg, dd = t[m], seg[m], dist[m]
-        arrive = np.flatnonzero((sg > 0) & (dd >= reward_cm))
-        if len(arrive) == 0:
-            continue
-        k = arrive[0]
-        start = np.flatnonzero((sg[:k] == 0) & (dd[:k] <= 5.0))
-        if len(start) == 0:
-            continue
-        runs.append((tt[start[-1]], tt[k], int(sg[k]), r.get("condition", "")))
-    return runs
-
-
-def tmaze_maps(s: dict, units, runs=None, trial_maps=False):
-    """Linearised T-maze rate maps: central arm (0-65 cm) from all runs, then side arm 1 and side arm
-    2 (0-84 cm each), in 1.86 cm bins, speed above 3 cm/s, each segment smoothed on its own with a
-    Gaussian of SD 5.57 cm. Returns occupancy, dict unit -> list of three maps, and the runs."""
-    t, seg, dist = tmaze_linear(s)
-    if runs is None:
-        runs = tmaze_runs(s)
-    sp = np.abs(np.gradient(gaussian_filter1d(np.where(seg == 0, -dist, dist), 0.25 / np.median(np.diff(t))), t))
-    in_run = np.zeros(len(t), bool)
-    for a, b, *_ in runs:
-        in_run |= (t >= a) & (t <= b)
-    use = in_run & (sp > SPEED_MIN)
-    dt = np.median(np.diff(t))
-    lengths = [CENTRAL_CM, REWARD_CM, REWARD_CM]
-    nb = [int(np.ceil(L / TM_BIN_CM)) for L in lengths]
-    bins = [np.clip((dist / TM_BIN_CM).astype(int), 0, n - 1) for n in nb]
-    occ = []
-    for g in range(3):
-        o = np.zeros(nb[g])
-        sel = use & (seg == g) & (dist <= lengths[g])
-        np.add.at(o, bins[g][sel], dt)
-        occ.append(o)
-    sd = TM_SMOOTH_CM / TM_BIN_CM
-    maps = {}
-    for u in units:
-        st = times(s, u)
-        st = st[(st >= t[0]) & (st <= t[-1])]
-        k = np.clip(np.searchsorted(t, st), 0, len(t) - 1)
-        ms = []
-        for g in range(3):
-            sel = use[k] & (seg[k] == g) & (dist[k] <= lengths[g])
-            c = np.zeros(nb[g])
-            np.add.at(c, bins[g][k[sel]], 1)
-            with np.errstate(invalid="ignore", divide="ignore"):
-                raw = np.where(occ[g] > 0, c / occ[g], np.nan)
-            ms.append(_smooth_nan(raw, sd))
-        maps[u] = ms
-    return occ, maps, runs
-
-
-def linear_fields(m: np.ndarray, min_bins=TM_FIELD_BINS, frac=TM_FIELD_FRAC) -> list[tuple[int, int, float]]:
-    """Fields of a 1-D map: repeatedly take the highest bin not yet assigned; stop below 1 Hz; the
-    field is the contiguous run of bins around it above 50% of that local peak; it counts when it
-    spans at least 5 bins. Returns (first bin, last bin, peak Hz) of each field."""
-    x = np.nan_to_num(m, nan=0.0).copy()
-    free = np.ones(len(x), bool)
-    fields = []
-    while free.any():
-        i = int(np.argmax(np.where(free, x, -np.inf)))
-        peak = x[i]
-        if peak < 1.0:
-            break
-        a = i
-        while a - 1 >= 0 and free[a - 1] and x[a - 1] > frac * peak:
-            a -= 1
-        b = i
-        while b + 1 < len(x) and free[b + 1] and x[b + 1] > frac * peak:
-            b += 1
-        free[a:b + 1] = False
-        if b - a + 1 >= min_bins:
-            fields.append((a, b, float(peak)))
-    return fields
-
-
-def spatial_info(rate: np.ndarray, occ: np.ndarray) -> float:
-    """Skaggs information (bits/s): sum p_i r_i log2(r_i / r)."""
-    ok = np.isfinite(rate) & (occ > 0)
-    p = occ[ok] / occ[ok].sum()
-    r = rate[ok]
-    mean = (p * r).sum()
-    if mean <= 0:
-        return np.nan
-    with np.errstate(divide="ignore", invalid="ignore"):
-        terms = np.where(r > 0, p * r * np.log2(r / mean), 0.0)
-    return float(terms.sum())
-EOF
-. $TMPDIR/work/bin/activate && python -c "import dg; print('ok')"
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, collections
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-TM=[s for s in S if s['trials'] is not None and 'EightMazePosition_twhl_linearized' in s['positions']]
-print(len(TM))
-agg=collections.Counter()
-for s in TM[:50]:
-    runs=dg.tmaze_runs(s)
-    tr=s['trials']
-    sides=collections.Counter((r[3],r[2]) for r in runs)
-    agg.update(sides)
-    occ,maps,_=dg.tmaze_maps(s,[u for u in s['spikes'] if s['units'].set_index('unit').loc[u,'type'] in ('GC','MC','CA3')],runs)
-    nf={}
-    for u,m in maps.items():
-        ty=s['units'].set_index('unit').loc[u,'type']
-        nf.setdefault(ty,[]).append(sum(len(dg.linear_fields(x)) for x in m))
-    print(s['session'], len(tr), 'stim', int(tr.stim_run.sum()), 'runs', len(runs), dict(sides), 'occ s', [round(o.sum()) for o in occ], {k:np.round(np.mean(np.array(v)>=2),2) for k,v in nf.items()}, {k:len(v) for k,v in nf.items()})
-print(agg)
-EOF
-```
-
-```
-42
-YutaMouse33-150218 33 stim 11 runs 2 {('run_right', 2): 1, ('run_left', 1): 1} occ s [7, 5, 6] {} {}
-YutaMouse33-150219 47 stim 18 runs 4 {('run_right', 2): 1, ('run_left', 1): 3} occ s [19, 21, 28] {'GC': np.float64(0.0)} {'GC': 3}
-YutaMouse33-150223 44 stim 20 runs 0 {} occ s [0, 0, 0] {'MC': np.float64(0.0), 'GC': np.float64(0.0)} {'MC': 17, 'GC': 1}
-YutaMouse37-150617 84 stim 30 runs 38 {('run_right', 2): 17, ('run_left', 1): 11, ('run_right', 1): 6, ('run_left', 2): 4} occ s [39, 31, 24] {'MC': np.float64(0.5)} {'MC': 2}
-YutaMouse39-150727 23 stim 3 runs 6 {('run_right', 2): 5, ('run_left', 1): 1} occ s [0, 0, 0] {} {}
-YutaMouse39-150729 71 stim 20 runs 20 {('run_right', 1): 9, ('run_right', 2): 5, ('run_left', 1): 5, ('run_left', 2): 1} occ s [6, 0, 4] {'CA3': np.float64(0.56), 'GC': np.float64(0.17), 'MC': np.float64(0.4)} {'CA3': 9, 'GC': 6, 'MC': 5}
-YutaMouse39-150730 63 stim 20 runs 12 {('run_right', 2): 2, ('run_left', 1): 8, ('run_left', 2): 2} occ s [3, 0, 0] {'CA3': np.float64(0.0), 'MC': np.float64(0.0), 'GC': np.float64(0.0)} {'CA3': 16, 'MC': 9, 'GC': 7}
-YutaMouse39-150731 69 stim 20 runs 11 {('run_right', 1): 6, ('run_right', 2): 2, ('run_left', 2): 1, ('run_left', 1): 2} occ s [3, 0, 3] {'CA3': np.float64(0.45), 'GC': np.float64(0.0), 'MC': np.float64(0.27)} {'CA3': 11, 'GC': 11, 'MC': 11}
-YutaMouse39-150803 62 stim 20 runs 12 {('run_right', 2): 5, ('run_left', 1): 4, ('run_right', 1): 3} occ s [2, 0, 3] {'CA3': np.float64(0.33), 'GC': np.float64(0.0), 'MC': np.float64(0.33)} {'CA3': 9, 'GC': 10, 'MC': 3}
-YutaMouse41-150830 26 stim 13 runs 2 {('run_right', 2): 1, ('run_left', 1): 1} occ s [0, 0, 0] {'CA3': np.float64(0.0), 'GC': np.float64(0.0)} {'CA3': 9, 'GC': 5}
-YutaMouse41-150831 41 stim 20 runs 7 {('run_left', 2): 2, ('run_right', 2): 2, ('run_left', 1): 3} occ s [1, 0, 0] {'CA3': np.float64(0.0), 'GC': np.float64(0.0), 'MC': np.float64(0.0)} {'CA3': 4, 'GC': 18, 'MC': 8}
-YutaMouse41-150901 30 stim 15 runs 4 {('run_right', 2): 1, ('run_lef
-[... 31 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-s=[s for s in S if s['session']=='YutaMouse41-150902'][0]
-t,seg,dist=dg.tmaze_linear(s)
-p=s['positions']['EightMazePosition_twhl_linearized']; n=s['positions']['EightMazePosition_twhl_norm']
-print('dt', np.median(np.diff(p['t'])), 'n', len(p['t']), 'nan', np.isnan(p['xy']).any(1).mean())
-tr=s['trials']; print(tr.head(8))
-for i in range(1,4):
-    r=tr.iloc[i]; m=(t>=r.start_time)&(t<r.stop_time)
-    print(r.condition, r.stop_time-r.start_time)
-    idx=np.flatnonzero(m)[::8]
-    print([(round(t[j]-r.start_time,1), int(seg[j]), round(dist[j])) for j in idx][:80])
-EOF
-```
-
-```
-dt 0.025600000000849832 n 134387 nan 0.004345658434223548
-   start_time   stop_time  condition  error_run  stim_run  both_visit
-0  10022.2704  10206.3816   run_left        0.0       0.0         0.0
-1  10206.3816  10310.8432  run_right        0.0       0.0         0.0
-2  10310.8432  10360.0776   run_left        0.0       0.0         0.0
-3  10360.0776  10440.9504  run_right        0.0       0.0         0.0
-4  10440.9504  10602.6512   run_left        0.0       0.0         0.0
-5  10602.6512  10659.7872  run_right        0.0       0.0         0.0
-6  10659.7872  10757.4224   run_left        0.0       0.0         0.0
-7  10757.4224  10808.8528  run_right        0.0       0.0         0.0
-run_right 104.46160000000054
-[(np.float64(0.0), 2, 98), (np.float64(0.2), 2, 99), (np.float64(0.4), 0, 1), (np.float64(0.6), 2, 97), (np.float64(0.8), 2, 97), (np.float64(1.0), 2, 97), (np.float64(1.2), 2, 98), (np.float64(1.4), 2, 98), (np.float64(1.6), 0, 4), (np.float64(1.8), 0, 3), (np.float64(2.1), 0, 3), (np.float64(2.3), 0, 2), (np.float64(2.5), 1, 97), (np.float64(2.7), 1, 98), (np.float64(2.9), 1, 98), (np.float64(3.1), 0, 1), (np.float64(3.3), 1, 100), (np.float64(3.5), 1, 100), (np.float64(3.7), 1, 100), (np.float64(3.9), 0, 0), (np.float64(4.1), 0, 0), (np.float64(4.3), 1, 100), (np.float64(4.5), 0, 2), (np.float64(4.7), 1, 98), (np.float64(4.9), 1, 96), (np.float64(5.1), 1, 95), (np.float64(5.3), 1, 95), (np.float64(5.5), 1, 95), (np.float64(5.7), 1, 95), (np.float64(5.9), 1, 95), (np.float64(6.1), 1, 95), (np.float64(6.4), 1, 95), (np.float64(6.6), 1, 97), (np.float64(6.8), 1, 99), (np.float64(7.0), 0, 0), (np.float64(7.2), 0, 1), (np.float64(7.4), 1, 100), (np.float64(7.6), 1, 99), (np.float64(7.8), 1, 96), (np.float64(8.0), 1, 96), (np.float64(8.2), 1, 97), (np.float64(8.4), 1, 96), (np.float64(8.6), 1, 97), (np.float64(8.8), 1, 98), (np.float64(9.0), 1, 98), (np.float64(9.2), 1, 96), (np.float64(9.4), 1, 97), (np.float64(9.6), 1, 98), (np.float64(9.8), 0, 1), (np.float64(10.
-[... 4 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-src=open('dg.py').read()
-a=src.index('def tmaze_runs'); b=src.index('def tmaze_maps')
-src=src[:a]+'''def tmaze_runs(s: dict, reward_cm=REWARD_CM - 10.0):
-    """Outbound runs, one per trial without light stimulation: from the last sample on the first
-    5 cm of the central arm before the animal reaches its far end (60 cm), to the first sample
-    after that on a side arm within 10 cm of the reward port (84 cm). The ends of the side arms
-    (about 95 to 102 cm) lie in the waiting area and are not part of a run. Returns a list of
-    (t0, t1, side arm, trial condition)."""
-    t, seg, dist = tmaze_linear(s)
-    tr = s["trials"]
-    runs = []
-    for _, r in tr.iterrows():
-        if r.get("stim_run", 0) == 1:
-            continue
-        m = (t >= r.start_time) & (t < r.stop_time)
-        tt, sg, dd = t[m], seg[m], dist[m]
-        far = np.flatnonzero((sg == 0) & (dd >= 60.0))
-        if len(far) == 0:
-            continue
-        c = far[0]
-        start = np.flatnonzero((sg[:c] == 0) & (dd[:c] <= 5.0))
-        arrive = np.flatnonzero((sg[c:] > 0) & (dd[c:] >= reward_cm) & (dd[c:] <= REWARD_CM + 6.0))
-        if len(start) == 0 or len(arrive) == 0:
-            continue
-        k = c + arrive[0]
-        if np.any((sg[c:k] == 0) & (dd[c:k] <= 5.0)):
-            continue
-        runs.append((tt[start[-1]], tt[k], int(sg[k]), r.get("condition", "")))
-    return runs
-
-
-'''+src[b:]
-open('dg.py','w').write(src)
-EOF
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, collections
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-TM=[s for s in S if s['trials'] is not None and 'EightMazePosition_twhl_linearized' in s['positions']]
-agg=collections.Counter(); tot={}
-for s in TM:
-    runs=dg.tmaze_runs(s); tr=s['trials']
-    sides=collections.Counter((r[3],r[2]) for r in runs); agg.update(sides)
-    ku=[u for u in s['spikes'] if s['units'].set_index('unit').loc[u,'type'] in ('GC','MC','CA3')]
-    occ,maps,_=dg.tmaze_maps(s,ku,runs)
-    nf={}
-    for u,m in maps.items():
-        ty=s['units'].set_index('unit').loc[u,'type']; n=sum(len(dg.linear_fields(x)) for x in m)
-        nf.setdefault(ty,[]).append(n); tot.setdefault(ty,[]).append(n)
-    print(s['session'], len(tr), 'nonstim', int((tr.stim_run==0).sum()), 'runs', len(runs), dict(sides), 'dur', round(np.median([b-a for a,b,*_ in runs]),1) if runs else None, 'occ', [round(o.sum()) for o in occ], {k:(len(v), np.round(np.mean(np.array(v)>=2),2)) for k,v in nf.items()})
-print(agg)
-for k,v in tot.items(): v=np.array(v); print(k, len(v), '>=2', np.mean(v>=2).round(3), '>=1', np.mean(v>=1).round(3), 'of with fields', (np.sum(v>=2)/max(1,np.sum(v>=1))).round(3))
-EOF
-```
-
-```
-YutaMouse33-150218 33 nonstim 22 runs 22 {('run_right', 2): 11, ('run_left', 1): 11} dur 12.3 occ [115, 82, 127] {}
-YutaMouse33-150219 47 nonstim 29 runs 29 {('run_right', 2): 14, ('run_left', 1): 15} dur 12.9 occ [126, 82, 122] {'GC': (3, np.float64(0.0))}
-YutaMouse33-150223 44 nonstim 24 runs 24 {('run_left', 1): 12, ('run_right', 2): 12} dur 8.0 occ [85, 59, 49] {'MC': (17, np.float64(0.71)), 'GC': (1, np.float64(0.0))}
-YutaMouse37-150617 84 nonstim 54 runs 50 {('run_right', 2): 27, ('run_left', 1): 23} dur 8.4 occ [188, 121, 149] {'MC': (2, np.float64(0.0))}
-YutaMouse39-150727 23 nonstim 20 runs 20 {('run_right', 2): 9, ('run_left', 1): 10, ('run_right', 1): 1} dur 11.5 occ [80, 79, 55] {}
-YutaMouse39-150729 71 nonstim 51 runs 47 {('run_right', 2): 23, ('run_left', 1): 22, ('run_right', 1): 2} dur 10.4 occ [158, 106, 124] {'CA3': (9, np.float64(0.67)), 'GC': (6, np.float64(0.0)), 'MC': (5, np.float64(1.0))}
-YutaMouse39-150730 63 nonstim 43 runs 43 {('run_right', 2): 21, ('run_left', 1): 22} dur 8.6 occ [154, 108, 81] {'CA3': (16, np.float64(0.44)), 'MC': (9, np.float64(0.78)), 'GC': (7, np.float64(0.0))}
-YutaMouse39-150731 69 nonstim 49 runs 49 {('run_right', 2): 27, ('run_left', 1): 22} dur 7.8 occ [161, 107, 115] {'CA3': (11, np.float64(0.55)), 'GC': (11, np.float64(0.0)), 'MC': (11, np.float64(0.55))}
-YutaMouse39-150803 62 nonstim 42 runs 42 {('run_right', 2): 22, ('run_left', 1): 20} dur 8.2 occ [155, 117, 112] {'CA3': (9, np.float64(0.44)), 'GC': (10, np.float64(0.0)), 'MC': (3, np.float64(1.0))}
-YutaMouse41-150830 26 nonstim 13 runs 13 {('run_right', 2): 4, ('run_left', 1): 9} dur 15.9 occ [55, 88, 32] {'CA3': (9, np.float64(0.78)), 'GC': (5, np.float64(0.2))}
-YutaMouse41-150831 41 nonstim 21 runs 21 {('run_left', 1): 15, ('run_right', 2): 6} dur 11.1 occ [88, 99, 50] {'CA3': (4, np.float64(0.75)), 'GC': (18, np.float64(0.0)), 'MC': (8, np.float64(0.38))}
-YutaMouse41-150901 30 nonstim 15 runs 14 {('run_right', 2): 7, ('run_left', 1): 7} dur 8.7 occ [47, 96
-[... 34 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, time
-from scipy import stats
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-OF=[s for s in S if all(f'{dg.OPEN_FIELDS[k]}_twhl_norm' in s['positions'] for k in ('A','B','A2'))]
-print(len(OF), sorted({s['subject'] for s in OF}))
-t0=time.time(); rows=[]
-for s in OF:
-    ku=[u for u in s['spikes'] if s['units'].set_index('unit').loc[u,'type'] in ('GC','MC','CA3')]
-    if not ku: continue
-    M={k:dg.open_field_maps(s,dg.OPEN_FIELDS[k],ku,split=True) for k in ('A','B','A2')}
-    for u in ku:
-        r={'session':s['session'],'subject':s['subject'],'unit':u,'type':s['units'].set_index('unit').loc[u,'type']}
-        place=False
-        for k in ('A','B','A2'):
-            full,h1,h2=M[k][u]; stab=dg.map_corr(h1,h2); f=dg.open_field_fields(full)
-            r[f'stab_{k}']=stab; r[f'nf_{k}']=len(f); r[f'peak_{k}']=np.nanmax(full) if np.isfinite(full).any() else np.nan
-            place |= (stab>=0.5) and len(f)>0
-        r['place']=place
-        r['AB']=dg.map_corr(M['A'][u][0],M['B'][u][0]); r['BA2']=dg.map_corr(M['B'][u][0],M['A2'][u][0]); r['AA2']=dg.map_corr(M['A'][u][0],M['A2'][u][0])
-        r['remap']=r['AA2']-np.nanmean([r['AB'],r['BA2']])
-        rows.append(r)
-D=pd.DataFrame(rows); print('secs', time.time()-t0)
-print(D.groupby('type').agg(n=('unit','size'), place=('place','sum'), remap_all=('remap','median')))
-P=D[D.place]
-for ty,g in P.groupby('type'):
-    x=g.remap.dropna(); print(ty, len(x), 'median', x.median().round(3), 'wilcoxon p', stats.wilcoxon(x).pvalue, 'frac>=0.2', (x>=0.2).mean().round(3), (x>=0.2).sum())
-print('KW', stats.kruskal(*[g.remap.dropna() for _,g in P.groupby('type')]))
-print('GC vs MC MW', stats.mannwhitneyu(P[P.type=='GC'].remap.dropna(), P[P.type=='MC'].remap.dropna()))
-print(D.groupby('type').subject.nunique())
-D.to_pickle(os.environ['TMPDIR']+'/OF.pkl')
-EOF
-```
-
-```
-<stdin>:20: RuntimeWarning: Mean of empty slice
-35 ['YutaMouse41', 'YutaMouse42', 'YutaMouse45', 'YutaMouse55', 'YutaMouse56']
-secs 3.110414505004883
-        n  place  remap_all
-type                       
-CA3   317    145   0.121160
-GC    246     27   0.009757
-MC    182    116   0.208687
-CA3 143 median 0.207 wilcoxon p 8.637602220816817e-14 frac>=0.2 0.51 73
-GC 27 median 0.128 wilcoxon p 0.0012526363134384155 frac>=0.2 0.407 11
-MC 116 median 0.293 wilcoxon p 1.4833815484433958e-13 frac>=0.2 0.56 65
-KW KruskalResult(statistic=np.float64(2.3673294778266154), pvalue=np.float64(0.3061547031567759))
-GC vs MC MW MannwhitneyuResult(statistic=np.float64(1259.0), pvalue=np.float64(0.1138804439493928))
-type
-CA3    4
-GC     5
-MC     5
-Name: subject, dtype: int64
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, time
-from scipy import stats
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-t0=time.time(); rows=[]
-for s in S:
-    if 'Drd2' not in s['genotype'] or len(s['pulse20'])==0: continue
-    p=s['pulse20']; ipi=np.diff(p)
-    for u in s['spikes']:
-        r=dg.opto_response(dg.times(s,u),p); r.update(session=s['session'],subject=s['subject'],type=s['units'].set_index('unit').loc[u,'type'],unit=u, ipi_min=ipi.min(), ipi_med=np.median(ipi)); rows.append(r)
-O=pd.DataFrame(rows); print('secs',time.time()-t0)
-print(O.groupby('session')[['ipi_min','ipi_med']].first().describe())
-O['supp']=O.change<=-0.2; O['supp_p']=O.supp&(O.p_decrease<0.05)
-print(O.groupby('type').agg(n=('unit','size'), supp=('supp','sum'), supp_p=('supp_p','sum'), med_change=('change','median')))
-# DS2
-t0=time.time(); rows=[]
-for s in S:
-    if len(s['ds2'])==0: continue
-    for u in s['spikes']:
-        ty=s['units'].set_index('unit').loc[u,'type']
-        if ty not in ('GC','MC'): continue
-        r=dg.ds2_response(dg.times(s,u),s['ds2']); r.pop('curve'); r.update(type=ty,session=s['session']); rows.append(r)
-Dd=pd.DataFrame(rows); print('ds2 secs', time.time()-t0)
-print(Dd.groupby('type')[['peak_ratio','peak_ms','base_hz']].median(), Dd.groupby('type').size())
-print(stats.kruskal(*[g.peak_ratio.dropna() for _,g in Dd.groupby('type')]), stats.kruskal(*[g.peak_ms.dropna() for _,g in Dd.groupby('type')]))
-EOF
-```
-
-```
-secs 6.732666969299316
-         ipi_min       ipi_med
-count  26.000000  2.600000e+01
-mean    0.199877  2.000000e-01
-std     0.000294  1.853640e-13
-min     0.199200  2.000000e-01
-25%     0.200000  2.000000e-01
-50%     0.200000  2.000000e-01
-75%     0.200000  2.000000e-01
-max     0.200000  2.000000e-01
-        n  supp  supp_p  med_change
-type                               
-CA3   219     6       6    0.040581
-GC    198     6       5    0.051793
-MC    106    68      68   -0.272803
-nI    132    14      14    0.017498
-wI     88    20      20   -0.028986
-ds2 secs 1.5105252265930176
-      peak_ratio  peak_ms   base_hz
-type                               
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, time
-from scipy import stats
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-R=pd.read_pickle(os.environ['TMPDIR']+'/R.pkl')
-rows=[]
-for s in S:
-    if not s['phases']: continue
-    for u,ph in s['phases']['units'].items():
-        ty=s['units'].set_index('unit').loc[u,'type']
-        for b in ('theta','gamma'):
-            r=dg.phase_stats(ph[b]); r.update(type=ty, band=b, session=s['session'], unit=u); rows.append(r)
-P=pd.DataFrame(rows)
-P=P.merge(R[['session','unit','rate_overall','rate_awake']],on=['session','unit'])
-P['sig']=(P.p<0.05)&(P.kappa>0.1)
-for b in ('theta','gamma'):
-    x=P[(P.band==b)&P.type.isin(['GC','MC'])]
-    print(b, x.groupby('type').agg(n=('unit','size'), sig=('sig','sum'), mrl=('mrl','median')))
-    g=x[x.sig]
-    print('  sig MRL', g.groupby('type').mrl.median().round(3).to_dict(), stats.kruskal(g[g.type=='GC'].mrl, g[g.type=='MC'].mrl).pvalue)
-    print('  phase circ mean', g.groupby('type').phase.apply(lambda v: np.degrees(np.angle(np.exp(1j*v).mean()))).round(1).to_dict(), 'KW (-pi,pi]', stats.kruskal(g[g.type=='GC'].phase, g[g.type=='MC'].phase).pvalue, 'KW [0,2pi)', stats.kruskal(np.mod(g[g.type=='GC'].phase,2*np.pi), np.mod(g[g.type=='MC'].phase,2*np.pi)).pvalue)
-    for ty in ('GC','MC'):
-        gg=g[g.type==ty]; print('  corr rate-mrl', ty, stats.pearsonr(gg.rate_overall, gg.mrl), stats.pearsonr(np.log10(gg.rate_overall), gg.mrl)[0])
-        aa=x[(x.type==ty)&x.mrl.notna()]; print('     all units', stats.pearsonr(aa.rate_overall, aa.mrl))
-print(np.mean([s['phases']['theta_fraction_above'] for s in S if s['phases']]), np.mean([s['phases']['gamma_fraction_above'] for s in S if s['phases']]))
-EOF
-```
-
-```
-theta         n  sig       mrl
-type                    
-GC    609  483  0.386838
-MC    568  532  0.333527
-  sig MRL {'GC': 0.422, 'MC': 0.339} 1.53130584244306e-20
-  phase circ mean {'GC': 30.8, 'MC': 12.0} KW (-pi,pi] 1.0405911104329283e-17 KW [0,2pi) 0.8207228345392269
-  corr rate-mrl GC PearsonRResult(statistic=np.float64(-0.3010395370024791), pvalue=np.float64(1.4162409864096412e-11)) -0.3719437023597405
-     all units PearsonRResult(statistic=np.float64(-0.1985370245420922), pvalue=np.float64(2.333034679391671e-06))
-  corr rate-mrl MC PearsonRResult(statistic=np.float64(-0.06769402079812557), pvalue=np.float64(0.11888099067225322)) -0.16520448386621722
-     all units PearsonRResult(statistic=np.float64(-0.015912107241714463), pvalue=np.float64(0.7063659595261772))
-gamma         n  sig       mrl
-type                    
-GC    609  345  0.271454
-MC    568  475  0.202930
-  sig MRL {'GC': 0.319, 'MC': 0.212} 4.806873398790824e-43
-  phase circ mean {'GC': -20.2, 'MC': 1.7} KW (-pi,pi] 1.2060175859293695e-23 KW [0,2pi) 0.17767211286346707
-  corr rate-mrl GC PearsonRResult(statistic=np.float64(-0.3965805004041512), pvalue=np.float64(1.9238611211306172e-14)) -0.4588801502080793
-     all units PearsonRResult(statistic=np.float64(-0.17677314173522163), pvalue=np.float64(3.613566321346703e-05))
-  corr rate-mrl MC PearsonRResult(statistic=np.float64(-0.25280422224737137), pvalue=np.float64(2.3207015248130194e-08)) -0.4092397954023464
-     all units PearsonRResult(statistic=np.float64(-0.1613659290959563), pvalue=np.float64(0.00012720723303211387))
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd, dg, time
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-t0=time.time(); rows=[]
-for s in S:
-    ty=s['units'].set_index('unit').type
-    T={u:dg.times(s,u) for u in s['spikes']}
-    gcs=[u for u in T if ty[u]=='GC']; mcs=[u for u in T if ty[u]=='MC']; c3=[u for u in T if ty[u]=='CA3']
-    for g in gcs:
-        for m in mcs:
-            a=dg.ccg_test(dg.ccg(T[g],T[m])); b=dg.ccg_test(dg.ccg(T[m],T[g]))
-            rows.append(dict(session=s['session'],gc=g,mc=m,gm=a['mono'],mg=b['mono'],sync=a['sync'],tp=a['mono_excess']/len(T[g]), peak=a['mono_peak_ms'], ngc=len(T[g]), nmc=len(T[m])))
-C=pd.DataFrame(rows); print('secs', time.time()-t0, len(C))
-print('GC->MC pairs', C.gm.sum(), 'MC->GC', C.mg.sum(), 'GCs with partner', C[C.gm].groupby(['session','gc']).ngroups)
-ngc=sum((s['units'].type=='GC').sum() for s in S); ngc_with_mc=C.groupby(['session','gc']).ngroups
-print('GC total', ngc, 'GC with MC in session', ngc_with_mc, 'pairs/GC', C.gm.sum()/ngc, 'GCs/GCtot', C[C.gm].groupby(['session','gc']).ngroups/ngc, 'pairs/pairs', C.gm.mean())
-print(C[C.gm][['session','gc','mc','tp','peak','ngc','nmc']].head(40))
-C.to_pickle(os.environ['TMPDIR']+'/C.pkl')
-EOF
-```
-
-```
-secs 16.117926359176636 4713
-GC->MC pairs 65 MC->GC 8 GCs with partner 49
-GC total 609 GC with MC in session 503 pairs/GC 0.10673234811165845 GCs/GCtot 0.08045977011494253 pairs/pairs 0.013791640144281773
-                 session  gc  mc        tp  peak    ngc     nmc
-6     YutaMouse20-140325  25  26  0.005687  1.75  86558   32470
-8     YutaMouse20-140325  25  33  0.010485  3.75  86558  105389
-188   YutaMouse33-150221  27  30  0.003017  2.25  25462   26798
-269   YutaMouse33-150222  42  29  0.015520  1.75  46980   28469
-279   YutaMouse33-150222  42  60  0.008962  4.75  46980  282389
-306   YutaMouse33-150223  45  54  0.008265  1.75  27478  109538
-307   YutaMouse33-150223  45  55  0.010676  1.75  27478  159282
-314   YutaMouse33-150224   2  16  0.072509  4.25   5623  144372
-315   YutaMouse33-150224   2  19  0.039674  4.25   5623  105739
-318   YutaMouse33-150224   2  26  0.074530  3.25   5623  135017
-330   YutaMouse33-150224   3  16  0.012684  1.75  47327  144372
-331   YutaMouse33-150224   3  19  0.009567  1.75  47327  105739
-336   YutaMouse33-150224   3  29  0.004861  2.25  47327  149571
-346   YutaMouse33-150225  10  15  0.035417  1.75   4306   20155
-407   YutaMouse33-150225  28  16  0.017425  1.75   7848   13230
-408   YutaMouse33-150225  28  24  0.026696  1.75   7848   70310
-[... 24 more lines not kept]
-```
-
-**Agent**
-
-Data and helpers work end to end. Writing the claims file now.
-
-**Agent calls Write**
+**Agent calls Read**
 
 ```json
 {
- "file_path": "claims/000003/10.1016-j.neuron.2016.12.011.yaml",
- "content": "# Claims for Senzai & Buzsaki (2017) on dandiset 000003.\n# Source: the accepted author manuscript in PubMed Central (PMC5293146), full text, read from its\n# Results, figure legends and STAR Methods. The version of record is not open access. The\n# supplementary figures (S1 to S7) were not available; claims citing them rest on the main text.\n#\n# What the author had seen when these criteria were written: the file list, the contents of every\n# file, the data check, and exploratory runs of the helper module on all files, made while\n# writing and debugging it. Those runs printed, for each type of unit, the counts, the median\n# rates by state, burst indices and trough-to-peak latencies; the open-field remapping index and\n# the fraction of remapping place cells; the T-maze place field counts; the optogenetic\n# suppression counts with the 20 ms pre-pulse baseline; the DS2 peak ratios and times; the theta\n# and gamma modulation and the rate correlations; and the number of GC-MC pairs the automatic\n# CCG test detects. Nothing was tuned on these results: every threshold below is the paper's,\n# or a choice stated in the helper module's docstring, fixed when the function was written. The\n# one change made after a run was to the T-maze run segment, whose first version took the\n# waiting area at the ends of the side arms for the reward port. Results not seen before the\n# criteria: burst facilitation, state-dependent transmission, synchrony, splitter cells,\n# population-vector remapping, the central-arm activity, the T-maze peak rate and information,\n# and the inheritance of place fields.\n#\n# The dandiset gives each unit a cell type label (granule cell, mossy cell, CA3 pyramidal cell,\n# narrow or wide waveform interneuron), taken from the authors' unit summary. Claims use these\n# labels; the paper's own classification cannot be re-run, as the units carry no recording site.\n# Units are counted once per recording day: the probe was moved 70 um after each day and every\n# unit has its own global_id, so units on different days are treated as different cells.\n#\n# Method choices fixed here, where the Methods leave them open (also in the helper's docstring):\n# \"wake\" is read two ways, the `awake` periods alone, or `awake` and `quiet` together; the light\n# baseline is read two ways (the 20 ms before each pulse, or 50 to 200 ms after onset, the rest of\n# the 5 Hz cycle); bursts are spikes at most 6 ms apart; the DS2 peak ratio is the largest rate\n# within +-20 ms over the mean rate at 50 to 100 ms on both sides; place fields use the map's\n# peak as the \"local maximum\" in the open field; the T-maze run is the trial's outbound run from\n# the start of the central arm to within 10 cm of the reward port, stimulation trials left out;\n# open-field and T-maze speed from positions smoothed with a 0.25 s Gaussian.\nschema_version: 1\ndandiset: \"000003\"\npaper: doi:10.1016/j.neuron.2016.12.011\nclaims:\n- id: unit-counts\n  statement: The second-stage classification divided dentate excitatory neurons into 586 putative\n    granule cells (GC) and 500 putative mossy cells (MC).\n  source: Results, Identification of granule cells and mossy cells; Figure 1F\n  expected:\n  - quantity: GC units\n    value: 586\n    tolerance: 58.6\n  - quantity: MC units\n    value: 500\n    tolerance: 50\n  criterion: Counted from the units' cell_type labels over all files, once per recording day.\n    Reproduced when both counts are within tolerance; partially reproduced when one is.\n- id: first-stage-labels\n  statement: Narrow-waveform interneurons have a trough-to-peak latency below 0.425 ms, and among\n    wide-waveform units the excitatory cells have a burst index above the threshold separating\n    them from wide-waveform interneurons.\n  source: Figure 1A; STAR Methods, Unit classification\n  criterion: Trough-to-peak latency from the mean of each unit's first 200 stored waveforms, on the\n    channel of largest amplitude, upsampled to 100 kHz; burst index from the spike times as the\n    Methods define it. The threshold reads 1.2 in the Methods and 1.8 in the Figure 1A legend;\n    both readings are tested. Reproduced when, under one reading, at least 90% of labelled\n    narrow-waveform units are below 0.425 ms, at least 90% of GC and MC are at or above\n    0.425 ms with a burst index above the threshold, and at least 90% of wide-waveform\n    interneurons are at or above 0.425 ms with a burst index at or below it. Partially\n    reproduced when two of the three groups meet it.\n- id: interneuron-rates\n  statement: Narrow-waveform interneurons fire faster than wide-waveform interneurons (medians\n    7.97 and 2.11 Hz; Kruskal-Wallis P < 0.00001).\n  source: Results, Identification of granule cells and mossy cells\n  expected:\n  - quantity: median rate of narrow-waveform interneurons\n    value: 7.97\n    tolerance: 0.797\n    unit: Hz\n  - quantity: median rate of wide-waveform interneurons\n    value: 2.11\n    tolerance: 0.211\n    unit: Hz\n  criterion: The rate is not defined in the paper; readings are (a) spikes over the span of the\n    recording and (b) the rate in `awake` periods. The dandiset's interneuron labels include CA3\n    interneurons, which the paper counts apart. Reproduced when, under one reading, both medians\n    are within tolerance and the Kruskal-Wallis test gives P < 0.00001; partially reproduced when\n    only the test holds.\n- id: gc-narrower-waveform\n  statement: The waveform of granule cells is narrower than that of mossy cells.\n  source: Results, end of Identification of granule cells and mossy cells; Figure 1E\n  criterion: Trough-to-peak latency as in first-stage-labels. Reproduced when the GC median is\n    below the MC median with a two-sided Mann-Whitney P < 0.05. The share of units whose peak\n    falls at the end of the stored 1.6 ms is reported, as their latency is a lower bound.\n- id: optotag-drd2\n  statement: In DRD2-Cre::Ai35 mice, 29 of 107 putative mossy cells were suppressed by green light,\n    against none of 202 putative granule cells, 8 of 68 wide-waveform and none of 69\n    narrow-waveform interneurons.\n  source: Results, Optogenetic validation; Figure 1H; STAR Methods, Optogenetic tagging\n  expected:\n  - quantity: fraction of MC suppressed\n    value: 0.271\n    tolerance: 0.0271\n  - quantity: fraction of GC suppressed\n    value: 0.0\n    tolerance: 0.0\n  criterion: Units of DRD2-Cre::Ai35 sessions that hold the 20 ms light pulses; suppressed when\n    the rate in +2 to +15 ms after pulse onset is at least 20% below the baseline (Methods). The\n    baseline is read two ways (the 20 ms before the pulse; 50 to 200 ms after onset). Reproduced\n    when, under one reading, the MC fraction is within tolerance and the GC fraction is below\n    0.05; partially reproduced when, under one reading, the MC fraction exceeds four times the GC\n    fraction but the values are outside these bounds.\n- id: mc-more-active\n  statement: Mossy cells are more active than granule cells during both waking and NREM sleep\n    (Kruskal-Wallis P < 0.0001 for each).\n  source: Results, Physiological properties; Figure 2A\n  criterion: Per-unit rates in each state from the `states` table. Reproduced when, under one\n    reading of wake, the MC median exceeds the GC median in wake and in NREM with Kruskal-Wallis\n    P < 0.0001 for each; partially reproduced when it holds in one state.\n- id: gc-nrem-highest\n  statement: Granule cells fire most during NREM sleep and at similar rates during wake and REM.\n  source: Results, Physiological properties; Figure 2A\n  criterion: The paper's test, a Kruskal-Wallis test across the three states followed by pairwise\n    Mann-Whitney tests with Bonferroni correction (three comparisons). Reproduced when, under one\n    reading of wake, NREM exceeds wake and REM (adjusted P < 0.05 for both) and wake against REM\n    is not significant (adjusted P >= 0.05). Partially reproduced when the NREM part holds and\n    wake and REM differ.\n- id: ca3-wake-highest\n  statement: CA3 pyramidal neurons are most active during wake and least active during REM.\n  source: Results, Physiological properties; Figure 2A\n  criterion: As in gc-nrem-highest. Reproduced when, under one reading of wake, the wake median is\n    the highest and the REM median the lowest, with each pairwise test at adjusted P < 0.05;\n    partially reproduced when the ordering holds but not every test is significant.\n- id: nrem-wake-ratio\n  statement: Granule cells increase their firing in NREM sleep compared with waking, while mossy\n    cells fire at equivalent rates in the two states.\n  source: Figure 1D; Discussion, first paragraph\n  criterion: Per-unit ratio of the NREM rate to the wake rate (units with a wake rate above 0).\n    Reproduced when, under one reading of wake, the GC median ratio is above 1 and above the MC\n    median ratio (two-sided Mann-Whitney P < 0.05). The MC median ratio and a Wilcoxon test of MC\n    NREM against wake are reported.\n- id: theta-modulation\n  statement: Granule cells are more strongly phase-modulated by theta oscillations than mossy\n    cells and fire at later theta phases (Kruskal-Wallis P < 0.0001 for both).\n  source: Results, Physiological properties; Figure 2C\n  criterion: Theta (4 to 10 Hz) phase from the file's theta-reference LFP channel during `awake`\n    periods (up to an hour per file) where the amplitude exceeds median + 0.5 SD; units with\n    Rayleigh P < 0.05 and kappa > 0.1. MRL compared by Kruskal-Wallis. Phases are compared on\n    (a) (-pi, pi] with 0 at the peak of the filtered LFP, (b) [0, 2 pi). Reproduced when the GC\n    MRL median is higher with P < 0.0001 and, under one phase reading, the GC circular mean phase\n    is later than the MC one with Kruskal-Wallis P < 0.0001; partially reproduced when one part\n    holds.\n- id: gamma-modulation\n  statement: Granule cells are more strongly phase-modulated by gamma oscillations than mossy cells\n    and fire at earlier gamma phases (Kruskal-Wallis P < 0.0001 for both).\n  source: Results, Physiological properties; Figure 2B\n  criterion: As theta-modulation, for gamma (30 to 80 Hz, amplitude above median + 1 SD), with\n    earlier in place of later.\n- id: gamma-rate-correlation\n  statement: Slow-firing neurons are more strongly coupled to gamma than fast-firing ones (GC r =\n    -0.176, MC r = -0.184, P < 0.0001 for each).\n  source: Results, Physiological properties\n  expected:\n  - quantity: Pearson r, GC rate against gamma MRL\n    value: -0.176\n    tolerance: 0.0176\n  - quantity: Pearson r, MC rate against gamma MRL\n    value: -0.184\n    tolerance: 0.0184\n  criterion: Rate is spikes over the recording span. Readings are (a) all GC or MC with a gamma MRL,\n    (b) only the units passing Rayleigh P < 0.05 and kappa > 0.1. Reproduced when, under one\n    reading, both r are within tolerance with P < 0.0001; partially reproduced when both r are\n    negative with P < 0.0001.\n- id: ds2-recruitment\n  statement: Granule cells are more effectively recruited by type 2 dentate spikes than mossy\n    cells and fire earlier (Kruskal-Wallis P < 0.0001 for both).\n  source: Results, Physiological properties; Figure 2D and 2E\n  criterion: Histograms of spikes around the DS2 peaks stored in the file (2 ms bins, +-100 ms).\n    Reproduced when the GC median peak ratio exceeds the MC median and the GC median peak time is\n    earlier, each with Kruskal-Wallis P < 0.0001; partially reproduced when one holds.\n- id: monosyn-gc-to-mc\n  statement: 5.5% of granule cells monosynaptically excite mossy cells (32 pairs), whereas no mossy\n    cell significantly excites a granule cell.\n  source: Results, Granule cell-mossy cell spike transmission; Figure 3B and 3C\n  expected:\n    quantity: fraction of GC exciting MC\n    value: 0.055\n    tolerance: 0.0055\n  criterion: The automatic test of the Methods on all GC-MC pairs recorded together; the paper's\n    manual inspection is not repeated. The fraction is read three ways (a) significant GC to MC\n    pairs over all GC, (b) GC with at least one MC target over all GC, (c) significant pairs over\n    tested pairs. Reproduced when, under one reading, the fraction is within tolerance and no MC\n    to GC pair is found; partially reproduced when GC to MC pairs outnumber MC to GC pairs at\n    least four to one; not reproduced otherwise.\n- id: burst-facilitation\n  statement: Spike transmission probability from granule cells to mossy cells increases from the\n    first to the second spike of a granule cell burst (P < 0.001).\n  source: Results, Granule cell-mossy cell spike transmission; Figure 3E to 3G\n  depends_on:\n  - monosyn-gc-to-mc\n  criterion: For the detected GC to MC pairs, transmission probability (excess MC spikes at +1.5 to\n    +5 ms over the CCG baseline, per GC spike) for first and second spikes of bursts (spikes at\n    most 6 ms apart). Reproduced when the second spike's probability exceeds the first's by a\n    paired Wilcoxon test at P < 0.001; partially reproduced at P < 0.05.\n- id: state-transmission\n  statement: GC to MC spike transmission is lower during NREM sleep than during waking (n = 31, P <\n    0.005).\n  source: Results, State-dependent changes; Figure 4B\n  depends_on:\n  - monosyn-gc-to-mc\n  criterion: Transmission probability as in burst-facilitation, from GC spikes in `awake` periods\n    against GC spikes in `nrem` periods, per detected pair. Reproduced when NREM is lower by a\n    paired Wilcoxon test at P < 0.005; partially reproduced at P < 0.05.\n- id: zero-lag-synchrony\n  statement: Synchronous co-activation within 1 ms is found in 23% of mossy cells and 9% of CA3\n    pyramidal cells, but in fewer than 0.2% of granule cell pairs.\n  source: Results, Granule cell-mossy cell spike transmission\n  expected:\n  - quantity: MC fraction with synchrony\n    value: 0.23\n    tolerance: 0.023\n  - quantity: CA3 fraction with synchrony\n    value: 0.09\n    tolerance: 0.009\n  - quantity: GC pair fraction with synchrony\n    value: 0.002\n    tolerance: 0.0002\n  criterion: The Methods' test at -1 to +1 ms on all same-type pairs recorded together. The MC and\n    CA3 fractions are read as (a) fractions of pairs and (b) fractions of cells with at least one\n    synchronous partner; the GC value as a fraction of pairs, where the claim holds for any value\n    up to 0.0022. Reproduced when, under one reading, all three are within tolerance; partially\n    reproduced when the MC and CA3 fractions exceed the GC pair fraction by at least ten times.\n    Units on one shank cannot be told apart from units on different shanks, as the files do not\n    say which shank a unit is on.\n- id: tmaze-central-active\n  statement: On the circular T-maze, the fraction of active neurons (above 1 Hz) is higher in the\n    central arm than in the side arms, for granule cells, mossy cells and CA3 pyramidal cells\n    (Kruskal-Wallis P < 0.00001 for each).\n  source: Results, Spatial and memory properties; Figure 5B\n  criterion: Fraction of each type's units above 1 Hz in each spatial bin of the linearised maze;\n    central-arm bins against side-arm bins. Reproduced when the central median exceeds the\n    side-arm median with Kruskal-Wallis P < 0.00001 for all three types; partially reproduced when\n    it holds at P < 0.05 for all three or at P < 0.00001 for one or two.\n- id: tmaze-multiple-fields\n  statement: Few granule cells have two or more place fields on the T-maze (6.6%), against 57.8% of\n    mossy cells and 36.1% of CA3 pyramidal cells (Kolmogorov-Smirnov P < 0.0001).\n  source: Results, Spatial and memory properties; Figure 5C and 5D\n  expected:\n  - quantity: GC with two or more fields\n    value: 0.066\n    tolerance: 0.0066\n  - quantity: MC with two or more fields\n    value: 0.578\n    tolerance: 0.0578\n  - quantity: CA3 with two or more fields\n    value: 0.361\n    tolerance: 0.0361\n  criterion: Fields from linearised rate maps of every GC, MC and CA3 unit in sessions with T-maze\n    runs. The fractions are read as (a) of all units, (b) of units with at least one field.\n    Reproduced when, under one reading, all three fractions are within tolerance and the GC\n    against MC Kolmogorov-Smirnov test on field counts gives P < 0.0001; partially reproduced\n    when the GC fraction is the lowest and the test holds.\n- id: tmaze-peak-info\n  statement: Granule cells have the lowest within-field peak firing rates (GC against MC,\n    Kolmogorov-Smirnov P < 0.003) and the lowest spatial information of the three types (P <\n    0.0005).\n  source: Results, Spatial and memory properties; Figure 5E and 5F\n  criterion: Within-field peak rate of units with a field; spatial information (bits/s) of all\n    units. Reproduced when the GC median peak rate is below the MC median with KS P < 0.003, and\n    the GC median information is below the MC and CA3 medians with KS P < 0.0005 for both;\n    partially reproduced when the medians are ordered so but a test fails.\n- id: tmaze-splitters\n  statement: The fraction of splitter cells, whose central-arm firing predicts the coming turn, is\n    comparable in granule cells, mossy cells and CA3 pyramidal cells.\n  source: Results, Spatial and memory properties\n  criterion: A claim of absence. A splitter is a unit with a central-arm field whose per-run rates\n    in the field's bins differ between left and right runs by a two-way ANOVA (position x choice,\n    choice P < 0.001, Methods). The paper names no test for the comparison across types; a\n    chi-square test of splitter counts across the three types is fixed here. Reproduced when P >=\n    0.05, not reproduced when P < 0.05; the fractions are reported either way.\n- id: remap-positive\n  statement: For neurons with stable place fields, the remapping index between open fields A and B\n    is above zero in each group (Wilcoxon signed-rank; GC P < 0.05, MC and CA3 P < 0.00001).\n  source: Results, Spatial and memory properties; Figure 6C and 6D\n  criterion: Remapping index r(AA') - mean(r(AB), r(BA')) from smoothed rate maps; place cells are\n    units with, in at least one of A, B, A', first-half against second-half map correlation of at\n    least 0.5 and a place field of at least 100 pixels with a peak of at least 1 Hz. Reproduced\n    when the three Wilcoxon tests reach the paper's levels; partially reproduced when all three\n    are positive at P < 0.05.\n- id: remap-gc-lt-mc\n  statement: Granule cells with stable place fields remap less than mossy cells (Kruskal-Wallis P =\n    0.034; post hoc GC against MC P = 0.028).\n  source: Results, Spatial and memory properties; Figure 6D\n  criterion: Place cells as in remap-positive. Reproduced when the GC median is below the MC median\n    with Kruskal-Wallis P < 0.05 across the three types and a Bonferroni-corrected Mann-Whitney GC\n    against MC P < 0.05; partially reproduced when the GC median is lower and only one test holds.\n- id: remap-fractions\n  statement: Only 36.7% of granule cells with place fields (11 of 30) remap, against 61.3% of mossy\n    cells (68 of 111) and 55.6% of CA3 pyramidal cells (80 of 144).\n  source: Results, Spatial and memory properties; Figure 6C\n  expected:\n  - quantity: GC fraction remapping\n    value: 0.367\n    tolerance: 0.0367\n  - quantity: MC fraction remapping\n    value: 0.613\n    tolerance: 0.0613\n  - quantity: CA3 fraction remapping\n    value: 0.556\n    tolerance: 0.0556\n  criterion: Remapping when the index is at least 0.2, among place cells as in remap-positive.\n    Reproduced when all three fractions are within tolerance; partially reproduced when the GC\n    fraction is the lowest. The place-cell counts (30, 111, 144) and the units per type (247,\n    181, 317 in 5 mice) are reported.\n- id: pv-remap\n  statement: Population-vector remapping is smaller for granule cells than for mossy cells and CA3\n    pyramidal cells, for populations of 5, 10, 15 and 20 place cells.\n  source: Results, Spatial and memory properties; Figure 6E to 6G\n  criterion: Place cells pooled across sessions per type; for each population size, 1000 random\n    draws (fixed seed); population-vector correlation as the mean over pixels visited in both\n    maps of the Pearson correlation of the stacked rates; index PV(AA') - mean(PV(AB), PV(BA')).\n    Reproduced when, for every size, the GC median index is below the MC and CA3 medians with\n    Kruskal-Wallis P < 0.00001; partially reproduced when it holds for some sizes.\n- id: inheritance-tmaze\n  statement: Mossy cells rarely inherit place fields from single presynaptic granule cells; of 10\n    place fields of connected granule cells, only 2 overlapped a field of the postsynaptic mossy\n    cell.\n  source: Results, Transmission of place information; Figure 7A and 7B\n  depends_on:\n  - monosyn-gc-to-mc\n  - tmaze-multiple-fields\n  criterion: Detected GC to MC pairs in sessions with T-maze runs; a GC field overlaps when it\n    shares a bin with a field of the partner MC on the same arm. \"Rarely\" is taken as at most a\n    third of the GC fields (the paper's 2 of 10 is inside it). Reproduced when at most a third of\n    GC fields overlap; not reproduced otherwise. Fewer than 5 GC fields leaves it blocked.\n- id: inheritance-openfield\n  statement: In the open fields, the rate maps of connected granule cells and mossy cells are not\n    correlated within the granule cell's place field (median near 0, n = 19, Wilcoxon P = 0.60).\n  source: Results, Transmission of place information; Figure 7J\n  depends_on:\n  - monosyn-gc-to-mc\n  criterion: A claim of absence, judged on the paper's test, a Wilcoxon signed-rank test of the\n    correlations against 0. For detected GC to MC pairs, in each open-field session (A, B, A' and\n    the curtain sessions) where the GC has a place field, the correlation of the GC and MC maps\n    over the field's pixels. Reproduced when P >= 0.05; not reproduced when P < 0.05. Fewer than\n    5 comparisons leaves it blocked.\n- id: mc-deeper\n  statement: Mossy cells are located deeper than granule cells relative to the DS2 reversal\n    (Mann-Whitney P < 0.001).\n  source: Figure 1G\n- id: gc-mc-classification\n  statement: K-means clustering on DS2 amplitude at the unit's site, the NREM to wake rate ratio\n    and two waveform principal components separates excitatory dentate units into two groups.\n  source: Results; Figure 1D to 1F; STAR Methods\n- id: gc-mc-distance\n  statement: Granule cells reside 59 +- 35 um above the mossy cells they drive.\n  source: Results, Granule cell-mossy cell spike transmission; Figure 3D\n- id: gc-backpropagation\n  statement: Granule cell spikes show a delay from the soma to the proximal dendrites, absent in\n    mossy cells.\n  source: Results; Figure S3D to S3F\n"
+ "file_path": "README.md"
 }
 ```
 
 ```
-File created successfully at: claims/000003/10.1016-j.neuron.2016.12.011.yaml (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "claims/000003/10.1016-j.neuron.2016.12.011.yaml",
- "old_string": "  expected:\n  - quantity: fraction of MC suppressed\n    value: 0.271\n    tolerance: 0.0271\n  - quantity: fraction of GC suppressed\n    value: 0.0\n    tolerance: 0.0\n  criterion: Units of DRD2",
- "new_string": "  expected:\n    quantity: fraction of MC suppressed\n    value: 0.271\n    tolerance: 0.0271\n  criterion: Units of DRD2"
-}
-```
-
-```
-The file claims/000003/10.1016-j.neuron.2016.12.011.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 80,140p ../../tools/entry.py; grep -n "def check\|sanity\|claim:\|Result\|tags" ../../tools/entry.py | head -60
-```
-
-```
-"""The parsed file, or None after reporting that it is not valid YAML."""
-    try:
-        return yaml.safe_load(path.read_text())
-    except yaml.YAMLError as e:
-        report.error(path.relative_to(ROOT), f"not valid YAML: {e}")
-        return None
-
-
-def validate(report: Report, path: Path, schema_name: str) -> dict | None:
-    data = load(report, path)
-    if data is None:
-        return None
-    for err in sorted(schema(schema_name).iter_errors(_plain(data)), key=lambda e: list(e.path)):
-        where = "/".join(str(p) for p in err.path) or "(top level)"
-        report.error(path.relative_to(ROOT), f"{where}: {err.message}")
-    return data if isinstance(data, dict) else None
-
-
-def _plain(value):
-    """YAML dates as strings, so JSON Schema's string formats apply."""
-[... 48 more lines not kept]
+1	# Encore Science: the registry
+2	
+3	Encore Science checks datasets against the papers they came from. This repository holds its public record, the Encore registry, served at <https://encorescience.org>. The protocol the checks follow, and the `encore` command that runs the same check on your own data, are in [encore-protocol](https://github.com/encorescience/encore-protocol). It is developed by [CatalystNeuro](https://www.catalystneuro.com).
+4	
+5	Agents, and people, try to reproduce the key findings of papers from the open
+6	data in public archives, starting with the [DANDI Archive](https://dandiarchive.org), and register the result
+7	here: the notebooks when it works, and the reason when it does not.
+8	
+9	- **For the archive:** evidence of whether each dandiset is complete and
+10	  accurate enough to support the findings of its paper.
+11	- **For analysts:** working notebooks to build new analyses on.
+12	
+13	Status: pilot. All eight pilot targets have been attempted and checked by an
+14	independent agent.
+15	
+16	**Site:** <https://encorescience.org/>, with the registry's dashboard at <https://encorescience.org/registry/> and what Encore offers a journal at <https://encorescience.org/journals/>.
+17	
+18	## Reading the outcomes
+19	
+20	An outcome says what one attempt could recover from the data in a dandiset,
+[... 129 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 140,330p ../../tools/entry.py
-```
-
-```
-report.error(rel, "no requirements.lock.txt; run `tools/entry.py lock`")
-    else:
-        pinned = {re.split(r"[=<>!~\[ ]", line, maxsplit=1)[0].lower().replace("_", "-")
-                  for line in lock.read_text().splitlines() if line and not line.startswith((" ", "#"))}
-        for line in requirements.read_text().splitlines():
-            name = re.split(r"[=<>!~\[ ;]", line.strip(), maxsplit=1)[0].lower().replace("_", "-")
-            if name and not name.startswith("#") and name not in pinned:
-                report.error(rel / "requirements.lock.txt", f"{name} is required but not locked; re-run lock")
-
-    used = [r["id"].split(":", 1)[1].partition("/")
-            for r in entry.get("related", []) if r["id"].startswith("dandi:")]
-    dandisets = [d for d, _, _ in used]
-    versions = {d: v for d, _, v in used}
-    if entry.get("type") in ("orientation", "reproduction"):
-        if not dandisets:
-            report.error(rel / "entry.yaml", "an orientation or reproduction entry must relate to a dandiset")
-        for d, v in versions.items():
-            if not v:
-                report.error(rel / "entry.yaml", f"pin the version of dandiset {d}, as dandi:{d}/<version>")
-    helper_code = "\n".join((entry_dir / h).read_text() for h in helpers if (entry_dir / h).is_file())
-[... 171 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> dg.py <<'EOF'
-
-
-def tmaze_run_rates(s: dict, u: int, runs, seg: int, lo: int, hi: int):
-    """Per-run firing rate (Hz) in bins lo..hi of one maze segment (unsmoothed; bins a run did not
-    visit at speed are NaN). Returns runs x bins."""
-    t, sg, dist = tmaze_linear(s)
-    sp = np.abs(np.gradient(gaussian_filter1d(np.where(sg == 0, -dist, dist), 0.25 / np.median(np.diff(t))), t))
-    dt = np.median(np.diff(t))
-    b = (dist / TM_BIN_CM).astype(int)
-    st = times(s, u)
-    out = np.full((len(runs), hi - lo + 1), np.nan)
-    for i, (a, z, *_) in enumerate(runs):
-        m = (t >= a) & (t <= z) & (sg == seg) & (sp > SPEED_MIN) & (b >= lo) & (b <= hi)
-        occ = np.bincount(b[m] - lo, minlength=hi - lo + 1) * dt
-        k = np.clip(np.searchsorted(t, st[(st >= a) & (st <= z)]), 0, len(t) - 1)
-        k = k[m[k]]
-        c = np.bincount(b[k] - lo, minlength=hi - lo + 1)
-        with np.errstate(invalid="ignore", divide="ignore"):
-            out[i] = np.where(occ > 0, c / occ, np.nan)
-    return out
-
-
-def pv_correlation(X: np.ndarray, Y: np.ndarray) -> float:
-    """Mean over pixels of the Pearson correlation between the population vectors (cells x pixels)
-    of two conditions, over pixels finite in both with some variance."""
-    ok = np.all(np.isfinite(X), axis=0) & np.all(np.isfinite(Y), axis=0)
-    x, y = X[:, ok], Y[:, ok]
-    x = x - x.mean(axis=0)
-    y = y - y.mean(axis=0)
-    den = np.sqrt((x ** 2).sum(axis=0) * (y ** 2).sum(axis=0))
-    good = den > 0
-    if good.sum() == 0:
-        return np.nan
-    return float(((x * y).sum(axis=0)[good] / den[good]).mean())
-
-
-def pv_remap(maps: list, k: int, rng: np.random.Generator, n=1000) -> np.ndarray:
-    """Population-vector remapping index for n random draws of k cells; maps is a list of
-    (A, B, A') rate maps of place cells."""
-    A = np.stack([m[0].ravel() for m in maps])
-    B = np.stack([m[1].ravel() for m in maps])
-    C = np.stack([m[2].ravel() for m in maps])
-    out = np.empty(n)
-    for i in range(n):
-        j = rng.choice(len(maps), size=k, replace=False)
-        out[i] = pv_correlation(A[j], C[j]) - np.nanmean([pv_correlation(A[j], B[j]), pv_correlation(B[j], C[j])])
-    return out
-EOF
-cat > requirements.in <<'EOF'
-dandi
-h5py
-matplotlib
-numpy
-pandas
-remfile
-scipy
-statsmodels
-EOF
-. $TMPDIR/work/bin/activate && uv pip install -q statsmodels && python -c "import dg"
-```
-
-```
-(Bash completed with no output)
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/build_nb.py",
- "content": "\"\"\"Builds entries/000003-senzai-2017/reproduce_senzai_2017.ipynb. Cells are (kind, tags, source).\"\"\"\nimport os\nimport sys\n\nimport nbformat\n\nCELLS = []\n\n\ndef md(src, tags=None):\n    CELLS.append((\"markdown\", tags or [], src.strip(\"\\n\")))\n\n\ndef code(src, tags=None):\n    CELLS.append((\"code\", tags or [], src.strip(\"\\n\")))\n\n\n# ---------------------------------------------------------------- header\nmd(r\"\"\"\n# Reproducing Senzai & Buzsaki (2017) from dandiset 000003\n\n**Paper.** Senzai Y, Buzsaki G (2017). Physiological properties and behavioral correlates of\nhippocampal granule cells and mossy cells. *Neuron* 93:691-704.\n[doi:10.1016/j.neuron.2016.12.011](https://doi.org/10.1016/j.neuron.2016.12.011). This attempt used\nthe full text of the accepted author manuscript in PubMed Central (PMC5293146); the version of\nrecord is not open access, and the supplementary figures were not available.\n\n**Dandiset.** [DANDI:000003](https://dandiarchive.org/dandiset/000003/0.260218.2052), version\n0.260218.2052. The paper cites no DANDI version (it points to CRCNS). This is the most recent of\nfour published versions (0.210812.1448, 0.230629.1955, 0.250624.0409, 0.260218.2052). All four hold\nthe same 101 assets with the same paths, sizes and blobs, and differ only in metadata (contributors,\nkeywords, schema version), none of which the analysis uses; the data check prints the comparison.\n\n**What the dandiset holds.** One NWB file per recording day (101 files, 16 mice): sorted units with\na cell type label, spike times and per-spike waveforms; sleep and wake periods; the LFP; type 2\ndentate spike (DS2) events; light pulse times; and, on days with behaviour, positions on the\ncircular T-maze and in the open fields, with the T-maze trials. The raw wide-band signal is in 17\nfiles and is not used.\n\n**Code read.** The paper links no code. The dandiset was converted with the CatalystNeuro\nconversion code: `buzsaki_lab_to_nwb/yuta_mossy_cell` in\nhttps://github.com/catalystneuro/buzsaki-lab-to-nwb at commit 5f6a3750 (current), and the earlier\nscript `original_code/convert_yuta.py` at commit e4652c1 (February 2020), which matches the file\nformat. They show where the labels come from: `cell_type` maps the authors' `fineCellType` codes\n(1 is a GC in the dentate and a CA3 pyramidal cell in CA3), and `missing` marks units with no row\nin the authors' unit summary. The T-maze positions are the authors' `twhl_linearized` and\n`twhl_norm`, scaled by 0.325 m and 0.46 m. The monosynaptic connections the authors detected\n(`MonoSynConvClick.mat`) were not converted.\n\nNo outside data are used. Random draws use a generator seeded in their own section.\n\"\"\")\n\nmd(r\"\"\"\n| Claim | Status |\n|---|---|\n| unit-counts | tested |\n| first-stage-labels | tested |\n| interneuron-rates | tested |\n| gc-narrower-waveform | tested |\n| optotag-drd2 | tested |\n| mc-more-active | tested |\n| gc-nrem-highest | tested |\n| ca3-wake-highest | tested |\n| nrem-wake-ratio | tested |\n| theta-modulation | tested |\n| gamma-modulation | tested |\n| gamma-rate-correlation | tested |\n| ds2-recruitment | tested |\n| monosyn-gc-to-mc | tested |\n| burst-facilitation | tested (depends on monosyn-gc-to-mc) |\n| state-transmission | tested (depends on monosyn-gc-to-mc) |\n| zero-lag-synchrony | tested |\n| tmaze-central-active | tested |\n| tmaze-multiple-fields | tested |\n| tmaze-peak-info | tested |\n| tmaze-splitters | tested |\n| remap-positive | tested |\n| remap-gc-lt-mc | tested |\n| remap-fractions | tested |\n| pv-remap | tested |\n| inheritance-tmaze | tested (depends on monosyn-gc-to-mc, tmaze-multiple-fields) |\n| inheritance-openfield | tested (depends on monosyn-gc-to-mc) |\n| mc-deeper | blocked: no recording site per unit |\n| gc-mc-classification | blocked: no recording site per unit |\n| gc-mc-distance | blocked: no recording site per unit |\n| gc-backpropagation | blocked: no recording site per unit |\n\"\"\")\n\ncode(r\"\"\"\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import stats\nfrom statsmodels.formula.api import ols\nfrom statsmodels.stats.anova import anova_lm\n\nimport dg\n\npd.set_option(\"display.width\", 220)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nstarted = time.time()\nS = dg.load_all(workers=12)\nprint(f\"loaded {len(S)} files from dandiset {dg.DANDISET_ID} version {dg.DANDISET_VERSION} in {time.time() - started:.0f} s\")\n\"\"\", [\"load\"])\n\nmd(\"## Data check\\n\\nEach check of the metadata against the values is stated under its output.\")\n\ncode(r\"\"\"\n# Versions: compare the assets of every published version with the pinned one.\nwith DandiAPIClient() as client:\n    versions = [v.identifier for v in client.get_dandiset(dg.DANDISET_ID).get_versions() if v.identifier != \"draft\"]\n    listing = {}\n    for v in versions:\n        ds = client.get_dandiset(dg.DANDISET_ID, v)\n        listing[v] = {a.path: (a.size, a.get_raw_metadata().get(\"digest\", {}).get(\"dandi:dandi-etag\")) for a in ds.get_assets()}\nref = listing[dg.DANDISET_VERSION]\nfor v in versions:\n    same = listing[v] == ref\n    print(f\"version {v}: {len(listing[v])} assets; same paths, sizes and etags as {dg.DANDISET_VERSION}: {same}\")\n\"\"\", [\"sanity\"])\n\ncode(r\"\"\"\ninfo = pd.DataFrame([{\"session\": s[\"session\"], \"subject\": s[\"subject\"], \"genotype\": s[\"genotype\"], \"age\": s[\"age\"][:9],\n                      \"format\": s[\"format\"], \"units\": len(s[\"units_all\"]), \"kept\": len(s[\"units\"]),\n                      \"electrodes\": s[\"n_electrodes\"], \"raw\": s[\"has_raw\"],\n                      \"span_h\": (s[\"spike_time_range\"][1] - s[\"spike_time_range\"][0]) / 3600} for s in S])\nprint(\"Files:\", len(info), \"; subjects:\", info.subject.nunique())\nprint(\"\\nSubjects by genotype (paper: 7 SST-Cre, 5 DRD2-Cre::Ai35, 3 POMC-Cre::Ai35, 1 wild type):\")\nprint(info.groupby(\"genotype\").subject.nunique().to_string())\nprint(\"\\nFiles per subject:\")\nprint(info.groupby([\"subject\", \"genotype\"]).size().to_string())\nprint(\"\\nFile formats (units table columns):\", info.format.value_counts().to_dict())\nprint(\"Files with the raw wide-band signal (not used):\", int(info.raw.sum()))\nprint(\"Recording span per file (h): median %.1f, range %.1f to %.1f\" % (info.span_h.median(), info.span_h.min(), info.span_h.max()))\n\"\"\", [\"sanity\"])\n\nmd(r\"\"\"\nThe 16 subjects match the paper's 16 mice, but the genotypes do not: the files give 6 SST-Cre,\n5 Drd2-Cre::Ai35, 4 POMC-Cre::Arch and 1 POMC-Cre::Ai35, against the paper's 7 SST-Cre,\n5 DRD2-Cre::Ai35, 3 POMC-Cre::Ai35 and 1 wild type. Ai35 expresses Arch, so POMC-Cre::Arch and\nPOMC-Cre::Ai35 may name the same cross; even so, the counts of SST-Cre, POMC and wild-type mice\ndiffer. Four files have an older layout of the units table (with `electrode_group` and\n`max_electrode`, without waveforms).\n\"\"\")\n\ncode(r\"\"\"\nU = pd.concat([s[\"units_all\"].assign(session=s[\"session\"], subject=s[\"subject\"]) for s in S], ignore_index=True)\nprint(\"Units by cell_type label (all files):\")\nprint(U.cell_type.value_counts().to_string())\nprint(\"\\nglobal_id: %d units without one (label 'missing' has %d); duplicated values: %d\" % (\n    U.global_id.isna().sum(), (U.cell_type == \"missing\").sum(), U.global_id.dropna().duplicated().sum()))\nprint(\"\\nKept units by type and subject:\")\nprint(pd.crosstab(U[U.type != \"other\"].subject, U[U.type != \"other\"].type, margins=True).to_string())\n\"\"\", [\"sanity\"])\n\nmd(r\"\"\"\nThe labels follow the conversion code's mapping of the authors' codes. `missing` (237 units) marks\nunits of the spike sorting with no row in the authors' summary, and `unknown` (1104) units the\nauthors left unclassified. The interneuron labels do not say whether a unit is in the dentate gyrus\nor CA3; only label 1 was split by region (GC or CA3 pyramidal cell). Each unit has its own\n`global_id`, unique across files, so a unit is never the same across days; the probe was moved\n70 um after each day (Methods), and units are counted once per day.\n\"\"\")\n\ncode(r\"\"\"\nrep = pd.DataFrame([{\"session\": s[\"session\"], **r} for s in S for r in s[\"repairs\"]])\nprint(\"Files where the first unit's spike train continues at the start of the second unit's:\", len(rep))\nprint(rep.to_string(index=False))\nprint(\"\\nUnits with decreasing spike times as stored:\", sum(len(s[\"unsorted_units_stored\"]) for s in S),\n      \"in\", sum(bool(s[\"unsorted_units_stored\"]) for s in S), \"files; after the repair:\",\n      sum(len(s[\"unsorted_units_repaired\"]) for s in S))\nlab = {s[\"session\"]: s[\"units_all\"].set_index(\"unit\").cell_type for s in S}\nprint(\"\\nLabels of the units affected (unit 0 gains, unit 1 loses the moved spikes):\")\nprint(pd.Series([f\"{lab[r.session][0]} / {lab[r.session][1]}\" for r in rep.itertuples()]).value_counts().to_string())\nprint(\"\\nLargest distance of a spike time from the 20 kHz sample grid (samples):\", max(s[\"spike_grid_error\"] for s in S))\n\"\"\", [\"sanity\"])\n\nmd(r\"\"\"\nIn 24 files the second unit's stored spike train starts with a block of exactly 65,536 x k spikes\n(k = 1 to 7) that continues the first unit's train (the first such spike follows the first unit's\nlast stored spike by 2 ms to 0.5 s) and then restarts at the beginning of the recording. The first\nunit's end index is short by a multiple of 2^16, as from an integer overflow at conversion. The\nloader gives these blocks back to the first unit; after that every unit's spike times increase.\nThe same correction applies to the waveforms, which follow the spike order. A first unit whose\ntrue count exceeds the stored one but whose moved block does not break the order of the second\nunit's train cannot be detected this way. Spike times lie on the 20 kHz sample grid.\n\"\"\")\n\ncode(r\"\"\"\nst_all = pd.concat([s[\"states\"].assign(session=s[\"session\"]) for s in S], ignore_index=True)\nst_all[\"dur\"] = st_all.stop_time - st_all.start_time\nprint(\"State periods by label: count, total hours, median minutes\")\nprint(st_all.groupby(\"label\").dur.agg([\"size\", lambda d: d.sum() / 3600, lambda d: d.median() / 60]).round(2).to_string())\nprint(\"Files without a states table:\", sum(len(s[\"states\"]) == 0 for s in S))\nprint(\"Overlapping periods within a file:\",\n      sum(int((np.diff(g.sort_values(\"start_time\").start_time) < g.sort_values(\"start_time\").stop_time.values[:-1] - 1e-3).sum())\n          for _, g in st_all.groupby(\"session\")))\n\n# Clock check: rates of GC and CA3 units in NREM against awake periods, with the true labels and with\n# the labels shifted by 30 min. If the states share the spike clock, the contrast should shrink.\ndef nrem_awake_contrast(shift):\n    out = []\n    for s in S:\n        st = s[\"states\"].copy()\n        st[[\"start_time\", \"stop_time\"]] += shift\n        a, n = st[st.label == \"awake\"], st[st.label == \"nrem\"]\n        da, dn = (a.stop_time - a.start_time).sum(), (n.stop_time - n.start_time).sum()\n        if da < 300 or dn < 300:\n            continue\n        for u in s[\"units\"][s[\"units\"].type.isin([\"GC\", \"CA3\"])].unit:\n            t = dg.times(s, u)\n            ra = dg.interval_mask_count(t, a.start_time, a.stop_time) / da\n            rn = dg.interval_mask_count(t, n.start_time, n.stop_time) / dn\n            if ra > 0 and rn > 0:\n                out.append(np.log2(rn / ra))\n    return np.median(out), len(out)\nfor shift in (0, 1800, -1800):\n    m, n = nrem_awake_contrast(shift)\n    print(f\"labels shifted by {shift:+5d} s: median log2(NREM rate / awake rate) of GC and CA3 units = {m:.2f} (n = {n})\")\n\"\"\", [\"sanity\"])\n\nmd(r\"\"\"\nThe states table holds `awake`, `quiet`, `nrem`, `rem` and `transit` periods; the paper names wake,\nNREM and REM. `quiet` is read as quiet wake, so wake is tested both as `awake` alone and as `awake`\nwith `quiet`. The NREM against awake contrast of GC and CA3 rates is large with the true labels and\nmuch smaller with the labels shifted by 30 minutes, which is consistent with the states sharing the\nclock of the spikes.\n\"\"\")\n\ncode(r\"\"\"\n# Positions. Open fields: normalised 0..1, scaled by the stored conversion (0.46 m = the 46 cm arena).\nrows = []\nfor s in S:\n    for k, p in s[\"positions\"].items():\n        xy = p[\"xy\"]\n        ok = np.all(np.isfinite(xy), axis=1)\n        rows.append({\"session\": s[\"session\"], \"series\": k.replace(\"_twhl\", \"\"), \"n\": len(xy), \"nan_frac\": 1 - ok.mean(),\n                     \"dt_ms\": 1000 * np.median(np.diff(p[\"t\"])), \"c0_min\": np.nanmin(xy[:, 0]), \"c0_max\": np.nanmax(xy[:, 0]),\n                     \"c1_min\": np.nanmin(xy[:, 1]), \"c1_max\": np.nanmax(xy[:, 1]), \"conversion\": p[\"conversion\"], \"unit\": p[\"unit\"]})\npos = pd.DataFrame(rows)\nprint(pos.groupby(\"series\").agg(files=(\"session\", \"size\"), dt_ms=(\"dt_ms\", \"median\"), nan_frac=(\"nan_frac\", \"max\"),\n                                c0_min=(\"c0_min\", \"min\"), c0_max=(\"c0_max\", \"max\"), c1_min=(\"c1_min\", \"min\"),\n                                c1_max=(\"c1_max\", \"max\"), conversion=(\"conversion\", \"first\"), unit=(\"unit\", \"first\")).round(3).to_string())\nprint(\"\\nSessions with open fields A (Old), B (New) and A' (Oldlast):\",\n      sum(all(f\"{dg.OPEN_FIELDS[k]}_twhl_norm\" in s[\"positions\"] for k in (\"A\", \"B\", \"A2\")) for s in S))\nprint(\"Sessions with T-maze trials:\", sum(s[\"trials\"] is not None and \"EightMazePosition_twhl_linearized\" in s[\"positions\"] for s in S))\n\"\"\", [\"sanity\"])\n\ncode(r\"\"\"\n# T-maze: what the two linearised columns are. Column 0 is 0..2 on the central arm and 0 elsewhere;\n# column 1 is an angle (-pi..pi) on the side arms and 0 on the central arm.\nTM = [s for s in S if s[\"trials\"] is not None and \"EightMazePosition_twhl_linearized\" in s[\"positions\"]]\nboth = zero = n = 0\nfor s in TM:\n    a = s[\"positions\"][\"EightMazePosition_twhl_linearized\"][\"xy\"]\n    a = a[np.all(np.isfinite(a), axis=1)]\n    both += int(((a[:, 0] > 0) & (a[:, 1] != 0)).sum()); zero += int(((a[:, 0] == 0) & (a[:, 1] == 0)).sum()); n += len(a)\nprint(f\"T-maze samples: {n}; with both columns non-zero: {both}; with both zero: {zero}\")\nprint(\"Central arm length (2 x 0.325 m): %.0f cm; side arm at |angle| = pi: %.0f cm (Methods: 65 and 102 cm)\" % (2 * dg.RADIUS_CM, np.pi * dg.RADIUS_CM))\nruns_all = []\nfor s in TM:\n    for a, b, side, cond in dg.tmaze_runs(s):\n        runs_all.append({\"session\": s[\"session\"], \"subject\": s[\"subject\"], \"dur\": b - a, \"side\": side, \"cond\": cond})\nruns_all = pd.DataFrame(runs_all)\ntrials_all = sum(len(s[\"trials\"]) for s in TM)\nnonstim = sum(int((s[\"trials\"].stim_run == 0).sum()) for s in TM)\nprint(f\"Trials: {trials_all}; without light: {nonstim}; outbound runs found: {len(runs_all)}\")\nprint(\"Side arm reached against the trial's condition:\")\nprint(pd.crosstab(runs_all.cond, runs_all.side).to_string())\nprint(\"Run duration (s): median %.1f, 5th-95th percentile %.1f to %.1f\" % (runs_all.dur.median(), *np.percentile(runs_all.dur, [5, 95])))\nprint(\"Runs per session: median %d, range %d to %d\" % (runs_all.groupby(\"session\").size().median(), runs_all.groupby(\"session\").size().min(), runs_all.groupby(\"session\").size().max()))\n\"\"\", [\"sanity\"])\n\nmd(r\"\"\"\nThe open-field positions span 0 to 1 and, scaled by the stored conversion of 0.46 m, cover the\n46 cm arena of the Methods. The T-maze positions are documented only by their series names. The\nvalues show that column 0 runs along the central arm (0 to 2, so 65 cm at 0.325 m per unit) and\ncolumn 1 is the angle along the circular side arms (pi radians at a 32.5 cm radius is 102 cm). This\nmatches the maze in the Methods (central arm 65 cm, side arms 102 cm), so the reading is consistent\nwith the data, but the files do not state it. Negative angles are the left arm: 98% of runs reach\nthe arm that the trial's `condition` names. Both arm ends lie at the waiting area, and runs end\n10 cm before the reward port (84 cm). Position samples are 25.6 ms apart (39 Hz), as the Methods\nsay.\n\"\"\")\n\ncode(r\"\"\"\n# Clock check for positions: spatial information of MC and CA3 units on the T-maze with true positions,\n# and with the spike train shifted by 20 s (circularly within the session).\ndef info_with_shift(shift):\n    vals = []\n    for s in TM:\n        units = s[\"units\"][s[\"units\"].type.isin([\"MC\", \"CA3\"])].unit.tolist()\n        if not units:\n            continue\n        saved = {u: s[\"spikes\"][u] for u in units}\n        span = int((s[\"spike_time_range\"][1] - s[\"spike_time_range\"][0]) * dg.SPIKE_HZ)\n        for u in units:\n            s[\"spikes\"][u] = np.sort((saved[u] + int(shift * dg.SPIKE_HZ)) % span).astype(np.int32)\n        occ, maps, _ = dg.tmaze_maps(s, units)\n        for u in units:\n            vals.append(dg.spatial_info(np.concatenate(maps[u]), np.concatenate(occ)))\n        s[\"spikes\"].update(saved)\n    return np.nanmedian(vals), len(vals)\nfor shift in (0, 20):\n    m, n = info_with_shift(shift)\n    print(f\"spikes shifted by {shift:2d} s: median spatial information of MC and CA3 units = {m:.3f} bits/s (n = {n})\")\n\"\"\", [\"sanity\"])\n\ncode(r\"\"\"\n# DS2 events and light pulses.\nds2n = pd.DataFrame([{\"session\": s[\"session\"], \"series\": \",\".join(s[\"ds2_series\"]), \"n_ds2\": len(s[\"ds2\"]),\n                      \"per_min_nrem\": len(s[\"ds2\"]) / max(1e-9, (s[\"states\"][s[\"states\"].label == \"nrem\"].eval(\"stop_time - start_time\").sum() / 60))}\n                     for s in S])\nprint(\"DS2 peaks per file: median %d, range %d to %d; files without DS2 events: %d\" % (\n    ds2n.n_ds2.median(), ds2n.n_ds2.min(), ds2n.n_ds2.max(), (ds2n.n_ds2 == 0).sum()))\nprint(\"One DS2 series per file:\", bool((ds2n.series.str.count(\",\") == 0).all()))\npul = pd.DataFrame([{\"session\": s[\"session\"], \"genotype\": s[\"genotype\"], \"n\": len(s[\"pulse20\"]),\n                     \"ipi_ms_median\": 1000 * np.median(np.diff(s[\"pulse20\"])), \"ipi_ms_min\": 1000 * np.min(np.diff(s[\"pulse20\"]))}\n                    for s in S if len(s[\"pulse20\"]) > 1])\nprint(\"\\nFiles with 20 ms light pulses (PulseStim_5V_20ms_LD12), by genotype:\", pul.genotype.value_counts().to_dict())\nprint(\"Pulses per file: %d to %d (Methods: 60,000 to 100,000 repetitions)\" % (pul.n.min(), pul.n.max()))\nprint(\"Interval between pulses (ms): median %.1f, smallest %.1f\" % (pul.ipi_ms_median.median(), pul.ipi_ms_min.min()))\n\"\"\", [\"sanity\"])\n\ncode(r\"\"\"\n# Recordings deposited twice: sessions of one mouse on the same date (the 'b' files) against each other.\nfrom itertools import combinations\ndef coincidence(a, b, tol=0.0005):\n    j = np.clip(np.searchsorted(b, a), 1, len(b) - 1)\n    return float((np.minimum(np.abs(b[j] - a), np.abs(b[j - 1] - a)) < tol).mean())\nby_day = {}\nfor s in S:\n    by_day.setdefault((s[\"subject\"], s[\"session\"][-6:]), []).append(s)\nrows = []\nfor (subj, day), group in by_day.items():\n    for s1, s2 in combinations(group, 2):\n        best = 0.0\n        for u in s1[\"spikes\"]:\n            a = dg.times(s1, u)[:20000]\n            for v in s2[\"spikes\"]:\n                b = dg.times(s2, v)\n                if len(a) > 100 and len(b) > 100:\n                    best = max(best, coincidence(a, b))\n        n1, n2 = len(s1[\"positions\"]), len(s2[\"positions\"])\n        rows.append({\"pair\": f\"{s1['session']} / {s2['session']}\", \"units\": f\"{len(s1['spikes'])} / {len(s2['spikes'])}\",\n                     \"max_coincident_spike_fraction\": round(best, 3),\n                     \"same_states\": s1[\"states\"][[\"start_time\", \"stop_time\"]].round(0).equals(s2[\"states\"][[\"start_time\", \"stop_time\"]].round(0)),\n                     \"same_unit_count\": len(s1[\"units_all\"]) == len(s2[\"units_all\"])})\ndups = pd.DataFrame(rows)\nprint(dups.to_string(index=False))\n# Across days: identical spike trains between any two files of a mouse (first 50 spikes of each unit).\nsig = {}\nfor s in S:\n    for u in s[\"spikes\"]:\n        key = (s[\"subject\"], tuple(s[\"spikes\"][u][:50]))\n        sig.setdefault(key, []).append(s[\"session\"])\nprint(\"Units whose first 50 spike times appear in more than one file:\", sum(len(v) > 1 for v in sig.values()))\n\"\"\", [\"sanity\"])\n\nmd(r\"\"\"\nSeven dates hold two files of one mouse (the second named with `b`). No unit in one shares more\nthan a few percent of its spikes (within 0.5 ms) with any unit in the other, so these are different\nrecordings and not the same recording deposited twice; they are consistent with a second probe or\na second recording on that day, which the metadata do not describe. No unit's spike train appears\nin two files.\n\"\"\")\n\ncode(r\"\"\"\n# Theta-reference LFP channel and the phase data used for theta-modulation and gamma-modulation.\nph = pd.DataFrame([{\"session\": s[\"session\"], \"awake_s\": s[\"phases\"][\"seconds\"] if s[\"phases\"] else 0,\n                    \"theta_above\": s[\"phases\"][\"theta_fraction_above\"] if s[\"phases\"] else np.nan,\n                    \"gamma_above\": s[\"phases\"][\"gamma_fraction_above\"] if s[\"phases\"] else np.nan} for s in S])\nprint(\"Files with one theta-reference LFP channel and awake periods used:\", int((ph.awake_s > 0).sum()), \"of\", len(S))\nprint(\"Awake LFP used per file (s): median %.0f, range %.0f to %.0f\" % (ph[ph.awake_s > 0].awake_s.median(), ph[ph.awake_s > 0].awake_s.min(), ph[ph.awake_s > 0].awake_s.max()))\nprint(\"Fraction of that time above the amplitude criterion: theta %.2f, gamma %.2f\" % (ph.theta_above.median(), ph.gamma_above.median()))\nprint(\"Files without:\", ph[ph.awake_s == 0].session.tolist())\n\"\"\", [\"sanity\"])\n\n# ---------------------------------------------------------------- unit table\nmd(r\"\"\"\n## Unit measures\n\nRates by state, burst index, trough-to-peak latency, phase statistics and the DS2 response of every\nkept unit, used by several claims below.\n\"\"\")\n\ncode(r\"\"\"\nstarted = time.time()\nrows = []\nfor s in S:\n    if not s[\"spikes\"]:\n        continue\n    r = dg.state_rates(s)\n    ut = s[\"units\"].set_index(\"unit\")\n    r[\"type\"] = [ut.type[u] for u in r.unit]\n    r[\"bi\"] = [dg.burst_index(dg.times(s, u)) for u in r.unit]\n    tp = [dg.trough_to_peak_ms(s[\"waveforms\"][u])[:2] if u in s[\"waveforms\"] else (np.nan, False) for u in r.unit]\n    r[\"tp\"] = [x[0] for x in tp]\n    r[\"tp_at_end\"] = [x[1] for x in tp]\n    for band in (\"theta\", \"gamma\"):\n        st = [dg.phase_stats(s[\"phases\"][\"units\"][u][band]) if s[\"phases\"] else dg.phase_stats(np.array([])) for u in r.unit]\n        for k in (\"n\", \"mrl\", \"phase\", \"p\", \"kappa\"):\n            r[f\"{band}_{k}\"] = [x[k] for x in st]\n    if len(s[\"ds2\"]):\n        d = [dg.ds2_response(dg.times(s, u), s[\"ds2\"]) for u in r.unit]\n        for k in (\"peak_ratio\", \"peak_ms\", \"base_hz\"):\n            r[f\"ds2_{k}\"] = [x[k] for x in d]\n    r[\"session\"], r[\"subject\"], r[\"genotype\"] = s[\"session\"], s[\"subject\"], s[\"genotype\"]\n    rows.append(r)\nR = pd.concat(rows, ignore_index=True)\nfor band in (\"theta\", \"gamma\"):\n    R[f\"{band}_sig\"] = (R[f\"{band}_p\"] < 0.05) & (R[f\"{band}_kappa\"] > 0.1)\nprint(f\"{len(R)} units measured in {time.time() - started:.0f} s\")\nprint(R.groupby(\"type\")[[\"rate_overall\", \"rate_awake\", \"rate_quiet\", \"rate_nrem\", \"rate_rem\", \"bi\", \"tp\"]].median().round(3).to_string())\nprint(\"\\nDS2 measures missing (no events, or no spikes in the baseline):\", R.ds2_peak_ratio.isna().groupby(R.type).sum().to_dict())\n\"\"\")\n\n# ---------------------------------------------------------------- claims\nmd(r\"\"\"\n## unit-counts\n\n> The second-stage classification divided dentate excitatory neurons into 586 putative granule\n> cells (GC) and 500 putative mossy cells (MC).\n\"\"\")\ncode(r\"\"\"\ncnt = R.type.value_counts()\nprint(\"GC: %d (paper 586, tolerance 527.4 to 644.6); MC: %d (paper 500, tolerance 450 to 550)\" % (cnt[\"GC\"], cnt[\"MC\"]))\nprint(\"GC + MC: %d (paper 1086 excitatory dentate units)\" % (cnt[\"GC\"] + cnt[\"MC\"]))\nprint(\"Subjects with GC or MC:\", R[R.type.isin([\"GC\", \"MC\"])].subject.nunique())\nprint(\"\\nBy subject:\")\nprint(pd.crosstab(R.subject, R.type)[[\"GC\", \"MC\"]].to_string())\n\"\"\", [\"claim:unit-counts\"])\n\nmd(r\"\"\"\n## first-stage-labels\n\n> Narrow-waveform interneurons have a trough-to-peak latency below 0.425 ms, and among\n> wide-waveform units the excitatory cells have a burst index above the threshold separating them\n> from wide-waveform interneurons.\n\"\"\")\ncode(r\"\"\"\nrows = []\nfor thr in dg.BURST_THRESHOLDS:\n    n = R[R.type == \"nI\"]; e = R[R.type.isin([\"GC\", \"MC\"])]; w = R[R.type == \"wI\"]\n    rows.append({\"burst threshold\": thr,\n                 \"nI below 0.425 ms\": (n.tp < dg.TP_NARROW_MS).mean(),\n                 \"GC+MC wide and bursty\": ((e.tp >= dg.TP_NARROW_MS) & (e.bi > thr)).mean(),\n                 \"wI wide and not bursty\": ((w.tp >= dg.TP_NARROW_MS) & (w.bi <= thr)).mean(),\n                 \"CA3 wide and bursty\": ((R[R.type == \"CA3\"].tp >= dg.TP_NARROW_MS) & (R[R.type == \"CA3\"].bi > thr)).mean()})\nprint(pd.DataFrame(rows).round(3).to_string(index=False))\nprint(\"\\nUnits without a latency (no waveforms, or a positive spike):\", R.tp.isna().groupby(R.type).sum().to_dict())\nprint(\"Burst index medians:\", R.groupby(\"type\").bi.median().round(2).to_dict())\nprint(\"Latency medians (ms):\", R.groupby(\"type\").tp.median().round(3).to_dict())\nprint(\"nI below 0.425 ms by subject:\", R[R.type == \"nI\"].groupby(\"subject\").tp.apply(lambda x: round((x < 0.425).mean(), 2)).to_dict())\nfig, ax = plt.subplots(figsize=(6, 4))\nfor ty, c in ((\"nI\", \"tab:blue\"), (\"wI\", \"tab:cyan\"), (\"GC\", \"gold\"), (\"MC\", \"m\")):\n    x = R[R.type == ty]\n    ax.scatter(x.tp, np.log10(x.bi.clip(lower=1e-2)), s=4, c=c, label=ty)\nax.axvline(0.425, c=\"k\", lw=0.5); ax.axhline(np.log10(1.2), c=\"k\", lw=0.5); ax.axhline(np.log10(1.8), c=\"k\", lw=0.5, ls=\"--\")\nax.set_xlabel(\"trough-to-peak (ms)\"); ax.set_ylabel(\"log10 burst index (clipped at 0.01)\"); ax.legend()\nprint(\"Plotted latency range: %.2f to %.2f ms; burst index below 0.01 drawn at 0.01: %d units\" % (R.tp.min(), R.tp.max(), int((R.bi < 0.01).sum())))\n\"\"\", [\"claim:first-stage-labels\"])\n\nmd(r\"\"\"\n## interneuron-rates\n\n> Narrow-waveform interneurons fire faster than wide-waveform interneurons (medians 7.97 and\n> 2.11 Hz; Kruskal-Wallis P < 0.00001).\n\"\"\")\ncode(r\"\"\"\nfor col, name in ((\"rate_overall\", \"(a) spikes over the recording span\"), (\"rate_awake\", \"(b) awake periods\")):\n    n, w = R[R.type == \"nI\"][col].dropna(), R[R.type == \"wI\"][col].dropna()\n    print(f\"{name}: nI median {n.median():.2f} Hz (n = {len(n)}), wI median {w.median():.2f} Hz (n = {len(w)}), \"\n          f\"Kruskal-Wallis P = {stats.kruskal(n, w).pvalue:.2g}\")\nprint(\"Paper: 7.97 (tolerance 7.17 to 8.77) and 2.11 Hz (1.90 to 2.32).\")\nprint(\"\\nBy subject, reading (a):\")\nprint(R[R.type.isin([\"nI\", \"wI\"])].groupby([\"subject\", \"type\"]).rate_overall.median().unstack().round(2).to_string())\n\"\"\", [\"claim:interneuron-rates\"])\n\nmd(r\"\"\"\n## gc-narrower-waveform\n\n> The waveform of granule cells is narrower than that of mossy cells.\n\"\"\")\ncode(r\"\"\"\ng, m = R[R.type == \"GC\"].tp.dropna(), R[R.type == \"MC\"].tp.dropna()\nprint(f\"Trough-to-peak latency: GC median {g.median():.3f} ms (n = {len(g)}), MC median {m.median():.3f} ms (n = {len(m)}), \"\n      f\"Mann-Whitney P = {stats.mannwhitneyu(g, m).pvalue:.2g}\")\nprint(\"Units whose peak falls at the end of the stored 1.6 ms (latency a lower bound): GC %.2f, MC %.2f\" % (\n    R[R.type == \"GC\"].tp_at_end.mean(), R[R.type == \"MC\"].tp_at_end.mean()))\ngg, mm = R[(R.type == \"GC\") & ~R.tp_at_end].tp.dropna(), R[(R.type == \"MC\") & ~R.tp_at_end].tp.dropna()\nprint(f\"Variant, units with the peak inside the window: GC {gg.median():.3f} ms (n = {len(gg)}), MC {mm.median():.3f} ms (n = {len(mm)}), P = {stats.mannwhitneyu(gg, mm).pvalue:.2g}\")\nprint(\"\\nBy subject (median ms):\")\nprint(R[R.type.isin([\"GC\", \"MC\"])].groupby([\"subject\", \"type\"]).tp.median().unstack().round(3).to_string())\n\"\"\", [\"claim:gc-narrower-waveform\"])\n\nmd(r\"\"\"\n## optotag-drd2\n\n> In DRD2-Cre::Ai35 mice, 29 of 107 putative mossy cells were suppressed by green light, against\n> none of 202 putative granule cells, 8 of 68 wide-waveform and none of 69 narrow-waveform\n> interneurons.\n\"\"\")\ncode(r\"\"\"\nrows = []\nfor s in S:\n    if \"Drd2\" not in s[\"genotype\"] or len(s[\"pulse20\"]) == 0:\n        continue\n    ut = s[\"units\"].set_index(\"unit\")\n    for u in s[\"spikes\"]:\n        t = dg.times(s, u)\n        a = dg.opto_response(t, s[\"pulse20\"])\n        dg.OPTO_BASE = (0.050, 0.200); b = dg.opto_response(t, s[\"pulse20\"]); dg.OPTO_BASE = (-0.020, 0.0)\n        rows.append({\"session\": s[\"session\"], \"subject\": s[\"subject\"], \"type\": ut.type[u],\n                     \"change_pre\": a[\"change\"], \"p_pre\": a[\"p_decrease\"], \"change_cycle\": b[\"change\"], \"base_hz\": a[\"base_hz\"]})\nO = pd.DataFrame(rows)\nO[\"supp_pre\"] = O.change_pre <= -dg.OPTO_DROP\nO[\"supp_cycle\"] = O.change_cycle <= -dg.OPTO_DROP\ntab = O.groupby(\"type\").agg(n=(\"type\", \"size\"), pre=(\"supp_pre\", \"sum\"), frac_pre=(\"supp_pre\", \"mean\"),\n                            cycle=(\"supp_cycle\", \"sum\"), frac_cycle=(\"supp_cycle\", \"mean\"),\n                            median_change_pre=(\"change_pre\", \"median\")).round(3)\nprint(\"Sessions:\", O.session.nunique(), \"; mice:\", O.subject.nunique())\nprint(tab.to_string())\nprint(\"\\nPaper: MC 29 of 107 (0.271, tolerance 0.244 to 0.298), GC 0 of 202, wI 8 of 68, nI 0 of 69.\")\nfor thr in (0.1, 0.2, 0.3, 0.5):\n    print(f\"threshold {thr:.0%} decrease, baseline before the pulse: MC {np.mean(O[O.type == 'MC'].change_pre <= -thr):.3f}, \"\n          f\"GC {np.mean(O[O.type == 'GC'].change_pre <= -thr):.3f}\")\nprint(\"With the 20% rule and a one-sided Poisson P < 0.05 (baseline before the pulse):\",\n      O[O.supp_pre & (O.p_pre < 0.05)].groupby(\"type\").size().to_dict())\nprint(\"\\nMC suppressed by subject (baseline before the pulse):\")\nprint(O[O.type == \"MC\"].groupby(\"subject\").agg(n=(\"type\", \"size\"), suppressed=(\"supp_pre\", \"sum\")).to_string())\n\"\"\", [\"claim:optotag-drd2\"])\n\nmd(r\"\"\"\n## mc-more-active\n\n> Mossy cells are more active than granule cells during both waking and NREM sleep\n> (Kruskal-Wallis P < 0.0001 for each).\n\"\"\")\ncode(r\"\"\"\nfor col, name in ((\"rate_awake\", \"wake (a): awake\"), (\"rate_wake_all\", \"wake (b): awake + quiet\"), (\"rate_nrem\", \"NREM\"), (\"rate_rem\", \"REM\")):\n    g, m = R[R.type == \"GC\"][col].dropna(), R[R.type == \"MC\"][col].dropna()\n    print(f\"{name:24s} GC median {g.median():.3f} Hz (n = {len(g)}), MC median {m.median():.3f} Hz (n = {len(m)}), Kruskal-Wallis P = {stats.kruskal(g, m).pvalue:.2g}\")\nprint(\"\\nBy subject (median Hz, awake and NREM):\")\nprint(R[R.type.isin([\"GC\", \"MC\"])].groupby([\"subject\", \"type\"])[[\"rate_awake\", \"rate_nrem\"]].median().unstack().round(3).to_string())\n\"\"\", [\"claim:mc-more-active\"])\n\nmd(r\"\"\"\n## gc-nrem-highest\n\n> Granule cells fire most during NREM sleep and at similar rates during wake and REM.\n\"\"\")\ncode(r\"\"\"\ndef three_states(ty, wake_col):\n    x = R[R.type == ty]\n    groups = {\"wake\": x[wake_col].dropna(), \"nrem\": x.rate_nrem.dropna(), \"rem\": x.rate_rem.dropna()}\n    kw = stats.kruskal(*groups.values()).pvalue\n    post = {f\"{a}-{b}\": min(1.0, 3 * stats.mannwhitneyu(groups[a], groups[b]).pvalue) for a, b in ((\"nrem\", \"wake\"), (\"nrem\", \"rem\"), (\"wake\", \"rem\"))}\n    med = {k: round(v.median(), 3) for k, v in groups.items()}\n    return med, kw, post\nfor wake_col, name in ((\"rate_awake\", \"(a) awake\"), (\"rate_wake_all\", \"(b) awake + quiet\")):\n    med, kw, post = three_states(\"GC\", wake_col)\n    print(f\"GC, wake {name}: medians {med}; Kruskal-Wallis P = {kw:.2g}; Bonferroni-adjusted Mann-Whitney P: \" + \", \".join(f\"{k} {v:.2g}\" for k, v in post.items()))\nx = R[R.type == \"GC\"]\nprint(\"\\nPaired view: GC with NREM above awake: %.2f; with NREM above REM: %.2f (n = %d)\" % (\n    (x.rate_nrem > x.rate_awake).mean(), (x.rate_nrem > x.rate_rem).mean(), len(x)))\nprint(\"By subject (GC medians, Hz):\")\nprint(x.groupby(\"subject\")[[\"rate_awake\", \"rate_quiet\", \"rate_nrem\", \"rate_rem\"]].median().round(3).to_string())\n\"\"\", [\"claim:gc-nrem-highest\"])\n\nmd(r\"\"\"\n## ca3-wake-highest\n\n> CA3 pyramidal neurons are most active during wake and least active during REM.\n\"\"\")\ncode(r\"\"\"\nfor wake_col, name in ((\"rate_awake\", \"(a) awake\"), (\"rate_wake_all\", \"(b) awake + quiet\")):\n    med, kw, post = three_states(\"CA3\", wake_col)\n    print(f\"CA3, wake {name}: medians {med}; Kruskal-Wallis P = {kw:.2g}; adjusted P: \" + \", \".join(f\"{k} {v:.2g}\" for k, v in post.items()))\nprint(\"\\nBy subject (CA3 medians, Hz):\")\nprint(R[R.type == \"CA3\"].groupby(\"subject\")[[\"rate_awake\", \"rate_quiet\", \"rate_nrem\", \"rate_rem\"]].median().round(3).to_string())\n\"\"\", [\"claim:ca3-wake-highest\"])\n\nmd(r\"\"\"\n## nrem-wake-ratio\n\n> Granule cells increase their firing in NREM sleep compared with waking, while mossy cells fire at\n> equivalent rates in the two states.\n\"\"\")\ncode(r\"\"\"\nfor wake_col, name in ((\"rate_awake\", \"(a) awake\"), (\"rate_wake_all\", \"(b) awake + quiet\")):\n    ok = R[wake_col] > 0\n    ratio = (R.rate_nrem / R[wake_col])[ok]\n    g, m = ratio[R.type[ok] == \"GC\"].dropna(), ratio[R.type[ok] == \"MC\"].dropna()\n    mc = R[ok & (R.type == \"MC\")]\n    print(f\"wake {name}: NREM / wake ratio GC median {g.median():.2f} (n = {len(g)}), MC median {m.median():.2f} (n = {len(m)}); \"\n          f\"Mann-Whitney P = {stats.mannwhitneyu(g, m).pvalue:.2g}; MC NREM against wake, Wilcoxon P = {stats.wilcoxon(mc.rate_nrem, mc[wake_col]).pvalue:.2g}\")\nok = R.rate_awake > 0\nprint(\"\\nBy subject, reading (a), median ratio:\")\nprint((R.rate_nrem / R.rate_awake)[ok].groupby([R.subject[ok], R.type[ok]]).median().unstack()[[\"GC\", \"MC\"]].round(2).to_string())\n\"\"\", [\"claim:nrem-wake-ratio\"])\n\nmd(r\"\"\"\n## theta-modulation\n\n> Granule cells are more strongly phase-modulated by theta oscillations than mossy cells and fire\n> at later theta phases (Kruskal-Wallis P < 0.0001 for both).\n\"\"\")\ncode(r\"\"\"\ndef circ_mean_deg(v):\n    return float(np.degrees(np.angle(np.exp(1j * v).mean())))\n\ndef phase_claim(band):\n    x = R[R.type.isin([\"GC\", \"MC\"])]\n    print(f\"Units with a {band} estimate: \" + \", \".join(f\"{t} {int((x[x.type == t][f'{band}_n'] >= 10).sum())}\" for t in (\"GC\", \"MC\")))\n    print(f\"Modulated (Rayleigh P < 0.05, kappa > 0.1): \" + \", \".join(f\"{t} {int(x[x.type == t][f'{band}_sig'].sum())}\" for t in (\"GC\", \"MC\")))\n    sig = x[x[f\"{band}_sig\"]]\n    g, m = sig[sig.type == \"GC\"], sig[sig.type == \"MC\"]\n    print(f\"MRL of modulated units: GC median {g[f'{band}_mrl'].median():.3f}, MC median {m[f'{band}_mrl'].median():.3f}, \"\n          f\"Kruskal-Wallis P = {stats.kruskal(g[f'{band}_mrl'], m[f'{band}_mrl']).pvalue:.2g}\")\n    allg, allm = x[(x.type == 'GC') & x[f'{band}_mrl'].notna()], x[(x.type == 'MC') & x[f'{band}_mrl'].notna()]\n    print(f\"Variant, all units with an estimate: GC median MRL {allg[f'{band}_mrl'].median():.3f}, MC {allm[f'{band}_mrl'].median():.3f}, \"\n          f\"P = {stats.kruskal(allg[f'{band}_mrl'], allm[f'{band}_mrl']).pvalue:.2g}\")\n    print(f\"Spikes per modulated unit: GC median {g[f'{band}_n'].median():.0f}, MC median {m[f'{band}_n'].median():.0f} \"\n          \"(the MRL of a uniform phase with n spikes is about 0.89 / sqrt(n))\")\n    print(f\"Variant, MRL above the uniform-phase expectation 0.89/sqrt(n): GC median {(g[f'{band}_mrl'] - 0.89 / np.sqrt(g[f'{band}_n'])).median():.3f}, \"\n          f\"MC {(m[f'{band}_mrl'] - 0.89 / np.sqrt(m[f'{band}_n'])).median():.3f}, P = \"\n          f\"{stats.kruskal(g[f'{band}_mrl'] - 0.89 / np.sqrt(g[f'{band}_n']), m[f'{band}_mrl'] - 0.89 / np.sqrt(m[f'{band}_n'])).pvalue:.2g}\")\n    gp, mp = g[f\"{band}_phase\"], m[f\"{band}_phase\"]\n    print(f\"Circular mean of preferred phases (0 = peak, degrees): GC {circ_mean_deg(gp):.1f}, MC {circ_mean_deg(mp):.1f}; \"\n          f\"GC minus MC {np.degrees(np.angle(np.exp(1j * (np.angle(np.exp(1j * gp).mean()) - np.angle(np.exp(1j * mp).mean()))))):.1f}\")\n    print(f\"Kruskal-Wallis on phases: (a) on (-pi, pi] P = {stats.kruskal(gp, mp).pvalue:.2g}; \"\n          f\"(b) on [0, 2 pi) P = {stats.kruskal(np.mod(gp, 2 * np.pi), np.mod(mp, 2 * np.pi)).pvalue:.2g}; \"\n          f\"medians (a) GC {np.degrees(gp.median()):.1f}, MC {np.degrees(mp.median()):.1f}; \"\n          f\"(b) GC {np.degrees(np.mod(gp, 2 * np.pi).median()):.1f}, MC {np.degrees(np.mod(mp, 2 * np.pi).median()):.1f}\")\n    print(\"By subject, median MRL of modulated units:\")\n    print(sig.groupby([\"subject\", \"type\"])[f\"{band}_mrl\"].median().unstack().round(3).to_string())\nphase_claim(\"theta\")\n\"\"\", [\"claim:theta-modulation\"])\n\nmd(r\"\"\"\n## gamma-modulation\n\n> Granule cells are more strongly phase-modulated by gamma oscillations than mossy cells and fire\n> at earlier gamma phases (Kruskal-Wallis P < 0.0001 for both).\n\"\"\")\ncode(r\"\"\"\nphase_claim(\"gamma\")\n\"\"\", [\"claim:gamma-modulation\"])\n\nmd(r\"\"\"\n## gamma-rate-correlation\n\n> Slow-firing neurons are more strongly coupled to gamma than fast-firing ones (GC r = -0.176,\n> MC r = -0.184, P < 0.0001 for each).\n\"\"\")\ncode(r\"\"\"\nfor reading, sel in ((\"(a) all units with an MRL\", R.gamma_mrl.notna()), (\"(b) modulated units\", R.gamma_sig)):\n    for ty in (\"GC\", \"MC\"):\n        x = R[sel & (R.type == ty)]\n        r, p = stats.pearsonr(x.rate_overall, x.gamma_mrl)\n        print(f\"{reading}, {ty}: r = {r:.3f}, P = {p:.2g}, n = {len(x)}\")\nprint(\"Paper: GC -0.176 (tolerance -0.194 to -0.158), MC -0.184 (-0.202 to -0.166).\")\nfor ty in (\"GC\", \"MC\"):\n    x = R[R.gamma_mrl.notna() & (R.type == ty)]\n    print(f\"Variant, log10 rate, {ty}: r = {stats.pearsonr(np.log10(x.rate_overall), x.gamma_mrl)[0]:.3f}; \"\n          f\"Spearman rho = {stats.spearmanr(x.rate_overall, x.gamma_mrl)[0]:.3f}\")\n\"\"\", [\"claim:gamma-rate-correlation\"])\n\nmd(r\"\"\"\n## ds2-recruitment\n\n> Granule cells are more effectively recruited by type 2 dentate spikes than mossy cells and fire\n> earlier (Kruskal-Wallis P < 0.0001 for both).\n\"\"\")\ncode(r\"\"\"\nx = R[R.type.isin([\"GC\", \"MC\"]) & R.ds2_peak_ratio.notna() & np.isfinite(R.ds2_peak_ratio)]\ng, m = x[x.type == \"GC\"], x[x.type == \"MC\"]\nprint(f\"Peak ratio: GC median {g.ds2_peak_ratio.median():.2f} (n = {len(g)}), MC median {m.ds2_peak_ratio.median():.2f} (n = {len(m)}), \"\n      f\"Kruskal-Wallis P = {stats.kruskal(g.ds2_peak_ratio, m.ds2_peak_ratio).pvalue:.2g}\")\nprint(f\"Peak time (ms from the DS2 peak): GC median {g.ds2_peak_ms.median():.1f}, MC median {m.ds2_peak_ms.median():.1f}, \"\n      f\"Kruskal-Wallis P = {stats.kruskal(g.ds2_peak_ms, m.ds2_peak_ms).pvalue:.2g}\")\nprint(\"Dropped (no DS2 events or a zero baseline): GC %d, MC %d\" % ((R.type == \"GC\").sum() - len(g), (R.type == \"MC\").sum() - len(m)))\nprint(\"Units peaking within +-4 ms of the DS2 peak: GC %.2f, MC %.2f\" % ((g.ds2_peak_ms.abs() <= 4).mean(), (m.ds2_peak_ms.abs() <= 4).mean()))\nprint(\"\\nBy subject (median peak ratio, median peak ms):\")\nprint(x.groupby([\"subject\", \"type\"])[[\"ds2_peak_ratio\", \"ds2_peak_ms\"]].median().unstack().round(2).to_string())\n\"\"\", [\"claim:ds2-recruitment\"])\n\nmd(r\"\"\"\n## monosyn-gc-to-mc\n\n> 5.5% of granule cells monosynaptically excite mossy cells (32 pairs), whereas no mossy cell\n> significantly excites a granule cell.\n\"\"\")\ncode(r\"\"\"\nstarted = time.time()\nrows = []\nfor s in S:\n    ut = s[\"units\"].set_index(\"unit\")\n    T = {u: dg.times(s, u) for u in s[\"spikes\"]}\n    gcs = [u for u in T if ut.type[u] == \"GC\"]\n    mcs = [u for u in T if ut.type[u] == \"MC\"]\n    for g in gcs:\n        for m in mcs:\n            a = dg.ccg_test(dg.ccg(T[g], T[m]))\n            b = dg.ccg_test(dg.ccg(T[m], T[g]))\n            rows.append({\"session\": s[\"session\"], \"subject\": s[\"subject\"], \"gc\": g, \"mc\": m, \"gc_to_mc\": a[\"mono\"], \"mc_to_gc\": b[\"mono\"],\n                         \"peak_ms\": a[\"mono_peak_ms\"], \"tp\": a[\"mono_excess\"] / len(T[g]), \"n_gc\": len(T[g]), \"n_mc\": len(T[m]),\n                         \"gc_mc_shank_id_same\": ut.shank_id[g] == ut.shank_id[m]})\nC = pd.DataFrame(rows)\nn_gc = int((R.type == \"GC\").sum())\npairs = C[C.gc_to_mc]\nprint(f\"GC-MC pairs tested: {len(C)} in {C.session.nunique()} sessions ({time.time() - started:.0f} s)\")\nprint(f\"GC to MC pairs: {len(pairs)}; MC to GC pairs: {int(C.mc_to_gc.sum())}\")\nprint(f\"(a) pairs / all GC = {len(pairs)} / {n_gc} = {len(pairs) / n_gc:.4f}\")\nprint(f\"(b) GC with a target / all GC = {pairs.groupby(['session', 'gc']).ngroups} / {n_gc} = {pairs.groupby(['session', 'gc']).ngroups / n_gc:.4f}\")\nprint(f\"(c) pairs / tested pairs = {len(pairs)} / {len(C)} = {len(pairs) / len(C):.4f}\")\nprint(\"Paper: 0.055 (tolerance 0.0495 to 0.0605), 32 pairs, no MC to GC pair.\")\nprint(\"Peak lag of detected GC to MC pairs (ms):\", pairs.peak_ms.value_counts().sort_index().to_dict())\nprint(\"\\nVariant thresholds (Poisson percentile): \", end=\"\")\nfor pct in (0.9999, 0.99999, 0.9999999):\n    dg.CCG_PCTL = pct\n    k1 = k2 = 0\n    for s in S:\n        ut = s[\"units\"].set_index(\"unit\")\n        for r in C[C.session == s[\"session\"]].itertuples():\n            k1 += dg.ccg_test(dg.ccg(dg.times(s, r.gc), dg.times(s, r.mc)))[\"mono\"]\n            k2 += dg.ccg_test(dg.ccg(dg.times(s, r.mc), dg.times(s, r.gc)))[\"mono\"]\n    print(f\"{pct}: GC to MC {k1}, MC to GC {k2}; \", end=\"\")\ndg.CCG_PCTL = 0.999999\nprint(\"\\n\\nBy subject:\")\nprint(C.groupby(\"subject\").agg(pairs_tested=(\"gc\", \"size\"), gc_to_mc=(\"gc_to_mc\", \"sum\"), mc_to_gc=(\"mc_to_gc\", \"sum\")).to_string())\n\"\"\", [\"claim:monosyn-gc-to-mc\"])\n\nmd(r\"\"\"\n## burst-facilitation\n\n> Spike transmission probability from granule cells to mossy cells increases from the first to the\n> second spike of a granule cell burst (P < 0.001).\n\"\"\")\ncode(r\"\"\"\nrows = []\nsmap = {s[\"session\"]: s for s in S}\nfor r in pairs.itertuples():\n    s = smap[r.session]\n    tg, tm = dg.times(s, r.gc), dg.times(s, r.mc)\n    pos = dg.burst_positions(tg)\n    rows.append({\"single\": dg.transmission(tg[pos == 0], tm), \"first\": dg.transmission(tg[pos == 1], tm),\n                 \"second\": dg.transmission(tg[pos == 2], tm), \"third\": dg.transmission(tg[pos == 3], tm),\n                 \"n_first\": int((pos == 1).sum()), \"n_second\": int((pos == 2).sum())})\nB = pd.DataFrame(rows)\nprint(f\"Pairs: {len(B)}; median GC spikes per pair that are first / second in a burst: {B.n_first.median():.0f} / {B.n_second.median():.0f}\")\nprint(\"Median transmission probability:\", B[[\"single\", \"first\", \"second\", \"third\"]].median().round(4).to_dict())\nok = B[[\"first\", \"second\"]].notna().all(axis=1)\nw = stats.wilcoxon(B.second[ok], B.first[ok])\nprint(f\"Second against first: {int((B.second[ok] > B.first[ok]).sum())} of {int(ok.sum())} pairs higher, paired Wilcoxon P = {w.pvalue:.2g}\")\nfor isi in (0.004, 0.010):\n    vals = []\n    for r in pairs.itertuples():\n        s = smap[r.session]; tg, tm = dg.times(s, r.gc), dg.times(s, r.mc); pos = dg.burst_positions(tg, isi)\n        vals.append((dg.transmission(tg[pos == 1], tm), dg.transmission(tg[pos == 2], tm)))\n    v = np.array(vals); ok2 = np.all(np.isfinite(v), axis=1)\n    print(f\"Variant, bursts at most {isi * 1000:.0f} ms apart: median first {np.median(v[ok2, 0]):.4f}, second {np.median(v[ok2, 1]):.4f}, P = {stats.wilcoxon(v[ok2, 1], v[ok2, 0]).pvalue:.2g}\")\n\"\"\", [\"claim:burst-facilitation\"])\n\nmd(r\"\"\"\n## state-transmission\n\n> GC to MC spike transmission is lower during NREM sleep than during waking (n = 31, P < 0.005).\n\"\"\")\ncode(r\"\"\"\nrows = []\nfor r in pairs.itertuples():\n    s = smap[r.session]\n    tg, tm = dg.times(s, r.gc), dg.times(s, r.mc)\n    out = {}\n    for lab in (\"awake\", \"nrem\"):\n        st = s[\"states\"][s[\"states\"].label == lab]\n        keep = np.zeros(len(tg), bool)\n        for a, b in zip(st.start_time, st.stop_time):\n            keep[np.searchsorted(tg, a):np.searchsorted(tg, b)] = True\n        out[lab] = dg.transmission(tg[keep], tm) if keep.sum() >= 50 else np.nan\n        out[f\"n_{lab}\"] = int(keep.sum())\n    rows.append(out)\nW = pd.DataFrame(rows)\nok = W[[\"awake\", \"nrem\"]].notna().all(axis=1)\nprint(f\"Pairs with at least 50 GC spikes in both states: {int(ok.sum())} of {len(W)}\")\nprint(f\"Median transmission: awake {W.awake[ok].median():.4f}, NREM {W.nrem[ok].median():.4f}; NREM lower in {int((W.nrem[ok] < W.awake[ok]).sum())} pairs; \"\n      f\"paired Wilcoxon P = {stats.wilcoxon(W.nrem[ok], W.awake[ok]).pvalue:.2g}\")\n\"\"\", [\"claim:state-transmission\"])\n\nmd(r\"\"\"\n## zero-lag-synchrony\n\n> Synchronous co-activation within 1 ms is found in 23% of mossy cells and 9% of CA3 pyramidal\n> cells, but in fewer than 0.2% of granule cell pairs.\n\"\"\")\ncode(r\"\"\"\nstarted = time.time()\nrows = []\nfor s in S:\n    ut = s[\"units\"].set_index(\"unit\")\n    for ty in (\"GC\", \"MC\", \"CA3\"):\n        us = [u for u in s[\"spikes\"] if ut.type[u] == ty]\n        T = {u: dg.times(s, u) for u in us}\n        for i, a in enumerate(us):\n            for b in us[i + 1:]:\n                rows.append({\"session\": s[\"session\"], \"type\": ty, \"a\": a, \"b\": b,\n                             \"sync\": dg.ccg_test(dg.ccg(T[a], T[b]))[\"sync\"], \"same_shank_id\": ut.shank_id[a] == ut.shank_id[b]})\nZ = pd.DataFrame(rows)\nprint(f\"Pairs tested in {time.time() - started:.0f} s\")\nfor ty in (\"GC\", \"MC\", \"CA3\"):\n    z = Z[Z.type == ty]\n    cells = pd.concat([z[[\"session\", \"a\"]].rename(columns={\"a\": \"u\"}), z[[\"session\", \"b\"]].rename(columns={\"b\": \"u\"})]).drop_duplicates()\n    synced = pd.concat([z[z.sync][[\"session\", \"a\"]].rename(columns={\"a\": \"u\"}), z[z.sync][[\"session\", \"b\"]].rename(columns={\"b\": \"u\"})]).drop_duplicates()\n    print(f\"{ty}: (a) pairs {int(z.sync.sum())} of {len(z)} = {z.sync.mean():.4f}; (b) cells with a synchronous partner {len(synced)} of {len(cells)} = {len(synced) / max(1, len(cells)):.4f}\")\nprint(\"Paper: MC 0.23 (0.207 to 0.253), CA3 0.09 (0.081 to 0.099), GC pairs below 0.002 (up to 0.0022).\")\n\"\"\", [\"claim:zero-lag-synchrony\"])\n\nmd(r\"\"\"\n## tmaze-central-active\n\n> On the circular T-maze, the fraction of active neurons (above 1 Hz) is higher in the central arm\n> than in the side arms, for granule cells, mossy cells and CA3 pyramidal cells (Kruskal-Wallis\n> P < 0.00001 for each).\n\"\"\")\ncode(r\"\"\"\nstarted = time.time()\nTMAPS = {}\nrows = []\nfor s in TM:\n    ut = s[\"units\"].set_index(\"unit\")\n    units = [u for u in s[\"spikes\"] if ut.type[u] in (\"GC\", \"MC\", \"CA3\")]\n    if not units:\n        continue\n    occ, maps, runs = dg.tmaze_maps(s, units)\n    TMAPS[s[\"session\"]] = (occ, maps, runs)\n    for u in units:\n        fields = [(g, f) for g in range(3) for f in dg.linear_fields(maps[u][g])]\n        flat = np.concatenate(maps[u])\n        rows.append({\"session\": s[\"session\"], \"subject\": s[\"subject\"], \"unit\": u, \"type\": ut.type[u], \"n_fields\": len(fields),\n                     \"field_peak\": max([f[2] for _, f in fields], default=np.nan),\n                     \"info\": dg.spatial_info(flat, np.concatenate(occ)), \"fields\": fields})\nF = pd.DataFrame(rows)\nprint(f\"T-maze maps of {len(F)} units in {len(TMAPS)} sessions, {F.subject.nunique()} mice ({time.time() - started:.0f} s)\")\nprint(\"Units per type:\", F.type.value_counts().to_dict(), \"(paper: GC 213, MC 225, CA3 249 in 9 mice)\")\nfor ty in (\"GC\", \"MC\", \"CA3\"):\n    stack = [TMAPS[r.session][1][r.unit] for r in F[F.type == ty].itertuples()]\n    frac = [np.nanmean(np.array([m[g] for m in stack]) > 1.0, axis=0) for g in range(3)]\n    central, side = frac[0], np.concatenate(frac[1:])\n    print(f\"{ty}: fraction active per bin, central median {np.median(central):.3f} ({len(central)} bins), \"\n          f\"side median {np.median(side):.3f} ({len(side)} bins), Kruskal-Wallis P = {stats.kruskal(central, side).pvalue:.2g}\")\n\"\"\", [\"claim:tmaze-central-active\"])\n\nmd(r\"\"\"\n## tmaze-multiple-fields\n\n> Few granule cells have two or more place fields on the T-maze (6.6%), against 57.8% of mossy\n> cells and 36.1% of CA3 pyramidal cells (Kolmogorov-Smirnov P < 0.0001).\n\"\"\")\ncode(r\"\"\"\nfor ty in (\"GC\", \"MC\", \"CA3\"):\n    x = F[F.type == ty].n_fields\n    print(f\"{ty}: n = {len(x)}; field counts {x.value_counts().sort_index().to_dict()}; (a) two or more of all {np.mean(x >= 2):.3f}; \"\n          f\"(b) of units with a field {np.sum(x >= 2) / max(1, np.sum(x >= 1)):.3f}\")\nprint(\"Paper: GC 0.066 (0.059 to 0.073), MC 0.578 (0.520 to 0.636), CA3 0.361 (0.325 to 0.397).\")\nprint(\"Kolmogorov-Smirnov on field counts: GC against MC P = %.2g; GC against CA3 P = %.2g; MC against CA3 P = %.2g\" % (\n    stats.ks_2samp(F[F.type == \"GC\"].n_fields, F[F.type == \"MC\"].n_fields).pvalue,\n    stats.ks_2samp(F[F.type == \"GC\"].n_fields, F[F.type == \"CA3\"].n_fields).pvalue,\n    stats.ks_2samp(F[F.type == \"MC\"].n_fields, F[F.type == \"CA3\"].n_fields).pvalue))\nprint(\"\\nVariant field thresholds, reading (a):\")\nfor frac, nb in ((0.5, 5), (0.5, 3), (0.3, 5), (0.7, 5)):\n    out = {}\n    for ty in (\"GC\", \"MC\", \"CA3\"):\n        cnt = [sum(len(dg.linear_fields(TMAPS[r.session][1][r.unit][g], min_bins=nb, frac=frac)) for g in range(3)) for r in F[F.type == ty].itertuples()]\n        out[ty] = round(float(np.mean(np.array(cnt) >= 2)), 3)\n    print(f\"  above {frac:.0%} of the local peak, at least {nb} bins: {out}\")\nprint(\"\\nBy subject, reading (a):\")\nprint(F.groupby([\"subject\", \"type\"]).n_fields.apply(lambda x: round(float(np.mean(x >= 2)), 2)).unstack().to_string())\n\"\"\", [\"claim:tmaze-multiple-fields\"])\n\nmd(r\"\"\"\n## tmaze-peak-info\n\n> Granule cells have the lowest within-field peak firing rates (GC against MC,\n> Kolmogorov-Smirnov P < 0.003) and the lowest spatial information of the three types\n> (P < 0.0005).\n\"\"\")\ncode(r\"\"\"\npk = {ty: F[(F.type == ty) & (F.n_fields > 0)].field_peak for ty in (\"GC\", \"MC\", \"CA3\")}\ninf = {ty: F[F.type == ty].info.dropna() for ty in (\"GC\", \"MC\", \"CA3\")}\nprint(\"Within-field peak (Hz), units with a field: \" + \", \".join(f\"{t} median {v.median():.2f} (n = {len(v)})\" for t, v in pk.items()))\nprint(\"  KS GC against MC P = %.2g; MC against CA3 P = %.2g\" % (stats.ks_2samp(pk[\"GC\"], pk[\"MC\"]).pvalue, stats.ks_2samp(pk[\"MC\"], pk[\"CA3\"]).pvalue))\nprint(\"Spatial information (bits/s), all units: \" + \", \".join(f\"{t} median {v.median():.3f} (n = {len(v)})\" for t, v in inf.items()))\nprint(\"  KS GC against MC P = %.2g; GC against CA3 P = %.2g; MC against CA3 P = %.2g\" % (\n    stats.ks_2samp(inf[\"GC\"], inf[\"MC\"]).pvalue, stats.ks_2samp(inf[\"GC\"], inf[\"CA3\"]).pvalue, stats.ks_2samp(inf[\"MC\"], inf[\"CA3\"]).pvalue))\nfig, axs = plt.subplots(1, 2, figsize=(9, 3))\nfor ty, c in ((\"GC\", \"gold\"), (\"MC\", \"m\"), (\"CA3\", \"r\")):\n    axs[0].hist(pk[ty], bins=np.linspace(0, 40, 41), histtype=\"step\", density=True, color=c, label=ty)\n    axs[1].hist(inf[ty], bins=np.linspace(0, 3, 31), histtype=\"step\", density=True, color=c, label=ty)\naxs[0].set_xlabel(\"within-field peak (Hz)\"); axs[1].set_xlabel(\"information (bits/s)\"); axs[0].legend()\nprint(\"Outside the plotted ranges: peaks above 40 Hz %d, information above 3 bits/s %d\" % (\n    sum(int((v > 40).sum()) for v in pk.values()), sum(int((v > 3).sum()) for v in inf.values())))\n\"\"\", [\"claim:tmaze-peak-info\"])\n\nmd(r\"\"\"\n## tmaze-splitters\n\n> The fraction of splitter cells, whose central-arm firing predicts the coming turn, is comparable\n> in granule cells, mossy cells and CA3 pyramidal cells.\n\"\"\")\ncode(r\"\"\"\nrows = []\nfor r in F.itertuples():\n    central = [f for g, f in r.fields if g == 0]\n    if not central:\n        continue\n    s = smap[r.session]\n    runs = TMAPS[r.session][2]\n    split = False\n    for a, b, _ in central:\n        rates = dg.tmaze_run_rates(s, r.unit, runs, 0, a, b)\n        side = np.array([x[2] for x in runs])\n        df = pd.DataFrame([{\"rate\": rates[i, j], \"pos\": j, \"choice\": side[i]} for i in range(len(runs)) for j in range(rates.shape[1]) if np.isfinite(rates[i, j])])\n        if df.choice.nunique() < 2 or len(df) < 10:\n            continue\n        p = anova_lm(ols(\"rate ~ C(pos) + C(choice)\", df).fit(), typ=2).loc[\"C(choice)\", \"PR(>F)\"]\n        split |= bool(p < 0.001)\n    rows.append({\"type\": r.type, \"splitter\": split})\nSP = pd.DataFrame(rows)\ntab = pd.crosstab(SP.type, SP.splitter)\nprint(\"Units with a central-arm field, and splitters among them:\")\nprint(tab.to_string())\nprint(\"Fractions:\", SP.groupby(\"type\").splitter.mean().round(3).to_dict())\nchi = stats.chi2_contingency(tab)\nprint(f\"Chi-square across the three types: chi2 = {chi[0]:.2f}, P = {chi[1]:.2g}\")\n\"\"\", [\"claim:tmaze-splitters\"])\n\nmd(r\"\"\"\n## remap-positive\n\n> For neurons with stable place fields, the remapping index between open fields A and B is above\n> zero in each group (Wilcoxon signed-rank; GC P < 0.05, MC and CA3 P < 0.00001).\n\"\"\")\ncode(r\"\"\"\nstarted = time.time()\nOFS = [s for s in S if all(f\"{dg.OPEN_FIELDS[k]}_twhl_norm\" in s[\"positions\"] for k in (\"A\", \"B\", \"A2\"))]\nOMAPS = {}\nrows = []\nfor s in OFS:\n    ut = s[\"units\"].set_index(\"unit\")\n    units = [u for u in s[\"spikes\"] if ut.type[u] in (\"GC\", \"MC\", \"CA3\")]\n    if not units:\n        continue\n    M = {k: dg.open_field_maps(s, dg.OPEN_FIELDS[k], units, split=True) for k in (\"A\", \"B\", \"A2\")}\n    OMAPS[s[\"session\"]] = M\n    for u in units:\n        r = {\"session\": s[\"session\"], \"subject\": s[\"subject\"], \"unit\": u, \"type\": ut.type[u]}\n        place = False\n        for k in (\"A\", \"B\", \"A2\"):\n            full, h1, h2 = M[k][u]\n            stab = dg.map_corr(h1, h2)\n            nf = len(dg.open_field_fields(full))\n            r[f\"stab_{k}\"], r[f\"nf_{k}\"] = stab, nf\n            place |= bool(stab >= 0.5 and nf > 0)\n        r[\"place\"] = place\n        r[\"AB\"], r[\"BA2\"], r[\"AA2\"] = dg.map_corr(M[\"A\"][u][0], M[\"B\"][u][0]), dg.map_corr(M[\"B\"][u][0], M[\"A2\"][u][0]), dg.map_corr(M[\"A\"][u][0], M[\"A2\"][u][0])\n        r[\"remap\"] = r[\"AA2\"] - np.nanmean([r[\"AB\"], r[\"BA2\"]])\n        rows.append(r)\nOFD = pd.DataFrame(rows)\nprint(f\"Open-field maps of {len(OFD)} units in {len(OMAPS)} sessions, {OFD.subject.nunique()} mice ({time.time() - started:.0f} s)\")\nprint(\"Units per type:\", OFD.type.value_counts().to_dict(), \"(paper: GC 247, MC 181, CA3 317 in 5 mice)\")\nprint(\"Place cells:\", OFD[OFD.place].type.value_counts().to_dict(), \"(paper: GC 30, MC 111, CA3 144)\")\nprint(\"Units without a remapping index (no spikes at speed in a session):\", OFD.remap.isna().groupby(OFD.type).sum().to_dict())\nP = OFD[OFD.place & OFD.remap.notna()]\nfor ty in (\"GC\", \"MC\", \"CA3\"):\n    x = P[P.type == ty].remap\n    print(f\"{ty}: place cells {len(x)}, median remapping index {x.median():.3f}, Wilcoxon P = {stats.wilcoxon(x).pvalue:.2g}\")\nprint(\"\\nAll units (variant): \" + \", \".join(f\"{t} median {OFD[OFD.type == t].remap.median():.3f}\" for t in (\"GC\", \"MC\", \"CA3\")))\nprint(\"By subject, place cells (n, median index):\")\nprint(P.groupby([\"subject\", \"type\"]).remap.agg([\"size\", \"median\"]).round(3).unstack().to_string())\n\"\"\", [\"claim:remap-positive\"])\n\nmd(r\"\"\"\n## remap-gc-lt-mc\n\n> Granule cells with stable place fields remap less than mossy cells (Kruskal-Wallis P = 0.034;\n> post hoc GC against MC P = 0.028).\n\"\"\")\ncode(r\"\"\"\ng, m, c = (P[P.type == t].remap for t in (\"GC\", \"MC\", \"CA3\"))\nprint(f\"Medians: GC {g.median():.3f}, MC {m.median():.3f}, CA3 {c.median():.3f}\")\nprint(f\"Kruskal-Wallis across the three types: P = {stats.kruskal(g, m, c).pvalue:.3g}\")\nprint(f\"Mann-Whitney GC against MC: P = {stats.mannwhitneyu(g, m).pvalue:.3g} (Bonferroni x3: {min(1, 3 * stats.mannwhitneyu(g, m).pvalue):.3g}); \"\n      f\"GC against CA3: P = {stats.mannwhitneyu(g, c).pvalue:.3g}\")\nprint(\"\\nVariant place-cell rule, stability above 0.5 in A or A' only:\")\nalt = OFD[((OFD.stab_A >= 0.5) & (OFD.nf_A > 0)) | ((OFD.stab_A2 >= 0.5) & (OFD.nf_A2 > 0))].dropna(subset=[\"remap\"])\nga, ma, ca = (alt[alt.type == t].remap for t in (\"GC\", \"MC\", \"CA3\"))\nprint(f\"  n {len(ga)}, {len(ma)}, {len(ca)}; medians {ga.median():.3f}, {ma.median():.3f}, {ca.median():.3f}; KW P = {stats.kruskal(ga, ma, ca).pvalue:.3g}; GC against MC P = {stats.mannwhitneyu(ga, ma).pvalue:.3g}\")\n\"\"\", [\"claim:remap-gc-lt-mc\"])\n\nmd(r\"\"\"\n## remap-fractions\n\n> Only 36.7% of granule cells with place fields (11 of 30) remap, against 61.3% of mossy cells\n> (68 of 111) and 55.6% of CA3 pyramidal cells (80 of 144).\n\"\"\")\ncode(r\"\"\"\nfor ty, paper in ((\"GC\", \"0.367 (0.330 to 0.404)\"), (\"MC\", \"0.613 (0.552 to 0.674)\"), (\"CA3\", \"0.556 (0.500 to 0.612)\")):\n    x = P[P.type == ty].remap\n    print(f\"{ty}: {int((x >= 0.2).sum())} of {len(x)} = {np.mean(x >= 0.2):.3f}; paper {paper}\")\nfor thr in (0.1, 0.15, 0.25, 0.3):\n    print(f\"Variant threshold {thr}: \" + \", \".join(f\"{t} {np.mean(P[P.type == t].remap >= thr):.3f}\" for t in (\"GC\", \"MC\", \"CA3\")))\n\"\"\", [\"claim:remap-fractions\"])\n\nmd(r\"\"\"\n## pv-remap\n\n> Population-vector remapping is smaller for granule cells than for mossy cells and CA3 pyramidal\n> cells, for populations of 5, 10, 15 and 20 place cells.\n\"\"\")\ncode(r\"\"\"\nrng = np.random.default_rng(20170201)\npmaps = {ty: [tuple(OMAPS[r.session][k][r.unit][0] for k in (\"A\", \"B\", \"A2\")) for r in P[P.type == ty].itertuples()] for ty in (\"GC\", \"MC\", \"CA3\")}\nprint(\"Place cells pooled per type:\", {k: len(v) for k, v in pmaps.items()})\nfor k in (5, 10, 15, 20):\n    res = {ty: dg.pv_remap(pmaps[ty], k, rng) for ty in (\"GC\", \"MC\", \"CA3\")}\n    kw = stats.kruskal(*[v[np.isfinite(v)] for v in res.values()]).pvalue\n    print(f\"k = {k:2d}: median PV remapping index GC {np.nanmedian(res['GC']):.3f}, MC {np.nanmedian(res['MC']):.3f}, CA3 {np.nanmedian(res['CA3']):.3f}; \"\n          f\"Kruskal-Wallis P = {kw:.2g}; GC below MC in {np.mean(res['GC'] < np.median(res['MC'])):.2f} of GC draws\")\nallpv = {ty: dg.pv_remap(pmaps[ty], len(pmaps[ty]), rng, n=1)[0] for ty in (\"GC\", \"MC\", \"CA3\")}\nprint(\"All place cells together:\", {k: round(v, 3) for k, v in allpv.items()})\n\"\"\", [\"claim:pv-remap\"])\n\nmd(r\"\"\"\n## inheritance-tmaze\n\n> Mossy cells rarely inherit place fields from single presynaptic granule cells; of 10 place fields\n> of connected granule cells, only 2 overlapped a field of the postsynaptic mossy cell.\n\"\"\")\ncode(r\"\"\"\nFi = F.set_index([\"session\", \"unit\"])\ntm_pairs = pairs[pairs.session.isin(TMAPS.keys())]\nrows = []\nfor r in tm_pairs.itertuples():\n    gf = Fi.loc[(r.session, r.gc), \"fields\"]\n    mf = Fi.loc[(r.session, r.mc), \"fields\"]\n    for g, (a, b, _) in gf:\n        overlap = any(g == g2 and not (b2 < a or a2 > b) for g2, (a2, b2, _) in mf)\n        rows.append({\"session\": r.session, \"gc\": r.gc, \"mc\": r.mc, \"overlap\": overlap})\nIH = pd.DataFrame(rows, columns=[\"session\", \"gc\", \"mc\", \"overlap\"])\nprint(f\"Detected GC to MC pairs in T-maze sessions: {len(tm_pairs)} ({tm_pairs.gc.nunique()} GC, {tm_pairs.groupby(['session', 'mc']).ngroups} MC)\")\nprint(\"GC partners without a T-maze field:\", sum(len(Fi.loc[(r.session, r.gc), 'fields']) == 0 for r in tm_pairs.drop_duplicates(['session', 'gc']).itertuples()),\n      \"of\", len(tm_pairs.drop_duplicates(['session', 'gc'])))\nprint(\"MC fields of the partners:\", sum(len(Fi.loc[(r.session, r.mc), 'fields']) for r in tm_pairs.drop_duplicates(['session', 'mc']).itertuples()))\nprint(f\"GC fields (counted per pair): {len(IH)}; overlapping a partner MC field: {int(IH.overlap.sum())} ({IH.overlap.mean() if len(IH) else np.nan:.2f})\")\n\"\"\", [\"claim:inheritance-tmaze\"])\n\nmd(r\"\"\"\n## inheritance-openfield\n\n> In the open fields, the rate maps of connected granule cells and mossy cells are not correlated\n> within the granule cell's place field (median near 0, n = 19, Wilcoxon P = 0.60).\n\"\"\")\ncode(r\"\"\"\nrows = []\nfor r in pairs.itertuples():\n    s = smap[r.session]\n    for k, name in dg.OPEN_FIELDS.items():\n        if f\"{name}_twhl_norm\" not in s[\"positions\"]:\n            continue\n        maps = dg.open_field_maps(s, name, [r.gc, r.mc])\n        fields = dg.open_field_fields(maps[r.gc])\n        if not fields:\n            continue\n        mask = np.any(fields, axis=0)\n        a, b = maps[r.gc][mask], maps[r.mc][mask]\n        ok = np.isfinite(a) & np.isfinite(b)\n        if ok.sum() >= 10 and np.std(a[ok]) > 0 and np.std(b[ok]) > 0:\n            rows.append({\"session\": r.session, \"gc\": r.gc, \"mc\": r.mc, \"field\": k, \"r\": float(np.corrcoef(a[ok], b[ok])[0, 1])})\nIO = pd.DataFrame(rows, columns=[\"session\", \"gc\", \"mc\", \"field\", \"r\"])\nprint(f\"Comparisons (pair x open-field session with a GC field): {len(IO)} from {IO.groupby(['session', 'gc', 'mc']).ngroups if len(IO) else 0} pairs, {IO.session.nunique() if len(IO) else 0} sessions\")\nif len(IO) >= 5:\n    print(f\"Median r = {IO.r.median():.3f}; above 0.5: {int((IO.r > 0.5).sum())}; Wilcoxon against 0 P = {stats.wilcoxon(IO.r).pvalue:.2g}\")\n    print(IO.groupby(\"field\").r.agg([\"size\", \"median\"]).round(3).to_string())\n\"\"\", [\"claim:inheritance-openfield\"])\n\nmd(r\"\"\"\n## Blocked claims\n\n`mc-deeper`, `gc-mc-classification`, `gc-mc-distance` and `gc-backpropagation` need each unit's\nrecording site: the shank and the channel of largest amplitude, to read the DS2 amplitude there or\nplace units along the probe. The standard files give each unit only a cluster number\n(`shank_id`, \"0-indexed id of cluster of shank\") and waveforms on the channels of its shank,\nwithout saying which shank. The four older-layout files have `electrode_group` and\n`max_electrode`, but the conversion code sets `max_electrode` to the first channel of the shank\n(\"as a temporary solution\"), and these files hold no GC or MC with a known site to compare.\n\"\"\")\ncode(r\"\"\"\nold = [s for s in S if s[\"format\"] == \"electrode_group\"]\nfor s in old:\n    print(s[\"session\"], \"units:\", len(s[\"units_all\"]), \"GC/MC:\", int(s[\"units_all\"].type.isin([\"GC\", \"MC\"]).sum()),\n          \"electrode groups:\", s[\"units_all\"].get(\"electrode_group\", pd.Series(dtype=str)).nunique())\nprint(\"Standard files: units table columns hold no shank or channel per unit; shank_id range:\",\n      int(U.shank_id.min()), \"to\", int(U.shank_id.max()))\nprint(f\"Total run time: {(time.time() - started_all) / 60:.1f} min\" if \"started_all\" in globals() else \"\")\n\"\"\")\n\nmd(r\"\"\"\n## Summary\n\n(written after the run)\n\"\"\")\n\nnb = nbformat.v4.new_notebook()\nfor kind, tags, src in CELLS:\n    cell = nbformat.v4.new_markdown_cell(src) if kind == \"markdown\" else nbformat.v4.new_code_cell(src)\n    if tags:\n        cell.metadata[\"tags\"] = tags\n    nb.cells.append(cell)\nnb.metadata[\"kernelspec\"] = {\"name\": \"python3\", \"display_name\": \"Python 3\", \"language\": \"python\"}\nout = sys.argv[1] if len(sys.argv) > 1 else \"reproduce_senzai_2017.ipynb\"\nnbformat.write(nb, out)\nprint(\"wrote\", out, len(nb.cells), \"cells\")\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/build_nb.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-src=open('dg.py').read()
-src=src.replace('''def opto_response(t: np.ndarray, pulses: np.ndarray) -> dict:''','''def opto_response(t: np.ndarray, pulses: np.ndarray, base=OPTO_BASE) -> dict:''')
-src=src.replace('''    nb, nt = count(*OPTO_BASE), count(*OPTO_TEST)
-    db, dt = OPTO_BASE[1] - OPTO_BASE[0], OPTO_TEST[1] - OPTO_TEST[0]''','''    nb, nt = count(*base), count(*OPTO_TEST)
-    db, dt = base[1] - base[0], OPTO_TEST[1] - OPTO_TEST[0]''')
-src=src.replace('''def ccg_test(counts: np.ndarray, binsize=CCG_BIN, half=CCG_HALF):''','''def ccg_test(counts: np.ndarray, binsize=CCG_BIN, half=CCG_HALF, pctl=CCG_PCTL):''')
-src=src.replace('''    hi = stats.poisson.ppf(CCG_PCTL, base)''','''    hi = stats.poisson.ppf(pctl, base)''')
-open('dg.py','w').write(src)
-b=open('/tmp/claude-1001/build_nb.py').read()
-b=b.replace('''        a = dg.opto_response(t, s["pulse20"])
-        dg.OPTO_BASE = (0.050, 0.200); b = dg.opto_response(t, s["pulse20"]); dg.OPTO_BASE = (-0.020, 0.0)''','''        a = dg.opto_response(t, s["pulse20"])
-        b = dg.opto_response(t, s["pulse20"], base=(0.050, 0.200))''')
-b=b.replace('''for pct in (0.9999, 0.99999, 0.9999999):
-    dg.CCG_PCTL = pct
-    k1 = k2 = 0
-    for s in S:
-        ut = s["units"].set_index("unit")
-        for r in C[C.session == s["session"]].itertuples():
-            k1 += dg.ccg_test(dg.ccg(dg.times(s, r.gc), dg.times(s, r.mc)))["mono"]
-            k2 += dg.ccg_test(dg.ccg(dg.times(s, r.mc), dg.times(s, r.gc)))["mono"]
-    print(f"{pct}: GC to MC {k1}, MC to GC {k2}; ", end="")
-dg.CCG_PCTL = 0.999999''','''for pct in (0.9999, 0.99999, 0.9999999):
-    k1 = k2 = 0
-    for s in S:
-        for r in C[C.session == s["session"]].itertuples():
-            k1 += dg.ccg_test(dg.ccg(dg.times(s, r.gc), dg.times(s, r.mc)), pctl=pct)["mono"]
-            k2 += dg.ccg_test(dg.ccg(dg.times(s, r.mc), dg.times(s, r.gc)), pctl=pct)["mono"]
-    print(f"{pct}: GC to MC {k1}, MC to GC {k2}; ", end="")''')
-b=b.replace('''print(f"Total run time: {(time.time() - started_all) / 60:.1f} min" if "started_all" in globals() else "")''','''print(f"Total run time: {(time.time() - notebook_started) / 60:.1f} min")''')
-b=b.replace('''started = time.time()
-S = dg.load_all(workers=12)''','''notebook_started = started = time.time()
-S = dg.load_all(workers=12)''')
-open('/tmp/claude-1001/build_nb.py','w').write(b)
-EOF
-grep -n "OPTO_BASE\|CCG_PCTL" dg.py $TMPDIR/build_nb.py | head; cat > $TMPDIR/devrun.py <<'EOF'
-# Execute the notebook's code cells in one namespace, with the load cell replaced by the cached data.
-import nbformat, os, sys, pickle, time, traceback, matplotlib
-matplotlib.use("Agg")
-nb = nbformat.read(sys.argv[1], 4)
-ns = {}
-start = int(sys.argv[2]) if len(sys.argv) > 2 else 0
-os.chdir(os.path.dirname(os.path.abspath(sys.argv[1])))
-sys.path.insert(0, ".")
-for i, c in enumerate(nb.cells):
-    if c.cell_type != "code":
-        continue
-    src = c.source
-    if "load" in c.metadata.get("tags", []):
-        src = src.replace("S = dg.load_all(workers=12)", "S = pickle.load(open(os.environ['TMPDIR'] + '/S.pkl', 'rb'))")
-        src = "import pickle, os\n" + src
-    print(f"\n===== cell {i} {c.metadata.get('tags', '')}")
-    t = time.time()
-    try:
-        exec(compile(src, f"cell{i}", "exec"), ns)
-    except Exception:
-        traceback.print_exc()
-        break
-    print(f"----- {time.time() - t:.0f} s")
-EOF
-cd entries/000003-senzai-2017 && . $TMPDIR/work/bin/activate && python $TMPDIR/build_nb.py $TMPDIR/dev.ipynb && cp dg.py $TMPDIR/ && python $TMPDIR/devrun.py $TMPDIR/dev.ipynb 2>&1 | tee $TMPDIR/dev_out.txt | tail -5
-```
-
-```
-dg.py:388:OPTO_BASE, OPTO_TEST = (-0.020, 0.0), (0.002, 0.015)
-dg.py:392:def opto_response(t: np.ndarray, pulses: np.ndarray, base=OPTO_BASE) -> dict:
-dg.py:411:CCG_PCTL = 0.999999
-dg.py:420:def ccg_test(counts: np.ndarray, binsize=CCG_BIN, half=CCG_HALF, pctl=CCG_PCTL):
-wrote /tmp/claude-1001/dev.ipynb 80 cells
-YutaMouse45   NaN  0.08  0.14
-YutaMouse57  0.32  0.04  0.68
------ 0 s
-
-===== cell 62 ['claim:tmaze-peak-info']
-```
-
-**Agent calls Bash**
-
-```bash
-tail -30 $TMPDIR/dev_out.txt; grep -n "Traceback\|Error" $TMPDIR/dev_out.txt | head
-```
-
-```
-MC: fraction active per bin, central median 0.314 (35 bins), side median 0.272 (92 bins), Kruskal-Wallis P = 2.2e-06
-CA3: fraction active per bin, central median 0.214 (35 bins), side median 0.189 (92 bins), Kruskal-Wallis P = 0.048
------ 2 s
-
-===== cell 60 ['claim:tmaze-multiple-fields']
-GC: n = 253; field counts {0: 208, 1: 34, 2: 7, 3: 2, 4: 1, 7: 1}; (a) two or more of all 0.043; (b) of units with a field 0.244
-MC: n = 303; field counts {0: 56, 1: 54, 2: 50, 3: 46, 4: 27, 5: 23, 6: 22, 7: 9, 8: 6, 9: 8, 10: 2}; (a) two or more of all 0.637; (b) of units with a field 0.781
-CA3: n = 341; field counts {0: 121, 1: 73, 2: 39, 3: 29, 4: 22, 5: 18, 6: 21, 7: 6, 8: 9, 10: 3}; (a) two or more of all 0.431; (b) of units with a field 0.668
-Paper: GC 0.066 (0.059 to 0.073), MC 0.578 (0.520 to 0.636), CA3 0.361 (0.325 to 0.397).
-Kolmogorov-Smirnov on field counts: GC against MC P = 3.2e-53; GC against CA3 P = 3.3e-29; MC against CA3 P = 1.9e-06
-
-Variant field thresholds, reading (a):
-  above 50% of the local peak, at least 5 bins: {'GC': 0.043, 'MC': 0.637, 'CA3': 0.431}
-  above 50% of the local peak, at least 3 bins: {'GC': 0.095, 'MC': 0.713, 'CA3': 0.537}
-  above 30% of the local peak, at least 5 bins: {'GC': 0.051, 'MC': 0.673, 'CA3': 0.472}
-  above 70% of the local peak, at least 5 bins: {'GC': 0.032, 'MC': 0.597, 'CA3': 0.399}
-
-By subject, reading (a):
-type          CA3    GC    MC
-subject                      
-[... 12 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/"info": dg.spatial_info(flat, np.concatenate(occ))/"info_bits": dg.spatial_info(flat, np.concatenate(occ))/; s/inf = {ty: F\[F.type == ty\].info.dropna()/inf = {ty: F[F.type == ty].info_bits.dropna()/' $TMPDIR/build_nb.py && grep -n "info_bits" $TMPDIR/build_nb.py && . $TMPDIR/work/bin/activate && python $TMPDIR/build_nb.py $TMPDIR/dev.ipynb && cp dg.py $TMPDIR/ && python $TMPDIR/devrun.py $TMPDIR/dev.ipynb > $TMPDIR/dev_out.txt 2>&1; grep -n "Traceback" -A12 $TMPDIR/dev_out.txt | head -30; grep -c "=====" $TMPDIR/dev_out.txt
-```
-
-```
-847:                     "info_bits": dg.spatial_info(flat, np.concatenate(occ)), "fields": fields})
-895:inf = {ty: F[F.type == ty].info_bits.dropna() for ty in ("GC", "MC", "CA3")}
-wrote /tmp/claude-1001/dev.ipynb 80 cells
-532:YutaMouse57           9.42   3.37        -3.0   1.0Traceback (most recent call last):
-533-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/patsy/compat.py", line 40, in call_and_wrap_exc
-534-    return f(*args, **kwargs)
-535-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/patsy/eval.py", line 179, in eval
-536-    return eval(code, {}, VarLookupDict([inner_namespace] + self._namespaces))
-537-  File "<string>", line 1, in <module>
-538-TypeError: 'DataFrame' object is not callable
-539-
-540-The above exception was the direct cause of the following exception:
-541-
-542:Traceback (most recent call last):
-543-  File "/tmp/claude-1001/devrun.py", line 19, in <module>
-544-    exec(compile(src, f"cell{i}", "exec"), ns)
-545-    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-546-  File "cell64", line 15, in <module>
-547-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/statsmodels/base/model.py", line 210, in from_formula
-548-    tmp = handle_formula_data(data, None, formula, depth=eval_env, missing=missing)
-[... 7 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='/tmp/claude-1001/build_nb.py'
-b=open(p).read()
-for old,new in [('C = pd.DataFrame(rows)\nn_gc','CC = pd.DataFrame(rows)\nn_gc'),('pairs = C[C.gc_to_mc]','pairs = CC[CC.gc_to_mc]'),
- ('tested: {len(C)} in {C.session.nunique()}','tested: {len(CC)} in {CC.session.nunique()}'),('MC to GC pairs: {int(C.mc_to_gc.sum())}','MC to GC pairs: {int(CC.mc_to_gc.sum())}'),
- ('{len(pairs)} / {len(C)} = {len(pairs) / len(C):.4f}','{len(pairs)} / {len(CC)} = {len(pairs) / len(CC):.4f}'),('for r in C[C.session == s["session"]].itertuples()','for r in CC[CC.session == s["session"]].itertuples()'),
- ('print(C.groupby("subject")','print(CC.groupby("subject")')]:
-    assert old in b, old
-    b=b.replace(old,new)
-open(p,'w').write(b)
-EOF
-. $TMPDIR/work/bin/activate && python $TMPDIR/build_nb.py $TMPDIR/dev.ipynb && python $TMPDIR/devrun.py $TMPDIR/dev.ipynb > $TMPDIR/dev_out.txt 2>&1; grep -n "Traceback" -A12 $TMPDIR/dev_out.txt | head -30; grep -c "=====" $TMPDIR/dev_out.txt
-```
-
-```
-wrote /tmp/claude-1001/dev.ipynb 80 cells
-41
-```
-
-**Agent calls Bash**
-
-```bash
-cat $TMPDIR/dev_out.txt | cut -c1-260
+cat claims/senzai-2017.yaml; ls paper; ls entries/senzai-2017 entries/fouke-2025; cat papers/datasets/senzai-2017.yaml; ls questions | grep senzai; ls papers/author-notes | grep senzai
 ```
 
 ```
 <persisted-output>
-Output too large (34.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/c0d3ee2c-1c71-45f5-8a47-f9aef2565870/tool-results/b7j3nr57b.txt
+Output too large (34.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/83538c3a-6396-4c04-a95b-80db850c5b5a/tool-results/b6vjq1wqe.txt
 
 Preview (first 2KB):
-===== cell 2 ['load']
-loaded 101 files from dandiset 000003 version 0.260218.2052 in 1 s
------ 2 s
-
-===== cell 4 ['sanity']
-version 0.210812.1448: 101 assets; same paths, sizes and etags as 0.260218.2052: True
-version 0.230629.1955: 101 assets; same paths, sizes and etags as 0.260218.2052: True
-version 0.250624.0409: 101 assets; same paths, sizes and etags as 0.260218.2052: True
-version 0.260218.2052: 101 assets; same paths, sizes and etags as 0.260218.2052: True
------ 71 s
-
-===== cell 5 ['sanity']
-Files: 101 ; subjects: 16
-
-Subjects by genotype (paper: 7 SST-Cre, 5 DRD2-Cre::Ai35, 3 POMC-Cre::Ai35, 1 wild type):
-genotype
-[... 40 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/c0d3ee2c-1c71-45f5-8a47-f9aef2565870/tool-results/b7j3nr57b.txt",
- "offset": 50,
- "limit": 330
-}
-```
-
-```
-50	unknown                                                        1104
-51	pyramidal cell                                                  649
-52	granule cell                                                    609
-53	mossy cell                                                      568
-54	narrow waveform cell                                            537
-55	missing                                                         237
-56	wide waveform cell (narrower, exclude opto tagged SST cell)     191
-57	wide waveform cell (wider)                                      184
-58	positive waveform unit (bursty)                                  60
-59	positive waveform unit (non-bursty)                              31
-60	optogenetically tagged SST cell                                  21
-61	positive negative waveform unit                                  18
-62	
-63	global_id: 237 units without one (label 'missing' has 237); duplicated values: 0
-64	
-65	Kept units by type and subject:
-66	type         CA3   GC   MC  SST   nI   wI   All
-67	subject                                        
-68	YutaMouse20    0    3   26    6   16    7    58
-69	YutaMouse23    0   27   12    2   12    6    59
-[... 310 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/c0d3ee2c-1c71-45f5-8a47-f9aef2565870/tool-results/b7j3nr57b.txt",
- "offset": 380,
- "limit": 400
-}
-```
-
-```
-380	YutaMouse33       0.035       0.036      0.111     0.062
-381	YutaMouse37       0.058       0.088      0.412     0.280
-382	YutaMouse38       0.126       0.264      0.368     0.143
-383	YutaMouse39       0.116       0.157      0.416     0.316
-384	YutaMouse40       0.052       0.063      0.335     0.152
-385	YutaMouse41       0.152       0.306      0.571     0.272
-386	YutaMouse42       0.048       0.112      0.259     0.133
-387	YutaMouse44       0.065       0.204      0.278     0.157
-388	YutaMouse45       0.193       0.243      0.559     0.304
-389	YutaMouse51       0.040       0.161      0.510     0.111
-390	YutaMouse54       0.052       0.106      0.232     0.194
-391	YutaMouse55       0.087       0.121      0.339     0.104
-392	YutaMouse56       0.048       0.082      0.432     0.267
-393	YutaMouse57       0.059       0.063      0.233     0.126
-394	----- 0 s
-395	
-396	===== cell 38 ['claim:ca3-wake-highest']
-397	CA3, wake (a) awake: medians {'wake': np.float64(0.441), 'nrem': np.float64(0.459), 'rem': np.float64(0.287)}; Kruskal-Wallis P = 9.9e-16; adjusted P: nrem-wake 0.77, nrem-rem 1.1e-15, wake-rem 5.4e-09
-398	CA3, wake (b) awake + quiet: medians {'wake': np.float64(0.433), 'nrem': np.float64(0.459), 'rem': np.float64(0.287)}; Kruskal-Wallis P = 1.2e-15; adjusted P: nrem-wake 0.59, nrem-rem 1.1e-15, wake-rem 8.5e-09
-399	
-[... 330 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import pickle, os, numpy as np, pandas as pd
-S=pickle.load(open(os.environ['TMPDIR']+'/S.pkl','rb'))
-s=[s for s in S if s['session']=='YutaMouse42-151113'][0]
-st=s['states'].sort_values('start_time'); print(st.head(15))
-for s in S[:3]+[x for x in S if x['format']=='electrode_group'][:2]:
-    st=s['states'].sort_values('start_time').reset_index(drop=True)
-    ov=(st.start_time.values[1:] < st.stop_time.values[:-1]-1e-3)
-    print(s['session'], len(st), ov.sum(), st[np.r_[ov,False]|np.r_[False,ov]].head(4).to_dict('records'))
-e=[x for x in S if x['format']=='electrode_group'][1]; print(e['units_all'].electrode_group.unique(), e['units_all'].shank_id.values[:20])
-for s in S:
-    p=s['pulse20']
-    if len(p)>1 and (np.diff(p)<0).any(): print('unsorted pulses', s['session'], int((np.diff(p)<0).sum()), len(p), len(np.unique(p)))
-print([ (s['session'], s['ds2_series']) for s in S if len(s['ds2_series'])>1])
-EOF
-```
-
-```
-start_time  stop_time    label
-0          2.0      701.0    awake
-1        701.0      938.0     nrem
-2        938.0     1537.0    awake
-3       1537.0     1927.0     nrem
-4       1927.0     1968.0    quiet
-5       1968.0     2762.0     nrem
-6       2762.0     2781.0  transit
-7       2781.0     2801.0      rem
-8       2801.0     3466.0     nrem
-9       3466.0     3480.0  transit
-10      3480.0     3528.0      rem
-11      3528.0     3827.0     nrem
-12      3827.0     3995.0    quiet
-13      3995.0     4920.0    awake
-14      4920.0     5013.0     nrem
-YutaMouse20-140321 21 0 []
-YutaMouse20-140324 36 0 []
-YutaMouse20-140325 33 0 []
-YutaMouse33-150218 12 0 []
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, dg
-A=dict(dg.asset_urls())
-p=[k for k in A if '41-150902' in k][0]
-f=h5py.File(remfile.File(A[p]),'r'); U=f['units']
-eg=U['electrode_group'][:]; print(eg.dtype, [f[r].name for r in eg[:12]])
-me=U['max_electrode'][:]; print('max_electrode', me[:30])
-E=f['general/extracellular_ephys/electrodes']; gn=E['group_name'][:].astype(str); print('electrode group of max_electrode', gn[me[:30]])
-print('shank_id', U['shank_id'][:30])
-print([k for k in f['processing/ecephys'].keys()])
-EOF
-```
-
-```
-Exit code 1
-object ['/general/extracellular_ephys/shank1', '/general/extracellular_ephys/shank1', '/general/extracellular_ephys/shank1', '/general/extracellular_ephys/shank1', '/general/extracellular_ephys/shank1', '/general/extracellular_ephys/shank1', '/general/extracellular_ephys/shank2', '/general/extracellular_ephys/shank2', '/general/extracellular_ephys/shank3', '/general/extracellular_ephys/shank3', '/general/extracellular_ephys/shank3', '/general/extracellular_ephys/shank3']
-Traceback (most recent call last):
-  File "<stdin>", line 6, in <module>
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
-    return self._get(name)
-           ~~~~~~~~~^^^^^^
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "/tmp/claude-1001/work/lib/python3.13/site-packages/h5py/_hl/group.py", line 421, in _get
-    oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "h5py/h5o.pyx", line 255, in h5py.h5o.open
-KeyError: "Unable to synchronously open object (object 'max_electrode' doesn't exist)"
-```
-
-**Agent calls Bash**
-
-```bash
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, dg
-A=dict(dg.asset_urls())
-for key in ['41-150902','33-150222','54-160701']:
-    p=[k for k in A if key in k][0]
-    f=h5py.File(remfile.File(A[p]),'r'); U=f['units']
-    print(key, list(U.attrs['colnames']), list(U.keys()))
-    print('  ecephys:', [ (k, f['processing/ecephys'][k]['data'].shape if 'data' in f['processing/ecephys'][k] else '') for k in f['processing/ecephys'].keys()][:4])
-    eg=[f[r].name.split('/')[-1] for r in U['electrode_group'][:]]
-    print('  groups', sorted(set(eg)))
-EOF
-```
-
-```
-41-150902 ['cell_type', 'shank_id', 'electrode_group', 'global_id', 'spike_times', 'waveforms'] ['cell_type', 'electrode_group', 'global_id', 'id', 'shank_id', 'spike_times', 'spike_times_index', 'waveforms', 'waveforms_index', 'waveforms_index_index']
-  ecephys: [('LFP', '')]
-  groups ['shank1', 'shank2', 'shank3', 'shank4', 'shank5', 'shank6', 'shank7', 'shank8']
-33-150222 ['cell_type', 'shank_id', 'electrode_group', 'global_id', 'spike_times', 'waveforms'] ['cell_type', 'electrode_group', 'global_id', 'id', 'shank_id', 'spike_times', 'spike_times_index', 'waveforms', 'waveforms_index', 'waveforms_index_index']
-  ecephys: [('LFP', ''), ('LFPDecompositionSeries', (76293625, 1, 2))]
-  groups ['shank1', 'shank10', 'shank2', 'shank3', 'shank4', 'shank5', 'shank6', 'shank7', 'shank9']
-54-160701 ['global_id', 'electrode_group', 'cell_type', 'shank_id', 'spike_times', 'waveforms'] ['cell_type', 'electrode_group', 'global_id', 'id', 'shank_id', 'spike_times', 'spike_times_index', 'waveforms', 'waveforms_index', 'waveforms_index_index']
-  ecephys: [('LFP', '')]
-  groups ['shank1', 'shank2', 'shank3', 'shank4', 'shank5', 'shank6', 'shank8']
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-src=open('dg.py').read()
-# 1. electrode groups as names, and DS2 amplitude per channel for files that have them
-src=src.replace('''    if "electrode_group" in U:
-        units["electrode_group"] = U["electrode_group"][:].astype(str)''','''    if "electrode_group" in U:
-        units["electrode_group"] = [f[r].name.split("/")[-1] for r in U["electrode_group"][:]]''')
-src=src.replace('''    s["n_electrodes"] = int(f["general/extracellular_ephys/electrodes/id"].shape[0])''','''    s["n_electrodes"] = int(f["general/extracellular_ephys/electrodes/id"].shape[0])
-    s["pulse20_decreasing"] = int(np.sum(np.diff(s["pulse20"]) < 0)) if len(s["pulse20"]) > 1 else 0
-    s["pulse20"] = np.sort(s["pulse20"])
-    s["unit_site"] = unit_ds2_sites(f, s) if "electrode_group" in units and s["waveforms"] and len(s["ds2"]) else None''')
-src=src.replace('''def load_session(path: str, url: str, waveforms=True, lfp=True) -> dict:''','''DS2_BASELINE = (-0.036, -0.016)    # Methods, the baseline of the DS2 criterion
-
-
-def unit_ds2_sites(f, s: dict):
-    """For files whose units carry `electrode_group` (the shank): each unit's site, the channel of
-    its shank with the largest mean waveform, and the DS2 amplitude there (mean LFP at the DS2
-    peaks minus the mean at -36 to -16 ms, Methods). The LFP is read over the two LFP chunks
-    (2 x 99368 samples, about 159 s) holding the most DS2 peaks. Waveform channel i is taken to be
-    the i-th electrode of the shank in the electrodes table."""
-    E = f["general/extracellular_ephys/electrodes"]
-    groups = E["group_name"][:].astype(str)
-    lfp = f["processing/ecephys/LFP"]
-    series = lfp[list(lfp.keys())[0]]
-    data = series["data"]
-    rate = float(series["starting_time"].attrs["rate"])
-    t0 = float(series["starting_time"][()])
-    region = series["electrodes"][:]
-    conv = float(data.attrs["conversion"])
-    chunk = data.chunks[0] if data.chunks else 100000
-    idx = ((s["ds2"] - t0) * rate).astype(int)
-    rows = np.bincount(idx // chunk)
-    best = int(np.argmax(rows[:-1] + rows[1:])) if len(rows) > 1 else 0
-    i0, i1 = best * chunk, min((best + 2) * chunk, data.shape[0])
-    x = data[i0:i1, :].astype(float) * (conv if np.isfinite(conv) else 1.0)
-    ev = idx[(idx >= i0 + int(0.05 * rate)) & (idx < i1 - int(0.05 * rate))] - i0
-    b0, b1 = int(DS2_BASELINE[0] * rate), int(DS2_BASELINE[1] * rate)
-    amp = np.array([x[ev, c].mean() - np.mean([x[e + b0:e + b1, c].mean() for e in ev]) for c in range(x.shape[1])]) if len(ev) else None
-    out = {"n_events": int(len(ev)), "window_s": (i1 - i0) / rate, "channel_amp": amp, "region": region,
-           "groups": groups, "units": {}}
-    eg = s["units_all"].set_index("unit")["electrode_group"]
-    for u, w in s["waveforms"].items():
-        rows_e = np.flatnonzero(groups == eg[u])
-        ch = int(np.argmax(np.ptp(w, axis=1)))
-        if ch >= len(rows_e) or amp is None:
-            continue
-        cols = np.flatnonzero(region == rows_e[ch])
-        out["units"][u] = {"shank": eg[u], "channel": ch, "n_channels": len(rows_e), "waveform_channels": w.shape[0],
-                           "ds2_amp": float(amp[cols[0]]) if len(cols) else np.nan}
-    return out
-
-
-def load_session(path: str, url: str, waveforms=True, lfp=True) -> dict:''')
-open('dg.py','w').write(src)
-EOF
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import dg, time, numpy as np, pandas as pd
-A=dict(dg.asset_urls())
-p=[k for k in A if '41-150902' in k][0]
-t=time.time(); s=dg.load_session(p,A[p]); print('secs', time.time()-t)
-us=s['unit_site']; print(us['n_events'], us['window_s'])
-d=pd.DataFrame(us['units']).T.join(s['units'].set_index('unit').type); print(d.groupby('type').ds2_amp.median()*1e6, d.groupby('type').size())
-print(d.head(10))
-# profile per shank
-amp=us['channel_amp']; g=us['groups'][us['region']]
-for sh in sorted(set(g))[:3]: print(sh, np.round(amp[g==sh]*1e6))
-EOF
-```
-
-```
-secs 55.63526010513306
-365 204.2576
-type
-CA3   -232.154755
-GC     -82.869166
-MC     149.970856
-nI     234.335785
-wI      -27.72073
-Name: ds2_amp, dtype: object type
-CA3     1
-GC     25
-MC     18
-nI      3
-wI     10
-dtype: int64
-     shank channel n_channels waveform_channels   ds2_amp type
-0   shank1       4          8                 8  0.000234   wI
-1   shank1       6          8                 8 -0.000232  CA3
-2   shank1       4          8                 8  0.000234   nI
-5   shank1       2          8                 8  0.000526   wI
-[... 9 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='claims/000003/10.1016-j.neuron.2016.12.011.yaml'
-y=open(p).read()
-old=y[y.index('- id: mc-deeper'):]
-new='''- id: mc-deeper
-  statement: Mossy cells are located deeper than granule cells relative to the reversal of the type
-    2 dentate spike (DS2) (Mann-Whitney P < 0.001).
-  source: Figure 1G; Results, Identification of granule cells and mossy cells
-  criterion: The files give no coordinates for the recording sites, so depth is read from the DS2
-    amplitude at each unit's site, the feature the paper uses to place units (positive below the
-    reversal, in the hilus, and negative above it). Only the 17 files whose units carry their
-    shank (`electrode_group`) and waveforms can be used; the site is the shank channel with the
-    largest mean waveform. Reproduced when the MC median DS2 amplitude exceeds the GC median with a
-    two-sided Mann-Whitney P < 0.001; partially reproduced at P < 0.05.
-- id: gc-mc-classification
-  statement: K-means clustering on the DS2 amplitude at the unit's site, the NREM to wake rate ratio
-    and two principal components of the waveform's second derivative separates excitatory dentate
-    units into granule cells and mossy cells.
-  source: Results; Figure 1D to 1F; STAR Methods, Unit classification
-  criterion: On the GC and MC of the 17 files where the site is known (see mc-deeper). Features as
-    in the Methods, the waveform taken on the unit's site (normalised to its trough, upsampled to
-    100 kHz, second derivative from the trough to 0.8 ms after it), wake read as `awake`; the four
-    features standardised, then k-means with two clusters (fixed seed, 50 starts). Reproduced when
-    the clusters agree with the labels for at least 90% of units (under the better of the two
-    ways of naming the clusters); partially reproduced at 75% to 90%.
-- id: gc-mc-distance
-  statement: Granule cells reside 59 +- 35 um above the mossy cells they drive.
-  source: Results, Granule cell-mossy cell spike transmission; Figure 3D
-- id: gc-backpropagation
-  statement: Granule cell spikes show a delay from the soma to the proximal dendrites, absent in
-    mossy cells.
-  source: Results; Figure S3D to S3F
-'''
-y=y.replace(old,new)
-y=y.replace('''# labels; the paper's own classification cannot be re-run, as the units carry no recording site.''','''# labels. Only 17 files say which shank each unit was recorded on, so the paper's classification
-# features can be computed for those files alone.''')
-y=y.replace('''# and the inheritance of place fields.''','''# and the inheritance of place fields. The criteria of mc-deeper and gc-mc-classification were
-# written after the rest, once the shank of each unit was found in 17 files, and before their
-# analysis was run.''')
-open(p,'w').write(y)
-EOF
-grep -n "17 files\|gc-mc-classification" claims/000003/*.yaml | head
-```
-
-```
-19:# and the inheritance of place fields. The criteria of mc-deeper and gc-mc-classification were
-20:# written after the rest, once the shank of each unit was found in 17 files, and before their
-25:# labels. Only 17 files say which shank each unit was recorded on, so the paper's classification
-347:    reversal, in the hilus, and negative above it). Only the 17 files whose units carry their
-351:- id: gc-mc-classification
-356:  criterion: On the GC and MC of the 17 files where the site is known (see mc-deeper). Features as
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='claims/000003/10.1016-j.neuron.2016.12.011.yaml'
-y=open(p).read()
-y=y.replace('''# written after the rest, once the shank of each unit was found in 17 files, and before their
-# analysis was run.''','''# written after the rest, once the shank of each unit was found in 17 files, and before their
-# analysis was run; testing the loader on one of these files had printed its GC and MC median DS2
-# amplitudes (-83 and +150 uV).''')
-open(p,'w').write(y)
-EOF
-sed -n 1,30p claims/000003/10.1016-j.neuron.2016.12.011.yaml
-```
-
-```
 # Claims for Senzai & Buzsaki (2017) on dandiset 000003.
 # Source: the accepted author manuscript in PubMed Central (PMC5293146), full text, read from its
 # Results, figure legends and STAR Methods. The version of record is not open access. The
@@ -3383,438 +123,1758 @@ sed -n 1,30p claims/000003/10.1016-j.neuron.2016.12.011.yaml
 # or a choice stated in the helper module's docstring, fixed when the function was written. The
 # one change made after a run was to the T-maze run segment, whose first version took the
 # waiting area at the ends of the side arms for the reward port. Results not seen before the
-# criteria: burst facilitation, state-dependent transmission, synchrony, splitter cells,
-# population-vector remapping, the central-arm activity, the T-maze peak rate and information,
-# and the inheritance of place fields. The criteria of mc-deeper and gc-mc-classification were
-# written after the rest, once the shank of each unit was found in 17 files, and before their
 [... 10 more lines not kept]
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-python - <<'EOF'
-p='/tmp/claude-1001/build_nb.py'
-b=open(p).read()
-def rep(old,new):
-    global b
-    assert old in b, old[:80]
-    b=b.replace(old,new)
-rep('''| mc-deeper | blocked: no recording site per unit |
-| gc-mc-classification | blocked: no recording site per unit |''','''| mc-deeper | tested on the 17 files that give each unit's shank |
-| gc-mc-classification | tested on the 17 files that give each unit's shank |''')
-rep('''differ. Four files have an older layout of the units table (with `electrode_group` and
-`max_electrode`, without waveforms).''','''differ. Eighteen files have an older layout of the units table, with an `electrode_group` column
-that names each unit's shank; 17 of them also hold the waveforms. The other 83 files do not say
-which shank a unit was recorded on.''')
-rep('''print("Overlapping periods within a file:",
-      sum(int((np.diff(g.sort_values("start_time").start_time) < g.sort_values("start_time").stop_time.values[:-1] - 1e-3).sum())
-          for _, g in st_all.groupby("session")))''','''def overlaps(g):
-    g = g.sort_values("start_time")
-    return int((g.start_time.values[1:] < g.stop_time.values[:-1] - 1e-3).sum())
-print("Overlapping periods within a file:", sum(overlaps(g) for _, g in st_all.groupby("session")))''')
-rep('''print("One DS2 series per file:", bool((ds2n.series.str.count(",") == 0).all()))''','''print("Files with more than one DS2 series (pooled here):", ds2n[ds2n.series.str.contains(",")][["session", "series"]].values.tolist())''')
-rep('''print("Interval between pulses (ms): median %.1f, smallest %.1f" % (pul.ipi_ms_median.median(), pul.ipi_ms_min.min()))''','''print("Interval between pulses after sorting (ms): median %.1f, smallest %.1f" % (pul.ipi_ms_median.median(), pul.ipi_ms_min.min()))
-print("Files whose stored pulse times decrease somewhere:", [(s["session"], s["pulse20_decreasing"], len(s["pulse20"]), len(np.unique(s["pulse20"]))) for s in S if s["pulse20_decreasing"]])''')
-# DS2 profile sanity after theta cell
-rep('''print("Files without:", ph[ph.awake_s == 0].session.tolist())
-""", ["sanity"])''','''print("Files without:", ph[ph.awake_s == 0].session.tolist())
-""", ["sanity"])
-
-code(r"""
-# Files that give each unit's shank: DS2 amplitude per LFP channel along each shank (the LFP over
-# the 2 LFP chunks with the most DS2 peaks), and where the units sit.
-SITE = [s for s in S if s["unit_site"] is not None]
-print("Files with unit sites:", len(SITE), "; mice:", sorted({s["subject"] for s in SITE}))
-print("DS2 events used per file: median %d, range %d to %d; LFP window %.0f s" % (
-    np.median([s["unit_site"]["n_events"] for s in SITE]), min(s["unit_site"]["n_events"] for s in SITE),
-    max(s["unit_site"]["n_events"] for s in SITE), np.median([s["unit_site"]["window_s"] for s in SITE])))
-rev = []
-for s in SITE:
-    us = s["unit_site"]
-    g = us["groups"][us["region"]]
-    for sh in np.unique(g):
-        a = us["channel_amp"][g == sh]
-        rev.append({"session": s["session"], "shank": sh, "min_uV": 1e6 * a.min(), "max_uV": 1e6 * a.max(), "reverses": bool(a.min() < 0 < a.max())})
-rev = pd.DataFrame(rev)
-print("Shanks: %d; with a DS2 polarity reversal along the shank: %d" % (len(rev), rev.reverses.sum()))
-print("DS2 amplitude range across channels (uV): %.0f to %.0f" % (rev.min_uV.min(), rev.max_uV.max()))
-wch = pd.DataFrame([{"session": s["session"], **v} for s in SITE for v in s["unit_site"]["units"].values()])
-print("Units with a site:", len(wch), "; waveform channels equal to the shank's electrodes for all units:", bool((wch.waveform_channels == wch.n_channels).all()))
-""", ["sanity"])''')
-# per-unit site features into R: after R built
-rep('''for band in ("theta", "gamma"):
-    R[f"{band}_sig"] = (R[f"{band}_p"] < 0.05) & (R[f"{band}_kappa"] > 0.1)''','''for band in ("theta", "gamma"):
-    R[f"{band}_sig"] = (R[f"{band}_p"] < 0.05) & (R[f"{band}_kappa"] > 0.1)
-site = pd.DataFrame([{"session": s["session"], "unit": u, "ds2_site_uV": 1e6 * v["ds2_amp"], "shank": v["shank"], "site_channel": v["channel"]}
-                     for s in S if s["unit_site"] for u, v in s["unit_site"]["units"].items()])
-R = R.merge(site, on=["session", "unit"], how="left")''')
-# new claim cells before Blocked claims
-rep('''md(r"""
-## Blocked claims''','''md(r"""
-## mc-deeper
-
-> Mossy cells are located deeper than granule cells relative to the reversal of the type 2 dentate
-> spike (DS2) (Mann-Whitney P < 0.001).
-""")
-code(r"""
-x = R[R.type.isin(["GC", "MC"]) & R.ds2_site_uV.notna()]
-g, m = x[x.type == "GC"].ds2_site_uV, x[x.type == "MC"].ds2_site_uV
-print(f"Units with a site: GC {len(g)}, MC {len(m)}, in {x.session.nunique()} files of {x.subject.nunique()} mice")
-print(f"DS2 amplitude at the unit's site (uV): GC median {g.median():.0f}, MC median {m.median():.0f}; Mann-Whitney P = {stats.mannwhitneyu(g, m).pvalue:.2g}")
-print("Fraction at a site where DS2 is positive (below the reversal): GC %.2f, MC %.2f" % ((g > 0).mean(), (m > 0).mean()))
-print("By subject (median uV):")
-print(x.groupby(["subject", "type"]).ds2_site_uV.agg(["size", "median"]).round(0).unstack().to_string())
-fig, ax = plt.subplots(figsize=(5, 3))
-ax.hist([g, m], bins=np.linspace(-1500, 1500, 41), color=["gold", "m"], label=["GC", "MC"])
-ax.set_xlabel("DS2 amplitude at the unit's site (uV)"); ax.legend()
-print("Outside the plotted range: %d units" % int(((x.ds2_site_uV < -1500) | (x.ds2_site_uV > 1500)).sum()))
-""", ["claim:mc-deeper"])
-
-md(r"""
-## gc-mc-classification
-
-> K-means clustering on the DS2 amplitude at the unit's site, the NREM to wake rate ratio and two
-> principal components of the waveform's second derivative separates excitatory dentate units into
-> granule cells and mossy cells.
-""")
-code(r"""
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-rows = []
-for s in SITE:
-    for u, v in s["unit_site"]["units"].items():
-        if s["units"].set_index("unit").type[u] not in ("GC", "MC"):
-            continue
-        tp, at_end, y = dg.trough_to_peak_ms(s["waveforms"][u])
-        if y is None or not np.isfinite(tp):
-            continue
-        i = int(np.argmin(y))
-        seg = y[i:i + 80]
-        seg = np.pad(seg, (0, 80 - len(seg)), mode="edge")
-        rows.append({"session": s["session"], "unit": u, "d2": np.gradient(np.gradient(seg))})
-WF = pd.DataFrame(rows)
-pcs = PCA(n_components=2).fit_transform(np.stack(WF.d2.values))
-WF["w_pc1"], WF["w_pc2"] = pcs[:, 0], pcs[:, 1]
-K = WF.drop(columns="d2").merge(R[["session", "unit", "type", "subject", "ds2_site_uV", "rate_nrem", "rate_awake"]], on=["session", "unit"])
-K = K[K.rate_awake > 0].copy()
-K["log_ratio"] = np.log10((K.rate_nrem + 1e-3) / K.rate_awake)
-feats = K[["ds2_site_uV", "log_ratio", "w_pc1", "w_pc2"]].values
-z = (feats - feats.mean(0)) / feats.std(0)
-lab = KMeans(n_clusters=2, n_init=50, random_state=0).fit_predict(z)
-truth = (K.type == "MC").values.astype(int)
-agree = max(np.mean(lab == truth), np.mean(lab != truth))
-print(f"Units: {len(K)} (GC {int((K.type == 'GC').sum())}, MC {int((K.type == 'MC').sum())}); dropped for a zero awake rate or no waveform: "
-      f"{int(R[R.type.isin(['GC', 'MC']) & R.ds2_site_uV.notna()].shape[0] - len(K))}")
-print(f"Agreement of the two clusters with the labels: {agree:.3f}")
-print(pd.crosstab(K.type, lab if np.mean(lab == truth) >= 0.5 else 1 - lab, rownames=["label"], colnames=["cluster (1 = MC-like)"]).to_string())
-print("Feature medians by label:")
-print(K.groupby("type")[["ds2_site_uV", "log_ratio", "w_pc1", "w_pc2"]].median().round(3).to_string())
-for drop in ("ds2_site_uV", "log_ratio", "w_pc1"):
-    cols = [c for c in ("ds2_site_uV", "log_ratio", "w_pc1", "w_pc2") if c != drop]
-    zz = (K[cols].values - K[cols].values.mean(0)) / K[cols].values.std(0)
-    l2 = KMeans(n_clusters=2, n_init=50, random_state=0).fit_predict(zz)
-    print(f"Variant without {drop}: agreement {max(np.mean(l2 == truth), np.mean(l2 != truth)):.3f}")
-print("By subject, agreement:", K.assign(ok=(lab == truth) if np.mean(lab == truth) >= 0.5 else (lab != truth)).groupby("subject").ok.mean().round(2).to_dict())
-""", ["claim:gc-mc-classification"])
-
-md(r"""
-## Blocked claims''')
-rep('''`mc-deeper`, `gc-mc-classification`, `gc-mc-distance` and `gc-backpropagation` need each unit's
-recording site: the shank and the channel of largest amplitude, to read the DS2 amplitude there or
-place units along the probe. The standard files give each unit only a cluster number
-(`shank_id`, "0-indexed id of cluster of shank") and waveforms on the channels of its shank,
-without saying which shank. The four older-layout files have `electrode_group` and
-`max_electrode`, but the conversion code sets `max_electrode` to the first channel of the shank
-("as a temporary solution"), and these files hold no GC or MC with a known site to compare.''','''`gc-mc-distance` and `gc-backpropagation` need the positions of the recording sites in um. The
-electrodes table gives x, y and z as NaN in every file, and the order of the sites along a shank
-(staggered, 20 um apart in the Methods) is not stated. In 83 of the 101 files the units do not
-even say which shank they were recorded on (`shank_id` is a cluster number, "0-indexed id of
-cluster of shank").''')
-rep('''old = [s for s in S if s["format"] == "electrode_group"]
-for s in old:
-    print(s["session"], "units:", len(s["units_all"]), "GC/MC:", int(s["units_all"].type.isin(["GC", "MC"]).sum()),
-          "electrode groups:", s["units_all"].get("electrode_group", pd.Series(dtype=str)).nunique())
-print("Standard files: units table columns hold no shank or channel per unit; shank_id range:",
-      int(U.shank_id.min()), "to", int(U.shank_id.max()))''','''xyz = []
-for s in S[:1]:
-    pass
-print("Files whose units name their shank:", sum(s["format"] == "electrode_group" for s in S), "; of which with waveforms:", len(SITE))
-print("shank_id range over all units:", int(U.shank_id.min()), "to", int(U.shank_id.max()))''')
-open(p,'w').write(b)
-EOF
-echo "scikit-learn" >> requirements.in; sort -o requirements.in requirements.in; cat requirements.in; . $TMPDIR/work/bin/activate && uv pip install -q scikit-learn
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/83538c3a-6396-4c04-a95b-80db850c5b5a/tool-results/b6vjq1wqe.txt"
+}
 ```
 
 ```
-dandi
-h5py
-matplotlib
-numpy
-pandas
-remfile
-scikit-learn
-scipy
-statsmodels
+1	# Claims for Senzai & Buzsaki (2017) on dandiset 000003.
+2	# Source: the accepted author manuscript in PubMed Central (PMC5293146), full text, read from its
+3	# Results, figure legends and STAR Methods. The version of record is not open access. The
+4	# supplementary figures (S1 to S7) were not available; claims citing them rest on the main text.
+5	#
+6	# What the author had seen when these criteria were written: the file list, the contents of every
+7	# file, the data check, and exploratory runs of the helper module on all files, made while
+8	# writing and debugging it. Those runs printed, for each type of unit, the counts, the median
+9	# rates by state, burst indices and trough-to-peak latencies; the open-field remapping index and
+10	# the fraction of remapping place cells; the T-maze place field counts; the optogenetic
+11	# suppression counts with the 20 ms pre-pulse baseline; the DS2 peak ratios and times; the theta
+12	# and gamma modulation and the rate correlations; and the number of GC-MC pairs the automatic
+13	# CCG test detects. Nothing was tuned on these results: every threshold below is the paper's,
+14	# or a choice stated in the helper module's docstring, fixed when the function was written. The
+15	# one change made after a run was to the T-maze run segment, whose first version took the
+16	# waiting area at the ends of the side arms for the reward port. Results not seen before the
+17	# criteria: burst facilitation, state-dependent transmission, synchrony, splitter cells,
+18	# population-vector remapping, the central-arm activity, the T-maze peak rate and information,
+19	# and the inheritance of place fields. The criteria of mc-deeper and gc-mc-classification were
+20	# written after the rest, once the shank of each unit was found in 17 files, and before their
+[... 600 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-src=open('dg.py').read()
-src=src.replace('''    s["n_electrodes"] = int(f["general/extracellular_ephys/electrodes/id"].shape[0])
-''','''    s["n_electrodes"] = int(f["general/extracellular_ephys/electrodes/id"].shape[0])
-    s["electrode_xyz_finite"] = int(sum(np.isfinite(f[f"general/extracellular_ephys/electrodes/{c}"][:]).sum() for c in ("x", "y", "z")))
-''')
-open('dg.py','w').write(src)
-p='/tmp/claude-1001/build_nb.py'
-b=open(p).read()
-b=b.replace('''xyz = []
-for s in S[:1]:
-    pass
-print(''','''print("Finite x, y or z values in the electrodes tables of all files:", sum(s["electrode_xyz_finite"] for s in S))
-print(''')
-open(p,'w').write(b)
+tail -5 claims/senzai-2017.yaml; grep -n "checks" claims/senzai-2017.yaml; cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in entries/fouke-2025/README.md; cat attempts/fouke-2025-01.yaml | head -150
+```
+
+```
+mossy cells.
+  source: Results, Identification of granule cells and mossy cells in extracellular recordings,
+    paragraph 3; Figure S3D to S3F
+  quote: Indeed, the spikes of granule cells showed a delay from the soma to the proximal dendrites
+    ... whereas no such delays were observed in putative mossy cells
+schema_version: 1
+name: fouke-2025
+type: reproduction
+title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
+description: Tests the freely swimming findings of Fouke, He, Loring and Naumann (2025) on dandiset
+  001453, which holds the tracking data of 25 zebrafish and 12 Danionella cerebrum larvae during the
+  optomotor protocol. It compares swimming speed, turning and angular acceleration between species
+  and stimuli, the response to monocular stimuli, and how steady the swimming is. The imaging and
+  head-fixed tail tracking of the paper's Figures 2 to 4 are not in the dandiset.
+license: Apache-2.0
+notebooks:
+- path: reproduce_fouke_2025.ipynb
+  title: Reproducing Fouke et al. (2025) from dandiset 001453
+  runtime_minutes: 6
+helpers:
+[... 198 more lines not kept]
+```
+
+**Agent**
+
+Read the protocol, claims (30 claims) and an example entry. Now checking the attempt schema, the DANDI notes, and the paper.
+
+**Agent calls Bash**
+
+```bash
+ls schemas; sed -n '/## DANDI/,/^## [A-Z]/p' docs/archives.md | head -120; grep -l "pilot-18" attempts/*.yaml | head
+```
+
+```
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+paper-match.schema.json
+## DANDI
+
+- **Datasets.** A dandiset, identified by six digits (`000003`). Targets are the
+  public dandisets whose metadata names a paper (`targets/dandisets.json`, built
+  by `tools/build_targets.py` and refreshed daily by the Track DANDI workflow).
+- **Versions.** A published version (`0.220126.1855`) is fixed and has a DOI,
+  `10.48324/dandi.<id>/<version>`. The draft can change. Pin the version the
+  paper cites, or the latest published one. For a draft, record its
+  modification time under `dataset: modified` in the attempt.
+- **Reading.** List the assets and read metadata with the DANDI REST API
+  (`https://api.dandiarchive.org/api/dandisets/<id>/versions/<version>/` and its
+  `assets/` endpoint). Read NWB files by streaming them: open each asset's S3
+  URL with `remfile` and `h5py`, and read it with `pynwb`. Do not download files
+  to disk.
+- **In an entry.** The entry names the dataset as `dandi:<id>/<version>` under
+  `related`. The helper module keeps the version in one constant.
+[... 12 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat attempts/du-2026-01.yaml | head -60; grep -n "findings:" -A 25 attempts/du-2026-01.yaml | head -40; ls entries/du-2026
+```
+
+```
+schema_version: 3
+id: du-2026-01
+datasets:
+- archive: dandi
+  id: "001201"
+  version: 0.251023.2336
+  doi: 10.48324/dandi.001201/0.251023.2336
+  relation: reuses
+- archive: dandi
+  id: "000129"
+  version: 0.241017.1444
+  doi: 10.48324/dandi.000129/0.241017.1444
+  relation: reuses
+paper: doi:10.64898/2026.08.04.742876
+date: 2026-11-21
+entry: du-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+[... 78 more lines not kept]
+```
+
+**Agent**
+
+Now the paper text (methods especially).
+
+**Agent calls Bash**
+
+```bash
+wc -c paper/*; grep -n "STAR\|Unit classification\|Optogenetic tagging\|Spike transmission\|Dentate spike\|Place field\|Remapping\|Splitter\|Brain state\|Phase" paper/10.1016-j.neuron.2016.12.011.txt | head -60
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd paper; python3 -c "
+t=open('10.1016-j.neuron.2016.12.011.txt').read()
+i=t.find('STAR')
+import re
+for k in ['Unit classification','Optogenetic tagging','Spike transmission','Brain state','Dentate spike','Place field','Remapping','plitter','Phase lock','Burst index','Firing rate','Spatial information','Population vector']:
+  print(k,[m.start() for m in re.finditer(k,t)][:8])
+print(len(t))
+"
+```
+
+```
+Unit classification [46503]
+Optogenetic tagging [45468]
+Spike transmission [16098]
+Brain state []
+Dentate spike [9435, 44325]
+Place field [50600, 53295, 53438, 54253, 81877, 82384, 83743]
+Remapping [83523, 83626]
+plitter [19776, 19830, 53199, 107930, 108146, 108240, 108273]
+Phase lock []
+Burst index [46973]
+Firing rate [84300]
+Spatial information []
+Population vector [53763]
+113572
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1016-j.neuron.2016.12.011.txt').read()
+print(t[40000:57500])
+" | fold -s -w 200
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+Now the dataset: list assets at the pinned version.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/000003/versions/0.261122.2143/" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('name')); print(d.get('description')); print(d.get('assetsSummary')); print(d.get('doi')); print(d.get('dateModified'))"; curl -s "https://api.dandiarchive.org/api/dandisets/000003/versions/" | python3 -m json.tool | grep -E '"version"|"modified"|"status"'
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python3 - <<'EOF'
+import json,urllib.request
+url="https://api.dandiarchive.org/api/dandisets/000003/versions/0.261122.2143/assets/?page_size=200"
+out=[]
+while url:
+    d=json.load(urllib.request.urlopen(url)); out+=d['results']; url=d['next']
+json.dump(out,open('assets.json','w'))
+for a in out: print(a['path'], round(a['size']/1e9,2), a['asset_id'])
 EOF
-. $TMPDIR/work/bin/activate && python - <<'EOF'
-import time, dg, pickle, os
+```
+
+```
+sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140321_behavior+ecephys.nwb 5.61 9001fabf-b5b7-4d24-a48b-2827b68824a4
+sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140324_behavior+ecephys.nwb 6.14 d252c748-93bb-4fdf-afce-65fdbcffd4e9
+sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140325_behavior+ecephys.nwb 6.32 17582071-969a-42dc-8f7e-9dbf86534de4
+sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150223_behavior+ecephys.nwb 141.85 da684b6c-237a-4784-afd3-3a881e69d256
+sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150224_behavior+ecephys.nwb 146.62 400e8ef7-1149-48fd-b6bc-14f2fd930367
+sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150222_behavior+ecephys.nwb 160.28 c868d4b8-02cf-4b6a-8345-55021c8f37f9
+sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140327_behavior+ecephys.nwb 4.74 cfe660e7-6283-4a98-978d-28f86bb54c59
+sub-YutaMouse23/sub-YutaMouse23_ses-YutaMouse23-140804_behavior+ecephys.nwb 5.25 c36613cc-1581-4628-8e7f-8cbd73f6910f
+sub-YutaMouse20/sub-YutaMouse20_ses-YutaMouse20-140328_behavior+ecephys.nwb 6.36 82d3ff9f-845f-4000-9672-c7c57c16d710
+sub-YutaMouse41/sub-YutaMouse41_ses-YutaMouse41-150903_behavior+ecephys.nwb 76.52 05a469c7-0771-4399-8b9a-40054b1daa4f
+sub-YutaMouse42/sub-YutaMouse42_ses-YutaMouse42-151112_behavior+ecephys.nwb 71.75 0a38ae06-578b-4c5d-b8a3-e64d4256a794
+sub-YutaMouse23/sub-YutaMouse23_ses-YutaMouse23-140805_behavior+ecephys.nwb 5.05 2425621c-da59-42f9-b509-ee7eb6d54815
+sub-YutaMouse42/sub-YutaMouse42_ses-YutaMouse42-151108_behavior+ecephys.nwb 69.22 f0c11f24-5627-48e6-b69c-132b568e9920
+sub-YutaMouse23/sub-YutaMouse23_ses-YutaMouse23-140806_behavior+ecephys.nwb 6.14 5e0786f3-289a-4f29-84ea-dbee1a9f0d12
+sub-YutaMouse41/sub-YutaMouse41_ses-YutaMouse41-150909_behavior+ecephys.nwb 68.25 d4a69a89-0841-4632-a3ee-149eb3dc12af
+sub-YutaMouse33/sub-YutaMouse33_ses-YutaMouse33-150218_behavior+ecephys.nwb 8.5 796a5d34-b498-455d-a8d0-08f6e50c46ce
+sub-YutaMouse41/sub-YutaMouse41_ses-YutaMouse41-150910_behavior+ecephys.nwb 60.44 2c9f51f6-de11-4029-88
+[... 85 more lines not kept]
+```
+
+**Agent**
+
+Opening one small file to list its full contents.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python3 -c "import pynwb,h5py,remfile,scipy;print(pynwb.__version__)" 2>&1; which uv; python3 --version
+```
+
+```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import pynwb,h5py,remfile,scipy;print(pynwb.__version__)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'pynwb'
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/uv
+Python 3.13.18
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && uv venv -q dev && . dev/bin/activate && uv pip install -q pynwb h5py remfile scipy numpy pandas matplotlib nbformat nbclient ipykernel statsmodels 2>&1 | tail -2; python -c "import pynwb;print(pynwb.__version__)"
+```
+
+```
+4.2.0
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && cat > survey.py <<'EOF'
+import h5py, remfile, json, sys
+assets=json.load(open('assets.json'))
+def url(aid): return f"https://api.dandiarchive.org/api/assets/{aid}/download/"
+a=[x for x in assets if x['path'].endswith(sys.argv[1])][0]
+f=h5py.File(remfile.File(url(a['asset_id'])),'r')
+def show(name,obj):
+    if isinstance(obj,h5py.Dataset):
+        print(name, obj.shape, obj.dtype, dict((k,(v if not hasattr(v,'shape') or v.size<5 else '...')) for k,v in obj.attrs.items() if k not in ('namespace','object_id','neurodata_type')) )
+    else:
+        print(name+'/', obj.attrs.get('neurodata_type'), obj.attrs.get('description',''))
+f.visititems(show)
+EOF
+time python survey.py YutaMouse41-150829_behavior+ecephys.nwb 2>&1 | grep -v "^\s*$" | head -300
+```
+
+```
+acquisition/ None 
+acquisition/ch_SsolL/ TimeSeries auxiliary input on channel 73 of the recording system: sensor 4, left side arm, in the system's raw int16 steps (the scaling of these inputs is not documented)
+acquisition/ch_SsolL/data (21312875,) int16 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'a.u.'}
+acquisition/ch_SsolL/starting_time () float64 {'rate': np.float64(1250.0), 'unit': 'seconds'}
+acquisition/ch_SsolR/ TimeSeries auxiliary input on channel 70 of the recording system: sensor 1, right side arm, in the system's raw int16 steps (the scaling of these inputs is not documented)
+acquisition/ch_SsolR/data (21312875,) int16 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'a.u.'}
+acquisition/ch_SsolR/starting_time () float64 {'rate': np.float64(1250.0), 'unit': 'seconds'}
+acquisition/ch_arm/ TimeSeries auxiliary input on channel 78 of the recording system: central arm period, in the system's raw int16 steps (the scaling of these inputs is not documented)
+acquisition/ch_arm/data (21312875,) int16 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'a.u.'}
+acquisition/ch_arm/starting_time () float64 {'rate': np.float64(1250.0), 'unit': 'seconds'}
+acquisition/ch_dig1/ TimeSeries auxiliary input on channel 65 of the recording system: TDT digital output 1, in the system's raw int16 steps (the scaling of these inputs is not documented)
+acquisition/ch_dig1/data (21312875,) int16 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'a.u.'}
+acquisition/ch_dig1/starting_time () float64 {'rate': np.float64(1250.0), 'unit': 'seconds'}
+acquisition/ch_dig2/ TimeSeries auxiliary input on channel 68 of the recording system: TDT digital output 2, in the system's raw int16 steps (the scaling of these inputs is not documented)
+acquisition/ch_dig2/data (21312875,) int16 {'conversion'
+[... 177 more lines not kept]
+```
+
+**Agent**
+
+The conversion now carries shanks for each unit, the authors' monosynaptic and zero-lag tables, and DRD2 tags. Checking a large file and one with behaviour.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python survey.py YutaMouse41-150903_behavior+ecephys.nwb 2>&1 | grep -v "specifications\|^acquisition/ch_\|external_resources" | grep -v "^general/subject" | head -120
+```
+
+```
+acquisition/ None 
+acquisition/ElectricalSeries/ ElectricalSeries wide-band signal of the probe channels, recorded at 20 kHz on an Amplipex system
+acquisition/ElectricalSeries/data (807382000, 64) int16 {'conversion': np.float64(3.814697265625e-07), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
+acquisition/ElectricalSeries/starting_time () float64 {'rate': np.float64(20000.0), 'unit': 'seconds'}
+acquisition/led0_position/ SpatialSeries position of LED 0 on the head stage in camera pixels (.whl file), NaN when not detected; the T-maze and open field positions in processing/behavior are this LED in arena coordinates, and their descriptions give each arena's place in the camera image
+acquisition/led0_position/data (1576921, 2) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'pixels'}
+acquisition/led0_position/reference_frame () object {}
+acquisition/led0_position/starting_time () float64 {'rate': np.float64(39.0625), 'unit': 'seconds'}
+acquisition/led1_position/ SpatialSeries position of LED 1 on the head stage in camera pixels (.whl file), NaN when not detected
+acquisition/led1_position/data (1576921, 2) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'pixels'}
+acquisition/led1_position/reference_frame () object {}
+acquisition/led1_position/starting_time () float64 {'rate': np.float64(39.0625), 'unit': 'seconds'}
+analysis/ None 
+file_create_date (1,) object {}
+general/ None 
+general/devices/ None 
+general/devices/probe/ Device NeuroNexus silicon probe (Buzsaki64): 8 shanks 200 um apart, each with 8 staggered recording sites 20 um apart vertically
+general/experiment_description () object {}
+general/experimenter (1,) object {}
+general/extracellular_ephys/ None 
+[... 101 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python survey.py YutaMouse41-150903_behavior+ecephys.nwb 2>&1 | grep -v "specifications\|^acquisition/ch_\|external_resources" | grep -v "^general/subject" | sed -n '120,200p' | cut -c1-600
+```
+
+```
+processing/behavior/open_field_position/Oldlast/data (43526, 2) float64 {'conversion': np.float64(0.46), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'meters'}
+processing/behavior/open_field_position/Oldlast/reference_frame () object {}
+processing/behavior/open_field_position/Oldlast/timestamps (43526,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
+processing/behavior/side_arm_angle/ TimeSeries angle along the circular side arms (column 2 of twhl_linearized); positive on runs the lab marks as left runs and negative on right runs, 0 while the mouse is on the central arm
+processing/behavior/side_arm_angle/data (144777,) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'radians'}
+processing/behavior/side_arm_angle/starting_time () float64 {'rate': np.float64(39.06250000009104), 'unit': 'seconds'}
+processing/behavior/t_maze_position/ Position 
+processing/behavior/t_maze_position/central_arm_position/ SpatialSeries the lab's linearized position on the central arm (column 1 of twhl_linearized, normalized units scaled to meters): about 2 where the mouse enters the central arm, falling to about 0 where it leaves it toward the side arms, and 0 while it is on a side arm
+processing/behavior/t_maze_position/central_arm_position/data (144777,) float64 {'conversion': np.float64(0.325), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'meters'}
+processing/behavior/t_maze_position/central_arm_position/reference_frame () object {}
+processing/behavior/t_maze_position/central_arm_position/starting_time () float64 {'rate': np.float64(39.06250000009104), 'unit': 'seconds'}
+processing/behavior/t_maze_position/position/ SpatialSeries head position on the circular T-maze (twhl_norm), in the lab's normalized maze coordinates scaled to meters: one unit is the 32.5 cm radius of the circle formed by the side arms. In the camera image, the lab's region of interest for the circle formed by th
+[... 53 more lines not kept]
+```
+
+**Agent**
+
+Let me check the chunking of the big arrays and time reading one file's units and tables.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import h5py, remfile, json, time, numpy as np
+assets=json.load(open('assets.json'))
+def url(aid): return f"https://api.dandiarchive.org/api/assets/{aid}/download/"
+for name in ['YutaMouse41-150829_','YutaMouse41-150903_']:
+    a=[x for x in assets if name in x['path']][0]
+    t=time.time()
+    f=h5py.File(remfile.File(url(a['asset_id'])),'r')
+    for p in ['processing/ecephys/LFP/lfp/data','units/spike_times','units/waveforms','units/waveforms_index','acquisition/ElectricalSeries/data']:
+        if p in f: print(p, f[p].chunks, f[p].compression)
+    u=f['units']
+    st=u['spike_times'][:]; print('spike_times read', time.time()-t, st.shape)
+    ct=u['cell_type'][:].astype(str); print(np.unique(ct,return_counts=True))
+    print('region',np.unique(u['region'][:].astype(str),return_counts=True))
+    print('global ids',u['global_id'][:][:10])
+    ms=f['processing/ecephys/monosynaptic_connections']; print('mono', ms['presynaptic_unit'][:], ms['postsynaptic_unit'][:], ms['connection'][:].astype(str))
+    bs=f['processing/behavior/brain_states']; print(np.unique(bs['label'][:].astype(str),return_counts=True))
+    lp=f['intervals/light_pulses']; print(np.unique(lp['protocol'][:].astype(str),return_counts=True))
+    print('subject', f['general/subject/genotype'][()], f['general/subject/subject_id'][()], f['session_description'][()])
+    if 'intervals/epochs' in f:
+        e=f['intervals/epochs']; print(e['start_time'][:], e['stop_time'][:], e['tags'][:])
+    print('total', time.time()-t)
+EOF
+```
+
+```
+processing/ecephys/LFP/lfp/data (1048576, 16) gzip
+units/spike_times (953531,) gzip
+units/waveforms (524288, 32) gzip
+units/waveforms_index (953531,) gzip
+spike_times read 1.5967292785644531 (953531,)
+(array(['CA3 pyramidal cell', 'granule cell', 'mossy cell',
+       'narrow-waveform interneuron', 'positive-negative-waveform unit',
+       'positive-waveform unit (bursty)', 'unclassified',
+       'wide-waveform interneuron (narrower)',
+       'wide-waveform interneuron (wider)'], dtype='<U36'), array([10,  3,  1,  3,  1,  1,  1,  1,  2]))
+region (array(['CA3', 'DG', 'unknown'], dtype='<U7'), array([15,  7,  1]))
+global ids [837 838 839 840 841 842 843 844 845 846]
+mono [14 16 18] [13 19 19] ['excitatory' 'excitatory' 'excitatory']
+(array(['awake', 'nrem', 'rem', 'transit'], dtype='<U7'), array([ 5, 13, 11, 11]))
+(array(['PulseStim_2.3V_200ms_LD1', 'PulseStim_2.3V_200ms_LD2',
+       'PulseStim_2.5V_1000ms_LD1200', 'PulseStim_2.5V_10ms_LD12',
+       'PulseStim_2.5V_200ms_LD1', 'PulseStim_2.5V_200ms_LD2',
+       'PulseStim_3.5V_1000ms_LD1200', 'PulseStim_3.5V_10ms_LD12',
+       'PulseStim_3.5V_200ms_LD1', 'PulseStim_3.5V_200ms_LD2',
+       'PulseStim_3V_200ms_LD1', 'PulseStim_3V_200ms_LD2',
+[... 42 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import h5py, remfile, json, time, numpy as np
+assets=json.load(open('assets.json'))
+def url(aid): return f"https://api.dandiarchive.org/api/assets/{aid}/download/"
+a=[x for x in assets if 'YutaMouse41-150903_' in x['path']][0]
+f=h5py.File(remfile.File(url(a['asset_id'])),'r')
+u=f['units']; wii=u['waveforms_index_index'][:]; 
 t=time.time()
-S=dg.load_all(workers=12)
-print('load secs', time.time()-t)
-pickle.dump(S, open(os.environ['TMPDIR']+'/S.pkl','wb'))
-print(sum(s['unit_site'] is not None for s in S))
+for k in range(3):
+    s0 = 0 if k==0 else wii[k-1]
+    wi=u['waveforms_index'][s0:s0+201]
+    r0 = 0 if s0==0 else u['waveforms_index'][s0-1]
+    w=u['waveforms'][r0:wi[-2]]
+    print(k, w.shape, time.time()-t)
+t=time.time()
+x=f['processing/ecephys/LFP/lfp/data'][0:1048576, 0]
+print('lfp chunk col', time.time()-t)
+t=time.time()
+x=f['processing/ecephys/LFP/lfp/data'][1048576:2*1048576, 0:16]
+print('lfp chunk 16 col', time.time()-t)
 EOF
 ```
 
 ```
-load secs 281.6697163581848
-17
+0 (1600, 32) 1.199033260345459
+1 (1600, 32) 2.0145657062530518
+2 (1600, 32) 3.0604662895202637
+lfp chunk col 0.8959944248199463
+lfp chunk 16 col 0.674088716506958
+Shell cwd was reset to
+```
+
+**Agent**
+
+Waveforms cost about 1 s per unit; LFP chunks under 1 s. Now a full survey of all 101 files' tables.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && cat > survey_all.py <<'EOF'
+import h5py, remfile, json, time, numpy as np, pandas as pd
+from concurrent.futures import ThreadPoolExecutor
+assets=json.load(open('assets.json'))
+def url(aid): return f"https://api.dandiarchive.org/api/assets/{aid}/download/"
+def one(a):
+    f=h5py.File(remfile.File(url(a['asset_id'])),'r')
+    u=f['units']
+    d=dict(path=a['path'], subject=f['general/subject/subject_id'][()].decode(), genotype=f['general/subject/genotype'][()].decode(),
+      n_units=len(u['id']), wideband='acquisition/ElectricalSeries' in f,
+      trials=len(f['intervals/trials/id']) if 'intervals/trials' in f else 0,
+      epochs=[t.decode() for t in f['intervals/epochs/tags'][:]] if 'intervals/epochs' in f else [],
+      of=list(f['processing/behavior/open_field_position'].keys()) if 'processing/behavior/open_field_position' in f else [],
+      lfp_T=f['processing/ecephys/LFP/lfp/data'].shape[0]/1250, nch=f['processing/ecephys/LFP/lfp/data'].shape[1],
+      states=dict(zip(*np.unique(f['processing/behavior/brain_states/label'][:].astype(str),return_counts=True))) if 'processing/behavior/brain_states' in f else {},
+      light=dict(zip(*np.unique(f['intervals/light_pulses/protocol'][:].astype(str),return_counts=True))) if 'intervals/light_pulses' in f else {},
+      ct=list(u['cell_type'][:].astype(str)), gid=list(u['global_id'][:]), region=list(u['region'][:].astype(str)), drd2=list(u['drd2_tagged'][:]),
+      nmono=len(f['processing/ecephys/monosynaptic_connections/id']) if 'processing/ecephys/monosynaptic_connections' in f else -1,
+      nzl=len(f['processing/ecephys/zero_lag_synchrony/id']) if 'processing/ecephys/zero_lag_synchrony' in f else -1)
+    return d
+t=time.time()
+with ThreadPoolExecutor(8) as ex: res=list(ex.map(one, assets))
+json.dump(res, open('survey.json','w'), default=lambda o: o.item() if hasattr(o,'item') else str(o))
+print(time.time()-t)
+EOF
+python survey_all.py
+```
+
+```
+225.684396982193
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-. $TMPDIR/work/bin/activate && python $TMPDIR/build_nb.py $TMPDIR/dev.ipynb && cp dg.py $TMPDIR/ && python $TMPDIR/devrun.py $TMPDIR/dev.ipynb > $TMPDIR/dev_out.txt 2>&1; grep -n "Traceback" -A15 $TMPDIR/dev_out.txt | head -30; grep -n -A12 "cell 4 \|cell 11 \|cell 17 \|cell 20 \|cell 21 " $TMPDIR/dev_out.txt | cut -c1-250 | head -90
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import json, pandas as pd, collections
+r=json.load(open('survey.json'))
+print('files',len(r),'units',sum(x['n_units'] for x in r), 'wideband', sum(x['wideband'] for x in r))
+print(collections.Counter(x['genotype'] for x in r))
+print(pd.Series({x['subject']:x['genotype'] for x in r}))
+rows=[]
+for x in r:
+    for c,g,rg,dd in zip(x['ct'],x['gid'],x['region'],x['drd2']): rows.append(dict(subject=x['subject'],path=x['path'],ct=c,gid=g,region=rg,drd2=dd))
+u=pd.DataFrame(rows)
+print(pd.crosstab(u.ct,u.region))
+print('dup gid', u[u.gid>=0].gid.duplicated().sum(), 'gid range', u.gid.min(), u.gid.max())
+print(u[u.subject!='YutaMouse57'].ct.value_counts())
+print(u.groupby('ct').drd2.sum())
+print('trials files', sum(x['trials']>0 for x in r), 'OF files', sum(len(x['of'])>0 for x in r))
+print(collections.Counter(tuple(x['of']) for x in r))
+print(collections.Counter(k for x in r for k in x['states']))
+lp=collections.Counter()
+for x in r:
+    for k,v in x['light'].items(): lp[(x['genotype'],k.split('_',2)[2] if k.count('_')>=2 else k)]+=v
+for k,v in sorted(lp.items()): 
+    if '20ms' in k[1]: print(k,v)
+print('mono', sum(x['nmono'] for x in r), 'zl', sum(x['nzl'] for x in r))
+EOF
 ```
 
 ```
-wrote /tmp/claude-1001/dev.ipynb 85 cells
-6:===== cell 4 ['sanity']
-7-version 0.210812.1448: 101 assets; same paths, sizes and etags as 0.260218.2052: True
-8-version 0.230629.1955: 101 assets; same paths, sizes and etags as 0.260218.2052: True
-9-version 0.250624.0409: 101 assets; same paths, sizes and etags as 0.260218.2052: True
-10-version 0.260218.2052: 101 assets; same paths, sizes and etags as 0.260218.2052: True
-11------ 29 s
-12-
-13-===== cell 5 ['sanity']
-14-Files: 101 ; subjects: 16
-15-
-16-Subjects by genotype (paper: 7 SST-Cre, 5 DRD2-Cre::Ai35, 3 POMC-Cre::Ai35, 1 wild type):
-17-genotype
-18-Drd2-Cre::Ai35    5
---
-134:===== cell 11 ['sanity']
-135-State periods by label: count, total hours, median minutes
-136-         size  <lambda_0>  <lambda_1>
-137-label                                
-138-awake     566      278.34        8.34
+files 101 units 4216 wideband 17
+Counter({'POMC-Cre::Ai35': 35, 'DRD2-Cre::Ai35': 32, 'SST-Cre': 24, 'wild type': 10})
+YutaMouse20           SST-Cre
+YutaMouse33    POMC-Cre::Ai35
+YutaMouse23           SST-Cre
+YutaMouse41         wild type
+YutaMouse42    POMC-Cre::Ai35
+YutaMouse54    DRD2-Cre::Ai35
+YutaMouse57    POMC-Cre::Ai35
+YutaMouse56    DRD2-Cre::Ai35
+YutaMouse51    DRD2-Cre::Ai35
+YutaMouse55    DRD2-Cre::Ai35
+YutaMouse38           SST-Cre
+YutaMouse45    DRD2-Cre::Ai35
+YutaMouse37           SST-Cre
+YutaMouse39           SST-Cre
+YutaMouse40           SST-Cre
+YutaMouse44    POMC-Cre::Ai35
+dtype: str
+region                                  CA3   DG  unknown
+[... 49 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import h5py, remfile, json, numpy as np
+assets=json.load(open('assets.json'))
+def url(aid): return f"https://api.dandiarchive.org/api/assets/{aid}/download/"
+a=[x for x in assets if 'YutaMouse55-160901' in x['path']][0]
+f=h5py.File(remfile.File(url(a['asset_id'])),'r')
+lp=f['intervals/light_pulses']; p=lp['protocol'][:].astype(str); st=lp['start_time'][:]; sp=lp['stop_time'][:]
+m=np.char.find(p,'20ms')>=0
+print(np.unique(p[m]), m.sum(), np.diff(st[m])[:10], (sp-st)[m][:3])
+print(f['intervals/light_pulses'].attrs['description'])
+e=f['general/extracellular_ephys/electrodes']; print(e['hilus_reference'][:].nonzero(), e['channel_id'][:20], e['shank_electrode_number'][:20], e['location'][:3])
+u=f['units']; print(u['electrodes'][:16], u['electrodes_index'][:3], u['shank'][:3])
+ds=f['processing/ecephys/dentate_spikes']; print(np.unique(ds['type'][:].astype(str),return_counts=True), np.unique(ds['hilus_channel'][:]))
+bs=f['processing/behavior/brain_states']; print(bs['label'][:10].astype(str), bs['start_time'][:10], bs['stop_time'][:10])
+print(f['processing/behavior/brain_states/meanings_tables/label_meanings/meaning'][:])
+tr=f['intervals/trials']; 
+for k in tr.keys():
+  if k!='meanings_tables': print(k, tr[k][:4])
+print(list(f['processing/behavior'].keys()))
+EOF
+```
+
+```
+Exit code 1
+Mon Nov 23 23:09:08 UTC 2026
+['PulseStim_5V_20ms_LD12'] 97190 [0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.4 0.2] [0.02 0.02 0.02]
+light pulses delivered through the optical fibers on the probe (the lab's .PulseStim_*.evt files), with the pulse duration, the voltage and the laser diodes taken from each file's name (.PulseStim_<voltage>V_<duration>ms_LD<diodes>.evt); each onset is kept once. Light colour by the paper's account: green. The paper reports green light for the DRD2-Cre::Ai35 mice (Figure 1H and Figure S1D); this mouse is one of them (Table S1). The STAR Methods give 520 nm laser diodes for green light. The lab's files do not record the wavelength of each laser diode.
+(array([26]),) [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19] [7 6 3 5 1 4 2 0 4 2 7 6 5 0 1 3 0 2 4 1] [b'Hippocampal region' b'Hippocampal region' b'Hippocampal region']
+[33 38 32 39 35 36 34 37 16 25 17 24 18 22 20 21] [ 8 16 24] [1 3 3]
+(array(['DS1', 'DS2'], dtype='<U3'), array([  303, 19260])) [26]
+['nrem' 'transit' 'rem' 'nrem' 'quiet' 'nrem' 'transit' 'rem' 'nrem'
+ 'transit'] [25991. 26318. 26339. 26426. 27156. 27310. 27623. 27648. 27841. 28892.] [26318. 26339. 26426. 27156. 27310. 27623. 27648. 27841. 28892. 28899.]
+[b'wake, scored from the theta/delta ratio of the hilus LFP and the movement of the mouse'
+ b'non-REM sleep, scored from the theta/delta ratio of the hilus LFP and the movement of the mouse'
+ b'REM sleep, scored from the theta/delta ratio of the hilus LFP and the movement of the mouse'
+ b"a label of the lab's state scoring that the paper does not define"
+ b"a label of the lab's state scoring that the paper does not define"]
+Traceback (most recent call last):
+  File "<stdin>", line 15, in <module>
+  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
+    return self._get(name)
+           ~~~~~~~~~^^^^^^
+  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
+[... 7 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import h5py, remfile, json, numpy as np
+assets=json.load(open('assets.json'))
+def url(aid): return f"https://api.dandiarchive.org/api/assets/{aid}/download/"
+a=[x for x in assets if 'YutaMouse41-150903' in x['path']][0]
+f=h5py.File(remfile.File(url(a['asset_id'])),'r')
+e=f['general/extracellular_ephys/electrodes']; gn=e['group_name'][:].astype(str); print(list(zip(range(64),gn,e['channel_id'][:],e['shank_electrode_number'][:]))[:20])
+u=f['units']; ei=u['electrodes_index'][:]; el=u['electrodes'][:]; sh=u['shank'][:]
+for k in range(4): print(sh[k], el[(ei[k-1] if k else 0):ei[k]], gn[el[(ei[k-1] if k else 0):ei[k]]])
+print(f['processing/ecephys/LFP/lfp/electrodes'][:10])
+tr=f['intervals/trials']
+for k in tr.keys():
+  if k!='meanings_tables': print(k, tr[k][:5])
+ca=f['processing/behavior/t_maze_position/central_arm_position/data'][:]; sa=f['processing/behavior/side_arm_angle/data'][:]
+print(np.nanmin(ca),np.nanmax(ca),np.nanmin(sa),np.nanmax(sa), f['processing/behavior/t_maze_position/position/starting_time'][()])
+o=f['processing/behavior/open_field_position/Old/data'][:]; print(np.nanmin(o,0),np.nanmax(o,0), np.isnan(o).mean())
+ts=f['processing/behavior/open_field_position/Old/timestamps'][:]; print(ts[:3], np.median(np.diff(ts)))
+print(f['processing/behavior/open_field_position/Old'].attrs['description'][:300])
+EOF
+```
+
+```
+[(0, np.str_('shank5'), np.int64(0), np.int64(7)), (1, np.str_('shank5'), np.int64(1), np.int64(6)), (2, np.str_('shank5'), np.int64(2), np.int64(3)), (3, np.str_('shank5'), np.int64(3), np.int64(5)), (4, np.str_('shank5'), np.int64(4), np.int64(1)), (5, np.str_('shank5'), np.int64(5), np.int64(4)), (6, np.str_('shank6'), np.int64(6), np.int64(2)), (7, np.str_('shank6'), np.int64(7), np.int64(0)), (8, np.str_('shank6'), np.int64(8), np.int64(4)), (9, np.str_('shank5'), np.int64(9), np.int64(2)), (10, np.str_('shank6'), np.int64(10), np.int64(7)), (11, np.str_('shank6'), np.int64(11), np.int64(6)), (12, np.str_('shank6'), np.int64(12), np.int64(5)), (13, np.str_('shank5'), np.int64(13), np.int64(0)), (14, np.str_('shank6'), np.int64(14), np.int64(1)), (15, np.str_('shank6'), np.int64(15), np.int64(3)), (16, np.str_('shank3'), np.int64(16), np.int64(0)), (17, np.str_('shank3'), np.int64(17), np.int64(2)), (18, np.str_('shank3'), np.int64(18), np.int64(4)), (19, np.str_('shank4'), np.int64(19), np.int64(1))]
+1 [33 38 32 39 35 36 34 37] ['shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1']
+1 [33 38 32 39 35 36 34 37] ['shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1']
+1 [33 38 32 39 35 36 34 37] ['shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1']
+1 [33 38 32 39 35 36 34 37] ['shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1' 'shank1']
+[0 1 2 3 4 5 6 7 8 9]
+arm_end [ 22.6744 112.932  176.776  275.8216 362.3024]
+arm_start [ 21.3968 111.3792 175.2448 272.1856 359.1736]
+both_visit [False False False False False]
+error_run [False False False False False]
+id [0 1 2 3 4]
+left_run [False  True False  True False]
+light_end [  0.       0.       0.     275.8216 362.3024]
+light_start [  0.       0.       0.     272.1864 359.1736]
+right_run [ True False  True False  True]
+sens_pass [ 26.2776 123.0936 181.6416 296.7552 431.2856]
+sessionIdx [1. 1. 1. 1. 1.]
+start_time [  9.0704  91.9688 159.1048 253.0256 339.2
+[... 7 more lines not kept]
+```
+
+**Agent**
+
+Now writing the helper module.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "entries/senzai-2017/senzai.py",
+ "content": "\"\"\"Loading and per-unit measures for Senzai & Buzsaki (2017) on DANDI:000003.\n\nEvery file is streamed from the archive at the pinned version (remfile + h5py);\nnothing is written to disk. `process_file` reads one session and returns, for\neach unit, the measures the claims use, and for each pair of excitatory units\nrecorded together, the cross-correlogram tests. The notebook runs it on every\nfile and pools the results.\n\nWhere each parameter comes from (C = the claim's criterion in\nclaims/senzai-2017.yaml; M = the paper's STAR Methods, quoted; A = an\nassumption, said why; S = a standard choice for a detail that cannot change a\nresult):\n\n- Rates by state: the `brain_states` table; wake read as `awake` alone and as\n  `awake` + `quiet` (C, claims file header). Overall rate: spikes over the\n  span of the LFP (C, interneuron-rates reading a).\n- Burst index: \"the average number of spikes in the 3-5 ms bins of the spike\n  autocorrelogram divided by the average number of spikes in the 200-300 ms\n  bins\" (M, Unit classification). Counted with both lags signs, per ms.\n- Waveform: mean of the first 200 stored spikes (C), damaged spikes (all 0 or\n  a sample beyond 20000 steps) left out (S); channel of largest peak-to-peak\n  amplitude (M \"recording site with the maximum amplitude\"; peak-to-peak is S);\n  cubic spline to 100 kHz (M \"up-sampled to 100kHz with a spline\n  interpolation\"); trough-to-peak = trough to the largest later sample (S).\n  Second derivative from the trough to 0.8 ms after it, waveform normalised to\n  its trough (C, gc-mc-classification; M \"0 to 0.8ms period of the second\n  derivative\").\n- Wide-band site: in files holding the 20 kHz wide-band signal, the mean\n  300 Hz high-passed signal around the unit's spikes in up to four 52 s\n  blocks; the site is the channel of largest peak-to-peak (C, mc-deeper). The\n  300 Hz cut-off and 4th-order Butterworth are S.\n- DS2 amplitude per channel: LFP at the DS2 peak minus the mean of -36 to -16\n  ms, the baseline of M (\"lower than the baseline value (-36 ms to -16 ms)\"),\n  averaged over up to 600 DS2 events of the file (S: a sample for speed).\n- DS2 histograms: 2 ms bins over +-100 ms (C); peak ratio = largest rate\n  within +-20 ms over the mean rate in 50-100 ms on both sides (C, header);\n  peak time = centre of that bin.\n- Theta 4-10 Hz and gamma 30-80 Hz on the file's hilus reference channel\n  (`hilus_reference`; M \"periods with oscillation amplitude higher than\n  criteria ... median+0.5 s.d. for theta, median+1 s.d. for gamma\"), in\n  `awake` periods of at least 2 s, up to one hour per file (C). Filters are\n  3rd-order Butterworth, zero phase (S). Rayleigh p < 0.05 and kappa > 0.1\n  (M). Kappa from the mean resultant length by the usual approximation\n  (Fisher 1993) (S). Phase 0 is the peak of the filtered LFP (C).\n- Optogenetic suppression: 20 ms pulses; rate in +2 to +15 ms against the\n  20 ms before onset, or 50 to 200 ms after onset (C); suppressed when at\n  least 20% below baseline (M \"decreased by >= 20% of the baseline PETH in\n  +2 to +15ms bins\").\n- Cross-correlograms: 0.5 ms bins, baseline from convolution with a Gaussian\n  of 10 ms SD, threshold the 99.9999 percentile of the Poisson distribution\n  at the baseline rate, at least two consecutive bins within +1.5 to +5 ms\n  (connection) or -1 to +1 ms (synchrony) (M, Detection of short-time scale\n  interactions). The CCG spans +-50 ms (S; the Gaussian is reflected at the\n  ends). The paper's manual inspection is not repeated (C).\n- Transmission probability: CCG counts minus baseline at +1.5 to +5 ms, over\n  the number of reference spikes (C, burst-facilitation); bursts are spikes\n  at most 6 ms apart (C, header).\n- Spatial maps: speed > 3 cm/s, 1.86 cm bins and 5.57 cm Gaussian on the\n  linearised T-maze, 0.92 cm pixels and 1.84 cm Gaussian in the open field\n  (M, Place fields); speed from positions smoothed with a 0.25 s Gaussian (C,\n  header). T-maze fields: at least 5 bins above 50% of the local maximum with\n  a peak above 1 Hz (M); open-field fields: at least 100 pixels above the\n  larger of 20% of the local maximum and 1 Hz (M). The local maximum is taken\n  iteratively: the highest remaining bin, its field, then the next (A: the\n  paper does not say how local maxima are found; this is the usual way). In\n  the open field the map's peak is the local maximum (C, header). The run on\n  the T-maze is from entry into the central arm (`arm_start`) to within 10 cm\n  of the reward port, on light-free trials (C, header); the port is 18 cm\n  from the end of the 102 cm side arm (M, Behavioral procedures).\n\"\"\"\n\nimport json\nimport urllib.request\n\nimport h5py\nimport numpy as np\nimport remfile\nfrom scipy import ndimage, signal, stats\nfrom scipy.interpolate import CubicSpline\n\nDANDISET = \"000003\"\nVERSION = \"0.261122.2143\"\nAPI = \"https://api.dandiarchive.org/api\"\nEXCLUDED_SUBJECT = \"YutaMouse57\"  # not in the paper (dandiset description)\n\nFS_LFP = 1250.0\nFS_WB = 20000.0\nUV_PER_STEP = 0.3814697265625  # 10 V over 16 bits at x400, in uV (file attributes)\n\nTYPES = {\n    \"granule cell\": \"GC\",\n    \"mossy cell\": \"MC\",\n    \"CA3 pyramidal cell\": \"CA3\",\n    \"narrow-waveform interneuron\": \"nI\",\n    \"wide-waveform interneuron (narrower)\": \"wI\",\n    \"wide-waveform interneuron (wider)\": \"wI\",\n}\n\n\ndef list_assets():\n    url = f\"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/?page_size=200\"\n    out = []\n    while url:\n        with urllib.request.urlopen(url) as r:\n            d = json.load(r)\n        out += d[\"results\"]\n        url = d[\"next\"]\n    return sorted(out, key=lambda a: a[\"path\"])\n\n\ndef open_asset(asset_id):\n    url = f\"{API}/assets/{asset_id}/download/\"\n    return h5py.File(remfile.File(url), \"r\")\n\n\ndef _ragged(index, data_len):\n    starts = np.concatenate([[0], index[:-1]]).astype(np.int64)\n    return starts, index.astype(np.int64)\n\n\ndef _intervals(table, label_col=\"label\"):\n    lab = table[label_col][:].astype(str)\n    return lab, table[\"start_time\"][:], table[\"stop_time\"][:]\n\n\ndef count_in(spk, starts, stops):\n    \"\"\"Spikes of a sorted train inside intervals.\"\"\"\n    return int(np.sum(np.searchsorted(spk, stops) - np.searchsorted(spk, starts)))\n\n\ndef lag_counts(a, b, lo, hi):\n    \"\"\"All lags b - a within [lo, hi) for sorted trains a and b.\"\"\"\n    i0 = np.searchsorted(b, a + lo)\n    i1 = np.searchsorted(b, a + hi)\n    n = i1 - i0\n    if n.sum() == 0:\n        return np.zeros(0)\n    rep = np.repeat(np.arange(len(a)), n)\n    offs = np.arange(n.sum()) - np.repeat(np.cumsum(n) - n, n)\n    return b[i0[rep] + offs] - a[rep]\n\n\ndef burst_index(spk):\n    \"\"\"M: mean count in 3-5 ms ACG bins over mean count in 200-300 ms bins.\"\"\"\n    if len(spk) < 10:\n        return np.nan\n    d = lag_counts(spk, spk, 0.0005, 0.3)\n    near = np.sum((d >= 0.003) & (d < 0.005)) / 2.0\n    far = np.sum((d >= 0.2) & (d < 0.3)) / 100.0\n    return near / far if far > 0 else np.nan\n\n\n# ---------------------------------------------------------------- waveforms\ndef mean_waveform(units, k, n_spikes=200):\n    wii = units[\"waveforms_index_index\"]\n    wi = units[\"waveforms_index\"]\n    s0 = int(wii[k - 1]) if k > 0 else 0\n    s1 = int(wii[k])\n    n = min(n_spikes, s1 - s0)\n    if n <= 0:\n        return None\n    ends = wi[s0:s0 + n]\n    r0 = int(wi[s0 - 1]) if s0 > 0 else 0\n    w = units[\"waveforms\"][r0:int(ends[-1])].astype(np.float32)\n    nch = int(ends[0] - r0)\n    if nch <= 0 or w.shape[0] != n * nch:\n        return None\n    w = w.reshape(n, nch, 32)\n    bad = (np.abs(w).max(axis=(1, 2)) > 20000) | (np.abs(w).max(axis=(1, 2)) == 0)\n    if (~bad).sum() == 0:\n        return None\n    return w[~bad].mean(axis=0)  # channels x 32\n\n\ndef waveform_features(mw):\n    \"\"\"Trough-to-peak (ms), max channel, normalised 2nd-derivative segment.\"\"\"\n    p2p = mw.max(axis=1) - mw.min(axis=1)\n    ch = int(np.argmax(p2p))\n    y = mw[ch] - np.median(mw[ch, :5])\n    t = np.arange(32) / FS_WB\n    tt = np.arange(0, t[-1] + 1e-9, 1e-5)  # 100 kHz\n    yy = CubicSpline(t, y)(tt)\n    it = int(np.argmin(yy))\n    ip = it + int(np.argmax(yy[it:]))\n    tp = (ip - it) * 1e-2  # ms\n    at_end = ip >= len(yy) - 3\n    yn = yy / abs(yy[it]) if yy[it] != 0 else yy\n    d2 = np.gradient(np.gradient(yn))\n    seg = d2[it:it + 81]\n    if len(seg) < 81:\n        seg = np.concatenate([seg, np.full(81 - len(seg), np.nan)])\n    return tp, ch, at_end, seg\n\n\n# ---------------------------------------------------------------- LFP\ndef _read_lfp(f, i0, i1, cols=None):\n    d = f[\"processing/ecephys/LFP/lfp/data\"]\n    if cols is None:\n        return d[i0:i1, :]\n    return d[i0:i1, cols]\n\n\ndef ds2_amplitude_profile(f, ds2_peaks, max_events=600):\n    \"\"\"Mean LFP at the DS2 peak minus -36..-16 ms baseline, per channel (uV).\"\"\"\n    if len(ds2_peaks) == 0:\n        return None, 0\n    n_lfp = f[\"processing/ecephys/LFP/lfp/data\"].shape[0]\n    block = 1048576  # one chunk of rows\n    samp = np.round(ds2_peaks * FS_LFP).astype(np.int64)\n    blocks = np.bincount(samp // block)\n    order = np.argsort(blocks)[::-1]\n    amps, used = [], 0\n    for b in order:\n        if used >= max_events or blocks[b] == 0:\n            break\n        i0, i1 = b * block, min((b + 1) * block, n_lfp)\n        x = _read_lfp(f, i0, i1).astype(np.float32) * UV_PER_STEP\n        s = samp[(samp >= i0 + 50) & (samp < i1 - 50)] - i0\n        s = s[: max_events - used]\n        if len(s) == 0:\n            continue\n        bl0, bl1 = int(round(0.036 * FS_LFP)), int(round(0.016 * FS_LFP))\n        for si in s:\n            amps.append(x[si] - x[si - bl0:si - bl1].mean(axis=0))\n        used += len(s)\n        del x\n    if not amps:\n        return None, 0\n    return np.mean(amps, axis=0), used\n\n\ndef phase_modulation(f, hil_col, awake, spikes, max_s=3600.0):\n    \"\"\"Per unit theta and gamma MRL, Rayleigh p, kappa and mean phase.\"\"\"\n    st, sp = awake\n    keep, tot = [], 0.0\n    for a, b in zip(st, sp):\n        if b - a < 2:\n            continue\n        if tot >= max_s:\n            break\n        b = min(b, a + (max_s - tot))\n        keep.append((a, b))\n        tot += b - a\n    out = {}\n    if not keep:\n        return out, 0.0\n    bands = {\"theta\": (4, 10, 0.5), \"gamma\": (30, 80, 1.0)}\n    sigs = {k: [] for k in bands}\n    for a, b in keep:\n        i0, i1 = int(a * FS_LFP), int(b * FS_LFP)\n        x = _read_lfp(f, i0, i1, hil_col).astype(np.float64)\n        for k, (lo, hi, _) in bands.items():\n            bb, aa = signal.butter(3, [lo / (FS_LFP / 2), hi / (FS_LFP / 2)], btype=\"band\")\n            z = signal.hilbert(signal.filtfilt(bb, aa, x))\n            sigs[k].append((i0, np.angle(z).astype(np.float32), np.abs(z).astype(np.float32)))\n    for k, (lo, hi, nsd) in bands.items():\n        allamp = np.concatenate([s[2] for s in sigs[k]])\n        thr = np.median(allamp) + nsd * allamp.std()\n        for u, spk in spikes.items():\n            ph = []\n            for i0, phase, amp in sigs[k]:\n                idx = np.round(spk * FS_LFP).astype(np.int64) - i0\n                idx = idx[(idx >= 0) & (idx < len(phase))]\n                idx = idx[amp[idx] > thr]\n                ph.append(phase[idx])\n            ph = np.concatenate(ph) if ph else np.zeros(0)\n            n = len(ph)\n            if n < 2:\n                out[(u, k)] = dict(n=n, mrl=np.nan, p=np.nan, kappa=np.nan, phase=np.nan)\n                continue\n            z = np.mean(np.exp(1j * ph))\n            r = np.abs(z)\n            R = n * r\n            p = np.exp(np.sqrt(1 + 4 * n + 4 * (n ** 2 - R ** 2)) - (1 + 2 * n))\n            out[(u, k)] = dict(n=n, mrl=r, p=min(p, 1.0), kappa=_kappa(r, n), phase=float(np.angle(z)))\n    return out, tot\n\n\ndef _kappa(r, n):\n    if r < 0.53:\n        k = 2 * r + r ** 3 + 5 * r ** 5 / 6\n    elif r < 0.85:\n        k = -0.4 + 1.39 * r + 0.43 / (1 - r)\n    else:\n        k = 1 / (r ** 3 - 4 * r ** 2 + 3 * r)\n    if n < 15:\n        k = max(k - 2 / (n * k), 0) if k < 2 else (n - 1) ** 3 * k / (n ** 3 + n)\n    return k\n\n\n# ---------------------------------------------------------------- wide band\ndef wideband_sites(f, spikes, n_blocks=4):\n    \"\"\"Channel (LFP column) of largest mean spike in the 300 Hz high-passed wide band.\"\"\"\n    d = f[\"acquisition/ElectricalSeries/data\"]\n    n = d.shape[0]\n    block = 1048576\n    nb = n // block\n    picks = np.linspace(1, max(nb - 2, 1), n_blocks).astype(int)\n    bb, aa = signal.butter(4, 300 / (FS_WB / 2), btype=\"high\")\n    sums = {u: np.zeros((40, d.shape[1])) for u in spikes}\n    cnt = {u: 0 for u in spikes}\n    for b in np.unique(picks):\n        i0, i1 = b * block, min((b + 1) * block, n)\n        x = d[i0:i1, :].astype(np.float32)\n        x = signal.filtfilt(bb, aa, x, axis=0).astype(np.float32)\n        for u, spk in spikes.items():\n            s = np.round(spk * FS_WB).astype(np.int64) - i0\n            s = s[(s >= 20) & (s < i1 - i0 - 20)][:300]\n            if len(s) == 0:\n                continue\n            idx = s[:, None] + np.arange(-20, 20)[None, :]\n            sums[u] += x[idx].sum(axis=0)\n            cnt[u] += len(s)\n        del x\n    out = {}\n    for u in spikes:\n        if cnt[u] >= 10:\n            m = sums[u] / cnt[u]\n            out[u] = (int(np.argmax(m.max(axis=0) - m.min(axis=0))), cnt[u])\n        else:\n            out[u] = (-1, cnt[u])\n    return out\n\n\n# ---------------------------------------------------------------- CCG\nBIN = 0.0005\nHALF = 0.05\nEDGES = np.arange(-HALF, HALF + BIN / 2, BIN)\nCENTRES = (EDGES[:-1] + EDGES[1:]) / 2\nCONN = (CENTRES > 0.0015) & (CENTRES < 0.005)\nSYNC = (CENTRES > -0.001) & (CENTRES < 0.001)\n\n\ndef ccg(a, b):\n    return np.histogram(lag_counts(a, b, -HALF, HALF), EDGES)[0].astype(float)\n\n\ndef ccg_test(c):\n    \"\"\"Returns (baseline, significant-bin mask) for a CCG (M).\"\"\"\n    base = ndimage.gaussian_filter1d(c, sigma=0.010 / BIN, mode=\"reflect\")\n    thr = stats.poisson.ppf(0.999999, np.maximum(base, 1e-12))\n    return base, c > thr\n\n\ndef two_consecutive(mask):\n    return bool(np.any(mask[:-1] & mask[1:]))\n\n\ndef transmission(a, b):\n    \"\"\"Excess b spikes at +1.5..+5 ms per a spike (C).\"\"\"\n    if len(a) == 0:\n        return np.nan\n    c = ccg(a, b)\n    base, _ = ccg_test(c)\n    return float((c[CONN] - base[CONN]).sum() / len(a))\n\n\ndef burst_spikes(a, isi=0.006):\n    \"\"\"First and second spikes of bursts (spikes at most 6 ms apart).\"\"\"\n    d = np.diff(a)\n    prev_long = np.concatenate([[True], d > isi])\n    next_short = np.concatenate([d <= isi, [False]])\n    first = np.where(prev_long & next_short)[0]\n    return a[first], a[first + 1]\n\n\n# ---------------------------------------------------------------- spatial\ndef smooth_pos(t, xy, sd_s=0.25):\n    dt = np.median(np.diff(t))\n    out = np.empty_like(xy)\n    for j in range(xy.shape[1]):\n        v = xy[:, j].copy()\n        ok = np.isfinite(v)\n        if ok.sum() < 2:\n            out[:, j] = np.nan\n            continue\n        v[~ok] = np.interp(np.flatnonzero(~ok), np.flatnonzero(ok), v[ok])\n        out[:, j] = ndimage.gaussian_filter1d(v, sd_s / dt)\n    return out\n\n\ndef speed(t, xy_cm):\n    s = smooth_pos(t, xy_cm)\n    v = np.sqrt((np.gradient(s[:, 0], t)) ** 2 + (np.gradient(s[:, 1], t)) ** 2)\n    return v\n\n\ndef nan_smooth(rate, occ_ok, sd_bins):\n    r = np.where(occ_ok, rate, 0.0)\n    w = ndimage.gaussian_filter(occ_ok.astype(float), sd_bins, mode=\"constant\")\n    s = ndimage.gaussian_filter(r, sd_bins, mode=\"constant\")\n    with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n        out = s / w\n    out[~occ_ok] = np.nan\n    return out\n\n\ndef fields_1d(m, min_bins=5, frac=0.5, min_peak=1.0):\n    \"\"\"Iterative local-maximum fields on a 1-D map (A, see docstring).\"\"\"\n    m = np.where(np.isfinite(m), m, 0.0)\n    free = np.ones(len(m), bool)\n    out = []\n    while free.any():\n        i = int(np.argmax(np.where(free, m, -1)))\n        pk = m[i]\n        if pk <= min_peak:\n            break\n        lo = i\n        while lo - 1 >= 0 and free[lo - 1] and m[lo - 1] > frac * pk:\n            lo -= 1\n        hi = i\n        while hi + 1 < len(m) and free[hi + 1] and m[hi + 1] > frac * pk:\n            hi += 1\n        free[lo:hi + 1] = False\n        if hi - lo + 1 >= min_bins:\n            out.append((lo, hi, pk))\n    return out\n\n\ndef field_2d(m, min_px=100, frac=0.2, min_rate=1.0):\n    \"\"\"Open-field field around the map's peak (M; C header): pixels connected\n    to the peak above max(20% of peak, 1 Hz); returns (mask, peak) or None.\"\"\"\n    if not np.isfinite(m).any():\n        return None\n    mm = np.where(np.isfinite(m), m, 0.0)\n    pk = mm.max()\n    if pk < min_rate:\n        return None\n    above = mm > max(frac * pk, min_rate)\n    lab, _ = ndimage.label(above)\n    i = np.unravel_index(np.argmax(mm), mm.shape)\n    mask = lab == lab[i]\n    if mask.sum() < min_px:\n        return None\n    return mask, pk\n\n\ndef skaggs_info(occ_p, rate):\n    ok = np.isfinite(rate) & (occ_p > 0)\n    p = occ_p[ok] / occ_p[ok].sum()\n    r = rate[ok]\n    lam = np.sum(p * r)\n    if lam <= 0:\n        return np.nan\n    with np.errstate(divide=\"ignore\", invalid=\"ignore\"):\n        t = np.where(r > 0, p * r * np.log2(r / lam), 0.0)\n    return float(t.sum())  # bits per second\n\n\ndef corr_maps(a, b):\n    ok = np.isfinite(a) & np.isfinite(b)\n    if ok.sum() < 10 or np.std(a[ok]) == 0 or np.std(b[ok]) == 0:\n        return np.nan\n    return float(np.corrcoef(a[ok], b[ok])[0, 1])\n\n\nOF_BINS = int(round(46 / 0.92))  # 50 pixels of 0.92 cm\n\n\ndef of_map(t, xy_cm, spk, sl=slice(None)):\n    \"\"\"Smoothed open-field rate map (Hz) from samples sl, speed > 3 cm/s.\"\"\"\n    dt = np.median(np.diff(t))\n    v = speed(t, xy_cm)\n    good = np.zeros(len(t), bool)\n    good[sl] = True\n    good &= (v > 3) & np.isfinite(xy_cm).all(axis=1)\n    ix = np.clip((xy_cm[:, 0] / 0.92).astype(int), 0, OF_BINS - 1)\n    iy = np.clip((xy_cm[:, 1] / 0.92).astype(int), 0, OF_BINS - 1)\n    occ = np.zeros((OF_BINS, OF_BINS))\n    np.add.at(occ, (ix[good], iy[good]), dt)\n    si = np.searchsorted(t, spk) - 1\n    si = si[(si >= 0) & (si < len(t))]\n    si = si[good[si]]\n    sc = np.zeros_like(occ)\n    np.add.at(sc, (ix[si], iy[si]), 1)\n    ok = occ > 0\n    with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n        raw = np.where(ok, sc / occ, np.nan)\n    return nan_smooth(raw, ok, 1.84 / 0.92), occ\n\n\nTM_BIN = 1.86\nCENTRAL_CM = 65.0\nSIDE_CM = 102.0\nRADIUS_CM = 32.5\nPORT_CM = SIDE_CM - 18.0\n\n\ndef tmaze_runs(f):\n    \"\"\"Linearised outbound runs: list of (times, lin_cm, arm, speed, left).\"\"\"\n    tr = f[\"intervals/trials\"]\n    T = {k: tr[k][:] for k in [\"arm_start\", \"arm_end\", \"sens_pass\", \"left_run\", \"stim_run\", \"error_run\", \"stop_time\"]}\n    g = f[\"processing/behavior/t_maze_position\"]\n    pos = g[\"position/data\"][:] * 32.5  # cm\n    rate = g[\"position/starting_time\"].attrs[\"rate\"]\n    t0 = g[\"position/starting_time\"][()]\n    t = t0 + np.arange(len(pos)) / rate\n    ca = g[\"central_arm_position/data\"][:] * 32.5  # cm, 65 at entry, 0 at junction\n    ang = f[\"processing/behavior/side_arm_angle/data\"][:]\n    v = speed(t, pos)\n    runs = []\n    for k in range(len(T[\"arm_start\"])):\n        if T[\"stim_run\"][k]:\n            continue\n        a = T[\"arm_start\"][k]\n        i0 = np.searchsorted(t, a)\n        i_end = np.searchsorted(t, T[\"stop_time\"][k])\n        side = np.abs(ang[i0:i_end]) * RADIUS_CM\n        reach = np.flatnonzero((side >= PORT_CM - 10) & (ca[i0:i_end] == 0))\n        if len(reach) == 0:\n            continue\n        i1 = i0 + reach[0]\n        if i1 - i0 < 5:\n            continue\n        cen = CENTRAL_CM - ca[i0:i1]\n        sd = np.abs(ang[i0:i1]) * RADIUS_CM\n        on_side = (ca[i0:i1] == 0) & (sd > 0)\n        lin = np.where(on_side, CENTRAL_CM + sd, np.clip(cen, 0, CENTRAL_CM))\n        runs.append(dict(t=t[i0:i1], lin=lin, side=on_side, v=v[i0:i1], left=bool(T[\"left_run\"][k]),\n                         error=bool(T[\"error_run\"][k]), dt=1 / rate))\n    return runs\n\n\nN_CEN = int(np.ceil(CENTRAL_CM / TM_BIN))\nN_SIDE = int(np.ceil(PORT_CM / TM_BIN))\n\n\ndef tmaze_bin(run):\n    \"\"\"Bin index on a track central (0..N_CEN-1), left side, right side.\"\"\"\n    lin = run[\"lin\"]\n    b = np.where(run[\"side\"], N_CEN + np.minimum(((lin - CENTRAL_CM) / TM_BIN).astype(int), N_SIDE - 1),\n                 np.minimum((lin / TM_BIN).astype(int), N_CEN - 1))\n    if not run[\"left\"]:\n        b = np.where(run[\"side\"], b + N_SIDE, b)\n    return b\n\n\nN_TM = N_CEN + 2 * N_SIDE\n\n\ndef tmaze_maps(runs, spikes, subset=None):\n    \"\"\"Occupancy and spike counts per bin for each unit (speed > 3 cm/s).\"\"\"\n    occ = np.zeros(N_TM)\n    sc = {u: np.zeros(N_TM) for u in spikes}\n    per_run = []\n    for j, r in enumerate(runs):\n        if subset is not None and j not in subset:\n            continue\n        b = tmaze_bin(r)\n        good = r[\"v\"] > 3\n        o = np.bincount(b[good], minlength=N_TM) * r[\"dt\"]\n        occ += o\n        rc = {}\n        for u, spk in spikes.items():\n            s = spk[(spk >= r[\"t\"][0]) & (spk < r[\"t\"][-1] + r[\"dt\"])]\n            si = np.clip(np.searchsorted(r[\"t\"], s) - 1, 0, len(r[\"t\"]) - 1)\n            si = si[good[si]]\n            c = np.bincount(b[si], minlength=N_TM).astype(float)\n            sc[u] += c\n            rc[u] = c\n        per_run.append(dict(occ=o, counts=rc, left=r[\"left\"]))\n    return occ, sc, per_run\n\n\ndef tm_smooth(raw, occ):\n    \"\"\"Smooth each segment of the linear track separately (M: 5.57 cm Gaussian).\"\"\"\n    out = np.full(N_TM, np.nan)\n    sd = 5.57 / TM_BIN\n    for lo, hi in [(0, N_CEN), (N_CEN, N_CEN + N_SIDE), (N_CEN + N_SIDE, N_TM)]:\n        ok = occ[lo:hi] > 0\n        r = np.where(ok, raw[lo:hi], 0.0)\n        w = ndimage.gaussian_filter1d(ok.astype(float), sd, mode=\"constant\")\n        s = ndimage.gaussian_filter1d(r, sd, mode=\"constant\")\n        with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n            seg = s / w\n        seg[~ok] = np.nan\n        out[lo:hi] = seg\n    return out\n\n\ndef tm_fields(m):\n    out = []\n    for lo, hi in [(0, N_CEN), (N_CEN, N_CEN + N_SIDE), (N_CEN + N_SIDE, N_TM)]:\n        for a, b, pk in fields_1d(m[lo:hi]):\n            out.append((lo + a, lo + b, pk))\n    return out\n\n\n# ---------------------------------------------------------------- one file\ndef process_file(asset, do_waveforms=True, do_lfp=True, do_space=True):\n    \"\"\"All per-unit and per-pair measures of one session.\"\"\"\n    f = open_asset(asset[\"asset_id\"])\n    res = dict(path=asset[\"path\"])\n    subj = f[\"general/subject/subject_id\"][()].decode()\n    res[\"subject\"] = subj\n    res[\"genotype\"] = f[\"general/subject/genotype\"][()].decode()\n    res[\"session\"] = f[\"general/session_id\"][()].decode() if \"general/session_id\" in f else asset[\"path\"]\n    u = f[\"units\"]\n    ct = u[\"cell_type\"][:].astype(str)\n    region = u[\"region\"][:].astype(str)\n    gid = u[\"global_id\"][:]\n    shank = u[\"shank\"][:]\n    drd2 = u[\"drd2_tagged\"][:]\n    sti = u[\"spike_times_index\"][:].astype(np.int64)\n    st_all = u[\"spike_times\"][:]\n    s0 = np.concatenate([[0], sti[:-1]])\n    spikes = {k: np.sort(st_all[s0[k]:sti[k]]) for k in range(len(ct))}\n    del st_all\n    n_lfp = f[\"processing/ecephys/LFP/lfp/data\"].shape[0]\n    span = n_lfp / FS_LFP\n    res[\"span\"] = span\n    lab, bst, bsp = _intervals(f[\"processing/behavior/brain_states\"])\n    dur = {s: float(np.sum((bsp - bst)[lab == s])) for s in [\"awake\", \"quiet\", \"nrem\", \"rem\"]}\n    res[\"state_dur\"] = dur\n    unsorted = sum(int(np.any(np.diff(u_spk) < 0)) for u_spk in\n                   [st_all_k for st_all_k in []])\n    rows = []\n    for k in range(len(ct)):\n        spk = spikes[k]\n        r = dict(path=asset[\"path\"], subject=subj, genotype=res[\"genotype\"], unit=k, global_id=int(gid[k]),\n                 cell_type=ct[k], type=TYPES.get(ct[k], \"other\"), region=region[k], shank=int(shank[k]),\n                 drd2_tagged=bool(drd2[k]), n_spikes=len(spk), rate=len(spk) / span)\n        for s in [\"awake\", \"quiet\", \"nrem\", \"rem\"]:\n            m = lab == s\n            r[f\"n_{s}\"] = count_in(spk, bst[m], bsp[m])\n            r[f\"rate_{s}\"] = r[f\"n_{s}\"] / dur[s] if dur[s] > 0 else np.nan\n        dw = dur[\"awake\"] + dur[\"quiet\"]\n        r[\"rate_wake_aq\"] = (r[\"n_awake\"] + r[\"n_quiet\"]) / dw if dw > 0 else np.nan\n        rows.append(r)\n    res[\"units\"] = rows\n    analyse = subj != EXCLUDED_SUBJECT\n    typ = np.array([TYPES.get(c, \"other\") for c in ct])\n    interest = [k for k in range(len(ct)) if typ[k] != \"other\"] if analyse else []\n    for k in interest:\n        rows[k][\"burst_index\"] = burst_index(spikes[k])\n\n    # waveforms and sites\n    elec = u[\"electrodes\"][:]\n    ei = u[\"electrodes_index\"][:].astype(np.int64)\n    e0 = np.concatenate([[0], ei[:-1]])\n    lfp_el = f[\"processing/ecephys/LFP/lfp/electrodes\"][:]\n    el_to_col = {int(e): j for j, e in enumerate(lfp_el)}\n    if do_waveforms:\n        for k in interest:\n            if typ[k] not in (\"GC\", \"MC\", \"nI\", \"wI\"):\n                continue\n            mw = mean_waveform(u, k)\n            if mw is None:\n                continue\n            tp, ch, at_end, seg = waveform_features(mw)\n            rows[k][\"tp_ms\"] = tp\n            rows[k][\"tp_at_end\"] = bool(at_end)\n            rows[k][\"d2\"] = seg\n            unit_el = elec[e0[k]:ei[k]]\n            rows[k][\"site_table\"] = el_to_col.get(int(unit_el[ch]), -1) if ch < len(unit_el) else -1\n    wide = \"acquisition/ElectricalSeries\" in f\n    res[\"wideband\"] = wide\n    if do_waveforms and wide:\n        exc = {k: spikes[k] for k in interest if typ[k] in (\"GC\", \"MC\")}\n        if exc:\n            ws = wideband_sites(f, exc)\n            for k, (col, n) in ws.items():\n                rows[k][\"site_wb\"] = col\n                rows[k][\"site_wb_n\"] = n\n                if col >= 0:\n                    # wide-band waveform at the site, for the classification\n                    pass\n\n    # LFP: DS2 amplitude profile, DS2 histograms, phase modulation\n    ds = f[\"processing/ecephys/dentate_spikes\"]\n    dtype = ds[\"type\"][:].astype(str)\n    ds2 = np.sort(ds[\"peak_time\"][:][dtype == \"DS2\"])\n    res[\"n_ds2\"] = len(ds2)\n    hil = np.flatnonzero(f[\"general/extracellular_ephys/electrodes/hilus_reference\"][:])\n    res[\"hilus_col\"] = [el_to_col.get(int(h), -1) for h in hil]\n    if do_lfp and analyse:\n        prof, nused = ds2_amplitude_profile(f, ds2)\n        res[\"ds2_profile\"] = prof\n        res[\"ds2_profile_n\"] = nused\n        for k in interest:\n            if prof is not None:\n                for key in (\"site_table\", \"site_wb\"):\n                    c = rows[k].get(key, -1)\n                    if c is not None and c >= 0:\n                        rows[k][\"ds2_amp_\" + key.split(\"_\")[1]] = float(prof[c])\n        # DS2 peri-event histograms (2 ms bins, +-100 ms)\n        edges = np.arange(-0.1, 0.1 + 1e-9, 0.002)\n        cen = (edges[:-1] + edges[1:]) / 2\n        for k in interest:\n            if len(ds2) == 0:\n                break\n            d = lag_counts(ds2, spikes[k], -0.1, 0.1)\n            h = np.histogram(d, edges)[0] / (len(ds2) * 0.002)\n            pk = np.abs(cen) < 0.02\n            bl = (np.abs(cen) > 0.05) & (np.abs(cen) < 0.1)\n            base = h[bl].mean()\n            rows[k][\"ds2_ratio\"] = h[pk].max() / base if base > 0 else np.nan\n            rows[k][\"ds2_peak_ms\"] = float(cen[pk][np.argmax(h[pk])] * 1000)\n            # control: DS2 times shifted by 0.5 s\n            d2 = lag_counts(ds2 + 0.5, spikes[k], -0.1, 0.1)\n            h2 = np.histogram(d2, edges)[0] / (len(ds2) * 0.002)\n            b2 = h2[bl].mean()\n            rows[k][\"ds2_ratio_shift\"] = h2[pk].max() / b2 if b2 > 0 else np.nan\n        if len(hil) and res[\"hilus_col\"][0] >= 0:\n            m = lab == \"awake\"\n            pm, tot = phase_modulation(f, res[\"hilus_col\"][0], (bst[m], bsp[m]),\n                                       {k: spikes[k] for k in interest if typ[k] in (\"GC\", \"MC\", \"CA3\")})\n            res[\"phase_seconds\"] = tot\n            for (k, band), v in pm.items():\n                for kk, vv in v.items():\n                    rows[k][f\"{band}_{kk}\"] = vv\n\n    # optogenetic suppression with 20 ms pulses\n    if \"intervals/light_pulses\" in f and analyse:\n        lp = f[\"intervals/light_pulses\"]\n        prot = lp[\"protocol\"][:].astype(str)\n        dur20 = np.isclose(lp[\"stop_time\"][:] - lp[\"start_time\"][:], 0.02, atol=0.002)\n        on = np.sort(lp[\"start_time\"][:][dur20 & (np.char.find(prot, \"_20ms_\") >= 0)])\n        res[\"n_pulses20\"] = len(on)\n        if len(on):\n            for k in interest:\n                spk = spikes[k]\n\n                def cnt(a, b):\n                    return count_in(spk, on + a, on + b)\n                resp = cnt(0.002, 0.015) / (0.013 * len(on))\n                pre = cnt(-0.020, 0.0) / (0.020 * len(on))\n                post = cnt(0.050, 0.200) / (0.150 * len(on))\n                rows[k][\"light_resp\"] = resp\n                rows[k][\"light_pre\"] = pre\n                rows[k][\"light_post\"] = post\n\n    # pairs: CCG tests on excitatory pairs recorded together\n    pairs = []\n    if analyse:\n        gc = [k for k in interest if typ[k] == \"GC\"]\n        mc = [k for k in interest if typ[k] == \"MC\"]\n        ca3 = [k for k in interest if typ[k] == \"CA3\"]\n        wake = (bst[lab == \"awake\"], bsp[lab == \"awake\"])\n        nrem = (bst[lab == \"nrem\"], bsp[lab == \"nrem\"])\n\n        def in_iv(spk, iv):\n            a = np.searchsorted(iv[0], spk, side=\"right\") - 1\n            ok = a >= 0\n            ok[ok] = spk[ok] < iv[1][a[ok]]\n            return spk[ok]\n        for a in gc:\n            for b in mc:\n                c = ccg(spikes[a], spikes[b])\n                base, sig = ccg_test(c)\n                fwd = two_consecutive(sig & CONN)\n                rev_c = c[::-1]\n                rb, rsig = ccg_test(rev_c)\n                rev = two_consecutive(rsig & CONN)\n                p = dict(pre=a, post=b, kind=\"GC-MC\", same_shank=bool(shank[a] == shank[b]),\n                         gc_to_mc=fwd, mc_to_gc=rev)\n                if fwd:\n                    p[\"tp_all\"] = float((c[CONN] - base[CONN]).sum() / max(len(spikes[a]), 1))\n                    f1, f2 = burst_spikes(spikes[a])\n                    p[\"n_burst\"] = len(f1)\n                    p[\"tp_first\"] = transmission(f1, spikes[b])\n                    p[\"tp_second\"] = transmission(f2, spikes[b])\n                    wa = in_iv(spikes[a], wake)\n                    na = in_iv(spikes[a], nrem)\n                    p[\"n_wake\"], p[\"n_nrem\"] = len(wa), len(na)\n                    p[\"tp_wake\"] = transmission(wa, spikes[b])\n                    p[\"tp_nrem\"] = transmission(na, spikes[b])\n                pairs.append(p)\n        for group, name in [(gc, \"GC-GC\"), (mc, \"MC-MC\"), (ca3, \"CA3-CA3\")]:\n            for i, a in enumerate(group):\n                for b in group[i + 1:]:\n                    c = ccg(spikes[a], spikes[b])\n                    _, sig = ccg_test(c)\n                    pairs.append(dict(pre=a, post=b, kind=name, same_shank=bool(shank[a] == shank[b]),\n                                      sync=two_consecutive(sig & SYNC)))\n    res[\"pairs\"] = pairs\n    # the authors' tables\n    mono = f[\"processing/ecephys/monosynaptic_connections\"]\n    res[\"authors_mono\"] = list(zip(mono[\"presynaptic_unit\"][:].tolist(), mono[\"postsynaptic_unit\"][:].tolist(),\n                                   mono[\"connection\"][:].astype(str).tolist()))\n    zl = f[\"processing/ecephys/zero_lag_synchrony\"]\n    res[\"authors_sync\"] = list(zip(zl[\"unit_1\"][:].tolist(), zl[\"unit_2\"][:].tolist()))\n\n    # spatial\n    if do_space and analyse:\n        sp_units = {k: spikes[k] for k in interest if typ[k] in (\"GC\", \"MC\", \"CA3\")}\n        if \"intervals/trials\" in f and \"processing/behavior/t_maze_position\" in f:\n            res[\"tmaze\"] = tmaze_session(f, sp_units)\n        if \"processing/behavior/open_field_position\" in f:\n            res[\"openfield\"] = openfield_session(f, sp_units)\n    f.close()\n    return res\n\n\ndef tmaze_session(f, sp_units):\n    runs = tmaze_runs(f)\n    out = dict(n_runs=len(runs), n_left=sum(r[\"left\"] for r in runs))\n    if len(runs) < 4:\n        return out\n    occ, sc, per_run = tmaze_maps(runs, sp_units)\n    out[\"occ\"] = occ\n    out[\"maps\"], out[\"fields\"], out[\"info\"], out[\"splitter\"] = {}, {}, {}, {}\n    ok = occ > 0\n    for k in sp_units:\n        raw = np.where(ok, sc[k] / np.where(ok, occ, 1), np.nan)\n        m = tm_smooth(raw, occ)\n        out[\"maps\"][k] = m\n        out[\"fields\"][k] = tm_fields(m)\n        out[\"info\"][k] = skaggs_info(occ, m)\n    # splitters: central-arm fields of the left-run or right-run maps\n    for k in sp_units:\n        res_k = []\n        for side in (True, False):\n            idx = [j for j, r in enumerate(per_run) if r[\"left\"] == side]\n            o = sum(per_run[j][\"occ\"] for j in idx) if idx else np.zeros(N_TM)\n            s = sum(per_run[j][\"counts\"][k] for j in idx) if idx else np.zeros(N_TM)\n            okk = o > 0\n            m = tm_smooth(np.where(okk, s / np.where(okk, o, 1), np.nan), o)\n            for a, b, pk in fields_1d(m[:N_CEN]):\n                res_k.append((a, b))\n        out[\"splitter\"][k] = _splitter_test(per_run, k, res_k)\n    return out\n\n\ndef _splitter_test(per_run, k, fields):\n    \"\"\"Two-way ANOVA (position x choice) on per-run rates in each central field (M).\"\"\"\n    import pandas as pd\n    import statsmodels.api as sm\n    from statsmodels.formula.api import ols\n    best = None\n    for a, b in fields:\n        rows = []\n        for j, r in enumerate(per_run):\n            for x in range(a, b + 1):\n                if r[\"occ\"][x] > 0:\n                    rows.append(dict(rate=r[\"counts\"][k][x] / r[\"occ\"][x], pos=x, choice=int(r[\"left\"])))\n        d = pd.DataFrame(rows)\n        if d.empty or d.choice.nunique() < 2 or d.pos.nunique() < 2:\n            continue\n        try:\n            t = sm.stats.anova_lm(ols(\"rate ~ C(pos) + C(choice)\", data=d).fit(), typ=2)\n            p = float(t.loc[\"C(choice)\", \"PR(>F)\"])\n        except Exception:\n            continue\n        best = p if best is None else min(best, p)\n    return dict(n_fields=len(fields), p=best)\n\n\nOF_SESSIONS = [\"Old\", \"New\", \"Oldlast\", \"Old_Curtain\", \"New_Curtain\", \"Lroom_Old\", \"Lroom_New\"]\n\n\ndef openfield_session(f, sp_units):\n    g = f[\"processing/behavior/open_field_position\"]\n    out = {}\n    for name in OF_SESSIONS:\n        if name not in g:\n            continue\n        ss = g[name]\n        if ss[\"data\"].attrs.get(\"unit\") != \"meters\":\n            continue\n        xy = ss[\"data\"][:] * ss[\"data\"].attrs[\"conversion\"] * 100.0  # cm\n        t = ss[\"timestamps\"][:]\n        half = len(t) // 2\n        sess = dict(duration=float(t[-1] - t[0]), maps={}, half_r={}, field={})\n        occ = None\n        for k, spk in sp_units.items():\n            m, occ = of_map(t, xy, spk)\n            m1, _ = of_map(t, xy, spk, slice(0, half))\n            m2, _ = of_map(t, xy, spk, slice(half, None))\n            sess[\"maps\"][k] = m.astype(np.float32)\n            sess[\"half_r\"][k] = corr_maps(m1, m2)\n            fl = field_2d(m)\n            sess[\"field\"][k] = None if fl is None else (fl[0], fl[1])\n        sess[\"occ\"] = occ\n        out[name] = sess\n    return out\n"
+}
+```
+
+```
+File created successfully at: entries/senzai-2017/senzai.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/senzai-2017 && python3 - <<'EOF'
+p='senzai.py'; s=open(p).read()
+s=s.replace('''    unsorted = sum(int(np.any(np.diff(u_spk) < 0)) for u_spk in
+                   [st_all_k for st_all_k in []])
+''','')
+s=s.replace('''            out[u] = (int(np.argmax(m.max(axis=0) - m.min(axis=0))), cnt[u])
+        else:
+            out[u] = (-1, cnt[u])''','''            col = int(np.argmax(m.max(axis=0) - m.min(axis=0)))
+            out[u] = (col, cnt[u], m[:, col])
+        else:
+            out[u] = (-1, cnt[u], None)''')
+s=s.replace('''            for k, (col, n) in ws.items():
+                rows[k]["site_wb"] = col
+                rows[k]["site_wb_n"] = n
+                if col >= 0:
+                    # wide-band waveform at the site, for the classification
+                    pass''','''            for k, (col, n, w) in ws.items():
+                rows[k]["site_wb"] = col
+                rows[k]["site_wb_n"] = n
+                if w is not None:
+                    tp, _, at_end, seg = waveform_features(w[None, :])
+                    rows[k]["tp_wb_ms"] = tp
+                    rows[k]["d2_wb"] = seg''')
+s=s.replace('''    t = np.arange(32) / FS_WB''','''    t = np.arange(mw.shape[1]) / FS_WB''')
+open(p,'w').write(s)
+EOF
+date -u
+```
+
+```
+Mon Nov 23 23:12:47 UTC 2026
+```
+
+**Agent**
+
+Testing the per-file pass on a small DRD2 session, with timing and memory.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && cat > t1.py <<'EOF'
+import sys, time, resource, pickle
+sys.path.insert(0,'entries/senzai-2017')
+import senzai as S
+assets=S.list_assets()
+a=[x for x in assets if sys.argv[1] in x['path']][0]
+t=time.time()
+r=S.process_file(a)
+print('time', time.time()-t, 'maxrss MB', resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024)
+pickle.dump(r, open(f'res_{sys.argv[1]}.pkl','wb'))
+import pandas as pd
+u=pd.DataFrame(r['units'])
+cols=[c for c in u.columns if c not in ('d2','d2_wb')]
+print(u[u.type!='other'][cols].groupby('type').median(numeric_only=True).T.to_string())
+p=pd.DataFrame(r['pairs']); print(p.groupby('kind').sum(numeric_only=True).T)
+print(r.get('n_pulses20'), r['n_ds2'], r.get('ds2_profile_n'), r.get('phase_seconds'), r['hilus_col'])
+print('tmaze', {k:v for k,v in r.get('tmaze',{}).items() if k in ('n_runs','n_left')}, 'of', list(r.get('openfield',{}).keys()))
+EOF
+python t1.py YutaMouse55-160901 2>&1 | tail -80
+```
+
+```
+time 20.99491548538208 maxrss MB 994.70703125
+type                      CA3            nI            wI
+unit                33.000000     36.500000     28.000000
+global_id         2898.000000   2901.500000   2893.000000
+shank                4.000000      5.500000      4.000000
+drd2_tagged          0.000000      0.000000      0.000000
+n_spikes         38156.000000  42563.000000  23321.000000
+rate                 0.801085      0.893610      0.489624
+n_awake          10933.000000   3979.000000   1207.000000
+rate_awake           1.079909      0.393026      0.119222
+n_quiet            431.000000    363.500000     10.000000
+rate_quiet           0.853465      0.719802      0.019802
+n_nrem            5987.000000  17638.500000    338.000000
+rate_nrem            0.628359      1.851228      0.035474
+n_rem              412.000000   2583.000000     13.000000
+rate_rem             0.316923      1.986923      0.010000
+rate_wake_aq         1.080158      0.408552      0.114498
+burst_index          6.362756      5.359902      0.945351
+ds2_ratio            1.639610      2.184196      1.653587
+ds2_peak_ms         11.000000     -2.000000      5.000000
+[... 25 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python t1.py YutaMouse41-150903 2>&1 | tail -60
+```
+
+```
+time 72.26360630989075 maxrss MB 2718.4296875
+type                      CA3            GC            MC            nI             wI
+unit             2.000000e+00  2.900000e+01  2.400000e+01  3.900000e+01      36.500000
+global_id        1.062000e+03  1.089000e+03  1.084000e+03  1.099000e+03    1096.500000
+shank            1.000000e+00  5.000000e+00  4.000000e+00  5.000000e+00       5.000000
+drd2_tagged      0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00       0.000000
+n_spikes         4.560700e+04  1.145500e+04  2.854300e+04  1.429907e+06  149203.500000
+rate             1.129750e+00  2.837566e-01  7.070507e-01  3.542083e+01       3.695983
+n_awake          1.708850e+04  2.017000e+03  8.696000e+03  4.765500e+05   69506.500000
+rate_awake       1.389422e+00  1.639971e-01  7.070494e-01  3.874705e+01       5.651394
+n_quiet          2.305000e+02  3.700000e+01  2.400000e+02  5.008000e+03     638.500000
+rate_quiet       9.110672e-01  1.462451e-01  9.486166e-01  1.979447e+01       2.523715
+n_nrem           3.890000e+03  1.405000e+03  2.358000e+03  7.544300e+04    5311.500000
+rate_nrem        1.315522e+00  4.751437e-01  7.974298e-01  2.551336e+01       1.796246
+n_rem            1.690000e+02  5.200000e+01  1.210000e+02  7.815000e+03    1007.500000
+rate_rem         9.037433e-01  2.780749e-01  6.470588e-01  4.179144e+01       5.387701
+rate_wake_aq     1.379780e+00  1.684990e-01  7.219567e-01  3.836504e+01       5.587078
+burst_index      7.313509e+00  1.201216e+01  6.672185e+00  1.128031e+00       0.251566
+ds2_ratio        1.290021e+00  4.127466e+00  3.370508e+00  5.428391e+00       2.471403
+ds2_peak_ms      5.000000e+00 -3.000000e+00 -1.000000e+00 -3.000000e+00      -1.000000
+[... 33 more lines not kept]
+```
+
+**Agent**
+
+Works: 72 s and 2.7 GB peak on the largest kind of file. I'll cut the wide-band memory by filtering 16 columns at a time, then check the spatial outputs before the full pass.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import pickle, numpy as np, sys
+sys.path.insert(0,'entries/senzai-2017')
+import senzai as S
+r=pickle.load(open('res_YutaMouse41-150903.pkl','rb'))
+tm=r['tmaze']; occ=tm['occ']
+print('occ central', occ[:S.N_CEN].round(1)); print('left', occ[S.N_CEN:S.N_CEN+S.N_SIDE].round(1)); print('right', occ[S.N_CEN+S.N_SIDE:].round(1))
+typ={u['unit']:u['type'] for u in r['units']}
+for k,fl in list(tm['fields'].items())[:12]: print(k, typ[k], [(a,b,round(p,1)) for a,b,p in fl], round(tm['info'][k],3), tm['splitter'][k])
+of=r['openfield']
+for s,v in of.items():
+    hr=[(typ[k], round(x,2)) for k,x in v['half_r'].items()]
+    print(s, round(v['duration']), (v['occ']>0).sum(), hr[:10], sum(f is not None for f in v['field'].values()))
+EOF
+```
+
+```
+occ central [0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.2 0.2 1.8 1.5 1.8 1.3
+ 1.2 1.1 1.1 1.9 2.3 1.5 2.4 1.8 1.1 1.2 1.3 2.2 2.5 2.1 3.3 2.9 2.5]
+left [4.6 3.9 3.2 3.6 4.2 4.  3.6 4.8 4.8 2.7 3.  4.1 5.4 3.8 2.  2.8 3.9 4.5
+ 3.  3.3 4.2 5.8 7.4 7.3 6.3 5.1 5.7 4.2 5.  2.9 2.6 2.3 3.  2.7 3.5 6.2
+ 6.7 1.5 1.  0.8 0.  0.  0.  0.  0.  0. ]
+right [1.3 2.4 2.2 1.2 1.  0.7 0.7 0.6 0.7 1.2 0.7 1.  0.8 1.6 1.1 0.9 1.3 1.1
+ 0.7 0.9 1.1 1.  0.8 1.1 2.2 1.7 1.  0.8 1.4 0.9 1.  1.7 2.2 1.5 0.8 1.4
+ 1.9 1.5 0.9 0.8 0.  0.  0.  0.  0.  0. ]
+0 CA3 [(30, 34, np.float64(3.1)), (12, 20, np.float64(2.5)), (21, 29, np.float64(1.3)), (35, 47, np.float64(6.7)), (48, 72, np.float64(3.1)), (81, 89, np.float64(5.3)), (90, 94, np.float64(2.5)), (102, 111, np.float64(1.2))] 0.888 {'n_fields': 4, 'p': 0.5734133855735909}
+1 CA3 [(64, 74, np.float64(1.9)), (114, 120, np.float64(4.5))] 0.432 {'n_fields': 0, 'p': None}
+3 CA3 [(14, 30, np.float64(2.0)), (69, 74, np.float64(2.3)), (62, 68, np.float64(1.1))] 0.288 {'n_fields': 3, 'p': 0.4849557228623455}
+4 CA3 [(20, 34, np.float64(1.6)), (70, 74, np.float64(3.0)), (65, 69, np.float64(1.4))] 0.26 {'n_fields': 2, 'p': 0.05644134024668647}
+7 GC [] 0.024 {'n_fields': 0, 'p': None}
+8 GC [] 0.026 {'n_fields': 0, 'p': None}
+9 GC [(69, 74, np.float64(1.2))] 0.056 {'n_fields': 0, 'p': None}
+11 GC [] 0.04 {'n_fields': 0, 'p': None}
+12 GC [] 0.019 {'n_fields': 0, 'p': None}
+13 GC [] 0.051 {'n_fields': 0, 'p': None}
+14 MC [(35, 44, np.float64(1.3)), (67, 74, np.float64(1.3))] 0.376 {'n_fields': 0, 'p': None}
+15 GC [] 0.04 {'n_fields': 0, 'p': None}
+[... 6 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import h5py, remfile, json, numpy as np, sys
+sys.path.insert(0,'entries/senzai-2017')
+import senzai as S
+assets=S.list_assets()
+a=[x for x in assets if 'YutaMouse41-150903' in x['path']][0]
+f=S.open_asset(a['asset_id'])
+g=f['processing/behavior/t_maze_position']; ca=g['central_arm_position/data'][:]; ang=f['processing/behavior/side_arm_angle/data'][:]
+pos=g['position/data'][:]
+t=0.0256+np.arange(len(ca))/39.0625
+tr=f['intervals/trials']; st=tr['start_time'][:]; a0=tr['arm_start'][:]; a1=tr['arm_end'][:]; sp=tr['sens_pass'][:]
+for k in range(3):
+    i=np.searchsorted(t,[st[k],a0[k],a1[k],sp[k]])
+    print(k, st[k],a0[k],a1[k],sp[k], 'ca at', ca[i].round(2), 'ang', ang[i].round(2))
+    seg=slice(i[0],i[3]); print(' ca', ca[seg][::10].round(2)); print(' pos', pos[seg][::10].round(2).tolist()[:30])
+EOF
+```
+
+```
+0 9.0704 21.3968 22.674400000000002 26.2776 ca at [1.91 1.23 0.04 0.  ] ang [ 0.   -0.   -0.   -2.44]
+ ca [ 1.91  1.89  1.87  0.    0.    1.82  0.    1.8   1.75  1.76  1.81  1.84
+  1.84  1.88  1.9   1.91  1.87  0.    0.    0.    0.    1.97  1.96  1.96
+  1.96  1.95  0.    0.    0.    0.    0.    0.    0.    1.98  1.95  1.94
+  1.95  0.    1.94  1.94  0.    0.    0.    1.93  1.84  1.75  1.61  1.43
+  1.25  1.06  0.75  0.48  0.23  0.04 -0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.    0.    0.    0.    0.  ]
+ pos [[0.97, 0.01], [0.95, -0.02], [0.93, 0.03], [0.89, 0.1], [0.89, 0.13], [0.88, 0.08], [0.89, 0.11], [0.85, 0.1], [0.81, 0.05], [0.82, 0.04], [0.87, 0.03], [0.9, 0.04], [0.9, 0.0], [0.93, -0.08], [0.95, -0.05], [0.97, -0.05], [0.92, -0.08], [0.97, -0.15], [0.97, -0.18], [1.0, -0.14], [1.03, -0.13], [1.03, -0.08], [1.02, -0.1], [1.02, -0.04], [1.02, -0.05], [1.0, -0.06], [0.98, -0.11], [0.98, -0.11], [0.98, -0.13], [0.98, -0.12]]
+1 91.9688 111.3792 112.932 123.09360000000001 ca at [ 0.    1.19 -0.    0.  ] ang [ 2.99 -0.    0.01  2.42]
+ ca [ 0.    0.    0.    0.    1.98  0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.    0.    0.    0.    0.    0.    1.97  1.9   1.91
+  1.88  1.96  1.95  1.94  1.99  1.99  1.96  1.93  1.93  0.    0.    0.
+  0.    1.93  0.    0.    0.    1.96  0.    0.    0.    1.95  0.    0.
+  1.93  0.    0.    1.94  0.    1.93  1.93  0.    0.    1.96  0.    0.
+  0.    0.    0.    1.93  0.    0.    0.    0.    1.98  1.93  1.86  1.74
+  1.62  1.52  1.39  1.24  1.17  1.15  0.92  0.65  0.35  0.08 -0.   -0.
+ -0.   -0.   -0.   -0.   -0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.  ]
+[... 12 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/senzai-2017 && python3 - <<'EOF'
+p='senzai.py'; s=open(p).read()
+old='''        a = T["arm_start"][k]
+        i0 = np.searchsorted(t, a)
+        i_end = np.searchsorted(t, T["stop_time"][k])'''
+new='''        a = T["arm_start"][k]
+        i0 = np.searchsorted(t, a)
+        # arm_start is ~26 cm into the central arm; go back to the entry (A)
+        while i0 > 0 and ca[i0 - 1] > 0:
+            i0 -= 1
+        i_end = np.searchsorted(t, T["stop_time"][k])'''
+assert old in s; s=s.replace(old,new)
+old='''        lin = np.where(on_side, CENTRAL_CM + sd, np.clip(cen, 0, CENTRAL_CM))
+        runs.append(dict(t=t[i0:i1], lin=lin, side=on_side, v=v[i0:i1], left=bool(T["left_run"][k]),'''
+new='''        lin = np.where(on_side, CENTRAL_CM + sd, np.clip(cen, 0, CENTRAL_CM))
+        valid = on_side | (ca[i0:i1] > 0)
+        runs.append(dict(t=t[i0:i1], lin=lin, side=on_side, v=np.where(valid, v[i0:i1], 0.0), left=bool(T["left_run"][k]),'''
+assert old in s; s=s.replace(old,new)
+old='''    for b in np.unique(picks):
+        i0, i1 = b * block, min((b + 1) * block, n)
+        x = d[i0:i1, :].astype(np.float32)
+        x = signal.filtfilt(bb, aa, x, axis=0).astype(np.float32)
+        for u, spk in spikes.items():
+            s = np.round(spk * FS_WB).astype(np.int64) - i0
+            s = s[(s >= 20) & (s < i1 - i0 - 20)][:300]
+            if len(s) == 0:
+                continue
+            idx = s[:, None] + np.arange(-20, 20)[None, :]
+            sums[u] += x[idx].sum(axis=0)
+            cnt[u] += len(s)
+        del x'''
+new='''    for b in np.unique(picks):
+        i0, i1 = b * block, min((b + 1) * block, n)
+        sel = {}
+        for u, spk in spikes.items():
+            s = np.round(spk * FS_WB).astype(np.int64) - i0
+            sel[u] = s[(s >= 20) & (s < i1 - i0 - 20)][:300]
+            cnt[u] += len(sel[u])
+        for c0 in range(0, d.shape[1], 16):  # 16 columns at a time, for memory
+            x = d[i0:i1, c0:c0 + 16].astype(np.float32)
+            x = signal.filtfilt(bb, aa, x, axis=0).astype(np.float32)
+            for u, s in sel.items():
+                if len(s):
+                    idx = s[:, None] + np.arange(-20, 20)[None, :]
+                    sums[u][:, c0:c0 + 16] += x[idx].sum(axis=0)
+            del x'''
+assert old in s; s=s.replace(old,new)
+open(p,'w').write(s)
+EOF
+cd $TMPDIR && . dev/bin/activate && python t1.py YutaMouse41-150903 2>&1 | grep -E "time|tmaze" ; python - <<'EOF'
+import pickle,sys
+sys.path.insert(0,'entries/senzai-2017')
+import senzai as S
+r=pickle.load(open('/tmp/claude-1001/res_YutaMouse41-150903.pkl','rb'))
+print(r['tmaze']['occ'][:S.N_CEN].round(1))
+EOF
+```
+
+```
+time 70.83565354347229 maxrss MB 1749.6953125
+tmaze {'n_runs': 17, 'n_left': 8} of ['Old', 'New', 'Oldlast', 'Old_Curtain', 'New_Curtain']
+[2.4 2.4 3.  2.8 3.3 1.7 1.7 1.5 1.9 2.5 3.  1.5 2.4 2.1 2.1 1.5 1.8 1.3
+ 1.2 1.1 1.1 1.9 2.3 1.5 2.4 1.8 1.1 1.2 1.3 2.2 2.5 2.1 3.3 2.9 2.5]
+Shell cwd was reset to
+```
+
+**Agent**
+
+Now the full pass over all 101 files, 4 processes, caching results for developing the claim analyses.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && mkdir -p cache && cat > run_all.py <<'EOF'
+import sys, time, pickle, os
+sys.path.insert(0,'entries/senzai-2017')
+import senzai as S
+from concurrent.futures import ProcessPoolExecutor
+def job(a):
+    out=f"cache/{os.path.basename(a['path'])}.pkl"
+    if os.path.exists(out): return a['path'], 0
+    t=time.time()
+    try:
+        r=S.process_file(a)
+    except Exception as e:
+        return a['path'], repr(e)
+    pickle.dump(r, open(out,'wb'))
+    return a['path'], time.time()-t
+if __name__=='__main__':
+    assets=S.list_assets()
+    t=time.time()
+    with ProcessPoolExecutor(4) as ex:
+        for p,dt in ex.map(job, sorted(assets, key=lambda a:-a['size'])):
+            print(round(time.time()-t), p.split('/')[-1][:40], dt, flush=True)
+EOF
+date -u; python run_all.py 2>&1 | tail -110; date -u
+```
+
+```
+Mon Nov 23 23:16:44 UTC 2026
+305 sub-YutaMouse41_ses-YutaMouse41-150908_b 74.85190272331238
+305 sub-YutaMouse42_ses-YutaMouse42-151111_e 68.57478141784668
+entries/senzai-2017/senzai.py:538: RuntimeWarning: invalid value encountered in cast
+  b = np.where(run["side"], N_CEN + np.minimum(((lin - CENTRAL_CM) / TM_BIN).astype(int), N_SIDE - 1),
+entries/senzai-2017/senzai.py:539: RuntimeWarning: invalid value encountered in cast
+  np.minimum((lin / TM_BIN).astype(int), N_CEN - 1))
+340 sub-YutaMouse54_ses-YutaMouse54-160702_b 92.89076900482178
+340 sub-YutaMouse42_ses-YutaMouse42-151105_b 59.73443055152893
+360 sub-YutaMouse41_ses-YutaMouse41-150911_b 61.10331916809082
+entries/senzai-2017/senzai.py:538: RuntimeWarning: invalid value encountered in cast
+  b = np.where(run["side"], N_CEN + np.minimum(((lin - CENTRAL_CM) / TM_BIN).astype(int), N_SIDE - 1),
+entries/senzai-2017/senzai.py:539: RuntimeWarning: invalid value encountered in cast
+  np.minimum((lin / TM_BIN).astype(int), N_CEN - 1))
+382 sub-YutaMouse41_ses-YutaMouse41-150902_b 76.90805268287659
+382 sub-YutaMouse33_ses-YutaMouse33-150226_b KeyError("Unable to synchronously open object (object 'zero_lag_synchrony' doesn't exist)")
+382 sub-YutaMouse33_ses-YutaMouse33-150221_b 36.1556293964386
+382 sub-YutaMouse57_ses-YutaMouse57-161007_b 4.709587097167969
+421 sub-YutaMouse33_ses-YutaMouse33-150220_b 55.912379026412964
+437 sub-YutaMouse56_ses-YutaMouse56-160911_b 65.32497143745422
+[... 93 more lines not kept]
+```
+
+**Agent**
+
+Most files done in 20 min. Failures come from optional tables that are absent in some files, T-maze series stored with timestamps, and one file without `waveforms_index_index`. Checking that file.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python survey.py YutaMouse33-150218 2>&1 | grep -E "^units/|t_maze|side_arm|monosyn|zero_lag" | cut -c1-250; python survey.py YutaMouse42-151113 2>&1 | grep -E "t_maze_position/.*/(timestamps|starting_time|data)|side_arm_angle/" | cut -c1-200
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python survey.py YutaMouse33-150218_ > s33.txt 2>&1; grep -E "^units/|t_maze|side_arm|monosyn|zero_lag" s33.txt | cut -c1-250; python survey.py YutaMouse42-151113_ > s42.txt 2>&1;  grep -E "t_maze_position/|side_arm_angle/" s42.txt | cut -c1-200; tail -3 s33.txt
+```
+
+```
+a=[x for x in assets if x['path'].endswith(sys.argv[1])][0]
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && sed -i 's/x\[.path.\].endswith(sys.argv\[1\])/sys.argv[1] in x["path"]/' survey.py && python survey.py YutaMouse33-150218_ > s33.txt 2>&1; grep -E "^units/|t_maze|side_arm|monosyn|zero_lag" s33.txt | cut -c1-250; python survey.py YutaMouse42-151113_ > s42.txt 2>&1;  grep -E "t_maze_position/|side_arm_angle/" s42.txt | cut -c1-200
+```
+
+```
+processing/behavior/side_arm_angle/ TimeSeries angle along the circular side arms (column 2 of twhl_linearized); positive on runs the lab marks as left runs and negative on right runs, 0 while the mouse is on the central arm
+processing/behavior/side_arm_angle/data (94586,) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'radians'}
+processing/behavior/side_arm_angle/starting_time () float64 {'rate': np.float64(39.06249999870326), 'unit': 'seconds'}
+processing/behavior/t_maze_position/ Position 
+processing/behavior/t_maze_position/central_arm_position/ SpatialSeries the lab's linearized position on the central arm (column 1 of twhl_linearized, normalized units scaled to meters): about 2 where the mouse enters the central arm, falling to abou
+processing/behavior/t_maze_position/central_arm_position/data (94586,) float64 {'conversion': np.float64(0.325), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'meters'}
+processing/behavior/t_maze_position/central_arm_position/reference_frame () object {}
+processing/behavior/t_maze_position/central_arm_position/starting_time () float64 {'rate': np.float64(39.06249999870326), 'unit': 'seconds'}
+processing/behavior/t_maze_position/position/ SpatialSeries head position on the circular T-maze (twhl_norm), in the lab's normalized maze coordinates scaled to meters: one unit is the 32.5 cm radius of the circle formed by the side arms. In the came
+processing/behavior/t_maze_position/position/data (94586, 2) float64 {'conversion': np.float64(0.325), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'meters'}
+processing/behavior/t_maze_position/position/reference_frame () object {}
+processing/behavior/t_maze_position/position/starting_time () float64 {'rate': np.float64(39.06249999870326), 'unit': 'seconds'}
+units/ Units units sorted with KlustaKwik and curated in Klusters (clusters 2 and up of the .clu files); this file has no spike waveforms: t
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/senzai-2017 && python3 - <<'EOF'
+p='senzai.py'; s=open(p).read()
+rep=[('''    rate = g["position/starting_time"].attrs["rate"]
+    t0 = g["position/starting_time"][()]
+    t = t0 + np.arange(len(pos)) / rate
+''','''    if "timestamps" in g["position"]:
+        t = g["position/timestamps"][:]
+        rate = 1 / np.median(np.diff(t))
+    else:
+        rate = g["position/starting_time"].attrs["rate"]
+        t = g["position/starting_time"][()] + np.arange(len(pos)) / rate
+'''),
+('''        valid = on_side | (ca[i0:i1] > 0)
+''','''        valid = (on_side | (ca[i0:i1] > 0)) & np.isfinite(lin)
+        lin = np.where(valid, lin, 0.0)
+'''),
+('''    if do_waveforms:
+        for k in interest:''','''    res["has_waveforms"] = "waveforms_index_index" in u
+    if do_waveforms and res["has_waveforms"]:
+        for k in interest:'''),
+('''    mono = f["processing/ecephys/monosynaptic_connections"]
+    res["authors_mono"] = list(zip(mono["presynaptic_unit"][:].tolist(), mono["postsynaptic_unit"][:].tolist(),
+                                   mono["connection"][:].astype(str).tolist()))
+    zl = f["processing/ecephys/zero_lag_synchrony"]
+    res["authors_sync"] = list(zip(zl["unit_1"][:].tolist(), zl["unit_2"][:].tolist()))
+''','''    res["authors_mono"] = res["authors_sync"] = None
+    if "processing/ecephys/monosynaptic_connections" in f:
+        mono = f["processing/ecephys/monosynaptic_connections"]
+        res["authors_mono"] = list(zip(mono["presynaptic_unit"][:].tolist(), mono["postsynaptic_unit"][:].tolist(),
+                                       mono["connection"][:].astype(str).tolist()))
+    if "processing/ecephys/zero_lag_synchrony" in f:
+        zl = f["processing/ecephys/zero_lag_synchrony"]
+        res["authors_sync"] = list(zip(zl["unit_1"][:].tolist(), zl["unit_2"][:].tolist()))
+''')]
+for a,b in rep:
+    assert a in s, a[:50]; s=s.replace(a,b)
+open(p,'w').write(s)
+EOF
+cd $TMPDIR && . dev/bin/activate && date -u && python run_all.py 2>&1 | grep -v Warning | grep -v "np.minimum\|b = np.where" | tail -60; date -u
+```
+
+```
+Mon Nov 23 23:37:05 UTC 2026
+230 sub-YutaMouse55_ses-YutaMouse55-160902_b 27.220046997070312
+230 sub-YutaMouse38_ses-YutaMouse38-150709_b 0
+230 sub-YutaMouse42_ses-YutaMouse42-151104_b 46.83104205131531
+230 sub-YutaMouse45_ses-YutaMouse45-160302_b 20.989683389663696
+230 sub-YutaMouse45_ses-YutaMouse45-160305_b 22.471972942352295
+230 sub-YutaMouse39_ses-YutaMouse39-150803_b 36.76354217529297
+230 sub-YutaMouse37_ses-YutaMouse37-150611_b 23.25032377243042
+233 sub-YutaMouse55_ses-YutaMouse55b160907_b 32.40729784965515
+233 sub-YutaMouse45_ses-YutaMouse45-160304_b 28.464740753173828
+234 sub-YutaMouse42_ses-YutaMouse42-151114_b 27.96494483947754
+261 sub-YutaMouse39_ses-YutaMouse39-150729_b 30.880051374435425
+261 sub-YutaMouse45_ses-YutaMouse45-160303_b 15.477450370788574
+273 sub-YutaMouse44_ses-YutaMouse44-151129_b 39.87010145187378
+307 sub-YutaMouse42_ses-YutaMouse42-151116_b 73.68765783309937
+307 sub-YutaMouse20_ses-YutaMouse20-140328_b 18.429739713668823
+381 sub-YutaMouse55_ses-YutaMouse55-160911_b 120.03949189186096
+381 sub-YutaMouse20_ses-YutaMouse20-140325_b 40.02089595794678
+514 sub-YutaMouse44_ses-YutaMouse44-151128_b 241.21048736572266
+514 sub-YutaMouse44_ses-YutaMouse44-151130_b 0
 [... 43 more lines not kept]
 ```
 
+**Agent**
+
+All 101 files processed. Now prototyping the claim analyses on the cached results.
+
 **Agent calls Bash**
 
 ```bash
-sed -i 's/    s\["pulse20"\] = np.sort(s\["pulse20"\])/    s["pulse20_duplicates"] = int(len(s["pulse20"]) - len(np.unique(s["pulse20"])))\n    s["pulse20"] = np.unique(s["pulse20"])/' dg.py; grep -n "pulse20" dg.py; grep -n -A40 "claim:mc-deeper" $TMPDIR/dev_out.txt | cut -c1-200; tail -12 $TMPDIR/dev_out.txt
+cd $TMPDIR && . dev/bin/activate && ls cache | wc -l && python - <<'EOF'
+import pickle, glob, pandas as pd, numpy as np
+from scipy import stats
+R=[pickle.load(open(p,'rb')) for p in sorted(glob.glob('cache/*.pkl'))]
+U=pd.DataFrame([u for r in R for u in r['units']])
+U=U[U.subject!='YutaMouse57']
+print(U.type.value_counts())
+print('gid dup', U[U.global_id>=0].global_id.duplicated().sum())
+for t in ['nI','wI']:
+    x=U[U.type==t]; print(t, x.region.value_counts().to_dict(), 'median rate', x.rate.median(), 'awake', x.rate_awake.median())
+x=U[U.type.isin(['nI','wI'])&(U.region=='DG')]; print(x.groupby('type')[['rate','rate_awake']].median())
+print(stats.kruskal(U[U.type=='nI'].rate, U[U.type=='wI'].rate))
+for t in ['GC','MC','CA3']:
+    x=U[U.type==t]; print(t, len(x), x[['rate_awake','rate_wake_aq','rate_nrem','rate_rem']].median().round(3).to_dict())
+EOF
 ```
 
 ```
-283:    s["pulse20"] = stim["PulseStim_5V_20ms_LD12/timestamps"][:] if "PulseStim_5V_20ms_LD12" in stim else np.array([])
-286:    s["pulse20_decreasing"] = int(np.sum(np.diff(s["pulse20"]) < 0)) if len(s["pulse20"]) > 1 else 0
-287:    s["pulse20_duplicates"] = int(len(s["pulse20"]) - len(np.unique(s["pulse20"])))
-288:    s["pulse20"] = np.unique(s["pulse20"])
-716:===== cell 79 ['claim:mc-deeper']
-717-Units with a site: GC 153, MC 243, in 17 files of 4 mice
-718-DS2 amplitude at the unit's site (uV): GC median -38, MC median 271; Mann-Whitney P = 5.7e-09
-719-Fraction at a site where DS2 is positive (below the reversal): GC 0.40, MC 0.73
-720-By subject (median uV):
-721-            size     median       
-722-type          GC  MC     GC     MC
-723-subject                           
-724-YutaMouse33   16  63 -111.0 -181.0
-725-YutaMouse41   88  69  -59.0   51.0
-726-YutaMouse42   34  76  259.0  296.0
-727-YutaMouse54   15  35  -87.0  542.0
-728-Outside the plotted range: 0 units
-729------ 0 s
-730-
-731-===== cell 81 ['claim:gc-mc-classification']
+101
+type
+other    1320
+GC        583
+CA3       568
+MC        503
+nI        457
+wI        320
+Name: count, dtype: int64
+gid dup 0
+nI {np.str_('DG'): 248, np.str_('CA3'): 209} median rate 5.7985619952153415 awake 7.7891685988737995
+wI {np.str_('DG'): 258, np.str_('CA3'): 62} median rate 2.170852576400892 awake 2.934577925910292
+          rate  rate_awake
+type                      
+nI    7.649878    9.229783
+wI    2.053273    2.866458
+KruskalResult(statistic=np.float64(62.3670870646838), pvalue=np.float64(2.8504747412918488e-15))
+GC 583 {'rate_awake': 0.079, 'rate_wake_aq': 0.083, 'rate_nrem': 0.398, 'rate_rem': 0.205}
+MC 503 {'rate_awake': 0.726, 'rate_wake_aq': 0.714, 'rate_nrem': 0.907, 'rate_rem': 0.741}
+CA3 568 {'rate_awake': 0.45, 'rate_wake_aq': 0.445, 'rate_nrem': 0.473, 'rate_rem': 0.305}
+[... 1 more lines not kept]
+```
+
+**Agent**
+
+Rates look close to the paper. Checking the "b" sessions recorded on the same days as other files, as possible duplicate deposits.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import pickle, glob, numpy as np, os
+R={os.path.basename(p):pickle.load(open(p,'rb')) for p in sorted(glob.glob('cache/*.pkl'))}
+for k,r in R.items():
+    if 'b16' in k:
+        mate=[m for m in R if m.replace('-','b',1)==k or k.replace('b16','-16')==m]
+        print(k, 'span', round(r['span']), 'units', len(r['units']), 'nds2', r['n_ds2'], [ (m, round(R[m]['span']), len(R[m]['units']), R[m]['n_ds2']) for m in mate])
+        if mate:
+            a=sorted(u['n_spikes'] for u in r['units']); b=sorted(u['n_spikes'] for u in R[mate[0]]['units'])
+            print('   common spike counts', len(set(a)&set(b)))
+EOF
+grep -h "general/devices" -A1 s33.txt | head -3
+```
+
+```
+sub-YutaMouse51_ses-YutaMouse51b160514_behavior+ecephys.nwb.pkl span 32209 units 35 nds2 5887 []
+sub-YutaMouse51_ses-YutaMouse51b160516_behavior+ecephys.nwb.pkl span 32587 units 31 nds2 882 [('sub-YutaMouse51_ses-YutaMouse51-160516_behavior+ecephys.nwb.pkl', 43068, 44, 8651)]
+   common spike counts 0
+sub-YutaMouse54_ses-YutaMouse54b160701_behavior+ecephys.nwb.pkl span 40954 units 68 nds2 2345 [('sub-YutaMouse54_ses-YutaMouse54-160701_behavior+ecephys.nwb.pkl', 33504, 58, 1311)]
+   common spike counts 0
+sub-YutaMouse54_ses-YutaMouse54b160702_behavior+ecephys.nwb.pkl span 43242 units 108 nds2 122 [('sub-YutaMouse54_ses-YutaMouse54-160702_behavior+ecephys.nwb.pkl', 30681, 94, 49)]
+   common spike counts 0
+sub-YutaMouse55_ses-YutaMouse55b160907_behavior+ecephys.nwb.pkl span 44161 units 15 nds2 1550 [('sub-YutaMouse55_ses-YutaMouse55-160907_behavior+ecephys.nwb.pkl', 24650, 20, 8149)]
+   common spike counts 0
+sub-YutaMouse56_ses-YutaMouse56b160913_behavior+ecephys.nwb.pkl span 30356 units 20 nds2 18660 [('sub-YutaMouse56_ses-YutaMouse56-160913_behavior+ecephys.nwb.pkl', 47702, 40, 14609)]
+   common spike counts 0
+sub-YutaMouse56_ses-YutaMouse56b160914_behavior+ecephys.nwb.pkl span 29406 units 43 nds2 11443 [('sub-YutaMouse56_ses-YutaMouse56-160914_behavior+ecephys.nwb.pkl', 45038, 29, 6898)]
+   common spike counts 0
+sub-YutaMouse56_ses-YutaMouse56b160915_behavior+ecephys.nwb.pkl span 50069 units 28 nds2 5673 [('sub-YutaMouse56_ses-YutaMouse56-160915_behavior+ecephys.nwb.pkl', 23800, 33, 3023)]
+   common spike counts 0
+general/devices/ None 
+general/devices/linear_probe/ Device 32-site linear silicon probe implanted in addition to the shank probe (the experiment sheet lists a '32ch (linear probe)' and its channels in two columns of 16, 'top' and 'bottom', which are channel groups 9 and 10 of the lab's .xml file); the sheet gives no site spacing or separate location for it, and its units are not in the lab's unit summary
+general/devices/probe/ Device NeuroNexus silicon pro
+[... 1 more lines not kept]
+```
+
+**Agent**
+
+The "b" sessions are separate recordings (different spans, no shared spike counts, distinct unit IDs). Now writing the notebook generator, with a dev mode that loads the cache in place of streaming.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1016-j.neuron.2016.12.011.txt').read()
+import re
+for k in ['median = 7.97','n = 586','29 out of 107','5.5%','<0.2%','6.6%','36.7%','Spike transmission probability increased','reduced','59±35','r = -0.176','central arm compared','splitter cells was comparable','population remapping','only two','median correlation','deeper']:
+  i=t.find(k); print('==',k, t[max(0,i-700):i+500].replace('\n',' ') if i>=0 else None); print()
+" | fold -s -w 220 | head -150
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+Paper counts DG interneurons (248 narrow, 268 wide), matching the DG labels (248, 258), so DG-only is the reading the text supports. Writing the notebook now.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/cells_a.py",
+ "content": "#%% md\n# Reproducing Senzai & Buzsaki (2017) from DANDI:000003\n\n**Paper.** Senzai Y, Buzsaki G (2017). Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells. *Neuron* 93, 691-704. doi:10.1016/j.neuron.2016.12.011.\n\n**Dataset.** DANDI:000003, version **0.261122.2143** (doi:10.48324/dandi.000003/0.261122.2143). This version was asked for in the attempt's prompt; it is also the most recent published version, and the paper cites no version (its data statement names CRCNS). Every file is streamed from the archive; nothing is downloaded to disk.\n\n**Text read.** The claims file (`claims/senzai-2017.yaml`) was written from the accepted author manuscript in PubMed Central (PMC5293146): Results, figure legends and STAR Methods. The author of this attempt read the same text under `paper/`.\n\n**What the dataset holds.** 101 NWB files from 16 mice. YutaMouse57 (8 files) is not in the paper (dataset description) and is left out of every analysis. Each file has the sorted units with the authors' cell-type labels, spike times and stored waveforms (one file has none), the 1250 Hz LFP, brain states, dentate spikes, light pulses, the authors' tables of monosynaptic and zero-lag pairs (in most files), and T-maze trials and positions (42 files) or open-field positions (43 files). 17 files also hold the 20 kHz wide-band signal.\n\nThe table of claims and their status is in the Summary at the end; tested claims each have a section below. Two claims (gc-mc-distance, gc-backpropagation) are blocked: see their sections.\n#%%\nimport os\nos.environ.setdefault(\"OMP_NUM_THREADS\", \"1\")\nos.environ.setdefault(\"OPENBLAS_NUM_THREADS\", \"1\")\nimport time, zlib, resource\nfrom concurrent.futures import ProcessPoolExecutor\nimport numpy as np\nimport pandas as pd\nfrom scipy import stats\nimport senzai as S\n\npd.set_option(\"display.width\", 200)\npd.set_option(\"display.max_columns\", 40)\nPAPER = \"senzai-2017\"\n\n\ndef seed(claim):\n    return zlib.crc32(f\"{PAPER}/{claim}\".encode())\n\n\ndef mwu(a, b):\n    a, b = np.asarray(a, float), np.asarray(b, float)\n    a, b = a[np.isfinite(a)], b[np.isfinite(b)]\n    return stats.mannwhitneyu(a, b, alternative=\"two-sided\").pvalue\n\n\ndef kw(*g):\n    g = [np.asarray(x, float)[np.isfinite(np.asarray(x, float))] for x in g]\n    return stats.kruskal(*g).pvalue\n#%% LOAD\n# Stream every file and compute the per-unit and per-pair measures (senzai.process_file),\n# four files at a time. This is the long step (about 25 minutes).\nt0 = time.time()\nassets = S.list_assets()\nprint(len(assets), \"assets in DANDI:000003 version\", S.VERSION)\nwith ProcessPoolExecutor(4) as ex:\n    R = list(ex.map(S.process_file, sorted(assets, key=lambda a: -a[\"size\"])))\nR = sorted(R, key=lambda r: r[\"path\"])\nprint(f\"streamed and processed in {(time.time() - t0) / 60:.1f} min\")\n#%%\nunits_all = pd.DataFrame([u for r in R for u in r[\"units\"]])\nfiles = pd.DataFrame([dict(path=r[\"path\"], subject=r[\"subject\"], genotype=r[\"genotype\"], span_h=r[\"span\"] / 3600,\n                           n_units=len(r[\"units\"]), wideband=r.get(\"wideband\", False), waveforms=r.get(\"has_waveforms\", False),\n                           n_ds2=r[\"n_ds2\"], pulses20=r.get(\"n_pulses20\", 0), tmaze_runs=r.get(\"tmaze\", {}).get(\"n_runs\", 0),\n                           openfield=\",\".join(r.get(\"openfield\", {}).keys()),\n                           authors_mono=None if r[\"authors_mono\"] is None else len(r[\"authors_mono\"]),\n                           **{f\"{k}_h\": v / 3600 for k, v in r[\"state_dur\"].items()}) for r in R])\nU = units_all[units_all.subject != S.EXCLUDED_SUBJECT].copy()\nU[\"key\"] = U.path + \"#\" + U.unit.astype(str)\nDG_I = U.type.isin([\"nI\", \"wI\"]) & (U.region == \"DG\")\n#%% sanity\nprint(\"files:\", len(files), \" subjects:\", files.subject.nunique(), \" units in all files:\", len(units_all))\nprint(\"left out:\", S.EXCLUDED_SUBJECT, (files.subject == S.EXCLUDED_SUBJECT).sum(), \"files,\",\n      (units_all.subject == S.EXCLUDED_SUBJECT).sum(), \"units\")\nprint(\"\\nfiles by subject and genotype:\")\nprint(files.groupby([\"subject\", \"genotype\"]).agg(files=(\"path\", \"size\"), units=(\"n_units\", \"sum\"),\n                                                 hours=(\"span_h\", \"sum\")).round(1).to_string())\nprint(\"\\ncell-type labels by region (paper's mice):\")\nprint(pd.crosstab(U.cell_type, U.region, margins=True).to_string())\nprint(\"\\nunits with a global_id:\", (U.global_id >= 0).sum(), \" duplicated global_ids:\",\n      U[U.global_id >= 0].global_id.duplicated().sum())\nprint(\"\\nfiles with wide-band:\", files.wideband.sum(), \" with stored waveforms:\", files.waveforms.sum(),\n      \" with T-maze runs:\", (files.tmaze_runs > 0).sum(), \" with open fields:\", (files.openfield != \"\").sum(),\n      \" without the authors' monosynaptic table:\", files.authors_mono.isna().sum())\nprint(\"\\nstate hours (all files):\", files[[\"awake_h\", \"quiet_h\", \"nrem_h\", \"rem_h\"]].sum().round(1).to_dict())\nprint(\"session span (h): min %.2f median %.2f max %.2f\" % (files.span_h.min(), files.span_h.median(), files.span_h.max()))\nprint(\"\\nrates (Hz) by type, spikes over span: \")\nprint(U.groupby(\"type\").rate.describe().round(3).to_string())\nx = U[U.n_spikes > 0]\nprint(\"spike times: first\", round(min(r[\"units\"][0][\"rate\"] for r in R), 3), \"Hz ... (see below)\")\n#%% sanity\n# Units recorded on the same day in two files ('b' sessions): separate recordings or the same one twice?\npairs_same_day = []\nfor r in R:\n    name = r[\"path\"].split(\"ses-\")[1]\n    if \"b16\" in name:\n        mate = [q for q in R if q[\"path\"].split(\"ses-\")[1] == name.replace(\"b16\", \"-16\")]\n        if mate:\n            q = mate[0]\n            a = {u[\"n_spikes\"] for u in r[\"units\"]}\n            b = {u[\"n_spikes\"] for u in q[\"units\"]}\n            pairs_same_day.append(dict(b_file=name[:24], span_h=round(r[\"span\"] / 3600, 2), units=len(r[\"units\"]),\n                                       other_span_h=round(q[\"span\"] / 3600, 2), other_units=len(q[\"units\"]),\n                                       shared_spike_counts=len(a & b), n_ds2=r[\"n_ds2\"], other_n_ds2=q[\"n_ds2\"]))\nprint(pd.DataFrame(pairs_same_day).to_string())\n#%% sanity\n# The electrodes table's channel map against the wide-band signal: for GC and MC in the wide-band files,\n# the channel of the largest stored waveform (through units.electrodes) against the channel where the\n# mean spike is largest in the 300 Hz high-passed wide band.\nwb = U[U.type.isin([\"GC\", \"MC\"]) & U.site_wb.notna() & (U.site_wb >= 0) & U.site_table.notna()]\nsame = (wb.site_wb == wb.site_table)\nprint(\"GC/MC units with both sites:\", len(wb), \" same channel:\", same.sum(), f\"({same.mean():.3f})\")\nd = (wb.ds2_amp_wb - wb.ds2_amp_table).abs()\nprint(\"|DS2 amplitude difference| between the two sites (uV): median %.1f, 90th pct %.1f\" % (d.median(), d.quantile(0.9)))\nprint(\"wide-band spikes used per unit: median\", wb.site_wb_n.median(), \" min\", wb.site_wb_n.min())\n#%% sanity\n# Clock checks. (1) DS2 times against spikes: the peri-DS2 peak ratio with the true DS2 times and with\n# the DS2 times shifted by 0.5 s. (2) Light pulses against spikes: DRD2 mice's tagged units with true\n# and shifted pulse times are shown in the optotag section. (3) Positions against spikes: spatial\n# information with the spikes as recorded and shifted by 60 s, in the T-maze section.\nfor t in [\"GC\", \"MC\", \"CA3\", \"nI\", \"wI\"]:\n    x = U[(U.type == t) & U.ds2_ratio.notna()]\n    print(f\"{t:4s} n={len(x):4d}  DS2 peak ratio median: true {x.ds2_ratio.median():.2f}, shifted 0.5 s {x.ds2_ratio_shift.median():.2f}\")\nper_file = U[U.type.isin([\"GC\", \"MC\"]) & U.ds2_ratio.notna()].groupby(\"path\")[[\"ds2_ratio\", \"ds2_ratio_shift\"]].median()\nprint(\"files where the GC/MC median ratio is higher with true than shifted times:\",\n      (per_file.ds2_ratio > per_file.ds2_ratio_shift).sum(), \"of\", len(per_file))\nprint(per_file[per_file.ds2_ratio <= per_file.ds2_ratio_shift].round(2).to_string())\n#%% md\n## unit-counts\n\n> The second-stage classification divided dentate excitatory neurons into 586 putative granule cells (GC) and 500 putative mossy cells (MC).\n\nCounted from the units' `cell_type` labels, once per recording day (each unit has its own `global_id`; the probe was moved 70 um after each day).\n#%% claim:unit-counts\ncnt = U.drop_duplicates(\"global_id\").type.value_counts()\nprint(\"GC:\", cnt[\"GC\"], \" MC:\", cnt[\"MC\"], \" (paper 586 and 500, tolerance 10%)\")\nprint(\"including YutaMouse57:\", (units_all.cell_type == \"granule cell\").sum(), \"GC,\", (units_all.cell_type == \"mossy cell\").sum(), \"MC\")\nprint(\"\\nby subject:\")\nprint(pd.crosstab(U.subject, U.type)[[\"GC\", \"MC\", \"CA3\", \"nI\", \"wI\"]].to_string())\n#%% md\n## first-stage-labels\n\n> Narrow-waveform interneurons have a trough-to-peak latency below 0.425 ms, and among wide-waveform units the excitatory cells have a burst index above the threshold separating them from wide-waveform interneurons.\n\nTrough-to-peak latency from the mean of the first 200 stored waveforms on the channel of largest amplitude, upsampled to 100 kHz; burst index from the autocorrelogram (Methods). Threshold 1.2 (Methods) and 1.8 (Figure 1A legend). The 0.425 ms threshold is the dentate one; CA3 units have their own (0.525 ms, Methods) and are shown apart.\n#%% claim:first-stage-labels\ndef stage1(df, thr, tp_thr=0.425):\n    out = {}\n    n = df[df.type == \"nI\"]\n    out[\"nI below tp\"] = (n.tp_ms < tp_thr).mean(), len(n)\n    e = df[df.type.isin([\"GC\", \"MC\"])]\n    out[\"GC+MC wide & BI>thr\"] = ((e.tp_ms >= tp_thr) & (e.burst_index > thr)).mean(), len(e)\n    w = df[df.type == \"wI\"]\n    out[\"wI wide & BI<=thr\"] = ((w.tp_ms >= tp_thr) & (w.burst_index <= thr)).mean(), len(w)\n    return out\n\ndg = U[U.tp_ms.notna() & ((U.region == \"DG\") | U.type.isin([\"GC\", \"MC\"]))]\nrows = []\nfor thr in (1.2, 1.8):\n    for k, (frac, n) in stage1(dg, thr).items():\n        rows.append(dict(threshold=thr, group=k, fraction=round(frac, 3), n=n, meets_90=frac >= 0.9))\nprint(pd.DataFrame(rows).to_string())\nprint(\"\\nparts of each criterion (DG):\")\nfor t in [\"nI\", \"wI\", \"GC\", \"MC\"]:\n    x = dg[dg.type == t]\n    print(f\"{t}: n={len(x)} tp<0.425: {(x.tp_ms < 0.425).mean():.3f}  BI>1.2: {(x.burst_index > 1.2).mean():.3f}  BI>1.8: {(x.burst_index > 1.8).mean():.3f}\"\n          f\"  tp median {x.tp_ms.median():.3f} ms, BI median {x.burst_index.median():.2f}\")\nca3i = U[U.tp_ms.notna() & (U.region == \"CA3\") & U.type.isin([\"nI\", \"wI\"])]\nprint(\"\\nCA3 interneurons (own threshold 0.525 ms): nI below 0.525:\", round((ca3i[ca3i.type == \"nI\"].tp_ms < 0.525).mean(), 3),\n      \"n =\", (ca3i.type == \"nI\").sum(), \"; wI at or above:\", round((ca3i[ca3i.type == \"wI\"].tp_ms >= 0.525).mean(), 3), \"n =\", (ca3i.type == \"wI\").sum())\nprint(\"units without a waveform (file without waveforms):\", U[U.type.isin([\"GC\", \"MC\", \"nI\", \"wI\"]) & U.tp_ms.isna()].shape[0])\nprint(\"peak at the end of the stored 1.6 ms:\", U[U.type.isin(['GC','MC','nI','wI'])].tp_at_end.sum())\n#%% md\n## interneuron-rates\n\n> Narrow-waveform interneurons fire faster than wide-waveform interneurons (medians 7.97 and 2.11 Hz; Kruskal-Wallis P < 0.00001).\n\nReadings: (a) spikes over the span of the recording, (b) the rate in `awake` periods. The paper's counts of interneurons (248 narrow, 268 wide) are dentate units, with CA3 units \"separately classified\" (Results, Identification..., paragraph 1); the dentate units are the main set, and all labelled interneurons are shown as a variant.\n#%% claim:interneuron-rates\nrows = []\nfor setname, mask in [(\"DG\", DG_I), (\"DG and CA3\", U.type.isin([\"nI\", \"wI\"]))]:\n    for rd, col in [(\"a span\", \"rate\"), (\"b awake\", \"rate_awake\")]:\n        n = U[mask & (U.type == \"nI\")][col]\n        w = U[mask & (U.type == \"wI\")][col]\n        rows.append(dict(units=setname, reading=rd, n_nI=n.notna().sum(), n_wI=w.notna().sum(),\n                         median_nI=round(n.median(), 3), median_wI=round(w.median(), 3), KW_P=kw(n, w),\n                         nI_in_tol=abs(n.median() - 7.97) <= 0.797, wI_in_tol=abs(w.median() - 2.11) <= 0.211))\nprint(pd.DataFrame(rows).to_string())\nprint(\"\\nby subject (DG, reading a):\")\nprint(U[DG_I].groupby([\"subject\", \"type\"]).rate.median().unstack().round(2).to_string())\n#%% md\n## gc-narrower-waveform\n\n> The waveform of granule cells is narrower than that of mossy cells.\n#%% claim:gc-narrower-waveform\ng = U[(U.type == \"GC\") & U.tp_ms.notna()]\nm = U[(U.type == \"MC\") & U.tp_ms.notna()]\nprint(f\"trough-to-peak median GC {g.tp_ms.median():.3f} ms (n={len(g)}), MC {m.tp_ms.median():.3f} ms (n={len(m)}); Mann-Whitney P = {mwu(g.tp_ms, m.tp_ms):.3g}\")\nprint(f\"peak at the end of the stored window: GC {g.tp_at_end.mean():.3f}, MC {m.tp_at_end.mean():.3f}\")\ngw = U[(U.type == \"GC\") & U.tp_wb_ms.notna()]; mw_ = U[(U.type == \"MC\") & U.tp_wb_ms.notna()]\nprint(f\"variant, wide-band waveform at the site (17 files): GC {gw.tp_wb_ms.median():.3f} (n={len(gw)}), MC {mw_.tp_wb_ms.median():.3f} (n={len(mw_)}), P = {mwu(gw.tp_wb_ms, mw_.tp_wb_ms):.3g}\")\nprint(\"\\nby subject (median ms):\")\nprint(U[U.type.isin([\"GC\", \"MC\"])].groupby([\"subject\", \"type\"]).tp_ms.median().unstack().round(3).to_string())\n"
+}
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/build_nb.py",
+ "content": "\"\"\"Build the notebook from cells_*.py; with --dev, replace the LOAD cell by loading the cache.\"\"\"\nimport sys, re, nbformat\ndev = \"--dev\" in sys.argv\nsrc = \"\"\nfor p in [\"cells_a.py\", \"cells_b.py\", \"cells_c.py\", \"cells_d.py\"]:\n    try:\n        src += open(f\"/tmp/claude-1001/{p}\").read() + \"\\n\"\n    except FileNotFoundError:\n        pass\nparts = re.split(r\"^#%%(.*)$\", src, flags=re.M)\ncells = []\nfor i in range(1, len(parts), 2):\n    head = parts[i].strip()\n    body = parts[i + 1].strip(\"\\n\")\n    if head == \"md\":\n        cells.append(nbformat.v4.new_markdown_cell(body))\n        continue\n    tags = [t for t in head.split() if t != \"LOAD\"]\n    if head == \"LOAD\" and dev:\n        body = (\"import pickle, glob\\nR = [pickle.load(open(p, 'rb')) for p in sorted(glob.glob('/tmp/claude-1001/cache/*.pkl'))]\\n\"\n                \"R = sorted(R, key=lambda r: r['path'])\")\n    c = nbformat.v4.new_code_cell(body)\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\nnb = nbformat.v4.new_notebook(cells=cells)\nnb.metadata[\"kernelspec\"] = {\"name\": \"python3\", \"display_name\": \"Python 3\", \"language\": \"python\"}\nout = \"/tmp/claude-1001/dev.ipynb\" if dev else \"entries/senzai-2017/reproduce_senzai_2017.ipynb\"\nnbformat.write(nb, out)\nprint(\"wrote\", out, len(cells), \"cells\")\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/build_nb.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python build_nb.py --dev && cp entries/senzai-2017/senzai.py . && jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb 2>&1 | tail -3; python - <<'EOF'
+import nbformat
+nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        for o in c.outputs:
+            if o.output_type=='stream': print(o.text[:6000])
+            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
+EOF
+```
+
+```
+Exit code 1
+wrote /tmp/claude-1001/dev.ipynb 16 cells
+trust
+
+Jupyter command `jupyter-nbconvert` not found.
+Traceback (most recent call last):
+  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/nbformat/__init__.py", line 169, in read
+    buf = fp.read()
+          ^^^^^^^
+AttributeError: 'str' object has no attribute 'read'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/nbformat/__init__.py", line 171, in read
+    with open(fp, encoding="utf8") as f:  # noqa: PTH123
+         ~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-1001/dev_out.ipynb'
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && cat > runnb.py <<'EOF'
+import nbformat, sys
+from nbclient import NotebookClient
+nb=nbformat.read(sys.argv[1],4)
+c=NotebookClient(nb, timeout=3600, kernel_name='python3', resources={'metadata':{'path':'/tmp/claude-1001'}}, allow_errors=True)
+c.execute()
+nbformat.write(nb, sys.argv[2])
+only = sys.argv[3] if len(sys.argv)>3 else None
+for cell in nb.cells:
+    if cell.cell_type=='code':
+        if only and only not in cell.source and not any(only in t for t in cell.metadata.get('tags',[])): continue
+        for o in cell.outputs:
+            if o.output_type=='stream': print(o.text[:8000])
+            elif o.output_type=='error': print('ERROR', o.ename, o.evalue, ''.join(o.traceback)[-1500:])
+EOF
+python -m ipykernel install --user --name python3 >/dev/null 2>&1; python runnb.py dev.ipynb dev_out.ipynb
+```
+
+```
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+files: 101  subjects: 16  units in all files: 4216
+left out: YutaMouse57 8 files, 465 units
+
+files by subject and genotype:
+                            files  units  hours
+subject     genotype                           
+YutaMouse20 SST-Cre             5    136   42.8
+YutaMouse23 SST-Cre             3     74   25.3
+YutaMouse33 POMC-Cre::Ai35      9    437  120.9
+YutaMouse37 SST-Cre             5    114   44.4
+YutaMouse38 SST-Cre             1     38   10.3
+YutaMouse39 SST-Cre             7    216   68.6
+YutaMouse40 SST-Cre             3     48   29.6
+YutaMouse41 wild type          10    564   89.1
+YutaMouse42 POMC-Cre::Ai35     15    733  143.1
+YutaMouse44 POMC-Cre::Ai35      3     24   31.8
+YutaMouse45 DRD2-Cre::Ai35      5    215   51.7
+YutaMouse51 DRD2-Cre::Ai35      4    166   39.5
+YutaMouse54 DRD2-Cre::Ai35      5    342   49.6
+[... 150 more lines not kept]
+```
+
+**Agent**
+
+Part A runs. Writing part B: optotagging, state rates, oscillations, DS2, depth and classification.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/cells_b.py",
+ "content": "#%% md\n## optotag-drd2\n\n> In DRD2-Cre::Ai35 mice, 29 of 107 putative mossy cells were suppressed by green light, against none of 202 putative granule cells, 8 of 68 wide-waveform and none of 69 narrow-waveform interneurons.\n\nUnits of DRD2-Cre::Ai35 files that hold 20 ms pulses; suppressed when the rate in +2 to +15 ms after onset is at least 20% below the baseline (Methods). Baseline (i) the 20 ms before the pulse, (ii) 50 to 200 ms after onset. Interneurons are the dentate ones, as for the paper's counts. The dataset's `drd2_tagged` column (the authors' own result) is shown beside.\n#%% claim:optotag-drd2\nd = U[(U.genotype == \"DRD2-Cre::Ai35\") & U.light_resp.notna() & U.type.isin([\"GC\", \"MC\", \"nI\", \"wI\"])\n      & ((U.region == \"DG\") | U.type.isin([\"GC\", \"MC\"]))].copy()\nd[\"sup_pre\"] = d.light_resp <= 0.8 * d.light_pre\nd[\"sup_post\"] = d.light_resp <= 0.8 * d.light_post\nd.loc[d.light_pre == 0, \"sup_pre\"] = False\nd.loc[d.light_post == 0, \"sup_post\"] = False\ntab = d.groupby(\"type\").agg(n=(\"key\", \"size\"), suppressed_pre=(\"sup_pre\", \"sum\"), suppressed_post=(\"sup_post\", \"sum\"),\n                            authors_tagged=(\"drd2_tagged\", \"sum\"))\ntab[\"frac_pre\"] = (tab.suppressed_pre / tab.n).round(3)\ntab[\"frac_post\"] = (tab.suppressed_post / tab.n).round(3)\nprint(tab.to_string())\nprint(\"\\npaper: MC 29/107 (0.271), GC 0/202, wI 8/68, nI 0/69\")\nprint(\"DRD2 files with 20 ms pulses:\", files[(files.genotype == \"DRD2-Cre::Ai35\") & (files.pulses20 > 0)].shape[0],\n      \"of\", (files.genotype == \"DRD2-Cre::Ai35\").sum(), \"; pulses per file: median\",\n      files[(files.genotype == \"DRD2-Cre::Ai35\") & (files.pulses20 > 0)].pulses20.median())\nmcs = d[d.type == \"MC\"]\nprint(\"\\nMC tagged by the authors: suppressed under baseline (i)\", mcs[mcs.drd2_tagged].sup_pre.sum(), \"of\", mcs.drd2_tagged.sum(),\n      \"; response/baseline (i) median\", round((mcs[mcs.drd2_tagged].light_resp / mcs[mcs.drd2_tagged].light_pre).median(), 3),\n      \"against\", round((mcs[~mcs.drd2_tagged].light_resp / mcs[~mcs.drd2_tagged].light_pre).median(), 3), \"for untagged MC\")\nprint(\"\\nby subject (MC suppressed, baseline i / ii / n):\")\nprint(d[d.type == \"MC\"].groupby(\"subject\").agg(n=(\"key\", \"size\"), pre=(\"sup_pre\", \"sum\"), post=(\"sup_post\", \"sum\")).to_string())\n#%% md\n## mc-more-active\n\n> Mossy cells are more active than granule cells during both waking and NREM sleep (Kruskal-Wallis P < 0.0001 for each).\n\nPer-unit rates in each state from the `brain_states` table. Wake is read as `awake` alone and as `awake` and `quiet` together.\n#%% claim:mc-more-active\ng, m = U[U.type == \"GC\"], U[U.type == \"MC\"]\nfor col, name in [(\"rate_awake\", \"wake (awake)\"), (\"rate_wake_aq\", \"wake (awake+quiet)\"), (\"rate_nrem\", \"NREM\")]:\n    print(f\"{name:20s} GC median {g[col].median():.3f} (n={g[col].notna().sum()})  MC median {m[col].median():.3f} (n={m[col].notna().sum()})  KW P = {kw(g[col], m[col]):.3g}\")\nprint(\"\\nby subject (median Hz, awake / NREM):\")\nprint(U[U.type.isin([\"GC\", \"MC\"])].groupby([\"subject\", \"type\"])[[\"rate_awake\", \"rate_nrem\"]].median().unstack().round(3).to_string())\n#%% md\n## gc-nrem-highest and ca3-wake-highest\n\n> Granule cells fire most during NREM sleep and at similar rates during wake and REM.\n\n> CA3 pyramidal neurons are most active during wake and least active during REM.\n\nKruskal-Wallis across the three states, then pairwise Mann-Whitney tests with Bonferroni correction (three comparisons). Units with no time in a state are left out of that state.\n#%% claim:gc-nrem-highest claim:ca3-wake-highest\ndef states_test(t):\n    x = U[U.type == t]\n    out = []\n    for wcol in [\"rate_awake\", \"rate_wake_aq\"]:\n        g = {\"wake\": x[wcol].dropna(), \"nrem\": x.rate_nrem.dropna(), \"rem\": x.rate_rem.dropna()}\n        p_kw = kw(*g.values())\n        pw = {f\"{a}-{b}\": min(1.0, 3 * mwu(g[a], g[b])) for a, b in [(\"nrem\", \"wake\"), (\"nrem\", \"rem\"), (\"wake\", \"rem\")]}\n        out.append(dict(type=t, wake=wcol, **{f\"median_{k}\": round(v.median(), 3) for k, v in g.items()},\n                        **{f\"n_{k}\": len(v) for k, v in g.items()}, KW_P=p_kw, **{f\"Padj_{k}\": v for k, v in pw.items()}))\n    return out\nst = pd.DataFrame(states_test(\"GC\") + states_test(\"CA3\"))\nprint(st.T.to_string())\nprint(\"\\nby subject, CA3 (median Hz):\")\nprint(U[U.type == \"CA3\"].groupby(\"subject\")[[\"rate_awake\", \"rate_nrem\", \"rate_rem\"]].median().round(3).to_string())\nprint(\"\\nby subject, GC (median Hz):\")\nprint(U[U.type == \"GC\"].groupby(\"subject\")[[\"rate_awake\", \"rate_nrem\", \"rate_rem\"]].median().round(3).to_string())\n#%% md\n## nrem-wake-ratio\n\n> Granule cells increase their firing in NREM sleep compared with waking, while mossy cells fire at equivalent rates in the two states.\n#%% claim:nrem-wake-ratio\nfor wcol in [\"rate_awake\", \"rate_wake_aq\"]:\n    x = U[U.type.isin([\"GC\", \"MC\"]) & (U[wcol] > 0) & U.rate_nrem.notna()].copy()\n    x[\"ratio\"] = x.rate_nrem / x[wcol]\n    g, m = x[x.type == \"GC\"], x[x.type == \"MC\"]\n    print(f\"wake = {wcol}: GC median ratio {g.ratio.median():.3f} (n={len(g)}), MC {m.ratio.median():.3f} (n={len(m)}), \"\n          f\"Mann-Whitney P = {mwu(g.ratio, m.ratio):.3g}; MC NREM vs wake Wilcoxon P = {stats.wilcoxon(m.rate_nrem, m[wcol]).pvalue:.3g}\")\nx = U[U.type.isin([\"GC\", \"MC\"]) & (U.rate_awake > 0)].copy(); x[\"ratio\"] = x.rate_nrem / x.rate_awake\nprint(\"\\nby subject (median ratio, wake = awake):\")\nprint(x.groupby([\"subject\", \"type\"]).ratio.median().unstack().round(2).to_string())\n#%% md\n## theta-modulation and gamma-modulation\n\n> Granule cells are more strongly phase-modulated by theta oscillations than mossy cells and fire at later theta phases (Kruskal-Wallis P < 0.0001 for both).\n\n> Granule cells are more strongly phase-modulated by gamma oscillations than mossy cells and fire at earlier gamma phases (Kruskal-Wallis P < 0.0001 for both).\n\nPhases from the file's hilus reference channel (`hilus_reference`, the channel the lab used for theta and gamma phase) in `awake` periods, up to one hour per file, where the band amplitude exceeds median + 0.5 SD (theta) or + 1 SD (gamma). Units with Rayleigh P < 0.05 and kappa > 0.1. Phase readings (a) (-pi, pi] with 0 at the LFP peak, (b) [0, 2 pi).\n#%% claim:theta-modulation claim:gamma-modulation\nprint(\"awake seconds used per file: median\", np.median([r.get(\"phase_seconds\", np.nan) for r in R if r[\"subject\"] != S.EXCLUDED_SUBJECT]))\nfor band in [\"theta\", \"gamma\"]:\n    x = U[U.type.isin([\"GC\", \"MC\"]) & U[f\"{band}_mrl\"].notna()]\n    sig = x[(x[f\"{band}_p\"] < 0.05) & (x[f\"{band}_kappa\"] > 0.1)]\n    g, m = sig[sig.type == \"GC\"], sig[sig.type == \"MC\"]\n    pa = g[f\"{band}_phase\"], m[f\"{band}_phase\"]\n    pb = np.mod(pa[0], 2 * np.pi), np.mod(pa[1], 2 * np.pi)\n    cm = lambda p: np.angle(np.mean(np.exp(1j * p)))\n    print(f\"\\n{band}: units with phases GC {(x.type=='GC').sum()}, MC {(x.type=='MC').sum()}; passing Rayleigh and kappa GC {len(g)}, MC {len(m)}\")\n    print(f\"  MRL median GC {g[f'{band}_mrl'].median():.3f}, MC {m[f'{band}_mrl'].median():.3f}, KW P = {kw(g[f'{band}_mrl'], m[f'{band}_mrl']):.3g}\")\n    print(f\"  circular mean phase (rad) GC {cm(pa[0]):.3f}, MC {cm(pa[1]):.3f}; GC minus MC = {np.angle(np.exp(1j*(cm(pa[0])-cm(pa[1])))):.3f} rad\")\n    print(f\"  reading a, (-pi, pi]: median GC {pa[0].median():.3f}, MC {pa[1].median():.3f}, KW P = {kw(*pa):.3g}\")\n    print(f\"  reading b, [0, 2 pi): median GC {pb[0].median():.3f}, MC {pb[1].median():.3f}, KW P = {kw(*pb):.3g}\")\n    print(f\"  all units with phases (no Rayleigh selection): MRL median GC {x[x.type=='GC'][f'{band}_mrl'].median():.3f}, MC {x[x.type=='MC'][f'{band}_mrl'].median():.3f}\")\n    print(\"  by subject (MRL median of passing units):\")\n    print(sig.groupby([\"subject\", \"type\"])[f\"{band}_mrl\"].median().unstack().round(3).to_string())\n#%% md\n## gamma-rate-correlation\n\n> Slow-firing neurons are more strongly coupled to gamma than fast-firing ones (GC r = -0.176, MC r = -0.184, P < 0.0001 for each).\n\nRate is spikes over the recording span. Readings (a) all GC or MC with a gamma MRL, (b) only the units passing Rayleigh P < 0.05 and kappa > 0.1.\n#%% claim:gamma-rate-correlation\nfor rd, sel in [(\"a all\", lambda x: x), (\"b passing\", lambda x: x[(x.gamma_p < 0.05) & (x.gamma_kappa > 0.1)])]:\n    for t in [\"GC\", \"MC\"]:\n        x = sel(U[(U.type == t) & U.gamma_mrl.notna()])\n        r, p = stats.pearsonr(x.rate, x.gamma_mrl)\n        print(f\"reading {rd:10s} {t}: n={len(x)}, Pearson r = {r:.3f}, P = {p:.3g}\")\nx = U[(U.type.isin([\"GC\", \"MC\"])) & U.gamma_mrl.notna()]\nprint(\"\\nvariant, Spearman (reading a): GC rho = %.3f, MC rho = %.3f\" % (stats.spearmanr(x[x.type=='GC'].rate, x[x.type=='GC'].gamma_mrl)[0],\n                                                                         stats.spearmanr(x[x.type=='MC'].rate, x[x.type=='MC'].gamma_mrl)[0]))\nprint(\"gamma spike counts used per unit: median GC\", x[x.type=='GC'].gamma_n.median(), \", MC\", x[x.type=='MC'].gamma_n.median())\n#%% md\n## ds2-recruitment\n\n> Granule cells are more effectively recruited by type 2 dentate spikes than mossy cells and fire earlier (Kruskal-Wallis P < 0.0001 for both).\n\nHistograms of spikes around the DS2 peaks stored in each file (2 ms bins, +-100 ms). Peak ratio: largest rate within +-20 ms over the mean rate at 50 to 100 ms on both sides; peak time: centre of that bin.\n#%% claim:ds2-recruitment\nx = U[U.type.isin([\"GC\", \"MC\"]) & U.ds2_ratio.notna() & np.isfinite(U.ds2_ratio)]\ng, m = x[x.type == \"GC\"], x[x.type == \"MC\"]\nprint(f\"DS2 per file: median {files[files.subject != S.EXCLUDED_SUBJECT].n_ds2.median():.0f}, files with none: {(files[files.subject != S.EXCLUDED_SUBJECT].n_ds2 == 0).sum()}\")\nprint(f\"peak ratio median GC {g.ds2_ratio.median():.2f} (n={len(g)}), MC {m.ds2_ratio.median():.2f} (n={len(m)}); KW P = {kw(g.ds2_ratio, m.ds2_ratio):.3g}\")\nprint(f\"peak time median GC {g.ds2_peak_ms.median():.1f} ms, MC {m.ds2_peak_ms.median():.1f} ms; KW P = {kw(g.ds2_peak_ms, m.ds2_peak_ms):.3g}\")\nprint(f\"ratio with DS2 times shifted by 0.5 s: GC {g.ds2_ratio_shift.median():.2f}, MC {m.ds2_ratio_shift.median():.2f}\")\nprint(\"dropped (no DS2 or no baseline spikes):\", U[U.type.isin([\"GC\", \"MC\"])].shape[0] - len(x))\nprint(\"\\nby subject (medians):\")\nprint(x.groupby([\"subject\", \"type\"])[[\"ds2_ratio\", \"ds2_peak_ms\"]].median().unstack().round(2).to_string())\n#%% md\n## mc-deeper\n\n> Mossy cells are located deeper than granule cells relative to the reversal of the type 2 dentate spike (DS2) (Mann-Whitney P < 0.001).\n\nDepth is read from the DS2 amplitude at each unit's site (positive below the reversal, in the hilus). Main: the 17 files with the wide-band signal, the site being the channel where the unit's spike is largest in the wide band. Variant: the channel of the largest stored waveform through the electrodes table, on every file with waveforms. The DS2 amplitude is the LFP at the DS2 peak minus its mean at -36 to -16 ms (the baseline of the Methods' DS2 detection), averaged over up to 600 DS2 events of the file.\n#%% claim:mc-deeper\nprint(\"DS2 events averaged per file: median\", np.median([r.get(\"ds2_profile_n\", 0) for r in R if r.get(\"ds2_profile\") is not None]))\nfor name, col in [(\"wide-band site (main)\", \"ds2_amp_wb\"), (\"stored-waveform site (variant)\", \"ds2_amp_table\")]:\n    x = U[U.type.isin([\"GC\", \"MC\"]) & U[col].notna()]\n    g, m = x[x.type == \"GC\"][col], x[x.type == \"MC\"][col]\n    print(f\"{name}: GC median {g.median():.1f} uV (n={len(g)}), MC median {m.median():.1f} uV (n={len(m)}), Mann-Whitney P = {mwu(g, m):.3g}\")\n    print(f\"   positive DS2 at the site: GC {(g > 0).mean():.2f}, MC {(m > 0).mean():.2f}\")\nx = U[U.type.isin([\"GC\", \"MC\"]) & U.ds2_amp_wb.notna()]\nprint(\"\\nby file (wide-band site, median uV):\")\nprint(x.groupby([\"path\", \"type\"]).ds2_amp_wb.median().unstack().round(0).rename(index=lambda p: p.split(\"ses-\")[1][:20]).to_string())\n#%% md\n## gc-mc-classification\n\n> K-means clustering on the DS2 amplitude at the unit's site, the NREM to wake rate ratio and two principal components of the waveform's second derivative separates excitatory dentate units into granule cells and mossy cells.\n\nOn the GC and MC of the 17 wide-band files. Features as the criterion gives them: DS2 amplitude at the wide-band site; the NREM to wake (`awake`) rate ratio; w-PC1 and w-PC2 of the second derivative (trough to 0.8 ms after it) of the wide-band waveform at the site, normalised to its trough and upsampled to 100 kHz. Standardised, then k-means with two clusters, 50 starts, seed from the claim; the seed plus 1000 to 4000 are shown too.\n#%% claim:gc-mc-classification\nfrom sklearn.cluster import KMeans\nfrom sklearn.decomposition import PCA\n\nx = U[U.type.isin([\"GC\", \"MC\"]) & U.ds2_amp_wb.notna() & (U.rate_awake > 0) & U.rate_nrem.notna()].copy()\nx = x[x.d2_wb.apply(lambda v: isinstance(v, np.ndarray) and np.isfinite(v).all())]\nD2 = np.vstack(x.d2_wb.values)\npcs = PCA(2).fit_transform(D2)\nfeat = np.column_stack([x.ds2_amp_wb.values, (x.rate_nrem / x.rate_awake).values, pcs])\nZ = (feat - feat.mean(0)) / feat.std(0)\nlab = (x.type == \"MC\").values\nprint(\"units:\", len(x), \"GC\", (~lab).sum(), \"MC\", lab.sum())\nres_seed = {}\nfor off in [0, 1000, 2000, 3000, 4000]:\n    km = KMeans(2, n_init=50, random_state=(seed(\"gc-mc-classification\") + off) % 2**32).fit(Z)\n    agree = max((km.labels_ == lab).mean(), (km.labels_ != lab).mean())\n    res_seed[off] = agree\n    print(f\"seed + {off}: agreement {agree:.3f}\")\nfor name, cols in [(\"without waveform PCs\", [0, 1]), (\"DS2 only\", [0]), (\"ratio only\", [1]), (\"waveform PCs only\", [2, 3])]:\n    km = KMeans(2, n_init=50, random_state=seed(\"gc-mc-classification\")).fit(Z[:, cols])\n    print(f\"variant {name}: agreement {max((km.labels_ == lab).mean(), (km.labels_ != lab).mean()):.3f}\")\nxs = U[U.type.isin([\"GC\", \"MC\"]) & U.ds2_amp_table.notna() & (U.rate_awake > 0) & U.rate_nrem.notna()].copy()\nxs = xs[xs.d2.apply(lambda v: isinstance(v, np.ndarray) and np.isfinite(v).all())]\nF2 = np.column_stack([xs.ds2_amp_table.values, (xs.rate_nrem / xs.rate_awake).values, PCA(2).fit_transform(np.vstack(xs.d2.values))])\nZ2 = (F2 - F2.mean(0)) / F2.std(0)\nkm = KMeans(2, n_init=50, random_state=seed(\"gc-mc-classification\")).fit(Z2)\nl2 = (xs.type == \"MC\").values\nprint(f\"variant, stored waveforms and table site, all files: n={len(xs)}, agreement {max((km.labels_ == l2).mean(), (km.labels_ != l2).mean()):.3f}\")\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/cells_b.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && uv pip install -q scikit-learn && python build_nb.py --dev && python runnb.py dev.ipynb dev_out.ipynb claim 2>&1 | grep -v WARNING | sed -n '/optotag\|sup/,$p' | tail -230
+```
+
+```
+wrote /tmp/claude-1001/dev.ipynb 34 cells
+YutaMouse56  42   21    22
+
+wake (awake)         GC median 0.079 (n=583)  MC median 0.726 (n=503)  KW P = 4.39e-102
+wake (awake+quiet)   GC median 0.083 (n=583)  MC median 0.714 (n=503)  KW P = 3.1e-100
+NREM                 GC median 0.398 (n=583)  MC median 0.907 (n=503)  KW P = 1.14e-23
+
+by subject (median Hz, awake / NREM):
+            rate_awake        rate_nrem       
+type                GC     MC        GC     MC
+subject                                       
+YutaMouse20      0.548  0.903     1.981  1.238
+YutaMouse23      0.180  1.078     0.713  0.984
+YutaMouse33      0.035  0.845     0.111  0.610
+YutaMouse37      0.058  0.611     0.412  0.956
+YutaMouse38      0.126  0.482     0.368  0.326
+YutaMouse39      0.116  0.636     0.416  0.795
+YutaMouse40      0.052    NaN     0.335    NaN
+YutaMouse41      0.152  0.799     0.571  0.927
+YutaMouse42      0.048  0.837     0.259  1.091
+[... 212 more lines not kept]
+```
+
+**Agent**
+
+Most of part B works. Fixing the variant that hit NaN padding in stored-waveform segments, then writing part C (pairs).
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+p='/tmp/claude-1001/cells_b.py'; s=open(p).read()
+s=s.replace('''xs = xs[xs.d2.apply(lambda v: isinstance(v, np.ndarray) and np.isfinite(v).all())]
+F2 = np.column_stack([xs.ds2_amp_table.values, (xs.rate_nrem / xs.rate_awake).values, PCA(2).fit_transform(np.vstack(xs.d2.values))])''','''# the stored 1.6 ms often ends before 0.8 ms after the trough; the first 0.4 ms after it is used here
+xs = xs[xs.d2.apply(lambda v: isinstance(v, np.ndarray) and np.isfinite(v[:41]).all())]
+F2 = np.column_stack([xs.ds2_amp_table.values, (xs.rate_nrem / xs.rate_awake).values,
+                      PCA(2).fit_transform(np.vstack([v[:41] for v in xs.d2.values]))])''')
+s=s.replace('print("awake seconds used per file: median", np.median(','print("awake seconds used per file: median", np.nanmedian(')
+open(p,'w').write(s)
+EOF
+date -u
+```
+
+```
+Mon Nov 23 23:49:51 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/cells_c.py",
+ "content": "#%% md\n## Pairs: cross-correlogram tests\n\nEvery GC-MC pair recorded in the same file, and every same-type pair of GC, MC and CA3 pyramidal cells, was tested with the automatic test of the Methods (0.5 ms bins, baseline from a 10 ms SD Gaussian, 99.9999th Poisson percentile, two consecutive bins at +1.5 to +5 ms or -1 to +1 ms). The paper's manual inspection is not repeated. The authors' own tables of monosynaptic and zero-lag pairs, which the files hold, are shown beside as a reference.\n#%%\nP = []\nfor r in R:\n    if r[\"subject\"] == S.EXCLUDED_SUBJECT:\n        continue\n    typ = {u[\"unit\"]: u[\"type\"] for u in r[\"units\"]}\n    for p in r[\"pairs\"]:\n        P.append(dict(path=r[\"path\"], subject=r[\"subject\"], **p))\nP = pd.DataFrame(P)\ngm = P[P.kind == \"GC-MC\"].copy()\nprint(P.groupby(\"kind\").size().to_string())\n# the authors' monosynaptic table, typed by the units' labels\nA = []\nfor r in R:\n    if r[\"subject\"] == S.EXCLUDED_SUBJECT or r[\"authors_mono\"] is None:\n        continue\n    typ = {u[\"unit\"]: u[\"type\"] for u in r[\"units\"]}\n    for a, b, c in r[\"authors_mono\"]:\n        A.append(dict(path=r[\"path\"], pre=a, post=b, connection=c, pre_type=typ.get(a), post_type=typ.get(b)))\nA = pd.DataFrame(A)\n#%% md\n## monosyn-gc-to-mc\n\n> 5.5% of granule cells monosynaptically excite mossy cells (32 pairs), whereas no mossy cell significantly excites a granule cell.\n\nFraction read three ways: (a) significant GC to MC pairs over all GC, (b) GC with at least one MC target over all GC, (c) significant pairs over tested pairs.\n#%% claim:monosyn-gc-to-mc\nn_gc = (U.type == \"GC\").sum()\nn_gc_tested = gm.pre.groupby(gm.path).nunique().sum()\nsig = gm[gm.gc_to_mc]\nrev = gm[gm.mc_to_gc]\nn_gc_target = sig.groupby(\"path\").pre.nunique().sum()\nprint(f\"GC-MC pairs tested: {len(gm)}; GC: {n_gc} (in files with an MC: {n_gc_tested})\")\nprint(f\"GC to MC pairs: {len(sig)};  MC to GC pairs: {len(rev)}\")\nprint(f\"(a) pairs / all GC = {len(sig)}/{n_gc} = {len(sig)/n_gc:.4f}\")\nprint(f\"(b) GC with an MC target / all GC = {n_gc_target}/{n_gc} = {n_gc_target/n_gc:.4f}\")\nprint(f\"(c) pairs / tested pairs = {len(sig)}/{len(gm)} = {len(sig)/len(gm):.4f}\")\nprint(f\"variant, GC in files with an MC as denominator: (a) {len(sig)/n_gc_tested:.4f}, (b) {n_gc_target/n_gc_tested:.4f}\")\nprint(f\"same shank among GC to MC pairs: {sig.same_shank.sum()} of {len(sig)}; among MC to GC: {rev.same_shank.sum()} of {len(rev)}\")\nae = A[(A.connection == \"excitatory\")]\na_gm = ae[(ae.pre_type == \"GC\") & (ae.post_type == \"MC\")]\na_mg = ae[(ae.pre_type == \"MC\") & (ae.post_type == \"GC\")]\nprint(f\"\\nauthors' table (files that hold it): GC to MC excitatory {len(a_gm)}, MC to GC excitatory {len(a_mg)}, GC with an MC target {a_gm.groupby('path').pre.nunique().sum()}\")\nboth = sig.merge(a_gm, on=[\"path\", \"pre\", \"post\"])\nprint(f\"pairs found by both this test and the authors' table: {len(both)}\")\nprint(\"\\nby subject (GC to MC / MC to GC / tested):\")\nprint(gm.groupby(\"subject\").agg(tested=(\"pre\", \"size\"), gc_to_mc=(\"gc_to_mc\", \"sum\"), mc_to_gc=(\"mc_to_gc\", \"sum\")).to_string())\n#%% md\n## burst-facilitation\n\n> Spike transmission probability from granule cells to mossy cells increases from the first to the second spike of a granule cell burst (P < 0.001).\n\nFor the detected GC to MC pairs: transmission probability (CCG counts minus the Gaussian baseline at +1.5 to +5 ms, per GC spike) for the first and second spikes of bursts (spikes at most 6 ms apart).\n#%% claim:burst-facilitation\nb = sig[sig.n_burst > 0]\nprint(f\"pairs: {len(b)} (bursts per GC: median {b.n_burst.median():.0f})\")\nprint(f\"transmission probability median: first {b.tp_first.median():.4f}, second {b.tp_second.median():.4f}; all spikes {sig.tp_all.median():.4f}\")\nprint(f\"second > first in {(b.tp_second > b.tp_first).sum()} of {len(b)}; paired Wilcoxon P = {stats.wilcoxon(b.tp_second, b.tp_first).pvalue:.3g}\")\na_b = []\nprint(\"\\nby subject (median second minus first):\")\nprint(b.assign(d=b.tp_second - b.tp_first).groupby(\"subject\").agg(n=(\"d\", \"size\"), median_diff=(\"d\", \"median\")).round(4).to_string())\n#%% md\n## state-transmission\n\n> GC to MC spike transmission is lower during NREM sleep than during waking (n = 31, P < 0.005).\n\nTransmission probability as in burst-facilitation, from GC spikes in `awake` periods against GC spikes in `nrem` periods, per detected pair.\n#%% claim:state-transmission\ns2 = sig[(sig.n_wake > 0) & (sig.n_nrem > 0)]\nprint(f\"pairs: {len(s2)}; GC spikes per pair in wake median {s2.n_wake.median():.0f}, in NREM {s2.n_nrem.median():.0f}\")\nprint(f\"median transmission wake {s2.tp_wake.median():.4f}, NREM {s2.tp_nrem.median():.4f}; NREM lower in {(s2.tp_nrem < s2.tp_wake).sum()} of {len(s2)}\")\nprint(f\"paired Wilcoxon P = {stats.wilcoxon(s2.tp_nrem, s2.tp_wake).pvalue:.3g}; one-sided (NREM lower) P = {stats.wilcoxon(s2.tp_nrem, s2.tp_wake, alternative='less').pvalue:.3g}\")\nprint(\"\\nby subject:\")\nprint(s2.assign(d=s2.tp_nrem - s2.tp_wake).groupby(\"subject\").agg(n=(\"d\", \"size\"), median_nrem_minus_wake=(\"d\", \"median\")).round(4).to_string())\n#%% md\n## zero-lag-synchrony\n\n> Synchronous co-activation within 1 ms is found in 23% of mossy cells and 9% of CA3 pyramidal cells, but in fewer than 0.2% of granule cell pairs.\n\nThe Methods' test at -1 to +1 ms on all same-type pairs recorded together. MC and CA3 read as (a) fractions of pairs, (b) fractions of cells with at least one synchronous partner; GC as a fraction of pairs (the claim holds for any value up to 0.0022). The files now say which shank each unit is on, so pairs on different shanks are shown as a variant.\n#%% claim:zero-lag-synchrony\nrows = []\nfor kind, t in [(\"GC-GC\", \"GC\"), (\"MC-MC\", \"MC\"), (\"CA3-CA3\", \"CA3\")]:\n    x = P[P.kind == kind]\n    for setname, xx in [(\"all pairs\", x), (\"different shanks\", x[~x.same_shank]), (\"same shank\", x[x.same_shank])]:\n        cells = pd.concat([xx[xx.sync][[\"path\", \"pre\"]].rename(columns={\"pre\": \"u\"}), xx[xx.sync][[\"path\", \"post\"]].rename(columns={\"post\": \"u\"})]).drop_duplicates()\n        n_cells = (U.type == t).sum()\n        rows.append(dict(kind=kind, pairs=setname, n_pairs=len(xx), sync_pairs=int(xx.sync.sum()),\n                         frac_pairs=round(xx.sync.mean(), 4) if len(xx) else np.nan,\n                         cells_with_partner=len(cells), frac_cells=round(len(cells) / n_cells, 4)))\nprint(pd.DataFrame(rows).to_string())\n# authors' zero-lag table\nZ = []\nfor r in R:\n    if r[\"subject\"] == S.EXCLUDED_SUBJECT or r[\"authors_sync\"] is None:\n        continue\n    typ = {u[\"unit\"]: u[\"type\"] for u in r[\"units\"]}\n    for a, bb in r[\"authors_sync\"]:\n        Z.append(dict(path=r[\"path\"], a=a, b=bb, ta=typ.get(a), tb=typ.get(bb)))\nZ = pd.DataFrame(Z)\nprint(\"\\nauthors' zero-lag table (files that hold it): pairs by type\")\nprint(pd.crosstab(Z.ta, Z.tb).to_string())\nfor t in [\"GC\", \"MC\", \"CA3\"]:\n    zz = Z[(Z.ta == t) & (Z.tb == t)]\n    cells = set(zip(zz.path, zz.a)) | set(zip(zz.path, zz.b))\n    print(f\"{t}: same-type pairs {len(zz)}, cells with a partner {len(cells)} of {(U.type == t).sum()} ({len(cells)/(U.type == t).sum():.3f})\")\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/cells_c.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python build_nb.py --dev && python runnb.py dev.ipynb dev_out.ipynb claim 2>&1 | grep -v WARNING | sed -n '/^type  *n  *suppressed/,/^by subject (MC supp/p; /variant, stored/,$p' | head -150
+```
+
+```
+wrote /tmp/claude-1001/dev.ipynb 44 cells
+variant, stored waveforms and table site, all files: n=1086, agreement 0.927
+
+GC-MC pairs tested: 4425; GC: 583 (in files with an MC: 477)
+GC to MC pairs: 63;  MC to GC pairs: 8
+(a) pairs / all GC = 63/583 = 0.1081
+(b) GC with an MC target / all GC = 47/583 = 0.0806
+(c) pairs / tested pairs = 63/4425 = 0.0142
+variant, GC in files with an MC as denominator: (a) 0.1321, (b) 0.0985
+same shank among GC to MC pairs: 34 of 63; among MC to GC: 3 of 8
+
+authors' table (files that hold it): GC to MC excitatory 32, MC to GC excitatory 0, GC with an MC target 28
+pairs found by both this test and the authors' table: 32
+
+by subject (GC to MC / MC to GC / tested):
+             tested gc_to_mc mc_to_gc
+subject                              
+YutaMouse20      16        2        0
+YutaMouse23     138        0        1
+YutaMouse33     308       15        6
+[... 68 more lines not kept]
+```
+
+**Agent**
+
+Part C works; our automatic test finds all 32 GC to MC pairs in the authors' table, plus 31 more. I'll add the authors' 32 pairs as a variant for the transmission claims. Now part D (spatial).
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/cells_d.py",
+ "content": "#%% claim:burst-facilitation claim:state-transmission\n# variant: the 32 GC to MC pairs of the authors' table (all of them found by the automatic test above)\nva = sig.merge(a_gm[[\"path\", \"pre\", \"post\"]], on=[\"path\", \"pre\", \"post\"])\nprint(f\"authors' pairs: {len(va)}\")\nprint(f\"  burst: first {va.tp_first.median():.4f}, second {va.tp_second.median():.4f}, second > first in {(va.tp_second > va.tp_first).sum()}, Wilcoxon P = {stats.wilcoxon(va.tp_second, va.tp_first).pvalue:.3g}\")\nprint(f\"  state: wake {va.tp_wake.median():.4f}, NREM {va.tp_nrem.median():.4f}, NREM lower in {(va.tp_nrem < va.tp_wake).sum()}, Wilcoxon P = {stats.wilcoxon(va.tp_nrem, va.tp_wake).pvalue:.3g}\")\n#%% md\n## T-maze: maps and fields\n\nRuns on the circular T-maze, from entry into the central arm to within 10 cm of the reward port (18 cm from the end of the 102 cm side arm), light-free trials only (claims file header). The lab's `arm_start` falls about 25 cm into the central arm, so each run starts at the mouse's last entry into the central arm before it (an assumption: the Methods start the analysis at the gate opening, which the files do not mark). Linearised: central arm 0 to 65 cm, then the left or the right side arm, 1.86 cm bins, speed > 3 cm/s, 5.57 cm Gaussian (Methods). Fields: at least 5 bins above 50% of the local maximum with a peak above 1 Hz (Methods), local maxima taken in turn from the highest.\n#%%\nT = []\noccs = {}\nfor r in R:\n    tm = r.get(\"tmaze\")\n    if not tm or \"maps\" not in tm:\n        continue\n    occs[r[\"path\"]] = tm[\"occ\"]\n    typ = {u[\"unit\"]: u[\"type\"] for u in r[\"units\"]}\n    for k, m in tm[\"maps\"].items():\n        fl = tm[\"fields\"][k]\n        T.append(dict(path=r[\"path\"], subject=r[\"subject\"], unit=k, type=typ[k], map=m, n_fields=len(fl), fields=fl,\n                      peak=max([f[2] for f in fl]) if fl else np.nan, info=tm[\"info\"][k],\n                      split_fields=tm[\"splitter\"][k][\"n_fields\"], split_p=tm[\"splitter\"][k][\"p\"]))\nT = pd.DataFrame(T)\nruns = pd.DataFrame([dict(path=r[\"path\"], runs=r[\"tmaze\"][\"n_runs\"], left=r[\"tmaze\"][\"n_left\"]) for r in R if r.get(\"tmaze\")])\nprint(\"T-maze files:\", len(runs), \" with at least 4 light-free runs:\", len(occs), \"; runs per file median\", runs.runs.median(), \"range\", runs.runs.min(), \"-\", runs.runs.max())\nprint(T.groupby(\"type\").size().to_string())\nprint(\"by subject:\"); print(pd.crosstab(T.subject, T.type).to_string())\n#%% sanity\n# Clock check for positions: spatial information of GC, MC and CA3 in two T-maze files with spikes as\n# recorded and shifted by 60 s.\nfor path in sorted(occs)[:2]:\n    a = [x for x in assets if x[\"path\"] == path][0]\n    f = S.open_asset(a[\"asset_id\"])\n    u = f[\"units\"]\n    sti = u[\"spike_times_index\"][:].astype(np.int64); s0 = np.concatenate([[0], sti[:-1]])\n    keys = T[T.path == path].unit.tolist()\n    spk = {k: u[\"spike_times\"][s0[k]:sti[k]] for k in keys}\n    runs_ = S.tmaze_runs(f)\n    info = {}\n    for shift in [0, 60]:\n        occ, sc, _ = S.tmaze_maps(runs_, {k: v + shift for k, v in spk.items()})\n        ok = occ > 0\n        info[shift] = [S.skaggs_info(occ, S.tm_smooth(np.where(ok, sc[k] / np.where(ok, occ, 1), np.nan), occ)) for k in keys]\n    f.close()\n    print(path.split(\"ses-\")[1][:20], f\"units {len(keys)}: median information {np.nanmedian(info[0]):.3f} bits/s as recorded, {np.nanmedian(info[60]):.3f} with spikes shifted 60 s; higher as recorded for {np.sum(np.array(info[0]) > np.array(info[60]))} units\")\n#%% md\n## tmaze-central-active\n\n> On the circular T-maze, the fraction of active neurons (above 1 Hz) is higher in the central arm than in the side arms, for granule cells, mossy cells and CA3 pyramidal cells (Kruskal-Wallis P < 0.00001 for each).\n\nFraction of each type's units above 1 Hz in each bin of the linearised maze (units with a value in the bin); central-arm bins against side-arm bins.\n#%% claim:tmaze-central-active\nfor t in [\"GC\", \"MC\", \"CA3\"]:\n    M = np.vstack(T[T.type == t].map.values)\n    frac = np.nansum(M > 1, axis=0) / np.sum(np.isfinite(M), axis=0)\n    cen, side = frac[:S.N_CEN], frac[S.N_CEN:]\n    cen, side = cen[np.isfinite(cen)], side[np.isfinite(side)]\n    print(f\"{t}: units {len(M)}; median fraction active central {np.median(cen):.3f} ({len(cen)} bins), side {np.median(side):.3f} ({len(side)} bins); KW P = {kw(cen, side):.3g}\")\n    for sub, g in T[T.type == t].groupby(\"subject\"):\n        Mg = np.vstack(g.map.values)\n        with np.errstate(invalid=\"ignore\"):\n            fg = np.nansum(Mg > 1, axis=0) / np.sum(np.isfinite(Mg), axis=0)\n        print(f\"     {sub}: n={len(Mg)}, central {np.nanmedian(fg[:S.N_CEN]):.3f}, side {np.nanmedian(fg[S.N_CEN:]):.3f}\")\n#%% md\n## tmaze-multiple-fields\n\n> Few granule cells have two or more place fields on the T-maze (6.6%), against 57.8% of mossy cells and 36.1% of CA3 pyramidal cells (Kolmogorov-Smirnov P < 0.0001).\n\nFractions (a) of all units, (b) of units with at least one field.\n#%% claim:tmaze-multiple-fields\nfor t in [\"GC\", \"MC\", \"CA3\"]:\n    x = T[T.type == t]\n    print(f\"{t}: n={len(x)}, with a field {(x.n_fields > 0).sum()}, two or more {(x.n_fields >= 2).sum()}; \"\n          f\"(a) {(x.n_fields >= 2).mean():.3f}, (b) {(x.n_fields >= 2).sum() / max((x.n_fields > 0).sum(), 1):.3f}; field counts {x.n_fields.value_counts().sort_index().to_dict()}\")\nprint(\"KS GC vs MC on field counts: P = %.3g\" % stats.ks_2samp(T[T.type == \"GC\"].n_fields, T[T.type == \"MC\"].n_fields).pvalue)\nprint(\"paper: GC 0.066, MC 0.578, CA3 0.361\")\nprint(\"\\nby subject, fraction with two or more (a):\")\nprint(T.groupby([\"subject\", \"type\"]).n_fields.apply(lambda v: (v >= 2).mean()).unstack().round(2).to_string())\n#%% md\n## tmaze-peak-info\n\n> Granule cells have the lowest within-field peak firing rates (GC against MC, Kolmogorov-Smirnov P < 0.003) and the lowest spatial information of the three types (P < 0.0005).\n\nWithin-field peak rate: the highest field peak of each unit with a field. Spatial information (bits/s, Skaggs) of every unit, from the smoothed linearised map.\n#%% claim:tmaze-peak-info\npk = {t: T[(T.type == t)].peak.dropna() for t in [\"GC\", \"MC\", \"CA3\"]}\ninf = {t: T[(T.type == t)].info.dropna() for t in [\"GC\", \"MC\", \"CA3\"]}\nfor t in pk:\n    print(f\"{t}: peak median {pk[t].median():.2f} Hz (n={len(pk[t])}), information median {inf[t].median():.3f} bits/s (n={len(inf[t])})\")\nprint(\"KS peak GC vs MC P = %.3g; GC vs CA3 P = %.3g\" % (stats.ks_2samp(pk[\"GC\"], pk[\"MC\"]).pvalue, stats.ks_2samp(pk[\"GC\"], pk[\"CA3\"]).pvalue))\nprint(\"KS information GC vs MC P = %.3g; GC vs CA3 P = %.3g\" % (stats.ks_2samp(inf[\"GC\"], inf[\"MC\"]).pvalue, stats.ks_2samp(inf[\"GC\"], inf[\"CA3\"]).pvalue))\n#%% md\n## tmaze-splitters\n\n> The fraction of splitter cells, whose central-arm firing predicts the coming turn, is comparable in granule cells, mossy cells and CA3 pyramidal cells.\n\nA splitter has a central-arm field (from the left-run or the right-run map) whose per-run rates in the field's bins differ between left and right runs by a two-way ANOVA (position x choice, choice P < 0.001; Methods). Chi-square test of splitter counts across the three types (criterion). The denominator is not given: the main reading is the units with a central-arm field (the units the Methods test); all units are shown as the other reading.\n#%% claim:tmaze-splitters\nT[\"splitter\"] = T.split_p.notna() & (T.split_p < 0.001)\nrows = []\nfor name, base in [(\"units with a central-arm field\", T[T.split_fields > 0]), (\"all units\", T)]:\n    ct = pd.crosstab(base.type, base.splitter)\n    ct = ct.reindex(columns=[False, True], fill_value=0)\n    chi = stats.chi2_contingency(ct.values)\n    for t in ct.index:\n        rows.append(dict(reading=name, type=t, n=int(ct.loc[t].sum()), splitters=int(ct.loc[t, True]), fraction=round(ct.loc[t, True] / ct.loc[t].sum(), 3), chi2_P=chi.pvalue))\nprint(pd.DataFrame(rows).to_string())\n#%% md\n## Open fields: maps and place cells\n\nOpen fields A ('Old'), B ('New') and A' ('Oldlast'), with the curtain and other-room sessions used only for inheritance-openfield. Positions in cm (46 cm arena), 0.92 cm pixels, speed > 3 cm/s, 1.84 cm Gaussian (Methods). Place cells: in at least one of A, B, A', a first-half against second-half map correlation of at least 0.5 and a field of at least 100 pixels above the larger of 20% of the peak and 1 Hz (criterion).\n#%%\nO = []\nfor r in R:\n    of = r.get(\"openfield\")\n    if not of or not all(k in of for k in [\"Old\", \"New\", \"Oldlast\"]):\n        continue\n    typ = {u[\"unit\"]: u[\"type\"] for u in r[\"units\"]}\n    for k in of[\"Old\"][\"maps\"]:\n        row = dict(path=r[\"path\"], subject=r[\"subject\"], unit=k, type=typ[k])\n        pc = False\n        for s in [\"Old\", \"New\", \"Oldlast\"]:\n            hr = of[s][\"half_r\"][k]\n            row[f\"half_{s}\"] = hr\n            row[f\"field_{s}\"] = of[s][\"field\"][k] is not None\n            pc |= bool(np.isfinite(hr) and hr >= 0.5 and of[s][\"field\"][k] is not None)\n        row[\"place_cell\"] = pc\n        mA, mB, mA2 = (of[s][\"maps\"][k] for s in [\"Old\", \"New\", \"Oldlast\"])\n        row[\"rAA\"], row[\"rAB\"], row[\"rBA\"] = S.corr_maps(mA, mA2), S.corr_maps(mA, mB), S.corr_maps(mB, mA2)\n        row[\"remap\"] = row[\"rAA\"] - np.mean([row[\"rAB\"], row[\"rBA\"]])\n        O.append(row)\nO = pd.DataFrame(O)\nprint(\"files with A, B and A':\", O.path.nunique(), \"subjects:\", O.subject.nunique())\nprint(O.groupby(\"type\").agg(units=(\"unit\", \"size\"), place_cells=(\"place_cell\", \"sum\")).to_string())\nprint(\"paper: 247 GC, 181 MC, 317 CA3 in 5 mice; place cells 30, 111, 144\")\nprint(\"by subject:\"); print(O.groupby([\"subject\", \"type\"]).place_cell.agg([\"size\", \"sum\"]).unstack().to_string())\n#%% md\n## remap-positive\n\n> For neurons with stable place fields, the remapping index between open fields A and B is above zero in each group (Wilcoxon signed-rank; GC P < 0.05, MC and CA3 P < 0.00001).\n#%% claim:remap-positive\npcs = O[O.place_cell & O.remap.notna()]\nfor t, lvl in [(\"GC\", 0.05), (\"MC\", 1e-5), (\"CA3\", 1e-5)]:\n    x = pcs[pcs.type == t].remap\n    print(f\"{t}: n={len(x)}, median index {x.median():.3f}, Wilcoxon P = {stats.wilcoxon(x).pvalue:.3g} (paper's level {lvl})\")\n#%% md\n## remap-gc-lt-mc\n\n> Granule cells with stable place fields remap less than mossy cells (Kruskal-Wallis P = 0.034; post hoc GC against MC P = 0.028).\n#%% claim:remap-gc-lt-mc\ng, m, c = (pcs[pcs.type == t].remap for t in [\"GC\", \"MC\", \"CA3\"])\nprint(f\"medians GC {g.median():.3f}, MC {m.median():.3f}, CA3 {c.median():.3f}; KW P = {kw(g, m, c):.3g}; \"\n      f\"Mann-Whitney GC vs MC, Bonferroni x3: P = {min(1, 3 * mwu(g, m)):.3g}\")\n#%% md\n## remap-fractions\n\n> Only 36.7% of granule cells with place fields (11 of 30) remap, against 61.3% of mossy cells (68 of 111) and 55.6% of CA3 pyramidal cells (80 of 144).\n#%% claim:remap-fractions\nfor t in [\"GC\", \"MC\", \"CA3\"]:\n    x = pcs[pcs.type == t].remap\n    print(f\"{t}: remapping (index >= 0.2) {(x >= 0.2).sum()} of {len(x)} = {(x >= 0.2).mean():.3f}; all units of the type in A/B/A' files: {(O.type == t).sum()}\")\n#%% md\n## pv-remap\n\n> Population-vector remapping is smaller for granule cells than for mossy cells and CA3 pyramidal cells, for populations of 5, 10, 15 and 20 place cells.\n\nPlace cells pooled across sessions per type; for each population size, 1000 random draws; population-vector correlation as the mean over pixels visited in both maps (by every cell drawn) of the Pearson correlation of the stacked rates; index PV(AA') - mean(PV(AB), PV(BA')).\n#%% claim:pv-remap\nmaps = {}\nfor r in R:\n    of = r.get(\"openfield\")\n    if not of or not all(k in of for k in [\"Old\", \"New\", \"Oldlast\"]):\n        continue\n    for k in of[\"Old\"][\"maps\"]:\n        maps[(r[\"path\"], k)] = [of[s][\"maps\"][k].reshape(-1) for s in [\"Old\", \"New\", \"Oldlast\"]]\n\n\ndef pv_corr(X, Y):\n    ok = np.isfinite(X).all(0) & np.isfinite(Y).all(0)\n    X, Y = X[:, ok], Y[:, ok]\n    Xc, Yc = X - X.mean(0), Y - Y.mean(0)\n    den = np.sqrt((Xc ** 2).sum(0) * (Yc ** 2).sum(0))\n    with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n        rr = (Xc * Yc).sum(0) / den\n    return np.nanmean(rr) if np.isfinite(rr).any() else np.nan\n\n\ndef pv_draws(rng, n, ndraw=1000):\n    out = {}\n    for t in [\"GC\", \"MC\", \"CA3\"]:\n        keys = [(p, u) for p, u in pcs[pcs.type == t][[\"path\", \"unit\"]].itertuples(index=False)]\n        vals = []\n        for _ in range(ndraw):\n            pick = rng.choice(len(keys), n, replace=False)\n            A_, B_, A2 = (np.vstack([maps[keys[i]][j] for i in pick]) for j in range(3))\n            vals.append(pv_corr(A_, A2) - np.mean([pv_corr(A_, B_), pv_corr(B_, A2)]))\n        out[t] = np.array(vals)\n    return out\n\nrows = []\nfor off in [0, 1000, 2000, 3000, 4000]:\n    rng = np.random.default_rng(seed(\"pv-remap\") + off)\n    for n in [5, 10, 15, 20]:\n        d = pv_draws(rng, n)\n        rows.append(dict(seed_offset=off, n=n, **{f\"median_{t}\": round(np.nanmedian(v), 3) for t, v in d.items()},\n                         KW_P=kw(*d.values()), P_GC_MC_bonf=min(1, 3 * mwu(d[\"GC\"], d[\"MC\"])), P_GC_CA3_bonf=min(1, 3 * mwu(d[\"GC\"], d[\"CA3\"]))))\npv = pd.DataFrame(rows)\nprint(pv.to_string())\n#%% md\n## inheritance-tmaze\n\n> Mossy cells rarely inherit place fields from single presynaptic granule cells; of 10 place fields of connected granule cells, only 2 overlapped a field of the postsynaptic mossy cell.\n\nDetected GC to MC pairs in files with T-maze runs; a GC field overlaps when it shares a bin with a field of the partner MC (bins are arm-specific, so the same arm). \"Rarely\" is at most a third of the GC fields (criterion).\n#%% claim:inheritance-tmaze\nTk = T.set_index([\"path\", \"unit\"])\nrows = []\nfor name, pairs_ in [(\"automatic test\", sig), (\"authors' table\", va)]:\n    n_f = n_ov = n_pairs = 0\n    gcs = set()\n    for p in pairs_.itertuples():\n        if (p.path, p.pre) not in Tk.index or (p.path, p.post) not in Tk.index:\n            continue\n        n_pairs += 1\n        gf, mf = Tk.loc[(p.path, p.pre)].fields, Tk.loc[(p.path, p.post)].fields\n        mbins = set(b for a, z, _ in mf for b in range(a, z + 1))\n        for a, z, _ in gf:\n            n_f += 1\n            n_ov += bool(set(range(a, z + 1)) & mbins)\n    rows.append(dict(pairs=name, pairs_in_tmaze=n_pairs, gc_fields=n_f, overlapping=n_ov, fraction=round(n_ov / n_f, 3) if n_f else np.nan))\nprint(pd.DataFrame(rows).to_string())\n#%% md\n## inheritance-openfield\n\n> In the open fields, the rate maps of connected granule cells and mossy cells are not correlated within the granule cell's place field (median near 0, n = 19, Wilcoxon P = 0.60).\n\nFor detected GC to MC pairs, in each open-field session (A, B, A', the curtain and other-room sessions) where the GC has a place field, the correlation of the GC and MC maps over the field's pixels; Wilcoxon signed-rank test against 0.\n#%% claim:inheritance-openfield\nres_of = {}\nRp = {r[\"path\"]: r for r in R}\nfor name, pairs_ in [(\"automatic test\", sig), (\"authors' table\", va)]:\n    cs = []\n    for p in pairs_.itertuples():\n        of = Rp[p.path].get(\"openfield\") or {}\n        for s, v in of.items():\n            fl = v[\"field\"].get(p.pre)\n            if fl is None or p.post not in v[\"maps\"]:\n                continue\n            mask = fl[0]\n            a, b = v[\"maps\"][p.pre][mask], v[\"maps\"][p.post][mask]\n            ok = np.isfinite(a) & np.isfinite(b)\n            if ok.sum() > 2 and a[ok].std() > 0 and b[ok].std() > 0:\n                cs.append(np.corrcoef(a[ok], b[ok])[0, 1])\n    cs = np.array(cs)\n    res_of[name] = cs\n    if len(cs) >= 1:\n        print(f\"{name}: comparisons {len(cs)}, median r {np.median(cs):.3f}, Wilcoxon P = {stats.wilcoxon(cs).pvalue if len(cs) > 1 else np.nan:.3g}\")\n    else:\n        print(f\"{name}: no comparisons\")\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/cells_d.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && python build_nb.py --dev && time python runnb.py dev.ipynb dev_out.ipynb claim 2>&1 | grep -v WARNING | sed -n '/^authors. pairs:/,$p' | head -150
+```
+
+```
+wrote /tmp/claude-1001/dev.ipynb 70 cells
+authors' pairs: 32
+  burst: first 0.0083, second 0.0510, second > first in 32, Wilcoxon P = 4.66e-10
+  state: wake 0.0191, NREM 0.0129, NREM lower in 19, Wilcoxon P = 0.0175
+
+ERROR AttributeError 'function' object has no attribute 'values' [31m---------------------------------------------------------------------------[39m[31mAttributeError[39m                            Traceback (most recent call last)[36mCell[39m[36m [39m[32mIn[29][39m[32m, line 2[39m
+[32m      1[39m [38;5;28;01mfor[39;00m t [38;5;28;01min[39;00m [[33m"GC"[39m, [33m"MC"[39m, [33m"CA3"[39m]:
+[32m----> [39m[32m2[39m     M = np.vstack(T[T.type == t].map.values)
+[32m      3[39m     frac = np.nansum(M > [32m1[39m, axis=[32m0[39m) / np.sum(np.isfinite(M), axis=[32m0[39m)
+[32m      4[39m     cen, side = frac[:S.N_CEN], frac[S.N_CEN:]
+[32m      5[39m     cen, side = cen[np.isfinite(cen)], side[np.isfinite(side)]
+[31mAttributeError[39m: 'function' object has no attribute 'values'
+GC: n=225, with a field 40, two or more 11; (a) 0.049, (b) 0.275; field counts {0: 185, 1: 29, 2: 5, 3: 4, 4: 1, 7: 1}
+MC: n=238, with a field 182, two or more 149; (a) 0.626, (b) 0.819; field counts {0: 56, 1: 33, 2: 32, 3: 38, 4: 21, 5: 24, 6: 14, 7: 8, 8: 6, 9: 5, 10: 1}
+CA3: n=253, with a field 166, two or more 123; (a) 0.486, (b) 0.741; field counts {0: 87, 1: 43, 2: 25, 3: 23, 4: 22, 5: 18, 6: 19, 7: 3, 8: 9, 9: 3, 10: 1}
+
+KS GC vs MC on field counts: P = 1.63e-37
+paper: GC 0.066, MC 0.578, CA3 0.361
+
+by subject, fraction with two or more (a):
+[... 68 more lines not kept]
+```
+
+**Agent**
+
+Part D runs apart from two column names that clash with DataFrame methods (`map`, `info`). Fixing those and printing the optotag and T-maze sections.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && sed -i 's/T\[T.type == t\].map.values/T[T.type == t]["map"].values/; s/np.vstack(g.map.values)/np.vstack(g["map"].values)/; s/T\[(T.type == t)\].info.dropna()/T[(T.type == t)]["info"].dropna()/' cells_d.py && sed -i 's/\*\*{f"median_{t}": round(np.nanmedian(v), 3)/**{f"median_{t}": round(np.nanmedian(v), 4)/' cells_d.py && python build_nb.py --dev && python runnb.py dev.ipynb dev_out.ipynb claim 2>&1 | grep -v WARNING | sed -n '/suppressed_pre/,/^wake (awake) /p; /^GC: units .*median fraction/,/^KS information/p' | grep -v "^     Yuta" ; python runnb.py dev.ipynb dev_out.ipynb sanity 2>&1 | grep "bits/s"
+```
+
+```
+wrote /tmp/claude-1001/dev.ipynb 70 cells
+        n  suppressed_pre  suppressed_post  authors_tagged  frac_pre  frac_post
+type                                                                           
+GC    198               6               13               0     0.030      0.066
+MC    106              68               71              29     0.642      0.670
+nI     68               4               10               0     0.059      0.147
+wI     62              15               17               8     0.242      0.274
+
+paper: MC 29/107 (0.271), GC 0/202, wI 8/68, nI 0/69
+DRD2 files with 20 ms pulses: 26 of 32 ; pulses per file: median 96542.0
+
+MC tagged by the authors: suppressed under baseline (i) 29 of 29 ; response/baseline (i) median 0.57 against 0.794 for untagged MC
+
+by subject (MC suppressed, baseline i / ii / n):
+              n  pre  post
+subject                   
+YutaMouse51   3    0     1
+YutaMouse54  55   44    45
+YutaMouse55   6    3     3
+YutaMouse56  42   21    22
 [... 35 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/conclusions.py <<'PYEOF'
-C = {
-"unit-counts": """**Result: partially reproduced.** The files hold 609 GC, within the tolerance of the paper's
-586, and 568 MC, 13.6% above the paper's 500 and outside its tolerance. GC and MC come from all 16
-mice, with large differences between mice (for example 3 GC and 26 MC in YutaMouse20).""",
-"first-stage-labels": """**Result: partially reproduced.** Under either burst threshold, 98.2% of GC and MC are
-wide-waveform and bursty, and 91.7% (threshold 1.2) or 93.3% (1.8) of wide-waveform interneurons
-are wide and not bursty, but only 82.5% of narrow-waveform interneurons have a trough-to-peak
-latency below 0.425 ms (from 40% to 100% by mouse). The latency here is measured on the stored
-spike waveforms, which the files do not describe; the paper used unfiltered waveforms.""",
-"interneuron-rates": """**Result: partially reproduced.** Narrow-waveform interneurons fire faster than wide-waveform
-ones (Kruskal-Wallis P = 5.3e-17 over the recording, 1.4e-15 in awake periods), but the medians
-(5.96 and 2.57 Hz over the recording; 8.75 and 3.08 Hz awake) are outside the tolerance of 7.97 and
-2.11 Hz under both readings. The labels include CA3 interneurons, which the paper counts apart.""",
-"gc-narrower-waveform": """**Result: reproduced.** The GC median trough-to-peak latency (0.710 ms) is below the MC median
-(0.740 ms; Mann-Whitney P = 2.3e-14). The result rests on units whose peak falls at the end of the
-stored 1.6 ms (43% of GC, 67% of MC): among units with the peak inside the window, GC are not
-narrower (0.660 against 0.645 ms, P = 0.057).""",
-"optotag-drd2": """**Result: partially reproduced.** In the 26 DRD2-Cre::Ai35 sessions with 20 ms pulses (4 mice),
-the light suppresses MC far more often than GC, but at a much higher rate than the paper reports:
-68 of 106 MC (0.642) with the baseline before the pulse and 71 (0.670) with the baseline later in
-the cycle, against 6 (0.030) and 13 (0.066) of 198 GC; the paper gives 29 of 107 MC and none of
-202 GC. Wide-waveform interneurons are suppressed in 20 of 88 (paper 8 of 68) and narrow-waveform
-ones in 14 of 132 (paper 0 of 69). With a 50% threshold the MC fraction falls to 0.066, so the
-fraction depends strongly on a threshold the paper states as 20%.""",
-"mc-more-active": """**Result: reproduced.** MC fire more than GC in wake (median 0.736 against 0.077 Hz in awake
-periods, Kruskal-Wallis P = 1.8e-114; 0.727 against 0.083 Hz with quiet wake) and in NREM (0.913
-against 0.391 Hz, P = 2e-29).""",
-"gc-nrem-highest": """**Result: partially reproduced.** GC fire most in NREM (median 0.391 Hz against 0.077 Hz awake
-and 0.198 Hz in REM; adjusted P 1.3e-86 and 8.7e-31; 97% of GC fire more in NREM than awake), but
-wake and REM are not similar: REM rates are higher than wake rates (adjusted P = 1.4e-25 with
-awake periods, 6.3e-23 with quiet wake included).""",
-"ca3-wake-highest": """**Result: not reproduced.** CA3 pyramidal cells fire least in REM (median 0.287 Hz; adjusted
-P = 1.1e-15 against NREM and 5.4e-09 against wake), but not most in wake: the NREM median (0.459
-Hz) is above the wake median (0.441 Hz awake, 0.433 Hz with quiet wake), and the two do not
-differ (adjusted P = 0.77 and 0.59).""",
-"nrem-wake-ratio": """**Result: reproduced.** The NREM to wake rate ratio is 4.63 for GC and 1.11 for MC (Mann-Whitney
-P = 3.9e-141; 4.28 and 1.11 with quiet wake), and the GC ratio is above the MC ratio in every
-mouse with both types. MC are not fully equivalent across the two states: their NREM rates are
-slightly higher than their wake rates (Wilcoxon P = 1.4e-06).""",
-"theta-modulation": """**Result: reproduced.** Of the units with Rayleigh P < 0.05 and kappa > 0.1 (483 GC, 532 MC),
-GC have the higher theta MRL (0.422 against 0.339, Kruskal-Wallis P = 1.5e-20) and fire later in
-the theta cycle (circular mean 30.8 against 12.0 degrees from the peak; P = 1e-17 with phases on
-(-pi, pi], P = 0.82 on [0, 2 pi)). GC fire fewer spikes (median 119 against 747), which inflates
-their MRL; after subtracting the uniform-phase expectation GC are still higher (0.324 against
-0.295) but at P = 0.00056.""",
-"gamma-modulation": """**Result: reproduced.** Of the modulated units (345 GC, 475 MC), GC have the higher gamma MRL
-(0.319 against 0.212, Kruskal-Wallis P = 4.8e-43; 0.219 against 0.166, P = 4.1e-18 after
-subtracting the uniform-phase expectation) and fire earlier in the gamma cycle (circular mean
--20.2 against 1.7 degrees; P = 1.2e-23 with phases on (-pi, pi], P = 0.18 on [0, 2 pi)).""",
-"gamma-rate-correlation": """**Result: partially reproduced.** Over all units with a gamma MRL, r is -0.177 for GC (P =
-3.6e-05), within the tolerance of -0.176, and -0.161 for MC (P = 0.00013), just outside the
-tolerance of -0.184 and above P = 0.0001. Over the modulated units both are negative with P below
-0.0001 (GC -0.397, MC -0.253), outside the tolerance.""",
-"ds2-recruitment": """**Result: reproduced.** GC are recruited more by DS2 than MC (median peak ratio 6.88 against
-4.82, Kruskal-Wallis P = 1.1e-10) and fire earlier (median peak -3.0 against +1.0 ms from the DS2
-peak, P = 2.2e-09).""",
-"monosyn-gc-to-mc": """**Result: partially reproduced.** The automatic test of the Methods finds 65 GC to MC pairs and
-8 MC to GC pairs among 4713 GC-MC pairs. The GC to MC fraction is 0.107 as pairs over GC, 0.0805
-as GC with a target over GC and 0.0138 as pairs over tested pairs, none within 0.0495 to 0.0605,
-and MC to GC pairs are found, where the paper reports none. GC to MC pairs outnumber MC to GC
-pairs 65 to 8. The paper inspected each detection by hand and kept 32; that step cannot be
-repeated. Stricter thresholds lower both counts (56 and 6 at the 99.99999th percentile).""",
-"burst-facilitation": """**Result: reproduced.** For the 65 detected pairs, the transmission probability of the second
-spike of a GC burst (median 0.0334) exceeds that of the first (0.0066) in 58 pairs (paired
-Wilcoxon P = 1.2e-09), and it holds with bursts defined at 4 ms (P = 4.4e-08) or 10 ms (P =
-5.5e-10). The pairs are the automatic detections, more than the paper's 32.""",
-"state-transmission": """**Result: not reproduced.** For the 65 detected pairs, transmission is 0.0125 from GC spikes in
-awake periods and 0.0108 from GC spikes in NREM, lower in NREM for 34 pairs; paired Wilcoxon
-P = 0.39.""",
-"zero-lag-synchrony": """**Result: partially reproduced.** Synchrony within 1 ms is rare among GC pairs (4 of 3155,
-0.0013) and common for MC, but the MC and CA3 values are outside tolerance under both readings:
-MC 0.0766 of pairs or 0.433 of cells, CA3 0.0120 of pairs or 0.102 of cells, against 0.23 and
-0.09. Read as cells, both exceed the GC pair fraction more than ten times. Pairs on one shank
-cannot be left out, as most files do not give the shank.""",
-"tmaze-central-active": """**Result: partially reproduced.** The median fraction of active units is higher in the central
-arm than on the side arms for all three types (GC 0.020 against 0.018, MC 0.314 against 0.272,
-CA3 0.214 against 0.189), with Kruskal-Wallis P below 0.00001 for MC only (2.2e-06); GC (P =
-0.043) and CA3 (P = 0.048) pass at 0.05.""",
-"tmaze-multiple-fields": """**Result: partially reproduced.** Of all units, 4.3% of GC, 63.7% of MC and 43.1% of CA3 have
-two or more T-maze fields (paper 6.6%, 57.8% and 36.1%); each value is outside tolerance, MC by
-0.001. GC have the fewest fields (KS P = 3.2e-53 against MC). The fractions move with the field
-rule (GC 3.2% to 9.5%, MC 59.7% to 71.3% over the variants shown).""",
-"tmaze-peak-info": """**Result: reproduced.** GC have the lowest within-field peak rate (median 2.63 Hz against MC
-5.68 Hz, KS P = 4.5e-05) and the lowest spatial information (0.035 bits/s against MC 0.603 and CA3
-0.293, KS P = 1.6e-49 and 1.5e-29).""",
-"tmaze-splitters": """**Result: reproduced.** Splitter cells are rare in every type (0 of 17 GC, 4 of 179 MC and 4
-of 141 CA3 with a central-arm field) and their fractions do not differ (chi-square P = 0.76).""",
-"remap-positive": """**Result: reproduced.** Among place cells the remapping index is above zero for GC (27 cells,
-median 0.128, Wilcoxon P = 0.0013), MC (116, 0.293, P = 1.5e-13) and CA3 (143, 0.207, P =
-8.6e-14). The units per type (GC 246, MC 182, CA3 317 in 5 mice) are within one of the paper's
-counts.""",
-"remap-gc-lt-mc": """**Result: not reproduced.** The GC median remapping index (0.128) is below the MC median
-(0.293), but neither the Kruskal-Wallis test (P = 0.306) nor the GC against MC test (P = 0.114,
-0.342 after Bonferroni) is significant. With the variant place-cell rule GC against MC gives
-P = 0.0648.""",
-"remap-fractions": """**Result: partially reproduced.** 11 of 27 GC (0.407), 65 of 116 MC (0.560) and 73 of 143 CA3
-(0.510) place cells remap. MC and CA3 are within tolerance; GC is 0.003 above it. GC remap least
-of the three types at the thresholds 0.2 and 0.25.""",
-"pv-remap": """**Result: reproduced.** For populations of 5, 10, 15 and 20 place cells the GC median
-population-vector remapping index (0.162 to 0.210) is below the MC (0.253 to 0.302) and CA3
-(0.251 to 0.352) medians, with Kruskal-Wallis P from 5.8e-35 to 8.1e-190. Single draws overlap:
-from 71% (5 cells) to 89% (20 cells) of GC draws are below the MC median.""",
-"inheritance-tmaze": """**Result: reproduced.** Of 16 place fields of GC with a detected MC partner in T-maze
-sessions, 5 (0.31) overlap a field of the partner, within the criterion of at most a third, and
-15 of 23 GC partners have no T-maze field. The partner MC have 112 fields. The result is near the
-criterion's limit and uses the automatic pair detections.""",
-"inheritance-openfield": """**Result: reproduced.** Over 18 comparisons (6 pairs, 4 sessions) the correlation of GC and
-MC maps within the GC field has a median of -0.038 (Wilcoxon P = 0.67); 5 of the 18 are above
-0.5 (paper 2 of 19).""",
-"mc-deeper": """**Result: reproduced.** In the 17 files that give each unit's shank, the DS2 amplitude at the
-site of MC (median +271 uV, 73% positive) is higher than at the site of GC (median -38 uV, 40%
-positive; Mann-Whitney P = 5.7e-09), placing MC below the DS2 reversal more often than GC. It
-holds in 3 of the 4 mice; in YutaMouse33 the MC median is below the GC median.""",
-"gc-mc-classification": """**Result: reproduced.** On 391 GC and MC of the 17 files, k-means on the four features agrees
-with the labels for 94.4% of units (91% to 97% by mouse). Without the NREM to wake ratio or
-without the first waveform component the agreement falls to 77.2%.""",
-}
-PYEOF
-python - <<'EOF'
-import re
-exec(open('/tmp/claude-1001/conclusions.py').read())
-p='/tmp/claude-1001/build_nb.py'
-b=open(p).read()
-for claim, text in C.items():
-    tag=f'["claim:{claim}"])'
-    i=b.rfind(tag)
-    assert i>0, claim
-    j=i+len(tag)
-    b=b[:j]+'\nmd(r"""\n'+text+'\n""")'+b[j:]
-open(p,'w').write(b)
-print('ok')
+date -u; cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import nbformat
+nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code' and 'Clock check for positions' in c.source:
+        for o in c.outputs:
+            print(o.get('text', '')[:3000], o.get('ename',''), o.get('evalue',''))
 EOF
 ```
 
 ```
-ok
+Mon Nov 23 23:54:40 UTC 2026
+ NameError name 'assets' is not defined
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-p='/tmp/claude-1001/build_nb.py'
-b=open(p).read()
-b=b.replace('''print(f"Detected GC to MC pairs in T-maze sessions: {len(tm_pairs)} ({tm_pairs.gc.nunique()} GC, {tm_pairs.groupby(['session', 'mc']).ngroups} MC)")''','''print(f"Detected GC to MC pairs in T-maze sessions: {len(tm_pairs)} ({tm_pairs.groupby(['session', 'gc']).ngroups} GC, {tm_pairs.groupby(['session', 'mc']).ngroups} MC)")''')
-b=b.replace('''(0.510) place cells remap. MC and CA3 are within tolerance; GC is 0.003 above it. GC remap least
-of the three types at the thresholds 0.2 and 0.25.''','''(0.510) place cells remap. MC and CA3 are within tolerance; GC is 0.003 above it. GC remap least
-of the three types at every threshold shown (0.1 to 0.3).''')
-summary = r'''md(r"""
-## Summary
+cd $TMPDIR && . dev/bin/activate && sed -i "s|R = sorted(R, key=lambda r: r\['path'\])\")|R = sorted(R, key=lambda r: r['path'])\\\\nassets = S.list_assets()\")|" build_nb.py && grep -n "assets = S" build_nb.py && python build_nb.py --dev && python runnb.py dev.ipynb dev_out.ipynb sanity 2>&1 | grep -A3 "bits/s\|Error"
+```
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
+```
+21:                "R = sorted(R, key=lambda r: r['path'])\nassets = S.list_assets()")
+wrote /tmp/claude-1001/dev.ipynb 70 cells
+YutaMouse33-150218_b units 0: median information nan bits/s as recorded, nan with spikes shifted 60 s; higher as recorded for 0 units
+
+YutaMouse33-150219_b units 3: median information 0.020 bits/s as recorded, 0.025 with spikes shifted 60 s; higher as recorded for 1 units
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && sed -i 's/^for path in sorted(occs)\[:2\]:/for path in T.groupby("path").size().sort_values().index[-2:]:/' cells_d.py && python build_nb.py --dev && python runnb.py dev.ipynb dev_out.ipynb sanity 2>&1 | grep "bits/s"
+```
+
+```
+wrote /tmp/claude-1001/dev.ipynb 70 cells
+YutaMouse41-150902_b units 44: median information 0.100 bits/s as recorded, 0.048 with spikes shifted 60 s; higher as recorded for 31 units
+YutaMouse42-151112_b units 44: median information 0.323 bits/s as recorded, 0.057 with spikes shifted 60 s; higher as recorded for 34 units
+Shell cwd was reset to
+```
+
+**Agent**
+
+All sections run on the cache. Adding one more check to the helper (where `arm_start` falls on the central arm), then the conclusions, blocked sections and summary.
+
+**Agent calls Bash**
+
+```bash
+cd entries/senzai-2017 && python3 - <<'EOF'
+p='senzai.py'; s=open(p).read()
+old='''        a = T["arm_start"][k]
+        i0 = np.searchsorted(t, a)
+'''
+new='''        a = T["arm_start"][k]
+        i0 = np.searchsorted(t, a)
+        at_start = CENTRAL_CM - ca[min(i0, len(ca) - 1)]  # cm into the central arm at arm_start
+'''
+assert old in s; s=s.replace(old,new)
+old='''                         error=bool(T["error_run"][k]), dt=1 / rate))'''
+new='''                         error=bool(T["error_run"][k]), dt=1 / rate, arm_start_cm=float(at_start)))'''
+assert old in s; s=s.replace(old,new)
+old='''    out = dict(n_runs=len(runs), n_left=sum(r["left"] for r in runs))'''
+new='''    out = dict(n_runs=len(runs), n_left=sum(r["left"] for r in runs),
+               arm_start_cm=[r["arm_start_cm"] for r in runs])'''
+assert old in s; s=s.replace(old,new)
+open(p,'w').write(s)
+EOF
+cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+import nbformat
+nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code' and ('pv_draws' in c.source or 'zero-lag' in c.source and 'claim' in str(c.metadata)):
+        for o in c.outputs: print(o.get('text','')[:2500])
+EOF
+```
+
+```
+kind             pairs  n_pairs  sync_pairs  frac_pairs  cells_with_partner  frac_cells
+0    GC-GC         all pairs     3105           4      0.0013                   7      0.0120
+1    GC-GC  different shanks     2010           4      0.0020                   7      0.0120
+2    GC-GC        same shank     1095           0      0.0000                   0      0.0000
+3    MC-MC         all pairs     3187         262      0.0822                 216      0.4294
+4    MC-MC  different shanks     1972         262      0.1329                 216      0.4294
+5    MC-MC        same shank     1215           0      0.0000                   0      0.0000
+6  CA3-CA3         all pairs     4753          51      0.0107                  46      0.0810
+7  CA3-CA3  different shanks     1775          51      0.0287                  46      0.0810
+8  CA3-CA3        same shank     2978           0      0.0000                   0      0.0000
+
+authors' zero-lag table (files that hold it): pairs by type
+tb     CA3  GC   MC  nI  other  wI
+ta                                
+CA3     47   0   27   4      3   3
+GC       0   0    2  36      3   2
+MC      22   3  148  14      5  12
+nI       4  34   13  71     82  21
+other    2   2    4  70     63  15
+wI       3   1   10  15     19  13
+[... 26 more lines not kept]
+```
+
+**Agent**
+
+Now the conclusion cells. I'll insert each "Result" cell before the next section's heading.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > insert_results.py <<'EOF'
+import re
+RES = {
+# key: text inserted before the given anchor (first occurrence) in the given file
+("cells_a.py", "## first-stage-labels"): "**Result: reproduced.** The labels give 583 GC and 503 MC, once per recording day (no global_id repeats), within 10% of 586 and 500.",
+("cells_a.py", "## interneuron-rates"): "**Result: partially reproduced.** Under either threshold (1.2 or 1.8), 98.5% of GC and MC are wide with a burst index above it, and 90.6% (1.2) or 92.6% (1.8) of dentate wide-waveform interneurons are wide with a burst index at or below it; 89.9% of dentate narrow-waveform interneurons (222 of 247) are below 0.425 ms, just short of 90%. Two of the three groups meet the criterion.",
+("cells_a.py", "## gc-narrower-waveform"): "**Result: reproduced.** Among dentate interneurons, the narrow-waveform median rate is 7.65 Hz and the wide-waveform one 2.05 Hz over the recording span (reading a), both within tolerance of 7.97 and 2.11 Hz, with Kruskal-Wallis P = 1.4e-13. In `awake` periods (reading b) the medians are 9.23 and 2.87 Hz, outside tolerance. With CA3 interneurons included, the narrow-waveform median falls to 5.80 Hz.",
+("cells_a.py", "@@END"): "**Result: reproduced.** The GC median trough-to-peak latency (0.710 ms) is below the MC median (0.740 ms), Mann-Whitney P = 3.6e-14. The latency is a lower bound for many units, as the peak falls at the end of the stored 1.6 ms for 44% of GC and 69% of MC; with the wide-band waveform at the site (17 files) the medians are 0.700 and 0.710 ms and the difference is not significant (P = 0.43).",
+("cells_b.py", "## mc-more-active"): "**Result: partially reproduced.** Under baseline (i), the 20 ms before each pulse, 68 of 106 MC (0.642) are suppressed, against 6 of 198 GC (0.030), 15 of 62 wide-waveform and 4 of 68 narrow-waveform dentate interneurons. The GC fraction is below 0.05 and the MC fraction exceeds four times it, but the MC fraction is far above 0.271 (29 of 107); under baseline (ii) it is 0.670. The 29 MC the authors tagged are all among those suppressed, so the criterion's 20% decrease, without a significance test, admits more units than the paper's.",
+("cells_b.py", "## gc-nrem-highest and ca3-wake-highest"): "**Result: reproduced.** MC fire faster than GC in wake (`awake`: median 0.726 against 0.079 Hz, Kruskal-Wallis P = 4e-102; `awake` and `quiet`: P = 3e-100) and in NREM (0.907 against 0.398 Hz, P = 1e-23).",
+("cells_b.py", "## nrem-wake-ratio"): "**Result: gc-nrem-highest partially reproduced; ca3-wake-highest not reproduced.** GC fire most in NREM (median 0.398 Hz, against 0.079 in wake and 0.205 in REM, every pairwise adjusted P < 1e-10 against NREM), as claimed, but their wake and REM rates differ (adjusted P near 0), under both readings of wake. For CA3 pyramidal cells REM is the lowest (0.305 Hz), but wake (0.450 Hz) is not the highest: the NREM median is 0.473 Hz, and wake and NREM do not differ (adjusted P = 0.77 with `awake`, 0.69 with `awake` and `quiet`).",
+("cells_b.py", "## theta-modulation and gamma-modulation"): "**Result: reproduced.** The GC median ratio of NREM to wake rate is 4.67 (above 1), against 1.09 for MC, Mann-Whitney P = 1e-130 (wake as `awake`; 4.31 and 1.10 with `quiet`). The MC NREM rate does differ from wake by a Wilcoxon test (P = 0.0002), though their median ratio is near 1.",
+("cells_b.py", "## gamma-rate-correlation"): "**Result: theta-modulation reproduced; gamma-modulation reproduced.** Among units passing the Rayleigh and kappa test, the theta MRL is higher for GC (median 0.429) than MC (0.347), P = 7e-16, and GC fire later in the theta cycle (circular mean 0.536 against 0.246 rad, reading a medians 0.508 and 0.201, P = 8e-13). The gamma MRL is higher for GC (0.323 against 0.217, P = 3e-34), and GC fire earlier in the gamma cycle (circular mean -0.470 against -0.062 rad, reading a P = 2e-23). Under phase reading b ([0, 2 pi)) neither phase difference is significant (P = 0.59 and 0.67), as the phases straddle 0.",
+("cells_b.py", "## ds2-recruitment"): "**Result: not reproduced.** Both correlations are negative, but neither reading puts both r within tolerance or gives MC P < 0.0001: reading (a) GC r = -0.234 (P = 2e-8), MC r = -0.119 (P = 0.008); reading (b) GC r = -0.413 (P = 7e-15), MC r = -0.182 (P = 0.0002).",
+("cells_b.py", "## mc-deeper"): "**Result: reproduced.** The GC median peak ratio around DS2 (6.70) exceeds the MC one (5.04), Kruskal-Wallis P = 1.9e-6, and GC peak earlier (median -3 ms against +1 ms), P = 3e-8. With the DS2 times shifted by 0.5 s the ratios fall to 1.69 and 1.63.",
+("cells_b.py", "## gc-mc-classification"): "**Result: reproduced.** At the wide-band site, the MC median DS2 amplitude (1144 uV, n = 240) exceeds the GC median (451 uV, n = 136), Mann-Whitney P = 5e-44; every MC and 82% of GC sites have a positive DS2. The variant with the stored-waveform site on all files gives 1130 against 401 uV, P = 9e-114.",
+("cells_b.py", "@@END"): "**Result: reproduced.** K-means on the four standardised features agrees with the labels for 94.9% of the 376 units (136 GC, 240 MC), the same under all five seeds. The variant on all files with the stored waveforms and the table site gives 92.7%; without the waveform components 89.9%.",
+("cells_c.py", "## burst-facilitation"): "**Result: partially reproduced.** The automatic test finds 63 GC to MC pairs and 8 MC to GC pairs among 4425 tested. The fraction is 0.108 (pairs over all GC), 0.081 (GC with a target) or 0.014 (pairs over tested pairs), none within 0.055 +- 0.0055, and MC to GC pairs exist; GC to MC pairs outnumber them 63 to 8, more than four to one. The authors' table in the files holds exactly 32 GC to MC pairs and no MC to GC pair, as the paper reports, and the automatic test finds all 32; the paper's manual inspection, not repeated here, is what removes the rest.",
+("cells_c.py", "## state-transmission"): "**Result: reproduced.** Across the 63 detected pairs, the transmission probability of the second burst spike (median 0.032) exceeds that of the first (0.0067) in 56 pairs, paired Wilcoxon P = 2.9e-9. On the authors' 32 pairs, 32 of 32, P = 4.7e-10 (printed below).",
+("cells_c.py", "## zero-lag-synchrony"): "**Result: not reproduced.** Across the 63 detected pairs, the median transmission is 0.0125 in wake and 0.0111 in NREM, lower in NREM for 32 of 63 pairs, paired Wilcoxon P = 0.52. On the authors' 32 pairs (printed below) NREM is lower in 19, P = 0.018, which would meet only the partial level.",
+("cells_c.py", "@@END"): "**Result: partially reproduced.** GC pairs are synchronous in 0.0013 of pairs (4 of 3105), within the claim's bound of 0.0022. As fractions of pairs, MC 0.082 and CA3 0.011; as fractions of cells with a synchronous partner, MC 0.429 and CA3 0.081; none is within tolerance of 0.23 and 0.09 (CA3 0.0810 lies just outside 0.081). Under reading (b) both exceed the GC pair fraction by more than ten times. No same-shank pair is synchronous by this test. The authors' zero-lag table gives 111 of 503 MC (0.221) and 30 of 568 CA3 (0.053) with a same-type partner, and no GC pair.",
+("cells_d.py", "## tmaze-multiple-fields"): "**Result: partially reproduced.** The fraction of active units is higher in the central arm only for MC (median 0.328 against 0.239, Kruskal-Wallis P = 5e-10). For GC (0.018 against 0.022, P = 0.41) and CA3 (0.233 against 0.219, P = 0.21) it is not.",
+("cells_d.py", "## tmaze-peak-info"): "**Result: partially reproduced.** Of all units, 4.9% of GC, 62.6% of MC and 48.6% of CA3 have two or more fields (reading a; of units with a field, 27.5%, 81.9% and 74.1%). Only the MC fraction is within tolerance (GC 0.049 against 0.066 +- 0.0066, CA3 0.486 against 0.361 +- 0.036); GC have the lowest fraction and the GC against MC Kolmogorov-Smirnov test gives P = 2e-37.",
+("cells_d.py", "## tmaze-splitters"): "**Result: reproduced.** GC have the lowest within-field peak rate (median 2.54 Hz, against 4.89 for MC; KS P = 0.0005) and the lowest spatial information (0.033 bits/s, against 0.424 for MC and 0.240 for CA3; KS P = 2e-41 and 2e-28).",
+("cells_d.py", "## Open fields: maps and place cells"): "**Result: reproduced.** Splitters are 0 of 17 GC, 5 of 158 MC and 3 of 127 CA3 units with a central-arm field, chi-square P = 0.72; over all units P = 0.098. Both readings find no difference at P < 0.05. Splitters are few under the Methods' P < 0.001 (8 in all).",
+("cells_d.py", "## remap-gc-lt-mc"): "**Result: reproduced.** The remapping index of place cells is above zero in each group: GC median 0.161 (n = 24, Wilcoxon P = 0.0025), MC 0.281 (n = 102, P = 3e-10), CA3 0.233 (n = 141, P = 1e-14), each at the paper's level.",
+("cells_d.py", "## remap-fractions"): "**Result: not reproduced.** The GC median index (0.161) is below the MC median (0.281), but neither test holds: Kruskal-Wallis across the three types P = 0.69, Bonferroni-corrected Mann-Whitney GC against MC P = 1.",
+("cells_d.py", "## pv-remap"): "**Result: partially reproduced.** 11 of 24 GC place cells remap (0.458), against 56 of 102 MC (0.549) and 77 of 141 CA3 (0.546). Only the CA3 fraction is within tolerance; GC have the lowest fraction. The place-cell counts are 24, 102 and 141 (paper 30, 111, 144), from 246 GC, 182 MC and 317 CA3 units in the A, B, A' files (paper 247, 181, 317).",
+("cells_d.py", "## inheritance-tmaze"): "**Result: reproduced, but seed sensitive.** Under the claim's seed, the GC median index is below the MC and CA3 medians at every size (n = 5: 0.203 against 0.254 and 0.238; n = 20: 0.2877 against 0.2902 and 0.3461), with Kruskal-Wallis P below 1e-10. At n = 20 the GC and MC medians are within 0.003 of each other, the Bonferroni GC against MC test gives P = 0.84, and under seeds +2000 and +4000 the GC median is above the MC one (0.2874 against 0.2872; 0.2903 against 0.2888).",
+("cells_d.py", "## inheritance-openfield"): "**Result: reproduced.** Of 19 place fields of GC with a detected MC partner on the T-maze (28 pairs), 5 overlap a field of the partner (0.263), within a third. On the authors' pairs (18 in T-maze files, as the paper's 18), 3 of 14 GC fields overlap.",
+("cells_d.py", "@@END"): "**Result: reproduced.** Over 18 comparisons the median correlation of GC and MC maps within the GC field is -0.005, Wilcoxon P = 0.25, so no correlation is found. On the authors' pairs, 14 comparisons, median -0.117, P = 0.90.",
+}
+for (fn, anchor), text in RES.items():
+    p = f"/tmp/claude-1001/{fn}"; s = open(p).read()
+    block = "#%% md\n" + text + "\n"
+    if anchor == "@@END":
+        s = s.rstrip("\n") + "\n" + block
+    else:
+        key = "#%% md\n" + anchor
+        assert key in s, (fn, anchor)
+        s = s.replace(key, block + key, 1)
+    open(p, "w").write(s)
+print("ok")
+EOF
+cp cells_a.py cells_a.bak; cp cells_b.py cells_b.bak; cp cells_c.py cells_c.bak; cp cells_d.py cells_d.bak; python3 insert_results.py
+```
+
+```
+ok
+Shell cwd was reset to
+```
+
+**Agent**
+
+Moving the authors'-pairs variant into the burst and state cells so it prints where it is cited, then adding the blocked sections and the summary.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+p='/tmp/claude-1001/cells_d.py'; s=open(p).read()
+i=s.index('#%% md\n## T-maze: maps and fields')
+s=s[i:]
+open(p,'w').write(s)
+p='/tmp/claude-1001/cells_c.py'; s=open(p).read()
+s=s.replace('''both = sig.merge(a_gm, on=["path", "pre", "post"])''','''both = sig.merge(a_gm, on=["path", "pre", "post"])
+va = sig.merge(a_gm[["path", "pre", "post"]], on=["path", "pre", "post"])  # the authors' pairs, as found here''')
+s=s.replace('''a_b = []
+''','''print(f"variant, the authors' {len(va)} pairs: first {va.tp_first.median():.4f}, second {va.tp_second.median():.4f}, second > first in {(va.tp_second > va.tp_first).sum()}, Wilcoxon P = {stats.wilcoxon(va.tp_second, va.tp_first).pvalue:.3g}")
+''')
+s=s.replace('''print("\\nby subject:")
+print(s2.assign''','''print(f"variant, the authors' {len(va)} pairs: wake {va.tp_wake.median():.4f}, NREM {va.tp_nrem.median():.4f}, NREM lower in {(va.tp_nrem < va.tp_wake).sum()}, Wilcoxon P = {stats.wilcoxon(va.tp_nrem, va.tp_wake).pvalue:.3g}")
+print("\\nby subject:")
+print(s2.assign''')
+s=s.replace("printed below","printed above").replace("frac_cells=round(len(cells) / n_cells, 4)","frac_cells=round(len(cells) / n_cells, 5)")
+open(p,'w').write(s)
+EOF
+grep -n "authors' {len(va)}" cells_c.py | head
+```
+
+```
+66:print(f"variant, the authors' {len(va)} pairs: first {va.tp_first.median():.4f}, second {va.tp_second.median():.4f}, second > first in {(va.tp_second > va.tp_first).sum()}, Wilcoxon P = {stats.wilcoxon(va.tp_second, va.tp_first).pvalue:.3g}")
+82:print(f"variant, the authors' {len(va)} pairs: wake {va.tp_wake.median():.4f}, NREM {va.tp_nrem.median():.4f}, NREM lower in {(va.tp_nrem < va.tp_wake).sum()}, Wilcoxon P = {stats.wilcoxon(va.tp_nrem, va.tp_wake).pvalue:.3g}")
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+p='/tmp/claude-1001/cells_d.py'; s=open(p).read()
+old='''print(T.groupby("type").size().to_string())'''
+new='''ast = np.concatenate([r["tmaze"].get("arm_start_cm", []) for r in R if r.get("tmaze")] or [np.zeros(0)])
+if len(ast):
+    print(f"position at the lab's arm_start, cm into the 65 cm central arm: median {np.median(ast):.1f}, 10th to 90th percentile {np.percentile(ast, 10):.1f} to {np.percentile(ast, 90):.1f} ({len(ast)} runs)")
+print(T.groupby("type").size().to_string())'''
+assert old in s; s=s.replace(old,new,1)
+open(p,'w').write(s)
+EOF
+cat > cells_e.py <<'EOF'
+#%% md
+## gc-mc-distance and gc-backpropagation (blocked)
+
+> Granule cells reside 59 +- 35 um above the mossy cells they drive.
+
+> Granule cell spikes show a delay from the soma to the proximal dendrites, absent in mossy cells.
+
+Both need the vertical position of each recording site on its shank. The electrodes table holds `channel_id`, `group_name`, `location`, `hilus_reference` and `shank_electrode_number` (the channel's place in the shank's list in the lab's .xml file), and no coordinate; the probe description says only that sites are staggered 20 um apart vertically. Which list position is which depth is not stated, so the distance between a GC site and its MC partner's site, and the order of sites along the somatodendritic axis, cannot be read. Both claims are blocked (`metadata_insufficient`); the claims file gives no criterion for either.
+#%%
+f = S.open_asset([a for a in assets if "YutaMouse41-150903" in a["path"]][0]["asset_id"])
+e = f["general/extracellular_ephys/electrodes"]
+print("electrodes table columns:", list(e.keys()))
+print("probe:", f["general/devices/probe"].attrs["description"])
+f.close()
+#%% md
+## Summary
 
 | Claim | Outcome |
 |---|---|
-| unit-counts | partially reproduced |
+| unit-counts | reproduced |
 | first-stage-labels | partially reproduced |
-| interneuron-rates | partially reproduced |
+| interneuron-rates | reproduced |
 | gc-narrower-waveform | reproduced |
 | optotag-drd2 | partially reproduced |
 | mc-more-active | reproduced |
@@ -3823,444 +1883,749 @@ reasoning and the differences from the paper's method.
 | nrem-wake-ratio | reproduced |
 | theta-modulation | reproduced |
 | gamma-modulation | reproduced |
-| gamma-rate-correlation | partially reproduced |
+| gamma-rate-correlation | not reproduced |
 | ds2-recruitment | reproduced |
 | monosyn-gc-to-mc | partially reproduced |
 | burst-facilitation | reproduced |
 | state-transmission | not reproduced |
 | zero-lag-synchrony | partially reproduced |
 | tmaze-central-active | partially reproduced |
-| tmaze-multiple-fields | partially reproduced |
+| tmaze-multiple-fields | partially reproduced (rests on an assumption) |
 | tmaze-peak-info | reproduced |
 | tmaze-splitters | reproduced |
 | remap-positive | reproduced |
 | remap-gc-lt-mc | not reproduced |
 | remap-fractions | partially reproduced |
-| pv-remap | reproduced |
-| inheritance-tmaze | reproduced |
+| pv-remap | reproduced (seed sensitive) |
+| inheritance-tmaze | reproduced (rests on an assumption) |
 | inheritance-openfield | reproduced |
 | mc-deeper | reproduced |
 | gc-mc-classification | reproduced |
-| gc-mc-distance | blocked: no site coordinates |
-| gc-backpropagation | blocked: no site coordinates |
+| gc-mc-distance | blocked: metadata insufficient |
+| gc-backpropagation | blocked: metadata insufficient |
 
-**How the analysis differs from the paper's.**
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences from the paper's method.
 
-- Units are classified by the dandiset's `cell_type` labels, not by re-running the paper's
-  classification; the classification is tested separately on the 17 files that give each unit's
-  shank.
-- Interneuron labels mix dentate and CA3 units, which the paper counts apart.
-- The trough-to-peak latency is measured on the stored waveforms (1.6 ms long, of unstated
-  filtering), where the paper used unfiltered waveforms.
-- Monosynaptic pairs and synchrony are the automatic detections of the Methods' test; the paper
-  inspected and refined each by hand. The claims that use pairs use these detections.
-- Theta and gamma phases come from the file's theta-reference channel in up to an hour of awake
-  periods per file.
-- T-maze runs, the DS2 and light-pulse baselines, the burst definition and the open-field "local
-  maximum" are choices stated in the helper module.
-- Depth is read from the DS2 amplitude at the unit's site, as the files give no site coordinates.
+**How the analysis differs from the paper's.** Cell types are the authors' labels in the files, not re-derived. Monosynaptic and zero-lag pairs come from the Methods' automatic test without the paper's manual inspection; the authors' curated tables in the files are shown beside. Optogenetic suppression uses the Methods' 20% decrease with no significance test. On the T-maze the run starts at the mouse's last entry into the central arm (the files do not mark the gate opening), and fields are found from the highest local maximum down. Phase modulation uses up to an hour of `awake` time per file. DS2 amplitudes average up to 600 events per file. The wide-band site and waveform rest on up to four 52 s blocks of the wide band.
 
-**What was found about the dandiset.**
-
-- In 24 files the first unit's spike train is cut short by a multiple of 65,536 spikes, and the
-  missing spikes open the second unit's train; the loader moves them back.
-- The genotypes in the files (6 SST-Cre, 5 Drd2-Cre::Ai35, 4 POMC-Cre::Arch, 1 POMC-Cre::Ai35)
-  do not match the paper's 16 mice (7 SST-Cre, 5 DRD2-Cre::Ai35, 3 POMC-Cre::Ai35, 1 wild type).
-- 83 of 101 files do not say which shank a unit was recorded on, and no file gives site
-  coordinates, so the paper's depth measures can be computed for 17 files only, and distances
-  not at all.
-- The T-maze positions (`twhl_linearized`, `twhl_norm`) and the states (`quiet`, `transit`) are
-  not described; their meaning is inferred from the values.
-- The dandiset holds 568 MC against the paper's 500, and labels interneurons without their
-  region.
-- The authors' monosynaptic pairs were not converted, so the paper's pair-based results cannot
-  be checked on its own pairs.
-- One file stores 24,286 duplicate light-pulse times, and the files mix two layouts of the units
-  table.
-""")
-'''
-b=b.replace('''md(r"""
-## Summary
-
-(written after the run)
-""")
-''', summary)
-open(p,'w').write(b)
+**What was found about the dataset.** The labels match the paper's counts closely (583 GC and 503 MC against 586 and 500; 248 dentate narrow-waveform interneurons, as the paper's 248). The authors' monosynaptic table holds the paper's 32 GC to MC pairs and no MC to GC pair, and its zero-lag table gives 22.1% of MC with a partner (paper 23%). The open-field files hold 246 GC, 182 MC and 317 CA3 units (paper 247, 181, 317). The seven same-day 'b' files are separate recordings, not duplicates. The stored-waveform site agrees with the wide-band site for 89% of GC and MC. The trials' `arm_start` lies well inside the central arm, not at its entry (T-maze section). The stored 1.6 ms waveforms end before the spike's peak for many units, so trough-to-peak latencies from them are lower bounds. No electrode coordinates are given, which blocks the two claims on site depth.
 EOF
-grep -n "Summary" $TMPDIR/build_nb.py | head -3
+sed -i 's/"cells_d.py"\]/"cells_d.py", "cells_e.py"]/' build_nb.py; grep -n cells_e build_nb.py; date -u
 ```
 
 ```
-1377:## Summary
+5:for p in ["cells_a.py", "cells_b.py", "cells_c.py", "cells_d.py", "cells_e.py"]:
+Mon Nov 23 23:58:43 UTC 2026
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-curl -s https://api.github.com/repos/catalystneuro/buzsaki-lab-to-nwb/commits/e4652c1 | python -c "import json,sys;print(json.load(sys.stdin)['sha'])"; python - <<'EOF'
-p='/tmp/claude-1001/build_nb.py'
-b=open(p).read()
-b=b.replace('''print("Files whose stored pulse times decrease somewhere:", [(s["session"], s["pulse20_decreasing"], len(s["pulse20"]), len(np.unique(s["pulse20"]))) for s in S if s["pulse20_decreasing"]])''','''print("Files whose stored pulse times decrease or repeat (session, decreases, duplicates):",
-      [(s["session"], s["pulse20_decreasing"], s["pulse20_duplicates"]) for s in S if s["pulse20_decreasing"] or s["pulse20_duplicates"]])''')
-open(p,'w').write(b)
+cd $TMPDIR && python3 - <<'EOF'
+p='/tmp/claude-1001/cells_a.py'; s=open(p).read()
+old="The table of claims and their status is in the Summary at the end; tested claims each have a section below. Two claims (gc-mc-distance, gc-backpropagation) are blocked: see their sections."
+ids="unit-counts first-stage-labels interneuron-rates gc-narrower-waveform optotag-drd2 mc-more-active gc-nrem-highest ca3-wake-highest nrem-wake-ratio theta-modulation gamma-modulation gamma-rate-correlation ds2-recruitment monosyn-gc-to-mc burst-facilitation state-transmission zero-lag-synchrony tmaze-central-active tmaze-multiple-fields tmaze-peak-info tmaze-splitters remap-positive remap-gc-lt-mc remap-fractions pv-remap inheritance-tmaze inheritance-openfield mc-deeper gc-mc-classification".split()
+tab="| Claim | Status |\n|---|---|\n"+"".join(f"| {i} | tested |\n" for i in ids)+"| gc-mc-distance | blocked: metadata insufficient (no site coordinates) |\n| gc-backpropagation | blocked: metadata insufficient (no site coordinates) |\n"
+new="Claims, and which are tested (outcomes in the Summary at the end):\n\n"+tab
+assert old in s; s=s.replace(old,new); open(p,'w').write(s)
+EOF
+. dev/bin/activate && python build_nb.py --dev && python runnb.py dev.ipynb dev_out.ipynb ERRORONLY 2>&1 | grep -v WARNING | head; python - <<'EOF'
+import nbformat
+nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        for o in c.outputs:
+            if o.output_type=='error': print('ERR', c.source[:80], o.evalue)
+        if 'variant, the authors' in c.source or 'arm_start' in c.source or 'electrodes table columns' in c.source:
+            for o in c.outputs: print(o.get('text','')[:600])
 EOF
 ```
 
-Result: the fetched text is not kept.
+```
+wrote /tmp/claude-1001/dev.ipynb 99 cells
+pairs: 63 (bursts per GC: median 1267)
+transmission probability median: first 0.0067, second 0.0321; all spikes 0.0154
+second > first in 56 of 63; paired Wilcoxon P = 2.93e-09
+variant, the authors' 32 pairs: first 0.0083, second 0.0510, second > first in 32, Wilcoxon P = 4.66e-10
+
+by subject (median second minus first):
+              n  median_diff
+subject                     
+YutaMouse20   2       0.0033
+YutaMouse33  15       0.0173
+YutaMouse37   1       0.0333
+YutaMouse41  24       0.0293
+YutaMouse42   8       0.0902
+YutaMouse51   1      -0.0034
+YutaMouse54   5       0.0247
+YutaMouse56   7  
+pairs: 63; GC spikes per pair in wake median 2495, in NREM 5122
+median transmission wake 0.0125, NREM 0.0111; NREM lower in 32 of 63
+paired Wilcoxon P = 0.524; one-sided (NREM lower) P = 0.262
+[... 29 more lines not kept]
+```
 
 **Agent**
 
-Now entry.yaml, README, and building the real notebook.
+No errors. Now the entry files: entry.yaml, requirements.in, README.
 
 **Agent calls Bash**
 
 ```bash
-cat > entry.yaml <<'EOF'
+python3 -c "
+import json;s=json.load(open('schemas/entry.schema.json'));print(s.get('required'));print(list(s['properties'].keys()))"; cat entries/du-2026/entry.yaml | head -30; python3 tools/entry.py --help 2>&1 | head -20
+```
+
+```
+['schema_version', 'name', 'type', 'title', 'description', 'license', 'notebooks', 'related']
+['schema_version', 'name', 'type', 'title', 'description', 'license', 'python', 'notebooks', 'helpers', 'related']
 schema_version: 1
-name: 000003-senzai-2017
+name: du-2026
+type: reproduction
+title: Context-conditional neural gain in motor-cortex decoding (Du et al. 2026)
+description: Tests the findings of Du, Lai, Hu and Ye (2026) on LINK (dandiset 001201, one macaque,
+  18 development and 20 confirmation sessions) and MC_RTT (dandiset 000129), and their matched-seed
+  synthetic calibration. It ports the paper's released estimators and recomputes the context ladder,
+  the fully nested gains with trial replacement and permutation controls, the practical magnitudes,
+  the confirmation sessions, the nonlinear and estimator-family sensitivities, the temporal-offset and
+  context-capacity analyses, the MC_RTT results and the MC_Maze results on dandiset 000139 (data
+  elsewhere).
+license: Apache-2.0
+python: "3.13"
+notebooks:
+- path: 01_synthetic.ipynb
+  title: Matched-seed synthetic calibration
+  runtime_minutes: 3
+- path: 02_link_development.ipynb
+[... 32 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/senzai-2017 && cat > entry.yaml <<'EOF'
+schema_version: 1
+name: senzai-2017
 type: reproduction
 title: Granule cells and mossy cells of the dentate gyrus (Senzai and Buzsaki 2017)
-description: Tests the findings of Senzai and Buzsaki (2017) on dandiset 000003, which holds silicon
-  probe recordings of the dentate gyrus and CA3 in 16 mice over 101 recording days, with labelled
-  granule cells, mossy cells, CA3 pyramidal cells and interneurons, sleep states, dentate spikes,
-  light pulses, and positions on a circular T-maze and in open fields. It covers firing by brain
-  state, theta and gamma phase locking, recruitment by dentate spikes, optogenetic tagging,
-  monosynaptic transmission, place fields and remapping, and, on the 17 files that give each
-  unit's shank, depth and the classification of granule and mossy cells.
+description: Tests the findings of Senzai and Buzsaki (2017) on dandiset 000003, silicon probe
+  recordings from the dentate gyrus and CA3 of 15 of the paper's mice. It compares granule cells,
+  mossy cells and CA3 pyramidal cells by the authors' labels, their waveforms, rates by brain state,
+  theta and gamma phase locking, firing around dentate spikes, optogenetic suppression in DRD2-Cre
+  mice, monosynaptic and zero-lag pairs from cross-correlograms, place fields on the circular T-maze
+  and remapping between open fields, and repeats the paper's k-means separation of granule and
+  mossy cells on the files that hold the wide-band signal.
 license: Apache-2.0
 notebooks:
 - path: reproduce_senzai_2017.ipynb
   title: Reproducing Senzai and Buzsaki (2017) from dandiset 000003
-  runtime_minutes: 10
+  runtime_minutes: 30
 helpers:
-- dg.py
+- senzai.py
 related:
-- id: dandi:000003/0.260218.2052
+- id: dandi:000003/0.261122.2143
   relation: uses_data
 - id: doi:10.1016/j.neuron.2016.12.011
   relation: reproduces
 EOF
+printf "h5py\nnumpy\npandas\nremfile\nscipy\nscikit-learn\nstatsmodels\n" > requirements.in
+cp $TMPDIR/build_nb.py . 2>/dev/null; rm -f build_nb.py
+cd $TMPDIR && . dev/bin/activate && python build_nb.py && cd  && python tools/entry.py lock entries/senzai-2017 2>&1 | tail -5 && python tools/entry.py check entries/senzai-2017 2>&1 | tail -20
+```
+
+```
+wrote entries/senzai-2017/reproduce_senzai_2017.ipynb 99 cells
+Traceback (most recent call last):
+  File "tools/entry.py", line 59, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
+Traceback (most recent call last):
+  File "tools/entry.py", line 59, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . dev/bin/activate && uv pip install -q pyyaml jsonschema nbformat && cd  && python tools/entry.py lock entries/senzai-2017 2>&1 | tail -5 && python tools/entry.py check entries/senzai-2017 2>&1 | tail -20
+```
+
+```
+wrote senzai-2017/requirements.lock.txt (Python 3.13, with hashes)
+0 error(s)
+```
+
+**Agent**
+
+Lock and check pass. Updating the helper docstring for the run start and writing the README before the full run, since edits afterwards would force another run.
+
+**Agent calls Bash**
+
+```bash
+cd entries/senzai-2017 && python3 - <<'EOF'
+p='senzai.py'; s=open(p).read()
+old='''  the passage of the paper it was taken from (author, step 1.6), an assumption'''
+old2='''  the T-maze is from entry into the central arm (`arm_start`) to within 10 cm
+  of the reward port, on light-free trials (C, header); the port is 18 cm
+  from the end of the 102 cm side arm (M, Behavioral procedures).'''
+new2='''  the T-maze is from entry into the central arm to within 10 cm of the reward
+  port, on light-free trials (C, header); the port is 18 cm from the end of
+  the 102 cm side arm (M, Behavioral procedures). The lab's `arm_start` lies
+  about 25 cm into the central arm, so the run starts at the mouse's last
+  entry into the arm before it (A: the Methods start at the gate opening,
+  which the files do not mark; the entry is the nearest marked point).
+- Interneurons are the dentate ones (region DG) wherever the paper's counts
+  are dentate counts: "narrow-waveform (n = 248) and wide-waveform (n = 268)
+  putative interneurons ... Units recorded in CA3 were separately classified"
+  (Results, Identification of granule cells and mossy cells, paragraph 1).'''
+assert old2 in s; s=s.replace(old2,new2); open(p,'w').write(s)
+EOF
 cat > README.md <<'EOF'
 # Senzai and Buzsaki (2017) from dandiset 000003
 
-Tests the findings of [Senzai and Buzsaki (2017)](https://doi.org/10.1016/j.neuron.2016.12.011) on
-[DANDI:000003](https://dandiarchive.org/dandiset/000003/0.260218.2052), which holds silicon probe
-recordings of the dentate gyrus and CA3 in 16 mice over 101 recording days, with each unit labelled
-as a granule cell, mossy cell, CA3 pyramidal cell or interneuron.
+Tests the findings of [Senzai and Buzsaki (2017)](https://doi.org/10.1016/j.neuron.2016.12.011) that can be
+tested on [DANDI:000003](https://dandiarchive.org/dandiset/000003/0.261122.2143), version 0.261122.2143:
+silicon probe recordings from the dentate gyrus and CA3 of 15 of the paper's mice (a sixteenth mouse in
+the dandiset, YutaMouse57, is not in the paper and is left out).
 
 | Claim | Outcome |
 |---|---|
-| Unit counts (586 GC, 500 MC) | Partially reproduced |
-| First-stage labels follow latency and burst criteria | Partially reproduced |
-| Narrow interneurons faster than wide ones (7.97 and 2.11 Hz) | Partially reproduced |
-| GC waveforms narrower than MC | Reproduced |
-| Light suppresses 29 of 107 MC and no GC in DRD2 mice | Partially reproduced |
-| MC more active than GC in wake and NREM | Reproduced |
-| GC fire most in NREM, similarly in wake and REM | Partially reproduced |
-| CA3 most active in wake, least in REM | Not reproduced |
+| 586 GC and 500 MC | Reproduced |
+| First-stage thresholds separate the labelled groups | Partially reproduced |
+| Narrow-waveform interneurons fire faster than wide-waveform ones (7.97 and 2.11 Hz) | Reproduced |
+| GC waveforms are narrower than MC waveforms | Reproduced |
+| Green light suppresses 29 of 107 MC and no GC in DRD2-Cre::Ai35 mice | Partially reproduced |
+| MC are more active than GC in wake and NREM | Reproduced |
+| GC fire most in NREM, equally in wake and REM | Partially reproduced |
+| CA3 pyramidal cells fire most in wake, least in REM | Not reproduced |
 | GC raise their rate in NREM, MC do not | Reproduced |
-| GC more theta-modulated, at later phases | Reproduced |
-| GC more gamma-modulated, at earlier phases | Reproduced |
-| Slow cells more gamma-coupled (r = -0.176, -0.184) | Partially reproduced |
-| GC recruited more and earlier by DS2 | Reproduced |
-| 5.5% of GC excite MC, no MC excites GC | Partially reproduced |
-| Transmission rises from first to second burst spike | Reproduced |
-| GC to MC transmission lower in NREM | Not reproduced |
-| Synchrony in 23% of MC, 9% of CA3, under 0.2% of GC pairs | Partially reproduced |
-| More active cells in the central arm | Partially reproduced |
-| Two or more T-maze fields: 6.6% GC, 57.8% MC, 36.1% CA3 | Partially reproduced |
-| GC lowest peak rate and spatial information | Reproduced |
-| Splitter fractions comparable | Reproduced |
+| GC are more theta-modulated than MC and fire later | Reproduced |
+| GC are more gamma-modulated than MC and fire earlier | Reproduced |
+| Slow-firing cells couple more to gamma (r = -0.176 and -0.184) | Not reproduced |
+| GC are more recruited by DS2 than MC and fire earlier | Reproduced |
+| 5.5% of GC drive MC; no MC drives a GC | Partially reproduced |
+| GC to MC transmission rises from the first to the second burst spike | Reproduced |
+| GC to MC transmission is lower in NREM than in wake | Not reproduced |
+| Zero-lag synchrony in 23% of MC, 9% of CA3, under 0.2% of GC pairs | Partially reproduced |
+| More units active in the T-maze central arm, for each type | Partially reproduced |
+| Two or more T-maze fields in 6.6% of GC, 57.8% of MC, 36.1% of CA3 | Partially reproduced |
+| GC have the lowest field peak rate and spatial information | Reproduced |
+| Splitter fractions are comparable across types | Reproduced |
 | Remapping index above zero in each type | Reproduced |
 | GC remap less than MC | Not reproduced |
-| Remapping fractions 36.7%, 61.3%, 55.6% | Partially reproduced |
-| GC smallest population-vector remapping | Reproduced |
-| Few GC fields overlap partner MC fields (T-maze) | Reproduced |
-| GC and MC maps uncorrelated within GC fields (open field) | Reproduced |
-| MC deeper than GC (17 files) | Reproduced |
-| K-means on the paper's features separates GC and MC (17 files) | Reproduced |
-| GC 59 um above their MC partners; GC backpropagation | Blocked: no site coordinates |
+| 36.7% of GC, 61.3% of MC and 55.6% of CA3 place cells remap | Partially reproduced |
+| Population-vector remapping is smallest for GC | Reproduced (seed sensitive) |
+| MC rarely inherit T-maze fields from single GC | Reproduced |
+| GC and MC maps are not correlated within the GC field | Reproduced |
+| MC lie deeper than GC relative to the DS2 reversal | Reproduced |
+| K-means on the four features separates GC and MC | Reproduced |
+| GC sit 59 um above their MC partners; GC spikes back-propagate | Blocked: metadata insufficient (two claims) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The attempt record, with the reasons and the differences from the paper's method, is
-[`attempts/000003-senzai-2017-01.yaml`](../../attempts/000003-senzai-2017-01.yaml).
+[`attempts/senzai-2017-02.yaml`](../../attempts/senzai-2017-02.yaml).
 
-- `reproduce_senzai_2017.ipynb`: the analysis. It streams about 10 GB of spike times, waveforms
-  and LFP and takes about 10 minutes.
-- `dg.py`: loading the files (with the repair of the unit boundaries cut at multiples of 65,536
-  spikes), and the measures: rates by state, burst index, waveform latency, phase locking, DS2 and
-  light responses, cross-correlograms, and T-maze and open-field rate maps. Other notebooks on this
-  dandiset can import it.
+- `reproduce_senzai_2017.ipynb`: the analysis. It streams all 101 files, four at a time, and takes
+  about half an hour, most of it reading the files.
+- `senzai.py`: loading, and the per-unit and per-pair measures (rates by state, burst index,
+  waveforms, DS2 amplitude and histograms, theta and gamma phase, optogenetic suppression,
+  cross-correlogram tests, T-maze and open-field maps). Other notebooks on this dandiset can import it.
 EOF
-. $TMPDIR/work/bin/activate && python $TMPDIR/build_nb.py reproduce_senzai_2017.ipynb && cd ../.. && python tools/entry.py lock entries/000003-senzai-2017 && python tools/entry.py check entries/000003-senzai-2017
+cd  && . $TMPDIR/dev/bin/activate && python tools/entry.py check entries/senzai-2017 2>&1 | tail -3; date -u
 ```
 
 ```
-wrote reproduce_senzai_2017.ipynb 114 cells
-wrote entries/000003-senzai-2017/requirements.lock.txt
 0 error(s)
+Tue Nov 24 00:00:51 UTC 2026
 ```
+
+**Agent**
+
+Now the full run from a clean environment (estimated about 30 minutes from the dev pass).
 
 **Agent calls Bash**
 
 ```bash
-python tools/entry.py all entries/000003-senzai-2017 2>&1 | tail -30
+. $TMPDIR/dev/bin/activate && time python tools/entry.py all entries/senzai-2017 2>&1 | tail -20; date -u
 ```
 
 ```
-Installed kernelspec registry-000003-senzai-2017 in executed/000003-senzai-2017/.venv/share/jupyter/kernels/registry-000003-senzai-2017
+Installed kernelspec registry-senzai-2017 in executed/senzai-2017/.venv/share/jupyter/kernels/registry-senzai-2017
 0 error(s)
-pass  reproduce_senzai_2017.ipynb  (494 s)
+pass  reproduce_senzai_2017.ipynb  (1246 s)
+
+real	20m55.688s
+user	38m56.925s
+sys	6m8.619s
+Tue Nov 24 00:21:49 UTC 2026
 ```
+
+**Agent**
+
+Ran in 21 minutes. Reading the executed copy to confirm every number in the conclusions.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF' > $TMPDIR/exec_out.txt
+ls executed/senzai-2017/; . $TMPDIR/dev/bin/activate && python - <<'EOF' > $TMPDIR/exec_out.txt
+import nbformat, glob
+p=[x for x in glob.glob('executed/senzai-2017/*.ipynb')][0]
+nb=nbformat.read(p,4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        print('### CELL', c.metadata.get('tags',''), c.source[:60].replace('\n',' '))
+        for o in c.outputs:
+            if o.output_type=='stream': print(o.text)
+            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
+            elif 'data' in o and 'text/plain' in o['data']: print(o['data']['text/plain'][:500])
+EOF
+grep -c ERROR $TMPDIR/exec_out.txt; diff <(python - <<'EOF'
 import nbformat
-nb=nbformat.read('executed/000003-senzai-2017/reproduce_senzai_2017.ipynb',4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type!='code': continue
-    print(f'===== cell {i} {c.metadata.get("tags","")}')
-    for o in c.get('outputs',[]):
-        if o.output_type=='stream': print(o.text)
-        elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-        elif 'text/plain' in o.get('data',{}) and 'image/png' not in o.get('data',{}): print(o['data']['text/plain'])
+nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code' and any('claim' in t for t in c.metadata.get('tags',[])):
+        for o in c.outputs:
+            if o.output_type=='stream': print(o.text)
 EOF
-diff <(grep -v "^-----\|^=====\|loaded 101\|units measured in\|pairs tested\|Pairs tested\|maps of\|Total run time" $TMPDIR/dev_out.txt | cut -c1-200) <(grep -v "^=====\|loaded 101\|units measured in\|pairs tested\|Pairs tested\|maps of\|Total run time" $TMPDIR/exec_out.txt | cut -c1-200) | head -60; grep -n "ERROR\|Total run time\|loaded 101" $TMPDIR/exec_out.txt
+) <(python - <<'EOF'
+import nbformat, glob
+nb=nbformat.read(glob.glob('executed/senzai-2017/*.ipynb')[0],4)
+for c in nb.cells:
+    if c.cell_type=='code' and any('claim' in t for t in c.metadata.get('tags',[])):
+        for o in c.outputs:
+            if o.output_type=='stream': print(o.text)
+EOF
+) | head -60
 ```
 
 ```
-2d1
+reproduce_senzai_2017.ipynb
+result.json
+0
+110a111
+> 
+229a231
+> 
+232d233
 < 
-132a132
+258d258
+< variant, Spearman (reading a): GC rho = -0.272, MC rho = -0.138
+259a260
+> variant, Spearman (reading a): GC rho = -0.272, MC rho = -0.138
+288a290
 > 
-133a134
-> 
-134a136
-> 
-152a155
-> 
-162a166
-> 
-170,171c174,175
-< Interval between pulses after sorting (ms): median 200.0, smallest 0.0
-< Files whose stored pulse times decrease somewhere: [('YutaMouse57-161006', 1, 89086, 64800)]
----
-> Interval between pulses after sorting (ms): median 200.0, smallest 199.2
-> Files whose stored pulse times decrease or repeat (session, decreases, duplicates): [('YutaMouse57-161006', 1, 24286)]
-495c499,502
-< Variant thresholds (Poisson percentile): 0.9999: GC to MC 123, MC to GC 12; 0.99999: GC to MC 78, MC to GC 11; 0.9999999: GC to MC 56, MC to GC 6; 
-[... 27 more lines not kept]
+291d292
+< 
+322d322
+< variant without waveform PCs: agreement 0.899
+323a324
+[... 13 more lines not kept]
+```
+
+**Agent**
+
+Claim outputs are identical to the development run. Checking the sanity cells and the `arm_start` line in the executed copy.
+
+**Agent calls Bash**
+
+```bash
+grep -n "files with wide-band\|arm_start\|bits/s\|awake seconds\|streamed and\|DS2 events averaged\|same channel\|90th\|spikes used\|80 of\|higher with true\|state hours\|span (h)\|left out" $TMPDIR/exec_out.txt; grep -n "maxrss\|ru_maxrss" entries/senzai-2017/reproduce_senzai_2017.ipynb | head -2
+```
+
+```
+17:streamed and processed in 19.5 min
+22:left out: YutaMouse57 8 files, 465 units
+63:files with wide-band: 17  with stored waveforms: 100  with T-maze runs: 34  with open fields: 43  without the authors' monosynaptic table: 13
+65:state hours (all files): {'awake_h': 278.3, 'quiet_h': 20.4, 'nrem_h': 193.5, 'rem_h': 16.3}
+66:session span (h): min 4.74 median 9.72 max 16.95
+90:GC/MC units with both sites: 376  same channel: 335 (0.891)
+91:|DS2 amplitude difference| between the two sites (uV): median 0.0, 90th pct 17.6
+92:wide-band spikes used per unit: median 94.0  min 10.0
+100:files where the GC/MC median ratio is higher with true than shifted times: 80 of 81
+312:### CELL ['claim:theta-modulation', 'claim:gamma-modulation'] print("awake seconds used per file: median", np.nanmedian([r
+313:awake seconds used per file: median 3600.0
+404:### CELL ['claim:mc-deeper'] print("DS2 events averaged per file: median", np.median([r.g
+405:DS2 events averaged per file: median 600.0
+547:position at the lab's arm_start, cm into the 65 cm central arm: median 27.3, 10th to 90th percentile 24.6 to 29.2 (1246 runs)
+563:YutaMouse41-150902_b units 44: median information 0.100 bits/s as recorded, 0.048 with spikes shifted 60 s; higher as recorded for 31 units
+565:YutaMouse42-151112_b units 44: median information 0.323 bits/s as recorded, 0.057 with spikes shifted 60 s; higher as recorded for 34 units
+611:GC: peak median 2.54 Hz (n=40), information median 0.033 bits/s (n=211)
+612:MC: peak median 4.89 Hz (n=182), information median 0.424 bits/s (n=236)
+613:CA3: peak median 3.78 Hz (n=166), information median 0.240 bits/s (n=247)
+```
+
+**Agent**
+
+The `arm_start` offset is 27.3 cm (24.6 to 29.2), not "about 25" as my text says. Fixing that wording and removing a leftover debug line, then re-running.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && sed -i 's/falls about 25 cm into the central arm, so each run/lies about 27 cm into the 65 cm central arm (printed below), so each run/' cells_d.py && grep -c "about 27 cm" cells_d.py && python3 - <<'EOF'
+p='/tmp/claude-1001/cells_a.py'; s=open(p).read()
+old='''x = U[U.n_spikes > 0]
+print("spike times: first", round(min(r["units"][0]["rate"] for r in R), 3), "Hz ... (see below)")
+'''
+assert old in s; s=s.replace(old,''); open(p,'w').write(s)
+p='entries/senzai-2017/senzai.py'; s=open(p).read()
+s=s.replace("lies\n  about 25 cm into the central arm","lies\n  about 27 cm into the central arm"); s=s.replace("# arm_start is ~26 cm into","# arm_start is ~27 cm into")
+open(p,'w').write(s)
+EOF
+grep -n "27 cm" entries/senzai-2017/senzai.py; . dev/bin/activate && python build_nb.py && cd  && date -u && python tools/entry.py all entries/senzai-2017 2>&1 | tail -3; date -u
+```
+
+```
+1
+70:  about 27 cm into the central arm, so the run starts at the mouse's last
+521:        # arm_start is ~27 cm into the central arm; go back to the entry (A)
+wrote entries/senzai-2017/reproduce_senzai_2017.ipynb 99 cells
+Tue Nov 24 00:22:12 UTC 2026
+Installed kernelspec registry-senzai-2017 in executed/senzai-2017/.venv/share/jupyter/kernels/registry-senzai-2017
+0 error(s)
+pass  reproduce_senzai_2017.ipynb  (1230 s)
+Tue Nov 24 00:42:52 UTC 2026
+```
+
+**Agent**
+
+Re-run passed (20.5 min). Verifying the outputs again, then writing the attempt record.
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF' > $TMPDIR/exec_out2.txt
+import nbformat, glob
+nb=nbformat.read(glob.glob('executed/senzai-2017/*.ipynb')[0],4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        print('### CELL', c.metadata.get('tags',''), c.source[:60].replace('\n',' '))
+        for o in c.outputs:
+            if o.output_type=='stream' and 'Warning' not in o.text: print(o.text)
+            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
+EOF
+diff <(grep -v "Warning\|frac = np\|^$\|streamed and" $TMPDIR/exec_out.txt) <(grep -v "Warning\|frac = np\|^$\|streamed and" $TMPDIR/exec_out2.txt) | head; grep -c ERROR $TMPDIR/exec_out2.txt; python3 -c "
+import json;s=json.load(open('schemas/attempt.schema.json'));print(s.get('required'));
+o=s['\$defs'] if '\$defs' in s else s.get('definitions');print(list(o.keys()))
+for k in ['outcome','finding','dataset']:
+  if k in o: print(k, o[k].get('required'), list(o[k]['properties'].keys()))
+"
+```
+
+```
+Exit code 1
+4,7d3
+<   res = self.wald_test(
+<   F /= J
+<   res = self.wald_test(
+<   F /= J
+60d55
+< spike times: first 0.02 Hz ... (see below)
+0
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+    o=s['$defs'] if '$defs' in s else s.get('definitions');print(list(o.keys()))
+                                                                      ^^^^^^
+AttributeError: 'NoneType' object has no attribute 'keys'
+['schema_version', 'id', 'datasets', 'paper', 'date', 'provenance', 'outcomes']
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000003-senzai-2017 && python - <<'EOF'
-r=open('README.md').read()
-r=r.replace('''- `reproduce_senzai_2017.ipynb`: the analysis. It streams about 10 GB of spike times, waveforms
-  and LFP and takes about 10 minutes.''','''- `reproduce_senzai_2017.ipynb`: the analysis. It takes about 8 minutes, most of it streaming the
-  spike times, waveforms and LFP from the 101 files.''')
-open('README.md','w').write(r)
-e=open('entry.yaml').read().replace('runtime_minutes: 10','runtime_minutes: 9'); open('entry.yaml','w').write(e)
-b=open('/tmp/claude-1001/build_nb.py').read()
-b=b.replace('''four published versions (0.210812.1448, 0.230629.1955, 0.250624.0409, 0.260218.2052). All four hold
-the same 101 assets with the same paths, sizes and blobs, and differ only in metadata''','''four published versions (0.210812.1448, 0.230629.1955, 0.250624.0409, 0.260218.2052). All four hold
-the same 101 assets with the same paths, sizes and content checksums, and differ only in metadata''')
-open('/tmp/claude-1001/build_nb.py','w').write(b)
-EOF
-grep -n "content checksums" $TMPDIR/build_nb.py | head -2
+python3 -c "
+import json;s=json.load(open('schemas/attempt.schema.json'))
+p=s['properties']
+print(json.dumps(p['outcomes']['items'],indent=0)[:2500]); print(json.dumps(p['findings']['items'],indent=0)[:2000]); print(json.dumps(p['provenance'],indent=0)[:1500])"
 ```
 
 ```
-31:the same 101 assets with the same paths, sizes and content checksums, and differ only in metadata (contributors,
+{
+"type": "object",
+"additionalProperties": false,
+"required": [
+"claim",
+"outcome"
+],
+"properties": {
+"claim": {
+"description": "Claim id from the target's claims file.",
+"type": "string"
+},
+"outcome": {
+"enum": [
+"reproduced",
+"partially_reproduced",
+"not_reproduced",
+"blocked"
+],
+"description": "Describes the result, not the method: whether the effect the claim states was found. Differences in method from the paper go in `deviations`."
+[... 234 more lines not kept]
 ```
+
+**Agent**
+
+Outputs are unchanged apart from the removed debug line. Writing the attempt record.
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "attempts/000003-senzai-2017-01.yaml",
- "content": "schema_version: 1\nid: 000003-senzai-2017-01\ndandiset: \"000003\"\ndandiset_version: 0.260218.2052\npaper: doi:10.1016/j.neuron.2016.12.011\ndate: 2026-10-16\nentry: 000003-senzai-2017\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-7\noutcomes:\n- claim: unit-counts\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:unit-counts\n  measured:\n  - 609\n  - 568\n  notes: The files hold 609 GC (paper 586, within tolerance) and 568 MC (paper 500, outside the\n    tolerance of 450 to 550), from all 16 mice, counted once per recording day.\n  deviations:\n  - Counts come from the dandiset's labels; the paper's classification was not re-run on all files.\n- claim: first-stage-labels\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:first-stage-labels\n  notes: Under both burst thresholds (1.2 in the Methods, 1.8 in the Figure 1A legend), 98.2% of GC\n    and MC are wide-waveform and bursty and 91.7% or 93.3% of wide-waveform interneurons are wide\n    and not bursty, but 82.5% of narrow-waveform interneurons have a latency below 0.425 ms (40% to\n    100% by mouse), short of the 90% criterion.\n  deviations:\n  - Latency measured on the mean of the first 200 stored waveforms (1.6 ms long, filtering not\n    stated in the files); the paper used unfiltered waveforms.\n  - The Methods and the Figure 1A legend give different burst thresholds (1.2 and 1.8); both were\n    tested.\n- claim: interneuron-rates\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:interneuron-rates\n  measured:\n  - 5.96\n  - 2.57\n  notes: Narrow-waveform interneurons fire faster than wide-waveform ones (Kruskal-Wallis P = 5.3e-17\n    over the recording span, 1.4e-15 in awake periods), but the medians are outside tolerance\n    under both readings (5.96 and 2.57 Hz over the recording; 8.75 and 3.08 Hz awake).\n  deviations:\n  - The interneuron labels include CA3 interneurons, which the paper counts apart, and the files do\n    not say which region an interneuron is in.\n  - The paper does not define the rate; two readings were tested.\n- claim: gc-narrower-waveform\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gc-narrower-waveform\n  notes: GC median trough-to-peak latency 0.710 ms against MC 0.740 ms (Mann-Whitney P = 2.3e-14).\n    43% of GC and 67% of MC have their peak at the end of the stored 1.6 ms, so their latency is a\n    lower bound; among units with the peak inside the window GC are not narrower (0.660 against\n    0.645 ms, P = 0.057).\n  deviations:\n  - Measured as trough-to-peak latency on the stored waveforms, where the paper describes the\n    waveform shape through a PCA of its second derivative.\n- claim: optotag-drd2\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:optotag-drd2\n  measured: 0.642\n  notes: In 26 DRD2-Cre::Ai35 sessions with 20 ms pulses (4 mice), 68 of 106 MC (0.642) are\n    suppressed by at least 20% with the baseline before the pulse and 71 (0.670) with the baseline\n    later in the cycle, against 6 (0.030) and 13 (0.066) of 198 GC. Wide-waveform interneurons 20 of\n    88, narrow-waveform 14 of 132. The MC fraction is far above the paper's 29 of 107 and GC are\n    not zero; MC exceed four times the GC fraction under both readings. At a 50% threshold the MC\n    fraction is 0.066.\n  deviations:\n  - The Methods do not define the baseline of the light-pulse histogram; two readings were tested.\n  - The fifth DRD2 mouse (YutaMouse45) has no 20 ms pulses and is not included.\n- claim: mc-more-active\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:mc-more-active\n  notes: MC median 0.736 Hz against GC 0.077 Hz in awake periods (Kruskal-Wallis P = 1.8e-114), 0.727\n    against 0.083 Hz with quiet wake, and 0.913 against 0.391 Hz in NREM (P = 2e-29).\n  deviations:\n  - Wake is read as the `awake` periods, or `awake` with `quiet`; the states table does not\n    describe its labels.\n- claim: gc-nrem-highest\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gc-nrem-highest\n  notes: GC fire most in NREM (median 0.391 Hz against 0.077 Hz awake and 0.198 Hz REM; adjusted P\n    1.3e-86 and 8.7e-31), but REM rates exceed wake rates (adjusted P = 1.4e-25 with awake periods,\n    6.3e-23 with quiet wake), so wake and REM are not similar by the paper's test.\n  deviations:\n  - The post hoc test is taken as Bonferroni-corrected Mann-Whitney tests; the paper names\n    Kruskal-Wallis only.\n- claim: ca3-wake-highest\n  outcome: not_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:ca3-wake-highest\n  notes: CA3 pyramidal cells fire least in REM (0.287 Hz; adjusted P = 1.1e-15 against NREM and\n    5.4e-09 against wake), but the NREM median (0.459 Hz) is above the wake median (0.441 Hz awake,\n    0.433 Hz with quiet wake) and the two do not differ (adjusted P = 0.77 and 0.59). The REM part\n    of the claim holds.\n  deviations:\n  - The paper's CA3 units come from a separate classification (Figure S2); here the dandiset's\n    `pyramidal cell` label is used.\n- claim: nrem-wake-ratio\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:nrem-wake-ratio\n  notes: Median NREM to wake ratio 4.63 for GC and 1.11 for MC (Mann-Whitney P = 3.9e-141; 4.28 and\n    1.11 with quiet wake), and the GC ratio is above the MC ratio in every mouse with both. The\n    part saying MC fire at equivalent rates does not fully hold, as MC NREM rates are slightly\n    above wake rates (Wilcoxon P = 1.4e-06).\n- claim: theta-modulation\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:theta-modulation\n  notes: Modulated units 483 GC and 532 MC. Theta MRL GC 0.422 against MC 0.339 (Kruskal-Wallis P =\n    1.5e-20); GC fire later (circular means 30.8 and 12.0 degrees from the peak; P = 1e-17 with\n    phases on (-pi, pi], 0.82 on [0, 2 pi)). After subtracting the uniform-phase expectation for\n    the spike count (GC have fewer spikes), GC are still higher, at P = 0.00056.\n  deviations:\n  - Phases from the theta-reference channel the conversion flagged, during up to an hour of awake\n    periods per file; the paper's periods and reference channel are not stated.\n  - Phase comparisons depend on where the cycle is cut; both cuts are shown and the claim holds on\n    one.\n- claim: gamma-modulation\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gamma-modulation\n  notes: Modulated units 345 GC and 475 MC. Gamma MRL GC 0.319 against MC 0.212 (P = 4.8e-43; 0.219\n    against 0.166, P = 4.1e-18, after subtracting the uniform-phase expectation); GC fire earlier\n    (circular means -20.2 and 1.7 degrees; P = 1.2e-23 on (-pi, pi], 0.18 on [0, 2 pi)).\n  deviations:\n  - As theta-modulation.\n- claim: gamma-rate-correlation\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gamma-rate-correlation\n  measured:\n  - -0.177\n  - -0.161\n  notes: Over all units with a gamma MRL, GC r = -0.177 (P = 3.6e-05, within tolerance) and MC r =\n    -0.161 (P = 0.00013, just outside the tolerance and above P = 0.0001). Over modulated units,\n    GC -0.397 and MC -0.253, both P below 0.0001 and outside tolerance.\n  deviations:\n  - The paper does not say which units or which rate the correlation uses; two unit sets were\n    tested with the rate over the recording span.\n- claim: ds2-recruitment\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:ds2-recruitment\n  notes: Median DS2 peak ratio GC 6.88 against MC 4.82 (Kruskal-Wallis P = 1.1e-10); median peak time\n    -3.0 against +1.0 ms (P = 2.2e-09). 10 GC and 14 MC dropped for a zero baseline.\n  deviations:\n  - The DS2 events are those stored in the files; the peak-ratio baseline (50 to 100 ms on both\n    sides) is a choice, as the paper does not give it.\n- claim: monosyn-gc-to-mc\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:monosyn-gc-to-mc\n  measured: 0.1067\n  notes: Among 4713 GC-MC pairs the automatic test finds 65 GC to MC pairs and 8 MC to GC pairs. The\n    fraction is 0.107 (pairs over GC), 0.0805 (GC with a target over GC) or 0.0138 (pairs over\n    tested pairs), none within 0.0495 to 0.0605. GC to MC pairs outnumber MC to GC pairs 65 to 8.\n    Stricter thresholds lower both counts (56 and 6 at the 99.99999th percentile).\n  deviations:\n  - The paper inspected and refined each detection by hand; the automatic test alone is used here.\n  - The fraction 5.5% can be read three ways; all are shown.\n- claim: burst-facilitation\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:burst-facilitation\n  notes: For the 65 detected pairs, the median transmission probability is 0.0066 for first and\n    0.0334 for second burst spikes, higher in 58 pairs (Wilcoxon P = 1.2e-09); it holds with bursts\n    at 4 ms (P = 4.4e-08) and 10 ms (P = 5.5e-10). The detected pairs are partly reproduced (see\n    monosyn-gc-to-mc) and number 65 against the paper's 32.\n  deviations:\n  - Bursts are spikes at most 6 ms apart, a choice; the paper does not define them.\n  - Transmission is the excess over the plain Gaussian baseline of the Methods.\n- claim: state-transmission\n  outcome: not_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:state-transmission\n  notes: For 65 detected pairs, median transmission 0.0125 from GC spikes in awake periods and 0.0108\n    in NREM, lower in NREM for 34 pairs; Wilcoxon P = 0.39. The pairs are the automatic detections\n    (see monosyn-gc-to-mc), not the paper's 31.\n  deviations:\n  - Uses the automatic pair detections in place of the paper's curated pairs.\n- claim: zero-lag-synchrony\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:zero-lag-synchrony\n  measured:\n  - 0.0766\n  - 0.012\n  - 0.0013\n  notes: GC pairs 4 of 3155 (0.0013, within the claim). MC 0.0766 of pairs or 0.433 of cells; CA3\n    0.0120 of pairs or 0.102 of cells; none within the tolerance of 0.23 and 0.09. Read as cells,\n    MC and CA3 exceed the GC pair fraction more than ten times.\n  deviations:\n  - Pairs recorded on the same shank cannot be left out, as 83 of 101 files do not give the shank.\n  - Automatic detections without the paper's manual refinement.\n- claim: tmaze-central-active\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-central-active\n  notes: The central-arm median fraction of active units is above the side-arm median for GC (0.020\n    against 0.018, P = 0.043), MC (0.314 against 0.272, P = 2.2e-06) and CA3 (0.214 against 0.189, P =\n    0.048); only MC reach P < 0.00001.\n  deviations:\n  - T-maze runs are taken from the start of the central arm to 10 cm before the reward port in\n    trials without light; the paper uses the time from gate opening to arrival at the reward.\n  - The meaning of the linearised T-maze positions is inferred from the values and the maze\n    dimensions.\n- claim: tmaze-multiple-fields\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-multiple-fields\n  measured:\n  - 0.043\n  - 0.637\n  - 0.431\n  notes: Of all units, 4.3% of GC (253), 63.7% of MC (303) and 43.1% of CA3 (341) have two or more\n    fields; of units with a field, 24.4%, 78.1% and 66.8%. No reading puts all three in tolerance (MC\n    misses by 0.001 under reading a). GC have the fewest fields (KS P = 3.2e-53 against MC). The\n    units come from 7 mice; the paper reports 213, 225 and 249 units from 9 mice.\n  deviations:\n  - Fields are counted on a map of the central arm from all runs plus each side arm, smoothed per\n    segment; the paper builds left and right choice maps without saying how fields are combined.\n  - The 'local maximum' of the field rule is taken iteratively from the highest unassigned bin.\n- claim: tmaze-peak-info\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-peak-info\n  notes: Within-field peak GC 2.63 Hz against MC 5.68 Hz (KS P = 4.5e-05); spatial information GC\n    0.035 bits/s against MC 0.603 (P = 1.6e-49) and CA3 0.293 (P = 1.5e-29).\n  deviations:\n  - As tmaze-multiple-fields.\n- claim: tmaze-splitters\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-splitters\n  notes: Splitters 0 of 17 GC, 4 of 179 MC and 4 of 141 CA3 with a central-arm field; chi-square P =\n    0.76.\n  deviations:\n  - The paper names no test for comparing the fractions; a chi-square test was fixed in the\n    criterion.\n- claim: remap-positive\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:remap-positive\n  notes: Place cells GC 27, MC 116, CA3 143 (paper 30, 111, 144); median remapping index 0.128 (P =\n    0.0013), 0.293 (P = 1.5e-13) and 0.207 (P = 8.6e-14). Units per type 246, 182 and 317 in 5 mice\n    (paper 247, 181, 317 in 5 mice).\n  deviations:\n  - The place-field 'local maximum' is the map's peak; the speed is from positions smoothed over\n    0.25 s.\n- claim: remap-gc-lt-mc\n  outcome: not_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:remap-gc-lt-mc\n  notes: The GC median index (0.128) is below the MC median (0.293) but neither test is significant\n    (Kruskal-Wallis P = 0.306; GC against MC P = 0.114, 0.342 after Bonferroni). With the variant\n    place-cell rule, GC against MC P = 0.0648.\n  deviations:\n  - The paper's post hoc test is not named; Bonferroni-corrected Mann-Whitney tests are used.\n- claim: remap-fractions\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:remap-fractions\n  measured:\n  - 0.407\n  - 0.56\n  - 0.51\n  notes: 11 of 27 GC (0.407), 65 of 116 MC (0.560) and 73 of 143 CA3 (0.510) place cells remap. MC and\n    CA3 are within tolerance; GC is 0.003 above it. GC remap least at every threshold shown (0.1 to\n    0.3).\n- claim: pv-remap\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:pv-remap\n  notes: For 5, 10, 15 and 20 cells, the GC median index (0.162 to 0.210) is below the MC (0.253 to\n    0.302) and CA3 (0.251 to 0.352) medians, Kruskal-Wallis P from 5.8e-35 to 8.1e-190. 71% to 89% of\n    GC draws fall below the MC median.\n  deviations:\n  - Place cells pooled across sessions and mice for the draws; the paper does not say whether it\n    pooled.\n- claim: inheritance-tmaze\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:inheritance-tmaze\n  notes: 5 of 16 GC fields (0.31) of GC with a detected MC partner overlap a partner MC field, within\n    the criterion of at most a third; 15 of 23 GC partners have no T-maze field (paper 11 of 18).\n    The result is close to the criterion's limit and uses the automatic pair detections (see\n    monosyn-gc-to-mc).\n  deviations:\n  - '\"Rarely\" was fixed as at most a third of GC fields; the paper gives 2 of 10.'\n  - Pairs are automatic detections, not the paper's curated pairs.\n- claim: inheritance-openfield\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:inheritance-openfield\n  notes: 18 comparisons from 6 pairs in 4 sessions; median r = -0.038, Wilcoxon P = 0.67; 5 of 18\n    above 0.5 (paper 2 of 19).\n  deviations:\n  - Pairs are automatic detections; the open-field sessions include the curtain sessions, as the\n    paper's five sessions per pair do.\n- claim: mc-deeper\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:mc-deeper\n  notes: In the 17 files that give each unit's shank (4 mice; 153 GC, 243 MC), the DS2 amplitude at\n    the unit's site has a median of +271 uV for MC and -38 uV for GC (Mann-Whitney P = 5.7e-09);\n    73% of MC and 40% of GC sit where DS2 is positive. In one mouse (YutaMouse33) the MC median is\n    below the GC median.\n  deviations:\n  - Depth is read from the DS2 amplitude at the site, as the files give no site coordinates; the\n    paper measures distance from the DS2 reversal.\n  - 17 of 101 files only; the site is the shank channel with the largest mean waveform, taking\n    waveform channel i as the shank's i-th electrode.\n  - DS2 amplitude from about 220 s of LFP per file (the two LFP chunks with the most DS2 peaks).\n- claim: gc-mc-classification\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gc-mc-classification\n  measured: 0.944\n  notes: On 391 GC and MC of the 17 files, k-means on the four features agrees with the labels for\n    94.4% of units (91% to 97% by mouse). Without the NREM to wake ratio or without the first\n    waveform component the agreement falls to 77.2%; without the DS2 amplitude it is 92.6%.\n  deviations:\n  - Run on 17 of 101 files (391 of 1177 GC and MC); the paper ran it on all excitatory units.\n  - The four features are standardised and clustered directly; the paper took a second PCA before\n    k-means, which does not change k-means on all components.\n  - The second-derivative window starts at the trough; the Methods say 0 to 0.8 ms without naming\n    the origin.\n- claim: gc-mc-distance\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Needs the positions of the recording sites in um. The electrodes tables give x, y and z as\n    NaN in every file, the order of sites along a shank is not stated, and 83 of 101 files do not\n    say which shank a unit was on. The paper's own monosynaptic pairs were not converted either.\n- claim: gc-backpropagation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: Needs each unit's waveform along the shank with the sites' vertical positions; the files\n    give no site coordinates (x, y, z are NaN) and the stored waveforms span 1.6 ms at the channels\n    of the shank without their positions. In 83 files the shank itself is not given.\nfindings:\n- kind: format_error\n  statement: In 24 files the end index of the first unit in the units table is short by a multiple\n    of 65,536 spikes (k = 1 to 7). The missing spikes open the second unit's spike train, which then\n    restarts at the beginning of the recording, so the second unit's times are not sorted. The\n    first moved spike follows the first unit's last stored spike by 2 ms to 0.5 s. This looks like an\n    integer overflow at conversion; the waveforms follow the same boundaries.\n- kind: metadata_error\n  statement: The genotypes in the files (6 SST-Cre, 5 Drd2-Cre::Ai35, 4 POMC-Cre::Arch, 1\n    POMC-Cre::Ai35) do not match the paper's 16 mice (7 SST-Cre, 5 DRD2-Cre::Ai35, 3 POMC-Cre::Ai35\n    and 1 wild type).\n- kind: metadata_insufficient\n  statement: 83 of 101 files do not say which shank each unit was recorded on (`shank_id` is a\n    cluster number, and there is no `electrode_group`), and no file gives site coordinates (x, y, z\n    are NaN). The paper's depth measures can be computed for 17 files only, and distances between\n    cells not at all.\n- kind: metadata_insufficient\n  statement: The T-maze position series (`twhl_linearized`, `twhl_norm`) are not described. The\n    values show column 0 of `twhl_linearized` runs along the central arm (0 to 2) and column 1 is an\n    angle along the circular side arms, negative for the left arm, which fits the maze in the\n    Methods but is not stated.\n- kind: metadata_insufficient\n  statement: The states table holds `awake`, `quiet`, `nrem`, `rem` and `transit` without a\n    description; the paper names wake, NREM and REM, and whether `quiet` counts as wake is not\n    stated.\n- kind: metadata_insufficient\n  statement: The interneuron labels (narrow-waveform, wide-waveform) do not say whether the unit is in\n    the dentate gyrus or CA3, which the paper separates; only the excitatory label was split by\n    region (granule cell or CA3 pyramidal cell).\n- kind: data_missing\n  statement: The monosynaptic connections the authors detected and curated (`MonoSynConvClick.mat`)\n    were not converted (the conversion code comments them out), so the pair-based results (Figures\n    3, 4 and 7) cannot be checked on the authors' pairs.\n- kind: other\n  statement: The dandiset holds 568 mossy cells and 609 granule cells against the paper's 500 and 586,\n    and 237 units labelled `missing` (units of the spike sorting with no row in the authors' unit\n    summary).\n- kind: format_error\n  statement: The light-pulse series PulseStim_5V_20ms_LD12 of YutaMouse57-161006 holds 89,086 times of\n    which 24,286 are duplicates, and its times decrease once.\n- kind: other\n  statement: The units table has two layouts. 18 files (mice 33, 41, 42 and 54) carry an\n    `electrode_group` column naming each unit's shank, one of them without waveforms\n    (YutaMouse33-150218, which the conversion script lists as excluded); the other 83 files do not.\n- kind: metadata_insufficient\n  statement: Seven dates hold two files of one mouse (the second named with `b`). They share no\n    spike trains, so they are different recordings, but the metadata do not say whether they come\n    from a second probe or a second session.\n- kind: code_mismatch\n  statement: The Methods give a burst index threshold of 1.2 for excitatory cells, and the Figure 1A\n    legend gives 1.8.\n"
+ "file_path": "attempts/senzai-2017-02.yaml",
+ "content": "schema_version: 3\nid: senzai-2017-02\ndatasets:\n- archive: dandi\n  id: \"000003\"\n  version: 0.261122.2143\n  doi: 10.48324/dandi.000003/0.261122.2143\n  relation: primary\npaper: doi:10.1016/j.neuron.2016.12.011\ndate: 2026-11-23\nentry: senzai-2017\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code\n    model: claude-opus-5-5\n    protocol: pilot-18\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/encorescience/encore-registry/actions/runs/45284759424\noutcomes:\n- claim: unit-counts\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:unit-counts\n  measured:\n  - 583\n  - 503\n  notes: The cell_type labels give 583 granule cells and 503 mossy cells in the 15 mice of the\n    paper, each with its own global_id (no repeats), within 10% of 586 and 500. With YutaMouse57,\n    which is not in the paper, the labels give 609 and 568.\n  deviations:\n  - The labels are the authors' (the files' cell_type, from their unit summary); the second-stage\n    k-means is repeated separately under gc-mc-classification.\n- claim: first-stage-labels\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:first-stage-labels\n  notes: Under both thresholds 98.5% of the 1086 GC and MC are at or above 0.425 ms with a burst\n    index above the threshold, and 90.6% (1.2) or 92.6% (1.8) of the 256 dentate wide-waveform\n    interneurons with a waveform are at or above 0.425 ms with a burst index at or below it. Of 247\n    dentate narrow-waveform interneurons, 222 (89.9%) are below 0.425 ms, just short of 90%. Two of\n    three groups meet the criterion. CA3 interneurons, judged on their own 0.525 ms threshold, are\n    shown apart (93.8% of narrow ones below it). For 668 units the peak of the waveform falls at\n    the end of the stored 1.6 ms, so their latency is a lower bound.\n  deviations:\n  - The groups are the dentate units, as the 0.425 ms threshold is the dentate one (Methods, \"CA3\n    region units were also classified in a similar way into n-I cells (TP latency < 0.525ms)\").\n  - The channel of largest amplitude is taken by peak-to-peak amplitude, a standard choice; damaged\n    stored waveforms are left out of the mean.\n- claim: interneuron-rates\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:interneuron-rates\n  measured:\n  - 7.65\n  - 2.053\n  notes: Among the 248 narrow-waveform and 258 wide-waveform dentate interneurons, the median rate\n    over the recording span (reading a) is 7.65 and 2.05 Hz, both within tolerance, Kruskal-Wallis\n    P = 1.4e-13. In awake periods (reading b) the medians are 9.23 and 2.87 Hz, outside tolerance.\n    With the CA3 interneurons included the narrow-waveform median is 5.80 Hz (span) or 7.79 Hz\n    (awake).\n  deviations:\n  - The interneurons are the dentate ones, as the paper's counts are (\"narrow-waveform (n = 248)\n    and wide-waveform (n = 268) putative interneurons ... Units recorded in CA3 were separately\n    classified\", Results, Identification of granule cells and mossy cells, paragraph 1); all\n    labelled interneurons are shown as a variant.\n- claim: gc-narrower-waveform\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gc-narrower-waveform\n  notes: Trough-to-peak latency from the stored waveforms has a median of 0.710 ms for 583 GC and\n    0.740 ms for 503 MC, Mann-Whitney P = 3.6e-14. The peak falls at the end of the stored 1.6 ms\n    for 44% of GC and 69% of MC, so many latencies are lower bounds. With the wide-band waveform at\n    the unit's site, in the 17 files that hold it, the medians are 0.700 (136 GC) and 0.710 ms (240\n    MC), P = 0.43, so the difference rests on the truncated stored waveforms.\n- claim: optotag-drd2\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:optotag-drd2\n  measured: 0.642\n  notes: In 26 DRD2-Cre::Ai35 files with 20 ms pulses (median 96542 pulses per file), a 20% or\n    larger decrease at +2 to +15 ms against the 20 ms before each pulse is found in 68 of 106 MC\n    (0.642), 6 of 198 GC (0.030), 15 of 62 dentate wide-waveform and 4 of 68 narrow-waveform\n    interneurons. Against 50 to 200 ms after onset, 71 of 106 MC (0.670) and 13 of 198 GC (0.066).\n    The GC fraction is below 0.05 and the MC fraction more than four times it, but the MC fraction\n    is far above 0.271. The unit counts are close to the paper's (107 MC, 202 GC, 68 w-I, 69 n-I).\n    The files' drd2_tagged column marks 29 MC, as the paper, and all 29 are among the MC suppressed\n    here (median response over baseline 0.57, against 0.79 for untagged MC). The Methods' 20% rule\n    alone admits many more units than the paper counts; the paper says \"suppressed significantly\",\n    and the test behind that is asked of the authors.\n  deviations:\n  - No significance test is applied beyond the 20% decrease, as the claim's criterion has it.\n  - Interneurons are the dentate ones, as for interneuron-rates.\n- claim: mc-more-active\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:mc-more-active\n  notes: Median rates in awake periods are 0.726 Hz for MC and 0.079 Hz for GC (Kruskal-Wallis P =\n    4e-102; with quiet periods added P = 3e-100), and in NREM 0.907 and 0.398 Hz (P = 1e-23). The\n    MC median is higher in both states in 13 of the 14 mice with both types (not YutaMouse44,\n    which has one MC).\n- claim: gc-nrem-highest\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gc-nrem-highest\n  notes: GC medians are 0.398 Hz in NREM, 0.079 in wake (awake) and 0.205 in REM (583 units);\n    Kruskal-Wallis P printed as 0, and NREM exceeds wake and REM with Bonferroni-adjusted P\n    printed as 0. Wake and REM also differ (adjusted P printed as 0), so the \"similar rates during\n    wake and REM\" part does not hold, under both readings of wake (awake+quiet median 0.083 Hz).\n    REM exceeds wake in every mouse.\n- claim: ca3-wake-highest\n  outcome: not_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:ca3-wake-highest\n  notes: CA3 pyramidal cell medians are 0.450 Hz in wake (awake), 0.473 in NREM and 0.305 in REM\n    (568 units). REM is the lowest (adjusted P printed as 0 against both), but wake is not the\n    highest, and wake does not differ from NREM (adjusted P = 0.77; 0.69 with quiet periods, wake\n    median 0.445). By mouse, wake is the highest in 3 of 6 (YutaMouse41, 42, 55).\n- claim: nrem-wake-ratio\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:nrem-wake-ratio\n  notes: The median NREM to wake rate ratio is 4.67 for 583 GC and 1.09 for 503 MC (wake as awake),\n    Mann-Whitney P = 1e-130; with quiet periods 4.31 and 1.10. The GC median ratio is above 2.7 in\n    every mouse. MC NREM and wake rates do differ by a Wilcoxon test (P = 0.0002), though the MC\n    median ratio is near 1.\n- claim: theta-modulation\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:theta-modulation\n  notes: Of the units with theta phases (566 GC, 501 MC), 464 GC and 470 MC pass Rayleigh P < 0.05\n    and kappa > 0.1. Their median MRL is 0.429 for GC and 0.347 for MC, Kruskal-Wallis P = 7e-16.\n    GC fire later (circular mean 0.536 rad against 0.246; under reading a, (-pi, pi], medians\n    0.508 and 0.201, P = 8e-13). Under reading b, [0, 2 pi), the medians are 0.828 and 0.719 and P\n    = 0.59, as the phases lie near 0. The GC MRL median is higher in 12 of the 13 mice with both\n    types.\n  deviations:\n  - Phases are from the file's hilus_reference channel, which the files describe as the channel\n    the lab used for theta and gamma phase; up to one hour of awake time per file (the median file\n    used the full hour).\n- claim: gamma-modulation\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gamma-modulation\n  notes: Of the units with gamma phases (566 GC, 499 MC), 327 GC and 419 MC pass the Rayleigh and\n    kappa test. Median MRL is 0.323 for GC and 0.217 for MC, Kruskal-Wallis P = 3e-34. GC fire\n    earlier (circular mean -0.470 rad against -0.062; reading a medians -0.504 and -0.190, P =\n    2e-23); under reading b P = 0.67.\n  deviations:\n  - As for theta-modulation.\n- claim: gamma-rate-correlation\n  outcome: not_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gamma-rate-correlation\n  measured:\n  - -0.234\n  - -0.119\n  notes: Reading (a), all units with a gamma MRL, gives GC r = -0.234 (566 units, P = 2e-8) and MC r\n    = -0.119 (499 units, P = 0.0076); reading (b), units passing the Rayleigh and kappa test, GC r\n    = -0.413 (327, P = 7e-15) and MC r = -0.182 (419, P = 0.00019). Both correlations are negative\n    under both readings, but no reading puts both within tolerance, and the MC P is above 0.0001\n    under both, so neither the full nor the partial criterion holds. The MC r of reading (b) is\n    within tolerance of -0.184.\n- claim: ds2-recruitment\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:ds2-recruitment\n  notes: The median peak ratio around DS2 is 6.70 for 573 GC and 5.04 for 489 MC, Kruskal-Wallis P =\n    1.9e-6; the median peak time is -3 ms for GC and +1 ms for MC, P = 3e-8. With the DS2 times\n    shifted by 0.5 s the ratios are 1.69 and 1.63. 24 units with no spikes in the baseline window\n    are left out.\n- claim: monosyn-gc-to-mc\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:monosyn-gc-to-mc\n  measured: 0.108\n  notes: Of 4425 GC-MC pairs recorded together, the Methods' automatic test finds 63 GC to MC pairs\n    and 8 MC to GC pairs. The fraction is 63/583 = 0.108 (reading a), 47/583 = 0.081 (reading b)\n    or 63/4425 = 0.014 (reading c), none within 0.055 +- 0.0055, and MC to GC pairs are found;\n    GC to MC pairs outnumber them 63 to 8. The authors' monosynaptic table in the files holds\n    exactly 32 excitatory GC to MC pairs and no MC to GC pair, as the paper reports (32/583 =\n    0.055), and the automatic test finds all 32, so the difference is the paper's manual\n    inspection, not repeated here. 34 of the 63 pairs are on one shank.\n  deviations:\n  - The paper's manual inspection of detected pairs is not repeated (criterion); its effect is\n    shown by the authors' table.\n  - The CCG spans +-50 ms and the Gaussian baseline is reflected at its ends, a standard choice.\n- claim: burst-facilitation\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:burst-facilitation\n  notes: Over the 63 detected GC to MC pairs, the median transmission probability is 0.0067 for the\n    first burst spike and 0.032 for the second; the second is higher in 56 pairs, paired Wilcoxon P\n    = 2.9e-9. On the authors' 32 pairs, 0.0083 and 0.051, higher in 32 of 32, P = 4.7e-10.\n- claim: state-transmission\n  outcome: not_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:state-transmission\n  notes: Over the 63 detected pairs the median transmission probability is 0.0125 in wake and 0.0111\n    in NREM; NREM is lower in 32 of 63, paired Wilcoxon P = 0.52. On the authors' 32 pairs (the\n    paper's n is 31) the medians are 0.0191 and 0.0129, NREM lower in 19, P = 0.018, which would\n    meet the partial level (P < 0.05) but not P < 0.005. The difference between the two sets is\n    the 31 pairs the paper's manual inspection removed.\n  deviations:\n  - Tested on the pairs the automatic test finds (criterion); the authors' curated pairs are a\n    variant.\n- claim: zero-lag-synchrony\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:zero-lag-synchrony\n  measured:\n  - 0.0822\n  - 0.0107\n  - 0.0013\n  notes: GC pairs are synchronous in 4 of 3105 (0.0013), within the claim's bound of 0.0022. MC and\n    CA3 are synchronous in 0.082 and 0.011 of pairs (reading a) and 216 of 503 MC (0.429) and 46\n    of 568 CA3 (0.081) have a synchronous partner (reading b); none is within tolerance (CA3\n    0.0810 falls just outside 0.081 to 0.099). Under reading (b) both exceed the GC pair fraction\n    more than ten times; under (a) CA3 does not (8 times). No pair on one shank is synchronous by\n    the test; over pairs on different shanks MC 0.133 and CA3 0.029. The authors' zero-lag table\n    gives 111 of 503 MC (0.221) and 30 of 568 CA3 (0.053) with a same-type partner, and no GC pair.\n  deviations:\n  - The paper's manual inspection is not repeated.\n- claim: tmaze-central-active\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-central-active\n  notes: In 33 files with at least 4 light-free runs, the median fraction of units above 1 Hz is\n    0.328 in central-arm bins and 0.239 in side-arm bins for MC (238 units, Kruskal-Wallis P =\n    5e-10), 0.018 and 0.022 for GC (225 units, P = 0.41) and 0.233 and 0.219 for CA3 (253 units, P\n    = 0.21). The claim holds at P < 0.00001 for MC only.\n  deviations:\n  - Runs start at the mouse's last entry into the central arm before the lab's arm_start, which\n    lies about 27 cm into the arm, and end within 10 cm of the reward port (claims file header);\n    the Methods start at the gate opening, which the files do not mark.\n  - Units are pooled across sessions and the fraction is taken per bin over the units with a value\n    in it.\n- claim: tmaze-multiple-fields\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-multiple-fields\n  measured:\n  - 0.049\n  - 0.626\n  - 0.486\n  notes: Two or more fields are found in 11 of 225 GC (0.049), 149 of 238 MC (0.626) and 123 of\n    253 CA3 (0.486) (reading a); of units with a field, 0.275, 0.819 and 0.741 (reading b). Only\n    the MC fraction is within tolerance under reading (a). GC have the lowest fraction, and the\n    GC against MC Kolmogorov-Smirnov test on field counts gives P = 2e-37.\n  deviations:\n  - Assumed that fields are found from the highest local maximum down (the highest remaining bin,\n    its region above 50% of it, then the next), as the Methods' \"50% of the local maximum firing\n    rate\" does not say how local maxima are found; asked of the authors.\n  - Runs as in tmaze-central-active.\n- claim: tmaze-peak-info\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-peak-info\n  notes: The median within-field peak rate is 2.54 Hz for 40 GC with a field and 4.89 Hz for 182 MC\n    (KS P = 0.0005; 3.78 Hz for CA3). The median spatial information is 0.033 bits/s for GC, 0.424\n    for MC and 0.240 for CA3, KS P = 2e-41 (GC against MC) and 2e-28 (GC against CA3).\n  deviations:\n  - Runs and fields as in tmaze-multiple-fields; the peak is each unit's highest field peak.\n- claim: tmaze-splitters\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:tmaze-splitters\n  notes: Splitters (choice P < 0.001) are 0 of 17 GC, 5 of 158 MC and 3 of 127 CA3 units with a\n    central-arm field, chi-square P = 0.72; over all units (225, 238, 253) P = 0.098. Neither\n    reading finds a difference at P < 0.05. Splitters are few (8), and with no GC splitter the\n    comparison has little power.\n  deviations:\n  - The denominator of the fraction is not given; units with a central-arm field (the units the\n    Methods test) and all units were both run and agree.\n- claim: remap-positive\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:remap-positive\n  notes: Place cells (24 GC, 102 MC, 141 CA3) have median remapping indices of 0.161 (Wilcoxon P =\n    0.0025), 0.281 (P = 3e-10) and 0.233 (P = 1e-14), each at the paper's level. The open-field\n    files hold 246 GC, 182 MC and 317 CA3 units (paper 247, 181, 317).\n  deviations:\n  - Open fields A, B and A' are the lab's Old, New and Oldlast sessions.\n- claim: remap-gc-lt-mc\n  outcome: not_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:remap-gc-lt-mc\n  notes: The GC median index (0.161) is below the MC median (0.281; CA3 0.233), but the\n    Kruskal-Wallis test across the three types gives P = 0.69 and the Bonferroni-corrected\n    Mann-Whitney GC against MC P = 1.\n- claim: remap-fractions\n  outcome: partially_reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:remap-fractions\n  measured:\n  - 0.458\n  - 0.549\n  - 0.546\n  notes: 11 of 24 GC (0.458), 56 of 102 MC (0.549) and 77 of 141 CA3 (0.546) place cells have an\n    index of at least 0.2. Only the CA3 fraction is within tolerance (MC lies 0.003 below its\n    bound); GC have the lowest fraction. The place-cell counts are 24, 102 and 141 against the\n    paper's 30, 111 and 144.\n- claim: pv-remap\n  outcome: reproduced\n  seed_sensitive: true\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:pv-remap\n  notes: Under the claim's seed, the GC median population-vector remapping index is below the MC and\n    CA3 medians at every size, with Kruskal-Wallis P from 2e-11 (n = 5) to 2e-47 (n = 20). At n = 5,\n    10 and 15 the gap to MC is 0.03 to 0.05; at n = 20 the medians are GC 0.2877, MC 0.2902 and\n    CA3 0.3461, and the Bonferroni GC against MC test gives P = 0.84. Over the five seeds the n =\n    20 GC median ranges from 0.2858 to 0.2914 and the MC one from 0.2872 to 0.2959; under seeds\n    +2000 (0.2874 against 0.2872) and +4000 (0.2903 against 0.2888) the GC median is above the MC\n    one, so the outcome at n = 20 depends on the draws.\n  deviations:\n  - Draws are from place cells pooled across sessions, without replacement within a draw; pixels\n    count where every drawn cell's maps are defined.\n- claim: inheritance-tmaze\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:inheritance-tmaze\n  notes: 28 detected GC to MC pairs are in T-maze files; their GC have 19 fields, of which 5 overlap\n    a field of the partner MC (0.263, within a third). On the authors' pairs, 18 are in T-maze\n    files, as the paper's 18 (Figure 7A), and 3 of their 14 GC fields overlap.\n  deviations:\n  - Fields as in tmaze-multiple-fields (assumed).\n- claim: inheritance-openfield\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:inheritance-openfield\n  notes: Over 18 comparisons (detected pairs, open-field sessions where the GC has a field) the\n    median correlation of the GC and MC maps within the GC field is -0.005, Wilcoxon P = 0.25. On\n    the authors' pairs, 14 comparisons, median -0.117, P = 0.90.\n- claim: mc-deeper\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:mc-deeper\n  notes: At the wide-band site, in the 17 files with the wide-band signal, the median DS2 amplitude\n    is 1144 uV for 240 MC and 451 uV for 136 GC, Mann-Whitney P = 5e-44; all MC sites and 82% of GC\n    sites have a positive DS2. The MC median is higher in each of the 15 files with both types but\n    one (YutaMouse33-150223, 1104 against 1187 uV). The stored-waveform site, on all files, gives\n    1130 and 401 uV, P = 9e-114.\n  deviations:\n  - The DS2 amplitude is the LFP at the DS2 peak minus its mean at -36 to -16 ms (the baseline of\n    the Methods' DS2 detection), averaged over up to 600 DS2 events per file.\n  - The wide-band site uses up to four 52 s blocks of the wide band per file (median 94 spikes per\n    unit).\n- claim: gc-mc-classification\n  outcome: reproduced\n  notebook: reproduce_senzai_2017.ipynb\n  output: claim:gc-mc-classification\n  notes: K-means on the four standardised features of 376 units (136 GC, 240 MC) agrees with the\n    labels for 94.9%, under all five seeds. Without the waveform components 89.9%; the DS2\n    amplitude alone 85.1%, the waveform components alone 85.4%, the rate ratio alone 68.9%. The\n    variant with the stored waveforms (first 0.4 ms after the trough, as the stored 1.6 ms often\n    ends sooner) and the table site on all files gives 92.7% of 1086 units.\n- claim: gc-mc-distance\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The distance needs the vertical position of each recording site. The electrodes table holds\n    channel_id, group_name, location, hilus_reference and shank_electrode_number (a channel's place\n    in its shank's list in the lab's .xml file) and no coordinate, and the files do not say which\n    list position is which depth. The claims file gives no criterion for the claim.\n- claim: gc-backpropagation\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The soma to dendrite delay needs the order of the sites along the shank, which the files do\n    not give (see gc-mc-distance); the claim's figure (S3D to S3F) is in the supplement, and the\n    claims file gives no criterion for it.\nfindings:\n- kind: metadata_insufficient\n  about: data\n  severity: major\n  statement: The electrodes table gives no position for the recording sites, only each channel's\n    place in its shank's list in the lab's .xml file, and does not say which place is which depth.\n    The paper's GC to MC distance (Figure 3D) and the spike delay along the shank (Figure S3) cannot\n    be computed.\n- kind: metadata_error\n  about: data\n  severity: minor\n  statement: The trials' arm_start is described as the time the mouse entered the central arm, but\n    at that time the lab's central-arm position is 27.3 cm into the 65 cm arm (median over 1246\n    light-free runs; 10th to 90th percentile 24.6 to 29.2 cm). The entry into the arm is about\n    1 s earlier in the position series.\n- kind: other\n  about: data\n  severity: minor\n  statement: The stored spike waveforms span 1.6 ms (32 samples), and for 44% of granule cells and\n    69% of mossy cells the waveform peak after the trough falls at the end of that window, so\n    trough-to-peak latencies from them are lower bounds. With the wide-band waveform, in the 17\n    files that hold it, the GC and MC latencies do not differ (0.700 against 0.710 ms, P = 0.43),\n    while the stored waveforms give 0.710 against 0.740 ms (P = 4e-14). One file\n    (YutaMouse33-150218) has no stored waveforms, as its description says.\n- kind: other\n  about: data\n  severity: minor\n  statement: 13 of the 101 files have no monosynaptic_connections table and several have no\n    zero_lag_synchrony table; the files do not say whether the authors found no pair in those\n    sessions or did not analyse them. The automatic test finds GC to MC pairs in some sessions\n    without the table.\n- kind: other\n  about: data\n  severity: none\n  statement: The files agree with the paper's counts. The labels give 583 GC and 503 MC (paper 586\n    and 500) and 248 dentate narrow-waveform interneurons (paper 248; wide-waveform 258 against\n    268). The DRD2-Cre::Ai35 files hold 106 MC, 198 GC, 62 wide- and 68 narrow-waveform dentate\n    interneurons (paper 107, 202, 68, 69), and drd2_tagged marks 29 MC, as the paper, all of them\n    suppressed by light in the data. The authors' monosynaptic table holds the paper's 32 GC to MC\n    pairs and no MC to GC pair, 18 of them in T-maze files as in Figure 7A; its zero-lag table gives\n    22.1% of MC with a same-type partner (paper 23%). The open-field files hold 246 GC, 182 MC and\n    317 CA3 units (paper 247, 181, 317).\n- kind: other\n  about: data\n  severity: none\n  statement: Checks that passed. The seven same-day 'b' files are separate recordings (different\n    spans, no shared spike counts, distinct global_ids), not duplicates, and no global_id repeats.\n    The channel of the largest stored waveform, through the electrodes table, is the channel of the\n    largest wide-band spike for 335 of 376 GC and MC (89%), with a median DS2 amplitude difference\n    of 0 uV between the two. Spikes share the clock of the DS2 events (the GC and MC peak ratio\n    falls with DS2 times shifted by 0.5 s in 80 of 81 files; in YutaMouse44-151130, with few GC\n    and MC, it could not be shown), of the positions (spatial information falls from 0.100 and\n    0.323 to 0.048 and 0.057 bits/s with spikes shifted 60 s, in two T-maze files) and of the light\n    pulses (all 29 tagged MC suppressed at +2 to +15 ms).\n- kind: methods_unavailable\n  about: paper\n  statement: The Methods define a T-maze place field as a region \"above 50% of the local maximum\n    firing rate\" but not how local maxima are found when a map has several peaks. This attempt takes\n    the highest remaining bin, its region, then the next; the count of fields per unit, and so\n    tmaze-multiple-fields and inheritance-tmaze, depend on this. How were local maxima found?\n- kind: methods_unavailable\n  about: paper\n  statement: For DRD2-Cre::Ai35 mice the Methods identify mossy cells by a decrease of at least 20%\n    at +2 to +15 ms, and the Results say \"suppressed significantly\". The 20% rule alone, against\n    either baseline, finds 68 of 106 MC suppressed (paper 29 of 107). What baseline window and what\n    significance test were used?\n- kind: methods_unavailable\n  about: paper\n  statement: The automatic CCG test of the Methods finds 63 GC to MC and 8 MC to GC pairs; the\n    authors' curated table holds 32 and 0. The manual inspection that \"excluded the contamination\n    from the long-time scale trend\" changes the fraction (monosyn-gc-to-mc) and the state result\n    (state-transmission, P = 0.52 on the 63 pairs, 0.018 on the 32). What criteria did the\n    inspection apply?\n- kind: methods_unavailable\n  about: paper\n  statement: The T-maze analysis window runs \"from the gate opening to the arrival to the reward\n    location\", but the files mark no gate opening; this attempt starts each run at the mouse's\n    entry into the central arm. Where does the gate opening fall relative to the files' trial\n    times?\n"
 }
 ```
 
 ```
-File created successfully at: attempts/000003-senzai-2017-01.yaml (file state is current in your context — no need to Read it back)
+File created successfully at: attempts/senzai-2017-02.yaml (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -i 's/^- kind: code_mismatch\n  statement: The Methods give a burst/X/' ../../attempts/000003-senzai-2017-01.yaml && python - <<'EOF'
-p='../../attempts/000003-senzai-2017-01.yaml'
-y=open(p).read()
-y=y.replace('''- kind: code_mismatch
-  statement: The Methods give a burst index threshold''','''- kind: paper_inconsistency
-  statement: The Methods give a burst index threshold''')
-open(p,'w').write(y)
-import yaml; d=yaml.safe_load(open(p)); print(len(d['outcomes']), len(d['findings']))
-import collections; print(collections.Counter(o['outcome'] for o in d['outcomes']))
+python3 - <<'EOF'
+p='attempts/senzai-2017-02.yaml'; s=open(p).read()
+rep=[('''4e-102; with quiet periods added P = 3e-100), and in NREM 0.907 and 0.398 Hz (P = 1e-23). The
+    MC median is higher in both states in 13 of the 14 mice with both types (not YutaMouse44,
+    which has one MC).''','''4e-102; with quiet periods added P = 3e-100), and in NREM 0.907 and 0.398 Hz (P = 1e-23). By
+    mouse, the MC median is higher in wake in 13 of the 14 mice with both types, but in NREM in 8
+    of 14 (in YutaMouse20, 38, 44, 45, 51 and 55 the GC median is higher).'''),
+('''    light-free runs; 10th to 90th percentile 24.6 to 29.2 cm). The entry into the arm is about
+    1 s earlier in the position series.''','''    light-free runs; 10th to 90th percentile 24.6 to 29.2 cm).'''),
+('''  statement: 13 of the 101 files have no monosynaptic_connections table and several have no
+    zero_lag_synchrony table; the files do not say whether the authors found no pair in those
+    sessions or did not analyse them. The automatic test finds GC to MC pairs in some sessions
+    without the table.''','''  statement: 13 of the 101 files have no monosynaptic_connections table, and the files do not say
+    whether the authors found no pair in those sessions or did not analyse them.'''),
+]
+for a,b in rep:
+    assert a in s, a[:40]; s=s.replace(a,b)
+open(p,'w').write(s)
 EOF
-. $TMPDIR/work/bin/activate && python $TMPDIR/build_nb.py reproduce_senzai_2017.ipynb && cd ../.. && python tools/entry.py all entries/000003-senzai-2017 2>&1 | tail -3
+. $TMPDIR/dev/bin/activate && python tools/entry.py check entries/senzai-2017 2>&1 | tail -5; grep -n ": " attempts/senzai-2017-02.yaml | grep -v "^[0-9]*: *[-a-z_]*: \|^[0-9]*: *- [a-z_]*: " | head
 ```
 
 ```
-31 12
-Counter({'reproduced': 15, 'partially_reproduced': 11, 'not_reproduced': 3, 'blocked': 2})
-wrote reproduce_senzai_2017.ipynb 114 cells
-Installed kernelspec registry-000003-senzai-2017 in executed/000003-senzai-2017/.venv/share/jupyter/kernels/registry-000003-senzai-2017
 0 error(s)
-pass  reproduce_senzai_2017.ipynb  (496 s)
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF' > $TMPDIR/exec_out2.txt
-import nbformat
-nb=nbformat.read('executed/000003-senzai-2017/reproduce_senzai_2017.ipynb',4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type!='code': continue
-    print(f'===== cell {i} {c.metadata.get("tags","")}')
-    for o in c.get('outputs',[]):
-        if o.output_type=='stream': print(o.text)
-        elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-EOF
-diff <(grep -v "loaded 101\|units measured in\|pairs tested\|Pairs tested\|maps of\|Total run time\|=====" $TMPDIR/exec_out.txt) <(grep -v "loaded 101\|units measured in\|pairs tested\|Pairs tested\|maps of\|Total run time\|=====" $TMPDIR/exec_out2.txt); grep "Total run\|loaded" $TMPDIR/exec_out2.txt; python tools/entry.py handover entries/000003-senzai-2017; ls executed/000003-senzai-2017/handover; git status --short
+grep -n " #\|—" attempts/senzai-2017-02.yaml entries/senzai-2017/README.md | head; grep -c "—" $TMPDIR/cells_*.py entries/senzai-2017/senzai.py; grep -n -i "rather\|\*\*" $TMPDIR/cells_[a-e].py entries/senzai-2017/senzai.py entries/senzai-2017/README.md attempts/senzai-2017-02.yaml | grep -v "\*\*Result" | head
 ```
 
 ```
-loaded 101 files from dandiset 000003 version 0.260218.2052 in 275 s
-Total run time: 8.1 min
-wrote executed/000003-senzai-2017/handover
-10.1016-j.neuron.2016.12.011.yaml
-dg.py
-reproduce_senzai_2017.ipynb
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? attempts/000003-senzai-2017-01.yaml
-?? claims/000003/
-?? entries/000003-senzai-2017/
-?? scripts
-```
-
-**Agent calls Bash**
-
-```bash
-ls -la .bash_profile .bashrc .gitconfig .mcp.json .profile .ripgreprc .zprofile .zshrc .idea .vscode scripts 2>&1 | head -30; cat .gitignore 2>/dev/null | head
-```
-
-```
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .bash_profile
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .bashrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .gitconfig
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .idea
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .mcp.json
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .profile
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .ripgreprc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .vscode
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .zprofile
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 .zshrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 16 02:07 scripts
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
-.venv/
-.DS_Store
-executed/
-site/
-paper/
+/tmp/claude-1001/cells_a.py:0
+/tmp/claude-1001/cells_b.py:0
+/tmp/claude-1001/cells_c.py:0
+/tmp/claude-1001/cells_d.py:0
+/tmp/claude-1001/cells_e.py:0
+entries/senzai-2017/senzai.py:0
+/tmp/claude-1001/cells_a.py:4:**Paper.** Senzai Y, Buzsaki G (2017). Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells. *Neuron* 93, 691-704. doi:10.1016/j.neuron.2016.12.011.
+/tmp/claude-1001/cells_a.py:6:**Dataset.** DANDI:000003, version **0.261122.2143** (doi:10.48324/dandi.000003/0.261122.2143). This version was asked for in the attempt's prompt; it is also the most recent published version, and the paper cites no version (its data statement names CRCNS). Every file is streamed from the archive; nothing is downloaded to disk.
+/tmp/claude-1001/cells_a.py:8:**Text read.** The claims file (`claims/senzai-2017.yaml`) was written from the accepted author manuscript in PubMed Central (PMC5293146): Results, figure legends and STAR Methods. The author of this attempt read the same text under `paper/`.
+/tmp/claude-1001/cells_a.py:10:**What the dataset holds.** 101 NWB files from 16 mice. YutaMouse57 (8 files) is not in the paper (dataset description) and is left out of every analysis. Each file has the sorted units with the authors' cell-type labels, spike times and stored waveforms (one file has none), the 1250 Hz LFP, brain states, dentate spikes, light pulses, the authors' tables of monosynaptic and zero-lag pairs (in most files), and T-maze trials and positions (42 files) or open-field positions (43 files). 17 files also hold the 20 kHz wide-band signal.
+/tmp/claude-1001/cells_a.py:94:                           **{f"{k}_h": v / 3600 for k, v in r["state_dur"].items()}) for r in R])
+/tmp/claude-1001/cells_b.py:61:        out.append(dict(type=t, wake=wcol, **{f"median_{k}": round(v.median(), 3) for k, v in g.items()},
+/tmp/claude-1001/cells_b.py:62:                        **{f"n_{k}": len(v) for k, v in g.items()}, KW_P=p_kw, **{f"Padj_{k}": v 
+[... 3 more lines not kept]
 ```
 
 **Agent**
 
-I've finished steps 1 to 6 for dandiset 000003. The entry locks, passes `check`, and the notebook runs from a clean environment in 8.1 minutes (twice, with identical outputs). The handover package is built in `executed/000003-senzai-2017/handover/`. Nothing is committed.
+The notebook header and summary use bold labels, which the instructions do not allow. Removing them (a notebook edit, so one more run).
 
-**Paper:** I used the full text, from the accepted author manuscript in PubMed Central (PMC5293146), saved under `paper/`. The supplementary figures were not available.
+**Agent calls Bash**
 
-**Version:** pinned to 0.260218.2052. The paper cites no DANDI version. All four published versions hold the same 101 files (same paths, sizes and checksums) and differ only in metadata, so I took the most recent. The notebook header says this and prints the comparison.
+```bash
+cd $TMPDIR && for f in cells_a.py cells_e.py; do python3 - "$f" <<'EOF'
+import sys,re
+p='/tmp/claude-1001/'+sys.argv[1]; s=open(p).read()
+out=[]
+for line in s.split('\n'):
+    if line.startswith('**') and not line.startswith('**Result'):
+        line=re.sub(r'\*\*([^*]+)\*\*', r'\1', line)
+    out.append(line)
+open(p,'w').write('\n'.join(out))
+EOF
+done; grep -n "\*\*[A-Za-z0-9]" cells_a.py cells_e.py | grep -v Result | head; . dev/bin/activate && python build_nb.py && cd  && date -u && python tools/entry.py all entries/senzai-2017 2>&1 | tail -3; date -u
+```
 
-### 1. Outcomes (31 claims: 15 reproduced, 11 partially, 3 not reproduced, 2 blocked)
+```
+wrote entries/senzai-2017/reproduce_senzai_2017.ipynb 99 cells
+Tue Nov 24 00:45:34 UTC 2026
+Installed kernelspec registry-senzai-2017 in executed/senzai-2017/.venv/share/jupyter/kernels/registry-senzai-2017
+0 error(s)
+pass  reproduce_senzai_2017.ipynb  (1239 s)
+Tue Nov 24 01:06:24 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/dev/bin/activate && python - <<'EOF' > $TMPDIR/exec_out3.txt
+import nbformat, glob
+nb=nbformat.read(glob.glob('executed/senzai-2017/*.ipynb')[0],4)
+for c in nb.cells:
+    if c.cell_type=='code':
+        print('### CELL', c.metadata.get('tags',''), c.source[:60].replace('\n',' '))
+        for o in c.outputs:
+            if o.output_type=='stream' and 'Warning' not in o.text: print(o.text)
+            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
+EOF
+diff <(grep -v "Warning\|frac = np\|^$\|streamed and\|wald_test\|F /= J" $TMPDIR/exec_out2.txt) <(grep -v "Warning\|frac = np\|^$\|streamed and\|wald_test\|F /= J" $TMPDIR/exec_out3.txt); echo diffdone; python tools/entry.py handover entries/senzai-2017 2>&1 | tail -3; ls executed/senzai-2017/handover; python tools/entry.py check entries/senzai-2017 | tail -1
+```
+
+```
+diffdone
+wrote executed/senzai-2017/handover
+reproduce_senzai_2017.ipynb
+senzai-2017.yaml
+senzai.py
+0 error(s)
+```
+
+**Agent**
+
+Outputs identical across runs; handover built. Final check of the entry directory.
+
+**Agent calls Bash**
+
+```bash
+ls -la entries/senzai-2017; rm -rf entries/senzai-2017/__pycache__; ls entries/senzai-2017; date -u
+```
+
+```
+total 212
+drwxr-xr-x   4 runner runner  4096 Nov 24 00:00 .
+drwxr-xr-x 351 runner runner 12288 Nov 23 23:12 ..
+drwxr-xr-x   3 runner runner  4096 Nov 23 23:12 .claude
+-rw-r--r--   1 runner runner  3420 Nov 24 00:00 README.md
+drwxr-xr-x   2 runner runner  4096 Nov 24 00:22 __pycache__
+-rw-r--r--   1 runner runner  1106 Nov 24 00:00 entry.yaml
+-rw-r--r--   1 runner runner 84641 Nov 24 00:45 reproduce_senzai_2017.ipynb
+-rw-r--r--   1 runner runner    57 Nov 24 00:00 requirements.in
+-rw-r--r--   1 runner runner 55515 Nov 24 00:00 requirements.lock.txt
+-rw-r--r--   1 runner runner 36291 Nov 24 00:22 senzai.py
+README.md
+entry.yaml
+reproduce_senzai_2017.ipynb
+requirements.in
+requirements.lock.txt
+senzai.py
+Tue Nov 24 01:07:05 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+find entries/senzai-2017/.claude -type f | head;
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+find entries/senzai-2017/.claude; rmdir entries/senzai-2017/.claude/* entries/senzai-2017/.claude 2>&1; ls -a entries/senzai-2017
+```
+
+```
+entries/senzai-2017/.claude
+entries/senzai-2017/.claude/.cc-writes
+rmdir: failed to remove 'entries/senzai-2017/.claude/*': No such file or directory
+rmdir: failed to remove 'entries/senzai-2017/.claude': Directory not empty
+.
+..
+.claude
+README.md
+entry.yaml
+reproduce_senzai_2017.ipynb
+requirements.in
+requirements.lock.txt
+senzai.py
+```
+
+**Agent**
+
+I finished steps 1 to 6 for `senzai-2017` on DANDI:000003 version 0.261122.2143. The entry is at `entries/senzai-2017`, the record is `attempts/senzai-2017-02.yaml`, and `lock`, `check`, `all` and `handover` all passed with 0 errors.
+
+I did not see any earlier attempt's entry, record or transcript. However, the claims file's own opening comments describe an earlier author's analysis and print a few of its numbers: DS2 amplitudes of -83 and +150 uV in one file, mc-deeper P = 5.7e-09, and a classification agreement of 0.944 with a log ratio. I read these before my analysis, so the reconcile step should know this attempt saw them.
+
+### 1. Outcomes
 
 | Claim | Outcome |
 |---|---|
-| unit-counts (586 GC, 500 MC; here 609 and 568) | partially reproduced |
-| first-stage-labels | partially reproduced |
-| interneuron-rates | partially reproduced |
-| gc-narrower-waveform | reproduced |
-| optotag-drd2 (64% of MC suppressed here, paper 27%) | partially reproduced |
+| unit-counts | reproduced (583 GC, 503 MC) |
+| first-stage-labels | partially reproduced (89.9% of narrow interneurons below 0.425 ms, just under 90%) |
+| interneuron-rates | reproduced (7.65 and 2.05 Hz, P = 1e-13) |
+| gc-narrower-waveform | reproduced (0.710 vs 0.740 ms) |
+| optotag-drd2 | partially reproduced (68 of 106 MC suppressed, against the paper's 29) |
 | mc-more-active | reproduced |
-| gc-nrem-highest | partially reproduced |
-| ca3-wake-highest | not reproduced |
+| gc-nrem-highest | partially reproduced (wake and REM differ) |
+| ca3-wake-highest | not reproduced (NREM 0.473 Hz is above wake 0.450 Hz) |
 | nrem-wake-ratio | reproduced |
-| theta-modulation | reproduced |
-| gamma-modulation | reproduced |
-| gamma-rate-correlation | partially reproduced |
+| theta-modulation, gamma-modulation | reproduced |
+| gamma-rate-correlation | not reproduced (MC r = -0.119, P = 0.008) |
 | ds2-recruitment | reproduced |
-| monosyn-gc-to-mc (65 pairs one way and 8 the other here; paper 32 and 0) | partially reproduced |
-| burst-facilitation | reproduced |
-| state-transmission | not reproduced |
+| monosyn-gc-to-mc | partially reproduced (63 GC→MC and 8 MC→GC pairs) |
+| burst-facilitation | reproduced (P = 3e-9) |
+| state-transmission | not reproduced (P = 0.52; P = 0.018 on the authors' 32 pairs) |
 | zero-lag-synchrony | partially reproduced |
-| tmaze-central-active | partially reproduced |
-| tmaze-multiple-fields | partially reproduced |
-| tmaze-peak-info | reproduced |
-| tmaze-splitters | reproduced |
+| tmaze-central-active | partially reproduced (holds for MC only) |
+| tmaze-multiple-fields | partially reproduced (rests on an assumption) |
+| tmaze-peak-info, tmaze-splitters | reproduced |
 | remap-positive | reproduced |
-| remap-gc-lt-mc | not reproduced |
+| remap-gc-lt-mc | not reproduced (KW P = 0.69) |
 | remap-fractions | partially reproduced |
-| pv-remap | reproduced |
-| inheritance-tmaze | reproduced |
+| pv-remap | reproduced, seed sensitive (at 20 cells the GC and MC medians are 0.003 apart) |
+| inheritance-tmaze | reproduced (rests on an assumption) |
 | inheritance-openfield | reproduced |
-| mc-deeper (17 files only) | reproduced |
-| gc-mc-classification (17 files, 94.4% agreement with the labels) | reproduced |
-| gc-mc-distance | blocked: metadata_insufficient |
-| gc-backpropagation | blocked: metadata_insufficient |
+| mc-deeper | reproduced |
+| gc-mc-classification | reproduced (94.9% agreement under all five seeds) |
+| gc-mc-distance, gc-backpropagation | blocked: metadata insufficient |
 
-### 2. What I found about the dandiset
-- **Corrupted spike trains in 24 files.** The first unit's spike train is cut short by a multiple of 65,536 spikes, and the missing spikes sit at the start of the second unit's train. It looks like an integer overflow at conversion. The loader moves them back and reports each repair.
-- **Genotypes don't match the paper.** The files give 6 SST-Cre, 5 Drd2, 4 POMC-Cre::Arch and 1 POMC-Cre::Ai35. The paper gives 7 SST-Cre, 5 DRD2, 3 POMC and 1 wild type.
-- **Recording sites are mostly missing.** 83 of 101 files don't say which shank a unit was on, and no file gives site coordinates (x, y, z are NaN). That leaves depth testable on 17 files only and distances not at all. The units table comes in two layouts.
-- **The authors' detected connections weren't converted.** The monosynaptic pairs file was skipped by the conversion code, so the pair-based figures can't be checked on the authors' own pairs.
-- **Undocumented fields.** The T-maze position series and the state labels (`quiet`, `transit`) have no description; I inferred their meaning from the values. Interneuron labels don't say whether a unit is in the dentate gyrus or CA3.
-- **Counts differ from the paper.** There are 568 mossy cells against the paper's 500, plus 237 units labelled `missing`.
-- **Smaller issues.** One file has 24,286 duplicate light-pulse times. The paper gives two burst-index thresholds (1.2 in the Methods, 1.8 in the Figure 1A legend).
-- **No duplicate recordings.** The second files on seven same-day pairs (`b` sessions) are separate recordings, not copies, but the metadata don't say what they are.
+### 2. Dataset, assumptions, questions
+- **Agrees with the paper:**
+  - The labels match the paper's counts closely, including 248 dentate narrow-waveform interneurons and 106 MC, 198 GC in the DRD2 mice.
+  - The authors' monosynaptic table holds exactly the paper's 32 GC→MC pairs, 18 of them in T-maze files as in Figure 7A.
+  - The zero-lag table gives 22.1% of MC with a partner (paper 23%).
+  - The open-field files hold 246, 182 and 317 units (paper 247, 181, 317).
+- **Checks that passed:**
+  - The seven same-day "b" files are separate recordings, not duplicates.
+  - The stored-waveform site and the wide-band site agree for 89% of GC and MC.
+  - Spikes share the clock of the DS2 events (80 of 81 files), of the positions, and of the light pulses. The DS2 clock could not be shown for YutaMouse44-151130, which has few GC and MC.
+- **Problems found:**
+  - **No site coordinates (major):** the electrodes table gives no recording-site positions, which blocks the two depth claims.
+  - **`arm_start` (minor):** it is described as entry into the central arm, but it falls 27.3 cm into the 65 cm arm.
+  - **Truncated waveforms (minor):** the stored 1.6 ms waveforms end before the peak for 44% of GC and 69% of MC. With wide-band waveforms the GC/MC latency difference is not significant (P = 0.43).
+  - **Missing tables (minor):** 13 files have no monosynaptic table, and they don't say whether that means no pairs.
+- **Assumptions:**
+  - T-maze fields are found from the highest local maximum down.
+  - Each run starts at the mouse's last entry into the central arm before `arm_start`.
+- **Questions for the paper's authors**, recorded as `methods_unavailable` findings:
+  - How local maxima were found for the T-maze fields.
+  - Which significance test was used for optogenetic suppression.
+  - What the manual inspection of the cross-correlogram pairs excluded.
+  - Where the gate opening falls relative to the files' trial times.
+- **Questions to a reader:** none.
 
-### 3. Where the protocol was unclear, wrong or missing something
-1. **Writing criteria before analysis.** Building and debugging the helper on all files printed preliminary results before I wrote the criteria. I listed in the claims file exactly what I had seen, and tuned nothing on it.
-2. **Deposited labels versus re-running the classification.** The protocol is silent on this. I used the labels for all claims and tested the paper's classification as a separate claim.
-3. **Code to read.** Neither the paper nor the dandiset links code. I read the NWB conversion code (two commits) and recorded it in the notebook header, not under `inputs`, since it supplies no data.
-4. **Repairing broken data.** "Trust the data" doesn't say whether to repair a detectable format error. I repaired it in the loader and recorded it as a finding.
-5. **Tolerance for a reported zero.** The 10% rule gives zero tolerance for "none of 202". I put a bound (below 0.05) in the criterion instead.
-6. **Dependents of partially reproduced claims.** The `depends_on` rule only covers blocked claims. I tested the dependents and said in their notes that they rest on the automatic pair detections.
-7. **Finding new metadata mid-attempt.** I found the shank information in 17 files after writing the criteria. I added criteria for two claims I had planned to block, before running them, and recorded the timing and the one preliminary result I had seen.
-8. **Multiple readings make passing easier.** For "earlier/later phase" the outcome depends on where the phase cycle is cut. I listed both cuts, and the claims pass on one. This rule lets ambiguous claims pass easily.
-9. **Clock check for continuous sessions.** The suggested contrasts assume trial tables. I used state labels shifted by 30 minutes, and spikes shifted by 20 s against positions.
-10. **Same unit across days.** Each unit has its own ID and the probe moved 70 µm a day. I stated "once per day" as an assumption.
-11. **Supplementary figures unavailable.** Claims citing them rest on the main text.
+### 3. Protocol points
+1. The claims file's opening comments describe an earlier author's runs and numbers, so a blind repeat attempt still sees them. I read them and report it here.
+2. Two claims (gc-mc-distance, gc-backpropagation) have no criterion. I blocked both for missing metadata, and they would not be testable anyway.
+3. The step 3 rule that "every sentence must be backed by a printed number" applies to the notebook; the protocol does not say whether it also covers the record's notes. I held the notes to it and removed two sentences that were not backed.
+4. Changing any wording in the notebook forces a full 20-minute re-run. I ran the whole entry three times for text-only fixes.
+5. The harness left a protected empty `.claude/.cc-writes` folder inside `entries/senzai-2017` that I could not delete. The workflow should not commit it.
 
 ### 4. Runtime and failures
-- **Notebook:** 8.1 minutes, of which loading takes 4.6.
-- **Total session:** about 3 hours.
-- **Slow first loader:** the first version used threads and took 50 minutes, because h5py runs only one thread at a time. I switched to processes.
-- **Bugs found and fixed before the final run:**
-  - The first T-maze run detection mistook the waiting area for the reward port. This is the one change made after seeing results, and it is recorded.
-  - A column named `info` clashed with a pandas method.
-  - A table variable named `C` clashed with the C() term in the ANOVA formulas (statsmodels).
-- **Unexplained files:** about ten unexpected untracked entries appeared in the repo root (`.bashrc`, `.idea`, `scripts` and others). They are device files that appeared at 02:07, about when the session began, and I didn't create them. I left them alone; check they don't get committed.
+The notebook runs in about 21 minutes (1239 s) and the three runs gave identical outputs. The first full pass over the files failed on about 40 of them, because some tables are optional and some T-maze series use timestamps; I fixed the helper and the pass then completed. Nothing failed after that, and no claim was blocked for time. I finished at about 01:07 UTC.
 
 ## End of run
 
-106 turns, 151 minutes, result: success.
+78 turns, 125 minutes, $12.02 at API prices, result: success.

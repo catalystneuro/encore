@@ -1,53 +1,54 @@
 # Senzai and Buzsaki (2017) from dandiset 000003
 
-Tests the findings of [Senzai and Buzsaki (2017)](https://doi.org/10.1016/j.neuron.2016.12.011) on
-[DANDI:000003](https://dandiarchive.org/dandiset/000003/0.260218.2052), which holds silicon probe
-recordings of the dentate gyrus and CA3 in 16 mice, in 101 files from 94 recording days, with each unit labelled
-as a granule cell, mossy cell, CA3 pyramidal cell or interneuron.
+Tests the findings of [Senzai and Buzsaki (2017)](https://doi.org/10.1016/j.neuron.2016.12.011) that can be
+tested on [DANDI:000003](https://dandiarchive.org/dandiset/000003/0.261122.2143), version 0.261122.2143:
+silicon probe recordings from the dentate gyrus and CA3 of 15 of the paper's mice (a sixteenth mouse in
+the dandiset, YutaMouse57, is not in the paper and is left out).
 
 | Claim | Outcome |
 |---|---|
-| Unit counts (586 GC, 500 MC) | Partially reproduced |
-| First-stage labels follow latency and burst criteria | Partially reproduced |
-| Narrow interneurons faster than wide ones (7.97 and 2.11 Hz) | Partially reproduced |
-| GC waveforms narrower than MC | Reproduced |
-| Light suppresses 29 of 107 MC and no GC in DRD2 mice | Partially reproduced |
-| MC more active than GC in wake and NREM | Reproduced |
-| GC fire most in NREM, similarly in wake and REM | Partially reproduced |
-| CA3 most active in wake, least in REM | Not reproduced |
+| 586 GC and 500 MC | Reproduced |
+| First-stage thresholds separate the labelled groups | Partially reproduced |
+| Narrow-waveform interneurons fire faster than wide-waveform ones (7.97 and 2.11 Hz) | Reproduced |
+| GC waveforms are narrower than MC waveforms | Reproduced |
+| Green light suppresses 29 of 107 MC and no GC in DRD2-Cre::Ai35 mice | Partially reproduced |
+| MC are more active than GC in wake and NREM | Reproduced |
+| GC fire most in NREM, equally in wake and REM | Partially reproduced |
+| CA3 pyramidal cells fire most in wake, least in REM | Not reproduced |
 | GC raise their rate in NREM, MC do not | Reproduced |
-| GC more theta-modulated, at later phases | Reproduced |
-| GC more gamma-modulated, at earlier phases | Reproduced |
-| Slow cells more gamma-coupled (r = -0.176, -0.184) | Partially reproduced |
-| GC recruited more and earlier by DS2 | Reproduced |
-| 5.5% of GC excite MC, no MC excites GC | Partially reproduced |
-| Transmission rises from first to second burst spike | Reproduced |
-| GC to MC transmission lower in NREM | Not reproduced |
-| Synchrony in 23% of MC, 9% of CA3, under 0.2% of GC pairs | Partially reproduced |
-| More active cells in the central arm | Partially reproduced |
-| Two or more T-maze fields: 6.6% GC, 57.8% MC, 36.1% CA3 | Partially reproduced |
-| GC lowest peak rate and spatial information | Reproduced |
-| Splitter fractions comparable | Reproduced |
+| GC are more theta-modulated than MC and fire later | Reproduced |
+| GC are more gamma-modulated than MC and fire earlier | Reproduced |
+| Slow-firing cells couple more to gamma (r = -0.176 and -0.184) | Not reproduced |
+| GC are more recruited by DS2 than MC and fire earlier | Reproduced |
+| 5.5% of GC drive MC; no MC drives a GC | Partially reproduced |
+| GC to MC transmission rises from the first to the second burst spike | Reproduced |
+| GC to MC transmission is lower in NREM than in wake | Not reproduced |
+| Zero-lag synchrony in 23% of MC, 9% of CA3, under 0.2% of GC pairs | Partially reproduced |
+| More units active in the T-maze central arm, for each type | Partially reproduced (rests on an assumption) |
+| Two or more T-maze fields in 6.6% of GC, 57.8% of MC, 36.1% of CA3 | Partially reproduced (rests on an assumption) |
+| GC have the lowest field peak rate and spatial information | Reproduced (rests on an assumption) |
+| Splitter fractions are comparable across types | Reproduced (rests on an assumption) |
 | Remapping index above zero in each type | Reproduced |
 | GC remap less than MC | Not reproduced |
-| Remapping fractions 36.7%, 61.3%, 55.6% | Partially reproduced |
-| GC smallest population-vector remapping | Reproduced |
-| Few GC fields overlap partner MC fields (T-maze) | Reproduced |
-| GC and MC maps uncorrelated within GC fields (open field) | Reproduced |
-| MC deeper than GC (17 files) | Reproduced |
-| K-means on the paper's features separates GC and MC (17 files) | Reproduced |
-| GC 59 um above their MC partners; GC backpropagation | Blocked: no site coordinates |
+| 36.7% of GC, 61.3% of MC and 55.6% of CA3 place cells remap | Partially reproduced |
+| Population-vector remapping is smallest for GC | Reproduced (seed sensitive) |
+| MC rarely inherit T-maze fields from single GC | Reproduced (rests on an assumption) |
+| GC and MC maps are not correlated within the GC field | Reproduced |
+| MC lie deeper than GC relative to the DS2 reversal | Reproduced |
+| K-means on the four features separates GC and MC | Reproduced |
+| GC sit 59 um above their MC partners; GC spikes back-propagate | Blocked: methods underspecified, as the claims file gives no criterion (two claims) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The attempt record, with the reasons and the differences from the paper's method, is
-[`attempts/senzai-2017-01.yaml`](../../attempts/senzai-2017-01.yaml).
+[`attempts/senzai-2017-02.yaml`](../../attempts/senzai-2017-02.yaml).
 
-- `reproduce_senzai_2017.ipynb`: the analysis. It takes about 8 minutes, most of it streaming the
-  spike times, waveforms and LFP from the 101 files.
-- `dg.py`: loading the files (with the repair of the unit boundaries cut at multiples of 65,536
-  spikes), and the measures: rates by state, burst index, waveform latency, phase locking, DS2 and
-  light responses, cross-correlograms, and T-maze and open-field rate maps, and, in the 17 files
-  with the wide-band signal, each unit's site and waveform read from that signal. Other notebooks
-  on this dandiset can import it.
+- `reproduce_senzai_2017.ipynb`: the analysis. It streams all 101 files, four at a time, and takes
+  about half an hour, most of it reading the files.
+- `senzai.py`: loading, and the per-unit and per-pair measures (rates by state, burst index,
+  waveforms, DS2 amplitude and histograms, theta and gamma phase, optogenetic suppression,
+  cross-correlogram tests, T-maze and open-field maps, with variants on the T-maze run). Other notebooks on this dandiset can import it.
+- `earlier_findings.ipynb`: the findings of the earlier attempt, senzai-2017-01 (version 0.260218.2052),
+  checked on this version, one section each, for the reconciliation in the attempt record. It takes about
+  ten minutes.
