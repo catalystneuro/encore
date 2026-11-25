@@ -75,8 +75,11 @@ PROTOCOL = "encorescience/encore-protocol"
 AUTO_DEFAULT = "encorescience/encore-runner"
 CENTRAL_OWNERS = ("encorescience", "catalystneuro")
 RUN_URL = re.compile(r"https://github\.com/(?P<repo>[A-Za-z0-9-]+/[A-Za-z0-9._-]+)/actions/runs/(?P<id>[0-9]+)")
+# The protocol's workflow, at the ref or the commit its caller named. encore-runner names a release by its commit,
+# since GitHub cannot resolve sequence.yml's calls to the protocol's other workflows when the caller names an
+# annotated tag.
 SIGNER = re.compile(rf"https://github\.com/{re.escape(PROTOCOL)}/\.github/workflows/(?P<wf>attempt|papers)\.yml"
-                    r"@(?P<ref>refs/[A-Za-z0-9._/-]+)")
+                    r"@(?P<ref>refs/[A-Za-z0-9._/-]+|[0-9a-f]{40})")
 ROLES = {"claims": "papers", "claims-check": "papers", "author": "attempt"}
 # Every role of an attempt, and the workflow that makes it (a whole attempt, `--what attempt`).
 LATER = re.compile(r"author-answers|author-revise-[1-3]|verifier-[1-3]|reconcile|recorder")

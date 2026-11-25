@@ -34,12 +34,12 @@ permissions:
 
 jobs:
   claims:
-    uses: encorescience/encore-protocol/.github/workflows/papers.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/papers.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: claims, model: "${{ inputs.model }}"}
     secrets: inherit
   claims-check:
     needs: claims
-    uses: encorescience/encore-protocol/.github/workflows/papers.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/papers.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: claims-check, model: "${{ inputs.model }}"}
     secrets: inherit
   claims-ready:
@@ -61,27 +61,27 @@ jobs:
           PY
   author:
     needs: claims-ready
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: author, model: "${{ inputs.model }}"}
     secrets: inherit
   verifier-1:
     needs: author
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: verifier-1, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-1:
     needs: verifier-1
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: author-revise-1, model: "${{ inputs.model }}"}
     secrets: inherit
   verifier-2:
     needs: author-revise-1
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: verifier-2, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-2:
     needs: verifier-2
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: author-revise-2, model: "${{ inputs.model }}"}
     secrets: inherit
   proposals:
@@ -109,12 +109,12 @@ jobs:
   verifier-3:
     needs: proposals
     if: needs.proposals.outputs.found == 'true'
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: verifier-3, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-3:
     needs: verifier-3
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: author-revise-3, model: "${{ inputs.model }}"}
     secrets: inherit
   repeat:
@@ -144,6 +144,6 @@ jobs:
   reconcile:
     needs: repeat
     if: always() && needs.repeat.outputs.found == 'true'
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.4
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with: {paper: "${{ inputs.paper }}", role: reconcile, model: "${{ inputs.model }}"}
     secrets: inherit
