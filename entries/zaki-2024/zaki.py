@@ -24,7 +24,10 @@ Where each parameter comes from:
   population activity was re-computed each time"); claims offline-bursts-above-shuffle and
   offline-skew-above-shuffle. The offsets are drawn uniformly from 0 to T-1 frames: the legend does
   not give their range; a uniform draw over the whole recording is the standard choice and is an
-  assumption stated in the record.
+  assumption stated in the record. With ``normalise=False`` (reading (b) of the burst claim's
+  criterion) the surrogate trace keeps the true trace's mean and, for positively co-varying cells,
+  has a smaller SD, so it rarely reaches the true trace's threshold whether or not the cells burst
+  (the notebook's synthetic check).
 - Ensembles (``ensembles_from_registration``): from the CellReg table, an offline cell is neutral
   (matched to neutral encoding only), aversive (to FC only), overlap (both) or remaining (neither)
   (Methods, "Ensemble reactivation analysis").
@@ -40,6 +43,11 @@ Where each parameter comes from:
 - Freezing (``freezing_readings``): reading (a) the fraction of MotionSeries frames inside a
   FreezingIntervals row and (b) the summed interval duration over the MotionSeries duration
   (claims file, source-data-link). Frames are at ``starting_time + i / rate``.
+- Sleep scoring (``epoch_features``, ``gmm2``, ``score_sleep``, ``sleep_features``): 6 s epochs, a
+  two-state Gaussian mixture on the EMG (lower state sleep), then one on the theta (5-9 Hz) / delta
+  (0.5-4 Hz) ratio of the sleep epochs (higher state REM) (Methods, "Sleep recordings and sleep
+  scoring"). The EMG feature (log RMS) and the band power (periodogram) are not given by the paper
+  and are assumptions; the ratio is fitted as given and, as a variant, as its log.
 - Movement (``movement_bins``): the absolute ActivitySignal averaged in 100 ms bins (claims file,
   burst-locomotion-pause).
 """
@@ -273,6 +281,92 @@ def movement_bins(activity: np.ndarray, t0: float, rate: float, bin_s: float = 0
     a = np.abs(activity[:nb * per]).reshape(nb, per).mean(axis=1)
     centres = t0 + (np.arange(nb) + 0.5) * per / rate
     return centres, a
+
+
+def epoch_features(f: h5py.File, epoch_s: float = 6.0, chunk_epochs: int = 800) -> dict:
+    """Per-epoch telemetry features of a file's continuous EEG and EMG, read in chunks.
+
+    6 s epochs (Methods, "Sleep recordings and sleep scoring": "the data were binned into 6 s
+    epochs"). Per epoch: EMG RMS, EEG power in delta (0.5-4 Hz) and theta (5-9 Hz) (the bands of
+    the same passage), and whether the EEG or EMG is exactly constant (the mouse off its
+    receiver). Power is the periodogram summed over the band, a standard choice."""
+    eeg, emg = f["acquisition/EEGSignal/data"], f["acquisition/EMGSignal/data"]
+    fs = float(f["acquisition/EEGSignal/starting_time"].attrs["rate"])
+    E = int(round(epoch_s * fs))
+    n = eeg.shape[0] // E
+    fr = np.fft.rfftfreq(E, 1 / fs)
+    dl, th = (fr >= 0.5) & (fr < 4), (fr >= 5) & (fr <= 9)
+    out = {k: np.empty(n) for k in ("rms", "delta", "theta")}
+    out["flat"] = np.empty(n, bool)
+    for i0 in range(0, n, chunk_epochs):
+        i1 = min(n, i0 + chunk_epochs)
+        a = eeg[i0 * E:i1 * E].reshape(-1, E).astype(np.float64)
+        b = emg[i0 * E:i1 * E].reshape(-1, E).astype(np.float64)
+        out["flat"][i0:i1] = (np.ptp(a, axis=1) == 0) | (np.ptp(b, axis=1) == 0)
+        out["rms"][i0:i1] = np.sqrt(((b - b.mean(1, keepdims=True)) ** 2).mean(1))
+        P = np.abs(np.fft.rfft(a - a.mean(1, keepdims=True), axis=1)) ** 2
+        out["delta"][i0:i1], out["theta"][i0:i1] = P[:, dl].sum(1), P[:, th].sum(1)
+    out["epoch_s"] = epoch_s
+    return out
+
+
+def gmm2(x: np.ndarray, iters: int = 300):
+    """Two-component 1-D Gaussian mixture by EM; returns (means, SDs, weights, responsibilities),
+    components ordered by mean. Starts from the 25th and 75th percentiles (a standard choice)."""
+    x = np.asarray(x, float)
+    mu, sd, pi = np.percentile(x, [25, 75]), np.full(2, x.std() / 2), np.array([0.5, 0.5])
+    for _ in range(iters):
+        ll = np.stack([np.log(pi[k]) - np.log(sd[k]) - 0.5 * ((x - mu[k]) / sd[k]) ** 2 for k in range(2)], 1)
+        r = np.exp(ll - ll.max(1, keepdims=True))
+        r /= r.sum(1, keepdims=True)
+        nk = r.sum(0)
+        pi, mu = nk / len(x), (r * x[:, None]).sum(0) / nk
+        sd = np.sqrt((r * (x[:, None] - mu) ** 2).sum(0) / nk)
+    o = np.argsort(mu)
+    return mu[o], sd[o], pi[o], r[:, o]
+
+
+def score_sleep(feat: dict, log_ratio: bool = False) -> np.ndarray:
+    """Wake / nrem / rem per epoch ('none' where the telemetry is constant).
+
+    Methods, "Sleep recordings and sleep scoring": "the EMG data were fit with a Gaussian mixture
+    model with two states, in which the lower state represented sleep and the higher state
+    represented wake", then "a ratio of theta to delta signal was calculated. A Gaussian mixture
+    model was fit to this theta/delta ratio with two states, in which high theta/delta meant REM".
+    The EMG is fitted as log RMS (an assumption: the Methods do not name the EMG feature, and
+    amplitude is usually fitted on a log scale); the ratio as given, or its log with
+    ``log_ratio``."""
+    ok = ~feat["flat"]
+    state = np.full(len(ok), "none", dtype=object)
+    _, _, _, r = gmm2(np.log(feat["rms"][ok]))
+    idx = np.flatnonzero(ok)
+    sleep = idx[r[:, 0] > 0.5]
+    state[idx] = "wake"
+    ratio = feat["theta"][sleep] / feat["delta"][sleep]
+    _, _, _, r2 = gmm2(np.log(ratio) if log_ratio else ratio)
+    state[sleep] = np.where(r2[:, 1] > 0.5, "rem", "nrem")
+    return state
+
+
+def sleep_features(state: np.ndarray, epoch_s: float = 6.0) -> dict:
+    """Percent time per state, mean bout length (s) per state, and transition probabilities
+    between states, over the scored epochs of ``state`` (Extended Data Fig. 10 legend: "time
+    spent in each sleep state", "bout length", "transition probabilities")."""
+    ok = state != "none"
+    out = {f"% {s}": 100 * np.mean(state[ok] == s) for s in ("wake", "nrem", "rem")}
+    out["% sleep"] = out["% nrem"] + out["% rem"]
+    b = np.flatnonzero(np.r_[True, state[1:] != state[:-1]])
+    lab, ln = state[b], np.diff(np.r_[b, len(state)])
+    for s in ("wake", "nrem", "rem"):
+        out[f"bout {s} (s)"] = epoch_s * ln[lab == s].mean() if np.any(lab == s) else np.nan
+    seq = [x for x in lab if x != "none"]
+    pairs = list(zip(seq[:-1], seq[1:]))
+    for a in ("wake", "nrem", "rem"):
+        na = sum(1 for x, _ in pairs if x == a)
+        for c in ("wake", "nrem", "rem"):
+            if a != c:
+                out[f"P({a}->{c})"] = sum(1 for x, y in pairs if x == a and y == c) / na if na else np.nan
+    return out
 
 
 def source_data_csv(path: str):

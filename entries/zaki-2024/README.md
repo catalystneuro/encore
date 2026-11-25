@@ -24,13 +24,16 @@ reasoning and the differences from the paper's method.
 The burst-frequency outcome turns on whether the shuffled population trace is z-scored again
 before bursts are counted, which the paper does not say. After a reader's answer the criterion names
 both readings: held to the true trace's threshold, the shuffles hold almost no bursts and the claim
-is reproduced; z-scored again, they hold more bursts than the data. The outcome rests on the first. In Ca_EEG2-1 the behaviour sessions are timestamped about 1 h later
+is reproduced; z-scored again, they hold more bursts than the data. The outcome rests on the first,
+which a synthetic check shows is also passed by cells that only share a slow drift, so it shows that
+the cells co-vary, not that they burst. The wake co-bursting outcome rests on reading wake without
+the dataset's quiet wake, which the files define as a waking state; with it, the order reverses. In Ca_EEG2-1 the behaviour sessions are timestamped about 1 h later
 than the offline recordings and the telemetry, so that the first offline recording after fear
 conditioning appears to start before it. The attempt record, with the reasons and the differences
 from the paper's method, is [`attempts/zaki-2024-02.yaml`](../../attempts/zaki-2024-02.yaml).
 
-- `reproduce_zaki_2024.ipynb`: the analysis. It takes about four minutes, most of it the
-  surrogates.
+- `reproduce_zaki_2024.ipynb`: the analysis. It takes about six minutes, most of it the
+  surrogates and reading the week of telemetry.
 - `zaki.py`: streaming the files, freezing, burst detection, circular-shift surrogates, ensembles
-  from the cell registration, and movement from the telemetry. Other notebooks on this dandiset can
+  from the cell registration, movement from the telemetry, and sleep scoring of the continuous telemetry. Other notebooks on this dandiset can
   import it.

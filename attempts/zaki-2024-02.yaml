@@ -57,6 +57,9 @@ outcomes:
   - One mouse per group of the paper's 5 high-shock and 4 low-shock mice; bins within a session
     stand in for mice, as the criterion says.
   - The last of the ten bins holds 29.9 s, as the sessions hold 8998 and 8999 frames at 30 Hz.
+  - The 30 s bins of one session are autocorrelated, so the criterion's Mann-Whitney test treats
+    dependent samples as independent and its p-value is too small; the direction (all 10 bins) does
+    not depend on it.
 - claim: offline-bursts-above-shuffle
   outcome: reproduced
   assumed: true
@@ -80,7 +83,15 @@ outcomes:
     the detail and amended the criterion to name both readings, reproduced under either, with the
     outcome marked as resting on the reading that gives it. The outcome changes from not reproduced
     to reproduced, resting on reading (b). All 625, 711 and 858 cells have activity and none is
-    dropped.
+    dropped. Reading (b) is a weak test, as the verifier found. A circular shift keeps each cell's
+    mean, so a surrogate trace has the true trace's mean and, for positively co-varying cells, a
+    smaller SD. On synthetic cells with no bursts (600 AR(1) cells, 9000 frames) sharing a slow drift,
+    reading (b) puts the true frequency above the surrogates (5.90 against a 95th percentile of 2.60)
+    and reading (a) below them (5.90 against a mean of 8.55), the pattern of the real data; on
+    independent cells neither does (8.30 against 95th percentiles of 9.80 and 11.40). The result
+    under (b) therefore shows that the cells co-vary positively, not that they burst together; the
+    reading that tests burst structure, (a), does not hold here. The outcome is the criterion's, and a
+    reader is asked whether reading (b) belongs in it (questions/zaki-2024.yaml).
   deviations:
   - The paper shows this on the eight mice of the one-hour offline experiment (Extended Data Fig. 3),
     none of which is in the dataset; it is tested on the three offline recordings of the two EEG/EMG
@@ -89,12 +100,14 @@ outcomes:
     trace (its mean plus 2 SD), reading (b) of the criterion. The Extended Data Fig. 3l legend says
     only that "the mean population activity was re-computed each time" and that "The burst frequency
     was computed for each of these shuffles", and the Methods (Burst participation analysis) z-score
-    the true trace and threshold it at z = 2, without saying what is done to a shuffle. Reading (b)
-    is the one that tests what the legend's sentence "disrupting the co-firing relationships between
-    neurons" sets out to test, whether decorrelated cells reach the true trace's burst level; a trace
-    z-scored again measures the shape of its own distribution instead. The analysis code is not
-    public, so the authors are asked (a methods_unavailable finding). Under reading (a) the outcome
-    would be not reproduced.
+    the true trace and threshold it at z = 2, without saying what is done to a shuffle. The criterion
+    names both readings and is met under either. Reading (b) is not the better-supported one. The
+    legend's "The burst frequency was computed for each of these shuffles" reads most naturally as
+    the full detection, z-scoring included (the verifier's reading), and reading (b) is passed by
+    cells that only share a slow drift (notes). The outcome is kept as the criterion gives it, marked
+    as resting on reading (b), and a reader is asked whether that reading belongs in the criterion.
+    The analysis code is not public, so the authors are asked which was done (a methods_unavailable
+    finding). Under reading (a) the outcome would be not reproduced.
   - The circular-shift offsets are drawn uniformly from 0 to T-1 frames, independently for each cell;
     the legend gives no range ("circularly shuffled 1000 times relative to one another"). This is the
     standard choice; under either reading the true value lies beyond every surrogate or nearly every
@@ -109,7 +122,10 @@ outcomes:
     the surrogate means range 0.596 to 0.604, 0.401 to 0.404 and 0.360 to 0.369, and the outcome is
     the same under all five. Skew is unchanged by z-scoring, so the question on the burst claim
     does not bear on this one. The reader's answer on that claim (questions/zaki-2024.yaml) says the
-    same, and this claim is unchanged by it.
+    same, and this claim is unchanged by it. Unlike reading (b) of the burst claim, this test is not
+    passed by co-variation alone. On the synthetic cells with a shared slow drift and no bursts the
+    true skew is -0.276 against a surrogate 95th percentile of 0.105, and on independent cells 0.095
+    against 0.103 (200 surrogates each).
   deviations:
   - Tested on the EEG/EMG mice's offline recordings, not the one-hour experiment's mice of Extended
     Data Fig. 3n and 3o, as for offline-bursts-above-shuffle; offsets drawn uniformly, the same
@@ -128,7 +144,15 @@ outcomes:
     recording, and not in the other two (p = 1.000 and 0.511). The test assumes that imaging and
     telemetry in the offline files share a clock; the data check found this consistent (population
     activity and movement correlate positively at lag 0, +0.03 to +0.15, with peaks 1.5 to 6.5 s
-    later) but could not show it.
+    later) but could not show it. With the telemetry moved to each recording's lag of peak
+    correlation (+1.5, +5.5 and +6.5 s), p = 0.805, 0.982 and 0.863 (peak) and 0.798, 0.977 and
+    0.853 (onset). Over shifts of -8 to +8 s in 1 s steps, Ca_EEG3-4 Day 1 never reaches p < 0.05
+    (smallest 0.514), so no shift gives the result in all three recordings; two recordings reach it
+    at -3 s (peak) and at -3 and -4 s (onset), shifts that move movement earlier, against the
+    direction of the correlation. With a 1 s baseline (-4 to -3 s) in place of the criterion's 2 s,
+    p = 0.809, 0.997 and 0.306 at lag 0 (random times 0.009, 1.000 and 0.307). The file describes
+    ActivitySignal as "the motion of the probe relative to the receiver" that "can be used as a
+    proxy for locomotion", unit n.a.
   deviations:
   - The paper shows this on webcam locomotion of the one-hour offline experiment (Fig. 2d,e,
     Extended Data Fig. 6e), whose mice are not in the dataset; the movement measure here is the
@@ -144,12 +168,16 @@ outcomes:
     4.2%), with 2 bursts having OxN only and 1 OxA only, exact McNemar p = 1.0. Under reading (a),
     wake and quiet wake (85 bursts), OxN is below OxA (i, 25.9% against 35.3%; ii, 8.2% against
     17.6%; 7 against 15 discordant bursts, p = 0.134). The criterion's partial outcome is met under
-    reading (b). The paper's source data give this mouse 10.37% against 8.39% in wake over all 24
-    recordings, the direction of reading (b); NREM and REM are not in the deposited recording. The
-    dataset's "quiet wake" is a state the paper does not name, and which of the readings matches the
-    paper's "wake" cannot be told from the files (a finding). Outside bursts, in wake and quiet wake,
-    overlap and neutral are above z = 2 together in 0.18% of frames and overlap and aversive in
-    0.27%.
+    reading (b) alone, on 3 discordant bursts. The paper's source data give this mouse 10.37%
+    against 8.39% in wake over all 24 recordings, the direction of reading (b); NREM and REM are not
+    in the deposited recording. Reading (a) is the better match to the paper's wake. The file's
+    sleep_state description defines quiet wake as a waking state ("awake and alert but at rest");
+    the Methods' sleep/wake split (two-state Gaussian mixture on the EMG, 6 s epochs) scores 64 of
+    the 68 quiet-wake epochs of this recording as wake; and the Results place the effect "during
+    brief periods of quiet wake". Under reading (a) OxN is below OxA. The outcome is kept as the
+    criterion gives it, and a reader is asked whether reading (b) belongs in the criterion
+    (questions/zaki-2024.yaml). Outside bursts, in wake and quiet wake, overlap and neutral are above
+    z = 2 together in 0.18% of frames and overlap and aversive in 0.27%.
   deviations:
   - One of the paper's five high-shock mice and one of its 24 offline recordings; ensembles are
     z-scored over this recording alone, where the paper z-scores over the 24 concatenated recordings
@@ -171,20 +199,40 @@ outcomes:
   blocked_by: data_missing
   notes: The low-shock mouse Ca_EEG3-4 has no cell registration in the dataset, so its offline cells
     cannot be assigned to neutral, aversive and overlap ensembles; and one of four low-shock mice
-    cannot be tested by the paper's paired t-test across mice.
+    cannot be tested by the paper's paired t-test across mice. Its two offline files hold the
+    processing modules ophys (Fluorescence, ImageSegmentation, SegmentationImages) and sleep only,
+    and the one cell_registration module in the dataset is in Ca_EEG2-1's Week file (data check).
 - claim: ed9c-eeg-cohort-linking
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_zaki_2024.ipynb
+  output: claim:ed9c-eeg-cohort-linking
   notes: The high-shock mouse Ca_EEG2-1 has no neutral or novel recall in the dataset (only Recall1,
-    aversive). The low-shock mouse froze 16.90% in neutral and 14.60% in novel recall (reading b, see
-    source-data-link), but one mouse per group cannot test the paper's t-tests over 5 and 4 mice.
+    aversive). The low-shock half is shown descriptively. Ca_EEG3-4 froze 17.40% (reading a) or 16.90%
+    (reading b) in neutral recall and 15.06% or 14.60% in novel recall, about 2 points apart, but one
+    mouse cannot test the paper's paired t-test over 4 low-shock mice, and the high-shock half is
+    missing.
 - claim: ed9-ed10-sleep-unchanged
   outcome: blocked
   blocked_by: data_missing
+  notebook: reproduce_zaki_2024.ipynb
+  output: claim:ed9-ed10-sleep-unchanged
   notes: Needs sleep scoring over whole days, before and after encoding, for 9 Miniscope mice and 4
     mice without a Miniscope. The dataset holds sleep labels only inside its three 10-min offline
-    recordings (wake and quiet wake only) and one week of unscored telemetry for Ca_EEG2-1; the
-    no-Miniscope mice are not in it.
+    recordings (wake and quiet wake only) and 9.36 days of unscored telemetry for Ca_EEG2-1; the
+    no-Miniscope mice are not in it, so the Miniscope comparison (Extended Data Fig. 9d to 9f) cannot
+    be made, and the paper's tests across mice cannot be run on one. One mouse is described instead,
+    scored by the Methods' procedure (6 s epochs, two-state Gaussian mixtures on the EMG and on the
+    theta/delta ratio of the sleep epochs; the EMG feature, log RMS, is an assumption). The encoding
+    periods are taken from the telemetry dropouts, when the mouse is off its home-cage receiver.
+    Time asleep is 47.81% in the 24 h before neutral encoding, 53.12% after it and 57.15% after
+    aversive encoding; mean wake bouts 88, 83 and 60 s, NREM bouts 33 to 35 s. In the first 30 min
+    back in the home cage the mouse is awake 67% (after neutral) and 49% (after aversive) of the
+    time, against 93% at the same clock time the day before. The REM split is not determined. The
+    REM share is 10.9% or 21.1% of all epochs depending on whether the ratio or its log is fitted,
+    REM bouts last about 10 s and 40 to 46% of wake bouts are followed by REM, which is not
+    physiological. On day 2 the 19 imaging epochs hold 27.4% wake, 59.7% NREM and 12.9% REM against
+    25.8%, 59.9% and 14.3% over the span they sample, in line with Extended Data Fig. 9g.
 - claim: fig1bc-retrospective-not-prospective
   outcome: blocked
   blocked_by: data_missing
@@ -271,15 +319,18 @@ findings:
     precedes FC, and OfflineDay1Session1 to 4 precede NeutralExposure. The files do not say which
     clock is right. No analysis here combines sessions in time, but one that orders the offline
     recordings by FC's time would drop the first two after aversive encoding.
-- kind: metadata_insufficient
+- kind: other
   about: data
-  severity: major
-  statement: The sleep_state column of SleepIntervals in the offline files holds "wake" and "quiet
-    wake", with no description of "quiet wake". The paper scores wake, NREM and REM (Methods, Sleep
-    recordings and sleep scoring) and names no quiet wake, so whether quiet wake is part of the
-    paper's wake, or a low-EMG state the paper scores otherwise, cannot be told. In Ca_EEG2-1 61 of
-    87 bursts peak in quiet wake, and the overlap-neutral against overlap-aversive comparison of Fig.
-    5c reverses between the two readings.
+  severity: minor
+  statement: The sleep_state column of SleepIntervals in the offline files uses four states, "quiet
+    wake", "wake", "sws" and "rem", where the paper scores wake, NREM and REM (Methods, Sleep
+    recordings and sleep scoring) and names no quiet wake state. The column's description defines
+    quiet wake as a waking state ("The animal is awake and alert but at rest"), and the Methods'
+    sleep/wake split scores 64 of the 68 quiet-wake epochs of Ca_EEG2-1's offline recording as wake,
+    so quiet wake is part of the paper's wake. A user who takes "wake" for the paper's wake leaves
+    out 61 of 87 bursts in Ca_EEG2-1, and the overlap-neutral against overlap-aversive comparison of
+    Fig. 5c reverses. (The first version of this finding said the column had no description of quiet
+    wake; it has one.)
 - kind: data_missing
   about: data
   severity: major
@@ -320,7 +371,9 @@ findings:
     values in every array used here. A shared clock for imaging and behaviour could not be
     established in four sessions (Ca_EEG2-1 FC and NeutralExposure, Ca_EEG3-4 Recall2 and Recall3),
     where the correlation of population activity with motion peaks away from lag 0; no claim here
-    uses imaging and behaviour together.
+    uses imaging and behaviour together. The offline file's sleep labels of Ca_EEG2-1 agree with a
+    scoring of the Week telemetry by the Methods' procedure (70 of 74 epochs labelled wake or quiet
+    wake are scored wake).
 - kind: methods_unavailable
   statement: The Extended Data Fig. 3l legend does not say whether the shuffled mean population
     activity is z-scored again before bursts are counted at z = 2, or thresholded at the true trace's
@@ -328,4 +381,244 @@ findings:
     re-z-scored surrogates in all three recordings, far above the others). The paper's analysis code
     (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) is not public, so the authors
     are asked which was done. A reader found that the paper does not settle it and amended the claims
-    file to run both; the outcome, reproduced, rests on thresholding at the true trace's level.
+    file to run both; the outcome, reproduced, rests on thresholding at the true trace's level, a
+    test that cells sharing only a slow drift also pass (the notebook's synthetic check).
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: The session descriptions of the three offline files (OfflineDay2Session1 of Ca_EEG2-1,
+    OfflineDay1Session1 and OfflineDay2Session1 of Ca_EEG3-4) describe the one-hour webcam
+    experiment ("The homecage was placed in a dark grey storage bin with a webcam on top of the bin
+    ... Mouse behavior and calcium were recorded for an hour"). The files hold 10-min recordings with
+    home-cage telemetry and sleep labels, the EEG/EMG protocol the Methods
+    describe (10 min of imaging every 30 min, with continuous telemetry).
+verifications:
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write
+    the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text under paper/. The verifier checked the blocked
+    claims against the archive's asset list and metadata, and tested burst_events, burst_frequency, the
+    circular shift, binned_freezing and the McNemar test on synthetic inputs. It also reported metadata
+    problems (the offline-session descriptions describe the one-hour webcam protocol, the telemetry is
+    stored at 500 Hz, the Week file's start time is local time labelled UTC); the first is a new finding
+    (9), the other two were findings already.
+  results:
+  - claim: source-data-link
+    agrees: true
+    outcome: reproduced
+    reason: Both mice are found and their shock amplitudes match the source-data groups (cell 17). All
+      4 freezing values are within tolerance under both readings, (a) 64.09/8.82/17.40/15.06, (b) 63.45/8.46/16.90/14.60.
+      Reading (b) gives the CSV value exactly for 3 of the 4.
+    response: No change.
+  - claim: ed9b-aversive-freezing-high-vs-low
+    agrees: true
+    outcome: reproduced
+    reason: 'Recall1 freezing is 64.09% for Ca_EEG2-1 against 8.82% for Ca_EEG3-4. The high-shock mouse
+      is higher in 10 of 10 bins; Mann-Whitney U = 100, p = 1.8e-4 (cell 19). Problem 6: the 30 s bins
+      within one session are autocorrelated, so the Mann-Whitney test treats non-independent samples as
+      independent. The test is the criterion''s, and the direction is unambiguous.'
+    response: Outcome unchanged. A deviation now says that the bins are autocorrelated, so the p-value
+      is too small, and that the direction does not depend on it.
+  - claim: offline-bursts-above-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, under reading (b) only. Under (b) the true rates of 8.73/6.42/5.31 per min are
+      above every surrogate, whose 95th percentiles are 0.30/0.10/0.00, for all 5 seed sets; under (a)
+      the true rate is below the surrogate mean in all 3 recordings, which is not reproduced. The criterion
+      lets one reading decide, but (problem 1) a circular shift keeps each cell's mean, so the surrogate
+      mean trace has the true trace's mean but a smaller SD, and a threshold at the true mean + 2 SD almost
+      never fires on a surrogate once cells share any positive covariance, burst-like or not. On independent
+      AR(1) cells with only a slow shared drift and no bursts, reading (b) gives a reproduced result (true
+      2.40/min against a surrogate 95th percentile of 0.00) and reading (a) the same reversal as the real
+      data. So the reproduced outcome is near-guaranteed and does not show burst structure. The Extended
+      Data Fig. 3l legend reads most naturally as running the full detection, z-scoring included, on each
+      surrogate, reading (a), and under it the claim fails clearly. This comes from the claims file.
+    response: Outcome kept, as the criterion gives it and the verifier agreed, marked as resting on reading
+      (b). A synthetic check is added to the notebook (cell 27). On 600 AR(1) cells with no bursts and
+      a shared slow drift, reading (b) puts the true frequency above the surrogates (5.90 against a 95th
+      percentile of 2.60) and reading (a) below them (mean 8.55); on independent cells neither does. The
+      notes, the deviation, the notebook's conclusion and the methods_unavailable finding now say that
+      the result under (b) shows positive co-variation, not burst structure, and the deviation no longer
+      calls (b) the better-supported reading. The verifier's point that the claims file's reading (b)
+      cannot fail is added to questions/zaki-2024.yaml for a reader; the claim is not changed.
+  - claim: offline-skew-above-shuffle
+    agrees: true
+    outcome: reproduced
+    reason: True skew is 1.645/1.339/1.721 against surrogate 95th percentiles of 0.708/0.508/0.466. No
+      surrogate reaches the true value, for all 5 seed sets (cell 24).
+    response: No change of outcome. The synthetic check shows that this test, unlike reading (b) of the
+      burst claim, is not passed by co-variation alone (drift-only cells give skew -0.276 against a surrogate
+      95th percentile of 0.105); the notes and conclusion say so.
+  - claim: burst-locomotion-pause
+    agrees: true
+    outcome: not_reproduced
+    reason: 'p < 0.05 in 0 of 3 recordings under both the peak and onset readings, with p from 0.45 to
+      0.92 (cell 26). The mean traces rise at time zero, and do not dip, in Ca_EEG2-1 (0.22 to 0.26). Problem
+      3: activity correlates best with |ActivitySignal| at lags of +1.5, +5.5 and +6.5 s, and a few seconds
+      of offset between imaging and telemetry would move the windows by more than their width; the notebook
+      never tests the outcome''s sensitivity to it. Problem 4: the test compares a 1 s window with a 2
+      s window, which on heavy-tailed movement leans towards lower before (false-positive rate 0.195 on
+      synthetic data; Ca_EEG2-1''s random-time reference gives p = 0.000); the outcome is negative anyway.
+      Problem 5: the claim is tested on the EEG mice''s 10-min recordings with the telemetry signal, not
+      the paper''s one-hour webcam experiment. What ActivitySignal measures was not printed (C1).'
+    response: Outcome unchanged. A new cell (34) moves the telemetry to each recording's lag of peak correlation
+      (p = 0.805, 0.982 and 0.863 at the peak) and over -8 to +8 s; no shift gives p < 0.05 in all three
+      recordings (Ca_EEG3-4 Day 1 never below 0.514), and at most two reach it, at shifts that move movement
+      earlier, against the correlation. A variant with a 1 s baseline (-4 to -3 s) gives p = 0.809, 0.997
+      and 0.306, with random-time references. The data check prints the ActivitySignal description ("the
+      motion of the probe relative to the receiver", "a proxy for locomotion", unit n.a.). Problems 4
+      and 5 are the criterion's; the deviation already records 5.
+  - claim: fig5c-wake-overlap-neutral-coburst
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced, under wake reading (b) only. Wake alone (24 bursts) has OxN above OxA
+      (33.3 vs 29.2; 8.3 vs 4.2) on only 2 against 1 discordant bursts, McNemar p = 1.0; wake + quiet
+      wake (85 bursts) has OxN below OxA under both co-participation readings (25.9 vs 35.3; 8.2 vs 17.6),
+      p = 0.134 (cell 28). Problem 2: the paper''s sleep scoring has only wake, NREM and REM, and the
+      source data only those three states, so the files'' quiet wake has no counterpart and the paper''s
+      wake most plausibly corresponds to reading (a), under which OxN is below OxA; the Methods also count
+      the triple combination separately, which favours co-participation reading (ii). The partial outcome
+      rests on (b), with 3 discordant bursts. The criterion permits this, so the outcome stands, but it
+      is fragile. Problem 7: ensembles are z-scored over one session, not 24, which is unavoidable. What
+      quiet wake means was not printed (C3).'
+    response: Outcome kept as the criterion gives it. The data check now prints the sleep_state description,
+      which defines quiet wake as a waking state ("awake and alert but at rest"), and scores the Week
+      telemetry by the Methods' procedure, which puts 64 of the 68 quiet-wake epochs of this recording
+      in wake. The notes and conclusion now say that reading (a) is the better match to the paper and
+      that under it OxN is below OxA. The verifier's point that reading (b) has no counterpart in the
+      paper is added to questions/zaki-2024.yaml for a reader. Finding 2, which said quiet wake had no
+      description, is corrected and rated minor.
+  - claim: fig5c-sleep-no-coburst-difference
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: the three deposited offline files hold only wake and quiet wake (cell 3). The
+      Week file holds no sleep scoring and no imaging.'
+    response: No change.
+  - claim: fig5c-low-shock-wake-no-difference
+    agrees: true
+    outcome: blocked
+    reason: The archive list has no Week or registration file for Ca_EEG3-4; Ca_EEG2-1's registration
+      is in its Week file. The notebook never prints the processing groups of the Ca_EEG3-4 files, so
+      its claim that they hold no registration rests on the claims file's data check (C2).
+    response: The data check now prints the processing modules of every offline file (ophys and sleep
+      only) and the files that hold a cell_registration module (Ca_EEG2-1's Week file only). Outcome unchanged.
+  - claim: ed9c-eeg-cohort-linking
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing), partly testable. Ca_EEG2-1 has no Recall2 or Recall3 asset. The low-shock
+      half could be tested descriptively on Ca_EEG3-4, neutral vs novel recall 17.40 vs 15.06 (a), 16.90
+      vs 14.60 (b). The notebook does not do this.
+    response: 'A cell (40) now prints the low-shock mouse''s neutral and novel recall freezing under both
+      readings, and the notes give them. The claim stays blocked: the paper''s test is a paired t-test
+      over 4 low-shock mice, and the high-shock half is missing.'
+  - claim: ed9-ed10-sleep-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing / methods_underspecified), partly testable. No mouse without a Miniscope
+      is in the dataset (2 subjects), so the comparison with no-Miniscope mice is blocked. Whether sleep
+      structure changes after encoding could be tested for one mouse, by scoring the Week file's continuous
+      EEG/EMG with the Methods' 6 s epochs and two-state GMMs. The notebook does not try.
+    response: 'The Week telemetry of Ca_EEG2-1 is now scored by the Methods'' procedure (cells 16 and
+      41), and the sleep features of the 24 h before neutral encoding and after neutral and aversive encoding,
+      the first 2 h after encoding and the imaging scheme''s coverage are given for this one mouse. Time
+      asleep is 47.81%, 53.12% and 57.15%; the REM split is not determined by the scoring. The claim stays
+      blocked as data_missing: the no-Miniscope mice are not in the dataset and the paper''s tests across
+      mice cannot be run on one.'
+  - claim: fig1bc-retrospective-not-prospective
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig1ef-high-shock-drives-linking
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig1g-aversive-freezing-predicts-linking
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: ed1n-offline-hippocampus-needed
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: ed2-cocaine-retrospective-linking
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: ed3-aversive-ensemble-reactivated
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: ed4f-neutral-ensemble-reactivated-high-shock
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig3c-offline1-neutral-participation
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig3f-neutral-recruited-high-shock
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig4b-overlap-independent-participation
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig4e-overlap-neutral-coburst
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: ed6-overlap-inhibitory
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: ed8-no-shock-no-coburst
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: ed7-contexts-discriminable
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig6a-overlap-reactivated-neutral-recall
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
+  - claim: fig6b-neutral-representation-changed
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1
+      and Ca_EEG3-4 plus 8 behaviour videos.
+    response: No change.
