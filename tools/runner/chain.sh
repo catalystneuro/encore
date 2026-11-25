@@ -359,7 +359,14 @@ esac
 # has no verdict yet has its paper match now, before the claims are read; one that matches is listed for the paper,
 # and the claims are then read again for all of them (describe.py, claims-cover). Not for a replicate, which
 # repeats an attempt as it was, nor from inside such a match.
-if [ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]; then
+# An attempt whose recorder has run has nothing left but to finish. A chain started again there (one that stopped at
+# its pull request) would otherwise decide each step again from what main and the branch hold now, which is not what
+# its first pass saw. On 2026-11-25 choi-2025 and senzai-2017, repeat attempts on a new version, which keep their
+# claims file, were started again by the paper's key alone: with no version given, the chain began to read their
+# claims again, after the attempt was verified and recorded.
+recorded=""
+if [ -z "$REPLICATE" ] && is_done recorder; then recorded=1; log "the recorder has run: only the finish is left"; fi
+if [ -z "$recorded" ] && [ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]; then
   for sib in $(python "$here/describe.py" siblings "$d" 2>/dev/null); do
     log "the paper is also named by $sib: its paper match first"
     SIBLINGS=0 MATCH_ONLY=1 RUNNER_NOTIFY=none "$here/chain.sh" "$sib" 2>&1 | tail -n 1 | while read -r line; do log "$line"; done
@@ -368,7 +375,9 @@ if [ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]; then
 fi
 deprecated=$(python "$here/describe.py" deprecated "$d")
 on_main=$(python "$here/describe.py" claims-ready "$d")
-if [ -n "$REPLICATE" ]; then
+if [ -n "$recorded" ]; then
+  :   # the claims are the ones the attempt tested
+elif [ -n "$REPLICATE" ]; then
   # A replicate tests the claims the current attempt tested: main's claims file, as it is, checked or from before
   # claims were checked. It never reads them again.
   if ! git cat-file -e "origin/main:claims/$d.yaml" 2>/dev/null || [ "$deprecated" = true ]; then
@@ -427,7 +436,7 @@ fi
 for role in verifier-1 author-revise-1 verifier-2 author-revise-2; do step "$role"; done
 fetch
 latest=$(records_on_branch | tail -n 1)
-if git show "origin/$br:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
+if [ -z "$recorded" ] && git show "origin/$br:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
   log "has proposed changes: third round"
   for role in verifier-3 author-revise-3; do step "$role"; done
 fi

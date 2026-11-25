@@ -1,512 +1,593 @@
-# 000718 · verifier-1 · run 39086484979
+# zaki-2024 · verifier-1 · run 45548409660
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls docs paper 2>/dev/null; cat *.json *.yaml *.yml *.md 2>/dev/null | head -200
+cd  ls -la; ls paper docs 2>/dev/null; cat *.y*ml *.json 2>/dev/null | head -300
 ```
 
 ```
-total 320
-drwxr-xr-x 5 runner runner    4096 Oct 18 01:28 .
-drwxr-xr-x 7 runner runner    4096 Oct 18 01:28 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 01:25 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 01:25 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 18 01:28 .claude
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env.development
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env.local
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env.production
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env.test
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .env.test.local
-drwx------ 2 runner runner    4096 Oct 18 01:28 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 01:25 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 01:25 .github
--rw-r--r-- 1 runner runner       0 Oct 18 01:28 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 01:25 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 18 01:25 .mcp.json
-[... 218 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 200,400p 10.1038-s41586-024-08168-4.yaml; cat memlink.py
-```
-
-```
-- id: fig6b-neutral-representation-changed
-  statement: In high-shock mice the neutral encoding-to-recall population correlation is lower than
-    in low-shock mice and lower than the aversive encoding-to-recall correlation.
-  source: Figure 6b
-"""Loading and measures for dandiset 000718 (Zaki et al., Nature 2024, doi:10.1038/s41586-024-08168-4).
-
-The dandiset holds two mice of the paper's calcium imaging and EEG/EMG experiment (Figure 5):
-Ca_EEG2-1 (1.5 mA, high shock) and Ca_EEG3-4 (0.25 mA, low shock). Each session file holds the
-Minian output of one Miniscope recording (deconvolved activity `S`, 15 Hz after the 2x temporal
-downsampling of the Methods, and ROI centroids), and, by session type, ezTrack freezing intervals
-and motion (behaviour sessions), shock times (FC), telemetry signals at 500 Hz and 6 s sleep-state
-intervals (offline sessions). The `Week` file of Ca_EEG2-1 holds a week of telemetry, an epoch table
-of all sessions, and the CellReg tables that map each offline-day-2 recording's ROIs to the encoding
-and recall sessions (-9999 for no match). Files are streamed from the archive at the pinned version;
-nothing is written to disk.
-
-Where the parameters come from (the analysis code the paper names,
-github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024, is not public):
-
-- Burst detection, participation and co-participation follow the Methods ("Burst participation
-[... 286 more lines not kept]
+total 284
+drwxr-xr-x 6 runner runner    4096 Nov 25 04:53 .
+drwxr-xr-x 8 runner runner    4096 Nov 25 04:53 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 04:37 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 04:37 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 25 04:53 .claude
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .env.test.local
+drwx------ 2 runner runner    4096 Nov 25 04:53 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 04:37 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 04:37 .github
+-rw-r--r-- 1 runner runner       0 Nov 25 04:53 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 04:37 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 04:37 .mcp.json
+[... 321 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF'
+cd  sed -n 300,700p zaki-2024.yaml; cat zaki.py
+```
+
+```
+n: 7 low-shock and 8 high-shock mice
+  - about: neutral against aversive and overlap, low-shock mice
+    statistic: t12 = 2.83
+    p: 0.03
+  - about: neutral, aversive and overlap, high-shock mice
+    statistic: F2,14 = 1.52
+    p: 0.25
+- id: fig3c-offline1-neutral-participation
+  statement: During offline 1 a greater percentage of the neutral ensemble participates in bursts
+    than of the remaining ensemble, in both shock groups.
+  source: Figure 3c
+  quote: During offline 1 in the low- and high-shock groups, a greater percentage of the neutral
+    ensemble participated in bursts than the remaining ensemble
+  statistics:
+  - about: ensemble
+    statistic: F1,13 = 16.33
+    p: 0.001
+    n: 7 low-shock and 8 high-shock mice
+  - about: ensemble by amplitude interaction
+    statistic: F1,13 = 0.0058
+[... 494 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "^- id:" zaki-2024.yaml; grep -n "data:\|kind:" zaki-2024.yaml; python3 -c "
 import json
 nb=json.load(open('reproduce_zaki_2024.ipynb'))
 for i,c in enumerate(nb['cells']):
-    print(f"\n######## CELL {i} [{c['cell_type']}]")
+    print('=====',i,c['cell_type'])
     print(''.join(c['source']))
     for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--\n'+''.join(o['text'])[:4000])
+        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:6000])
         elif 'data' in o:
             d=o['data']
-            if 'text/plain' in d: print('--OUT--\n'+''.join(d['text/plain'])[:4000])
+            if 'text/plain' in d: print('--OUT--');print(''.join(d['text/plain'])[:6000])
             if 'image/png' in d: print('[image]')
         elif o.get('output_type')=='error': print('ERR',o['ename'],o['evalue'])
-EOF
+"
 ```
 
 ```
 <persisted-output>
-Output too large (57.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/f68bfd1e-6e8c-44be-9319-0c30d6f74bd6/tool-results/bx25dw2tq.txt
+Output too large (62.8KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/1eebd7f7-2a5e-49cf-8e1d-576095cc1a0c/tool-results/bwcgt6n1k.txt
 
 Preview (first 2KB):
-######## CELL 0 [markdown]
-# Reproducing Zaki et al. (2024) from dandiset 000718
+26
+43:  kind: link
+48:  data: with_inputs
+===== 0 markdown
+# Reproducing Zaki et al. (2024) on DANDI:000718
 
-Paper. Zaki Y, Pennington ZT, Morales-Rodriguez D, et al. (2024). Offline ensemble co-reactivation
-links memories across days. *Nature* 637, 145-155 (issue of January 2025; published online 6 November
-2024).
-[doi:10.1038/s41586-024-08168-4](https://doi.org/10.1038/s41586-024-08168-4). This attempt used the
-full text, which is open access under CC BY (PMC11666460).
+**Paper.** Zaki, Pennington, Morales-Rodriguez et al., "Offline ensemble co-reactivation links memories across days", *Nature* 637, 145-155 (2025), [doi:10.1038/s41586-024-08168-4](https://doi.org/10.1038/s41586-024-08168-4).
 
-Dandiset. [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.260825.1902), version
-0.260825.1902. The paper cites no DANDI version (its data statement says the imaging data are
-available "upon reasonable request"). This is the only published version, so it is pinned; the
-draft holds the same 20 assets (same asset ids and sizes).
+**Dataset.** [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.261122.2159), version **0.261122.2159**, which this attempt was asked to use (it is a repeat attempt, made blind, on the data as they are now). It is the most recent published version. The claims file's description was written against version 0.260825.1902; three NWB files differ between the two versions, and the data check below shows that the values this analysis uses are the same in both. Files are streamed from the archive; nothing is downloaded.
 
-What the dandiset holds. Two of the nine mice of the calcium imaging and EEG/EMG experiment of
-Figure 5 and Extended Data Figures 9 and 10: Ca_EEG2-1 (high shock, 1.5 mA) and Ca_EEG3-4 (low
-[... 13 more lines not kept]
+**Text read.** The claims file (`claims/zaki-2024.yaml`) was written from the full text of the version of record (PMC11666460): Results, figure and Extended Data legends, and Methods. The paper's analysis code (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) is not public (404 when this attempt was made). The source-data repository the paper names under Data availability is read, at commit a508164, only for the link claim and as a reference value for one claim.
+
+**What the dataset holds.** Two of the nine mice of the calcium imaging and EEG/EMG experiment (Figure 5, Extended Data Figures 9 and 10): Ca_EEG2-1 (1.5 mA) and Ca_EEG3-4 (0.25 mA), with one offline recording for each offline period deposited (Ca_EEG2-1: the first offline recording after aversive encoding; Ca_EEG3-4: the first after neutral and the first after aversive encoding).
+
+| Claim | Tested here |
+|---|---|
+[... 7 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/f68bfd1e-6e8c-44be-9319-0c30d6f74bd6/tool-results/bx25dw2tq.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/1eebd7f7-2a5e-49cf-8e1d-576095cc1a0c/tool-results/bwcgt6n1k.txt"
 }
 ```
 
 ```
-1	
-2	######## CELL 0 [markdown]
-3	# Reproducing Zaki et al. (2024) from dandiset 000718
-4	
-5	Paper. Zaki Y, Pennington ZT, Morales-Rodriguez D, et al. (2024). Offline ensemble co-reactivation
-6	links memories across days. *Nature* 637, 145-155 (issue of January 2025; published online 6 November
-7	2024).
-8	[doi:10.1038/s41586-024-08168-4](https://doi.org/10.1038/s41586-024-08168-4). This attempt used the
-9	full text, which is open access under CC BY (PMC11666460).
+1	26
+2	43:  kind: link
+3	48:  data: with_inputs
+4	===== 0 markdown
+5	# Reproducing Zaki et al. (2024) on DANDI:000718
+6	
+7	**Paper.** Zaki, Pennington, Morales-Rodriguez et al., "Offline ensemble co-reactivation links memories across days", *Nature* 637, 145-155 (2025), [doi:10.1038/s41586-024-08168-4](https://doi.org/10.1038/s41586-024-08168-4).
+8	
+9	**Dataset.** [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.261122.2159), version **0.261122.2159**, which this attempt was asked to use (it is a repeat attempt, made blind, on the data as they are now). It is the most recent published version. The claims file's description was written against version 0.260825.1902; three NWB files differ between the two versions, and the data check below shows that the values this analysis uses are the same in both. Files are streamed from the archive; nothing is downloaded.
 10	
-11	Dandiset. [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.260825.1902), version
-12	0.260825.1902. The paper cites no DANDI version (its data statement says the imaging data are
-13	available "upon reasonable request"). This is the only published version, so it is pinned; the
-14	draft holds the same 20 assets (same asset ids and sizes).
-15	
-16	What the dandiset holds. Two of the nine mice of the calcium imaging and EEG/EMG experiment of
-17	Figure 5 and Extended Data Figures 9 and 10: Ca_EEG2-1 (high shock, 1.5 mA) and Ca_EEG3-4 (low
-18	shock, 0.25 mA). For each, the Miniscope recordings of encoding and recall sessions with Minian
-19	output, freezing from ezTrack, and the first 10 min offline recording after aversive encoding (of the
-20	24 the Methods describe per offline period); for Ca_EEG3-4 also the first after neutral encoding.
-[... 648 more lines not kept]
+11	**Text read.** The claims file (`claims/zaki-2024.yaml`) was written from the full text of the version of record (PMC11666460): Results, figure and Extended Data legends, and Methods. The paper's analysis code (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) is not public (404 when this attempt was made). The source-data repository the paper names under Data availability is read, at commit a508164, only for the link claim and as a reference value for one claim.
+12	
+13	**What the dataset holds.** Two of the nine mice of the calcium imaging and EEG/EMG experiment (Figure 5, Extended Data Figures 9 and 10): Ca_EEG2-1 (1.5 mA) and Ca_EEG3-4 (0.25 mA), with one offline recording for each offline period deposited (Ca_EEG2-1: the first offline recording after aversive encoding; Ca_EEG3-4: the first after neutral and the first after aversive encoding).
+14	
+15	| Claim | Tested here |
+16	|---|---|
+17	| source-data-link | tested (link, with the paper's source data) |
+18	| ed9b-aversive-freezing-high-vs-low | tested |
+19	| offline-bursts-above-shuffle | tested |
+20	| offline-skew-above-shuff
+[... 540 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/f68bfd1e-6e8c-44be-9319-0c30d6f74bd6/tool-results/bx25dw2tq.txt",
- "offset": 669
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/1eebd7f7-2a5e-49cf-8e1d-576095cc1a0c/tool-results/bwcgt6n1k.txt",
+ "offset": 561
 }
 ```
 
 ```
-669	Ca_EEG3-4 OfflineDay2Session1       1.72          0.37         0.48         0.61                    0.0   4.69
-670	True skew above the shuffle 95th percentile in 3 of 3
-671	Paper (ED3o): {'true': (1.76, 3.65), 'shuffle': (0.47, 1.91)}
-672	
-673	
-674	######## CELL 27 [markdown]
-675	## burst-locomotion-pause
-676	
-677	> Offline population bursts coincide with the mouse briefly slowing down about 1 s before the burst
-678	> and resuming its movement about 1 to 2 s later.
-679	
-680	Movement is the magnitude of the telemetry activity signal in 100 ms bins (the paper tracked the
-681	mouse with a webcam, not deposited).
-682	
-683	######## CELL 28 [code]
-684	rng_move = np.random.default_rng(7183)
-685	rows, traces = [], {}
-686	lags = np.arange(-5, 5, ml.MOVE_BIN_S)
-687	for k in OFFLINE:
-688	    d, p = data[k], prep[k]
-[... 177 more lines not kept]
+561	print("within tolerance: reading (a)", int(link.a_ok.sum()), "of 4; reading (b)", int(link.b_ok.sum()), "of 4")
+562	--OUT--
+563	mice in the dandiset: ['Ca_EEG2-1', 'Ca_EEG3-4']
+564	found in ExtData9b: ['Ca_EEG2-1', 'Ca_EEG3-4'] ; in ExtData9c: ['Ca_EEG2-1', 'Ca_EEG3-4']
+565	
+566	--OUT--
+567	Ca_EEG2-1: FC description shock amplitude '1.5'; source data group High Shock / 1.5mA
+568	
+569	--OUT--
+570	Ca_EEG3-4: FC description shock amplitude '0.25'; source data group Low Shock / 0.25mA
+571	shock amplitudes match the groups: True
+572	
+573	--OUT--
+574	recall contexts: {('Ca_EEG2-1', 'Recall1'): 'Aversive', ('Ca_EEG3-4', 'Recall1'): 'Aversive', ('Ca_EEG3-4', 'Recall3'): 'Neutral', ('Ca_EEG3-4', 'Recall2'): 'Novel'}
+575	       mouse   context  session  source_data  expected   tol  a_frames  b_duration  a_ok  b_ok
+576	0  Ca_EEG2-1  Aversive  Recall1        63.87     63.87  6.39     64.09       63.45  True  True
+577	1  Ca_EEG3-4  Aversive  Recall1         8.46      8.46  0.85      8.82        8.46  True  True
+578	2  Ca_EEG3-4   Neutral  Recall3        16.90     16.90  1.69     17.40       16.90  True  True
+579	3  Ca_EEG3-4     Novel  Recall2        14.60     14.60  1.46     15.06       14.60  True  True
+580	within tolerance: reading (a) 4 of 4; reading (b) 4 of 4
+[... 253 more lines not kept]
 ```
 
 **Agent**
 
-Notebook and helper read. Next: fetch the paper text, query the DANDI asset list, and test helpers on synthetic data.
+Notebook, helper and claims read. Next: check the paper's passages and query the archive.
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -c "^- id:" *.yaml; grep "^- id:" *.yaml | wc -l; grep -n "data:\|criterion:" *.yaml | head; mkdir -p paper; curl -sL "https://api.dandiarchive.org/api/dandisets/000718/versions/0.260825.1902/assets/?page_size=100" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['count']); [print(a['path'],a['size']) for a in d['results']]"
+cd paper; f=10.1038-s41586-024-08168-4.txt; wc -c $f; grep -n -i "shuffl\|skew\|circular" $f | head -40; echo ----; grep -n -i "co-particip\|co-burst\|cobursting" $f | head -40
 ```
 
-Result: the fetched text is not kept.
+```
+<persisted-output>
+Output too large (285.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/1eebd7f7-2a5e-49cf-8e1d-576095cc1a0c/tool-results/bu3n1k235.txt
 
-**Agent calls Bash**
-
-```bash
-cd paper; curl -sL -A "Mozilla/5.0" "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_json/PMC11666460/unicode" -o pmc.json; ls -la; python3 -c "
-import json
-d=json.load(open('pmc.json'))
-d=d[0] if isinstance(d,list) else d
-out=[]
-for doc in d['documents']:
-  for p in doc['passages']:
-    out.append('['+p['infons'].get('section_type','')+'] '+p['text'])
-open('zaki2024.txt','w').write('\n\n'.join(out)); print(len(out))
-"; wc -c zaki2024.txt
+Preview (first 2KB):
+171070 10.1038-s41586-024-08168-4.txt
+7:981 npgopen Nature Nature PMC11666460 11666460 11666460 39506117 10.1038/s41586-024-08168-4 Offline ensemble co-reactivation links memories across days Zaki Yosif 1 Pennington Zachary T 1 Morales-Rodriguez Denisse 1 Bacon Madeline E 1 Ko BumJin 1 Francisco Taylor R 1 LaBanca Alexa R 1 Sompolpong Patlapa 1 Dong Zhe 1 Lamsifer Sophia 1 Chen Hung-Tu 2 Carrillo Segura Simón 3 Christenson Wick Zoé 1 Silva Alcino J 4 Rajan Kanaka 1 van der Meer Matthijs 2 Fenton André 5 6 Shuman Tristan 1 Cai Denise J 1 ✉ 1 Nash Department of Neuroscience, Icahn School of Medicine at Mount Sinai, New York, NY USA 2 Department of Psychological & Brain Sciences, Dartmouth College, Hanover, NH USA 3 Graduate Program in Mechanical and Aerospace Engineering, Tandon School of Engineering, New York University, Brooklyn, NY USA 4 Department of Neurobiology, Psychiatry & Biobehavioral Sciences and Psychology, Integrative Center for Learning and Memory, Brain Research Institute, University of California, Los Angeles, Los Angeles, CA USA 5 Center for Neural Science, New York University, New York, NY USA 6 Neuroscience Institute at the NYU Langone Medical Center, New York, NY USA ✉ Corresponding author. 6 11 2024 637 8044 145 145–155 25 12 2024 © The Author(s) 2024 Open Access This article is licensed under a Creative Commons Attribution 4.0 International License, which permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if changes were made. The images or other third party material in this article are included in the article’s Creative Commons licence, unless indicated other
+[... 2 more lines not kept]
 ```
 
-Result: the fetched text is not kept.
+**Agent**
+
+Lines are long; I'll extract sentences.
 
 **Agent calls Bash**
 
 ```bash
-cd paper; cat pmc.json; echo; curl -sL -A "Mozilla/5.0" "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11666460/fullTextXML" -o zaki2024.xml; ls -la; head -c 300 zaki2024.xml
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; rm pmc.json; python3 -c "
+cd paper; python3 - <<'E'
 import re
-x=open('zaki2024.xml').read()
-x=re.sub(r'<title>','\n\n## ',x); x=re.sub(r'</p>','\n',x); x=re.sub(r'<[^>]+>','',x)
-open('zaki2024.txt','w').write(x)"; wc -c zaki2024.txt; grep -n -i "shuffl\|skew\|burst event\|threshold\|co-participat\|quiet\|webcam\|locomot\|circular" zaki2024.txt | cut -c1-400
+t=open('10.1038-s41586-024-08168-4.txt').read()
+for kw in ['circularly','shuffled burst','skew','co-particip','co-burst','locomotion','slowing','Burst participation analysis','webcam','ezTrack','chance','sleep state the mouse','quiet wake','wake']:
+    print('#####',kw)
+    for m in list(re.finditer(re.escape(kw),t))[:6]:
+        print('...',t[max(0,m.start()-500):m.end()+600].replace('\n',' '),'\n')
+E
 ```
 
 ```
-146944 zaki2024.txt
-23:## Retrospective memory-linking with an appetitive contextual memory.A) Schematic of behavioural experiment to test whether cocaine-context pairing leads to a measurable conditioned response in the conditioned context. Mice were administered cocaine or saline immediately prior to exposure to a novel context. The following day, they were returned to the conditioned context off-drug for recall. B
-31:## Neurons active during Aversive encoding are selectively reactivated offline and during Aversive recall.A) Representative maximum intensity projection of the field-of-view of one example session (left). Spatial footprints of all recorded cells during the session, randomly colour-coded (right). B) Schematic of a single aversive experience. Mice had an Aversive experience followed by a 1 hr o
-35:## Hippocampal ensembles exhibit population bursts of calcium events during offline periods.a, Behavioural schematic of the retrospective memory-linking experimental design. The same as in Fig. 1d, but focusing here on the offline periods. b, Schematic of the lens and Miniscope placement onto the dorsal hippocampus (top left). Top right, representative histological analysis of GCaMP6f expressio
-38:## Low- vs High-shock calcium imaging supplementary analyses.A) Mice acquired within-session freezing during Aversive encoding. Mice that received high shocks (1.5 mA) displayed more freezing than mice that received low shocks (0.25 mA) (low-shock, n = 10 mice; high-shock, n = 12 mice). B) Mice responded robustly to each foot shock. High-shock mice responded more strongly to each sh
-41:## Neutral ensemble recruited into population burstsSince the neutral ensemble was more highly reactivated after a high shock, we next investigated whether the neutral, aversive and overlap ensembles might be firing together on a finer temporal scale. Hippocampal activity is known to exhibit organized bursts, often accompanied by sharp-wave ripples in the local field potential, during
-[... 19 more lines not kept]
+<persisted-output>
+Output too large (56KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/1eebd7f7-2a5e-49cf-8e1d-576095cc1a0c/tool-results/b77qybo8u.txt
+
+Preview (first 2KB):
+##### circularly
+...  during both Aversive and Novel recall were most highly active (A.U.). There was no difference in activity in the cells that would go on to be active in Aversive or Novel. Main effect of Ensemble ( F 3,21 = 27.81, p = 1.65e-7, n = 8 mice ). Post-hoc tests: for Aversive vs Novel ( t 7 = 1.33, p = 0.22 ), for Remaining vs Aversive ∩ Novel ( t 7 = 11.95, p = 0.000007 ), for Remaining vs Aversive ( t 7 = 3.97, p = 0.005 ), for Remaining vs Novel ( t 7 = 7.47, p = 0.0001 ). L) Neuron activities were circularly shuffled 1000 times relative to one another and the mean population activity was re-computed each time. This shuffling method preserved the autocorrelations for each neuron while disrupting the co-firing relationships between neurons. The burst frequency was computed for each of these shuffles to produce a shuffled burst frequency distribution (grey histogram), to which the true burst frequency was compared (blue dotted line). This is an example mouse. M) The mean burst frequency for the shuffled distribution was computed and compared to the true burst frequency for each mouse. True burst fre 
+
+##### shuffled burst
+...
+</persisted-output>
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-cd paper; sed -n '35p;41,42p;69,71p;133,137p;149,153p' zaki2024.txt
-```
-
-```
-## Hippocampal ensembles exhibit population bursts of calcium events during offline periods.a, Behavioural schematic of the retrospective memory-linking experimental design. The same as in Fig. 1d, but focusing here on the offline periods. b, Schematic of the lens and Miniscope placement onto the dorsal hippocampus (top left). Top right, representative histological analysis of GCaMP6f expression in the hippocampal CA1, imaged using confocal microscopy. Green, AAV1-Syn-GCaMP6f expression; blue, cellular DAPI stain. Bottom left, maximum-intensity projection of an example mouse across one recording session. Bottom right, spatial footprints of all recorded cells during the session on the left randomly colour coded. This experiment was repeated across two cohorts. Scale bars, 50 μm (top) and 200 μm (bottom). c, Example of a burst event. The top trace represents the z-scored mean population activity within one of the offline recordings. Three timepoints were chosen (overlaid in circles), the middle representing the peak of a burst event and the timepoints to its left and right representing t − 2 s and t + 2 s from the peak, respectively. The bottom three matrices represent binarized spatial footprints depicting the spatial footprints of the cells sufficiently active to participate in a burst (z &gt; 2). The matrices represent the timepoints of the three datapoints above it, ordered by time. d, Locomotion of an example mouse during each burst event stacked along the y axis (top), and the mean locomotion around burst events (bottom). Mice showed a robust and brief slowing down around 1 s before each burst event, before increasing locomotion back up around 2 s later. e, Mouse locomotion as in d, but averaged across all of the mice. Each thin line represents one mouse, and the thick black line represents the mean across mice, with the grey ribbon around it representing the s.e.m. n = 8 mice. This demonstrates a robust and reliable decrease in locomotion around the onset of bu
-[... 14 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd paper; grep -n "Hippocampal ensembles exhibit\|Neurons active during Aversive encoding are selectively" zaki2024.txt | cut -c1-80; sed -n '31p' zaki2024.txt | grep -o "L).\{0,1500\}"; grep -n "ExtData\|Fig. 9\|Extended Data Fig. 9" zaki2024.txt | cut -c1-200 | head; grep -n "^## Calcium imaging and EEG\|Low- vs High-shock calcium imaging with EEG\|sleep features" zaki2024.txt | cut -c1-200
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/1eebd7f7-2a5e-49cf-8e1d-576095cc1a0c/tool-results/b77qybo8u.txt"
+}
 ```
 
 ```
-31:## Neurons active during Aversive encoding are selectively reactivated offlin
-35:## Hippocampal ensembles exhibit population bursts of calcium events during o
-L) Neuron activities were circularly shuffled 1000 times relative to one another and the mean population activity was re-computed each time. This shuffling method preserved the autocorrelations for each neuron while disrupting the co-firing relationships between neurons. The burst frequency was computed for each of these shuffles to produce a shuffled burst frequency distribution (grey histogram), to which the true burst frequency was compared (blue dotted line). This is an example mouse. M) The mean burst frequency for the shuffled distribution was computed and compared to the true burst frequency for each mouse. True burst frequencies were greater than shuffled burst frequencies in every mouse (t7 = 6.159, p = 0.000463, n = 8 mice), suggesting that during the offline period, hippocampal CA1 neurons fire in a more coordinated manner than would be expected from shuffled neuronal activities. N) As in Extended Data Fig. 3l, neuron activities were shuffled, and mean population was re-computed each time. From this population activity trace, the skew of the distribution was computed. If there were distinct periods where many neurons simultaneously fired, we hypothesized that the true distribution of mean population activity would be more skewed with a strong right tail demonstrating large and brief deflections, compared to shuffled neuronal activities. We computed the skew of each shuffled mean population activity, to produce a distribution (grey histogram), to which the true mean p
-69:## Co-reactivation occurs more during wakeEnsemble reactivation has previously been observed to occur during non-rapid-eye-movement (NREM) sleep17, REM sleep8 and wake periods48. This reactivation 
-73:Extended Data Fig. 9
-75:## Validation of simultaneous calcium imaging and EEG/EMG to measure ensemble reactivation across sleep sta
-[... 1 more lines not kept]
+1	##### circularly
+2	...  during both Aversive and Novel recall were most highly active (A.U.). There was no difference in activity in the cells that would go on to be active in Aversive or Novel. Main effect of Ensemble ( F 3,21 = 27.81, p = 1.65e-7, n = 8 mice ). Post-hoc tests: for Aversive vs Novel ( t 7 = 1.33, p = 0.22 ), for Remaining vs Aversive ∩ Novel ( t 7 = 11.95, p = 0.000007 ), for Remaining vs Aversive ( t 7 = 3.97, p = 0.005 ), for Remaining vs Novel ( t 7 = 7.47, p = 0.0001 ). L) Neuron activities were circularly shuffled 1000 times relative to one another and the mean population activity was re-computed each time. This shuffling method preserved the autocorrelations for each neuron while disrupting the co-firing relationships between neurons. The burst frequency was computed for each of these shuffles to produce a shuffled burst frequency distribution (grey histogram), to which the true burst frequency was compared (blue dotted line). This is an example mouse. M) The mean burst frequency for the shuffled distribution was computed and compared to the true burst frequency for each mouse. True burst fre 
+3	
+4	##### shuffled burst
+5	... vs Aversive ∩ Novel ( t 7 = 11.95, p = 0.000007 ), for Remaining vs Aversive ( t 7 = 3.97, p = 0.005 ), for Remaining vs Novel ( t 7 = 7.47, p = 0.0001 ). L) Neuron activities were circularly shuffled 1000 times relative to one another and the mean population activity was re-computed each time. This shuffling method preserved the autocorrelations for each neuron while disrupting the co-firing relationships between neurons. The burst frequency was computed for each of these shuffles to produce a shuffled burst frequency distribution (grey histogram), to which the true burst frequency was compared (blue dotted line). This is an example mouse. M) The mean burst frequency for the shuffled distribution was computed and compared to the true burst frequency for each mouse. True burst frequencies were greater than shuffled burs
+[... 112 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd paper; sed -n '75p' zaki2024.txt | cut -c1-3000; grep -n "^## .*sleep/wake states\|^## Ensemble co-bursting" zaki2024.txt | cut -c1-100; grep -o "Fig. 5.\{0,40\}" zaki2024.txt | head -3; awk 'NR>=70 && NR<=74' zaki2024.txt | cut -c1-2500
+cd paper; python3 - <<'E'
+import re
+t=open('10.1038-s41586-024-08168-4.txt').read()
+for kw in ['Ensemble co-participation analysis','Fig. 5 Co-reactivation','6 s ','telemetry','Activity','HD-X02','sleep scor','Fig. 4 Overlap','percentage of total burst']:
+    print('#####',kw)
+    ms=list(re.finditer(re.escape(kw),t))
+    print(len(ms))
+    for m in ms[:3]:
+        print('...',t[max(0,m.start()-200):m.end()+1800].replace('\n',' '),'\n')
+E
 ```
 
 ```
-## Validation of simultaneous calcium imaging and EEG/EMG to measure ensemble reactivation across sleep states.A) Schematic representing the protocol for calcium imaging and EEG/EMG recordings during the offline period. EEG and EMG were recorded continuously throughout the offline period. To avoid photobleaching, calcium imaging was done intermittently: calcium was recorded for 10 min, followed by 20 min of no recording, repeated 24 times, for 4 hrs worth of calcium recordings across a 12 hr period. Mice underwent the retrospective memory-linking behavioural paradigm as in Fig. 1d, with calcium imaging recordings during Neutral and Aversive encoding, as well as during Aversive, Neutral, and Novel recall. During Offline 1 and Offline 2, in contrast to in Fig. 1d, these mice underwent the recording scheme described above. B) Freezing during Aversive recall. High-shock mice froze more during Aversive recall than low-shock mice (t7 = 8.99, p = 0.020) (low-shock, n = 4 mice; high-shock, n = 5 mice). C) Freezing during Neutral vs Novel recall. High-shock mice froze more during Neutral vs Novel recall (t4 = 4.02, p = 0.03), whereas low-shock mice froze no differently in Neutral vs Novel recall (t3 = 1.08, p = 0.36) (low-shock, n = 4 mice; high-shock, n = 5 mice). D) Mice wearing a Miniscope chronically throughout the experiment display no differences in sleep duration across the 24 hr sleep/wake cycle, compared to mice with no Miniscope implant (F1,10 = 0.54, p = 0.48) (Miniscope, n = 8 mice; No Miniscope, n = 4 mice). E) Same as Extended Data Fig. 9d but broken up by sleep state. Mice wearing a Miniscope chronically show no differences in time spent in each sleep state. F) Example hypnogram demonstrating that mice display normal patterns of sleep, with more bouts of sleep during their Lights On period. G) The calcium imaging recording scheme in Extended Data Fig. 9a reliably captures the fractions of time that mice spend in each sleep/wake state. Left: Amount of time spen
-[... 8 more lines not kept]
+##### Ensemble co-participation analysis
+1
+... rticipated in each event was computed, and then this was averaged across all events. The average participation of each ensemble was compared across ensembles and across low- versus high-shock groups. Ensemble co-participation analysis To measure ensemble co-participation during bursts (Figs. 4 and 5 and Extended Data Figs. 3 , 6 and 8 ), bursts were defined on the basis of the z -scored mean population activity of the whole population. Then, for each burst event, the z -scored mean population activity was computed for the neutral ensemble and for the aversive ensemble (see the ‘Ensemble reactivation analysis’ section for ensemble definitions). For each population-level burst event, the ‘participation’ of the neutral ensemble or aversive ensemble was measured on the basis of whether the ensemble’s mean population activity was above the z = 2 threshold during the population level event. The burst events in which one ensemble participated without the other ensembles were considered independent participations. The burst events in which multiple ensembles simultaneously participated were considered co-participations. The fraction of burst events in which each ensemble independently participated and co-participated was computed. Then, the same computation was performed for all non-burst periods to examine how frequently the ensembles burst independently and coincidentally outside of burst events. In the calcium imaging experiment with EEG/EMG (Fig. 5 ), ensemble co-participation was defined above; however, as there were several offline recordings per mouse, each ensemble mean activity was computed for each offline session, and all the mean ensemble activities were concatenated to produce a pseudocontinuous time series of mean ensemble activities across the offline session. These mean activities were z -scored and then ensemble co-participation was computed separately for each sleep state. Time-lagged cross-correlation analysi
+[... 36 more lines not kept]
 ```
+
+**Agent**
+
+Now the archive: asset list, dandiset metadata, and per-asset metadata for the blocked claims.
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF'
-import numpy as np, memlink as ml
-from scipy import stats
-rng=np.random.default_rng(0)
-# burst_events
-tr=np.array([0,3,3,0,3,0,0,3,3,3])
-print(ml.burst_events(tr), ml.burst_events(tr,merge=2))
-# shuffle_surrogates vs naive implementation
-T,N=600,40
-S=(rng.random((T,N))<0.02)*rng.exponential(1,(T,N))
-Z,keep=ml.zscore_cells(S)
-r1=np.random.default_rng(5); f1,s1=ml.shuffle_surrogates(Z,20,r1,1.0)
-r2=np.random.default_rng(5); f2=[];s2=[]
-for i in range(20):
-    k=r2.integers(0,T,N)
-    Zs=np.column_stack([np.roll(Z[:,j],k[j]) for j in range(N)])
-    p=ml.population(Zs); f2.append(len(ml.burst_events(p))); s2.append(stats.skew(p))
-print("freq equal",np.allclose(f1,f2),"skew equal",np.allclose(s1,s2,atol=1e-4))
-# Does the re-z-scored null detect coordination? Synthetic: independent sparse cells vs coordinated bursts
-def sim(coord, T=9000, N=600):
-    S=(rng.random((T,N))<0.015)*rng.exponential(1,(T,N))
-    if coord:
-        for t0 in rng.choice(T-5, 60, replace=False):  # 6 /min at 15Hz over 10 min
-            cells=rng.random(N)<0.15
-            S[t0:t0+3, cells]+=rng.exponential(1,(3,cells.sum()))
-    Z,_=ml.zscore_cells(S); pop=ml.population(Z)
-    true=len(ml.burst_events(pop))/10
-    f,sk=ml.shuffle_surrogates(Z,200,rng,10.0)
-    raw=Z.mean(1); thr=raw.mean()+2*raw.std()
-    ff,_=ml.shuffle_surrogates(Z,200,rng,10.0,fixed=thr)
-    print(f"coord={coord}: true {true:.2f}/min, rez-null mean {f.mean():.2f} p95 {np.percentile(f,95):.2f}; fixed-thr null mean {ff.mean():.2f}, true(fixed) {len(ml.burst_events(raw,thr))/10:.2f}; skew true {stats.skew(pop):.2f} null p95 {np.percentile(sk,95):.2f}")
-sim(False); sim(True)
-# binned_freezing synthetic
-s={"motion_t":np.arange(0,300,1/30),"freeze":np.array([[0,15],[60,90]])}
-print(ml.binned_freezing(s)[:4], ml.freezing_percent(s))
-# state_of_frames
-print(ml.state_of_frames(np.array([0,5.9,6.0,6.05,12.1]),(np.array([0,6.]),np.array([6.,12.]),np.array(["wake","quiet wake"]))))
-EOF
+cd $TMPDIR; python3 - <<'E'
+import requests, json
+API="https://api.dandiarchive.org/api"; V="0.261122.2159"
+r=requests.get(f"{API}/dandisets/000718/versions/{V}/assets/?page_size=200").json()
+for a in r['results']: print(a['path'], a['size'])
+m=requests.get(f"{API}/dandisets/000718/versions/{V}/").json()
+print(json.dumps({k:m.get(k) for k in ['name','description','assetsSummary','version']},indent=1)[:5000])
+vs=requests.get(f"{API}/dandisets/000718/versions/").json()
+print([ (v['version'],v['status']) for v in vs['results']])
+E
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'requests'
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python3 - <<'E'
+import urllib.request, json
+def g(u): return json.load(urllib.request.urlopen(u, timeout=60))
+API="https://api.dandiarchive.org/api"; V="0.261122.2159"
+r=g(f"{API}/dandisets/000718/versions/{V}/assets/?page_size=200")
+for a in r['results']: print(a['path'], a['size'], a['asset_id'])
+m=g(f"{API}/dandisets/000718/versions/{V}/")
+print(json.dumps({k:m.get(k) for k in ['name','description','assetsSummary','version']},indent=1)[:6000])
+vs=g(f"{API}/dandisets/000718/versions/")
+print([ (v['version'],v['status']) for v in vs['results']])
+E
+```
+
+```
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-FC_image+ophys/170838a7-3dd9-403d-be96-39786e5dc4b3_external_file_0.wmv 10685361 0da363e3-b1b2-486f-b69c-9dda5b7998ef
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-Recall1_image+ophys/d6404e63-f748-473a-97a4-88ae3755878b_external_file_0.wmv 11694873 69da6fbc-6c16-4533-a0ec-8a610e6c9aa5
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-NeutralExposure_image+ophys/2930ccda-bf86-4d71-96ad-935848d644b4_external_file_0.wmv 23362749 05178662-8c62-4ab8-bb6a-68425d3c5bcd
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-FC_image+ophys.nwb 2155937438 c2ca0ae4-f5d1-4fed-948f-a727f5e8b5a2
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-FC_image+ophys/b0826a1c-4b6e-46f2-9ba3-64023e60ea01_external_file_0.wmv 10685361 ff049a5e-8c17-4ada-b5c1-aeffd8bce875
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-Recall1_image+ophys.nwb 2309841661 d19355f8-e84f-4d57-a670-98faf57d13e6
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-NeutralExposure_image+ophys/4de417b9-0619-4bff-a334-bfb87e9aef67_external_file_0.wmv 23367081 8cc5d54c-9969-49f8-8d5d-93a8eafe8355
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-Week.nwb 3666480890 0ce578db-2786-47d7-bf9a-fee3abf2ebd9
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-FC_image+ophys.nwb 2130167525 5e50a3b7-a11a-424a-b50c-e3eb5f4884be
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-OfflineDay2Session1_ophys.nwb 4674074229 30c993ba-cda2-4d04-84a2-c22372afc865
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Recall1_image+ophys/39f90d26-08ac-406c-8a0b-5a0b04443981_external_file_0.wmv 11696317 42e9d0c3-620b-415b-b07a-397f09f3f5dc
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Recall2_image+ophys/270c62a9-65ea-464b-beb3-80cb19793880_external_file_0.wmv 11694873 e1359b64-fc01-4715-97f7-6ebae80cbc7e
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-NeutralExposure_image+ophys.nwb 4715546595 0e9666e8-8269-4da3-ab80-d215f91b5a5d
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Recall1_image+ophys.nwb 2296976548 13aac459-9bf6-4f9e-a02b-aa87581cce4d
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Recall3_image+ophys/d4343ed6-6389-4dd8-a0f7-297036cca322_external_file_0.wmv 11694873 b6943a80-2efa-4844-ae11-8b8d63437886
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Offli
+[... 58 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python3 - <<'E'
+import urllib.request, json
+def g(u): return json.load(urllib.request.urlopen(u, timeout=60))
+API="https://api.dandiarchive.org/api"; V="0.261122.2159"
+ids={'3-4 off1':'4910edee-dcd0-4ba2-a9d1-2fb861ecb0b5','3-4 off2':'07a024b1-13f1-48aa-9248-c2cd110e846b','week':'0ce578db-2786-47d7-bf9a-fee3abf2ebd9','2-1 off':'30c993ba-cda2-4d04-84a2-c22372afc865'}
+for k,i in ids.items():
+    m=g(f"{API}/dandisets/000718/versions/{V}/assets/{i}/")
+    print('####',k)
+    print(json.dumps({x:m.get(x) for x in ['variableMeasured','wasGeneratedBy','measurementTechnique']},indent=0)[:2500])
+E
+```
+
+```
+#### 3-4 off1
+{
+"variableMeasured": [
+{
+"value": "ImagingPlane",
+"schemaKey": "PropertyValue"
+},
+{
+"value": "PlaneSegmentation",
+"schemaKey": "PropertyValue"
+},
+{
+"value": "ProcessingModule",
+"schemaKey": "PropertyValue"
+},
+{
+"value": "OnePhotonSeries",
+"schemaKey": "PropertyValue"
+},
+{
+[... 218 more lines not kept]
+```
+
+**Agent**
+
+Now synthetic tests of the helpers, including reading (b)'s behaviour under null-like data and the unequal-window locomotion test.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python3 - <<'E'
+import sys, types
+for m in ['h5py','remfile','requests']:
+    sys.modules[m]=types.ModuleType(m)
+sys.path.insert(0,'
+import numpy as np, zaki
+from scipy import stats
+# burst_events
+p=np.array([3,3,0,0,2.5,1,4,5,4])
+print(zaki.burst_events(p), zaki.burst_frequency(p,1.0))
+# circular shift correctness
+rng=np.random.default_rng(0)
+Z=rng.normal(size=(50,3))
+captured=[]
+def meas(q): captured.append(q); return 0
+zaki.circular_shift_surrogates(Z,np.random.default_rng(1),1,meas,normalise=False)
+s=np.random.default_rng(1).integers(0,50,3)
+ref=np.mean([np.roll(Z[:,j],s[j]) for j in range(3)],axis=0)
+print("shift ok", np.allclose(captured[0],ref))
+# Null-ish data: independent AR(1) sparse cells + weak shared slow drift (no bursts)
+T,N=4000,300
+rng=np.random.default_rng(2)
+drift=np.convolve(rng.normal(size=T+400),np.ones(400)/20,'same')[200:T+200]
+X=np.zeros((T,N))
+for j in range(N):
+    e=rng.normal(size=T)
+    x=np.zeros(T)
+    for t in range(1,T): x[t]=0.9*x[t-1]+e[t]
+    X[:,j]=np.maximum(x+0.3*drift-1.5,0)
+Zc,_=zaki.zscore_cells(X); ptrue=zaki.population_trace(Zc)
+fr=zaki.burst_frequency(ptrue,10)
+m=Zc.mean(1); mu,sd=m.mean(),m.std()
+sa=zaki.circular_shift_surrogates(Zc,np.random.default_rng(3),100,lambda q: zaki.burst_frequency(q,10))
+sb=zaki.circular_shift_surrogates(Zc,np.random.default_rng(3),100,lambda q: zaki.burst_frequency((q-mu)/sd,10),normalise=False)
+print(f"drift-only data: true {fr:.2f}/min; (a) mean {sa.mean():.2f} p95 {np.percentile(sa,95):.2f}; (b) mean {sb.mean():.2f} p95 {np.percentile(sb,95):.2f}; skew true {stats.skew(ptrue):.2f}")
+# Unequal-window bias of locomotion test under null: heavy-tailed iid movement
+rng=np.random.default_rng(4)
+mv=rng.exponential(size=60000)**3  # 100 ms bins, skewed
+c=np.arange(len(mv))*0.1+0.05
+ps=[]
+for rep in range(200):
+    tz=rng.uniform(10,len(mv)*0.1-10,85)
+    pre=np.array([mv[(c>=t-1)&(c<t)].mean() for t in tz]); base=np.array([mv[(c>=t-5)&(c<t-3)].mean() for t in tz])
+    ps.append(stats.wilcoxon(pre,base,alternative='less').pvalue)
+print("null false-positive rate, one-sided Wilcoxon 1 s vs 2 s windows, n=85:", np.mean(np.array(ps)<0.05))
+# binned freezing with 8998 frames
+fr={'frame_times':np.arange(8998)/30,'frozen':np.r_[np.ones(4499,bool),np.zeros(4499,bool)],'rate':30.0}
+print(zaki.binned_freezing(fr))
+E
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
 ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls ~/.venv* .venv 2>/dev/null; which -a python python3; for p in $(which -a python python3); do $p -c "import numpy,scipy,h5py;print('$p ok')" 2>/dev/null; done; pip --version
+which -a python3 python; ls /usr/bin/python3* ; pip --version 2>&1; ls ~/.venv* /opt 2>/dev/null | head; uv --version 2>&1
 ```
 
 ```
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python
-/opt/hostedtoolcache/Python/3.13.16/x64/python
-/usr/bin/python
-/bin/python
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python3
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
 /usr/bin/python3
 /bin/python3
-pip 26.2.1 from /opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/pip (python 3.13)
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
+/opt/hostedtoolcache/Python/3.13.18/x64/python
+/usr/bin/python
+/bin/python
+/usr/bin/python3
+/usr/bin/python3-config
+/usr/bin/python3.14
+/usr/bin/python3.14-config
+pip 26.3 from /opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/pip (python 3.13)
+/opt:
+actionarchivecache
+az
+containerd
+google
+hca
+hostedtoolcache
+microsoft
+[... 3 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 -m venv $TMPDIR/v && $TMPDIR/v/bin/pip install -q numpy scipy h5py remfile dandi 2>&1 | tail -2; $TMPDIR/v/bin/python -c "import numpy, scipy, h5py, remfile, dandi; print('ok')"
+for p in /usr/bin/python3; do $p -c "import numpy, scipy; print(numpy.__version__, scipy.__version__)"; done 2>&1; cd $TMPDIR && uv venv -q v && uv pip install -q -p v/bin/python numpy scipy 2>&1 | tail -2; v/bin/python -c "import numpy,scipy;print('ok')"
 ```
 
 ```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import numpy, scipy; print(numpy.__version__, scipy.__version__)
+    ^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'numpy'
 ok
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  $TMPDIR/v/bin/python - <<'EOF'
-import numpy as np, memlink as ml
+cd $TMPDIR; v/bin/python - <<'E'
+import sys, types
+for m in ['h5py','remfile','requests']:
+    sys.modules[m]=types.ModuleType(m)
+sys.path.insert(0,'
+import numpy as np, zaki
 from scipy import stats
+p=np.array([3,3,0,0,2.5,1,4,5,4])
+print(zaki.burst_events(p), zaki.burst_frequency(p,1.0))
 rng=np.random.default_rng(0)
-tr=np.array([0,3,3,0,3,0,0,3,3,3])
-print(ml.burst_events(tr).tolist(), ml.burst_events(tr,merge=2).tolist())
-T,N=600,40
-S=(rng.random((T,N))<0.02)*rng.exponential(1,(T,N))
-Z,keep=ml.zscore_cells(S)
-r1=np.random.default_rng(5); f1,s1=ml.shuffle_surrogates(Z,20,r1,1.0)
-r2=np.random.default_rng(5); f2=[];s2=[]
-for i in range(20):
-    k=r2.integers(0,T,N)
-    Zs=np.column_stack([np.roll(Z[:,j],k[j]) for j in range(N)])
-    p=ml.population(Zs); f2.append(len(ml.burst_events(p))); s2.append(stats.skew(p))
-print("freq equal",np.allclose(f1,f2),"skew equal",np.allclose(s1,s2,atol=1e-4))
-def sim(coord, T=9000, N=600):
-    S=(rng.random((T,N))<0.015)*rng.exponential(1,(T,N))
-    if coord:
-        for t0 in rng.choice(T-5, 60, replace=False):
-            cells=rng.random(N)<0.15
-            S[t0:t0+3, cells]+=rng.exponential(1,(3,cells.sum()))
-    Z,_=ml.zscore_cells(S); pop=ml.population(Z)
-    true=len(ml.burst_events(pop))/10
-    f,sk=ml.shuffle_surrogates(Z,200,rng,10.0)
-    raw=Z.mean(1); thr=raw.mean()+2*raw.std()
-    ff,_=ml.shuffle_surrogates(Z,200,rng,10.0,fixed=thr)
-    print(f"coord={coord}: true {true:.2f}/min, rez-null mean {f.mean():.2f} p95 {np.percentile(f,95):.2f}; fixed-thr null mean {ff.mean():.2f}, true(fixed) {len(ml.burst_events(raw,thr))/10:.2f}; skew true {stats.skew(pop):.2f} null p95 {np.percentile(sk,95):.2f}")
-sim(False); sim(True)
-s={"motion_t":np.arange(0,300,1/30),"freeze":np.array([[0,15],[60,90]])}
-print(ml.binned_freezing(s)[:4], ml.freezing_percent(s))
-print(ml.state_of_frames(np.array([0,5.9,6.0,6.05,12.1]),(np.array([0,6.]),np.array([6.,12.]),np.array(["wake","quiet wake"]))))
-EOF
+Z=rng.normal(size=(50,3))
+captured=[]
+def meas(q): captured.append(q); return 0
+zaki.circular_shift_surrogates(Z,np.random.default_rng(1),1,meas,normalise=False)
+s=np.random.default_rng(1).integers(0,50,3)
+ref=np.mean([np.roll(Z[:,j],s[j]) for j in range(3)],axis=0)
+print("shift ok", np.allclose(captured[0],ref))
+T,N=4000,300
+rng=np.random.default_rng(2)
+drift=np.convolve(rng.normal(size=T+400),np.ones(400)/20,'same')[200:T+200]
+from scipy.signal import lfilter
+E_=rng.normal(size=(T,N)); Xa=lfilter([1],[1,-0.9],E_,axis=0)
+X=np.maximum(Xa+0.3*drift[:,None]*3-1.5,0)
+Zc,_=zaki.zscore_cells(X); ptrue=zaki.population_trace(Zc)
+fr=zaki.burst_frequency(ptrue,10)
+m=Zc.mean(1); mu,sd=m.mean(),m.std()
+sa=zaki.circular_shift_surrogates(Zc,np.random.default_rng(3),100,lambda q: zaki.burst_frequency(q,10))
+sb=zaki.circular_shift_surrogates(Zc,np.random.default_rng(3),100,lambda q: zaki.burst_frequency((q-mu)/sd,10),normalise=False)
+print(f"slow-drift-only data (no bursts): true {fr:.2f}/min; (a) mean {sa.mean():.2f} p95 {np.percentile(sa,95):.2f}; (b) mean {sb.mean():.2f} p95 {np.percentile(sb,95):.2f}; skew true {stats.skew(ptrue):.2f}")
+rng=np.random.default_rng(4)
+mv=rng.exponential(size=60000)**3
+c=np.arange(len(mv))*0.1+0.05
+ps=[]
+for rep in range(200):
+    tz=rng.uniform(10,len(mv)*0.1-10,85)
+    pre=np.array([mv[(c>=t-1)&(c<t)].mean() for t in tz]); base=np.array([mv[(c>=t-5)&(c<t-3)].mean() for t in tz])
+    ps.append(stats.wilcoxon(pre,base,alternative='less').pvalue)
+print("null false-positive rate, 1 s vs 2 s windows, n=85:", np.mean(np.array(ps)<0.05))
+fr={'frame_times':np.arange(8998)/30,'frozen':np.r_[np.ones(4499,bool),np.zeros(4499,bool)],'rate':30.0}
+print(zaki.binned_freezing(fr))
+E
 ```
 
 ```
-[[1, 3], [4, 5], [7, 10]] [[1, 5], [7, 10]]
-freq equal True skew equal True
-coord=False: true 33.10/min, rez-null mean 32.97 p95 35.00; fixed-thr null mean 32.92, true(fixed) 33.10; skew true 0.63 null p95 0.74
-coord=True: true 5.90/min, rez-null mean 31.74 p95 33.70; fixed-thr null mean 0.02, true(fixed) 5.90; skew true 6.30 null p95 0.69
-[ 50.11111111   0.         100.           0.11111111] (np.float64(15.022222222222222), np.float64(15.001666851872432))
-[np.str_('wake') np.str_('wake') np.str_('quiet wake')
- np.str_('quiet wake') 'none']
+[(0, 1, 0), (4, 4, 4), (6, 8, 7)] 3.0
+shift ok True
+slow-drift-only data (no bursts): true 2.40/min; (a) mean 4.98 p95 6.10; (b) mean 0.00 p95 0.00; skew true 1.15
+null false-positive rate, 1 s vs 2 s windows, n=85: 0.195
+[100.         100.         100.         100.          99.88888889
+   0.           0.           0.           0.           0.        ]
+Shell cwd was reset to
 ```
-
-**Agent calls Bash**
-
-```bash
-cd  curl -sL "https://api.dandiarchive.org/api/dandisets/000718/versions/0.260825.1902/assets/?page_size=100&glob=*Week*" | $TMPDIR/v/bin/python -c "
-import json,sys; d=json.load(sys.stdin); a=d['results'][0]; print(a['asset_id'])
-import urllib.request
-m=json.load(urllib.request.urlopen(f'https://api.dandiarchive.org/api/assets/{a[\"asset_id\"]}/'))
-print([v.get('value') for v in m.get('variableMeasured',[])]); print(m.get('wasGeneratedBy',[{}])[0].get('description','')[:600])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd  timeout 600 $TMPDIR/v/bin/python - <<'EOF'
-import memlink as ml, h5py
-for p in [ml.session_path("Ca_EEG2-1","Week"), ml.session_path("Ca_EEG3-4","OfflineDay2Session1")]:
-    f=ml.open_nwb(p)
-    print("==",p)
-    for g in ["acquisition","processing","intervals"]:
-        if g in f:
-            def show(name,obj):
-                if name.count("/")<2: print(" ",g+"/"+name, getattr(obj,"shape",""))
-            f[g].visititems(show)
-    if "acquisition/ActivitySignal" in f:
-        a=f["acquisition/ActivitySignal"]; print(" ActivitySignal attrs:",{k:str(v)[:150] for k,v in a.attrs.items()}, {k:str(v)[:80] for k,v in a["data"].attrs.items()})
-EOF
-```
-
-```
-== sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-Week.nwb
-  acquisition/ActivitySignal 
-  acquisition/ActivitySignal/data (404395000,)
-  acquisition/ActivitySignal/starting_time ()
-  acquisition/EEGSignal 
-  acquisition/EEGSignal/data (404395000,)
-  acquisition/EEGSignal/starting_time ()
-  acquisition/EMGSignal 
-  acquisition/EMGSignal/data (404395000,)
-  acquisition/EMGSignal/starting_time ()
-  acquisition/TemperatureSignal 
-  acquisition/TemperatureSignal/data (404395000,)
-  acquisition/TemperatureSignal/starting_time ()
-  processing/cell_registration 
-  processing/cell_registration/OfflineDay2Session10vsConditioningSessions 
-  processing/cell_registration/OfflineDay2Session11vsConditioningSessions 
-  processing/cell_registration/OfflineDay2Session12vsConditioningSessions 
-  processing/cell_registration/OfflineDay2Session13vsConditioningSessions 
-  processing/cell_registration/OfflineDay2Session14vsConditioningSessions 
-  processing/cell_registration/OfflineDay2Session15vsConditioningSessions 
-[... 43 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; for f in ExtendedData9/ExtData9b.csv ExtendedData9/ExtData9c.csv Figure5/Fig_5c.csv ExtendedData3/ExtData3m.csv ExtendedData3/ExtData3o.csv; do echo "== $f"; curl -sfL "https://raw.githubusercontent.com/denisecailab/RetrospectiveMemoryLinkingData_2024/a5081645d3d3e5743ade58ea632c28b003794345/$f" | grep -i "EEG\|mouse\|^[^,]*," | head -30; done
-```
-
-Result: the fetched text is not kept.
 
 **Agent**
 
-I checked 26 claims: the notebook tests 6 and treats 20 as blocked. By my reading, 3 reproduce, 1 partially reproduces and 2 do not, and the 20 blocked claims are blocked because the data are missing. No separate attempt record was among my materials, so these counts come from the claims file and the notebook.
+**Verifier report, round 1: Zaki et al. (2024) on DANDI:000718 v0.261122.2159**
 
-Sources: the paper's full text is saved at `paper/zaki2024.txt`, from Europe PMC (PMC11666460). I listed the archive's files through the DANDI API, and read only the internal file structure of two files (the `Week` file and one offline file) by streaming.
+The claims file holds 26 claims. The notebook tests 6 and treats 20 as blocked: 4 with their own reasons and 16 because the mice are not in the dataset. I had only the notebook, the helper module and the claims file, not the attempt record, so these counts come from those.
 
-**A. Outcomes**
+### A. Outcomes
 
-| claim id | outcome | reason |
+| Claim | My outcome | Reason |
 |---|---|---|
-| source-data-link | reproduced | Both mice are found. Their shock amplitudes (1.5 and 0.25 mA) match the source data's groups, and all 4 freezing values fall within tolerance under both readings (cell 18: a = 64.09, 8.82, 17.40, 15.06; b = 63.45, 8.46, 16.91, 14.61). I fetched ExtData9b.csv and ExtData9c.csv at commit a508164 and the typed reference values match them exactly. |
-| ed9b-aversive-freezing-high-vs-low | reproduced | Recall1 freezing is 64.09% for Ca_EEG2-1 against 8.82% for Ca_EEG3-4, and the Mann-Whitney test on 30 s bins gives p = 0.00018 (cell 21). This compares two animals, not the paper's groups (n = 5 and 4). |
-| offline-bursts-above-shuffle | not_reproduced (as the criterion is written) | At z = 2 the true burst rate is below the shuffled mean in all 3 recordings (8.71 vs 10.94, 6.40 vs 8.79, 5.30 vs 8.48 per min; cell 23). I do not count this as evidence against the paper, because the criterion's shuffle test cannot detect coordinated firing (problem 1). With a fixed threshold, the true rate beats every surrogate (cell 24). |
-| offline-skew-above-shuffle | reproduced | True skew is 1.65, 1.34 and 1.72, against shuffled 95th percentiles of 0.72, 0.51 and 0.48; no surrogate reaches the true value (cell 26). Skew is lower than the paper's chance-level data in both arms (paper: true 1.76 to 3.65, shuffled 0.47 to 1.91, another cohort recorded at 30 Hz for 1 h). |
-| burst-locomotion-pause | not_reproduced | The one-sided Wilcoxon gives p ≥ 0.39 in all 3 recordings under both time-zero readings (cell 28). The measure is the telemetry probe signal, not the paper's webcam locomotion (problem 4). |
-| fig5c-wake-overlap-neutral-coburst | partially_reproduced (by the letter of the criterion) | OxN > OxA only under "wake alone" (32 vs 28% and 8 vs 4%), resting on 2 against 1 discordant bursts, McNemar p = 1.0 (cell 31). Under "wake plus quiet wake", the reading closer to the Methods, the direction reverses (26.4 vs 35.6%, 7 vs 15, p = 0.13). |
-| fig1bc, fig1ef, fig1g, ed1n, ed2 | blocked: data_missing | The archive holds only the two Ca_EEG mice (20 assets: 12 NWB files and 8 behaviour videos). No behaviour-only mice. |
-| ed3, ed4f, fig3c, fig3f, fig4b, fig4e, ed7 | blocked: data_missing | The one-hour cohort (RLI mice in the source data) is absent. Analogues could be run on Ca_EEG2-1 but would not test these claims. Cell 32 already computes a fig3f-like comparison (neutral vs remaining participation, Wilcoxon p = 0.041 across bursts, bursts treated as independent). ed7 could be run as a one-mouse SVM on the registered neutral-encoding and FC cells. |
-| fig6a, fig6b | blocked: data_missing | One-hour cohort missing. Also, the high-shock mouse has no neutral or novel recall session; I confirmed there is no Recall2 or Recall3 asset for Ca_EEG2-1. |
-| ed6-overlap-inhibitory, ed8-no-shock-no-coburst | blocked: data_missing | The Gad2 chemotagging mice and the no-shock mice are not deposited. |
-| ed9c-eeg-cohort-linking | blocked: data_missing | The high-shock half cannot be tested (no Ca_EEG2-1 Recall2 or Recall3). The low-shock half could be described for one mouse: neutral 17.40% vs novel 15.06% (cell 18), with no test. |
-| fig5c-sleep-no-coburst-difference | blocked: data_missing | The deposited offline calcium recordings contain only wake and quiet wake (cell 15). The NREM and REM recordings, among the other 23 per offline period, are not deposited. |
-| fig5c-low-shock-wake-no-difference | blocked: data_missing | Ca_EEG3-4 has no CellReg tables. Its neutral encoding, FC and offline day 2 files do hold ROI centroids, so a one-recording test with centroid-based registration was possible but not attempted. |
-| ed9-ed10-sleep-unchanged | blocked: data_missing (one part was testable) | The Week file holds 9.36 days of raw EEG, EMG, activity and temperature for Ca_EEG2-1, with a 27-row epoch table and no sleep scoring. ED10 (sleep before vs after encoding) and ED9g (sampled vs total state time) could be checked for one mouse by applying the Methods' scoring (6 s epochs, GMM on EMG, then on theta/delta). ED9d and 9e need the no-Miniscope mice, which are absent. |
+| source-data-link | reproduced | Both mice are found and their shock amplitudes match the source-data groups (cell 17). All 4 freezing values are within tolerance under both readings: (a) 64.09/8.82/17.40/15.06, (b) 63.45/8.46/16.90/14.60. Reading (b) gives the CSV value exactly for 3 of the 4. |
+| ed9b-aversive-freezing-high-vs-low | reproduced | Recall1 freezing is 64.09% for Ca_EEG2-1 against 8.82% for Ca_EEG3-4. The high-shock mouse is higher in 10 of 10 bins; Mann-Whitney U = 100, p = 1.8e-4 (cell 19). |
+| offline-bursts-above-shuffle | reproduced, under reading (b) only | (b): the true rates of 8.73/6.42/5.31 per min are above every surrogate, whose 95th percentiles are 0.30/0.10/0.00, for all 5 seed sets. (a): the true rate is *below* the surrogate mean in all 3 recordings (fraction ≥ true 0.999–1.000), which is not reproduced. The criterion lets one reading decide, but see B1. |
+| offline-skew-above-shuffle | reproduced | True skew is 1.645/1.339/1.721 against surrogate 95th percentiles of 0.708/0.508/0.466. No surrogate reaches the true value, for all 5 seed sets (cell 24). |
+| burst-locomotion-pause | not_reproduced | p < 0.05 in 0 of 3 recordings under both the peak and onset readings, with p from 0.45 to 0.92 (cell 26). The mean traces rise at time zero rather than dip in Ca_EEG2-1 (0.22 → 0.26). See B3 and B4. |
+| fig5c-wake-overlap-neutral-coburst | partially_reproduced, under wake reading (b) only | Wake alone (24 bursts): OxN is above OxA (33.3 vs 29.2; 8.3 vs 4.2), but on only 2 against 1 discordant bursts, McNemar p = 1.0. Wake + quiet wake (85 bursts): OxN is below OxA under both co-participation readings (25.9 vs 35.3; 8.2 vs 17.6), p = 0.134 (cell 28). See B2. |
+| fig5c-sleep-no-coburst-difference | blocked (data_missing) | Confirmed: the three deposited offline files hold only wake and quiet wake (cell 3). The Week file holds no sleep scoring and no imaging. |
+| fig5c-low-shock-wake-no-difference | blocked (data_missing) | The archive list has no Week or registration file for Ca_EEG3-4; Ca_EEG2-1's registration is in its Week file. The notebook never prints the processing groups of the Ca_EEG3-4 files, so its claim that they hold no registration rests on the claims file's data check (C2). |
+| ed9c-eeg-cohort-linking | blocked (data_missing), partly testable | Confirmed: Ca_EEG2-1 has no Recall2 or Recall3 asset. The low-shock half could be tested descriptively on Ca_EEG3-4: neutral vs novel recall is 17.40 vs 15.06 (a), 16.90 vs 14.60 (b). The notebook does not do this. |
+| ed9-ed10-sleep-unchanged | blocked (data_missing / methods_underspecified), partly testable | No mouse without a Miniscope is in the dataset (2 subjects), so the comparison with no-Miniscope mice is blocked. The question of whether sleep structure changes after encoding could be tested for one mouse: score the Week file's continuous EEG/EMG with the Methods' 6 s epochs and two-state GMMs. The notebook does not try. |
+| 16 claims of the other experiments (fig1bc, fig1ef, fig1g, ed1n, ed2, ed3, ed4f, fig3c, fig3f, fig4b, fig4e, ed6, ed8, ed7, fig6a, fig6b) | blocked (data_missing) | Confirmed from the archive: `numberOfSubjects` is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1 and Ca_EEG3-4 plus 8 behaviour videos. |
 
-**B. Problems**
+No numeric chance level is stated in the paper's text for these selections (Extended Data Fig. 4n and 8f give only figure panels), so I had none to compare with the notebook's.
 
-1. [affects a conclusion] Burst-frequency shuffle, cell 23 and `shuffle_surrogates`: z-scoring each surrogate again makes the test unable to detect coordination.
-   - I planted 6/min strongly coordinated bursts in synthetic data. The true rate was 5.9/min against a re-z-scored null mean of 31.7/min. Without coordination: 33.1 against 33.0.
-   - The fixed-threshold variant behaves correctly: 5.9 against 0.02 with coordination, 33.1 against 32.9 without.
-   - Neither variant matches the paper's chance level. In the paper's ED3m the shuffled rate is 0.72 to 0.96 of the true rate; here it is 1.26 to 1.60 (re-z-scored) and about 0.00 to 0.01 (fixed threshold).
-   - So the paper's event definition or null differs, and it is underspecified (the Methods say only that the mean was "re-computed"). The criterion needs revising, or the claim should be treated as blocked: methods_underspecified.
-2. [affects a conclusion] fig5c, cell 31: the sleep scoring in the Methods has no quiet-wake class (EMG GMM for sleep vs wake, then NREM vs REM). In paper terms, every deposited frame is "wake", which makes reading (a) the faithful one, and under it OxN < OxA. The "under one reading" rule, across 4 readings, allows a post hoc pick.
-3. [affects a conclusion] fig5c, cell 31: the ensemble means are z-scored within one 10-minute recording, whereas the Methods concatenate all 24 offline recordings first. Co-participation comes out at 26 to 36% (inclusive) against the source data's 10.37 and 8.39% for this mouse (Fig_5c.csv, which I verified). The two are not comparable.
-4. [affects a conclusion] burst-locomotion-pause, cells 28 and 29: the file describes ActivitySignal as "motion of the probe relative to the receiver". It is not a locomotion measure, and the notebook never printed its description or validated it. The claim's evidence (Fig. 2d,e) comes from webcam tracking in another cohort. Outcome stays not_reproduced, but it is weak evidence against the paper.
-5. [does not affect a conclusion] Cell 28: the same Wilcoxon gives p = 0.016 at 300 random times in Ca_EEG2-1. The test on overlapping windows is not calibrated.
-6. [does not affect a conclusion] Cells 5 and 6: the order of the Ca_EEG2-1 offline recording after FC rests on inferring a 1-hour clock error. The telemetry gap and the exact EEG match support it. If it were wrong, the fig5c analysis would be invalid.
-7. [does not affect a conclusion] The files give telemetry at 500 Hz; the Methods say 100 Hz. The notebook does not note this.
-8. [does not affect a conclusion] Cell 21: the 30 s bins are autocorrelated, pseudo-replicated units from two animals.
-9. [does not affect a conclusion] Cell 32: outside-burst windows take the sleep state of their first frame only.
-10. Helper checks that passed:
-    - `shuffle_surrogates` gives the same result as a naive per-cell `np.roll` implementation.
-    - `burst_events` (with and without merging), `binned_freezing`, `freezing_percent` and `state_of_frames` behave correctly on synthetic inputs.
-    - Ensemble counts (97 neutral, 80 aversive, 166 overlap, 282 remaining) match the claims file.
-    - The ExtData3m, ExtData3o, 9b, 9c and Fig_5c values typed into the notebook match the repository. In ExtData9c, Ca_EEG3-4's Neutral and Novel rows sit in the opposite blocks from the other mice; the notebook follows the CSV's Context labels, which agree with the session descriptions.
+### B. Problems
 
-**C. Not checked, and the output that would have allowed it**
+1. **[affects a conclusion] offline-bursts-above-shuffle, reading (b)** (`circular_shift_surrogates` with `normalise=False`, cell 21).
+   - A circular shift keeps each cell's mean, so the surrogate mean trace has exactly the true trace's mean but a smaller SD. A threshold at the true mean + 2 SD therefore almost never fires on a surrogate once cells share any positive covariance, burst-like or not.
+   - Synthetic check: independent AR(1) cells with only a slow shared drift and no bursts. Reading (b) gives a "reproduced" result (true 2.40/min against surrogate 95th percentile 0.00). Reading (a) gives the same reversal as the real data (true 2.40 against surrogate mean 4.98).
+   - So the reproduced outcome is near-guaranteed and does not show burst structure.
+   - The Extended Data Fig. 3l legend ("the burst frequency was computed for each of these shuffles") reads most naturally as running the full detection, including z-scoring, on each surrogate. That is reading (a), and under it the claim fails clearly.
+   - This comes from the claims file, not the notebook, so I report it and do not correct it.
+2. **[affects a conclusion] fig5c-wake, the reading of "wake"** (cell 28).
+   - The paper's sleep scoring (Methods, "Sleep recordings and sleep scoring") has only wake, NREM and REM, and the source data (Fig_5c.csv) has only those three states. The files' "quiet wake" has no counterpart in the paper, so the paper's "wake" most plausibly corresponds to reading (a), wake plus quiet wake.
+   - Under (a), OxN is below OxA.
+   - The Methods also count the triple combination separately, which favours co-participation reading (ii). Under (a)(ii) the result reverses: 8.2 vs 17.6.
+   - The partial outcome rests on (b), with 3 discordant bursts. The criterion permits this, so the outcome stands, but it is fragile.
+3. **[affects a conclusion] burst-locomotion-pause, clock alignment** (cells 13, 26).
+   - In the offline files, population activity correlates best with |ActivitySignal| at lags of +1.5, +5.5 and +6.5 s, not 0 s (cell 13). In the behaviour sessions the best lag is about 0 s.
+   - A few seconds of offset between imaging and telemetry would move the −1–0 s and −5 to −3 s windows by more than their width. The notebook states this assumption but never tests the outcome's sensitivity to it.
+4. **[does not affect a conclusion] burst-locomotion-pause, window lengths** (cell 26). The test compares a 1 s window with a 2 s window in a paired one-sided Wilcoxon test. On heavy-tailed movement the shorter window's mean has a lower median, so the test leans towards "lower before" when nothing is there.
+   - Synthetic check: i.i.d. skewed movement at random times, n = 85, gives a false-positive rate of 0.195 at α = 0.05.
+   - Ca_EEG2-1's random-time reference gives p = 0.000 in the same direction.
+   - The outcome is negative anyway, so this biases towards a result that did not happen. It comes from the criterion.
+5. **[does not affect a conclusion] burst-locomotion-pause and the two shuffle claims, which experiment is tested.**
+   - Fig. 2d,e and Extended Data Fig. 3l–o come from the one-hour webcam experiment (8 different mice).
+   - The claims file tests them on 10-minute recordings from the EEG mice, with the telemetry signal as the movement measure.
+   - So the outcomes speak to these mice and this measure, not to the paper's data. This is a choice in the claims file, which I note rather than correct.
+6. **[does not affect a conclusion] ed9b, statistics** (`binned_freezing`). The 30 s bins within one session are autocorrelated, so the Mann-Whitney test treats non-independent samples as independent. The test is the criterion's, and the direction is unambiguous.
+7. **[does not affect a conclusion] fig5c, z-scoring.** The paper z-scores ensemble traces over 24 concatenated sessions; here they are z-scored over one session (`ensemble_traces`). With only one session deposited, this is unavoidable.
+8. **[does not affect a conclusion] helpers checked on synthetic inputs.** `burst_events`, `burst_frequency`, the circular shift (matches `np.roll`), and `binned_freezing` (10 bins from 8998 frames) all behave correctly. The McNemar test is an exact binomial on discordant bursts, which is correct.
+9. **[does not affect a conclusion] metadata inconsistencies.** The archive's offline-session descriptions describe the one-hour webcam protocol, not the EEG home cage. The telemetry is stored at 500 Hz where the Methods say 100 Hz. The Week file's start time is labelled +00:00 but its epoch times match the session files' −04:00 clock times.
 
-- The paper's burst event definition (minimum duration, peak separation) and its null. The analysis code returns 404. A positive control in the notebook (synthetic coordinated data run through the criterion's test) would have exposed problem 1 directly.
-- Whether ActivitySignal tracks movement: print its description and distribution, and its relation to EMG and to the wake/quiet-wake labels.
-- How the deposited "quiet wake" label relates to the paper's states: print the SleepIntervals description and the state definitions from the conversion code.
-- That OfflineDay2Session1 is the first recording after FC: print the full 27-row epoch table.
-- fig5c on all 24 recordings: these are not deposited, so it cannot be checked from the archive.
-- I did not re-run the notebook. Every number above comes from its saved outputs, my synthetic tests, the archive file listing and the source-data CSVs.
+### C. What I could not check
+
+1. **What ActivitySignal measures.** The notebook never prints the NWB description or unit of `acquisition/ActivitySignal`, so treating it as locomotion is an assumption. It is a signed, continuous signal (−0.9 to 5), not counts. Printing its attributes would settle this.
+2. **Whether Ca_EEG3-4 has cell registration.** Printing `list(f["processing"])` and the `processing/ophys` keys for the Ca_EEG3-4 offline files would confirm or refute the blocking of fig5c-low-shock-wake-no-difference. Archive metadata lists only module types.
+3. **What "quiet wake" means.** Printing the SleepIntervals description would show whether it is a sub-state of the paper's wake or something else (B2).
+4. **Sensitivity of the locomotion test to clock offset.** Re-running the locomotion test with the telemetry shifted by the lag of peak correlation (cell 13) would show whether the negative result survives B3.
+5. **The amendment record.** The notebook cites `questions/zaki-2024.yaml` for the criterion amendment, which I do not have. The claims file I have already contains both readings.
 
 ## End of run
 
-20 turns, 5 minutes, result: success.
+17 turns, 4 minutes, $1.56 at API prices, result: success.
