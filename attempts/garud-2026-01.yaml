@@ -71,11 +71,17 @@ outcomes:
     short and 44.72 s long, the Results' ~8 s and the Methods' ~45 s; cue to cue the long median is
     53.7 s), which is adopted where one reading is needed; the outcome is the same under all eight.
     Both corrections regress the 405 nm signal over the whole session, so each session's mean
-    ΔF/F is zero by construction (median 2e-08, largest 0.003 in absolute value), and stretches
-    without transients come out below zero; a late-ITI value below the criterion's baseline of
-    zero is partly set by this centering, and the test cannot separate a tonic dip from it. A
-    cue-locked trace confirms the short-ITI alignment - ΔF/F rises in the first second after the
-    cue in 143 of 144 short-ITI sessions.
+    ΔF/F is zero by construction (fit reading median 2e-08, largest 0.003 in absolute value; own
+    reading largest 4e-18), and stretches without transients come out below zero; a late-ITI value
+    below the criterion's baseline of zero is partly set by this centering, and the test cannot
+    separate a tonic dip from it. Against a pre-cue baseline, outside the criterion, there is no
+    dip - the late-ITI level minus the level 5 to 0 s before the cue is 0.0003 (t(17) = 1.03,
+    p = 0.32, lower in 8 of 18 mice; fit, reward, trials). Against the long-ITI late-ITI level, the
+    short-ITI last bin is not higher (-0.0067 against -0.0046, paired t(17) = -1.87, p = 0.078,
+    higher in 5 of 18), so the short-ITI part fails under that comparison too. Both readings of
+    the criterion's baseline are asked of a reader in questions/garud-2026.yaml. A cue-locked
+    trace confirms the short-ITI alignment - ΔF/F rises in the first second after the cue in 143
+    of 144 short-ITI sessions.
   deviations:
   - The paper reports no test for this panel; the one-sample one-tailed t-test across mice is the
     criterion's, taken from the paper's test of the stationary dip.
@@ -91,18 +97,22 @@ outcomes:
   output: claim:fig4d-dip-deepens-with-training
   measured: -0.283
   notes: Over 16 readings (8 tonic readings x 2 session numberings) the fixed slope on session
-    number is negative in 16, below p = 0.05 in 10 and below p = 0.001 in 1. Under the
+    number is negative in 16, below p = 0.05 in 10 and below p = 0.001 in 2. Under the
     first-listed tonic and session readings (fit, reward, trials, all sessions) the slope is
     -8.3e-05 ΔF/F per session, p = 0.0043; Pearson r is -0.128 pooled (reading a, out of
     tolerance) and -0.283 after removing each mouse's mean (reading b, within tolerance), the
-    value given as measured. The one reading with p below 0.001 (own, cue, samples, all sessions,
-    p = 0.0006) has r -0.13 pooled and -0.35 within mice, both out of tolerance. Readings with
-    the long-ITI session numbering, under the trial rule, give p 0.11 to 0.14. Per mouse, the OLS
+    value given as measured. The two readings with p below 0.001 (fit and own, cue, samples, all
+    sessions, p = 0.00064 and 0.00060) have r -0.13 pooled and -0.35 within mice, both out of
+    tolerance. Readings with the long-ITI session numbering, under the trial rule, give p 0.113
+    to 0.133. Per mouse, the OLS
     slope is negative in 14 of 18. The paper's r and p cannot both be matched under any reading.
     The first-listed reading measures the ITI from reward, the reading fig4b adopts.
   deviations:
   - The mixed model is fitted with statsmodels MixedLM (REML), random intercepts and slopes per
-    mouse, in place of the Julia package the paper used.
+    mouse, in place of the Julia package the paper used. It is fitted with L-BFGS, Powell and
+    Nelder-Mead and the converged fit with the highest REML likelihood is kept, as L-BFGS alone
+    stopped at a lower optimum in some runs (fit, cue, samples, all sessions gave p = 0.014 in the
+    round 2 notebook, against 0.00064 at the higher optimum).
 - claim: fig4c-lick-rate-rises-with-training
   outcome: reproduced
   notebook: reproduce_garud_2026.ipynb
@@ -217,11 +227,17 @@ outcomes:
     goal than farthest in 7 of 10. With at least 5 observations per mean, A > 0 in 6 of 10 (not
     reproduced under that reading). With the moving and stationary means taken from all rows off
     the ports (b1), the row set that matched Figure 2G-H, A > 0 in 7 and 6 of 10, the same counts.
-    Widening the profile scale search leaves the counts unchanged; 5 of the 10 winning fits (no
-    minimum, approach rows) run to the upper σ bound of 10,000 hexes, where the Gaussian is nearly
-    quadratic in distance and the sign of A still gives the direction of the fitted change. One
-    fit (IM-1292, minimum of 5) has A = -9e10 at σ near 0.8, a Gaussian that fits only the nearest
-    point, which lies below the rest. Open for the authors - the minimum count per position, which
+    The approach rows are recorded, as the Methods name them, though fig2gh adopts (b1) for the
+    same moving and stationary split; both row sets give 7. With the first round's narrower
+    bounds of the profile scale the counts and winners are the same under all four readings. 5 of
+    the 10 winning fits (no minimum, approach rows) run to the upper σ bound of 10,000 hexes, where
+    the Gaussian is nearly quadratic in distance and the sign of A still gives the direction of
+    the fitted change; the Gaussian wins there partly as a quadratic against nearly linear shapes.
+    Under the minimum of 5, IM-1292 has A = -2.6e11 at σ = 0.78 (approach rows) and -5.2e10 at
+    σ = 0.80 (b1; -2.44e12 in the round 2 notebook, as A is not determined for a Gaussian this
+    narrow), a Gaussian that fits only the nearest point, which lies below the rest, and
+    IM-1532's winning power law (approach rows) sits at the lower bound k = 1e-6 with A = 2.1e4.
+    Open for the authors - the minimum count per position, which
     rows give the stationary means, how hex-position gradients are placed on the approach axis, and
     the forms of the four profiles.
   deviations:
@@ -264,10 +280,10 @@ outcomes:
     (CT TD exponential), 948 (dV/dt Gaussian), 1623 (Value), 1866 (dV/dt exponential) and 6628
     (Velocity). Gaussian CT TD wins in 8 of 10 rats, dV/dt Gaussian in 2. With λ free to go below
     zero, the CT TD exponential and Value fits of IM-1322, IM-1398 and IM-1532 take a negative λ
-    (a profile rising with distance) and lower their SSE by 0.5 to 21; with the first round's
+    (a profile rising with distance) and lower their SSE by 0.53 to 20.93; with the first round's
     search (λ from 1e-4 to 5, σ from 0.3 to 100) CT TD exponential was 473 higher and Value 1679,
-    with the same winners. One fit (IM-1322, Gaussian CT TD) runs to σ = 10,000 hexes, its SSE
-    within 0.2 of the fit at σ = 100. A Nelder-Mead search over all parameters from each optimum
+    with the same winners. One fit (IM-1322, Gaussian CT TD) runs to the upper σ bound (9998
+    hexes), its SSE (11621.02) 0.17 below the fit at σ = 100. A Nelder-Mead search over all parameters from each optimum
     lowers no SSE by more than 1e-7.
   deviations:
   - The Methods fit all parameters by multi-start Nelder-Mead (4 initial vectors and 10
@@ -311,9 +327,10 @@ findings:
   about: data
   severity: critical
   statement: The photometry and the event log are on different clocks and the files do not say
-    so. Every photometry series starts at time 0, while the event log has its own zero; aligned by
-    the TTL2 channel, the photometry starts 3.6 to 251 s before the event log's zero. The only link is photometry_ttl2, described as "raw photometry channel ttl2", whose
-    rising edges fall on the cue onsets (event code 15). A user who takes both time bases as given
+    so. Every photometry series states a start of 0 (at most 8 microseconds), while the event log
+    has its own zero; aligned by the TTL2 channel, the photometry starts 3.6 to 251 s before the
+    event log's zero. The only link is photometry_ttl2, described in every file only as "raw
+    photometry channel ttl2", whose rising edges fall on the cue onsets (event code 15). A user who takes both time bases as given
     places dopamine seconds to minutes away from the cues and rewards.
 - kind: metadata_error
   about: data
@@ -411,7 +428,8 @@ verifications:
       centering. In short-ITI sessions the true-time reward contrast is negative, so alignment there
       is not verified directly, though the bin-0 peak suggests it is fine. The criterion says to
       adopt the best-supported reading, and cell 5 has evidence for the ITI-from-reward reading (7.57
-      and 44.72 s against the paper's ~8 and ~45 s), which the notebook does not adopt.
+      and 44.72 s against the paper's ~8 and ~45 s), which the notebook does not adopt. Could not
+      check an alternative fig4b baseline, such as a pre-cue window.
     response: Adopted the ITI-from-reward reading as the best-supported one, with the medians as the
       reason; the outcome is the same under all eight readings. Added the session mean ΔF/F (median
       2e-08) and a statement in the notebook and notes that a value below zero is partly set by the
@@ -534,3 +552,158 @@ verifications:
     reason: The method is in the supplement, which was not read. The Brown et al. data are not in
       DANDI:001552 - the API lists 502 assets, all Floeder.
     response: Tried the bioRxiv supplementary page again (it answered 429). No change.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the round 1 revision, with its conclusions and summary,
+    the helper module, the claims file, the attempt record and the paper's full text.
+  results:
+  - claim: floeder-subjects-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14 - 18 mice, 16 to 24 sessions, both classes in every mouse.
+    response: No change.
+  - claim: fig4a-lick-short-above-long
+    agrees: true
+    outcome: reproduced
+    reason: Cell 17 - t(17) = 4.15, p = 6.7e-4, short higher in 16 of 18.
+    response: No change.
+  - claim: fig4b-long-iti-dip-below-baseline
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 20 - long-ITI part below 0 under all 8 readings; short-ITI last bin -0.0067 /
+      -0.0056. Needs no assumed flag, as all 8 readings give the same outcome. The notes' session
+      mean ΔF/F (median 2e-08, largest 0.003) is printed for the fit reading only. Remaining (problem
+      3) - mean ΔF/F is zero by construction, and the cue-locked pre-cue level (about -0.0047 long,
+      -0.006 to -0.008 short) is close to the late-ITI tonic value; measured against a pre-cue
+      baseline there would be essentially no dip, so the part of fig4b that holds rests on the claims
+      file's zero baseline, not on the data. Reading "does not resolve" as above ΔF/F 0 under
+      session-wide centering may misread the paper; its most likely comparison is with the long-ITI
+      late level, and under that comparison the short-ITI part still fails (-0.0067 against
+      -0.0046), so the outcome stands. The round 1 could-not-check point about a pre-cue baseline is
+      not carried over.
+    response: The session mean ΔF/F is now printed for both corrections (own reading largest 4e-18).
+      Added two comparisons outside the criterion - the late-ITI level against the level 5 to 0 s
+      before the cue (difference 0.0003, t(17) = 1.03, p = 0.32, lower in 8 of 18 mice, so no dip
+      against that baseline), and the short-ITI last bin against the long-ITI late level (-0.0067
+      against -0.0046, paired t(17) = -1.87, p = 0.078, higher in 5 of 18). Both readings of the
+      baseline are asked of a reader in questions/garud-2026.yaml; the claim and its outcome are
+      kept as tested on the claims file. The round 1 could-not-check item is added to that round's
+      reason. Outcome unchanged.
+  - claim: fig4d-dip-deepens-with-training
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 24 - 0 of 16 readings reproduced, 10 of 16 partial. The notes' "p 0.11 to 0.14"
+      should be 0.113 to 0.133 as printed.
+    response: Corrected to 0.113 to 0.133. The re-run showed that the mixed model's L-BFGS fit can
+      stop at a lower REML optimum; it is now fitted with three optimizers and the fit with the
+      highest likelihood kept. Fit, cue, samples (all sessions) moves from p = 0.014 to 0.00064 at
+      the higher optimum, so 2 readings, not 1, have p below 0.001; both have r out of tolerance.
+      Still 0 of 16 reproduced and 10 of 16 partial. Outcome unchanged.
+  - claim: fig4c-lick-rate-rises-with-training
+    agrees: true
+    outcome: reproduced
+    reason: Cell 28 - r 0.648, p = 1.2e-5.
+    response: No change; the values are the same with the new mixed-model fitting.
+  - claim: krausz-included-observations
+    agrees: true
+    outcome: reproduced
+    reason: Cell 31 - 264,042 rows.
+    response: No change.
+  - claim: fig2a-ramp-toward-goal
+    agrees: true
+    outcome: reproduced
+    reason: Cell 34 - -0.68 per distance, -0.30 per hex, both p < 0.001.
+    response: No change.
+  - claim: fig2b-ramp-scales-with-reward
+    agrees: true
+    outcome: reproduced
+    reason: Cell 37.
+    response: No change.
+  - claim: fig2c-ramp-similar-early-late
+    agrees: true
+    outcome: reproduced
+    reason: Cell 40 - p = 0.52.
+    response: No change.
+  - claim: fig2d-ramp-scales-with-velocity
+    agrees: true
+    outcome: reproduced
+    reason: Cell 43.
+    response: No change.
+  - claim: fig2e-velocity-covaries-with-distance
+    agrees: true
+    outcome: reproduced
+    reason: Cell 46.
+    response: No change.
+  - claim: fig2f-coupling-grows-near-goal
+    agrees: true
+    outcome: reproduced
+    reason: Cell 49, reading (a); depends on taking distances 1 to 20, which is stated. Reading (b)
+      "p = 0.0075" in cell 50 and the notes is precision beyond the printed p = 0.007, not a
+      contradiction.
+    response: The cell now prints p to two significant figures (0.0075). No other change.
+  - claim: fig2gh-stationary-dip
+    agrees: true
+    outcome: reproduced
+    reason: Cell 52 (b1) - t = -4.274. The assumption that non-approach means all rows off the ports
+      is stated, and reasonable given the Figure 2G-H legend. It was picked after the fact because it
+      is the only row set that matches the paper; the notes say this openly.
+    response: No change.
+  - claim: fig3-recovered-value-increases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 55 - 7 of 10 under both row sets. The assumption of no minimum count per position is
+      stated and reasonable, the literal Methods reading. fig3 records the approach rows (a) while
+      fig2gh adopts (b1) for the same split, and the record does not reconcile this, but both give 7.
+      The notes' "A = -9e10" for IM-1292 does not match cell 55 (-2.59e11 under (a), -2.44e12 under
+      (b1)), and "widening the profile scale search leaves the counts unchanged" is not shown in this
+      notebook. 5 of 10 winning Gaussian fits (a, min 1) sit at σ = 10,000, effectively quadratic;
+      under min 5 IM-1532's winning power law sits at k = 1e-6 with A = 2e4, so the Gaussian wins
+      partly measure a quadratic against nearly linear shapes. This does not change the outcome.
+    response: The notebook now runs the value recovery with the first round's narrower profile
+      bounds as well; counts and winners are the same under all four readings. The A values are
+      corrected to the printed ones (in this run IM-1292 under (b1) is -5.2e10 at σ = 0.80), the
+      row-set choice is reconciled in the notes and the edge fits are described. Outcome unchanged.
+  - claim: fig3cd-gaussian-shape-wins
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 58 - 9/1/0, and mean R² is never above 0.8 for all four shapes. The fits at the edge
+      of the search (see fig3) do not change the outcome.
+    response: No change in outcome; the edge fits are described under fig3.
+  - claim: fig5bc-gaussian-ct-td-best
+    agrees: true
+    outcome: reproduced
+    reason: Cell 61 - lowest summed BIC, 8 of 10 rats. "Lower their SSE by 0.5 to 21" and "its SSE
+      within 0.2 of the fit at σ = 100" are not printed; cell 61 prints only the summed ΔBICs.
+    response: Cell 61 now prints the SSE of the narrower search minus the wide one for each fit
+      (0.53 to 20.93 for the six fits with a negative λ) and the IM-1322 Gaussian CT TD SSE at both
+      bounds (11621.02 against 11621.2 at σ = 100). Text updated to the printed values. Outcome
+      unchanged.
+  - claim: fig5d-tonic-term-and-gaussian-contribute
+    agrees: true
+    outcome: reproduced
+    reason: Cell 64 (a) - 1201.0 / 665.0, within tolerance with a margin of about 30.
+    response: No change.
+  - claim: figs2-no-velocity-coupling-without-goal
+    agrees: true
+    outcome: blocked
+    reason: Supplement not available.
+    response: No change.
+  findings:
+  - finding: 1
+    agrees: true
+    reason: Shown, and critical is right. Cell 9 shows identical 470 hashes, sample counts (381,921
+      and 330,189), cue counts and lick counts for F2 Day3/Day4 and F4 Day5/Day6. Cue and lick
+      identity is shown only through the counts. One recording deposited as two, labelled as
+      different days, is critical by definition.
+    response: No change.
+  - finding: 2
+    agrees: true
+    reason: Shown in substance, and critical is right. Cell 7 shows TTL2 edges fitting cue times
+      within 0.094 s, and the photometry starting 3.6 to 251.3 s before the event-log zero. "Starts
+      at time 0" and the TTL2 description are not printed. Signals on different clocks with no
+      stated link are critical; the 64 files with the wrong rate would make the problem visible, but
+      the other 292 sessions would not.
+    response: Cell 7 now prints the stated start of every photometry series (0 to 8 microseconds)
+      and the description of photometry_ttl2 in every file ("raw photometry channel ttl2"). The
+      finding now says the series state a start of 0. Severity kept.

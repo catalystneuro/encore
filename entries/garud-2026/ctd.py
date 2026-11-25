@@ -172,6 +172,10 @@ def load_session(asset_id, photometry=True):
         p470 = acq["photometry_470"]
         d["stated_rate"] = (float(p470["starting_time"].attrs["rate"]) if "starting_time" in p470
                             else 1 / float(np.median(np.diff(p470["timestamps"][:1000]))))
+        d["stated_start"] = (float(p470["starting_time"][()]) if "starting_time" in p470
+                             else float(p470["timestamps"][0]))
+        desc = acq["photometry_ttl2"].attrs.get("description", "")
+        d["ttl2_description"] = desc.decode() if isinstance(desc, bytes) else str(desc)
         if photometry:
             ttl2 = acq["photometry_ttl2"]["data"][:]
             edges = rising_edges(ttl2)
@@ -318,14 +322,20 @@ def last_bin_value(m, obs="trials"):
 
 
 def mixed_slope(df, y, x, group="subject"):
-    """Linear mixed model y ~ x with random intercepts and slopes per subject (Methods)."""
+    """Linear mixed model y ~ x with random intercepts and slopes per subject (Methods).
+
+    The REML surface has several local optima for some readings, and which one L-BFGS reaches
+    can change with rounding in the inputs; the model is fitted with L-BFGS, Powell and
+    Nelder-Mead and the converged fit with the highest REML log-likelihood is kept.
+    """
     import statsmodels.formula.api as smf
     import warnings
     d = df[[y, x, group]].dropna()
+    model = smf.mixedlm(f"{y} ~ {x}", d, groups=d[group], re_formula=f"~{x}")
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        fit = smf.mixedlm(f"{y} ~ {x}", d, groups=d[group], re_formula=f"~{x}").fit(
-            method=["lbfgs", "powell"], reml=True)
+        fits = [model.fit(method=m, reml=True, maxiter=5000) for m in ("lbfgs", "powell", "nm")]
+    fit = max((f for f in fits if f.converged and np.isfinite(f.pvalues[x])), key=lambda f: f.llf)
     r_pooled = stats.pearsonr(d[x], d[y])
     dm = d.groupby(group)[[x, y]].transform(lambda s: s - s.mean())
     r_within = stats.pearsonr(dm[x], dm[y])
@@ -411,6 +421,9 @@ PROFILES = {
 }
 PROFILE_BOUNDS = {"exponential": (1e-6, 20), "hyperbolic": (1e-6, 1e3), "power-law": (1e-6, 20),
                   "gaussian": (0.1, 1e4)}
+# the first round's narrower bounds, shown beside the wide ones
+PROFILE_BOUNDS_NARROW = {"exponential": (1e-4, 5), "hyperbolic": (1e-4, 50), "power-law": (1e-4, 10),
+                         "gaussian": (0.3, 60)}
 
 
 def _linear_given_shape(basis, y):
@@ -420,11 +433,11 @@ def _linear_given_shape(basis, y):
     return coef, sse
 
 
-def fit_profile(name, d, V):
+def fit_profile(name, d, V, bounds=PROFILE_BOUNDS):
     """Best three-parameter fit of a profile; the shape parameter by bounded search over a grid
     then refinement, A and c by least squares given it (same optimum as a joint search)."""
     f = PROFILES[name]
-    lo, hi = PROFILE_BOUNDS[name]
+    lo, hi = bounds[name]
     grid = np.geomspace(lo, hi, 200)
 
     def sse_of(p):
@@ -543,7 +556,8 @@ def session_summary(asset_id):
     s = {"has_events": True, "session_description": d["session_description"],
          "n_cues": len(d["cue"]), "n_rewards": len(d["reward"]), "n_licks": len(d["lick"]),
          "median_ici": float(np.median(np.diff(d["cue"]))) if len(d["cue"]) > 1 else np.nan,
-         "stated_rate": d["stated_rate"], "clock_a": d["clock_a"], "clock_b": d["clock_b"],
+         "stated_rate": d["stated_rate"], "stated_start": d["stated_start"],
+         "ttl2_description": d["ttl2_description"], "clock_a": d["clock_a"], "clock_b": d["clock_b"],
          "clock_resid": d["clock_resid"], "n_edges": d["n_edges"],
          "clock_pairs": d["clock_pairs"],
          "n_samples": d["n_samples"], "n_nan470": int(np.isnan(d["s470"]).sum()),
@@ -567,8 +581,8 @@ def session_summary(asset_id):
                                    for sh in (-6.0, -3.0, 3.0, 6.0)]
             s["dff_range"] = (float(np.nanmin(sig)), float(np.nanmax(sig)))
             s["dff_pct"] = tuple(float(x) for x in np.nanpercentile(sig, [0.1, 50, 99.9]))
-            s["dff_mean"] = float(np.nanmean(sig))
             s["cue_trace"] = cue_locked(d["t"], sig, d["cue"])
+        s[f"dff_mean_{corr}"] = float(np.nanmean(sig))
         means, counts = reward_bins(d["t"], sig, trials)
         for obs in ("trials", "samples"):
             m = kept_bins(means, counts, obs)

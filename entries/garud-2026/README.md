@@ -33,8 +33,8 @@ which steps at each cue. Two sessions are deposited twice and are counted once. 
 record, with the reasons and the differences from the paper's method, is
 [`attempts/garud-2026-01.yaml`](../../attempts/garud-2026-01.yaml).
 
-- `reproduce_garud_2026.ipynb`: the analysis. It takes about five minutes, most of it streaming
-  the 358 session files.
+- `reproduce_garud_2026.ipynb`: the analysis. It takes about fifteen minutes, most of it
+  streaming the 358 session files and fitting the mixed models.
 - `ctd.py`: loading the files and aligning their clocks, ΔF/F, the tonic and lick measures, and
   the Krausz selection, value recovery and model fits. Other notebooks on this dandiset can
   import it.
