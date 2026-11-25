@@ -1,46 +1,42 @@
-The attempt on dandiset 000718 is done through step 6 (protocol `pilot-7`). `tools/entry.py check` reports 0 errors, the notebook passes `all` in a clean environment in 81 s, and the handover is built in `executed/000718-zaki-2024/handover/`. I used the full text of the paper, which is open access (PMC11666460, CC BY), saved under `paper/`. Nothing is committed.
+I finished steps 1 to 6: the entry is at `entries/zaki-2024`, the record is `attempts/zaki-2024-02.yaml`, and there is a new question for a reader in `questions/zaki-2024.yaml`. `python tools/entry.py all` passes with 0 errors, and I built the verifier's package with `handover`. I did not verify my own work and committed nothing.
 
-## 1. Outcomes (26 claims)
+On blindness: the claims file's header already describes some of what an earlier author saw in the data. It gives the four ensemble sizes, version 0.260825.1902 and Ca_EEG3-4's Recall2 freezing of 15.1%. That is the only earlier-attempt information I came across. I looked at no other attempt, website, issue or pull request.
 
-| Claim | Outcome |
-|---|---|
-| `source-data-link` (uses outside data): the two mice match the paper's per-mouse freezing | reproduced (4 of 4 values within 10%) |
-| `ed9b-aversive-freezing-high-vs-low` | reproduced (64.1% against 8.8%, one mouse per group) |
-| `offline-bursts-above-shuffle` | blocked, `methods_underspecified` |
-| `offline-skew-above-shuffle` | reproduced (3 of 3 recordings above all 1000 surrogates) |
-| `burst-locomotion-pause` | not reproduced (telemetry movement proxy) |
-| `fig5c-wake-overlap-neutral-coburst` | partially reproduced (holds only with wake as the `wake` label alone; 2 against 1 discordant bursts) |
-| 20 other claims (behaviour-only, one-hour offline and single-experience, inhibitory tagging, no-shock, EEG sleep and low-shock) | blocked, `data_missing` |
+### 1. Outcomes
 
-On the burst claim: under the procedure the criterion fixed, the true burst rate is below the surrogates, which would be "not reproduced". But the paper's own chance level (surrogate/true 0.72 to 0.96, from its source data) is far from mine (1.26 to 1.60), so the protocol's chance-level rule makes it blocked.
+| Claim | Outcome | Basis |
+|---|---|---|
+| source-data-link | reproduced | Both mice and both shock groups match the paper's source data. All 4 freezing values are within tolerance under both readings; reading (b) equals the source data to two decimals for Ca_EEG3-4. |
+| ed9b-aversive-freezing-high-vs-low | reproduced | 64.1% against 8.8% freezing; the high-shock mouse froze more in 10 of 10 30-s bins (Mann-Whitney p = 1.8e-4). One mouse per group. |
+| offline-bursts-above-shuffle | not_reproduced | In all 3 recordings the true burst rate is below the surrogate mean (8.73 vs 10.94, 6.42 vs 8.81, 5.31 vs 8.48 per min). Same under all 5 seeds. |
+| offline-skew-above-shuffle | reproduced | True skew is above all 1000 surrogates in all 3 recordings, under all 5 seeds. |
+| burst-locomotion-pause | not_reproduced | No drop in movement before bursts under either time-zero reading (one-sided p 0.45 to 0.92). |
+| fig5c-wake-overlap-neutral-coburst | partially_reproduced | Counting wake alone: overlap-neutral 33.3% against overlap-aversive 29.2%, McNemar p = 1.0. Counting wake plus quiet wake, the order reverses (25.9% against 35.3%). |
+| 4 claims on this cohort | blocked, data_missing | fig5c sleep and low-shock claims, ed9c, ed9-ed10 |
+| 16 claims on other experiments | blocked, data_missing | None of those mice are in the dataset. |
 
-## 2. What was found about the dandiset
+### 2. Dataset, assumptions, questions
+- **Clock offset (major):** in Ca_EEG2-1, the behaviour sessions' timestamps run about 1 h ahead of the offline recordings and telemetry.
+  - The telemetry drops out (mouse off its receiver) about an hour before each behaviour timestamp, and is normal during the FC timestamp itself.
+  - The offline file's EEG equals the Week file's EEG exactly from the epoch start, so those two share one clock.
+  - As timestamped, the first offline recording "after FC" starts 47 min before FC.
+- **Undefined sleep state (major):** "quiet wake" has no definition and the paper has no such state. 61 of 87 bursts fall in it, and it flips the Fig. 5c comparison.
+- **Missing data (major):** 2 of 9 mice are deposited, and 1 of 24 offline recordings for Ca_EEG2-1. Ca_EEG3-4 has no cell registration, and there are no NREM or REM epochs.
+- **Minor:**
+  - Telemetry is stored at 500 Hz, where the Methods say 100 Hz.
+  - The shock amplitude in the FC descriptions has no unit.
+  - The Week file's start time is local time labelled as UTC.
+- **Checks that passed:** ensemble sizes are 97/80/166/282, no recording is deposited twice, and the 3 files changed since 0.260825.1902 hold the same values in every array used here.
+- **Assumption:** circular-shift offsets are drawn uniformly over the whole recording, stated as a standard choice. No outcome is marked `assumed`.
+- **Question for a reader and for the authors:** the criterion re-z-scores the shuffled trace before counting bursts, but the ED3l legend does not say this. The other reading, thresholding at the true trace's own z = 2 level, gives the opposite outcome; I show it as a variant. The paper's analysis code is still not public (404).
 
-- **Coverage:** it holds 2 of the 9 mice of the EEG/EMG experiment: Ca_EEG2-1 (1.5 mA, high shock) and Ca_EEG3-4 (0.25 mA, low shock). Of each offline period only the first 10 min recording of 24 is there. Ca_EEG2-1 has no neutral or novel recall session and no offline-day-1 recording.
-- **Missing cohorts:** none of the mice behind Figures 2 to 4 and 6 or the behaviour-only experiments are deposited.
-- **Registration:** only Ca_EEG2-1 has cell registration. Its 19 tables cover recordings of which one is deposited. The tables agree with the ROI centroids (2 to 3 px against about 190 px for random pairs).
-- **Session times, Ca_EEG2-1:** behaviour-session start times (and the Week epochs built from them) are about 1 h later than the telemetry and Miniscope clock. As deposited, the offline recording after FC starts 47 min before FC. Telemetry dropouts while the mouse is out of its cage show the true order.
-- **Timestamps:** the OnePhotonSeries timestamps of three files are halved.
-- **Sleep labels:** the labels include `quiet wake`, which the paper never defines. The deposited offline recordings hold no NREM or REM.
-- **Offline session description:** it says "an hour" and "webcam"; the deposited recordings are 10 min of telemetry with no video.
-- **Paper's code:** the analysis repository the paper names returns 404.
-- **No duplicates:** no recording is deposited twice.
-- **Clock checks:** calcium, behaviour and telemetry are consistent with a shared clock, except Ca_EEG3-4 offline day 1, where it could not be established.
+### 3. Protocol points
+1. The claims header carries an earlier author's data-check facts into a blind attempt. I said so here.
+2. The suggested clock check (decoding task variables around trial starts) does not fit offline imaging. I used lagged correlations and sleep labels shifted in time. The imaging and telemetry clocks were found consistent but could not be shown to match, and I said so on the locomotion claim.
+3. The severity table puts "events on different clocks" under critical, but here the contradiction can be seen in the files and it is unclear which clock is right. I rated it major.
+4. A method the criterion fixes but the paper does not state fits neither the "ask a reader" nor the "ask the authors" route cleanly. I did both.
+5. The variant's random generator uses seed + 1, while the five-seed sensitivity runs use + 1000 to + 4000.
 
-## 3. Where the protocol was unclear, wrong or missing something
-
-1. **General claims shown only in an undeposited cohort.** The protocol doesn't say whether these may be tested on the cohort that is deposited. I tested three (bursts, skew, movement pause), because the paper relies on them for its Figure 5 argument, and recorded the cohort difference as a deviation. Claims specific to the undeposited cohorts are blocked.
-2. **Chance-level rule.** The paper states its chance level only in its source data, and for another cohort at another frame rate. I applied the rule anyway (blocked), and the notes give the result under the fixed criterion.
-3. **Source-data repository.** The lab's repository of per-mouse figure values isn't covered: it could count as data deposited elsewhere (`elsewhere`) for the behaviour claims. I kept those claims `data_missing` and did not re-run statistics on figure values. I used the repository only for the link claim and for the reference chance levels.
-4. **Link claim with nothing depending on it.** The protocol describes link claims as gates for dependent claims. Here no claim needs the outside data, so `source-data-link` is a standalone check of the dandiset with no `depends_on`.
-5. **One mouse per group.** The protocol is silent on how to judge an across-mouse claim with one mouse. I fixed within-session tests in the criteria (30 s bins, McNemar over bursts) and said the paper's statistic was not tested. For the absence claim with one low-shock mouse, I blocked it.
-6. **Clock between sessions.** The clock check covers streams within a session only, not start times across sessions. I added a cross-session check using telemetry dropouts.
-7. **Data seen before criteria.** During the data check I saw one value the link claim compares (Recall2 freezing, 15.1%). I stated this in the claims file's opening comment, as the protocol allows.
-8. **Paper year for the entry name.** It's ambiguous (online 2024, issue 2025). I used 2024: `entries/000718-zaki-2024`.
-
-## 4. Runtime and failures
-
-- **Runtime:** the notebook takes 81 to 82 s; `entry.py all` takes about 92 s.
-- **Cloning:** `git clone` from GitHub failed (it asked for credentials), so I fetched both repositories as tarballs at pinned commits.
-- **Cleanup denied:** removing `entries/000718-zaki-2024/__pycache__` and an empty harness directory `entries/000718-zaki-2024/.claude/.cc-writes` needed approval and was denied. `__pycache__` is gitignored, and git does not commit an empty directory, so neither should end up in the commit, but a check before the workflow commits would confirm it.
-- **Stray files:** the sandbox's `/dev/null` placeholders (`.bashrc`, `.idea` and others at the repo root) appear as untracked; I left them alone.
+### 4. Runtime and failures
+- The notebook runs in about 3 min with 0.87 GB peak memory; the whole session took about 35 min (03:35 to 04:10 UTC).
+- Two bugs found during development were fixed before the final run: the 30-s bins came out as 9 instead of 10, and an array-length mismatch in the duplicate check. Nothing else failed.
