@@ -26,28 +26,32 @@ outcomes:
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig2a-threshold-decrease
   measured:
-  - 5.78
-  - 4.07
-  notes: Under reading (b), hit proportions corrected for false alarms, the median session threshold is 5.78 uA
-    early (n 46) and 4.07 uA late (n 89), p = 9.97e-08, r = 0.56; both within tolerance. Under reading (a), guess
-    rate fixed at the catch-trial rate, 5.41 and 3.69 uA (n 43 and 80, the paper's counts), p = 2.1e-07; the late
-    median is below 4.2 - 0.42. 18 of 1152 block fits (both readings) have no finite threshold, and 18 blocks have
-    a false-alarm rate of 0.5 or more; sessions with such a block drop out; averaging the finite blocks gives 5.56
-    and 3.97 uA (n 46, 89). Thresholds are lower late in each of the six mice. Without ICMS83 reading (b) gives
-    5.89 and 4.09 uA (p = 1.08e-06).
+  - 5.7
+  - 3.91
+  notes: Under reading (a), guess rate fixed at the catch-trial rate, the median session threshold is 5.70 uA early
+    (n 43) and 3.91 uA late (n 80), the paper's counts, p = 2.1e-07, r = 0.57; under reading (b), hit proportions
+    corrected for false alarms, 5.78 and 4.07 uA (n 46 and 89), p = 9.97e-08, r = 0.56. Both medians are within
+    tolerance under both readings. 18 of 1152 block fits have no finite threshold (reading a, 3 failed fits and
+    15 with no 50% point), and a session with such a block has none; averaging the finite blocks gives 5.56 and
+    3.97 uA under (a). psignifit's own threshold parameter under (a) gives 5.77 and 3.95 uA (p = 5e-08). Thresholds
+    are lower late in each of the six mice. Without ICMS83, reading (a) gives 5.85 and 3.73 uA, reading (b) 5.89
+    and 4.09 uA.
   deviations:
   - ICMS83's files have no catch trials and no block structure (180 to 480 trials, trial_index up to 625), so its
     sessions are fitted as one block with a false-alarm rate of 0; other mice use blocks of 100 trials by trial_index.
   - Blocks are fitted with all amplitudes presented (1 to 14 uA); the Methods' restriction to 4, 5 and 6 uA is read
     as applying to the neural analyses.
   - psignifit 4.3 with its default priors; the threshold is where the fitted curve gives 50% hits.
+  - A session with a block without a finite threshold (a failed fit, or no 50% point) has no session threshold,
+    as the session threshold is the mean of the four block thresholds (Methods, Analysis of behavioral data); the
+    mean of the finite blocks is a variant.
 - claim: figs1e-response-time
   outcome: reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:figs1e-response-time
-  notes: Hit-trial response times at 4 to 6 uA are shorter late. (a) trials, 190.1 ms early (n 1808) against 173.8
-    ms late (n 4168), p = 7.19e-17, r = 0.14; (b) channel-session medians, 221.4 (n 47) against 182.4 ms (n 87),
-    p = 0.00165. Weekly medians are 229.6, 180.4, 190.7, 178.6 and 156.2 ms in weeks 0 to 4. Five mice are faster
+  notes: Hit-trial response times at 4 to 6 uA are shorter late. (a) trials, 192.3 ms early (n 1644) against 179.2
+    ms late (n 3764), p = 2.83e-11, r = 0.11; (b) channel-session medians, 222.8 (n 42) against 181.7 ms (n 87),
+    p = 0.00256. Weekly medians are 231.6, 182.2, 198.5, 185.0 and 158.1 ms in weeks 0 to 4. Five mice are faster
     late; ICMS83 is slower late (254.9 against 356.0 ms).
   deviations:
   - The supplementary panel was not supplied; the test is the claims file's (two-sided Mann-Whitney U, early against
@@ -60,45 +64,60 @@ outcomes:
     2023-09-06). The files do not say which samples are pre-stimulus and which stimulation volumes; the catch-trial
     pattern across samples is the same as at 6 uA. The Methods' activation (at least 50% of an ROI's voxels above
     twice their baseline STD) needs voxel data that are not in the files, so the activated counts cannot be derived.
+    The full description of the series says the DF/F is an A1 footprint average of pre/mid 4D stacks with baseline
+    the mean of pre frames, without saying which samples are which; read as four pre and four mid samples, mid minus
+    pre is 0.114 on catch trials and 0.080 to 0.320 at 2 to 6 uA, in no order by current. The segmentation tables
+    of all 45 behavioural files with imaging hold only masks, sizes and source identifiers, with no activation or
+    distance column.
 - claim: fig2c-more-activated-neurons
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: As fig2b-representative-recruitment, the volumetric activation cannot be derived from the files. The distances
     and densities also need the stimulation site's position in the imaging volume, which the behavioural files do
-    not give (they have no stim_electrode_positions table, unlike the control files).
+    not give (they have no stim_electrode_positions table, unlike the control files). The segmentation tables hold
+    no activation or distance column (sanity check).
 - claim: fig2d-density-peak-200um
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: As fig2b-representative-recruitment, the volumetric activation cannot be derived from the files. The distances
     and densities also need the stimulation site's position in the imaging volume, which the behavioural files do
-    not give (they have no stim_electrode_positions table, unlike the control files).
+    not give (they have no stim_electrode_positions table, unlike the control files). The segmentation tables hold
+    no activation or distance column (sanity check).
 - claim: fig2e-density-200um
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: As fig2b-representative-recruitment, the volumetric activation cannot be derived from the files. The distances
     and densities also need the stimulation site's position in the imaging volume, which the behavioural files do
-    not give (they have no stim_electrode_positions table, unlike the control files).
+    not give (they have no stim_electrode_positions table, unlike the control files). The segmentation tables hold
+    no activation or distance column (sanity check).
 - claim: fig2e-activation-radius
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: As fig2b-representative-recruitment, the volumetric activation cannot be derived from the files. The distances
     and densities also need the stimulation site's position in the imaging volume, which the behavioural files do
-    not give (they have no stim_electrode_positions table, unlike the control files).
+    not give (they have no stim_electrode_positions table, unlike the control files). The segmentation tables hold
+    no activation or distance column (sanity check).
 - claim: fig2g-at-threshold-stable
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: As fig2b-representative-recruitment, the volumetric activation cannot be derived from the files. The distances
     and densities also need the stimulation site's position in the imaging volume, which the behavioural files do
-    not give (they have no stim_electrode_positions table, unlike the control files).
+    not give (they have no stim_electrode_positions table, unlike the control files). The segmentation tables hold
+    no activation or distance column (sanity check).
 - claim: figs2ef-control-stable
   outcome: not_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:figs2ef-control-stable
-  notes: A claim of absence, judged on the count test. In the control mice the number of activated ROIs per channel-session
+  notes: 'A claim of absence, judged on the count test. In the control mice the number of activated ROIs per channel-session
     at 5 uA is a median of 12.5 in weeks 0 and 1 (n 54) and 2.0 in weeks 2 and 3 (n 60), two-sided p = 0.00378,
     r = 0.31; as a fraction of ROIs, 0.063 against 0.027 (p = 0.00875). The ROIs per session range from 1 to 721.
-    The density within 200 um was not computed (see deviations), and the side-by-side with the behavioural early
-    weeks could not be made, as their volumetric activation cannot be derived.
+    The pooled test mixes mice: ICMS48 has only early sessions (medians 67 and 46); with the five mice seen in both
+    phases the medians are 4.0 and 2.0 (p = 0.444), and on percentile ranks within mouse p = 0.0658. Within mice
+    the counts change in three of five: down in ICMS45 (4.5 to 1.0, p = 0.00502) and ICMS54 (8.0 to 1.0, p = 0.00628),
+    up in ICMS56 (0.0 to 8.5, p = 0.00212), so the stability fails within mice too. Without sessions of fewer than
+    10 ROIs, 19.0 against 2.0 (p = 9.87e-06). The density within 200 um and the 800 um limit were not applied (see
+    deviations), and the side-by-side with the behavioural early weeks could not be made, as their volumetric activation
+    cannot be derived.'
   deviations:
   - The activation is the files' binary per-ROI table (RegionMetrics.mat in the description), not recomputed.
   - 'The density test cannot be run: the control files give ROI voxels in pixel and plane indices with no pixel
@@ -129,7 +148,9 @@ outcomes:
   blocked_by: metadata_insufficient
   notes: The planar ROIs are a separate segmentation in each session (the file description says so; 53 to 1019 ROIs
     per session), with no identifier linking them across sessions, and the per-session mean images that the PatchWarp
-    registration of the Methods aligns are not in the files, so no neuron can be followed across weeks.
+    registration of the Methods aligns are not in the files, so no neuron can be followed across weeks. Readings
+    (b) and (c) could be computed on all activated ROIs of week 0 and week 4 without tracking, but the claim is
+    about the same neurons followed over weeks, and separately segmented populations would test a different quantity.
 - claim: fig3j-subgroup-increase
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -166,7 +187,9 @@ outcomes:
   notes: The planar ROIs are a separate segmentation in each session (the file description says so; 53 to 1019 ROIs
     per session), with no identifier linking them across sessions, and the per-session mean images that the PatchWarp
     registration of the Methods aligns are not in the files, so no neuron can be followed across weeks. It depends
-    on fig3j-subgroup-increase, blocked for the same reason.
+    on fig3j-subgroup-increase, blocked for the same reason. Its recruitment reading (b) could be computed per session
+    without tracking, but the claim concerns tracked neurons and the subgroup of fig3j, and a claim that depends
+    on a blocked claim is blocked with it.
 - claim: fig4d-waveform-separation
   outcome: blocked
   blocked_by: data_missing
@@ -185,20 +208,21 @@ outcomes:
   - 179
   notes: '999 units (973 +- 97.3): 732 pyramidal and 260 interneurons by the stored label, 7 unknown (724 and 275
     by the trough-to-peak recomputed from the mean waveform). Modulated units 588 (484 +- 48.4): 406 pyramidal,
-    179 interneurons (402 and 186 by trough-to-peak); with all channels 588, with a one-sided test 599. Both histograms
-    have a mode below 0.45 ms (0.383 ms) and one above (0.717 ms for all units, 0.617 ms for modulated), with a
-    dip between. The recorded counts are within tolerance by trough-to-peak and the stored-label interneuron count
-    (260) is just below 270.9; the modulated total is outside under every variant, so the claim fails by its criterion.
-    Per mouse, recorded and modulated units are ICMS92 208/154, ICMS93 302/118, ICMS98 212/115, ICMS100 93/57, ICMS101
-    127/108, ICMS83 57/36.'
+    179 interneurons (402 and 186 by trough-to-peak); with all channels 588, with a one-sided test 599, with pre-stimulus
+    windows of 300 and 500 ms 653 and 633. Both histograms have a mode below 0.45 ms (0.383 ms) and one above (0.717
+    ms for all units, 0.617 ms for modulated), with a dip between. The modulated total is outside its tolerance
+    under every variant, so the claim fails by its criterion. Per mouse, recorded and modulated units are ICMS92
+    208/154, ICMS93 302/118, ICMS98 212/115, ICMS100 93/57, ICMS101 127/108, ICMS83 57/36.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
-  - Cell type by the stored cell_type label (main) and by the recomputed trough-to-peak (variant); they agree for
-    90% of units.
+  - Cell type by the stored cell_type label (main, as for every claim) and by the recomputed trough-to-peak (variant);
+    they agree for 90% of units.
   assumed: true
 - claim: figs3-modulation-all-cells
   outcome: partially_reproduced
@@ -206,16 +230,24 @@ outcomes:
   output: claim:figs3-modulation-all-cells
   notes: Modulation is higher late at 4, 5 and 6 uA (medians 2.68 to 3.77, 3.40 to 3.88, 3.56 to 4.57; p = 6.84e-05,
     0.00853, 0.000404). Time to maximum is shorter late at 5 uA (85 to 45 ms, p = 0.00441), not significantly at
-    4 and 6 uA (p = 0.0523, 0.168). At the current nearest each session threshold, modulation is higher late under
-    both threshold readings (2.53 to 4.13, p = 2.59e-05; 2.64 to 4.21, p = 4.96e-06), so the stable part does not
-    hold. Two of three parts hold. The representative recordings of the supplement are not identified; all mice
-    are pooled.
+    4 and 6 uA (p = 0.0523, 0.168). At the current nearest each session threshold, from every current presented
+    (2 to 10 uA), modulation is stable under both threshold readings (2.85 to 2.99, p = 0.484; 2.95 to 3.25, p =
+    0.461), so all three parts hold. Restricted to 4 to 6 uA, the at-threshold modulation is higher late (2.53 to
+    4.13, p = 2.59e-05; 2.64 to 4.21, p = 4.96e-06), which would make the claim partially reproduced. The representative
+    recordings of the supplement are not identified; all mice are pooled.
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
+  - At threshold, the response at the session threshold rounded to the nearest integer current, kept when that current
+    was presented, from every current presented, as the criterion refers to fig2g-at-threshold-stable; the Methods
+    analyse only 4, 5 and 6 uA (Analysis of behavioral data), and that restriction, which drops thresholds rounding
+    to 2 or 3 uA, is shown as a variant. This choice is an assumption; the two give different outcomes.
+  assumed: true
 - claim: fig4g-modulated-count-mouse1
   outcome: not_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
@@ -223,13 +255,17 @@ outcomes:
   notes: Mouse 1 (ICMS92) at 4 uA has 8 early and 21 late session-channel counts, the paper's n; medians 12.0 and
     14.0, one-sided p = 0.0571, r = -0.39 (paper 0.044). Pooled over six mice early 7.0 (n 26) and late 9.0 (n 84),
     one-sided p = 0.0805, so the group part holds. Counts rise significantly in ICMS101 (p = 0.00232) and ICMS83
-    (p = 0.0165). No random draws are involved.
+    (p = 0.0165). With pre-stimulus windows of 300 and 500 ms, Mouse 1 gives p = 0.014 and 0.0127 and the pooled
+    test p = 0.0361 and 0.0375, which would make the claim partially reproduced. No random draws are involved.
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
+  assumed: true
 - claim: fig4ij-pyramidal-drive
   outcome: reproduced
   notebook: reproduce_kim_2026_learning.ipynb
@@ -238,10 +274,14 @@ outcomes:
     pyramidal time to maximum falls at 5 and 6 uA (65 to 25 ms, p = 0.000329; 85 to 35 ms, p = 0.025); interneuron
     modulation does not change (p = 0.331, 0.884, 0.0885). The interneuron latency at 6 uA is longer late (130 to
     190 ms, p = 0.0335), as the paper reports. With the recomputed trough-to-peak the pyramidal latency at 6 uA
-    gives p = 0.0587, which would make the claim partially reproduced; the other parts are the same.'
+    gives p = 0.0587, which would make the claim partially reproduced; the other parts are the same. The 97 units
+    where the two disagree are stored as pyramidal at a recomputed 0.333 to 0.433 ms, or as interneurons at 0.467
+    to 0.900 ms (median 0.533), so the stored label was not computed from the stored waveform.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
@@ -257,117 +297,136 @@ outcomes:
   measured: 0.839
   notes: '906 unit-channel pairs with modulated responses (z < 50) at two or more currents (paper 729): 657 PL at
     all currents, 103 NPL at all, 70 PL to NPL, 59 NPL to PL, 17 mixed. The fraction keeping identity is 0.839 under
-    the claim''s seed and 0.843, 0.842, 0.852 and 0.843 under the seeds plus 1000 to 4000.'
+    the claim''s seed and 0.843, 0.842, 0.852 and 0.843 under the seeds plus 1000 to 4000. 80.5% of the selected
+    responses are PL (paper''s counts imply about 63%); the PL curves peak at a median of 3.75 ms after the pulse
+    (3.2% in the first valid bin), and with spikes placed uniformly in the valid window 2.4% of responses are called
+    PL, so the excess is not a blanking-edge artefact or false positives.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
 - claim: fig5e-pyramidal-in-pl
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig5e-pyramidal-in-pl
   measured:
-  - 73.9
-  - 55.7
-  notes: 'Stored label: 73.9% of 444 PL units and 55.7% of 140 NPL units are pyramidal, Fisher p = 8.74e-05. The
-    NPL fraction is above 49.8 + 4.98. Under the seeds plus 1000 to 4000 the NPL fraction is 56.1, 56.6, 54.4 and
-    56.8% (PL 73.2 to 74.1%), so the seed plus 3000 puts it inside the tolerance. Recomputed trough-to-peak: 71.8%
-    and 57.1%, p = 0.00172.'
+  - 73.4
+  - 57.1
+  notes: 'Stored label: 73.4% of 444 PL units and 57.1% of 140 NPL units are pyramidal, Fisher p = 0.000475. The
+    PL fraction is within tolerance and the NPL fraction above 49.8 + 4.98; pyramidal cells are more common among
+    PL units, with a smaller difference than the paper''s. Under the seeds plus 1000 to 4000 the NPL fraction is
+    57.8, 55.5, 55.1 and 58.0% (PL 73.1 to 73.9%, p at most 0.001). Recomputed trough-to-peak: 72.0% and 56.4%,
+    p = 0.000819.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
   - Unit classes from the responses with z < 50, the selection of Figure 5 in the claims file.
-  seed_sensitive: true
 - claim: figs4b-conduction-velocity
   outcome: not_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:figs4b-conduction-velocity
   notes: 'Latency does not rise with distance. Reading (a), first valid spike after each pulse: bin-median slopes
-    -0.663, -0.160 and 0.468 ms/mm at 4, 5 and 6 uA, so no velocity at 4 and 5 uA and 2.139 m/s at 6 uA; reading
-    (b), peak of the spike-probability curve: -1.042, -0.223 and 0.149 ms/mm, velocity 6.720 m/s at 6 uA. Bin medians
-    lie between 4.27 and 5.12 ms under (a). Jitter does not vary with distance (OLS slope p = 0.176 to 0.764), as
-    the paper says. Under the other seeds the 6 uA velocity under (a) is 5.9 to 20.0 m/s or undefined, and none
-    falls in 0.18 to 0.297 m/s. 55 PL responses have no distance, as their stimulation channel is missing from the
-    electrodes table.'
+    -0.577, -0.203 and 0.129 ms/mm at 4, 5 and 6 uA, so no velocity at 4 and 5 uA and 7.750 m/s at 6 uA; reading
+    (b), peak of the spike-probability curve: -1.042, -0.298 and 0.000 ms/mm, no velocity. Bin medians lie between
+    4.24 and 5.12 ms under (a). Jitter does not vary with distance (OLS slope p = 0.185 to 0.701), as the paper
+    says. Under the other seeds the 6 uA velocity is 10.9 to 40.9 m/s under (a) and 2.24 or 6.72 m/s or undefined
+    under (b), and none falls in 0.18 to 0.297 m/s. 56 PL responses have no distance, as their stimulation channel
+    is missing from the electrodes table. The mapping holds: the stimulation table''s stim_channel and the electrodes''
+    channel_name are both described as the Ripple channel number, units whose peak channel is a stimulation channel
+    lie 5.3 to 24.4 um (median per mouse) from it, and units lie a median of 1.1 to 8.1 um from their peak channel.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
   - Distance is the absolute difference of the electrodes table's rel_y of the stimulation channel and the unit's
     unit_y_um, as the code does (claims file).
 - claim: fig5fg-pl-modulation-latency
   outcome: partially_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig5fg-pl-modulation-latency
-  notes: PL modulation rises at 4, 5 and 6 uA (2.82 to 4.00, p = 8.26e-05; 3.54 to 4.25, p = 0.0016; 3.59 to 5.09,
-    p = 3.34e-05; n 163/603, 230/401, 240/190). Time to maximum falls at 5 uA (90 to 35 ms, p = 0.00282) and not
-    significantly at 6 uA (95 to 55 ms, p = 0.08). Under the other seeds the 6 uA latency p is 0.0581 to 0.0826
-    and the rest is unchanged.
+  notes: PL modulation rises at 4, 5 and 6 uA (2.85 to 3.83, p = 0.000272; 3.51 to 4.20, p = 0.0017; 3.50 to 5.06,
+    p = 3.11e-05; n 160/602, 234/402, 241/196). Time to maximum falls at 5 uA (75 to 35 ms, p = 0.0032) and not
+    significantly at 6 uA (95 to 55 ms, p = 0.0741). Under the seed plus 1000 the 6 uA latency p is 0.0441, which
+    would make the claim reproduced; under plus 2000 to 4000 it is 0.0968, 0.0962 and 0.0852. The modulation part
+    holds under all seeds.
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
+  seed_sensitive: true
 - claim: figs4de-npl-no-change
   outcome: reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:figs4de-npl-no-change
-  notes: 'A claim of absence. Under the claim''s seed no NPL test is significant: modulation p = 0.191, 0.995, 0.944
-    (medians 2.53 to 2.72, 2.81 to 2.70, 3.48 to 3.37) and time to maximum p = 0.158, 0.794, 0.828, on 28/135, 54/97
-    and 60/66 responses. Under the seeds plus 2000 and plus 3000 the 4 uA modulation test gives p = 0.0439 and 0.0464;
-    under plus 1000 and plus 4000, p = 0.0717 and 0.184.'
+  notes: 'A claim of absence. Under the claim''s seed no NPL test is significant: modulation p = 0.0893, 0.643,
+    0.856 (medians 2.44 to 2.80, 3.16 to 2.68, 3.54 to 3.38) and time to maximum p = 0.188, 0.51, 0.808, on 31/131,
+    52/96 and 58/69 responses. Under the seeds plus 2000 and plus 3000 the 4 uA modulation test gives p = 0.0245
+    and 0.0342; under plus 1000 and plus 4000, p = 0.106 and 0.124.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
   seed_sensitive: true
 - claim: fig5h-pl-spike-probability
   outcome: partially_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig5h-pl-spike-probability
-  notes: Peak spike probability of PL responses is higher late at 6 uA (2.536 to 3.253, p = 0.011) but not at 5
-    uA (2.453 to 2.716, p = 0.665); at 4 uA p = 0.934, as in the paper. Seeds plus 1000 to 4000 give 6 uA p 0.0056
-    to 0.0143 and 5 uA p 0.393 to 0.64.
+  notes: Peak spike probability of PL responses is higher late at 6 uA (2.508 to 3.105, p = 0.0193) but not at 5
+    uA (2.445 to 2.671, p = 0.626); at 4 uA p = 0.836, as in the paper. Seeds plus 1000 to 4000 give 6 uA p 0.00602
+    to 0.0104 and 5 uA p 0.54 to 0.758.
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
 - claim: figs5-movement-onset
   outcome: reproduced
   notebook: reproduce_kim_2026_learning.ipynb
@@ -378,52 +437,61 @@ outcomes:
   - 135.0
   notes: 'At 4 to 6 uA, in the five mice other than ICMS83: Mouse 1 (ICMS92) is the fastest, 125.0 ms (others 139.5
     to 196.5 ms); all hit trials 143.0 ms (n 4750); late 135.0 ms (n 2897), faster than early 155.0 ms (n 1306),
-    p = 6.3e-42, r = 0.26. Over all currents the three medians are 128.0, 148.0 and 137.0 ms, the second outside
-    135 +- 13.5. The onset precedes the recorded response time by a median of 20.6 ms.'
+    p = 6.3e-42, r = 0.26. Over all currents the three medians are 128.0, 148.0 and 137.0 ms, also within tolerance.
+    With the estimated wheel threshold scaled by 0.75 the medians are 120.0, 134.0 and 127.0 ms; by 1.25, 130.0,
+    151.0 and 142.0 ms, the last two outside tolerance; Mouse 1 stays fastest and late onsets earlier (p = 1.8e-44,
+    3.24e-38). The onset precedes the recorded response time by a median of 20.6 ms.'
   deviations:
   - The wheel's angular response threshold is not in the files or the paper; it is estimated per session as the
     median wheel deviation at the recorded response time of hits (13.5 to 27.2 a.u. in the five mice). This is an
-    assumption.
+    assumption; 0.75 and 1.25 times the estimate are shown as variants.
   - 'The five mice with reliable encoders are not named. ICMS83 is left out: its median deviation at the response
     time is 1.2 a.u. against 15.4 to 18.5, and 283 of its 1472 hits have no onset. This is an assumption.'
   - Trials at 4 to 6 uA, the amplitudes the Methods analyse (Analysis of behavioral data); all currents are shown
     as a variant.
   assumed: true
 - claim: figs5-pre-movement-window
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:figs5-pre-movement-window
-  notes: 'Reading (i), responses of the 700 ms analysis measured in 120 ms windows: PL modulation higher late at
-    4, 5 and 6 uA (p = 6.11e-05, 4.96e-05, 0.00104) and NPL at none (p = 0.215, 0.358, 0.472). Reading (ii), responses
-    selected by the modulation test in the 120 ms windows: PL higher at all three (p = 0.000295, 4.1e-05, 0.0127)
-    but NPL also higher at 4 and 6 uA (p = 0.0374, 0.000188, on 13/72 and 20/25 responses).'
+  notes: 'Reading (ii), responses selected by the modulation test in the 120 ms windows: PL modulation higher late
+    at 4, 5 and 6 uA (p = 0.00033, 3.91e-05, 0.0107) but NPL also higher at 4 and 6 uA (p = 0.0321, 0.000311, on
+    13/76 and 21/24 responses), so the NPL part fails; all five seeds give NPL p < 0.05 at 4 and 6 uA. Reading (i),
+    responses of the 700 ms analysis measured in 120 ms windows: PL higher at all three (p = 0.000143, 9.56e-05,
+    0.0011) and NPL at none (p = 0.089, 0.562, 0.468), which would make the claim reproduced, under all five seeds.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
-  - Which responses enter the 120 ms analysis is not given; reading (i), the responses and PL classes of the main
-    analysis, is adopted as an assumption, as the control re-measures the same responses in a shorter window. Reading
-    (ii) gives partially reproduced.
+  - Which responses enter the 120 ms analysis is not given; reading (ii), the responses that pass the modulation
+    test in the 120 ms windows, is adopted as an assumption, as the code the criterion cites recomputes the responses
+    in these windows and its filters keep the modulated responses of the table they are given. Reading (i), the
+    responses of the 700 ms analysis, gives reproduced. The PL classes are those of the 700 ms responses.
   assumed: true
 - claim: figs7-control-no-change
   outcome: not_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:figs7-control-no-change
-  notes: A claim of absence. In the control mice at 5 uA (ICMS45, 54, 56 have modulated responses; ICMS48 has 1
-    to 3 units and none modulated), PL peak spike probability is lower late (1.060, n 31, against 0.654, n 23; p
-    = 0.001), while PL modulation (p = 0.972) and time to maximum (p = 0.294) do not change. One NPL response is
-    modulated in each phase, so the NPL tests give p = 1.000. Over all control currents two tests are significant
-    (PL time to maximum p = 0.037, peak probability p = 0.002). Counting weeks from the first ephys session gives
-    the same tests.
+  notes: A claim of absence. With the 3 tabled bursts, in the control mice at 5 uA (ICMS45, 54, 56 have modulated
+    responses; ICMS48 has 1 to 3 units and none modulated), PL peak spike probability is lower late (1.060, n 31,
+    against 0.654, n 23; p = 0.001), while PL modulation (p = 0.972) and time to maximum (p = 0.294) do not change.
+    One NPL response is modulated in each phase, so the NPL tests give p = 1.000. Over all control currents two
+    tests are significant (PL time to maximum p = 0.037, peak probability p = 0.002). Counting weeks from the first
+    ephys session gives the same groups. Taking each trial as 10 bursts at 0.5 s spacing, which the spikes follow,
+    no test at 5 uA is significant (smallest p 0.076; 20/8 PL and 19/24 NPL responses), which would make the claim
+    reproduced; over all currents NPL modulation then rises (2.10 to 3.32, p < 0.001).
   deviations:
   - The control trials are 3 bursts of 10 pulses at 50 Hz in the files; the Methods describe only the 700 ms train.
     The stimulation count is taken inside the bursts, the pre-stimulus window as 600 ms before the first burst,
     and pulse-locking over the 20 ms interpulse interval with the Methods' blanking. These are assumptions.
   - The stimulation-channel filter is not applied, as each control channel was used in few sessions.
-  - The tables list 3 bursts per trial, while the spikes respond every 0.5 s for about 5 s (sanity check), so the
-    windows may miss stimulation.
+  - The stimulation and trial tables list 3 bursts (30 pulses, 1.2 s) per trial in most sessions, while the spikes
+    respond every 0.5 s for 5 s (sanity check); the windows follow the tables, and 10 bursts at 0.5 s spacing from
+    the first tabled burst, with a 2 s pre-stimulus window, are a variant that gives a different outcome.
   assumed: true
 - claim: figs8-tracked-units
   outcome: blocked
@@ -434,22 +502,26 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig6c-kl-divergence
-  notes: 'NPL above PL in both phases under both readings (reading a: 0.365 against 0.034 early, 0.352 against 0.028
-    late, p_FDR printed as 0). PL separation is lower late than early (0.028 against 0.034, p_FDR = 4.41e-108; reading
-    b 0.027 against 0.032), the reverse of the paper. NPL separation rises under reading (b) (0.218 against 0.201,
-    p_FDR = 1.29e-06) and not under (a) (0.352 against 0.365, p_FDR = 0.635). The seeds plus 1000 to 4000 give the
-    same directions; under plus 2000 the NPL decrease of reading (a) reaches p_FDR = 0.024.'
+  notes: 'NPL above PL in both phases under both readings and all five seeds (reading a: 0.362 against 0.034 early,
+    0.368 against 0.027 late, p_FDR printed as 0). PL separation is lower late than early under both readings and
+    all seeds (0.027 against 0.034, p_FDR = 1.25e-123; reading b 0.026 against 0.033), the reverse of the paper.
+    The NPL change has no stable direction: higher late under reading (a) (0.368 against 0.362, p_FDR = 7.4e-06)
+    and lower under (b) (0.194 against 0.219, p_FDR = 0.000475) at the claim''s seed; the other seeds give either
+    direction, significant or not. The outcome is partially reproduced under all seeds.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
   - Trials of PL or NPL responses with z < 50 at 4 to 6 uA, pooled per week and class across mice.
+  - The PL classes are drawn under the claim's seed and the KL bootstrap under its second generator (seed plus 1).
 - claim: fig6d-npl-hit-miss-divergence
   outcome: not_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
@@ -458,77 +530,95 @@ outcomes:
   - 170.0
   - 70.0
   notes: 'PL responses have significant hit-miss clusters in both phases (10 ms bins: 340 to 380 ms early, 580 to
-    620 and 640 to 650 ms late; 427 and 862 units). NPL onsets are 170 ms early and 70 ms late (5 ms bins 180 and
-    70 ms), against 65 and 35 ms, earlier late as in the paper; with the code''s last cluster, 390 and 70 ms. All
-    five seeds give the same clusters.'
+    610 and 640 to 650 ms late; 427 and 862 units). NPL onsets are 180 ms early and 70 ms late (5 ms bins 185 and
+    65 ms), against 65 and 35 ms, earlier late as in the paper; with the code''s last cluster, 390 and 70 ms. All
+    five seeds give the same clusters. Without smoothing, trial means of raw 10 ms counts, PL clusters remain in
+    both phases (from 340 ms early, 40 ms late) and the NPL onsets are 100 and 60 ms, still outside tolerance.'
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
   - Responses with at least 3 hit and 3 miss trials (a standard choice). Each trial's binned rate is smoothed with
     a Gaussian of sigma 20 ms before the trial median, as a median of raw counts is zero for most units; the smoothing
     is an assumption, from the code's time-to-maximum smoothing. The window is 0 to 700 ms.
+  - The PL classes are drawn under the claim's seed and the label swaps under its second generator (seed plus 1).
   assumed: true
 - claim: fig6f-pl-coupling-increase
   outcome: reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig6f-pl-coupling-increase
-  notes: PL coupling 0.269 early (n 632) and 0.678 late (n 1189), p_FDR = 0.00161, r = -0.09; NPL 1.722 (n 142)
-    and 1.482 (n 298), p_FDR = 0.181. Under the seeds plus 1000 to 4000, PL p_FDR 0.000884 to 0.00162 and NPL 0.181
-    to 0.206. 2735 of 2744 selected responses have 50 or more spikes in the trains. PL coupling rises in four of
-    six mice (ICMS83 and ICMS93 fall).
+  notes: PL coupling 0.272 early (n 636) and 0.707 late (n 1192), p_FDR = 0.00159, r = -0.09; NPL 1.750 (n 138)
+    and 1.535 (n 295), p_FDR = 0.158. Under the seeds plus 1000 to 4000, PL p_FDR 0.000478 to 0.00336; the NPL fall
+    gives p_FDR 0.262, 0.0445, 0.0456 and 0.127, so under plus 2000 and plus 3000 the NPL part fails and the claim
+    would be partially reproduced. 2735 of 2744 selected responses have 50 or more spikes in the trains. PL coupling
+    rises in four of six mice (ICMS83 and ICMS93 fall).
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
   - The population is every modulated response of the condition; PL and NPL units are the responses with z < 50.
+  - The PL classes are drawn under the claim's seed and the circular shifts under its second generator (seed plus
+    1).
+  seed_sensitive: true
 - claim: fig6f-npl-higher-coupling
   outcome: reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig6f-npl-higher-coupling
-  notes: NPL above PL early (1.722 against 0.269, p_FDR = 4.09e-12) and late (1.482 against 0.678, p_FDR = 1.33e-10);
-    the other seeds give p_FDR up to 4.45e-12 and 2.86e-10.
+  notes: With the claim's own classes and shifts, NPL above PL early (1.698 against 0.285, p_FDR = 1.54e-11) and
+    late (1.474 against 0.690, p_FDR = 1.54e-11); the other seeds give p_FDR up to 9.69e-11 early and 6.67e-10 late.
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
+  - The PL classes are drawn under the claim's seed and the circular shifts under its second generator (seed plus
+    1).
 - claim: figs9-coupling-controls
   outcome: partially_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:figs9-coupling-controls
-  notes: (A) With a PL-only population, PL coupling rises from early to late (p_FDR = 0.000627; 0.000635 to 0.000787
-    under the other seeds). (B) In the first 120 ms NPL exceeds PL early (p_FDR = 4.69e-07) and late (1.4e-07).
-    (C) In the controls at 5 uA there are 47 PL and 1 NPL coupling values, so the NPL against PL test is undefined.
-    Two of three parts hold; the third is not tested.
+  notes: (A) With a PL-only population, PL coupling rises from early to late (p_FDR = 0.00128; 0.000418 to 0.00246
+    under the other seeds). (B) In the first 120 ms NPL exceeds PL early (p_FDR = 2.81e-06) and late (3.76e-08),
+    under all seeds. (C) In the controls at 5 uA there are 47 PL and 1 NPL coupling values, so the NPL against PL
+    test is undefined. Two of three parts hold; the third is not tested.
   deviations:
-  - The pre-stimulus window is 700 ms before onset, as long as the train; the Methods say pre-stimulus without a
-    length (Methods, Quantifying neuromodulation metrics). This is an assumption.
+  - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
+    length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
+    spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
+    and fig4g-modulated-count-mouse1.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   - Pulse-locking follows the claims file (mean of 500 bootstrap draws of 20% of pulses, PLI as the mean of the
-    3 bins around the peak minus the median, null of 100 uniform spike sets). The spike probability is in spikes
-    per bin per trial summed over pulses (Methods, normalised by the number of trials), a scale that cannot change
-    a comparison.
-  - The control coupling concatenates the 200 ms bursts, an assumption stated for figs7-control-no-change.
+    3 bins around the peak minus the median, null of 100 uniform spike sets), with the classes drawn under the claim's
+    own seed and the seed plus 1000 to 4000. The spike probability is in spikes per bin per trial summed over pulses
+    (Methods, normalised by the number of trials), a scale that cannot change a comparison.
+  - The control coupling concatenates the 200 ms bursts of the 3 tabled bursts, an assumption stated for figs7-control-no-change,
+    with the control classes of that claim. The trained mice's classes are drawn under this claim's seed and the
+    coupling shifts under its second generator.
 findings:
 - kind: metadata_insufficient
   about: data
@@ -560,9 +650,11 @@ findings:
   about: data
   severity: major
   statement: In the control recordings the stimulation table lists 3 bursts per trial ending 1.2 s after the first,
-    but the summed firing rate peaks every 0.5 s for about 5 s after the first burst, at a lower amplitude after
-    the third. Either the table omits stimulation that was delivered or another stimulus followed; the files do
-    not say which.
+    and the trial table agrees (30 pulses, 1.2 s) in most sessions, but the summed firing rate peaks in 200 ms slots
+    every 0.5 s for 5 s after the first burst, at a lower amplitude after the third (ICMS45 2022-03-04, 2 to 9 uA,
+    slots 1 to 3 at 79 to 118 spikes/s, slots 4 to 10 at 30 to 47, gaps 2 to 8). In ICMS45 2022-02-05 the trial
+    table gives 100 pulses over 4.7 s per trial while the stimulation table lists 3 bursts. Either the tables omit
+    stimulation that was delivered or another stimulus followed; the files do not say which.
 - kind: metadata_insufficient
   about: data
   severity: major
@@ -625,7 +717,8 @@ findings:
   about: paper
   statement: Question for the authors. The length of the pre-stimulus window of the modulation test and score is
     not given (Methods, Quantifying neuromodulation metrics); this attempt used 700 ms before onset, as long as
-    the train. Was it 700 ms, or the whole 1 to 1.5 s pre-stimulus period?
+    the train and as the Results' delta spikes. Was it 700 ms, or the whole 1 to 1.5 s pre-stimulus period? With
+    300 or 500 ms Mouse 1's count rise in Figure 4G becomes significant and the group change too.
 - kind: methods_unavailable
   about: paper
   statement: Question for the authors. The angular response threshold of the wheel in encoder units, and which five
@@ -638,17 +731,398 @@ findings:
     smoothed each trial with a Gaussian of sigma 20 ms before the median, and finds significant PL clusters.
 - kind: methods_unavailable
   about: paper
-  statement: Question for the authors. The control mice received 3 bursts of 10 pulses at 50 Hz per trial (dandiset),
-    which the paper does not describe; the response windows and pulse-locking window used for them in fig. S7 and
-    S9C are not given. This attempt counted spikes inside the bursts, against 600 ms before the first burst.
+  statement: Question for the authors. The control mice received 3 bursts of 10 pulses at 50 Hz per trial according
+    to the dandiset's tables, while their spikes follow 10 bursts at 0.5 s; the paper does not describe these trains,
+    and the response windows and pulse-locking window used for them in fig. S7 and S9C are not given. This attempt
+    counted spikes inside the 3 tabled bursts, against 600 ms before the first; with 10 bursts no test at 5 uA is
+    significant.
 - kind: methods_unavailable
   about: paper
   statement: Question for the authors. For the 120 ms pre-movement analysis (fig. S5E to H), are the responses those
-    modulated in the 700 ms analysis, or those passing the modulation test in the 120 ms windows? The two give different
-    NPL results here.
+    passing the modulation test in the 120 ms windows (adopted here), or those modulated in the 700 ms analysis?
+    With the first, NPL modulation rises at 4 and 6 uA; with the second it does not.
 - kind: methods_unavailable
   about: paper
   statement: 'Question for the authors. The cell type used in Figures 4 and 5: the dandiset''s stored t2p label,
     or a trough-to-peak from another waveform (multi-channel or upsampled)? The stored label and a trough-to-peak
     from the stored mean waveform disagree for 10% of units and change the 6 uA pyramidal latency result of Figure
     4J.'
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the authors. For the at-threshold modulation of fig. S3D, were thresholds that round to
+    currents outside 4 to 6 uA (2 or 3 uA, common late) included? With every current presented the modulation is
+    stable (p = 0.484), as the paper says; with 4 to 6 uA only it rises (p = 2.59e-05). This attempt included every
+    current presented.
+verifications:
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1, claude-opus-5-5, Claude Code; separate context, did not
+    write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper module and
+    the claims file, with the paper's full text. The verifier did not re-run the notebook; it tested the helpers
+    on synthetic inputs (trough_to_peak_ms, time_to_max, latency_jitter, pulse_locking, cluster_test) and read the
+    dandiset and asset metadata through the DANDI API. It had no attempt record.
+  results:
+  - claim: fig2a-threshold-decrease
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19, reading (b): early median 5.78 uA, late 4.07 uA, both within tolerance; p = 1.0e-7. Under
+      reading (a) the late median (3.69 uA) is outside tolerance. The comment saying that a session with a non-finite
+      block has no threshold is wrong: pandas mean skips NaN, so only infinite values propagate, and main and variant
+      agree under reading (b) (problem 8). psignifit''s own threshold parameter for reading (a) could not be checked.'
+    response: Fixed the session threshold so that a session with any block without a finite threshold (NaN or infinite)
+      has none, as the comment said. The earlier medians included sessions with infinite values (minus infinity
+      where the false-alarm rate is at or above 0.5) while the test dropped them; now reading (a) gives 5.70 and
+      3.91 uA (n 43 and 80, the paper's counts), within tolerance, and reading (b) is unchanged. Added psignifit's
+      threshold parameter under reading (a) (5.77 and 3.95 uA). Outcome unchanged, now under both readings; measured
+      is reading (a).
+  - claim: figs1e-response-time
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: late response times are lower. Trials pooled, 192 to 179 ms, p = 2.8e-11. Channel-session
+      medians, p = 0.0026.'
+    response: No change of outcome. The conclusion and the notes quoted numbers from an earlier run (190.1 and 173.8
+      ms, p = 7.19e-17); they now give the executed numbers.
+  - claim: fig2b-representative-recruitment
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 10: volumetric dF/F has 6 to 8 samples per trial with -1 placeholder values, and no labelling
+      of which samples are pre-stimulus. No stimulation-site position is given. I accept this, with the reservation
+      that the full DfOverF_Volumetric description (cell 10 prints only its first 200 characters) and the columns
+      of the behavioural mice''s PlaneSegmentation tables would show whether the sample layout, or activation itself,
+      is documented and fig2c and fig2g are partly testable.'
+    response: 'Added to the sanity check: the full description (it says only A1 footprint average of pre/mid 4D
+      stacks, baseline the mean of pre frames), a test of the reading four pre and four mid samples (mid minus pre
+      0.114 on catch trials, 0.080 to 0.320 at 2 to 6 uA, in no order by current), and the segmentation columns
+      of all 45 behavioural files with imaging (masks, sizes and source identifiers only). No part is testable;
+      the block stands.'
+  - claim: fig2c-more-activated-neurons
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 10: volumetric dF/F has 6 to 8 samples per trial with -1 placeholder values, and no labelling
+      of which samples are pre-stimulus. No stimulation-site position is given. I accept this, with the reservation
+      that the full DfOverF_Volumetric description (cell 10 prints only its first 200 characters) and the columns
+      of the behavioural mice''s PlaneSegmentation tables would show whether the sample layout, or activation itself,
+      is documented and fig2c and fig2g are partly testable.'
+    response: 'Added to the sanity check: the full description (it says only A1 footprint average of pre/mid 4D
+      stacks, baseline the mean of pre frames), a test of the reading four pre and four mid samples (mid minus pre
+      0.114 on catch trials, 0.080 to 0.320 at 2 to 6 uA, in no order by current), and the segmentation columns
+      of all 45 behavioural files with imaging (masks, sizes and source identifiers only). No part is testable;
+      the block stands.'
+  - claim: fig2d-density-peak-200um
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 10: volumetric dF/F has 6 to 8 samples per trial with -1 placeholder values, and no labelling
+      of which samples are pre-stimulus. No stimulation-site position is given. I accept this, with the reservation
+      that the full DfOverF_Volumetric description (cell 10 prints only its first 200 characters) and the columns
+      of the behavioural mice''s PlaneSegmentation tables would show whether the sample layout, or activation itself,
+      is documented and fig2c and fig2g are partly testable.'
+    response: 'Added to the sanity check: the full description (it says only A1 footprint average of pre/mid 4D
+      stacks, baseline the mean of pre frames), a test of the reading four pre and four mid samples (mid minus pre
+      0.114 on catch trials, 0.080 to 0.320 at 2 to 6 uA, in no order by current), and the segmentation columns
+      of all 45 behavioural files with imaging (masks, sizes and source identifiers only). No part is testable;
+      the block stands.'
+  - claim: fig2e-density-200um
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 10: volumetric dF/F has 6 to 8 samples per trial with -1 placeholder values, and no labelling
+      of which samples are pre-stimulus. No stimulation-site position is given. I accept this, with the reservation
+      that the full DfOverF_Volumetric description (cell 10 prints only its first 200 characters) and the columns
+      of the behavioural mice''s PlaneSegmentation tables would show whether the sample layout, or activation itself,
+      is documented and fig2c and fig2g are partly testable.'
+    response: 'Added to the sanity check: the full description (it says only A1 footprint average of pre/mid 4D
+      stacks, baseline the mean of pre frames), a test of the reading four pre and four mid samples (mid minus pre
+      0.114 on catch trials, 0.080 to 0.320 at 2 to 6 uA, in no order by current), and the segmentation columns
+      of all 45 behavioural files with imaging (masks, sizes and source identifiers only). No part is testable;
+      the block stands.'
+  - claim: fig2e-activation-radius
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 10: volumetric dF/F has 6 to 8 samples per trial with -1 placeholder values, and no labelling
+      of which samples are pre-stimulus. No stimulation-site position is given. I accept this, with the reservation
+      that the full DfOverF_Volumetric description (cell 10 prints only its first 200 characters) and the columns
+      of the behavioural mice''s PlaneSegmentation tables would show whether the sample layout, or activation itself,
+      is documented and fig2c and fig2g are partly testable.'
+    response: 'Added to the sanity check: the full description (it says only A1 footprint average of pre/mid 4D
+      stacks, baseline the mean of pre frames), a test of the reading four pre and four mid samples (mid minus pre
+      0.114 on catch trials, 0.080 to 0.320 at 2 to 6 uA, in no order by current), and the segmentation columns
+      of all 45 behavioural files with imaging (masks, sizes and source identifiers only). No part is testable;
+      the block stands.'
+  - claim: fig2g-at-threshold-stable
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 10: volumetric dF/F has 6 to 8 samples per trial with -1 placeholder values, and no labelling
+      of which samples are pre-stimulus. No stimulation-site position is given. I accept this, with the reservation
+      that the full DfOverF_Volumetric description (cell 10 prints only its first 200 characters) and the columns
+      of the behavioural mice''s PlaneSegmentation tables would show whether the sample layout, or activation itself,
+      is documented and fig2c and fig2g are partly testable.'
+    response: 'Added to the sanity check: the full description (it says only A1 footprint average of pre/mid 4D
+      stacks, baseline the mean of pre frames), a test of the reading four pre and four mid samples (mid minus pre
+      0.114 on catch trials, 0.080 to 0.320 at 2 to 6 uA, in no order by current), and the segmentation columns
+      of all 45 behavioural files with imaging (masks, sizes and source identifiers only). No part is testable;
+      the block stands.'
+  - claim: figs2ef-control-stable
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 64: the control count of activated neurons falls from 12.5 to 2.0 (p = 0.0038), so the claimed
+      stability fails. The density test is blocked, and the comparison is confounded by which mice fall in each
+      phase (problem 9): ICMS48 appears only in the early phase (medians 67 and 46), ICMS56''s week-0 session has
+      1 ROI, no 800 um limit was applied, and per-mouse tests were not run.'
+    response: Added per-mouse tests and variants without ICMS48, without sessions of fewer than 10 ROIs, and on
+      ranks within mouse. With the mice seen in both phases the pooled test gives p = 0.444, but within mice the
+      counts change in three of five (down in ICMS45 and ICMS54, up in ICMS56), so the claimed stability fails either
+      way. The 800 um limit cannot be applied without a pixel size. Outcome unchanged.
+  - claim: fig3b-tracking-counts
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: fig3df-stable-cells-no-change
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: fig3e-onset-decrease
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: fig3i-more-high-intensity
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run. Readings (b) and (c) could
+      be partly tested without tracking, on all activated ROIs per session, as a declared deviation from tracked.
+    response: 'Not done: the claim is about the same neurons followed over weeks, and separately segmented populations
+      at week 0 and week 4 would test a different quantity. Said so in the notes; the block stands.'
+  - claim: fig3j-subgroup-increase
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: fig3j-subgroup-divergence
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: fig3lm-spikes-and-latency
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: fig3n-new-vs-enhanced
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: fig3n-vs-week0
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run.
+    response: No change.
+  - claim: figs6-imaging-pre-movement
+    agrees: true
+    outcome: blocked
+    reason: Planar ROIs have no identity across sessions. The archive lists no image series (variableMeasured has
+      only PlaneSegmentation, ImagingPlane, OpticalChannel), so PatchWarp cannot be run. The recruitment reading
+      (b) could be partly tested without tracking, on all activated ROIs per session, as a declared deviation from
+      tracked.
+    response: 'Not done: the claim concerns tracked neurons and the subgroup of fig3j-subgroup-increase, which is
+      blocked, and a claim that depends on a blocked claim is blocked with it. Said so in the notes.'
+  - claim: fig4d-waveform-separation
+    agrees: true
+    outcome: blocked
+    reason: Units hold one single-channel 90-sample mean waveform each, and asset metadata list only Units. Files
+      are about 67 MB each, 7.5 GB in total, with no raw or per-spike data. Confirmed that the data are not there.
+    response: No change.
+  - claim: fig4h-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 25: 999 recorded units, 724 pyramidal and 275 interneurons by trough-to-peak, all within tolerance.
+      But 588 modulated units (tolerance 436 to 532) and 402 modulated pyramidal (280 to 342) are outside it, under
+      every variant run. Both histograms are bimodal. The pre-stimulus window of 0.7 s is an assumption with no
+      other length run (problem 1); fig4h used recomputed trough-to-peak as main while fig4ij and fig5e used the
+      stored label (problem 5).'
+    response: Added pre-stimulus windows of 300 and 500 ms (653 and 633 modulated units, further from 484) and cited
+      the Results' 700 ms window of the delta spikes for the choice. Made the stored label the main cell type for
+      every claim, fig4h included, with trough-to-peak as the variant, and printed where the two disagree. Outcome
+      unchanged.
+  - claim: figs3-modulation-all-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 27: modulation is higher late at 4, 5 and 6 uA (p = 7e-5, 0.009, 4e-4), and latency is lower at
+      5 uA (p = 0.004). At threshold, modulation is not stable: p = 2.6e-5 under reading (a), 5e-6 under (b). Two
+      of three parts hold. Responses exist only at 4 to 6 uA, so channel-sessions whose rounded threshold is 3 uA
+      (common late) are dropped, though that current was given (problem 13).'
+    response: 'Computed responses at every current presented and took the at-threshold response at the rounded threshold
+      whenever that current was presented, as the criterion''s reference to fig2g says. Modulation is then stable
+      (p = 0.484 and 0.461), so all three parts hold: changed to reproduced, marked as resting on the assumption,
+      with the 4 to 6 uA variant (partially reproduced) shown and a question for the authors added.'
+  - claim: fig4g-modulated-count-mouse1
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 29: Mouse 1 at 4 uA gives one-sided p = 0.057 (the n of 8 and 21 match the paper). The pooled
+      group test gives p = 0.08, as required. The Mouse 1 condition fails, so it is not even partial. The 0.7 s
+      pre-window matters for the p of 0.057 against 0.05 (problem 1).'
+    response: 'Added pre-stimulus windows of 300 and 500 ms: Mouse 1 gives p = 0.014 and 0.0127 but the pooled test
+      becomes significant (p = 0.0361, 0.0375), which would be partially reproduced. Outcome kept under the 700
+      ms window, now marked as resting on that assumption.'
+  - claim: fig4ij-pyramidal-drive
+    agrees: true
+    outcome: reproduced
+    reason: Cell 31, stored cell-type label. Pyramidal modulation rises at all three currents (p <= 9e-4). Pyramidal
+      latency falls at 5 uA (p = 3e-4) and 6 uA (p = 0.025). Interneuron modulation p is 0.33, 0.88 and 0.089. With
+      trough-to-peak recomputed, pyramidal latency at 6 uA gives p = 0.059, which would make it partial (problem
+      5). The claims header specifies trough-to-peak at 0.45 ms, and the two agree for only 90% of units.
+    response: Kept the stored label, now the main cell type of every claim. The file describes it as the authors'
+      t2p classification; the 97 disagreeing units are stored as interneurons at recomputed values up to 0.900 ms
+      (median 0.533), so the label was not computed from the stored 90-sample waveform, and the authors' own application
+      of the rule is preferred. Outcome unchanged and marked as resting on the assumption, with the variant in the
+      notes.
+  - claim: fig5d-pl-identity-stable
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 33: 0.839 of pairs keep their identity, 0.839 to 0.852 across the 5 seeds, all above 0.8. There
+      are 906 pairs against the paper''s 729, and the pulse-locked share is inflated (problem 2: about 80% of selected
+      responses are PL against about 63% implied by the paper; no distribution of peak latencies and no check that
+      spikes inside the blanked 0 to 1.5 ms window are absent). The classes use fig5d''s seed for every claim instead
+      of each claim''s own (problem 10). My synthetic test gives about 2 to 3% false positives for the pulse-locking,
+      against a nominal 1%.'
+    response: Added the peak-time histogram of the PL curves (median 3.75 ms, 3.2% in the first valid bin), the
+      share of stimulation-window spikes within 0 to 1.5 ms of a pulse (0.0000) and the chance rate of the procedure
+      on these responses with spikes placed uniformly (2.4%, as the verifier found). The excess is not a blanking-edge
+      artefact or false positives; its cause is not found. Each claim now draws its classes under its own seed.
+      Outcome unchanged.
+  - claim: fig5e-pyramidal-in-pl
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 35: pulse-locked units are 73.9% pyramidal (within tolerance) and Fisher p = 8.7e-5. Non-pulse-locked
+      units are 55.7% pyramidal, outside the 44.8 to 54.8 band in 4 of 5 seeds. The criterion defines no partial
+      outcome; I chose partial because direction and significance hold.'
+    response: 'Changed to partially reproduced: the effect is present and significant but weaker, which the protocol''s
+      definition of partial covers where the criterion is silent. Under the claim''s own seed the fractions are
+      73.4% and 57.1% (p = 0.000475), the NPL fraction outside its tolerance under all five seeds, so seed_sensitive
+      is removed.'
+  - claim: figs4b-conduction-velocity
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 37: latency slopes are about zero or negative (4 uA, -0.66 ms/mm and -1.04 ms/mm under the two
+      readings). No velocity is in 0.18 to 0.30 m/s under either reading or any seed. The contact-to-unit distance
+      mapping was never checked (problem 6): ICMS100''s stimulation channels are absent from the electrodes table,
+      and no check was made that a unit''s distance is 0 when it sits on the stimulation contact.'
+    response: 'Added the check: both columns are described as the Ripple channel number, units whose peak channel
+      is a stimulation channel lie 5.3 to 24.4 um (median per mouse) from it, and units lie 1.1 to 8.1 um (median
+      per mouse) from their peak channel; ICMS100''s channel 3 and ICMS101''s channel 9 on its first day have no
+      depth, and their 56 responses are dropped. Outcome unchanged.'
+  - claim: fig5fg-pl-modulation-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 39: pulse-locked modulation rises at all three currents (p <= 0.0016). Latency falls at 5 uA (p
+      = 0.003) but not at 6 uA (p = 0.058 to 0.083 across seeds). Effect size r from mw(late, early) is negative
+      when late is higher; magnitudes are comparable to the paper''s (problem 11).'
+    response: 'Classes now under the claim''s own seed: the 6 uA latency gives p = 0.0741, and 0.0441 under the
+      seed plus 1000, so the outcome is now marked seed-sensitive. The sign of r is explained in the notebook''s
+      mw helper. Outcome unchanged.'
+  - claim: figs4de-npl-no-change
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41: 0 of 6 tests are significant at the main seed. Two of the four other seeds give 1 of 6 (4
+      uA modulation, p = 0.044 and 0.046), so the result is fragile.'
+    response: 'Classes now under the claim''s own seed: 0 of 6 at the claim''s seed, 1 of 6 under the seeds plus
+      2000 and 3000 (p = 0.0245, 0.0342). Outcome unchanged, seed-sensitive.'
+  - claim: fig5h-pl-spike-probability
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 43: 6 uA rises (p = 0.011; 0.006 to 0.014 across seeds). 5 uA does not (p = 0.39 to 0.67).'
+    response: Classes now under the claim's own seed (6 uA p = 0.0193, 5 uA p = 0.626, the same pattern at all seeds).
+      Outcome unchanged.
+  - claim: figs5-movement-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23 (5 mice): Mouse 1 is the fastest at 128 ms (125 ms at 4 to 6 uA). All hits 148 ms (143), late
+      137 ms (135); all within tolerance. Late is lower than early, p = 2e-76. This rests on an estimated wheel
+      threshold (problem 7: all three medians land within tolerance, 148 against an upper bound of 148.5, so the
+      absolute values depend on it).'
+    response: 'Corrected the conclusion, which said the all-currents median of 148.0 ms was outside tolerance. Added
+      thresholds 0.75 and 1.25 times the estimate: Mouse 1 stays fastest and late onsets earlier, and at 1.25 times
+      two medians leave tolerance; recorded in the notes. Outcome unchanged, still marked as resting on assumptions.'
+  - claim: figs5-pre-movement-window
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46, reading (i): pulse-locked modulation rises at all three currents, and no non-pulse-locked
+      current is significant. Reading (ii), which is closer to the code''s recomputation, has non-pulse-locked modulation
+      significant at 4 uA (p = 0.037) and 6 uA (p = 1.9e-4), so it fails. The claims file cites code that recomputes
+      responses in the 120 ms windows, which is reading (ii); reading (i) reuses the 700 ms selection and is the
+      notebook''s own construction. Only reading (i) passes (problem 4).'
+    response: Adopted reading (ii), as the code the criterion cites recomputes the responses in the 120 ms windows.
+      NPL modulation rises at 4 and 6 uA (p = 0.0321, 0.000311) under all five seeds, so the outcome is changed
+      to partially reproduced, resting on the assumption; reading (i) is shown as the variant that would give reproduced,
+      and the question to the authors is restated.
+  - claim: figs7-control-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 49: at 5 uA, pulse-locked peak spike probability falls, p = 0.001 (1 of 6 tests significant).
+      The non-pulse-locked arm has n = 1 per phase and cannot be tested. The control windows are assumptions (problem
+      3): the summed rates show 10 bursts at 0.5 s spacing (0 to 4.5 s), while the table lists 3 bursts per trial
+      ending at 1.2 s, and the analysis uses only the 3 tabled bursts and an assumed 600 ms pre-window.'
+    response: 'Added per session the trial table (pulses, durations, rep_num, trial_index) and the rate in 200 ms
+      slots every 0.5 s for 5 s by current, and a variant with 10 bursts per trial and a 2 s pre-window: no test
+      at 5 uA is then significant (smallest p 0.076). The trial tables give 30 pulses over 1.2 s, as the stimulation
+      tables, in most sessions, so the tabled bursts are kept; the outcome stays not reproduced, resting on assumptions,
+      and the finding on the control tables is extended.'
+  - claim: figs8-tracked-units
+    agrees: true
+    outcome: blocked
+    reason: Units hold one single-channel 90-sample mean waveform each, and asset metadata list only Units. Files
+      are about 67 MB each, 7.5 GB in total, with no raw or per-spike data. Confirmed that the data are not there.
+    response: No change.
+  - claim: fig6c-kl-divergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 51: non-pulse-locked separation exceeds pulse-locked in both phases under both readings. Pulse-locked
+      KL falls from early to late (p_FDR around 1e-108, all seeds). Non-pulse-locked KL rises only under reading
+      (b).'
+    response: Classes now under the claim's own seed and the bootstrap under its second generator. NPL above PL
+      and the PL fall hold under all seeds; the NPL change now rises under (a) and falls under (b), and varies with
+      the seed. Outcome unchanged.
+  - claim: fig6d-npl-hit-miss-divergence
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 53: pulse-locked responses have significant clusters in both phases (340 to 380 ms early; 580
+      to 620 ms late). Non-pulse-locked onsets are 170 to 180 ms early and 70 ms late, against 65 +- 10 and 35 +-
+      10, under both bin readings. Each trial is smoothed with a 20 ms Gaussian before the median, an assumption;
+      smoothing can only move onsets earlier, and the onsets are already later than the paper''s (problem 12).'
+    response: 'Added a variant without smoothing (trial means of raw 10 ms counts): PL clusters remain and the NPL
+      onsets are 100 and 60 ms, still outside tolerance. Classes now under the claim''s own seed (onsets 180 and
+      70 ms). Outcome unchanged.'
+  - claim: fig6f-pl-coupling-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 58: pulse-locked coupling rises 0.27 to 0.68, p_FDR = 0.0016. Non-pulse-locked p_FDR = 0.18. Same
+      pattern across all 5 seeds.'
+    response: 'Classes now under the claim''s own seed and shifts under its second generator: PL rises (p_FDR =
+      0.00159), NPL p_FDR = 0.158, but under the seeds plus 2000 and 3000 the NPL fall reaches p_FDR = 0.0445 and
+      0.0456. Outcome unchanged, now marked seed-sensitive.'
+  - claim: fig6f-npl-higher-coupling
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 58 and 60: non-pulse-locked coupling is higher than pulse-locked early (p_FDR = 4e-12) and late
+      (1e-10), at all seeds.'
+    response: Now computed with the claim's own classes and shifts (p_FDR = 1.54e-11 in both phases, all seeds below
+      1e-9). Outcome unchanged.
+  - claim: figs9-coupling-controls
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 62: (A) pulse-locked-to-pulse-locked coupling rises, p_FDR = 6e-4. (B) In the 120 ms window, non-pulse-locked
+      exceeds pulse-locked in both phases (p_FDR <= 5e-7). (C) The controls have 1 non-pulse-locked response, so
+      it cannot be tested. The control windows bear on (C) (problem 3).'
+    response: Classes now under the claim's own seed ((A) p_FDR = 0.00128; (B) 2.81e-06 and 3.76e-08). (C) remains
+      untestable with the tabled bursts. Outcome unchanged.

@@ -11,16 +11,16 @@ six passive controls.
 | Response times fall with training | Reproduced |
 | Wheel-movement onset falls; 122, 135 and 129 ms medians | Reproduced (assumed) |
 | 973 units, 484 modulated, bimodal spike width | Not reproduced |
-| Modulation of all cells rises; stable at threshold | Partially reproduced |
-| More modulated units in Mouse 1 at 4 uA, none at group level | Not reproduced |
+| Modulation of all cells rises; stable at threshold | Reproduced (assumed) |
+| More modulated units in Mouse 1 at 4 uA, none at group level | Not reproduced (assumed) |
 | Changes driven by pyramidal cells | Reproduced (assumed) |
 | Over 80% of units keep their PL or NPL identity | Reproduced |
-| Pyramidal cells more common among PL units (76.2 against 49.8%) | Not reproduced |
+| Pyramidal cells more common among PL units (76.2 against 49.8%) | Partially reproduced |
 | Conduction velocities of 0.2 to 0.27 m/s | Not reproduced |
 | PL modulation rises, latency falls at 5 and 6 uA | Partially reproduced |
 | NPL responses do not change | Reproduced |
 | PL peak spike probability rises at 5 and 6 uA | Partially reproduced |
-| The same in a 120 ms pre-movement window | Reproduced (assumed) |
+| The same in a 120 ms pre-movement window | Partially reproduced (assumed) |
 | No change in control mice (ephys) | Not reproduced (assumed) |
 | No change in control mice (imaging) | Not reproduced |
 | KL divergence of hit and miss | Partially reproduced |
@@ -40,8 +40,8 @@ sessions, and the files hold one mean waveform per unit, so 18 claims are blocke
 record, with the reasons and the differences from the paper's method, is
 [`attempts/kim-2026-learning-01.yaml`](../../attempts/kim-2026-learning-01.yaml).
 
-- `reproduce_kim_2026_learning.ipynb`: the analysis. It takes about 20 minutes, most of it the
-  psychometric fits and the pulse-locking under five seeds.
+- `reproduce_kim_2026_learning.ipynb`: the analysis. It takes about 25 minutes, most of it the
+  psychometric fits and the pulse-locking of each claim under five seeds.
 - `icms.py`: loading the files, the responses (modulation, time to maximum, pulse-locking, latency),
   the thresholds, the wheel onsets, the KL divergence, the cluster test and the population coupling.
   Other notebooks on this dandiset can import it.

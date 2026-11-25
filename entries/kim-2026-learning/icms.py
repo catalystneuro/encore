@@ -134,8 +134,11 @@ def trough_to_peak_ms(w, fs=30000.0):
 
 TRAIN_S = 0.7      # 700 ms train of 70 pulses at 100 Hz (Methods, Behavioral task; file metadata).
 PRE_S = 0.7        # Pre-stimulus window as long as the train, before onset. Assumption: the Methods
-                   # say "pre-stimulus" without a length; 700 ms matches the train and is within the
-                   # 1 to 1.5 s pre-stimulus period in which the mouse must hold still.
+                   # (Quantifying neuromodulation metrics) say "pre-stimulus" without a length. The
+                   # Results define the delta spikes of Figure 6 with "pre-stimulation spikes in the
+                   # preceding 700-ms window", and 700 ms lies within the 1 to 1.5 s pre-stimulus
+                   # period in which the mouse must hold still (Methods, Behavioral task). The
+                   # notebook shows 300 and 500 ms as variants.
 IPI_S = 0.010      # 10 ms interpulse interval (Methods).
 BIN_S = 0.0005     # 0.5 ms bins (Methods).
 BLANK_START = 3    # first 1.5 ms blanked (Methods) = 3 bins
@@ -222,8 +225,9 @@ def pulse_locking(H, n_trials, rng, n_pulses=70):
     n_all = V.shape[0]
     m = max(1, int(round(BOOT_FRAC * n_all)))
     idx = rng.integers(0, n_all, size=(N_BOOT, m))
-    curves = V[idx].sum(1) * (n_pulses / m) / 1.0  # spikes per bin per trial, per draw
-    curve = curves.mean(0)
+    # The mean of the N_BOOT draw curves, each V[idx[b]].sum(0) * n_pulses / m, computed at once from
+    # how often each pulse was drawn (the same draws, the same value).
+    curve = np.bincount(idx.ravel(), minlength=n_all) @ V * (n_pulses / m) / N_BOOT
     obs = float(pli(curve)[0])
     n_sp = int(V.sum())
     nb = V.shape[1]
@@ -249,7 +253,8 @@ def latency_jitter(H):
 
 
 def session_responses(s, rng, currents=CURRENTS, starts_col="start_time", stim_s=TRAIN_S, pre_s=PRE_S,
-                      n_pulses=70, keep_spikes=False, ttm_bin=0.010, ttm_sigma=0.020, trial_counts=False):
+                      n_pulses=70, keep_spikes=False, ttm_bin=0.010, ttm_sigma=0.020, trial_counts=False,
+                      pulse=True):
     """All responses of one session at the given currents, with the modulation test and measures.
 
     Modulated (Methods): paired t-test of spike counts in the stimulation against the pre-stimulus
@@ -257,7 +262,8 @@ def session_responses(s, rng, currents=CURRENTS, starts_col="start_time", stim_s
     higher (column p_two); the one-sided p is kept as a variant (p_one). At least 50 spikes in the
     stimulation window summed over trials and a baseline rate of at least 0.5 Hz (Methods).
     With trial_counts, the per-trial stimulation and pre-stimulus counts and hit labels of each
-    modulated response are kept (for the delta spikes of Figure 6B, C).
+    modulated response are kept (for the delta spikes of Figure 6B, C). With pulse=False the
+    pulse-locking, latency and jitter are not computed and no random numbers are drawn.
     """
     ev = stim_events(s)
     rows, keep = [], {}
@@ -286,11 +292,12 @@ def session_responses(s, rng, currents=CURRENTS, starts_col="start_time", stim_s
             if mod or mod1:
                 rel, tr = relative_spikes(spk, starts, 0.0, stim_s)
                 row["ttm_ms"] = time_to_max(rel, nt, stim_s, ttm_bin, ttm_sigma)
-                H = pulse_histogram(rel, tr, nt, n_pulses)
-                pl, obs, thr, pk, pkt = pulse_locking(H, nt, rng, n_pulses)
-                la, ja, lb, jb = latency_jitter(H)
-                row.update(pl=bool(pl), pli=obs, pli_null99=thr, peak_prob=pk, peak_ms=pkt,
-                           lat_a=la, jit_a=ja, lat_b=lb, jit_b=jb)
+                if pulse:
+                    H = pulse_histogram(rel, tr, nt, n_pulses)
+                    pl, obs, thr, pk, pkt = pulse_locking(H, nt, rng, n_pulses)
+                    la, ja, lb, jb = latency_jitter(H)
+                    row.update(pl=bool(pl), pli=obs, pli_null99=thr, peak_prob=pk, peak_ms=pkt,
+                               lat_a=la, jit_a=ja, lat_b=lb, jit_b=jb)
                 if keep_spikes:
                     keep[(int(ch), float(cur), ui)] = (rel, tr)
                 if trial_counts:
@@ -327,7 +334,9 @@ def fit_threshold(x, k, n, fa, reading):
     of behavioral data). Reading (a): guess rate fixed at the block's catch-trial false-alarm rate,
     threshold where the fitted curve gives 50% hits. Reading (b): hit proportions corrected for false
     alarms, (p - fa) / (1 - fa), then a fit with guess rate 0 (claims file, fig2a-threshold-decrease).
-    The lapse rate keeps psignifit's default prior. Returns NaN when the fit fails."""
+    The lapse rate keeps psignifit's default prior. Returns (threshold, parameter): the 50% point of
+    the fitted curve, and psignifit's own threshold parameter, the midpoint of the sigmoid before the
+    guess and lapse rates are applied (a variant); NaN when the fit fails."""
     import psignifit as ps
     x = np.asarray(x, float); k = np.asarray(k, float); n = np.asarray(n, float)
     if reading == "b":
@@ -342,9 +351,10 @@ def fit_threshold(x, k, n, fa, reading):
     try:
         r = ps.psignifit(data, sigmoid="norm", experiment_type="yes/no",
                          fixed_parameters={"gamma": min(gamma, 0.99)}, verbose=False)
-        return float(r.threshold([0.5], return_ci=False)[0])
+        return (float(r.threshold([0.5], return_ci=False)[0]),
+                float(r.threshold([0.5], unscaled=True, return_ci=False)[0]))
     except Exception:
-        return np.nan
+        return np.nan, np.nan
 
 
 def _fit_job(job):
@@ -372,11 +382,11 @@ def session_thresholds(sessions, processes=4):
     with Pool(processes) as p:
         res = p.map(_fit_job, jobs, chunksize=4)
     out = pd.DataFrame([dict(subject=a[0], session=a[1], stim_channel=a[2], block=a[3], reading=a[4],
-                             fa=a[5], threshold=t) for a, t in res])
+                             fa=a[5], threshold=t[0], threshold_param=t[1]) for a, t in res])
     return out
 
 
-def movement_onsets(s):
+def movement_onsets(s, scale=1.0):
     """Wheel-movement onset of each hit trial of the ephys blocks, in ms from stimulation onset.
 
     Onset is the first time after onset that the absolute wheel deviation from its value at onset
@@ -384,6 +394,7 @@ def movement_onsets(s):
     figs5-movement-onset, from the code). The threshold is not in the files or the paper; it is
     estimated per session as the median deviation at the recorded response time of hit trials (an
     assumption: the response time is when the wheel crossed the threshold, Methods, Behavioral task).
+    scale multiplies the estimated threshold, to show how the onsets depend on it.
     """
     w, fs, t0 = s["wheel"], s["wheel_rate"], s["wheel_t0"]
     ev = stim_events(s)
@@ -391,7 +402,7 @@ def movement_onsets(s):
     i0 = np.round((h.start_time.to_numpy() - t0) * fs).astype(int)
     ir = np.round((h.start_time.to_numpy() + h.response_time.to_numpy() - t0) * fs).astype(int)
     ok = ir < len(w)
-    thr = float(np.median(np.abs(w[ir[ok]] - w[i0[ok]]))) if ok.any() else np.nan
+    thr = scale * float(np.median(np.abs(w[ir[ok]] - w[i0[ok]]))) if ok.any() else np.nan
     hold = int(round(0.050 * fs))
     out = []
     for a, cur, ch, rt in zip(i0, h.current_uA, h.stim_channel, h.response_time):
@@ -506,13 +517,18 @@ def control_trials(s):
     return st
 
 
-def control_responses(s, rng, currents=(5.0,), keep_spikes=False):
+def control_responses(s, rng, currents=(5.0,), keep_spikes=False, n_bursts=3):
     """Responses of a passive control session, whose trials hold 3 bursts of 10 pulses at 50 Hz
     (file metadata) in place of the 700 ms train. Assumptions, as the paper gives no window for
     these mice: the stimulation count is the spikes inside the bursts (3 x 200 ms), the pre-stimulus
     window is 600 ms before the first burst, pulse-locking uses the 20 ms interpulse interval with
     the Methods' blanking (first 1.5 ms, last 0.5 ms), and the time to maximum is taken over the
-    concatenated bursts. Other rules as in session_responses."""
+    concatenated bursts. Other rules as in session_responses.
+
+    With n_bursts=10 (a variant), the trial is taken as 10 bursts at 0.5 s spacing from the first
+    tabled burst, the stimulation that the spikes follow (notebook, control sanity check), though
+    the tables list 3; the pre-stimulus window is then 2 s (10 x 200 ms) before the first burst.
+    """
     st = control_trials(s)
     rows, keep = [], {}
     for (ch, cur), g in st.groupby(["stim_channel", "current_uA"]):
@@ -520,15 +536,19 @@ def control_responses(s, rng, currents=(5.0,), keep_spikes=False):
             continue
         trials = g.groupby("trial")
         first = trials.start_time.min().to_numpy()
-        bursts = g.start_time.to_numpy()
-        bt = g.trial.map({t: i for i, t in enumerate(trials.groups)}).to_numpy()
+        if n_bursts == 3:
+            bursts = g.start_time.to_numpy()
+            bt = g.trial.map({t: i for i, t in enumerate(trials.groups)}).to_numpy()
+        else:
+            bursts = (first[:, None] + 0.5 * np.arange(n_bursts)[None, :]).ravel()
+            bt = np.repeat(np.arange(len(first)), n_bursts)
         nt = len(first)
         dur = 0.2
         for ui, spk in enumerate(s["spikes"]):
             cb = window_counts(spk, bursts, 0.0, dur)
             c_stim = np.bincount(bt, cb, minlength=nt)
-            c_pre = window_counts(spk, first, -3 * dur, 0.0)
-            r_stim, r_pre = c_stim / (3 * dur), c_pre / (3 * dur)
+            c_pre = window_counts(spk, first, -n_bursts * dur, 0.0)
+            r_stim, r_pre = c_stim / (n_bursts * dur), c_pre / (n_bursts * dur)
             sd = r_pre.std(ddof=1) if nt > 1 else np.nan
             z = (r_stim.mean() - r_pre.mean()) / sd if sd > 0 else np.inf
             if nt > 1 and np.any(c_stim != c_pre):
