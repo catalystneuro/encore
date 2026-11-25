@@ -1,0 +1,320 @@
+schema_version: 3
+id: garud-2026-01
+datasets:
+- archive: dandi
+  id: "001552"
+  version: 0.250828.1728
+  doi: 10.48324/dandi.001552/0.250828.1728
+  relation: reuses
+paper: doi:10.64898/2026.04.07.716149
+date: 2026-11-25
+entry: garud-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45586037523
+inputs:
+- what: The Krausz et al. (2023) hex-level table hexLevelDf.csv.zip (298,918 rows, 10 rats), which
+    the paper cites for Figures 2, 3 and 5. Read into memory and checked against its SHA-256
+    (cad0056f9627dcb8561ae0a42b1b97c7153bb76522b5f75affc1e982ef90553e).
+  source: doi:10.17632/m59zdjpm9h.1 (Mendeley Data, version 1)
+outcomes:
+- claim: floeder-subjects-sessions
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:floeder-subjects-sessions
+  measured:
+  - 18
+  - 16
+  - 24
+  notes: 18 mice (9 JF-FP, 9 JF-dLight-ramp2) have photometry and event logs, with 16 to 24
+    sessions each (16 to 24 also before two duplicate files are counted once), and every mouse has
+    short-ITI and long-ITI sessions. Session medians of the inter-cue interval are 14.2 to 16.9 s
+    (median 16.6) in the short class and 37.0 to 72.8 s (median 53.7) in the long class, so the
+    short value fits the Methods' ~15 s and the long value the Results' ~55 s. The sessions are in
+    blocks (8 long then 8 short; or 7 or 8 long, 8 short, 7 or 8 long), not alternating day by
+    day as the statement says; the criterion does not test the order. The dandiset also holds 9
+    JF-VR-FP mice with photometry only, which the criterion's count leaves out.
+  deviations:
+  - Two files that hold the same recording as another day's file (JF-dLight-ramp2-F2 Day4,
+    JF-dLight-ramp2-F4 Day6) are counted once, at the first day.
+- claim: fig4a-lick-short-above-long
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig4a-lick-short-above-long
+  notes: Lick rate 5 to 8 s after cue onset, short 2.393 Hz against long 1.600 Hz per mouse,
+    paired t(17) = 4.15, p = 0.00067, higher in 16 of 18 mice; the two readings of the per-mouse
+    rate give the same values to three decimals (p 0.00067 and 0.00068). Lick onsets are event
+    code 5, the only lick-onset code in the files.
+- claim: fig4b-long-iti-dip-below-baseline
+  outcome: partially_reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig4b-long-iti-dip-below-baseline
+  notes: Long-ITI part holds under all eight readings (correction x ITI reference x observation
+    rule) - the per-mouse late-ITI ΔF/F is below zero in 18 of 18 mice, mean -0.0036 to -0.0061,
+    t(17) -11.6 to -13.7, one-tailed p 6.5e-11 to 8.2e-10, over 212 long-ITI sessions. The
+    short-ITI part does not hold - the last kept bin before the next cue is below zero, mean
+    -0.0067 (SEM 0.0011) under the trial reading and -0.0056 (SEM 0.0007) under the sample
+    reading, above zero in 1 and 0 of 18 mice. On the criterion's baseline of ΔF/F zero the
+    short-ITI reward response has resolved, and gone below zero, before the next trial.
+  deviations:
+  - The paper reports no test for this panel; the one-sample one-tailed t-test across mice is the
+    criterion's, taken from the paper's test of the stationary dip.
+  - The session's tonic value is the mean over trials of each trial's mean over its kept bins in
+    the window, a standard choice the Methods do not state.
+  - Photometry samples are placed on the event clock by a fit of TTL2 rising edges to cue times;
+    the files state no link between the two clocks.
+- claim: fig4d-dip-deepens-with-training
+  outcome: partially_reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig4d-dip-deepens-with-training
+  measured: -0.283
+  notes: Over 16 readings (8 tonic readings x 2 session numberings) the fixed slope on session
+    number is negative in 16, below p = 0.05 in 10 and below p = 0.001 in 1. Under the
+    first-listed tonic and session readings (fit, reward, trials, all sessions) the slope is
+    -8.3e-05 ΔF/F per session, p = 0.0043; Pearson r is -0.128 pooled (reading a, out of
+    tolerance) and -0.283 after removing each mouse's mean (reading b, within tolerance), the
+    value given as measured. The one reading with p below 0.001 (own, cue, samples, all sessions,
+    p = 0.0006) has r -0.13 pooled and -0.35 within mice, both out of tolerance. Readings with
+    the long-ITI session numbering, under the trial rule, give p 0.11 to 0.14. Per mouse, the OLS
+    slope is negative in 14 of 18. The paper's r and p cannot both be matched under any reading.
+  deviations:
+  - The mixed model is fitted with statsmodels MixedLM (REML), random intercepts and slopes per
+    mouse, in place of the Julia package the paper used.
+- claim: fig4c-lick-rate-rises-with-training
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig4c-lick-rate-rises-with-training
+  measured: 0.648
+  notes: Long-ITI sessions (reading a), session number among all sessions - fixed slope 0.103 Hz
+    per session, p = 1.2e-05, pooled r 0.648 and within-mouse r 0.646, both within tolerance;
+    with the long-ITI numbering slope 0.153, p = 1.9e-05, r 0.646. Over all sessions (reading b)
+    slope 0.086, p = 8.7e-05, r 0.536, out of tolerance. Per mouse the long-ITI slope is positive
+    in 15 of 18.
+- claim: krausz-included-observations
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:krausz-included-observations
+  measured:
+  - 264042
+  - 10
+  notes: Dropping rows at a port (port not -100), rows with no distance to the chosen port (the
+    start hex of each trial), rows at distance 0 and rows without velocity keeps 264,042 rows over
+    10 rats, the paper's count exactly. No row follows a reward within its trial, so "had already
+    received reward" removes nothing.
+  deviations:
+  - The Methods do not name the columns; the mapping above is this attempt's, as the criterion
+    asks.
+- claim: fig2a-ramp-toward-goal
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig2a-ramp-toward-goal
+  notes: Per rat r between distance to the chosen port and mean DA at each distance is negative
+    in 9 of 10 rats (mean -0.68, one-sample t(9) = -7.25, p = 4.8e-05). Across-rat mean DA is 0.18
+    at 1 hex and -0.13 at 20 hexes.
+  deviations:
+  - The criterion's "position-mean DA" is taken as the mean DA at each distance to the goal, the
+    axis the paper plots; a hex position has many distances, as the goal changes by trial.
+- claim: fig2b-ramp-scales-with-reward
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig2b-ramp-scales-with-reward
+  notes: Reading (a), slope of DA on distance, high -0.0355 against low -0.0152 per hex, paired
+    t(9) = -7.30, p = 4.6e-05; reading (b), mean DA, 0.120 against -0.002, t(9) = 7.75,
+    p = 2.8e-05. Destination reward is the nominal reward of the port the trial ends at.
+- claim: fig2c-ramp-similar-early-late
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig2c-ramp-similar-early-late
+  notes: Slope of DA on distance, early -0.0253 and late -0.0277 per hex (change -0.0024), paired
+    t(9) = 0.67, p = 0.52, so the test does not find a difference. The ramp is slightly steeper
+    late, not reduced as the Figure 2C legend says.
+  deviations:
+  - With 5 to 12 sessions per rat, a quartile is round(n/4) sessions, at least one (1 to 3); the
+    Methods say only "first quartile" and "last quartile".
+- claim: fig2d-ramp-scales-with-velocity
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig2d-ramp-scales-with-velocity
+  notes: At the 45 or 46 hex positions present in both velocity quartiles, mean DA is 0.162 on
+    fast and -0.053 on slow observations, larger when fast in 10 of 10 rats, paired t(9) = 7.40,
+    p = 4.1e-05.
+- claim: fig2e-velocity-covaries-with-distance
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig2e-velocity-covaries-with-distance
+  notes: Per rat r between distance and mean velocity, mean -0.66 (velocity higher nearer the
+    goal), t(9) = -7.21, p = 5.0e-05; per rat r between mean DA and mean velocity across distance,
+    mean 0.59, t(9) = 9.21, p = 7.1e-06.
+- claim: fig2f-coupling-grows-near-goal
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig2f-coupling-grows-near-goal
+  measured: -0.494
+  notes: Reading (a), pooled within-distance DA-velocity r at distances 1 to 20, correlated with
+    distance - r = -0.494, df = 18, p = 0.027, the paper's three values. Reading (b), per-rat r
+    averaged, r = -0.579, p = 0.0075; reading (c), the 20 hex positions with most rows, r = 0.474,
+    p = 0.035.
+  deviations:
+  - The 20 distances of readings (a) and (b) are 1 to 20, the 20 with the most rows (908 or more;
+    distances 21 to 28 have 1 to 1097 rows and 21 alone has more than 20); the paper says only
+    df = 18.
+- claim: fig2gh-stationary-dip
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig2gh-stationary-dip
+  measured: -4.274
+  assumed: true
+  notes: Reading (b), all rows off the ports (approach rows and the start hex of each trial),
+    stationary DA below zero in 9 of 10 rats, t(9) = -4.274, one-tailed p = 0.0010, the paper's
+    values. Reading (a), approach rows only, t(9) = -2.81, p = 0.010, out of tolerance; with the
+    rows at the ports added, t(9) = -1.46, p = 0.089. Moving against stationary, paired t(9) =
+    3.13 (p = 0.012) under (a) and 3.55 (p = 0.0062) under (b). Open for the authors - which rows
+    the legend's "non-approach" observations are; the table has three kinds outside the approach
+    selection (start hex, at a port, missing velocity), and only the reading without the port
+    rows gives the reported t.
+  deviations:
+  - Assumed that "approach and non-approach" observations are all rows off the ports. The Figure
+    2G-H legend says both were used; the port rows are the rat at the port itself, before or after
+    reward, which the Methods' selection also sets apart. All three row sets are shown.
+- claim: fig3-recovered-value-increases
+  outcome: partially_reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig3-recovered-value-increases
+  measured: 7
+  assumed: true
+  notes: With no minimum number of observations per moving and stationary mean, the BIC-winning
+    profile has A > 0 in 7 of 10 rats (the paper 8), and the recovered V is higher nearest the
+    goal than farthest in 7 of 10. With at least 5 observations per mean, A > 0 in 6 of 10 (not
+    reproduced under that reading). Open for the authors - the minimum count per position, how
+    hex-position gradients are placed on the approach axis, and the forms of the four profiles.
+  deviations:
+  - The gradient is computed per hex position and distance to the goal, averaged per distance,
+    and integrated toward the goal with scipy's RK45 (Dormand-Prince) on the linear interpolant,
+    in place of Julia's Tsit5; both are explicit 5(4) Runge-Kutta solvers.
+  - Profile forms as the criterion reads them (A exp(-λd) + c, A / (1 + kd) + c, A (d + 1)^(-k) +
+    c, A exp(-d²/2σ²) + c); BIC = n ln(SSE/n) + k ln n. A and c are solved by least squares for
+    each value of the shape parameter, which is searched on a grid and refined.
+  - Assumed no minimum observation count, the literal reading of the Methods, which name none;
+    the minimum of 5 is shown as the other reading.
+- claim: fig3cd-gaussian-shape-wins
+  outcome: partially_reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig3cd-gaussian-shape-wins
+  measured:
+  - 9
+  - 1
+  - 0
+  notes: The Gaussian profile wins in 9 of 10 rats under both readings; the tenth is exponential
+    with no minimum count and power-law with a minimum of 5 (the paper 8, 1, 1). Mean R² over rats
+    is 0.54 to 0.73 for the four shapes with no minimum, and 0.77 to 0.82 with a minimum of 5,
+    where three of four exceed 0.8. Measured values are from the no-minimum reading.
+  deviations:
+  - Fits and readings as in fig3-recovered-value-increases.
+- claim: fig5bc-gaussian-ct-td-best
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig5bc-gaussian-ct-td-best
+  measured: 8
+  notes: Summed over rats, Gaussian CT TD has the lowest BIC; the others are higher by 473
+    (CT TD exponential), 948 (dV/dt Gaussian), 1679 (Value), 1866 (dV/dt exponential) and 6627
+    (Velocity). Gaussian CT TD wins in 8 of 10 rats, dV/dt Gaussian in 2. In 3 rats, 2 or 3 of the six fits had their
+    best grid point at a bound of the spatial scale (λ near 0 or σ of 100 hexes, a profile nearly
+    flat over the maze).
+  deviations:
+  - The Methods fit all parameters by multi-start Nelder-Mead (4 initial vectors and 10
+    perturbations each). Here the linear parameters are solved by least squares for each value of
+    the spatial scale, which is searched on a grid of 120 values and refined; this finds the same
+    least-squares optimum without random starts.
+- claim: fig5d-tonic-term-and-gaussian-contribute
+  outcome: reproduced
+  notebook: reproduce_garud_2026.ipynb
+  output: claim:fig5d-tonic-term-and-gaussian-contribute
+  measured:
+  - 1170.1
+  - 695.6
+  notes: Reading (a), main effects over the 2 x 2 design - tonic term ΔBIC 1170.1 and Gaussian
+    profile ΔBIC 695.6, both within tolerance. Reading (b) gives 947.9 and 473.4, reading (c)
+    1392.3 and 917.8, both out of tolerance.
+  deviations:
+  - Fits as in fig5bc-gaussian-ct-td-best.
+- claim: figs2-no-velocity-coupling-without-goal
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The analysis is in Supplementary Figure S2, which was not available; the main text gives
+    no selection, measure or test, and a claim of absence is judged on the paper's own test. The
+    paper does not say where the Brown et al. (2026) data are held, and the code on OSF
+    (osf.io/g3e2d) is not public (its API answered 401 on 2026-11-25).
+findings:
+- kind: metadata_error
+  about: data
+  severity: critical
+  statement: Two recordings are deposited twice under different days. sub-JF-dLight-ramp2-F2 Day3
+    and Day4 hold identical photometry (381,921 samples), cues and licks, as do
+    sub-JF-dLight-ramp2-F4 Day5 and Day6 (330,189 samples). An analysis that counts sessions
+    counts each of them twice, and one of each pair is filed under a day on which, as far as the
+    files show, no other recording exists.
+- kind: metadata_error
+  about: data
+  severity: critical
+  statement: The photometry and the event log are on different clocks and the files do not say
+    so. Every photometry series starts at time 0, while the event log has its own zero; aligned by
+    the TTL2 channel, the photometry starts 3.6 to 251 s before the event log's zero. The only link is photometry_ttl2, described as "raw photometry channel ttl2", whose
+    rising edges fall on the cue onsets (event code 15). A user who takes both time bases as given
+    places dopamine seconds to minutes away from the cues and rewards.
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: 64 of the 144 JF-FP photometry series state a rate of 120481.9 Hz, or timestamps 8.3
+    microseconds apart, for signals sampled at 120.3 to 120.5 Hz (fitted from TTL2 edges against cue
+    times), a factor of about 1000. The other files state 130 Hz, which the TTL2 fit confirms.
+- kind: metadata_insufficient
+  about: data
+  severity: major
+  statement: The 144 files of the 9 JF-VR-FP mice hold only raw photometry (session description
+    "photometry_only") with no event log, task parameters or behaviour, and nothing in the
+    dandiset says which experiment they belong to or how to align them to a task. They cannot be
+    analysed as deposited.
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  statement: The TTL channels, the eventFlag series (described only as the third column of the
+    event log) and the meaning of the lick code in use (code 5, "Lick3 onset") are not explained,
+    and the stretches where the 470 signal is near zero (about 2950 samples, some 23 s, in
+    JF-dLight-ramp2-M4 Day9 and JF-dLight-ramp2-M5 Day9) are not marked as dropouts.
+- kind: other
+  about: data
+  severity: none
+  statement: The sessions are in blocks of 8 long-ITI then 8 short-ITI sessions (JF-FP) or 7 or 8
+    long, 8 short, 7 or 8 long (JF-dLight-ramp2), with median inter-cue intervals of about 53.7 and
+    16.6 s, and rewards 9 s after each cue. Garud and Morris describe the sessions as alternating
+    across days, with ITIs of ~8 and ~55 s (Results) or ~15 and ~45 s (Methods).
+- kind: paper_inconsistency
+  statement: The paper gives the Floeder ITIs as ~8 s and ~55 s in the Results and as ~15 s and
+    ~45 s median in the Methods, and the Figure 2B reward split as > 80 and < 20 µL in the legend
+    and ≥ 80 and ≤ 20 µL in the Methods.
+- kind: methods_unavailable
+  statement: Questions for the authors on Figure 4. How was the 405 nm signal regressed out and
+    ΔF/F formed; is the ITI midpoint measured from reward or from the cue; is an "observation" in
+    the 20-observation rule a trial or a sample; is session number counted over all sessions or
+    long-ITI sessions only; and is the printed r a pooled Pearson r, a within-mouse r, or derived
+    from the mixed model? Every combination was run; the slope is negative under all 16, but
+    r = -0.29 with p < 0.001 is matched under none, and only the within-mouse r is near -0.29.
+- kind: methods_unavailable
+  statement: Questions for the authors on Figures 2G-H and 3. Which rows of hexLevelDf are the
+    "non-approach" observations of Figure 2G-H (all rows off the ports reproduce t = -4.27 exactly;
+    adding the rows at the ports does not)? For the value recovery, what minimum number of moving
+    and stationary observations was required at a position, how were hex-position gradients
+    ordered along the approach axis, and what are the four three-parameter profiles? With no
+    minimum, 7 of 10 rats have A > 0 and the mean R² is below 0.8.
+- kind: methods_unavailable
+  statement: The supplement (cited for further detailed methods and for Supplementary Figure S2)
+    was not available, and the code at osf.io/g3e2d is not public (the OSF API answers 401), so
+    no method detail could be checked against the code.
