@@ -1875,3 +1875,37 @@ def test_an_outside_run_says_who_ran_it_under_provenance(tmp_path):
     page = _paper_page(data, tmp_path, attempt)
     assert "run by Acme Lab in its own GitHub organization (acme-lab)" in page
     assert "https://github.com/acme-lab/encore-registry/actions/runs/1" in page
+
+
+# A finding against its dataset's newest version (finding_scope).
+
+def test_a_finding_is_current_fixed_or_seen_only_in_an_earlier_version():
+    scope = lambda f, tested, latest: site.finding_scope(f, tested, latest)[0]
+    new, old = "0.240923.1441", "0.240503.0152"
+    # The attempt read the newest version, or there is nothing newer to hold the finding against.
+    assert scope({}, new, new) == "current"
+    assert scope({}, "draft", new) == scope({}, "unversioned", None) == scope({}, old, None) == "current"
+    # The attempt read an earlier version and nobody has looked since.
+    assert scope({}, old, new) == "older"
+    # The finding says which versions it was seen in: the one the paper cites, whatever the attempt read.
+    assert site.finding_scope({"versions": [old]}, new, new) == ("older", [old])
+    assert scope({"versions": [old, new]}, new, new) == "current"
+    assert scope({"versions": [old], "fixed_in": new}, new, new) == "fixed"
+    # A target list that is behind the attempt does not make the attempt's version an earlier one.
+    assert scope({}, new, old) == "current"
+
+
+def test_only_a_current_finding_makes_a_dataset_one_whose_data_change_results():
+    assert site.counts_now({"changes_results": True, "scope": "current"})
+    assert site.counts_now({"changes_results": True})   # a finding with no scope is about the version read
+    assert not site.counts_now({"changes_results": True, "scope": "fixed"})
+    assert not site.counts_now({"changes_results": True, "scope": "older"})
+    assert not site.counts_now({"changes_results": False, "scope": "current"})
+    fixed = {"changes_results": True, "scope": "fixed", "seen_in": ["0.1"], "fixed_in": "0.2", "newest": "0.2"}
+    # On the dataset's page a fixed problem is marked fixed, not as one that changes results; on the paper's it is.
+    assert "Fixed in 0.2" in site.finding_tags(fixed) and site.CHANGES_LABEL not in site.finding_tags(fixed)
+    assert site.CHANGES_LABEL in site.finding_tags(fixed, paper=True)
+    older = {"changes_results": False, "scope": "older", "seen_in": ["0.1"], "newest": "0.2"}
+    assert "not rechecked since" in site.finding_tags(older)
+    assert "See the code that shows this finding" in site.finding_code("notebooks/x/a.html#cell-id=c1")
+    assert site.finding_code(None) == ""
