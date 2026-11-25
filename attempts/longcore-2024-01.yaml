@@ -42,8 +42,10 @@ outcomes:
     -2.66 at 0.5 lx and 1750 K, over 14, 14, 14 and 15 mice. The abstract's 12.3% and 3% increases
     match. The outcome is judged on the sign of the mean, as the criterion says, and none of the four
     differs from zero by a one-sample t-test (p 0.055 at 0.01 lx and 1750 K, 0.32 to 0.67 at the
-    others); at 0.01 lx and 3000 K the median is 0.03 and 7 of 14 mice are below zero. The female means at 0.01 lx and 3000 K (0.78) and 0.5 lx and 1750 K (3.53) are above
-    zero; the increases come from the males.
+    others); at 0.01 lx and 3000 K the median is 0.03 and 7 of 14 mice are below zero. The female
+    means at 0.01 lx and 3000 K (0.78) and 0.5 lx and 1750 K (3.53) are above zero, so at these two
+    treatments the increases come from the males; at 0.01 lx and 1750 K and 1950 K the female means
+    are also below zero (-2.50 and -0.58).
   deviations:
   - 14 or 15 mice per treatment where the criterion says 16; the missing values are not in the
     dataset.
@@ -171,7 +173,7 @@ outcomes:
     The log link puts three within tolerance under either scale; it cannot predict the negative
     male value. With log10 lux and the identity link none is within tolerance. The raw means by sex
     (-22.14, -2.50, 85.59, 95.28) put the two 0.01 lx values outside tolerance. The 95% intervals
-    here (t with 176 df) are wider than the paper's at 0.01 lx (-17.7 to -4.1 against the paper's
+    here (t with 183 - 7 = 176 df, printed) are wider than the paper's at 0.01 lx (-17.7 to -4.1 against the paper's
     -14.7 to -3.8).
 - claim: individual-variation
   outcome: reproduced
@@ -239,6 +241,8 @@ findings:
     mouse effects (-27.9 and +21.5), which the log-link models do not. The abstract also calls the
     analysis a multiple linear regression. Question for the authors,
     which link and which scale of illuminance did the JMP models use?
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:sex-predicted-suppression
 - kind: paper_inconsistency
   statement: The Results give the 3000 K cFos count as 113.4 +/- 8.22 s.d.; the deposited values have
     s.d. 20.13 and s.e.m. 8.22, and the reported t(10) = 0.9409 follows from the s.d. of 20.13. The
@@ -251,6 +255,8 @@ findings:
     illuminance at all three CCTs, and among CCTs it is 3000 K that differs from the others at 5
     and 50 lx. The paper does not list the pairs it found, so the sentence cannot be traced to a
     comparison. Question for the authors, which comparisons does the sentence describe?
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:tukey-illuminance-within-cct
 - kind: other
   about: data
   severity: none
@@ -281,7 +287,8 @@ verifications:
       where the criterion says 16, and whether a mean counts as a reduction is judged by its sign
       alone though several are not distinguishable from zero; that fragility belongs in the
       conclusion. Section C, the notebook could print the four abstract values next to the
-      treatment means.
+      treatment means. Section C, why 9 values are missing; the README does not say, and only the raw
+      wheel counts (not deposited) would show whether a mouse with no prior-day activity was dropped.
     response: The conclusion and notes now give the mouse counts and say that three of the eight means
       cannot be told from zero and that the outcome rests on their sign. The treatment-means cell
       prints the four values the abstract gives next to the means here.
@@ -322,7 +329,9 @@ verifications:
       regression" with the identity-link matches is strong evidence the paper's model was
       effectively identity-link, which the claims file and notebook do not note. Section C, adding
       the interaction LR and Wald p from the sex and mouse models would settle whether the claim
-      fails only because of the choice of model.
+      fails only because of the choice of model. Section C, whether JMP's GLM personality centers the
+      crossed continuous term matters only for the CCT main-effect p; both variants are shown and both
+      have p<0.05 under the identity link, so the outcome does not change.
     response: Added a cell that prints, for each log-link fit, the fitted means, parameters, standard
       errors and the condition number of J'J (3e9 with lux), and the conclusion says the log-link
       Wald tests and intervals with lux are not usable; the AICc cell now prints that the optimizer
@@ -402,3 +411,105 @@ verifications:
     response: The conclusion and notes now say that both rest on reading 8.22 as an s.d. and that the
       outcome does not change (the mean is within either tolerance and the t-test matches). Asked in
       questions/longcore-2024.yaml; the claim is unchanged.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the round-1 revision, with its conclusions and summary,
+    the helper module, the claims file, this attempt record, the questions file and the paper's full
+    text.
+  results:
+  - claim: table1-suppression-0p5-and-above
+    agrees: true
+    outcome: reproduced
+    reason: Cell 11, all 8 means are above 0. Three of them are not distinguishable from zero (p 0.84,
+      0.49, 0.18), and the record says so. The Summary's list of means that cannot be told from zero
+      ("all three at 0.01 lx and all three at 0.5 lx") leaves out 5 lx/1750 K (p 0.18), which cell 12
+      counts among the three; this is incomplete, not wrong.
+    response: The Summary now lists 5 lx at 1750 K with the others. The round-1 record now gives the
+      verifier's Section C item on why nine values are missing, which it had left out.
+  - claim: table1-increase-0p01
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14, all 4 means are below 0 (n 14, 14, 14, 15). None differs from 0 (p 0.055 to 0.67),
+      and the record says so. Cell 15 and the notes say "the increases come from the males." That
+      holds for the two treatments named there (female means 0.78 and 3.53). At 0.01 lx/1750 K and
+      1950 K the female means are also negative (-2.50 and -0.58, cell 14).
+    response: Cell 15 and the notes now limit the sentence to the two treatments and give the
+      negative female means at 0.01 lx and 1750 K and 1950 K.
+  - claim: tukey-illuminance-within-cct
+    agrees: true
+    outcome: not_reproduced
+    reason: Cells 17 and 18, neither reading matches.
+    response: No change. Finding 6 now names the cell claim:tukey-illuminance-within-cct. Findings 4
+      to 6 carry no severity because they are about the paper, and severity is given to findings about
+      the data.
+  - claim: cct-0p01-not-significant
+    agrees: true
+    outcome: reproduced
+    reason: Cell 21, no Tukey pair differs. The mean increase is 12.32 at 1750 K against 3.04 at 3000 K.
+    response: No change.
+  - claim: glm-illuminance-cct-interaction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cells 24 and 25, no reading of the named model gets the interaction p below 0.002 (smallest
+      is 0.00631). All three terms have p < 0.05 in the 8 identity-link readings. The mouse-identity
+      variant meets every bound (cell 27), but the criterion names the base model. So the partial
+      outcome may come from which model the claims file names, not from the data; this is referred
+      to the questions file. The Summary's "the claims whose criteria allow either link are
+      reproduced under the identity link" is wrong for this claim, whose criterion allows either link
+      and which under the identity link is only partially reproduced (interaction p 0.00631 is above
+      0.002).
+    response: The Summary now names this claim as the exception, partially reproduced under every
+      reading. The question on the model with mouse identity was already in
+      questions/longcore-2024.yaml; the outcome is kept. The round-1 record now gives the verifier's
+      Section C item on whether JMP centers the crossed term, which it had left out.
+  - claim: effect-size-illuminance-over-cct
+    agrees: true
+    outcome: reproduced
+    reason: Cell 30, the identity-link ratios are 3.10 to 3.84.
+    response: No change.
+  - claim: cct-effect-grows-with-intensity
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 33, the smallest spread is at 0.5 lx (5.64), not at 0.01 lx (9.28). The criterion
+      defines no partial outcome. The outcome depends on the claims author's choice of raw spread over
+      model spread, referred to the questions file. As a possible misreading, the paper says only
+      "with the influence of CCT decreasing at the lowest light strength" (Results paragraph 2); the
+      claim's "grew as illuminance increased, as shown by the significant interaction" goes beyond that
+      sentence, though the criterion's "smallest at 0.01 lx" condition still follows the paper's own
+      words.
+    response: Added the possible misreading to questions/longcore-2024.yaml as a question for a reader,
+      with the Discussion passage that the claim's wording may follow; the claim is unchanged.
+  - claim: lower-cct-less-suppression
+    agrees: true
+    outcome: reproduced
+    reason: Cell 36, 3 of 3 illuminances.
+    response: No change.
+  - claim: aicc-individual-sex
+    agrees: true
+    outcome: reproduced
+    reason: Cell 39, 1612.30 < 1628.26 < 1643.90, with differences 15.64 and 15.96. The source of the
+      AICc offset cannot be settled with 183 rows, and cell 40 says so.
+    response: No change.
+  - claim: sex-males-less-suppressed
+    agrees: true
+    outcome: reproduced
+    reason: Cell 42, LR p 2.42e-05, Wald p 2.2e-05, sex[F] +6.32.
+    response: No change.
+  - claim: sex-predicted-suppression
+    agrees: true
+    outcome: reproduced
+    reason: Cell 45, identity link with lux puts 4 of 4 within tolerance. The record's "t with 176 df"
+      for the intervals is not printed; it is consistent with n = 183 and 7 parameters.
+    response: Cell 45 now prints n, the number of parameters and the df (183 - 7 = 176) for each
+      reading. Finding 4 now names this cell.
+  - claim: individual-variation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 48, -27.86 and 21.46.
+    response: No change.
+  - claim: cfos-no-cct-difference
+    agrees: true
+    outcome: reproduced
+    reason: Cell 51, t(10) = 0.9409, p = 0.3689.
+    response: No change.
