@@ -608,7 +608,7 @@ def fit_all(trials, rats, models, seed, nstarts=3, procs=4, cv=True):
     return res
 
 
-def simulate_iti(g, model, alpha0, dscale, noise_var, rng, nsims=50, gain=None):
+def simulate_iti(g, model, alpha0, dscale, noise_var, rng, nsims=50, gain=None, exact=False):
     """Simulated trial initiation times on a rat's offers (GenerateLatencyData_*.m).
     model 'eq10' (AlphaPHModel: trials with a wait time, kappa0 = mean(ln[5..80]), D = 25 p,
     alpha from Equation 10), 'static' (VanillaAlpha: trials with an initiation time, kappa0 = 20,
@@ -616,7 +616,9 @@ def simulate_iti(g, model, alpha0, dscale, noise_var, rng, nsims=50, gain=None):
     G = |delta|). TI = D / kappa (Equation 2), kappa < 0 set to eps. Noise: log-normal with mean
     TI and variance `noise_var`; the mean of `nsims` simulations is drawn from its normal
     approximation (mean TI, variance noise_var / nsims), a standard shortcut that only changes
-    the noise. Returns a Series over g.index (NaN off the model's trials)."""
+    the noise; exact=True draws the nsims log-normal values per trial and averages them, to check
+    the shortcut. noise_var = 0 gives the model without noise. Returns a Series over g.index (NaN
+    off the model's trials)."""
     if model == "eq10":
         good = g["wait_time"].notna().to_numpy()
         k0, D, mode = float(np.mean(np.log([5, 10, 20, 40, 80]))), 25 * dscale, 0
@@ -640,8 +642,11 @@ def simulate_iti(g, model, alpha0, dscale, noise_var, rng, nsims=50, gain=None):
     kap = retro_kappa(r, new, gain, alpha0, mode, k0)
     kap = np.where(kap < 0, 1e-16, kap)
     ti = D / kap
-    sim = ti + rng.normal(0, np.sqrt(noise_var / nsims), len(ti)) if nsims > 1 else \
-        np.exp(rng.normal(np.log(ti) - np.log(noise_var / ti ** 2 + 1) / 2, np.sqrt(np.log(noise_var / ti ** 2 + 1))))
+    s2 = np.log(noise_var / ti ** 2 + 1)
+    if exact or nsims == 1:
+        sim = np.exp(rng.normal((np.log(ti) - s2 / 2)[:, None], np.sqrt(s2)[:, None], (len(ti), nsims))).mean(1)
+    else:
+        sim = ti + rng.normal(0, np.sqrt(noise_var / nsims), len(ti))
     out = pd.Series(np.nan, index=g.index)
     out.loc[h.index] = sim
     return out
@@ -651,17 +656,21 @@ def logistic4(x, A, D, C, x0):
     return A + (D - A) / (1 + np.exp(-C * (x - x0)))
 
 
-def fit_logistic(x, Y, ngrid_c=161, ngrid_x0=81):
-    """4-parameter logistic of Equation 11 (A lower asymptote, D upper, C inverse temperature, x0
-    midpoint) fitted by least squares to each row of Y: a grid over C in [-8, 8] and x0 in
-    [-20, 20], with A and D solved exactly for each grid point (the model is linear in them).
-    my_fit_sigmoid.m uses fmincon from 10 random starts; the grid is a deterministic search for
-    the same optimum (a standard choice). Returns an array (rows, 4) of (A, D, C, x0)."""
+def fit_logistic(x, Y, ngrid_c=100, ngrid_x0=121):
+    """4-parameter logistic of Equation 11, y = A + (D - A) / (1 + exp(-C (x - x0))), fitted by least
+    squares to each row of Y, with the bounds of my_fit_sigmoid.m (rat_behavior/utils at
+    b7b68ca8c107: lb = [-5, 0, 0, -5], ub = [5, 5, 30, 5] for (D, C, x0, A)). C >= 0, so A is the
+    left asymptote and D the right one, and each parameter means the same thing in every fit.
+    my_fit_sigmoid.m runs fmincon from 10 random starts; here a grid over C in (0, 5] and x0 in
+    [0, 30], with A and D solved exactly at each grid point (the model is linear in them), gives
+    the start, and a bounded least-squares fit (scipy least_squares, trust region) refines all four
+    parameters continuously (a standard choice for the same optimum). Returns an array (rows, 4)
+    of (A, D, C, x0)."""
+    from scipy.optimize import least_squares
     x = np.asarray(x, float)
     Y = np.atleast_2d(np.asarray(Y, float))
-    Cs = np.linspace(-8, 8, ngrid_c)
-    Cs = Cs[Cs != 0]
-    X0 = np.linspace(-20, 20, ngrid_x0)
+    Cs = np.linspace(0, 5, ngrid_c + 1)[1:]
+    X0 = np.linspace(0, 30, ngrid_x0)
     cc, xx = np.meshgrid(Cs, X0, indexing="ij")
     cc, xx = cc.ravel(), xx.ravel()
     with np.errstate(over="ignore"):
@@ -671,10 +680,17 @@ def fit_logistic(x, Y, ngrid_c=161, ngrid_x0=81):
     det = suu * sss - sus ** 2
     yu, ys = Y @ U.T, Y @ S.T  # (R, G)
     with np.errstate(all="ignore"):
-        A = (yu * sss - ys * sus) / det
-        D = (ys * suu - yu * sus) / det
+        A = np.clip((yu * sss - ys * sus) / det, -5, 5)
+        D = np.clip((ys * suu - yu * sus) / det, -5, 5)
         sse = (Y * Y).sum(1)[:, None] - 2 * (A * yu + D * ys) + A * A * suu + 2 * A * D * sus + D * D * sss
-    sse = np.where(np.isfinite(sse), sse, np.inf)
+    sse = np.where(np.isfinite(sse) & (np.abs(det) > 1e-12), sse, np.inf)
     k = np.argmin(sse, 1)
-    r = np.arange(len(Y))
-    return np.c_[A[r, k], D[r, k], cc[k], xx[k]]
+    lo, hi = np.array([-5, -5, 0, 0]), np.array([5, 5, 5, 30])
+    out = np.empty((len(Y), 4))
+    for r in range(len(Y)):
+        y = Y[r]
+        p0 = np.clip([A[r, k[r]], D[r, k[r]], cc[k[r]], xx[k[r]]], lo + 1e-9, hi - 1e-9)
+        res = least_squares(lambda p: logistic4(x, *p) - y, p0, bounds=(lo, hi), method="trf",
+                            xtol=1e-10, ftol=1e-10, gtol=1e-10)
+        out[r] = res.x if (res.fun ** 2).sum() <= ((logistic4(x, *p0) - y) ** 2).sum() else p0
+    return out
