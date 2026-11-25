@@ -1,31 +1,36 @@
-No outcome changed. The verifier agreed with all 13 (five tested, eight blocked as data_missing), and its points led to one bug fix, new outputs and clearer wording on the weak tests. The entry re-ran cleanly with `python tools/entry.py all` (77 s), `check` reports 0 errors, and the round is recorded under `verifications` in `attempts/002014-choi-2025-01.yaml`. Nothing is committed.
+I've revised the attempt for every point in the round-1 report. No outcome changed: the verifier agreed with all 13, and the five tested claims keep the same result on the re-run numbers. The entry re-ran cleanly with `python tools/entry.py all entries/choi-2025` (0 check errors), and the notebook text and attempt record match the new outputs.
 
-**Fixed**
-- **Dopamine reference at V (`reference_at` in `chamber.py`):** when the sample at V was NaN, the old fallback averaged an uneven window and gave a 0.13 offset on a synthetic ramp. It now interpolates between the nearest valid samples on each side, if both are within 0.2 s. A new sanity cell tests this on a ramp: it fails with the old code (error 0.133) and passes with the new one (error 4e-15).
-- **Effect on the numbers:** none of the 62 successful trials that are NaN at V has valid samples on both sides, so all 62 are now dropped. fig8b now reads 1.88 against 1.10, p = 0.0035, with 429 and 460 trials (23 and 39 dropped). It was 1.87 against 1.11, p = 0.0037.
-- **Wrong denominator in fig8a:** the share of trials with a ratio above 1 counted trials without a ratio as below 1. Over the 889 trials that have one it is 64%, where it was given as 60%.
+**Outcomes and their new numbers**
+- **fig8a:** still reproduced. The ratios for trial 133 are unchanged (2.025 and 2.199). The reference over all successful trials is now 1.259.
+- **fig8b:** still reproduced, V to RW difference 0.758, p = 0.0028.
+- **fig9a:** still reproduced.
+- **fig9bc:** still reproduced.
+- **fig9d:** still partially reproduced, p = 0.112. No variant reaches p < 0.05 now: the one that did (15 to 30 Hz with N = 2) moved from 0.0496 to 0.052.
+- **The other 8 claims:** still blocked as `data_missing`.
 
-**Added**
-- **fig8a:** trial 133's ratio is higher than 76.9% of the 889 ratios. The text now calls the test weak and says the criterion was written after trial 133's values had been printed.
-- **fig8b:**
-  - A permutation test that shuffles labels only within blocks of 50 consecutive trials, so slow drift across the session stays in the null: p = 0.0045 (RW to RW+3 s: p = 0.0010).
-  - A variant without trial 1411: p = 0.0031.
-  - A note on the "c8c" in the Zenodo list file names: Zenodo describes the lists as trial ids used for all its data sets, so the site name doesn't affect them.
-- **fig9a:** the PSTH values per condition in 100 ms bins, and the 7 ms lag-corrected value (0.48) in the conclusion.
-- **fig9bc:**
-  - The detector's dead time: 1.562 ms against a 1.50 ms waveform.
-  - The Plexon unit's ISIs below that dead time: 14 (0.015%).
-  - The waveform dataset shapes.
-  - A count of ISIs just above the dead time relative to 10 to 30 ms: 0.106 for the thresholded unit, 0.204 for Plexon.
-  - The conclusion now says the criterion holds but the evidence for a single unit is weak.
-- **fig9d:**
-  - Trial-averaged normalized power with bootstrap 95% CIs: 0.839 for large and 0.885 for small, difference -0.046 (CI -0.125 to 0.036).
-  - The within-block permutation test: p = 0.19.
-  - The plot is limited to ±1.5 s to avoid the filter's edge distortion, and the edge values are printed.
-- **Findings:** the clock finding now says the dandiset description ("all data are expressed relative to the start of the Neuralynx recording") is contradicted by the data. The README and notebook summary rows for fig8a and fig9bc carry the same caveats as the conclusions.
+The numbers moved because I fixed the verifier's first point: the last trial (id 1411), whose span has no end, is no longer counted as a successful trial. The trial classes now match the paper's Zenodo lists exactly (451 large, 499 small), and the special handling of that trial in fig9a is gone.
 
-**Not done**
-- I did not report the description mismatch upstream. It is recorded as a finding; opening an issue on a project we don't maintain needs your approval first.
-- I did not change the fig9bc outcome. The criterion decides it and it holds; the verifier also gave "reproduced", with the same weak-evidence caveat.
-- I did not save the paper text under `paper/`: I used no text beyond what the verifier had already saved, and the folder is not in this checkout.
-- The repo root has untracked files I did not create (`.bashrc`, `.profile`, `.vscode`, `scripts` and others). I left them alone; they should not go into the workflow's commit.
+**Outputs the verifier asked for, now in the notebook**
+- **Trial start times:** every `midpoint_time` equals a trial-start event exactly (largest difference 0.000000 s).
+- **The 11812.1 s clock offset:** the claims file reports it from an earlier dataset version. In this version the LFP correlation at that offset is r −0.12 to −0.02, against 0.89 to 0.94 at 0 to 1 ms, so the 0.5 ms offset I used holds.
+- **LFP spectra:** the raw c7b−c5c signal has strong lines at the FSCV scan rate (10 Hz) and its harmonics. The stored LFP has these removed and otherwise equals the raw signal. That is why it kept only about 0.15 of the raw SD in the beta band, as the verifier suspected.
+- **FSCV timing (`iox` against the raw scans):** a kernel fitted over 36 trials shows `iox` follows the raw current near 0.6 V with no shift beyond a few tenths of a second. It is smoothed over about the preceding 2.4 s, and the file doesn't document that smoothing. I added this as a new minor finding at the end of the list.
+- **Dopamine detail:** dopamine aligned to RW for large and small trials, the trial-133 samples from −5 to +5 s, and the mean traces at 0.5 s steps.
+- **Spike timing against the FSCV scans:** V falls at every phase of the scan cycle. Each 100 ms PSTH bin spans one whole cycle, so the FSCV blanking can't cause the dip and peak after V.
+- **fig9d:** the mean power ratio over 0 to 0.5 s is printed (0.841 large, 0.885 small).
+
+**Corrections to the text and record**
+- The fig8b notes now say that the claim's "especially between the value cue display and reward" does not hold: the difference after RW is as large or larger.
+- The fig9bc notes now say the paper never calls the spikes a single unit.
+- I updated the findings on clocks, LFP preprocessing and trial classes in place, so their order and numbers are unchanged.
+- I recorded the round under `verifications` and updated the README.
+
+**Questions for a reader**
+I created `questions/choi-2025.yaml` with two questions on these points:
+- **fig9bc:** the statement adds "consistent with a single unit", which the paper doesn't say, and the refractory test cannot fail on these spikes.
+- **fig8b:** the criterion doesn't test the "especially" part of the claim.
+
+**Not changed**
+- **recordings-two-monkeys** stays blocked. The verifier's own outcome is blocked too, and the claim has no criterion for one monkey.
+- **fig9d** stays partial. The criterion compares medians, and the verifier agreed.
+- I didn't change any claim's statement, criterion or expected values, and I didn't commit anything.
