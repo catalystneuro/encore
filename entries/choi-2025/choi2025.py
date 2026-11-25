@@ -8,7 +8,8 @@ Where each parameter comes from:
 - Trial classes, the value cue V (code 23) and the reward RW (codes 101 and 100): the claims
   file's opening comment. A trial is the span from its trial-start event (code 128, the trials
   table's midpoint_time) to the next code-128 event; large (small) successful trials hold a
-  big (small) reward event and no error event.
+  big (small) reward event and no error event. The last row, which has no next trial start,
+  is not classed: the paper's Zenodo lists leave it out (verifier round 1).
 - The dopamine window (V to RW), the reference at V, the 5 s windows of fig8a, the spike
   windows, bins and random alignments of fig9a, the refractory and waveform tests of fig9bc,
   the beta band, filter, windows and measure of fig9d: the claims' criteria.
@@ -130,8 +131,10 @@ def trial_table(f: h5py.File, events: dict[str, np.ndarray]) -> pd.DataFrame:
     rw_big = _first_in(events["big reward"], mid, nxt)
     rw_small = _first_in(events["small reward"], mid, nxt)
     df["RW"] = np.where(df["big"], rw_big, rw_small)
-    df["large_success"] = df["big"] & ~df["error"]
-    df["small_success"] = df["small"] & ~df["error"]
+    # the last row has no next trial start, so its span is open; the paper's lists leave it out
+    closed = np.isfinite(nxt)
+    df["large_success"] = df["big"] & ~df["error"] & closed
+    df["small_success"] = df["small"] & ~df["error"] & closed
     df["success"] = df["large_success"] | df["small_success"]
     df["cls"] = np.select([df["large_success"], df["small_success"]], ["large", "small"], "other")
     return df

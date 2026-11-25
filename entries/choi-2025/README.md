@@ -11,8 +11,8 @@ paper's lists of large and small successful trials, from its Zenodo record
 | Single-trial dopamine fluctuates more after the value cue (Fig. 8A) | Reproduced |
 | More dopamine for large than small reward between cue and reward (Fig. 8B) | Reproduced |
 | Spikes at c5d aligned to the value cue (Fig. 9A) | Reproduced |
-| Spike waveform and interspike intervals of a single unit (Fig. 9B, C) | Reproduced |
-| Beta power suppressed more after large than small reward cues (Fig. 9D) | Partially reproduced (p = 0.109) |
+| Spike waveform and interspike intervals (Fig. 9B, C) | Reproduced |
+| Beta power suppressed more after large than small reward cues (Fig. 9D) | Partially reproduced (p = 0.112) |
 | Recordings in two monkeys; electrode yields; cultures; drainage; bone growth | Blocked: not in the dandiset |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
