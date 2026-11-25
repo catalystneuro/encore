@@ -184,7 +184,7 @@ def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
     # chain.sh counted "0\n0" for a paper with no questions file, which is not 0: the answer and author-answers roles
     # ran for nothing on every such paper, and the first replicates hung at the answer role (2026-11-14).
     chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
-    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index('if [ "${open_questions:-0}" != 0 ]')]
+    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index("if ! is_done verifier-1 &&")]
     def count(on_branch):
         script = f"set -uo pipefail\nd=x\non_branch(){{ {on_branch}; }}\npython(){{ {sys.executable} \"$@\"; }}\n{lines}\necho \"[$open_questions]\""
         return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.strip()
@@ -358,6 +358,23 @@ def test_the_claims_checkpoint_validates_against_the_protocols_schema(tmp_path):
     assert "claims/x-2020.yaml" in on_main and not [f for f in on_main if f.startswith("schemas/")]
     out, on_main = checkpoint("y-2021", "not_claims: []\n")
     assert "does not validate" in out and "claims/y-2021.yaml" not in on_main
+
+
+def test_a_chain_started_again_after_its_rounds_does_not_ask_the_questions_of_the_revisions():
+    # 2026-11-25: mah-2023 stopped at its pull request; its revisions had left two questions open. Started again, the
+    # chain ran the reader's answer role on them, after the verification and the reconcile step.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index("open_questions=${open_questions:-0}"):chain.index("for role in verifier-1")]
+    def roles_run(open_questions, done):
+        script = (f'open_questions={open_questions}\nis_done(){{ case " {" ".join(done)} " in *" $1 "*) return 0;; esac; return 1; }}\n'
+                  'log(){ :; }\nstep(){ is_done "$1" || echo "$1"; }\n' + block)
+        return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.split()
+    assert roles_run(2, ["author"]) == ["answer", "author-answers"]
+    assert roles_run(0, ["author"]) == []
+    assert roles_run(1, ["author", "answer"]) == ["author-answers"]          # stopped between the two
+    assert roles_run(0, ["author", "answer"]) == ["author-answers"]
+    assert roles_run(2, ["author", "verifier-1", "author-revise-1", "verifier-2", "author-revise-2"]) == []
+    assert roles_run(2, ["author", "answer", "author-answers", "verifier-1"]) == []
 
 
 def test_a_failed_commit_job_is_found_by_its_name_in_a_called_workflow():

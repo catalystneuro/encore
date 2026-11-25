@@ -415,7 +415,11 @@ fetch
 # author-answers roles for nothing, and a replicate, whose answer run the workflow refused, retried for ever.
 open_questions=$({ on_branch "questions/$d.yaml" || true; } | python -c "import yaml,sys; q=yaml.safe_load(sys.stdin) or []; q=q.get('questions', []) if isinstance(q, dict) else q; print(sum(1 for x in q if not x.get('answered')))" 2>/dev/null | tail -n 1)
 open_questions=${open_questions:-0}
-if [ "${open_questions:-0}" != 0 ] || is_done answer; then
+# Only before the verification rounds. A question the author writes while revising stays open in the record: the
+# chain does not come back for it. A chain started again after its rounds, to finish (mah-2023, 2026-11-25), counted
+# those questions and began the answer and author-answers runs, which would have changed the entry after its
+# verifiers had read it.
+if ! is_done verifier-1 && { [ "${open_questions:-0}" != 0 ] || is_done answer; }; then
   log "$open_questions open questions"
   step answer
   step author-answers
