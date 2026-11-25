@@ -1,0 +1,106 @@
+questions:
+- claim: optotag-drd2
+  question: The criterion counts a unit as suppressed when "the rate in +2 to +15 ms after pulse
+    onset is at least 20% below the baseline", that is, the mean over the window. The Methods say
+    the PETH "decreased by >= 20% of the baseline PETH in +2 to +15ms bins", which can also be read
+    per bin, every 1 ms bin of the window at least 20% below the baseline. Does the criterion misread
+    the Methods by fixing the mean, and should the per-bin reading be allowed as a reading?
+  passage: 'STAR Methods, Optogenetic tagging, "For DRD2-Cre::Ai35 mice, putative mossy cells were
+    identified if the PETH triggered by 60,000-100,000 repetitions of 20ms light pulses decreased
+    by >= 20% of the baseline PETH in +2 to +15ms bins." Results, Optogenetic validation, paragraph
+    1, "29 out of 107 putative mossy cells were light responsive ... whereas only eight of 68 w-I
+    interneurons and none of the putative granule cells (n = 202) or n-I interneurons (n = 69) were
+    suppressed significantly by green light".'
+  why: With the mean over the window, 68 of 106 MC (0.642) are suppressed under the 20 ms
+    pre-pulse baseline and 71 (0.670) under the 50 to 200 ms baseline, far from 0.271, so the claim
+    is partially reproduced. Read per bin against the pre-pulse baseline, 28 of 106 MC (0.264,
+    within 0.271 +- 0.027), 0 of 198 GC, 7 of 62 wide- and 0 of 68 narrow-waveform interneurons are
+    suppressed (paper 29 of 107, 0 of 202, 8 of 68, 0 of 69), and 28 of the 29 MC the files'
+    drd2_tagged column marks are among them. Under that reading the claim would be reproduced.
+- claim: first-stage-labels
+  question: The criterion takes the trough-to-peak latency from "the mean of each unit's first 200
+    stored waveforms". The paper measures "the unfiltered waveform", and the Methods use the same
+    average waveforms for the latency and for the waveform PCA, which the gc-mc-classification
+    criterion takes from the unfiltered wide-band signal. The stored waveforms are the lab's .spk
+    files, and the files do not say whether they were filtered. Should the latency be taken from
+    the unfiltered wide-band waveform, as for the PCA, where the files hold it?
+  passage: 'Results, Identification of granule cells and mossy cells in extracellular recordings,
+    paragraph 1, "The unfiltered waveform was quantified by the trough-to-peak latency of the
+    extracellular spike." STAR Methods, Unit classification, "To calculate the TP latency, the
+    average waveforms were taken from the recording site with the maximum amplitude for the averaged
+    waveforms of a given unit. The same average waveforms were also used for the waveform PCA".'
+  why: On the stored waveforms 89.9% of dentate narrow-waveform units are below 0.425 ms, just short
+    of the 90% the criterion asks, so the claim is partially reproduced. In the 17 files with the
+    wide band, the unfiltered mean gives 0.744 (latency to the largest later sample) or 0.949 (to
+    the first local peak), and with the first local peak 0.848 of GC and MC and 0.868 of
+    wide-waveform interneurons pass. The source of the waveform, and the definition of the peak,
+    can move each group across 90%.
+- claim: gc-narrower-waveform
+  question: The criterion takes the latency "as in first-stage-labels", from the stored waveforms.
+    For the same reason as the question on first-stage-labels, should it use the unfiltered
+    wide-band waveform, where the files hold it?
+  passage: 'Results, Identification of granule cells and mossy cells in extracellular recordings,
+    paragraph 1, "The unfiltered waveform was quantified by the trough-to-peak latency of the
+    extracellular spike"; paragraph 3, "Overall, the waveform of granule cells was narrower".'
+  why: The stored waveforms give GC 0.710 ms against MC 0.740 ms (P = 3.6e-14), but the peak falls at
+    the end of the stored 1.6 ms for 44% of GC and 69% of MC. With the unfiltered wide-band waveform
+    in 17 files, the latency to the largest later sample gives 0.770 against 0.800 ms (P = 0.175, not
+    reproduced), and to the first local peak 0.610 against 0.700 ms (P = 7.9e-10, reproduced).
+- claim: pv-remap
+  question: The claim's statistics list a Bonferroni post hoc test (P < 0.00001 at 20 place cells, P
+    < 0.05 at 5, 10, 15 and 20), and the statement says granule cells remap less than mossy cells,
+    which only the post hoc GC against MC test addresses. The criterion asks only that the GC median
+    be below the MC and CA3 medians with Kruskal-Wallis P < 0.00001 across the three types. Does the
+    criterion misread the paper by leaving out the post hoc test, and should it require the GC
+    against MC and GC against CA3 post hoc P values the statistics give?
+  passage: 'Results, Spatial and memory properties of granule cells and mossy cells, paragraph 3,
+    "The magnitude of population remapping was significantly smaller for granule cells compared to
+    mossy cells and CA3 pyramidal cells (P < 0.00001; Kruskal-Wallis test with Bonferroni post hoc;
+    P < 0.00001; Figure 6F) ... (P < 0.00001 for n = 5, 10, 15, 20 sampling number, Kruskal-Wallis
+    test with Bonferroni post hoc; P < 0.05; Figure 6G)".'
+  why: Under the claim's seed the GC median is below the MC and CA3 medians at every size with
+    Kruskal-Wallis P at most 2e-11, so the claim is reproduced on the criterion. The Bonferroni GC
+    against MC test gives P at most 1e-6 at 5, 10 and 15 cells but P = 0.84 at 20 cells, where the
+    medians are 0.2877 and 0.2902. With the post hoc test in the criterion the claim would be
+    partially reproduced (raised by the verifier, round 2, point 3).
+- claim: gc-mc-distance
+  question: The claims file gives no criterion for gc-mc-distance or gc-backpropagation, so neither
+    can be judged. The files hold each channel's place in its shank's list, and the DS2 profile is
+    smooth in list order on 0.83 of the shanks where it reverses, so a site's depth can be read
+    from it with the lab's convention. Can criteria be written for the two claims (for example, the
+    mean GC to MC vertical offset of connected same-shank pairs against 59 +- 35 um, and the
+    soma to dendrite delay of GC spikes against MC spikes)?
+  passage: 'Results, Granule cell-mossy cell spike transmission, paragraph 1, "Granule cells
+    resided 59±35 μm above their driven mossy cell partners (Figure 3B, D)". Results,
+    Identification of granule cells and mossy cells in extracellular recordings, paragraph 3,
+    "Indeed, the spikes of granule cells showed a delay from the soma to the proximal dendrites
+    (corresponding to ~ 0.2–0.3 m/s, Krueppel et al., 2011), whereas no such delays were observed in
+    putative mossy cells (Figure S3D-F)".'
+  why: Both claims are blocked. With a criterion they could be tested. Read as depth from the top
+    at 20 um per list place, the MC site lies 13 +- 49 um below its GC partner's on the authors' 17
+    same-shank pairs, against the paper's 59 +- 35 um.
+- claim: zero-lag-synchrony
+  question: The claims file's header says "Only 17 files say which shank each unit was recorded on",
+    the zero-lag-synchrony criterion says units on one shank cannot be told apart "as the files do
+    not say which shank a unit is on", and the mc-deeper criterion uses only the 17 files "whose
+    units carry their shank". Every file's units table gives the shank (the electrode_group of each
+    unit). Should these sentences be corrected, and should the zero-lag criterion say how pairs on
+    one shank are treated?
+  passage: 'STAR Methods, Detection of short-time scale interactions (the CCG test for monosynaptic
+    and zero-lag pairs); the claims file header and the criteria of zero-lag-synchrony and
+    mc-deeper.'
+  why: No pair on one shank is synchronous by the test, and those pairs enlarge the denominators.
+    Over pairs on different shanks MC give 0.133 and CA3 0.029 of pairs; the outcome, partially
+    reproduced, is the same. For mc-deeper the 17 files are the ones with the wide-band signal, so
+    the outcome does not change (raised by the verifier, round 2).
+- claim: gc-backpropagation
+  question: The claims file's header says the supplementary figures (S1 to S7) were not available
+    and that claims citing them rest on the main text, but paper/ holds the supplement
+    (10.1016-j.neuron.2016.12.011.supp.pdf), and gc-backpropagation rests on Figure S3D to S3F.
+    Should the header be corrected, and can the supplement give the method and a criterion for
+    gc-backpropagation?
+  passage: 'Claims file header, line 4; Results, Identification of granule cells and mossy cells in
+    extracellular recordings, paragraph 3, "(Figure S3D-F)"; the supplement under paper/.'
+  why: The claim is blocked as methods_underspecified, as the claims file gives no criterion. The
+    verifier could not extract text from the supplement, as no PDF tool is installed, so whether it
+    describes the method was not checked (raised by the verifier, round 3).

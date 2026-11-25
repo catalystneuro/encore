@@ -3090,12 +3090,15 @@ var steps=[].slice.call(document.getElementById('pstep').options,1).map(function
 var rank={done:0,waiting:1,deprecated:2,todo:3,none:4};
 var state={q:'',step:'',st:'',col:-1,dir:1,page:1,size:50};
 var $=function(id){return document.getElementById(id);};
+// As list.js: lower case, without accents, so that "jerome" finds "Jérôme".
+var FOLDED={'ß':'ss','æ':'ae','œ':'oe','ø':'o','ł':'l','đ':'d','ð':'d','þ':'th','ı':'i','ħ':'h'};
+function fold(t){return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[ßæœøłđðþıħ]/g,function(c){return FOLDED[c];});}
 function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
   if(td.dataset.sort!==undefined)return [0,td.dataset.sort];
   return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
 function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
 function shown(tr){
-  if(state.q&&(tr.cells[0].textContent+' '+tr.cells[1].textContent+' '+tr.cells[2].textContent).toLowerCase().indexOf(state.q)<0)return false;
+  if(state.q&&fold(tr.cells[0].textContent+' '+tr.cells[1].textContent+' '+tr.cells[2].textContent).indexOf(state.q)<0)return false;
   var keys=state.step?[state.step]:steps;
   if(state.st)return keys.some(function(k){return tr.dataset[k]===state.st;});
   return true;}
@@ -3122,7 +3125,7 @@ function draw(){
       return '<option value="'+s+'"'+(s===state.size?' selected':'')+'>'+s+' per page</option>';}).join('')+'</select>';}
 var timer;
 $('pq').addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(function(){
-  state.q=$('pq').value.trim().toLowerCase();state.page=1;draw();},120);});
+  state.q=fold($('pq').value.trim());state.page=1;draw();},120);});
 $('pstep').addEventListener('change',function(){state.step=this.value;state.page=1;draw();});
 $('pstate').addEventListener('change',function(){state.st=this.value;state.page=1;draw();});
 table.tHead.addEventListener('click',function(ev){var b=ev.target.closest('button.sort');if(!b)return;
@@ -4538,9 +4541,10 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         here = (f'<a href="{root}papers/{e(paper["key"])}/">{e(paper["byline"])}</a> / Attempt {e(one["id"])}'
                 if one else e(paper["byline"]))
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
-               f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
-               f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
-               f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
+               # The line above the title gives the journal. The paper's byline, and the attempt on an attempt's
+               # page, are in the crumbs just above it, so they are not said again.
+               + (f'<p class="eyebrow">{e(journal_name(paper["doi"]))}</p>' if journal_name(paper["doi"]) else "")
+               + f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
                f'{authors_html(data, paper["doi"], root)}')
         # The result leads (the outcomes and the summary); what the paper is and which data were used are in a
         # column at the side, which goes under the result on a narrow screen.
