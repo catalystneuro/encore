@@ -11,8 +11,8 @@ record.
 |---|---|
 | Spontaneous gastric mill activity from 11 to 30 C in nine preparations | Blocked: data missing |
 | Spontaneous rhythms less regular at high temperature (Figure 2a) | Blocked: data missing |
-| Rhythms evoked from 7 to 21 C in 9 of 10 preparations | Not reproduced (8 of 10) |
-| Spontaneous and evoked rhythms similar in three of four preparations | Blocked: data missing |
+| Rhythms evoked from 7 to 21 C in 9 of 10 preparations | Reproduced (9 of 10; 8 if 21 C is required) |
+| Spontaneous and evoked rhythms similar in three of four preparations | Not reproduced (1 of 3 testable) |
 | PD and LG periods decrease with temperature in all 10 preparations | Reproduced |
 | Q10 of about 2 for both rhythms in 8 of 10 preparations | Not reproduced |
 | PD and LG Q10s do not differ (paired t-test) | Reproduced |
@@ -26,7 +26,7 @@ record.
 | LG/PD ratio independent of temperature | Reproduced |
 | LG/PD ratios from about 5 to 25 at low temperature | Not reproduced |
 | LG burst starts phase-locked to PD (Rayleigh test) | Partially reproduced |
-| Counts of LG and DG burst starts in the phase analysis | Not reproduced |
+| Counts of LG and DG burst starts in the phase analysis | Partially reproduced |
 | LG starts at a PD phase of about 0.5, without trend | Partially reproduced |
 | LG spiking drops near the end of the PD burst at high temperature | Not reproduced |
 | DG burst starts not phase-locked to PD | Reproduced |

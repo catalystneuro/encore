@@ -290,27 +290,31 @@ def held_seconds(prep: dict) -> dict:
     return {int(c): float(in_bin(prep["temperature"], c).sum() / 1e3) for c in BIN_CENTRES}
 
 
-def q10_methods(prep: dict, b: dict, neuron: str, limit: float, bins=None) -> tuple[float, dict]:
+def q10_methods(prep: dict, b: dict, neuron: str, limit: float, bins=None,
+                temperature: str = "centre") -> tuple[float, dict]:
     """Q10 as the Methods define it ("Estimation and comparison of Q10s").
 
     f_T is the mean burst frequency (mean of 1 / period) of the bursts starting in the bin of T,
-    f_11 that of the 11 C bin, Q10 = (f_T / f_11)^(10 / (T - 11)) with T the bin centre, one Q10
-    per bin other than 11 C, averaged per preparation. Periods above `limit` are removed first, as
-    fig_burst_period.m does (5 s for PD, 50 s for LG). `bins` restricts the bins used.
+    f_11 that of the 11 C bin, Q10 = (f_T / f_11)^(10 / (T - T_11)), one Q10 per bin other than
+    11 C, averaged per preparation. With `temperature="centre"` T and T_11 are the bin centres;
+    with `"measured"` they are the mean temperatures at the starts of the bursts in each bin.
+    Periods above `limit` are removed first, as fig_burst_period.m does (5 s for PD, 50 s for
+    LG). `bins` restricts the bins used.
     """
     per = b[neuron]["periods"].copy()
     per[per > limit] = np.nan
     temps = temp_at(prep, b[neuron]["starts"])
     f = 1 / per
     use = BIN_CENTRES if bins is None else [c for c in BIN_CENTRES if c in bins]
-    fbin = {}
+    fbin, tbin = {}, {}
     for c in use:
-        v = f[in_bin(temps, c) & np.isfinite(f)]
-        if len(v):
-            fbin[int(c)] = float(np.mean(v))
+        u = in_bin(temps, c) & np.isfinite(f)
+        if u.any():
+            fbin[int(c)] = float(np.mean(f[u]))
+            tbin[int(c)] = float(np.mean(temps[u])) if temperature == "measured" else float(c)
     if 11 not in fbin:
         return np.nan, {}
-    q = {c: (fbin[c] / fbin[11]) ** (10 / (c - 11)) for c in fbin if c != 11}
+    q = {c: (fbin[c] / fbin[11]) ** (10 / (tbin[c] - tbin[11])) for c in fbin if c != 11}
     return (float(np.mean(list(q.values()))) if q else np.nan), q
 
 
