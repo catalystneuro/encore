@@ -175,7 +175,7 @@ outcomes:
   notes: Over 0 to 0.5 s the masked group power over 4-30 Hz and 50-120 Hz is -0.728 and +0.411 dB in
     precentral, -0.743 and +0.426 in postcentral, and -0.556 and +0.200 in inferior parietal; at the
     bin of 0 s the signs are the same. All three hold under both readings, all five seeds, unmasked,
-    and with each file's own good-electrode flags (variant). Middle frontal shows the pattern too;
+    and under each of the three electrode variants. Middle frontal shows the pattern too;
     in supramarginal and the temporal regions the masked high-frequency values are at most 0.008 dB.
   deviations:
   - Spectral power is computed from the dataset's continuous ECoG, not from the paper's curated
@@ -189,8 +189,12 @@ outcomes:
   - Assumed, as the good-electrode flags differ between a subject's files; the good electrodes are
     those marked good in every file of the subject, for the segment rejection, the projection and
     the regression, as the claims file's opening comment renormalises the weights per subject. The
-    weights are renormalised to sum 1 per region (code). The flags of each event's own file, the
-    assumption of round 1, are shown as a variant for every region claim.
+    weights are renormalised to sum 1 per region (code). Three variants are shown for every region
+    claim, on the same events; the flags of each event's own file (the assumption of round 1), the
+    electrodes good in at least one file (only those bad in every file removed), and the main set
+    with the electrodes holding a 50 ms run of zeros left out of each event. The main set removes
+    12.6 +- 8.4 surface electrodes per subject, each file's flags 4.2 +- 2.1 and the electrodes bad
+    in every file 1.2 +- 0.4, against the paper's 4.9 +- 4.9 (Methods, ECoG data processing).
   - An electrode whose wavelet power is not finite in an event gets weight 0 in that event and the
     weights are renormalised (standard choice); no kept event needed it.
   - The bootstrap mask's Benjamini-Hochberg correction runs over the bins computed here (-1.5 to +1.0
@@ -203,7 +207,7 @@ outcomes:
   notes: Under readings (a), (b) and (c) and all five seeds, the three largest regions are postcentral,
     precentral and inferior parietal, and each temporal region is below all three. Reading (a) gives
     0.429, 0.418 and 0.251 dB for the three, 0.177 for middle frontal, and at most 0.034 for the
-    temporal regions. The variant with each file's flags gives the same under all three readings.
+    temporal regions. Each of the three electrode variants gives the same under all three readings.
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
 - claim: fig3-lfb-more-widespread
@@ -217,8 +221,10 @@ outcomes:
     holds under all five seeds (35.8 to 36.6 against 22.1 to 22.4). Reading (a), regions with any
     significant bin, gives 8 against 8 under the claim's seed, and 7 or 8 against 8 under the
     others, so the low count is never larger. Supramarginal (30 bins) and superior temporal (27
-    bins) have significant low-frequency decreases. With each file's flags (variant) the readings
-    give 7 against 8 and 34.6 against 24.0, the same disagreement. The question of which measure
+    bins) have significant low-frequency decreases. The electrode variants give the same
+    disagreement; 7 against 8 and 34.6 against 24.0 with each file's flags, 8 against 8 and 35.0
+    against 25.2 with the electrodes good in at least one file, 8 against 8 and 36.6 against 22.1
+    without the zero-run electrodes. The question of which measure
     the paper meant is recorded for its authors.
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
@@ -233,7 +239,11 @@ outcomes:
     S04 and S08 are among six subjects tied at 3 bins, so they are not among the three fewest. Part 1
     fails in one subject; S09 has a mean of -0.039 dB over 76-100 Hz (its 8-32 Hz mean is -0.09). The
     other 11 subjects show the pattern. With each file's own flags (variant), parts 2 to 4 hold and
-    part 1 fails for S09 only, also partially reproduced.
+    part 1 fails for S09 only (-0.030 dB), also partially reproduced. With the electrodes good in at
+    least one file all four parts hold, which would be reproduced, but that set removes 1.2 surface
+    electrodes per subject against the paper's 4.9; each file's flags are closest to the paper's
+    count. Without the electrodes holding 50 ms runs of zeros two parts hold and S09 stays at -0.029
+    dB over 76-100 Hz, so the zeros do not explain its failure of part 1.
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
 - claim: fig5-band-power-differs-across-subjects
@@ -243,7 +253,7 @@ outcomes:
   output: claim:fig5-band-power-differs-across-subjects
   notes: Kruskal-Wallis across the 12 subjects on 7649 events gives H = 740 (LFB) and 1028 (HFB) for
     band means, and 786 and 953 for band medians, with p printed as 0 (below the smallest double).
-    With each file's flags, H = 747 and 1052.
+    Under the three electrode variants, H = 740 to 760 (LFB) and 1028 to 1089 (HFB).
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
 - claim: table1-subject-band-power-ci
@@ -257,8 +267,10 @@ outcomes:
     -2.11 to -1.73), S03 HFB (1.044 against 1.39 to 1.67), S06 LFB (-0.647 against -1.63 to -1.11),
     S06 HFB (1.874 against 2.02 to 2.37) and S10 LFB (-0.196 against -0.87 to -0.35). The median band
     mean is below 0 for LFB in 12 of 12 subjects and above 0 for HFB in 11 of 12. With each file's
-    own flags (variant) the mean of the band mean puts 21 of 24 inside. The attempt's own
-    5000-replicate bootstrap intervals are printed beside the paper's.
+    own flags (variant) the mean of the band mean puts 21 of 24 inside, with the electrodes good in
+    at least one file 22 of 24, and without the zero-run electrodes at best 18 of 24; partially
+    reproduced under each. The attempt's own 5000-replicate bootstrap intervals are printed beside
+    the paper's.
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
 - claim: fig5-recording-day-effects
@@ -271,11 +283,26 @@ outcomes:
     the paper has none for S01 LFB (p = 0.043), S01 HFB (p = 0.022) and S06 HFB (p = 6.9e-11), and is
     not found for S07 HFB (p = 0.073), S08 LFB (p = 0.31) and S10 HFB (p = 0.054), where the paper
     reports one. The other eight significant pairs of the paper are significant here. The outcome
-    rests on the choice of good electrodes; with each file's own flags (variant, the main analysis
-    of round 1) 20 of 24 agree, which would be partially reproduced. S01 lost 132 events of day 7,
-    where its ECoG ends early.
+    rests on the choice of good electrodes. With each file's own flags (variant, the main analysis
+    of round 1) 20 of 24 agree with band means and 19 with band medians; with the electrodes good in
+    at least one file 21 and 20; both would be partially reproduced. Without the electrodes holding
+    50 ms runs of zeros 18 and 18, and S10 HFB keeps p = 0.054. The day medians of the band mean lie
+    inside Table 2's per-day intervals for 41 of 55 subject-days in LFB and 42 of 55 in HFB. S01
+    lost 132 events of day 7, where its ECoG ends early.
+  proposed:
+    outcome: partially_reproduced
+    reason: The main set of good electrodes (good in every file) removes 12.6 +- 8.4 surface
+      electrodes per subject, against the paper's 4.9 +- 4.9 (Methods, ECoG data processing); each
+      file's own flags remove 4.2 +- 2.1, closest to the paper, and give 20 of 24 agreeing pairs with
+      band means, at the criterion's threshold for a partial reproduction. Removing only the
+      electrodes bad in every file (1.2 +- 0.4), which keeps the electrodes the same across days,
+      gives 21. Only the main set gives fewer than 20 (18). The other region claims keep their
+      outcomes under each file's flags. Analysis in the notebook, section "Region results under
+      other electrode choices" and the cell after it.
   deviations:
   - The same spectral method and assumptions as fig3-group-lfb-decrease-hfb-increase.
+  - The paper's per-day intervals (Table 2) are compared with the day medians of the band mean here,
+    for comparison only; the criterion's count uses the Kruskal-Wallis tests.
 - claim: extfig5-1-baseline-reduces-day-variability
   outcome: reproduced
   assumed: true
@@ -294,7 +321,7 @@ outcomes:
   notebook: reproduce_peterson_2021.ipynb
   output: claim:discussion-day-changes-small
   notes: The largest deviation of a day mean from the subject's mean is 1.49 dB (S06 HFB), and every
-    subject and band is at most 2.2 dB (1.49 dB with each file's flags too); the largest range of day
+    subject and band is at most 2.2 dB (1.49 dB under each electrode variant too); the largest range of day
     means is 2.04 dB (S06 LFB). Without baseline subtraction the precentral band power is 11.7 to 36.9
     dB in microvolts squared (the files' stored unit), inside 9 to 55 dB; in volts squared it would be
     -108 to -83 dB.
@@ -424,7 +451,9 @@ findings:
   statement: The `good` flags of the electrodes differ between the files of a subject (bad in at least
     one file 3 to 32 per subject, bad in every file 1 to 17), and nothing says how they were set or
     which applies to the subject's analyses. The paper reports 4.9 +- 4.9 surface electrodes removed
-    per subject.
+    per subject; the surface electrodes bad in at least one file number 12.6 +- 8.4 per subject, those
+    bad in every file 1.2 +- 0.4, and those bad in a file 4.2 +- 2.1 on average over a subject's
+    files.
 - kind: metadata_insufficient
   severity: minor
   statement: The electrodes table carries low_freq_R2 and high_freq_R2 columns with no description of
@@ -454,7 +483,8 @@ findings:
     matrices match the electrodes of all 12 subjects; ECoG is at 500 Hz in microvolts and pose at 30 Hz.
     Band power at the event onsets differs from that at pseudo-onsets 3 s earlier in the same segments
     in 10 of 12 subjects for LFB and 8 of 12 for HFB, consistent with ECoG and events sharing a clock;
-    for sub-09 neither band differs, so the alignment could not be established there.
+    for sub-09 neither band differs, so the alignment could not be established there, also with the
+    electrodes holding 50 ms runs of zeros left out (p = 0.84 and 0.87).
 - kind: methods_unavailable
   statement: Question for the authors. The Methods drop segments with power below 0 dB or with
     115-125 Hz power more than 3 SD above all segments, but do not say how power is pooled over
@@ -471,12 +501,15 @@ findings:
     days. Were bad electrodes removed per day or per subject, and did the analyses use the electrodes
     good on every day? This attempt used the electrodes good on every day for the projection and the
     regression; with each day's own flags, the recording-day effects of 20 of 24 subject and band
-    pairs agree with the paper, against 18.
+    pairs agree with the paper, against 18, and removing only the electrodes bad on every day gives
+    21. Each day's flags remove 4.2 surface electrodes per subject on average, the closest to the
+    paper's 4.9.
 - kind: metadata_insufficient
   severity: minor
   statement: In sub-09 and sub-10 every analysed event has, on 1 to 15 electrodes marked good in
     every file, a run of at least 25 exact zero samples (50 ms) within the 10 s around it; no other
-    subject has such runs. The files do not say what the zeros mean.
+    subject has such runs. The files do not say what the zeros mean. Leaving those electrodes out of
+    each event changes no outcome of this attempt.
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -520,7 +553,10 @@ verifications:
     reason: The minimum is 211 (reading a) and 210 (reading b) against 151 +- 15.1. The Methods keep
       only events lasting 0.5-4 s and the dataset's durations go down to 0.233 s, but this filter is
       not one of the criterion's readings; it would lower counts but is unlikely to bring S09 down to
-      151.
+      151. Separately (problem 2, not affecting a conclusion), cell 4 prints a largest difference of
+      86400 s between the ReachEvents timestamps and the reaches start_time and nobody follows it up;
+      the ECoG and pose windows use the ReachEvents timestamps while time of day and duration use
+      start_time, so some events were probably cut with ECoG from the wrong day, likely few.
     response: Printed the counts after the 0.5-4 s filter as a variant (fewest 208 and 207), which does
       not change the outcome. The data check now counts the events whose ReachEvents time and
       start_time differ by more than 1 s; there is one (S08 day 4, 40.3 s against 86440.3 s), and it
@@ -690,3 +726,183 @@ verifications:
       bad-electrode variant was not run.
     response: Ran the seed, log(onset speed + 1) and bad-electrode variants; day and angle lead in
       all. Outcome unchanged.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the claims file, the README and the attempt record, with the paper's full text under
+    paper/. The record has no finding rated critical, so no finding was reviewed for its rating.
+  results:
+  - claim: subject-days
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: roi-projection-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; the zero rows sit at the electrodes without positions, and shifting
+      the rows lowers the fit in all 12 subjects (round-1 point 6 resolved).
+    response: No change.
+  - claim: cohort
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome; the grid-only variant was run (round-1 point 10 resolved).
+    response: No change.
+  - claim: fig2-event-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The one mismatched event (S08 day 4) is now dropped from reading
+      (b), and the 0.5-4 s filter was run as a variant (round-1 points 2 and 9 resolved). The record's
+      round-1 reasons omitted problem 2 (the 86400 s timestamp mismatch).
+    response: Added problem 2 to the round-1 reasons of this claim. Outcome unchanged.
+  - claim: fig2-features-differ-across-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2-reach-shape
+    agrees: true
+    outcome: partially_reproduced
+    reason: The new density table (cell 30) supports the author. Pooled, only 6.4% of events lie within
+      15 degrees of -90, below the 8.3% a uniform spread would give, so the -90 side fails for a
+      reason other than the kernel's boundary effect. The Summary's "no angle density peaks within 15
+      degrees of +-90" is not supported; cell 30 shows a peak at +75.0 pooled and in S01, which is
+      exactly 15 degrees from +90 and counts as within under the code's test. The failure is on the
+      -90 side and in the density at 0.
+    response: Corrected the Summary row; in no subject is either of the two highest maxima within 15
+      degrees of -90, and pooled the density at 0 is above the lower maximum. Outcome unchanged.
+  - claim: fig2-bimanual-skew
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: extfig2-1c-contralateral-larger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Cell 38's "S05 and S04, which move both arms most" is only loosely
+      supported; cell 34 ranks S07's median bimanual ratio (0.308) above S05's (0.296).
+    response: Removed the phrase; the conclusion now gives the ratios of S05 and S04 (1.06 to 1.30)
+      only. Outcome unchanged.
+  - claim: extfig2-2-feature-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2-days-and-waking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig3-group-lfb-decrease-hfb-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; the assumed segment-rejection pooling is stated and reasonable.
+    response: Added two electrode variants (the electrodes good in at least one file, and the main
+      set without electrodes holding 50 ms runs of zeros); the three named regions hold under each.
+      Outcome unchanged.
+  - claim: fig3-sensorimotor-largest
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: Same under the two added electrode variants. Outcome unchanged.
+  - claim: fig3-lfb-more-widespread
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: The two added electrode variants give the same disagreement between the readings.
+      Outcome unchanged.
+  - claim: fig4-precentral-subject-variability
+    agrees: true
+    outcome: partially_reproduced
+    reason: The choice of good electrodes moves fig4 from 3 to 2 parts; it stays partially reproduced
+      either way. Part 4 now fails; S07 and S09 have 2 bins and six subjects, S04 and S08 among them,
+      tie at 3, so only one place among the three fewest is left and counting this as a fail is
+      reasonable. The Summary's "S04 and S08 tied for the narrowest decrease" is not supported. S09's
+      part-1 failure may bear on its runs of zeros (round-1 problem 3, partly open).
+    response: Corrected the Summary row. Ran the main set without the electrodes holding 50 ms runs of
+      zeros; S09 stays at -0.029 dB over 76-100 Hz, so the zeros do not explain its failure. With the
+      electrodes good in at least one file all four parts hold, but that set removes far fewer
+      electrodes than the paper reports; each file's flags, closest to the paper's count, give three
+      of four. Outcome unchanged.
+  - claim: fig5-band-power-differs-across-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: Same under the two added electrode variants. Outcome unchanged.
+  - claim: table1-subject-band-power-ci
+    agrees: true
+    outcome: partially_reproduced
+    reason: The choice of good electrodes moves table1 from 21/24 to 18/24, exactly the partial
+      threshold; it stays partially reproduced either way.
+    response: With the electrodes good in at least one file the best reading puts 22 of 24 inside, and
+      without the zero-run electrodes 18; partially reproduced under each. Outcome unchanged.
+  - claim: fig5-recording-day-effects
+    agrees: false
+    reason: The outcome changed from round 1 only because the main analysis now uses the electrodes
+      marked good in every file of a subject. The claims header's "renormalised to sum to 1 per
+      subject" does not say which electrodes count as bad. Excluding every electrode bad in any file
+      removes 3 to 32 per subject (mean about 17.3), against the paper's 4.9 +- 4.9 surface
+      electrodes; removing only the electrodes bad in every file gives a mean of 3.0 (SD about 4.6),
+      much closer, and is also per subject and keeps the electrode mix the same across days. That set
+      was not run. The result is 18/24 under the chosen set and 20/24 under each file's flags, so the
+      outcome flips on an open choice; undecided between partially and not reproduced until that set
+      is run. The criterion also asks for Table 2's per-day intervals for comparison, and cell 67
+      prints day means only. S10's HFB day effect (p = 0.054) may bear on its runs of zeros (round-1
+      problem 3, partly open).
+    response: Ran the electrodes good in at least one file (only those bad in every file removed); 21
+      of 24 pairs agree with band means and 20 with band medians. Split into surface and depth, that
+      set removes 1.2 +- 0.4 surface electrodes per subject, the main set 12.6 +- 8.4 and each file's
+      flags 4.2 +- 2.1, against the paper's 4.9 +- 4.9, so each file's flags (20 of 24) are closest to
+      the paper's count. Both choices give partially reproduced. As no outcome may change in round 2,
+      not reproduced is kept and partially reproduced is proposed, with the analysis in the notebook.
+      Added Table 2's per-day intervals beside the day medians (41 of 55 inside in LFB, 42 of 55 in
+      HFB). Leaving out the electrodes with 50 ms runs of zeros keeps S10 HFB at p = 0.054.
+  - claim: extfig5-1-baseline-reduces-day-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: discussion-day-changes-small
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: The largest day deviation is 1.49 dB under each electrode variant too. Outcome unchanged.
+  - claim: fig6b-best-models-sensorimotor
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; the regression electrode set and the R2 > 0.03 refit rule for the
+      variants are stated and reasonable. The leakage from forward selection is disclosed (round-1
+      point 5 resolved). Cell 0 and the README say the notebook runs for about 40 minutes (17 for the
+      regression, 9 for the variants), where cell 100 prints 63.5 min, the regression 2052 s and the
+      variants 620 + 365 s.
+    response: Corrected the run time in cell 0, the README and entry.yaml (about an hour); this run took
+      63.5 minutes, 2109 s for the regression and 886 s for the variants, now run in one pool.
+      Outcome unchanged.
+  - claim: fig6-r2-at-most-025
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; the seed, log(onset speed + 1) and bad-electrode variants were run
+      (round-1 point 4 resolved).
+    response: No change.
+  - claim: fig6c-angle-and-day-most-informative
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome; Delta R2 and coefficients were refit under the variants (round-1
+      point 4 resolved).
+    response: No change.
+  - claim: extfig6-2-angle-most-retained
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig6d-upward-reaches-enhance-pattern
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig6d-angle-and-day-largest-coefficients
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.

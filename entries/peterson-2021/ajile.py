@@ -43,6 +43,7 @@ Where each parameter comes from:
 """
 
 import io
+import time
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 
@@ -190,15 +191,28 @@ def event_table(metas):
 
 # ----------------------------------------------------------------------------- figshare inputs
 
+def _get(url, tries=4):
+    """GET with a few retries for transient network errors; the last error is raised."""
+    for k in range(tries):
+        try:
+            r = requests.get(url, timeout=60)
+            r.raise_for_status()
+            return r
+        except requests.RequestException:
+            if k == tries - 1:
+                raise
+            time.sleep(10 * (k + 1))
+
+
 def figshare_files():
-    r = requests.get(f"https://api.figshare.com/v2/articles/{FIGSHARE_ITEM}/versions/1", timeout=60).json()
+    r = _get(f"https://api.figshare.com/v2/articles/{FIGSHARE_ITEM}/versions/1").json()
     return {f["name"]: f["download_url"] for f in r["files"]}, r
 
 
 def load_projection(subject, files):
     """Projection matrix (rows = electrodes in file order, columns = AAL regions) and centroids."""
-    m = pd.read_csv(io.StringIO(requests.get(files[f"aal_{subject:02d}_elecs2ROI.csv"], timeout=60).text))
-    c = pd.read_csv(io.StringIO(requests.get(files[f"aal_{subject:02d}_ROIcentroids_Lside.csv"], timeout=60).text))
+    m = pd.read_csv(io.StringIO(_get(files[f"aal_{subject:02d}_elecs2ROI.csv"]).text))
+    c = pd.read_csv(io.StringIO(_get(files[f"aal_{subject:02d}_ROIcentroids_Lside.csv"]).text))
     return m, c
 
 
@@ -320,13 +334,16 @@ def project(weights, db):
     return np.einsum("cr,cfb->rfb", w, np.where(np.isfinite(db), db, 0.0)), dropped
 
 
-def session_spectral(asset_id, event_times, good, weights, weights_alt=None, n_threads=6, batch_chunks=6,
+def session_spectral(asset_id, event_times, good, weights, weights_var=None, n_threads=6, batch_chunks=6,
                      wrist_names=("L_Wrist", "R_Wrist")):
     """Spectral measures, segment checks and wrist windows for the events of one file.
 
     good: bool (n_ch,) good electrodes (here those good in every file of the subject).
     weights: (n_ch, n_roi) projection weights with bad electrodes already 0 and columns summing
-    to 1; weights_alt: a second set (the variant with the file's own flags).
+    to 1; weights_var: a dict of further sets, each projected the same way (variants of the
+    electrode choice). The variant "zero_run" is added: the main weights with, in each event, the
+    electrodes holding a run of at least 25 exact zero samples (50 ms) in the segment set to 0
+    and the regions renormalised (a variant asked for by the verifier; 50 ms is a standard choice).
     Returns a dict of arrays, one row per event.
     """
     f, url = open_nwb(asset_id)
@@ -342,7 +359,9 @@ def session_spectral(asset_id, event_times, good, weights, weights_alt=None, n_t
     inside = (seg_lo >= 0) & (seg_hi <= n_t)
     nb, nf, nr = len(BIN_T), len(FREQS), weights.shape[1]
     region = np.full((n_ev, nr, nf, nb), np.nan, np.float32)
-    region_alt = np.full((n_ev, nr, nf, nb), np.nan, np.float32) if weights_alt is not None else None
+    weights_var = dict(weights_var or {})
+    region_var = {k: np.full((n_ev, nr, nf, nb), np.nan, np.float32) for k in list(weights_var) + ["zero_run"]}
+    zero_run_el = np.zeros((n_ev, n_ch), bool)  # electrodes (any flag) with a run of >= 25 zero samples
     n_dropped = np.zeros(n_ev, int)      # weighted electrodes with non-finite power in the event
     n_zero_el = np.zeros(n_ev, int)      # good electrodes with any exact zero sample in the segment
     n_zero_run = np.zeros(n_ev, int)     # good electrodes with a run of at least 25 zero samples (50 ms)
@@ -397,10 +416,11 @@ def session_spectral(asset_id, event_times, good, weights, weights_alt=None, n_t
                 seg = block[seg_lo[i] - start: seg_hi[i] - start].T.astype(np.float64)  # (n_ch, 5000), uV
                 done[i] = True
                 allzero[i] = bool(np.all(seg[good] == 0, axis=0).any())
-                z = seg[good] == 0
-                n_zero_el[i] = int(z.any(axis=1).sum())
+                z = seg == 0
+                n_zero_el[i] = int(z[good].any(axis=1).sum())
                 cz = np.concatenate([np.zeros((z.shape[0], 1), int), np.cumsum(z, axis=1)], axis=1)
-                n_zero_run[i] = int(((cz[:, 25:] - cz[:, :-25]) == 25).any(axis=1).sum())
+                zero_run_el[i] = ((cz[:, 25:] - cz[:, :-25]) == 25).any(axis=1)
+                n_zero_run[i] = int(zero_run_el[i][good].sum())
                 fr, p = _segment_psd(seg[good])
                 pm = p.mean(axis=0)
                 seg_db[i] = 10 * np.log10(pm[(fr >= 1) & (fr <= 200)].mean())
@@ -426,8 +446,9 @@ def session_spectral(asset_id, event_times, good, weights, weights_alt=None, n_t
                 elec["lfb_mean_raw"][i] = raw["lfb_mean"]
                 elec["hfb_mean_raw"][i] = raw["hfb_mean"]
                 region[i], n_dropped[i] = project(weights, db)
-                if weights_alt is not None:
-                    region_alt[i] = project(weights_alt, db)[0]
+                for k, wv in weights_var.items():
+                    region_var[k][i] = project(wv, db)[0]
+                region_var["zero_run"][i] = project(weights * ~zero_run_el[i][:, None], db)[0]
             # keep only chunks needed later
             keep = {batch[-1]}
             for c in list(cache):
@@ -447,7 +468,7 @@ def session_spectral(asset_id, event_times, good, weights, weights_alt=None, n_t
             if c - 45 >= 0 and c + 46 <= n_p:
                 wrist[w][i] = d[c - 45:c + 46, :]
     f.close()
-    return dict(region=region, region_alt=region_alt, elec=elec, seg_db=seg_db, hf_db=hf_db, inside=inside,
+    return dict(region=region, region_var=region_var, zero_run_el=zero_run_el, elec=elec, seg_db=seg_db, hf_db=hf_db, inside=inside,
                 allzero=allzero, n_dropped=n_dropped, n_zero_el=n_zero_el, n_zero_run=n_zero_run, wrist=wrist, wrist_t=k / prate)
 
 
@@ -650,22 +671,29 @@ def regress_subject(args):
     return out
 
 
-def run_regression(jobs, workers=4):
+def run_regression(jobs, workers=4, per_job=False):
+    """Runs the jobs largest first (events x models), so that the workers finish together, and
+    returns the rows in the order of the jobs (a list of rows per job with per_job). Each job has
+    its own generators, so the order does not change a result."""
     from concurrent.futures import ProcessPoolExecutor
     import multiprocessing as mp
+    order = sorted(range(len(jobs)), key=lambda i: -jobs[i]["Y"].shape[0] * jobs[i]["Y"].shape[1])
     with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
-        return [r for rows in ex.map(regress_subject, jobs) for r in rows]
+        res = dict(zip(order, ex.map(regress_subject, [jobs[i] for i in order])))
+    if per_job:
+        return [res[i] for i in range(len(jobs))]
+    return [r for i in range(len(jobs)) for r in res[i]]
 
 
 def _spectral_job(args):
     import os
     os.environ.setdefault("OMP_NUM_THREADS", "1")
-    asset_id, times, good, weights, weights_alt = args
-    return session_spectral(asset_id, times, good, weights, weights_alt)
+    asset_id, times, good, weights, weights_var = args
+    return session_spectral(asset_id, times, good, weights, weights_var)
 
 
 def run_spectral(jobs, workers=8):
-    """jobs: list of (asset_id, event_times, good, weights, weights_alt). Runs files in parallel processes."""
+    """jobs: list of (asset_id, event_times, good, weights, weights_var). Runs files in parallel processes."""
     from concurrent.futures import ProcessPoolExecutor
     import multiprocessing as mp
     with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
