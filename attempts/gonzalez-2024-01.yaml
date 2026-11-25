@@ -1,0 +1,407 @@
+schema_version: 3
+id: gonzalez-2024-01
+datasets:
+- archive: dandi
+  id: "000405"
+  version: draft
+  modified: "2023-06-20T00:56:24.445627Z"
+  relation: primary
+paper: doi:10.7554/elife.85646
+date: 2026-11-24
+entry: gonzalez-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore-runner/actions/runs/45506573406
+inputs:
+- what: The paper's analysis code, read for every method detail the claims file takes from it and ported
+    into the entry's helper (maze zones, trial windows, blanking, balanced resampling, remapping scores,
+    segment rate comparisons, zone encoders, statistics). The notebook also reads the repository's
+    metadata/session_table.csv and metadata/perf_table.csv, to compare the session list and trial
+    counts with the dandiset; no outcome rests on them.
+  source: https://github.com/alexgonzl/TMA at commit 6f935935d93a9a27f931f6e73c05d965dfbb862a
+outcomes:
+- claim: fig1d-task-performance
+  outcome: partially_reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig1d-task-performance
+  measured:
+  - 73.0
+  - 152.0
+  notes: Over the 124 Tree-Maze sessions with at least one unit and 50 trials, the median of the five
+    subjects' median accuracies is 73.0% (expected 72.6 +- 7.26) and the median of their median trial
+    counts is 152.0 (expected 110 +- 11). Pooled sessions give 76.4% and 150.5. Thresholds of 40 to 60
+    trials give 135 to 152 trials. The repository's perf_table.csv gives the same 152 under the same rule,
+    and the trial and unit counts of every session agree between it and the dandiset, so the paper's 110
+    did not come from these session tables. The paper's notebook printed 110.25, which as a median of
+    five subject medians of whole or half trial counts cannot arise; it suggests the printed table held a
+    different set of subjects or sessions.
+  deviations:
+  - The dandiset lacks 12 Tree-Maze sessions with units that the repository's session table lists; one
+    (Ca_T3g_031419) has no trials in perf_table.csv and the other 11 are not in it.
+- claim: fig1-switch-performance
+  outcome: partially_reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig1-switch-performance
+  measured:
+  - 73.8
+  - 69.0
+  assumed: true
+  notes: The median of subject medians of Switch-trial accuracy is 73.8% (expected 76.9 +- 7.69) and of
+    Switch trials per session 69.0 (expected 54 +- 5.4). Non-Switch accuracy is 71.4%, 2.4 points below,
+    so the similarity holds under the claims file's 10-point threshold. The sw column equals "cue differs
+    from the previous trial" in every session. Per session, Switch accuracy is a median 7.6 points higher
+    than non-Switch (Wilcoxon p = 4.8e-11, not the paper's test).
+  deviations:
+  - The 10-point threshold for "similar" is the claims file's, not the paper's; the paper gives no test,
+    so this part rests on that assumption, as the criterion says.
+- claim: fig1-training-to-criterion
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the training sessions before surgery. Every Tree-Maze file in the dandiset is a recording
+    session with units and a trial table; the code reads the training sessions from a spreadsheet
+    (experiment_info.py, get_all_behav_perf, all_behavior_perf) that is not in the repository's metadata
+    folder or anywhere public that the paper names.
+- claim: fig2c-cue-error-coding
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig2c-cue-error-coding
+  notes: For 510 isolated units the segment effects on U_Z (CR against CL, outbound) are left 0.600, stem
+    0.285, right -0.226; LRT 89.3, df 2, p = 4.0e-20; Wald test of the two ordering contrasts 89.0,
+    p = 4.8e-20; one-sided left > stem p = 1.8e-4 and stem > right p = 3.6e-9. With MUA (1744 units)
+    0.556, 0.325, -0.228, LRT 276.8, p = 7.7e-61. By subject, left > stem > right holds in Cl and Li;
+    in Al, Ca and Ne the stem mean is above the left. The paper reports chi2(3) = 85.25; the code's LRT
+    function gives df 2 for these models (p with df 3 is 3.0e-19).
+  deviations:
+  - U_Z is computed with the U statistic of the first sample, as current scipy returns it; the code's
+    counts of U_Z <= 0 (Figure 4c) are only possible with that convention.
+- claim: fig2d-cue-remapping
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig2d-cue-remapping
+  measured: -0.540
+  notes: LMEM mean cue remapping score -0.540 for 507 isolated units (95% CI -0.793 to -0.288,
+    p = 2.7e-5) and -0.551 for 1732 units with MUA (CI -0.783 to -0.318), both within -0.67 +- 0.44
+    with CIs below zero. Under the five seeds the isolated-unit mean ranges from -0.596 to -0.540 and the
+    all-unit mean from -0.576 to -0.551; the code's seed 0 gives -0.559 and -0.573. One session
+    (Cl_T3g_021519) has no score, a balanced set being too small.
+  deviations:
+  - The resampling generator is seeded from the claim, not with the code's seed 0 (which is shown).
+- claim: fig2e-unit-remap-behaviour
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig2e-unit-remap-behaviour
+  measured:
+  - -0.266
+  - -0.145
+  notes: Isolated units (n = 507) give Kendall tau -0.266 and LMEM slope on logit performance -0.145
+    (CI -0.188 to -0.102), LRT 42.6, p = 6.6e-11; under the five seeds tau ranges from -0.269 to -0.261
+    and the slope from -0.147 to -0.142, all within tolerance. With MUA (n = 1732) tau is -0.231, outside
+    tolerance, and the slope -0.124, inside (LRT p = 3.9e-25). On the raw fraction the slope is -0.026.
+- claim: fig2f-session-remap-behaviour
+  outcome: partially_reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig2f-session-remap-behaviour
+  measured:
+  - -0.422
+  - -0.385
+  notes: With session means of isolated units (90 sessions), tau is -0.422 (within -0.41 +- 0.041, and
+    stronger than the unit-level -0.266) and LRT 17.3, p = 3.1e-5, but the slope is -0.385 (CI -0.561 to
+    -0.209), outside -0.22 +- 0.11. With MUA (122 sessions) tau is -0.376 (within) and the slope -0.384
+    (outside). Under the five seeds the isolated-unit slope ranges from -0.385 to -0.361 and tau from
+    -0.422 to -0.391, so the outcome is the same under all.
+- claim: fig2g-population-remap-behaviour
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig2g-population-remap-behaviour
+  notes: Population cue remapping of all units against logit performance over 122 sessions gives slope
+    -0.104 (CI -0.144 to -0.065), LRT 25.0, p = 5.7e-7, tau -0.376; isolated-unit populations give slope
+    -0.077, p = 8.3e-6. All five seeds give p below 2e-6 with a negative slope.
+- claim: fig2h-subject-remap-behaviour
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig2h-subject-remap-behaviour
+  notes: All five subjects have a negative Kendall correlation between session mean cue remapping and
+    logit performance (Li -0.418, Ne -0.380, Cl -0.483, Al -0.289, Ca -0.143), and all five bootstrap
+    means are negative under each of the five seeds. Ca, with the fewest units (29), has the weakest
+    correlation (bootstrap SD 0.216). The statement's one exception does not appear; the criterion allows
+    at most one and is met.
+- claim: fig2-remap-behaviour-controls
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig2-remap-behaviour-controls
+  notes: All 12 tests (Pearson score, 500 ms after reward blanked, speed outside 2 to 100 cm/s blanked;
+    isolated units and with MUA; unit and session-mean levels) give LRT p below 2e-4 with negative slopes
+    (-0.107 to -0.410). Speed blanking removes a median 45% of samples per session, reward blanking 9%.
+  deviations:
+  - The control scores were computed under the claim's seed only, not under four more seeds, to keep the
+    notebook within its time; the main scores vary little with the seed (fig2d-cue-remapping).
+- claim: fig3d-cue-rate-remapping-model
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig3d-cue-rate-remapping-model
+  measured: 0.123
+  notes: On the Mann-Whitney reading with 5 folds, the LRT of comparison is 1196, df 2, p = 2.4e-260 for
+    isolated units, with Z+C above Z (fixed_v_none 0.846) and above ZxC (inter_v_fixed -1.016); with MUA
+    4361 and the same signs. The mean test R2 of Z+C over 510 isolated units is 0.123 (Z 0.113, ZxC
+    0.109); five seeds give 0.1225 to 0.1236 and 10 folds 0.1229; 82% of all units are best fitted by
+    Z+C. On the R2 reading the LRT is 6.0, p = 0.0499 with Z+C highest, and 0.050 to 0.067 under the
+    other seeds and 10 folds. The single comparisons are weaker (fixed_v_none p = 0.056, inter_v_fixed
+    p = 0.022). The paper reports chi2(3) = 962.05.
+  deviations:
+  - Trials without a correct flag are left out of the encoder folds; the code leaves out only the first
+    such trial of a session (ZoneEncoder.update_trial_data).
+  - Folds are seeded from the claim, not with the code's seed 42.
+- claim: fig3e-zone-decoder-cue
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested in this run. The decoders are multinomial logistic regressions on population
+    activity with the code's cumulative evidence tables (tree_maze_functions.py, ZoneDecoder, about 900
+    lines), and porting them with the folds, targets and integration the claims file cites did not fit in
+    the run's five hours with the claims above. The dandiset holds what they need (rates, tracking and
+    trial tables of every Tree-Maze session), so a later attempt can test it.
+- claim: fig3f-decision-decoder
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested in this run, for the reason given under fig3e-zone-decoder-cue; the data are in the
+    dandiset.
+- claim: fig3g-decoder-tracks-behaviour
+  outcome: blocked
+  blocked_by: other
+  notes: Not tested in this run; depends on fig3f-decision-decoder, which was not tested.
+- claim: fig4c-reward-error-coding
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4c-reward-error-coding
+  measured:
+  - 357
+  - 326
+  - 374
+  notes: Of 510 isolated units, U_Z <= 0 (unrewarded above rewarded, inbound) in 357 left, 326 stem and
+    374 right (70%, 64%, 73%), each within 10% of 386, 340 and 412 and above half. The paper counts 565
+    isolated units; the dandiset lacks 11 recorded sessions with 65 isolated units (see deviations). The
+    segment effect has LRT 45.3, df 2, p = 1.4e-10 (with MUA 113.1, p = 2.8e-25). MUA alone give 828,
+    762 and 862 of 1234.
+  deviations:
+  - Counts are over 510 isolated units, not 565; the dandiset lacks sessions the repository lists.
+- claim: fig4d-reward-remapping
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4d-reward-remapping
+  measured: -1.022
+  notes: LMEM mean reward remapping score -1.022 for isolated units (CI -1.544 to -0.500) and -1.038 with
+    MUA (CI -1.419 to -0.656), within -1.03 +- 0.57 with CIs below zero; five seeds give -1.034 to -1.007
+    for isolated units. With the null balanced for correct and incorrect trials, as the Figure 4d
+    paragraph describes it, the means are -0.606 (CI -1.039 to -0.173) and -0.634, also within tolerance
+    with CIs below zero.
+- claim: fig4ef-reward-remap-behaviour
+  outcome: partially_reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4ef-reward-remap-behaviour
+  measured:
+  - -0.242
+  - -0.152
+  - -0.359
+  - -0.318
+  notes: Both LRTs have p < 0.05 with negative slopes under both unit sets, but under neither are all four
+    values within tolerance. Isolated units give unit tau -0.242 (outside -0.28 +- 0.028), unit slope
+    -0.152 (inside), session tau -0.359 (outside -0.43 +- 0.043), session slope -0.318 (inside), unit LRT
+    83.8, p = 5.5e-20, session LRT 34.9, p = 3.5e-9. With MUA, -0.239 (outside), -0.135 (inside), -0.411
+    (inside), -0.412 (outside -0.28 +- 0.095). The same values fall outside under all five seeds.
+- claim: fig4gh-reward-remap-population-subject
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4gh-reward-remap-population-subject
+  notes: Population reward remapping of all units against performance gives slope -0.107, LRT 41.8,
+    p = 1.0e-10 over 122 sessions (five seeds p below 3e-10). All five subjects have a negative
+    correlation (Li -0.579, Ne -0.400, Cl -0.418, Al -0.378, Ca -0.448), under every seed.
+- claim: fig4-reward-remap-behaviour-controls
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4-reward-remap-behaviour-controls
+  notes: All 12 tests give LRT p below 4e-9 with negative slopes (-0.117 to -0.420).
+  deviations:
+  - The control scores were computed under the claim's seed only (see fig2-remap-behaviour-controls).
+- claim: fig5-reward-rate-remapping-model
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig5-reward-rate-remapping-model
+  notes: On the Mann-Whitney reading the LRT is 813, p = 2.9e-177 for isolated units, with Zi+R above Zi
+    (0.967) and above ZixR (-0.812), and 2994 with MUA. On the R2 reading the LRT is 13.2, p = 0.0014,
+    with Zi+R highest (0.123 against 0.102 and 0.101); 77% of all units are best fitted by Zi+R. Five
+    seeds and 10 folds give the same signs. The paper reports chi2(3) = 856.9.
+  deviations:
+  - As for fig3d-cue-rate-remapping-model.
+- claim: fig4s5-cue-reward-remap-correlated
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4s5-cue-reward-remap-correlated
+  notes: Cue and reward remapping scores are positively correlated for isolated units at the unit (tau
+    0.211, p = 1.1e-12, n = 507), session-mean (0.374, p = 1.8e-7, 90 sessions) and population (0.447,
+    p = 4.5e-10) levels, and with MUA (0.198, 0.414, 0.581, all p < 2e-11), under all five seeds.
+- claim: fig4s6-incorrect-coding-overlap
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4s6-incorrect-coding-overlap
+  seed_sensitive: true
+  notes: On isolated units, the set of the code's figure functions (plot_cue_rw_correct_rate_coding_overlap
+    and plot_remap_x_correct_coding, unit_type 'cell'), incorrect coding overlaps more between cue and
+    reward than correct coding, strict 69 of 263 against 6 of 65 (Fisher p = 0.0028) and liberal 263 of
+    449 against 58 of 244 (p = 6.1e-19). Under the claim's seed none of the 12 two-sample KS tests between
+    the four coding groups has p < 0.05 (smallest 0.073); under the seed plus 1000, 2000, 3000 and 4000,
+    2, 0, 1 and 0 of the 12 have p < 0.05 (smallest 0.030). With MUA the Fisher tests hold (p = 4.7e-13
+    and 3.1e-58) but 5 of 12 KS tests have p < 0.05.
+  deviations:
+  - The Fisher table is read, as the claims file does, as overlapping against non-overlapping units of
+    the union, for incorrect against correct coding.
+- claim: fig4s7-error-signal-persists
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig4s7-error-signal-persists
+  notes: On 510 isolated units with more than 5 incorrect outbound trials, inbound runs conditioned on
+    outbound give incorrect above correct (coefficient 0.146, LRT 4.04, p = 0.045) and the conditioning
+    effect (0.280, LRT 10.5, p = 0.0012); outbound runs conditioned on inbound give incorrect above
+    correct (0.391, LRT 25.4, p = 4.7e-7) and the conditioning effect (0.186, LRT 4.12, p = 0.042). With
+    MUA the inbound conditioning effect is not significant (p = 0.17). The legend's N is 500.
+  deviations:
+  - The z measure, the unit rule and the conditioning variables are taken from the code
+    (tree_maze_functions.py, mean_segment_rates_analysis; experiment_info.py,
+    get_conditional_correct_bigseg_rates; paper_stats.py, _conditiona_co_inco_rates).
+  - For the outbound conditioning test the default optimizer gave a negative LRT; both models were
+    refitted with Powell's method and the higher likelihood of each kept.
+- claim: fig6cd-of-aggregate-model
+  outcome: reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:fig6cd-of-aggregate-model
+  notes: Over 664 isolated units in 103 open-field sessions (one unit left out for an R2 at or below -1),
+    with 20 s blocks, the aggregate model has the highest mean test R2 (0.096, against 0.043 for position,
+    0.027 for head direction and 0.007 for speed) and the highest r_p (0.406, against 0.286, 0.276 and
+    0.135), and is the best model for 452 units. The model effect has LRT 2450 (df 3) on R2 and 3664 on
+    r_p, both with p below the floating-point limit; the paper reports chi2(4) = 567.15 and 878.84. With
+    30 s blocks the order is the same (0.093 and 0.404 for the aggregate). By subject the aggregate has the
+    highest mean R2 in four of five; in Ca all models are near zero (aggregate -0.008, position 0.003).
+  deviations:
+  - The models follow the code's call for the published analysis (experiment_info.py,
+    get_of_encoding_models_scores2, models speed, head direction and position, z-scored responses), with
+    its parameters (get_task_params for OF; AllSpatialEncodingModels), and 20 s blocks as the Methods say,
+    30 s as a variant.
+  - Only isolated units are fitted, as paper_stats.py, _open_field_models leaves MUA out of the test.
+  - The LMEM is the code's joint test of model (value ~ 0 + model against value ~ 1, groups subject,
+    variance components session and unit), which has df 3 with four models; the paper's df 4 suggests
+    one more model in its comparison.
+- claim: fig7b-matched-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Matching needs waveforms (1000 per unit on tetrodes at the same depth). The files hold binned
+    firing rates only, with no spike times, waveforms or electrode tables, and the paper deposits no
+    waveforms elsewhere. The repository's unit_table.csv holds the paper's matches but not the data to
+    rerun them.
+- claim: fig7de-hd-speed-tradeoff
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7b-matched-units, blocked for missing waveforms. The aggregate coefficients it
+    clusters come from fig6cd-of-aggregate-model, which is tested; the matched units are what is missing.
+- claim: fig7f-tuning-metrics-match
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7de-hd-speed-tradeoff, blocked.
+- claim: fig7g-hd-cluster-remaps-more
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7de-hd-speed-tradeoff, blocked.
+- claim: fig7h-hd-cluster-encoder-scores
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7de-hd-speed-tradeoff, blocked.
+- claim: methods-lookahead-encoder-best
+  outcome: partially_reproduced
+  notebook: reproduce_gonzalez_2024.ipynb
+  output: claim:methods-lookahead-encoder-best
+  notes: Z50 has the highest mean test R2 over isolated units (0.114, against 0.109 for Z0 and 0.099 for
+    Z-50), in the same order under all five seeds and with 10 folds, but neither comparison favours it at
+    p < 0.05 (Z50 against Z0 0.018, p = 0.98; Z-50 against Z50 -0.687, p = 0.36). With MUA included Z0
+    has the higher raw mean among MUA (0.046 against 0.045) and Z50 against Z0 is -0.195 (p = 0.80).
+  deviations:
+  - As for fig3d-cue-rate-remapping-model.
+findings:
+- kind: data_missing
+  about: data
+  severity: major
+  statement: The files hold smoothed firing rates in 20 ms bins and no spike times, waveforms or
+    electrode tables. Units cannot be matched across sessions (Figure 7) or re-sorted, and any analysis
+    that needs spikes or waveforms cannot be run on the dandiset.
+- kind: data_missing
+  about: data
+  severity: major
+  statement: The repository's session table lists 288 sessions; 12 Tree-Maze sessions with units are not
+    in the dandiset (Li_T3i_061218_0001, Li_T3g_070518_0001, NE_T3g_053018_0001, Ne_T3g_060118_0001,
+    NE_T3g_062618_0001, NE_T3gj_062718_0001, NE_T3gj_062818_0001, Cl_T3g_112118_0001, Cl_T3g_120118_0001,
+    Cl_T3g_121218_0001, Al_T3g_101018_0002, Ca_T3g_031419), with 224 units, 65 of them isolated. The
+    attempt has 510 isolated units where the paper counts 565 (Figure 4c), and the repository's unit
+    match table refers to Li_T3i_061218_0001.
+- kind: metadata_insufficient
+  about: data
+  severity: major
+  statement: No column of the trial, event or unit tables has a description ("no description"). The
+    trial markers t0, tD, tE, tE_1, tE_2 and tR, and the columns grw, long and vsw, are defined only in
+    the paper's code; the analyses need tE_2 and tR to cut outbound and inbound runs.
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: In Tree-Maze files, track_data is described as "columns=x,y,hd" but holds four columns, a
+    clock in seconds, x and y in mm, and head angle in radians. It starts one sample after the firing
+    rates (its first row is sample 1). Its starting_time rate attribute is 0.02, the sample period, not
+    a rate. The firing rates are labelled "uv" but are rates in spikes per second. Open-field track_data
+    is labelled mm but holds x and y in cm (-63 to 63 and -6 to 135) and speed in cm/s.
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: Every session_start_time is in year 0018 or 0019; the dates were written with a two-digit
+    year.
+- kind: selection_undocumented
+  about: data
+  severity: minor
+  statement: Cl_T3g_121418 and Cl_T3g_121418_0 are two recordings of the same day with different trials
+    and units. The paper's code leaves Cl_T3g_121418_0 out as invalid (SummaryInfo.invalid_sessions);
+    the dandiset does not say so.
+- kind: format_error
+  about: data
+  severity: minor
+  statement: The last trial of Ca_T3g_040119 starts at sample 177666, after the file's last sample
+    (165216), with a negative duration. It has no correct flag and no outbound samples, so it adds
+    nothing to the zone rates, but it is listed as a trial in an included session.
+- kind: other
+  about: data
+  severity: minor
+  statement: The dandiset has no published version; only the draft can be read, and it can still change.
+- kind: other
+  about: data
+  severity: none
+  statement: The checks support the files otherwise. Trial and unit counts of all 143 Tree-Maze sessions
+    match the repository's tables; trial markers fall in the expected zones (medians over sessions, Home
+    at the start in 100% of trials, the goal well matching the recorded decision in 98.3% against 42.6%
+    with decisions shifted by one trial); and zone maps of even and odd trials agree best with rates
+    unshifted against tracking in 114 of 124 sessions (median Kendall 0.53 against 0.22 with a 5 s
+    shift). In 10 sessions, most with few units, the alignment could not be shown this way.
+- kind: code_mismatch
+  about: paper
+  statement: The paper's median of 110 trials per session (Figure 1d) and 54 Switch trials disagree with
+    the repository's own perf_table.csv, which gives 152 and 69 under the paper's rule, as do the
+    dandiset's trial tables. The accuracies agree (73.0% and 73.8% against 72.6% and 76.9%).
+- kind: methods_unavailable
+  about: paper
+  statement: The paper calls Switch and non-Switch performance "similar" without a test or threshold
+    (Results, Tree-Maze behavior, paragraph 2). The attempt uses the claims file's 10-point threshold;
+    which comparison did the authors mean?
+- kind: paper_inconsistency
+  about: paper
+  statement: The Figure 4d paragraph says the reward null has "an equal number of rewarded and unrewarded
+    trials", while the Methods and the code balance the null by left and right cue. Both give a mean
+    reward remapping score below zero (-1.02 and -0.61 for isolated units).
