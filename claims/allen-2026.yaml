@@ -1,0 +1,944 @@
+# Claims for Allen, Yan, Kuan et al. (2026), Communications Biology 9:229, "Neurometabolic
+# rewiring in squid (Sepioteuthis lessoniana) optic lobes drives behavioral plasticity and visual
+# integration under environmental acidification", on Dryad dataset doi:10.5061/dryad.rjdfn2zqz.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-25,
+# protocol pilot-19 as stated in docs/protocol.md.
+#
+# Text read: the version of record (Communications Biology PDF, uploaded by Ben Dichter), its
+# extracted text with the main text, Methods, figure legends and the one supplement PDF
+# (Supplementary Figures 1 to 5 and Supplementary Tables 1 to 5). Figure pages 3, 7, 8, 9 and 10
+# of the PDF were opened only to read the significance letters of Figures 1B to 1F, 2D and 2H and
+# the axes of Figure 3C and 3D. The supplementary data files the Methods name ("Supplementary
+# data: DET Results" and "GSEA results") are not under paper/; only the claim
+# chronic-nachr-subunits-down rests on them.
+#
+# Code read: none. The paper links no code repository. Its Data availability says the
+# bioinformatics code and "custom scripts, if any" are in the Dryad deposit itself, which the
+# reader does not open; statistics were run in GraphPad Prism v10.2.3 and R v4.3.2 (logistic
+# regression). Where the deposit's scripts fix a detail left open here, the author may take it
+# from them, citing the file.
+#
+# The dataset. Dryad title "Physiological and behavioral dataset of squid exposed to ocean
+# acidification". By the paper's Data availability it holds the raw physiological data
+# (metabolic rates, ammonia excretion rates, blood acid-base parameters), the behavioral tracking
+# data, the ERG recordings, the carbonate chemistry calculations and the bioinformatics code. The
+# RNA-seq reads are in NCBI SRA BioProject PRJNA1204452 and the assembled transcriptome in NCBI
+# TSA GLBY00000000 (version GLBY01000000), so the transcriptomic claims are data elsewhere.
+#
+# Data the paper used. Lab-reared bigfin reef squid (S. lessoniana), three groups: control (reared
+# 90 days at pH 8.2), acute-OA (reared 90 days at pH 8.2, then 7 days at pH 7.8) and chronic-OA
+# (reared 90 days from hatching at pH 7.8); four replicate tanks per condition, animals sampled
+# across tanks (Methods). Measured, per squid:
+# - Routine metabolic rate (closed respirometry, umol O2 per g fresh mass per h; n = 8 to 12 per
+#   group, 29 in all by the ANOVA df) and ammonia excretion rate (separate squid; 30 and 60 min
+#   water samples; n = 5 to 9, 21 in all), Fig. 1B and 1C, Supplementary Table 1.
+# - Blood pH and total CO2, from which PCO2 and [HCO3-] are derived (Eqs. 1 and 2; n = 7, 6 and 9
+#   in Supplementary Table 2, while the Fig. 1 legend says 7 to 9), Fig. 1D to 1F.
+# - 3-D tracking (X, Y, Z every 0.1 s) of a 10 min exploration of a 60 x 20 x 22 cm arena (control
+#   15, acute 8, chronic 11 squid by Fig. 2A, Supplementary Fig. 2 and the ANOVA df; the Fig. 2B
+#   legend and Supplementary Fig. 1 give 9 acute squid), with mantle length, Fig. 2C to 2F.
+# - Predator-prey assay after the partition is lifted (10 min max): attack or not (46 control, 36
+#   acute, 22 chronic squid, from both 2-D and 3-D tracking runs), hunt duration and strike
+#   attempts of those that attacked (29, 8 and 8), Fig. 2G to 2I; prey shrimp velocity at 10 and
+#   20 min (control n = 8, CO2 n = 11), Supplementary Fig. 3.
+# - ERG to flicker (white LED, 200 ms on and 200 ms off, 5 s per frequency, 4 kHz sampling),
+#   maximum response frequency per stimulus frequency (Fig. 3C, n = 8, 8, 9) and critical flicker
+#   fusion frequency (Fig. 3D, n = 3 to 6 per group).
+# - Optic lobe RNA-seq (control 4, acute 5, chronic 3), Fig. 4 and Supplementary Fig. 5.
+# - Seawater chemistry, weekly, per condition (Supplementary Table 5); body mass and mantle length.
+#
+# Notes on the text that bear on several claims.
+# - The "±" after means in the Results is not named as SD or SEM. The Fig. 2 legend says mean ±
+#   SEM for Fig. 2H and 2I, but 262.2 ± 193.0 s over 8 squid only fits an SD. The blood values of
+#   Supplementary Table 2 differ slightly in their spread from those of the Results (PCO2 control
+#   234.087 against 229.5). Tolerances below are 10% of each mean: the ± values are the spread over
+#   squid, not an uncertainty of the mean, and the attempt recomputes the means from the same
+#   squid. Both SD and SEM are to be reported.
+# - Supplementary Table 3 labels the left-zone and front-zone ANOVAs "Y=log(Y)", but their sums of
+#   squares (residual mean squares 793.5 and 918.6) are on the scale of raw percentages; the
+#   ammonia and hunt-duration ANOVAs labelled log(Y) have sums of squares on a log10 scale.
+# - The Results cite "Fig. 3E" and "Fig. 3F" for the left and front zone durations; these are Fig.
+#   2E and 2F.
+# - The Methods say the footage was recorded at five frames per second and that coordinates were
+#   recorded every 0.1 s; the Fig. 2B legend counts 6,000 observations per squid (10 per s).
+schema_version: 2
+paper: doi:10.1038/s42003-025-09506-6
+claims:
+- id: fig1b-metabolic-rate
+  statement: Routine metabolic rate was 16.9 (control), 18.9 (acute-OA) and 23.9 (chronic-OA) umol
+    O2 per g fresh mass per h; chronic-OA squid had a 41% higher rate than controls, and acute-OA
+    did not differ from either.
+  source: Results, Metabolic and homeostatic performances, paragraph 1; Figure 1B; Supplementary
+    Table 1
+  quote: showed routine metabolic rates of 16.9 ± 4.1 and 18.9 ± 7.0 ... Compared to control squid,
+    squid being chronically exposed to acidified conditions for 90 days (chronic-OA) showed a 41%
+    increase in metabolic rate, reaching 23.9 ± 2.1
+  statistics:
+  - about: treatment effect
+    test: ordinary one-way ANOVA
+    statistic: F(2,26) = 4.473
+    p: 0.021407
+    n: 29 squid (8 to 12 per group)
+  - about: pairwise, by the letters of Figure 1B (control a, acute ab, chronic b)
+    test: Tukey's multiple comparisons
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: control mean routine metabolic rate
+    value: 16.9
+    tolerance: 1.69
+    unit: umol O2 gFM-1 h-1
+  - quantity: acute-OA mean routine metabolic rate
+    value: 18.9
+    tolerance: 1.89
+    unit: umol O2 gFM-1 h-1
+  - quantity: chronic-OA mean routine metabolic rate
+    value: 23.9
+    tolerance: 2.39
+    unit: umol O2 gFM-1 h-1
+  - quantity: increase of chronic-OA over control
+    value: 41
+    tolerance: 4.1
+    unit: percent
+  criterion: Per squid, the rate as the Methods define it (fall in dissolved O2, in moles, over the
+    run, less the blank chamber's fall, divided by fresh mass and duration), or the deposited rate
+    if the deposit gives it. Untransformed values, ordinary one-way ANOVA and Tukey's test
+    (Supplementary Table 1). Reproduced when the means are within tolerance, the ANOVA has p < 0.05,
+    and Tukey's test separates control from chronic-OA (p < 0.05) but neither from acute-OA.
+    Partially reproduced when the ANOVA and the control against chronic-OA difference hold but the
+    acute-OA comparisons differ from the letters.
+- id: fig1c-ammonia-excretion
+  statement: Ammonia excretion was similar in control (3.3) and acute-OA (2.9 umol per g per h)
+    squid and lower in chronic-OA squid (1.6), about 52% and 45% below control and acute-OA.
+  source: Results, Metabolic and homeostatic performances, paragraphs 1 and 2; Figure 1C;
+    Supplementary Table 1
+  quote: Ammonia excretion rates were also similar between control (3.3 ± 0.7 μmol TAmm gFM−1 h−1)
+    and acutely exposed squids (2.9 ± 1.5 μmol TAmm gFM−1 h−1) ... However, chronically exposed
+    squids had significantly lower ... ammonia excretion rates, at 1.6 ± 0.5
+  statistics:
+  - about: treatment effect, on log-transformed rates
+    test: ordinary one-way ANOVA
+    statistic: F(2,18) = 6.382
+    p: 0.008038
+    n: 21 squid (5 to 9 per group)
+  - about: pairwise, by the letters of Figure 1C (control a, acute a, chronic b)
+    test: Tukey's multiple comparisons
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: control mean ammonia excretion rate
+    value: 3.3
+    tolerance: 0.33
+    unit: umol TAmm gFM-1 h-1
+  - quantity: acute-OA mean ammonia excretion rate
+    value: 2.9
+    tolerance: 0.29
+    unit: umol TAmm gFM-1 h-1
+  - quantity: chronic-OA mean ammonia excretion rate
+    value: 1.6
+    tolerance: 0.16
+    unit: umol TAmm gFM-1 h-1
+  - quantity: reduction of chronic-OA against control
+    value: 52
+    tolerance: 5.2
+    unit: percent
+  - quantity: reduction of chronic-OA against acute-OA
+    value: 45
+    tolerance: 4.5
+    unit: percent
+  criterion: Per squid, the rate as the Methods define it (ammonium at 60 min minus at 30 min, in
+    moles, divided by fresh mass and the 30 min between samples), or the deposited rate. One-way
+    ANOVA on log-transformed rates (Supplementary Table 1; the base of the log cannot change F or
+    p) and Tukey's test. Reproduced when the means are within tolerance, the ANOVA has p < 0.05 and
+    chronic-OA differs from both other groups while control and acute-OA do not differ.
+- id: fig1d-blood-ph
+  statement: Blood pH was higher in chronic-OA squid (7.17) than in controls (7.09); acute-OA squid
+    were intermediate (7.15) and differed from neither.
+  source: Results, Metabolic and homeostatic performances, paragraph 3; Figure 1D; Supplementary
+    Table 2
+  quote: Blood pH in squids that developed under chronic acidification was significantly more
+    alkaline (7.17 ± 0.07) than in control squids (7.09 ± 0.02) ... they showed an intermediate
+    blood pH of 7.15 ± 0.09, which did not differ significantly from control (p = 0.391) or
+    chronic-OA squids (p = 0.754)
+  statistics:
+  - about: treatment effect
+    test: Welch's ANOVA
+    statistic: W = 5.983, df 2, 9.196
+    p: 0.00965
+    n: 7 control, 6 acute-OA, 9 chronic-OA squid
+  - about: control against chronic-OA
+    test: Dunnett's T3
+    p: 0.015
+    ci:
+      level: 0.95
+      low: -0.129
+      high: -0.036
+  - about: control against acute-OA
+    test: Dunnett's T3
+    p: 0.391
+  - about: acute-OA against chronic-OA
+    test: Dunnett's T3
+    p: 0.754
+  expected:
+  - quantity: control mean blood pH
+    value: 7.092
+    tolerance: 0.02
+  - quantity: acute-OA mean blood pH
+    value: 7.145
+    tolerance: 0.088
+  - quantity: chronic-OA mean blood pH
+    value: 7.175
+    tolerance: 0.068
+  criterion: Tolerances for pH are the per-group spreads of Supplementary Table 2, since 10% of a pH
+    value would not test anything. Welch's ANOVA and Dunnett's T3 (Methods, Statistics; Supplementary
+    Table 2). Reproduced when the means are within tolerance, Welch's ANOVA has p < 0.05, control
+    against chronic-OA has p < 0.05 and the two other pairs p >= 0.05. Group sizes are as the deposit
+    gives them; the 6 acute-OA squid of Supplementary Table 2 against the 7 to 9 of the Fig. 1
+    legend is reported.
+- id: fig1e-blood-pco2
+  statement: Blood PCO2 rose 1.5-fold under acute-OA (1583.8 uatm) and 2.6-fold under chronic-OA
+    (2778.7 uatm) from 1057.4 uatm in controls, and all three groups differ.
+  source: Results, Metabolic and homeostatic performances, paragraph 3; Figure 1E; Supplementary
+    Table 2
+  quote: This alkalinization was accompanied by a significant 2.6-fold increase in systemic PCO2
+    from 1057.4 ± 229.5 to 2778.7 ± 637.2 ... systemic PCO2 increased to 1583.8 ± 283.4 μatm,
+    representing a 1.5-fold increase compared to control squids
+  statistics:
+  - about: treatment effect
+    test: Welch's ANOVA
+    statistic: W = 27.653, df 2, 9.379
+    p: 0.0001
+    p_relation: "<"
+    n: 7 control, 6 acute-OA, 9 chronic-OA squid
+  - about: control against acute-OA
+    test: Dunnett's T3
+    p: 0.013
+    ci:
+      level: 0.95
+      low: -812.540
+      high: -240.322
+      unit: uatm
+  - about: control against chronic-OA
+    test: Dunnett's T3
+    p: 0.001
+    ci:
+      level: 0.95
+      low: -2158.015
+      high: -1284.671
+      unit: uatm
+  - about: acute-OA against chronic-OA
+    test: Dunnett's T3
+    p: 0.001
+    ci:
+      level: 0.95
+      low: -1655.776
+      high: -734.047
+      unit: uatm
+  expected:
+  - quantity: control mean blood PCO2
+    value: 1057.4
+    tolerance: 105.7
+    unit: uatm
+  - quantity: acute-OA mean blood PCO2
+    value: 1583.8
+    tolerance: 158.4
+    unit: uatm
+  - quantity: chronic-OA mean blood PCO2
+    value: 2778.7
+    tolerance: 277.9
+    unit: uatm
+  - quantity: fold change, chronic-OA over control
+    value: 2.6
+    tolerance: 0.26
+  - quantity: fold change, acute-OA over control
+    value: 1.5
+    tolerance: 0.15
+  criterion: PCO2 as deposited. If only pH and total CO2 are deposited, PCO2 is derived with Eq. 1
+    from the solubility and pKa1 of Carcinus maenas hemolymph (Methods, ref. 65); the paper does not
+    print these constants, so the author takes them from ref. 65 or the deposit and says which.
+    Welch's ANOVA and Dunnett's T3. Reproduced when the means and fold changes are within tolerance
+    and all three pairs differ at p < 0.05.
+- id: fig1f-blood-bicarbonate
+  statement: Blood [HCO3-] rose 1.7-fold under acute-OA (5.90 mmol/l) and 3.1-fold under chronic-OA
+    (11.08 mmol/l) from 3.56 mmol/l in controls, and all three groups differ.
+  source: Results, Metabolic and homeostatic performances, paragraph 3; Figure 1F; Supplementary
+    Table 2
+  quote: a 3.1-fold ... 3.56 ± 0.87 ... 11.08 ± 2.20 ... 5.90 ± 0.64 mmol l–1 HCO3−, representing a
+    1.7-fold increase over controls
+  statistics:
+  - about: treatment effect
+    test: Welch's ANOVA
+    statistic: W = 39.545, df 2, 12.59
+    p: 0.0001
+    p_relation: "<"
+    n: 7 control, 6 acute-OA, 9 chronic-OA squid
+  - about: each of the three pairs
+    test: Dunnett's T3
+    p: 0.001
+  expected:
+  - quantity: control mean blood HCO3-
+    value: 3.56
+    tolerance: 0.356
+    unit: mmol/l
+  - quantity: acute-OA mean blood HCO3-
+    value: 5.90
+    tolerance: 0.59
+    unit: mmol/l
+  - quantity: chronic-OA mean blood HCO3-
+    value: 11.08
+    tolerance: 1.108
+    unit: mmol/l
+  - quantity: fold change, chronic-OA over control
+    value: 3.1
+    tolerance: 0.31
+  - quantity: fold change, acute-OA over control
+    value: 1.7
+    tolerance: 0.17
+  criterion: As fig1e-blood-pco2, with Eq. 2 for [HCO3-] when it must be derived. Reproduced when
+    the means and fold changes are within tolerance and all three pairs differ at p < 0.05.
+- id: methods-body-size
+  statement: After 90 days of development the squid averaged 87.5 g fresh mass and 9.9 cm mantle
+    length.
+  source: Methods, Animal handling and rearing protocols, paragraph 1
+  quote: After 90 days of development, squid reached an average fresh mass of 87.5 ± 3.3 g and
+    mantle lengths of 9.9 ± 0.2 cm
+  expected:
+  - quantity: mean fresh mass at 90 days
+    value: 87.5
+    tolerance: 8.75
+    unit: g
+  - quantity: mean mantle length at 90 days
+    value: 9.9
+    tolerance: 0.99
+    unit: cm
+  criterion: The paper does not say which squid enter these means. Readings (a) all squid with a
+    recorded mass and mantle length in the deposit; (b) control squid only; (c) all 90-day squid
+    (control and chronic-OA). Reproduced when both means are within tolerance under one reading.
+- id: stable5-seawater-chemistry
+  kind: finding
+  statement: Exposure tanks were held at pH 8.20 and PCO2 414 uatm (control), pH 7.81 and 1187 uatm
+    (acute-OA) and pH 7.80 and 1155 uatm (chronic-OA).
+  source: Supplementary Table 5
+  inferred: Numbers from Supplementary Table 5 (weekly means ± SEM); no sentence of the Results
+    states them.
+  expected:
+  - quantity: control pH
+    value: 8.20
+    tolerance: 0.01
+  - quantity: acute-OA pH
+    value: 7.81
+    tolerance: 0.03
+  - quantity: chronic-OA pH
+    value: 7.80
+    tolerance: 0.01
+  - quantity: control PCO2
+    value: 414
+    tolerance: 9
+    unit: uatm
+  - quantity: acute-OA PCO2
+    value: 1187
+    tolerance: 81
+    unit: uatm
+  - quantity: chronic-OA PCO2
+    value: 1155
+    tolerance: 22
+    unit: uatm
+  criterion: Tolerances are the SEMs of Supplementary Table 5, the uncertainty of each weekly mean.
+    Means over the weekly measurements in the deposited carbonate chemistry, PCO2 as the deposit's
+    CO2SYS output. Reproduced when all six are within tolerance.
+- id: fig2c-velocity-unchanged
+  statement: Mean swimming velocity during the 10 min exploration did not differ between groups
+    (0.2, 0.21 and 0.25 mantle lengths per s for control, acute-OA and chronic-OA).
+  source: Results, Squids behavioral paradigms, paragraph 1; Figure 2C; Supplementary Table 3
+  quote: with a mean velocity of 0.2 ± 0.16 mantle lengths s–1 ... Thereby, mean swimming velocity
+    remained unchanged at 0.21 ± 0.1 and 0.25 ± 0.16 mantle lengths
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: KW = 0.4124
+    p: 0.813689
+    n: 15 control, 8 acute-OA, 11 chronic-OA squid
+  expected:
+  - quantity: control mean velocity
+    value: 0.2
+    tolerance: 0.02
+    unit: mantle lengths/s
+  - quantity: acute-OA mean velocity
+    value: 0.21
+    tolerance: 0.021
+    unit: mantle lengths/s
+  - quantity: chronic-OA mean velocity
+    value: 0.25
+    tolerance: 0.025
+    unit: mantle lengths/s
+  depends_on:
+  - sfig2-distance-unchanged
+  criterion: A claim of absence. Velocity is total distance (sfig2-distance-unchanged) divided by
+    the duration of the exploration, normalized to mantle length (Methods, Behavioral assays). The
+    paper's test, Kruskal-Wallis at p < 0.05 (Supplementary Table 3). Reproduced when it finds no
+    difference; the effect size is reported. The control mean is printed to one decimal (0.2); a
+    value from 0.15 to 0.25 rounds to it, and is reported. Group sizes as in the comment (acute-OA 8
+    by the df; the deposit's 9th acute squid, if present, is shown as a variant).
+- id: sfig2-distance-unchanged
+  statement: Total distance travelled during the 10 min exploration did not differ between groups
+    (132.9, 124.4 and 147.3 mantle lengths for control, acute-OA and chronic-OA).
+  source: Results, Squids behavioral paradigms, paragraph 1; Supplementary Figure 2; Supplementary
+    Table 3
+  quote: Squids reared under control conditions for 90 days traveled a total of 132.9 ± 93.4 mantle
+    lengths ... Total distance traveled was unaffected by acute (124.4 ± 56.7 mantle lengths) or
+    chronic exposure (147.3 ± 97.3 mantle lengths)
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: KW = 0.4124
+    p: 0.813689
+    n: 15 control, 8 acute-OA, 11 chronic-OA squid
+  expected:
+  - quantity: control mean distance
+    value: 132.9
+    tolerance: 13.3
+    unit: mantle lengths
+  - quantity: acute-OA mean distance
+    value: 124.4
+    tolerance: 12.4
+    unit: mantle lengths
+  - quantity: chronic-OA mean distance
+    value: 147.3
+    tolerance: 14.7
+    unit: mantle lengths
+  criterion: A claim of absence. Distance by Eq. 3, the sum of 3-D step lengths between points 0.1
+    s apart over the 10 min exploration, divided by the squid's mantle length (Methods, Behavioral
+    assays). The paper does not say how untracked samples are treated; steps across a missing
+    sample are left out, a standard choice that is stated. Kruskal-Wallis at p < 0.05. Reproduced
+    when it finds no difference; effect size reported.
+- id: fig2d-acute-upper-zone
+  statement: Acute-OA squid spent most of the exploration in the upper half of the arena (86.0%),
+    more than control (30.0%) and chronic-OA (14.7%) squid, which did not differ from each other.
+  source: Results, Squids behavioral paradigms, paragraph 2; Figure 2D; Supplementary Table 3
+  quote: squid reared in control and chronically acidified seawater spent 30.0 ± 39.0% and 14.7 ±
+    17.2% of the trial in the upper arena depths, respectively (Fig. 2D). In contrast, acute
+    acidified conditions substantially influenced the behavior of squid, as they spent 86.0 ± 34.6%
+    of the trial in the upper half of the arena
+  statistics:
+  - about: treatment effect
+    test: ordinary one-way ANOVA
+    statistic: F(2,31) = 12.07
+    p: 0.000133
+    n: 15 control, 8 acute-OA, 11 chronic-OA squid
+  - about: pairwise, by the letters of Figure 2D (control a, acute b, chronic a)
+    test: Tukey's multiple comparisons
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: control time in upper zone
+    value: 30.0
+    tolerance: 3.0
+    unit: percent
+  - quantity: acute-OA time in upper zone
+    value: 86.0
+    tolerance: 8.6
+    unit: percent
+  - quantity: chronic-OA time in upper zone
+    value: 14.7
+    tolerance: 1.47
+    unit: percent
+  criterion: Upper zone is the vertical coordinate above the halfway point of the 22 cm water
+    depth, after the Cartesian transform (Methods, Behavioral assays; zones A and B). Percentage of
+    the 10 min exploration. The paper does not fix the denominator; readings (a) all 0.1 s samples
+    of the 10 min, (b) tracked samples only. Untransformed one-way ANOVA and Tukey's test
+    (Supplementary Table 3). Reproduced when, under one reading, the means are within tolerance,
+    the ANOVA has p < 0.05 and acute-OA differs from both other groups while control and chronic-OA
+    do not. Partially reproduced when the ANOVA and the acute-OA differences hold but a mean is out
+    of tolerance.
+- id: stable3-acute-shallower
+  statement: Mean depth differed between groups, acute-OA squid swimming shallower.
+  source: Results, Squids behavioral paradigms, paragraph 2; Supplementary Table 3 (Mean Depth)
+  quote: of the trial in the upper half of the arena at a significantly shallower depth
+  statistics:
+  - test: ordinary one-way ANOVA
+    statistic: F(2,31) = 8.190
+    p: 0.001394
+    n: 15 control, 8 acute-OA, 11 chronic-OA squid
+  criterion: The paper does not define mean depth. Readings (a) the mean over the exploration of the
+    height above the arena bottom (the Cartesian vertical coordinate), higher meaning shallower;
+    (b) the mean distance below the surface (22 cm less that height). Both give the same F; the
+    direction is read accordingly. Untransformed one-way ANOVA (Supplementary Table 3). Reproduced
+    when the ANOVA has p < 0.05 with F within 10% of 8.190 and the acute-OA group is the shallowest.
+    Partially reproduced when p < 0.05 and acute-OA is shallowest but F is out of that range.
+- id: fig2e-left-right-unchanged
+  statement: Acidification did not change the preference for the left or right side of the arena
+    (55.8%, 54.1% and 57.1% of the trial on the left for control, acute-OA and chronic-OA).
+  source: Results, Squids behavioral paradigms, paragraph 2; Figure 2E (cited as Fig. 3E);
+    Supplementary Table 3
+  quote: Acidification did not influence the preference for the left or right side of the arena.
+    Control squids spent 55.8 ± 31.8% of the trial on the left side, while acute and chronic
+    exposure squids spent 54.1 ± 27.9% and 57.1 ± 22.4%, respectively
+  statistics:
+  - test: ordinary one-way ANOVA
+    statistic: F(2,31) = 0.02705
+    p: 0.973338
+    n: 15 control, 8 acute-OA, 11 chronic-OA squid
+  expected:
+  - quantity: control time on left
+    value: 55.8
+    tolerance: 5.58
+    unit: percent
+  - quantity: acute-OA time on left
+    value: 54.1
+    tolerance: 5.41
+    unit: percent
+  - quantity: chronic-OA time on left
+    value: 57.1
+    tolerance: 5.71
+    unit: percent
+  criterion: A claim of absence. Left is the half of the 60 cm main zone on the left of the front
+    camera (zones A, C, G, E). Denominator as fig2d-acute-upper-zone. The paper's test is a one-way
+    ANOVA at p < 0.05; Supplementary Table 3 labels it log(Y) but its sums of squares are on the
+    raw percentage scale, so both are run, untransformed as the main reading and log as a variant
+    (zero values cannot be logged and are left out of that variant). Reproduced when the ANOVA finds
+    no difference; effect size reported.
+- id: fig2f-front-back-unchanged
+  statement: Acidification did not change the preference for the front or back of the arena (58.3%,
+    80.0% and 66.1% of the trial near the front wall for control, acute-OA and chronic-OA).
+  source: Results, Squids behavioral paradigms, paragraph 2; Figure 2F (cited as Fig. 3F);
+    Supplementary Table 3
+  quote: The control squids spent 58.3 ± 35.6% of the trial near the front wall, compared to 80.0 ±
+    15.2% and 66.1 ± 30.1% for acute and chronic exposure, respectively ... Similarly, no
+    significant difference was observed in front/back preference
+  statistics:
+  - test: ordinary one-way ANOVA
+    statistic: F(2,31) = 1.326
+    p: 0.280094
+    n: 15 control, 8 acute-OA, 11 chronic-OA squid
+  expected:
+  - quantity: control time near front
+    value: 58.3
+    tolerance: 5.83
+    unit: percent
+  - quantity: acute-OA time near front
+    value: 80.0
+    tolerance: 8.0
+    unit: percent
+  - quantity: chronic-OA time near front
+    value: 66.1
+    tolerance: 6.61
+    unit: percent
+  criterion: A claim of absence. Front is the half of the 20 cm width nearer the front camera, from
+    the above camera (Methods; the Methods call it zones E and F, the Fig. 2 legend calls F the
+    front and E the back; the halfway split is used). Denominator, transform and test as
+    fig2e-left-right-unchanged. Reproduced when the ANOVA finds no difference; effect size
+    reported.
+- id: fig2g-attack-willingness
+  statement: Acidified conditions reduced the proportion of squid that attacked prey (logistic
+    regression, pH p = 0.0422) with no effect of exposure duration (p = 0.2461); acute-OA and
+    chronic-OA squid were 64.7% and 42.3% less likely to attack than controls.
+  source: Results, Squids behavioral paradigms, paragraph 3; Figure 2G; Supplementary Table 4
+  quote: Logistic regression showed that acidified conditions significantly reduced the proportion
+    of squid that attempted to attack prey (Fig. 2G, p = 0.0422), with no significant effect of
+    exposure duration (p = 0.2461). After 7- and 90-days of acidification, squid were 64.7% and
+    42.3% less likely to attack prey compared to controls
+  statistics:
+  - about: pH term
+    test: logistic regression (GLM, binomial, logit)
+    statistic: estimate 2.734246, SE 1.345676, z = 2.032
+    p: 0.0422
+    n: 104 squid (46 control, 36 acute-OA, 22 chronic-OA)
+  - about: exposure time term
+    test: logistic regression (GLM, binomial, logit)
+    statistic: estimate 0.008351, SE 0.00762, z = 1.16
+    p: 0.2461
+    n: 104 squid
+  expected:
+  - quantity: control squid that attacked
+    value: 29
+    tolerance: 0
+  - quantity: acute-OA squid that attacked
+    value: 8
+    tolerance: 0
+  - quantity: chronic-OA squid that attacked
+    value: 8
+    tolerance: 0
+  - quantity: acute-OA reduction in attack likelihood against control
+    value: 64.7
+    tolerance: 6.47
+    unit: percent
+  - quantity: chronic-OA reduction in attack likelihood against control
+    value: 42.3
+    tolerance: 4.23
+    unit: percent
+  - quantity: pH coefficient
+    value: 2.734
+    tolerance: 0.273
+  - quantity: residual deviance
+    value: 127.58
+    tolerance: 12.76
+  - quantity: area under the ROC curve
+    value: 0.6992
+    tolerance: 0.0699
+  criterion: Counts are of squid and must match exactly (Fig. 2 legend, 29 of 46, 8 of 36, 8 of
+    22). The reductions are 1 minus the group proportion over the control proportion, which these
+    counts give exactly (64.7% and 42.3%). Logistic regression in R, attack (yes or no) on pH and
+    exposure time (Methods, Statistics). The paper does not say how pH and time are coded. Readings
+    (a) pH nominal (8.2, 7.8) and time as days in the rearing condition (control 90, acute-OA 7,
+    chronic-OA 90); (b) pH nominal and time as days of acidification (control 0); (c) as (a) or (b)
+    with the measured tank pH of Supplementary Table 5. The deviances (null 142.28 on 103 df,
+    residual 127.58 on 101 df) and AIC 133.58 identify the coding. Reproduced when, under one
+    reading, the pH term has p < 0.05 with lower attack at lower pH, the time term p >= 0.05, and
+    the counts match. Partially reproduced when the counts and reductions match but no reading gives
+    p < 0.05 for pH.
+- id: fig2h-hunt-duration
+  statement: Acute-OA squid took about 2.5 times longer to capture prey than controls (262.2 against
+    106.7 s, p = 0.03); chronic exposure did not affect hunt duration.
+  source: Results, Squids behavioral paradigms, paragraph 3; Figure 2H; Supplementary Table 4
+  quote: Acute treatments significantly increased hunt duration, requiring 262.2 ± 193.0 s compared
+    to 106.7 ± 125.2 s for controls (2.5-fold change, p = 0.03; Fig. 2H and Supplementary Table 4).
+    Chronic exposure did not affect hunt duration
+  statistics:
+  - about: treatment effect, on log-transformed durations
+    test: ordinary one-way ANOVA
+    statistic: F(2,42) = 3.372
+    p: 0.0439
+    n: 45 squid that attacked (29 control, 8 acute-OA, 8 chronic-OA)
+  - about: acute-OA against control (letters a, b; chronic-OA ab)
+    test: Tukey's multiple comparisons
+    p: 0.03
+  expected:
+  - quantity: control mean hunt duration
+    value: 106.7
+    tolerance: 10.7
+    unit: s
+  - quantity: acute-OA mean hunt duration
+    value: 262.2
+    tolerance: 26.2
+    unit: s
+  - quantity: fold change, acute-OA over control
+    value: 2.5
+    tolerance: 0.25
+  criterion: Hunt duration is the time from partition removal to capture, in squid that attacked
+    (Methods; Fig. 2 legend). One-way ANOVA on log durations (Supplementary Table 4) and Tukey's
+    test. Reproduced when the means are within tolerance, the ANOVA has p < 0.05, acute-OA differs
+    from control at p < 0.05 and chronic-OA differs from neither. Partially reproduced when acute-OA
+    is significantly longer than control but another part fails.
+- id: fig2i-strike-attempts
+  statement: Most squid struck prey successfully within 1 to 2 attempts, strike attempts did not
+    differ between groups, and every squid that attempted to hunt captured its prey.
+  source: Results, Squids behavioral paradigms, paragraph 3; Figure 2I and legend; Supplementary
+    Table 4
+  quote: the majority of examined squids were able to strike at prey successfully within 1–2
+    attempts (Fig. 2I)
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: KW = 2.568
+    p: 0.2769
+    n: 45 squid that attacked (29 control, 8 acute-OA, 8 chronic-OA)
+  criterion: Of the squid that attacked, the fraction with 1 or 2 strike attempts, overall and per
+    group. Reproduced when over half of the squid in every group needed 1 or 2 attempts, every
+    attacking squid captured its prey, and Kruskal-Wallis on attempts finds no difference at p <
+    0.05 (the paper's test). "Majority" read overall instead of per group is shown as a variant.
+- id: sfig3-prey-velocity-unchanged
+  statement: The velocity of the prey shrimp was not affected by CO2 treatment, time (10 and 20 min)
+    or their interaction.
+  source: Results, Squids behavioral paradigms, paragraph 3; Supplementary Figure 3
+  quote: Two-way ANOVA revealed no significant effects of CO2 treatment, time, or their interaction
+    on prey velocity (all p > 0.05)
+  statistics:
+  - test: two-way ANOVA (treatment by time)
+    p: 0.05
+    p_relation: ">"
+    n: 8 control and 11 CO2-exposed shrimp
+  criterion: A claim of absence. Shrimp velocity at 10 and 20 min of exposure, two-way ANOVA with
+    pH and exposure time as factors (Methods, Statistics). The paper does not say whether time is a
+    repeated measure; the ordinary two-way ANOVA the Methods name is the test, and a repeated
+    measures version is shown as a variant. Reproduced when no term has p < 0.05.
+- id: fig3c-ratio-declines
+  statement: As stimulus frequency increased, the ratio of maximum response frequency to stimulus
+    frequency decreased in all three groups, markedly above 40 Hz.
+  source: Results, Temporal visual processing in squids, paragraph 2; Figure 3C and legend
+  quote: As the stimulus frequency increased, the ratio of maximal response frequency to stimulus
+    frequency decreased in all groups
+  criterion: Per squid and stimulus frequency, the maximum response frequency is the peak of the
+    difference spectrum, the FFT of the stimulus period less that of a no-stimulus period
+    (Methods; Supplementary Fig. 4B), averaged over technical replicates; the ratio is that over
+    the stimulus frequency; group means per frequency (Fig. 3C, n = 8, 8, 9). The paper does not
+    give the FFT window or the length of the no-stimulus period; the whole 5 s stimulus train and a
+    no-stimulus period of the same length are used, a stated choice, unless the deposit holds the
+    per-frequency peaks. Reproduced when, in each group, the mean ratio at every tested frequency
+    above 40 Hz is below the mean at 20 Hz, and the mean at the highest frequency is the lowest or
+    within 0.1 of it. Partially reproduced when this holds in two groups.
+- id: sfig4a-amplitude-attenuation
+  statement: ERG response amplitude attenuated as flicker frequency increased from 20 to 50 Hz.
+  source: Methods, Electroretinogram (ERG) recording and analysis, paragraph 2; Supplementary
+    Figure 4A
+  quote: The ERG traces for different stimulus frequencies (20 Hz, 30 Hz, 40 Hz, and 50 Hz) revealed
+    a clear attenuation in response amplitude with increasing frequency
+  criterion: Response amplitude per squid and frequency, averaged over the frequency's responses
+    (Methods, "Response amplitudes were averaged for each frequency"); the paper does not define the
+    amplitude, so readings (a) the difference-spectrum power at the stimulus frequency, (b) the
+    peak-to-peak amplitude of the trace averaged over flicker cycles. Reproduced when, under one
+    reading, the mean over all squid falls from 20 to 50 Hz at each step and is lower at 50 than at
+    20 Hz in most squid.
+- id: fig3d-cff-unchanged
+  statement: Critical flicker fusion frequency did not differ between treatments (control 50.8,
+    acute-OA 50.8, chronic-OA 47.7 Hz).
+  source: Results, Temporal visual processing in squids, paragraph 2; Figure 3D
+  quote: "Nevertheless, the CFF average values showed no significant difference between treatments
+    (control: 50.8 ± 1.4 Hz; acute: 50.8 ± 6.3 Hz; chronic: 47.7 ± 5.5 Hz; Fig. 3D)"
+  statistics:
+  - test: one-way ANOVA with Tukey's multiple comparisons
+    p: 0.05
+    p_relation: ">"
+    n: 3 to 6 squid per group
+  expected:
+  - quantity: control mean CFF
+    value: 50.8
+    tolerance: 5.08
+    unit: Hz
+  - quantity: acute-OA mean CFF
+    value: 50.8
+    tolerance: 5.08
+    unit: Hz
+  - quantity: chronic-OA mean CFF
+    value: 47.7
+    tolerance: 4.77
+    unit: Hz
+  depends_on:
+  - fig3c-ratio-declines
+  criterion: A claim of absence, judged on one-way ANOVA at p < 0.05 (Methods). CFF per squid as the
+    Methods define it, read as the highest stimulus frequency at which the ratio of
+    fig3c-ratio-declines is at least 0.9; Fig. 3D shows per-squid CFFs at discrete frequencies,
+    which fits this reading. The paper does not say which squid enter Fig. 3D (n = 3 to 6 per group
+    against 8, 8 and 9 in Fig. 3C); readings (a) every squid in the deposit, (b) the squid the
+    deposit marks or gives a CFF for. Linear interpolation of the 0.9 crossing is shown as a variant.
+    Reproduced when the ANOVA finds no difference; the means and effect size are reported.
+- id: fig3d-cff-variance
+  statement: The standard deviation of CFF was 4 to 5 times higher in the acidified groups than in
+    controls.
+  source: Results, Temporal visual processing in squids, paragraph 2; Figure 3D; Discussion,
+    paragraph 8
+  quote: though variance increased markedly under acidification, with 4- to 5-fold higher standard
+    deviations in treated groups compared to controls
+  expected:
+  - quantity: SD of CFF, acute-OA over control
+    value: 4.5
+    tolerance: 1.0
+  - quantity: SD of CFF, chronic-OA over control
+    value: 4.5
+    tolerance: 1.0
+  depends_on:
+  - fig3d-cff-unchanged
+  criterion: The reported range 4 to 5, widened by 10% of each bound, is 3.6 to 5.5; it is written
+    as 4.5 with a tolerance of 1.0. Sample SDs (n - 1) of per-squid CFF under the readings of
+    fig3d-cff-unchanged. Reproduced when both ratios lie in 3.6 to 5.5. The Results call the
+    increase not statistically significant and the Discussion calls it significant; no test is
+    reported, so none is judged.
+- id: rnaseq-assembly
+  statement: The de novo optic lobe transcriptome had 902,413 transcripts, an N50 of 476 bp overall
+    and 2038 bp for the top 78% of expressed transcripts, read mapping rates above 97% (mean
+    99.51%), and 69,368 transcripts after expression filtering.
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 1; Supplementary Figure 5A;
+    Methods, RNA-seq de novo assembly and Differential expression
+  quote: achieving high-quality transcripts with mapping rates exceeding 97% (average 99.51%,
+    Bowtie2 v2.5.3)68. The output showed that the highest 78% of expressed transcripts had an N50
+    of 2038 bp, and that the in-total N50 of the assembled transcripts is 476 bp
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  expected:
+  - quantity: mean mapping rate
+    value: 99.51
+    tolerance: 2.0
+    unit: percent
+  - quantity: E78N50
+    value: 2038
+    tolerance: 203.8
+    unit: bp
+  - quantity: N50 of all transcripts
+    value: 476
+    tolerance: 47.6
+    unit: bp
+  - quantity: transcripts after filtering
+    value: 69368
+    tolerance: 6937
+  criterion: The mapping-rate tolerance is 2 points, since 10% of 99.51 would admit rates below the
+    reported floor of 97%. Assembly statistics from the TSA assembly with Trinity's ExN50 tool;
+    mapping with Bowtie2 v2.5.3 through align_and_estimate_abundance.pl (Methods). The filter
+    "expression counts less than 10 and were expressed in less than 3 samples" is open; readings
+    (a) keep transcripts with at least 10 counts in at least 3 samples, (b) drop transcripts whose
+    total count is under 10 and also those detected in fewer than 3 samples. Reproduced when every
+    value is within tolerance under one reading.
+- id: fig4a-pca
+  statement: In a PCA of optic lobe transcriptomes, acute-OA samples lay near controls along PC1
+    (35% of variance), while chronic-OA samples diverged along PC1 and PC2 (15%).
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 1; Figure 4A; Supplementary
+    Figure 5B
+  quote: acute-OA samples remained near controls along PC1 (35% variance), while chronic-OA samples
+    showed significant divergence along both PC1 and PC2 axes (15% variance)
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  expected:
+  - quantity: variance explained by PC1
+    value: 35
+    tolerance: 3.5
+    unit: percent
+  - quantity: variance explained by PC2
+    value: 15
+    tolerance: 1.5
+    unit: percent
+  depends_on:
+  - rnaseq-assembly
+  criterion: RSEM counts per transcript, filtered as rnaseq-assembly, DESeq2 v1.42.0, variance
+    stabilizing transform, sva v3.50.0 batch effect removed, then DESeq2's PCA function with its
+    defaults (Methods, Differential expression; Transcriptomic data visualization). The paper does
+    not give the number of surrogate variables or how they are removed; readings (a) the number sva
+    estimates, removed with limma's removeBatchEffect; (b) the known sample batches, removed the
+    same way; the deposit's code is followed if it settles this. Reproduced when, under one
+    reading, both variances are within tolerance, the acute-OA centroid is nearer the control
+    centroid on PC1 than the chronic-OA centroid is, and chronic-OA is separated from controls on
+    both PCs (centroid distance larger than the control samples' spread on each).
+- id: sfig5b-acute-clusters-with-control
+  statement: After batch-effect removal, acute-OA samples clustered closer to controls than
+    chronic-OA samples did.
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 1; Supplementary Figure 5B
+  quote: An initial analysis after batch-effect removal showed that acute-OA samples clustered closer
+    to controls than chronic-OA samples
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  depends_on:
+  - fig4a-pca
+  criterion: Euclidean distances between samples on the batch-corrected variance-stabilized data of
+    fig4a-pca (Supplementary Fig. 5B), under its readings. Reproduced when the mean distance from
+    acute-OA to control samples is smaller than from chronic-OA to control samples.
+- id: fig4b-shared-down-sets
+  statement: Only 2 of 36 GO gene sets were down-regulated under both acute and chronic
+    acidification, organelle inner membrane and mitochondrial inner membrane.
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 2; Figure 4B and 4C
+  quote: only 2 out of 36 GO gene sets were down-regulated in both acute and chronic acidified
+    conditions ... organelle inner membrane and mitochondrial inner membrane
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  expected:
+  - quantity: gene sets down-regulated in both treatments
+    value: 2
+    tolerance: 0
+  depends_on:
+  - fig4a-pca
+  criterion: GSEA per treatment against control, on transcripts ranked by DESeq2 log fold change
+    shrunk with the normal estimator, clusterProfiler v4.10.0 with ont ALL, minGSSize 10,
+    maxGSSize 500, nPermSimple 1000, BH adjustment, cutoff 0.05 (Methods), using the paper's
+    AnnotationForge GO database built from Trinotate and UniProt (Methods, Functional annotation;
+    in the deposit or rebuilt as described). GSEA permutations are random; the seed is a standard
+    choice and is stated. "36" is open; readings (a) the number of down-regulated sets in either
+    treatment, (b) all sets in the Venn diagram. Reproduced when exactly two sets are down in both
+    and they are these two, and the count is within 10% of 36 under one reading.
+- id: fig4c-acute-ridge
+  statement: Acute acidification suppressed gene sets of lipid, carboxylic acid and organic acid
+    metabolism, transferase and endopeptidase complexes and ribosomal subunits, and up-regulated
+    cell-cell adhesion.
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 2; Figure 4C
+  quote: Acute acidification significantly suppressed multiple metabolic functions, including
+    cellular lipid metabolism, carboxylic acid metabolism, and organic acid metabolic processes ...
+    evidenced by suppressed transferase and endopeptidase complexes ... The ribosomal subunit and
+    ribosome-related GO terms were considerably downregulated, ... while cell-cell adhesion pathways
+    showed significant upregulation
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  depends_on:
+  - fig4b-shared-down-sets
+  criterion: GSEA of fig4b-shared-down-sets, acute-OA against control. Reproduced when, at BH
+    adjusted p < 0.05, at least one GO term matching each named family (cellular lipid metabolic
+    process, carboxylic acid metabolic process, organic acid metabolic process, transferase
+    complex, endopeptidase complex, ribosomal subunit) has negative NES and a cell-cell adhesion
+    term has positive NES. Partially reproduced when most of the seven hold.
+- id: fig4d-acute-tree
+  statement: Under acute acidification down-regulated clusters included mitochondrial and energy
+    metabolism (respirasome, electron transport chain complex IV, mitochondrial envelope), fatty
+    acid biosynthesis and elongase activity, and ncRNA ribonucleoprotein and 3'-end RNA processing.
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 3; Figure 4D
+  quote: The key downregulated pathways included mitochondrial and energy metabolism components,
+    particularly respirasome cytochrome, electron transport chain complex IV, and mitochondrial
+    envelope. Fatty acid biosynthesis and elongase activity pathways showed substantial suppression
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  depends_on:
+  - fig4b-shared-down-sets
+  criterion: As fig4c-acute-ridge. Reproduced when terms for respirasome, cytochrome c oxidase
+    (complex IV), mitochondrial envelope, fatty acid biosynthesis or elongase activity, and ncRNA
+    ribonucleoprotein or 3'-end RNA processing are each down-regulated at BH adjusted p < 0.05.
+    The tree-plot clustering (clusterProfiler treeplot defaults) is a display and is not judged.
+- id: fig4e-chronic-synaptic-down
+  statement: Under chronic acidification down-regulated gene sets included postsynaptic membrane,
+    synaptic membrane, transmitter-gated channel activity and neurotransmitter receptor activity,
+    NAD(P)H dehydrogenase activity, respiratory electron transport, cell adhesion molecules and
+    prefoldin complex.
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 3; Figure 4E
+  quote: Under chronic exposure, the GSEA tree plot demonstrated distinct downregulation patterns
+    (Fig. 4E), particularly affecting neurotransmission and synaptic activity. This included reduced
+    expression in postsynaptic membrane, synaptic membrane, transmitter-gated channel activity, and
+    neurotransmitter receptor activity terms
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  depends_on:
+  - fig4b-shared-down-sets
+  criterion: GSEA of fig4b-shared-down-sets, chronic-OA against control. Reproduced when the four
+    synaptic terms are down-regulated at BH adjusted p < 0.05 and at least one term each for
+    NAD(P)H dehydrogenase activity and respiratory electron transport chain is; partially
+    reproduced when the synaptic terms hold but not the others.
+- id: fig4fgh-chronic-up
+  statement: Chronic acidification up-regulated 82 cellular component, 308 biological process and
+    128 molecular function gene sets, including vesicle, endosome and Golgi components, purine
+    biosynthesis and carbohydrate catabolism, ribonucleoprotein and ubiquitin-related activities,
+    and oxidoreductase, hydrolase and transporter activities.
+  source: Results, RNA-seq profiling in the optic lobes, paragraph 4; Figure 4F to 4H and legend
+  quote: Cellular components (CC) showed enhanced vesicular, endosomal, and Golgi apparatus pathways
+    (Fig. 4F). Biological processes (BP) exhibited upregulated purine biosynthesis and carbohydrate
+    catabolism (Fig. 4G), while molecular functions (MF) displayed elevated ribonucleoprotein
+    activity and ubiquitin-related processes
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  expected:
+  - quantity: up-regulated CC gene sets, chronic-OA
+    value: 82
+    tolerance: 8.2
+  - quantity: up-regulated BP gene sets, chronic-OA
+    value: 308
+    tolerance: 30.8
+  - quantity: up-regulated MF gene sets, chronic-OA
+    value: 128
+    tolerance: 12.8
+  depends_on:
+  - fig4b-shared-down-sets
+  criterion: GSEA of fig4b-shared-down-sets, chronic-OA against control; up-regulated sets are those
+    with positive NES at BH adjusted p < 0.05, counted per ontology. Reproduced when the three
+    counts are within tolerance and at least one up-regulated term matches each named family
+    (vesicle, endosome, Golgi; purine biosynthesis, carbohydrate catabolism; ribonucleoprotein,
+    ubiquitin; oxidoreductase, hydrolase, transporter activity). Partially reproduced when the
+    families hold but a count is out of tolerance.
+- id: chronic-nachr-subunits-down
+  statement: Chronic acidification down-regulated transcripts of several nicotinic acetylcholine
+    receptor subunits (alpha-7, alpha-10 and beta-4) in the optic lobes.
+  source: Discussion, paragraph 5; Supplementary data, GSEA results
+  quote: Chronic exposure to acidified conditions caused significant changes in transcripts related
+    to synaptic function, including the downregulation of several nicotinic acetylcholine receptor
+    subunits (alpha-7, alpha-10, and beta-4
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  depends_on:
+  - fig4e-chronic-synaptic-down
+  criterion: The supplementary GSEA results file the claim cites was not available to the reader.
+    Transcripts annotated (Methods, Functional annotation) as nAChR alpha-7, alpha-10 and beta-4
+    subunits are read either (a) as core enrichment genes of a chronic-OA down-regulated synaptic
+    gene set of fig4e-chronic-synaptic-down, or (b) as having negative shrunken log fold change in
+    DESeq2, chronic-OA against control. Reproduced when all three subunits are down under one
+    reading; partially reproduced for one or two.
+- id: optic-lobe-no-ion-regulation
+  statement: No change was seen in optic lobe transcripts associated with acid-base or ion
+    regulatory processes.
+  source: Discussion, paragraph 3
+  quote: we did not observe changes in optic lobe transcripts associated with acid–base or ion
+    regulatory processes
+  data: elsewhere
+  where: NCBI SRA BioProject PRJNA1204452; NCBI TSA GLBY01000000
+  depends_on:
+  - fig4b-shared-down-sets
+  criterion: A claim of absence, judged on the paper's GSEA (fig4b-shared-down-sets) at BH adjusted
+    p < 0.05 for both treatments against control. The paper does not list the terms; the GO terms
+    whose names contain "pH", "acid-base", "bicarbonate", "proton", "chloride" or "ion
+    transmembrane transport" are read as these processes. Reproduced when none is significant in
+    either treatment; the terms that are, with their NES, are reported either way.
