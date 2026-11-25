@@ -1,13 +1,15 @@
 name: Intake
 run-name: "Intake: ${{ inputs.request || (github.event.issue.number && format('#{0}', github.event.issue.number)) || inputs.run_url }}"
 
-# Takes a run made from encore-runner, or a fork of it, into the registry (encore-protocol docs/outside-runs.md).
-# Such a run reads this registry and writes nothing to it; it ends with a signed submission of what it changed in
-# one paper's files. tools/intake.py checks the signature, the base and the changes, and commits the submission to
-# the attempt's branch, attempt/<paper>.
+# Takes an attempt made from encore-runner, or a fork of it, into the registry (encore-protocol docs/outside-runs.md).
+# A runner makes the whole attempt in its own repository and touches the registry twice. It says when it starts
+# (`what: start`), and the intake makes the branch attempt/<paper> to name it. At the end it sends the attempt
+# (`what: attempt`), and tools/intake.py checks every run's signature, that each run started from what the one
+# before it left, and each role's changes, and pushes the runs as attempt/<paper>. `what: run` takes one run at a
+# time, as attempts begun before 2026-11-25 were taken.
 #
-# A run reaches the intake in one of two ways. encore-runner dispatches this workflow at the end of its own runs,
-# with a token only it holds. A fork's owner opens an "Outside run" issue with the run's address. Runs from the
+# Either reaches the intake in one of two ways. encore-runner dispatches this workflow from its own runs,
+# with a token only it holds. A fork's owner opens an "Outside attempt" issue with the run's address. Runs from the
 # repositories in the variable ENCORE_INTAKE_AUTO (default encorescience/encore-runner, "*" for all) are taken as soon
 # as they pass; any other waits for someone in queue/priority.yaml: their dispatch with `approve` ticked, their own
 # issue, or the `approved` label they add to someone else's. The issue's text is read only by the Python script,
@@ -19,6 +21,14 @@ on:
       run_url:
         description: "The run's address: https://github.com/OWNER/REPO/actions/runs/ID"
         required: true
+      what:
+        description: "start: the runner has begun an attempt; attempt: the finished attempt; run: one run"
+        type: choice
+        options: [run, start, attempt]
+        default: run
+      paper:
+        description: "The paper's key, for start and attempt"
+        default: ""
       approve:
         description: "Take it even if its repository's runs wait for a person (counts only for someone in queue/priority.yaml)"
         type: boolean
@@ -79,6 +89,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ENCORE_INTAKE_AUTO: ${{ vars.ENCORE_INTAKE_AUTO }}
           RUN_URL: ${{ inputs.run_url }}
+          WHAT: ${{ inputs.what }}
+          PAPER: ${{ inputs.paper }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE: ${{ github.event.issue.number }}
           DRY_RUN: ${{ inputs.dry_run }}
@@ -101,5 +113,5 @@ jobs:
           if [ -n "$ISSUE" ]; then
             python tools/intake.py --issue-body-env ISSUE_BODY --issue "$ISSUE" "${args[@]}"
           else
-            python tools/intake.py "$RUN_URL" "${args[@]}"
+            python tools/intake.py "$RUN_URL" --what "${WHAT:-run}" --paper "$PAPER" "${args[@]}"
           fi

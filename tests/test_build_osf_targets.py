@@ -302,3 +302,18 @@ def test_a_file_outside_osf_storage_is_named_with_its_provider_and_kinds_are_nam
     assert b.file_record(item)["path"] == "googledrive/src/run.py"
     assert b.file_record(item, prefix="xyz23/")["path"] == "xyz23/googledrive/src/run.py"
     assert b.kind_of("sessions/s01.NWB") == "NWB" and b.kind_of("v1.2/Makefile") == "no extension"
+
+
+def test_a_storage_add_on_that_answers_403_is_left_out_with_a_warning(osf, monkeypatch, capsys):
+    # OSF:r7aes links a GitHub add-on whose files answer 403 to an anonymous reader.
+    real = b.get
+
+    def get(url):
+        if url == f"{API}/nodes/abcde/files/github/?page[size]=100":
+            raise urllib.error.HTTPError(url, 403, "Forbidden", {}, io.BytesIO(b""))
+        return real(url)
+
+    monkeypatch.setattr(b, "get", get)
+    t = b.target("abcde")
+    assert "github" not in t["providers"] and not any(f["provider"] == "github" for f in t["files"])
+    assert "README.txt" in [f["path"] for f in t["files"]] and "github cannot be read" in capsys.readouterr().err
