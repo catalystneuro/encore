@@ -103,7 +103,9 @@ def test_rows_match_the_attempts(built):
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
     assert len(rows["datasets"]) == data["queue_counts"]["with_a_paper"]
     assert sum(r["claims"] or 0 for r in rows["datasets"]) == sum(len(a["outcomes"]) for a in attempts)
-    assert sum(r["findings"] or 0 for r in rows["datasets"]) == sum(len(a["findings"]) for a in attempts)
+    # A finding that a later version of its dataset fixed is no longer open (finding_scope).
+    assert sum(r["findings"] or 0 for r in rows["datasets"]) == sum(
+        1 for a in attempts for f in a["findings"] if f["scope"] != "fixed")
     assert sum(1 for r in rows["datasets"] if r["status"] == "attempted") == len(current)
 
 
@@ -243,8 +245,10 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["id"] == dandiset)
         attempts = [a for a in attempts if not a.get("deprecated")]
-        assert row["findings"] == sum(len(a["findings"]) for a in attempts)
-        kinds = sorted({f["kind"] for a in attempts for f in a["findings"]})
+        # Open: not fixed by a later version of the dataset (finding_scope).
+        open_ = [f for a in attempts for f in a["findings"] if f["scope"] != "fixed"]
+        assert row["findings"] == len(open_)
+        kinds = sorted({f["kind"] for f in open_})
         # Beside the kinds, the lists' filter has the datasets with a problem that changes results.
         assert [k for k in row["found"] if k != site.CHANGES_RESULTS] == kinds
         page = (out / row["page"] / "index.html").read_text()
@@ -254,7 +258,13 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
                 assert site.e(f["statement"]) in page
         # The findings are under the version of the dataset they were found on, and the row has what a curator
         # reads: the versions tested, the open findings by kind, and the papers tested.
-        assert page.count('<h3 class="vhead">') == len({site.version_text(a) for a in attempts})
+        # One heading for each version with a finding that is in the dataset now, and one, "In earlier versions",
+        # for those a later version fixed or that were not looked for since.
+        earlier = [f for a in attempts for f in a["findings"] if f["scope"] != "current"]
+        now = {site.version_text(a) for a in attempts if any(f["scope"] == "current" for f in a["findings"])}
+        every = {site.version_text(a) for a in attempts}
+        assert page.count('<h3 class="vhead">') == (len(now) + 1 if earlier else len(every))
+        assert ("In earlier versions" in page) == bool(earlier)
         assert all(site.version_text(a) in page for a in attempts)
         assert sum(row["found_counts"].values()) == row["findings"] and sorted(row["found_counts"]) == kinds
         assert row["versions"] == list(dict.fromkeys(
@@ -1509,10 +1519,11 @@ def test_problems_that_change_results_come_first_under_their_version_on_a_datase
         live = [a for a in atts if not a.get("deprecated")]
         if not live:
             continue
-        worst = [f for a in live for f in a["findings"] if f["changes_results"]]
+        # Only a problem that is in the dataset's newest version counts as one that changes results now.
+        worst = [f for a in live for f in a["findings"] if site.counts_now(f)]
         page = (out / site.page_of(key) / "index.html").read_text()
         # The heading is there only with such a finding; each is listed once, under it, with what the check found.
-        rest = [f for a in live for f in a["findings"] if not f["changes_results"]]
+        rest = [f for a in live for f in a["findings"] if not f["changes_results"] and f["scope"] == "current"]
         for f in worst[:1]:
             for g in rest[:1]:
                 assert page.index(site.e(f["statement"])) < page.index("Other findings") < page.index(site.e(g["statement"])) \
