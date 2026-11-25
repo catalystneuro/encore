@@ -215,7 +215,7 @@ def diagnose(folder: str, status: str, detail: str, run: str) -> tuple[list[str]
     if "wrote no claims file" in what:
         why.append("The reader could not read the claims from the paper's text as stored. Its report, below, says "
                    "what is missing: usually a supplement, the methods, or figure legends.")
-        steps += ["Add what the report asks for to the paper store (catalystneuro/registry-papers, in this "
+        steps += ["Add what the report asks for to the paper store (encorescience/registry-papers, in this "
                   "dataset's folder): the article's PDF or the supplementary files.",
                   restart(folder)]
     elif "claims file is not ready" in what:
