@@ -113,7 +113,10 @@ outcomes:
     10 and not at all (visit trials) or 1200, 10 and 300 s (search trials), so two or three of three are
     still earlier. The support is thin. The merges at 5 s rest on bins with almost no eggs (0 of 42 against
     0 of 48 visits in 0/500/500/500/200; 4 of 854 against 0 of 715 in 0/500/200/500/200), and the bins after
-    them differ (p = 0.011 or less from 15 s, p < 0.001 from 10 s); the merge at 10 s is of the same kind
+    them differ up to 60 s (p = 0.011 or less from 15 to 60 s in the first, p < 0.001 from 10 to 60 s in
+    the second). Later the first chamber's curves come together (60 to 90 s p = 0.013, 90 to 150 s p =
+    0.051, then 0.085 to 0.781), while the second's differ in every bin (p = 0.002 and 0.006 at 300 to 600
+    and 600 to 1200 s, the others below 0.001). The merge at 10 s is of the same kind
     (1 of 189 against 1 of 158). Only the 1200 s merge of 0/500/200 follows bins with many eggs.
   deviations:
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
@@ -165,6 +168,8 @@ outcomes:
     visits are common at the boundary (359 of 12154 sucrose visits in the 4-mm chamber last one frame), but
     merging visits of up to 0.5, 1, 2 or 5 s into the visits around them gives medians of 48.5, 57.0 and
     441.5 s (448.2 s at 5 s) with 35, 44 and 21 (or 20) fast eggs, still outside every median tolerance.
+    For the 2-mm and bounce chambers flicker does not explain the short medians; for the 4-mm chamber it
+    nearly does, as the merged median, 48.5 s, is 0.1 s below the lower tolerance of 48.6 s.
   deviations:
   - No frame of the tunnel chambers lacks a sucrose label (printed), so the first frame on 0 mM follows the
     last on 200 mM and 'within 10 s' from crossing the midline and from leaving 200 mM are the same frame;
@@ -185,17 +190,18 @@ outcomes:
     150 to 240 s bin is already high (0.922 against 0.316 eggs/min below 150 s, p = 0.0014); over the bins
     from 5 s rho = 0.68, p = 0.029; with visits of up to 0.5 s merged (boundary flicker) the 0 to 5 s bin
     loses its 2 eggs and rho = 0.74, p = 0.009 over all bins below 240 s. Below 150 s the rates are flat
-    under every variant (p = 0.11 to 0.21). The rise is present but starts between 150 and 240 s.'
+    under every variant (p = 0.11 to 0.21). The rise is present but starts between 150 and 240 s (2.5 to
+    4 min), below the 240 s edge the claims file fixes. The case is borderline, as the paper says "~4 min"
+    and the 150 to 240 s bin holds 9 eggs.'
   deviations:
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
     as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
     on 0/1 trials are far too large.
-  - '''No rising trend'' below 240 s has no test in the paper. Assumed: it fails when the bins below
-    240 s hold a significant rise, judged by the rank sum test of the 150 to 240 s bin against the bins
-    below 150 s and by the Spearman correlation of bin rate with bin order over the bins from 5 s (the
-    bins the merge point counts, Fig. 5A legend). The first version of this attempt used the Spearman
-    correlation over all bins from 0 s, which shows no rise (p = 0.20) and would give reproduced; the
-    notebook shows every reading.'
+  - '''No rising trend'' below 240 s has no test in the paper. Assumed: it fails when the bin just below
+    240 s, 150 to 240 s, has a higher rate than the bins below 150 s by the rank sum test (M5) at p < 0.05.
+    This step test decides the outcome. The Spearman correlations of bin rate with bin order are shown
+    as variants only; the first version of this attempt used the one over all bins from 0 s, which shows
+    no rise (p = 0.20) and would give reproduced. The notebook shows every reading.'
   assumed: true
 - claim: fig3f-motor-program-not-faster
   outcome: not_reproduced
@@ -417,14 +423,16 @@ outcomes:
     has an egg (0 of 973 and 0 of 1478 visits). Egg-aligned averages hold 831 and 795 eggs.'
   deviations:
   - The criterion asks that the 1.4% rate be lower in the bins up to 15 s; in the 0 to 5 s bin both rates
-    are 0, a tie. It is broken as the merge-point definition does (Fig. 5A legend, bins past 5 s), by
-    leaving out the bin before 5 s; read literally with that bin, the criterion fails.
+    are 0, a tie. It is assumed that the tie is set aside as the merge-point definition does (Fig. 5A legend, bins
+    past 5 s), by leaving out the bin before 5 s; read literally with that bin, the criterion fails, so
+    the outcome rests on this assumption.
   - Pause time (M7) as in Methods, Statistics, from the last frame before the egg with 1-s boxcar speed
     above 0.1 mm/s; on these data its medians are 0.5 to 2.5 s and it takes values in steps of 0.5 s.
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
     as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
     on 0/1 trials are far too large.
   - With the same substrate on both sides, the substrate is taken from the island series.
+  assumed: true
 - claim: fig6g-more-time-softer
   outcome: reproduced
   notebook: reproduce_vijayan_2022.ipynb
@@ -610,6 +618,7 @@ outcomes:
   - Merge point (Fig. 5A legend, first bin past 5 s for which P > 0.05) taken with the 5 to 10 s bin as
     the first bin past 5 s (assumption; the 0 to 5 s bin, where all rates are near 0, is the only one
     left out). The variant with the 10 to 15 s bin first is shown.
+  assumed: true
 - claim: figs3-long-searches
   outcome: reproduced
   notebook: reproduce_vijayan_2022.ipynb
@@ -619,7 +628,8 @@ outcomes:
   - 95
   notes: 3978 eggs from 95 flies (89 with eggs) in the three chambers. The fraction on the lower option
     is 0.949 (95% CI 0.903 to 0.978) for searches of 360 to 1500 s (none is longer) and 0.957 (0.892 to
-    0.988) with 25 or more transitions, and above 0.89 in every bin.
+    0.988) with 25 or more transitions, and 0.888 or more in every bin (lowest, 0.888, for searches with
+    no transition).
   deviations:
   - 'Search start (M3), taken from Methods, Automated determination of egg-laying search: the scan for
     the first frame below 0.1 mm/s of the 18.5-s centred boxcar of speed starts 9 s before the egg, so
@@ -698,8 +708,11 @@ findings:
 - kind: other
   about: data
   severity: none
-  statement: Egg counts per group agree with the paper's legends within a few eggs (for example 1863 against
-    1862 for CS 0/200, 533 for DDC>Kir 31 C, 831 and 795 for the same-agarose chambers), the ref. 16 chambers
+  statement: Egg counts per group agree with the egg-aligned counts of the paper's legends within 2 eggs
+    in 16 of 19 groups (for example 1863 against 1862 for CS 0/200, 533 for DDC>Kir 31 C, 831 and 795 for
+    the same-agarose chambers). The files hold 596 eggs against 586 for Dop1R2-mutant-1, 220 against 214
+    for D. suzukii and 670 against 675 for the bounce chamber; the legends' counts are of egg-aligned averages
+    that leave out eggs near the ends of a recording, and those built here hold 586, 216 and 670. The ref. 16 chambers
     hold 95 flies and 3978 eggs (paper 95, 3979), no recording appears twice, the islands follow the y
     position and the sucrose label changes only with the island, and flies speed up before an annotated
     egg and pause at it while shifted times show no such contrast, so the egg annotations share the position
@@ -1066,3 +1079,328 @@ verifications:
       in concentration is model 1 as the paper defines it, and the paper gives it as the cause of the failure.
       Model 2 cannot be fit, as the paper gives neither its equations nor its constants; the criterion tests
       model 1 only, and the notes say the statement''s model 2 part is untested.'
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run, with the conclusions and
+    summary, the helper module, the attempt record, the README and the claims file, with the paper
+    under paper/. Cell numbers in the reasons are those of that notebook. No finding in the record
+    is rated critical, and the verifier found nothing in the printed outputs that points to one, so
+    no finding was reviewed. Beyond the claims, it reported that the data-check sentence 'egg counts
+    per group are within a few eggs of the legends' holds only for the egg-aligned counts
+    (Dop1R2-mutant-1 holds 596 eggs against 586, D. suzukii 220 against 214; cell 6), a minor point;
+    cell 7, the summary and the data finding now say so.
+  results:
+  - claim: leave-higher-stay-lower
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig1d-no-substrate-marking
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig1f-tarsi-proboscis
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig2bc-larger-chambers-two-options
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig2d-three-choice-inhibit-200
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig2e-200-recovers-with-time
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig2efg-inhibit-200-after-0
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig2-earlier-merge-three-choice
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 37 and the notes overstate the later bins. They say the bins after the 5-s merges
+      differ (p = 0.011 or less from 15 s on in the first, p < 0.001 from 10 s on in the second).
+      That holds only up to 60 s. Cell 36, 0/500/500/500/200: the 60-90 s bin is p = 0.013 and
+      90-150 s is p = 0.051, then 0.781. Cell 36, 0/500/200/500/200: the 300-600 s bin is p = 0.002
+      and 600-1200 s is p = 0.006."
+    response: "No change of outcome. The conclusion and the notes now say the bins after the 5-s
+      merges differ up to 60 s, and give the later bins: in 0/500/500/500/200 p = 0.013 at 60 to 90
+      s, 0.051 at 90 to 150 s, then 0.085 to 0.781; in 0/500/200/500/200 every bin still differs, at
+      p = 0.002 and 0.006 at 300 to 600 and 600 to 1200 s and below 0.001 elsewhere."
+  - claim: fig3ab-2mm-tunnel-faster
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig3c-bounce-faster
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig3d-dwell-before-fast-eggs
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Cell 46 overstates the flicker conclusion. It says flicker at the boundary does not
+      explain the short medians. For the 4-mm chamber the merged median, 48.5 s, is 0.1 s below the
+      tolerance of 48.6 s (cell 45). The sentence holds for the 2-mm and bounce chambers, but not
+      for the 4-mm one. The fig3d medians remain unexplained for the 2-mm and bounce chambers, and
+      the question is put to the authors."
+    response: "No change of outcome. The conclusion and the notes now say flicker does not explain
+      the short medians of the 2-mm and bounce chambers, and that in the 4-mm chamber it nearly
+      does, the merged median of 48.5 s being 0.1 s below the lower tolerance of 48.6 s."
+  - claim: fig3e-rate-after-long-absence
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Partially reproduced (assumed), which replaces my round-1 reproduced. Cell 48 shows the
+      150-240 s bin already high, 0.922 against 0.316 eggs/min, p = 0.0014: a rise below 240 s, the
+      edge the claims file fixed. The assumption is stated and reasonable, but the step test carries
+      it. Starting the Spearman test at 5 s, on the grounds that the merge point counts from there,
+      does not carry over: this x-axis is dwell time, not time since a transition. The case is
+      borderline, because the paper says ~4 min."
+    response: "No change of outcome. The assumption now rests on the step test alone (150 to 240 s
+      against the bins below 150 s, p = 0.0014); the justification of the Spearman test from 5 s by
+      the merge point is dropped, and the Spearman correlations are shown as variants only. The
+      conclusion and the notes now say the case is borderline, since 150 to 240 s is 2.5 to 4 min,
+      the paper says ~4 min, and the bin holds 9 eggs."
+  - claim: fig3f-motor-program-not-faster
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the stated outcome. Round-1 point 2, pause quantisation, is now flagged
+      (cell 51)."
+    response: "No change."
+  - claim: fig4a-shorter-middle-transits
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the stated outcome. Round-1 point 2, transit quantisation, is now flagged
+      (cell 54)."
+    response: "No change."
+  - claim: fig4b-faster-middle-preferred
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig4d-anomalous-eggs-alternative
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig4e-inter-egg-not-longer
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig4f-motor-program-not-accelerated
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig5ab-strains-release-faster
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The assumption (visit trials) is stated and reasonable.
+      Round-1 point 5 still bears on the conclusion: fig5ab turns on the trial reading."
+    response: "No change."
+  - claim: fig5c-suzukii-no-preference
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the stated outcome. Round-1 point 11, the claims-file reading with no
+      multiple-testing correction, still bears on the conclusion: with Holm the smallest adjusted p
+      is 0.38. It is put to a reader."
+    response: "No change."
+  - claim: fig5de-suzukii-more-on-200
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig5f-egg-numbers-differ
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig5gh-search-and-pause
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig6b-softer-preferred
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with blocking as data_missing. My round-1 agreement with blocking for
+      metadata_insufficient was wrong. Cell 14 shows the Agarose_Percentage series, which changes
+      only with the island, and that the chambers were loaded both ways round (18/6 and 12/12
+      flies). Bars 2, 3 and 6 are missing, and the criterion needs them."
+    response: "No change."
+  - claim: fig6cd-hardness-fast-merge
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with reproduced. My round-1 agreement with blocking for metadata_insufficient
+      was wrong (cell 14 shows the Agarose_Percentage series). Cell 84: merges at 20 and 20/25 s.
+      The criterion's chambers with equal sucrose is tested on the one such chamber the dandiset
+      holds, and the record says so."
+    response: "No change."
+  - claim: fig6ef-pause-longer-hard
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome, but it is not marked assumed and rests on a tie-break.
+      The 0-5 s bin is 0/973 against 0/1478, a tie, and it is set aside by analogy with the merge-
+      point rule. The deviation itself says that read literally, with that bin, the criterion fails.
+      The outcome rests on this reading, so it should be assumed: true."
+    response: "No change of outcome; marked assumed. The deviation now states the tie-break as an
+      assumption, and the conclusion and the summary say the outcome rests on it."
+  - claim: fig6g-more-time-softer
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with reproduced. My round-1 agreement with blocking for metadata_insufficient
+      was wrong (cell 14 shows the Agarose_Percentage series). Cell 90: median time on 0.8% is 0.609
+      over all frames and 0.672 over search frames."
+    response: "No change."
+  - claim: fig7a-screen-ddc-hits
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig7b-ddc-kir-sense-sucrose
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig7cf-kir-merge-earlier
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the stated outcome. The assumption (5-10 s as the first bin past 5 s) is
+      stated and defensible. The other reading is about as plausible and flips the outcome. Both are
+      printed, and the question is put to the authors."
+    response: "No change."
+  - claim: fig7df-overall-rate-drops
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the stated outcome. In round 1 I wrote 1000 of 1031 eggs at 18 C, which the
+      record carries forward as my words; that figure was wrong. 1000 is the number counted; 31 are
+      left out, as the record's notes and cell 96 correctly say."
+    response: "No change of outcome. The round-1 reason is kept as the verifier gave it; the notes
+      already give 31 of 1031 eggs left out."
+  - claim: fig7gh-choice-falls
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig7ik-not-egg-number-or-motor
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the stated outcome. Round-1 point 10, the claims-file reading of unrelated
+      to egg number, still bears on the conclusion: the egg part would hold under the correlation
+      reading (rho -0.07, p = 0.72). It is put to a reader."
+    response: "No change."
+  - claim: fig7l-dopamine-gal80-rescue
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig7mn-brain-neurons
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig8a-d1-receptor-mutants
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig8b-mutants-sense-sucrose
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig8ce-mutants-flat-rates
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig8fg-time-and-eggs
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig8j-200-500-defect
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: fig8k-agarose-intact
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: dop1r1-84714-no-defect
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the stated outcome. The Result sentence and the record's notes agree with
+      the printed outputs."
+    response: "No change."
+  - claim: figs2-search-definition-robust
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees with the stated outcome, but it is not marked assumed and rests on an
+      assumption. The response to round 1 says marked assumed, and the Summary (cell 121) says rests
+      on an assumption, but the outcome has no assumed: true. Under search trials the criterion
+      holds (cell 111), so the outcome depends on the visit reading. It should be marked."
+    response: "No change of outcome; marked assumed: true, as the round-1 response and the summary
+      already said."
+  - claim: figs3-long-searches
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 115 and the figs3 notes are wrong about one bin. They say the fraction is above
+      0.89 in every bin, but in cell 114 the 0-transition bin is 0.888."
+    response: "No change of outcome. The conclusion and the notes now say 0.888 or more in every
+      bin, the lowest being searches with no transition."
+  - claim: figs4-models-fail
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with reproduced (assumed), and drops the round-1 partially reproduced. The
+      criterion tests model 1 only. The log-link fit (cell 117) also overestimates the 0/500 rate in
+      7 of 7 bins, so the result does not depend on the negative rates. The fit still matches its
+      training curve only loosely: 3 or 4 of 7 bins fall inside the CI, and the 0-5 s bin predicts
+      0.54 eggs/min against 0 observed. The 8.08 eggs/min log-link overshoot is largely built in by
+      linearity in concentration. Claims-file point (report, not correct): the statement names two
+      models, but the criterion tests only model 1, so reproduced covers half the statement, and the
+      notes say so."
+    response: "No change of outcome. The claims-file point is added to questions/vijayan-2022.yaml
+      as a question for a reader; the claim is not changed."
