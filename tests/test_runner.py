@@ -184,7 +184,7 @@ def test_a_paper_with_no_questions_file_has_no_open_questions(tmp_path):
     # chain.sh counted "0\n0" for a paper with no questions file, which is not 0: the answer and author-answers roles
     # ran for nothing on every such paper, and the first replicates hung at the answer role (2026-11-14).
     chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
-    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index('if [ "${open_questions:-0}" != 0 ]')]
+    lines = chain[chain.index("open_questions=$({ on_branch"):chain.index("if ! is_done verifier-1 &&")]
     def count(on_branch):
         script = f"set -uo pipefail\nd=x\non_branch(){{ {on_branch}; }}\npython(){{ {sys.executable} \"$@\"; }}\n{lines}\necho \"[$open_questions]\""
         return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.strip()
@@ -249,8 +249,9 @@ def test_a_replicate_has_its_own_branch_and_runs_and_never_reconciles_or_merges(
     assert body.index('log "replicate $REPLICATE: the claims on main"') < body.index("step claims\n")
 
 
-def _finish_sandbox(tmp_path, branch_change, main_change):
-    """An origin with main and attempt/x, a clone of it, and chain.sh's merge_main run in the clone."""
+def _finish_sandbox(tmp_path, branch_change, main_change, then="", env=None):
+    """An origin with main and attempt/x, a clone of it, and chain.sh's merge_main run in the clone; `then` is run
+    after it, in the same shell, while the worktree is still there."""
     import subprocess
     origin, clone = tmp_path / "origin.git", tmp_path / "clone"
     _git(tmp_path, "init", "-q", "--bare", "-b", "main", str(origin))
@@ -272,10 +273,10 @@ def _finish_sandbox(tmp_path, branch_change, main_change):
     body = chain[chain.index("drop_work(){"):chain.index('log "finishing"')]
     script = ('set -uo pipefail\nd=x\nbr=attempt/x\nwork=$(mktemp -d)\nnotify(){ :; }\n'
               'fetch(){ git fetch -q origin main "attempt/$d"; }\n' + body + 'merge_main; rc=$?\n'
-              'echo "rc=$rc"; [ $rc = 0 ] && git -C "$work" log -1 --format=%s; drop_work\n')
+              'echo "rc=$rc"; [ $rc = 0 ] && git -C "$work" log -1 --format=%s\n' + then + '\ndrop_work\n')
     out = subprocess.run(["bash", "-c", script], cwd=clone, capture_output=True, text=True,
                          env={**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.org",
-                              "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.org"}).stdout
+                              "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.org", **(env or {})}).stdout
     _git(clone, "fetch", "-q", "origin")
     return out, clone
 
@@ -299,6 +300,81 @@ def test_finishing_keeps_the_branchs_claims_file_and_stops_on_any_other_conflict
     assert "rc=1" in out
     assert _git(clone, "show", "origin/attempt/x:README.md") == "branch\n"          # nothing was pushed
 
+
+
+def _a_protocol(tmp_path, files):
+    """A stand-in for a clone of encore-protocol, and what a registry's main holds to have it laid."""
+    protocol = tmp_path / "protocol"
+    for name, text in files.items():
+        (protocol / name).parent.mkdir(parents=True, exist_ok=True); (protocol / name).write_text(text)
+    _git(protocol, "init", "-q")
+    registry = {"tools/protocol.sh": (REPO / "tools" / "protocol.sh").read_text(), "protocol.lock": "v0\n",
+                ".gitignore": "".join(f"/{name}\n" for name in files)}
+    return protocol, registry
+
+
+def test_finishing_lays_the_protocol_over_its_worktree(tmp_path):
+    # 2026-11-23 to 25: the registry's commits no longer held the protocol's tools, the finish worktree had none,
+    # describe.py could not read the attempt, and seven finished attempts stopped with a blank pull request title.
+    protocol, registry = _a_protocol(tmp_path, {"tools/agent_run.py": "attempt_of = None\n"})
+    out, clone = _finish_sandbox(
+        tmp_path, {"entries/x.txt": "entry\n"}, registry, env={"ENCORE_PROTOCOL": str(protocol)},
+        then='[ ! -e "$work/tools/agent_run.py" ] && echo "before=none"; lay_protocol; echo "lay=$?"\n'
+             'python3 -B -c "import sys; sys.path.insert(0, sys.argv[1]); import agent_run; print(\'read=ok\')" "$work/tools"\n'
+             'echo "status=[$(git -C "$work" status --porcelain)]"')
+    assert "rc=0" in out and "before=none" in out and "lay=0" in out and "read=ok" in out
+    assert "status=[]" in out                                    # and nothing of it is left for a commit to pick up
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    assert chain.index('checkout -q --detach "origin/$br"') < chain.index("lay_protocol ||") < chain.index("describe.py\" title")
+    # A branch from before the protocol had a repository of its own has no protocol.sh, and holds the protocol itself.
+    (tmp_path / "old").mkdir()
+    out, clone = _finish_sandbox(tmp_path / "old", {"entries/x.txt": "entry\n"}, {"docs/other.md": "main\n"},
+                                 then='lay_protocol; echo "lay=$?"')
+    assert "lay=0" in out
+
+
+def test_the_claims_checkpoint_validates_against_the_protocols_schema(tmp_path):
+    # 2026-11-25: the checkpoint's worktree of main had no schemas/ (they come with the protocol), so garud-2026's
+    # claims "did not validate" and stayed off main.
+    protocol, registry = _a_protocol(tmp_path, {"schemas/claims.schema.json": '{"type": "object", "required": ["claims"]}\n'})
+    origin, clone = tmp_path / "origin.git", tmp_path / "clone"
+    _git(tmp_path, "init", "-q", "--bare", "-b", "main", str(origin))
+    _git(tmp_path, "clone", "-q", str(origin), str(clone))
+    for name, text in registry.items():
+        (clone / name).parent.mkdir(exist_ok=True); (clone / name).write_text(text)
+    _git(clone, "add", "-A"); _git(clone, "commit", "-q", "-m", "start"); _git(clone, "push", "-q", "origin", "HEAD:main")
+    def checkpoint(paper, text):
+        _git(clone, "checkout", "-q", "-B", f"attempt/{paper}", "origin/main")
+        (clone / "claims").mkdir(exist_ok=True); (clone / "claims" / f"{paper}.yaml").write_text(text)
+        _git(clone, "add", "-A"); _git(clone, "commit", "-q", "-m", "claims"); _git(clone, "push", "-q", "origin", f"attempt/{paper}")
+        _git(clone, "checkout", "-q", "--detach", "origin/main")
+        run = subprocess.run(["bash", str(REPO / "tools" / "runner" / "merge_claims.sh"), paper], cwd=clone,
+                             capture_output=True, text=True,
+                             env={**os.environ, "ENCORE_PROTOCOL": str(protocol), "PATH": f"{Path(sys.executable).parent}:{os.environ['PATH']}"})
+        _git(clone, "fetch", "-q", "origin")
+        return run.stdout + run.stderr, _git(clone, "ls-tree", "-r", "--name-only", "origin/main").split()
+    out, on_main = checkpoint("x-2020", "claims:\n- {id: one}\n")
+    assert "x-2020: claims merged into main" in out, out
+    assert "claims/x-2020.yaml" in on_main and not [f for f in on_main if f.startswith("schemas/")]
+    out, on_main = checkpoint("y-2021", "not_claims: []\n")
+    assert "does not validate" in out and "claims/y-2021.yaml" not in on_main
+
+
+def test_a_chain_started_again_after_its_rounds_does_not_ask_the_questions_of_the_revisions():
+    # 2026-11-25: mah-2023 stopped at its pull request; its revisions had left two questions open. Started again, the
+    # chain ran the reader's answer role on them, after the verification and the reconcile step.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index("open_questions=${open_questions:-0}"):chain.index("for role in verifier-1")]
+    def roles_run(open_questions, done):
+        script = (f'open_questions={open_questions}\nis_done(){{ case " {" ".join(done)} " in *" $1 "*) return 0;; esac; return 1; }}\n'
+                  'log(){ :; }\nstep(){ is_done "$1" || echo "$1"; }\n' + block)
+        return subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout.split()
+    assert roles_run(2, ["author"]) == ["answer", "author-answers"]
+    assert roles_run(0, ["author"]) == []
+    assert roles_run(1, ["author", "answer"]) == ["author-answers"]          # stopped between the two
+    assert roles_run(0, ["author", "answer"]) == ["author-answers"]
+    assert roles_run(2, ["author", "verifier-1", "author-revise-1", "verifier-2", "author-revise-2"]) == []
+    assert roles_run(2, ["author", "answer", "author-answers", "verifier-1"]) == []
 
 
 def test_a_failed_commit_job_is_found_by_its_name_in_a_called_workflow():
