@@ -11,7 +11,10 @@ Where each parameter comes from:
   inter-burst interval of at least 200 ms"). The details (how a lone spike is merged into the
   next burst, and the removal of cycles whose frequency jumps more than three times the mean
   neighbouring change) are a port of the deposited extractBurstFrequency_Final.m, the code the
-  paper's Data availability statement says reproduces its results.
+  paper's Data availability statement says reproduces its results. The removal deletes a
+  cycle's start with its frequency, so the cycle before it spans two bursts while keeping its own
+  period; these cycles are marked (``gap``) and left out of the hold means and phases, an
+  assumption (``hold_means``).
 - Phase (``phase_calc``): delay of the first or last spike after the first PD spike, over the
   period (Methods, Analysis). Which spikes form the neuron's burst within a cycle (the longest
   run of spikes with inter-spike intervals of at most 0.11 s) is a port of the deposited
@@ -24,13 +27,16 @@ Where each parameter comes from:
 - Cycles slower than 1/8 Hz are dropped from the frequency and phase measures
   (CalculateFrequencyPhaseEtc.m, "Eliminate all cycles that have a period of > ... 8seconds").
 - Holding temperature: cycles within 0.3 degrees C of 11, 13, ..., 21 degrees C (Results, The
-  steady-state frequency increase, paragraph 3; claims file header).
+  steady-state frequency increase, paragraph 3; claims file header). The deposited
+  CalculateFrequencyPhaseEtc.m uses a strict bound (< 0.3) for the Cs+ frequency and temperature
+  and <= 0.3 elsewhere; ``strict_cs`` follows it where a Cs+ frequency is formed.
 - Jag measure (``jag_measure``): temperature smoothed over 10 cycles and frequency over 30
   (Methods, Analysis), with MATLAB's ``smooth`` (centred moving average, even spans reduced by one,
   shrinking at the ends) as the deposited ProbabilityUpDown.m uses it; increasing cycles have a
   smoothed temperature change > 0.01 degrees C, stable cycles a change within +-0.01 (the
   deposited code and the Figure 3A legend, "change less than 0.01 C/pyloric cycle"); thresholds
-  0.002 Hz (Methods).
+  0.002 Hz (Methods). O3 spans: the Timings window, the step protocol, and the window extended
+  over the cooling to 11 degrees C.
 - Q10 (``q10``): readings (a), (b), (c) of the claims file header, O1. Reading (b), the
   straight-line fit of log10 frequency on the measured mean temperature, is what the deposited
   CalculateFrequencyPhaseEtc.m does.
@@ -90,9 +96,14 @@ def load_spikes(expt: str) -> dict:
     return out
 
 
-def extract_bursts(spikes: np.ndarray, min_time_bw_bursts: float = 0.2, min_sp_per_burst: int = 2):
+def extract_bursts(spikes: np.ndarray, min_time_bw_bursts: float = 0.2, min_sp_per_burst: int = 2, return_gaps: bool = False):
     """Port of extractBurstFrequency_Final.m. Returns StartTime (N), burstFreq (N-1),
-    sp_per_burst, cyclePeriod (N-1), burstDuration (N-1), after the deposited outlier removal."""
+    sp_per_burst, cyclePeriod (N-1), burstDuration (N-1), after the deposited outlier removal.
+
+    As in the deposited code, the removal deletes StartTime(P) together with burstFreq(P), so the
+    cycle before a removed one keeps its own period while the next start kept is two or more
+    bursts later. With return_gaps, a sixth array (N-1) marks these cycles (True where the next
+    start kept is not the next burst detected)."""
     s = np.asarray(spikes, float)
     n = len(s)
     # MATLAB 1-based indices are kept below and converted at the end.
@@ -115,6 +126,7 @@ def extract_bursts(spikes: np.ndarray, min_time_bw_bursts: float = 0.2, min_sp_p
     period = np.diff(start)
     freq = 1.0 / period
     dur = s[be] - s[bs[:-1]]
+    orig = np.arange(len(start))
     while True:
         remove = []
         L = len(freq)
@@ -129,8 +141,11 @@ def extract_bursts(spikes: np.ndarray, min_time_bw_bursts: float = 0.2, min_sp_p
         keep = np.ones(len(start), bool)
         keep[remove] = False
         start = start[keep]
+        orig = orig[keep]
         k2 = keep[: len(freq)]
         freq, period, dur, sp_per_burst = freq[k2], period[k2], dur[k2], sp_per_burst[k2]
+    if return_gaps:
+        return start, freq, sp_per_burst, period, dur, np.diff(orig) > 1
     return start, freq, sp_per_burst, period, dur
 
 
@@ -196,9 +211,9 @@ def analyse(expt: str, pd_key: str = "PD") -> dict:
     """Per-cycle measures of one experiment: start, freq, period, PD burst duration, temperature,
     and onset/offset phases and latencies of PD, LP and PY."""
     d = load_spikes(expt)
-    start, freq, spb, period, dur = extract_bursts(d[pd_key], 0.2, 2)
+    start, freq, spb, period, dur, gap = extract_bursts(d[pd_key], 0.2, 2, return_gaps=True)
     temp = cycle_temperature(start, d["x_sub"], d["Tempsub"])
-    cyc = {"start": start[:-1], "freq": freq, "period": period, "pd_dur": dur, "temp": temp}
+    cyc = {"start": start[:-1], "freq": freq, "period": period, "pd_dur": dur, "temp": temp, "gap": gap}
     _, pd_off, _, _, pd_lat_off = phase_calc(d[pd_key], 0.11, start, period, dur)
     cyc["PD_OFF"] = pd_off
     for nrn in ("LP", "PY"):
@@ -241,20 +256,24 @@ def trailing_mean(y, span):
     return (cs[i + 1] - cs[a]) / (i + 1 - a)
 
 
-def jag_measure(d: dict, cond: str, centred: bool = True, span: str = "window", up_thr=0.01, f_thr=0.002):
+def jag_measure(d: dict, cond: str, centred: bool = True, span: str = "window", up_thr=0.01, f_thr=0.002,
+                smooth_within: bool = False):
     """Percent of temperature-increasing cycles with a smoothed frequency decrease, and percent of
     temperature-stable cycles with an increase, in one condition window.
 
     span "window": the cycles of the Timings window (as ProbabilityUpDown.m), stable meaning
-    |dT| < 0.01; span "steps": only cycles from the first 11 degrees C hold to the end of the
-    21 degrees C hold, stable meaning dT <= 0.01 (every cycle that did not warm), O3 (a)."""
+    |dT| < 0.01 (the deposited code and the Figure 3A legend); span "steps": only cycles from the
+    first 11 degrees C hold to the end of the 21 degrees C hold, stable meaning dT <= 0.01 (every
+    cycle that did not warm, the Methods' wording), O3 (a); span "recording": the Timings window
+    extended to the first cycle back within 0.3 degrees C of 11 degrees C after it (the cooling,
+    which precedes the solution change, Methods, Temperature protocol) or to the next condition's
+    window, stable meaning dT <= 0.01, O3 (b). smooth_within: smooth only the cycles of the span
+    (a variant; the deposited code smooths the whole recording, across condition boundaries)."""
     c = d["cycles"]
     temp, freq, st = c["temp"], c["freq"], c["start"]
     sm = matlab_smooth if centred else trailing_mean
-    dT = np.diff(sm(temp, 10))
-    dF = np.diff(sm(freq, 30))
     s_idx, e_idx = d["Timings"][cond]
-    m = condition_mask(st, d["fileTimes"], s_idx[0], e_idx[0])[: len(dT)]
+    m = condition_mask(st, d["fileTimes"], s_idx[0], e_idx[0])
     if span == "steps":
         idx = np.nonzero(m)[0]
         tt = temp[idx]
@@ -263,7 +282,27 @@ def jag_measure(d: dict, cond: str, centred: bool = True, span: str = "window", 
         last = hot[-1] if len(hot) else idx[-1]
         m = np.zeros_like(m)
         m[first : last + 1] = True
-        m = m[: len(dT)]
+    elif span == "recording":
+        idx = np.nonzero(m)[0]
+        w_end = d["fileTimes"][min(e_idx[0] + 1, len(d["fileTimes"]) - 1)]
+        nxt = [d["fileTimes"][a[0]] for a, _ in d["Timings"].values() if d["fileTimes"][a[0]] >= w_end]
+        stop = min(nxt) if nxt else np.inf
+        after = np.nonzero((st > w_end) & (st < stop))[0]
+        back = after[np.abs(temp[after] - 11) <= MOE]
+        last = back[0] if len(back) else (after[-1] if len(after) else idx[-1])
+        m = np.zeros_like(m)
+        m[idx[0] : last + 1] = True
+    if smooth_within:
+        idx = np.nonzero(m)[0]
+        dT = np.full(len(temp) - 1, np.nan)
+        dF = np.full(len(temp) - 1, np.nan)
+        dT[idx[:-1]] = np.diff(sm(temp[idx], 10))
+        dF[idx[:-1]] = np.diff(sm(freq[idx], 30))
+    else:
+        dT = np.diff(sm(temp, 10))
+        dF = np.diff(sm(freq, 30))
+    m = m[: len(dT)]
+    if span in ("steps", "recording"):
         stable = m & (dT <= up_thr)
     else:
         stable = m & (dT < up_thr) & (dT > -up_thr)
@@ -273,8 +312,16 @@ def jag_measure(d: dict, cond: str, centred: bool = True, span: str = "window", 
     return dec, inc, int(np.sum(up)), int(np.sum(stable))
 
 
-def hold_means(d: dict, cond: str, which: str = "all", min_freq: float = 1 / 8, strict_cs: bool = False, moe: float = MOE):
+def hold_means(d: dict, cond: str, which: str = "all", min_freq: float = 1 / 8, strict_cs: bool = False, moe: float = MOE,
+               drop_gaps: bool = True):
     """Per-target-temperature means of the per-cycle measures in a condition window.
+
+    strict_cs: a strict bound |T - target| < moe, which the deposited CalculateFrequencyPhaseEtc.m
+    uses for the Cs+ frequency and temperature (its phases, and every saline measure, use <=).
+    drop_gaps: leave out the cycles left by the outlier removal before a removed cycle
+    (extract_bursts), whose phases are divided by the period of a different cycle. This is an
+    assumption: the deposited code keeps them, but leaving them out brings the phases far closer to
+    the deposited SummaryStatistics.mat (checked in the notebook); drop_gaps=False is the variant.
 
     which: "all" = every cycle within 0.3 C of the target in the window (deposited code);
     "first" = for 11 C only the cycles from the first one within 0.3 C of 11 C to the first one
@@ -286,6 +333,8 @@ def hold_means(d: dict, cond: str, which: str = "all", min_freq: float = 1 / 8, 
     for a, b in zip(s_idx, e_idx):
         m |= condition_mask(c["start"], d["fileTimes"], a, b)
     m &= c["freq"] > min_freq
+    if drop_gaps:
+        m &= ~c["gap"]
     idx = np.nonzero(m)[0]
     temp = c["temp"][idx]
     keys = ["freq", "period", "pd_dur", "temp", "PD_OFF", "LP_ON", "LP_OFF", "PY_ON", "PY_OFF", "LP_duty", "LP_lat_on", "PY_lat_on", "LP_lat_off"]
@@ -399,6 +448,20 @@ def paired(x, y):
             "mean_diff": (x - y).mean(), "t": t.statistic, "p_t": t.pvalue, "p_w": w.pvalue, "sw_diff": sw_test(x - y)}
 
 
+def raw_channels(expt: str) -> list:
+    """Channel names (nerve_names) of Raw_Expt_<expt>.mat, without reading the traces."""
+    import h5py
+    import scipy.io as sio
+
+    path = DATA_DIR / f"Raw_Expt_{expt}.mat"
+    try:
+        with h5py.File(path, "r") as h:
+            return ["".join(chr(c) for c in np.ravel(h[r][()])) for r in np.ravel(h["nerve_names"][()])]
+    except OSError:
+        d = sio.loadmat(path, variable_names=["nerve_names"])
+        return [str(np.ravel(x)[0]) for x in np.ravel(d["nerve_names"])]
+
+
 def raw_trace(expt: str, channel: str, t0: float, t1: float, fs: float = 10_000.0):
     """Slice of channel `channel` of Raw_Expt_<expt>.mat between t0 and t1 s (10 kHz, Methods,
     Analysis; sample 0 at t = 0 of the spike times, checked in the notebook). v7.3 files are read
@@ -444,3 +507,14 @@ def step_onset(cyc: dict, mask: np.ndarray, t_from: float, t_to: float):
     while k > idx[hold[0]] and dT[k - 1] > 0.01:
         k -= 1
     return k
+
+
+def trace_spikes(v, fs: float = 10_000.0, height: float = -40.0, prominence: float = 10.0):
+    """Spike times (s from the trace's first sample) on an intracellular trace, for the one
+    example with no deposited spike times (Raw_Expt_981_037.mat): peaks above `height` mV standing
+    `prominence` mV above their surroundings, at least 2 ms apart. A standard choice, checked in
+    the notebook against the trace (spikes reach about -27 mV from a trough near -70 mV)."""
+    from scipy.signal import find_peaks
+
+    pk, _ = find_peaks(np.asarray(v, float), height=height, prominence=prominence, distance=int(0.002 * fs))
+    return pk / fs
