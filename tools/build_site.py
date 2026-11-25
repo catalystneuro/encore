@@ -4497,9 +4497,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                              f'A problem in version {seen} of this dataset changed results; it has not been looked '
                              f'for in the newest version, {e(f.get("newest") or "")}' if f["scope"] == "older" else
                              'A problem in this dataset changes results')
+                    # The dataset's page lists the findings of its current attempts: an attempt a later one
+                    # replaced has no anchor there to link to (senzai-2017-01, 2026-11-25).
+                    see = (f' <a href="{root}{e(page_of(k))}#{e(finding_anchor(x, f))}">See the finding</a>'
+                           if any(c["id"] == x["id"] for c in current.get(k, [])) else "")
                     lines += (f'<tr class="sets-own"><td colspan="{len(cells)}"><span class="tag changes">'
-                              f'{CHANGES_LABEL if f["scope"] == "current" else "Changed results"}</span> {where}. '
-                              f'<a href="{root}{e(page_of(k))}#{e(finding_anchor(x, f))}">See the finding</a></td></tr>')
+                              f'{CHANGES_LABEL if f["scope"] == "current" else "Changed results"}</span> {where}.'
+                              f'{see}</td></tr>')
             # Under the dataset's line, the claims that rest on it alone, when they are only some of the paper's:
             # the others also use outside data, or are on data in another archive. What the dataset's own page counts.
             own = outcome_counts([x for x in mine_ if not x.get("deprecated")]) if mine_ else {}

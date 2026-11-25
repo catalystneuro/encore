@@ -114,6 +114,19 @@ def test_no_internal_link_is_broken(built):
     assert broken_links(out) == []
 
 
+def test_a_replaced_attempts_page_does_not_link_to_findings_the_datasets_page_no_longer_lists(tmp_path):
+    # 2026-11-25: senzai-2017-01 found a problem that changes results; once senzai-2017-02 replaced it, its page
+    # still linked to that finding's anchor on the dataset's page, which lists the findings of current attempts.
+    data = site.collect()
+    latest = {a["id"] for atts in site.current_attempts(data).values() for a in atts}
+    replaced = next(a for a in data["attempts"] if a["id"] not in latest and not a.get("deprecated") and a["findings"])
+    replaced["findings"][0]["changes_results"] = True
+    site.build(data, tmp_path)
+    assert broken_links(tmp_path) == []
+    page = (tmp_path / site.attempt_path(data, replaced) / "index.html").read_text()
+    assert "changed results" in page or "changes results" in page      # the problem is still named there
+
+
 def test_pages_load_nothing_from_other_sites(built):
     _, out = built
     for page in out.rglob("*.html"):
@@ -1879,7 +1892,9 @@ def test_an_outside_run_says_who_ran_it_under_provenance(tmp_path):
     # An outside organization's attempt (encore-protocol docs/outside-runs.md): its paper's page names the
     # organization and says that Encore's verifiers check it here.
     data = site.collect()
-    attempt = next(a for a in data["attempts"] if not a.get("deprecated") and a["kind"] == "agent")
+    # A paper's page describes its latest attempt: the first attempt in the list can be one a later attempt replaced.
+    latest = [a for atts in site.current_attempts(data).values() for a in atts]
+    attempt = next(a for a in latest if not a.get("deprecated") and a["kind"] == "agent")
     attempt.update(accountable="Acme Lab", outside="acme-lab",
                    runner={"platform": "GitHub Actions", "url": "https://github.com/acme-lab/encore-registry/actions/runs/1"})
     site.build(data, tmp_path)
