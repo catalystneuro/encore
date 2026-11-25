@@ -27,6 +27,9 @@ TYPES = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
 # Not part of the site: GitHub Pages' own files.
 SKIP = {"CNAME", ".nojekyll"}
 PREVIEWS = "pr-preview/"
+# Uploads at once. A new preview uploads every file of the site, some 13,000 small ones, and at 16 at once that
+# took six minutes; R2's S3 API sets no limit that this reaches.
+UPLOADS = 64
 
 
 def content_type(path: Path) -> str:
@@ -54,7 +57,8 @@ def client():
     return boto3.client("s3", endpoint_url=f"https://{account}.r2.cloudflarestorage.com",
                         aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
                         aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
-                        region_name="auto", config=Config(retries={"max_attempts": 8, "mode": "adaptive"}))
+                        region_name="auto",
+                        config=Config(retries={"max_attempts": 8, "mode": "adaptive"}, max_pool_connections=UPLOADS))
 
 
 def listing(s3, bucket: str, prefix: str) -> dict[str, str]:
@@ -88,7 +92,7 @@ def main() -> int:
     def put(key: str) -> None:
         s3.put_object(Bucket=bucket, Key=key, Body=files[key].read_bytes(), ContentType=content_type(files[key]))
 
-    with concurrent.futures.ThreadPoolExecutor(16) as ex:
+    with concurrent.futures.ThreadPoolExecutor(UPLOADS) as ex:
         list(ex.map(put, upload))
     for i in range(0, len(delete), 1000):
         s3.delete_objects(Bucket=bucket, Delete={"Objects": [{"Key": k} for k in delete[i:i + 1000]], "Quiet": True})
