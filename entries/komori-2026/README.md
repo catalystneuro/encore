@@ -7,10 +7,10 @@ recordings with somatosensory and visual stimulation are not deposited.
 
 | Claim | Outcome |
 |---|---|
-| A GRU on 0.1 Hz ICs decodes spontaneous pupil dilation above null models | Partially reproduced (one sample reading, one seed) |
+| A GRU on 0.1 Hz ICs decodes spontaneous pupil dilation above null models | Partially reproduced (one reading combination, at one seed of five) |
 | The decoder has lower loss and higher accuracy than null | Not reproduced |
 | Decoding needs a 0.1 Hz filter; 2 Hz does not decode | Not reproduced |
-| 10 ICs and a 1.5 s window give the highest median AUC | Partially reproduced (10 ICs yes, 1.5 s no) |
+| 10 ICs and a 1.5 s window give the highest median AUC | Partially reproduced (10 ICs under one reading, 1.5 s under none) |
 | Maximum VIF 9.0 with 10 ICs; 7 ICs lower, 13 and 15 not different | Not reproduced |
 | SHAP of a medial anterior IC rises before RSP and MOs | Not reproduced |
 | 18 claims on the paper's stimulation recordings | Blocked: data missing |
@@ -20,12 +20,14 @@ reasoning and the differences from the paper's method.
 
 Every tested outcome rests on choices the paper leaves open: which three mice and sessions, which
 ICs (kept "by visual inspection" in the paper), and how samples and labels are formed around each
-dilation peak. The notebooks run the main reading and one change at a time. The pipeline is
+dilation peak, and whether the paper's epoch selection applies to resting data. The notebooks run
+both epoch selections, the other readings one at a time under the first and in combination under
+the second. The pipeline is
 rebuilt from the paper's Methods, as its published code does not cover the resting data.
 
 - `reproduce_komori_2026_decoding.ipynb`: data check and the three decoding claims.
-- `reproduce_komori_2026_features.ipynb`: IC count and window, VIF, SHAP, and the costly
-  every-frame variant of the decoding claim.
+- `reproduce_komori_2026_features.ipynb`: IC count and window, VIF, SHAP, the costly
+  every-frame variant of the decoding claim and three restarts of the ICA.
 - `pupilwf.py`: streaming, hemodynamic correction, SVD and JADE ICA, labels, the GRU and its
   cross-validation.
 

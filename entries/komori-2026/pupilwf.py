@@ -264,10 +264,14 @@ def epochs_of(t):
     return [(int(np.searchsorted(t, s)), int(np.searchsorted(t, s + EPOCH_S))) for s in starts]
 
 
-def jade(X, m):
+def jade(X, m, rotation_seed=None):
     """JADE ICA (Cardoso), a port of jadeR (https://github.com/gbeckers/jadeR) [paper: Methods, ICA].
     X: (n_sensors, T) array. Returns B (m x n_sensors) so that B @ X are the m sources, whitened
-    (unit variance), sorted by decreasing norm of their mixing columns, as jadeR does."""
+    (unit variance), sorted by decreasing norm of their mixing columns, as jadeR does.
+    rotation_seed: None starts the joint diagonalisation from the whitened data, as jadeR does;
+    a seed first rotates the whitened data by a random orthogonal matrix, a restart of the
+    algorithm from another starting point [standard: ICA restarts, to show how far the
+    decomposition depends on where it starts]."""
     X = np.asarray(X, dtype=np.float64)
     n, T = X.shape
     X = X - X.mean(axis=1, keepdims=True)
@@ -278,6 +282,10 @@ def jade(X, m):
     scales = np.sqrt(D[k])
     B = (PCs / scales).T          # m x n
     X = B @ X                     # m x T, whitened
+    if rotation_seed is not None:
+        Qr, _ = np.linalg.qr(np.random.default_rng(rotation_seed).normal(size=(m, m)))
+        X = Qr @ X
+        B = Qr @ B
     # cumulant matrices
     nbcm = m * (m + 1) // 2
     CM = np.zeros((m, m * nbcm))
@@ -342,20 +350,30 @@ def common_mask(sessions):
     return m
 
 
-def decompose(sessions, hemo="fit_hp_subtract_raw", n_svd=N_SVD, n_svd_ica=N_SVD_ICA, n_ica=N_ICA):
+def decompose(sessions, hemo="fit_hp_subtract_raw", n_svd=N_SVD, n_svd_ica=N_SVD_ICA, n_ica=N_ICA,
+              rotation_seed=None):
     """Pixel-wise Z-scored images (per session) -> SVD on every fifth epoch -> JADE ICA.
+    [standard] JADE converges to different solutions when its input differs in the last bits
+    (as it does with the number of linear-algebra threads), so the inputs are rounded to float32
+    and the decomposition runs on one thread; the same data then give the same ICs.
     [paper] Methods, ICA-based cortical features. [assumption] For resting data the unit of
     "every fifth session" is the 40 s epoch (the resting analogue of a 40 s session); pixel
     Z-scoring uses each recording's own mean and SD. The data of a recording are of rank 34 after
     the hemodynamic correction, so the SVD keeps min(400, 34 x recordings) components."""
+    from threadpoolctl import threadpool_limits
+    with threadpool_limits(1):
+        return _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed)
+
+
+def _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed):
     mask = common_mask(sessions)
     Ws, Vc, sel = [], [], []
     g = 0
     for s in sessions:
-        V = s["V"][hemo]
+        V = s["V"][hemo].astype(np.float32).astype(np.float64)
         mu = V.mean(axis=0)
         Vcen = V - mu
-        M = s["maps_atlas"][:, mask].astype(np.float64)       # 34 x P
+        M = s["maps_atlas"][:, mask].astype(np.float32).astype(np.float64)       # 34 x P
         C = (Vcen.T @ Vcen) / len(Vcen)
         sd = np.sqrt(np.einsum("kp,kl,lp->p", M, C, M))
         W = M / sd                                          # 34 x P, z-scored maps
@@ -386,7 +404,7 @@ def decompose(sessions, hemo="fit_hp_subtract_raw", n_svd=N_SVD, n_svd_ica=N_SVD
     temporal = [(V @ W @ Us) / Ss for W, V in zip(Ws, Vc)]
     k2 = min(n_svd_ica, k)
     Xica = np.vstack([tc[idx, :k2] for tc, idx in zip(temporal, sel) if len(idx)])
-    B = jade(Xica.T, n_ica)
+    B = jade(Xica.T, n_ica, rotation_seed)
     ics = [tc[:, :k2] @ B.T for tc in temporal]
     # whiten on the decomposition frames
     allsel = np.vstack([ic[idx] for ic, idx in zip(ics, sel) if len(idx)])
@@ -420,26 +438,33 @@ def compactness(maps, mask):
     return np.array(out)
 
 
-def vif(X):
-    """VIF of each column: 1/(1-R2) of the column regressed (with intercept) on the others
-    [paper: Methods, Permutation importance; code: statsmodels variance_inflation_factor].
-    Computed from the inverse correlation matrix, which gives the same values."""
+def vif(X, centred=False):
+    """VIF of each column, 1/(1-R2) of the column regressed on the others [paper: Methods,
+    Permutation importance]. The paper's code (#05_deep_learning/#07_vif_calc.ipynb, commit
+    405a720, compute_vif_time) calls statsmodels variance_inflation_factor on the features as
+    they are, with no constant column, so the regression has no intercept and R2 is uncentred:
+    VIF_j = (x_j'x_j) [(X'X)^-1]_jj. That is the default here. centred=True gives the VIF with an
+    intercept (inverse correlation matrix), shown as a variant."""
     X = np.asarray(X, dtype=np.float64)
-    C = np.corrcoef(X, rowvar=False)
-    return np.diag(np.linalg.pinv(C))
+    if centred:
+        C = np.corrcoef(X, rowvar=False)
+        return np.diag(np.linalg.pinv(C))
+    G = X.T @ X
+    return np.diag(G) * np.diag(np.linalg.pinv(G))
 
 
-def select_ics(feats, comp, n, reading="kept"):
+def select_ics(feats, comp, n, reading="kept", centred=False):
     """IC selection [claim R6, rest-ic-count-and-window readings (a) and (b)].
     feats: (frames, n_ica) filtered features used for VIF. Candidates are ordered by compactness.
     reading 'initial' (b): the n most compact, then the one with the highest VIF removed until
     the maximum VIF < 10. reading 'kept' (a): as (b), then the next most compact ICs are added
-    one at a time, each kept only if the maximum VIF stays below 10, until n are kept."""
+    one at a time, each kept only if the maximum VIF stays below 10, until n are kept.
+    The VIF is that of the paper's code (uncentred) unless centred=True."""
     order = list(np.argsort(comp)[::-1])
     keep = order[:n]
     removed = []
     while len(keep) > 1:
-        v = vif(feats[:, keep])
+        v = vif(feats[:, keep], centred)
         if v.max() < VIF_MAX:
             break
         removed.append(keep.pop(int(np.argmax(v))))
@@ -449,7 +474,7 @@ def select_ics(feats, comp, n, reading="kept"):
                 break
             if c in removed:
                 continue
-            v = vif(feats[:, keep + [c]])
+            v = vif(feats[:, keep + [c]], centred)
             if v.max() < VIF_MAX:
                 keep.append(c)
     return keep, removed
@@ -490,7 +515,7 @@ def epoch_labels(t, pn, sample_reading="window", selection="none"):
             frames = np.arange(max(a, WINDOW - 1), b)
             y = np.where((frames >= w0) & (frames < w1), lab[frames], 0).astype(np.int8)
         out.append(dict(epoch=e, peak=pk, frames=frames, y=y, keep=ok,
-                        peak_value=float(pn[pk])))
+                        peak_value=float(pn[pk]), edge=bool(pk == a or pk >= b - n_post)))
     return out
 
 
@@ -528,18 +553,7 @@ def gru_fit(Xtr, ytr, Xva, yva, seed, epochs=10, batch=256, smoothing=0.001, thr
     torch.set_num_threads(threads)
     torch.manual_seed(seed)
     g = torch.Generator().manual_seed(seed)
-
-    class Net(torch.nn.Module):
-        def __init__(self, n_in):
-            super().__init__()
-            self.gru = torch.nn.GRU(n_in, 32, batch_first=True)
-            self.fc = torch.nn.Linear(32, 1)
-
-        def forward(self, x):
-            h, _ = self.gru(x)
-            return self.fc(h[:, -1]).squeeze(-1)
-
-    net = Net(Xtr.shape[2])
+    net = make_net(Xtr.shape[2])
     # Keras initialisers: glorot_uniform kernels, orthogonal recurrent kernels, zero biases
     for name, p in net.named_parameters():
         if "weight_ih" in name or name == "fc.weight":
@@ -584,6 +598,50 @@ def gru_fit(Xtr, ytr, Xva, yva, seed, epochs=10, batch=256, smoothing=0.001, thr
             best["state"] = {k: v.clone() for k, v in net.state_dict().items()}
     net.load_state_dict(best.pop("state"))
     return best, net, hist
+
+
+def make_net(n_in):
+    """GRU(32) -> Dense(1); the sigmoid is applied to its output."""
+    import torch
+
+    class Net(torch.nn.Module):
+        def __init__(self, n_in):
+            super().__init__()
+            self.gru = torch.nn.GRU(n_in, 32, batch_first=True)
+            self.fc = torch.nn.Linear(32, 1)
+
+        def forward(self, x):
+            h, _ = self.gru(x)
+            return self.fc(h[:, -1]).squeeze(-1)
+
+    return Net(n_in)
+
+
+def _fit_task(args):
+    """One fit in a worker process; returns the metrics, the history and the weights."""
+    Xtr, ytr, Xva, yva, seed, epochs = args
+    best, net, hist = gru_fit(Xtr, ytr, Xva, yva, seed, epochs=epochs, threads=1)
+    return best, hist, {k: v.numpy() for k, v in net.state_dict().items()}
+
+
+def _net_from(state, n_in):
+    import torch
+    net = make_net(n_in)
+    net.load_state_dict({k: torch.tensor(v) for k, v in state.items()})
+    net.eval()
+    return net
+
+
+_POOL = {}
+
+
+def fit_pool(workers=4):
+    """A pool of worker processes (spawned once, reused by every cross-validation)."""
+    if workers not in _POOL:
+        import multiprocessing as mp
+        from concurrent.futures import ProcessPoolExecutor
+        _POOL[workers] = ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn"))
+    return _POOL[workers]
 
 
 def folds_by_mouse(units_by_mouse, seed, k=5):
@@ -642,7 +700,7 @@ def make_dataset(sessions, ics, ic_idx, cutoff=0.1, sample_reading="window", sel
         for L in labs:
             info.append(dict(rec=r, subject=s["subject"], day=s["day"], epoch=L["epoch"],
                              keep=L["keep"], n_pos=int(L["y"].sum()), n=len(L["y"]),
-                             peak_value=L["peak_value"]))
+                             peak_value=L["peak_value"], peak_frame=L["peak"], edge=L["edge"]))
         kept = [L for L in labs if L["keep"]]
         Xs, ys = build_samples(feats, kept, window)
         for L, xx, yy in zip(kept, Xs, ys):
@@ -666,7 +724,7 @@ def shuffle_within(y, unit, rng):
 
 
 def run_cv(ds, seed, fold_unit="epoch", null_scope="train", k=5, epochs=10, keep_models=False,
-           threads=2):
+           workers=4):
     """Five-fold cross-validation of the model and its null model [paper: Methods, Model
     evaluation; claim R7, R8]. fold_unit 'epoch' (R7 a) or 'recording' (R7 b); null_scope
     'train' (R8 a) or 'both' (R8 b). Model fits use seed + fold; null shuffles use the claim's
@@ -682,25 +740,33 @@ def run_cv(ds, seed, fold_unit="epoch", null_scope="train", k=5, epochs=10, keep
     fold = folds_by_mouse(by_mouse, seed, k)
     fsample = np.array([fold[int(u)] for u in units])
     rng_null = np.random.default_rng(seed + 1)
-    res = []
-    models = []
+    res, tasks, vals = [], [], []
     for f in range(k):
         tr, va = fsample != f, fsample == f
         r = {"fold": f, "n_train": int(tr.sum()), "n_val": int(va.sum()),
              "pos_train": float(ds["y"][tr].mean()), "pos_val": float(ds["y"][va].mean())}
-        best, net, _ = gru_fit(ds["X"][tr], ds["y"][tr], ds["X"][va], ds["y"][va], seed + f,
-                               epochs=epochs, threads=threads)
-        r.update({"model_" + kk: v for kk, v in best.items()})
         ytr_null = shuffle_within(ds["y"][tr], ds["unit"][tr], rng_null)
         yva_null = ds["y"][va]
         if null_scope == "both":
             yva_null = shuffle_within(ds["y"][va], ds["unit"][va], rng_null)
-        bnull, nnet, _ = gru_fit(ds["X"][tr], ytr_null, ds["X"][va], yva_null, seed + 100 + f,
-                                 epochs=epochs, threads=threads)
-        r.update({"null_" + kk: v for kk, v in bnull.items()})
+        r["null_changed"] = float(np.mean(ytr_null != ds["y"][tr]))
+        tasks.append((ds["X"][tr], ds["y"][tr], ds["X"][va], ds["y"][va], seed + f, epochs))
+        tasks.append((ds["X"][tr], ytr_null, ds["X"][va], yva_null, seed + 100 + f, epochs))
         res.append(r)
+        vals.append(np.flatnonzero(va))
+    # [standard] the ten fits run in parallel processes, one thread each; a fit gives the same
+    # result on one thread as on several (checked while preparing), so this changes no number.
+    out = list(fit_pool(workers).map(_fit_task, tasks))
+    models = []
+    n_in = ds["X"].shape[2]
+    for f in range(k):
+        (best, hist, st), (bnull, nhist, nst) = out[2 * f], out[2 * f + 1]
+        res[f].update({"model_" + kk: v for kk, v in best.items()})
+        res[f]["model_hist"] = hist
+        res[f].update({"null_" + kk: v for kk, v in bnull.items()})
+        res[f]["null_hist"] = nhist
         if keep_models:
-            models.append((net, nnet, np.flatnonzero(va)))
+            models.append((_net_from(st, n_in), _net_from(nst, n_in), vals[f]))
     import pandas as pd
     df = pd.DataFrame(res)
     return (df, models) if keep_models else df
@@ -812,3 +878,25 @@ def auc_by_mouse(ds, folds_models):
                                  null_auc=roc_auc_score(y, pn[i])))
     import pandas as pd
     return pd.DataFrame(rows)
+
+
+def hemo_check(s, hemo="fit_hp_subtract_raw"):
+    """Correlation, per atlas ROI, of this attempt's corrected dF/F averaged over the ROI (the
+    34 corrected components projected on the ROI's pixels) with the deposited ROI dF/F
+    (processing/ophys/DfOverF/dFF, the dataset's own hemodynamics-corrected signal), both
+    low-pass filtered at 0.1 Hz. The uncorrected 470 nm dF/F is given as the reference."""
+    M = s["maps_atlas"]
+    out = {}
+    for name, V in (("corrected", s["V"][hemo]), ("uncorrected", s["V"]["uncorrected"])):
+        rs = []
+        for i, n in enumerate(s["roi_names"]):
+            if n.startswith("OB") or i >= s["dff_deposited"].shape[1]:
+                continue
+            m = s["roi_atlas"][i] & np.isfinite(M).all(axis=0)
+            if m.sum() < 5:
+                continue
+            x = V @ M[:, m].mean(axis=1)
+            dep, _ = fill_nan(s["dff_deposited"][:, i])
+            rs.append(np.corrcoef(butter(x, 0.1), butter(dep, 0.1))[0, 1])
+        out[name] = np.array(rs)
+    return out
