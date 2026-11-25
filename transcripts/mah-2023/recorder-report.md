@@ -1,0 +1,87 @@
+# mah-2023, Mah et al. 2023, second attempt
+
+Twenty-four claims reproduced, six partially, two not reproduced and none
+blocked, plus the link claim `pre-cue-session-link`, partially reproduced
+(14 of 16 rats linked). The first verification round agreed with 28 of the
+33 outcomes as they stood, and fig2k, fig2l, fig5b and fig5c moved from
+reproduced to partially reproduced and fig3l to not reproduced; the second
+round agreed with all 33, and nothing was proposed after it, so there was no
+third round. The attempt pins version 0.261120.1450. The paper, Mah,
+Schiereck, Bossio and Constantinople in Nature Communications (14, 7573),
+trains 291 rats in a temporal wagering task with hidden blocks of high, low
+and mixed rewards, and reports that wait times on catch trials follow an
+inference of the block while trial initiation times follow recently received
+rewards. Every claim could be tested, those of Figure 4 on the paper's
+Zenodo deposit (A_Structs_all), since the dandiset holds only included
+sessions. The cohort, the block effects of Figure 1, most of the
+trial-history results of Figure 2, the inferential against retrospective
+model comparison (Fig. 3j), fig4c, fig4d and fig5d reproduce. Not reproduced are fig3f, where
+the fitted inferential model's 20 uL wait times are longer after offers
+below 20 uL (+0.048 z, rank-sum p = 3.7e-05, unchanged from 6 starts), and
+fig3l, where neither reading of the wait time difference between the lambda
+groups holds (C at mixed to low p = 0.337). fig2k, fig2l and fig5c hold only
+under the code's trials, and only through the trials after violations, on
+which the task repeats the offer; fig3i is partial because the alternative
+models show overshoots of 0.0002 to 0.0058 z, fig4a because the first
+session pair's mean wait time ratio (1.187) is not closer to 1 than over
+pairs 16-25 (0.936), and fig5b because the Methods' 30-session reading
+rises from 5 to 10 uL. The model fits use the attempt's own bounds and 2
+random starts against the paper's 100, so fig3j, suppfig8, fig3f and fig3l
+rest on assumptions, and suppfig8 is seed sensitive (BIC and AIC p = 0.0305
+under seed +3000, 0.0507 from 6 starts). The reconciliation with
+`mah-2023-01` found the attempt blind and traces the changed outcomes to an
+error in the earlier attempt for fig2k and fig2l (session-first trials given
+the previous session's last offer) and for the Figure 4 claims (blocked
+without reading the Zenodo deposit), and to readings for fig3j and suppfig8
+(fewer fit starts) and fig5b (where the 99th percentile cut is taken). The
+behaviour notebook ran in 822 s and the models notebook in 2,766 s, with
+peak memory 9.7 GB; a development run was killed for memory in the Figure 4
+cells and Zenodo rate-limited the author twice. In the last revision the
+behaviour notebook failed when Zenodo returned a 504 and was re-executed
+alone; the reconciliation's full run passed all four notebooks.
+
+The dataset was converted by CatalystNeuro (catalystneuro/constantinople-lab-to-nwb).
+It holds only the sessions that pass the paper's inclusion criterion, and
+nothing in it says so: the trial counter trials_in_stage jumps between
+consecutive deposited sessions in 2,586 of 22,742 pairs (284 rats), the
+first deposited session of a rat starts at a median of 1,543 final-stage
+trials, and the Zenodo deposit holds a median of 95 final-stage sessions per
+rat against 71 here, so Figure 4 and the pre-cue analyses cannot be run on
+the dandiset alone. That deposit stops earlier than the dandiset for 49
+rats, with 1,718 dandiset sessions dated after the rat's last session in it.
+The pre-cue sessions of Figure 5 are marked only by the undescribed task
+argument center_port_cue, True in 762 sessions, all of the 16 rats
+Figure5.m names. wait_time_threshold includes 16,086 timed-out catch trials
+at 100 s; over opt-out catch trials alone it would be lower in all 291 rats,
+by a median of 5.19 s. Catch probability 0.3 occurs in 180,591 trials of 8
+rats, a cohort the paper does not list, and two block transitions go
+directly between high and low blocks. No file gives a subject age: 275 rats
+have a date of birth and the 1,181 files of the other 16 give only P6M/P24M.
+The counts match the paper exactly (291 rats, 184 male and 107 female, a
+median of 33,493 trials and 71 sessions per rat). Of the earlier attempt's
+findings on the data, the duplicated L011 session, the missing catch
+probability and the undescribed is_catch flags are fixed in this version.
+In the paper, the Methods use 20 uL trials for Fig. 2k, 2l and 5c while
+latency_post20ul_by_previous_vol.m uses all mixed block trials, and without
+the post-violation trials the population initiates faster after small
+offers; Fig. 2f is reported as r = 0.08, p = 0.18 in the Results and
+r = -0.03, p = 0.53 in the legend; the model fitting code is not public;
+the Fig. 3c cohort sizes sum to 437 for 291 rats; Equation 6 uses H0 where
+GenerateSynthData_Bayes.m uses H0/2; Figure5.m pairs 16 rats with 20 dates
+and has no 30-session offset; and myTauShuffleTest.m scales the shuffled
+coefficients by 10 under an amplitude bound of 1. Questions on these are put
+to the paper's authors.
+
+The author's points on the protocol: the claims have no per-outcome `data`
+field to mark Figure 4 as using data from elsewhere, so Zenodo was listed
+under `inputs`; files were fetched whole instead of read with `remfile`;
+Zenodo's rate limit was met with a few large range requests; the 60-minute
+limit forced two notebooks, five seeds of model fits and a single-start
+lambda fit; the fig3i criterion gives no size for an overshoot; the
+`pre-cue-session-link` claim carries text from an earlier attempt, used as
+the claims file has it; and the models notebook's `runtime_minutes` was
+left at 35 against a run of 46, since editing it would invalidate the run.
+
+---
+
+Most of the paper's main findings held up in this data, and every claim could be tested: wait and trial initiation times both track the hidden reward blocks, initiation times follow recent rewards while wait times do not, and an inferential model fits wait times better than a retrospective one. Slower initiation after small offers held only on trials after violations, where the task repeats the offer; on the trials the Methods name, it reverses. Two model results did not reproduce, the inferential model's insensitivity to the previous offer and wait time differences between rats with good and poor inference, on refits made without the unpublished fitting code. Training effects, tested on the authors' Zenodo deposit, mostly held.
