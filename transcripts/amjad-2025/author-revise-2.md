@@ -1,745 +1,727 @@
-# 002013 · author-revise-2 · run 38780605279
+# amjad-2025 · author-revise-2 · run 45515648481
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat transcripts/002013/verifier-2-report.md; ls entries/002013-amjad-2025 entries/002013-amjad-2025/*; sed -n '/[Ss]tep 6/,/^## /p' docs/protocol.md
+date -u; ls; ls entries/amjad-2025 transcripts/amjad-2025 questions 2>/dev/null | head -50; cat transcripts/amjad-2025/verifier-2-report.md
 ```
 
 ```
-**1. Outcomes**
-
-The claims file has 14 claims, and the attempt record has 14 outcomes with the same ids. I agree with all 14.
-
-| Claim | Record | Agree | Basis |
-|---|---|---|---|
-| insertion-yield | blocked (data_missing) | yes | No sensor or implant log (cell 3) |
-| chronic-duration | blocked (metadata_insufficient) | yes | No implant date; the sessions are 13 days apart, matching 496 − 483 (cell 3) |
-| fscv-waveform | partially_reproduced | yes | −0.347 V is outside −0.4 ± 0.04; the other three values pass. The conversion is 1 and the offset 0 (cells 11, 22) |
-| ephys-acquisition | reproduced | yes | 30000, 32000, 0.1 and 8000 Hz, all within tolerance (cell 25) |
-| shape-task-structure | reproduced | yes | 24.4% forced trials; complete blocks are 71 to 273 trials (cell 28) |
-| zenodo-link | reproduced | yes | The lists agree on at least 99.82% of trials; r = 0.943 at 6 ms (cell 31) |
-| fig3a-dual-channel | blocked (data_missing) | yes | No c8ds. The c8dg half is above zero in 56/85 trials (cell 37) |
-| fig3a-redox-peaks | blocked (metadata_insufficient) | yes | No offset puts the raw current on the trial clock (cell 13) |
-| fig3b-beta-bursts | reproduced | yes | p = 9.5e-10 at the 75th percentile (cell 34). The conclusion now says this is not separate evidence from fig4b |
-| fig4a-dopamine-reward | reproduced (weak) | yes | p = 0.023, and p = 0.022 with the −1 to 0 s baseline (cell 37) |
-| fig4b-beta-reward | reproduced | yes | p = 1e-08, with no pre-cue difference (cell 40) |
-| fig4c-beta-side | reproduced | yes | p = 1.6e-06 (cell 43) |
-| fig5a-spike-reward | blocked (data_missing) | yes | The Zenodo TTL codes cannot be decoded: code 128 is absent and code 23 occurs only 20 times (cell 19) |
-| fig5bc-unit-isolation | reproduced | yes | 0.003% of ISIs under 1 ms; trough/noise is 5.66 (cell 46) |
-[... 222 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls attempts | grep 002013; cat attempts/002013-amjad-2025-01.yaml; ls executed/002013-amjad-2025/ 2>/dev/null
-```
-
-```
-Exit code 2
-002013-amjad-2025-01.yaml
-schema_version: 1
-id: 002013-amjad-2025-01
-dandiset: "002013"
-dandiset_version: 0.261012.0921
-paper: doi:10.1021/acschemneuro.5c00071
-date: 2026-10-15
-entry: 002013-amjad-2025
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-7
-inputs:
-- what: The paper's Zenodo data deposit, read only by the zenodo-link claim. The four lists of
-    successful trial numbers of session 09/26/2024 (files "09262024_trialids_value object start_big
+Wed Nov 25 00:15:00 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+entries
+executed
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
 [... 153 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n '/^findings/,/^verifications/p' attempts/002013-amjad-2025-01.yaml; grep -n "round\|reviewed\|verifier:" attempts/002013-amjad-2025-01.yaml | head -30; ls executed/
+sed -n '/Hand over for verification/,/^## /p' docs/protocol.md | head -150; ls attempts | grep amjad;
 ```
 
 ```
-Exit code 2
-findings:
-- kind: format_error
-  statement: Each event is stored about five times in the events tables of both Monkey T sessions
-    (85665 stored times, 17686 distinct, in 09/13/2024; 59702 and 12434 in 09/26/2024), once for every
-    overlapping 60 s trial window that contains it.
-- kind: metadata_insufficient
-  statement: The trials tables hold only times, no trial conditions. Conditions must be decoded from
-    the event codes. Session 09/13/2024 has no small-reward code, and the labels of codes 35 and 36
-    ("right cue reward condition 1/2") do not say that they code large and small reward, which the
-    data show in all 303 successful forced trials.
-- kind: data_missing
-  statement: The trial-aligned FSCV table of session 09/13/2024 has rows for only the first 734 of
-    its 1468 trials (from a source file named "firsthalf"), and the dandiset has FSCV from c8dg only;
-    the second site of Figure 3A (c8ds) is missing.
-- kind: metadata_insufficient
-  statement: The trial-aligned FSCV columns (da, ph, m, iox) carry no units, and da is not referenced
-    at the value cue as the Methods describe; the reference point is not stated.
-- kind: metadata_error
-  statement: The raw FSCV current is labelled amperes, but its values range from -1527 to 1557; the
-[... 44 more lines not kept]
+verification round, with its `reason` (see "Hand over for verification").
+- **`inputs`**: everything used that is not in the dataset, each with where
+  it came from (a DOI, or a repository at a commit).
+- **`findings`**: what the attempt found, whatever the outcomes. Each is
+  about one of two things, and is shown where it belongs:
+  - **the data** (`about: data`): the dataset's files or metadata. Something
+    is wrong, missing, undocumented or mislabelled, or differs from what the
+    paper says the files hold. These are for the data owner and the archive,
+    on the dataset's page. A mismatch between the files and the paper is about
+    the data: it is what a user of the dataset needs to know.
+  - **the paper** (`about: paper`): the paper, its methods or its published
+    code, with nothing wrong in the files. These are on the paper's page.
+
+  The kinds are `metadata_error`, `data_missing`, `identifier_missing`,
+  `format_error` (files that break their own format, such as unsorted spike
+  times) and `metadata_insufficient` (a variable without a description or a
+  needed mapping), which are about the data; `methods_unavailable`,
+  `code_mismatch` (published code that disagrees with the paper or the data)
+  and `paper_inconsistency` (the paper disagrees with itself), which are
+  about the paper; and `selection_undocumented` and `other`, which can be
+[... 82 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 270,290p attempts/002013-amjad-2025-01.yaml; grep -n "^  - round\|^- round\|round:" attempts/002013-amjad-2025-01.yaml; git log --stat -3 | head -40
+cat attempts/amjad-2025-02.yaml 2>/dev/null || ls attempts/amjad*
 ```
 
 ```
-the paper's Methods give -0.4 to 1.3 V.
-verifications:
-- date: '2026-10-15'
+schema_version: 3
+id: amjad-2025-02
+datasets:
+- archive: dandi
+  id: '002013'
+  version: 0.261120.1306
+  doi: 10.48324/dandi.002013/0.261120.1306
+  relation: primary
+paper: doi:10.1021/acschemneuro.5c00071
+date: '2026-11-24'
+entry: amjad-2025
+provenance:
   kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
-    module and the claims file, with the paper's full text (PMC12183687). The verifier read the
-    archive's file list and metadata through the DANDI API and tested the helpers on synthetic inputs
-    (beta_power, burst_onsets, window_mean, codes_per_trial, rereference, fscv_window_mean, best_lag,
-    reward_blocks). It had no attempt record and took the claims from the claims file.
-  results:
-  - claim: insertion-yield
-    agrees: true
-    outcome: blocked
-    reason: The archive has 3 assets with sites c8dg, c3bs, c3a and cl3, and nothing about implanted
-      or failed sensors. Figure 3 names 4 functional Monkey T sites against the paper's "3/14", so
-      "sensor" may mean probe. Neither count can be checked; an implant log of sensors per monkey is
-      not in the archive.
-    response: No change.
-  - claim: chronic-duration
-[... 39 more lines not kept]
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-18
+  runner:
+[... 378 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025; python -c "
+cd entries/amjad-2025; cat README.md; wc -l amjad.py; python -c "
 import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
 for i,c in enumerate(nb['cells']):
-  if i in (3,13,14,19,20,25,26,35,41,48): print('=====',i,c['cell_type'],c['metadata'].get('tags'));print(''.join(c['source']))
+    print(i,c['cell_type'],c.get('metadata',{}).get('tags'), ''.join(c['source'])[:100].replace('\n',' | '))
 "
 ```
 
 ```
-===== 3 code ['sanity']
-rows = []
-for key, f in files.items():
-    el = f["general/extracellular_ephys/electrodes"]
-    rows.append({"file": mp.PATHS[key], "subject": mp.text(f, "general/subject/subject_id"),
-                 "sex": mp.text(f, "general/subject/sex"), "age": mp.text(f, "general/subject/age"),
-                 "session_start": mp.text(f, "session_start_time")[:19],
-                 "sites": ", ".join(x.decode() for x in el["location"][:]),
-                 "related_publication": ", ".join(x.decode() for x in f["general/related_publications"][:]),
-                 "trials": f["intervals/trials/id"].shape[0] if "intervals/trials" in f else 0,
-                 "events": "processing/events" in f})
-info = pd.DataFrame(rows)
-print(info.to_string(index=False))
-print("\nContents per file:")
-for key, f in files.items():
-    print(f"  {key}: acquisition {sorted(f['acquisition'])}, processing "
-          f"{ {m: sorted(f['processing'][m]) for m in f['processing']} }, stimulus {sorted(f['stimulus/presentation'])}, "
-          f"units {'units' in f}")
-print("\nDandiset relatedResource:")
-for r in meta["relatedResource"]:
-[... 178 more lines not kept]
+# Amjad et al. (2025) on DANDI:002013
+
+Tests the claims in `claims/amjad-2025.yaml` on version 0.261120.1306 of
+[DANDI:002013](https://dandiarchive.org/dandiset/002013/0.261120.1306), streaming the three NWB
+files. `reproduce_amjad_2025.ipynb` holds the analysis; `amjad.py` holds the loading and the
+measures, each parameter with its source. The claim `zenodo-link` also reads the paper's Zenodo
+deposit (doi:10.5281/zenodo.14826579).
+
+Of 14 claims, 8 are reproduced, 1 partially reproduced (fscv-waveform), 1 not reproduced
+(fig3a-redox-peaks) and 4 blocked (the second dopamine channel, the implantation dates and list of
+implanted sensors, and a code map for Monkey P's events are not in the dataset).
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
+and the differences from the paper's method.
+
+Run with `python tools/entry.py all entries/amjad-2025`; it takes about 2 to 4 minutes and 4.4 GB of
+memory.
+260 amjad.py
+0 markdown None # Reproducing Amjad et al. (2025) from DANDI:002013 |  | **Paper.** Amjad U, Mahajan S, Choi J, Shrivast
+1 code None import re, time, resource | import h5py | import numpy as np | import pandas as pd | import requests | import 
+[... 61 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n "zenodo\|ZENODO\|^def \|requests\|record" microprobes.py | head -60; python -c "
-import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-  if i in (0,1,2,34): print('=====',i,c['cell_type'],c['metadata'].get('tags'));print(''.join(c['source']))
+cd  ls executed/amjad-2025; python -c "
+import json;nb=json.load(open('executed/amjad-2025/reproduce_amjad_2025.ipynb'))
+for i in [3,4,16,19,24,25,27,52,53,55,56,57,62]:
+    c=nb['cells'][i]
+    print('=====',i); print(''.join(c['source']))
+    for o in c.get('outputs',[]):
+        print('--- OUT'); print(''.join(o.get('text',''))[:4000])
 "
 ```
 
 ```
-33:- Spike sorting conventions: the paper's spikes_PCA.m (Zenodo doi:10.5281/zenodo.10397773) takes
-36:  Neuralynx events file on Zenodo (doi:10.5281/zenodo.14826579, session126_events.mat), read by
-37:  `zenodo_events`.
-83:ZENODO_DATA = "https://zenodo.org/api/records/14826579/files/{}/content"
-86:def asset_url(key: str) -> str:
-92:def dandiset_metadata() -> dict:
-97:def open_file(key: str) -> h5py.File:
-101:def text(f: h5py.File, path: str) -> str:
-108:def load_events(f: h5py.File) -> tuple[dict, pd.DataFrame]:
-123:def trial_starts(f: h5py.File) -> np.ndarray:
-127:def codes_per_trial(events: dict, starts: np.ndarray) -> pd.DataFrame:
-150:def direction_task_trials(f: h5py.File) -> pd.DataFrame:
-161:def shape_task_trials(f: h5py.File) -> pd.DataFrame:
-176:def reward_blocks(trials: pd.DataFrame) -> pd.DataFrame:
-192:def fscv_table(f: h5py.File) -> dict:
-204:def rereference(series: np.ndarray, rows: np.ndarray, at_s: np.ndarray) -> np.ndarray:
-211:def fscv_window_mean(x: np.ndarray, cue_s: np.ndarray, a: float, b: float) -> np.ndarray:
-221:def fscv_aligned(x: np.ndarray, cue_s: np.ndarray, pre_s: float, post_s: float) -> tuple[np.ndarray, np.ndarray]:
-231:def raw_fscv(f: h5py.File) -> dict:
-250:def load_lfp(f: h5py.File) -> tuple[np.ndarray, np.ndarray, float]:
-[... 126 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 75,110p microprobes.py; sed -n 378,400p microprobes.py; python -c "
-import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-  s=''.join(c['source'])
-  if 'description' in s or 'notes' in s: print(i, [l for l in s.split('\n') if 'description' in l or 'notes' in l])
-"
-```
-
-```
-LFP_RATE = 1000.0
-BETA_BAND = (13.0, 28.0)        # Methods
-BETA_ORDER = 4                  # common choice
-BETA_SMOOTH_S = 0.25            # Methods, Hanning window
-BURST_PERCENTILE = 75.0         # common choice
-BURST_MIN_S = 0.05              # one cycle at 20 Hz
-SPIKE_BAND = (300.0, 6000.0)    # common choice for the noise estimate
-
-ZENODO_DATA = "https://zenodo.org/api/records/14826579/files/{}/content"
-
-
-def asset_url(key: str) -> str:
-    with DandiAPIClient() as client:
-        asset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION).get_asset_by_path(PATHS[key])
-        return asset.get_content_url(follow_redirects=1, strip_query=True)
-
-
-def dandiset_metadata() -> dict:
-    with DandiAPIClient() as client:
-        return client.get_dandiset(DANDISET_ID, DANDISET_VERSION).get_raw_metadata()
-[... 39 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025 2>/dev/null; ls; python - <<'EOF'
-import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
-for i in (9,10,11,12): print('=====',i);print(''.join(nb['cells'][i]['source']))
-EOF
-```
-
-```
-README.md
-entry.yaml
-microprobes.py
 reproduce_amjad_2025.ipynb
-requirements.in
-requirements.lock.txt
-===== 9
-fs = mp.fscv_table(files["T-0913"])
-tab = files["T-0913"]["processing/fscv/trial_aligned_fscv_table"]
-print("trial-aligned FSCV rows:", len(fs["trial"]), "; trial numbers", fs["trial"].min(), "to", fs["trial"].max(),
-      "; contiguous:", bool(np.all(np.diff(fs["trial"]) == 1)), "; good:", int(fs["good"].sum()),
-      "; rate:", np.unique(fs["rate"]), "; samples per row:", fs["da"].shape[1])
-for name in ("da", "ph", "m", "iox"):
-    x = fs[name]
-    print(f"  {name}: range {np.nanmin(x):.3g} to {np.nanmax(x):.3g}, NaN fraction {np.isnan(x).mean():.3f}; "
-          f"description: {tab[name].attrs['description']!r}; unit attribute: {tab[name].attrs.get('unit', 'none')}")
-rows13 = fs["trial"] - 1
-cue13 = (s13.value_cue.values - s13.start.values)[rows13]
-sel = s13.success.values[rows13]
-at_cue = fs["da"][rows13[sel] - rows13[0], np.round(300 + cue13[sel] * 10).astype(int)]
-[... 35 more lines not kept]
-```
+result.json
+===== 3
+listing = {}
+for v in ["0.261012.0921", A.DANDISET_VERSION]:
+    r = requests.get(f"{A.API}/dandisets/{A.DANDISET_ID}/versions/{v}/assets/", params={"page_size": 100}).json()
+    listing[v] = {a["path"]: a["size"] for a in r["results"]}
+print(pd.DataFrame(listing).to_string())
+meta = requests.get(f"{A.API}/dandisets/{A.DANDISET_ID}/versions/{A.DANDISET_VERSION}/").json()
+print("\nsubjects in the metadata:", meta["assetsSummary"]["numberOfSubjects"], " files:", meta["assetsSummary"]["numberOfFiles"])
+print("\ndescription:", meta["description"])
+notes = meta.get("releaseNotes", "")
+print("\nrelease notes of this version, section 'Known gaps':")
+print(notes[notes.find("**Known gaps**"):])
+--- OUT
+                                                    0.261012.0921  0.261120.1306
+sub-Monkey-T/sub-Monkey-T_ses-09132024_ecephys.nwb      635366923      870350366
+sub-Monkey-T/sub-Monkey-T_ses-09262024_ecephys.nwb     2677518722     2681648047
+sub-Monkey-P/sub-Monkey-P_ses-08132018_ecephys.nwb     1376700802     2040584384
 
-**Agent**
-
-Let me explore what the files and Zenodo deposit actually hold, to decide which outputs to add.
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025; timeout 600 python - <<'EOF'
-import microprobes as mp, json, urllib.request, re
-meta=mp.dandiset_metadata()
-d=meta["description"]
-for m in re.finditer("7500|7.5 kHz|8000|implant|c8ds|channel", d): print(m.group(), '|', d[max(0,m.start()-100):m.end()+60].replace('\n',' '))
-print([k for k in meta])
-for key in mp.PATHS:
-    f=mp.open_file(key)
-    print("=== ",key)
-    print(list(f["general"].keys()))
-    if "subject" in f["general"]: print({k: mp.text(f,"general/subject/"+k) for k in f["general/subject"] if hasattr(f["general/subject"][k],'shape')})
-    print("devices", {k: dict(f["general/devices"][k].attrs) for k in f["general/devices"]})
-    el=f["general/extracellular_ephys/electrodes"]; print("electrode cols", list(el.keys()))
-    if "notes" in f["general"]:
-        n=mp.text(f,"general/notes"); print(len(n)); 
-        for m in re.finditer("(?i)filter|cut|Hz|c8ds|channel|implant", n): print('  ',m.group(),'|', n[max(0,m.start()-120):m.end()+80].replace('\n',' '))
-r=json.load(urllib.request.urlopen("https://zenodo.org/api/records/14826579"))
-print([x["key"] for x in r["files"]])
-EOF
-```
-
-```
-Exit code 1
-/bin/bash: line 19: cd: entries/002013-amjad-2025: No such file or directory
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "entries/002013-amjad-2025/microprobes.py", line 49, in <module>
-    import h5py
-ModuleNotFoundError: No module named 'h5py'
+[... 305 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 1,60p tools/entry.py | grep -n "venv\|env" ; ls -a; ls .venv* envs 2>/dev/null | head
+cd  ls schemas tools; grep -n "verifications" -A80 schemas/attempt*.json | grep -n -i -E "findings|severity|agrees|reason|response|proposed|round|required" | head -60
 ```
 
 ```
-3:    python tools/entry.py lock  entries/<name>   # pin the environment
-5:    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-24:`run` builds a fresh virtual environment from the lock file and executes each
-25:notebook through a Jupyter kernel installed in that environment, in the entry
-.
-..
-.bash_profile
-.bashrc
-.claude
-.env
-.env.development
-.env.development.local
-.env.local
-.env.production
-.env.production.local
-.env.test
-.env.test.local
-.git
-.gitconfig
-.github
-[... 30 more lines not kept]
-```
+schemas:
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+paper-match.schema.json
 
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python -m venv ev && ev/bin/pip install -q -r entries/002013-amjad-2025/requirements.lock.txt 2>&1 | tail -3; echo $TMPDIR
-```
-
-```
-/tmp/claude-1001
-Shell cwd was reset to
+tools:
+__pycache__
+agent_run.py
+archive_transcripts.sh
+archives
+author_notes.py
+authors.py
+backfill_summaries.py
+blind.sh
+build_dryad_targets.py
+build_figshare_targets.py
+build_openneuro_targets.py
+build_osf_targets.py
+build_reuse_targets.py
+[... 45 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025; timeout 900 $TMPDIR/ev/bin/python - <<'EOF'
-import microprobes as mp, json, urllib.request, re
-meta=mp.dandiset_metadata()
-d=meta["description"]
-for m in re.finditer("7500|7.5 kHz|8000|implant|c8ds|channel", d): print(m.group(), '|', d[max(0,m.start()-100):m.end()+60].replace('\n',' '))
-print([k for k in meta])
-for key in mp.PATHS:
-    f=mp.open_file(key)
-    print("=== ",key)
-    print(list(f["general"].keys()))
-    if "subject" in f["general"]: print({k: mp.text(f,"general/subject/"+k) for k in f["general/subject"] if hasattr(f["general/subject"][k],'shape')})
-    print("devices", {k: dict(f["general/devices"][k].attrs) for k in f["general/devices"]})
-    el=f["general/extracellular_ephys/electrodes"]; print("electrode cols", list(el.keys()))
-    if "notes" in f["general"]:
-        n=mp.text(f,"general/notes"); print(len(n)); 
-        for m in re.finditer("(?i)filter|cut|Hz|c8ds|channel|implant", n): print('  ',m.group(),'|', n[max(0,m.start()-120):m.end()+80].replace('\n',' '))
-r=json.load(urllib.request.urlopen("https://zenodo.org/api/records/14826579"))
-print([x["key"] for x in r["files"]])
-EOF
+cd  sed -n 395,520p schemas/attempt.schema.json; grep -n '"proposed"' -A40 schemas/attempt.schema.json | head -50
 ```
 
 ```
-7500 | adstage (HS-36, ±1 mV input range) at 30 kHz (Monkey P) or 32 kHz (Monkey T), bandpass filtered 0.1–7500 Hz. FSCV was performed with a triangular waveform (−0.35 to
-['id', 'doi', 'url', 'name', 'about', 'access', 'license', 'version', '@context', 'citation', 'keywords', 'protocol', 'schemaKey', 'identifier', 'repository', 'contributor', 'dateCreated', 'description', 'publishedBy', 'assetsSummary', 'datePublished', 'schemaVersion', 'ethicsApproval', 'wasGeneratedBy', 'relatedResource', 'manifestLocation']
-===  T-0913
-['devices', 'experiment_description', 'experimenter', 'extracellular_ephys', 'institution', 'keywords', 'lab', 'protocol', 'related_publications', 'session_id', 'source_script', 'subject']
-{'age': 'P11Y', 'description': 'Two adult female rhesus monkeys were used for in vivo validation of the s-µIP device, with chronic implants targeting the striatum for simultaneous FSCV and EPhys recordings during behavioral tasks.', 'sex': 'F', 'species': 'Macaca mulatta', 'subject_id': 'Monkey T'}
-devices {'device_ecephys': {'description': 'Neuralynx recording', 'namespace': 'core', 'neurodata_type': 'Device', 'object_id': 'b32a27bf-62ad-49e4-aa91-707478dc84e0'}}
-electrode cols ['group', 'group_name', 'id', 'location']
-===  T-0926
-['devices', 'experiment_description', 'experimenter', 'extracellular_ephys', 'institution', 'keywords', 'lab', 'notes', 'protocol', 'related_publications', 'session_id', 'source_script', 'subject']
-{'age': 'P11Y', 'description': 'Two adult female rhesus monkeys were used for in vivo validation of the s-µIP device, with chronic implants targeting the striatum for simultaneous FSCV and EPhys recordings during behavioral tasks.', 'sex': 'F', 'species': 'Macaca mulatta', 'subject_id': 'Monkey T'}
-devices {'device_ecephys': {'description': 'Neuralynx recording', 'namespace': 'core', 'neurodata_type': 'Device', 'object_id': 'd829e8db-0e22-4beb-9533-39a24a47b885'}}
-electrode cols ['ADMaxValue', 'DSPHighCutFilterEnabled', 'DSPLowCutFilterEnab
-[... 13 more lines not kept]
+}
+          }
+        ]
+      }
+    },
+    "verifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "kind",
+          "by",
+          "results"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+[... 147 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n -A12 "claim: fig3a-dual-channel" attempts/002013-amjad-2025-01.yaml | head -20; grep -n "suppression is deeper\|deeper\|any offset\|0.1 to 0.2\|0.34 per\|below 1 s\|has none either\|ten channels\|device fields" attempts/002013-amjad-2025-01.yaml entries/002013-amjad-2025/README.md entries/002013-amjad-2025/reproduce_amjad_2025.ipynb
+cd  grep -n -i "critical\|\"findings\"\|\['findings'\]" tools/entry.py | head -30; grep -n "def cmd_\|def main\|subparsers\|add_parser" tools/entry.py | head -30
 ```
 
 ```
-98:- claim: fig3a-dual-channel
-99-  outcome: blocked
-100-  blocked_by: data_missing
-101-  notes: The dandiset holds FSCV from site c8dg only. Site c8ds is not in it, and the Zenodo deposit
-102-    holds processed FSCV of c8dg only. The conversion notes list raw FSCV files with ten channels,
-103-    including c8ds, which were not deposited. The c8dg half can be tested and holds; the mean of the
-104-    re-referenced dopamine over 0 to 3 s is above zero in 56 of 85 large-reward forced trials
-105-    (65.9%), and in 58 of 85 with a baseline of the mean over -1 to 0 s.
-106-- claim: fig3a-redox-peaks
-107-  outcome: blocked
-108-  blocked_by: metadata_insufficient
-109-  notes: The raw FSCV current is in the dandiset, but its timing could not be linked to the trials.
-110-    Its scan times are an exact 0.1 s grid starting at the first trial start and running 24120 s,
---
-331:  - claim: fig3a-dual-channel
-332-    agrees: true
-333-    outcome: blocked
-334-    reason: The archive has no c8ds. The c8dg half can be tested and passes (large-reward median of
-335-      re-referenced da over 0 to 3 s +1.28, n 85), but the fraction of trials with a positive change
-336-      is only inferred from the median, not printed.
-[... 10 more lines not kept]
+288:                n_then, n_now = len(earlier.get("findings") or []), len(attempt.get("findings") or [])
+289:                numbers = [f.get("finding") for f in rec.get("findings") or []]
+293:                for f in rec.get("findings") or []:
+306:            kinds = {f.get("kind") for f in attempt.get("findings") or []}
+352:        for n, f in enumerate(attempt.get("findings") or [], 1):
+363:                report.error(where, f"finding {n}: it is about the data; give its `severity` (critical, major, minor "
+371:        for item in (attempt.get("findings_review") or {}).get("findings") or []:
+372:            number, its = item["finding"], attempt.get("findings") or []
+381:            for item in rnd.get("findings") or []:
+382:                if item["finding"] > len(attempt.get("findings") or []):
+695:def main() -> int:
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 270,300p tools/entry.py; sed -n 375,395p tools/entry.py
+```
+
+```
+attempt = load(report, path)
+        if not isinstance(attempt, dict) or attempt.get("entry") != entry["name"]:
+            continue
+        validate(report, path, "attempt")
+        where = path.relative_to(ROOT)
+        # The entry streams the versions of its latest attempt; earlier attempts keep the versions they used.
+        for used in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else []):
+            pinned = versions.get(str(used.get("id")))
+            version = used.get("version")
+            if pinned and path == mine[-1] and version != pinned:
+                report.error(where, f"dataset {used.get('id')} version {version!r} differs from {pinned!r} in entry.yaml")
+        # A repeat attempt's reconciliation points into the earlier record's findings and its own by number.
+        rec = attempt.get("reconciliation")
+        if isinstance(rec, dict):
+            earlier = load(Report(), ROOT / "attempts" / f"{rec.get('earlier')}.yaml")
+            if not isinstance(earlier, dict):
+                report.error(where, f"reconciliation: no attempt record {rec.get('earlier')!r}")
+            else:
+                n_then, n_now = len(earlier.get("findings") or []), len(attempt.get("findings") or [])
+                numbers = [f.get("finding") for f in rec.get("findings") or []]
+[... 32 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
 cd  python -c "
-import json;nb=json.load(open('entries/002013-amjad-2025/reproduce_amjad_2025.ipynb'))
-print(''.join(nb['cells'][44]['source']))"; cat entries/002013-amjad-2025/README.md; grep -n -B2 -A14 "claim: fig4b-beta-reward$" attempts/002013-amjad-2025-01.yaml | head -40
+import json;nb=json.load(open('executed/amjad-2025/reproduce_amjad_2025.ipynb'))
+for i in [26]:
+    c=nb['cells'][i]
+    print('=====',i); print(''.join(c['source']))
+    for o in c.get('outputs',[]):
+        print('--- OUT'); print(''.join(o.get('text',''))[:3000])
+"; curl -s https://api.dandiarchive.org/api/dandisets/002013/versions/0.261120.1306/ | python -c "import json,sys; print(json.load(sys.stdin)['releaseNotes'])"
 ```
 
-```
-**Result: reproduced.** Among large-reward trials, the median beta power over 0 to 0.5 s after the value cue is 245 µV² for left (contralateral) cues and 301 µV² for right cues (282 and 288 trials, ratio 0.81, Mann-Whitney p = 1.6e-06). Before the cue, left is slightly higher (ratio 1.095, p = 0.013), so relative to the pre-cue power the difference is larger (ratio 0.71, p = 2.1e-09). Over 0 to 1 s the difference holds (p = 0.019); over 0.25 to 0.75 s it does not (p = 0.75). Small-reward trials show the same side difference (p = 1.5e-10). On the unsmoothed envelope left is lower over 0 to 0.5 s (ratio 0.807, p = 1.7e-06) and over 0.125 to 0.5 s (ratio 0.688, p = 3.2e-17), most in the bins from 0.1 to 0.3 s (ratios 0.54 and 0.55). The files do not record the implanted hemisphere, so left as contralateral rests on the Methods.
-# Amjad et al. (2025) from dandiset 002013
-
-Tests the findings of [Amjad et al. (2025)](https://doi.org/10.1021/acschemneuro.5c00071) that can be
-tested on [DANDI:002013](https://dandiarchive.org/dandiset/002013/0.261012.0921), which holds the three
-example sessions of the paper: FSCV from site c8dg and LFP from c3bs-c3a in monkey T, and spikes in
-monkey P.
-
-| Claim | Outcome |
-|---|---|
-| Insertion yields of 21.4% and 33% | Blocked: data missing |
-| Recordings 483, 496 and 390 days after implantation | Blocked: metadata insufficient |
-| FSCV waveform from -0.4 to 1.3 V at 400 V/s and 10 Hz | Partially reproduced |
-| EPhys at 30 and 32 kHz, filtered 0.1 to 7500 Hz | Reproduced |
-| Shape task: 25% forced trials, blocks of 50 to 300 trials | Reproduced |
-| The dandiset agrees with the paper's Zenodo files (outside data) | Reproduced |
-| Dopamine from two channels, c8dg and c8ds (Figure 3A) | Blocked: data missing |
-| Dopamine redox current after the value cue (Figure 3A) | Blocked: metadata insufficient |
-| Beta bursts change around the cue (Figure 3B) | Reproduced |
-| More dopamine after large-reward cues (Figure 4A) | Reproduced |
-[... 52 more lines not kept]
-```
-
-**Agent**
-
-Now editing the notebook: adding the outputs the verifier asked for and correcting the wording.
+Result: the fetched text is not kept.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025; python - <<'EOF'
-import json
-p='reproduce_amjad_2025.ipynb'
-nb=json.load(open(p))
-C=nb['cells']
-def get(i): return ''.join(C[i]['source'])
-def put(i,s): C[i]['source']=s.splitlines(keepends=True)
-def rep(i,a,b):
-    s=get(i); assert a in s,(i,a); put(i,s.replace(a,b))
-
-# cell 3: implant search over all metadata and file fields, Zenodo file list
-rep(3,'''print("Any implant date in the files or the dandiset metadata:",
-      any("implant" in str(v).lower() and "date" in str(v).lower() for v in meta.values()))''',
-'''for key, f in files.items():
-    print(f"{key}: subject fields { {k: mp.text(f, 'general/subject/' + k)[:60] for k in f['general/subject']} }")
-    print(f"  devices { {k: f['general/devices'][k].attrs.get('description') for k in f['general/devices']} }; "
-          f"electrode columns {sorted(f['general/extracellular_ephys/electrodes'])}")
-found = []
-for key, f in files.items():
-    def visit(name, obj):
-        for a, val in obj.attrs.items():
-            if "implant" in str(val).lower():
-                found.append(f"{key}:{name}@{a}")
-        if isinstance(obj, mp.h5py.Dataset) and obj.dtype.kind in "OS" and obj.size < 1000:
-            if "implant" in str(obj[()]).lower():
-                found.append(f"{key}:{name}")
-    f["general"].visititems(visit)
-print("Fields of the files' general section that mention 'implant':", found)
-meta_text = json.dumps(meta).lower()
-print("Mentions of 'implant' anywhere in the dandiset metadata, with context:")
-for i_ in [m.start() for m in re.finditer("implant", meta_text)]:
-    print("   ", repr(meta_text[max(0, i_ - 60):i_ + 60]))
-print("Any date-like value next to them:", any(re.search(r"\\d{4}-\\d{2}-\\d{2}|\\d{1,2}/\\d{1,2}/\\d{4}", meta_text[max(0, i_ - 60):i_ + 60])
-                                            for i_ in [m.start() for m in re.finditer("implant", meta_text)]))
-print("\\nFiles of the paper's Zenodo deposit:", mp.zenodo_files())''')
-
-# imports
-rep(1,'import time\n','import json\nimport re\nimport time\n')
-
-# cell 14
-rep(14,'(r about 0.1 to 0.2)','(r 0.16 to 0.20)')
-
-# cell 19: spike times below 1 s
-rep(19,'''          f"repeated times {len(s) - len(np.unique(s))}")''','''          f"repeated times {len(s) - len(np.unique(s))}, below 1 s: {int(np.sum(s < 1))}")''')
-
-# cell 25
-rep(25,'print("monkey P notes:", files["P-0813"]["general/notes"][()].decode()[:400])',
-'''notes_P = files["P-0813"]["general/notes"][()].decode()
-print(f"monkey P notes ({len(notes_P)} characters):", notes_P)
-print("filter settings in monkey P's notes or electrode columns:",
-      re.findall(r"(?i)[^,{]*(?:filter|cut|dsp)[^,}]*", notes_P),
-      [c for c in files["P-0813"]["general/extracellular_ephys/electrodes"] if re.search("(?i)filter|cut|dsp", c)])
-i_ = meta["description"].index("7500")
-print("dandiset description:", meta["description"][i_ - 120:i_ + 10])''')
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-git diff --stat; tail -c 50 reproduce_amjad_2025.ipynb | od -c | tail -3; git show HEAD:entries/002013-amjad-2025/reproduce_amjad_2025.ipynb | tail -c 20 | od -c | tail -2
+cd  curl -s "https://api.dandiarchive.org/api/dandisets/002013/versions/0.261120.1306/assets/?page_size=100" | python -c "
+import json,sys,requests
+r=json.load(sys.stdin)['results']
+for a in r:
+    m=requests.get(f'https://api.dandiarchive.org/api/assets/{a[\"asset_id\"]}/').json()
+    print(a['path'], sorted(m.keys()))
+    print(json.dumps(m.get('wasAttributedTo'))[:400]); print(json.dumps(m.get('wasGeneratedBy'))[:600])
+"
 ```
 
-```
-.../002013-amjad-2025/reproduce_amjad_2025.ipynb   | 38 +++++++++++++++++++---
- 1 file changed, 33 insertions(+), 5 deletions(-)
-0000040   o   r   m   a   t   _   m   i   n   o   r   "   :       5  \n
-0000060   }  \n
-0000062
-0000020   5  \n   }  \n
-0000024
-```
+Result: the fetched text is not kept.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025; python - <<'EOF'
-import json
-p='reproduce_amjad_2025.ipynb'
-nb=json.load(open(p))
-C=nb['cells']
-for i in (1,3):
-    s=''.join(C[i]['source'])
-    s=s.replace('import time\n\n','import time\n\nimport h5py\n',1) if i==1 else s.replace('mp.h5py.Dataset','h5py.Dataset')
-    C[i]['source']=s.splitlines(keepends=True)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-python -c "
-import json;nb=json.load(open('reproduce_amjad_2025.ipynb'));print(''.join(nb['cells'][1]['source'])[:200])"
-python - <<'EOF'
-s=open('microprobes.py').read()
-s=s.replace('''def zenodo_mat(name: str) -> dict:''','''def zenodo_files() -> list[str]:
-    """Names of the files in the paper's Zenodo deposit."""
-    with urllib.request.urlopen(ZENODO_DATA.split("/files/")[0], timeout=120) as r:
-        return sorted(x["key"] for x in json.load(r)["files"])
-
-
-def zenodo_mat(name: str) -> dict:''')
-open('microprobes.py','w').write(s)
-EOF
-grep -n "^import\|^from" microprobes.py
+cd  ls -a entries/amjad-2025 executed/amjad-2025; ls -d .venv* */.venv 2>/dev/null; sed -n 1,60p tools/entry.py | grep -n -i "venv\|python"
 ```
 
 ```
-import json
-import re
-import time
-import warnings
+entries/amjad-2025:
+.
+..
+.claude
+README.md
+amjad.py
+entry.yaml
+reproduce_amjad_2025.ipynb
+requirements.in
+requirements.lock.txt
 
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from scipy import signal, stats
-
-import microprobes as mp
-
-warnings.filterwarn
-43:from __future__ import annotations
-45:import io
-46:import urllib.parse
-47:import urllib.request
-49:import h5py
-50:import numpy as np
-51:import pandas as pd
+executed/amjad-2025:
+.
+..
+.clean-run.json
+.venv
+reproduce_amjad_2025.ipynb
+result.json
+3:    python tools/entry.py lock  entries/<name>   # pin the environment
+4:    python tools/entry.py check entries/<name>   # validate metadata and conventions
 [... 4 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025; sed -i 's/^import io$/import io\nimport json/' microprobes.py; python - <<'EOF'
-import json
-p='reproduce_amjad_2025.ipynb'
-nb=json.load(open(p))
-c=nb['cells'][1]; s=''.join(c['source']); s=s.replace('import warnings\n\n','import warnings\n\nimport h5py\n',1); c['source']=s.splitlines(keepends=True)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-EOF
-cd ../..; python tools/entry.py all entries/002013-amjad-2025 2>&1 | tail -15
+cd  executed/amjad-2025/.venv/bin/python -c "
+import json,requests
+r=requests.get('https://api.dandiarchive.org/api/dandisets/002013/versions/0.261120.1306/assets/',params={'page_size':100}).json()['results']
+for a in r:
+    m=requests.get(f'https://api.dandiarchive.org/api/assets/{a[\"asset_id\"]}/').json()
+    print(a['path'], sorted(m.keys()))
+    print(json.dumps(m.get('wasAttributedTo'))[:500]); print(json.dumps(m.get('wasGeneratedBy'))[:500])
+"
 ```
 
 ```
-Installed kernelspec registry-002013-amjad-2025 in executed/002013-amjad-2025/.venv/share/jupyter/kernels/registry-002013-amjad-2025
+sub-Monkey-T/sub-Monkey-T_ses-09132024_ecephys.nwb ['@context', 'access', 'approach', 'blobDateModified', 'contentSize', 'contentUrl', 'dateModified', 'datePublished', 'digest', 'encodingFormat', 'id', 'identifier', 'keywords', 'measurementTechnique', 'path', 'publishedBy', 'relatedResource', 'schemaKey', 'schemaVersion', 'variableMeasured', 'wasAttributedTo', 'wasGeneratedBy']
+[{"age": {"value": "P11Y", "unitText": "ISO-8601 duration", "schemaKey": "PropertyValue", "valueReference": {"value": "dandi:BirthReference", "schemaKey": "PropertyValue"}}, "sex": {"name": "Female", "schemaKey": "SexType", "identifier": "http://purl.obolibrary.org/obo/PATO_0000383"}, "species": {"name": "Macaca mulatta - Rhesus monkey", "schemaKey": "SpeciesType", "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_9544"}, "schemaKey": "Participant", "identifier": "Monkey T"}]
+[{"name": "09132024", "endDate": "2024-09-13T15:45:06.153221-04:00", "schemaKey": "Session", "startDate": "2024-09-13T09:03:06-04:00", "identifier": "09132024", "description": "In vivo recordings of dopamine, spikes and local field potentials from micro-invasive probes (s-\u00b5IPs) chronically implanted in the striatum of rhesus monkeys performing reward-biased eye movement tasks. Times are in seconds from the session start. In the 2024 sessions this is when the Neuralynx recording was opened. 
+sub-Monkey-T/sub-Monkey-T_ses-09262024_ecephys.nwb ['@context', 'access', 'approach', 'blobDateModified', 'contentSize', 'contentUrl', 'dateModified', 'datePublished', 'digest', 'encodingFormat', 'id', 'identifier', 'keywords', 'measurementTechnique', 'path', 'publishedBy', 'relatedResource', 'schemaKey', 'schemaVersion', 'variableMeasured', 'wasAttributedTo', 'wasGeneratedBy']
+[{"age": {"value": "P11Y", "unitText": "ISO-8601 duration", "schemaKey": "PropertyValue", "valueReference": {"value": "dandi:BirthReference", "schemaKey": "PropertyValue"}}, "sex": {"name": "Female", "schemaKey": "SexType", "identifier": "http://purl
+[... 4 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; python - <<'EOF'
+import json
+p='entries/amjad-2025/reproduce_amjad_2025.ipynb'
+nb=json.load(open(p))
+src=lambda i:''.join(nb['cells'][i]['source'])
+def put(i,s): nb['cells'][i]['source']=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert s.count(a)==1,(i,a); put(i,s.replace(a,b))
+rep(3,'''notes = meta.get("releaseNotes", "")
+print("\\nrelease notes of this version, section 'Known gaps':")
+print(notes[notes.find("**Known gaps**"):])''','''print("\\nrelease notes of this version:")
+print(meta.get("releaseNotes", ""))
+# asset metadata: subjects' ages, and any mention of sensors or of an implant date
+for a in r["results"]:
+    am = requests.get(f"{A.API}/assets/{a['asset_id']}/").json()
+    txt = json.dumps(am)
+    print(f"\\nasset {a['path']}: age {[s['age']['value'] for s in am.get('wasAttributedTo', [])]}, "
+          f"mentions 'sensor': {bool(re.search(r'sensor', txt, re.I))}, "
+          f"'implant' with a date: {bool(re.search(r'implant\\w*\\s+(on|in)\\s+\\d', txt, re.I))}")''')
+print(src(1)[:400])
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+EOF
+```
+
+```
+Wed Nov 25 00:15:56 UTC 2026
+import re, time, resource
+import h5py
+import numpy as np
+import pandas as pd
+import requests
+import matplotlib.pyplot as plt
+from scipy import stats, signal
+
+import amjad as A
+
+pd.set_option("display.width", 200)
+pd.set_option("display.max_columns", 40)
+started = time.time()
+def mem_gb():
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6
+print("dandiset", A.DANDISET_ID, "version"
+```
+
+**Agent calls Bash**
+
+```bash
+cd  executed/amjad-2025/.venv/bin/python --version; python - <<'EOF'
+import json
+p='entries/amjad-2025/reproduce_amjad_2025.ipynb'
+nb=json.load(open(p))
+src=lambda i:''.join(nb['cells'][i]['source'])
+def put(i,s): nb['cells'][i]['source']=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert s.count(a)==1,(i,a); put(i,s.replace(a,b))
+rep(1,'import re, time, resource','import re, json, time, resource')
+rep(3,'''    txt = json.dumps(am)
+    print(f"\\nasset {a['path']}: age {[s['age']['value'] for s in am.get('wasAttributedTo', [])]}, "
+          f"mentions 'sensor': {bool(re.search(r'sensor', txt, re.I))}, "
+          f"'implant' with a date: {bool(re.search(r'implant\\w*\\s+(on|in)\\s+\\d', txt, re.I))}")''','''    txt = json.dumps(am)
+    ages = [s["age"]["value"] for s in am.get("wasAttributedTo", [])]
+    sensor = bool(re.search(r"sensor", txt, re.I))
+    dated = bool(re.search(r"implant\\w*\\s+(on|in)\\s+\\d", txt, re.I))
+    print(f"asset {a['path']}: subject age {ages}, mentions 'sensor': {sensor}, 'implant' with a date: {dated}")''')
+print(src(3))
+# cell 16: interval counts and full range
+rep(16,'''f"0.1-99.9 percentile {np.percentile(x_lfp, 0.1)*1e6:.0f} to {np.percentile(x_lfp, 99.9)*1e6:.0f} uV, NaN {int(np.isnan(x_lfp).sum())}")''',
+'''f"0.1-99.9 percentile {np.percentile(x_lfp, 0.1)*1e6:.0f} to {np.percentile(x_lfp, 99.9)*1e6:.0f} uV, "
+      f"min {x_lfp.min()*1e6:.0f}, max {x_lfp.max()*1e6:.0f} uV, NaN {int(np.isnan(x_lfp).sum())}")
+off = np.abs(d - 1e-3) > 1e-5
+print(f"intervals other than 1 ms: {int(off.sum())}, of", ", ".join(f"{x*1e3:.2f}" for x in d[off]), "ms")''')
+# cell 26: subject ages in the files
+rep(26,'''print("dandiset metadata mentions''','''for k, f in F.items():
+    print(k, "subject age in the file:", A._str(f["general/subject/age"][()]))
+print("dandiset metadata mentions''')
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+EOF
+```
+
+```
+Python 3.13.18
+listing = {}
+for v in ["0.261012.0921", A.DANDISET_VERSION]:
+    r = requests.get(f"{A.API}/dandisets/{A.DANDISET_ID}/versions/{v}/assets/", params={"page_size": 100}).json()
+    listing[v] = {a["path"]: a["size"] for a in r["results"]}
+print(pd.DataFrame(listing).to_string())
+meta = requests.get(f"{A.API}/dandisets/{A.DANDISET_ID}/versions/{A.DANDISET_VERSION}/").json()
+print("\nsubjects in the metadata:", meta["assetsSummary"]["numberOfSubjects"], " files:", meta["assetsSummary"]["numberOfFiles"])
+print("\ndescription:", meta["description"])
+print("\nrelease notes of this version:")
+print(meta.get("releaseNotes", ""))
+# asset metadata: subjects' ages, and any mention of sensors or of an implant date
+for a in r["results"]:
+    am = requests.get(f"{A.API}/assets/{a['asset_id']}/").json()
+    txt = json.dumps(am)
+    ages = [s["age"]["value"] for s in am.get("wasAttributedTo", [])]
+    sensor = bool(re.search(r"sensor", txt, re.I))
+    dated = bool(re.search(r"implant\w*\s+(on|in)\s+\d", txt, re.I))
+    print(f"asset {a['path']}: subject age {ages}, mentions 'sensor': {sensor}, 'implant' with a date: {dated}")
+```
+
+**Agent calls Bash**
+
+```bash
+cd  executed/amjad-2025/.venv/bin/python -c "
+import json,requests,re
+r=requests.get('https://api.dandiarchive.org/api/dandisets/002013/versions/0.261120.1306/assets/',params={'page_size':100}).json()['results']
+for a in r:
+    t=json.dumps(requests.get(f'https://api.dandiarchive.org/api/assets/{a[\"asset_id\"]}/').json())
+    print([t[max(0,m.start()-80):m.end()+80] for m in re.finditer('sensor|electrode',t,re.I)][:5])
+"
+```
+
+```
+['ured": [{"value": "ProcessingModule", "schemaKey": "PropertyValue"}, {"value": "ElectrodeGroup", "schemaKey": "PropertyValue"}], "measurementTechnique": [{"name": "surgi']
+['alue"}, {"value": "ElectricalSeries", "schemaKey": "PropertyValue"}, {"value": "ElectrodeGroup", "schemaKey": "PropertyValue"}], "measurementTechnique": [{"name": "multi', 'roup", "schemaKey": "PropertyValue"}], "measurementTechnique": [{"name": "multi electrode extracellular electrophysiology recording technique", "schemaKey": "Measurement']
+['alue"}, {"value": "ElectricalSeries", "schemaKey": "PropertyValue"}, {"value": "ElectrodeGroup", "schemaKey": "PropertyValue"}, {"value": "Units", "schemaKey": "Property', 'nits", "schemaKey": "PropertyValue"}], "measurementTechnique": [{"name": "multi electrode extracellular electrophysiology recording technique", "schemaKey": "Measurement']
+```
+
+**Agent**
+
+Asset metadata has no sensor list, so that note can now be backed by a printed check. Applying the text and block-split edits next.
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+p='entries/amjad-2025/reproduce_amjad_2025.ipynb'
+nb=json.load(open(p))
+src=lambda i:''.join(nb['cells'][i]['source'])
+def put(i,s): nb['cells'][i]['source']=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert s.count(a)==1,(i,a); put(i,s.replace(a,b))
+rep(52,'''print(f"blocks with large below small:''','''for side in ["left", "right"]:
+    g = bt[bt.big_side == side]; neg = g.index[g.large_minus_small < 0]
+    print(f"big reward on the {side}: large below small in {len(neg)} of {len(g)} blocks ({', '.join(map(str, neg))})")
+print(f"blocks with large below small:''')
+rep(55,'''print(f"within blocks, left minus right''','''for side in ["left", "right"]:
+    g = bc[bc.big_side == side]; neg = g.index[g.left_minus_right < 0]
+    print(f"big reward on the {side}: left below right in {len(neg)} of {len(g)} blocks ({', '.join(map(str, neg))})")
+print(f"within blocks, left minus right''')
+put(53, src(53).split("\n\nWithin each block")[0] + '''
+
+Within each block the big reward is on one side, so large against small is also one side against
+the other, and the comparison within blocks cannot separate a reward effect from a side effect. In
+the 8 blocks with the big reward on the left both effects predict lower power on the same trials,
+and large is below small in all 8. In the 8 blocks with the big reward on the right the two predict
+opposite signs, and large is below small in 4 (blocks 5, 7, 11 and 13). The 12 of 16 blocks with
+large below small (Wilcoxon over blocks p = 0.025) are these 8 and an even split. The pattern fits
+two additive effects of similar size; it fits equally a single effect confined to the blocks with
+the big reward on the left, where the median on right cues is 303.1 to 474.3e-12 V^2 against 193.6
+to 357.6e-12 in the other cells of the table. With the side fixed the reward difference holds (left
+cues 244.5 against 290.3, p = 0.00164; right cues 301.9 against 394.2, p = 9.91e-08), but each of
+these tests compares trials from different blocks. The criterion as written is met. With the
+paper's order read literally (squared, then enveloped) the result is the same (378.8 against
+409.0, p = 5.42e-06).
+''')
+put(56, src(56).split("\n\nLarge-reward left trials")[0] + '''
+
+Large-reward left trials come from the 8 blocks with the big reward on the left, and large-reward
+right trials from the other 8, so the test holds the reward fixed but compares different blocks.
+Taking each block's median as one value, the left blocks are lower (251.0 against 306.8,
+p = 0.000622). Within blocks, over both rewards, left is below right in 12 of 16 blocks (Wilcoxon
+p = 0.00336): all 8 blocks with the big reward on the left, where side and reward predict the same
+sign, and 4 of the 8 with the big reward on the right (blocks 1, 3, 9 and 15), where they predict
+opposite signs. Within blocks, left against right is the same contrast as large against small, so
+these blocks cannot separate a side effect from a reward effect (see fig4b-beta-reward). With the
+paper's order read literally (squared, then enveloped) left is also lower (363.2 against 393.4,
+p = 0.00734).
+''')
+rep(57,'''The release notes (data check) confirm that "no code map exists
+for that session".''','''The release notes (data check) say
+"Monkey P's 36 event codes have no names, so its trials and reward conditions cannot be
+identified", and that the codes are stored by code "since no code map exists for that session".''')
+rep(24,'''no file or the dataset metadata lists the implanted sensors.''','''no file, the dandiset metadata or the asset metadata of the three files lists the
+implanted sensors (the asset metadata does not mention sensors, data check).''')
+rep(27,'''The subjects' ages
+(P11Y and P8Y) are not implantation dates.''','''The subjects' ages
+(P11Y for Monkey T and P8Y for Monkey P, printed above and in the data check) are not
+implantation dates.''')
+rep(4,'''The notes also say that the clock offsets''','''The notes (printed in full above) also say that the clock offsets''')
+rep(62,'''In the direction task the side of the big reward is fixed within
+blocks of 50 to 93 successful trials, so reward and side are tied within a block; the reward and
+side effects on beta power hold when the other is held fixed.''','''In the direction task the side of the big reward is fixed within
+blocks of 50 to 93 successful trials, so within a block large against small is the same contrast
+as left against right. The side effect on beta power holds with the reward fixed (large-reward
+trials, and small-reward trials, p = 1.48e-10), and the reward effect holds with the side fixed
+(p = 0.00164 and 9.91e-08); both of these tests compare trials from different blocks. Within
+blocks the data cannot tell a reward effect from a side effect: of the 12 of 16 blocks that go the
+expected way, 8 are all the blocks with the big reward on the left, where both effects predict the
+same sign, and 4 are half of those with the big reward on the right, where they predict opposite
+signs. The criteria as written are met.''')
+json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+EOF
+grep -c "—\|rather" entries/amjad-2025/reproduce_amjad_2025.ipynb
+```
+
+```
+0
+```
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; time python tools/entry.py all entries/amjad-2025 2>&1 | tail -30; date -u
+```
+
+```
+Wed Nov 25 00:16:49 UTC 2026
+Installed kernelspec registry-amjad-2025 in executed/amjad-2025/.venv/share/jupyter/kernels/registry-amjad-2025
 0 error(s)
-pass  reproduce_amjad_2025.ipynb  (248 s)
+pass  reproduce_amjad_2025.ipynb  (96 s)
+
+real	1m46.499s
+user	0m54.080s
+sys	0m8.222s
+Wed Nov 25 00:18:35 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "
+import json;nb=json.load(open('executed/amjad-2025/reproduce_amjad_2025.ipynb'))
+for i in [3,16,26,52,55,61]:
+    c=nb['cells'][i]
+    print('=====',i)
+    for o in c.get('outputs',[]):
+        t=''.join(o.get('text',''))
+        if i==3: t=t[-1200:]
+        print(t[:3500])
+"
+```
+
+```
+===== 3
+                                                    0.261012.0921  0.261120.1306
+sub-Monkey-T/sub-Monkey-T_ses-09132024_ecephys.nwb      635366923      870350366
+sub-Monkey-T/sub-Monkey-T_ses-09262024_ecephys.nwb     2677518722     2681648047
+sub-Monkey-P/sub-Monkey-P_ses-08132018_ecephys.nwb     1376700802     2040584384
+
+for Monkey P). The files cite the published article as well as the preprint.
+
+**Additions**
+
+- **Monkey P events.** Monkey P's file had no events. The strobed event codes of `csc12.plx` are now stored, by code, since no code map exists for that session.
+- **Trial-aligned FSCV** has one row for every trial with data, a `trial_index` column, and the `good` flag as the lab gives it. Its columns say that their units are not known.
+
+**Known gaps**
+
+- The second FSCV site of Figure 3A (c8ds) is not in the dandiset; 09/13/2024 holds c8dg only.
+- The trial-aligned FSCV of 09/13/2024 covers the first 734 of its 1468 trials, as in the lab's source file.
+- Monkey P's 36 event codes have no names, so its trials and reward conditions cannot be identified.
+- The units of the PCA-extracted dopamine, pH and motion components and of the oxidation current are not given in the source, nor the window they are referenced to.
+- The trials tables hold 60 s windows around each trial start; trial conditions are only in the events.
+[... 109 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
 cd  python - <<'EOF'
-import json;nb=json.load(open('executed/002013-amjad-2025/reproduce_amjad_2025.ipynb'))
-def out(i):
-    for o in nb['cells'][i].get('outputs',[]):
-        print(''.join(o.get('text','')) or o.get('data',{}).get('text/plain',''))
-for i in (3,19,25,34,13): print('=====',i); out(i)
-EOF
-```
-
-```
-===== 3
-                                              file  subject sex  age       session_start     sites                       related_publication  trials  events
-sub-Monkey-T/sub-Monkey-T_ses-09132024_ecephys.nwb Monkey T   F P11Y 2024-09-13T09:03:06      c8dg https://doi.org/10.1101/2025.01.30.635139    1468    True
-sub-Monkey-T/sub-Monkey-T_ses-09262024_ecephys.nwb Monkey T   F P11Y 2024-09-26T09:01:38 c3bs, c3a https://doi.org/10.1101/2025.01.30.635139    1501    True
-sub-Monkey-P/sub-Monkey-P_ses-08132018_ecephys.nwb Monkey P   F  P8Y 2018-08-13T10:20:08       cl3 https://doi.org/10.1101/2025.01.30.635139       0   False
-
-Contents per file:
-  T-0913: acquisition ['fscv_response_series'], processing {'events': ['events_table'], 'fscv': ['trial_aligned_fscv_table']}, stimulus ['fscv_excitation_series'], units False
-
-  T-0926: acquisition ['electrical_series'], processing {'ecephys': ['FilteredEphys'], 'events': ['events_table']}, stimulus [], units False
-  P-0813: acquisition ['electrical_series'], processing {'ecephys': ['thresholded_units']}, stimulus [], units True
-
-Dandiset relatedResource:
-   dcite:IsDescribedBy https://doi.org/10.1021/acschemneuro.5c00071
-   dcite:IsDerivedFrom https://doi.org/10.5281/zenodo.14826579
-   dcite:IsCompiledBy https://github.com/catalystneuro/schwerdt-lab-to-nwb
-
-Paper: Figure 3A sites c8dg and c8ds, 483 days post-implant; Figure 3B and 4B,C site c3bs-c3a, 496 days; Figure 5 site c33, 390 days.
-Session dates differ by 13 days; the paper's days post-implant differ by 13
-T-0913: subject fields {'age': 'P11Y', 'description': 'Two adult female rhesus monkeys were used for in vivo valida', 'sex': 'F', 'species': 'Macaca mulatta', 'subject_id': 'Monkey T'}
-[... 141 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025; $TMPDIR/ev/bin/python - <<'EOF'
-import microprobes as mp
-for k in ("T-0926","P-0813"):
-    f=mp.open_file(k)
-    for g in f["general/extracellular_ephys"]:
-        print(k,g,dict(f["general/extracellular_ephys"][g].attrs).get("description"))
-    print(mp.text(f,"general/experiment_description")[:3000])
-EOF
-```
-
-```
-T-0926 ElectrodeGroup The group of electrodes from the EPhys system (Neuralynx, Digital Lynx SX) implanted in the striatum.
-T-0926 electrodes metadata about extracellular electrodes
-This experiment contains in vivo recordings of reward- and movement-related dopamine, spikes, and local field potentials obtained using single- and dual-channel shaft-assisted micro-invasive probes (s-µIPs) chronically implanted in the striatum of task-performing rhesus monkeys. The s-µIPs leverage carbon fiber materials to enable dual neurochemical and electrical neural activity recording at micro-invasive (10 µm) spatial footprints near the recording sites, while a wider shaft provides rigidity for deep brain targeting using standard cranial chambers. These probes allow for measurements from deep brain targets with minimal tissue disruption at the recording site. Recordings were made during performance of reward-biased eye movement tasks, enabling simultaneous measurement of dopamine transients, spikes, and local field potentials with micrometer spatial resolution. Chronic implants demonstrated stable, multi-modal neural activity measurements from micro-invasive devices over extended periods post-implantation.
-P-0813 ElectrodeGroup The group of electrodes from the EPhys system (Neuralynx, Digital Lynx SX) implanted in the striatum.
-P-0813 electrodes metadata about extracellular electrodes
-This experiment contains in vivo recordings of reward- and movement-related dopamine, spikes, and local field potentials obtained using single- and dual-channel shaft-assisted micro-invasive probes (s-µIPs) chronically implanted in the striatum of task-performing rhesus monkeys. The s-µIPs leverage carbon fiber materials to enable dual neurochemical and electrical neural activity recording at micro-invasive (10 µm) spatial footprints near the recording sites, while a wider shaft provides rigidity for deep brain targeting using standard cranial chambers. These probes allow for measurements from deep br
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025; python -c "
-import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
-print(''.join(nb['cells'][4]['source']))"
-```
-
-```
-Two adult female rhesus monkeys and three sessions, as the dandiset describes. Monkey P's site is named
-`cl3` in the file, `c33` in the Figure 5 legend. The files' `related_publications` point to the bioRxiv
-preprint (doi:10.1101/2025.01.30.635139), not the article. Neither the files nor the dandiset metadata give an
-implantation date, so the days post-implant cannot be checked; the two Monkey T sessions are 13 days apart, which
-matches the 483 and 496 days of the legends. Monkey P's file has no trials and no events. The conversion
-code also reads eye tracking channels, which are not in the files.
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/002013-amjad-2025; python - <<'EOF'
 import json
-p='reproduce_amjad_2025.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-s=''.join(C[3]['source'])
-a=s.index('found = []'); b=s.index('print("\\nFiles of the paper')
-new='''texts = {"dandiset metadata": json.dumps(meta, ensure_ascii=False)}
-for key, f in files.items():
-    def visit(name, obj):
-        for a_, val in obj.attrs.items():
-            texts[f"{key}: {name} ({a_})"] = str(val)
-        if isinstance(obj, h5py.Dataset) and obj.dtype.kind in "OS" and obj.size < 1000:
-            texts[f"{key}: {name}"] = str(obj[()])
-    f["general"].visititems(visit)
-date_like = r"\\d{4}-\\d{2}-\\d{2}|\\d{4}/\\d{2}/\\d{2}|\\d{1,2}/\\d{1,2}/\\d{4}"
-print("Every mention of 'implant' in the dandiset metadata and in the general section of the files, with context:")
-for where, t in texts.items():
-    for m_ in re.finditer("(?i)implant", t):
-        ctx = t[max(0, m_.start() - 60):m_.end() + 60]
-        print(f"  {where}: {ctx!r}; date in context: {bool(re.search(date_like, ctx))}")
-'''
-s=s[:a]+new+s[b:]
-C[3]['source']=s.splitlines(keepends=True)
-
-def rep(i,x,y):
-    t=''.join(C[i]['source']); assert x in t,(i,x); C[i]['source']=t.replace(x,y).splitlines(keepends=True)
-rep(4,"Neither the files nor the dandiset metadata give an\nimplantation date,",
- "The subject, device and electrode fields hold no implantation date, and no mention of implantation in the\ngeneral section of the files or in the dandiset metadata comes with a date,")
-rep(4,"Monkey P's file has no trials and no events.","Monkey P's file has no trials and no events. The paper's Zenodo deposit holds trial lists,\nLFP and events of the example sessions, processed FSCV of c8dg only, and no list of implanted sensors.")
-rep(14,"while some shifted times give smaller p values.","while two of the eight shifted times give p below 0.05 (-10 s, p = 0.020; -30 s, p = 0.033), which\nwith eight shifts tried is near what chance gives and does not single out an offset.")
-rep(14,"(r about 0.1 to 0.2)","(r 0.16 to 0.20)") if "(r about" in ''.join(C[14]['source']) else None
-rep(20,"and it holds 7 spike times below 1 s, with repeated times;","and it holds 7 spike times below 1 s and 3 repeated times;")
-rep(26,"Monkey P's file stores no filter settings.","Monkey P's file stores no filter settings: its notes (printed in full) and its electrode columns name no filter or cut-off. The dandiset description states 0.1 to 7500 Hz.")
-rep(35,"falls again from 6 s after it (0.34 per s and below)","falls again from 6 s after it (0.39 per s and below)")
-rep(41,"The suppression is deeper after large-reward cues, and beta power is higher after them from 0.5 s on.",
- "Beta power is lower after large-reward cues at 0.1 to 0.4 s and higher from 0.5 s on. These bins fit a suppression that is deeper after large-reward cues, and equally an earlier suppression with an earlier rebound; they do not tell the two apart. The criterion, lower power over 0 to 0.5 s, is met.")
-rep(48,"it cannot be matched to the trial-aligned series or to the task at any offset.","it cannot be matched to the trial-aligned series at any offset tried, or to the task at the stored times.")
+p='entries/amjad-2025/reproduce_amjad_2025.ipynb'
+nb=json.load(open(p))
+src=lambda i:''.join(nb['cells'][i]['source'])
+def put(i,s): nb['cells'][i]['source']=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert s.count(a)==1,(i,a); put(i,s.replace(a,b))
+rep(16,'''print(f"intervals other than 1 ms: {int(off.sum())}, of", ", ".join(f"{x*1e3:.2f}" for x in d[off]), "ms")''',
+'''print(f"intervals more than 0.01 ms from 1 ms: {int(off.sum())} of {len(d)}, from {d[off].min()*1e3:.2f} to {d[off].max()*1e3:.2f} ms, "
+      f"mean {d[off].mean()*1e3:.3f} ms; longest interval {d.max()*1e3:.2f} ms")
+print(f"samples beyond +-1 mV: {int((np.abs(x_lfp) > 1e-3).sum())} ({100*np.mean(np.abs(x_lfp) > 1e-3):.4f}%)")''')
 json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
 EOF
-python -c "
-import json;nb=json.load(open('reproduce_amjad_2025.ipynb'))
-print(''.join(nb['cells'][14]['source']))"
+python tools/entry.py all entries/amjad-2025 2>&1 | tail -3; python -c "
+import json;nb=json.load(open('executed/amjad-2025/reproduce_amjad_2025.ipynb'))
+for i in [16,61]:
+    for o in nb['cells'][i].get('outputs',[]): print(''.join(o.get('text',''))[:900])
+"
 ```
 
 ```
-The raw current at 0.6 V does not match the stored oxidation current `iox` at the stored times (|r| below
-0.06), and searched over the whole raw record the best matches are weak (r 0.16 to 0.20) at offsets
-that differ from row to row, so no single offset links the two. The raw current shows no large-against-small
-contrast at the stored value cue times (p = 0.46), while two of the eight shifted times give p below 0.05 (-10 s, p = 0.020; -30 s, p = 0.033), which
-with eight shifts tried is near what chance gives and does not single out an offset. The same
-search at 0.50 and 0.70 V and at -0.19 V on the falling sweep gives the same picture (best r 0.17 to 0.22, at
-offsets that differ from row to row). Computed at the stored times, the background-subtracted voltammogram of
-large-reward trials has its largest rising-sweep value at -0.24 V, not near 0.6 V (where it is -0.033), and
-its most negative value at the switching potential (1.34 V), not near -0.2 V; its values (SD 0.042 over the
-scan) are small. This is not a test of the claim, since the clock is not established. The raw
-FSCV therefore cannot be shown to share the trial clock, and may not be the recording the trial-aligned
-series came from. It is not used for any claim (`fig3a-redox-peaks` is blocked).
+Installed kernelspec registry-amjad-2025 in executed/amjad-2025/.venv/share/jupyter/kernels/registry-amjad-2025
+0 error(s)
+pass  reproduce_amjad_2025.ipynb  (93 s)
+bipolar LFP: 19246352 samples, 5719.1 to 24965.4 s, median rate 1000.0 Hz, intervals 0.50 to 1.50 ms, unit volts, 0.1-99.9 percentile -504 to 898 uV, min -1259, max 1162 uV, NaN 0
+intervals more than 0.01 ms from 1 ms: 1473 of 19246351, from 0.50 to 1.50 ms, mean 0.997 ms; longest interval 1.50 ms
+
+samples beyond +-1 mV: 8168 (0.0424%)
+electrode note: The electrode of site c3bs; the signal is referenced to site c3a.
+trials from 5749.1 to 24948.4 s; last trial window ends 24978.4 s
+raw EPhys: (722978367, 2) at 31999.9624 Hz from 2631.34 s, conversion 3.0517578125e-08 V per bit
+  location channel_name DspLowCutFrequency DspHighCutFrequency DspLowCutFilterType DspHighCutFilterType InputRange
+0     c3bs        CSC37                0.1                8000                 DCO                  FIR       1000
+1      c3a        CSC38                0.1                8000                 DCO                  FIR       1000
+
+total run time 86 s, peak memory 4.39 GB
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025; python - <<'EOF'
+cd  python - <<'EOF'
 import json
-p='reproduce_amjad_2025.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-def rep(i,x,y):
-    t=''.join(C[i]['source']); assert x in t,(i,x); C[i]['source']=t.replace(x,y).splitlines(keepends=True)
-rep(14,"""while two of the eight shifted times give p below 0.05 (-10 s, p = 0.020; -30 s, p = 0.033), which
-with eight shifts tried is near what chance gives and does not single out an offset.""","""while two of the eight shifted times give p below 0.05 (-10 s, p = 0.020; -30 s, p = 0.033), so a
-contrast with the task at some offset is not ruled out.""")
-rep(4,"processed FSCV of c8dg only, and no list of implanted sensors.","processed FSCV of c8dg only (the one FSCV file is named for c8dg), and none of its file names points\nto a list of implanted sensors.")
+p='entries/amjad-2025/reproduce_amjad_2025.ipynb'
+nb=json.load(open(p))
+src=lambda i:''.join(nb['cells'][i]['source'])
+def put(i,s): nb['cells'][i]['source']=s.splitlines(keepends=True)
+def rep(i,a,b):
+    s=src(i); assert s.count(a)==1,(i,a); put(i,s.replace(a,b))
+rep(19,'''The bipolar LFP is continuous at 1 kHz over the trials (one interval of 0.5 ms and one of 1.5 ms),
+in volts with values within the +-1 mV input range.''','''The bipolar LFP is continuous at 1 kHz over the trials: 1473 of its 19.2 million intervals differ
+from 1 ms, all between 0.5 and 1.5 ms (mean 0.997 ms), so there are no gaps. It is in volts; 0.0424%
+of its values lie beyond +-1 mV (from -1259 to 1162 uV), which a difference of two channels with
+a +-1 mV input range can reach.''')
 json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
+EOF
+sed -i 's/it takes about 2 to 4 minutes and 4.4 GB of$/it takes about 2 minutes (the notebook about 90 s) and 4.4 GB of/' entries/amjad-2025/README.md; tail -3 entries/amjad-2025/README.md
+```
+
+```
+Run with `python tools/entry.py all entries/amjad-2025`; it takes about 2 minutes (the notebook about 90 s) and 4.4 GB of
+memory.
+```
+
+**Agent**
+
+Now updating the attempt record.
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+p='attempts/amjad-2025-02.yaml'
+s=open(p).read()
+def rep(a,b):
+    global s; assert s.count(a)==1,a; s=s.replace(a,b)
+rep("""    dandiset metadata list the implanted sensors (14 in monkey T and 9 in monkey P by the paper). The asset metadata
+    gives no list of sensors either.""","""    dandiset metadata list the implanted sensors (14 in monkey T and 9 in monkey P by the paper). The asset metadata
+    of the three files does not mention sensors (data check); the verifier found the same in its round-1 API check.""")
+rep("""The subjects'' ages (P11Y, P8Y) are not implantation dates.""","""The subjects'' ages (P11Y, P8Y), printed from the files and the asset metadata, are not implantation dates.""")
+rep("""    notes of the pinned version confirm that no code map exists for that session.""","""    notes of the pinned version say "Monkey P's 36 event codes have no names, so its trials and reward conditions
+    cannot be identified", and that the codes are stored by code "since no code map exists for that session".""")
+rep("""    (Wilcoxon over blocks p = 0.025). With the paper's order read literally (squared, then enveloped) 378.8 against
+    409.0, p = 5.42e-06.""","""    (Wilcoxon over blocks p = 0.025). Within a block large against small is the same contrast as left against right,
+    so the blocks cannot separate a reward effect from a side effect; the 12 are all 8 blocks with the big reward
+    on the left, where both effects predict the same sign, and 4 of the 8 with the big reward on the right (5, 7,
+    11 and 13), where they predict opposite signs. This fits two additive effects and equally a single effect confined
+    to the left-big blocks. The side-fixed tests compare trials from different blocks. The criterion as written is
+    met. With the paper's order read literally (squared, then enveloped) 378.8 against 409.0, p = 5.42e-06.""")
+rep("""    p = 0.000622); within blocks over both rewards left is below right in 12 of 16 (Wilcoxon p = 0.00336). With
+    the paper's order read literally (squared, then enveloped) 363.2 against 393.4, p = 0.00734.""","""    p = 0.000622); within blocks over both rewards left is below right in 12 of 16 (Wilcoxon p = 0.00336), all
+    8 left-big blocks and 4 of 8 right-big blocks (1, 3, 9 and 15). Within a block left against right is the same
+    contrast as large against small, so the blocks cannot separate a side effect from a reward effect; the main
+    test holds the reward fixed but compares different blocks. With the paper's order read literally (squared,
+    then enveloped) 363.2 against 393.4, p = 0.00734.""")
+rep("""- kind: data_missing
+  severity: minor
+  statement: No implantation dates""","""- kind: data_missing
+  severity: major
+  statement: No implantation dates""")
+open(p,'w').write(s)
 EOF
 ```
 
@@ -750,385 +732,232 @@ EOF
 **Agent calls Bash**
 
 ```bash
-cd entries/002013-amjad-2025; python - <<'EOF'
-import json
-p='reproduce_amjad_2025.ipynb'
-nb=json.load(open(p)); C=nb['cells']
-t=''.join(C[4]['source']); x="The paper's Zenodo deposit holds trial lists,\nLFP and events of the example sessions,"
-assert x in t
-C[4]['source']=t.replace(x,"The paper's Zenodo deposit holds ten files (listed above): trial\nlists, LFP, spikes and events of the example sessions, and").splitlines(keepends=True)
-json.dump(nb,open(p,'w'),indent=1,ensure_ascii=False); open(p,'a').write('\n')
-print(''.join(C[4]['source']))
-EOF
-cd ../..; python tools/entry.py all entries/002013-amjad-2025 2>&1 | tail -3
+cd  ls -l --time-style=full-iso transcripts/amjad-2025/
 ```
 
 ```
-Two adult female rhesus monkeys and three sessions, as the dandiset describes. Monkey P's site is named
-`cl3` in the file, `c33` in the Figure 5 legend. The files' `related_publications` point to the bioRxiv
-preprint (doi:10.1101/2025.01.30.635139), not the article. The subject, device and electrode fields hold no implantation date, and no mention of implantation in the
-general section of the files or in the dandiset metadata comes with a date, so the days post-implant cannot be checked; the two Monkey T sessions are 13 days apart, which
-matches the 483 and 496 days of the legends. Monkey P's file has no trials and no events. The paper's Zenodo deposit holds ten files (listed above): trial
-lists, LFP, spikes and events of the example sessions, and processed FSCV of c8dg only (the one FSCV file is named for c8dg), and none of its file names points
-to a list of implanted sensors. The conversion
-code also reads eye tracking channels, which are not in the files.
-Installed kernelspec registry-002013-amjad-2025 in executed/002013-amjad-2025/.venv/share/jupyter/kernels/registry-002013-amjad-2025
-0 error(s)
-pass  reproduce_amjad_2025.ipynb  (185 s)
+total 344
+-rw-r--r-- 1 runner runner   5944 2026-11-25 00:08:23.932501911 +0000 author-report.md
+-rw-r--r-- 1 runner runner   3775 2026-11-25 00:08:23.932501911 +0000 author-revise-1-report.md
+-rw-r--r-- 1 runner runner  85444 2026-11-25 00:08:23.933501908 +0000 author-revise-1.md
+-rw-r--r-- 1 runner runner 180807 2026-11-25 00:08:23.934501906 +0000 author.md
+-rw-r--r-- 1 runner runner   8364 2026-11-25 00:08:23.934501906 +0000 verifier-1-report.md
+-rw-r--r-- 1 runner runner  28472 2026-11-25 00:08:23.934501906 +0000 verifier-1.md
+-rw-r--r-- 1 runner runner   8039 2026-11-25 00:08:23.934501906 +0000 verifier-2-report.md
+-rw-r--r-- 1 runner runner  20214 2026-11-25 00:08:23.934501906 +0000 verifier-2.md
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'EOF'
-import json;nb=json.load(open('executed/002013-amjad-2025/reproduce_amjad_2025.ipynb'))
-o=''.join(''.join(x.get('text','')) for x in nb['cells'][3]['outputs']); print(o[o.index('Every mention'):])
-for i in (13,19,25,34,40):
-    o=''.join(''.join(x.get('text','')) for x in nb['cells'][i]['outputs']); print(i, len(o), hash(o))
-EOF
+cd  head -30 transcripts/amjad-2025/verifier-2.md; grep -n -i "2026-11-2\|date" transcripts/amjad-2025/verifier-2.md | head
 ```
 
-```
-Every mention of 'implant' in the dandiset metadata and in the general section of the files, with context:
-  dandiset metadata: '-n92ldne8nv5b/v1", "https://www.protocols.io/view/baseplate-implantation-for-two-part-chamber-system-kqdg32b91v25/v1", "https:/'; date in context: False
-  dandiset metadata: 'www.protocols.io/view/craniotomy-and-second-and-third-phase-implantation-x54v92wd4l3e/v1", "https://www.protocols.io/view/chron'; date in context: False
-  dandiset metadata: 'ps://www.protocols.io/view/chronic-multi-electrode-assembly-implantation-with-bp2l62m95gqe/v1"], "schemaKey": "Dandiset", "iden'; date in context: False
-  T-0913: experiment_description: '-assisted micro-invasive probes (s-\\xc2\\xb5IPs) chronically implanted in the striatum of task-performing rhesus monkeys. The s-'; date in context: False
-  T-0913: experiment_description: 'ield potentials with micrometer spatial resolution. Chronic implants demonstrated stable, multi-modal neural activity measureme'; date in context: False
-  T-0913: experiment_description: "ents from micro-invasive devices over extended periods post-implantation.'"; date in context: False
-  T-0913: keywords: "[b'fast scan cyclic voltammetry' b'micro-invasive neural implant'\n b'dopamine' b'striatum']"; date in context: False
-  T-0913: subject/description: 'in vivo validation of the s-\\xc2\\xb5IP device, with chronic implants targeting the striatum for simultaneous FSCV and EPhys rec'; date in context: False
-  T-0926: experiment_description: '-assisted micro-invasive probes (s-\\xc2\\xb5IPs) chronically implanted in the striatum of task-performing rhesus monkeys. The s-'; date in context: False
-  T-0926: experiment_description: 'ield potentials with micrometer spatial resolution. Chronic implants demonstrated stable, multi-modal neural activity measureme'; date in context: False
-  T-0926: experiment_description: "ents from micro-invasive devices over extended periods post-implantation.'"; date in context: False
-  T-0926: extrac
-[... 16 more lines not kept]
-```
+````
+# amjad-2025 · verifier-2 · run 45513996619
+
+Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 18,30p attempts/002013-amjad-2025-01.yaml; sed -n 172,180p attempts/002013-amjad-2025-01.yaml; grep -n "^- date\|^  kind\|^  by\|^  reviewed" attempts/002013-amjad-2025-01.yaml
+cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
 ```
 
 ```
-successful trial numbers of session 09/26/2024 (files "09262024_trialids_value object start_big
-    rew and success_tr1-1501.mat" and its small rew, left and right counterparts) and the beta power
-    of its example trial (09262024_c3bs-c3a_data_trial35bigrewardexample.mat), used as reference
-    values.
-  source: doi:10.5281/zenodo.14826579
-- what: The Neuralynx events file of Monkey P's session in the paper's Zenodo deposit
-    (session126_events.mat), read in the data check for the time of its first event, which places
-    the spike times on the raw signal's clock, and to show its event codes for fig5a-spike-reward.
-  source: doi:10.5281/zenodo.14826579
-outcomes:
-- claim: insertion-yield
-  outcome: blocked
-  blocked_by: data_missing
-    and higher from 0.5 s on (1.32 to 1.49). The LFP's 1497 joins do not step (largest change at a
-    join 20.3 µV, below the 99.9th percentile of 26.0 µV over all samples), and 118 of 1172
-    successful trials have one within -0.5 to 1 s of the cue, 23 to 36 in each reward and side
-    condition. Trial 1501, absent from the Zenodo lists, is included; one trial of 570 cannot
-    change the result.
-  deviations:
-  - The paper does not give the window highlighted in Figure 4B or a test; 0 to 0.5 s and the
-[... 7 more lines not kept]
-```
-
-**Agent**
-
-Notebook re-run passes with unchanged numbers. Now updating the attempt record.
+total 508
+drwxr-xr-x 6 runner runner    4096 Nov 25 00:04 .
+drwxr-xr-x 8 runner runner    4096 Nov 25 00:04 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:55 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:55 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 25 00:04 .claude
+-rw-r--r-- 1 runner runner       0 Nov 25 00:04 .env
+-rw-r--r-- 1 runner runner       0 Nov 25 00:04 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 25 00:04 .env.development.local
+[... 13 more lines not kept]
+````
 
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'EOF'
-p='attempts/002013-amjad-2025-01.yaml'
-s=open(p).read()
-def rep(a,b):
-    global s; assert s.count(a)==1,a; s=s.replace(a,b)
-rep("""    the spike times on the raw signal's clock, and to show its event codes for fig5a-spike-reward.
-  source: doi:10.5281/zenodo.14826579
-""","""    the spike times on the raw signal's clock, and to show its event codes for fig5a-spike-reward.
-  source: doi:10.5281/zenodo.14826579
-- what: The list of file names of the paper's Zenodo deposit, printed in the data check to show what
-    the deposit holds (insertion-yield, fig3a-dual-channel).
-  source: doi:10.5281/zenodo.14826579
-""")
-rep("""    which kept working, in its files or its metadata. The paper's Zenodo deposit has none either.""",
-"""    which kept working, in its files or its metadata. None of the ten file names of the paper's
-    Zenodo deposit, printed in the data check, points to such a list.""")
-rep("""  notes: No implantation date is given in the files (subject, electrode or device fields) or the
-    dandiset metadata, so days post-implant cannot be computed.""",
-"""  notes: The subject, device and electrode fields of the files hold no implantation date, and none
-    of the mentions of implantation in the files' general section or the dandiset metadata (all
-    printed in the data check) comes with a date, so days post-implant cannot be computed.""")
-rep("""    holds processed FSCV of c8dg only. The conversion notes list raw FSCV files with ten channels,
-    including c8ds, which were not deposited. The c8dg half""",
-"""    holds processed FSCV of c8dg only; its one FSCV file is FSCV_trlists_c8dg_09132024_firsthalf.mat
-    (file list printed in the data check). The c8dg half""")
-rep("""    Hz and a high cut of 8000 Hz, inside the tolerance of 7500 Hz but not equal to it; the
-    dandiset's description also says 7500 Hz. Monkey P's file stores no filter settings.""",
-"""    Hz and a high cut of 8000 Hz, inside the tolerance of 7500 Hz but not equal to it; the
-    dandiset's description also says 0.1 to 7500 Hz (printed). Monkey P's file stores no filter
-    settings; its notes, printed in full, and its electrode columns name no filter or cut-off.""")
-rep("""    and higher from 0.5 s on (1.32 to 1.49). The LFP's""","""    and higher from 0.5 s on (1.32 to 1.49). The criterion, lower power over 0 to 0.5 s, is met; the
-    bins fit a deeper suppression after large-reward cues and equally an earlier suppression with an
-    earlier rebound, so the part of the claim saying the suppression is greater is not shown. The LFP's""")
-rep("""    the 7 spike times below 1 s and repeated times;""","""    the 7 spike times below 1 s and repeated times;""") if "the 7 spike" in s else None
-open(p,'w').write(s)
-EOF
-grep -n "7 spike times" attempts/002013-amjad-2025-01.yaml
-```
-
-```
-263:    thresholded spikes, including 7 spike times below 1 s and repeated times; the poor-quality spikes
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -i 's/including 7 spike times below 1 s and repeated times;/including 7 spike times below 1 s and 3 repeated times;/' attempts/002013-amjad-2025-01.yaml; ls schemas; python -c "
-import json,yaml,glob
-for f in glob.glob('schemas/*attempt*'):
-  d=json.load(open(f)) if f.endswith('json') else yaml.safe_load(open(f))
-  print(json.dumps(d['properties']['verifications'],indent=1)[:3000])"
-```
-
-```
-attempt.schema.json
-claims.schema.json
-entry.schema.json
-{
- "type": "array",
- "items": {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-   "date",
-   "kind",
-   "by",
-   "results"
-  ],
-  "properties": {
-   "date": {
-    "type": "string",
-    "format": "date"
-   },
-   "kind": {
-[... 52 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  head -c 2500 transcripts/002013/verifier-2.md; grep -o "PMC[0-9]*\|paper/[^ ]*" transcripts/002013/verifier-2.md | sort | uniq -c | head
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent**
-
-Now appending the round-2 verification record.
-
-**Agent calls Bash**
-
-```bash
-cd  cat >> attempts/002013-amjad-2025-01.yaml <<'EOF'
-- date: '2026-10-15'
+cd  cat >> attempts/amjad-2025-02.yaml <<'EOF'
+- date: '2026-11-25'
   kind: agent
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The full executed notebook of the first revision, the helper module, the claims file, the
-    attempt record, the README and its own round-1 report, with the paper's full text (PMC12183687).
+  reviewed: 'Round 2: the full executed notebook after the round-1 revision (conclusion cells and summary included),
+    the helper module, the claims file and the attempt record, with the paper''s full text under paper/. Cell numbers
+    below are those of the round-2 notebook, which the round-2 revision kept.'
   results:
   - claim: insertion-yield
     agrees: true
     outcome: blocked
-    reason: No sensor or implant log (cell 3). The record's note "The paper's Zenodo deposit has none
-      either" has no notebook output behind it.
-    response: The data check now prints the file names of the Zenodo deposit; the note says that none
-      of them points to a list of implanted sensors. Outcome unchanged.
+    reason: Blocked, data_missing (cells 5, 6). The insertion-yield notes say "The asset metadata gives no list of
+      sensors either"; no cell prints this. It comes from my round-1 API check and is correct; the record should
+      say it comes from that check, not from the notebook.
+    response: No change of outcome. The data check now fetches the asset metadata of the three files and prints that
+      none mentions sensors or an implant date; the notes cite that output and the verifier's round-1 check, and
+      the claim's section cites the data check.
   - claim: chronic-duration
     agrees: true
     outcome: blocked
-    reason: No implant date; the sessions are 13 days apart, matching 496 - 483 (cell 3). The record's
-      "(subject, electrode or device fields)" has no output behind it; cell 3 prints only the subject's
-      age and searches the top-level values of the dandiset metadata.
-    response: The data check now prints the subject fields, device descriptions and electrode columns
-      of each file, and every mention of implantation in the files' general section and anywhere in
-      the dandiset metadata, with its context; none comes with a date. The notes say so. Outcome
-      unchanged.
+    reason: Blocked, data_missing (cell 26; release notes printed in cell 3). Cell 27 ("The subjects' ages (P11Y and
+      P8Y)") and the notes rest on no printed output; they come from my round-1 API check and are correct.
+    response: No change of outcome. Cell 26 now prints each file's subject age (P11Y, P11Y, P8Y), and the data check
+      prints the ages in the asset metadata; cell 27 and the notes cite them.
   - claim: fscv-waveform
     agrees: true
     outcome: partially_reproduced
-    reason: -0.347 V is outside -0.4 +- 0.04; the other three values pass. The conversion is 1 and the
-      offset 0 (cells 11, 22).
+    reason: 'Cell 29: 3 of 4 values; low point -0.347 V.'
     response: No change.
   - claim: ephys-acquisition
     agrees: true
     outcome: reproduced
-    reason: 30000, 32000, 0.1 and 8000 Hz, all within tolerance (cell 25). Two statements rest on
-      output the notebook does not show; "Monkey P's file stores no filter settings" (the notes are
-      printed only up to 400 characters) and "the dandiset's description also says 7500 Hz" (that part
-      of the description is never printed).
-    response: Cell 25 now prints Monkey P's notes in full (654 characters), a search of the notes and
-      electrode columns for filter or cut-off settings (none), and the part of the dandiset
-      description that says 0.1 to 7500 Hz. Conclusion and notes cite these. Outcome unchanged.
+    reason: Cell 32; the 8000 Hz high cut passes only through the tolerance.
+    response: No change.
   - claim: shape-task-structure
     agrees: true
     outcome: reproduced
-    reason: 24.4% forced trials; complete blocks are 71 to 273 trials (cell 28).
+    reason: 'Cell 35: 24.39%; blocks of 71 to 273 trials.'
     response: No change.
   - claim: zenodo-link
     agrees: true
     outcome: reproduced
-    reason: The lists agree on at least 99.82% of trials; r = 0.943 at 6 ms (cell 31).
+    reason: 'Cell 38: lists agree at 99.82% or more; r = 0.9421. The 35th entry of the list is taken, and the list''s
+      ascending order is now checked.'
     response: No change.
   - claim: fig3a-dual-channel
     agrees: true
     outcome: blocked
-    reason: No c8ds. The c8dg half is above zero in 56/85 trials (cell 37). The record's notes "the
-      Zenodo deposit holds processed FSCV of c8dg only" and "The conversion notes list raw FSCV files
-      with ten channels, including c8ds" have no notebook output behind them.
-    response: The data check now prints the Zenodo file list, whose one FSCV file is named for c8dg;
-      the notes cite it. The sentence about the conversion notes was removed, as the notebook does not
-      show it. Outcome unchanged.
+    reason: Blocked, data_missing (cells 3, 5, 41).
+    response: No change.
   - claim: fig3a-redox-peaks
     agrees: true
-    outcome: blocked
-    reason: No offset puts the raw current on the trial clock (cell 13). The Summary (cell 48) says the
-      raw current "cannot be matched to the trial-aligned series or to the task at any offset", but cell
-      13 tests the large-against-small contrast at only nine shifts, and two give p < 0.05 (-10 s, p =
-      0.020; -30 s, p = 0.033); the record's finding is worded correctly ("or to the task at the stored
-      times"). Cell 14's "r about 0.1 to 0.2" is loose; the printed values are 0.164 to 0.202.
-    response: The Summary now says the raw current cannot be matched to the trial-aligned series at
-      any offset tried, or to the task at the stored times. Cell 14 gives r 0.16 to 0.20 and names the
-      two shifts with p below 0.05, saying a contrast with the task at some offset is not ruled out.
-      Outcome unchanged.
+    outcome: not_reproduced
+    reason: 'Cell 43: falling minimum at 0.897 V. Cell 44 now says no redox signal is detectable and discusses the
+      mismatch with the stored PCA da.'
+    response: No change.
   - claim: fig3b-beta-bursts
     agrees: true
     outcome: reproduced
-    reason: p = 9.5e-10 at the 75th percentile (cell 34). The conclusion now says this is not separate
-      evidence from fig4b. Cell 35's "falls again from 6 s after it (0.34 per s and below)" is wrong;
-      the 6.50 s bin is 0.39 per s.
-    response: Cell 35 now says 0.39 per s and below. Outcome unchanged.
+    reason: 'Cell 46: p = 9.5e-10. The threshold uses the union of trial windows, which covers every sample.'
+    response: No change.
   - claim: fig4a-dopamine-reward
     agrees: true
     outcome: reproduced
-    reason: p = 0.023, and p = 0.022 with the -1 to 0 s baseline (cell 37).
+    reason: 'Agrees, weak. Cell 49: p = 0.0226. Cell 50 now calls the evidence weak and includes the +10 s control.'
     response: No change.
   - claim: fig4b-beta-reward
     agrees: true
     outcome: reproduced
-    reason: p = 1e-08, with no pre-cue difference (cell 40). Cell 41's last sentence, "The suppression
-      is deeper after large-reward cues", is not supported; the 0.1 s bins show large-reward power
-      lower at 0.1 to 0.4 s (0.85, 0.59, 0.60) and higher from 0.5 s (1.32 to 1.49), and over 0 to 1 s
-      slightly higher (ratio 1.04). An earlier suppression and an earlier rebound would also produce
-      this. Round-1 point B4 is partly resolved; whether large reward makes the suppression deeper or
-      earlier is still open, and the bins point to timing. This does not change the outcome under the
-      criterion; it changes how the conclusion should describe the result.
-    response: Cell 41 now says power is lower after large-reward cues at 0.1 to 0.4 s and higher from
-      0.5 s on, that the bins fit a deeper suppression and equally an earlier suppression with an
-      earlier rebound, and that the criterion is met. The notes say the part of the claim that the
-      suppression is greater is not shown. Outcome unchanged, as the verifier said.
+    reason: 'Cell 52: p = 1.03e-08. Point C3 is only partly resolved. Within a block, large against small is the same
+      contrast as left against right. In the 8 left-big blocks both effects predict lower power for the same trials,
+      and all 8 blocks go that way; in the 8 right-big blocks the two effects predict opposite signs, and the result
+      splits 4 to 4. So the "12 of 16" comes from the left-big blocks plus an even split, and the within-block data
+      cannot tell a reward effect from a side effect. The pattern fits two additive effects of similar size; it equally
+      fits a single effect confined to the left-big blocks. The side-fixed Mann-Whitney tests do hold side fixed,
+      but they compare across blocks. Cell 53 presents the 12 of 16 as separating reward from side, which it cannot,
+      and the Summary''s "the reward and side effects on beta power hold when the other is held fixed" is for fig4b
+      supported only by the side-fixed tests. Cells 53 and 56 and the Summary should state this limit. The criteria
+      as written are still met.'
+    response: No change of outcome. Cell 52 now prints the split by the side of the big reward (large below small
+      in 8 of 8 left-big blocks and in 4 of 8 right-big blocks, 5, 7, 11 and 13). Cell 53, the notes and the Summary
+      now state that within blocks the data cannot separate a reward effect from a side effect, that the pattern
+      fits a single effect confined to the left-big blocks as well as two additive effects, and that the side-fixed
+      tests compare trials from different blocks.
   - claim: fig4c-beta-side
     agrees: true
     outcome: reproduced
-    reason: p = 1.6e-06 (cell 43).
-    response: No change.
+    reason: 'Cell 55: p = 1.61e-06. The main test uses large-reward trials only, and small-reward trials give p = 1.48e-10,
+      so the side effect holding with the reward fixed is supported. Within blocks left is below right in 12 of 16
+      (left in blocks 1, 3, 9 and 15 of the right-big blocks), which cannot separate side from reward (point C3);
+      cell 56 should state this limit.'
+    response: No change of outcome. Cell 55 now prints the split by the side of the big reward (8 of 8 and 4 of 8,
+      blocks 1, 3, 9 and 15), and cell 56, the notes and the Summary state the limit and that the main test compares
+      different blocks.
   - claim: fig5a-spike-reward
     agrees: true
     outcome: blocked
-    reason: The Zenodo TTL codes cannot be decoded; code 128 is absent and code 23 occurs only 20 times
-      (cell 19). Cell 20 and the record's format_error finding say "7 spike times below 1 s", but cell
-      19 prints "below 6800 s - 7" and a minimum of 0.0003 s; nothing printed shows that all 7 are
-      below 1 s.
-    response: Cell 19 now prints the count of spike times below 1 s for each unit of the units table
-      (7 for unit 0) and the repeated times (3); cell 20 and the finding say 3 repeated times. Outcome
-      unchanged.
+    reason: 'Blocked, metadata_insufficient (cells 7, 57). Cell 57 quotes the release notes as confirming that "no
+      code map exists for that session"; the release notes printed in cell 3 do not contain this phrase. They say
+      "Monkey P''s 36 event codes have no names, so its trials and reward conditions cannot be identified." The record
+      paraphrases correctly; the notebook should quote the printed text.'
+    response: No change of outcome. Cell 3 now prints the release notes in full, where "since no code map exists
+      for that session" appears under "Additions"; cell 57 and the notes now quote the known-gap sentence and that
+      phrase as printed.
   - claim: fig5bc-unit-isolation
     agrees: true
     outcome: reproduced
-    reason: 0.003% of ISIs under 1 ms; trough/noise is 5.66 (cell 46).
-    response: No change.
+    reason: 'Cell 59: 0.0032% of ISIs under 1 ms; trough 4.58 times the noise. The noise uses the first 600 s, with
+      two later segments shown.'
+    response: 'No change. Other points of the report, not tied to one claim: cell 4''s sentence on the corrected clock
+      offsets is now shown, as cell 3 prints the full release notes. Cell 19 said "one interval of 0.5 ms and one
+      of 1.5 ms" and "values within the +-1 mV input range"; cell 16 now prints the count and the full range, which
+      showed both were wrong (1473 intervals differ from 1 ms, all between 0.5 and 1.5 ms; 0.0424% of values lie beyond
+      +-1 mV, from -1259 to 1162 uV), and cell 19 now says so. The README gave 2 to 4 minutes; the run takes about
+      2 minutes (notebook 86 s after the imports, 93 s in all).'
+  findings:
+  - finding: 3
+    agrees: false
+    severity: major
+    reason: Finding 3 (no implant dates or list of implanted sensors) is rated minor, but it blocks two claims, insertion-yield
+      and chronic-duration, which carry the paper's headline numbers. By the definition given, that makes it major,
+      the same as findings 1 and 2.
+    response: Changed the severity to major.
+  - finding: 8
+    agrees: true
+    reason: Finding 8 is the raw FSCV current against the PCA da. minor is acceptable there, because the files do not
+      show which of the two is wrong (cells 43, 49).
+  - finding: 10
+    agrees: true
+    reason: None of the 11 findings is rated critical, and none should be. The clock checks support the "none" finding
+      (cells 7, 13, 17, 21, 22).
 EOF
-python tools/entry.py check entries/002013-amjad-2025 2>&1 | tail -5; grep -n "—\|rather" attempts/002013-amjad-2025-01.yaml entries/002013-amjad-2025/reproduce_amjad_2025.ipynb entries/002013-amjad-2025/microprobes.py | head; python -c "
-import yaml;d=yaml.safe_load(open('attempts/002013-amjad-2025-01.yaml'));print(len(d['verifications']))"
+python tools/entry.py check entries/amjad-2025 2>&1 | tail -5; grep -c "—\|rather" attempts/amjad-2025-02.yaml
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py all entries/amjad-2025 2>&1 | tail -2; python -c "
+import json;nb=json.load(open('executed/amjad-2025/reproduce_amjad_2025.ipynb'))
+print(''.join(nb['cells'][19]['source'])[:400]); print(nb['cells'][61]['outputs'][0]['text'])"; date -u
 ```
 
 ```
 0 error(s)
-2
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-import yaml
-d=yaml.safe_load(open('attempts/002013-amjad-2025-01.yaml'))
-def walk(x):
-    if isinstance(x,dict): [walk(v) for v in x.values()]
-    elif isinstance(x,list): [walk(v) for v in x]
-    elif isinstance(x,str) and ': ' in x: print(repr(x[:100]))
-walk(d)
-EOF
-git status --short; rm -rf $TMPDIR/ev
-```
-
-```
-M attempts/002013-amjad-2025-01.yaml
- M entries/002013-amjad-2025/microprobes.py
- M entries/002013-amjad-2025/reproduce_amjad_2025.ipynb
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? scripts
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json;nb=json.load(open('entries/002013-amjad-2025/reproduce_amjad_2025.ipynb'));print(sum(len(c.get('outputs',[])) for c in nb['cells']))"; git diff --stat
-```
-
-```
-0
- attempts/002013-amjad-2025-01.yaml                 | 140 +++++++++++++++++++--
- entries/002013-amjad-2025/microprobes.py           |   7 ++
- .../002013-amjad-2025/reproduce_amjad_2025.ipynb   |  57 ++++++---
- 3 files changed, 182 insertions(+), 22 deletions(-)
+pass  reproduce_amjad_2025.ipynb  (93 s)
+The bipolar LFP is continuous at 1 kHz over the trials: 1473 of its 19.2 million intervals differ
+from 1 ms, all between 0.5 and 1.5 ms (mean 0.997 ms), so there are no gaps. It is in volts; 0.0424%
+of its values lie beyond +-1 mV (from -1259 to 1162 uV), which a difference of two channels with
+a +-1 mV input range can reach. The raw c3bs minus c3a signal matches it at a
+lag of 0 to 1 ms in three 
+['total run time 86 s, peak memory 4.39 GB\n']
+Wed Nov 25 00:23:17 UTC 2026
 ```
 
 **Agent**
 
-No outcomes changed and none are proposed. The round-2 verifier agreed with all 14, and nothing I found calls for a change. The entry was re-run with `python tools/entry.py all`: it passes with 0 errors in 185 s, every printed number is the same as before, and `check` passes.
+No outcome changed and none is proposed. The verifier agreed with all 14 outcomes in round 2: 8 reproduced, 1 partially reproduced, 1 not reproduced and 4 blocked. The entry re-runs cleanly (`tools/entry.py all`: 0 errors, notebook passes in 93 s, 4.39 GB peak memory). Apart from the two cell-19 corrections below, no number changed.
 
-**Outputs added**, each one something the verifier said had no printed output behind it:
-- **Implant dates (cell 3):** the data check now prints, for each file, the subject fields, device descriptions and electrode columns. It also prints every mention of "implant" in the files' general section and anywhere in the dandiset metadata, with context. None of them comes with a date.
-- **Zenodo file list (cell 3):** the check also prints the ten file names of the Zenodo deposit, using a new helper `zenodo_files()` in `microprobes.py`. The only FSCV file is named for c8dg, and no file name points to a list of implanted sensors. This list is now recorded under `inputs`.
-- **Spike times below 1 s (cell 19):** the cell now counts them for each unit in the units table. Unit 0 has 7, which supports the format_error finding. It also has 3 repeated times, and the text now gives that number.
-- **Filter settings (cell 25):** Monkey P's notes are printed in full, with a search of the notes and electrode columns for filter or cut-off settings, which finds none. The part of the dandiset description that says 0.1 to 7500 Hz is printed too.
+**What I added or corrected**
+- **Cell 19 was wrong.** The verifier pointed out that two sentences in cell 19 had no printed support. Once I printed the values, both turned out to be false, so I rewrote the cell:
+  - It said the LFP had one 0.5 ms and one 1.5 ms interval. In fact 1473 intervals are not 1 ms, all between 0.5 and 1.5 ms, so there are still no gaps.
+  - It said all values were within +-1 mV. In fact 0.0424% of values lie beyond that, from -1259 to 1162 uV. A difference of two channels with a +-1 mV input range can reach that.
+- **Release notes:** cell 3 now prints them in full, which supports cell 4's sentence on the corrected clock offsets. Cell 57 and the fig5a notes now quote the notes exactly as printed.
+- **Ages and sensors:** cell 26 prints each subject's age from the files, and cell 3 checks the asset metadata (ages; no mention of sensors or an implant date). Cell 27, the insertion-yield section and the notes cite these outputs. The insertion-yield note also credits the verifier's round-1 check, as the verifier asked.
+- **Reward against side (C3):** cells 52 and 55 now print the split by the side of the big reward: 8 of 8 left-big blocks, and 4 of 8 right-big blocks (5, 7, 11, 13 and 1, 3, 9, 15). Cells 53 and 56, the fig4b and fig4c notes and the Summary now say:
+  - within a block, the data cannot tell a reward effect from a side effect;
+  - the pattern fits two additive effects or a single effect confined to the left-big blocks equally well;
+  - the side-fixed tests compare trials from different blocks;
+  - the criteria as written are still met.
+- **README:** run time corrected from "2 to 4 minutes" to about 2 minutes.
+- **Finding 3** (no implant dates or list of sensors) is now `major`, as the verifier said, because it blocks two claims.
+- **Record:** round 2 is under `verifications`, with the verifier's reason and my response for each claim. Its comments on findings 3, 8 and 10 are under the round's `findings`. No finding was rated `critical`, and the verifier agreed none should be.
 
-**Text corrected:**
-- **Cell 48 (Summary):** the raw FSCV current now "cannot be matched to the trial-aligned series at any offset tried, or to the task at the stored times."
-- **Cell 14:** gives r as 0.16 to 0.20. It also names the two shifts with p below 0.05 (−10 s and −30 s) and says a contrast with the task at some offset is not ruled out.
-- **Cell 35:** the burst rate from 6 s on is now "0.39 per s and below".
-- **Cell 41:** no longer says the suppression is deeper after large-reward cues. Power is lower at 0.1 to 0.4 s and higher from 0.5 s on. That fits a deeper suppression and equally an earlier suppression with an earlier rebound, and the criterion is met. The fig4b-beta-reward notes now say that the "greater suppression" part of the claim is not shown.
-- **Record notes:** insertion-yield, chronic-duration, fig3a-dual-channel and ephys-acquisition now cite the new outputs.
-
-**Recorded:** round 2 is now under `verifications`, with the verifier's reasons for all 14 claims in its own words and my response to each.
-
-**Not done:** I removed the fig3a-dual-channel sentence saying the conversion notes list raw FSCV files with ten channels, including c8ds. The notebook does not show that source, and adding it would mean reading outside material that isn't needed to keep the claim blocked. Nothing was committed or pushed.
+**Not done:** I added nothing to `questions/amjad-2025.yaml`, because the verifier reported no new place where the claims file misreads the paper. Nothing is committed, as instructed.
 
 ## End of run
 
-32 turns, 11 minutes, result: success.
+27 turns, 8 minutes, $1.31 at API prices, result: success.
