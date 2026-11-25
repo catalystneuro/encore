@@ -5,6 +5,15 @@
 //     labels: {facetKey: {value: text}}, outcomes: {key: [label, css, icon]} }
 // Rows are fetched from `data`. Filters, search, sort, page and page size are
 // kept in the URL query string, so every view is a link.
+// Text as the search compares it: lower case, without accents, and with the letters that have no
+// accent to drop written as their usual Latin spelling, so that "jerome" finds "Jérôme", "muller" finds
+// "Müller" and "lukasz" finds "Łukasz".
+const FOLDED = { 'ß': 'ss', 'æ': 'ae', 'œ': 'oe', 'ø': 'o', 'ł': 'l', 'đ': 'd', 'ð': 'd', 'þ': 'th', 'ı': 'i', 'ħ': 'h' };
+function fold(text) {
+  return String(text).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[ßæœøłđðþıħ]/g, (c) => FOLDED[c]);
+}
+
 (async function () {
   const cfg = JSON.parse(document.getElementById('list-config').textContent);
   const root = cfg.root;
@@ -35,7 +44,7 @@
   }
   // A list of part of the file: `only` names the values a row must have ({status: ['attempted']}).
   if (cfg.only) rows = rows.filter((r) => Object.entries(cfg.only).every(([k, allowed]) => allowed.includes(r[k])));
-  rows.forEach((r) => { r._text = JSON.stringify(r).toLowerCase(); });
+  rows.forEach((r) => { r._text = fold(JSON.stringify(r)); });
 
   // --- state <-> URL ---------------------------------------------------------
   const state = { q: '', sort: cfg.sorts[0].key, page: 1, size: 25, f: {} };
@@ -66,7 +75,7 @@
 
   // --- filtering -------------------------------------------------------------
   function matches(row, skipFacet) {
-    if (state.q && !row._text.includes(state.q.toLowerCase())) return false;
+    if (state.q && !row._text.includes(fold(state.q))) return false;
     for (const f of cfg.facets) {
       if (f.key === skipFacet) continue;
       const chosen = state.f[f.key];

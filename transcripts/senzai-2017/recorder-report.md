@@ -1,78 +1,18 @@
-I ran `python tools/readme_row.py 000003 --write`, which added the row 15 / 11 / 3 / 2 to README.md, and I added the subsection below at the end of docs/pilot-notes.md. Nothing is committed.
+I've written both files and left them uncommitted. Nothing else in the repository changed; the untracked dotfiles, `.idea`, `.vscode` and `scripts/` were already in the checkout and I didn't touch them. Two choices to check:
 
-Two things to check before the workflow commits:
+- **CatalystNeuro sentence:** the `catalystneuro` field names a contributor, not a repository ("contributor Baker, Cody of CatalystNeuro"), so that sentence names the contributor instead.
+- **Heading:** I followed `asari-2009-02.md`, which ends in "second attempt". `knierim-2000-02.md` uses a different heading form.
 
-- **Conversion repository:** the `catalystneuro` field for 000003 names a person ("contributor Baker, Cody of CatalystNeuro"), not a repository. None of the sources I was allowed to use names one either. So the opening sentence of the second paragraph gives the contributor, as the 000004 subsection does. The full author transcript (`transcripts/000003/author.md`) does read `catalystneuro/buzsaki-lab-to-nwb`, if you want the repository there instead.
-- **Untracked files:** dotfiles (`.bashrc`, `.gitconfig`, `.mcp.json` and others), `.idea`, `.vscode` and a `scripts/` directory are untracked in the repo root. The author's report says it did not create them. Make sure they don't go into the commit.
+**docs/pilot-notes/senzai-2017-02.md**
 
-### 000003, Senzai et al. 2017
+# senzai-2017, Senzai et al. 2017, second attempt
 
-Fifteen claims reproduced, eleven partially, three not reproduced and two
-blocked, all on the dandiset. Round 1 gave its own outcome for each claim
-without seeing the record and agreed with all 31; round 2 agreed again and
-nothing was proposed, so there was no third round. The paper reports the
-physiological properties and behavioral correlates of granule cells and
-mossy cells in the mouse dentate gyrus. The unit counts and classification,
-firing rates across wake, NREM and REM, theta and gamma modulation,
-recruitment by dentate spikes, monosynaptic granule to mossy cell pairs,
-place fields and remapping in the T-maze and open field, and depth (on the
-17 files that give each unit's shank) were tested. `gc-mc-distance` and
-`gc-backpropagation` are blocked as `metadata_insufficient`, because no file
-gives site coordinates; the second revision found the stored channel order
-consistent with depth, which makes them testable on the 17 files, but left
-that to a new attempt. Some outcomes rest on weak ground: the phase part of
-`theta-modulation` holds on one cut of the cycle only, and the spike-count
-corrected comparison gives P = 0.00056 against the paper's P < 0.0001; the
-permutation test for `pv-remap` gives P = 0.32; the overlap of 0.31 in
-`inheritance-tmaze` is at chance (median 0.38); `gc-narrower-waveform` on all
-files is mostly driven by truncated waveforms, and on the wide-band signal of
-the 17 files gives P = 0.017 unfiltered and P = 0.4 after a 300 Hz
-high-pass; and the pair-based claims rest on automatic detections, 65 pairs
-against the paper's 32.
+Seventeen claims reproduced, eight partially, four not reproduced and two blocked, both as `methods_underspecified`; five outcomes rest on an assumption, `tmaze-multiple-fields` and `inheritance-tmaze` on how fields are found and `tmaze-central-active`, `tmaze-peak-info` and `tmaze-splitters` on where a run starts, and `pv-remap` is seed sensitive. The first verification round agreed with 28 of the 31 outcomes, rating `pv-remap` partial and giving the two blocked claims a different reason; the second agreed with 28 as tested, accepted `pv-remap` as reproduced and seed sensitive, and still disagreed with the reason for the two blocked claims, so a change from `metadata_insufficient` to `methods_underspecified` was proposed and a third round reviewed those two claims and agreed. It pins version 0.261122.2143. The paper, Senzai and Buzsaki in Neuron, "Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells", separates dentate granule cells (GC) and mossy cells (MC) in silicon-probe recordings of mice by a k-means on the DS2 amplitude, the NREM to wake rate ratio and the waveform, checks the split by optogenetic tagging in DRD2-Cre::Ai35 mice, and compares the two types' firing across brain states, theta and gamma modulation, dentate spikes, GC to MC spike transmission, and place fields on a T-maze and in two open fields. The claims were written from the author manuscript (PMC5293146) without the supplement, and the attempt kept the claims file of `senzai-2017-01`. Reproduced are the unit counts (583 GC and 503 MC against 586 and 500), the classification (94.4% agreement with the unfiltered wide-band waveform, under all five seeds), the interneuron rates, the narrower GC waveform, MC being more active, the NREM to wake ratio, theta and gamma modulation, DS2 recruitment, burst facilitation (P = 3e-9), the T-maze peak rate and information, the splitters, the remapping index above zero, population-vector remapping, both inheritance claims and MC lying deeper. Not reproduced are `ca3-wake-highest` (NREM 0.473 Hz above wake 0.450 Hz), `gamma-rate-correlation` (MC r = -0.119, P = 0.0076), `state-transmission` (P = 0.52 on the 63 pairs the automatic test finds, 0.018 on the authors' 32) and `remap-gc-lt-mc` (Kruskal-Wallis P = 0.69). Partial are the first-stage labels (89.9% of narrow interneurons below 0.425 ms), the optogenetic tagging (68 of 106 MC suppressed under the criterion's mean-rate rule, 28 of 106 read per 1 ms bin), GC firing most in NREM (wake and REM also differ), the monosynaptic fraction (63 GC to MC and 8 MC to GC pairs), zero-lag synchrony, central-arm activity (MC only), multiple T-maze fields and the remapping fractions. The distance between connected GC and MC and GC backpropagation are blocked because the claims file gives them no criterion. The author read the claims file's opening comments, which print a few numbers of the earlier author's analysis, and reported it; the reconciliation found the attempt otherwise blind and traces the three outcomes that differ from `senzai-2017-01` (unit-counts, interneuron-rates, gamma-rate-correlation) to the new version, which says YutaMouse57 is not in the paper and gives each interneuron's region. The author's first full pass failed on about 40 files, because some tables are optional and some T-maze series use timestamps, and completed after the helper was fixed. The author asked a reader nothing at first and added seven questions over the three revisions. Round 1 found that the classification used a 300 Hz high-passed waveform where the criterion says unfiltered, that the optogenetic rule could be read per bin, that the `pv-remap` P values shrink with the number of draws and that the stored waveforms may be filtered; in reply the classification was rerun on the unfiltered waveform, the per-bin reading, a count-matched gamma control, a circular phase test, an exact splitter test and a per-pair transmission table were added, and no outcome changed. Round 2 found sentences on the same-day files and the first-stage labels that the outputs did not support, which were corrected, an unflagged assumption on the T-maze run start, now flagged on three more outcomes, and proposed the smoothness test of the DS2 profile that led to the third round. The notebook ran in 1239 s at first, 1285 s after round 1, about 24 minutes after round 2 and about 34 minutes after round 3, and in 1313 s, with the reconciliation's notebook in 616 s, at the end.
 
-The dandiset was converted by CatalystNeuro (Cody Baker of CatalystNeuro is
-a contributor). In 24 files the end index of the first unit is short by a
-multiple of 65,536 spikes (k = 1 to 7), and the missing spikes open the
-second unit's train, which looks like an integer overflow at conversion; the
-loader moves them back and reports each repair. In the 17 files with the
-wide-band signal, the electrodes table's map of columns to shanks and sites
-disagrees with the data: a unit's largest spike lies on the shank the units
-table gives for 45% of units and on the table's own site for 9%, and the DS2
-amplitude along the table's site numbers crosses zero more than once on 43
-of 64 shanks; the units' `electrode_group` and stored waveform channels fit
-one fixed map in all 4 mice, so the error is in the table. The authors'
-curated monosynaptic connections (`MonoSynConvClick.mat`) were not
-converted, so Figures 3, 4 and 7 cannot be checked on their pairs. Other
-findings: the genotypes in the files (6 SST-Cre, 5 Drd2-Cre::Ai35, 4
-POMC-Cre::Arch, 1 POMC-Cre::Ai35) do not match the paper's (7 SST-Cre, 5
-DRD2-Cre::Ai35, 3 POMC-Cre::Ai35 and 1 wild type); 83 of 101 files do not say
-which shank each unit was on and no file gives site coordinates, and the
-units table has two layouts; the stored waveforms are about 5 times larger
-than the same spikes in the wide-band signal, consistent with ADC counts read
-as microvolts, and their 1.6 ms window cuts off the peak of 43% of GC, 67%
-of MC and 78% of CA3 waveforms; the dandiset holds 568 mossy cells and 609
-granule cells against the paper's 500 and 586, and 237 units labelled
-`missing`; the T-maze position series and the states `quiet` and `transit`
-are not described; the interneuron labels do not say whether a unit is in
-the dentate gyrus or CA3; one light-pulse series holds 24,286 duplicate
-times among 89,086; seven dates hold two files of one mouse that are
-separate recordings, without saying what they are; and the paper gives a
-burst index threshold of 1.2 in the Methods and 1.8 in the Figure 1A legend.
+The dataset was converted by CatalystNeuro (contributor Cody Baker). The electrodes table gives no position for the recording sites, only each channel's place in its shank's list, and does not say which place is which depth; the DS2 profile in list order is smoother than under random orders on 0.83 of the 261 shanks where it reverses (0.05 by chance), so the lists are in depth order on most shanks, but their direction is not stated, and the probe description names 8 sites per shank while six mice's shanks hold 10 and YutaMouse33's probe has 10 shanks. The stored spike waveforms span 1.6 ms, and for 44% of GC and 69% of MC the peak after the trough falls at the end of that window, so trough-to-peak latencies from them are lower bounds; the files do not say whether they were filtered, and with the unfiltered wide-band waveform in the 17 files that hold it the GC and MC latencies differ with P = 0.175 or P = 8e-10, depending on how the peak is defined. The files do not say whether the two files of a day hold the same neurons under different global_ids: in YutaMouse51 on 16 May 5 of the 9 units of the 'b' file have a same-type unit on the same shank in the other file of the day whose waveform correlates above 0.95, against none of 9 in a file of another day, and the other six pairs do not settle it. 13 of the 101 files have no monosynaptic_connections table and do not say why. The trials' arm_start is described as entry into the central arm, but falls 27.3 cm into the 65 cm arm, and the files mark no gate opening, from which the paper's T-maze window runs. The files otherwise agree with the paper's counts: 248 dentate narrow-waveform interneurons (paper 248), 106 MC and 198 GC in the DRD2-Cre::Ai35 files with 29 MC tagged, as the paper, the authors' table of exactly the paper's 32 GC to MC pairs, 22.1% of MC with a zero-lag partner (paper 23%) and 246, 182 and 317 open-field units (paper 247, 181, 317). Spikes share the clock of the DS2 events (in 80 of 81 files), the positions and the light pulses, and the seven same-day 'b' files are separate recordings, not duplicates. Of the 14 findings of `senzai-2017-01`, nine are fixed on this version (among them the spike-index overflow, the genotypes, the channel map and the waveform scale), four partly fixed and one, the paper's burst index threshold of 1.2 in the Methods and 1.8 in the Figure 1A legend, still present; the labels do not show which was used. Four questions are put to the paper's authors: how local maxima were found for the T-maze fields, what rule and significance test identified suppressed MC, what the manual inspection of the cross-correlogram pairs excluded, and where the gate opening falls relative to the files' trial times.
 
-The electrodes-table finding came in the first revision, after the verifier
-asked whether waveform channels map to the shank's electrodes; the criteria
-of `mc-deeper` and `gc-mc-classification` were then changed to take each
-unit's site from the wide-band signal, with what had been seen recorded in
-the claims file, and both stayed reproduced. Untracked dotfiles and a
-`scripts/` directory that the author did not create appeared in the
-repository during the run and were left alone. The author's points on the
-protocol: preliminary results printed while building the helper before the
-criteria were written; no rule on deposited labels against re-running the
-paper's classification; where to record conversion code read when no
-analysis code is linked; whether to repair a detectable format error; the
-10% rule giving zero tolerance for a reported zero; dependents of partially
-reproduced claims, which the `depends_on` rule does not cover; metadata
-found after the criteria were written; multiple readings that make ambiguous
-claims pass easily; clock checks for continuous sessions without trial
-tables; counting the same unit across days; and claims citing supplementary
-figures that were not available.
+The author's points on the protocol: the claims file's opening comments describe an earlier author's runs and numbers, so a blind repeat attempt still sees them; two claims have no criterion, and they were blocked for missing metadata at first; the protocol does not say whether the rule that every sentence be backed by a printed number covers the record's notes as well as the notebook, and the notes were held to it; any change of wording in the notebook forces a full 20-minute rerun, and the entry was run three times for text-only fixes; and the harness left a protected empty `.claude/.cc-writes` folder inside the entry that could not be deleted.
+
+**summaries/senzai-2017-02.md** (118 words)
+
+Most main findings hold up: granule and mossy cells separate as described, mossy cells fire more, and granule cells fire most in NREM sleep, lock more strongly to theta and gamma, excite mossy cells with burst facilitation and carry less spatial information. Two did not reproduce: weaker granule-to-mossy transmission in NREM sleep, which depends on the authors' manual curation of pairs, and less open-field remapping in granule than mossy cells (P = 0.69). Optogenetic tagging matched the paper only under a per-bin reading of the suppression rule. Some smaller claims, such as CA3 cells firing most in wake, did not hold. The distance between connected cells and dendritic backpropagation were untested, as the claims file gives no criterion.

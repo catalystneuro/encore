@@ -1,4 +1,4 @@
-# 000055 · verifier-2 · run 42352090517
+# peterson-2021 · verifier-2 · run 45595469096
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
@@ -9,464 +9,432 @@ cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
 ```
 
 ```
-total 568
-drwxr-xr-x 6 runner runner    4096 Nov  7 08:08 .
-drwxr-xr-x 7 runner runner    4096 Nov  7 08:08 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov  7 07:37 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov  7 07:37 .bashrc
-drwxr-xr-x 5 runner runner    4096 Nov  7 08:08 .claude
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env.development
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env.development.local
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env.local
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env.production
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env.production.local
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env.test
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .env.test.local
-drwx------ 2 runner runner    4096 Nov  7 08:08 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov  7 07:37 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov  7 07:37 .github
--rw-r--r-- 1 runner runner       0 Nov  7 08:08 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov  7 07:37 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Nov  7 07:37 .mcp.json
-[... 79 more lines not kept]
+total 604
+drwxr-xr-x 6 runner runner    4096 Nov 25 11:42 .
+drwxr-xr-x 8 runner runner    4096 Nov 25 11:42 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 10:28 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 10:28 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 25 11:42 .claude
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .env.test.local
+drwx------ 2 runner runner    4096 Nov 25 11:42 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 10:28 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 10:28 .github
+-rw-r--r-- 1 runner runner       0 Nov 25 11:42 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 10:28 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 25 10:28 .mcp.json
+[... 82 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat README.md; cat 000055-peterson-2021-01.yaml
+cd  cat README.md; diff <(cat peterson-2021-02.yaml) <(cat peterson-2021.yaml) | head -5; head -50 peterson-2021-02.yaml; echo ----; head -50 peterson-2021.yaml
 ```
 
 ```
-<persisted-output>
-Output too large (42.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/b3r9xro2w.txt
-
-Preview (first 2KB):
 # Peterson, Singh, Wang, Rao & Brunton (2021) from dandiset 000055
 
-Tests the findings of [Peterson et al. (2021)](https://doi.org/10.1523/ENEURO.0007-21.2021) on
-[DANDI:000055](https://dandiarchive.org/dandiset/000055/0.220127.0436) (AJILE12), which holds 55 days
-of ECoG and pose from 12 people in clinical epilepsy monitoring, with their wrist movement events and
-event features. Region power uses the paper's projection matrices from
-[Figshare](https://doi.org/10.6084/m9.figshare.12114408.v1).
+Tests the findings of [Peterson et al. (2021)](https://doi.org/10.1523/eneuro.0007-21.2021) on
+[DANDI:000055](https://dandiarchive.org/dandiset/000055/0.261123.1703) (AJILE12), which holds the
+ECoG, pose and wrist movement events of the paper's 12 subjects over 55 days. The ECoG around each
+of 8088 events is streamed from the archive, and region power uses the paper's projection matrices
+from [Figshare](https://doi.org/10.6084/m9.figshare.12114408.v1).
 
 | Claim | Outcome |
 |---|---|
-| Subjects and days match Table 2 (link) | Reproduced |
-| The Figshare projection matrices match the dataset's electrodes (link) | Reproduced |
-| Cohort and electrode counts | Partially reproduced |
+| Subjects and days are the paper's | Reproduced |
+| The Figshare projection matrices match the electrodes | Reproduced |
+| Cohort: sex, age, electrodes, hemispheres | Partially reproduced |
 | 151 to 947 events per subject, median 640 | Not reproduced |
 | All ten features differ across subjects | Reproduced |
-| Reach duration, magnitude and bimodal angle | Partially reproduced |
-[... 18 more lines not kept]
+| Reach duration and magnitude small, angles peak at +-90 | Partially reproduced |
+| Bimanual features skewed toward unimanual | Reproduced |
+| Contralateral wrist moves more than ipsilateral | Reproduced |
+| Feature correlations | Partially reproduced |
+| Events even across days except S04, S05, S09; mostly waking | Partially reproduced |
+[... 127 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat 10.1523-eneuro.0007-21.2021.yaml
+cd  sed -n 50,400p peterson-2021-02.yaml
 ```
 
 ```
-<persisted-output>
-Output too large (46.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/bcy8it5ym.txt
-
-Preview (first 2KB):
-# Claims for Peterson, Singh, Wang, Rao & Brunton (2021), eNeuro 8(3), ENEURO.0007-21.2021,
-# "Behavioral and Neural Variability of Naturalistic Arm Movements", on dandiset 000055.
-# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
-# protocol pilot-10 as stated in docs/protocol.md.
-#
-# Text read. The version of record as served by Europe PMC (PMC8225404), from
-# paper/10.1523-eneuro.0007-21.2021.txt: main text, Materials and Methods, figure legends,
-# Tables 1 and 2, the legends of the Extended Data figures, and the review history. No PDF was
-# supplied. The Extended Data figures (1-1, 2-1 to 2-4, 3-1, 4-1 to 4-7, 5-1, 6-1, 6-2) are
-# EPS downloads and are not in the text; only their legends are. Claims that rest on them are
-# taken from their legends and from the Results sentences that cite them. The per-subject
-# electrode table (Extended Data Figure 1-1) and the per-subject feature confidence intervals
-# (Extended Data Figures 2-3 and 2-4) could not be read.
-#
-# Code read. github.com/BruntonUWBio/naturalistic_arm_movements_ecog at commit
-# 04c6faf2f219586fa834d10c614ef48a694cec55 (17 March 2021), Python 3.6 (MNE 0.19) and MATLAB.
-[... 12 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/b3r9xro2w.txt"
-}
-```
-
-```
-1	# Peterson, Singh, Wang, Rao & Brunton (2021) from dandiset 000055
-2	
-3	Tests the findings of [Peterson et al. (2021)](https://doi.org/10.1523/ENEURO.0007-21.2021) on
-4	[DANDI:000055](https://dandiarchive.org/dandiset/000055/0.220127.0436) (AJILE12), which holds 55 days
-5	of ECoG and pose from 12 people in clinical epilepsy monitoring, with their wrist movement events and
-6	event features. Region power uses the paper's projection matrices from
-7	[Figshare](https://doi.org/10.6084/m9.figshare.12114408.v1).
-8	
-9	| Claim | Outcome |
-10	|---|---|
-11	| Subjects and days match Table 2 (link) | Reproduced |
-12	| The Figshare projection matrices match the dataset's electrodes (link) | Reproduced |
-13	| Cohort and electrode counts | Partially reproduced |
-14	| 151 to 947 events per subject, median 640 | Not reproduced |
-15	| All ten features differ across subjects | Reproduced |
-16	| Reach duration, magnitude and bimodal angle | Partially reproduced |
-17	| Bimanual features skewed to unimanual | Reproduced |
-18	| Contralateral wrist moves more than ipsilateral | Reproduced |
-19	| Feature correlations (Extended Data Figure 2-2) | Partially reproduced |
-20	| Events by day and in waking hours | Partially reproduced |
-[... 680 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/bcy8it5ym.txt"
-}
-```
-
-```
-1	# Claims for Peterson, Singh, Wang, Rao & Brunton (2021), eNeuro 8(3), ENEURO.0007-21.2021,
-2	# "Behavioral and Neural Variability of Naturalistic Arm Movements", on dandiset 000055.
-3	# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
-4	# protocol pilot-10 as stated in docs/protocol.md.
-5	#
-6	# Text read. The version of record as served by Europe PMC (PMC8225404), from
-7	# paper/10.1523-eneuro.0007-21.2021.txt: main text, Materials and Methods, figure legends,
-8	# Tables 1 and 2, the legends of the Extended Data figures, and the review history. No PDF was
-9	# supplied. The Extended Data figures (1-1, 2-1 to 2-4, 3-1, 4-1 to 4-7, 5-1, 6-1, 6-2) are
-10	# EPS downloads and are not in the text; only their legends are. Claims that rest on them are
-11	# taken from their legends and from the Results sentences that cite them. The per-subject
-12	# electrode table (Extended Data Figure 1-1) and the per-subject feature confidence intervals
-13	# (Extended Data Figures 2-3 and 2-4) could not be read.
-14	#
-15	# Code read. github.com/BruntonUWBio/naturalistic_arm_movements_ecog at commit
-16	# 04c6faf2f219586fa834d10c614ef48a694cec55 (17 March 2021), Python 3.6 (MNE 0.19) and MATLAB.
-17	# It holds compute_spectral_power.py and tfr_utils.py (Morlet power, baseline, bootstrap
-18	# masking, projection to regions), the MATLAB projection of electrodes onto AAL regions
-19	# (project_ecog_to_rois.m, EEGLAB 13.5.4b, Measure Projection Toolbox 1.661),
-20	# fit_regression_models.py and regression_utils.py (regression), and notebooks for Figures 2,
-[... 666 more lines not kept]
+deviations:
+  - The criterion's rule as worded (drop all-zero rows) leaves one row too many in every subject and
+    drops the zero rows of the 24 electrodes without a position in S03 and S12. The code's rule
+    (tfr_utils.load_project_spectral_power, commit 04c6faf, `np.nonzero(df.transpose().mean().values
+    != 0)[0][1:]`) also drops the first non-zero row; it is used, and the rows are applied in order
+    to the electrodes with a position. Electrodes without a position get no weight. The wording is
+    asked about in questions/peterson-2021.yaml.
+- claim: cohort
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:cohort
+  measured:
+  - 12
+  - 8
+  - 29.42
+  - 84.83
+  - 7
+  - 23.71
+  - 5
+  notes: Twelve subjects, 8 male, mean age 29.42 years (SD 7.94), 84.83 surface electrodes on average
+[... 331 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF'
+cd  sed -n 400,800p peterson-2021-02.yaml
+```
+
+```
+- kind: data_missing
+  severity: minor
+  statement: The ECoG of three files ends hours before the day ends while the pose and the events go
+    on to 24 h; sub-01 day 7 (15.5 h), sub-04 day 3 (15.7 h) and sub-06 day 3 (15.9 h). 237 events
+    (132, 22 and 83) have no neural data.
+- kind: metadata_insufficient
+  severity: minor
+  statement: The ECoG holds stretches of NaN samples, which the files do not describe; 125 events
+    have NaN samples within 5 s of onset (47 of them in sub-10).
+- kind: metadata_error
+  severity: minor
+  statement: The bimanual overlap is described as a fraction of the contralateral movement duration,
+    but 1708 of 8088 values are above 1 (up to 3.83); the values are consistent with seconds.
+- kind: metadata_error
+  severity: minor
+  statement: The pose series are labelled in meters, but the values are pixels; the reach magnitudes
+    computed from the pose equal the stored pixel magnitudes (median ratio 1.007).
+- kind: metadata_insufficient
+  severity: minor
+  statement: The reach angle has no stated convention. It is the angle in image coordinates (y
+[... 273 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF' > $TMPDIR/nb.txt
 import json
 nb=json.load(open('reproduce_peterson_2021.ipynb'))
 for i,c in enumerate(nb['cells']):
     src=''.join(c['source'])
-    print(f"===== CELL {i} [{c['cell_type']}] =====")
-    print(src[:600] if c['cell_type']=='code' else src)
-    if c['cell_type']=='code':
+    print(f"=== CELL {i} [{c['cell_type']}]")
+    if c['cell_type']=='markdown':
+        print(src)
+    else:
+        print(src[:600] + ('...' if len(src)>600 else ''))
         for o in c.get('outputs',[]):
-            t=o.get('text') or o.get('data',{}).get('text/plain')
-            if t: print('--- OUT ---'); print(''.join(t)[:6000])
-            if o.get('output_type')=='error': print('ERROR', o.get('ename'), o.get('evalue'))
+            if o['output_type']=='stream': print('>>',''.join(o['text']))
+            elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print('>>',''.join(o['data']['text/plain']))
+            elif o['output_type']=='error': print('ERR',o['ename'],o['evalue'])
 EOF
+wc -l $TMPDIR/nb.txt; grep -n "=== CELL" $TMPDIR/nb.txt | wc -l
 ```
 
 ```
-<persisted-output>
-Output too large (138.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/b3yfln0h7.txt
-
-Preview (first 2KB):
-===== CELL 0 [markdown] =====
-# Reproducing Peterson et al. (2021) from dandiset 000055
-
-**Paper.** Peterson SM, Singh SH, Wang NXR, Rao RPN, Brunton BW (2021). Behavioral and neural
-variability of naturalistic arm movements. *eNeuro* 8(3), ENEURO.0007-21.2021.
-[doi:10.1523/ENEURO.0007-21.2021](https://doi.org/10.1523/ENEURO.0007-21.2021). The claims file was
-written from the version of record in Europe PMC (PMC8225404): main text, Methods, legends, Tables 1
-and 2 and the legends of the Extended Data figures.
-
-**Dataset.** [DANDI:000055](https://dandiarchive.org/dandiset/000055/0.220127.0436) (AJILE12),
-version 0.220127.0436. The paper cites no DANDI version: its data statement points to the curated
-epochs on Figshare, and the dandiset was published later. This is the only published version, and
-the draft lists the same 55 files with the same total size, so the published version is pinned.
-The files are streamed; nothing is downloaded.
-
-**What the dataset holds.** 12 subjects and 55 subject-days of preprocessed ECoG (500 Hz), pose of
-[... 13 more lines not kept]
+1845 /tmp/claude-1001/nb.txt
+101
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/b3yfln0h7.txt",
+ "file_path": "/tmp/claude-1001/nb.txt",
  "limit": 700
 }
 ```
 
 ```
-1	===== CELL 0 [markdown] =====
-2	# Reproducing Peterson et al. (2021) from dandiset 000055
+1	=== CELL 0 [markdown]
+2	# Reproducing Peterson et al. (2021) from DANDI:000055
 3	
-4	**Paper.** Peterson SM, Singh SH, Wang NXR, Rao RPN, Brunton BW (2021). Behavioral and neural
-5	variability of naturalistic arm movements. *eNeuro* 8(3), ENEURO.0007-21.2021.
-6	[doi:10.1523/ENEURO.0007-21.2021](https://doi.org/10.1523/ENEURO.0007-21.2021). The claims file was
-7	written from the version of record in Europe PMC (PMC8225404): main text, Methods, legends, Tables 1
-8	and 2 and the legends of the Extended Data figures.
-9	
-10	**Dataset.** [DANDI:000055](https://dandiarchive.org/dandiset/000055/0.220127.0436) (AJILE12),
-11	version 0.220127.0436. The paper cites no DANDI version: its data statement points to the curated
-12	epochs on Figshare, and the dandiset was published later. This is the only published version, and
-13	the draft lists the same 55 files with the same total size, so the published version is pinned.
-14	The files are streamed; nothing is downloaded.
-15	
-16	**What the dataset holds.** 12 subjects and 55 subject-days of preprocessed ECoG (500 Hz), pose of
-17	nine key points (30 frames per second), 8088 contralateral wrist movement events with the paper's
-18	ten features, coarse behaviour labels, and an electrode table with MNI positions, a `good` flag and
-19	the paper's regression R2 per electrode. Sex and age are not in it.
-20	
+4	Paper: Peterson, Singh, Wang, Rao and Brunton (2021), "Behavioral and Neural Variability of
+5	Naturalistic Arm Movements", eNeuro 8(3), ENEURO.0007-21.2021, doi:10.1523/eneuro.0007-21.2021.
+6	
+7	Dataset: DANDI:000055 (AJILE12), version 0.261123.1703 (doi:10.48324/dandi.000055/0.261123.1703).
+8	This version was asked for in the prompt of this attempt, a repeat attempt that tests what the
+9	dataset holds now. It holds 55 NWB files, one per subject and recording day, with ECoG at 500 Hz,
+10	pose at 30 Hz, the contralateral wrist movement events and their features. Every file is streamed;
+11	nothing is downloaded.
+12	
+13	Claims: `claims/peterson-2021.yaml`, written from the version of record (Europe PMC, PMC8225404)
+14	and checked by a second reader. Method details the claims file does not give are taken from the
+15	paper's Methods and its code (github.com/BruntonUWBio/naturalistic_arm_movements_ecog, commit
+16	04c6faf2f219586fa834d10c614ef48a694cec55), cited where they are used. Outside input: the paper's
+17	projection matrices from electrodes to regions, Figshare item 12114408 version 1
+18	(doi:10.6084/m9.figshare.12114408.v1).
+19	
+20	The notebook runs for about 40 minutes: about 10 minutes to stream the ECoG around 8088 events
 [... 680 more lines not kept]
 ```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/b3yfln0h7.txt",
- "offset": 700,
- "limit": 700
-}
-```
-
-```
-700	
-701	> All ten behavioural and environmental features differ significantly across subjects.
-702	===== CELL 37 [code] =====
-703	rows = []
-704	for label, sel in [("b", ev.keep_b), ("a", np.ones(len(ev), bool))]:
-705	    for f in FEATURES:
-706	        groups = [g[f].values for _, g in ev[sel].groupby("subject")]
-707	        h, p = stats.kruskal(*groups)
-708	        rows.append({"reading": label, "feature": f, "H": round(h, 1), "p": p, "p_below_0001": p < 0.001})
-709	kw = pd.DataFrame(rows)
-710	print(kw.to_string(index=False))
-711	print("All ten p < 0.001, reading b:", bool(kw[kw.reading == "b"].p_below_0001.all()),
-712	      "; reading a:", bool(kw[kw.reading == "a"].p_below_0001.all()))
-713	print("Largest p:", kw.groupby("reading").p.max().to_dict())
-714	--- OUT ---
-715	reading          feature      H             p  p_below_0001
-716	      b              day  374.6  1.513673e-73          True
-717	      b             hour  311.7  3.064764e-60          True
-718	      b         duration  189.8  9.854386e-35          True
-719	      b        magnitude 1434.3 4.898135e-301          True
-[... 680 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/b80ef37f-5689-4a04-a53f-137dd1f35867/tool-results/b3yfln0h7.txt",
- "offset": 1399,
- "limit": 900
-}
-```
-
-```
-1399	LFB: reading a, SD lower with baseline in 9 of 12 subjects (median 0.202 against 0.865 dB); reading b, in 1006 of 1096 good electrodes (0.918; median 0.246 against 0.831 dB)
-1400	HFB: reading a, SD lower with baseline in 12 of 12 subjects (median 0.140 against 0.480 dB); reading b, in 988 of 1096 good electrodes (0.901; median 0.217 against 0.592 dB)
-1401	Day effects that remain (claim fig5-recording-day-effects, band mean): significant subject and band pairs 11
-1402	
-1403	===== CELL 81 [markdown] =====
-1404	**Result: reproduced.** The SD across days is lower with baseline subtraction for 9 of 12 subjects in LFB and 12 of 12 in HFB (reading a) and for 0.918 and 0.901 of good electrodes (reading b). Variability remains: 11 subject and band pairs have significant day effects after baseline subtraction (median SD with baseline 0.20 and 0.14 dB in the precentral region).
-1405	===== CELL 82 [markdown] =====
-1406	## Claim `discussion-day-changes-small`
-1407	
-1408	> Day-to-day changes in baseline-subtracted spectral power are small (about 1-2 dB) compared
-1409	> with spectral power without baseline subtraction (about 10-50 dB).
-1410	===== CELL 83 [code] =====
-1411	rows = []
-1412	for sub in SUBJECTS:
-1413	    g = E[E.subject == sub]
-1414	    for band in ["lfb", "hfb"]:
-1415	        col = f"roi_band:precentral:{band}_mean"
-1416	        dm = g.groupby("day")[col].mean()
-1417	        raw = g[f"roi_band_raw:precentral:{band}_mean"].mean()
-1418	        rows.append({"subject": sub, "band": band.upper(), "largest_day_change_dB": round((dm - g[col].mean()).abs().max(), 3),
-[... 504 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "^def \|^    def \|^[A-Z_]* = " ajile.py | head -80; grep -n "17.8\|6931\|male\|29.4" paper/10.1038-s41597-022-01280-y.txt | head -20
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "^def " ajile.py; grep -n -o ".\{150\}17\.8.\{100\}\|.\{150\}6,931.\{80\}\|.\{100\}6931.\{80\}" paper/10.1038-s41597-022-01280-y.txt | head; grep -n -o ".\{100\}eight male\|.\{100\}8 male.\{60\}\|.\{60\}29\.4.\{60\}" paper/10.1038-s41597-022-01280-y.txt | head
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "ajile.py",
- "offset": 435,
- "limit": 260
-}
-```
-
-```
-435	def regression_design(ev: pd.DataFrame, log_plus_one: bool = False) -> tuple[pd.DataFrame, dict]:
-436	    """The ten features of one subject's events, as the claims file's opening comment sets them.
-437	
-438	    Columns in the code's order (regression_utils.single_subj_regression): the eight continuous or
-439	    binary features, z-scored over the subject's events with pandas' SD (code,
-440	    standardize_feats), then the day one-hot columns and the three time-of-day one-hot columns
-441	    (0-8, 8-16, 16-24 h), not standardised (the code joins them after standardising). Reach
-442	    duration and magnitude are log transformed (Methods); `log_plus_one` gives the code's
-443	    log(duration), log(magnitude + 1), log(speed + 1). Returns the design and, per feature,
-444	    its columns.
-445	    """
-446	    cols, groups = {}, {}
-447	    if log_plus_one:
-448	        cols["duration"], cols["magnitude"] = np.log(ev["duration"]), np.log(ev["magnitude"] + 1)
-449	        cols["speed"] = np.log(ev["speed"] + 1)
-450	    else:
-451	        cols["duration"], cols["magnitude"] = np.log(ev["duration"]), np.log(ev["magnitude"])
-452	        cols["speed"] = ev["speed"].astype(float)
-453	    for c in ["angle", "speech", "bimanual_ratio", "bimanual_overlap", "bimanual_class"]:
-454	        cols[c] = ev[c].astype(float)
-[... 213 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python3 - <<'EOF'
-import json
-nb=json.load(open('reproduce_peterson_2021.ipynb'))
-for i in [3,86,88,90,93,96,99]:
-    print(f"===== CELL {i} =====")
-    print(''.join(nb['cells'][i]['source']))
-EOF
-```
-
-```
-===== CELL 3 =====
-# One table of events. Time of day from the midnight clock of the files (see the helper).
-rows = []
-for s in sessions:
-    e = s["events"].copy()
-    e["subject"], e["day"], e["k"] = s["subject"], s["day"], np.arange(len(e))
-    rows.append(e)
-ev = pd.concat(rows, ignore_index=True)
-ev = ev.rename(columns={"Reach_magnitude_px": "magnitude", "Reach_angle_degrees": "angle_file",
-                        "Onset_speed_px_per_sec": "speed", "Speech_ratio": "speech",
-                        "Bimanual_ratio": "bimanual_ratio", "Bimanual_overlap": "bimanual_overlap",
-                        "Bimanual_class": "bimanual_class"})
-# The files' angle is atan2(dy, dx) in image coordinates (checked below); the paper's angle
-# negates it (y up) and folds 90-270 degrees onto 90 to -90 (Methods; code).
-ev["angle"] = ajile.fold_angle(-ev["angle_file"])
-ev["hour"] = ev["start_time"] / 3600.0
-ev["tod_bin"] = np.clip((ev["hour"] // 8).astype(int), 0, 2)
-FEATURES = ["day", "hour", "duration", "magnitude", "angle", "speed", "speech",
-            "bimanual_ratio", "bimanual_overlap", "bimanual_class"]
-print(len(ev), "events")
-[... 194 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -o ".\{120\}false positive.\{120\}" paper/10.1523-eneuro.0007-21.2021.txt | head; grep -c "17.8" paper/10.1523-eneuro.0007-21.2021.txt
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -o ".\{200\}17\.8.\{100\}" paper/10.1523-eneuro.0007-21.2021.txt | head
-```
-
-Result: not kept, because it reads the paper's text.
 
 **Agent**
 
-**Round 2 verification: Peterson et al. 2021 on DANDI:000055**
+Notebook cells 0–27 checked; continuing with the rest.
 
-**1. Outcomes and assumptions**
+**Agent calls Read**
 
-The claims file has 25 claims and the attempt record has 25 outcomes, one per claim. I agree with all 25:
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 700,
+ "limit": 600
+}
+```
 
-- 15 reproduced: subject-days, roi-projection-link, fig2-features-differ-across-subjects, fig2-bimanual-skew, extfig2-1c-contralateral-larger, fig3-group-lfb-decrease-hfb-increase, fig3-sensorimotor-largest, fig4-precentral-subject-variability, fig5-band-power-differs-across-subjects, fig5-recording-day-effects, extfig5-1-baseline-reduces-day-variability, discussion-day-changes-small, fig6-r2-at-most-025, fig6b-best-models-sensorimotor, fig6c-angle-and-day-most-informative.
-- Also reproduced: fig6d-upward-reaches-enhance-pattern and fig6d-angle-and-day-largest-coefficients (17 in all).
-- 6 partially reproduced: cohort, fig2-reach-shape, extfig2-2-feature-correlations, fig2-days-and-waking, table1-subject-band-power-ci, extfig6-2-angle-most-retained.
-- 1 not reproduced: fig2-event-counts.
-- 1 blocked as methods_underspecified: fig3-lfb-more-widespread.
+```
+700	largest p (b): 7.028176603840595e-33 duration
+701	
+702	>> /tmp/ipykernel_3076/328981889.py:8: Pandas4Warning: The 'lsuffix' and 'rsuffix' keywords in DataFrame.join are deprecated and will be removed in a future version. Use the 'suffixes' keyword instead.
+703	  tab = kwb.join(kwa, lsuffix="_b", rsuffix="_a")
+704	
+705	=== CELL 28 [markdown]
+706	**Result: reproduced.** All ten features differ across subjects (Kruskal-Wallis), with the largest p
+707	7.0e-33 (reach duration) on the events of reading (b), and p < 0.001 for all ten on all events.
+708	=== CELL 29 [markdown]
+709	## fig2-reach-shape
+710	
+711	> Reach duration and reach magnitude vary little across subjects, with most reaches lasting under
+712	> 2 s and covering under 200 pixels, and reach angle distributions tend to be bimodal with peaks near
+713	> +90 and -90 degrees, with few side-to-side reaches.
+714	
+715	Angle density: Gaussian KDE with Scott's bandwidth on the folded angle, evaluated on -90 to 90 in
+716	steps of 0.5 degrees (a standard grid). The grid's end points count as local maxima when they exceed
+717	their neighbour, since the folded angle cannot pass +-90 (standard choice, stated).
+718	=== CELL 30 [code]
+719	grid = np.arange(-90, 90.01, 0.5)
+[... 580 more lines not kept]
+```
 
-The six regression outcomes now rest on outputs (cells 88–106) and each matches its criterion:
-- **fig6-r2-at-most-025:** largest R2 is 0.189, against a limit of 0.275.
-- **fig6b-best-models-sensorimotor:** in LFB, 22 of 22 electrodes with R2 > 0.05 are in the five frontoparietal regions. In HFB it is 13 of 14. The projected top three are all frontoparietal.
-- **fig6c-angle-and-day-most-informative:** angle and day have the two largest median Delta R2 in LFB under every variant.
-- **extfig6-2-angle-most-retained:** the angle part holds; the order of the next four fails under both readings.
-- **fig6d-upward-reaches-enhance-pattern:** median angle coefficient is −1.027 in LFB and +0.535 in HFB.
-- **fig6d-angle-and-day-largest-coefficients:** angle and the day SD are the two largest under both readings in both bands.
+**Agent calls Read**
 
-Eleven outcomes are marked `assumed: true`: fig3-group, fig3-sensorimotor, fig4, extfig5-1, discussion-day-changes-small and the six regression claims. Each assumption is stated in the deviations and is reasonable:
-- the reading of the bad-segment rule, which cell 107 shows changes no outcome;
-- the fig4 tie-break, with the strict reading (partial) recorded;
-- the microvolt unit;
-- the batched Huber fit, which agrees with sklearn to 4.4e-05 in R2 (cell 87);
-- refits only where R2 > 0.05, the only electrodes the criteria use.
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1299,
+ "limit": 560
+}
+```
 
-I checked `huber_fit`, `forward_select`, `day_balanced_splits` and `electrode_model` against sklearn's Huber objective and statsmodels' rank-based adjusted R2, and found no error.
+```
+1299	8         5  lfb       True      0.0189            True        0.0557             False                 [-0.65, -0.82, -0.4]
+1300	9         5  hfb      False       0.906            True         0.658              True                   [0.25, 0.29, 0.24]
+1301	10        6  lfb       True    2.65e-07            True      3.76e-07              True     [0.27, -1.77, -0.7, -1.1, -1.14]
+1302	11        6  hfb      False    6.85e-11           False      3.31e-10             False       [0.11, 1.82, 1.77, 1.63, 1.83]
+1303	12        7  lfb       True     0.00129            True       0.00163              True  [-0.64, -0.25, -0.38, -0.88, -0.69]
+1304	13        7  hfb       True      0.0731           False        0.0748             False        [1.5, 1.38, 1.23, 1.16, 1.26]
+1305	14        8  lfb       True       0.308           False        0.0433              True   [0.04, -0.17, -0.05, -0.13, -0.05]
+1306	15        8  hfb       True    0.000505            True       0.00142              True        [0.37, 0.39, 0.58, 0.3, 0.09]
+1307	16        9  lfb      False       0.543            True         0.439              True    [0.18, -0.48, -0.02, -0.35, 0.16]
+1308	17        9  hfb      False       0.653            True          0.76              True      [0.2, -0.66, -0.06, 0.1, -0.24]
+1309	18       10  lfb      False         0.5            True         0.768              True   [-0.43, -0.3, -0.46, -0.32, -0.24]
+1310	19       10  hfb       True      0.0535           False        0.0338              True      [0.06, -0.06, 0.14, 0.24, 0.23]
+1311	20       11  lfb       True    3.81e-08            True      1.14e-07              True  [-2.49, -1.34, -1.38, -1.69, -2.23]
+1312	21       11  hfb      False       0.352            True         0.406              True       [0.09, 0.19, 0.37, 0.17, 0.35]
+1313	22       12  lfb      False       0.646            True         0.296              True    [-0.5, -0.37, -0.5, -0.49, -0.61]
+1314	23       12  hfb      False       0.576      
+[... 532 more lines not kept]
+```
 
-Two small points, neither of which changes an outcome:
-- The day and time-of-day coefficient is taken as the mean over splits of the per-split SD (`coef_all[:, ci].std(1).mean()`), not the SD of the split-averaged coefficients. The record does not state this. It can only raise the day value a little, and the margins are large (day 0.660 against the next feature at 0.188 in LFB).
-- Every ECoG outcome, not only the regressions, includes the false-positive events the files do not mark. This is stated under fig2-event-counts and fig6, not under fig3 or fig5.
+**Agent calls Bash**
 
-**2. Sentences against printed outputs**
+```bash
+cd  grep -n "^- id:\|^  - id:\|^    id:" peterson-2021.yaml | head -40; grep -c "claim:" peterson-2021-02.yaml; grep -n "  outcome:" peterson-2021-02.yaml | wc -l
+```
 
-Every number in the Result cells, the Summary, the README and the record notes matches the outputs. I found no sentence the numbers contradict. Two small points:
-- Cell 59 says "Middle frontal and supramarginal show the same pattern". Cell 57 also lists middle temporal, with −0.005 and +0.003 dB. Supramarginal's high-frequency value at the onset bin is 0.000, so the pattern holds there only over 0 to 0.5 s. The record says so; cell 59 does not.
-- Cell 0 (not a conclusion) says the ECoG step takes "about 22 minutes". Cell 19 prints 19.8 min.
+```
+106:- id: subject-days
+118:- id: roi-projection-link
+135:- id: cohort
+173:- id: fig2-event-counts
+195:- id: fig2-features-differ-across-subjects
+211:- id: fig2-reach-shape
+232:- id: fig2-bimanual-skew
+250:- id: extfig2-1c-contralateral-larger
+274:- id: extfig2-2-feature-correlations
+309:- id: fig2-days-and-waking
+323:- id: fig3-group-lfb-decrease-hfb-increase
+352:- id: fig3-sensorimotor-largest
+374:- id: fig3-lfb-more-widespread
+394:- id: fig4-precentral-subject-variability
+423:- id: fig5-band-power-differs-across-subjects
+443:- id: table1-subject-band-power-ci
+463:- id: fig5-recording-day-effects
+522:- id: extfig5-1-baseline-reduces-day-variability
+545:- id: discussion-day-changes-small
+562:- id: fig6b-best-models-sensorimotor
+[... 7 more lines not kept]
+```
 
-The record's 17.8% false-positive figure is in the paper (Methods), and 6931 events and 8 male / 4 female are in the data descriptor, as stated. I could not check the reference to `questions/000055.yaml`.
+**Agent calls Bash**
 
-The record's round-1 entries give my reasons faithfully, in close paraphrase:
-- the agreement count of 19 is correct (25 minus the 6 regression claims);
-- B6 is merged into cohort, and B7–B9 into fig3-group;
-- B2 is kept as a criterion problem, reported and not corrected.
+```bash
+cd  sed -n 50,105p peterson-2021.yaml; sed -n 394,522p peterson-2021.yaml
+```
 
-**3. Round-1 points**
+```
+# subject's events). Reach duration and reach magnitude are log transformed (Methods); the code
+# uses log(duration), log(magnitude + 1) and also log(onset speed + 1), shown as a variant.
+# Reach angle is folded to -90 (down) to +90 degrees (up) (Methods; code negates the image angle
+# and folds 90-270 degrees). Missing bimanual ratios are set to 0.5 and bimanual class is 1 when
+# the ipsilateral lead/lag value exists (code). Forward selection by OLS adjusted R2 (code
+# _forward_selected_new, run on all of the subject's events, as the code does where the
+# Methods do not say); unselected features are set to 0. Huber-loss linear regression
+# (sklearn HuberRegressor defaults, code). 200 random train/test splits per subject with days
+# balanced in the test set (equal numbers of test events from each day). The Methods give 90%
+# training and 10% test; the code uses 80/20 (train_test_split_day_balance, per_train=.8). The
+# Methods' 90/10 is the main result and the code's 80/20 a variant. Full-model R2 is the
+# coefficient of determination on the test events, averaged over splits. The Delta R2 of a
+# feature is the full-model test R2 minus the test R2 of a model refit with that feature
+# shuffled (all day columns shuffled together, and all time-of-day columns together, code),
+# averaged over splits. Features dropped by forward selection get Delta R2 0 (code). The
+# Methods score the shuffled model on the unshuffled withheld data, and the Results say the
+# training labels were shuffled. The code shuffles the column in training and test events and
+# scores on the shuffled test events. The Methods' version is the main result, the code's a
+# variant. Coefficients are averaged over splits. Recording day and time of day are
+# summarised by the SD of their one-hot coefficients (Figure 6 legend, code). Figure 6b-d
+[... 165 more lines not kept]
+```
 
-- **B1 (regressions not run): resolved.** All six were run with all their variants, in 2.2 min.
-- **B2 (KDE boundary bias): resolved as a sensitivity check.** A boundary-reflected KDE puts the peaks within 15° of ±90 in 6 of 12 subjects, not more than half, so the partial outcome holds under either KDE. The bias remains in the criterion and is reported there.
-- **B3 (false positives not marked): resolved as far as the data allow.** Cell 6 shows the same nine columns in all 55 files and no false-positive mark. The notes now qualify the outcome.
-- **B4 (one bootstrap seed): resolved.** Under ten seeds the readings give 7 against 7 regions and 35.0–35.6 against 25.5–25.8 bins per frequency every time (cell 65).
-- **B5 (fig4 tie-break): resolved by disclosure.** The outcome is marked assumed and the strict reading is recorded as partial.
-- **B6 (depth classification): resolved.** Cell 7 lists the groups and cell 31 gives the descriptor's counts. The "five" fails either way.
-- **B7 (bad electrodes from the first file):** the record now cites tfr_utils.py. I cannot check the code, and no conclusion depends on it.
-- **B8 and B9:** unchanged; neither affects a conclusion.
+**Agent calls Bash**
 
-What remains that bears on a conclusion:
+```bash
+cd  python3 -c "
+import json
+nb=json.load(open('reproduce_peterson_2021.ipynb'))
+for i in (46,76):
+    print('=== ',i); print(''.join(nb['cells'][i]['source']))
+"
+```
 
-1. **fig6b-d: the attempt's per-electrode R2 matches the paper's only moderately.** The R2 values stored in the files are the paper's own. Their Spearman correlation with the attempt's R2 is 0.718 in LFB and 0.643 in HFB, and the HFB maximum is 0.189 here against 0.255 stored (cell 90). Claims fig6b, fig6c and both fig6d claims rest on small sets above R2 0.05: 22 LFB electrodes from 4 subjects (11 from S01) and 14 HFB electrodes from 6 subjects. The notebook does not show how far these sets overlap the paper's. Two outputs would settle it: the overlap with the stored R2 > 0.05 sets, and the fig6b-d criteria applied to electrodes selected by the stored R2. The outcomes stand on present evidence.
-2. **fig2-event-counts** is judged on reading a in full, and on reading b without its false-positive step, which the files make impossible. This is a data limitation and is disclosed.
-3. **fig4 part 4** depends on the tie-break. Under the strict bin-count reading the claim would be partially reproduced; this is disclosed.
-4. **fig2-reach-shape's angle criterion** has a KDE without boundary correction. This is in the claims file, reported and not corrected. The sensitivity check shows the outcome does not depend on it.
+```
+===  46
+kbv = ev.keep.values
+subj_v = ev.subject.values
+SUBJ_MED = np.stack([np.nanmedian(REG_BS[kbv & (subj_v == s)], axis=0) for s in subjects])  # (subj, roi, f, b)
+GROUP = SUBJ_MED.mean(axis=0)
+GROUP = GROUP - GROUP[..., ajile.BASE].mean(axis=-1, keepdims=True)
+base_idx = np.flatnonzero(ajile.BASE)
+
+def bh(p, q=0.05):
+    p = p.ravel(); n = len(p); o = np.argsort(p)
+    thr = q * np.arange(1, n + 1) / n
+    ok = p[o] <= thr
+    k = np.max(np.flatnonzero(ok)) + 1 if ok.any() else 0
+    sig = np.zeros(n, bool); sig[o[:k]] = True
+    return sig
+
+def mask_group(rng, n_boot=2000, group=None, subj_med=None):
+    group = GROUP if group is None else group
+    subj_med = SUBJ_MED if subj_med is None else subj_med
+    masked = np.zeros_like(group)
+[... 72 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json
+nb=json.load(open('reproduce_peterson_2021.ipynb'))
+print(''.join(nb['cells'][13]['source']))
+"; sed -n 211,232p peterson-2021.yaml
+```
+
+```
+# Clock check: event-locked band power at the true onsets against a pseudo-onset 3 s earlier in the
+# same segments (same electrodes, same events). Precentral-weighted mean over the subject's good electrodes.
+rows = []
+for s in subjects:
+    lf, hf, lfs, hfs = [], [], [], []
+    for m, r in zip(metas, spec):
+        if int(m["subject_id"]) != s:
+            continue
+        k = ev[(ev.asset_id == m["asset_id"])].keep.values
+        w = np.nan_to_num(W_MAIN[s][:, 1])
+        for key, lst in (("lfb_mean", lf), ("hfb_mean", hf), ("lfb_mean_shift", lfs), ("hfb_mean_shift", hfs)):
+            lst.append(np.nansum(r["elec"][key][k] * w[None, :], axis=1))
+    lf, hf, lfs, hfs = map(np.concatenate, (lf, hf, lfs, hfs))
+    rows.append(dict(subject=s, lfb_onset=np.median(lf), lfb_pseudo=np.median(lfs),
+                     hfb_onset=np.median(hf), hfb_pseudo=np.median(hfs),
+                     p_hfb=stats.wilcoxon(hf, hfs).pvalue, p_lfb=stats.wilcoxon(lf, lfs).pvalue))
+clock = pd.DataFrame(rows)
+print(clock.round(4).to_string())
+# Pose: contralateral wrist speed around onset
+spd = []
+[... 30 more lines not kept]
+```
+
+**Agent**
+
+**Verifier report, round 2: Peterson et al. 2021 on DANDI:000055 (0.261123.1703)**
+
+The claims file has 25 claims and the attempt record has 25 outcomes: 15 reproduced, 7 partially reproduced, 2 not reproduced and 1 blocked. My round-1 report gave 14 reproduced and 9 partially reproduced. That was my counting error: my own round-1 table lists 15 and 8.
+
+### 1. Outcomes
+
+I agree with 24 of the 25 outcomes. Every assumption marked `assumed: true` is stated. All but one are reasonable.
+
+- **fig5-recording-day-effects (not_reproduced, assumed): I do not agree that the outcome is settled.**
+  - The outcome changed from round 1 only because the main analysis now uses the electrodes marked good in every file of a subject.
+  - The claims header's phrase "renormalised to sum to 1 per subject" says the weights are made per subject. It does not say which electrodes count as bad.
+  - The notebook's own counts (cell 4) argue against the chosen set. Excluding every electrode that is bad in any file removes 3 to 32 per subject, mean about 17.3. The paper reports 4.9 ± 4.9 surface electrodes removed per subject.
+  - Removing only the electrodes bad in every file gives a mean of 3.0 (SD about 4.6), much closer to the paper. That set is also per subject and keeps the electrode mix the same across days.
+  - That third set was not run. The result is 18/24 under the chosen set and 20/24 (exactly the threshold) under each file's flags, so the outcome flips on an open choice. I would report it as undecided between partially and not reproduced until that set is run.
+- **table1 and fig4:** the same choice moves table1 from 21/24 to 18/24, which is exactly the partial threshold, and fig4 from 3 to 2 parts. Both outcomes stay partially reproduced either way, so I agree with them.
+- **fig4 part 4 now fails:** S07 and S09 have 2 bins, and six subjects, S04 and S08 among them, tie at 3 (cell 56). Only one place among the three fewest is left, so S04 and S08 cannot both be in it. Counting this as a fail is reasonable.
+- **fig2-reach-shape:** the new density table (cell 30) supports the author. Pooled, only 6.4% of events lie within 15° of −90, which is below the 8.3% a uniform spread would give. The −90 side fails for a reason other than the kernel's boundary effect, so partially reproduced stands.
+- **The other assumed outcomes** (segment-rejection pooling, regression electrode set, the R² > 0.03 refit rule for the variants) are stated and reasonable.
+
+### 2. Sentences the numbers do not support
+
+- **Cell 99 (Summary), fig2-reach-shape row:** "no angle density peaks within 15 degrees of +-90". Cell 30 shows a peak at +75.0 pooled and in S01, which is exactly 15° from +90. The code's `<= 15` test counts that as within. The failure is on the −90 side and in the density at 0.
+- **Cell 99 (Summary), fig4 row:** "S04 and S08 tied for the narrowest decrease". Cell 56 shows S07 and S09 narrowest at 2 bins, and S04 and S08 tied at 3 bins with four other subjects.
+- **Cell 0 and the README:** "runs for about 40 minutes", with about 17 minutes for regression and about 9 minutes for variants. Cell 100 prints 63.5 min. The regression took 2052 s (cell 78) and the variants 620 + 365 s (cells 97–98).
+- **Cell 38:** "S05 and S04, which move both arms most". This is only loosely supported. Cell 34 ranks S07's median bimanual ratio (0.308) above S05's (0.296).
+
+I checked every other sentence of the conclusions, the Summary, the README table and the record's notes and findings against the printed outputs, and they match. This includes the 439 dropped events (237 + 125 + 1 + 75 + 1), the 11 significant day-effect pairs, the 21/24 and 20/24 variant results, and the variant ranges for seeds, log speed and bad electrodes.
+
+The record's `verifications` states my round-1 reasons faithfully in its own words, with one omission: my problem 2 (the 86400 s timestamp mismatch) is not among the stated reasons. Only the author's response to fig2-event-counts mentions it.
+
+### 3. Round-1 points
+
+**Resolved:**
+- 2: one mismatched event (S08 day 4), now dropped from reading (b).
+- 4: the seed, log(onset speed + 1) and bad-electrode variants were run, with Delta R² and coefficients refit (cells 97–98).
+- 5: the leakage from forward selection is disclosed.
+- 6: the zero rows sit at the electrodes without positions, and shifting the rows lowers the fit in all 12 subjects (cells 7–8).
+- 8: the density values are now printed.
+- 9: the 0.5–4 s filter was run as a variant.
+- 10: the grid-only variant was run.
+- 7: stated as a deviation. It does not change any outcome.
+
+**Remaining, bearing on a conclusion:**
+- **Problem 1, now as an electrode-set question.** The per-subject reading was run, but the chosen set is the least consistent with the paper's 4.9 ± 4.9 removed electrodes. The outcome of fig5-recording-day-effects depends on it, as described in section 1.
+- **Problem 3, partly open.** No electrode's power becomes non-finite, but every analysed event of S09 and S10 has runs of 50 ms or more of zeros on 1 to 15 good electrodes (cell 12). Their effect on band power is not measured.
+  - This touches S09's fig4 part-1 failure and S10's HFB day effect (p = 0.054).
+  - S09 is also the one subject where neither band differs between onset and pseudo-onset (cell 13), so its alignment of ECoG and events is not established.
+- **Not run (criterion gap):** the fig5-recording-day-effects criterion asks for Table 2's per-day intervals for comparison. Cell 67 prints day means only.
+
+### 4. Critical findings
+
+The attempt record has no finding rated `critical`. I see none that should be: the one-event timestamp mismatch, the ECoG ending early, the unit and convention errors, and the depth-group count are all evident from the values or easy to work around.
+
+S09's unconfirmed alignment (cell 13) would be critical only if a misalignment were shown, and nothing in the outputs shows one. Its current listing under checks that passed, noting that alignment could not be established for sub-09, is appropriate.
 
 ## End of run
 
-16 turns, 3 minutes, $1.78 at API prices, result: success.
+13 turns, 3 minutes, $1.43 at API prices, result: success.
