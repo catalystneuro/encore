@@ -464,6 +464,12 @@ merge_main(){
   fi
   git -C "$work" push -q origin "HEAD:refs/heads/$br" || return 3
 }
+# The protocol over the worktree, at the version its protocol.lock names. describe.py reads the attempt with the
+# protocol's tools (agent_run.py, datasets.py), which the registry's commits have not held since 2026-11-23
+# (tools/protocol.sh), so a new worktree has none. Until 2026-11-25 nothing laid them here: the title came out
+# blank and each of the seven attempts that finished in those two days stopped at "could not open a pull request".
+# A branch from before then has no protocol.sh until main is merged in, and holds the protocol itself.
+lay_protocol(){ [ ! -f "$work/tools/protocol.sh" ] || bash "$work/tools/protocol.sh" "$work" >/dev/null; }
 log "finishing"
 round=0
 while true; do
@@ -480,7 +486,10 @@ while true; do
   # The branch as the recorder left it, for the pull request's title and body (describe.py reads the tree).
   fetch; git -C "$work" checkout -q --detach "origin/$br" \
     || { end "$d STOPPED: could not check out $br after the recorder"; exit 1; }
+  lay_protocol || { last_why="tools/protocol.sh failed in the finish worktree"; end "$d STOPPED: could not lay the protocol over $br"; exit 1; }
   title=$(REGISTRY_ROOT="$work" python "$here/describe.py" title "$d")
+  [ -n "$title" ] || { last_why="describe.py could not read the attempt on $br; its error is in the chain's log"
+                       end "$d STOPPED: could not write the pull request's title"; exit 1; }
   pr=$(gh pr list --head "$br" --state open --json url --jq '.[0].url // empty')
   if [ -z "$pr" ]; then
     pr=$(gh pr create --base main --head "$br" --title "$title" \
