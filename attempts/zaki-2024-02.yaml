@@ -418,6 +418,23 @@ findings:
     overlap-aversive comparison in wake reverses with it (25.9% against 35.3% of 85 bursts with quiet
     wake, 33.3% against 29.2% of 24 without, in Ca_EEG2-1's deposited recording). The analysis code is
     not public, so the authors are asked which states their wake holds.
+- kind: selection_undocumented
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: The dandiset's description is the paper's abstract, and neither it nor the experiment
+    description of the files says why mice Ca_EEG2-1 and Ca_EEG3-4, and only the first 10 min
+    recording of each offline period, were deposited, or which recordings the paper analysed. The
+    release notes list the two mice and the first offline recordings under "Known gaps", without a
+    reason.
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: In the 11 files with imaging the fluorescence series carry placeholder descriptions
+    ("description of baseline traces", "description of deconvolved traces", "description of denoised
+    traces", "Array of neuropil traces.") and unit "n.a.", and the session description of
+    sub-Ca-EEG2-1_ses-Week.nwb is empty.
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -848,3 +865,119 @@ verifications:
       does not apply, and an analysis that uses the timestamps as given orders the recordings wrongly. The
       verifier reviewed it as a major finding, so its agreement is recorded as given (agrees false), and the
       site will not present it as a checked critical finding until a verifier reviews it as rated.
+reconciliation:
+  earlier: zaki-2024-01
+  date: '2026-11-25'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 3
+    note: >-
+      zaki-2024-02's finding 3 reports the same two of the nine mice of the calcium imaging and EEG/EMG experiment
+      and one offline recording per offline period, with Ca_EEG2-1 holding 1 of its 24 recordings after aversive
+      encoding and no neutral or novel recall; 20 of the 26 claims are blocked for it in both attempts.
+  - finding: 2
+    status: still_present
+    now: 3
+    note: >-
+      The same finding 3 reports that Ca_EEG3-4 has no cell registration and that Ca_EEG2-1's Week file holds
+      registration tables for 19 offline-day-2 recordings whose imaging is not deposited.
+  - finding: 3
+    status: still_present
+    now: 11
+    note: >-
+      On 0.261122.2159 the dandiset's description is still the paper's abstract and the files' experiment
+      description names no selection; the new release notes list the two mice and the first 10 min offline
+      recordings under "Known gaps" without saying why (earlier_findings.ipynb, finding 3).
+  - finding: 4
+    status: still_present
+    now: 1
+    note: >-
+      zaki-2024-02's finding 1 reports the same offset of about 1 h between the Ca_EEG2-1 behaviour sessions and
+      the telemetry clock, with OfflineDay2Session1 starting 47 min before FC; the release notes of 0.261122.2159
+      list it as a known gap and leave the start times unchanged.
+  - finding: 5
+    status: fixed
+    note: >-
+      On 0.261122.2159 the three files have one OnePhotonSeries timestamp per frame (17770, 17876 and 8934) over
+      the whole recording, ending at 599.973, 600.126 and 299.938 s, 0.034 s after the last deconvolved sample,
+      with a median step of 34.0 ms (earlier_findings.ipynb, finding 5); the release notes say these files were
+      re-converted with the Miniscope frame times.
+  - finding: 6
+    status: still_present
+    now: 2
+    note: >-
+      zaki-2024-02's finding 2 reports the same "quiet wake" state in the sleep_state column, which the paper does
+      not name, and its finding 10 asks the authors which states the wake of Fig. 5c holds. It also finds that the
+      column's description defines quiet wake as a waking state, which the earlier finding did not discuss.
+  - finding: 7
+    status: still_present
+    now: 4
+    note: >-
+      zaki-2024-02's finding 4 reports the same telemetry stored at 500 Hz in the offline files and the Week file,
+      against the 100 Hz of the Methods.
+  - finding: 8
+    status: still_present
+    now: 9
+    note: >-
+      zaki-2024-02's finding 9 reports the same session descriptions of the three offline files, which describe
+      the one-hour webcam recordings while the files hold 10 min recordings with telemetry.
+  - finding: 9
+    status: still_present
+    now: 5
+    note: >-
+      zaki-2024-02's finding 5 reports the shock amplitudes "1.5" and "0.25" without a unit. The other two parts
+      are also still there on 0.261122.2159 (placeholder descriptions and unit "n.a." on the fluorescence series
+      of all 11 imaging files, an empty Week session description; earlier_findings.ipynb, finding 9), and are
+      added as finding 12.
+  - finding: 10
+    status: still_present
+    now: 8
+    note: >-
+      zaki-2024-02's finding 8 reports the same analysis code repository as not public and asks the same question,
+      how bursts are counted in the shuffled surrogates.
+  outcomes:
+  - claim: offline-bursts-above-shuffle
+    earlier: blocked
+    cause: claims_changed
+    note: >-
+      zaki-2024-01 tested the one procedure its criterion named (each surrogate z-scored again), found the true
+      rate below the surrogate mean (5.30, 6.40 and 8.71 against 8.48 to 10.94 per min), and blocked the claim as
+      methods_underspecified because this chance level is far from the paper's source data for Extended Data Fig.
+      3m (surrogate over true 0.72 to 0.96, here 1.26 to 1.60). During zaki-2024-02 a reader amended the criterion
+      to accept also reading (b), surrogates held to the true trace's mean plus 2 SD, under which it gets 8.73,
+      6.42 and 5.31 against surrogate means of 0.11, 0.01 and 0.00, as zaki-2024-01's own variant did (at most
+      0.50 per min); the numbers agree under both readings. Neither reading comes near the paper's chance level of
+      3.38 to 4.39 per min, which zaki-2024-02 did not compare with, and reading (b) is also passed by cells that
+      share only a slow drift (its synthetic check).
+    supports: blocked
+    confidence: medium
+  - claim: fig5c-wake-overlap-neutral-coburst
+    earlier: not_reproduced
+    cause: label
+    note: >-
+      The numbers are essentially the same (wake with quiet wake, OxN 26.4 against OxA 35.6% of 87 bursts in
+      zaki-2024-01 and 25.9 against 35.3% of 85 in zaki-2024-02; wake alone, 32.0 against 28.0% of 25 and 33.3
+      against 29.2% of 24, McNemar p = 1.0 in both); the 2 bursts that differ fall between sleep intervals, which
+      earlier-entry/memlink.py state_of_frames labels by extending each interval by 0.1 s. zaki-2024-01 judged the
+      outcome on wake with quiet wake alone after its first verification, while the criterion counts any of its
+      readings, under which OxN above OxA in wake alone without p < 0.05 is partially reproduced, as zaki-2024-02
+      applied it.
+    supports: partially_reproduced
+    confidence: high
+  protocol: >-
+    docs/pilot-notes.md has sections for pilot-8, 9, 10, 12, 13 and 14 after pilot-7, and none for pilot-11 or
+    pilot-15 to pilot-18. pilot-8 added quotes and statistics to the claims (this claims file's were added on
+    2026-10-19), and no criterion turns on them. pilot-9 took every method from the paper and had every reading the
+    paper allows run, as the two-reading criteria of the burst and co-bursting claims do. pilot-10 split the reader
+    from the author; zaki-2024-01's author had written its own criteria and narrowed fig5c-wake-overlap-neutral-coburst
+    to one reading after its first verification, while zaki-2024-02's author was bound by the criterion and asked a
+    reader about offline-bursts-above-shuffle, and the reader's amendment changed that outcome. pilot-12 made this
+    repeat blind and added this comparison; pilot-13 raised the notebook limit to 60 min, which neither entry nears;
+    pilot-14 filed the records by paper. From tools/entry.py, pilot-15 asks `about` on other and
+    selection_undocumented findings, pilot-17 asks for the authors' notes (there are none for this paper), and
+    pilot-18 asks a severity on each finding about the data, which zaki-2024-02's carry and zaki-2024-01's have only
+    from its findings_review. The current rule that an outcome may rest on an assumed reading, blocked as
+    methods_underspecified only when no choice is defensible, is in none of the notes; zaki-2024-02 marks both
+    changed outcomes as assumed under it.
