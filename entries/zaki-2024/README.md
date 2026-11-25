@@ -11,7 +11,7 @@ the behaviour-only experiments are not in it.
 |---|---|
 | The deposited mice are the source data's mice, with the same freezing | Reproduced |
 | High-shock mouse froze more in aversive recall than low-shock mouse | Reproduced |
-| Offline bursts more frequent than in circularly shifted data | Not reproduced |
+| Offline bursts more frequent than in circularly shifted data | Reproduced, under an assumption |
 | Offline population activity more skewed than in circularly shifted data | Reproduced |
 | Movement pauses about 1 s before bursts | Not reproduced |
 | In wake, overlap co-bursts more with neutral than with aversive (high shock) | Partially reproduced |
@@ -22,13 +22,14 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The burst-frequency outcome turns on whether the shuffled population trace is z-scored again
-before bursts are counted, which the paper does not say; the other reading is shown as a variant
-and would reproduce the claim. In Ca_EEG2-1 the behaviour sessions are timestamped about 1 h later
+before bursts are counted, which the paper does not say. After a reader's answer the criterion names
+both readings: held to the true trace's threshold, the shuffles hold almost no bursts and the claim
+is reproduced; z-scored again, they hold more bursts than the data. The outcome rests on the first. In Ca_EEG2-1 the behaviour sessions are timestamped about 1 h later
 than the offline recordings and the telemetry, so that the first offline recording after fear
 conditioning appears to start before it. The attempt record, with the reasons and the differences
 from the paper's method, is [`attempts/zaki-2024-02.yaml`](../../attempts/zaki-2024-02.yaml).
 
-- `reproduce_zaki_2024.ipynb`: the analysis. It takes about three minutes, most of it the
+- `reproduce_zaki_2024.ipynb`: the analysis. It takes about four minutes, most of it the
   surrogates.
 - `zaki.py`: streaming the files, freezing, burst detection, circular-shift surrogates, ensembles
   from the cell registration, and movement from the telemetry. Other notebooks on this dandiset can

@@ -58,29 +58,47 @@ outcomes:
     stand in for mice, as the criterion says.
   - The last of the ten bins holds 29.9 s, as the sessions hold 8998 and 8999 frames at 30 Hz.
 - claim: offline-bursts-above-shuffle
-  outcome: not_reproduced
+  outcome: reproduced
+  assumed: true
   notebook: reproduce_zaki_2024.ipynb
   output: claim:offline-bursts-above-shuffle
-  notes: In all three deposited offline recordings the true burst frequency is below the mean of
-    1000 circular-shift surrogates whose population trace is z-scored again, as the criterion says
-    (Ca_EEG2-1 Day 2, 8.73 against a surrogate mean of 10.94 bursts per minute, 95th percentile
-    12.14; Ca_EEG3-4 Day 1, 6.42 against 8.81 and 9.92; Ca_EEG3-4 Day 2, 5.31 against 8.48 and 9.52).
-    The fraction of surrogates at or above the true value is 0.999, 1.000 and 1.000. Under the
-    claim's seed and the seed plus 1000 to 4000 the surrogate means range 10.91 to 10.96, 8.78 to
-    8.85 and 8.48 to 8.57, and the outcome is the same under all five. As a variant, with each
-    surrogate thresholded at the true trace's mean plus 2 SD (not z-scored again), the surrogates
-    hold 0.11, 0.01 and 0.00 bursts per minute (95th percentiles 0.30, 0.10, 0.00), and the claim
-    would be reproduced in all three. The Extended Data Fig. 3l legend does not say which was done;
-    a question for a reader is in questions/zaki-2024.yaml. All 625, 711 and 858 cells have activity
-    and none is dropped.
+  notes: Under reading (b), each surrogate thresholded at the true trace's mean plus 2 SD, the true
+    burst frequency is above the 95th percentile of 1000 circular-shift surrogates in all three
+    deposited offline recordings (Ca_EEG2-1 Day 2, 8.73 against a surrogate mean of 0.11 bursts per
+    minute, 95th percentile 0.30, maximum 0.50; Ca_EEG3-4 Day 1, 6.42 against 0.01, 0.10 and 0.30;
+    Ca_EEG3-4 Day 2, 5.31 against 0.00, 0.00 and 0.20), and no surrogate reaches the true value.
+    Under the second generator's seed (the claim's plus 1) and that seed plus 1000 to 4000 the
+    surrogate means range 0.10 to 0.11, 0.00 to 0.01 and 0.00, the 95th percentiles 0.30, 0.00 to
+    0.10 and 0.00, and the outcome is the same under all five. Under reading (a), each surrogate
+    z-scored again, the true frequency is below the surrogate mean in all three (10.94, 8.81 and
+    8.48, 95th percentiles 12.14, 9.92 and 9.52; fraction of surrogates at or above the true value
+    0.999, 1.000 and 1.000), with surrogate means 10.91 to 10.96, 8.78 to 8.85 and 8.48 to 8.57 under
+    the claim's seed and the four others; that reading alone gives not reproduced. What the answer
+    changed. This attempt first tested the criterion as it then stood, reading (a) only, and recorded
+    not reproduced, with reading (b) as a variant, and asked a reader whether the criterion should
+    list both. The reader answered (questions/zaki-2024.yaml, 2026-11-25) that the paper does not fix
+    the detail and amended the criterion to name both readings, reproduced under either, with the
+    outcome marked as resting on the reading that gives it. The outcome changes from not reproduced
+    to reproduced, resting on reading (b). All 625, 711 and 858 cells have activity and none is
+    dropped.
   deviations:
   - The paper shows this on the eight mice of the one-hour offline experiment (Extended Data Fig. 3),
     none of which is in the dataset; it is tested on the three offline recordings of the two EEG/EMG
     mice, each 10 min at 15 Hz, as the criterion says.
+  - Assumed that each shuffled mean population trace is held to the burst threshold of the true
+    trace (its mean plus 2 SD), reading (b) of the criterion. The Extended Data Fig. 3l legend says
+    only that "the mean population activity was re-computed each time" and that "The burst frequency
+    was computed for each of these shuffles", and the Methods (Burst participation analysis) z-score
+    the true trace and threshold it at z = 2, without saying what is done to a shuffle. Reading (b)
+    is the one that tests what the legend's sentence "disrupting the co-firing relationships between
+    neurons" sets out to test, whether decorrelated cells reach the true trace's burst level; a trace
+    z-scored again measures the shape of its own distribution instead. The analysis code is not
+    public, so the authors are asked (a methods_unavailable finding). Under reading (a) the outcome
+    would be not reproduced.
   - The circular-shift offsets are drawn uniformly from 0 to T-1 frames, independently for each cell;
     the legend gives no range ("circularly shuffled 1000 times relative to one another"). This is the
-    standard choice; with the true value below 99.9% or more of the surrogates, no range of offsets
-    that decorrelates the cells is likely to change the outcome.
+    standard choice; under either reading the true value lies beyond every surrogate or nearly every
+    one, so no range of offsets that decorrelates the cells is likely to change the outcome.
 - claim: offline-skew-above-shuffle
   outcome: reproduced
   notebook: reproduce_zaki_2024.ipynb
@@ -90,7 +108,8 @@ outcomes:
     and maxima of 0.798, 0.682 and 0.633; no surrogate reaches the true value. Under the five seeds
     the surrogate means range 0.596 to 0.604, 0.401 to 0.404 and 0.360 to 0.369, and the outcome is
     the same under all five. Skew is unchanged by z-scoring, so the question on the burst claim
-    does not bear on this one.
+    does not bear on this one. The reader's answer on that claim (questions/zaki-2024.yaml) says the
+    same, and this claim is unchanged by it.
   deviations:
   - Tested on the EEG/EMG mice's offline recordings, not the one-hour experiment's mice of Extended
     Data Fig. 3n and 3o, as for offline-bursts-above-shuffle; offsets drawn uniformly, the same
@@ -308,5 +327,5 @@ findings:
     level. On the deposited recordings the two give opposite results (true burst frequency below the
     re-z-scored surrogates in all three recordings, far above the others). The paper's analysis code
     (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) is not public, so the authors
-    are asked which was done; the claims file fixes the first, and the question is also put to a
-    reader.
+    are asked which was done. A reader found that the paper does not settle it and amended the claims
+    file to run both; the outcome, reproduced, rests on thresholding at the true trace's level.

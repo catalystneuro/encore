@@ -211,8 +211,9 @@ def circular_shift_surrogates(Z: np.ndarray, rng: np.random.Generator, n: int, m
     """``measure(population trace)`` for ``n`` surrogates, each cell circularly shifted by an
     independent offset drawn uniformly from 0..T-1 (Extended Data Fig. 3l).
 
-    With ``normalise`` (the claims' criterion) the surrogate mean trace is z-scored as for the
-    data; without it the raw mean over cells is passed to ``measure`` (a variant)."""
+    With ``normalise`` (reading (a) of the criterion) the surrogate mean trace is z-scored as for
+    the data; without it the raw mean over cells is passed to ``measure``, which for reading (b)
+    thresholds it at the true trace's mean plus 2 SD. The paper does not say which was done."""
     T, N = Z.shape
     Zd = np.concatenate([Z, Z]).T.astype(np.float64, copy=False)  # N x 2T, row j doubled
     Zd = np.ascontiguousarray(Zd)
