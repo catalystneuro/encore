@@ -45,6 +45,7 @@ import urllib.parse
 import random
 import re
 import shutil
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -170,6 +171,16 @@ def finding_severity(record: dict, finding: dict, n: int) -> dict:
     return {"severity": review.get("severity"), "changes_results": review.get("severity") == "critical" and agreed,
             "checked": squash(review.get("note")) if agreed else None}
 
+
+def records_updated() -> str:
+    """The time of the checkout's latest commit, in UTC: when the registry's records last changed. The time now when
+    there is no commit to read (a copy of the files outside Git)."""
+    r = subprocess.run(["git", "log", "-1", "--format=%cI"], cwd=ROOT, capture_output=True, text=True)
+    try:
+        when = datetime.datetime.fromisoformat(r.stdout.strip())
+    except ValueError:
+        when = datetime.datetime.now(datetime.timezone.utc)
+    return when.astimezone(datetime.timezone.utc).isoformat(timespec="seconds")
 
 def load_yaml(path: Path):
     # libyaml when PyYAML has it: the site reads every claims file and record, and the pure-Python parser
@@ -512,6 +523,10 @@ def collect(executed: Path | None = None) -> dict:
         "transcripts": {**transcripts, **archived},
         "transcript_dirs": transcript_dirs,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        # When the registry's records last changed: the time of the checkout's commit. The files that say when they
+        # were made give this, not the build's own time, so that a build with no new records changes no file but the
+        # few that show the live queue, and publishing uploads only what changed (site.yml).
+        "records_updated": records_updated(),
         "queue_generated": queue["generated"],
         "queue_counts": {**queue["counts"], "with_a_paper": len(targets)},   # every archive's targets
         "attempts": attempts,
@@ -2104,7 +2119,7 @@ def footer(data: dict, root: str) -> str:
 </div>
 <p class="foot-note">Outcomes describe what one attempt could reproduce from the data in the dataset, with the methods
 available. A failure to reproduce may be a failure of the agent, and is not a judgement of the paper.</p>
-<p class="foot-legal">Generated {e(data["generated"][:10])} from the registry's files. Code under the
+<p class="foot-legal">Generated {e(data["records_updated"][:10])} from the registry's files. Code under the
 <a href="{REPO_URL}/blob/main/LICENSE">Apache-2.0 license</a>; the registry's records are in the public domain
 (<a href="{REPO_URL}/blob/main/LICENSE-data">CC0</a>).</p>
 </div></footer>'''
@@ -4593,7 +4608,7 @@ def build(data: dict, output: Path) -> None:
                 redirect_page(own, "../" * (page_of(key).count("/") + 1)) if own else page_dandiset(data, key, a))
         api = json.dumps({
             "dataset": {"archive": split_key(key)[0], "id": split_key(key)[1], "label": dataset_label(key)},
-            "page": page_of(key), "generated": data["generated"],
+            "page": page_of(key), "generated": data["records_updated"],
             "caution": CAUTION + " It may be a failure of the attempt.",
             "outcome_counts": outcome_counts(attempts),
             "outcome_counts_with_outside_data": outcome_counts(attempts, "with_inputs"),
@@ -4643,7 +4658,7 @@ def build(data: dict, output: Path) -> None:
         (output / "api" / "papers" / f'{p["key"]}.json').write_text(json.dumps({
             "key": p["key"], "doi": p["doi"], "title": p["title"], "byline": p["byline"],
             "journal": journal_name(p["doi"]), "url": SITE_URL + f'papers/{p["key"]}/', "status": p["status"],
-            "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+            "generated": data["records_updated"], "caution": CAUTION + " It may be a failure of the attempt.",
             "authors": [{"name": a["name"], "orcid": a.get("orcid"),
                          "url": SITE_URL + f'authors/{a["orcid"]}/' if a.get("orcid") else None}
                         for a in authors_of(data, p["doi"])],
@@ -4683,7 +4698,7 @@ def build(data: dict, output: Path) -> None:
         counts = {x["id"]: x for x in r["papers"]}
         (output / "api" / "authors" / f"{orcid}.json").write_text(json.dumps({
             "orcid": orcid, "name": author["name"], "page": f"authors/{orcid}/", "url": SITE_URL + f"authors/{orcid}/",
-            "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+            "generated": data["records_updated"], "caution": CAUTION + " It may be a failure of the attempt.",
             "badge": badge,
             # Every outcome across their papers, verified or not, and the badges that show them.
             "outcome_counts": every["counts"] if every else None,
