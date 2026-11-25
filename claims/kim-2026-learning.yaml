@@ -179,8 +179,9 @@ claims:
     statistic: r = 0.39
     p: 0.0069
     n: 22 early and 26 late
-  criterion: Activated neurons from volumetric imaging, within 800 um of the stimulation site
-    (Methods, Detection and quantification; matlab/fig2/fig2c_neuron_counts.m:63-67). The legend says
+  criterion: Activated neurons from volumetric imaging (Methods, Detection and quantification),
+    within 800 um of the stimulation site, a limit the Methods do not state and the code applies
+    (matlab/fig2/fig2c_neuron_counts.m:63-67). The legend says
     each dot is a channel, session and animal; the code takes the median count over the sessions of
     each channel, week and current (fig2c_neuron_counts.m:78-82) and skips one channel of ICMS100
     (line 55). Readings are (a) the code's channel-week medians, (b) one count per channel and
@@ -233,7 +234,8 @@ claims:
   - test: two-sided Mann-Whitney U test
     statistic: r = 0.56
     p: 1.1e-5
-    n: 22 early and 40 late channel-sessions, as for the density (read from the same panel)
+    n: not given for this test; the code tests the same channel-sessions as the density (22 early
+      and 40 late)
   criterion: The activation radius is the median 3-D distance of activated neurons from the site
     for the condition (Methods), at 5 uA, one value per channel and session, with the selection
     readings (a) and (b) of fig2e-density-200um. Two-sided Mann-Whitney U, early against late.
@@ -387,7 +389,7 @@ claims:
   - fig3df-stable-cells-no-change
   criterion: Units as in fig3df-stable-cells-no-change. The subgroup, per mouse, is the units whose
     dF/Fmax exceeds the mean + STD over that mouse's units; the code takes each unit's last valid
-    session (roiPLotter2Miss.m:2569-2571, 2666, 2680). Readings are (a) the code, (b) the week 4
+    session (roiPLotter2Miss.m:2569-2575, 2666, 2680). Readings are (a) the code, (b) the week 4
     value, for units with one. Each unit's early mean (weeks 0, 1) and late mean (weeks 2 to 4),
     two-sided Mann-Whitney U within each group (matlab/fig3/fig3_stats.m:49-66). Reproduced when,
     under one reading, the subgroup increases at p < 0.05 and the remaining neurons give p >= 0.05;
@@ -483,10 +485,15 @@ claims:
     spike size fitted per ROI (Methods, Deconvolution); the per-ROI optimisation is not given, so
     OASIS defaults with its own parameter estimation are used, a standard choice that could shift
     small counts. Spike count and spike onset per unit and week; per week, two-sided Mann-Whitney U
-    of subgroup against remaining, zero and non-finite values left out (fig3_stats.m:84-113).
-    Reproduced when, for both measures, weeks 0 and 1 give p >= 0.05 and weeks 2 to 4 give p < 0.05
-    with more spikes and earlier onsets in the subgroup; partially reproduced when this holds for
-    one measure or for two of the three late weeks.
+    of subgroup against remaining, zero and non-finite values left out (fig3_stats.m:84-113). The
+    early to late change within each group, which the statement also makes and the paper reports
+    without a p-value, is tested as in fig3j-subgroup-increase (each unit's mean of weeks 0 and 1
+    against its mean of weeks 2 to 4, two-sided Mann-Whitney U, Figure 3 legend for L, M); the code
+    runs no such test for these measures. Reproduced when, for both measures, weeks 0 and 1 give p
+    >= 0.05 and weeks 2 to 4 give p < 0.05 with more spikes and earlier onsets in the subgroup, and
+    the subgroup's early to late change is in that direction at p < 0.05; partially reproduced when
+    this holds for one measure, for two of the three late weeks, or without the within-group change.
+    The remaining neurons' change ("little change") is reported.
 - id: fig3n-new-vs-enhanced
   statement: Neurons recruited only in the last week had lower dF/Fmax and fewer deconvolved spikes
     than the high-intensity subgroup during weeks 2 to 4, with similar onset time.
@@ -527,8 +534,8 @@ claims:
     Reproduced when, under one reading, week 4 neurons are lower than the enhanced group in dF/Fmax
     and spike count at p < 0.05 and the onset difference gives p >= 0.05.
 - id: fig3n-vs-week0
-  statement: Newly recruited week 4 neurons had lower fluorescence than tracked neurons at week 0,
-    and the enhanced subgroup at weeks 2 to 4 had higher dF/Fmax, more spikes and shorter spike onset
+  statement: Newly recruited week 4 neurons had lower fluorescence than tracked neurons at week 0
+    (and a shorter deconvolved spike onset, at p = 0.479), and the enhanced subgroup at weeks 2 to 4 had higher dF/Fmax, more spikes and shorter spike onset
     than tracked neurons at week 0.
   source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
     subpopulations, paragraph 4; Figure 3N
@@ -558,7 +565,7 @@ claims:
     in the text and "all longitudinally recruited neurons at week 0" in the legend, but n = 23 and
     the code use the subgroup at week 0. Readings are (a) the subgroup at week 0, (b) all tracked
     neurons at week 0. The paper calls the week 4 onset shorter at p = 0.479, which is not
-    significant; only its direction is judged. Reproduced when, under one reading, the four
+    significant; its direction is reported and not judged. Reproduced when, under one reading, the four
     comparisons with p < 0.05 in the paper give p < 0.05 in the stated direction; partially
     reproduced for two or three of them.
 - id: fig4d-waveform-separation
@@ -578,7 +585,7 @@ claims:
     components; distance between the centroids of a unit's stimulation and non-stimulation spikes,
     and between the stimulation centroids of units within 240 um or at most four contacts apart
     (Methods, Spike sorting during stimulation). Two-sided Mann-Whitney U (legend); the code runs it
-    one-sided (python/fig4/stim_nonstim_pca.py:51), a variant. Reproduced when p < 0.05 with
+    one-sided (python/fig4/stim_nonstim_pca.py:92), a variant. Reproduced when p < 0.05 with
     within-unit distances smaller; the result with 3, 5, 7, 15 and 20 components is reported for
     the robustness sentence. Needs per-spike waveforms or stimulation and non-stimulation mean
     waveforms; whether the dataset holds them is the author's to find.
@@ -714,7 +721,7 @@ claims:
   criterion: Modulated responses (unit, channel, current, session), max z 100, split by cell type;
     per current, two-sided Mann-Whitney U, early against late, of modulation score and time to
     maximum firing rate (Figure 4I, J legend; python/fig4/modulation_over_time.py:45-46). The code's
-    stats table runs these one-sided (python/fig4/stats_table.py:41-42), a variant. Reproduced when
+    stats table runs these one-sided (python/fig4/stats_table.py:59-70), a variant. Reproduced when
     pyramidal modulation increases at p < 0.05 at all three currents, pyramidal latency decreases at
     p < 0.05 at 5 and 6 uA, and interneuron modulation gives p >= 0.05 at all three currents;
     partially reproduced when the pyramidal modulation result holds and one of the others does not.
@@ -771,8 +778,8 @@ claims:
     distance (fig. S4C)
   expected:
     quantity: conduction velocity from the latency-distance fit, each of 4, 5 and 6 uA
-    value: 0.235
-    tolerance: 0.062
+    value: 0.2385
+    tolerance: 0.0585
     unit: m/s
   criterion: From the code (python/fig_s4/generate_figure.py:45-158), distance is the absolute depth
     difference between the stimulation contact and the unit; PL responses are binned in 120 um bins
@@ -867,7 +874,11 @@ claims:
     fastest mouse, 135 ms over all hit trials and 129 ms in the late phase, faster than early.
   source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
     paragraph 4; fig. S5A to S5D (not supplied)
-  quote: We evaluated three candidate cutoffs from stimulation onset
+  quote: Wheel-movement onset, quantified on a trial-by-trial basis in all animals (n = 5) with
+    reliable rotary encoder recordings (fig. S5A, B), decreased with training similarly to
+    behavioral response times ... the median wheel-movement onset in the fastest animal (Mouse 1,
+    122 ms; fig. S5D), the median onset across all hit trials (135 ms), and the median onset during
+    the late training phase (129 ms), which was faster than in the early phase (fig. S5D)
   expected:
   - quantity: median movement onset, Mouse 1
     value: 122
@@ -952,7 +963,7 @@ claims:
     at least 0.5, tracks of 3 or more sessions, waveform-distance exclusions at 3 and 5 times the
     medians) and python/fig_s8/generate_figure.py:374-501; the ratio is the median nearby-unit
     distance over the median within-track distance, nearby being within two contacts (lines
-    340-373); that test one-sided, less (line 352), as the paper does not give its side. Tracked
+    340-373); that test one-sided, less (line 370), as the paper does not give its side. Tracked
     responses, PL and NPL, max z 50, per current two-sided Mann-Whitney U, early against late.
     Reproduced when the two numbers are within tolerance and PL modulation increases at p < 0.05 at
     one or more currents while NPL modulation is not significant at any; partially reproduced when
@@ -1099,3 +1110,21 @@ claims:
     increases early to late at p_FDR < 0.05, NPL exceeds PL in both phases at p_FDR < 0.05 in the
     120 ms window, and neither phase gives p_FDR < 0.05 for NPL against PL in controls (the absence
     judged on that test); partially reproduced when two of the three hold.
+checks:
+- date: 2026-11-25
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2e-activation-radius. The statistics gave n = 22 early and 40 late as the paper's; the paper gives no n for the radius test. Now says so, and that the code (fig2e_density_r50_5uA.m, one mask for both measures) tests the same channel-sessions.
+  - fig2c-more-activated-neurons. The 800 um limit was cited to the Methods, which give none; now cited to the code alone.
+  - fig3lm-spikes-and-latency. The statement says the subgroup's spike count rose and onset fell from early to late (Results, paragraph 3), but the criterion tested only the per-week subgroup against remaining comparisons. Added the within-group early against late test of fig3j-subgroup-increase (Figure 3 legend, two-sided Mann-Whitney U for L, M) to the judgement, and said the code runs none.
+  - fig3n-vs-week0. The statement left out the paper's shorter week 4 spike onset (p = 0.479); added. The criterion said its direction is judged but its rule did not use it; now said to be reported and not judged.
+  - figs4b-conduction-velocity. The expected value 0.235 with tolerance 0.062 spans 0.173 to 0.297, not the stated widened range 0.18 to 0.297. Set to 0.2385 and 0.0585.
+  - figs5-movement-onset. The quote ("We evaluated three candidate cutoffs from stimulation onset") did not state the finding; replaced with the sentences giving the decrease and the three medians.
+  - fig4d-waveform-separation, fig4ij-pyramidal-drive, fig3j-subgroup-increase, figs8-tracked-units. Corrected code line numbers checked at commit d1922d1 (stim_nonstim_pca.py:92, stats_table.py:59-70, roiPLotter2Miss.m:2569-2575, fig_s8 generate_figure.py:370).
+  - Checked, unchanged. Every quote, p-value, r, n and expected value against the text; the code citations for weeks (ceil of days over 7), effect sizes, response filters, fig2e selection over five mice, fig3 stats and tests, fig3n groups, fig4g one-sided test on ICMS92, the fig. S4 binned OLS, the fig6d last-cluster choice and the fig. S5 tests.
+  - Open. The quote checker cannot match p = 0.0002 in fig4ij-pyramidal-drive; the paper prints it as 2.0e-4 (Results, Chronic electrophysiology, paragraph 4), so the value is right.
+  - Open. The supplement (figs. S1 to S9) was not supplied, so the claims on supplementary panels rest on the Results sentences, the Methods and the code; their panels and any statistics in their legends could not be read.
+  - Open. figs1e-response-time uses this file's test (early against late, two-sided Mann-Whitney U) and its definition of response time; the paper gives neither, and the claim says so.
+  - Open. The per-ROI OASIS parameter optimisation (fig3lm-spikes-and-latency) is not given in the Methods or the code read; the defaults used are an assumption that could shift small spike counts.
