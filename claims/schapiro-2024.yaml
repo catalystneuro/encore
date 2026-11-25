@@ -1,0 +1,640 @@
+# Claims for Schapiro, Rittenberg, Kenngott & Marder (2024), eLife, doi:10.7554/elife.98844, on Dryad
+# dataset doi:10.5061/dryad.1rn8pk129 ("Effects of Cs on temperature response of C. borealis pyloric
+# rhythm").
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-25,
+# protocol as stated in docs/protocol.md (version pilot-19).
+#
+# Text read: the version of record, full text from Europe PMC (PMC11479588, open access JATS), with
+# Results, Discussion, Methods, the figure legends of Figures 1 to 6, Figure 1-figure supplement 1
+# (the paper's only supplement) and Table 1. The dataset's files were not opened.
+#
+# Code. The Data availability statement says the code and data to reproduce the results and figures
+# were uploaded to the Dryad dataset itself. Being among the dataset's files, that code was not read
+# in this run and no commit is recorded. The Methods also link Crabsort (github.com/sg-s/crabsort,
+# commit ee237eaea4565d4139a31a40fe180f884175a20b, read), the MATLAB spike-sorting software used to
+# detect and assign spikes. It holds the sorting interface, file loading, clustering and generic
+# helpers (computePeriods, consolidate); the paper does not say those helpers were used, and nothing
+# in it fixes the frequency, Q10, phase or jag measures below. Every method below is from the paper's
+# text. Where the deposited scripts settle a detail named as open here, the author may follow them
+# and should say so.
+#
+# Data the paper used, as it reports them.
+# - Isolated stomatogastric nervous systems of adult Cancer borealis (STG desheathed), acquired
+#   November 2022 to December 2023. Extracellular recordings of lvn, pdn and pyn; intracellular
+#   recordings of PD, LP and PY somata; 10 kHz sampling; dish temperature from a thermocouple within
+#   1 cm of the STG.
+# - Step protocol (Figure 1A, Methods, Temperature protocol). 2 min at 11 degrees C, then steps of
+#   2 degrees C to 21 degrees C, each allowed to stabilize over 4 min; return to 11 degrees C; 10 min
+#   solution change; the protocol repeated in the other condition. Conditions saline and 5 mM CsCl,
+#   order randomized; N=21 experiments with both (Figures 1, 3, 5, 6; PY phases in 12 of them).
+# - Control experiments with two consecutive saline step protocols, N=6 (Figure 1E and 1F).
+# - Picrotoxin experiments, N=6: saline and Cs+ in random order, then Cs+ + 10^-5 M picrotoxin
+#   (Figure 4). The paper does not say whether these 6 are among the 21.
+# - Voltage clamp of PD and LP at 11 and 21 degrees C, saline and Cs+: held at -50 mV, steps to
+#   -100 to -120 mV for 12 s (Figure 1-figure supplement 1); 4 PD and 3 LP cells at 11 degrees C,
+#   3 PD and 5 LP cells at 21 degrees C.
+# - Measured variables: spike times of PD, LP and PY; temperature; membrane potential; clamp
+#   current.
+#
+# Method fixed by the paper and used throughout (Methods, Analysis; Results, section 1).
+# - PD bursts are two or more consecutive PD spikes separated from the next burst by at least
+#   200 ms. Period is the time between the first spikes of consecutive PD bursts; frequency is its
+#   inverse. Phase of an event is its delay from the first PD spike of the cycle divided by the
+#   period. Onset is the neuron's first spike in the cycle, offset its last.
+# - The frequency at a holding temperature is the mean over the times the preparation was within
+#   0.3 degrees C of the target (Results, The steady-state frequency increase, paragraph 3).
+# - Jag measure: frequency and temperature smoothed with a moving average over 30 and 10 pyloric
+#   cycles; a cycle is temperature-increasing when the smoothed temperature rose by more than
+#   0.01 degrees C from the previous cycle, otherwise stable; among increasing cycles, the percent
+#   with a smoothed frequency decrease of more than 0.002 Hz per cycle; among stable cycles, the
+#   percent with an increase of more than 0.002 Hz per cycle.
+# - Phase constancy: per experiment and condition, a line fitted to mean phase against temperature;
+#   slopes tested against zero across experiments by Wilcoxon signed-rank (non-normal) or one-sample
+#   t-test (normal), Bonferroni-adjusted for 10 tests (5 phases by 2 conditions).
+# - Normality by Shapiro-Wilk decides parametric or non-parametric tests; where the paper names the
+#   test used for a comparison, that test is used.
+# - Summary values are mean +- SD over experiments or cells.
+#
+# Details the paper leaves open, used by several claims (each claim names the ones it rests on).
+# - O1, Q10. "as described previously (Tang et al., 2010)", with no formula. Readings are (a) a fit
+#   of f = f11 * Q10^((T - 11)/10) to the six holding-temperature mean frequencies by nonlinear least
+#   squares; (b) a straight-line fit of log10 frequency on temperature, Q10 = 10^(10 * slope);
+#   (c) the two-point ratio (f21/f11)^(10/10).
+# - O2, which 11 degrees C. The holding period at 11 degrees C is read as the first one of each
+#   condition's step protocol (the 2 min before the first step); the return to 11 degrees C after
+#   21 degrees C is a variant.
+# - O3, jag smoothing and span. MATLAB movmean is centred by default; a centred window is the main
+#   reading, a trailing window a variant. The span of cycles is (a) the step protocol from the first
+#   cycle at 11 degrees C to the end of the 21 degrees C hold; (b) the whole recording of the
+#   condition, cooling included, cycles that did not warm counted as stable as the Methods' wording
+#   allows. The per-cycle temperature is the mean over the cycle ("change in mean temperature",
+#   Results, Cs+ revealed dynamic transitory frequency response, paragraph 2).
+# - O4, cycles that form a phase at a temperature. (a) cycles within 0.3 degrees C of the target,
+#   as for frequency; (b) all cycles of the holding period (yellow in Figure 1A). For the slope,
+#   (a) a line through the six per-temperature means; (b) a line through all cycles' phases against
+#   their temperature.
+# - O5, Tukey HSD after a one-way repeated-measures ANOVA. (a) MATLAB multcompare on the fitted
+#   repeated-measures model (Tukey-Kramer on paired differences); (b) the classic Tukey HSD using the
+#   ANOVA's within-subject error term. Both are reported.
+# - O6, LP and PY onset and offset. The first and last spike of the neuron between the first spikes
+#   of two consecutive PD bursts (standard choice; the paper gives no burst rule for LP and PY).
+#
+# Tolerances. Where the paper gives mean +- SD, the tolerance is the stated SD, the paper's own
+# spread (protocol, Reader, step 3); a count or a number without spread has 10%.
+schema_version: 2
+paper: doi:10.7554/elife.98844
+claims:
+- id: figs1-ih-reduced-11c
+  statement: At 11 degrees C and -110 mV, Ih in PD and LP cells was 1.5 nA in saline and 0.23 nA in
+    Cs+, a reduction of 93% (4 PD and 3 LP cells, paired t-test p = 0.0005).
+  source: Results, The steady-state frequency increase in response to elevated temperature was
+    decreased by Cs+, paragraph 1; Figure 1-figure supplement 1A and 1C
+  quote: At 11°C and –110 mV, I h was 1.5±0.83 nA in saline and 0.23±.5 nA in Cs + , a reduction of
+    93±30% (4 PD cells, 3 LP cells, paired Student’s t-test; p=0.0005)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.0005
+    n: 4 PD and 3 LP cells
+  expected:
+  - quantity: Ih at -110 mV, 11 degrees C, saline
+    value: 1.5
+    tolerance: 0.83
+    unit: nA
+  - quantity: Ih at -110 mV, 11 degrees C, Cs+
+    value: 0.23
+    tolerance: 0.5
+    unit: nA
+  - quantity: reduction of Ih in Cs+, 11 degrees C
+    value: 93
+    tolerance: 30
+    unit: percent
+  criterion: Ih is the difference between the initial current needed to hold the step to -110 mV
+    and the steady-state current (Results, paragraph 1; Figure 1-figure supplement 1 legend). The
+    paper does not fix the windows. Readings are (a) initial current as the mean over the first
+    100 ms after the capacitive transient, steady state as the mean over the last 1 s of the 12 s
+    step; (b) initial current as the extreme current in the first 500 ms after the transient,
+    steady state as the last 1 s. Reduction per cell is 100 * (1 - Ih Cs / Ih saline), averaged
+    over cells; the ratio of the means is a variant. Reproduced when, under one reading, the
+    values are within tolerance and a paired t-test of saline against Cs+ gives p < 0.05.
+- id: figs1-ih-reduced-21c
+  statement: At 21 degrees C and -110 mV, Ih was 3.2 nA in saline and 0.6 nA in Cs+, a reduction
+    of 78% (5 LP and 3 PD cells, paired t-test p = 0.02).
+  source: Results, The steady-state frequency increase in response to elevated temperature was
+    decreased by Cs+, paragraph 1; Figure 1-figure supplement 1B and 1D
+  quote: At 21°C and –110 mV, I h was 3.2±2.3 nA in saline and 0.6±.8 nA in Cs + , a reduction of
+    78±20% (5 LP cells, 3 PD cells, paired Student’s t-test; p=0.02)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.02
+    n: 5 LP and 3 PD cells
+  expected:
+  - quantity: Ih at -110 mV, 21 degrees C, saline
+    value: 3.2
+    tolerance: 2.3
+    unit: nA
+  - quantity: Ih at -110 mV, 21 degrees C, Cs+
+    value: 0.6
+    tolerance: 0.8
+    unit: nA
+  - quantity: reduction of Ih in Cs+, 21 degrees C
+    value: 78
+    tolerance: 20
+    unit: percent
+  criterion: As figs1-ih-reduced-11c, on the cells clamped at 21 degrees C.
+- id: fig1-cs-lower-frequency-11c
+  statement: At 11 degrees C pyloric frequency was lower in Cs+ than in saline (0.9 against
+    1.2 Hz, paired t-test p < 0.001).
+  source: Results, The steady-state frequency increase in response to elevated temperature was
+    decreased by Cs+, paragraph 2
+  quote: In Cs + at 11°C, the pyloric frequency was significantly decreased compared to control
+    conditions (saline ... 1.2±0.2 Hz; Cs + 0.9±0.2 Hz, paired Student’s t-test; p < 0.001)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  expected:
+  - quantity: mean pyloric frequency at 11 degrees C, saline
+    value: 1.2
+    tolerance: 0.2
+    unit: Hz
+  - quantity: mean pyloric frequency at 11 degrees C, Cs+
+    value: 0.9
+    tolerance: 0.2
+    unit: Hz
+  criterion: Per experiment and condition, the mean PD burst frequency over times within 0.3 degrees
+    C of 11 degrees C, at the first 11 degrees C hold of the condition (O2). Reproduced when both
+    means are within tolerance and a paired t-test over the 21 experiments gives p < 0.05 with Cs+
+    lower.
+- id: fig1d-difference-grows-with-temperature
+  statement: The difference between a preparation's frequency in saline and in Cs+ increased
+    significantly as temperature increased.
+  source: Results, The steady-state frequency increase, paragraph 3; Figure 1D
+  quote: As temperature increased, the difference between a preparation’s frequency in saline and Cs
+    + significantly increased (one-way repeated measures ANOVA [F(5,85) = 43.259, p<0.001, N=21])
+  statistics:
+  - test: one-way repeated measures ANOVA
+    statistic: F(5,85) = 43.259
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  criterion: Per experiment, saline minus Cs+ mean frequency at each of the six holding
+    temperatures (within 0.3 degrees C of 11, 13, 15, 17, 19 and 21 degrees C); a one-way
+    repeated-measures ANOVA on temperature. The printed degrees of freedom, F(5,85), imply 18
+    experiments, not 21; readings are (a) every experiment with values at all six temperatures in
+    both conditions; (b) the 21 experiments, with any missing value handled as MATLAB ranova does
+    (dropping the experiment). Reproduced when, under one reading, the temperature effect has
+    p < 0.05 and the mean difference at 21 degrees C exceeds that at 11 degrees C. The number of
+    experiments entering is reported.
+- id: fig1e-q10-lower-in-cs
+  statement: The Q10 of pyloric frequency was lower in Cs+ (1.3) than in saline (1.7), paired t-test
+    p < 0.001, N=21.
+  source: Results, The steady-state frequency increase, paragraph 3; Figure 1E
+  quote: The mean Q 10 of the pyloric frequency was significantly lower in Cs + (1.3±0.5) than in
+    control (1.7±0.3) ( Figure 1E )
+  statistics:
+  - test: paired Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  expected:
+  - quantity: mean Q10 of frequency, saline
+    value: 1.7
+    tolerance: 0.3
+  - quantity: mean Q10 of frequency, Cs+
+    value: 1.3
+    tolerance: 0.5
+  criterion: Q10 per experiment and condition from the six holding-temperature mean frequencies,
+    under the readings of O1. Reproduced when, under one reading, both means are within tolerance
+    and a paired t-test gives p < 0.05 with Cs+ lower.
+- id: fig1f-two-saline-frequency-change-same
+  statement: In experiments with two consecutive saline step protocols, the frequency change from
+    11 to 21 degrees C did not differ between the first (0.9 Hz) and second (0.8 Hz) protocol.
+  source: Results, The steady-state frequency increase, paragraph 4; Figure 1F
+  quote: The mean difference in frequency between 21°C and 11°C for the first (0.9±0.3 Hz) and
+    second temperature changes (0.8±0.3 Hz) were not significantly different ( Figure 1F )
+  statistics:
+  - test: paired Student's t-test
+    p: 0.14
+    n: 6 experiments
+  expected:
+  - quantity: frequency change 11 to 21 degrees C, first saline protocol
+    value: 0.9
+    tolerance: 0.3
+    unit: Hz
+  - quantity: frequency change 11 to 21 degrees C, second saline protocol
+    value: 0.8
+    tolerance: 0.3
+    unit: Hz
+  criterion: A claim of absence. Per experiment and protocol, mean frequency within 0.3 degrees C of
+    21 degrees C minus that of 11 degrees C; a paired t-test over the 6 experiments, the paper's
+    test (Figure 1F legend). Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean
+    difference is reported either way.
+- id: fig1e-two-saline-q10-same
+  statement: In the two-saline experiments the Q10 of the first protocol (2.0) did not differ from
+    that of the second (1.8).
+  source: Results, The steady-state frequency increase, paragraph 4; Figure 1E legend
+  quote: the mean Q 10 of the first temperature increase (2.0±0.4) was not significantly different
+    than the mean Q 10 of the second temperature increase (1.8±0.4)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.14
+    n: 6 experiments
+  expected:
+  - quantity: mean Q10, first saline protocol
+    value: 2.0
+    tolerance: 0.4
+  - quantity: mean Q10, second saline protocol
+    value: 1.8
+    tolerance: 0.4
+  criterion: A claim of absence, judged on a paired t-test of the two Q10 values over the 6
+    experiments (Figure 1E legend). Q10 under the readings of O1; the absence is judged under each
+    and reported for all. Reproduced when p >= 0.05, not reproduced when p < 0.05.
+- id: fig1e-saline-q10-same-across-designs
+  statement: The saline Q10 did not differ between experiments with two saline protocols and those
+    with one saline and one Cs+ protocol.
+  source: Results, The steady-state frequency increase, paragraph 4; Figure 1E legend
+  quote: Q 10 was also not significantly different between the mean Q 10 of the experiments with two
+    saline temperature changes those that experienced one saline and one Cs + temperature change
+    (two-sample t-test, p=0.26)
+  statistics:
+  - test: two-sample t-test
+    p: 0.26
+    n: 6 two-saline and 21 saline and Cs+ experiments
+  criterion: A claim of absence, judged on a two-sample t-test. The legend's "mean Q 10 of the
+    experiments with two saline temperature changes" is read as each of the 6 experiments' mean of
+    its two saline Q10 values, against the 21 saline Q10 values; the first saline Q10 alone and the
+    12 pooled values are variants. Q10 under O1. Reproduced when p >= 0.05, not reproduced when
+    p < 0.05.
+- id: fig2c-decrease-by-depolarizing-phase
+  statement: In Cs+, the frequency decrease right after a temperature increase came from an
+    elongation of the PD depolarizing phase, with bursting and repolarization phases maintained.
+  source: Results, Cs+ revealed dynamic transitory frequency response, paragraph 1; Figure 2C; also
+    Figure 4G for Cs+ + PTX
+  quote: Alignment of each PD cycle during this window to the first PD spike reveals that the
+    decrease in frequency was due to elongation of the depolarizing phase and not the bursting,
+    repolarization, or inhibitory phases
+  criterion: The paper shows this in one example preparation, not identified, for the step from 13
+    toward 15 degrees C, and gives no measure. A measure is fixed here from the legend's phases. On
+    the intracellular PD trace, per cycle, burst duration (first to last spike), repolarization
+    (last spike to the voltage minimum), and depolarization (voltage minimum to the next first
+    spike). In each Cs+ experiment with intracellular PD, cycles of the 30 s before the 13 to 15
+    degrees C step are compared with the cycles of the first 30 s of warming in which the period
+    exceeds the pre-step mean. Reproduced when, in most such experiments, the depolarizing phase
+    accounts for more than half of the period increase. Partially reproduced when this holds in the
+    example-like experiments with the largest decrease only. Not testable without intracellular PD
+    traces.
+- id: fig3d-freq-decrease-while-warming
+  statement: Among temperature-increasing cycles, the percent with a frequency decrease was higher
+    in Cs+ (31.4%) than in saline (7.5%), and higher in Cs+ in 20 of 21 experiments.
+  source: Results, Cs+ revealed dynamic transitory frequency response, paragraph 2; Figure 3D
+  quote: In Cs + , the mean percent of temperature-increasing pyloric cycles in which the frequency
+    decreased (31.4±15%) was significantly higher than in control (7.5±5%) ( Figure 3D , paired
+    Student’s t-test, N=21, p<0.001)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  expected:
+  - quantity: percent of temperature-increasing cycles with frequency decrease, Cs+
+    value: 31.4
+    tolerance: 15
+    unit: percent
+  - quantity: percent of temperature-increasing cycles with frequency decrease, saline
+    value: 7.5
+    tolerance: 5
+    unit: percent
+  - quantity: experiments with a higher percent in Cs+ than saline
+    value: 20
+    tolerance: 2
+    unit: of 21
+  criterion: The jag measure as the Methods fix it (header), under the readings of O3. Reproduced
+    when, under one reading, both means and the count are within tolerance and a paired t-test
+    gives p < 0.05 with Cs+ higher.
+- id: fig3e-freq-increase-when-stable
+  statement: Among temperature-stable cycles, the percent with a frequency increase was higher in
+    Cs+ (27.6%) than in saline (14.1%), and higher in Cs+ in 20 of 21 experiments.
+  source: Results, Cs+ revealed dynamic transitory frequency response, paragraph 2; Figure 3E
+  quote: In Cs + , the mean percent of temperature-stable cycles in which frequency increased in Cs +
+    (27.6±6%) was significantly higher than in control (14.1±5%) ( Figure 3E , paired Student’s
+    t-test, N=21, p<0.001)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  expected:
+  - quantity: percent of temperature-stable cycles with frequency increase, Cs+
+    value: 27.6
+    tolerance: 6
+    unit: percent
+  - quantity: percent of temperature-stable cycles with frequency increase, saline
+    value: 14.1
+    tolerance: 5
+    unit: percent
+  - quantity: experiments with a higher percent in Cs+ than saline
+    value: 20
+    tolerance: 2
+    unit: of 21
+  criterion: As fig3d-freq-decrease-while-warming, for stable cycles and increases of more than
+    0.002 Hz per cycle.
+- id: fig4c-ptx-restores-frequency-change
+  statement: The frequency change from 11 to 21 degrees C differed by condition; it was smaller in
+    Cs+ than in saline or in Cs+ + PTX, with no difference between saline and Cs+ + PTX.
+  source: Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph
+    1; Figure 4C
+  quote: change in frequency in Cs + was significantly lower than in either control or Cs + +PTX (
+    Figure 4C ) with no significant difference between control and Cs + +PTX
+  statistics:
+  - test: one-way repeated measures ANOVA
+    statistic: F(2,10) = 12.272
+    p: 0.002
+    n: 6 experiments
+  - about: pairwise comparisons of conditions
+    test: post hoc Tukey's honestly significant difference
+    p: 0.05
+    p_relation: "<"
+  criterion: Per experiment and condition, mean frequency within 0.3 degrees C of 21 degrees C minus
+    that of 11 degrees C; a one-way repeated-measures ANOVA on condition over the 6 picrotoxin
+    experiments, then Tukey HSD under the readings of O5. Reproduced when, under one reading, the
+    condition effect has p < 0.05, Cs+ is significantly lower than both saline and Cs+ + PTX, and
+    saline against Cs+ + PTX is not significant (the paper's test, as a claim of absence).
+- id: fig4d-ptx-keeps-decrease-while-warming
+  statement: The percent of temperature-increasing cycles with a frequency decrease differed by
+    condition; it was higher in Cs+ and in Cs+ + PTX than in saline, with no difference between Cs+
+    and Cs+ + PTX.
+  source: Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph
+    2; Figure 4D
+  quote: The probability of frequency decrease while temperature increased was lower in control than
+    in either Cs + or Cs + +PTX ( Figure 4D ), with no difference between Cs + and Cs + +PTX
+  statistics:
+  - test: one-way repeated measures ANOVA
+    statistic: F(2,10) = 13.077
+    p: 0.002
+    n: 6 experiments
+  - about: pairwise comparisons of conditions
+    test: Tukey's honestly significant difference
+    p: 0.05
+    p_relation: "<"
+  criterion: The jag measure (header) under the readings of O3, per experiment and condition; a
+    one-way repeated-measures ANOVA on condition, then Tukey HSD under O5. Reproduced when, under
+    one reading, the condition effect has p < 0.05, both Cs+ conditions are significantly above
+    saline, and Cs+ against Cs+ + PTX is not significant.
+- id: fig4e-stable-increase-ordering
+  statement: The percent of temperature-stable cycles with a frequency increase differed between
+    all three conditions, lowest in saline, middle in Cs+ and highest in Cs+ + PTX.
+  source: Results, In Cs+, follower neurons determined frequency-temperature sensitivity, paragraph
+    2; Figure 4E
+  quote: the probability of frequency increase while temperature was stable was significantly
+    different between all three conditions... control was lowest, Cs + was in the middle, and Cs +
+    +PTX was greatest
+  statistics:
+  - test: one-way repeated measures ANOVA
+    statistic: F(2,10) = 69.572
+    p: 0.001
+    p_relation: "<"
+    n: 6 experiments
+  - about: pairwise comparisons of conditions
+    test: Tukey's honestly significant difference
+    p: 0.05
+    p_relation: "<"
+  criterion: As fig4d-ptx-keeps-decrease-while-warming, for stable cycles with an increase. The
+    legend names the Cs+ against saline and Cs+ + PTX against Cs+ comparisons; the Results say all
+    three differ. Reproduced when, under one reading, the condition effect has p < 0.05, the means
+    are ordered saline < Cs+ < Cs+ + PTX, and all three pairs are significant; partially reproduced
+    when the two pairs the legend names are significant and saline against Cs+ + PTX also is, but
+    the ordering is not as stated, or when two of the three pairs are significant with the stated
+    ordering.
+- id: fig5b-pd-burst-shorter
+  statement: At 11 degrees C the PD burst was modestly shorter in Cs+ (144 ms) than in saline
+    (164 ms).
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 1; Figure 5B
+  quote: The time of PD bursting was significantly but modestly shorter in Cs + ( Figure 5B ,
+    saline ... 164±34 ms, Cs + ... 144±18 ms)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.019
+    n: 21 experiments
+  expected:
+  - quantity: PD burst duration at 11 degrees C, saline
+    value: 164
+    tolerance: 34
+    unit: ms
+  - quantity: PD burst duration at 11 degrees C, Cs+
+    value: 144
+    tolerance: 18
+    unit: ms
+  criterion: PD burst duration is first to last spike of the burst; per experiment the mean over the
+    11 degrees C cycles under O2 and O4. Reproduced when both means are within tolerance and a
+    Wilcoxon signed-rank test gives p < 0.05 with Cs+ shorter.
+- id: table1-pd-off-advanced
+  statement: At 11 degrees C, PD OFF phase was advanced in Cs+ (0.12) compared with saline (0.19).
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 1; Table 1; Figure 5C
+  quote: the phase of PD OFF (percentage of period at which PD stops firing) was significantly
+    advanced in Cs + compared to control
+  statistics:
+  - test: paired Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  expected:
+  - quantity: PD OFF phase at 11 degrees C, saline
+    value: 0.19
+    tolerance: 0.04
+  - quantity: PD OFF phase at 11 degrees C, Cs+
+    value: 0.12
+    tolerance: 0.03
+  criterion: Phase as the Methods define it, per experiment the mean over 11 degrees C cycles under
+    O2 and O4, onsets and offsets as O6. Reproduced when, under one reading, both means are within
+    tolerance and a paired t-test (Table 1, T) gives p < 0.05 with Cs+ lower.
+- id: table1-lp-on-advanced
+  statement: At 11 degrees C, LP ON phase was advanced in Cs+ (0.29) compared with saline (0.40).
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 1; Table 1; Figure 5C
+  quote: LP onset, which follows PD offset, was also phase advanced in Cs + conditions compared to
+    control
+  statistics:
+  - test: paired Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  expected:
+  - quantity: LP ON phase at 11 degrees C, saline
+    value: 0.40
+    tolerance: 0.05
+  - quantity: LP ON phase at 11 degrees C, Cs+
+    value: 0.29
+    tolerance: 0.05
+  criterion: As table1-pd-off-advanced, for LP onset.
+- id: table1-lp-off-advanced
+  statement: At 11 degrees C, LP OFF phase was advanced in Cs+ (0.56) compared with saline (0.66).
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 2; Table 1; Figure 5C
+  quote: LP OFF was also significantly advanced in Cs +
+  statistics:
+  - test: paired Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 21 experiments
+  expected:
+  - quantity: LP OFF phase at 11 degrees C, saline
+    value: 0.66
+    tolerance: 0.05
+  - quantity: LP OFF phase at 11 degrees C, Cs+
+    value: 0.56
+    tolerance: 0.06
+  criterion: As table1-pd-off-advanced, for LP offset.
+- id: table1-py-phase-unchanged
+  statement: At 11 degrees C, PY ON (0.58 against 0.60) and PY OFF (0.87 against 0.90) phases did
+    not differ between saline and Cs+.
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 2; Table 1
+  quote: PY ON and PY OFF were not significantly different between Cs + and control
+  statistics:
+  - about: PY ON
+    test: paired Student's t-test
+    p: 0.86
+    n: 12 experiments
+  - about: PY OFF
+    test: Wilcoxon signed-rank test
+    p: 0.91
+    n: 12 experiments
+  expected:
+  - quantity: PY ON phase at 11 degrees C, saline
+    value: 0.58
+    tolerance: 0.11
+  - quantity: PY ON phase at 11 degrees C, Cs+
+    value: 0.60
+    tolerance: 0.11
+  - quantity: PY OFF phase at 11 degrees C, saline
+    value: 0.87
+    tolerance: 0.20
+  - quantity: PY OFF phase at 11 degrees C, Cs+
+    value: 0.90
+    tolerance: 0.19
+  criterion: A claim of absence, judged on the paper's tests (Table 1), a paired t-test for PY ON
+    and a Wilcoxon signed-rank test for PY OFF over the 12 experiments with PY. Phases as
+    table1-pd-off-advanced. Reproduced when both give p >= 0.05; not reproduced when either gives
+    p < 0.05; the mean differences are reported either way.
+- id: fig5d-pdoff-lpon-delay-smaller
+  statement: The phase delay between PD OFF and LP ON was smaller in Cs+ (0.17) than in saline
+    (0.21), so LP ON advanced more than the PD OFF advance explains.
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 1; Figure 5D
+  quote: the delay between PD OFF and LP ON phase was significantly smaller in Cs + compared to
+    control ( Figure 5D , saline ... 0.21±0.06, Cs + ... 0.17±0.04)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.0048
+    n: 21 experiments
+  expected:
+  - quantity: LP ON minus PD OFF phase at 11 degrees C, saline
+    value: 0.21
+    tolerance: 0.06
+  - quantity: LP ON minus PD OFF phase at 11 degrees C, Cs+
+    value: 0.17
+    tolerance: 0.04
+  criterion: Per experiment, the mean of LP ON phase minus PD OFF phase over 11 degrees C cycles
+    (O2, O4; the difference of the two means is a variant). Reproduced when both means are within
+    tolerance and a paired t-test gives p < 0.05 with Cs+ smaller.
+- id: lp-duty-cycle-preserved
+  statement: LP duty cycle did not differ between saline and Cs+ at 11 degrees C.
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 2
+  quote: LP OFF was also significantly advanced in Cs + , and subsequently duty cycle (percent of the
+    period a neuron is firing) was preserved (paired Student’s t-test, N=21, p=0.448)
+  statistics:
+  - test: paired Student's t-test
+    p: 0.448
+    n: 21 experiments
+  criterion: A claim of absence. LP duty cycle per cycle is (last LP spike minus first LP spike) over
+    the period, the mean over 11 degrees C cycles (O2, O4). A paired t-test over 21 experiments, the
+    paper's test. Reproduced when p >= 0.05, not reproduced when p < 0.05; the mean difference is
+    reported either way.
+- id: matched-period-lp-earlier
+  statement: In cycles of matched period between saline at 11 degrees C and Cs+, PD bursts were
+    51 ms shorter in Cs+ while LP fired 91 ms earlier and PY latency did not change (1.9 ms), and
+    the PD offset advance did not correlate with the LP onset advance.
+  source: Results, Phase of PD and LP advanced in Cs+, paragraph 3
+  quote: Although PD burst duration was only 51±30 ms shorter in Cs + , LP fired 91±68 ms earlier.
+    Conversely, PY latency did not change in these matched frequency samples (1.9±100 ms earlier).
+    There was no correlation between how advanced PD’s offset was between control and Cs +
+    conditions and how much LP’s onset advanced in these matched period samples (Pearson
+    correlation; r(21)=0.26, p=0.2928)
+  statistics:
+  - about: correlation of PD offset advance with LP onset advance
+    test: Pearson correlation
+    statistic: r(21) = 0.26
+    p: 0.2928
+  expected:
+  - quantity: PD burst duration shortening in Cs+, matched period
+    value: 51
+    tolerance: 30
+    unit: ms
+  - quantity: LP onset latency advance in Cs+, matched period
+    value: 91
+    tolerance: 68
+    unit: ms
+  - quantity: PY onset latency advance in Cs+, matched period
+    value: 1.9
+    tolerance: 100
+    unit: ms
+  criterion: The paper does not say how periods were matched. Readings are (a) per experiment, the
+    Cs+ holding temperature whose mean period is nearest the saline 11 degrees C mean period, with
+    latencies and durations as means over those holds; (b) per experiment, Cs+ cycles whose period
+    is within 2% of the saline 11 degrees C mean period (a standard choice, the paper gives no
+    bound). Latencies are from the first PD spike to the first LP or PY spike (O6); advance is
+    saline minus Cs+. Reproduced when, under one reading, the three means are within tolerance, LP
+    advance exceeds PD shortening, and the Pearson correlation across experiments of PD offset
+    advance (ms) with LP onset advance (ms) has p >= 0.05 (a claim of absence, the paper's test).
+    The printed r(21) implies 23 pairs by the degrees-of-freedom convention, while r = 0.26 with
+    p = 0.2928 fits about 18 pairs; the number of pairs used is reported.
+- id: fig6a-lp-off-advances-saline
+  statement: In saline, LP OFF phase advanced modestly with temperature, by 0.07 per 10 degrees C;
+    all other phases were constant.
+  source: Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 1;
+    Figure 6A and 6B
+  quote: In control conditions, LP OFF modestly advanced with temperature, with a mean advance of
+    0.07±0.07 per 10°C (Wilcoxon signed-rank test, N=21, p<0.01)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni, 10 tests
+    n: 21 experiments
+  expected:
+  - quantity: LP OFF phase advance per 10 degrees C, saline (minus the fitted slope times 10)
+    value: 0.07
+    tolerance: 0.07
+  criterion: Per experiment, a line of phase on temperature under O4; slope per 10 degrees C, an
+    advance being a negative slope. Wilcoxon signed-rank test against zero over 21 experiments,
+    p multiplied by 10 (Bonferroni, Methods). Reproduced when, under one reading, the mean advance
+    is within tolerance and the adjusted p < 0.01, with the slope negative.
+- id: fig6a-lp-advances-cs
+  statement: In Cs+, LP ON and LP OFF advanced with temperature, by 0.05 and 0.14 per 10 degrees C.
+  source: Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 2;
+    Figure 6A and 6C
+  quote: In Cs + , LP ON and LP OFF advanced with temperature, with a mean advance of 0.05±0.05 per
+    10°C and 0.14±0.09 per 10°C respectively (Wilcoxon signed-rank test, N=21, p<0.01)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni, 10 tests
+    n: 21 experiments
+  expected:
+  - quantity: LP ON phase advance per 10 degrees C, Cs+
+    value: 0.05
+    tolerance: 0.05
+  - quantity: LP OFF phase advance per 10 degrees C, Cs+
+    value: 0.14
+    tolerance: 0.09
+  criterion: As fig6a-lp-off-advances-saline, for LP ON and LP OFF in Cs+. Reproduced when both
+    hold; partially reproduced when one does.
+- id: fig6a-pd-py-phase-constant
+  statement: PD and PY phases were constant with temperature in both saline and Cs+.
+  source: Results, Phase constancy with increasing temperature was reduced by Cs+, paragraph 2;
+    Figure 6A
+  quote: PD and PY phase constancy was not significantly altered in either condition
+  criterion: A claim of absence, on the paper's test. For PD OFF, PY ON and PY OFF in each
+    condition (6 tests; N=21 for PD, 12 for PY), the slope of phase on temperature (O4) tested
+    against zero by Wilcoxon signed-rank or one-sample t-test as Shapiro-Wilk on the slopes
+    decides, p multiplied by 10. Reproduced when none has adjusted p < 0.05; not reproduced when
+    any does, naming it. LP ON in saline, which the Results also count as constant, is reported
+    the same way. Mean slopes are reported either way.
