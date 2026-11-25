@@ -1,0 +1,247 @@
+schema_version: 3
+id: longcore-2024-01
+datasets:
+- archive: dryad
+  id: t1g1jwtb0
+  version: "300765"
+  doi: 10.5061/dryad.t1g1jwtb0
+  relation: primary
+paper: doi:10.1242/jeb.247235
+date: 2026-11-25
+entry: longcore-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45672275146
+outcomes:
+- claim: table1-suppression-0p5-and-above
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:table1-suppression-0p5-and-above
+  notes: The mean suppression is above zero for all eight treatments named (0.79 and 2.98 at 0.5 lx
+    and 1950 and 3000 K; 7.02, 12.15 and 30.89 at 5 lx; 53.73, 60.98 and 90.44 at 50 lx). The two
+    0.5 lx means are close to zero (medians 0.67 and 1.53; one-sample t-test p 0.84 and 0.49), and
+    so is 5 lx at 1750 K (p 0.18). The 50 lx means match the abstract's 91% and 53%.
+  deviations:
+  - Means over the mice the file holds for each treatment, 14 at 0.01 lx, 15 at 0.5 lx and 16 at 5
+    and 50 lx, where the criterion says 16 mice; nine values are not in the dataset.
+- claim: table1-increase-0p01
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:table1-increase-0p01
+  notes: The four means are below zero, -12.32, -4.71 and -3.04 at 0.01 lx (1750, 1950, 3000 K) and
+    -2.66 at 0.5 lx and 1750 K, over 14, 14, 14 and 15 mice. The abstract's 12.3% and 3% increases
+    match. The female means at 0.01 lx and 3000 K (0.78) and 0.5 lx and 1750 K (3.53) are above
+    zero; the increases come from the males.
+  deviations:
+  - 14 or 15 mice per treatment where the criterion says 16; the missing values are not in the
+    dataset.
+- claim: tukey-illuminance-within-cct
+  outcome: not_reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:tukey-illuminance-within-cct
+  notes: Neither reading matches. Reading (a), within each CCT, finds 50 lx different from every
+    lower illuminance at all three CCTs (adjusted p < 0.001), and at 3000 K also 5 lx against 0.01
+    and 0.5 lx (p < 0.001, 0.0003). Reading (b), within each illuminance, finds CCTs different at
+    5 lx and at 50 lx, in both cases 3000 K against 1750 K and against 1950 K (50 lx differences
+    36.7 and 29.5 points, p 0.0003 and 0.0035), and not 1750 against 1950 K (7.2 points, p 0.68).
+    One Tukey-Kramer family over all twelve treatments gives the same within-CCT pairs, and
+    within illuminances 3000 K against 1750 K at 5 lx (p 0.0498) and 3000 K against both at 50 lx.
+  deviations:
+  - One Tukey-Kramer family per CCT (reading a) or per illuminance (reading b), from the Methods
+    ("testing for significant differences for each while holding the other constant"); a single
+    family over twelve treatments is shown as a variant and gives the same conclusion.
+- claim: cct-0p01-not-significant
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:cct-0p01-not-significant
+  notes: No CCT pair differs at 0.01 lx (adjusted p 0.63, 0.51 and 0.98; one-way ANOVA p 0.50). The
+    mean increase in activity is 12.32% at 1750 K against 3.04% at 3000 K, 9.28 points more.
+- claim: glm-illuminance-cct-interaction
+  outcome: partially_reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:glm-illuminance-cct-interaction
+  notes: No reading meets the interaction bound of p < 0.002; the smallest interaction p is 0.0063
+    (identity link, illuminance in lux, likelihood ratio; Wald 0.0065). Under that reading the whole
+    model has p 1.6e-43, illuminance p < 1e-44 and CCT p 2.1e-06 (0.034 with illuminance not
+    centered in the crossing), so all three terms have p < 0.05, the partial criterion. With
+    illuminance in log10 lux and the identity link the interaction p is 0.026 to 0.027. With the
+    log link the Methods state, the interaction is not significant under any reading (smallest p
+    0.082), and the Wald test of illuminance in the lux fit has p 0.89, as the log of a mean cannot
+    follow the negative cell means at 0.01 lx. All four log-link fits converged to the same
+    optimum from four starts.
+  deviations:
+  - Fitted in Python (least squares for the identity link, a trust-region solver for the log
+    link), not JMP. Terms coded as JMP's Fit Model codes them by default (effect coding,
+    illuminance centered in the crossing); the uncentered fit is shown and changes only the CCT
+    main-effect p, not the outcome.
+  - The whole-model test is a likelihood ratio against the intercept-only model; the paper does not
+    name it.
+- claim: effect-size-illuminance-over-cct
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:effect-size-illuminance-over-cct
+  notes: With the identity link the ratio of the scaled illuminance effect to the CCT effect is 3.10
+    (reading a, lux), 3.72 (b, lux), 3.20 (a, log10 lux) and 3.84 (b, log10 lux); the scaled
+    illuminance estimate is 34.1 or 35.2 points and the CCT effect 11.0 (largest level parameter,
+    3000 K) or 9.2 (continuous). With the log link the ratios are 2.89 and 3.62 with log10 lux and
+    0.80 and 1.81 with lux. The abstract's 3.6 is within the range. The claim depends on
+    glm-illuminance-cct-interaction, partially reproduced; the effect sizes do not use its
+    interaction test.
+- claim: cct-effect-grows-with-intensity
+  outcome: partially_reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:cct-effect-grows-with-intensity
+  notes: The spread of mean suppression across CCTs is 9.28 points at 0.01 lx, 5.64 at 0.5 lx, 23.87
+    at 5 lx and 36.71 at 50 lx. The spread at 50 lx is larger than at 0.01 lx and the interaction
+    is significant at 0.05 (p 0.0063, identity link and lux), but the smallest spread is at 0.5 lx,
+    not 0.01 lx, so the first condition of the criterion fails; the effect holds in part, growing
+    from the two lower illuminances to the two higher. By sex the spread at 0.01 lx is 3.29 (F) and
+    15.28 (M). The GLM variant gives spreads smallest at 0.01 lx under every reading (identity and
+    lux 11.95, 12.20, 14.51, 37.58), as a model linear in the interaction makes them. The
+    interaction does not reach the paper's p < 0.002 (claim glm-illuminance-cct-interaction).
+- claim: lower-cct-less-suppression
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:lower-cct-less-suppression
+  notes: The 1750 K mean is below the 3000 K mean at 0.5 lx (-2.66 against 2.98), 5 lx (7.02 against
+    30.89) and 50 lx (53.73 against 90.44); 1950 K lies between. Mouse by mouse, 1750 K is below
+    3000 K in 9 of 15 mice at 0.5 lx (paired Wilcoxon p 0.33), 15 of 16 at 5 lx and 16 of 16 at 50
+    lx.
+- claim: aicc-individual-sex
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:aicc-individual-sex
+  measured:
+  - 1612.3
+  - 1628.26
+  - 1643.9
+  - 15.64
+  - 15.96
+  notes: Under the identity link with illuminance in lux, the AICc is 1612.3 with mouse identity,
+    1628.26 with sex and 1643.9 with neither; the order holds and the differences, 15.64 and 15.96,
+    are within 15.7 +/- 1.6 and 16.5 +/- 1.7. The values are 3.6 to 4.2 above the paper's; not
+    counting the scale lowers them by 2.2 to 2.6 and leaves the differences within tolerance. No
+    other reading matches (log link and lux, order fails; log link and log10 lux, differences 6.49
+    and 3.29; identity link and log10 lux, order fails).
+  deviations:
+  - AICc counts the scale as a parameter, the usual count for a normal model; JMP's count is not
+    stated, and the other count is shown.
+- claim: sex-males-less-suppressed
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:sex-males-less-suppressed
+  notes: With the identity link and lux, the female parameter is +6.32 (males 12.6 points below
+    females), likelihood-ratio p 2.4e-05 and Wald p 2.2e-05. Males are lower under every reading;
+    with log10 lux and the identity link p is 0.0003, and with the log link 0.003 to 0.007. The
+    test treats each mouse-by-treatment value as independent; one value per mouse (8 against 8),
+    a Mann-Whitney test gives p 0.083.
+- claim: sex-predicted-suppression
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:sex-predicted-suppression
+  measured:
+  - -10.9
+  - 1.75
+  - 85.57
+  - 98.22
+  notes: Under the identity link with lux the predictions are -10.90 (males, 0.01 lx and 1750 K),
+    1.75 (females), 85.57 and 98.22 (males and females, 50 lx and 3000 K), all within tolerance.
+    The log link puts three within tolerance under either scale; it cannot predict the negative
+    male value. With log10 lux and the identity link none is within tolerance. The raw means by sex
+    (-22.14, -2.50, 85.59, 95.28) put the two 0.01 lx values outside tolerance. The 95% intervals
+    here (t with 176 df) are wider than the paper's at 0.01 lx (-17.7 to -4.1 against the paper's
+    -14.7 to -3.8).
+- claim: individual-variation
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:individual-variation
+  measured:
+  - 27.86
+  - 21.46
+  notes: Under reading (a), identity link and lux, the mouse parameters range from -27.86 (6FC2, P6,
+    less suppression) to +21.46 (6FC1, P2), the paper's 27.9 and 21.5; 95% intervals -38.0 to
+    -17.7 and 7.3 to 35.7 against the paper's 18.3 to 37.4 and 8.1 to 34.8. Reading (b) gives the
+    same values with the identity link; with log10 lux the extremes are -27.21 and 18.24, also
+    within tolerance; with the log link reading (b) gives -14.7 and 6.8, outside. Mouse 6FC1, P2
+    lacks its 0.01 and 0.5 lx values; its raw mean is 38.3 points above the mean of mice for that
+    reason, and the model's parameter accounts for it.
+- claim: cfos-no-cct-difference
+  outcome: reproduced
+  notebook: reproduce_longcore_2024.ipynb
+  output: claim:cfos-no-cct-difference
+  measured:
+  - 123.74
+  - 113.4
+  notes: The unpaired t-test gives t(10) = 0.9409 and p = 0.3689, the paper's values; Welch's test
+    gives p 0.3692. Means 123.74 (s.d. 17.89) and 113.40 (s.d. 20.13), difference 10.35 cells. The
+    paper's 3000 K spread of 8.22 is the s.e.m. of these values, not the s.d., which is why the
+    claims file found its means and s.d. inconsistent with its t.
+  deviations:
+  - The file holds one value per animal, already combined over sections, sides and observers, so
+    the claims file's reading (mean over observers, each observer as a variant) cannot be run; the
+    deposited per-animal values are used.
+findings:
+- kind: metadata_error
+  severity: minor
+  statement: The README says Suppression "ranges -1 to 1", but the values are percent, from -59.59
+    to 100; 178 of 183 have an absolute value above 1.
+  notebook: reproduce_longcore_2024.ipynb
+  output: finding-readme-scale
+- kind: data_missing
+  severity: minor
+  statement: SuppressionDataset.csv holds 183 of the 192 mouse-by-treatment values. Mouse 6FC1, P2
+    has no value at the six 0.01 and 0.5 lx treatments and mouse 6FC2, P8 none at the three 0.01 lx
+    treatments, so those treatments have 14 or 15 mice where the paper gives n = 16 (Fig. 2A
+    legend). Neither the README nor the paper says why. Question for the authors, were these
+    values left out (for example for no activity on the prior day) or not recorded?
+  notebook: reproduce_longcore_2024.ipynb
+  output: finding-missing-rows
+- kind: data_missing
+  severity: minor
+  statement: The dataset holds derived values only. The wheel counts in 3-min bins from which
+    suppression was computed are not deposited, so the suppression values cannot be checked, and
+    cFosdata.csv holds one value per animal with no animal identifier, sex, section, side or
+    observer, so the averaging the Methods describe and the agreement between observers cannot be
+    checked. The paper's data statement calls the deposit raw data. The per-animal values are
+    enough for the paper's t-test.
+  notebook: reproduce_longcore_2024.ipynb
+  output: finding-cfos-granularity
+- kind: paper_inconsistency
+  statement: The Methods state a generalized linear model with a normal distribution and a log link,
+    but the reported results fit an identity link. The paper reports a negative predicted
+    suppression for males (9.3% increase) with a 95% interval symmetric about it, which a log link
+    cannot give, and the identity-link model with illuminance in lux reproduces the reported AICc
+    differences (15.6 and 16.0 against 15.7 and 16.5), the four sex predictions and the extreme
+    mouse effects (-27.9 and +21.5), which the log-link models do not. Question for the authors,
+    which link and which scale of illuminance did the JMP models use?
+- kind: paper_inconsistency
+  statement: The Results give the 3000 K cFos count as 113.4 +/- 8.22 s.d.; the deposited values have
+    s.d. 20.13 and s.e.m. 8.22, and the reported t(10) = 0.9409 follows from the s.d. of 20.13. The
+    1950 K value (17.89) is an s.d., so the two groups are summarized with different measures.
+  notebook: reproduce_longcore_2024.ipynb
+  output: finding-cfos-sd
+- kind: methods_unavailable
+  statement: The Results say that within color temperatures only 50 lx at 1750 K differed
+    significantly by Tukey-Kramer comparisons; on the deposited data 50 lx differs from every lower
+    illuminance at all three CCTs, and among CCTs it is 3000 K that differs from the others at 5
+    and 50 lx. The paper does not list the pairs it found, so the sentence cannot be traced to a
+    comparison. Question for the authors, which comparisons does the sentence describe?
+- kind: other
+  about: data
+  severity: none
+  statement: Checks that passed. The four files match the SHA-256 of Dryad's file list. The
+    illuminances, CCTs, 16 mice (8 per sex, each with one sex throughout) and the cFos groups (6 per
+    CCT) are those of the Methods; no mouse and treatment is deposited twice and no two mice share
+    their values. The treatment means at 0.01 and 50 lx match the four the abstract gives, and the
+    cFos values give the paper's t and p exactly. Only one version of the dataset is published, so
+    there is no other version to compare.
+  notebook: reproduce_longcore_2024.ipynb
+  output: sanity
