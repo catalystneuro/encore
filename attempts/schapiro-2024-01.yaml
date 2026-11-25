@@ -157,19 +157,23 @@ outcomes:
   notes: Under reading (a), on the two Cs+ experiments with an intracellular PD trace and spike times (969_113, the paper's
     Figure 2 example, step onset at 67.9 min as in the deposited plotting call, and 969_115), the depolarizing phase carries
     1.29 and 1.63 of the period increase in the first 30 s of warming from 13 C, the burst 0.05 and 0.02, and the repolarization
-    shrinks (-0.34 and -0.66 of it); the period rose by 78 and 26 ms. Under reading (b), from spikes, the depolarizing phase
-    carries more than half in 4 of the 5 experiments marked intracellular (0.35 in 969_115, where the repolarization to the
-    first LP spike carries 0.76), and in 17 of the 20 Cs+ experiments with a period increase (median 0.87). The statement's
-    Cs+ + PTX example, outside the criterion, also holds. It is Raw_Expt_981_037.mat, the trace the deposited script plots
-    as the example of jag in PTX (its Figure 5F,G, the paper's Figure 4F,G), with no spike file. On PD spikes detected on
-    the trace, in the first 30 s of the warming at 16.10 min (from 11.3 C, not 13 C) the period rises from 1628 to 2146 ms
-    and the depolarizing phase carries 0.96 of the increase, the burst -0.01 and the repolarization 0.06. The other raw files
-    hold no further Cs+ intracellular PD trace with spike times (969_087 and 969_147 are extracellular only, 969_137 holds
-    PY, 981_007 has no spike file).
+    shrinks (-0.34 and -0.66 of it); the period rose by 78 and 26 ms. With the gap cycles kept the shares change by at most
+    0.015. Under reading (b), from spikes, the depolarizing phase carries more than half in 4 of the 5 experiments marked
+    intracellular (0.35 in 969_115, where the repolarization to the first LP spike carries 0.76), and in 17 of the 20 Cs+
+    experiments with a period increase (median 0.87; 16 of 20 with the gap cycles kept). The statement's Cs+ + PTX example,
+    outside the criterion, also holds. It is Raw_Expt_981_037.mat, the trace the deposited script plots as the example of
+    jag in PTX (its Figure 5F,G, the paper's Figure 4F,G), with no spike file. On PD spikes detected on the trace, in the
+    first 30 s of the warming at 16.10 min (from 11.3 C, not 13 C) the period rises from 1628 to 2146 ms and the depolarizing
+    phase carries 0.96 of the increase, the burst -0.01 and the repolarization 0.06. No other raw file can add a Cs+ warming
+    with an intracellular PD trace. 969_087 and 969_147 are extracellular only and 969_137 holds PY; 981_007 has an intracellular
+    PD trace, which the deposited script plots as the saline and Cs+ example of the paper's Figure 5E, but its temperature
+    stays between 9.6 and 11.7 C over 187 min, so it has no warming step. In 969_152 under Cs+ + PTX no LP spike falls within
+    30 s of the step onset, so reading (b) cannot be formed there.
   deviations:
   - Step onset is the first cycle of the warming from 13 C (traced back from the first cycle above 13.3 C while the smoothed
-    temperature rose by more than 0.01 C per cycle), a standard choice built on the paper's increasing-temperature rule; the
-    paper marks the onset by eye (Figure 2, maroon line).
+    temperature rose by more than 0.01 C per cycle, the crossing taken being the first after which the temperature reaches
+    14.7 C without falling back below 13 C), a standard choice built on the paper's increasing-temperature rule; the paper
+    marks the onset by eye (Figure 2, maroon line).
   - The voltage minimum is taken on a 5 ms moving average of the PD trace, a standard choice.
   - Reading (a) is run on 2 experiments, the only Cs+ ones with a deposited intracellular PD trace and spike times.
   - The Cs+ + PTX example (981_037) is analysed outside the criterion, on PD spikes detected on its intracellular trace (peaks
@@ -300,7 +304,7 @@ outcomes:
   - 164
   - 145
   notes: First to last PD spike, mean over the first 11 C hold, 164 +- 36 ms in saline and 145 +- 19 ms in Cs+ over 20 experiments,
-    Wilcoxon p = 0.012, shorter in Cs+ in 15. O4 reading (b), every cycle of the first holding period, gives 165 and 145 ms
+    Wilcoxon p = 0.012, shorter in Cs+ in 15. O4 reading (b), every cycle of the first holding period, gives 165 and 146 ms
     (p = 0.014); the deposited code's measure, period times PD OFF phase, 164 and 145 ms (p = 0.017); with the gap cycles
     kept 164 and 145 ms (p = 0.012).
   deviations:
@@ -316,7 +320,10 @@ outcomes:
     of the window) selects the same cycles.
   - 20 of 21 experiments (969_070 has no 11 C Cs+ cycle).
   - O4 reading (b) takes every cycle of the first holding period, from the first cycle of the condition window within 1 C
-    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature.
+    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature. The onset is traced back,
+    by the paper's increasing-temperature rule (a smoothed rise above 0.01 C per cycle), from the rise that leaves the band
+    within 0.3 C of 11 C for the last time before 12.7 C is reached, so that a brief rise during the hold does not end the
+    holding period (a standard choice).
 - claim: table1-pd-off-advanced
   outcome: reproduced
   notebook: reproduce_schapiro_2024.ipynb
@@ -325,7 +332,7 @@ outcomes:
   - 0.191
   - 0.122
   notes: PD OFF phase at 11 C, 0.191 +- 0.044 in saline and 0.122 +- 0.027 in Cs+ over 20 experiments, paired t = 7.90, p
-    = 2e-07, lower in Cs+ in all 20; O4 reading (b) 0.191 and 0.123; gap cycles kept 0.198 and 0.126.
+    = 2e-07, lower in Cs+ in all 20; O4 reading (b) 0.191 and 0.123 (20 experiments); gap cycles kept 0.198 and 0.126.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
     with 0.11 s, CalculateFrequencyPhaseEtc.m), which also fixes details the paper leaves open (the outlier-cycle removal,
@@ -340,7 +347,10 @@ outcomes:
   - Onsets and offsets are those of the longest run of spikes with gaps of at most 0.11 s in the cycle (deposited Phase_Calc.m),
     which settles O6.
   - O4 reading (b) takes every cycle of the first holding period, from the first cycle of the condition window within 1 C
-    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature.
+    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature. The onset is traced back,
+    by the paper's increasing-temperature rule (a smoothed rise above 0.01 C per cycle), from the rise that leaves the band
+    within 0.3 C of 11 C for the last time before 12.7 C is reached, so that a brief rise during the hold does not end the
+    holding period (a standard choice).
 - claim: table1-lp-on-advanced
   outcome: reproduced
   notebook: reproduce_schapiro_2024.ipynb
@@ -349,7 +359,7 @@ outcomes:
   - 0.398
   - 0.289
   notes: LP ON phase at 11 C, 0.398 +- 0.049 in saline and 0.289 +- 0.051 in Cs+ (20 experiments), paired t p = 2e-07, lower
-    in Cs+ in 19; reading (b) 0.398 and 0.290 (19 experiments); gap cycles kept 0.404 and 0.295.
+    in Cs+ in 19; reading (b) 0.398 and 0.290 (20 experiments); gap cycles kept 0.404 and 0.295.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
     with 0.11 s, CalculateFrequencyPhaseEtc.m), which also fixes details the paper leaves open (the outlier-cycle removal,
@@ -362,7 +372,10 @@ outcomes:
     deposited condition window, during the solution change, and is not used; the deposited code's reading (every 11 C cycle
     of the window) selects the same cycles.
   - O4 reading (b) takes every cycle of the first holding period, from the first cycle of the condition window within 1 C
-    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature.
+    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature. The onset is traced back,
+    by the paper's increasing-temperature rule (a smoothed rise above 0.01 C per cycle), from the rise that leaves the band
+    within 0.3 C of 11 C for the last time before 12.7 C is reached, so that a brief rise during the hold does not end the
+    holding period (a standard choice).
 - claim: table1-lp-off-advanced
   outcome: reproduced
   notebook: reproduce_schapiro_2024.ipynb
@@ -371,7 +384,7 @@ outcomes:
   - 0.664
   - 0.565
   notes: LP OFF phase at 11 C, 0.664 +- 0.053 in saline and 0.565 +- 0.056 in Cs+ (20 experiments), paired t p = 1e-07, lower
-    in Cs+ in 20; reading (b) 0.661 and 0.562; gap cycles kept 0.671 and 0.571.
+    in Cs+ in 20; reading (b) 0.664 and 0.565; gap cycles kept 0.671 and 0.571.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
     with 0.11 s, CalculateFrequencyPhaseEtc.m), which also fixes details the paper leaves open (the outlier-cycle removal,
@@ -384,7 +397,10 @@ outcomes:
     deposited condition window, during the solution change, and is not used; the deposited code's reading (every 11 C cycle
     of the window) selects the same cycles.
   - O4 reading (b) takes every cycle of the first holding period, from the first cycle of the condition window within 1 C
-    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature.
+    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature. The onset is traced back,
+    by the paper's increasing-temperature rule (a smoothed rise above 0.01 C per cycle), from the rise that leaves the band
+    within 0.3 C of 11 C for the last time before 12.7 C is reached, so that a brief rise during the hold does not end the
+    holding period (a standard choice).
 - claim: table1-py-phase-unchanged
   outcome: reproduced
   notebook: reproduce_schapiro_2024.ipynb
@@ -396,7 +412,7 @@ outcomes:
   - 0.897
   notes: Over the 12 experiments with PY phases in both conditions, PY ON is 0.603 +- 0.094 in saline and 0.598 +- 0.104 in
     Cs+ (difference 0.006, paired t p = 0.846) and PY OFF 0.884 +- 0.204 and 0.897 +- 0.188 (difference -0.013, Wilcoxon p
-    = 0.677); reading (b) p = 0.784 and 1.000, gap cycles kept p = 0.727 and 0.424. Neither of the paper's tests finds a difference.
+    = 0.677); reading (b) p = 0.847 and 0.970, gap cycles kept p = 0.727 and 0.424. Neither of the paper's tests finds a difference.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
     with 0.11 s, CalculateFrequencyPhaseEtc.m), which also fixes details the paper leaves open (the outlier-cycle removal,
@@ -409,7 +425,10 @@ outcomes:
     deposited condition window, during the solution change, and is not used; the deposited code's reading (every 11 C cycle
     of the window) selects the same cycles.
   - O4 reading (b) takes every cycle of the first holding period, from the first cycle of the condition window within 1 C
-    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature.
+    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature. The onset is traced back,
+    by the paper's increasing-temperature rule (a smoothed rise above 0.01 C per cycle), from the rise that leaves the band
+    within 0.3 C of 11 C for the last time before 12.7 C is reached, so that a brief rise during the hold does not end the
+    holding period (a standard choice).
 - claim: fig5d-pdoff-lpon-delay-smaller
   outcome: reproduced
   notebook: reproduce_schapiro_2024.ipynb
@@ -418,7 +437,7 @@ outcomes:
   - 0.207
   - 0.167
   notes: Per-cycle LP ON minus PD OFF at 11 C, 0.207 +- 0.064 in saline and 0.167 +- 0.044 in Cs+ (20 experiments), paired
-    t p = 0.004; the difference of the two means gives the same values (p = 0.004); reading (b) 0.206 and 0.166, p = 0.005;
+    t p = 0.004; the difference of the two means gives the same values (p = 0.004); reading (b) 0.207 and 0.167, p = 0.004;
     gap cycles kept 0.206 and 0.169, p = 0.008.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
@@ -432,13 +451,16 @@ outcomes:
     deposited condition window, during the solution change, and is not used; the deposited code's reading (every 11 C cycle
     of the window) selects the same cycles.
   - O4 reading (b) takes every cycle of the first holding period, from the first cycle of the condition window within 1 C
-    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature.
+    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature. The onset is traced back,
+    by the paper's increasing-temperature rule (a smoothed rise above 0.01 C per cycle), from the rise that leaves the band
+    within 0.3 C of 11 C for the last time before 12.7 C is reached, so that a brief rise during the hold does not end the
+    holding period (a standard choice).
 - claim: lp-duty-cycle-preserved
   outcome: reproduced
   notebook: reproduce_schapiro_2024.ipynb
   output: claim:lp-duty-cycle-preserved
   notes: LP duty cycle at 11 C, 0.267 +- 0.057 in saline and 0.276 +- 0.045 in Cs+ (difference -0.009, 20 experiments); paired
-    t p = 0.445, so the paper's test does not find a difference (paper p = 0.448). Reading (b) p = 0.447, gap cycles kept
+    t p = 0.445, so the paper's test does not find a difference (paper p = 0.448). Reading (b) p = 0.433, gap cycles kept
     p = 0.449.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
@@ -452,7 +474,10 @@ outcomes:
     deposited condition window, during the solution change, and is not used; the deposited code's reading (every 11 C cycle
     of the window) selects the same cycles.
   - O4 reading (b) takes every cycle of the first holding period, from the first cycle of the condition window within 1 C
-    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature.
+    of 11 C (a standard bound) to the onset of the warming toward 13 C, whatever its temperature. The onset is traced back,
+    by the paper's increasing-temperature rule (a smoothed rise above 0.01 C per cycle), from the rise that leaves the band
+    within 0.3 C of 11 C for the last time before 12.7 C is reached, so that a brief rise during the hold does not end the
+    holding period (a standard choice).
 - claim: matched-period-lp-earlier
   outcome: reproduced
   notebook: reproduce_schapiro_2024.ipynb
@@ -465,7 +490,9 @@ outcomes:
     +- 34 ms shorter in Cs+, LP onset 71 +- 65 ms earlier, PY onset -33 +- 110 ms (12 experiments with PY), all within tolerance,
     LP advance larger than PD shortening, and PD offset advance against LP onset advance r = 0.10, p = 0.675 over 21 pairs,
     not significant. Reading (b), Cs+ cycles within 2% of each experiment's saline 11 C mean period (19 experiments), gives
-    63 +- 35, 95 +- 71 and 16 +- 110 ms (11 with PY), r = 0.18, p = 0.461, and also matches. The deposited LPAdvanceSamePeriod.mat,
+    63 +- 35, 95 +- 71 and 16 +- 110 ms (11 with PY), r = 0.18, p = 0.461, and also matches. With the gap cycles kept, reading
+    (b) gives the same (63 and 96 ms, r = 0.10, p = 0.687) and reading (a) fails (LP advance 39 ms, below the PD shortening
+    of 51 ms, r = 0.50, p = 0.020), so the outcome does not rest on leaving them out. The deposited LPAdvanceSamePeriod.mat,
     from code that is not deposited and on a different set of experiments, gives the paper's 51 +- 30, 91 +- 68 and 1.9 ms
     and r = 0.26, p = 0.2928 over 18 pairs.
   deviations:
@@ -489,7 +516,8 @@ outcomes:
   - 0.071
   notes: O4 reading (a), line through the six per-temperature means, LP OFF in saline advances 0.071 +- 0.065 per 10 C over
     21 experiments, Wilcoxon p times 10 = 0.0001, negative slope. Reading (b), every cycle of the condition window, 0.064,
-    p = 0.0005; with the gap cycles kept 0.076, p = 0.0001.
+    t-test adjusted p = 0.0005; with the gap cycles kept 0.076, p = 0.0001. The deposited per-experiment phases, fitted and
+    tested as the deposited script does, give 0.074 +- 0.075, Wilcoxon adjusted p = 0.0002.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
     with 0.11 s, CalculateFrequencyPhaseEtc.m), which also fixes details the paper leaves open (the outlier-cycle removal,
@@ -509,10 +537,14 @@ outcomes:
   - 0.14
   notes: In Cs+, under O4 reading (a), LP ON advances 0.053 +- 0.052 per 10 C (Wilcoxon adjusted p = 0.0003) and LP OFF 0.140
     +- 0.096 (adjusted p < 0.0001), both within tolerance and below 0.01; reading (b), every cycle of the window, gives 0.047
-    and 0.122 (Wilcoxon adjusted p = 0.0005 and < 0.0001). The outcome rests on leaving out the cycles that the deposited
-    outlier removal leaves spanning two or more bursts. With them kept, as the deposited code does, LP ON advances 0.010 +-
-    0.202 with adjusted p = 0.029 and LP OFF 0.096 +- 0.224 with p = 0.004, so only LP OFF would hold; the gap cycles, whose
-    phases are divided by the period of a single cycle, widen the spread of the LP ON slopes about fourfold.
+    and 0.122 (t-test adjusted p = 0.0020 and < 0.0001, the test Shapiro-Wilk chooses; Wilcoxon 0.0005 and < 0.0001). The
+    outcome rests on leaving out the cycles that the deposited outlier removal leaves spanning two or more bursts. With them
+    kept, as the deposited code does, LP ON advances 0.010 +- 0.202 with adjusted p = 0.029 and LP OFF 0.096 +- 0.224 with
+    p = 0.004, so only LP OFF would hold; the gap cycles, whose phases are divided by the period of a single cycle, widen
+    the spread of the LP ON slopes about fourfold. The authors' own per-experiment phases (SummaryStatistics.mat TotalLPON_E
+    and TotalLPOFF_E), fitted and tested as the deposited MakePaperFigures_Clean.m does, give LP ON 0.054 +- 0.055 per 10
+    C with Wilcoxon adjusted p = 0.0004 and LP OFF 0.140 +- 0.099 with p < 0.0001, as leaving the gap cycles out does. The
+    port's outlier removal is printed beside the deposited extractBurstFrequency_Final.m lines it follows.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
     with 0.11 s, CalculateFrequencyPhaseEtc.m), which also fixes details the paper leaves open (the outlier-cycle removal,
@@ -531,7 +563,9 @@ outcomes:
   notes: Slopes of PD OFF, PY ON and PY OFF in each condition, with the test chosen by Shapiro-Wilk on the slopes, have adjusted
     p of 1.0, 0.47 and 1.0 in saline and 0.13, 1.0 and 0.34 in Cs+ under reading (a), and >= 0.08 under every other reading
     (b, b_hold, gaps kept); none is below 0.05. Mean advances per 10 C are 0.004, -0.053, -0.010 (saline) and 0.017, 0.038,
-    0.082 (Cs+). LP ON in saline, reported the same way, has adjusted p = 0.35 (advance 0.023).
+    0.082 (Cs+). LP ON in saline, reported the same way, has adjusted p = 0.35 (advance 0.023). The deposited per-experiment
+    phases, fitted and tested as the deposited script does (its fixed choice of test, PY only for the 11 experiments with
+    a complete saline PY ON row), give adjusted p >= 0.056 for these six slopes and 0.40 for LP ON in saline.
   deviations:
   - Per-cycle measures are computed with a Python port of the deposited MATLAB code (extractBurstFrequency_Final.m, Phase_Calc.m
     with 0.11 s, CalculateFrequencyPhaseEtc.m), which also fixes details the paper leaves open (the outlier-cycle removal,
@@ -551,11 +585,11 @@ findings:
   severity: major
   about: data
   statement: VoltageClampData.mat holds one trial per experiment, the first (saline or TTX+PTX), while its ConditionsKey lists
-    3 to 22 trials per experiment, the Cs+ trials among them, and the README describes the array as trials x steps x time.
-    No Cs+ voltage-clamp trial is deposited except the four example cells of VoltageClampTraceData.mat, so the Ih values of
-    Figure 1-figure supplement 1 (7 cells at 11 C, 8 at 21 C) cannot be measured. The paper's Ih numbers come from per-cell
-    values typed into MakePaperFigures_Clean.m from readings the script says were judged by eye. The file was 814 MB in version
-    290160 against 98 MB in 310115, so the earlier version may hold every trial; it was not read.
+    5 to 22 trials per experiment, 2 to 8 of them Cs+, and the README describes the array as trials x steps x time. No Cs+
+    voltage-clamp trial is deposited except the four example cells of VoltageClampTraceData.mat, so the Ih values of Figure
+    1-figure supplement 1 (7 cells at 11 C, 8 at 21 C) cannot be measured. The paper's Ih numbers come from per-cell values
+    typed into MakePaperFigures_Clean.m from readings the script says were judged by eye. The file was 814 MB in version 290160
+    against 98 MB in 310115, so the earlier version may hold every trial; it was not read.
   notebook: reproduce_schapiro_2024.ipynb
   output: finding-voltage-clamp-one-trial
   versions:
@@ -638,7 +672,8 @@ findings:
     start with its frequency, which leaves the previous cycle spanning two or more bursts with its own period. Were those
     cycles left out of the phase means of SummaryStatistics.mat, or were the phases computed otherwise? This attempt leaves
     them out, which brings its phases to within a median of 0.0004 to 0.0009 of the deposited ones. With them kept, the LP
-    ON slope in Cs+ (Figure 6A, 6C) has a Bonferroni-adjusted Wilcoxon p of 0.029; without them, 0.0003.
+    ON slope in Cs+ (Figure 6A, 6C) has a Bonferroni-adjusted Wilcoxon p of 0.029; without them, 0.0003; on the deposited
+    per-experiment phases of SummaryStatistics.mat, 0.0004.
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -781,9 +816,12 @@ verifications:
   - claim: fig5b-pd-burst-shorter
     agrees: true
     outcome: reproduced
-    reason: 164±36 against 145±19 ms, Wilcoxon p=0.012, n=20 (cell 45). Problem 6, first_hold_cycles reading (b) is limited
-      to the span of reading (a)'s cycles, so it cannot reach the full yellow holding period of O4(b) and is barely an independent
-      reading.
+    reason: '164±36 against 145±19 ms, Wilcoxon p=0.012, n=20 (cell 45). Problem 6, first_hold_cycles reading (b) is limited
+      to the span of reading (a)''s cycles, so it cannot reach the full yellow holding period of O4(b) and is barely an independent
+      reading. Separately (problem 3), extract_bursts, tested on a synthetic train with one stray spike: after the outlier
+      removal the start times of the remaining cycles are no longer consecutive, while freq and period are kept from before.
+      phase_calc and cycle_temperature then treat the gap as one cycle spanning several real ones, with the old period as
+      the divisor. This is rare, but it is not checked against the deposited MATLAB.'
     response: 'No change of outcome. Problem 6 is fixed: O4 reading (b) now takes every cycle of the first holding period,
       from the first cycle within 1 C of 11 C to the onset of the warming toward 13 C, whatever its temperature, and the slope
       reading (b) fits every cycle of the condition window; the old slope reading is kept as the variant b_hold. Problem 3
@@ -856,3 +894,258 @@ verifications:
       LP ON in saline is also not significant (0.37–0.38) (cell 53).
     response: No change of outcome; under every reading the minimum is now 0.08 (PD OFF in Cs+, b_hold) and LP ON in saline
       0.35.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the round-1 revision (conclusion cells and summary included), the helper
+    module, the claims file, the README and the attempt record, with the paper under paper/. No finding was rated critical.'
+  results:
+  - claim: figs1-ih-reduced-11c
+    agrees: true
+    outcome: blocked
+    reason: 'Unchanged from round 1 and still right: blocked.'
+    response: No change.
+  - claim: figs1-ih-reduced-21c
+    agrees: true
+    outcome: blocked
+    reason: 'Unchanged from round 1 and still right: blocked.'
+    response: No change.
+  - claim: fig1-cs-lower-frequency-11c
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change.
+  - claim: fig1d-difference-grows-with-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change.
+  - claim: fig1e-q10-lower-in-cs
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change.
+  - claim: fig1f-two-saline-frequency-change-same
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged from round 1 and still right: reproduced on the deposited table.'
+    response: No change.
+  - claim: fig1e-two-saline-q10-same
+    agrees: true
+    outcome: blocked
+    reason: 'Unchanged from round 1 and still right: blocked.'
+    response: No change.
+  - claim: fig1e-saline-q10-same-across-designs
+    agrees: true
+    outcome: blocked
+    reason: 'Unchanged from round 1 and still right: blocked.'
+    response: No change.
+  - claim: fig2c-decrease-by-depolarizing-phase
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, the result cell says that in 969_152 under Cs+ + PTX
+      the cycles hold no LP spikes, but the output prints only NaN shares; the LP spike count is not printed. It gives 981_007
+      has no spike file as the reason no further Cs+ intracellular PD trace is available, but 981_007 has a PD intracellular
+      channel, and the notebook detects spikes on such a trace for 981_037; the condition of 981_007 is not known, so the
+      reason given is not the real limit. The response's shares change by at most 0.02 with the gap cycles kept is not printed.
+    response: 'No change of outcome. The notebook now prints the LP spikes of 969_152 under Cs+ + PTX: none within 30 s of
+      the step onset. It prints the temperature of Raw_Expt_981_007.mat, which stays between 9.6 and 11.7 C over its 187 min;
+      the deposited script plots its PD trace as the saline and Cs+ example of the paper''s Figure 5E, and with no warming
+      step it cannot serve reading (a). The text now gives that reason. The gap-kept variant is printed for both readings:
+      reading (a) shares change by at most 0.015, and reading (b) gives 16 of 20 experiments with a depolarizing share above
+      one half (17 of 20 without them). The step onset fix (O4 b, below) also moves the 13 C onset of 969_068 and 969_070,
+      where the first crossing was an excursion at the start of the window; the counts are unchanged (4 of 5 and 17 of 20).'
+  - claim: fig3d-freq-decrease-while-warming
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change.
+  - claim: fig3e-freq-increase-when-stable
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change.
+  - claim: fig4c-ptx-restores-frequency-change
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The record now gives my reason (cell 49). The assumption is stated in the deviations: 981_035''s 21 C value is
+      taken within 0.5 C instead of 0.3 C. It is reasonable, because the paper reports N=6 with F(2,10), and the deposited
+      summary has a 21 C value at 20.70 C (cell 9). The 0.5 C margin and the choice of post hoc test remain open (problem
+      1). This is the reason the outcome is partial, and it is correct as stated.'
+    response: No change. Both open points stay a question for the authors (the record's methods_unavailable finding on 981_035).
+  - claim: fig4d-ptx-keeps-decrease-while-warming
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change.
+  - claim: fig4e-stable-increase-ordering
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change.
+  - claim: fig5b-pd-burst-shorter
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, O4 (b) is described as every cycle of the first holding
+      period to the onset of the warming toward 13 C, but reading (b) holds fewer cycles than reading (a) in many experiments
+      (969_088 saline 34 against 267, 969_068 Cs+ 20 against 113, 965_106 saline 526 against 543). The likely cause is in
+      step_onset, which treats the first cycle above 11.3 C as the warming, even when that is a brief rise during the hold.
+      Round-1 problem 6 is not fully fixed; no outcome depends on it, because reading (a) decides each claim and reading (b)
+      agrees with it. Problem 3 (extract_bursts) is not in any of my round-1 reasons; it appears only in the author's responses.
+    response: 'No change of outcome. The O4 (b) truncation is fixed: step_onset now takes the crossing after which the temperature
+      reaches the next target without falling back below 11 C, and O4 (b) ends the holding period at the rise that leaves
+      the band within 0.3 C of 11 C for the last time before 12.7 C (hold_end). 969_088 saline now holds 301 cycles and 969_068
+      Cs+ 269. The notebook prints the onset of each experiment; where (b) still holds fewer cycles than (a), the difference
+      is exactly the cycles of (a) after the onset, in the first part of the warming but still within 0.3 C of 11 C (3 to
+      23 per experiment). Reading (b) now gives 165 and 146 ms, Wilcoxon p = 0.014. Problem 3 is added, in the verifier''s
+      words, to the round-1 reason of this claim.'
+  - claim: table1-pd-off-advanced
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, O4 (b) is described as every cycle of the first holding
+      period to the onset of the warming toward 13 C, but reading (b) holds fewer cycles than reading (a) in many experiments
+      (969_088 saline 34 against 267, 969_068 Cs+ 20 against 113, 965_106 saline 526 against 543). The likely cause is in
+      step_onset, which treats the first cycle above 11.3 C as the warming, even when that is a brief rise during the hold.
+      Round-1 problem 6 is not fully fixed; no outcome depends on it, because reading (a) decides each claim and reading (b)
+      agrees with it.
+    response: 'No change of outcome. The O4 (b) truncation is fixed: step_onset now takes the crossing after which the temperature
+      reaches the next target without falling back below 11 C, and O4 (b) ends the holding period at the rise that leaves
+      the band within 0.3 C of 11 C for the last time before 12.7 C (hold_end). 969_088 saline now holds 301 cycles and 969_068
+      Cs+ 269. The notebook prints the onset of each experiment; where (b) still holds fewer cycles than (a), the difference
+      is exactly the cycles of (a) after the onset, in the first part of the warming but still within 0.3 C of 11 C (3 to
+      23 per experiment). Reading (b) 0.191 and 0.123.'
+  - claim: table1-lp-on-advanced
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, O4 (b) is described as every cycle of the first holding
+      period to the onset of the warming toward 13 C, but reading (b) holds fewer cycles than reading (a) in many experiments
+      (969_088 saline 34 against 267, 969_068 Cs+ 20 against 113, 965_106 saline 526 against 543). The likely cause is in
+      step_onset, which treats the first cycle above 11.3 C as the warming, even when that is a brief rise during the hold.
+      Round-1 problem 6 is not fully fixed; no outcome depends on it, because reading (a) decides each claim and reading (b)
+      agrees with it.
+    response: 'No change of outcome. The O4 (b) truncation is fixed: step_onset now takes the crossing after which the temperature
+      reaches the next target without falling back below 11 C, and O4 (b) ends the holding period at the rise that leaves
+      the band within 0.3 C of 11 C for the last time before 12.7 C (hold_end). 969_088 saline now holds 301 cycles and 969_068
+      Cs+ 269. The notebook prints the onset of each experiment; where (b) still holds fewer cycles than (a), the difference
+      is exactly the cycles of (a) after the onset, in the first part of the warming but still within 0.3 C of 11 C (3 to
+      23 per experiment). Reading (b) 0.398 and 0.290, 20 experiments; the record''s earlier 19 was wrong.'
+  - claim: table1-lp-off-advanced
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, O4 (b) is described as every cycle of the first holding
+      period to the onset of the warming toward 13 C, but reading (b) holds fewer cycles than reading (a) in many experiments
+      (969_088 saline 34 against 267, 969_068 Cs+ 20 against 113, 965_106 saline 526 against 543). The likely cause is in
+      step_onset, which treats the first cycle above 11.3 C as the warming, even when that is a brief rise during the hold.
+      Round-1 problem 6 is not fully fixed; no outcome depends on it, because reading (a) decides each claim and reading (b)
+      agrees with it.
+    response: 'No change of outcome. The O4 (b) truncation is fixed: step_onset now takes the crossing after which the temperature
+      reaches the next target without falling back below 11 C, and O4 (b) ends the holding period at the rise that leaves
+      the band within 0.3 C of 11 C for the last time before 12.7 C (hold_end). 969_088 saline now holds 301 cycles and 969_068
+      Cs+ 269. The notebook prints the onset of each experiment; where (b) still holds fewer cycles than (a), the difference
+      is exactly the cycles of (a) after the onset, in the first part of the warming but still within 0.3 C of 11 C (3 to
+      23 per experiment). Reading (b) 0.664 and 0.565.'
+  - claim: table1-py-phase-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, O4 (b) is described as every cycle of the first holding
+      period to the onset of the warming toward 13 C, but reading (b) holds fewer cycles than reading (a) in many experiments
+      (969_088 saline 34 against 267, 969_068 Cs+ 20 against 113, 965_106 saline 526 against 543). The likely cause is in
+      step_onset, which treats the first cycle above 11.3 C as the warming, even when that is a brief rise during the hold.
+      Round-1 problem 6 is not fully fixed; no outcome depends on it, because reading (a) decides each claim and reading (b)
+      agrees with it.
+    response: 'No change of outcome. The O4 (b) truncation is fixed: step_onset now takes the crossing after which the temperature
+      reaches the next target without falling back below 11 C, and O4 (b) ends the holding period at the rise that leaves
+      the band within 0.3 C of 11 C for the last time before 12.7 C (hold_end). 969_088 saline now holds 301 cycles and 969_068
+      Cs+ 269. The notebook prints the onset of each experiment; where (b) still holds fewer cycles than (a), the difference
+      is exactly the cycles of (a) after the onset, in the first part of the warming but still within 0.3 C of 11 C (3 to
+      23 per experiment). Reading (b) p = 0.847 and 0.970.'
+  - claim: fig5d-pdoff-lpon-delay-smaller
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, O4 (b) is described as every cycle of the first holding
+      period to the onset of the warming toward 13 C, but reading (b) holds fewer cycles than reading (a) in many experiments
+      (969_088 saline 34 against 267, 969_068 Cs+ 20 against 113, 965_106 saline 526 against 543). The likely cause is in
+      step_onset, which treats the first cycle above 11.3 C as the warming, even when that is a brief rise during the hold.
+      Round-1 problem 6 is not fully fixed; no outcome depends on it, because reading (a) decides each claim and reading (b)
+      agrees with it.
+    response: 'No change of outcome. The O4 (b) truncation is fixed: step_onset now takes the crossing after which the temperature
+      reaches the next target without falling back below 11 C, and O4 (b) ends the holding period at the rise that leaves
+      the band within 0.3 C of 11 C for the last time before 12.7 C (hold_end). 969_088 saline now holds 301 cycles and 969_068
+      Cs+ 269. The notebook prints the onset of each experiment; where (b) still holds fewer cycles than (a), the difference
+      is exactly the cycles of (a) after the onset, in the first part of the warming but still within 0.3 C of 11 C (3 to
+      23 per experiment). Reading (b) 0.207 and 0.167, p = 0.004.'
+  - claim: lp-duty-cycle-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69). Separately, O4 (b) is described as every cycle of the first holding
+      period to the onset of the warming toward 13 C, but reading (b) holds fewer cycles than reading (a) in many experiments
+      (969_088 saline 34 against 267, 969_068 Cs+ 20 against 113, 965_106 saline 526 against 543). The likely cause is in
+      step_onset, which treats the first cycle above 11.3 C as the warming, even when that is a brief rise during the hold.
+      Round-1 problem 6 is not fully fixed; no outcome depends on it, because reading (a) decides each claim and reading (b)
+      agrees with it.
+    response: 'No change of outcome. The O4 (b) truncation is fixed: step_onset now takes the crossing after which the temperature
+      reaches the next target without falling back below 11 C, and O4 (b) ends the holding period at the rise that leaves
+      the band within 0.3 C of 11 C for the last time before 12.7 C (hold_end). 969_088 saline now holds 301 cycles and 969_068
+      Cs+ 269. The notebook prints the onset of each experiment; where (b) still holds fewer cycles than (a), the difference
+      is exactly the cycles of (a) after the onset, in the first part of the warming but still within 0.3 C of 11 C (3 to
+      23 per experiment). Reading (b) p = 0.433.'
+  - claim: matched-period-lp-earlier
+    agrees: true
+    outcome: reproduced
+    reason: Both readings now pass (cell 66). Reading (a) passes only because the gap cycles are left out (it failed with
+      them in round 1). Reading (b) does not depend on that, so the outcome does not need the assumption. The summary says
+      keeping them changes no outcome but fig6a-lp-advances-cs, but the notebook prints no gap-kept variant for this claim;
+      reading (b) passed with the gap cycles kept in round 1, so the statement is probably true, but this notebook does not
+      show it.
+    response: 'No change of outcome. The gap-kept variant is now printed for both readings: reading (b) gives 63 and 96 ms,
+      r = 0.10, p = 0.687, and matches; reading (a) fails (LP advance 39 ms, below the PD shortening of 51 ms, r = 0.50, p
+      = 0.020). The notes and the summary now say that the claim then holds under reading (b) only.'
+  - claim: fig6a-lp-off-advances-saline
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change. The slopes fitted to the deposited per-experiment phases, now printed, give 0.074 +- 0.075 per 10
+      C, Wilcoxon adjusted p = 0.0002.
+  - claim: fig6a-lp-advances-cs
+    agrees: true
+    outcome: reproduced
+    reason: 'It was partially reproduced in round 1; I agree with the change. The assumption is stated in the deviations and
+      the notes: the gap cycles, which the deposited outlier removal leaves spanning two or more bursts while keeping a single
+      cycle''s period, are left out. It is reasonable: leaving them out shrinks the median phase difference from the deposited
+      SummaryStatistics.mat five- to twelvefold, and the largest from 0.85 to 0.11 (cell 15); without them the LP ON slope
+      is 0.053 +- 0.052, against the paper''s 0.05 +- 0.05, and with them 0.010 +- 0.202 (cell 69), so the paper''s own spread
+      matches the reading without them. One direct check is missing: the notebook never fits slopes to the deposited per-experiment
+      phases (TotalLPON_E and TotalLPOFF_E, already loaded in cell 15), which would show whether the authors'' own values
+      give adjusted p < 0.01. A printout of the deposited extractBurstFrequency_Final.m would confirm that the port''s outlier
+      removal matches it. The notes give the reading (b) LP ON p as Wilcoxon adjusted p = 0.0005, but the test chosen by Shapiro-Wilk
+      is the t-test, p = 0.0020 (cell 69); both are below 0.01, so the outcome stands.'
+    response: 'No change of outcome. Both checks are added. The slopes fitted to the deposited TotalLPON_E and TotalLPOFF_E,
+      tested as the deposited MakePaperFigures_Clean.m does, give LP ON 0.054 +- 0.055 per 10 C with Wilcoxon adjusted p =
+      0.0004 and LP OFF 0.140 +- 0.099 with p < 0.0001: the authors'' own values agree with the reading without the gap cycles.
+      The notebook prints the outlier removal of the deposited extractBurstFrequency_Final.m (its lines 46 to 67) after the
+      agreement check, with the correspondence to the port, which deletes StartTime(P) with burstFreq(P), cyclePeriod(P) and
+      burstDuration(P) as it does. The notes and the result cell now give the reading (b) LP ON p as the t-test''s 0.0020,
+      with the Wilcoxon 0.0005 beside it.'
+  - claim: fig6a-pd-py-phase-constant
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and still right. Every number moved a little once the gap cycles were left out, and none
+      moved enough to change an outcome (cells 26 to 69).
+    response: No change. The deposited per-experiment phases, now printed, give adjusted p >= 0.056 for PD OFF, PY ON and
+      PY OFF in both conditions.

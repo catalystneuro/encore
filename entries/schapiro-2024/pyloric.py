@@ -489,10 +489,15 @@ def raw_trace(expt: str, channel: str, t0: float, t1: float, fs: float = 10_000.
         return np.asarray(ds[0, a:b]), n
 
 
-def step_onset(cyc: dict, mask: np.ndarray, t_from: float, t_to: float):
+def step_onset(cyc: dict, mask: np.ndarray, t_from: float, t_to: float, hold_end: bool = False):
     """Index of the first cycle of the warming from t_from toward t_to within `mask`: going back
     from the first cycle above t_from + 0.3 C to the last cycle whose centred 10-cycle smoothed
-    temperature did not rise by more than 0.01 C (the paper's increasing-temperature criterion)."""
+    temperature did not rise by more than 0.01 C (the paper's increasing-temperature criterion).
+    The crossing taken is the first one after which the temperature reaches t_to - 0.3 C without
+    falling back below t_from, so that a brief rise during the hold is not taken for the step.
+    hold_end: the crossing taken is the first one after the last cycle within 0.3 C of t_from
+    before t_to - 0.3 C is reached, so that every cycle of the hold, brief rises above
+    t_from + 0.3 C included, comes before the onset (the end of the holding period, O4 b)."""
     idx = np.nonzero(mask)[0]
     temp = cyc["temp"][idx]
     sm = matlab_smooth(cyc["temp"], 10)
@@ -500,7 +505,12 @@ def step_onset(cyc: dict, mask: np.ndarray, t_from: float, t_to: float):
     hold = np.nonzero(np.abs(temp - t_from) <= MOE)[0]
     if not len(hold):
         return None
-    after = np.nonzero((np.arange(len(idx)) > hold[0]) & (temp > t_from + MOE))[0]
+    pos = np.arange(len(idx))
+    reach = np.nonzero((pos > hold[0]) & (temp >= t_to - MOE))[0]
+    if not len(reach):
+        return None
+    back = np.nonzero((pos > hold[0]) & (pos < reach[0]) & ((temp <= t_from + MOE) if hold_end else (temp < t_from)))[0]
+    after = np.nonzero((pos > (back[-1] if len(back) else hold[0])) & (temp > t_from + MOE))[0]
     if not len(after):
         return None
     k = idx[after[0]]
