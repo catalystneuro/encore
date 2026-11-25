@@ -6,6 +6,7 @@ import html
 import json
 import re
 import sys
+import urllib.parse
 from pathlib import Path
 
 import pytest
@@ -84,7 +85,7 @@ def built(tmp_path_factory):
 
 def test_every_page_is_built(built):
     data, out = built
-    for page in ("index.html", "datasets/index.html",
+    for page in ("index.html", "registry/index.html", "journals/index.html", "datasets/index.html",
                  "assets/app.css", "assets/list.js", "assets/favicon.svg", "assets/favicon-32.png",
                  "assets/favicon-180.png", "registry.json"):
         assert (out / page).is_file(), page
@@ -160,14 +161,14 @@ def test_every_claim_has_an_anchor_on_its_papers_page_and_none_on_a_datasets(bui
 
 def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
     data, out = built
-    assert site.CAUTION in (out / "index.html").read_text()
+    assert site.CAUTION in (out / "registry" / "index.html").read_text()
     for dandiset in site.current_attempts(data):
         assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
 def test_the_caution_shows_its_lead_and_keeps_the_rest_behind_a_disclosure(built):
     _, out = built
-    home = (out / "index.html").read_text()
+    home = (out / "registry" / "index.html").read_text()
     block = home[home.index('<div class="caution" id="caution">'):]
     block = block[:block.index("</details>") + len("</details>")]
     lead, details = block.split("<details>", 1)
@@ -207,8 +208,9 @@ def test_the_overview_stays_small_at_scale(tmp_path):
     data = site.demo(site.collect(), 150)
     site.build(data, tmp_path)
     assert len(list((tmp_path / "datasets" / "dandi").glob("*/index.html"))) == 150
-    assert (tmp_path / "index.html").stat().st_size < 100_000
-    assert "Demo data" in (tmp_path / "index.html").read_text()
+    for page in ("index.html", "registry/index.html"):
+        assert (tmp_path / page).stat().st_size < 100_000
+        assert "Demo data" in (tmp_path / page).read_text()
     assert broken_links(tmp_path) == []
 
 
@@ -259,6 +261,22 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
             site.version_plain(a) for a in sorted(attempts, key=site.version_order, reverse=True)))
         assert row["n_tested"] == len({a["paper"].lower() for a in attempts})
         assert '<a href="../../../datasets/">Datasets</a> / ' in page
+
+
+def test_every_finding_has_its_own_anchor_on_its_datasets_page(built):
+    """Each finding about the data can be linked to on its dataset's page by an id made of the attempt's id and the
+    finding's number in the attempt's record, so the link survives the page ordering findings differently."""
+    data, out = built
+    for dandiset, attempts in site.current_attempts(data).items():
+        page = (out / site.page_of(dandiset) / "index.html").read_text()
+        ids = re.findall(r'<li class="finding" id="(finding-[^"]+)"', page)
+        assert len(ids) == len(set(ids))
+        for a in attempts:
+            if a.get("deprecated"):
+                continue
+            for f in a["findings"]:
+                anchor = f'finding-{a["id"]}-{f["n"]}'
+                assert anchor in ids and f'href="#{anchor}"' in page
 
 
 def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
@@ -534,15 +552,15 @@ def test_the_dashboard_counts_each_dandiset_from_its_first_attempt():
 def test_the_overview_shows_the_dashboard(built):
     data, out = built
     if len(site.progress_data(data)["days"]) > 1:
-        page = (out / "index.html").read_text()
-        assert 'id="progress-data"' in page and "assets/progress.js" in page
+        page = (out / "registry" / "index.html").read_text()
+        assert 'id="progress-data"' in page and "../assets/progress.js" in page
         assert (out / "assets" / "progress.js").is_file()
 
 
 def test_the_overviews_outcomes_give_each_ones_share_of_the_claims(built):
     # Each outcome's count and its share, in whole percent that add up to 100; the compact legends have no shares.
     data, out = built
-    page = (out / "index.html").read_text()
+    page = (out / "registry" / "index.html").read_text()
     panel = page[page.index("claims that rest on the dataset alone"):page.index("</ul>", page.index("claims that rest"))]
     found = re.findall(r"<strong>([0-9,]+)</strong> ([A-Za-z ]+) <span class=\"pct\">(<?[0-9]+)%</span>", panel)
     assert [label for _, label, _ in found] == [v[0] for v in site.OUTCOMES.values()]
@@ -558,9 +576,9 @@ def test_the_overviews_outcomes_give_each_ones_share_of_the_claims(built):
 
 def test_the_overview_leads_with_outcomes_and_a_paper_search(built):
     data, out = built
-    page = (out / "index.html").read_text()
+    page = (out / "registry" / "index.html").read_text()
     # A plain form, so it works without scripts: the papers list reads q from the URL.
-    assert re.search(r'<form class="home-search" method="get" action="papers/"[^>]*>\s*<input name="q" type="search"', page)
+    assert re.search(r'<form class="home-search" method="get" action="\.\./papers/"[^>]*>\s*<input name="q" type="search"', page)
     # Under the lede, then the outcomes (with the caution attached), then the counters and charts.
     order = [page.index('class="lede"'), page.index('class="home-search"'), page.index("claims that rest on the dataset alone"),
              page.index('id="caution"'), page.index('class="progress"' if 'class="progress"' in page else 'class="tiles"')]
@@ -674,23 +692,30 @@ def test_a_preview_is_kept_out_of_search_results(tmp_path):
 
 def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     data, out = built
-    about = (out / "about" / "index.html").read_text()
-    assert "How the registry works" in about and "First verification" in about
-    assert 'aria-current="page">About' in about
-    assert 'href="about/">About' in (out / "index.html").read_text()
-    assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
+    about = (out / "method" / "index.html").read_text()
+    assert "<h1>The method</h1>" in about and "First verification" in about
+    assert 'aria-current="page">Method' in about
+    assert 'href="method/">Method' in (out / "index.html").read_text()
+    assert f"<loc>{site.SITE_URL}method/</loc>" in (out / "sitemap.xml").read_text()
+    # The page was at about/: that address sends its readers on, anchor and all.
+    old = (out / "about" / "index.html").read_text()
+    assert 'url=../method/"' in old and "location.hash" in old
 
 
 def test_the_about_page_names_the_archives_draws_the_steps_and_points_authors_and_archives_on(built):
     data, out = built
-    about = (out / "about" / "index.html").read_text()
+    about = (out / "method" / "index.html").read_text()
     archives = {site.split_key(a["key"])[0] for a in data["attempts"]}
     assert archives and site.attempted_archives(data)
     for k in archives:
         assert html.escape(site.ARCHIVES[k]["name"]) in about
     assert "the only archive" not in about
-    # The diagram: one box a step, labelled for screen readers, and the list still in full.
-    assert 'id="flow"' in about and 'role="img" aria-label="The six steps of an attempt' in about
+    # The diagram: one box a step, the last of them the authors' response, labelled for screen readers, and the list still in full.
+    # A response can start a new attempt: the picture has the line back to the first step, and the step says so.
+    assert 'class="fl"' in about and "New attempt, with the authors’ notes" in about
+    assert "goes to a new attempt as notes" in about and "does not see the earlier" in about
+    assert 'id="flow"' in about and 'role="img" aria-label="The seven steps of an attempt' in about
+    assert site.ABOUT_STEPS[-1][0] == "The paper's authors respond" and "by the paper&#x27;s authors" in about
     for head, _ in site.ABOUT_STEPS:
         assert about.count(f">{html.escape(head)}<") >= 2
     assert html.escape(site.RESPOND_URL) in about and "docs/badges.md" in about
@@ -700,37 +725,103 @@ def test_the_about_page_names_the_archives_draws_the_steps_and_points_authors_an
     assert shown and (out / "badge" / shown[1] / f"{shown[2]}.svg").exists()
 
 
-def test_the_bar_is_for_readers_and_check_your_data_is_its_button(built):
-    """Pipeline is the maintainers' page: in the footer, the phone menu (menuonly, hidden on a wide screen) and the
-    About page, not among the bar's tabs. "Check your data" is the bar's one button."""
-    import re
+def test_the_bar_is_the_sites_and_the_registrys_pages_have_a_bar_of_their_own(built):
+    """The bar has the site's three places and one filled button, "Contact us". The registry's pages carry a second
+    bar with its lists, and Pipeline, the maintainers' page, is at its far end and in the foot, not in the bar."""
     data, out = built
     home = (out / "index.html").read_text()
     bar = home[home.index('<nav class="top"'):home.index("</nav>")]
     footer = home[home.index("<footer>"):home.index("</footer>")]
-    assert 'href="pipeline/">Pipeline</a>' in footer
-    shown = [m for m in re.findall(r'<a class="(tab[^"]*)" href="([^"]*)"', bar) if "menuonly" not in m[0]]
-    assert [h for _, h in shown][:5] == ["./", "papers/", "datasets/", "authors/", "about/"]
-    assert not any("pipeline" in h for _, h in shown)
-    assert '<a class="tab menuonly" href="pipeline/">Pipeline</a>' in bar
-    assert re.search(rf'<a class="tab ext cta" href="{re.escape(site.ENCORE_DOCS)}" title="Run the same check', bar)
-    # The menu-only links are hidden in the bar and shown in the phone menu; the button is filled in the accent.
+    assert [h for _, h in re.findall(r'<a class="(tab)" href="([^"]*)"', bar)] == ["registry/", "method/", "journals/"]
+    assert "pipeline" not in bar and 'href="pipeline/">Pipeline</a>' in footer
+    # "Check your data" is a page of the site, which points on to the command's full documentation.
+    assert '<a class="tab quiet" href="check/" title="Run the same check' in bar
+    check = (out / "check" / "index.html").read_text()
+    assert "<h1>Check your own data</h1>" in check and "pip install encore-science" in check
+    assert f'href="{site.ENCORE_DOCS}"' in check and 'href="../check/" aria-current="page"' in check
+    assert f'<a class="tab cta" href="{site.CONTACT_URL}"' in bar
+    assert 'class="regnav"' not in home and "aria-current" not in bar     # the home page is none of the three
+    # The button is filled in ink, and the menu button shows only on a small screen.
     css = (site.ASSETS / "app.css").read_text()
-    wide = css[:css.index("@media (max-width:920px)")]
-    assert "nav.top a.tab.menuonly{display:none}" in wide and "nav.top a.tab.menuonly{display:flex}" in css
-    assert "background:var(--accent);color:var(--surface)" in wide[wide.index("nav.top a.tab.cta{"):]
-    pipeline = (out / "pipeline" / "index.html").read_text()
-    assert '<a class="tab menuonly" href="../pipeline/" aria-current="page">Pipeline</a>' in pipeline
-    assert 'href="../pipeline/">pipeline</a>' in (out / "about" / "index.html").read_text()
+    wide = css[:css.index("@media (max-width:860px)")]
+    assert "background:var(--text);color:var(--surface)" in wide[wide.index("nav.top a.tab.cta{"):]
+    assert "button.navtoggle{display:none}" in wide and "nav.top.open .tabrow{display:flex}" in css
+    # On a page of the registry the bar's Registry tab is lit, and the second bar marks the page itself.
+    for path, label, root in (("registry", "Overview", "../"), ("papers", "Papers", "../"), ("pipeline", "Pipeline", "../")):
+        page = (out / path / "index.html").read_text()
+        top = page[page.index('<nav class="top"'):page.index("</nav>")]
+        sub = page[page.index('<nav class="regnav"'):]
+        sub = sub[:sub.index("</nav>")]
+        assert f'<a class="tab" href="{root}registry/" aria-current=' in top
+        assert re.search(rf'<a href="{re.escape(root)}{path}/" aria-current="page">{label}', sub)
+        assert sub.count("aria-current") == 1
+        assert [h for h in re.findall(r'<a href="([^"]*)"', sub)] == [
+            f"{root}registry/", f"{root}papers/", f"{root}datasets/", f"{root}authors/", f"{root}pipeline/"]
+    paper = next(q for q in site.papers_of(data) if q["attempts"])
+    assert 'class="regnav"' in (out / "papers" / paper["key"] / "index.html").read_text()
+    for path in ("method", "journals"):
+        assert 'class="regnav"' not in (out / path / "index.html").read_text()
+    assert 'href="../pipeline/">pipeline</a>' in (out / "method" / "index.html").read_text()
+
+
+def test_the_home_page_says_what_encore_does_and_shows_the_registrys_own_numbers(built):
+    """The home page is for a visitor who has not seen the registry. Its evidence is read from the record: the
+    example is a verified attempt of a real paper, and the numbers are the registry's."""
+    data, out = built
+    home = (out / "index.html").read_text()
+    assert "<h1>Do the deposited data support the paper?</h1>" in home
+    assert '<a class="button" href="journals/">' in home and '<a class="button secondary" href="registry/">' in home
+    assert home.count(f'href="{site.CONTACT_URL}"') >= 2 and site.CAUTION in home
+    for head, _ in site.HOME_STEPS:
+        assert f"<h3>{html.escape(head)}</h3>" in home
+    attempts = [a for atts in site.current_attempts(data).values() for a in atts]
+    counts = site.outcome_counts(attempts)
+    assert f'<span class="n">{sum(counts.values()):,}</span><span class="l">claims given an outcome</span>' in home
+    n_papers = sum(1 for q in site.papers_of(data) if q["attempts"])
+    assert f'<span class="n">{n_papers:,}</span><span class="l">papers checked</span>' in home
+    papers = {q["doi"]: q for q in site.papers_of(data) if q["attempts"]}
+    shown = site.home_example(data, attempts, papers)
+    if shown:
+        attempt, paper = shown
+        assert attempt["tier"] != "runs" and attempt["findings"]
+        assert sum(1 for n in site.outcome_counts(attempt, "paper").values() if n) >= 2
+        card = home[home.index('<figure class="shot">'):home.index("</figure>")]
+        assert f'href="papers/{paper["key"]}/"' in card and html.escape(paper["title"]) in card
+        assert any(html.escape(site.squash(o["statement"])) in card for o in attempt["outcomes"])
+    # A link to an attempt by its old anchor on the home page still reaches it.
+    assert "location.hash.match(/^#attempt-(.+)$/)" in home
+
+
+def test_the_journals_page_lists_the_journals_of_the_papers_attempted(built):
+    data, out = built
+    page = (out / "journals" / "index.html").read_text()
+    assert "<h1>Encore for journals</h1>" in page and 'aria-current="page">For journals' in page
+    assert site.CAUTION in page and f'href="{site.CONTACT_URL}"' in page
+    # The four ways to work with us are numbered, and what follows them has a heading of its own.
+    offers = page[page.index('id="offers"'):page.index('id="terms"')]
+    assert re.findall(r'<span class="offer-n">(\d)</span>', offers) == ["1", "2", "3", "4"] and offers.count('class="panel"') == 4
+    assert page.index('id="terms"') < page.index('id="confidential"') < page.index('id="limits"')
+    journals = site.journal_counts(data)
+    rows = [p for p in site.rows_cache(data)["papers"] if p["status"] == "attempted"]
+    assert all(name not in ("Preprint", "Other journals") for name, _ in journals)
+    assert [n for _, n in journals] == sorted((n for _, n in journals), reverse=True)
+    for name, n in journals[:12]:
+        assert n == sum(1 for p in rows if p["journal"] == name)
+        assert f'journal={urllib.parse.quote(name)}">{html.escape(name)}</a><span class="num">{n:,}</span>' in page
+    for path in ("registry/", "journals/", "check/"):
+        assert f"<loc>{site.SITE_URL}{path}</loc>" in (out / "sitemap.xml").read_text()
 
 
 def test_a_claim_shows_the_papers_own_words_when_quoted():
     claim = {"claim": "fig2", "statement": "Rates rise.", "source": "Figure 2B", "quote": "Firing rates rose <sharply>.",
              "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p><cite>Figure 2B</cite>' in html
-    body = html.split("</summary>")[1]
-    assert body.index("blockquote") < body.index("It rose.")
+    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p></blockquote>' in html
+    head, body = html.split("</summary>")
+    # Where the paper says it is on the claim's own line, once, and the open claim's parts are labelled, in order.
+    assert '<span class="source">Figure 2B</span>' in head and "Figure 2B" not in body
+    assert body.index("<h5>From the paper</h5>") < body.index("blockquote") < body.index("<h5>Result</h5>") < body.index("It rose.")
+    assert "Deviations from" not in body and "Reported statistics" not in body      # no empty parts
     assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
 
 
@@ -802,11 +893,13 @@ def test_a_claim_shows_its_id_which_the_response_form_asks_for():
     claim = {"claim": "fig2-rates", "statement": "Rates rise.", "source": "Figure 2B", "outcome": "reproduced",
              "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
-    # In view without opening the claim, once, with the link to the claim under it.
+    # In view without opening the claim, once, at the end of the line under the statement, and itself the link to
+    # the claim.
     head = html.split("</summary>")[0]
-    assert ('<span class="claim-ref"><code class="claim-id" title="The id of this claim">fig2-rates</code>'
-            '<a class="claim-anchor" href="#claim-fig2-rates">link to this claim</a></span>') in head
-    assert html.count("fig2-rates</code>") == 1 and "Claim id" not in html
+    assert ('<a class="claim-id" href="#claim-fig2-rates" title="The id of this claim, and a link to it">'
+            'fig2-rates</a></div>') in head
+    assert head.index('class="statement"') < head.index('class="claim-meta"') < head.index('class="claim-id"')
+    assert html.count(">fig2-rates</a>") == 1 and "Claim id" not in html
     # Open, a claim tested in a notebook that has an executed copy leads to its cell there.
     assert "that tests this claim" not in html
     at_cell = site.claim_item({**claim, "cell": "../notebooks/demo/analysis.html#cell-id=ab12"}, "../")
@@ -821,7 +914,7 @@ def test_a_claim_shows_its_id_which_the_response_form_asks_for():
     assert site.cell_href({}, attempt, {"notebook": "other.ipynb", "output": "claim:a"}, "../") is None
     # The form's hint names ids as the page shows them, not numbers the page does not have.
     form = (REPO / ".github" / "ISSUE_TEMPLATE" / "author-response.yml").read_text()
-    assert "C3, C7" not in form and "end of the claim's first line" in form
+    assert "C3, C7" not in form and "at the end of the line under the claim" in form
 
 
 def test_a_closed_claim_gives_the_first_sentence_of_its_notes():
@@ -875,7 +968,7 @@ def test_stylesheets_and_scripts_are_named_by_their_contents(built):
     data, out = built
     page = (out / "pipeline" / "index.html").read_text()
     assert re.search(r'href="\.\./assets/app\.css\?v=[0-9a-f]{10}"', page)
-    assert re.search(r'src="assets/progress\.js\?v=[0-9a-f]{10}"', (out / "index.html").read_text())
+    assert re.search(r'src="\.\./assets/progress\.js\?v=[0-9a-f]{10}"', (out / "registry" / "index.html").read_text())
 
 
 def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
@@ -921,7 +1014,7 @@ def test_a_dataset_with_claims_and_no_attempt_has_a_page_leading_to_its_papers_c
 def test_a_dataset_waiting_on_a_person_links_its_issue():
     data = site.collect()
     label = data["targets"][0]["label"]
-    data["issues"] = {label: "https://github.com/catalystneuro/encore/issues/1"}
+    data["issues"] = {label: "https://github.com/encorescience/encore-registry/issues/1"}
     row = next(r for r in site.pipeline_rows(data) if r["dataset"] == label)
     assert row["issue"] == data["issues"][label]
     page = site.page_pipeline(data)
@@ -1758,3 +1851,27 @@ def test_summaries_hold_no_agent_chatter():
     found = [p.name for p in (Path(site.ROOT) / "summaries").glob("*.md")
              if p.name != "README.md" and chatter.search(p.read_text())]
     assert found == []
+
+
+@pytest.mark.parametrize("url,owner", [
+    ("https://github.com/acme-lab/encore-registry/actions/runs/1", "acme-lab"),
+    ("https://github.com/catalystneuro/encore/actions/runs/1", None),
+    ("https://github.com/CatalystNeuro/reproduction-registry/actions/runs/1", None),
+    ("https://github.com/encorescience/encore-registry/actions/runs/1", None),
+    (None, None),
+])
+def test_an_outside_run_is_known_by_its_runner(url, owner):
+    assert site.outside_of({"runner": {"url": url} if url else None}) == owner
+
+
+def test_an_outside_run_says_who_ran_it_under_provenance(tmp_path):
+    # An outside organization's attempt (encore-protocol docs/outside-runs.md): its paper's page names the
+    # organization and says that Encore's verifiers check it here.
+    data = site.collect()
+    attempt = next(a for a in data["attempts"] if not a.get("deprecated") and a["kind"] == "agent")
+    attempt.update(accountable="Acme Lab", outside="acme-lab",
+                   runner={"platform": "GitHub Actions", "url": "https://github.com/acme-lab/encore-registry/actions/runs/1"})
+    site.build(data, tmp_path)
+    page = _paper_page(data, tmp_path, attempt)
+    assert "run by Acme Lab in its own GitHub organization (acme-lab)" in page
+    assert "https://github.com/acme-lab/encore-registry/actions/runs/1" in page

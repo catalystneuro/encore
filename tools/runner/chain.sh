@@ -243,7 +243,9 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
     if echo "$runlog" | grep -qE "$GITHUB_DOWN" \
        && [ $outage -lt "${OUTAGE_TRIES:-24}" ]; then
       outage=$((outage+1))
-      if ! echo "$runlog" | cut -f1 | grep -qvx commit; then
+      # The job is `commit`, or `attempt / commit` and `papers / commit` since the run is encore-protocol's,
+      # called from the registry's workflow of the same name.
+      if ! echo "$runlog" | cut -f1 | grep -qvE '^([a-z]+ / )?commit$'; then
         log "$role: its commit failed because GitHub is failing (run $id); its commit job again in 15 minutes, retry $outage"
         sleep 900
         until gh run rerun "$id" --failed >/dev/null 2>&1; do

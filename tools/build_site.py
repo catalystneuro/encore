@@ -6,7 +6,10 @@
 Reads targets/dandisets.json, targets/pilot.yaml, claims/, attempts/,
 entries/ and transcripts/, and writes:
 
-    index.html                    overview: numbers, breakdowns, latest attempts
+    index.html                    the home page: what Encore does and for whom
+    registry/index.html           overview of the registry: numbers, breakdowns, latest attempts
+    journals/index.html           what Encore offers a journal
+    check/index.html              how to run the check on your own data
     datasets/index.html           every target, filterable and paginated
     datasets/<archive>/<id>/      one static page per attempted dataset, and one per earlier attempt
     dandisets/<id>/               redirects to the dataset's page, for links made before
@@ -50,11 +53,15 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
-REPO_URL = "https://github.com/catalystneuro/encore"
+REPO_URL = "https://github.com/encorescience/encore-registry"
 CN_URL = "https://www.catalystneuro.com"
 # Encore Science is the project: the `encore` tool (docs/encore.md) and this site, the Encore registry.
 SITE_NAME = "Encore Science"
-ENCORE_DOCS = REPO_URL + "/blob/main/docs/encore.md"
+# The protocol, the agents' instructions and the `encore` tool are in encore-protocol, at the version protocol.lock
+# names: the one the records were made under, linked as such.
+PROTOCOL_REPO_URL = "https://github.com/encorescience/encore-protocol"
+PROTOCOL_BLOB = f"{PROTOCOL_REPO_URL}/blob/{(ROOT / 'protocol.lock').read_text().strip()}"
+ENCORE_DOCS = PROTOCOL_BLOB + "/docs/encore.md"
 SITE_URL = "https://encorescience.org/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from their open data, and record every "
                     "outcome and what they find about the data.")
@@ -74,14 +81,23 @@ def page_of(key: str) -> str:
 
 
 # GitHub's mark (Octicons, mark-github), drawn in the text colour.
-# The site's mark, drawn like the favicon: a loop that comes back round, a result run again, with a tick inside it.
-# The loop takes the text colour and the tick the brand colour, so it suits both themes.
+# The site's mark, drawn like the favicon: a loop that comes back round, a result run again, and a tick that starts
+# inside the loop and leaves through its gap. The loop takes the text colour and the tick the brand colour, so it
+# suits both themes. The two paths are also the badges' mark (badge_mark) and the favicon's.
+MARK_LOOP = "M20.2 5.9A11 11 0 1 0 27 16"
+MARK_TICK = "M10.4 16.2l4.4 4.4L26.6 7.2"
 ENCORE_MARK = ('<svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">'
-               '<path d="M21.6 8.3A9.5 9.5 0 1 0 25.5 16" fill="none" stroke="currentColor" stroke-width="2.8" '
-               'stroke-linecap="round"/><path d="M18.9 10.7 24.1 5.5 24.7 11.3z" fill="currentColor" '
-               'stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path class="tick" '
-               'd="M11.3 16.3l3.3 3.3 5.9-6.8" fill="none" stroke-width="3" stroke-linecap="round" '
+               f'<path d="{MARK_LOOP}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>'
+               f'<path class="tick" d="{MARK_TICK}" fill="none" stroke-width="3.4" stroke-linecap="round" '
                'stroke-linejoin="round"/></svg>')
+
+
+def badge_mark(cx: float, cy: float) -> str:
+    """The mark in a badge, 13 pixels across and centred on (cx, cy), inside a group that sets its stroke."""
+    return (f'<g transform="translate({cx - 6.72:.2f} {cy - 6.72:.2f}) scale(.42)" stroke-width="3.6">'
+            f'<path d="{MARK_LOOP}"/><path d="{MARK_TICK}"/></g>')
+
+
 GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 '
                '8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 '
                '3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2'
@@ -171,6 +187,18 @@ def tier_of(attempt: dict) -> str:
     return VERIFICATION_TIER.get(latest["kind"], "runs") if claims <= agreed else "runs"
 
 
+# The GitHub organizations whose runs are Encore's own. A run from any other is an outside organization's, made in
+# its fork of encore-runner with its own API key and taken here by the intake (encore-protocol docs/outside-runs.md).
+CENTRAL_OWNERS = ("catalystneuro", "encorescience")
+
+
+def outside_of(provenance: dict) -> str | None:
+    """The GitHub organization an attempt was run in, when that is not Encore's own; None for Encore's runs."""
+    url = (provenance.get("runner") or {}).get("url") or ""
+    m = re.match(r"https://github\.com/([A-Za-z0-9-]+)/", url)
+    return m.group(1) if m and m.group(1).lower() not in CENTRAL_OWNERS else None
+
+
 def squash(text) -> str:
     return " ".join((text or "").split())
 
@@ -200,7 +228,7 @@ def asset(name: str) -> str:
 
 # --- collecting ---------------------------------------------------------------
 
-COLAB_URL = "https://colab.research.google.com/github/catalystneuro/encore/blob/colab/entries"
+COLAB_URL = "https://colab.research.google.com/github/encorescience/encore-registry/blob/colab/entries"
 
 
 def environment_of(entry_dir: Path) -> dict:
@@ -333,6 +361,7 @@ def collect(executed: Path | None = None) -> dict:
             "accountable": a["provenance"]["accountable"]["name"],
             "agent": a["provenance"].get("agent"),
             "runner": a["provenance"].get("runner"),
+            "outside": outside_of(a["provenance"]),
             "tier": tier_of(a),
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
@@ -578,8 +607,8 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
                           {"path": "behaviour.ipynb", "title": "Behaviour", "executed": None}],
             "outcomes": outcomes,
             "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30)),
-                          "severity": None, "changes_results": False, "checked": None}
-                         for _ in range(rng.randint(1, 10))],
+                          "severity": None, "changes_results": False, "checked": None, "n": i}
+                         for i in range(1, rng.randint(1, 10) + 1)],
             "verifications": [] if tier == "runs" else [{
                 "date": date, "kind": "agent", "by": "Demo verifier", "reviewed": "Demo",
                 "agreed": n_claims, "of": n_claims, "disagreements": []}],
@@ -1501,7 +1530,7 @@ def outcomes_badge_svg(o: dict) -> str:
             f'<g clip-path="url(#r)"><rect width="{lw:.0f}" height="22" fill="#2b2333"/>'
             f'<rect x="{lw:.0f}" width="{w - lw:.0f}" height="22" fill="#f3f1f6"/></g>'
             f'<g fill="none" stroke="#c4a3e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
-            f'<circle cx="13" cy="11" r="5.6"/><path d="M10.4 11.2l1.9 1.9 3.3-3.8"/></g>'
+            f'{badge_mark(13, 11)}</g>'
             f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11" font-weight="bold">'
             f'<text x="24" y="15" fill="#fff" textLength="{_text_width("Encore"):.0f}">Encore</text>'
             f'<g fill="#2b2333">{legend}</g></g></svg>\n')
@@ -1526,7 +1555,7 @@ def card_badge_svg(o: dict) -> str:
             f'aria-label="{e(o["alt"])}"><title>{e(o["alt"])}</title>'
             f'<rect x=".5" y=".5" width="{w - 1}" height="95" rx="6" fill="#fff" stroke="#d9d4e0"/>'
             f'<g fill="none" stroke="#6a3d8f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
-            f'<circle cx="{pad + 6}" cy="19" r="5.6"/><path d="M{pad + 3.4} 19.2l1.9 1.9 3.3-3.8"/></g>'
+            f'{badge_mark(pad + 6, 19)}</g>'
             f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11">'
             f'<text x="{pad + 17}" y="23" font-weight="bold" fill="#2b2333" textLength="{_text_width("Encore"):.0f}">Encore</text>'
             f'<text x="{w - pad}" y="23" text-anchor="end" fill="#6b6475">{e(tested)}</text>'
@@ -1675,7 +1704,7 @@ def badge_svg(badge: dict) -> str:
             f'<g clip-path="url(#r)"><rect width="{lw:.0f}" height="22" fill="#2b2333"/>'
             f'<rect x="{lw:.0f}" width="{tw:.0f}" height="22" fill="#e6f4e6"/></g>'
             f'<g fill="none" stroke="#c4a3e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
-            f'<circle cx="13" cy="11" r="5.6"/><path d="M10.4 11.2l1.9 1.9 3.3-3.8"/></g>'
+            f'{badge_mark(13, 11)}</g>'
             f'<g font-family="Verdana,DejaVu Sans,Geneva,sans-serif" font-size="11" font-weight="bold">'
             f'<text x="24" y="15" fill="#fff" textLength="{_text_width(label):.0f}">{e(label)}</text>'
             f'<text x="{lw + 9:.0f}" y="15" fill="#14601a" textLength="{_text_width(text):.0f}">{e(text)}</text></g></svg>\n')
@@ -1907,9 +1936,17 @@ def cell_href(data: dict, attempt: dict, o: dict, root: str) -> str | None:
     return f'{data.get("notebooks_root") or root}{nb["executed"]}' + (f"#cell-id={cell}" if cell else "")
 
 
+def claim_sections(sections: list[tuple[str, str]], foot: str = "") -> str:
+    """The body of an open claim: each part under its own label (the paper's words, the result, the deviations
+    from its method), so that a long explanation reads as a record and not as one block of text."""
+    parts = "".join(f'<div class="claim-sec"><h5>{e(label)}</h5><div>{html_}</div></div>' for label, html_ in sections if html_)
+    return f'<div class="claim-body">{parts}{foot}</div>'
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | None = None) -> str:
-    """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
-    blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
+    """One claim as an accordion. Closed, it is the statement, then what was found in a line, then where the paper
+    says it, its tags and its id. Open, the explanation follows in labelled parts (claim_sections)."""
+    blocked = f'<span class="why">{e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
@@ -1928,48 +1965,51 @@ def claim_item(o: dict, root: str, attempt: dict | None = None, asked: dict | No
     if o.get("proposed"):
         tags += (f'<span class="tag">change to {e(OUTCOMES[o["proposed"]["outcome"]][0].lower())} '
                  f'proposed</span>')
-    body = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
+    found = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
     if o.get("proposed"):
-        body += (f'<p class="notes"><strong>Proposed after the last verification, not yet verified:</strong> '
-                 f'{e(OUTCOMES[o["proposed"]["outcome"]][0].lower())}. {e(squash(o["proposed"]["reason"]))}</p>')
+        found += (f'<p class="notes"><strong>Proposed after the last verification, not yet verified:</strong> '
+                  f'{e(OUTCOMES[o["proposed"]["outcome"]][0].lower())}. {e(squash(o["proposed"]["reason"]))}</p>')
     changed = next((c for c in ((attempt or {}).get("reconciliation") or {}).get("outcomes", [])
                     if c["claim"] == o["claim"]), None)
     if changed:
         then = attempt["reconciliation"]["earlier"].rsplit("-", 1)[1]
         tags += f'<span class="tag">was {e(OUTCOMES[changed["earlier"]][0].lower())} in attempt {e(then)}</span>'
-        body += (f'<p class="notes"><strong>Attempt {e(then)}:</strong> '
-                 f'{e(OUTCOMES[changed["earlier"]][0].lower())}. {e(changed["note"])}</p>')
-    if o["deviations"]:
-        items = "".join(f"<li>{e(d)}</li>" for d in o["deviations"])
-        body += (f'<p class="deviations-title">How the test differed from the paper’s method</p>'
-                 f'<ul class="deviations">{items}</ul>')
-    if not body:
-        body = '<p class="notes muted">No explanation recorded.</p>'
-    if o.get("statistics"):
-        items = "".join(f"<li>{e(statistic_text(s))}</li>" for s in o["statistics"])
-        body = f'<p class="deviations-title">What the paper reports</p><ul class="stats">{items}</ul>' + body
-    if o.get("inferred"):
-        body = f'<p class="inferred"><strong>Not quoted:</strong> {e(o["inferred"])}</p>' + body
+        found += (f'<p class="notes"><strong>Attempt {e(then)}:</strong> '
+                  f'{e(OUTCOMES[changed["earlier"]][0].lower())}. {e(changed["note"])}</p>')
+    # The paper's own words, or what the claim was drawn from when the paper does not say it in a sentence. Where
+    # in the paper is on the line above (source), so the quotation does not repeat it.
+    said = ""
     if o.get("quote"):
-        cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
-        body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
-    # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at
-    # the end of the claim's first line, once, with the link to the claim under it.
-    ident = (f'<span class="claim-ref"><code class="claim-id" title="The id of this claim">{e(o["claim"])}</code>'
-             f'<a class="claim-anchor" href="#claim-{e(o["claim"])}">link to this claim</a></span>')
+        said = f'<blockquote class="quote"><p>{e(o["quote"])}</p></blockquote>'
+    if o.get("inferred"):
+        said += f'<p class="inferred"><strong>Not quoted:</strong> {e(o["inferred"])}</p>'
+    reports = ('<ul class="stats">' + "".join(f"<li>{e(statistic_text(s))}</li>" for s in o["statistics"]) + "</ul>"
+               if o.get("statistics") else "")
+    differed = ('<ul class="deviations">' + "".join(f"<li>{e(d)}</li>" for d in o["deviations"]) + "</ul>"
+                if o["deviations"] else "")
+    sections = [("From the paper", said), ("Reported statistics", reports),
+                ("Result", found or '<p class="notes muted">No explanation recorded.</p>'),
+                ("Deviations from the paper’s method", differed)]
     # Open, the claim leads to the cell of the executed notebook that tests it (cell_href, set by the page).
+    foot = ""
     if o.get("cell"):
         at_cell = "#cell-id=" in o["cell"]
-        body += (f'<p class="claim-link"><a href="{e(o["cell"])}">See the notebook {"cell" if at_cell else ""} that tests '
-                 f'this claim</a> <span class="muted small">in the executed notebook, with its output</span></p>'
-                 ).replace("notebook  that", "notebook that")
+        foot = (f'<p class="claim-link"><a href="{e(o["cell"])}">See the notebook {"cell" if at_cell else ""} that tests '
+                f'this claim</a> <span class="muted small">in the executed notebook, with its output</span></p>'
+                ).replace("notebook  that", "notebook that")
+    # The claim's id, which the records, a verifier's notes and the author response form name it by: in view at the
+    # end of the line under the claim, once, and itself the link to the claim.
+    ident = (f'<a class="claim-id" href="#claim-{e(o["claim"])}" title="The id of this claim, and a link to it">'
+             f'{e(o["claim"])}</a>')
     # What was found, in a line under the statement while the claim is closed; open, the full notes show.
     lead = f'<p class="gist">{e(gist(o["notes"]))}</p>' if o["notes"] else ""
-    # The chip is not a link here: inside the summary a click should open the claim.
+    # The chip is not a link here: inside the summary a click should open the claim. Under an outcome's heading
+    # (by_outcome) it is not shown, as the heading and the claim's stripe already say it.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
-            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}{ident}</div>'
-            f'<p class="statement">{e(o["statement"])}</p>{lead}</summary>'
-            f'<div class="claim-body">{body}</div></details></li>')
+            f'<div class="claim-chip">{chip(o["outcome"])}</div>'
+            f'<p class="statement">{e(o["statement"])}</p>{lead}'
+            f'<div class="claim-meta">{blocked}{source}{tags}{ident}</div></summary>'
+            f'{claim_sections(sections, foot)}</details></li>')
 
 
 _ROWS: dict = {}
@@ -2002,8 +2042,7 @@ def head_tags(data: dict, title: str, path: str, description: str, structured: d
         f'<meta property="og:image" content="{card}">',
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
-        f'<meta property="og:image:alt" content="{SITE_NAME}: can the findings of a paper be reproduced '
-        'from its open data?">',
+        f'<meta property="og:image:alt" content="{SITE_NAME}: do the deposited data support the paper?">',
         '<meta name="twitter:card" content="summary_large_image">',
         f'<meta name="twitter:title" content="{e(title)}">',
         f'<meta name="twitter:description" content="{e(description)}">',
@@ -2030,25 +2069,79 @@ def beacon(data: dict) -> str:
     return f"<script defer src=\"{BEACON_SRC}\" data-cf-beacon='{e(json.dumps({'token': token}))}'></script>"
 
 
+# Who to write to about a check for a journal: CatalystNeuro's contact page, until the site has an address of its own.
+CONTACT_URL = CN_URL + "/contact"
+PROTOCOL_URL = PROTOCOL_BLOB + "/docs/protocol.md"
+# What Anthropic does with what is sent to its models, by kind of account: the source of the journals page's
+# statement on training and retention, read on 2026-11-22.
+DATA_USAGE_URL = "https://code.claude.com/docs/en/data-usage"
+
+# The pages of the registry itself, which share the second bar (shell): the overview of the record and its lists.
+REGISTRY_PAGES = ("overview", "papers", "datasets", "authors", "pipeline")
+
+
+def footer(data: dict, root: str) -> str:
+    """The foot of every page: where everything is, who is behind the site, and how to read an outcome."""
+    def column(head: str, links: list[tuple[str, str]]) -> str:
+        items = "".join(f'<li><a href="{e(href)}">{e(label)}</a></li>' for label, href in links)
+        return f'<div class="foot-col"><h2>{e(head)}</h2><ul>{items}</ul></div>'
+    columns = (
+        column("Registry", [("Overview", f"{root}registry/"), ("Papers", f"{root}papers/"),
+                            ("Datasets", f"{root}datasets/"), ("Authors", f"{root}authors/"),
+                            ("Pipeline", f"{root}pipeline/"), ("Data as JSON", f"{root}registry.json")])
+        + column("Method", [("Steps of a check", f"{root}method/"), ("Protocol", PROTOCOL_URL),
+                            ("Reading an outcome", f"{root}registry/#caution"),
+                            ("Badges", f"{REPO_URL}/blob/main/docs/badges.md"), ("Agent runs", f"{REPO_URL}/actions")])
+        + column("Use Encore", [("For journals", f"{root}journals/"), ("Check your own data", f"{root}check/"),
+                                ("For authors", f"{root}method/#authors"), ("Contact", CONTACT_URL),
+                                ("Repository", REPO_URL)]))
+    return f'''<footer><div class="wrap">
+<div class="foot-grid">
+  <div class="foot-brand"><a class="brand" href="{root or "./"}">{ENCORE_MARK}<span>{SITE_NAME}</span></a>
+    <p>Checks datasets against the papers they came from. {SITE_NAME} is developed by
+    <a href="{CN_URL}">CatalystNeuro</a>.</p></div>
+  {columns}
+</div>
+<p class="foot-note">Outcomes describe what one attempt could reproduce from the data in the dataset, with the methods
+available. A failure to reproduce may be a failure of the agent, and is not a judgement of the paper.</p>
+<p class="foot-legal">Generated {e(data["generated"][:10])} from the registry's files. Code under the
+<a href="{REPO_URL}/blob/main/LICENSE">Apache-2.0 license</a>; the registry's records are in the public domain
+(<a href="{REPO_URL}/blob/main/LICENSE-data">CC0</a>).</p>
+</div></footer>'''
+
+
 def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "", path: str = "",
-          description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
+          description: str = SITE_DESCRIPTION, structured: dict | None = None, bleed: bool = False) -> str:
+    """One page: the bar, the registry's own bar on the registry's pages, the body and the foot.
+
+    The bar is the site's: the registry, how it works, and what it offers a journal. The pages of the registry
+    (REGISTRY_PAGES) carry a second bar with its lists. With `bleed`, the body lays out its own full-width bands
+    (the home page); otherwise it sits in the page's column."""
     r = rows_cache(data)
     n_papers = sum(1 for p in papers_of(data) if p["attempts"])
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
-    # The bar's tabs are the pages for readers. Pipeline, the maintainers' page of which step each paper is at, is
-    # in the phone menu (class "menuonly") and the footer, not in the bar on a wide screen.
-    tabs = [("overview", "Overview", root or "./", None, ""), ("papers", "Papers", f"{root}papers/", n_papers, ""),
-            ("datasets", "Datasets", f"{root}datasets/", n_datasets, ""),
-            ("authors", "Authors", f"{root}authors/", None, ""),
-            ("about", "About", f"{root}about/", None, ""),
-            ("pipeline", "Pipeline", f"{root}pipeline/", None, " menuonly")]
+    in_registry = active in REGISTRY_PAGES
     nav = ""
-    for key, label, href, n, extra in tabs:
-        current = ' aria-current="page"' if key == active else ""
-        count = f'<span class="n">{n:,}</span>' if n is not None else ""
-        nav += f'<a class="tab{extra}" href="{href}"{current}>{label}{count}</a>'
+    for key, label, href in [("registry", "Registry", f"{root}registry/"), ("method", "Method", f"{root}method/"),
+                             ("journals", "For journals", f"{root}journals/")]:
+        # The registry's tab is lit on every page of the registry; only its overview is the tab's own page.
+        current = (' aria-current="page"' if key == active or (key == "registry" and active == "overview")
+                   else ' aria-current="true"' if key == "registry" and in_registry else "")
+        nav += f'<a class="tab" href="{href}"{current}>{label}</a>'
+    subnav = ""
+    if in_registry:
+        for key, label, href, n in [("overview", "Overview", f"{root}registry/", None),
+                                    ("papers", "Papers", f"{root}papers/", n_papers),
+                                    ("datasets", "Datasets", f"{root}datasets/", n_datasets),
+                                    ("authors", "Authors", f"{root}authors/", None),
+                                    ("pipeline", "Pipeline", f"{root}pipeline/", None)]:
+            current = ' aria-current="page"' if key == active else ""
+            count = f'<span class="n">{n:,}</span>' if n is not None else ""
+            subnav += f'<a href="{href}"{current}>{label}{count}</a>'
+        subnav = f'<nav class="regnav" aria-label="The registry"><div class="wrap">{subnav}</div></nav>\n'
     banner = '<div class="demo">Demo data: made-up attempts, for testing the site only</div>' if data["demo"] else ""
     home = root or "./"
+    main = body if bleed else f'<div class="wrap page-body">\n{body}\n</div>'
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -2058,24 +2151,18 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="{root}assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
+<link rel="preload" href="{root}assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
-{banner}<nav class="top" aria-label="Sections"><div class="wrap">
+{banner}<nav class="top" aria-label="Site"><div class="wrap">
   <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow" id="tabrow">{nav}
-  <a class="tab ext menuonly" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
-  <a class="tab ext cta" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a></div>
+  <a class="tab quiet" href="{root}check/"{' aria-current="page"' if active == "check" else ""} title="Run the same check on your own data with the encore command">Check your data</a>
+  <a class="tab cta" href="{CONTACT_URL}" title="Write to CatalystNeuro about checks for your journal">Contact us</a></div>
   <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false" aria-controls="tabrow" aria-label="Menu"><span aria-hidden="true"></span></button>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
-<div class="wrap">
-{body}
-<footer>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
-<a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
-<a href="{root}pipeline/">Pipeline</a> · <a href="{REPO_URL}/actions">Agent runs</a> ·
-<a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
-the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
-a judgement of the paper.</footer>
-</div>
+{subnav}{main}
+{footer(data, root)}
 {THEME_JS}
 {scripts}{beacon(data)}
 </body></html>
@@ -2313,19 +2400,19 @@ def page_overview(data: dict) -> str:
     verified = sum(1 for atts in current.values() if weakest_tier(atts) != "runs")
     n_papers = sum(1 for q in papers_of(data) if q["attempts"])
     tiles = [
-        (f"{n_papers:,}", "papers attempted", "papers/?status=attempted"),
-        (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "datasets/"),
-        (f"{n_claims:,}", "claims attempted", "papers/?status=attempted"),
+        (f"{n_papers:,}", "papers attempted", "../papers/?status=attempted"),
+        (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "../datasets/"),
+        (f"{n_claims:,}", "claims attempted", "../papers/?status=attempted"),
         (f"{verified:,}", "datasets independently verified",
-         "papers/?tier=agent_verified,human_verified,author_endorsed"),
-        (f'{len(r["findings"]):,}', "findings about the data", "datasets/"),
+         "../papers/?tier=agent_verified,human_verified,author_endorsed"),
+        (f'{len(r["findings"]):,}', "findings about the data", "../datasets/"),
     ]
     tile_html = "".join(f'<a class="tile" href="{href}"><div class="n">{n}</div><div class="l">{e(label)}</div></a>'
                         for n, label, href in tiles)
 
     if n_claims:
-        outcomes = (bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"papers/?has={k}")
-                    + legend(counts, href=lambda k: f"papers/?has={k}"))
+        outcomes = (bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"../papers/?has={k}")
+                    + legend(counts, href=lambda k: f"../papers/?has={k}"))
     else:
         outcomes = '<p class="muted">No claims attempted yet.</p>'
 
@@ -2337,8 +2424,8 @@ def page_overview(data: dict) -> str:
     for t, c in sorted(by_technique.items(), key=lambda kv: -sum(kv[1].values()))[:8]:
         label = "Not stated" if t == "(none)" else t
         technique_rows += (
-            f'<a class="label" href="papers/?status=attempted&technique={e(t)}">{e(label)}</a>'
-            + bar(c, f"{label}: {sum(c.values())} claims", href=lambda k, t=t: f"papers/?technique={t}&has={k}")
+            f'<a class="label" href="../papers/?status=attempted&technique={e(t)}">{e(label)}</a>'
+            + bar(c, f"{label}: {sum(c.values())} claims", href=lambda k, t=t: f"../papers/?technique={t}&has={k}")
             + f'<span class="num">{sum(c.values()):,}</span>')
     technique_panel = (f'<div class="panel"><h2>Outcomes by technique</h2><div class="rows">{technique_rows}</div></div>'
                        if technique_rows else "")
@@ -2360,14 +2447,14 @@ def page_overview(data: dict) -> str:
 
     panels = "".join([
         technique_panel,
-        breakdown("Why claims could not be tested",
-                  ordered(blocked, BLOCKED_BY, lambda k: f"papers/?blocked_by={k}"),
-                  "papers/?has=blocked"),
-        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"datasets/?found={k}"),
-                  "datasets/"),
+        breakdown("Blocked claims by reason",
+                  ordered(blocked, BLOCKED_BY, lambda k: f"../papers/?blocked_by={k}"),
+                  "../papers/?has=blocked"),
+        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"../datasets/?found={k}"),
+                  "../datasets/"),
         breakdown("Verification of attempted datasets",
-                  ordered(tiers, TIERS, lambda k: f"papers/?status=attempted&tier={k}"),
-                  "papers/?status=attempted"),
+                  ordered(tiers, TIERS, lambda k: f"../papers/?status=attempted&tier={k}"),
+                  "../papers/?status=attempted"),
     ])
 
     paper_for = {q["doi"]: q for q in papers_of(data) if q["attempts"]}
@@ -2383,21 +2470,19 @@ def page_overview(data: dict) -> str:
                 out.append(a)
         return out[:n]
     recent = once_a_paper(sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True))
-    recent_html = "".join(attempt_row(a, "", paper=its(a), data=data) for a in recent) or '<p class="empty">No attempts yet.</p>'
-    top_html = ("".join(attempt_row(a, "", share=True, paper=its(a), data=data)
+    recent_html = "".join(attempt_row(a, "../", paper=its(a), data=data) for a in recent) or '<p class="empty">No attempts yet.</p>'
+    top_html = ("".join(attempt_row(a, "../", share=True, paper=its(a), data=data)
                         for a in once_a_paper(most_reproduced(attempts, n=24)))
                 or '<p class="empty">No verified attempt yet.</p>')
 
     dashboard = progress_panel(data)
-    redirect = json.dumps({a["id"]: attempt_path(data, a) for a in data["attempts"]})
     body = f'''<header class="page" id="top">
-  <div class="eyebrow">The Encore registry</div>
-  <h1>Can the findings of a paper be reproduced from its open data?</h1>
-  <p class="lede">AI agents try to reproduce the key findings of papers from their open data. Independent agents check
-  each attempt, and every finding gets
-  an outcome, whether or not it reproduced. <a href="about/">How it works</a> ·
-  <a href="{ENCORE_DOCS}">Run the same check on your own data</a></p>
-  <form class="home-search" method="get" action="papers/" role="search">
+  <h1>The Encore registry</h1>
+  <p class="lede">Can the findings of a paper be reproduced from its open data? AI agents try, on the datasets in
+  public archives. Independent agents check each attempt, and every finding gets an outcome, whether or not it
+  reproduced. <a href="../method/">The method</a> ·
+  <a href="../check/">Run the same check on your own data</a></p>
+  <form class="home-search" method="get" action="../papers/" role="search">
     <input name="q" type="search" placeholder="Search papers" aria-label="Search papers">
     <button class="ghost" type="submit">Search</button>
   </form>
@@ -2414,26 +2499,410 @@ def page_overview(data: dict) -> str:
     <div class="tabs" role="tablist"><button type="button" role="tab" data-panel="most-reproduced" aria-selected="true">Most
       reproduced</button><button type="button" role="tab" data-panel="latest" aria-selected="false">Latest</button></div>
     <section class="tabpanel" id="most-reproduced"><h2>Most reproduced</h2>
-      <p class="sub small"><a class="more" href="papers/?status=attempted&amp;sort=-reproduced">See all</a>Verified
+      <p class="sub small"><a class="more" href="../papers/?status=attempted&amp;sort=-reproduced">See all</a>Verified
       attempts with at least {TOP_MIN_CLAIMS} claims on the dataset, by the share of claims reproduced; a partial
       reproduction counts as half.</p>
       <div class="results">{top_html}</div></section>
     <section class="tabpanel" id="latest"><h2>Latest attempts</h2>
-      <p class="sub small"><a class="more" href="papers/?status=attempted&amp;sort=-date">See all</a>The most recent attempts,
+      <p class="sub small"><a class="more" href="../papers/?status=attempted&amp;sort=-date">See all</a>The most recent attempts,
       verified or not.</p>
       <div class="results">{recent_html}</div></section>
   </div>
 </main>'''
+    scripts = TABS_JS + CAUTION_JS + (f'<script src="../{asset("progress.js")}"></script>' if dashboard else "")
+    return shell(data, f"The Encore registry · {SITE_NAME}", "../", "overview", body, scripts, path="registry/",
+                 description="The public record of attempts to reproduce the findings of papers from their open "
+                             "data: every claim tested, its outcome, and what each attempt found about the data.")
+
+
+# --- the home page and the page for journals ----------------------------------------------------------------------
+# The home page says what Encore does and for whom, to a visitor who has not seen the registry: an editor, an author,
+# a curator. Everything it shows as evidence (the example, the numbers, the journals) is read from the registry when
+# the site is built, so it never drifts from the record. The registry's own overview is at registry/ (page_overview).
+
+HOME_STEPS = [
+    ("The claims are written from the paper",
+     "A reader agent records the paper's key findings as claims, each with the numbers it rests on, a tolerance, and "
+     "the test that will decide it. A second reader checks them against the paper. The claims are fixed before any "
+     "analysis is run, and the readers never see the data."),
+    ("Each claim is tested on the data",
+     "An author agent checks the dataset against its own description, then writes a notebook that streams the data "
+     "from the archive and tests each claim. What it learns about the data along the way is recorded as findings."),
+    ("An independent agent verifies the work",
+     "A verifier, in a separate run that has not seen the author's reasoning or conclusions, reviews the notebook and "
+     "the paper and decides its own outcome for each claim. The author answers each point and revises the analysis."),
+    ("The result is a record anyone can check",
+     "Every claim has an outcome and the reasoning behind it. The notebook runs again in a clean environment, and the "
+     "agents' transcripts are kept with the record."),
+    ("The paper's authors can respond",
+     "An author of the paper who thinks a check is wrong, or who has something to add, responds from the paper's "
+     "page. Once we confirm who wrote the response, it is shown there with the check, and a new check is run "
+     "with what the response adds."),
+]
+
+# The outcomes in a sentence each, as the protocol defines them (docs/protocol.md, "One outcome per claim").
+OUTCOME_MEANS = {
+    "reproduced": "The result matches the claim.",
+    "partially_reproduced": "The effect is present but weaker, or holds only in part.",
+    "not_reproduced": "The analysis ran and the result differs. This may be a failure of the attempt.",
+    "blocked": "The claim could not be tested, most often because data it needs are not in the dataset.",
+}
+
+
+def home_example(data: dict, attempts: list[dict], papers: dict) -> tuple[dict, dict] | None:
+    """The attempt the home page shows, with its paper: the most reproduced verified attempt (most_reproduced) whose
+    claims had at least three different outcomes and that has a finding about the data, so that the example shows
+    all a check returns. Failing that, one with two outcomes. None when the registry has no such attempt yet."""
+    ranked = [(a, papers.get(a["paper"].lower())) for a in most_reproduced(attempts, n=len(attempts)) if a["findings"]]
+    for least in (3, 2):
+        for a, paper in ranked:
+            if paper and sum(1 for n in outcome_counts(a, "paper").values() if n) >= least:
+                return a, paper
+    return None
+
+
+def example_card(data: dict, attempt: dict, paper: dict, root: str) -> str:
+    """One attempt as the registry records it, in brief: its outcomes, a claim of each outcome and a finding."""
+    row = next((r for r in rows_cache(data)["papers"] if r["id"] == paper["key"]), {})
+    counts = outcome_counts(attempt, "paper")
+    page = f'{root}papers/{paper["key"]}/'
+    claims = ""
+    for outcome in [k for k in OUTCOMES if counts[k]][:3]:
+        # The shortest statement of each outcome, so that the card stays a card.
+        o = min((o for o in attempt["outcomes"] if o["outcome"] == outcome), key=lambda o: len(o["statement"]), default=None)
+        if o:
+            claims += f'<li>{chip(outcome)}<span>{e(squash(o["statement"]))}</span></li>'
+    # A finding of a named kind before one of the kind "other", and the shortest of them.
+    finding = min(attempt["findings"], key=lambda f: (f["kind"] == "other", len(f["statement"])))
+    journal = f'<span class="sep" aria-hidden="true">·</span>{e(row["journal"])}' if row.get("journal") else ""
+    n, n_found = sum(counts.values()), len(attempt["findings"])
+    return f'''<figure class="shot">
+  <figcaption><span>From the registry</span>{quiet_tier(attempt["tier"])}</figcaption>
+  <p class="byline">{e(paper["byline"])}{journal}</p>
+  <p class="shot-title"><a href="{page}">{e(paper["title"])}</a></p>
+  {bar(counts, f"Outcomes of {n} claims")}{legend(counts, compact=True)}
+  <ul class="shot-claims">{claims}</ul>
+  <p class="shot-finding"><span class="tag">{e(FINDING_KINDS.get(finding["kind"], finding["kind"]))}</span>
+  {e(gist(finding["statement"], limit=170))}</p>
+  <p class="shot-more"><a href="{page}">Read the full record</a><span class="muted">{n} claims ·
+  {n_found} finding{"" if n_found == 1 else "s"} about the data</span></p>
+</figure>'''
+
+
+def journal_counts(data: dict) -> list[tuple[str, int]]:
+    """The journals of the papers attempted, with the number of papers in each, the most first. Preprints and the
+    journals the list groups as "Other journals" are not journals a reader would look for by name."""
+    counts: dict = {}
+    for p in rows_cache(data)["papers"]:
+        if p["status"] == "attempted" and p.get("journal") and p["journal"] not in ("Preprint", "Other journals"):
+            counts[p["journal"]] = counts.get(p["journal"], 0) + 1
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+def journal_href(root: str, journal: str) -> str:
+    return f"{root}papers/?status=attempted&journal={urllib.parse.quote(journal)}"
+
+
+def page_home(data: dict) -> str:
+    r = rows_cache(data)
+    current = current_attempts(data)
+    attempts = [a for atts in current.values() for a in atts]
+    counts = outcome_counts(attempts)
+    n_claims = sum(counts.values())
+    n_papers = sum(1 for q in papers_of(data) if q["attempts"])
+    names = [ARCHIVES.get(k, {}).get("name", k) for k in attempted_archives(data)]
+    papers = {q["doi"]: q for q in papers_of(data) if q["attempts"]}
+    shown = home_example(data, attempts, papers)
+    example = example_card(data, *shown, "") if shown else ""
+
+    stats = [(f"{n_papers:,}", "papers checked", "papers/?status=attempted"),
+             (f"{n_claims:,}", "claims given an outcome", "registry/"),
+             (f'{len(r["findings"]):,}', "findings about the data", "datasets/"),
+             (f"{len(names):,}", "public archives", "datasets/")]
+    stats_html = "".join(f'<a class="stat" href="{href}"><span class="n">{n}</span><span class="l">{e(label)}</span></a>'
+                         for n, label, href in stats)
+    journals = journal_counts(data)
+    journals_html = ""
+    if journals:
+        some = ", ".join(f'<a href="{e(journal_href("", j))}">{e(j)}</a>' for j, _ in journals[:6])
+        journals_html = (f'<p class="journals-line">The papers checked so far were published in {len(journals)} journals, '
+                         f'among them {some}. <a href="papers/?status=attempted">Find the papers from your journal</a></p>')
+
+    blocked: dict = {}
+    for c in r["claims"]:
+        if c["outcome"] == "blocked":
+            blocked[c["blocked_by"]] = blocked.get(c["blocked_by"], 0) + 1
+    missing = blocked.get("data_missing", 0)
+    record = ""
+    if n_claims:
+        note = (f' Of the {counts["blocked"]:,} claims that could not be tested, {missing:,} were blocked because data '
+                f'they need are not in the dataset.' if missing else "")
+        record = f'''<section class="band alt" id="record"><div class="wrap">
+  <h2>The registry so far</h2>
+  <p class="band-lede">The registry is the public record of these checks on published papers and their datasets in
+  {e(", ".join(names[:-1]) + " and " + names[-1] if len(names) > 1 else (names[0] if names else "public archives"))}.{note}</p>
+  <div class="record">
+    {bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"papers/?has={k}")}
+    {legend(counts, href=lambda k: f"papers/?has={k}")}
+  </div>
+  <div class="home-stats">{stats_html}</div>
+  {journals_html}
+</div></section>'''
+
+    steps = "".join(f'<li><h3>{e(head)}</h3><p>{e(text)}</p></li>' for head, text in HOME_STEPS)
+    means = "".join(f'<li>{chip(k)}<span>{e(text)}</span></li>' for k, text in OUTCOME_MEANS.items())
+    kinds: dict = {}
+    for f in r["findings"]:
+        kinds[f["kind"]] = kinds.get(f["kind"], 0) + 1
+    kinds_html = "".join(f'<li><a href="datasets/?found={e(k)}">{e(FINDING_KINDS.get(k, k))}</a><span class="num">{n:,}</span></li>'
+                         for k, n in sorted(kinds.items(), key=lambda kv: -kv[1])[:5] if k != "other")
+
+    body = f'''<header class="hero"><div class="wrap">
+  <div class="hero-text">
+    <h1>Do the deposited data support the paper?</h1>
+    <p class="lede">Encore tests each finding of a paper on the data its authors deposited. You get a report of what
+    reproduced, what did not, and what is missing from the dataset, with the code behind every result.</p>
+    <p class="hero-actions"><a class="button" href="journals/">Encore for journals</a>
+    <a class="button secondary" href="registry/">Browse the registry</a></p>
+    <p class="hero-by">Developed by <a href="{CN_URL}">CatalystNeuro</a>. The protocol, the code and every record are
+    public.</p>
+  </div>
+  {example}
+</div></header>
+<main class="home">
+{record}
+<section class="band" id="how"><div class="wrap">
+  <h2>The method</h2>
+  <p class="band-lede">Each check follows a <a href="{PROTOCOL_URL}">written protocol</a>, in a fixed sequence of
+  roles. The readers, the author and the verifiers are separate runs that do not share their reasoning.</p>
+  <ol class="how-steps">{steps}</ol>
+  <p class="band-more"><a href="method/">The method in full</a></p>
+</div></section>
+<section class="band alt" id="returns"><div class="wrap">
+  <h2>The report</h2>
+  <div class="returns">
+    <div><h3>An outcome for every claim</h3>
+      <ul class="means">{means}</ul></div>
+    <div><h3>Findings about the data</h3>
+      <p>The agents record what is wrong with or missing from the dataset as they work: units that do not match,
+      metadata that is missing, data the paper describes but the files do not hold. The most common kinds so far:</p>
+      <ul class="kinds-list">{kinds_html}</ul>
+      <h3>Notebooks that run</h3>
+      <p>Each check leaves the notebook that tested the claims. It streams its data from the archive and computes
+      every result from them, so anyone can run it again or build on it.</p></div>
+  </div>
+</div></section>
+<section class="band" id="for"><div class="wrap">
+  <h2>For journals, authors and archives</h2>
+  <div class="audiences">
+    <div class="audience"><h3>Journals</h3>
+      <p>See whether the data deposited with a manuscript support its findings, before or after publication. The
+      report lists each claim with its outcome and each problem found in the dataset.</p>
+      <p><a href="journals/">Encore for journals</a></p></div>
+    <div class="audience"><h3>Authors and labs</h3>
+      <p>Run the same check on your own dataset before you deposit it. The <code>encore</code> command runs on your
+      machine, and the result stays there.</p>
+      <p><a href="check/">Check your own data</a></p></div>
+    <div class="audience"><h3>Archives</h3>
+      <p>Each dataset in the registry has a page with what the checks found about its data, a badge the archive can
+      show, and a JSON file with the same numbers.</p>
+      <p><a href="method/#archives">Encore for archives</a></p></div>
+  </div>
+</div></section>
+<section class="band alt" id="limits"><div class="wrap split">
+  <h2>Reading an outcome</h2>
+  <div><p>{CAUTION} An outcome says what one attempt could recover from the data in a dataset, with the methods available
+  to it. A claim may fail to reproduce because of a mistake or a limitation in the agent's analysis, because the paper
+  does not describe its methods fully, or because the dataset differs from what the paper analysed.</p>
+  <p>Most checks are made by AI agents, and the agents make mistakes. Every record links to its code and its
+  reasoning, and an author who thinks an attempt is wrong can <a href="{RESPOND_URL}">respond to it</a>; the response
+  is shown on the paper's page. <a href="registry/#caution">More on reading outcomes</a></p></div>
+</div></section>
+<section class="band" id="behind"><div class="wrap behind">
+  <div><h2>Built by CatalystNeuro</h2>
+    <p>{SITE_NAME} is built by <a href="{CN_URL}">CatalystNeuro</a>, a team of research software engineers who trained
+    as neuroscientists. CatalystNeuro converts lab data to the NWB standard and publishes them on the DANDI Archive.</p>
+    <p>We believe recent advances in AI make it possible to raise the standard for open science: for the first time,
+    the reproducibility of computational results can be checked at scale. {SITE_NAME} is our first large step in that
+    direction.</p>
+    <p>Encore is led by Ben Dichter, founder and CEO of CatalystNeuro.</p></div>
+  <div><h2>Open by design</h2>
+    <p>The <a href="{PROTOCOL_URL}">protocol</a> the agents follow, the <a href="{PROTOCOL_REPO_URL}">code</a> that runs them
+    and the transcript of every run are public. The code is under the Apache-2.0 license and the registry's records
+    are in the public domain.</p></div>
+</div></section>
+<section class="band ink" id="contact"><div class="wrap">
+  <h2>Try it on your own papers</h2>
+  <p>Send us a few papers with deposited data, published or in review, and we will return a full report on each.</p>
+  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
+  <a class="button secondary" href="journals/">Encore for journals</a></p>
+</div></section>
+</main>'''
+    # A link to #attempt-<id> on the home page was a link to an attempt, from when the overview listed them here.
+    redirect = json.dumps({a["id"]: attempt_path(data, a) for a in data["attempts"]})
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
-               'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + TABS_JS + CAUTION_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>')
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
         "publisher": {"@type": "Organization", "name": "CatalystNeuro", "url": "https://www.catalystneuro.com"},
     }
-    return shell(data, f"{SITE_NAME}: can the findings of a paper be reproduced from its open data?", "",
-                 "overview", body, scripts, path="", structured=structured)
+    return shell(data, f"{SITE_NAME}: do the deposited data support the paper?", "", "home", body, scripts,
+                 path="", structured=structured, bleed=True)
+
+
+def page_journals(data: dict) -> str:
+    """What Encore offers a journal, said from what the tools do today: the check on a manuscript's data, the public
+    record and badge of a published paper, and the papers of each journal already in the registry."""
+    root = "../"
+    names = [ARCHIVES.get(k, {}).get("name", k) for k in attempted_archives(data)]
+    archives = (", ".join(names[:-1]) + " and " + names[-1]) if len(names) > 1 else (names[0] if names else "public archives")
+    papers = {q["doi"]: q for q in papers_of(data) if q["attempts"]}
+    attempts = [a for atts in current_attempts(data).values() for a in atts]
+    shown = home_example(data, attempts, papers)
+    example = (f'<div class="panel"><h2>An example record</h2><p class="sub">Each paper in the registry has a page like '
+               f'this one, with every claim, its outcome and the reasoning behind it.</p>'
+               f'{example_card(data, *shown, root)}</div>') if shown else ""
+    journals = journal_counts(data)
+    rows_ = "".join(f'<li><a href="{e(journal_href(root, j))}">{e(j)}</a><span class="num">{n:,}</span></li>'
+                    for j, n in journals[:12])
+    in_registry = (f'''<div class="panel" id="your-journal"><h2>Your journal in the registry</h2>
+    <p class="sub">The registry already holds checks of papers from {len(journals)} journals, made on the data their
+    authors deposited in public archives. Each name opens that journal's papers.</p>
+    <ul class="kinds-list journals-list">{rows_}</ul>
+    <p class="small"><a href="{root}papers/?status=attempted">All papers, with a filter by journal</a></p></div>'''
+                   if journals else "")
+    counts = outcome_counts(attempts)
+    n_blocked = counts["blocked"]
+    missing = sum(1 for c in rows_cache(data)["claims"] if c["outcome"] == "blocked" and c["blocked_by"] == "data_missing")
+    n_papers = len(papers)
+    evidence = (f'''<p class="lede">In the public registry of {n_papers:,} papers, {shares(counts)["blocked"]}% of the
+  claims could not be tested at all, and for {round(100 * missing / n_blocked)}% of those the data the claim rests on
+  were not in the dataset. A check finds this while the authors can still fix it.</p>''' if n_blocked and missing else "")
+    body = f'''<header class="page">
+  <h1>Encore for journals</h1>
+  <p class="lede">Your journal asks authors to deposit their data. Encore tells you whether what they deposited is
+  enough to support the paper.</p>
+  {evidence}
+  <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a>
+  <a class="button secondary" href="{root}method/">The method</a></p>
+</header>
+<main class="journals">
+  <div class="panel" id="report"><h2>The report</h2>
+    <ul class="receives">
+      <li>Each key finding of the paper as a claim, with an outcome: reproduced, partially reproduced, not reproduced,
+      or blocked.</li>
+      <li>Each problem found in the dataset, such as missing data, errors in the metadata, or a selection of units or
+      sessions the paper does not document.</li>
+      <li>The notebook that ran each test, which the authors or a reviewer can run again.</li>
+      <li>For a full check, the verdict of an independent verifier on every outcome.</li>
+    </ul></div>
+  <h2 class="section-head" id="offers">Four ways to work with us</h2>
+  <div class="grid2">
+    <div class="panel"><h2><span class="offer-n">1</span>A pilot on your own papers</h2>
+      <p>Send us a few papers with deposited data, published or in review. We run a full check on each and return
+      the reports, so you see what a check finds on your journal's papers before you decide anything.</p></div>
+    <div class="panel"><h2><span class="offer-n">2</span>Checks during review</h2>
+      <p>At the stage of review you choose, your editorial office sends us the manuscript and the location of its
+      data. We return the report for the editor to share with the reviewers and the authors. A quick check takes one
+      to three hours of computing. A full check, with two rounds of independent verification, takes several hours
+      more.</p></div>
+    <div class="panel"><h2><span class="offer-n">3</span>A public record for published papers</h2>
+      <p>For accepted papers, we add the check to the public registry. The paper gets a page with every claim, its
+      outcome and the code behind it, and a <a href="{REPO_URL}/blob/main/docs/badges.md">badge</a> for the article
+      page that links there. Authors can <a href="{PROTOCOL_BLOB}/docs/author-responses.md">respond</a>, and
+      their response is shown beside the check.</p></div>
+    <div class="panel"><h2><span class="offer-n">4</span>Run it yourselves</h2>
+      <p>The <a href="{root}check/"><code>encore</code> command</a> is open source and runs on your own machines,
+      with your own Claude account, on files in a directory, files at a URL, or a draft dataset in an archive. We
+      help your team set it up.</p></div>
+  </div>
+  <h2 class="section-head" id="terms">Confidentiality and limits</h2>
+  <div class="grid2">
+    <div class="panel" id="confidential"><h2>Confidential manuscripts</h2>
+      <p>A manuscript under review does not go through the public registry. We run its check with the
+      <code>encore</code> command on our own machines, and the result stays there until we send it to you. The agents'
+      commands run in a sandbox that can write only inside the run's directory and can reach only the archives,
+      Python's package index, GitHub and doi.org.</p>
+      <p>The manuscript and the data are sent to Anthropic's models under its commercial terms. Under those terms
+      Anthropic does not train models on them and keeps them for 30 days
+      (<a href="{DATA_USAGE_URL}">Anthropic's data usage policy</a>). Nothing goes on the public registry unless the
+      journal and the authors ask for it.</p>
+      <p>If the manuscript must stay on your own systems, your team can run the same check itself.</p></div>
+    <div class="panel" id="limits"><h2>Limits of a check</h2>
+      <p>{CAUTION} A check reports what one attempt could recover from the deposited data, and the agents that make
+      it can be mistaken.</p>
+      <p>A blocked claim usually points to data the authors still need to deposit. A claim that did not reproduce is
+      a question to put to the authors, and the report gives them the notebook that ran the test. The editor and the
+      reviewers decide what follows. <a href="{root}registry/#caution">More on reading outcomes</a></p>
+      <p>Most checks so far are of neuroscience papers, on data in {e(archives)}. The registry also holds checks of
+      papers in ecology, microbiology, political science, food safety and planetary science, and we take papers from
+      <a href="{root}papers/?status=attempted&amp;archive=dryad,figshare">other fields</a>.</p></div>
+  </div>
+  {example}
+  {in_registry}
+  <div class="panel contact-panel" id="contact"><h2>Start with a pilot</h2>
+    <p>Tell us about your journal and the data its papers deposit. We suggest starting with a pilot on a few of your
+    papers, then deciding where in review a check belongs.</p>
+    <p class="hero-actions"><a class="button" href="{CONTACT_URL}">Request a pilot</a></p></div>
+</main>'''
+    return shell(data, f"Encore for journals · {SITE_NAME}", root, "journals", body, path="journals/",
+                 description="Encore checks the data deposited with a paper against the paper's findings: an outcome "
+                             "for every claim, and every problem found in the dataset, for journals and their editors.")
+
+
+def page_check(data: dict) -> str:
+    """How to run the same check on your own data with the `encore` command: what docs/encore.md says, in brief,
+    for an author or a lab; the document itself has every option."""
+    root = "../"
+    body = f'''<header class="page">
+  <h1>Check your own data</h1>
+  <p class="lede">Before you deposit a dataset, check it against your paper. The <code>encore</code> command runs the
+  same check as the registry, on your own machine: agents read the paper, write down each of its claims, and test the
+  claims on the data. You get an outcome for every claim and a list of what is wrong with or missing from the
+  dataset.</p>
+</header>
+<main class="journals check">
+  <div class="panel"><h2>Run a check</h2>
+    <pre class="snippet term">pip install encore-science
+
+encore check ./nwb/ --paper paper.pdf                    # a directory of files, before you upload them
+encore check s3://bucket/smith-2024/ --paper paper.pdf   # files at a URL
+encore check DANDI:001234 --draft --paper paper.pdf      # a dataset in an archive</pre>
+    <p>A quick check, the default, takes one to three hours: a reader writes the claims from the paper, a second
+    reader checks them, and an author tests them on the data. <code>--full</code> adds two rounds in which an
+    independent agent verifies the work, and takes several hours more. If a run stops, run the same command again and
+    it goes on from where it stopped.</p></div>
+  <div class="grid2">
+    <div class="panel"><h2>Requirements</h2>
+      <ul class="receives">
+        <li><a href="https://docs.claude.com/en/docs/claude-code">Claude Code</a>, signed in to a Claude account or
+        with an API key. The run counts against that account's usage.</li>
+        <li>Python 3.10 or later, and git.</li>
+        <li>The paper, as a PDF or a text file. A preprint is fine.</li>
+      </ul></div>
+    <div class="panel"><h2>The report</h2>
+      <p>The run writes <code>report.md</code>, which lists every claim with its outcome (reproduced, partially
+      reproduced, not reproduced, or blocked) and every finding about the data, and points to the notebooks that
+      tested them. A failure to reproduce may be the agent's: read the notes and the notebooks before acting on
+      one.</p></div>
+    <div class="panel"><h2>On your own machine</h2>
+      <p>A check you run yourself stays on your machine. The agents' commands run in a sandbox: they can write only
+      inside the run's directory and can reach only the archives, Python's package index, GitHub and doi.org. A
+      local dataset is read in place and never changed.</p></div>
+    <div class="panel"><h2>Put a dataset on the record</h2>
+      <p>To have a published dataset checked in the public registry, ask for a run with
+      <code>encore request</code>: a first attempt on a dataset with a paper, or a repeat after its data were
+      fixed. <a href="{REPO_URL}/blob/main/docs/queue.md">The queue</a></p></div>
+  </div>
+  <div class="panel contact-panel"><h2>The full documentation</h2>
+    <p>Every command and option is in the <a href="{ENCORE_DOCS}">documentation of the <code>encore</code>
+    command</a>, and the source is in the <a href="{PROTOCOL_REPO_URL}">protocol's repository</a>. Editors who want checks run for
+    their journal can read <a href="{root}journals/">Encore for journals</a>.</p></div>
+</main>'''
+    return shell(data, f"Check your own data · {SITE_NAME}", root, "check", body, path="check/",
+                 description="Run the Encore check on your own dataset before you deposit it: the encore command "
+                             "tests the claims of your paper on your data, on your own machine.")
 
 
 ABOUT_STEPS = [
@@ -2459,22 +2928,30 @@ ABOUT_STEPS = [
     ("Record and publish",
      "The attempt is added to the registry's records. The notebook runs again in a clean environment, "
      "and once the checks pass the attempt is merged and appears here."),
+    ("The paper's authors respond",
+     "At any time after, an author of the paper who thinks the attempt is wrong, or who has something to add, can "
+     "respond with the form on the paper's page. Once a maintainer confirms who wrote the response, it is shown on "
+     "the paper's page with the attempt. What the response adds, such as how something was computed or where some "
+     "data are, goes to a new attempt as notes. Its author reads the notes with the paper, does not see the earlier "
+     "attempts, and tests every claim against the same criterion."),
 ]
 # Who does each step, as the diagram on the About page labels it (docs/pipeline.md, "Steps").
 ABOUT_ROLES = ["Queue runner", "Reader agents", "Author agent", "Verifier agent", "Verifier agent",
-               "Checks, then the recorder agent"]
+               "Checks, then the recorder agent", "Paper's authors"]
 
 
 def about_flow() -> str:
-    """The six steps of ABOUT_STEPS as a picture: one box a step, with who does it, and the author's revision after
-    each verification. Drawn with the site's colours, so that it follows the theme; the list beside it says the rest."""
-    w, box, gap, pill, pgap = 300, 46, 22, 26, 18
-    parts, y = [], 1
+    """The steps of ABOUT_STEPS as a picture: one box a step, with who does it, the author's revision after each
+    verification, and a line from the authors' response back to the first step, for the new attempt a response
+    can start. Drawn with the site's colours, so that it follows the theme; the list beside it says the rest."""
+    w, box, gap, pill, pgap, side = 300, 46, 22, 26, 18, 44
+    parts, y, tops = [], 1, []
     arrow = lambda y0, y1: (f'<line x1="{w // 2}" y1="{y0}" x2="{w // 2}" y2="{y1 - 2}" class="fa" '
                             f'marker-end="url(#flow-arrow)"/>')
     for i, (head, _) in enumerate(ABOUT_STEPS):
         if i:
             parts.append(arrow(y - gap, y))
+        tops.append(y)
         parts.append(f'<rect x="1" y="{y}" width="{w - 2}" height="{box}" rx="4" class="fb"/>'
                      f'<circle cx="19" cy="{y + box // 2}" r="11" class="fc"/>'
                      f'<text x="19" y="{y + box // 2 + 4}" class="fn">{i + 1}</text>'
@@ -2487,11 +2964,18 @@ def about_flow() -> str:
             parts.append(f'<rect x="{w // 2 - 70}" y="{top + pgap}" width="140" height="{pill}" rx="{pill // 2}" class="fp"/>'
                          f'<text x="{w // 2}" y="{top + pgap + 17}" class="fq">Author revises</text>')
             y = top + pgap + pill + gap
-    label = ("The six steps of an attempt, in order: " + "; ".join(
+    # From the last step round to the first: out of its right side, up beside the boxes, and in at the first's.
+    first, last, x = tops[0] + box // 2, tops[-1] + box // 2, w + side - 20
+    parts.append(f'<path d="M{w} {last}H{x - 8}a8 8 0 0 0 8-8V{first + 8}a8 8 0 0 0-8-8H{w + 3}" class="fl" '
+                 f'marker-end="url(#flow-arrow)"/>'
+                 f'<text transform="translate({x + 15} {(first + last) // 2}) rotate(-90)" class="fq">'
+                 f'New attempt, with the authors’ notes</text>')
+    label = ("The seven steps of an attempt, in order: " + "; ".join(
         f"{i + 1}, {head.lower()}, by the {ABOUT_ROLES[i][0].lower() + ABOUT_ROLES[i][1:]}"
-        for i, (head, _) in enumerate(ABOUT_STEPS)) + ". The author revises after each verification.")
+        for i, (head, _) in enumerate(ABOUT_STEPS)) + ". The author revises after each verification. After the "
+        "authors respond, a new attempt can start again at the first step, with the authors' notes.")
     h = y - gap + 1
-    return (f'<figure class="flow" id="flow"><svg viewBox="0 0 {w} {h}" role="img" aria-label="{e(label)}">'
+    return (f'<figure class="flow" id="flow"><svg viewBox="0 0 {w + side} {h}" role="img" aria-label="{e(label)}">'
             f'<title>{e(label)}</title><defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" '
             f'markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="fm"/></marker></defs>'
             + "".join(parts) + "</svg></figure>")
@@ -2673,7 +3157,7 @@ def page_pipeline(data: dict) -> str:
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
   <p class="lede">Every paper, and where it stands in the
-  <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: the match to its datasets, its text, the claims
+  <a href="{PROTOCOL_BLOB}/docs/pipeline.md">pipeline</a>: the match to its datasets, its text, the claims
   read from it and their check, the attempt, the questions it raised, and verification. A dataset whose paper
   match is still to make is listed under the paper its archive names. {len(waiting):,}
   paper{"s are" if len(waiting) != 1 else " is"} waiting on a person, {papers_missing:,} of them for a text to
@@ -2733,16 +3217,16 @@ def page_about(data: dict) -> str:
     else:
         example = ""
     body = f'''<header class="page">
-  <h1>How the registry works</h1>
+  <h1>The method</h1>
   <p class="lede">Every attempt here is made by AI agents, in a fixed sequence of roles, following a
-  <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The readers, the author and the verifiers are
+  <a href="{PROTOCOL_BLOB}/docs/protocol.md">written protocol</a>. The readers, the author and the verifiers are
   separate runs that do not share their reasoning.</p>
 </header>
 <main class="about">
   <div class="panel"><h2>An attempt, step by step</h2>
     <div class="flowwrap">{about_flow()}<ol class="steps">{steps}</ol></div></div>
   <div class="grid2" style="margin-top:16px">
-    <div class="panel"><h2>Where the agents run</h2>
+    <div class="panel"><h2>The agents' environment</h2>
       <p>Each role runs in GitHub Actions on a fresh machine with no personal configuration. The agent's commands
       cannot see the credentials it runs on, and a verifier sees only the materials it is given: the repository is
       removed before it starts. Each run commits its work, its cleaned transcript and its report, so every step can
@@ -2753,7 +3237,7 @@ def page_about(data: dict) -> str:
       <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it.
       A failure to reproduce may be a failure of the attempt, and is not a finding that the paper is wrong. Claims that
       also use data from outside the dataset, or that rest on data the paper deposited in another archive, are counted
-      apart. <a href="{root}#caution">More on reading outcomes</a></p></div>
+      apart. <a href="{root}registry/#caution">More on reading outcomes</a></p></div>
     <div class="panel"><h2>Repeat attempts</h2>
       <p>When a dataset changes, for example after its data are corrected, or when the protocol changes, a new attempt
       can be made on the same paper. Its author does not see the earlier attempt. Once the new attempt is verified, a
@@ -2768,7 +3252,7 @@ def page_about(data: dict) -> str:
     <div class="panel" id="authors"><h2>For authors</h2>
       <p>Each paper's page and each attempt's page link to a <a href="{RESPOND_URL}">form for responding</a> to the
       attempt. Once a maintainer confirms who wrote a response, it is shown on the paper's page
-      (<a href="{REPO_URL}/blob/main/docs/author-responses.md">how responses are handled</a>). Each author whose
+      (<a href="{PROTOCOL_BLOB}/docs/author-responses.md">how responses are handled</a>). Each author whose
       ORCID iD the registry knows has a page with their papers, their datasets and their badges. Find yours in the
       <a href="{root}authors/">list of authors</a>.</p></div>
     <div class="panel" id="archives"><h2>For archives</h2>
@@ -2778,7 +3262,7 @@ def page_about(data: dict) -> str:
       with the same numbers (<a href="{REPO_URL}/blob/main/docs/badges.md">how to use the badges</a>).</p>{example}</div>
   </div>
 </main>'''
-    return shell(data, f"How the registry works · {SITE_NAME}", root, "about", body, path="about/",
+    return shell(data, f"The method · {SITE_NAME}", root, "method", body, path="method/",
                  description="How AI agents attempt to reproduce papers from their open data in public archives: "
                              "the claims, the reader, author and verifier roles, and where the agents run.")
 
@@ -3127,7 +3611,7 @@ def responses_block(data: dict, paper: dict, attempt: dict | None = None, root: 
     return (f'<div class="author-responses"><h2>Responses from the paper&rsquo;s authors</h2>'
             f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">An author can say whether the '
             f'outcomes are right with the form linked under this ("Respond to this attempt"). '
-            f'<a href="{REPO_URL}/blob/main/docs/author-responses.md">How responses are handled</a>.</p></div>')
+            f'<a href="{PROTOCOL_BLOB}/docs/author-responses.md">Handling of responses</a>.</p></div>')
 
 
 def summary_para(text: str, label: str | None = None) -> str:
@@ -3229,12 +3713,32 @@ def finding_tags(f: dict) -> str:
     return tags
 
 
-def findings_list(findings: list[dict], root: str, note=None) -> str:
+def finding_anchor(attempt: dict, f: dict) -> str:
+    """A finding's anchor on a page: the id of the attempt that found it and the finding's number in that attempt's
+    record (`n`, the number a reconciliation and a verifier name it by). Neither changes when a page orders its
+    findings differently, so a link to one finding keeps working, and an attempt lists a finding once on any page."""
+    return f'finding-{attempt["id"]}-{f["n"]}'
+
+
+def finding_open(anchor: str | None) -> str:
+    """The opening tag of a finding's list item: with its anchor, when it has one."""
+    return f'<li class="finding" id="{e(anchor)}">' if anchor else "<li>"
+
+
+def finding_link(anchor: str | None) -> str:
+    """A small link to the finding itself, for copying its address."""
+    return (f'<a class="finding-link" href="#{e(anchor)}" title="Link to this finding" '
+            f'aria-label="Link to this finding">#</a>') if anchor else ""
+
+
+def findings_list(findings: list[dict], root: str, note=None, anchor=None) -> str:
     """Findings about the data as a list, each with its kind (a link to the datasets with an open finding of that
-    kind) and, given `note`, a line under it (which attempt found it)."""
+    kind), given `note`, a line under it (which attempt found it), and given `anchor` (finding -> its id on the page,
+    finding_anchor), an id and a link to itself."""
     return "".join(
-        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
+        f'{finding_open(anchor(f) if anchor else None)}<span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
+        f'{finding_link(anchor(f) if anchor else None)}'
         + (f'<br><span class="muted small">Checked: {e(f["checked"])}</span>' if f.get("checked") else "")
         + (f'<br><span class="muted small">{note(f)}</span>' if note else "") + '</span></li>'
         for f in findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
@@ -3280,7 +3784,8 @@ def page_dataset(data: dict, key: str) -> str:
         # about the version it was found on, these as much as the others.
         worst = [(f, a) for a in group for f in a["findings"] if f["changes_results"]]
         rest = [(f, a) for a in group for f in a["findings"] if not f["changes_results"]]
-        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f)) for f, a in pairs)
+        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f),
+                                                     anchor=lambda f, a=a: finding_anchor(a, f)) for f, a in pairs)
         findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
                           f'{n} open finding{"" if n == 1 else "s"}</span></h3>')
         if worst:
@@ -3357,8 +3862,7 @@ def page_dataset(data: dict, key: str) -> str:
                   + '. <span class="muted small">Reproduced in full, by attempts an independent verifier checked.</span></p>') if badge else ""
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
-  <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
-  <p class="sub">{e(name)}</p>
+  <div class="dhead"><h1>{e(name)}</h1></div>
   {people_html(data, contributors_of(data, key), root, noun="contributors")}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   {f'<p class="sub small" style="margin-top:8px">Tested on dataset {"; ".join(versions)}</p>' if versions else ""}
@@ -3539,13 +4043,14 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                             f'<span class="muted small">{e(why)}</span></summary>'
                             f'{by_outcome(blocked, root, a, asked)}</details>')
 
-    all_findings = [f for a in atts for f in a["findings"]]
+    all_findings = [(f, a) for a in atts for f in a["findings"]]
 
-    all_findings.sort(key=lambda f: not f["changes_results"])   # stable: the record's order within each
+    all_findings.sort(key=lambda fa: not fa[0]["changes_results"])   # stable: the record's order within each
     findings_html = "".join(
-        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
-        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}</span></li>'
-        for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
+        f'{finding_open(finding_anchor(a, f))}<span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
+        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
+        f'{finding_link(finding_anchor(a, f))}</span></li>'
+        for f, a in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
     for a in atts:
         rec = a.get("reconciliation")
         if not rec:
@@ -3627,7 +4132,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         rows_ = [("Attempt record", record), ("Paper", f'<a href="https://doi.org/{e(a["paper"])}">'
                                                      f'{e(a.get("paper_title") or a["paper"])}</a>'),
                  ("Date", e(a["date"])),
-                 ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}')]
+                 ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}'
+                  + (f' in its own GitHub organization ({e(a["outside"])}), with its own API key. Encore&rsquo;s '
+                     f'verifiers check it here like any other attempt.' if a.get("outside") else ""))]
         # The datasets the attempt used, each with its version: a paper's attempt can use several.
         for x in (attempt_sets(data, a) if paper else [a]):
             rows_ += [("Dataset", (f'<a href="{root}{e(page_of(x["key"]))}">{e(x["label"])}</a> ' if paper else "")
@@ -3676,7 +4183,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         actions += [f'<a href="{root}papers/{e(q["key"])}/">{e(q["byline"])}: the paper&rsquo;s page</a>'
                     for q in papers_of(data) if q["doi"] in papers_here and q["attempts"]]
         actions += [f'<a href="{root}api/{page_of(dandiset).rstrip("/")}.json">JSON</a>']
-    actions += [f'<a href="{root}#caution">How to read outcomes</a>']
+    actions += [f'<a href="{root}registry/#caution">Reading outcomes</a>']
     # The author response form (docs/author-responses.md), filled in for the paper and, on an attempt's page or the
     # page of a paper with one current attempt, for the attempt. A response is to a paper's attempt, so the link is
     # on those two pages and not on a dataset's.
@@ -3785,14 +4292,16 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                       f'<ul class="questions">{question_items}</ul>') if questions else ""
 
     # What the attempts found about the paper itself (its methods, its code, its own consistency): on its page.
-    notes = [f for a in atts for f in a.get("paper_notes") or []] if paper else []
+    notes = [(f, a) for a in atts for f in a.get("paper_notes") or []] if paper else []
     notes_panel = (f'<section class="tabpanel" id="notes"><h2>Notes on the paper</h2>'
                    f'<p class="sub small" style="margin-top:12px">What the attempts found about the paper itself: a '
                    f'method or rule it does not give, a place where it disagrees with itself, published code that '
                    f'does something else. What they found about the data is on each dataset&rsquo;s page.</p>'
                    f'<ul class="findings">' + "".join(
-                       f'<li><span><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span></span>'
-                       f'<span>{finding_tags(f)}{e(f["statement"])}</span></li>' for f in notes)
+                       f'{finding_open(finding_anchor(a, f))}<span><span class="kind">'
+                       f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span></span>'
+                       f'<span>{finding_tags(f)}{e(f["statement"])}{finding_link(finding_anchor(a, f))}</span></li>'
+                       for f, a in notes)
                    + '</ul>'
                    # The questions asked about the paper's text are notes on the paper too: one tab holds both.
                    + (f'<h3 id="questions" style="margin-top:28px">Questions about the claims '
@@ -3882,7 +4391,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         others_side = (f'<div class="srcs"><p class="srcs-head">Other data and code used</p><ul>'
                        + "".join(_src(o) for o in others[:SHOWN])
                        + (f'<li class="muted">and {len(others) - SHOWN} more</li>' if len(others) > SHOWN else "")
-                       + f'</ul><p class="small"><a href="#provenance">What was taken from each</a></p></div>'
+                       + f'</ul><p class="small"><a href="#provenance">Details of each source</a></p></div>'
                        ) if others else ""
         missing = [m for a in atts for m in a.get("missing_datasets") or []]
         # Why an attempt left a dataset out, in its own words: long, so on request.
@@ -3991,17 +4500,18 @@ def claims_list(files: list[dict], titles: dict) -> tuple[str, int]:
         items = ""
         for c in f["claims"]:
             n += 1
-            body = ""
+            said = ""
             if c["quote"]:
-                cite = f'<cite>{e(c["source"])}</cite>' if c["source"] else ""
-                body += f'<blockquote class="quote"><p>{e(c["quote"])}</p>{cite}</blockquote>'
-            if c["criterion"]:
-                body += f'<p class="deviations-title">How it will be judged</p><p class="notes">{e(c["criterion"])}</p>'
+                said = f'<blockquote class="quote"><p>{e(c["quote"])}</p></blockquote>'
+            judged = f'<p class="notes">{e(c["criterion"])}</p>' if c["criterion"] else ""
+            sections = [("From the paper", said or '<p class="notes muted">No quote recorded.</p>'),
+                        ("Criterion", judged)]
+            source = f'<span class="source">{e(c["source"])}</span>' if c["source"] else ""
             items += (f'<li class="claim" id="claim-{e(c["id"])}"><details><summary>'
-                      f'<div class="claim-head"><span class="tag">{e(c["id"])}</span></div>'
-                      f'<p class="statement">{e(c["statement"])}</p></summary>'
-                      f'<div class="claim-body">{body or '<p class="notes muted">No quote recorded.</p>'}</div>'
-                      f'</details></li>')
+                      f'<p class="statement">{e(c["statement"])}</p>'
+                      f'<div class="claim-meta">{source}<a class="claim-id" href="#claim-{e(c["id"])}" '
+                      f'title="The id of this claim, and a link to it">{e(c["id"])}</a></div></summary>'
+                      f'{claim_sections(sections)}</details></li>')
         paper = titles.get(f["paper"].lower()) or f["paper"]
         claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
                         f'<a href="https://doi.org/{e(f["paper"])}">{e(paper)}</a> · '
@@ -4032,8 +4542,7 @@ def page_claims(data: dict, key: str) -> str:
     name = (target or {}).get("name") or dataset_label(key)
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
-  <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
-  <p class="sub">{e(name)}</p>
+  <div class="dhead"><h1>{e(name)}</h1></div>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <p class="lede">Not attempted yet. These are the claims read from its paper, which an attempt will
   test{("; next in the pipeline: " + e(row["next"].lower())) if row and row["next"] else ""}.</p>
@@ -4056,9 +4565,15 @@ def build(data: dict, output: Path) -> None:
     shutil.copytree(ASSETS, output / "assets", dirs_exist_ok=True)
     for sub in ("papers", "datasets", "dandisets", "data", "api/dandiset"):
         (output / sub).mkdir(parents=True, exist_ok=True)
-    (output / "index.html").write_text(page_overview(data))
+    (output / "index.html").write_text(page_home(data))
+    for sub, page in (("registry", page_overview), ("journals", page_journals), ("check", page_check)):
+        (output / sub).mkdir(exist_ok=True)
+        (output / sub / "index.html").write_text(page(data))
+    (output / "method").mkdir(exist_ok=True)
+    (output / "method" / "index.html").write_text(page_about(data))
+    # The page was at about/ until it was named for what it holds; links to it there are kept working.
     (output / "about").mkdir(exist_ok=True)
-    (output / "about" / "index.html").write_text(page_about(data))
+    (output / "about" / "index.html").write_text(redirect_page("method/", "../"))
     (output / "pipeline").mkdir(exist_ok=True)
     (output / "pipeline" / "index.html").write_text(page_pipeline(data))
     (output / "data" / "pipeline.json").write_text(json.dumps(pipeline_rows(data), separators=(",", ":")) + "\n")
@@ -4248,14 +4763,14 @@ def page_not_found(data: dict) -> str:
     body = f'''<header class="page">
   <h1>Page not found</h1>
   <p class="lede">There is no page at this address. It may have moved: the dataset pages are listed on the
-  <a href="/datasets/">datasets page</a>, and the <a href="/">overview</a> has where every attempt stands.</p>
+  <a href="/datasets/">datasets page</a>, and the <a href="/registry/">overview of the registry</a> has where every attempt stands.</p>
 </header>'''
     return shell(dict(data, noindex=True), f"Page not found · {SITE_NAME}", "/", "", body, path="404.html")
 
 
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dataset page dated by its latest attempt."""
-    pages = [("", data["generated"][:10]), ("about/", data["generated"][:10]), ("pipeline/", data["generated"][:10])]
+    pages = [(p, data["generated"][:10]) for p in ("", "registry/", "journals/", "check/", "method/", "pipeline/")]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
