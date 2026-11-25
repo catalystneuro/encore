@@ -33,10 +33,12 @@ outcomes:
   output: claim:fig8a-single-trial-dopamine
   notes: In trial id 133 (row 132, a large successful trial) the SD of the dopamine trace referenced at V is
     4.414 over 0 to 5 s after V and 2.180 over the 5 s before, ratio 2.025. Under the other reading (row 133,
-    a small trial, with 17 and 22 NaN samples in the two windows) the ratio is 2.199. Over the 950 successful trials
-    the median ratio is 1.259 (IQR 0.804 to 1.885), 62.7% are above 1, and trial 133 lies at the 0.775 quantile.
+    a small trial, with 17 and 22 NaN samples in the two windows) the ratio is 2.199. Over the 941 successful trials
+    with a ratio (9 of 950 are NaN) the median ratio is 1.259 (IQR 0.804 to 1.885), 62.7% are above 1, and trial 133 lies at the 0.775 quantile.
     The referenced trace of trial 133 is printed from 5 s before to 5 s after V; it dips to -1.84 about 1.1 s
-    before V and rises to 13.59 about 1.9 s after. The paper gives no values to compare with.
+    before V and rises to 13.59 about 1.9 s after. The paper gives no values to compare with. The trial-aligned
+    FSCV lags the raw scans (iox best matches the raw current about 1.5 s earlier, and da follows iox by a further
+    0.1 to 0.4 s in 13 trials), so part of the rise after V may come from changes in the raw current just before V.
   deviations:
   - The stored PCA estimate (`da`, units not given) is used; the paper's color plot of the voltammograms cannot
     be compared, as the background-subtracted voltammograms of the trial are not in the file.
@@ -48,11 +50,15 @@ outcomes:
     trials, difference of means 0.758, two-sided Mann-Whitney p = 0.0028; 4 trials dropped as their window holds
     only NaN. Variants, RW to RW + 3 s 1.546 (p = 0.00012); 0 to 2 s after V 0.091 (p = 0.57). V to RW in the
     first half of the session 0.778 (p = 0.051) and in the second 0.745 (p = 0.018). By 1 s windows the large
-    minus small difference is 0.33 or less until 2 s after V, 1.15 to 1.44 from 2 to 5 s and 1.32 to 1.68 from 5
-    to 8 s (RW is 4.72 to 5.50 s after V). The criterion tests the V to RW window only. The statement's
-    "especially between the value cue display and reward" does not hold in these data, as the difference after
-    RW is as large as or larger than before it; a question to a reader asks whether the criterion should test
-    this part. The paper reports no test.
+    minus small difference is 0.33 or less until 2 s after V, 1.15 to 1.44 from 2 to 4 s, 1.32 from 4 to 5 s
+    and 1.57 to 1.68 from 5 to 8 s (RW is 4.72 to 5.50 s after V). The criterion tests the V to RW window only.
+    On the statement's "especially between the value cue display and reward", the difference arises between V
+    and RW (from 0.33 at 1 to 2 s after V to 1.44 at 3 to 4 s) and is then held at about 1.6; referenced at RW
+    it grows by only 0.19, 0.48 and 0.25 per 1 s window over 0 to 3 s after RW, and the RW to RW + 3 s window
+    is referenced at V, so it carries the difference built up before RW. Only the level of the difference is as
+    large after RW as before. A question to a reader asks whether the criterion should test this part. The
+    trial-aligned FSCV lags the raw scans by about 1.5 s or more (data check), so the null 0 to 2 s variant may
+    in part reflect this delay. The paper reports no test.
   deviations:
   - The trace is referenced at V by subtracting the stored estimate's value there, as the criterion says, in
     place of the paper's background subtraction of the voltammograms at V.
@@ -159,9 +165,9 @@ findings:
     falls 8 samples after the thresholded spike times, within 2 samples of the stored waveforms' trough (sample 10); the
     spike-free gap sits 46 to 50 ms after each stored FSCV scan time throughout the session, consistent with
     the stated mapping of scans to within one scan; the trial-aligned oxidation current follows the raw
-    current near 0.6 V with no shift of more than a few tenths of a second (a fitted kernel over 36 trials is
-    positive from -2.4 to +0.2 s and largest at -0.2 to 0 s); the large minus small dopamine difference appears
-    only after V; and the spike rate is modulated at V far beyond random alignments. The offset of 11812.1 s
+    current near 0.6 V (a fitted kernel over 36 trials is positive from about -2.8 to +0.2 s and largest at -0.2
+    to 0 s), though smoothed so that it matches the raw current best about 1.5 s earlier (finding 9); the large
+    minus small dopamine difference appears only after V; and the spike rate is modulated at V far beyond random alignments. The offset of 11812.1 s
     reported by the claims file for an earlier version does not hold in this one (r -0.12 to -0.02 at that
     offset, 0.89 to 0.94 at 0 to 1 ms).
 - kind: metadata_insufficient
@@ -202,13 +208,16 @@ findings:
     (13 to 30 Hz, 0 to 0.5 s against the 0.5 s before V) give a smaller suppression for large than small trials
     that is not significant (p = 0.112).
 - kind: metadata_insufficient
-  severity: minor
+  severity: major
   statement: The trial-aligned oxidation current (iox) is a smoothed version of the raw current near 0.6 V, and
     the file does not say so. A linear kernel from the raw current to iox, fitted over 36 trials, is positive
-    from 2.4 s before to 0.2 s after each sample, largest at -0.2 to 0 s, and negative from +0.4 s, and the
-    detrended correlation peaks with the raw current 0.8 to 2.5 s earlier (median 1.5 s). Responses in the
-    trial-aligned series are therefore spread over about 2 s after the raw change. How the PCA components were
-    derived from the scans, and whether they are smoothed the same way, is not documented.
+    from about 2.8 s before to 0.2 s after each sample, largest at -0.2 to 0 s, and negative from +0.4 s, and
+    the detrended correlation peaks with the raw current 0.8 to 2.5 s earlier (median 1.5 s). The PCA dopamine
+    estimate (da) follows iox by a further 0.1 to 0.4 s (median 0.3 s, 13 trials with no NaN), so it carries at
+    least the same delay; matched directly with the raw current, da peaks 1.2 to 5.0 s earlier (median 3.1 s,
+    with 5.0 s the edge of the search). Responses in the trial-aligned series are therefore spread over about 2 s after the
+    raw change, and a latency measured on them comes out late by about 1.5 s or more. How the PCA components
+    were derived from the scans is not documented.
 verifications:
 - date: '2026-11-24'
   kind: agent
@@ -333,3 +342,122 @@ verifications:
     outcome: blocked
     reason: There are no images or histology.
     response: No change.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the first revision, with its conclusion cells and summary, the
+    attempt record, the helper module, the claims file and the paper.
+  results:
+  - claim: fig8a-single-trial-dopamine
+    agrees: true
+    outcome: reproduced
+    reason: Cell 10, ratio 2.025 for row 132 and 2.199 for row 133; either reading is above 1. The notes' "Over
+      the 950 successful trials the median ratio is 1.259" is minor, as cell 10 prints "NaN 9", so the statistics
+      cover 941 trials. If da is smoothed like iox, which lags the raw current by about 1.5 s (cell 8), part of
+      fig8a's "after V" fluctuation could come from just before V, and the notes should mention this when they
+      interpret timing.
+    response: The notes and the result cell now say 941 trials (9 of 950 NaN). The data check now also measures
+      the lag of da. In the 13 of the 36 sampled trials with no NaN, da follows iox by a further 0.1 to 0.4 s, so
+      it carries at least the iox delay. The notes and result cell say that part of the rise after V may come
+      from changes in the raw current just before V. Outcome unchanged.
+  - claim: fig8b-dopamine-large-vs-small
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14, V to RW difference 0.758, p = 0.0028, n = 448/498, 4 dropped. In cell 7 the +5 to +8 s bins
+      are 1.57, 1.68 and 1.64, and 1.32 is the +4 to +5 s bin, so "1.32 to 1.68 from 5 to 8 s" should read 1.57 to
+      1.68. The sentence that "especially between the value cue display and reward" does not hold goes too far,
+      as did its own round-1 point B6. The RW to RW+3 s window (1.546) is referenced at V, so it includes the
+      difference built up before RW; referenced at V the difference rises from 0.33 to about 1.4 between V+1 s
+      and V+4 s, before RW, and stays at about 1.6 after; referenced at RW its further growth over 0 to 3 s is only
+      0.19, 0.48 and 0.25 per 1 s bin. So the difference arises between V and RW and is then held, and "does not
+      hold" is true only of its level. This does not change the outcome, as the criterion tests V to RW only. If
+      da is smoothed like iox, the null 0 to 2 s variant could be partly a filter delay.
+    response: The range now reads 1.57 to 1.68 from 5 to 8 s (1.32 from 4 to 5 s). The notes and result cell now
+      say the difference builds between V and RW and is then held, with the numbers above, and that only its
+      level is as large after RW. They say the null 0 to 2 s variant may in part reflect the delay of the
+      trial-aligned FSCV, which the new da check shows da shares. The question to a reader is kept, with its
+      reasoning corrected to the same effect. Outcome unchanged.
+  - claim: fig9a-spikes-task-aligned
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18, every trial has a spike (fraction 1.0); variance 0.4807 against a 95th percentile of 0.0574
+      to 0.0607, and no null draw reaches it. Its round-1 requests (phase of V within the scan cycle, the claims
+      file's 11812.1 s offset) are resolved.
+    response: No change.
+  - claim: fig9bc-unit-waveform-isi
+    agrees: true
+    outcome: reproduced
+    reason: Cell 22, 0 intervals under 1 ms; peak/SD ratio 4.79. The paper never says "single unit"; that wording
+      is the claims file's own, and the attempt flags it.
+    response: No change.
+  - claim: fig9d-beta-suppression-large
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 26, median large -0.156, small -0.125, p = 0.112. No variant reaches p < 0.05. The spectra
+      (cell 5) resolve its round-1 point on the stored LFP.
+    response: No change.
+  - claim: recordings-two-monkeys
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the only subject is sub-Monkey-T.
+    response: No change.
+  - claim: scfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: scfe-background-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: mcfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no yield data.
+    response: No change.
+  - claim: dopamine-signal-yield
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the only subject is sub-Monkey-T and the Zenodo record holds no yield data.
+    response: No change.
+  - claim: asepsis-cultures
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no culture data.
+    response: No change.
+  - claim: fig6-drainage-volume
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no drainage data.
+    response: No change.
+  - claim: fig7-bone-growth-margins
+    agrees: true
+    outcome: blocked
+    reason: Cell 30, the Zenodo record holds no imaging data.
+    response: No change.
+  findings:
+  - finding: 2
+    agrees: true
+    reason: No finding is rated critical, and it would rate none critical; the clock offset does not hold in this
+      version (cell 5). It noted that "no shift of more than a few tenths of a second" is true of the kernel's
+      peak (lag 0), while cell 8 also shows the detrended correlation peaking with the raw current 1.5 s earlier
+      (median; range 0.8 to 2.5 s), and that the kernel is positive from about -2.8 s (cell 8 prints +0.2 at
+      -2.8 s and +1.3 at -2.6 s), not from -2.4 s.
+    response: The statement now gives the kernel as positive from about -2.8 s and says in the same place that
+      the oxidation current matches the raw current best about 1.5 s earlier (finding 9). The summary says the
+      same. Severity unchanged (none).
+  - finding: 5
+    agrees: true
+    reason: The thresholded and Plexon units share the same spikes; two detections of the same channel are
+      visible as such in the file (cell 3, 0.9949 overlap), so minor is right.
+    response: No change.
+  - finding: 9
+    agrees: false
+    severity: major
+    reason: It would rate the iox smoothing major for any analysis of response latency, because it is
+      undocumented and only shows up when compared with the raw scans; for the criteria tested here, minor is
+      acceptable.
+    response: Raised to major, as the rating is about harm to a user of the dataset and a latency measured on the
+      trial-aligned FSCV comes out late by about 1.5 s. The statement now adds that da follows iox by a further
+      0.1 to 0.4 s, so it carries at least the same delay, and gives the kernel as positive from about -2.8 s.
