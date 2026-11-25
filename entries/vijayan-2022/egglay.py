@@ -2,7 +2,8 @@
 
 Every NWB file of the dandiset holds one fly: at 2 frames per second, the xy
 position of its centroid (mm), the island it is on, the sucrose concentration
-under it (mM) and a 0/1 egg series. The files are streamed from the archive
+under it (mM) and a 0/1 egg series; the files of the agarose chambers also hold
+the agarose percentage under the fly. The files are streamed from the archive
 (each file is read into memory in one request and opened with h5py); nothing is
 written to disk.
 
@@ -74,6 +75,8 @@ def read_fly(asset):
         isl = b["Island/data"][:]
         suc = b["Sucrose_Concentration/data"][:]
         egg = b["Egg/data"][:]
+        # Agarose_Percentage is present only in the four agarose groups (0p8--1p4 and so on).
+        agar = b["Agarose_Percentage/data"][:] if "Agarose_Percentage" in b else None
         t_e = b["Egg/timestamps"]
         same_t = (t_e.shape == t.shape) and bool(np.array_equal(t_e[:], t))
         subj = f["general/subject"]
@@ -91,6 +94,9 @@ def read_fly(asset):
         "pos": pos,
         "island": np.where(np.isfinite(isl), isl, -1).astype(np.int8),
         "sucrose": np.where(np.isfinite(suc), suc, -1).astype(np.float32),
+        # agarose in tenths of a percent (8 for 0.8%, 14 for 1.4%), so that labels compare exactly; None
+        # when the file has no agarose series
+        "agarose": None if agar is None else np.where(np.isfinite(agar), np.round(agar * 10), -1).astype(np.int16),
         "eggs": np.flatnonzero(egg > 0.5),
         "egg_sum": float(np.nansum(egg)),
         "pos_nan": int(np.isnan(pos).any(axis=1).sum()),
@@ -350,6 +356,24 @@ def visits(label):
     return st, en, label[st]
 
 
+def merge_short_visits(label, max_s):
+    """Variant for boundary flicker: a run of label shorter than or equal to
+    max_s s between two runs of the same label is given that label, repeated
+    until none is left. [assume] Not a step of the paper; used only to show how
+    much brief visits change the dwell-time results (verifier, round 1)."""
+    lab = np.array(label, copy=True)
+    nmax = int(round(max_s * FPS))
+    while nmax > 0:
+        st, en, val = visits(lab)
+        dur = en - st + 1
+        idx = [i for i in range(1, len(st) - 1) if dur[i] <= nmax and val[i - 1] == val[i + 1]]
+        if not idx:
+            break
+        for i in idx:
+            lab[st[i]:en[i] + 1] = val[i - 1]
+    return lab
+
+
 def in_search_mask(f, mode="alt1"):
     """Frames inside any search period (default: M3 without the 30-s minimum)."""
     m = np.zeros(f["n"], bool)
@@ -455,11 +479,9 @@ def kernel_features(sucrose, scale=200.0, boxes=KERNEL_BOXES):
     return X, valid
 
 
-def fit_kernel(flies, mode="working", boxes=KERNEL_BOXES):
-    """[claim] figs4 reading: least squares fit of the per-frame egg indicator,
-    over search frames, to c + sum_j beta_j x_j(t) with zero kernel area
-    (sum_j beta_j * width_j = 0, Methods, Mathematical models: "The area under
-    the kernel is 0"). Returns (c, beta)."""
+def _kernel_design(flies, mode="working", boxes=KERNEL_BOXES):
+    """Search frames of the flies (with a full kernel history), the features
+    with the zero-area constraint built in, and the 0/1 egg indicator."""
     widths = np.array([hi - lo for lo, hi in boxes], float)
     rows, ys = [], []
     for f in flies:
@@ -476,12 +498,45 @@ def fit_kernel(flies, mode="working", boxes=KERNEL_BOXES):
     X = np.vstack(rows); y = np.concatenate(ys)
     # beta_last = -sum_{j<last} beta_j w_j / w_last
     Z = X[:, :-1] - np.outer(X[:, -1], widths[:-1] / widths[-1])
+    return Z, y, widths
+
+
+def fit_kernel(flies, mode="working", boxes=KERNEL_BOXES):
+    """[claim] figs4 reading: least squares fit of the per-frame egg indicator,
+    over search frames, to c + sum_j beta_j x_j(t) with zero kernel area
+    (sum_j beta_j * width_j = 0, Methods, Mathematical models: "The area under
+    the kernel is 0"). Returns (c, beta, number of frames fit)."""
+    Z, y, widths = _kernel_design(flies, mode, boxes)
     A = np.column_stack([np.ones(len(Z)), Z])
     coef, *_ = np.linalg.lstsq(A, y, rcond=None)
     beta = np.concatenate([coef[1:], [-(coef[1:] * widths[:-1]).sum() / widths[-1]]])
     return coef[0], beta, len(y)
 
 
-def predict_kernel(f, c, beta, boxes=KERNEL_BOXES):
+def fit_kernel_loglink(flies, mode="working", boxes=KERNEL_BOXES):
+    """Variant of fit_kernel that cannot predict a negative rate: the per-frame
+    egg probability is exp(c + sum_j beta_j x_j(t)), fit by maximum Poisson
+    likelihood (L-BFGS), with the same zero-area kernel. [assume] A standard
+    link for event rates (verifier, round 1, asked for a non-negative fit); the
+    paper does not give its fit. Returns (c, beta, frames, converged)."""
+    from scipy import optimize
+    Z, y, widths = _kernel_design(flies, mode, boxes)
+    sd = Z.std(0); sd[sd == 0] = 1
+    A = np.column_stack([np.ones(len(Z)), Z / sd])
+
+    def nll(b):
+        eta = A @ b; mu = np.exp(eta)
+        return mu.sum() - y @ eta, A.T @ (mu - y)
+
+    b0 = np.zeros(A.shape[1]); b0[0] = np.log(y.mean())
+    r = optimize.minimize(nll, b0, jac=True, method="L-BFGS-B")
+    coef = r.x[1:] / sd
+    beta = np.concatenate([coef, [-(coef * widths[:-1]).sum() / widths[-1]]])
+    return r.x[0], beta, len(y), bool(r.success)
+
+
+def predict_kernel(f, c, beta, boxes=KERNEL_BOXES, link="identity"):
+    """Predicted eggs per frame; link 'log' for fit_kernel_loglink."""
     X, valid = kernel_features(f["sucrose"], boxes=boxes)
-    return c + X @ beta  # frames before the recording count as s = 0
+    eta = c + X @ beta  # frames before the recording count as s = 0
+    return np.exp(eta) if link == "log" else eta

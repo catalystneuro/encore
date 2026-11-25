@@ -111,7 +111,10 @@ outcomes:
     0/200, 0/200/200 and five-island 0/200 chambers do not merge within 7200 s. All three three-choice
     chambers merge earlier under readings (a) and (b). With the 10 to 15 s bin first, they merge at 1200,
     10 and not at all (visit trials) or 1200, 10 and 300 s (search trials), so two or three of three are
-    still earlier.
+    still earlier. The support is thin. The merges at 5 s rest on bins with almost no eggs (0 of 42 against
+    0 of 48 visits in 0/500/500/500/200; 4 of 854 against 0 of 715 in 0/500/200/500/200), and the bins after
+    them differ (p = 0.011 or less from 15 s, p < 0.001 from 10 s); the merge at 10 s is of the same kind
+    (1 of 189 against 1 of 158). Only the 1200 s merge of 0/500/200 follows bins with many eggs.
   deviations:
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
     as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
@@ -158,29 +161,42 @@ outcomes:
     200 mM visit increases, 45.5, 57.0 and 379.5 s, but all three medians are below the tolerances around
     54, 96 and 576 s. Bounce differs from both others (p = 0.003); 4 mm and 2 mm do not (p = 0.54). Other
     dwell measures tried while preparing (cumulative 200 mM time since a 0 mM visit of 5 s or more, 200
-    mM time since the previous egg) did not give the paper's medians either; they are not run here.
+    mM time since the previous egg) did not give the paper's medians either; they are not run here. Brief
+    visits are common at the boundary (359 of 12154 sucrose visits in the 4-mm chamber last one frame), but
+    merging visits of up to 0.5, 1, 2 or 5 s into the visits around them gives medians of 48.5, 57.0 and
+    441.5 s (448.2 s at 5 s) with 35, 44 and 21 (or 20) fast eggs, still outside every median tolerance.
   deviations:
-  - The sucrose series has no barrier state, so 'within 10 s' from crossing the midline and from leaving
-    200 mM are the same frame; both readings of the criterion are one here. Counting eggs strictly under
-    10 s gives 34, 42 and 18 with the same medians.
+  - No frame of the tunnel chambers lacks a sucrose label (printed), so the first frame on 0 mM follows the
+    last on 200 mM and 'within 10 s' from crossing the midline and from leaving 200 mM are the same frame;
+    both readings of the criterion are one here. Counting eggs strictly under 10 s gives 34, 42 and 18
+    with the same medians.
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
     as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
     on 0/1 trials are far too large.
 - claim: fig3e-rate-after-long-absence
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_vijayan_2022.ipynb
   output: claim:fig3e-rate-after-long-absence
   notes: 'Pooled tunnel chambers, first 10 s on 0 mM within a search: 1.213 eggs/min after a previous
     200 mM visit of at least 240 s (25 eggs in 140 visits) against 0.345 after shorter visits (69 in 1280),
     p = 1.8e-08. Below 240 s the bin rates are 0.245 to 0.406 except 150 to 240 s (0.922); Spearman rho
     of rate against bin order 0.42, p = 0.20. The higher rate after long absences holds in each chamber
-    (1.08, 1.18, 1.37 against 0.19, 0.65, 0.87).'
+    (1.08, 1.18, 1.37 against 0.19, 0.65, 0.87). The no-rising-trend part holds only on that reading: the
+    150 to 240 s bin is already high (0.922 against 0.316 eggs/min below 150 s, p = 0.0014); over the bins
+    from 5 s rho = 0.68, p = 0.029; with visits of up to 0.5 s merged (boundary flicker) the 0 to 5 s bin
+    loses its 2 eggs and rho = 0.74, p = 0.009 over all bins below 240 s. Below 150 s the rates are flat
+    under every variant (p = 0.11 to 0.21). The rise is present but starts between 150 and 240 s.'
   deviations:
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
     as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
     on 0/1 trials are far too large.
-  - '''No rising trend'' below 240 s is judged as no significant positive Spearman correlation of bin
-    rate with bin order (a reading of the criterion''s words; the paper gives no test).'
+  - '''No rising trend'' below 240 s has no test in the paper. Assumed: it fails when the bins below
+    240 s hold a significant rise, judged by the rank sum test of the 150 to 240 s bin against the bins
+    below 150 s and by the Spearman correlation of bin rate with bin order over the bins from 5 s (the
+    bins the merge point counts, Fig. 5A legend). The first version of this attempt used the Spearman
+    correlation over all bins from 0 s, which shows no rise (p = 0.20) and would give reproduced; the
+    notebook shows every reading.'
+  assumed: true
 - claim: fig3f-motor-program-not-faster
   outcome: not_reproduced
   notebook: reproduce_vijayan_2022.ipynb
@@ -192,8 +208,9 @@ outcomes:
   notes: 'Reading (a): fast eggs of the 4-mm chamber pause a median 0.5 s against 1.0 s for all its eggs
     (p = 0.0014); 2-mm and bounce medians are equal (1.0 s; p = 0.12 and 0.33). Reading (b): the 102 pooled
     fast eggs (median 0.5 s) differ from every chamber''s eggs (p = 0.0002 to 0.0045). With medians of
-    0.5 to 1 s in steps of 0.5 s, the 10% bound cannot be met by any difference. Egg-aligned averages
-    hold 979, 918 and 670 eggs (legend 979, 918, 675).'
+    0.5 to 1 s in steps of 0.5 s, the 10% bound cannot be met by any difference; every pause time is a
+    whole number of frames, and the 4-mm difference is one frame. The rank sum test fails the claim without
+    that bound. Egg-aligned averages hold 979, 918 and 670 eggs (legend 979, 918, 675).'
   deviations:
   - Pause time (M7) as in Methods, Statistics, from the last frame before the egg with 1-s boxcar speed
     above 0.1 mm/s; on these data its medians are 0.5 to 2.5 s and it takes values in steps of 0.5 s.
@@ -213,7 +230,8 @@ outcomes:
   notes: Island visits wholly inside a search period, the visit ending at the egg left out. Pooled over
     0/500/200, 500/0/500 and 500/0/200, the median transit is 4.0 s through the middle island and 13.0
     s through edge islands, under both readings of a transit. The edge median is within tolerance; the
-    middle median is one frame below the tolerance (4.05 to 4.95 s). Per chamber the middle medians are
+    middle median, 8 frames, is one frame below the tolerance (4.05 to 4.95 s), which holds only 9 frames.
+    Under reading (ii) both medians are within tolerance in 500/0/500 and 500/0/200, not in 0/500/200. Per chamber the middle medians are
     4.0, 4.5 and 4.5 s and the edge medians 13.0, 12.5 and 13.5 s. With middle visits counted only when
     they pass through (reading b), 0/500/200 has 2654, 5716 and 2993 transits on 0, 500 and 200 mM (legend
     2637, 5694, 2903); 500/0/500 1445 and 1797 on 0 and 500 mM (legend 1625, 1508); 500/0/200 1874, 3149
@@ -294,8 +312,11 @@ outcomes:
   - Merge point (Fig. 5A legend, first bin past 5 s for which P > 0.05) taken with the 5 to 10 s bin as
     the first bin past 5 s (assumption; the 0 to 5 s bin, where all rates are near 0, is the only one
     left out). The variant with the 10 to 15 s bin first is shown.
-  - The trial unit of the bin test is open in the claims file (M5 readings a and b); the outcome holds
-    under reading (a) only, and both are shown.
+  - 'The trial unit of the bin test is open in the claims file (M5 readings a and b); the outcome holds
+    under reading (a) only, and both are shown. Reading (a), one trial per visit, is adopted as an assumption:
+    the P values "assume that each individual search and each substrate transition within a search are
+    independent" (Materials and Methods, Calculation of egg-laying rate), which makes each transition a trial.'
+  assumed: true
 - claim: fig5c-suzukii-no-preference
   outcome: not_reproduced
   notebook: reproduce_vijayan_2022.ipynb
@@ -303,8 +324,9 @@ outcomes:
   notes: A claim of absence on the bin test at p < 0.05. One of 13 bins from 5 s on, 300 to 600 s, has
     a higher rate on 0 than on 200 mM at p = 0.029 (13 of 17 visits against 8 of 20; 0.94 against 0.55
     eggs/min), under both trial readings. No other bin reaches p < 0.05, and the differences change sign
-    between bins (-0.47 to +0.28 eggs/min). Under alternate search definitions 1 and 2 no bin is significant
-    (figs2).
+    between bins (-0.47 to +0.39 eggs/min). Under alternate search definitions 1 and 2 no bin is significant
+    (figs2). With a Holm correction over the 13 bins the smallest adjusted p is 0.38 (a variant, not the
+    criterion). Whether the criterion should correct for the number of bins is asked of a reader (questions/vijayan-2022.yaml).
   deviations:
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
     as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
@@ -348,19 +370,39 @@ outcomes:
     on 0/1 trials are far too large.
 - claim: fig6b-softer-preferred
   outcome: blocked
-  blocked_by: metadata_insufficient
+  blocked_by: data_missing
   notebook: reproduce_vijayan_2022.ipynb
-  notes: 'The 0.8/1.4% chambers do not record which island held 0.8% agarose: the sucrose series is the
-    same on both sides, there is no hardness series, and per-fly egg fractions on island 0 are bimodal
-    (14 of 23 flies above 0.7, 6 below 0.3), as when chambers are loaded both ways round. Four of the
-    six conditions of Fig. 6B (sucrose on one side, 500 on 0.8% against 200 on 1.4%) are also not in the
-    dandiset.'
+  output: claim:fig6b-softer-preferred
+  notes: Four of the six conditions of Fig. 6B are not in the dandiset, among them bar 6 (500 mM on 0.8%
+    against 200 mM on 1.4%), whose fraction the criterion needs, and bars 2 and 3 (sucrose on the softer
+    side only). For information, not an outcome, the notebook shows the two it holds, with the agarose
+    of each frame from the Agarose_Percentage series; 0.8 against 1.4% without sucrose, 743 of 929 eggs
+    on 0.8% (0.800, 95% CI 0.773 to 0.825; 38.7 eggs per fly), and with 200 mM on both sides 0.730 (37.4
+    eggs per fly), 0.07 below the first. The first version of this attempt blocked the claim as metadata_insufficient,
+    having missed the Agarose_Percentage series.
 - claim: fig6cd-hardness-fast-merge
-  outcome: blocked
-  blocked_by: metadata_insufficient
+  outcome: reproduced
   notebook: reproduce_vijayan_2022.ipynb
-  notes: The rate on 0.8% against 1.4% agarose needs the hardness of each island, which the files do not
-    give (see fig6b-softer-preferred).
+  output: claim:fig6cd-hardness-fast-merge
+  measured:
+  - 20
+  notes: Rate on 0.8% since leaving 1.4% against rate on 1.4% since leaving 0.8%, with the agarose of each
+    frame from the Agarose_Percentage series. The curves merge at 20 s in the 0.8/1.4% chamber under both
+    trial readings and both first-bin readings, and at 20 s (visit trials) or 25 s (search trials) in
+    the chamber with 200 mM on both sides, the one equal-sucrose chamber the dandiset holds; every merge
+    is at or before 25 s. Before the merge the 0.8% rate is higher (5 to 10 s, 0.725 against 0.071 eggs/min
+    without sucrose, 0.439 against 0.193 with). Some later bins differ again at p < 0.05 (30 to 45, 150
+    to 300 and 300 to 600 s without sucrose; 90 to 150 and 300 to 600 s with), which the merge-point definition
+    does not count.
+  deviations:
+  - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
+    as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
+    on 0/1 trials are far too large.
+  - Merge point (Fig. 5A legend, first bin past 5 s for which P > 0.05) taken with the 5 to 10 s bin as
+    the first bin past 5 s (assumption; the 0 to 5 s bin, where all rates are near 0, is the only one
+    left out). The variant with the 10 to 15 s bin first is shown.
+  - The paper names several chambers with equal sucrose on both sides (Fig. 6B bars 4 and 5); the dandiset
+    holds one, with 200 mM, and the claim's second part is tested on it.
 - claim: fig6ef-pause-longer-hard
   outcome: reproduced
   notebook: reproduce_vijayan_2022.ipynb
@@ -384,10 +426,14 @@ outcomes:
     on 0/1 trials are far too large.
   - With the same substrate on both sides, the substrate is taken from the island series.
 - claim: fig6g-more-time-softer
-  outcome: blocked
-  blocked_by: metadata_insufficient
+  outcome: reproduced
   notebook: reproduce_vijayan_2022.ipynb
-  notes: Needs the hardness of each island, which the files do not give (see fig6b-softer-preferred).
+  output: claim:fig6g-more-time-softer
+  notes: In the 0.8/1.4% chamber the median per-fly fraction of time on 0.8% agarose (Agarose_Percentage
+    series) is 0.609 over all frames (24 flies, 18 above 0.5) and 0.672 over search frames (23 flies with
+    eggs, 22 above 0.5); both readings hold. It is above 0.5 whichever way round the chamber was loaded
+    (0.562 for the 18 flies with 0.8% on island 0, 0.763 for the 6 with 1.4% there). With 200 mM on both
+    sides the median is 0.685.
 - claim: fig7a-screen-ddc-hits
   outcome: blocked
   blocked_by: data_missing
@@ -408,7 +454,10 @@ outcomes:
     higher at p < 0.05 in bins between 5 and 30 s. At 31 C two bins past 5 s differ (5 to 10 s, p = 0.001;
     45 to 60 s, p = 0.007), so reading (b) fails; with the 5 to 10 s bin first, the 31 C merge point (10
     s) is not the first bin, so reading (a) fails. With the 10 to 15 s bin first, reading (a) holds and
-    the claim is reproduced. Search trials give the same, with 29/29.5 C merging at 45 s.
+    the claim is reproduced. Search trials give the same, with 29/29.5 C merging at 45 s. The outcome rests
+    on the 5 to 10 s bin being the first bin past 5 s, adopted because its left edge is 5 s, so that only
+    the 0 to 5 s bin is left out; with the 10 to 15 s bin first the claim is reproduced under both trial
+    readings and under all three alternate search definitions (figs2).
   deviations:
   - Merge point (Fig. 5A legend, first bin past 5 s for which P > 0.05) taken with the 5 to 10 s bin as
     the first bin past 5 s (assumption; the 0 to 5 s bin, where all rates are near 0, is the only one
@@ -423,7 +472,9 @@ outcomes:
   output: claim:fig7df-overall-rate-drops
   notes: Overall rate during search (eggs over search frames of both curves, times 120) is 0.557, 0.465,
     0.208 and 0.219 eggs/min at 18, 27, 29/29.5 and 31 C; median search 27.5, 49.5, 125.8 and 114.0 s.
-    It falls from 27 to 29/29.5 C but not from 29/29.5 to 31 C.
+    It falls from 27 to 29/29.5 C but not from 29/29.5 to 31 C. The rate-function bins leave out search
+    frames before a fly's first crossing (31 of 1031 eggs at 18 C); every egg over every search frame gives
+    0.567, 0.460, 0.208 and 0.220 eggs/min, the same pattern.
   deviations:
   - 'Search start (M3), taken from Methods, Automated determination of egg-laying search: the scan for
     the first frame below 0.1 mm/s of the 18.5-s centred boxcar of speed starts 9 s before the egg, so
@@ -446,7 +497,10 @@ outcomes:
   notes: 'Eggs per fly are lower at 31 C than at 18 C (mean 13.0 against 21.5, p = 2.4e-04), and the median
     pause at 31 C is 1.5 s against 2.5 s, 40% shorter (p = 9.2e-10); both parts of the criterion fail.
     Variant, 31 C flies with at least 5 eggs: Spearman rho between eggs laid and fraction on 0 mM -0.07
-    (p = 0.72). Egg-aligned averages hold 1030 and 533 eggs (legend 1029, 533).'
+    (p = 0.72). The pause medians differ by 2 frames of 0.5 s, where the 20% bound allows half a frame.
+    Whether the claims file reads "unrelated to the number of eggs laid" as the paper means is asked of
+    a reader (questions/vijayan-2022.yaml); under the correlation reading the egg part would hold, and
+    the pause part fails either way. Egg-aligned averages hold 1030 and 533 eggs (legend 1029, 533).'
   deviations:
   - Pause time (M7) as in Methods, Statistics, from the last frame before the egg with 1-s boxcar speed
     above 0.1 mm/s; on these data its medians are 0.5 to 2.5 s and it takes values in steps of 0.5 s.
@@ -505,7 +559,10 @@ outcomes:
   notes: Median time fraction on 0 mM 0.399 (Dop1R1-) and 0.393 (Dop1R2 attP); eggs per fly do not differ
     between any pair of the three mutants (p = 0.37 to 0.80). The speed over the 60 s before the pause
     exceeds the 60 s before that in Dop1R1- (0.79 against 0.63 mm/s) but not in Dop1R2 attP (1.61 against
-    1.66) or Dop1R2- (1.94 against 2.06). Egg-aligned averages hold 498, 586 and 323 eggs, as in the legend.
+    1.66) or Dop1R2- (1.94 against 2.06). With 30-s windows it rises only in Dop1R1-; with 120-s windows in
+    Dop1R1- and barely in Dop1R2- (2.00 against 1.97, p = 0.65), not in Dop1R2 attP. Without the eggs
+    annotated in the last 30 s of a recording the egg-count p-values are 0.34 to 0.69. Egg-aligned averages
+    hold 498, 586 and 323 eggs, as in the legend.
   deviations:
   - Pause time (M7) as in Methods, Statistics, from the last frame before the egg with 1-s boxcar speed
     above 0.1 mm/s; on these data its medians are 0.5 to 2.5 s and it takes values in steps of 0.5 s.
@@ -537,10 +594,16 @@ outcomes:
     keep that outcome under all three alternate definitions, fig5ab only under alternate 1 (TUT merges
     at 90 s under alternate 2; CS merges at 1200 s under alternate 3). Neither the criterion''s all-three
     nor its two-of-three condition holds for fig5ab. Of the others, fig3c is reproduced under alternates
-    1 and 3, fig5c under 1 and 2, and fig7cf under 2.'
+    1 and 3, fig5c under 1 and 2, and fig7cf under 2. With the 10 to 15 s bin first, fig7cf is reproduced
+    and keeps it under all three, and fig5ab still fails. With search trials fig5ab is not reproduced under
+    the working definition, and the remaining reproduced claims keep their outcome under all three alternates,
+    so the criterion would hold; the outcome rests on the visit reading adopted for fig5ab.'
   deviations:
   - The alternate definitions are those of the fig. S2 legend; for alternates 2 and 3 a search is cut
     at the previous egg plus 1 min, and at the recording start.
+  - 'Trials of the bin test are visits (M5 reading a), adopted as for fig5ab: the Methods assume "each
+    substrate transition within a search" independent (Calculation of egg-laying rate). Both readings, and
+    both first-bin readings, are shown.'
   - The rank sum test is computed with a tie correction (scipy mannwhitneyu, asymptotic, continuity corrected),
     as MATLAB's ranksum does; the paper used MATLAB (Data analysis software). Without the correction p-values
     on 0/1 trials are far too large.
@@ -570,13 +633,18 @@ outcomes:
     series over 325879 search frames of the 0/200 chamber, follows the 0/200 0 mM curve roughly (inside
     its 90% CI in 3 of 7 bins from 5 to 60 s). Applied to 0/500, it predicts a higher rate on 0 mM after
     leaving 500 mM than observed in all 7 bins from 5 to 60 s (mean 1.82 against 1.23 eggs/min, every
-    bin above the 90% CI), the overestimate the Methods describe. Model 2 was not fit, as its constants
-    are not given.
+    bin above the 90% CI), the overestimate the Methods describe. The least squares fit predicts negative
+    rates (as low as -2.69 eggs/min). A variant that cannot, a log link with Poisson likelihood on the same
+    zero-area kernel, follows the 0/200 curves inside the 90% CI in 4 of 7 bins on each (0 mM mean 1.27
+    against 1.21 eggs/min) and overestimates the 0/500 rate on 0 mM after 500 mM in 7 of 7 bins (mean
+    8.08 against 1.23). Model 2 was not fit, as the paper gives neither its equations nor its constants
+    k1 and k2; the criterion tests model 1 only, and the statement's model 2 part is untested.
   deviations:
   - The kernel's basis and fit are not given by the paper ('code and concepts from (82)'); a piecewise-constant
     kernel on log-spaced lags, fit by least squares with the zero-area constraint of the Methods, is assumed,
     as the claims file's reading allows. Sucrose enters as concentration over 200 mM, so the model is
-    linear in concentration as the Methods describe.
+    linear in concentration as the Methods describe. A log-link Poisson fit of the same kernel is shown
+    as a variant and gives the same result.
   assumed: true
 inputs:
 - what: Table S2 of the paper, the names and enhancers of the 115 Gal4 lines of the screen, which the
@@ -584,13 +652,16 @@ inputs:
     not in the dandiset; Table S2 is a separate spreadsheet of the supplement and is not under paper/.
   source: doi:10.1126/sciadv.abn3852
 findings:
-- kind: metadata_insufficient
+- kind: other
   about: data
-  severity: major
-  statement: The agarose chambers (0.8 against 1.4%, and the same with 200 mM sucrose on both sides) do
-    not record which island held which agarose. The sucrose series is the same on both sides, there is
-    no hardness series, and per-fly egg fractions on island 0 are bimodal, as when chambers are loaded
-    both ways round. The paper's Fig. 6B, 6C, 6D and 6G cannot be tested.
+  severity: none
+  statement: The four agarose groups carry an Agarose_Percentage series, the agarose under the fly in every
+    frame, which the other groups lack; its label changes only with the island. The 0.8 against 1.4% chambers
+    were loaded both ways round (island 0 is 0.8% for 18 of 24 flies without sucrose and 12 of 24 with
+    200 mM on both sides), so the island number alone does not give the hardness, but the series does.
+    The first version of this attempt read only the island and sucrose series, missed it, and reported
+    the hardness as unrecorded (metadata_insufficient, major); that was wrong, and this finding replaces
+    it.
 - kind: data_missing
   about: data
   severity: major
@@ -616,8 +687,9 @@ findings:
   about: data
   severity: minor
   statement: 48 of 29531 intervals between successive eggs of a fly are under 10 s (12 are a single frame),
-    against the paper's statement that eggs are at least 1 min apart; they may be double annotations.
-    They are kept.
+    against the paper's statement that eggs are at least 1 min apart; in 47 both eggs are on one island
+    and in 34 the fly moves no faster than 0.3 mm/s between them, so they may be double annotations. They
+    are listed in the data check and kept.
 - kind: other
   about: data
   severity: minor
@@ -659,3 +731,338 @@ findings:
   statement: 'Question for the authors: the search start scans back from 9 s before the egg in this attempt,
     which gives the paper''s 1205 searches on higher sucrose; was that the procedure? And how were the
     fig. S4 kernel (ref. 82) and the constants k1, k2 of model 2 fit? The analysis code is not public.'
+- kind: other
+  about: data
+  severity: minor
+  statement: Two Dop1R2-mutant-1 recordings (sub-0-200-Dop1R2-mutant-1-fly#-11 and -12) have 6 and 4 eggs
+    annotated in their last 19 s, 0.5 to 10.5 s apart, while the fly walks at up to 8.7 and 7.0 mm/s; they
+    are unlikely to be eggs. They make up 7 of the 48 intervals under 10 s, and the group holds 596 eggs
+    in all. The paper's legend count for the group, 586, is of an egg-aligned average that leaves out
+    eggs near the ends of a video, so it does not show whether the paper counted them. They are kept; they
+    change no outcome (fig8fg egg-count p-values 0.34 to 0.69 without them).
+verifications:
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The handover of the first run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file, with the paper under paper/. The verifier also checked
+    the DANDI API for the assets' metadata. Cell numbers in the reasons are those of the handover notebook.
+  results:
+  - claim: leave-higher-stay-lower
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 18: 1205 searches start on higher, 0.805 leave; 2773 start on lower, 0.331 leave. All within
+      tolerance, p = 9e-167.'
+    response: No change of outcome.
+  - claim: fig1d-no-substrate-marking
+    agrees: true
+    outcome: blocked
+    reason: The archive has no movable-boundary group (33 groups, 1013 assets, checked through the API).
+    response: No change of outcome.
+  - claim: fig1f-tarsi-proboscis
+    agrees: true
+    outcome: blocked
+    reason: No group with glued tarsi or proboscis.
+    response: No change of outcome.
+  - claim: fig2bc-larger-chambers-two-options
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: 200 mM is below 0 mM in all 7 bins from 5 to 60 s in both chambers, all at p < 0.05.
+      No merge in either.'
+    response: No change of outcome.
+  - claim: fig2d-three-choice-inhibit-200
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 22: the three-choice rate is lower in 7 of 7 bins, significant in 7, under both trial readings.'
+    response: No change of outcome.
+  - claim: fig2e-200-recovers-with-time
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: 1.478 against 0.088 eggs/min, p ≈ 0. Non-decreasing in 11 of 12 steps.'
+    response: No change of outcome.
+  - claim: fig2efg-inhibit-200-after-0
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: reading (b), at most 20%, holds in 3 of 3 chambers, all p < 1e-6. Reading (a) holds in
+      2 of 3 (0/500/200 ratio 0.147).'
+    response: No change of outcome.
+  - claim: fig2-earlier-merge-three-choice
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced (weak). Cell 28: merges at 1200, 5 and 5 s against none in every comparison chamber.
+      Two of those merges are artefacts of near-empty early bins (problem 3: in 0/500/500/500/200 the 5-10
+      s bin has p = 1.0 and the 10-15 s bin p = 0.90, and the bins after differ at p = 0.005; these are not
+      releases of inhibition). The outcome still holds under the search, >=10 s reading (1200, 10, 300).'
+    response: No change of outcome. The cell now prints eggs and visits of both curves in every bin from 5
+      to 60 s; the conclusion and notes say the 5-s merges (and the 10-s merge with the 10 to 15 s bin first)
+      rest on bins with almost no eggs, and that only the 1200 s merge follows bins with many eggs.
+  - claim: fig3ab-2mm-tunnel-faster
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: 5-10 s bin, 1.236 against 0.364 eggs/min, p = 5e-7.'
+    response: No change of outcome.
+  - claim: fig3c-bounce-faster
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 32, 5-10 s bin: higher than 4 mm (p = 2e-10) but not 2 mm (p = 0.051). The 0-5 s reading
+      is not reproduced.'
+    response: No change of outcome.
+  - claim: fig3d-dwell-before-fast-eggs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 34: counts 36/44/22 are within tolerance and the medians increase. The medians themselves
+      (45.5/57/379.5 against 54/96/576 s) are all out of tolerance, and 4 mm against 2 mm gives p = 0.54. Problem
+      1: the minimum dwell of 0.5 s suggests flicker at the boundary splits visits, which would shorten dwells;
+      the notebook never shows the visit-length distribution or merges sub-second visits, and it replaced the
+      claims file''s two readings (from the midline, from leaving 200 mM) with <=10 against <10 s.'
+    response: 'No change of outcome. The cell now prints the length distribution of every sucrose visit in
+      the tunnel chambers (359 of 12154 visits in the 4-mm chamber last one frame) and reruns the claim with
+      visits of up to 0.5, 1, 2 and 5 s merged into the visits around them: medians 48.5, 57.0 and 441.5 s
+      (448.2 s at 5 s), still outside every tolerance. It also prints that no frame lacks a sucrose label,
+      which is why the two readings of ''within 10 s'' are one frame; the <10 s count is kept as a variant.'
+  - claim: fig3e-rate-after-long-absence
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: >=240 s gives 1.213 against <240 s 0.345 eggs/min, p = 2e-8. Below 240 s the rate is
+      flat (Spearman p = 0.20), except a 0.92 step in the 150-240 s bin. Problem 1: split visits would change
+      the binning in fig3e.'
+    response: Outcome changed to partially_reproduced, assumed. The rerun the verifier asked for (visits of
+      up to 0.5 to 2 s merged) takes the 2 eggs out of the 0 to 5 s bin and gives a significant rising trend
+      below 240 s (rho 0.71 to 0.75, p = 0.007 to 0.015); over the bins from 5 s the trend is significant without
+      merging too (rho 0.68, p = 0.029); and the 150 to 240 s step the verifier noted is significant (0.922
+      against 0.316 eggs/min below 150 s, p = 0.0014). The rise after long absences holds, but 'no rising trend
+      below 240 s' holds only on the all-bins Spearman reading of the first version, so the outcome is partial,
+      with every reading shown.
+  - claim: fig3f-motor-program-not-faster
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 38, reading (a): in the 4-mm chamber fast eggs pause less (0.5 against 1.0 s, p = 0.0014).
+      Reading (b): all three chambers differ. Problem 2: pause time is quantised at 0.5 s with medians of 1-2.5
+      s, so the 10% bound comes down to one frame; a weakness of the claims file''s bounds, not a coding error.'
+    response: No change of outcome. The cell now prints that every pause time is a whole number of 0.5-s frames,
+      the median differences in frames, and the criterion; the conclusion says the 10% bound holds only for
+      equal medians and that the rank sum test fails the claim without it.
+  - claim: fig4a-shorter-middle-transits
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 40: edge medians 12.5-13.5 s are within tolerance. Middle medians are 4.5 s in two chambers
+      but 4.0 s pooled and in 0/500/200, one frame outside tolerance (problem 2).'
+    response: No change of outcome. The cell prints the medians in frames and which readings meet both tolerances;
+      the conclusion says the tolerance holds only the 9-frame value and that reading (ii) holds in two chambers
+      of three.
+  - claim: fig4b-faster-middle-preferred
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 42, 5-10 s bin: p < 1e-7 against the edge chambers pooled, each one, and 0/500/500, under
+      both trial readings.'
+    response: No change of outcome.
+  - claim: fig4d-anomalous-eggs-alternative
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 44: 0.407 against 0.142 eggs/min, p = 4e-29.'
+    response: No change of outcome.
+  - claim: fig4e-inter-egg-not-longer
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46: 2260/922/1901 intervals; medians 5.09/4.38/4.12 min are within tolerance in the Fig.
+      4A order. Neither middle-preferred chamber is longer. Problem 13: the cell prints numbers without applying
+      the criterion.'
+    response: No change of outcome. The cell now applies the criterion and prints it.
+  - claim: fig4f-motor-program-not-accelerated
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 48: median pause is 1.0 s in all three chambers, p = 0.56 and 0.20. Problem 13: the cell
+      prints numbers without applying the criterion.'
+    response: No change of outcome. The cell now applies the criterion and prints it.
+  - claim: fig5ab-strains-release-faster
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 50, visit trials: TUT merges at 20 s, DL at 90 s, CS does not merge. Search trials give TUT
+      90 s, which fails (problem 5). The Methods'' independence assumption covers ''each substrate transition
+      within a search'', which supports the visit reading, so I took it. The notebook states no preference.'
+    response: No change of outcome; marked assumed. The visit reading is now adopted as an assumption, citing
+      the Methods passage the verifier names, in the cell, the conclusion and a deviation; the search reading
+      is still shown.
+  - claim: fig5c-suzukii-no-preference
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 52: the 300-600 s bin has 0 mM higher, p = 0.029 (13/17 against 8/20). The criterion says
+      any such bin fails the claim. Problem 11 (claims-file reading): the rule ''any significant bin fails''
+      ignores multiple testing; one bin in 13 at p = 0.029 is about what chance gives, and alt1 and alt2 do
+      not show it.'
+    response: No change of outcome, as the criterion decides it. The cell now prints Holm and Benjamini-Hochberg
+      corrections over the 13 bins (smallest adjusted p 0.38 and 0.34) as a variant, and the multiple-testing
+      reading is asked of a reader in questions/vijayan-2022.yaml.
+  - claim: fig5de-suzukii-more-on-200
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 54: egg fraction on 0 mM is 0.386 (CI 0.322-0.454); median time fraction on 0 mM is 0.197.'
+    response: No change of outcome.
+  - claim: fig5f-egg-numbers-differ
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 56: all 6 pairs differ at p < 0.05.'
+    response: No change of outcome.
+  - claim: fig5gh-search-and-pause
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 58: 6 of 6 pause pairs at p < 0.001; speed rises in all four groups. Egg counts are within
+      tolerance.'
+    response: No change of outcome.
+  - claim: fig6b-softer-preferred
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (metadata_insufficient). No hardness label (problem 12). Four of the six conditions are
+      also absent. Problem 12: cell 9 prints dataset attributes only, not the description or comments attributes
+      of the Island and Sucrose TimeSeries, which might say which island is 0.8% agarose.'
+    response: Still blocked, now for data_missing. Printing every attribute of a 0.8/1.4% file, as the verifier
+      asked, shows an Agarose_Percentage series that the first version did not read; it gives the agarose of
+      every frame. The claim stays blocked because bar 6 and bars 2 and 3 of Fig. 6B are not in the dandiset;
+      the two conditions it holds are shown (0.800 and 0.730 of eggs on 0.8%).
+  - claim: fig6cd-hardness-fast-merge
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (metadata_insufficient). Same: no hardness label.'
+    response: 'Outcome changed to reproduced. With the Agarose_Percentage series the claim is tested: the 0.8%
+      and 1.4% curves merge at 20 s without sucrose and at 20 s (visit trials) or 25 s (search trials) with
+      200 mM on both sides, at or before 25 s under every reading.'
+  - claim: fig6ef-pause-longer-hard
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 60: pause is longer on 1.4%, p = 4e-21. The 1.4% rate is lower and significant in the 5-10
+      and 10-15 s bins. The 0-5 s bin is 0 eggs in both, a tie, which is why the printed flag reads False.
+      Problem 13: the cell prints numbers without applying the criterion.'
+    response: No change of outcome. The cell now prints each part of the criterion, with the tie in the 0 to
+      5 s bin.
+  - claim: fig6g-more-time-softer
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (metadata_insufficient). Same: no hardness label.'
+    response: Outcome changed to reproduced. With the Agarose_Percentage series the median fraction of time
+      on 0.8% is 0.609 over all frames and 0.672 over search frames.
+  - claim: fig7a-screen-ddc-hits
+    agrees: true
+    outcome: blocked
+    reason: No screen lines in the archive.
+    response: No change of outcome.
+  - claim: fig7b-ddc-kir-sense-sucrose
+    agrees: true
+    outcome: blocked
+    reason: Tracking only; no feeding-latency video or scores.
+    response: No change of outcome.
+  - claim: fig7cf-kir-merge-earlier
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 62: merges fall monotonically (none, 600, 25, 10 s) and 27 and 29/29.5 C stay biased. At
+      31 C two bins still differ (p = 0.001, 0.007), so under ''first bin >=5 s'' neither 31 C reading holds.
+      It holds only if ''past 5 s'' means >=10 s. Problem 4: the notebook runs both readings but gives no verdict;
+      the figs2 cell uses only >=5 s and only visit trials.'
+    response: No change of outcome. The cell now prints the outcome under the adopted readings (visit trials,
+      5 to 10 s bin first) and under the other, and the conclusion and notes give the reason for the choice.
+      The figs2 cell now runs both trial readings and both first-bin readings.
+  - claim: fig7df-overall-rate-drops
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 64: 0.465, 0.208, 0.219 eggs/min. It falls from 27 C but not from 29/29.5 to 31 C. Problem
+      8: the rate functions count only frames whose time since leaving the other substrate is under 7200 s,
+      which leaves out search frames before the first crossing (1000 of 1031 eggs at 18 C).'
+    response: No change of outcome. The cell now prints every egg over every frame of the search windows as
+      a variant (0.567, 0.460, 0.208 and 0.220 eggs/min), the same pattern.
+  - claim: fig7gh-choice-falls
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 66: 0.938 > 0.919 > 0.761 > 0.296; median time fraction at 31 C is 0.266.'
+    response: No change of outcome.
+  - claim: fig7ik-not-egg-number-or-motor
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 68: eggs per fly are lower at 31 C than 18 C (p = 2e-4). Median pause is 40% shorter (1.5
+      against 2.5 s). Problem 10 (claims-file reading): the claims file reads ''unrelated to the number of
+      eggs'' as ''31 C flies lay no fewer eggs than 18 C''; the paper more plausibly means preference is not
+      explained by egg number. 27 C flies lay the most eggs (38/fly) with intact preference, and within 31
+      C the Spearman rho is -0.07 (p = 0.72). The pause half fails either way.'
+    response: No change of outcome. The reading is asked of a reader in questions/vijayan-2022.yaml, and the
+      notes and conclusion say the egg part would hold under the correlation reading. The cell prints that
+      the pause medians differ by 2 frames.
+  - claim: fig7l-dopamine-gal80-rescue
+    agrees: true
+    outcome: blocked
+    reason: No Gal80 genotypes.
+    response: No change of outcome.
+  - claim: fig7mn-brain-neurons
+    agrees: true
+    outcome: blocked
+    reason: No TSH-Gal80 or OTD-FLP groups.
+    response: No change of outcome.
+  - claim: fig8a-d1-receptor-mutants
+    agrees: true
+    outcome: blocked
+    reason: 'Only 4 of 13 genotypes are present. Part can be tested: Dop1R1- 0.345, Dop1R2 attP 0.324, Dop1R2-
+      0.444 (all below 0.5) and CS 0.918 (cell 80). CS mean is 39.6 eggs/fly against 40.'
+    response: No change of outcome.
+  - claim: fig8b-mutants-sense-sucrose
+    agrees: true
+    outcome: blocked
+    reason: No feeding-latency data.
+    response: No change of outcome.
+  - claim: fig8ce-mutants-flat-rates
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 70: at most 1 significant bin per mutant. Dop1R1- means are nearer CS 0 mM; both Dop1R2 curves
+      are nearer CS 200 mM.'
+    response: No change of outcome.
+  - claim: fig8fg-time-and-eggs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 72: time fractions 0.399 and 0.393; no egg-count pair differs. The speed does not rise for
+      Dop1R2 attP or Dop1R2-. Problem 13: the cell prints numbers without applying the criterion. Not checked:
+      the speed rise with other windows (for example 30 s), and the egg-aligned speed traces plotted per mutant.'
+    response: No change of outcome. The cell now applies the criterion, gives the speed rise with 30-, 60-
+      and 120-s windows (it rises in Dop1R2 attP under none) and plots the egg-aligned speed of each mutant
+      and CS, and gives the egg-count test without the eggs annotated at the end of two recordings.
+  - claim: fig8j-200-500-defect
+    agrees: true
+    outcome: blocked
+    reason: No 200/500 chambers for mutants or DDC>Kir.
+    response: No change of outcome.
+  - claim: fig8k-agarose-intact
+    agrees: true
+    outcome: blocked
+    reason: No agarose chambers for mutants or DDC>Kir.
+    response: No change of outcome.
+  - claim: dop1r1-84714-no-defect
+    agrees: true
+    outcome: blocked
+    reason: No BDSC 84714 group.
+    response: No change of outcome.
+  - claim: figs2-search-definition-robust
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 74: fig5ab is reproduced under the working definition but keeps its outcome under only 1
+      of 3 alternates (TUT merges at 90 s under alt2; CS merges at 1200 s under alt3). The criterion needs
+      at least two. Not checked: cell 74 rerun with ''first bin >=10 s'', and both trial readings for fig5ab
+      under alt1 to alt3.'
+    response: No change of outcome; marked assumed. The cell now gives the criterion under both trial readings
+      and both first-bin readings. With the 10 to 15 s bin first the outcome is the same. With search trials
+      fig5ab is not reproduced under the working definition, so it drops out and the criterion would hold;
+      the outcome rests on the visit reading adopted for fig5ab, which a deviation states.
+  - claim: figs3-long-searches
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 76: 3978 eggs, 95 flies; 0.949 in the 360-1500 s bin, 0.957 for 25+ transitions.'
+    response: No change of outcome.
+  - claim: figs4-models-fail
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 78: model 1 overestimates 0 mM after 500 mM in 7 of 7 bins. The fit is weak (problem 9: fit_kernel
+      is an unconstrained linear fit that predicts negative rates, down to -1.5 eggs/min, and falls inside
+      the 90% CI of its own training curve in only 3 of 7 bins, so the paper''s premise, a kernel that ''roughly
+      approximates'' the 0/200 curves, is only half met; because the model is linear in concentration, overshooting
+      500 to 0 is partly built in), and model 2 was not tested.'
+    response: 'Outcome kept as reproduced, with the disagreement recorded. The verifier''s suggested non-negative
+      fit was added (log link, Poisson likelihood, same zero-area kernel): it follows the 0/200 curves inside
+      the 90% CI in 4 of 7 bins on each curve (0 mM mean 1.27 against 1.21 eggs/min) and overestimates the
+      0/500 rate on 0 mM after 500 mM in 7 of 7 bins, so the result does not rest on the negative rates. Linearity
+      in concentration is model 1 as the paper defines it, and the paper gives it as the cause of the failure.
+      Model 2 cannot be fit, as the paper gives neither its equations nor its constants; the criterion tests
+      model 1 only, and the notes say the statement''s model 2 part is untested.'
