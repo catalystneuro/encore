@@ -13,7 +13,7 @@ six passive controls, and the recordings of four of them.
 | 973 units, 484 modulated, bimodal spike width | Not reproduced |
 | Modulation of all cells rises; stable at threshold | Partially reproduced |
 | More modulated units in Mouse 1 at 4 uA, none at group level | Not reproduced (assumed) |
-| Changes driven by pyramidal cells | Reproduced (assumed); partially reproduced under the criterion's cell-type rule, proposed |
+| Changes driven by pyramidal cells | Partially reproduced (assumed) |
 | Over 80% of units keep their PL or NPL identity | Reproduced |
 | Pyramidal cells more common among PL units (76.2 against 49.8%) | Partially reproduced |
 | Conduction velocities of 0.2 to 0.27 m/s | Not reproduced |

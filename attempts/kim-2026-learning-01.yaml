@@ -298,43 +298,37 @@ outcomes:
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
   assumed: true
 - claim: fig4ij-pyramidal-drive
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_kim_2026_learning.ipynb
   output: claim:fig4ij-pyramidal-drive
-  notes: 'Verified outcome, with the stored cell-type label: pyramidal modulation rises at 4, 5 and 6 uA (p = 3.19e-05,
-    0.000587, 0.000878); pyramidal time to maximum falls at 5 and 6 uA (65 to 25 ms, p = 0.000329; 85 to 35 ms,
-    p = 0.025); interneuron modulation does not change (p = 0.331, 0.884, 0.0885); the interneuron latency at 6
-    uA is longer late (130 to 190 ms, p = 0.0335), as the paper reports. With the criterion''s trough-to-peak at
-    0.45 ms recomputed from the mean waveform, now the main cell type: pyramidal modulation rises (p = 0.000143,
-    0.000435, 0.000492), pyramidal time to maximum falls at 5 uA (45 to 25 ms, p = 0.000362) but not significantly
-    at 6 uA (85 to 35 ms, p = 0.0587), interneuron modulation does not change (p = 0.117, 0.706, 0.229), so the
-    claim is partially reproduced; a change is proposed. The recomputed types are closer to the paper''s counts
-    (interneuron n early/late 63/228, 94/164, 92/76 against 55/221, 90/158, 90/76 stored and 69/254, 113/180, 122/86
-    in the paper; 724/275 recorded units against 732/260 and 672/301). The 97 units where the two disagree are stored
-    as pyramidal at a recomputed 0.333 to 0.433 ms, or as interneurons at 0.467 to 0.900 ms (median 0.533).'
+  notes: 'With the criterion''s trough-to-peak at 0.45 ms recomputed from the mean waveform, the main cell type:
+    pyramidal modulation rises at 4, 5 and 6 uA (p = 0.000143, 0.000435, 0.000492), pyramidal time to maximum falls
+    at 5 uA (45 to 25 ms, p = 0.000362) but not significantly at 6 uA (85 to 35 ms, p = 0.0587), and interneuron
+    modulation does not change (p = 0.117, 0.706, 0.229), so the pyramidal modulation result holds and one other
+    part fails. The interneuron latency at 6 uA, reported but not judged by the criterion, is not significantly longer
+    late (135 to 155 ms, p = 0.419). With the stored cell-type label (variant), on which the outcome rested until
+    round 3, all three parts hold: pyramidal modulation p = 3.19e-05, 0.000587, 0.000878; pyramidal time to maximum
+    falls at 5 and 6 uA (65 to 25 ms, p = 0.000329; 85 to 35 ms, p = 0.025); interneuron modulation p = 0.331,
+    0.884, 0.0885; the interneuron latency at 6 uA is longer late (130 to 190 ms, p = 0.0335), as the paper reports.
+    The recomputed types are closer to the paper''s counts (interneuron n early/late 63/228, 94/164, 92/76 against
+    55/221, 90/158, 90/76 stored and 69/254, 113/180, 122/86 in the paper; 724/275 recorded units against 732/260
+    and 672/301). The 97 units where the two disagree are stored as pyramidal at a recomputed 0.333 to 0.433 ms,
+    or as interneurons at 0.467 to 0.900 ms (median 0.533).'
   deviations:
   - The pre-stimulus window is 700 ms before onset, as long as the train. The Methods say pre-stimulus without a
     length (Quantifying neuromodulation metrics); the Results define the delta spikes of Figure 6 with the pre-stimulation
     spikes in the preceding 700-ms window. This is an assumption; 300 and 500 ms are shown as variants for fig4h-unit-counts
-    and fig4g-modulated-count-mouse1.
+    and fig4g-modulated-count-mouse1, and were not run for this claim, whose pyramidal latency test at 6 uA is close
+    to the line.
   - Responses are selected by the code's filters that the claims file follows (more than 5 trials, 0 < z below 100
     or 50, stimulation channels used on at least 5 session days); the modulation test is two-sided with the stimulation
     count higher, and at least 50 spikes are counted in the stimulation window summed over trials.
-  - The verified outcome rests on the stored cell_type label (the file's putative cell type from t2p classification),
-    taken in round 1 as the authors' application of the 0.45 ms rule; this was an assumption. After round 2 the
-    main cell type is the criterion's trough-to-peak at 0.45 ms recomputed from the stored 90-sample single-channel
-    mean waveform (one sample is 0.033 ms), as its counts lie closer to the paper's; the stored label is a variant.
-    The two give different outcomes.
+  - The cell type is the criterion's trough-to-peak at 0.45 ms recomputed from the stored 90-sample single-channel
+    mean waveform (one sample is 0.033 ms), as its counts lie closer to the paper's; the stored cell_type label
+    (the file's putative cell type from t2p classification) is a variant. The two give different outcomes. Until
+    round 3 the outcome rested on the stored label, taken in round 1 as the authors' application of the 0.45 ms
+    rule; the round-3 verifier agreed with the change to the criterion's rule.
   assumed: true
-  proposed:
-    outcome: partially_reproduced
-    reason: The criterion types cells by trough-to-peak at 0.45 ms. With that rule applied to the stored mean waveforms
-      (notebook, fig4ij cell) pyramidal modulation rises at all three currents and interneuron modulation does not
-      change, but the pyramidal latency at 6 uA gives p = 0.0587, so one part fails and the criterion gives partially
-      reproduced. The verified outcome rested on the stored label, whose counts are further from the paper's than
-      the recomputed ones (interneuron n 55/221, 90/158, 90/76 against 63/228, 94/164, 92/76 and the paper's 69/254,
-      113/180, 122/86), so the assumption that it is the authors' application of the rule is not supported, as the
-      round-2 verifier found.
 - claim: fig5d-pl-identity-stable
   outcome: reproduced
   notebook: reproduce_kim_2026_learning.ipynb
@@ -1551,3 +1545,33 @@ verifications:
       the 3 tabled bursts, as in ICMS45 2022-02-05; the statement now says so. The two readings are recorded as
       the assumption of figs7-control-no-change and figs9-coupling-controls, each with the variant that changes
       its outcome, and as a question for the authors.'
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-3, claude-opus-5-5, Claude Code; separate context, did not
+    write the notebook)
+  reviewed: Round 3. Only the one change of outcome proposed after round 2 (fig4ij-pyramidal-drive, reproduced to
+    partially reproduced), with the outputs of the re-executed notebook, the helper module, the claims file, the
+    attempt record and the paper. The verifier did not re-run the notebook. Report in transcripts/kim-2026-learning/verifier-3-report.md.
+  results:
+  - claim: fig4ij-pyramidal-drive
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The criterion is applied as written. The claims file types cells as pyramidal when trough-to-peak is
+      at least 0.45 ms, and cell 14 now types cells by trough-to-peak recomputed from the stored mean waveform; 0.45
+      ms falls between samples (0.433 and 0.467 ms), so no unit sits on the boundary. Cell 41 runs the criterion''s
+      tests. Pyramidal modulation rises at 4, 5 and 6 uA (p = 0.000143, 0.000435, 0.000492). Pyramidal time to maximum
+      falls at 5 uA (45 to 25 ms, p = 0.000362); at 6 uA it falls from 85 to 35 ms but p = 0.0587, which is not significant.
+      Interneuron modulation has p of at least 0.05 at all three currents (0.117, 0.706, 0.229). Under the claims
+      file''s rule, the pyramidal modulation result holding and one other part failing gives partially reproduced.
+      The choice was not made to reach the result: the change moves to a less favourable outcome and follows the
+      criterion''s own rule, which I raised in round 2. The recomputed counts are closer to the paper''s on every
+      comparison but one, the 6 uA late count, where both give 76. The 97 disagreeing units lie on either side of
+      the threshold, so the recomputation is consistent. Neither measure uses random draws. Remaining sensitivity,
+      which does not change my view: the 6 uA latency test is close to the line, and it was run only with the assumed
+      700 ms pre-stimulus window; the 300 and 500 ms variants were not run for this claim. The interneuron latency
+      at 6 uA is longer late under the stored label (p = 0.0335), as in the paper, but not significant under trough-to-peak
+      (p = 0.419); cell 42 states this correctly. No misreading of the paper by the claims file.'
+    response: Outcome changed to partially_reproduced and the proposal removed. The notes, the deviations, the result
+      cell, the summary and the README now give the criterion's rule as the basis of the outcome and the stored label
+      as a variant; the deviation on the pre-stimulus window says the 300 and 500 ms variants were not run for this
+      claim. The outcome stays marked as assumed, as it rests on the 700 ms window.
