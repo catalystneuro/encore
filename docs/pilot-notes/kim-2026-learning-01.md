@@ -1,0 +1,122 @@
+# kim-2026-learning, Kim et al. 2026
+
+Seven claims reproduced, eight partially, six not reproduced and 18 blocked,
+16 as `metadata_insufficient` and 2 for missing data. The first verification
+round agreed with 38 of the 39 outcomes as they stood, all but
+`fig5e-pyramidal-in-pl`, which it would call partially reproduced; the second
+agreed with 38 and would record `fig4ij-pyramidal-drive` as partially
+reproduced, the author proposed that change, and a third round reviewed that
+one claim and agreed. It pins version 0.260715.2016, the only published
+version; the paper cites none, and the draft holds the same 85 assets. The
+paper, Kim, Lycke, Zolotavin, Montes, Xie and Luan, "Learning induces
+activation-mechanism-dependent neural plasticity in an intracortical
+microstimulation task" (bioRxiv, accepted at Science Advances according to the
+code's README), implants 12 Thy1-GCaMP6s mice in S1 with a 32-channel
+ultraflexible nanoelectronic thread and a cranial window, trains 6 of them to
+report intracortical microstimulation (ICMS) by turning a wheel and stimulates
+6 passive controls, and reports that detection thresholds fall with learning,
+that ICMS activates more neurons near the site late in training, that tracked
+neurons include a subgroup whose responses grow, that unit modulation
+strengthens mainly in pyramidal cells and in pulse-locked (PL) responses, and
+that non-pulse-locked (NPL) responses separate hits from misses and are more
+coupled to the population, while PL coupling rises. The claims were written
+from the JATS text of preprint version 1 without the supplementary figures S1
+to S9, and from the code at commit d1922d1, which lacks `timing_params.json`
+and the code that builds the delta-spike table and the hit and miss PSTH
+arrays of Figure 6; the claims check corrected six of the 39 claims and fixed
+code line numbers in four others. Reproduced are the threshold decrease (5.70
+and 3.91 uA at the paper's n of 43 and 80 under reading (a), 5.78 and 4.07 uA
+under (b)), the shorter response times (192.3 against 179.2 ms), the movement
+onsets (125.0, 143.0 and 135.0 ms, on an estimated wheel threshold with ICMS83
+left out), the stable PL identity (0.839), the absence of NPL change and the
+PL coupling rise (0.272 to 0.707), both seed-sensitive, and the higher NPL
+coupling. Partial are the all-cell modulation (at threshold it rises within 4
+to 6 uA, where the paper says stable), the pyramidal drive (pyramidal latency
+at 6 uA p = 0.0587 by the criterion's trough-to-peak, all parts holding with
+the stored label), the pyramidal share of PL units (72.0% and 56.4%), PL
+latency at 6 uA (p = 0.0741), PL spike probability at 5 uA, the 120 ms window
+(NPL modulation rises too), the KL divergence (PL separation lower late, 0.027
+against 0.034) and the coupling controls, whose control part cannot be tested.
+Not reproduced are the unit counts (588 modulated units against 484), Mouse 1's
+count rise (one-sided p = 0.0571 against 0.044, and 0.014 and 0.0127 with
+pre-stimulus windows of 300 and 500 ms), the conduction velocity (latency does
+not rise with distance), the control stability (counts fall from 12.5 to 2.0),
+the controls' unchanged pulse-locking (PL peak spike probability lower late,
+p = 0.001) and the hit-miss divergence of Figure 6D (NPL onsets 180 and 70 ms
+against 65 and 35 ms, and PL clusters in both phases). The author's first run
+gave 9 reproduced, 5 partially, 7 not reproduced and 18 blocked, and the
+author asked a reader nothing. Round 1 found the pre-stimulus window untested,
+a PL share of about 80% against about 63%, control stimulation tables that
+look incomplete, a reading of the 120 ms window of the notebook's own making,
+an inconsistent cell-type rule, an unchecked contact mapping and at-threshold
+responses dropped below 4 uA; in reply 300 and 500 ms windows, a peak-time
+histogram and a chance rate of 2.4% (the cause of the PL excess was not found),
+per-mouse control tests and a fix of the session threshold were added, each
+claim drew its own pulse-locking seed, fig5e moved to partial and the 120 ms
+claim from reproduced to partial. The round-1 revision rewrote the all-cell
+modulation claim's text as reproduced but left its field at partial, which
+round 2 found; the main test then kept 4 to 6 uA. Round 2 also found
+sentences the outputs did not support (the positions of the -1 samples, a ROI
+count range, "the mapping holds", the same clusters under every seed), all
+corrected, had the controls' coupling part run under a 10-burst reading, and
+would have rated the control stimulation finding critical, which the author
+kept at major as the data cannot settle it. The author's run took from 03:44
+to about 06:10 UTC; one entry run failed when the author's script for removing
+bold also broke `**kw` in the code, and the notebook ran in 17.2 min at first,
+with peak memory 1.3 GB, 1369 s after round 1, 14.9 min after round 2 and
+956 s at the end. Untracked files at the repository root and an edit to
+`tools/intake.py`, which the author did not make, were left untouched.
+
+The planar ROIs are segmented separately in each session (53 to 1019 per
+session in 23 files) with no identifier across sessions, and the files hold no
+image of any kind (`reference_images` and acquisition are empty in all 45
+files with imaging), so no neuron can be followed over weeks and the ten claims
+on Figure 3 and fig. S6 are blocked. The volumetric dF/F holds 6 to 8 samples
+per trial within 0.25 s of onset, -1 at three or four of the eight positions in
+about half of the ROIs, at positions 3 and 7 on catch and 4 uA trials and 0, 3
+and 4 at the other currents, with nothing saying which samples precede
+stimulation; the voxel data of the Methods' activation rule are absent, and
+the behavioural files give no position of the stimulation contact in the
+imaging volume, so the six claims on Figure 2 are blocked. Units carry one
+90-sample mean waveform on one channel, so the waveform separation of Figure
+4D and the UnitMatch tracking of fig. S8 cannot be repeated. In the controls
+the stimulation table lists 3 bursts per trial ending 1.2 s after the first,
+and the trial table agrees in most sessions, but the firing rate peaks every
+0.5 s for 5 s (ICMS45 2022-03-04, 79 to 118 spikes/s in slots 1 to 3 and 30
+to 47 in slots 4 to 10), and the trial tables of ICMS45 2022-02-05 and ICMS54
+2022-05-20 give 100 pulses over 4.7 s and 210 or 340 pulses over 10.3 to
+16.9 s; with 10 bursts per trial the control pulse-locking and coupling claims
+would reproduce. The control trains (3 bursts of 10 pulses at 50 Hz) differ
+from the trained mice's 700 ms 100 Hz train, their `trial_index` repeats
+across blocks, and the control survey files give no pixel size or plane
+spacing and no mapping from stimulation channel to contact, with 2 to 9
+contacts per session at the origin. ICMS83 has no catch trials or blocks (180
+to 480 trials, `trial_index` up to 625) and its wheel barely moves (median 1.2
+wheel units against 15.4 to 18.5). The electrodes table lacks stimulation
+channel 3 of ICMS100 in all seven sessions and channel 9 of ICMS101 on
+2023-10-27, whose trains start 56.0 to 84.9 ms after the trial start against
+a median of 5.8 to 5.9 ms elsewhere; planar-block stimulation rows stop up to
+8.1 s after their start; `cell_type` uses two vocabularies, with 7 units
+unknown, and disagrees with the trough-to-peak of the stored waveform for 97
+units; the six trained mice hold 999 units against 973; and the wheel is in
+arbitrary units with no response threshold. Spikes, trials and wheel share one
+clock (61 of 68 sessions in the shifted-onset contrast, 51 of 54 in the wheel
+contrast, the other three ICMS83's), and no recording is deposited twice. The
+paper gives its Zenodo deposit as 10.5281/zenodo.17727762, the code's README as
+10.5281/zenodo.21382755. Seven questions are put to the paper's authors: the
+pre-stimulus window, the wheel threshold and the five mice with reliable
+encoders, the bins and smoothing of Figure 6D, the control trains and their
+windows, the responses of the 120 ms analysis, which waveform the cell types
+come from, and whether fig. S3D included thresholds outside 4 to 6 uA.
+
+The author's points on the protocol: pulse-locking feeds about ten claims
+while the protocol gives each claim its own seed, and it was first seeded by
+fig5d and rerun under four other seeds; it does not say whether to prefer a
+stored derived label, here the cell type, over a recomputation; it does not
+say how to judge criteria with a part that cannot be run (figs2ef, figs9); for
+fig2a one reading matches the paper's n and the other its medians; it leaves
+open whether to assume windows or block when the controls' stimulation is
+described nowhere, and windows were assumed; "run the whole dataset once"
+conflicted with bugs found late, and the entry was run clean four times; and
+choosing a subset such as the five mice with reliable encoders from the data
+is an author choice it does not address.
