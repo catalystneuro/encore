@@ -24,26 +24,29 @@ outcomes:
 - claim: rest-decoding-above-null
   outcome: partially_reproduced
   assumed: true
-  notebook: reproduce_komori_2026_features.ipynb
+  notebook: reproduce_komori_2026_decoding.ipynb
   output: claim:rest-decoding-above-null
   measured:
-  - 0.5
-  - 0.417
-  notes: 'Partial under one combination, every frame of the epoch a sample (R4 b) with the epoch selection
-    rule (R5 b): validation AUC 0.500 against 0.417 for the null models (paired t = 5.52, p = 0.0053),
-    and with the keypoint pupil (R3 b) 0.629 against 0.480 (p = 0.042); the mean is far below 0.82 +/-
-    0.082. The first holds at one seed of five (the others p = 0.19 to 0.31, model 0.496 to 0.574); its
-    model is at chance and the difference comes from null models below 0.5 (3 to 5 of 5 folds at every
-    seed). These are 2 of the 27 combinations run at the claim''s seed. Main combination, R5 (a): 0.669
-    against 0.688 (p = 0.477), seeds p = 0.48 to 0.91; R5 (b): 0.556 against 0.468 (p = 0.209), above
-    null at one seed of five (claim + 3000, p = 0.0475). One change at a time under R5 (a): p = 0.11 to
-    0.77 (high-passed signal, keypoint pupil, centred-VIF ICs, folds of recordings, null shuffling validation
-    labels). The 16 combinations of R2, R3, R7 and R8 under R5 (b): none significant (p = 0.11 to 0.94).
-    Three ICA restarts under R5 (a): p = 0.07 to 0.60. Under R5 (a) the within-epoch shuffle changes only
-    12.8% of the training labels (42 of 117 epoch windows hold no positive label, 37 only positive ones),
-    so the null model is close to the model by construction. By mouse, under R5 (a), model and null AUC
-    are 0.596 and 0.602 (VG1-GC#51), 0.574 and 0.551 (52), 0.761 and 0.792 (53). The training AUC of the
-    models is 0.746 (R5 a) and 0.516 (R5 b), against 0.928 for the paper''s example model.'
+  - 0.696
+  - 0.514
+  notes: 'Partial under two of the 16 combinations of R2, R3, R7 and R8 run under the epoch selection
+    rule (R5 b), both with folds of recordings (R7 b) and null models scored on shuffled validation labels
+    (R8 b). With the measured-signal correction and the keypoint pupil (R2 a, R3 b) the validation AUC
+    is 0.696 against 0.514 for the null models (p = 0.0014), above null at 4 of 5 seeds (p = 0.0014 to
+    0.039; at claim + 2000 0.587 against 0.551, p = 0.59). With the high-passed correction and the deposited
+    pupil (R2 hp, R3 a) it is 0.614 against 0.482 (p = 0.039), above null at 2 of 5 seeds (the others
+    p = 0.14 to 0.91). The null AUCs in these two are 0.45 to 0.57. Every mean model AUC in the two notebooks
+    is below 0.738, the lower end of 0.82 +/- 0.082 (highest 0.718). Main combination, R5 (a): 0.625 against
+    0.648 (p = 0.259), never above null over five seeds (p = 0.071 to 0.57); R5 (b): 0.621 against 0.550
+    (p = 0.430), above null at one seed of five (claim + 2000, 0.569 against 0.460, p = 0.011). One change
+    at a time under R5 (a): p = 0.31 to 0.90. Every frame a sample (R4 b) with R5 (b): 0.660 against 0.634
+    (p = 0.817), with the keypoint pupil 0.603 against 0.598 (p = 0.925), not above null at any of five
+    seeds. Under R5 (a) the within-epoch shuffle changes 12.8% of the training labels (42 of 117 epoch
+    windows hold no positive label, 37 only positive ones), so the null model is close to the model by
+    construction. By mouse, under R5 (a), model and null AUC are 0.555 and 0.580 (VG1-GC#51), 0.633 and
+    0.644 (52), 0.671 and 0.703 (53). The training AUC of the models is 0.684 (R5 a) and 0.561 (R5 b),
+    against 0.928 for the paper''s example model. Two of three ICA restarts give the same ICs and models;
+    the third keeps 9 ICs (5 matching) and its models are below null (0.583 against 0.665, p = 0.031).'
   deviations: &id001
   - Three mice (VG1-GC#51, 52, 53) and their first three resting sessions (day0, day1, day7). The paper
     says 'Experiments from three mice were used' (Methods, Cross-validation) and '2-3 experiments per
@@ -53,8 +56,9 @@ outcomes:
   - ICs kept by a repeatable rule in place of the paper's 'visual inspection' (Methods, ICA-based cortical
     features), the most compact spatial maps, then VIF pruning (claims file, R6). The VIF is the one the
     paper's code computes (#05_deep_learning/#07_vif_calc.ipynb at commit 405a720, statsmodels variance_inflation_factor
-    on the features with no constant column, so without an intercept); it removes ICs 24 and 29 for 10
-    ICs. Assumed. The VIF with an intercept, which removes none, is run as a variant.
+    on the features with no constant column, so without an intercept); for 10 ICs it removes ICs 5, 23
+    and 14 and no further IC can be added, so 7 ICs are kept where the paper keeps 10. Assumed. The VIF
+    with an intercept, which removes none and keeps 10, is run as a variant.
   - Failed pupil detections in the deposited diameter (values up to 2.9e21 pixels) replaced by interpolation
     when above three times or below a third of the recording's median (148 and 57 frames in two sessions).
     Assumed; the paper's own outlier rule is for its DeepLabCut coordinates (Methods, Pupil diameter quantification).
@@ -72,19 +76,25 @@ outcomes:
     400.
   - The GRU (32 units, dense sigmoid output, Adam, binary cross-entropy with label smoothing 0.001, batch
     256, 10 epochs, best validation loss) is written in PyTorch with Keras' initialisers in place of Keras.
-  - 'JADE ICA is a port of jadeR written in the helper. It reaches different solutions when its input
-    differs in the last bits (with the number of linear-algebra threads), which is why the round-1 run
-    kept other ICs than the run before it; it now runs on one thread on inputs rounded to float32, and
-    the same data give the same ICs. Three restarts from random rotations are shown: two keep ICs matching
-    the main ones, the third shares 4 of 10.'
+  - 'JADE ICA is a port of jadeR written in the helper. The SVD temporal components keep their singular
+    values, as in the paper''s code (#03_ica/#01_svd.ipynb, normalize_svd, svt = frames @ VT.T @ inv(VT
+    VT.T), commit 405a720); the Methods divide each component by its singular value, which on the frames
+    the SVD is fitted to makes the covariance the identity (ratio of the 30th to the 31st eigenvalue 1.00000000,
+    against 1.0188 with the code''s scaling), so the 30 of 200 dimensions jadeR keeps are then set by
+    rounding. That is why earlier runs on different machines kept different ICs. JADE runs to convergence
+    as jadeR does (101 sweeps; an earlier cap of 100 stopped it short), and numpy, scipy and torch are
+    pinned to their AVX2 kernels; a re-run from a fresh download gave the same outputs as the development
+    run. Three restarts from random rotations: two give the main ICs, the third keeps 9 ICs, 5 of them
+    matching.'
   - Epoch selection (R5) is run under both readings. The paper says such sessions 'were therefore excluded
     from all datasets' (Results, somatosensory, paragraph 1) and 'Reliable prediction was achieved after
     excluding sessions...' (Discussion, Summary of Results), so where the readings differ R5 (b) is the
     better-supported reading (assumed); the claims file's statement that the paper gives no rule for resting
     data is asked of a reader (questions/komori-2026.yaml).
   - 'Reading combinations: under R5 (a) the main one and one change at a time (R2, R3, R6, R7, R8); under
-    R5 (b) every combination of R2, R3, R7 and R8, and R4 (b) with R3 (a) and (b). R4 (b) with R5 (a)
-    (about 10 minutes per run) was not run in this round.'
+    R5 (b) every combination of R2, R3, R7 and R8, the two above null also under five seeds and at the
+    six cutoffs, and R4 (b) with R3 (a) and (b) under five seeds. R4 (b) with R5 (a) (about 10 minutes
+    per run) was not run.'
   seed_sensitive: true
 - claim: rest-loss-accuracy-vs-null
   outcome: not_reproduced
@@ -92,16 +102,19 @@ outcomes:
   notebook: reproduce_komori_2026_decoding.ipynb
   output: claim:rest-loss-accuracy-vs-null
   measured:
-  - 0.625
-  - 0.615
-  - 0.6
-  - 0.638
-  notes: 'Main combination with R5 (a): validation loss 0.625 against 0.615 for the null models (p = 0.587),
-    accuracy 0.600 against 0.638 (p = 0.408). With R5 (b): loss 0.692 against 0.688 (p = 0.592), accuracy
-    0.557 against 0.539 (p = 0.428). No seed gives either test significant (smallest p 0.065, the R5 b
-    loss at claim + 2000, model higher); the five readings under R5 (a) give p >= 0.12, and none of the
-    16 combinations under R5 (b) gives both. Under R4 (b) with R5 (b) the loss does not differ (p = 0.33;
-    0.29 with the keypoint pupil) and the accuracy of both models is the share of negative labels.'
+  - 0.667
+  - 0.65
+  - 0.559
+  - 0.575
+  notes: 'Main combination with R5 (a): validation loss 0.667 against 0.650 for the null models (p = 0.053,
+    the model''s loss the higher), accuracy 0.559 against 0.575 (p = 0.748). With R5 (b): loss 0.686 against
+    0.688 (p = 0.645), accuracy 0.583 against 0.555 (p = 0.374). No seed gives either test significant
+    (loss p = 0.053 to 0.74, accuracy p = 0.25 to 0.76, two R5 b seeds with equal accuracies); the five
+    readings under R5 (a) give p >= 0.050 (the smallest, R3 b accuracy, with the model lower). Of the
+    16 combinations under R5 (b) none gives both; one has the loss lower (R2 a, R3 b, R7 b, R8 b: 0.675
+    against 0.687, p = 0.0091) with the accuracy not higher (p = 0.187). Under R4 (b) with R5 (b) the
+    loss does not differ (p = 0.131; 0.171 with the keypoint pupil) and model and null have the same accuracy,
+    the share of negative samples.'
   deviations: *id001
 - claim: rest-needs-0-1-hz
   outcome: not_reproduced
@@ -109,16 +122,21 @@ outcomes:
   notebook: reproduce_komori_2026_decoding.ipynb
   output: claim:rest-needs-0-1-hz
   measured:
-  - 0.702
-  - 0.637
-  notes: No combination reproduces rest-decoding-above-null, so the cutoffs are judged in the combinations
-    run. At 0.1 Hz the models are not above null under R5 (a) (0.702 against 0.716, p = 0.845) or R5 (b)
-    (0.480 against 0.416, p = 0.523), at any of the five seeds (R5 a p = 0.63 to 0.84, R5 b p = 0.14 to
-    0.53). At 2 Hz they are not above null either (R5 a 0.637 against 0.608, p = 0.227; R5 b 0.475 against
-    0.494, p = 0.885; no seed significant), so the part of absence holds, though the R5 (a) AUC is far
-    above 0.51. No cutoff is above null in either combination (p >= 0.23). The Holm-corrected rank-sum
-    tests of 0.1 Hz against the other cutoffs are all p = 1.0, as in the paper. The cutoffs were not run
-    with R4 (b) and R5 (b), where the 0.1 Hz decoder is above null at the claim's seed.
+  - 0.66
+  - 0.607
+  notes: 'No combination reproduces rest-decoding-above-null, so the cutoffs are judged in every combination
+    run at them. Main combination: at 0.1 Hz the models are not above null under R5 (a) (0.660 against
+    0.642, p = 0.425) or R5 (b) (0.555 against 0.459, p = 0.381), at any of five seeds (R5 a p = 0.27
+    to 0.95, R5 b p = 0.15 to 0.84); at 2 Hz not either (R5 a 0.607 against 0.616, p = 0.872; R5 b 0.533
+    against 0.555, p = 0.725), and no cutoff is above null (p >= 0.28). In the two combinations above
+    null at the decoding claim''s seed, run at this claim''s seed: with R2 a, R3 b, R7 b, R8 b the claim''s
+    pattern holds (0.1 Hz 0.718 against 0.504, p = 0.009; 2 Hz 0.534 against 0.492, p = 0.61; no other
+    cutoff above null, p = 0.10 to 0.55); with R2 hp, R3 a, R7 b, R8 b it does not (0.1 Hz 0.479 against
+    0.475, p = 0.97; 0.2, 0.5 and 1 Hz above null, p = 0.005 to 0.039; 2 Hz p = 0.13). The R4 (b) runs
+    are not above null at the decoding claim''s seed, so their cutoffs are not run. The claim holds in
+    one of four combinations and fails in three, where the 0.1 Hz model is not above null. The Holm-corrected
+    rank-sum tests of 0.1 Hz against the other cutoffs are not significant in any combination (p >= 0.14),
+    as in the paper.'
   deviations:
   - Three mice (VG1-GC#51, 52, 53) and their first three resting sessions (day0, day1, day7). The paper
     says 'Experiments from three mice were used' (Methods, Cross-validation) and '2-3 experiments per
@@ -128,8 +146,9 @@ outcomes:
   - ICs kept by a repeatable rule in place of the paper's 'visual inspection' (Methods, ICA-based cortical
     features), the most compact spatial maps, then VIF pruning (claims file, R6). The VIF is the one the
     paper's code computes (#05_deep_learning/#07_vif_calc.ipynb at commit 405a720, statsmodels variance_inflation_factor
-    on the features with no constant column, so without an intercept); it removes ICs 24 and 29 for 10
-    ICs. Assumed. The VIF with an intercept, which removes none, is run as a variant.
+    on the features with no constant column, so without an intercept); for 10 ICs it removes ICs 5, 23
+    and 14 and no further IC can be added, so 7 ICs are kept where the paper keeps 10. Assumed. The VIF
+    with an intercept, which removes none and keeps 10, is run as a variant.
   - Failed pupil detections in the deposited diameter (values up to 2.9e21 pixels) replaced by interpolation
     when above three times or below a third of the recording's median (148 and 57 frames in two sessions).
     Assumed; the paper's own outlier rule is for its DeepLabCut coordinates (Methods, Pupil diameter quantification).
@@ -147,19 +166,25 @@ outcomes:
     400.
   - The GRU (32 units, dense sigmoid output, Adam, binary cross-entropy with label smoothing 0.001, batch
     256, 10 epochs, best validation loss) is written in PyTorch with Keras' initialisers in place of Keras.
-  - 'JADE ICA is a port of jadeR written in the helper. It reaches different solutions when its input
-    differs in the last bits (with the number of linear-algebra threads), which is why the round-1 run
-    kept other ICs than the run before it; it now runs on one thread on inputs rounded to float32, and
-    the same data give the same ICs. Three restarts from random rotations are shown: two keep ICs matching
-    the main ones, the third shares 4 of 10.'
+  - 'JADE ICA is a port of jadeR written in the helper. The SVD temporal components keep their singular
+    values, as in the paper''s code (#03_ica/#01_svd.ipynb, normalize_svd, svt = frames @ VT.T @ inv(VT
+    VT.T), commit 405a720); the Methods divide each component by its singular value, which on the frames
+    the SVD is fitted to makes the covariance the identity (ratio of the 30th to the 31st eigenvalue 1.00000000,
+    against 1.0188 with the code''s scaling), so the 30 of 200 dimensions jadeR keeps are then set by
+    rounding. That is why earlier runs on different machines kept different ICs. JADE runs to convergence
+    as jadeR does (101 sweeps; an earlier cap of 100 stopped it short), and numpy, scipy and torch are
+    pinned to their AVX2 kernels; a re-run from a fresh download gave the same outputs as the development
+    run. Three restarts from random rotations: two give the main ICs, the third keeps 9 ICs, 5 of them
+    matching.'
   - Epoch selection (R5) is run under both readings. The paper says such sessions 'were therefore excluded
     from all datasets' (Results, somatosensory, paragraph 1) and 'Reliable prediction was achieved after
     excluding sessions...' (Discussion, Summary of Results), so where the readings differ R5 (b) is the
     better-supported reading (assumed); the claims file's statement that the paper gives no rule for resting
     data is asked of a reader (questions/komori-2026.yaml).
   - 'Reading combinations: under R5 (a) the main one and one change at a time (R2, R3, R6, R7, R8); under
-    R5 (b) every combination of R2, R3, R7 and R8, and R4 (b) with R3 (a) and (b). R4 (b) with R5 (a)
-    (about 10 minutes per run) was not run in this round.'
+    R5 (b) every combination of R2, R3, R7 and R8, the two above null also under five seeds and at the
+    six cutoffs, and R4 (b) with R3 (a) and (b) under five seeds. R4 (b) with R5 (a) (about 10 minutes
+    per run) was not run.'
   - The 10 ICs selected at 0.1 Hz are used for every cutoff (assumed; the paper does not say whether ICs
     were reselected).
 - claim: rest-ic-count-and-window
@@ -167,14 +192,16 @@ outcomes:
   assumed: true
   notebook: reproduce_komori_2026_features.ipynb
   output: claim:rest-ic-count-and-window
-  notes: 'With the VIF of the paper''s code, reading (a) keeps 7, 10 and 11 ICs (13 cannot be reached)
-    and reading (b) 6, 8 and 9. Under R5 (a), reading (b) gives the highest median AUC at 10 ICs (0.591;
-    7 ICs 0.540, 13 ICs 0.486), reading (a) at 13 ICs (0.694 against 0.692); under R5 (b) 7 ICs are highest
-    under both readings. 1.5 s is never the highest window: under R5 (a) 10 s is (0.695 against 0.692),
-    under R5 (b) 0.5 s (0.497, with 1.0 to 10 s all at 0.495). No comparison is significant after Holm
-    correction (smallest p 0.15), as in the paper. 10 ICs hold under one reading, so partial. The differences
-    are small and no model here is above its null model (p = 0.07 to 0.96). Only the claim''s seed was
-    run.'
+  notes: With the VIF of the paper's code reading (a) keeps 7, 7 and 9 ICs for the counts 7, 10 and 13,
+    and reading (b) 6, 7 and 8; the 10-IC set of both readings is the 7-IC set of reading (a). Under R5
+    (a) 13 ICs give the highest median AUC under both readings (a 0.669 against 0.614 for 7 and 10; b
+    0.676 against 0.627 and 0.614). Under R5 (b) reading (a) has 7 and 10 ICs tied highest (0.539, the
+    same model; 13 ICs 0.471) and reading (b) 7 ICs highest (0.588; 10 ICs 0.539, 13 ICs 0.440). No rank-sum
+    test of 10 ICs against 7 or 13 is significant (Holm p >= 0.69). The window of 0.5 s has the highest
+    median under both selections (R5 a 0.6185 against 0.6137 at 1.5 s; R5 b 0.5476 against 0.5394), the
+    medians differing by less than 0.01; no Holm-corrected test is significant (all p = 1.0). 10 ICs are
+    highest only in a tie with an identical 7-IC set and 1.5 s is never highest, which is not reproduced
+    under the criterion; the verified outcome is kept and the change is proposed.
   deviations:
   - Three mice (VG1-GC#51, 52, 53) and their first three resting sessions (day0, day1, day7). The paper
     says 'Experiments from three mice were used' (Methods, Cross-validation) and '2-3 experiments per
@@ -184,8 +211,9 @@ outcomes:
   - ICs kept by a repeatable rule in place of the paper's 'visual inspection' (Methods, ICA-based cortical
     features), the most compact spatial maps, then VIF pruning (claims file, R6). The VIF is the one the
     paper's code computes (#05_deep_learning/#07_vif_calc.ipynb at commit 405a720, statsmodels variance_inflation_factor
-    on the features with no constant column, so without an intercept); it removes ICs 24 and 29 for 10
-    ICs. Assumed. The VIF with an intercept, which removes none, is run as a variant.
+    on the features with no constant column, so without an intercept); for 10 ICs it removes ICs 5, 23
+    and 14 and no further IC can be added, so 7 ICs are kept where the paper keeps 10. Assumed. The VIF
+    with an intercept, which removes none and keeps 10, is run as a variant.
   - Failed pupil detections in the deposited diameter (values up to 2.9e21 pixels) replaced by interpolation
     when above three times or below a third of the recording's median (148 and 57 frames in two sessions).
     Assumed; the paper's own outlier rule is for its DeepLabCut coordinates (Methods, Pupil diameter quantification).
@@ -203,48 +231,67 @@ outcomes:
     400.
   - The GRU (32 units, dense sigmoid output, Adam, binary cross-entropy with label smoothing 0.001, batch
     256, 10 epochs, best validation loss) is written in PyTorch with Keras' initialisers in place of Keras.
-  - 'JADE ICA is a port of jadeR written in the helper. It reaches different solutions when its input
-    differs in the last bits (with the number of linear-algebra threads), which is why the round-1 run
-    kept other ICs than the run before it; it now runs on one thread on inputs rounded to float32, and
-    the same data give the same ICs. Three restarts from random rotations are shown: two keep ICs matching
-    the main ones, the third shares 4 of 10.'
+  - 'JADE ICA is a port of jadeR written in the helper. The SVD temporal components keep their singular
+    values, as in the paper''s code (#03_ica/#01_svd.ipynb, normalize_svd, svt = frames @ VT.T @ inv(VT
+    VT.T), commit 405a720); the Methods divide each component by its singular value, which on the frames
+    the SVD is fitted to makes the covariance the identity (ratio of the 30th to the 31st eigenvalue 1.00000000,
+    against 1.0188 with the code''s scaling), so the 30 of 200 dimensions jadeR keeps are then set by
+    rounding. That is why earlier runs on different machines kept different ICs. JADE runs to convergence
+    as jadeR does (101 sweeps; an earlier cap of 100 stopped it short), and numpy, scipy and torch are
+    pinned to their AVX2 kernels; a re-run from a fresh download gave the same outputs as the development
+    run. Three restarts from random rotations: two give the main ICs, the third keeps 9 ICs, 5 of them
+    matching.'
   - Epoch selection (R5) is run under both readings. The paper says such sessions 'were therefore excluded
     from all datasets' (Results, somatosensory, paragraph 1) and 'Reliable prediction was achieved after
     excluding sessions...' (Discussion, Summary of Results), so where the readings differ R5 (b) is the
     better-supported reading (assumed); the claims file's statement that the paper gives no rule for resting
     data is asked of a reader (questions/komori-2026.yaml).
   - 'Reading combinations: under R5 (a) the main one and one change at a time (R2, R3, R6, R7, R8); under
-    R5 (b) every combination of R2, R3, R7 and R8, and R4 (b) with R3 (a) and (b). R4 (b) with R5 (a)
-    (about 10 minutes per run) was not run in this round.'
+    R5 (b) every combination of R2, R3, R7 and R8, the two above null also under five seeds and at the
+    six cutoffs, and R4 (b) with R3 (a) and (b) under five seeds. R4 (b) with R5 (a) (about 10 minutes
+    per run) was not run.'
   - The five-seed check was not run for this claim (24 cross-validations per seed).
+  proposed:
+    outcome: not_reproduced
+    reason: The verified partial outcome rested on 10 ICs being highest under R5 (a), reading (b), in
+      the round-2 run, whose decomposition was set by rounding (SVD components divided by their singular
+      values, JADE stopped at 100 sweeps). With the components scaled as in the paper's code and JADE
+      run to convergence, the decomposition is the same on any machine, and 10 ICs are highest only under
+      R5 (b), reading (a), tied with 7 ICs that form the same set, so the count makes no difference there;
+      1.5 s is never highest. Neither part of the criterion holds (features notebook, rest-ic-count-and-window
+      cells).
 - claim: rest-vif-below-10
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_komori_2026_features.ipynb
   output: claim:rest-vif-below-10
-  measured: 60.1
-  notes: With the VIF of the paper's code (no intercept), on the validation samples under R5 (a), the
-    10-IC maximum is 60.1 over the five models (20.5 to 60.1; 35.8 under reading b, 8 ICs), above 10 and
-    outside 9.0 +/- 0.9; no comparison with 7, 13 or 15 ICs is significant (Holm p >= 0.29). With an intercept
-    it is 5.58 (reading a), below 10 but outside the tolerance; there 7 ICs are lower (p = 0.024) and
-    13 and 15 do not differ (p = 0.62), as the paper finds, but the criterion's partial case needs the
-    10-IC maximum to hold. On the training samples, as the code takes them, the maximum is 14.05 (reading
-    b 11.79). Under R5 (b) the validation folds hold about 3 epochs each and the 10-IC maximum is 4.5e6
-    to 3.7e8. No reading gives a 10-IC maximum within 9.0 +/- 0.9. Over all frames of the 13 epochs, the
-    VIF used for selection, the 10 kept ICs reach 9.58.
+  measured: 21.55
+  notes: Only 7 ICs remain at the 10-IC count under either reading, so the 10-IC values are those of these
+    7. With the paper's code's VIF (no intercept) on the validation samples under R5 (a) the maximum is
+    21.55 over the five models (per model 9.99 to 21.55); with an intercept 2.97; on the training samples,
+    which the code uses, 10.32 (8.85 to 10.32). None is within 9.0 +/- 0.9. Under R5 (b) (212 to 530 validation
+    samples per fold) it reaches 1.3e6. On the validation samples the 7-IC count is not lower (reading
+    b Holm p = 0.67; reading a the same set) and 13 and 15 ICs do not differ (Holm p >= 0.67). On the
+    training samples, reading (b), the 7-IC count has a lower median (8.74 against 10.07), not significantly
+    (Holm p = 0.095); under reading (a) 15 ICs are higher (Holm p = 0.024). The 7 kept ICs have a maximum
+    VIF of 9.99 on the frames the selection uses.
   deviations: *id001
 - claim: rest-shap-medial-anterior-first
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_komori_2026_features.ipynb
   output: claim:rest-shap-medial-anterior-first
-  notes: Matched ICs 2 (medial anterior, only 0.164 of its positive weight in the midline band against
-    0.321 in MOs), 25 (RSP 0.473) and 6 (MOs 0.793); no kept IC is concentrated in the midline band. Under
-    R5 (a) no IC is above null in any window under either reading (smallest p 0.094), and the medial anterior
-    IC peaks at 0.0 s, after RSP and MOs (-0.03 s). Under R5 (b) the Methods reading explains 0 or 1 samples
-    per model; under the code reading only RSP differs from null (-1.1 to -0.7 s, p = 0.033 and 0.044)
-    without an onset, and the medial anterior IC peaks last (0.0 s). The models explained are not above
-    their null models.
+  notes: 'No kept IC matches the medial anterior description, the criterion''s ''no IC matches'' case:
+    the IC with the largest share in the medial anterior band, IC 18, has 0.266 of its positive weight
+    there against 0.494 in MOs, and no kept IC has more than 0.27 in the band. RSP is matched to IC 28
+    (0.160) and MOs to IC 4 (0.574). The timing does not favour the medial anterior IC either: under R5
+    (a) no window has the model''s SHAP significantly above the null''s for any of the three ICs, so reading
+    (a) gives no onset (the RSP IC differs at -0.3 to 0.0 s, p = 0.018 to 0.043, with the model''s SHAP
+    lower); under reading (b) all three peak at the last frame (0.0 s), except RSP under the code reading
+    (-0.033 s), so the medial anterior IC precedes neither. Under R5 (b) the Methods reading explains
+    a sample in one model only and the code reading 1 to 3 per model; no window differs from null, and
+    the medial anterior and MOs ICs peak at 0.0 s, RSP at -0.17 and -0.20 s. Every medial anterior peak
+    is at the window''s last frame.'
   deviations:
   - Three mice (VG1-GC#51, 52, 53) and their first three resting sessions (day0, day1, day7). The paper
     says 'Experiments from three mice were used' (Methods, Cross-validation) and '2-3 experiments per
@@ -254,8 +301,9 @@ outcomes:
   - ICs kept by a repeatable rule in place of the paper's 'visual inspection' (Methods, ICA-based cortical
     features), the most compact spatial maps, then VIF pruning (claims file, R6). The VIF is the one the
     paper's code computes (#05_deep_learning/#07_vif_calc.ipynb at commit 405a720, statsmodels variance_inflation_factor
-    on the features with no constant column, so without an intercept); it removes ICs 24 and 29 for 10
-    ICs. Assumed. The VIF with an intercept, which removes none, is run as a variant.
+    on the features with no constant column, so without an intercept); for 10 ICs it removes ICs 5, 23
+    and 14 and no further IC can be added, so 7 ICs are kept where the paper keeps 10. Assumed. The VIF
+    with an intercept, which removes none and keeps 10, is run as a variant.
   - Failed pupil detections in the deposited diameter (values up to 2.9e21 pixels) replaced by interpolation
     when above three times or below a third of the recording's median (148 and 57 frames in two sessions).
     Assumed; the paper's own outlier rule is for its DeepLabCut coordinates (Methods, Pupil diameter quantification).
@@ -273,19 +321,25 @@ outcomes:
     400.
   - The GRU (32 units, dense sigmoid output, Adam, binary cross-entropy with label smoothing 0.001, batch
     256, 10 epochs, best validation loss) is written in PyTorch with Keras' initialisers in place of Keras.
-  - 'JADE ICA is a port of jadeR written in the helper. It reaches different solutions when its input
-    differs in the last bits (with the number of linear-algebra threads), which is why the round-1 run
-    kept other ICs than the run before it; it now runs on one thread on inputs rounded to float32, and
-    the same data give the same ICs. Three restarts from random rotations are shown: two keep ICs matching
-    the main ones, the third shares 4 of 10.'
+  - 'JADE ICA is a port of jadeR written in the helper. The SVD temporal components keep their singular
+    values, as in the paper''s code (#03_ica/#01_svd.ipynb, normalize_svd, svt = frames @ VT.T @ inv(VT
+    VT.T), commit 405a720); the Methods divide each component by its singular value, which on the frames
+    the SVD is fitted to makes the covariance the identity (ratio of the 30th to the 31st eigenvalue 1.00000000,
+    against 1.0188 with the code''s scaling), so the 30 of 200 dimensions jadeR keeps are then set by
+    rounding. That is why earlier runs on different machines kept different ICs. JADE runs to convergence
+    as jadeR does (101 sweeps; an earlier cap of 100 stopped it short), and numpy, scipy and torch are
+    pinned to their AVX2 kernels; a re-run from a fresh download gave the same outputs as the development
+    run. Three restarts from random rotations: two give the main ICs, the third keeps 9 ICs, 5 of them
+    matching.'
   - Epoch selection (R5) is run under both readings. The paper says such sessions 'were therefore excluded
     from all datasets' (Results, somatosensory, paragraph 1) and 'Reliable prediction was achieved after
     excluding sessions...' (Discussion, Summary of Results), so where the readings differ R5 (b) is the
     better-supported reading (assumed); the claims file's statement that the paper gives no rule for resting
     data is asked of a reader (questions/komori-2026.yaml).
   - 'Reading combinations: under R5 (a) the main one and one change at a time (R2, R3, R6, R7, R8); under
-    R5 (b) every combination of R2, R3, R7 and R8, and R4 (b) with R3 (a) and (b). R4 (b) with R5 (a)
-    (about 10 minutes per run) was not run in this round.'
+    R5 (b) every combination of R2, R3, R7 and R8, the two above null also under five seeds and at the
+    six cutoffs, and R4 (b) with R3 (a) and (b) under five seeds. R4 (b) with R5 (a) (about 10 minutes
+    per run) was not run.'
   - Attributions by integrated gradients from the mean validation input in place of Deep SHAP (shap.DeepExplainer
     does not support PyTorch GRU layers); like Deep SHAP they sum to the difference from the baseline
     output.
@@ -413,8 +467,7 @@ findings:
   severity: minor
   statement: The deposited pupil diameter (processing/downsampled/pupil_tracking/diameter) holds unflagged
     failed detections. In VG1-GC#51 day0 and VG1-GC#53 day1 its maximum is 2.88e21 and 1.05e11 pixels,
-    with 148 and 57 frames above three times the median, besides 768 and 269 missing values. A min-max
-    normalisation of the raw trace leaves almost no dilation in those sessions.
+    with 148 and 57 frames above three times the median, besides 768 and 269 missing values.
 - kind: other
   about: data
   severity: minor
@@ -442,9 +495,10 @@ findings:
     but not whether the samples are only that window or every frame of the epoch with labels outside the
     window set to 0, nor whether the exclusion of sessions with early or no threshold crossing applies
     to resting data, and with which window. The readings give different results here (window, no selection,
-    model 0.669 against null 0.688; every frame with the selection rule, 0.500 against 0.417, p = 0.0053).
-    Please give the rule, and whether the resting pipeline applied the hemodynamic correction and the
-    0.1 Hz high-pass of the Methods.
+    model 0.625 against null 0.648, p = 0.259; window with the selection rule, folds of recordings, the
+    keypoint pupil and shuffled validation labels, 0.696 against 0.514, p = 0.0014). Please give the rule,
+    and whether the resting pipeline applied the hemodynamic correction and the 0.1 Hz high-pass of the
+    Methods.
 - kind: methods_unavailable
   statement: Which ICs were kept for the resting model, and how was 'every fifth session' applied to 600
     s resting recordings? The ICs were chosen 'by visual inspection', which cannot be repeated; this attempt
@@ -460,8 +514,18 @@ findings:
     with R2 from 'regressing each feature on all others'. The code (#05_deep_learning/#07_vif_calc.ipynb,
     commit 405a720) computes it on the training features and with statsmodels variance_inflation_factor
     on the features without a constant column, so with no intercept. On the resting features here the
-    10-IC maximum is 60.1 on validation samples without an intercept, 14.05 on training samples without
-    an intercept and 5.58 with an intercept, so which VIF the reported 9.0 is decides the claim.
+    maximum for the 10-IC count (7 ICs kept) is 21.55 on validation samples without an intercept, 10.32
+    on training samples without an intercept and 2.97 with an intercept, so which VIF the reported 9.0
+    is decides the claim.
+- kind: code_mismatch
+  about: paper
+  statement: 'The Methods obtain the SVD temporal components ''by dividing each component by its corresponding
+    singular value'' and apply JADE with a target of 30 ICs to the top 200 of them; the code (#03_ica/#01_svd.ipynb,
+    normalize_svd, commit 405a720) does not divide, so its components carry the singular values. The difference
+    decides the decomposition: divided, the components have equal variance on the frames the SVD is fitted
+    to, and the 30 dimensions jadeR keeps out of 200 are set by rounding (ratio of the 30th to the 31st
+    eigenvalue 1.00000000 here, against 1.0188 undivided); in this attempt two machines gave two different
+    sets of ICs that way.'
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -680,3 +744,192 @@ verifications:
       only and no pupil. There is no hindpaw electrical stimulation, drifting grating or oddball task,
       and no Emx1-GCaMP6f mice. No part of these claims can be tested.'
     response: No change.
+- date: '2026-11-25'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks of the round-1 revision as the workflow re-ran them (verifier-2
+    job), with their conclusions and summaries, the helper module, the claims file, the attempt record
+    and the README, with the paper's full text.
+  results:
+  - claim: rest-decoding-above-null
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The outcome stands, but not on the stated basis: features cell 19 prints 0.614 vs 0.576,
+      p = 0.412 for R4 b + R5 b, never significant over five seeds. Two other combinations show the model
+      above null (R4 b + R5 b + R3 b, p = 0.0025; R5 b + R8 b, p = 0.031), both far outside 0.82 +/- 0.082,
+      each at one seed only, so seed_sensitive is not shown for either.'
+    response: Every conclusion, the summaries, the README and the record were rewritten from the outputs
+      of this revision's run. The numbers had differed because the decomposition was set by rounding (SVD
+      components divided by their singular values, as the Methods write, and JADE stopped at 100 sweeps
+      before converging), so the workflow's re-run on another machine gave other ICs. The components now
+      keep their singular values, as in the paper's code, JADE runs to convergence and the kernels are
+      pinned; a fresh run gave the same outputs as the development run. With the new decomposition two
+      of the 16 combinations under R5 b are above null (R2 a, R3 b, R7 b, R8 b, p = 0.0014; R2 hp, R3
+      a, R7 b, R8 b, p = 0.039); both were run at five seeds (4 of 5 and 2 of 5 above null), so the outcome
+      stays partially reproduced and seed sensitive on that basis. The R4 b runs, now under five seeds
+      each, are not above null at any. R1 b (all 25 mice) and the fourth session of each mouse were not
+      run (about three hours of streaming), nor R4 b with R5 a (about 10 minutes per run); the paper's
+      epoch rule for resting data remains a question for a reader.
+  - claim: rest-loss-accuracy-vs-null
+    agrees: true
+    outcome: not_reproduced
+    reason: 'R5 a: loss p = 0.90, accuracy p = 0.376. R5 b: loss p = 0.326, accuracy identical to null.
+      0 of 16 combinations have both.'
+    response: 'Every conclusion, the summaries, the README and the record were rewritten from the outputs
+      of this revision''s run. The numbers had differed because the decomposition was set by rounding
+      (SVD components divided by their singular values, as the Methods write, and JADE stopped at 100
+      sweeps before converging), so the workflow''s re-run on another machine gave other ICs. The components
+      now keep their singular values, as in the paper''s code, JADE runs to convergence and the kernels
+      are pinned; a fresh run gave the same outputs as the development run. Still not reproduced: 0 of
+      16 combinations have both; the numbers in the notes and the conclusion are the new run''s.'
+  - claim: rest-needs-0-1-hz
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.1 Hz is never above null (main p = 0.149, R5 b p = 0.246, 0 of 10 seed runs); the main 2
+      Hz AUC is 0.674, far from 0.51. The cutoffs were not run in the two combinations that are above
+      null.
+    response: Every conclusion, the summaries, the README and the record were rewritten from the outputs
+      of this revision's run. The numbers had differed because the decomposition was set by rounding (SVD
+      components divided by their singular values, as the Methods write, and JADE stopped at 100 sweeps
+      before converging), so the workflow's re-run on another machine gave other ICs. The components now
+      keep their singular values, as in the paper's code, JADE runs to convergence and the kernels are
+      pinned; a fresh run gave the same outputs as the development run. The cutoffs are now run in every
+      combination above null at the decoding claim's seed (and would be under R4 b, where none is). The
+      claim's pattern holds in one of the four combinations run at the cutoffs (R2 a, R3 b, R7 b, R8 b)
+      and fails in three, where 0.1 Hz is not above null; the outcome stays not reproduced.
+  - claim: rest-ic-count-and-window
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under R5 a, reading (b), 10 ICs have the highest median (0.717, against 0.602 and 0.703).
+      No reading puts 1.5 s highest.
+    response: Every conclusion, the summaries, the README and the record were rewritten from the outputs
+      of this revision's run. The numbers had differed because the decomposition was set by rounding (SVD
+      components divided by their singular values, as the Methods write, and JADE stopped at 100 sweeps
+      before converging), so the workflow's re-run on another machine gave other ICs. The components now
+      keep their singular values, as in the paper's code, JADE runs to convergence and the kernels are
+      pinned; a fresh run gave the same outputs as the development run. In the new run 10 ICs are highest
+      only in a tie with an identical 7-IC set (R5 b, reading a) and 1.5 s is never highest, so the verified
+      outcome is kept and not_reproduced is proposed, with the analysis in the features notebook.
+  - claim: rest-vif-below-10
+    agrees: true
+    outcome: not_reproduced
+    reason: The 10-IC maxima are 27.91 (validation, uncentred), 7.31 (centred) and 10.90 (training); none
+      is within 9.0 +/- 0.9. On training samples, reading (a), the comparisons match the paper, but the
+      10-IC maximum does not hold.
+    response: Every conclusion, the summaries, the README and the record were rewritten from the outputs
+      of this revision's run. The numbers had differed because the decomposition was set by rounding (SVD
+      components divided by their singular values, as the Methods write, and JADE stopped at 100 sweeps
+      before converging), so the workflow's re-run on another machine gave other ICs. The components now
+      keep their singular values, as in the paper's code, JADE runs to convergence and the kernels are
+      pinned; a fresh run gave the same outputs as the development run. The new maxima are 21.55, 2.97
+      and 10.32; none is within 9.0 +/- 0.9, so not reproduced stands.
+  - claim: rest-shap-medial-anterior-first
+    agrees: false
+    outcome: partially_reproduced
+    reason: Under R5 a, reading (b) (peak), the medial anterior IC peaks at -0.10 s and MOs at -0.067
+      s under both SHAP readings, the criterion's partial case; the R5 b 'precedes both' peak is a degenerate
+      one at the window edge. Not reproduced can only hold through the 'no IC matches' clause (IC 19 has
+      0.288 of its weight in the midline band against 0.374 in MOs), an argument the record does not make;
+      on the attempt's own matching rule the outcome is partially_reproduced.
+    response: 'Every conclusion, the summaries, the README and the record were rewritten from the outputs
+      of this revision''s run. The numbers had differed because the decomposition was set by rounding
+      (SVD components divided by their singular values, as the Methods write, and JADE stopped at 100
+      sweeps before converging), so the workflow''s re-run on another machine gave other ICs. The components
+      now keep their singular values, as in the paper''s code, JADE runs to convergence and the kernels
+      are pinned; a fresh run gave the same outputs as the development run. The outcome is kept as not
+      reproduced, and the disagreement is recorded. In the new run the argument the verifier asks for
+      is made and printed: the IC matched as medial anterior (IC 18) has 0.266 of its weight in the band
+      against 0.494 in MOs, so no kept IC matches the description; and the timing no longer gives the
+      partial case either, as the medial anterior IC precedes neither other IC under any reading (all
+      its peaks at 0.0 s, flagged as edge peaks).'
+  - claim: fig1-ssp-then-pupil
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig1-roi-vif-vs-ica
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig1-somato-exclusion-window
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig1-somato-selection-rates
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig1-somato-spectra-correlation
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig1-somato-decoding
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig2-visual-pattern-sessions-ics
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig2-architectures-similar
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig2-visual-pattern-decoding
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig3-oddball-no-group-response
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig3-oddball-decoding
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: supp4-context-classifier-mos
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: supp8-permutation-importance
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig4-shap-somato-ic5
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig4-shap-visual-ics
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: supp10-top-shap-ics
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: fig4-mapped-shap-regions
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  - claim: supp2-session-selection-needed
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1.
+    response: No change.
+  findings: []

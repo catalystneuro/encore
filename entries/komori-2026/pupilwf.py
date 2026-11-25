@@ -15,7 +15,20 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 import zlib
+
+# [standard] The same numerical kernels on every x86-64 machine. The ICA lands on different
+# solutions when its input differs in the last bits, and the GRU fits drift apart likewise, so a
+# run on another processor (AVX-512 or not) gave other ICs and other AUCs. The linear algebra
+# (OpenBLAS in numpy and scipy, MKL in torch), numpy's own vector loops and torch's are pinned
+# to their AVX2 code, which every machine that runs the registry has. This must happen before
+# numpy is first imported: import pupilwf first.
+KERNELS = {"OPENBLAS_CORETYPE": "Haswell", "NPY_DISABLE_CPU_FEATURES": "X86_V4 AVX512_ICL",
+           "ATEN_CPU_CAPABILITY": "avx2", "MKL_CBWR": "AVX2,STRICT", "ONEDNN_MAX_CPU_ISA": "AVX2"}
+if "numpy" in sys.modules and any(os.environ.get(k) != v for k, v in KERNELS.items()):
+    raise RuntimeError("import pupilwf before numpy, so that its kernel settings take effect")
+os.environ.update(KERNELS)
 
 import numpy as np
 from scipy import signal, ndimage, stats
@@ -264,6 +277,9 @@ def epochs_of(t):
     return [(int(np.searchsorted(t, s)), int(np.searchsorted(t, s + EPOCH_S))) for s in starts]
 
 
+MAX_SWEEPS = 2000
+
+
 def jade(X, m, rotation_seed=None):
     """JADE ICA (Cardoso), a port of jadeR (https://github.com/gbeckers/jadeR) [paper: Methods, ICA].
     X: (n_sensors, T) array. Returns B (m x n_sensors) so that B @ X are the m sources, whitened
@@ -309,7 +325,10 @@ def jade(X, m, rotation_seed=None):
     seuil = 1e-6 / np.sqrt(T)
     encore = True
     sweep = 0
-    while encore and sweep < 100:
+    # [paper] jadeR sweeps until no rotation exceeds the threshold, with no cap. The cap here is
+    # far above what is needed (the main decomposition converges in about 150 sweeps); an earlier
+    # cap of 100 stopped before convergence, which left the ICs dependent on the last bits.
+    while encore and sweep < MAX_SWEEPS:
         encore = False
         sweep += 1
         for p in range(m - 1):
@@ -330,6 +349,9 @@ def jade(X, m, rotation_seed=None):
                     CM[pair, :] = G.T @ CM[pair, :]
                     CM[:, np.concatenate([Ip, Iq])] = np.hstack(
                         [c * CM[:, Ip] + s * CM[:, Iq], -s * CM[:, Ip] + c * CM[:, Iq]])
+    if encore:
+        raise RuntimeError(f"JADE did not converge in {MAX_SWEEPS} sweeps")
+    jade.sweeps = sweep
     B = V.T @ B
     A = np.linalg.pinv(B)
     order = np.argsort((A ** 2).sum(axis=0))[::-1]
@@ -351,21 +373,30 @@ def common_mask(sessions):
 
 
 def decompose(sessions, hemo="fit_hp_subtract_raw", n_svd=N_SVD, n_svd_ica=N_SVD_ICA, n_ica=N_ICA,
-              rotation_seed=None):
+              rotation_seed=None, scaling="code"):
     """Pixel-wise Z-scored images (per session) -> SVD on every fifth epoch -> JADE ICA.
-    [standard] JADE converges to different solutions when its input differs in the last bits
-    (as it does with the number of linear-algebra threads), so the inputs are rounded to float32
-    and the decomposition runs on one thread; the same data then give the same ICs.
+    [paper code] scaling 'code' (main): the SVD temporal components are the projections of the
+    frames on the spatial basis, U S, as in the paper's code (#03_ica/#01_svd.ipynb,
+    normalize_svd: svt = frames @ VT.T @ inv(VT VT.T); commit 405a720), and jadeR's reduction to
+    the target number of ICs then keeps the leading SVD components. scaling 'methods': each
+    component divided by its singular value, as the Methods write ("obtained by dividing each
+    component by its corresponding singular value"). On the frames the SVD was fitted to, those
+    components are orthonormal, so their covariance is the identity and the 30 dimensions jadeR
+    keeps out of 200 are set by rounding alone; this reading gives different ICs on different
+    machines and is shown only to document that (eig_gap: the ratio of the 30th to the 31st
+    eigenvalue of the covariance jadeR reduces).
+    [standard] The inputs are rounded to float32 and the decomposition runs on one thread, with
+    the kernels pinned (KERNELS), so that the same data give the same ICs on any machine.
     [paper] Methods, ICA-based cortical features. [assumption] For resting data the unit of
     "every fifth session" is the 40 s epoch (the resting analogue of a 40 s session); pixel
     Z-scoring uses each recording's own mean and SD. The data of a recording are of rank 34 after
     the hemodynamic correction, so the SVD keeps min(400, 34 x recordings) components."""
     from threadpoolctl import threadpool_limits
     with threadpool_limits(1):
-        return _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed)
+        return _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed, scaling)
 
 
-def _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed):
+def _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed, scaling="code"):
     mask = common_mask(sessions)
     Ws, Vc, sel = [], [], []
     g = 0
@@ -401,9 +432,12 @@ def _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed):
     var = Ss ** 2
     cum = np.cumsum(var) / var.sum()
     # temporal components of every frame of every session, divided by the singular values
-    temporal = [(V @ W @ Us) / Ss for W, V in zip(Ws, Vc)]
+    sc = Ss if scaling == "methods" else np.ones_like(Ss)
+    temporal = [(V @ W @ Us) / sc for W, V in zip(Ws, Vc)]
     k2 = min(n_svd_ica, k)
     Xica = np.vstack([tc[idx, :k2] for tc, idx in zip(temporal, sel) if len(idx)])
+    ev = np.sort(np.linalg.eigvalsh(np.cov(Xica.T)))[::-1]
+    eig_gap = float(ev[n_ica - 1] / ev[n_ica])
     B = jade(Xica.T, n_ica, rotation_seed)
     ics = [tc[:, :k2] @ B.T for tc in temporal]
     # whiten on the decomposition frames
@@ -411,11 +445,11 @@ def _decompose(sessions, hemo, n_svd, n_svd_ica, n_ica, rotation_seed):
     mu, sd = allsel.mean(axis=0), allsel.std(axis=0)
     ics = [(ic - mu) / sd for ic in ics]
     A = np.linalg.pinv(B) * sd                  # k2 x n_ica mixing, in units of the ICs
-    spatial = (Us[:, :k2] * Ss[:k2]) @ A        # P x n_ica
+    spatial = (Us[:, :k2] * sc[:k2]) @ A         # P x n_ica
     maps = np.full((n_ica,) + mask.shape, np.nan)
     maps[:, mask] = spatial.T
     return dict(mask=mask, ics=ics, maps=maps, n_svd=k, cum_var=cum, n_sel_frames=len(Xica),
-                svd_sv=Ss)
+                svd_sv=Ss, sweeps=jade.sweeps, eig_gap=eig_gap)
 
 
 def compactness(maps, mask):
@@ -551,6 +585,7 @@ def gru_fit(Xtr, ytr, Xva, yva, seed, epochs=10, batch=256, smoothing=0.001, thr
     import torch
     from sklearn.metrics import roc_auc_score
     torch.set_num_threads(threads)
+    torch.backends.mkldnn.enabled = False      # [standard] torch's own kernels (see KERNELS)
     torch.manual_seed(seed)
     g = torch.Generator().manual_seed(seed)
     net = make_net(Xtr.shape[2])

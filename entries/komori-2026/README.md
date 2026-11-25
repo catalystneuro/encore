@@ -7,12 +7,12 @@ recordings with somatosensory and visual stimulation are not deposited.
 
 | Claim | Outcome |
 |---|---|
-| A GRU on 0.1 Hz ICs decodes spontaneous pupil dilation above null models | Partially reproduced (one reading combination, at one seed of five) |
+| A GRU on 0.1 Hz ICs decodes spontaneous pupil dilation above null models | Partially reproduced (two of 16 reading combinations, one of them at four seeds of five; AUC far below the paper's) |
 | The decoder has lower loss and higher accuracy than null | Not reproduced |
-| Decoding needs a 0.1 Hz filter; 2 Hz does not decode | Not reproduced |
-| 10 ICs and a 1.5 s window give the highest median AUC | Partially reproduced (10 ICs under one reading, 1.5 s under none) |
+| Decoding needs a 0.1 Hz filter; 2 Hz does not decode | Not reproduced (holds in one of four combinations) |
+| 10 ICs and a 1.5 s window give the highest median AUC | Partially reproduced as verified; proposed: not reproduced (10 ICs only in a tie with the same 7 ICs, 1.5 s never) |
 | Maximum VIF 9.0 with 10 ICs; 7 ICs lower, 13 and 15 not different | Not reproduced |
-| SHAP of a medial anterior IC rises before RSP and MOs | Not reproduced |
+| SHAP of a medial anterior IC rises before RSP and MOs | Not reproduced (no kept IC matches the medial anterior description) |
 | 18 claims on the paper's stimulation recordings | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -23,11 +23,15 @@ ICs (kept "by visual inspection" in the paper), and how samples and labels are f
 dilation peak, and whether the paper's epoch selection applies to resting data. The notebooks run
 both epoch selections, the other readings one at a time under the first and in combination under
 the second. The pipeline is
-rebuilt from the paper's Methods, as its published code does not cover the resting data.
+rebuilt from the paper's Methods, as its published code does not cover the resting data; where
+the Methods leave the decomposition undetermined (the scaling of the SVD components), the code's
+choice is followed, and the numerical kernels are pinned so that the numbers are the same on any
+machine.
 
 - `reproduce_komori_2026_decoding.ipynb`: data check and the three decoding claims.
 - `reproduce_komori_2026_features.ipynb`: IC count and window, VIF, SHAP, the costly
-  every-frame variant of the decoding claim and three restarts of the ICA.
+  every-frame variant of the decoding claim, three restarts of the ICA and the check of the SVD
+  scaling.
 - `pupilwf.py`: streaming, hemodynamic correction, SVD and JADE ICA, labels, the GRU and its
   cross-validation.
 
