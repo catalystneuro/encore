@@ -1,0 +1,119 @@
+# vijayan-2022, Vijayan et al. 2022
+
+Twenty-two claims reproduced, seven partially, four not reproduced and twelve
+blocked, all twelve for missing data; six outcomes, fig3e, fig5ab, fig6ef,
+fig7cf, figs2 and figs4, rest on an assumption. The first verification round
+agreed with 44 of the 45 outcomes as they stood, giving partially reproduced
+for `figs4-models-fail` where the record kept reproduced, and the second agreed
+with all 45; nothing was proposed after the second, so there was no third
+round. The dandiset has never been published, so the attempt pins the draft
+and records its modification time (2023-06-20T00:56:15Z). The paper, Vijayan,
+Wang, Chandra, Chakravorty, Li, Sarbanes, Akhlaghpour and Maimon, "An internal
+expectation guides Drosophila egg-laying decisions" (Science Advances 8,
+eabn3852), tracks single mated females overnight at 2 frames per second in
+chambers of agarose islands that differ in sucrose or hardness, and reports
+from egg-laying rate functions that flies inhibit egg laying on a substrate
+after leaving a better one and release the inhibition with time, in chambers
+with two, three and five islands, with tunnels and in other strains and
+species, and that Kir2.1 in DDC-Gal4 neurons and mutants of the D1-like
+receptors Dop1R1 and Dop1R2 weaken the choice. The claims were written from
+the version of record served by Europe PMC (PMC9616500) with the supplement,
+without Tables S1 and S2, which are separate spreadsheets; the paper links no
+code, as all analyses were done in MATLAB. Reproduced are the leaving fractions
+of the two-choice chambers (1205 searches start on higher sucrose and 0.805
+leave it, 0.331 of 2773 leave lower), the inhibition on 200 mM after 500 or 0
+mM in the three-choice chambers and its recovery with time, the earlier merges
+in those chambers (on thin support, as two of the three rest on bins with
+almost no eggs), the faster laying with a 2-mm tunnel and with 0 mM in the
+middle, the DL and TUT strains' faster release (TUT at 20 s on visit trials),
+the D. suzukii, egg-number and pause comparisons of Fig. 5, the agarose claims
+of Figs. 6C to 6G, the fall in choice with Kir2.1 induction (0.938 to 0.296 of
+eggs on 0 mM), the flat rate curves of the receptor mutants, the long searches
+of fig. S3 and the failure of model 1 of fig. S4, whose model 2 the paper gives
+neither equations nor constants for. Not reproduced are `fig3f` (fast eggs of
+the 4-mm chamber pause a median 0.5 s against 1.0 s, and every pause time is a
+whole number of 0.5-s frames), `fig5c` (one of 13 bins, 300 to 600 s, has a
+higher rate on 0 mM at p = 0.029; with a Holm correction the smallest adjusted
+p is 0.38), `fig7ik` (eggs per fly 13.0 against 21.5 at 31 and 18 C, and the
+pause 40% shorter) and `figs2`, where fig5ab keeps its outcome only under
+alternate 1. Partial are the bounce chamber, the Fig. 3D dwell medians (45.5,
+57.0 and 379.5 s against 54, 96 and 576 s), the rise after long absences, which
+starts between 150 and 240 s, the middle transit median (4.0 s, one frame
+below tolerance), the Kir2.1 merges, which hinge on the 5 to 10 s bin being the
+first bin past 5 s, the overall rate, which does not fall from 29/29.5 to 31 C,
+and fig8fg, whose speed rise holds only in Dop1R1-. The twelve blocked claims
+need the movable-boundary chambers, glued flies, the Gal4 screen, the feeding
+assay, the Gal80 rescues, the missing receptor genotypes and agarose conditions
+and the BDSC 84714 mutant. The author's first run gave 21 reproduced, 6
+partially, 4 not reproduced and 14 blocked, with fig6b, fig6cd and fig6g
+blocked as `metadata_insufficient` because the hardness of each island seemed
+unrecorded. Round 1 asked that every attribute of an agarose file be printed,
+which showed an `Agarose_Percentage` series the first version had not read, so
+fig6cd and fig6g moved to reproduced and fig6b to blocked for missing data; it
+also found boundary flicker that might split visits, pause times quantised at
+0.5 s, merges on near-empty bins, and outcomes turning on the trial unit and
+the first bin, and in reply the visit lengths were printed and the claims
+rerun with short visits merged, which moved fig3e to partially reproduced, the
+visit reading was adopted as an assumption, and a log-link fit was added to
+figs4. Round 2 asked that figs2 and fig6ef be marked assumed and found
+sentences the outputs did not support (the later bins of fig2-earlier-merge,
+0.888 in one bin of figs3, flicker in the 4-mm chamber, and egg counts said to
+match the legends), which were corrected. Three readings of the claims file,
+for fig7ik, fig5c and figs4, were put to a reader in
+`questions/vijayan-2022.yaml`. The author's run took about 31 minutes (00:14 to
+about 00:45 UTC) and nothing failed; the notebook ran in 1.3 min at first, with
+peak memory 2.9 GB, about 2 minutes after round 1 and 324 s at the end. A first
+clock check showed no contrast and was replaced by the speed contrast before
+eggs, and untracked placeholder files in the repository root, there before the
+run started, were left alone.
+
+The paper says all fly tracking data it used are on DANDI 000212, but the
+dandiset lacks the movable-boundary chambers (Fig. 1D, E), the glued flies
+(Fig. 1F), the 115-line Gal4 screen (Fig. 7A), the Gal80 rescues (Fig. 7L to
+N), nine of the 13 receptor genotypes of Fig. 8A, the 200/500 mM and agarose
+chambers of the mutants and DDC>Kir flies (Fig. 8J, K), four of the six agarose
+conditions of Fig. 6B and the BDSC 84714 mutant; some of these may have been
+scored by egg counts without tracking, which the paper does not say, and the
+feeding-latency videos (Figs. 7B, 8B) are absent too. The 1013 files, one per
+fly in 33 chamber and genotype groups, hold position, island, sucrose and egg
+times at 2 Hz on one timestamp array. The four agarose groups carry an
+`Agarose_Percentage` series giving the agarose under the fly in every frame,
+which is needed, since the 0.8 against 1.4% chambers were loaded both ways round
+(island 0 is 0.8% for 18 of 24 flies without sucrose and 12 of 24 with 200 mM
+on both sides). The two Dop1R2 groups are named 'Dop1R2-mutant-1' and '-2',
+with genotypes that name only the paper each mutant came from (Keleman et al.
+2012, Deng et al. 2019), so the allele names follow from the paper's references
+and the egg counts, not the files. Every file has the same placeholder session
+start time (2021-01-01 01:01:01 -05:00), so no recording dates are held. 48 of
+29531 intervals between successive eggs of a fly are under 10 s (12 a single
+frame), against the paper's statement that eggs are at least 1 min apart; in 47
+both eggs are on one island and in 34 the fly moves no faster than 0.3 mm/s, so
+they may be double annotations, and two Dop1R2-mutant-1 recordings
+(sub-0-200-Dop1R2-mutant-1-fly#-11 and -12) have 6 and 4 eggs annotated in
+their last 19 s while the fly walks at up to 8.7 and 7.0 mm/s; all are kept and
+change no outcome. Egg counts agree with the legends' egg-aligned counts within
+2 eggs in 16 of 19 groups, the files holding 596 against 586 for
+Dop1R2-mutant-1, 220 against 214 for D. suzukii and 670 against 675 for the
+bounce chamber, and the ref. 16 chambers hold 95 flies and 3978 eggs (paper 95,
+3979); no recording appears twice, the sucrose label changes only with the
+island, and flies speed up before an annotated egg and pause at it, so the eggs
+share the position clock. Questions are put to the paper's authors: whether
+the 5 to 10 s bin counts as past 5 s for the merge point; whether a trial of
+the bin test is a visit or a search (the TUT merge point is 20 s with visits
+and 90 s with searches); how the Fig. 3D dwell time was measured; why the pause
+time of the Methods has medians of 0.5 to 2.5 s on these files; whether the
+search start scans back from 9 s before the egg; and how the fig. S4 kernel and
+the constants k1 and k2 of model 2 were fit.
+
+The author's points on the protocol: there is no published version to pin, and
+the draft was used with its `modified` time; streaming with remfile, as
+`docs/archives.md` says, was 8 times slower by range requests, so each file was
+fetched into memory in one request; it does not warn that scipy's `ranksums`
+has no tie correction, which inflates p on 0/1 trials, and a tie-corrected test
+matching MATLAB's `ranksum` was used; its tie rule fit fig6ef, where both rates
+are 0 in the 0 to 5 s bin, and was applied with the literal result shown; the
+figs2 criterion defines only reproduced and partially reproduced, and not
+reproduced was recorded when neither was met; `tools/entry.py check` demands an
+`inputs` entry for a `with_labels` claim even when it is blocked, and Table S2
+was listed as not used; and a blocked claim given an `output` must name a real
+cell tag, so the fig8a cell showing the three mutants present was tagged.

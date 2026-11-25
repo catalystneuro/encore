@@ -43,10 +43,14 @@ on:
 
 permissions:
   contents: write   # the called workflow's commit job pushes to the attempt's branch
+  # id-token and attestations: the called workflow's submit job, which signs a run's results, runs only for
+  # encore-runner (input `registry`), but GitHub checks every job's permissions against these.
+  id-token: write
+  attestations: write
 
 jobs:
   attempt:
-    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.1
+    uses: encorescience/encore-protocol/.github/workflows/attempt.yml@v0.1.6
     with:
       paper: ${{ inputs.paper }}
       dataset: ${{ inputs.dataset }}
