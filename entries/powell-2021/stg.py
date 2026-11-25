@@ -91,7 +91,9 @@ def load(raw: bytes | None = None) -> list[dict]:
 
     Keys: name, PD, LG, DG (sorted spike times, s), temperature (C, 1 kHz), mask (bool, 1 kHz,
     True where the file's mask is 1), file_codes (uint8, 1 kHz, index into file_names, 1-based),
-    file_names, and the raw sizes for the data check.
+    file_names, unsorted (per neuron, the number of spike times in the file smaller than the one
+    before), file_order (the spike times of those neurons in the file's order), and the raw sizes for
+    the data check.
     """
     if raw is None:
         raw = fetch()
@@ -112,12 +114,17 @@ def load(raw: bytes | None = None) -> list[dict]:
         obj_file = f[d["filename"][i, 0]][()].ravel()
         p = {"name": exp_names[int(exp_code[0]) - 1], "experiment_object": int(obj_exp[4]),
              "filename_object": int(obj_file[4]), "file_names": file_names, "file_codes": file_codes}
+        p["unsorted"], p["file_order"] = {}, {}
         for k in ("PD", "LG", "DG"):
             o = f[d[k][i, 0]]
             if o.attrs.get("MATLAB_empty"):
                 p[k] = np.array([])
             else:
-                p[k] = np.sort(o[()].ravel())
+                v = o[()].ravel()
+                p["unsorted"][k] = int(np.sum(np.diff(v) < 0))
+                if p["unsorted"][k]:
+                    p["file_order"][k] = v
+                p[k] = np.sort(v)
         p["temperature"] = f[d["temperature"][i, 0]][()].ravel()
         p["mask"] = f[d["mask"][i, 0]][()].ravel() == 1
         p["empty_fields"] = [k for k in ("T", "time_offset")

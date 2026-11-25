@@ -42,8 +42,9 @@ Spearman p of Figure 5f, the phase trend of Figure 6b, the 3816 LG burst starts)
 record, with the reasons and the differences from the paper's method, is
 [`attempts/powell-2021-01.yaml`](../../attempts/powell-2021-01.yaml).
 
-- `reproduce_powell_2021.ipynb`: the analysis. It takes about four minutes, most of it reading
-  `evoked_data.mat` (73 MB) from Zenodo.
+- `reproduce_powell_2021.ipynb`: the analysis. It runs in one to two minutes (the time is printed at the end);
+  fetching and reading `evoked_data.mat` (73 MB) from Zenodo took 14 to 61 s in five runs (printed
+  in the first cell).
 - `stg.py`: loading `evoked_data.mat` (including its MATLAB categorical fields), burst detection as
   crabsort's `computePeriods`, and the paper's measures of Q10, integer coupling, PD phase, the
   Rayleigh test and the slowing after stimulation. Other notebooks on this record can import it.
