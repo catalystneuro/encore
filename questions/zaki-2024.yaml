@@ -1,0 +1,68 @@
+questions:
+- claim: offline-bursts-above-shuffle
+  question: The criterion compares the true burst frequency with surrogates whose mean population
+    trace is "recomputed and z-scored as for the data". Does the paper say the surrogate trace is
+    z-scored again before the z = 2 threshold is applied? The Extended Data Fig. 3l legend says only
+    that the "mean population activity was re-computed each time" and that "The burst frequency was
+    computed for each of these shuffles". A second reading the text allows is that each surrogate
+    is thresholded at the level that defines a burst in the true trace (its mean plus 2 SD). Should
+    the criterion list both readings, as reader step 3 asks for a detail that could change the
+    outcome?
+  passage: 'Extended Data Fig. 3l legend, "Neuron activities were circularly shuffled 1000 times
+    relative to one another and the mean population activity was re-computed each time. This
+    shuffling method preserved the autocorrelations for each neuron while disrupting the co-firing
+    relationships between neurons. The burst frequency was computed for each of these shuffles to
+    produce a shuffled burst frequency distribution"; Methods, Burst participation analysis, "the
+    mean population activity across the whole population was computed across the session and that
+    one-dimensional trace was z-scored. Time periods when the mean population activity reached above
+    a threshold of z = 2 were considered to be burst events".'
+  why: The two readings give opposite outcomes. With the surrogate trace z-scored again, a trace of
+    decorrelated cells crosses z = 2 more often than the skewed true trace, and the true frequency
+    is below the surrogate mean in all three deposited offline recordings (8.73 against 10.94, 6.42
+    against 8.81, 5.31 against 8.48 bursts per minute), so the claim is not reproduced. With the
+    true trace's threshold the surrogates hold almost no bursts (means 0.11, 0.01 and 0.00) and the
+    claim would be reproduced. The attempt tests the criterion as written and shows the other
+    reading as a variant.
+  answer: Changed. The paper does not fix this detail, and it can decide the outcome, so the
+    criterion now names both readings and is reproduced under either, as reader step 3 asks. The
+    Methods z-score the true mean trace and call frames above z = 2 bursts, while the Extended Data
+    Fig. 3l legend says only that "the mean population activity was re-computed each time" and that
+    "The burst frequency was computed for each of these shuffles", without saying whether the
+    surrogate trace is z-scored again or held to the true trace's threshold. The analysis code is
+    not public, so nothing settles it. The criterion's earlier "z-scored as for the data" was a
+    choice the paper does not make. It now lists (a) re-z-scoring each surrogate and (b)
+    thresholding it at the true trace's mean plus 2 SD, and the outcome is marked as resting on the
+    reading that gives it. The skew claim is unaffected, since skewness does not depend on the
+    scale of the trace.
+  answered: 2026-11-25
+- claim: offline-bursts-above-shuffle
+  question: The verifier of attempt zaki-2024-02 (round 1) reports that reading (b) of the amended criterion,
+    each surrogate held to the true trace's mean plus 2 SD, cannot tell burst structure from any positive
+    co-variation of the cells, and that the Extended Data Fig. 3l legend reads most naturally as reading (a),
+    the full detection, z-scoring included, run on each surrogate. Should reading (b) stay in the criterion as a
+    reading that alone can give reproduced?
+  passage: 'Extended Data Fig. 3l legend, "Neuron activities were circularly shuffled 1000 times relative to one
+    another and the mean population activity was re-computed each time ... The burst frequency was computed for
+    each of these shuffles to produce a shuffled burst frequency distribution"; Methods, Burst participation
+    analysis, "that one-dimensional trace was z-scored. Time periods when the mean population activity reached
+    above a threshold of z = 2 were considered to be burst events".'
+  why: A circular shift keeps each cell's mean, so a surrogate mean trace has the true trace's mean and, when the
+    cells co-vary positively, a smaller SD; it then rarely reaches the true trace's threshold whether the cells
+    burst or not. On synthetic cells with no bursts and only a slow shared drift, reading (b) gives the true
+    frequency above the surrogates (5.90 against a 95th percentile of 2.60 bursts per minute) and reading (a)
+    below them (5.90 against a mean of 8.55), the pattern of the deposited recordings. The outcome is reproduced
+    under (b) and not reproduced under (a), so whether (b) stays in the criterion decides it.
+- claim: fig5c-wake-overlap-neutral-coburst
+  question: The criterion reads wake two ways, (a) wake and quiet wake together and (b) wake alone, and lets
+    either decide. The paper's scoring has wake, NREM and REM only, its source data (Fig_5c.csv) have only those
+    three states, and the Results place the effect "during brief periods of quiet wake". Does the paper allow
+    reading (b), which leaves out quiet wake, as a reading of its wake?
+  passage: 'Methods, Sleep recordings and sleep scoring, "the EMG data were fit with a Gaussian mixture model with
+    two states, in which the lower state represented sleep and the higher state represented wake"; Results,
+    Co-reactivation occurs more during wake, "suggest that this preferential ensemble co-reactivation occurs
+    during brief periods of quiet wake".'
+  why: The dataset's sleep_state column defines quiet wake as a waking state ("awake and alert but at rest"), and
+    the Methods' sleep/wake split scores 64 of the 68 quiet-wake epochs of the deposited recording as wake. Under
+    reading (a) overlap-neutral co-bursting is below overlap-aversive (25.9% against 35.3% of 85 bursts), which
+    gives not reproduced; the partial outcome rests on reading (b) alone (33.3% against 29.2% of 24 bursts, 2
+    against 1 discordant bursts). Raised by the verifier of attempt zaki-2024-02 (round 1).

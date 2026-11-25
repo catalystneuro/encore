@@ -1,48 +1,74 @@
-# 002014 · verifier-2 · run 38752165353
+# choi-2025 · verifier-2 · run 45514837808
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
+cd  ls -la; ls paper; cat round-1-report.md
 ```
 
 ```
-total 648
-drwxr-xr-x 5 runner runner    4096 Oct 15 14:38 .
-drwxr-xr-x 7 runner runner    4096 Oct 15 14:38 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:34 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:34 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 15 14:38 .claude
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env.development
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env.local
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env.production
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env.test
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .env.test.local
-drwx------ 2 runner runner    4096 Oct 15 14:38 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:34 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:34 .github
--rw-r--r-- 1 runner runner       0 Oct 15 14:38 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:34 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:34 .mcp.json
-[... 67 more lines not kept]
+total 660
+drwxr-xr-x 6 runner runner    4096 Nov 25 00:12 .
+drwxr-xr-x 8 runner runner    4096 Nov 25 00:12 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:59 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:59 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 25 00:12 .claude
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .env.test.local
+drwx------ 2 runner runner    4096 Nov 25 00:12 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:59 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:59 .github
+-rw-r--r-- 1 runner runner       0 Nov 25 00:12 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:59 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 23:59 .mcp.json
+[... 60 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat 10.1016-j.jneumeth.2025.110467.yaml; echo ======; cat 002014-choi-2025-01.yaml; echo =====; cat README.md
+cd  cat README.md; cat choi-2025-02.yaml
 ```
 
 ```
-<persisted-output>
-Output too large (30KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/164e322b-44fe-425c-b1cc-7bd37b78c182/tool-results/bwwhpbn74.txt
+# Choi et al. (2025) from dandiset 002014
 
-Preview (first 2KB):
+Tests the findings of [Choi et al. (2025)](https://doi.org/10.1016/j.jneumeth.2025.110467) on
+[DANDI:002014](https://dandiarchive.org/dandiset/002014/0.261120.0528), one session of monkey T
+(09/27/2024), the session of the paper's Figures 8 and 9 (`reproduce_choi_2025.ipynb`). The
+paper's lists of large and small successful trials, from its Zenodo record
+[14825992](https://doi.org/10.5281/zenodo.14825992), are used to check the trial classes.
+
+| Claim | Outcome |
+|---|---|
+| Single-trial dopamine fluctuates more after the value cue (Fig. 8A) | Reproduced |
+| More dopamine for large than small reward between cue and reward (Fig. 8B) | Reproduced |
+| Spikes at c5d aligned to the value cue (Fig. 9A) | Reproduced |
+| Spike waveform and interspike intervals (Fig. 9B, C) | Reproduced |
+| Beta power suppressed more after large than small reward cues (Fig. 9D) | Partially reproduced (p = 0.112) |
+| Recordings in two monkeys; electrode yields; cultures; drainage; bone growth | Blocked: not in the dandiset |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+[... 338 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat choi-2025.yaml
+```
+
+```
 # Claims for Choi, Amjad, Murray, ... & Schwerdt (2025), J Neurosci Methods 110467, on dandiset
 # 002014. Source: the author manuscript in PubMed Central (PMC13250822), full text (CC BY), read
 # from its Methods, Results and figure legends.
@@ -59,292 +85,218 @@ Preview (first 2KB):
 #
 # The dandiset holds one session (09/27/2024) of monkey T, the session of Figures 8 and 9. The
 # surgical, culture, drainage and yield results, and all of monkey J, are not in it.
-[... 15 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "10.1016-j.jneumeth.2025.110467.yaml"
-}
-```
-
-```
-1	# Claims for Choi, Amjad, Murray, ... & Schwerdt (2025), J Neurosci Methods 110467, on dandiset
-2	# 002014. Source: the author manuscript in PubMed Central (PMC13250822), full text (CC BY), read
-3	# from its Methods, Results and figure legends.
-4	#
-5	# When these criteria were written, the author had seen the data check only: the file's
-6	# contents, the event table and the trial classes built from it (which match the paper's Zenodo
-7	# trial lists), the spectrum of the stored LFP, the offset between the raw ephys clock and the
-8	# trial clock (11812.1 s, from cross-correlating the raw and stored LFP), the range of the spike
-9	# times, the failed search for the trial-aligned FSCV in the raw FSCV, and the NaN pattern of the
-10	# trial-aligned dopamine array. While checking the array layout the author printed the stored
-11	# dopamine values of three trials, including trial 133 (1-based), from 1 s before to 2 s after
-12	# the trial start, which ends near the value cue. No PSTH, no large against small comparison and
-13	# no beta power had been computed.
-14	#
-15	# The dandiset holds one session (09/27/2024) of monkey T, the session of Figures 8 and 9. The
-16	# surgical, culture, drainage and yield results, and all of monkey J, are not in it.
-17	#
-18	# Choices fixed here for all tested claims. Trials are classed from the dandiset's events: a
-19	# trial is the span from its trial-start event (code 128, the trials table's midpoint_time) to
-20	# the next; it is large (small) and successful when it holds a big (small) reward event and no
-[... 135 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "002014-choi-2025-01.yaml"
-}
-```
-
-```
-1	schema_version: 1
-2	id: 002014-choi-2025-01
-3	dandiset: "002014"
-4	dandiset_version: 0.261012.0921
-5	paper: doi:10.1016/j.jneumeth.2025.110467
-6	date: 2026-10-15
-7	entry: 002014-choi-2025
-8	provenance:
-9	  kind: agent
-10	  accountable:
-11	    name: CatalystNeuro
-12	  agent:
-13	    harness: Claude Code (GitHub Actions)
-14	    model: claude-opus-5-5
-15	    protocol: pilot-6
-16	inputs:
-17	- what: The paper's lists of successful large and small reward trials (files "09272024_nlx_c8c_value object
-18	    start_big rew and success_tr1-1411.mat" and the small reward one), used only to check the trial
-19	    selection built from the dandiset's events.
-20	  source: https://doi.org/10.5281/zenodo.14825992
-[... 286 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "README.md"
-}
-```
-
-```
-1	# Choi et al. (2025) from dandiset 002014
-2	
-3	Tests the findings of [Choi et al. (2025)](https://doi.org/10.1016/j.jneumeth.2025.110467) that can be tested on
-4	[DANDI:002014](https://dandiarchive.org/dandiset/002014/0.261012.0921), which holds one session of monkey T
-5	recorded through the paper's semi-sealed chamber (Figures 8 and 9). The surgical, culture, drainage and
-6	electrode-yield results, and monkey J, are not in it.
-7	
-8	| Claim | Outcome |
-9	|---|---|
-10	| A single trial's dopamine fluctuates more after the value cue (Figure 8A) | Reproduced (weak test) |
-11	| Dopamine rises more for large than small reward trials (Figure 8B) | Reproduced |
-12	| Spikes at c5d aligned to the value cue (Figure 9A) | Reproduced, after correcting the spike clock |
-13	| Waveform and interspike intervals of the c5d unit (Figure 9B, C) | Reproduced by the criterion (weak evidence for a single unit) |
-14	| Beta power is suppressed more after large reward cues (Figure 9D) | Partially reproduced |
-15	| Recordings in two monkeys; electrode yields; cultures; drainage; bone growth (eight claims) | Blocked: data missing |
-16	
-17	A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-18	reasoning and the differences from the paper's method.
-19	
-20	The raw ephys and the spike times in the file are not on the clock of the trials and events: they start at 0 s,
-[... 8 more lines not kept]
+#
+# Choices fixed here for all tested claims. Trials are classed from the dandiset's events: a
+# trial is the span from its trial-start event (code 128, the trials table's midpoint_time) to
+# the next; it is large (small) and successful when it holds a big (small) reward event and no
+[... 173 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF' > $TMPDIR/nb.txt
+cd  python3 - <<'EOF'
 import json
 nb=json.load(open('reproduce_choi_2025.ipynb'))
 for i,c in enumerate(nb['cells']):
-    print(f"\n######## CELL {i} [{c['cell_type']}] ########")
-    print(''.join(c['source']))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print('--- OUT ---\n'+''.join(o['text']))
-        elif 'data' in o:
-            d=o['data']
-            if 'text/plain' in d and 'image/png' not in d: print('--- OUT ---\n'+''.join(d['text/plain']))
-            elif 'image/png' in d: print('--- [image] ---')
-        if o.get('output_type')=='error': print('ERROR', o['ename'], o['evalue'])
+    print(f"\n===== CELL {i} [{c['cell_type']}] =====")
+    src=''.join(c['source'])
+    print(src if c['cell_type']=='markdown' else src[:3000])
+    if c['cell_type']=='code':
+        for o in c.get('outputs',[]):
+            if 'text' in o: print('--OUT--\n'+''.join(o['text']))
+            elif 'data' in o and 'text/plain' in o['data']: print('--OUT(data)--\n'+''.join(o['data']['text/plain'])[:1500])
 EOF
-wc -l $TMPDIR/nb.txt
 ```
 
 ```
-1161 /tmp/claude-1001/nb.txt
+<persisted-output>
+Output too large (56.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/55d11d5e-da4e-41ef-9e31-82e5497ed000/tool-results/bar0m3c5e.txt
+
+Preview (first 2KB):
+===== CELL 0 [markdown] =====
+# Reproducing Choi et al. (2025) from dandiset 002014
+
+Paper: Choi, Amjad, Murray, ... and Schwerdt (2025), "Aseptic, semi-sealed cranial chamber implants
+for chronic multi-channel neurochemical and electrophysiological neural recording in nonhuman
+primates", J Neurosci Methods 420, 110467, doi:10.1016/j.jneumeth.2025.110467.
+
+Dataset: DANDI:002014, version 0.261120.0528 (doi:10.48324/dandi.002014/0.261120.0528), streamed
+from the archive. This version was asked for in the prompt of this attempt; it is also the most
+recent published version, and the paper cites no DANDI version (its Data availability statement
+names the Zenodo record 10.5281/zenodo.14825992). The earlier version, 0.261012.0921, was not read.
+
+Claims: `claims/choi-2025.yaml`, written from the author manuscript in PubMed Central (PMC13250822),
+full text. This is a repeat attempt, made blind to the earlier ones.
+
+Outside source: the two trial-id lists of the paper's Zenodo deposit (record 14825992; files
+[... 24 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/55d11d5e-da4e-41ef-9e31-82e5497ed000/tool-results/bar0m3c5e.txt"
 }
 ```
 
 ```
 1	
-2	######## CELL 0 [markdown] ########
+2	===== CELL 0 [markdown] =====
 3	# Reproducing Choi et al. (2025) from dandiset 002014
 4	
-5	**Paper.** Choi J, Amjad U, Murray R, Shrivastav R, Teichert T, Goodell B, Olson M, Schaeffer DJ, Oluoch JK,
-6	Schwerdt HN (2025). Aseptic, semi-sealed cranial chamber implants for chronic multi-channel neurochemical
-7	and electrophysiological neural recording in nonhuman primates. *Journal of Neuroscience Methods* 420,
-8	110467. [doi:10.1016/j.jneumeth.2025.110467](https://doi.org/10.1016/j.jneumeth.2025.110467). This attempt
-9	used the full text of the author manuscript in PubMed Central (PMC13250822, CC BY).
-10	
-11	**Dandiset.** [DANDI:002014](https://dandiarchive.org/dandiset/002014/0.261012.0921), version 0.261012.0921.
-12	The paper cites no DANDI version; its data statement points to a Zenodo record
-13	([doi:10.5281/zenodo.14825992](https://doi.org/10.5281/zenodo.14825992)), which the dandiset says it
-14	includes together with the raw recordings. 0.261012.0921 is the only published version, and the draft holds
-15	the same file (same blob) and the same metadata, so the choice changes nothing the analysis uses.
+5	Paper: Choi, Amjad, Murray, ... and Schwerdt (2025), "Aseptic, semi-sealed cranial chamber implants
+6	for chronic multi-channel neurochemical and electrophysiological neural recording in nonhuman
+7	primates", J Neurosci Methods 420, 110467, doi:10.1016/j.jneumeth.2025.110467.
+8	
+9	Dataset: DANDI:002014, version 0.261120.0528 (doi:10.48324/dandi.002014/0.261120.0528), streamed
+10	from the archive. This version was asked for in the prompt of this attempt; it is also the most
+11	recent published version, and the paper cites no DANDI version (its Data availability statement
+12	names the Zenodo record 10.5281/zenodo.14825992). The earlier version, 0.261012.0921, was not read.
+13	
+14	Claims: `claims/choi-2025.yaml`, written from the author manuscript in PubMed Central (PMC13250822),
+15	full text. This is a repeat attempt, made blind to the earlier ones.
 16	
-17	**What the dandiset holds.** One NWB file: one session (09/27/2024) of monkey T, the session of Figures 8
-18	and 9. Monkey J, and the surgical, culture, drainage and electrode-yield results that make up most of the
-19	paper, are not in it.
-20	
-[... 714 more lines not kept]
+17	Outside source: the two trial-id lists of the paper's Zenodo deposit (record 14825992; files
+18	`09272024_nlx_c8c_value object start_big rew and success_tr1-1411.mat`, md5
+19	d3199b1d6d5d7a2e4e2ce2b23d2cb8bb, and `..._small rew and success_tr1-1411.mat`, md5
+20	21b6ec1119ff8924a3dd98a8537bbb68). They are used only to check the trial classes built from the
+[... 668 more lines not kept]
 ```
-
-**Agent**
-
-Round-1 materials are loaded. One mismatch so far: the cell 17 text says "largest 2.04", but cell 16 prints 2.06. Reading the rest of the notebook now.
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 735
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/55d11d5e-da4e-41ef-9e31-82e5497ed000/tool-results/bar0m3c5e.txt",
+ "offset": 689
 }
 ```
 
 ```
-735	######## CELL 24 [code] ########
-736	def window_by_trial(da, t_axis, lo, hi):
-737	    """Mean of each row between per-trial bounds lo[i] and hi[i] (s from V)."""
-738	    out = np.full(len(da), np.nan)
-739	    for i in range(len(da)):
-740	        m = (t_axis >= lo[i]) & (t_axis <= hi[i])
-741	        if np.any(~np.isnan(da[i, m])):
-742	            out[i] = np.nanmean(da[i, m])
-743	    return out
-744	rw = (succ.RW - succ.V).to_numpy()
-745	main = window_by_trial(da_al, t_da, np.zeros(len(succ)), rw)
-746	def compare(values, mask_big, label):
-747	    a, b = values[mask_big], values[~mask_big]
-748	    a, b = a[~np.isnan(a)], b[~np.isnan(b)]
-749	    p = stats.mannwhitneyu(a, b, alternative="two-sided").pvalue
-750	    d = (a.mean() - b.mean()) / np.sqrt((a.var(ddof=1) + b.var(ddof=1)) / 2)
-751	    return {"window": label, "n_large": len(a), "n_small": len(b), "mean_large": a.mean(), "mean_small": b.mean(),
-752	            "difference": a.mean() - b.mean(), "cohen_d": d, "mann_whitney_p": p}
-753	rows = [compare(main, big, "V to RW (main)")]
-754	print("Dropped (no dopamine sample in V to RW): large", int(np.isnan(main[big]).sum()), ", small", int(np.isnan(main[~big]).sum()))
-[... 408 more lines not kept]
+689	# variant: Plexon unit (no waveforms in the file for it)
+690	isp = np.diff(s_plx)
+691	print(f"variant, Plexon ch75#1: ISI < 1 ms {np.mean(isp < 0.001):.5f} ({int((isp < 0.001).sum())}), shortest {isp.min()*1e3:.3f} ms")
+692	# variant: halves of the session
+693	for nm, m in [("first half", s_thr < half), ("second half", s_thr >= half)]:
+694	    W = w_thr[m]; mm = W.mean(0); kk = int(np.argmax(np.abs(mm)))
+695	    print(f"{nm}: {m.sum()} spikes, peak {mm[kk]*1e6:.2f} uV, SD {W[:, kk].std(ddof=1)*1e6:.2f} uV, ratio {abs(mm[kk])/W[:, kk].std(ddof=1):.2f}")
+696	--OUT--
+697	thresholded unit 1: 101733 spikes, 101732 intervals
+698	ISI < 1 ms: 0.00000 (0); < 2 ms: 0.00008; shortest ISI 1.562 ms; waveform length 48 samples = 1.50 ms
+699	ISI histogram, 1 ms bins from 0 to 20 ms: [0, 8, 14, 1, 0, 4, 6, 16, 40, 49, 73, 90, 93, 100, 96, 114, 119, 112, 125, 105]
+700	mean waveform: largest |value| 56.36 uV at sample 10 (sign -1); SD there 11.76 uV; ratio 4.79
+701	variant, Plexon ch75#1: ISI < 1 ms 0.00002 (2), shortest 0.187 ms
+702	first half: 49941 spikes, peak -53.66 uV, SD 11.23 uV, ratio 4.78
+703	second half: 51792 spikes, peak -58.96 uV, SD 11.68 uV, ratio 5.05
+704	
+705	
+706	===== CELL 23 [code] =====
+707	fig, axs = plt.subplots(1, 2, figsize=(8, 3))
+708	tw = np.arange(w_thr.shape[1]) / 32
+[... 149 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "def " chamber.py; python3 - <<'EOF'
-import re
-src=open('chamber.py').read()
-for name in ('reference_at','block_permutation_p','dopamine_aligned','thresholded_waveforms','band_power_around'):
-    m=re.search(r'\ndef '+name+r'.*?(?=\ndef |\Z)',src,re.S); print(m.group(0))
-EOF
+cd paper; wc -c *; grep -n -i -E "single unit|single-unit|trial 133|beta|Fig\. 9|Figure 9|Fig\. 8|two monkeys|especially|eye" *.txt | head -60
 ```
 
 ```
-52:def open_file() -> h5py.File:
-60:def _text(x):
-64:def _ragged(group, column):
-70:def load_events(f) -> dict[str, np.ndarray]:
-78:def raw_event_counts(f) -> pd.DataFrame:
-89:def trial_table(f, events: dict[str, np.ndarray]) -> pd.DataFrame:
-121:def load_fscv_table(f) -> dict[str, np.ndarray]:
-130:def reference_at(trace, t, t0, half=0.2):
-145:def dopamine_aligned(fscv, trials: pd.DataFrame, t_axis=np.arange(-10, 10.01, 0.1)):
-157:def load_lfp(f):
-164:def raw_segment(f, start_s, duration_s, channels=slice(None)):
-174:def _bipolar_1khz(f, start_s, duration_s):
-179:def _normalized_xcorr(signal_long, template):
-190:def locate_raw_in_lfp(f, lfp_t, lfp_v, n=CLOCK_SEGMENTS, seg_s=CLOCK_SEGMENT_S, search_s=60.0):
-225:def spike_units(f, path):
-232:def thresholded_waveforms(f, unit_index, max_spikes=None):
-247:def psth(spike_times, align, window=(-1.0, 3.0), bin_s=0.1):
-257:def modulation(counts, bin_s=0.1):
-262:def band_power_around(lfp_t, lfp_v, times, band=BETA_BAND, pad=3.0, order=4):
-281:def window_mean(t_axis, values, lo, hi):
-[... 82 more lines not kept]
+<persisted-output>
+Output too large (72.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/55d11d5e-da4e-41ef-9e31-82e5497ed000/tool-results/bh9u818ex.txt
+
+Preview (first 2KB):
+98608 10.1016-j.jneumeth.2025.110467.txt
+7:319 nihpa Journal of neuroscience methods J Neurosci Methods PMC13250822 13250822 13250822 NIHMS2175174 40355000 10.1016/j.jneumeth.2025.110467 Aseptic, semi-sealed cranial chamber implants for chronic multi-channel neurochemical and electrophysiological neural recording in nonhuman primates Choi Jiwon a b Amjad Usamma a Murray Raymond a Shrivastav Ritesh a Teichert Tobias c Goodell Baldwin d Olson Matthew d Schaeffer David J a e Oluoch Julia K e Schwerdt Helen N a b * a Department of Bioengineering, University of Pittsburgh, PA, USA b Aligning Science Across Parkinson’s (ASAP) Collaborative Research Network, Chevy Chase, MD, USA c Department of Psychiatry, University of Pittsburgh, PA, USA d Gray Matter Research, Bozeman, MT, USA e Department of Neurobiology, University of Pittsburgh, PA, USA Author contributions H.N.S., J.C., U.A., and R.M. designed and performed research, and analyzed data. H.N.S., J.C., U.A., R.M., and R.S. created implanted components. T.T., B.G., J.K.O., and D.J.S. contributed analytic tools. H. N.S., J.C., and U.A. wrote the paper. * Corresponding author at: Department of Bioengineering, University of Pittsburgh, PA, USA. [removed: an e-mail address] (H.N. Schwerdt). 10 5 2025 420 110467 110467 11 6 2026 This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ . The publisher's version of this article is available at J Neurosci Methods Previous version available: This article is based on a previously available preprint posted on bioRxiv on February 11, 2025: " Aseptic, semi-sealed cranial chamber implants for chronic multi-channel neurochemical and electrophysiological neural recording in nonhuman primates ". Abstract Background: Invasive electrophysiological r
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -o -i -E ".{200}(single unit|unit activity|trial 133|ISI|beta-band|especially visible|two monkeys).{200}" *.txt | head -20
+```
+
+```
+atures an aspirating port for culturing chamber fluid to ensure continued asepsis. Results: Our chamber system was shown to provide successful recordings of dopamine and electrical neural activity in two monkeys while maintaining negative bacteria culture results for over a year post-implantation. Comparison with existing methods: Sealed chamber systems prevent contamination and reduce the risk of compromisi
+rode harboring chambers are completely sealed interfaces, isolating the brain surface from the external environment. These systems obviate the need for labor intensive chamber-cleaning procedures to disinfect inside the chamber and minimize the accumulation of pathogenic microorganisms, which if left unchecked can cause significant issues, from bone resorption to meningitis ( Adams et al., 2011 ). Th
+ted MRIs were acquired for presurgical planning at the University of Pittsburgh on a human, whole body 7 T MRI scanner (MAGNETOM, SIEMENS, Germany) using a MP2RAGE (magnetization-prepared 2 rapid acquisition gradient echo) sequence and a 2nd generation Tic-Tac-Toe radiofrequency (RF) system (resolution: 400 μm isotropic, TR/TE: 6000/3.7 ms, FOV: 148 ×148 ×96 mm), with 60 transmit channels and 32 rece
+mal Care and Use Committee (IACUC) at the University of Pittsburgh and were performed following the Guide for the Care and Use of Laboratory Animals (Department of Health and Human Services), the provisions of the Animals Welfare Act (USDA) and all applicable federal and state laws. All implanted devices were sterilized in ethylene oxide gas or hydrogen peroxide plasma chambers. All procedures were p
+phine). Monkeys were placed in stereotactic frames to fix their head for surgical operation. A sterile field was created on the skin above the targeted location for the baseplate and the surface was disinfected with several rounds of applying betadine and 70 % isopropanol, in a serial manner, with gauze. This same monkey preparation procedure was performed at the start of a
+[... 14 more lines not kept]
 ```
 
 **Agent**
 
+**Round 2 verifier report: choi-2025-02 (DANDI:002014 version 0.261120.0528)**
+
 **1. Outcomes**
 
-The claims file has 13 claims. The attempt record gives 5 tested outcomes and 8 blocked (data_missing). I agree with all 13.
+The claims file has 13 claims. The attempt record has 13 outcomes: 5 tested and 8 blocked (data_missing). No outcome carries `assumed: true`.
 
-- **fig8a-single-trial-dopamine, reproduced.** Agree. It is a weak test: 64% of the 889 trials with a reference also exceed 1, and trial 133 ranks above 76.9% of them (cell 21).
-- **fig8b-dopamine-large-vs-small, reproduced.** Agree. p = 0.0035, and the within-block permutation gives p = 0.0045 (cell 24).
-- **fig9a-spikes-task-aligned, reproduced.** Agree. Modulation is 0.49 against a null 95th percentile of 0.06 (cell 27). This depends on the 11812.11 s offset, which cell 14 supports.
-- **fig9bc-unit-waveform-isi, reproduced.** Agree by the criterion only. The criterion can hardly fail, and the notebook now says so.
-- **fig9d-beta-suppression-large, partially_reproduced.** Agree. Medians are −0.158 and −0.125, p = 0.108, block permutation p = 0.19 (cell 33).
-- **The 8 blocked claims** (recordings-two-monkeys, scfe-functional-yield, scfe-background-yield, mcfe-functional-yield, dopamine-signal-yield, asepsis-cultures, fig6-drainage-volume, fig7-bone-growth-margins): agree, data_missing.
+| Claim | Agree? | Basis (cell) |
+|---|---|---|
+| fig8a-single-trial-dopamine | Yes, reproduced | Cell 10: ratio 2.025 for row 132 and 2.199 for row 133. Either reading is above 1. |
+| fig8b-dopamine-large-vs-small | Yes, reproduced | Cell 14: V to RW difference 0.758, p = 0.0028, n = 448/498, 4 dropped. |
+| fig9a-spikes-task-aligned | Yes, reproduced | Cell 18: every trial has a spike (fraction 1.0). Variance 0.4807 against a 95th percentile of 0.0574 to 0.0607; no null draw reaches it. |
+| fig9bc-unit-waveform-isi | Yes, reproduced | Cell 22: 0 intervals under 1 ms; peak/SD ratio 4.79. |
+| fig9d-beta-suppression-large | Yes, partially_reproduced | Cell 26: median large −0.156, small −0.125, p = 0.112. No variant reaches p < 0.05. |
+| The 8 blocked claims | Yes, blocked (data_missing) | Cell 30: the only subject is sub-Monkey-T, and the Zenodo record holds no yield, culture, drainage or imaging data. |
 
-**2. Text against the printed outputs**
+I found no place where the claims file misreads the paper. The paper never says "single unit"; that wording is the claims file's own, and the attempt flags it (cell 24, fig9bc notes).
 
-Cell numbers below are the current notebook's; they differ from round 1. Every number in the Result cells (22, 25, 28, 31, 34), the Summary (35), the README and the attempt-record notes matches the printed outputs, except for these:
+**2. Sentences the printed outputs do not support**
 
-- **Cell 17:** "with no run of |t| above 3 before it (largest 2.04)". Cell 16 prints "largest |t| before V: 2.06".
-- **Cell 31 (Result), cell 13 and the fig9bc notes in the attempt record:** "every spike exceeds the 40 µV threshold". Cell 12 checks only the first 20000 of 101733 spikes (`max_spikes=20000`) and prints 1.000 at three decimals. Cell 30 loads all the waveforms but never prints this fraction.
-- **Cell 15:** "nearly every spike's trough lies between -7.4 and -6.9 ms". Its source, cell 14, prints the 10th and 90th percentiles, so 20% of troughs lie outside that range. The same cell also says "Raw c5d shows a spike at every stored spike time", but only 1633 spikes in one 300 s segment were checked.
-  - The attempt-record finding "per-spike trough lags of -7.4 to -6.9 ms" reads as the full range. It is the 10th to 90th percentile.
-- **Cell 35 (Summary):** "up to five copies". Cell 5 shows 7221 stored trial-start events for 1412 distinct ones, 5.1 on average, so some events have more than five copies. Cell 7 and the attempt record say "about five", which the numbers support.
-- **README:** "It takes about two minutes". Cell 36 prints 1.4 min.
+- **Cell 16 and the fig8b notes: "1.32 to 1.68 from 5 to 8 s".** In cell 7 the +5 to +8 s bins are 1.57, 1.68 and 1.64. The value 1.32 is the +4 to +5 s bin. The range should read 1.57 to 1.68.
+- **Cell 16 and the fig8b notes: "The statement's 'especially between the value cue display and reward' does not hold in these data: the difference after RW is as large as or larger than before it."** Read against the outputs, this goes too far, and my round-1 point B6 did too.
+  - The RW to RW+3 s window (1.546, cell 14) is referenced at V, so it includes the difference built up before RW.
+  - In cell 7 (referenced at V), the large minus small difference rises from 0.33 to about 1.4 between V+1 s and V+4 s, which is before RW (4.72 to 5.50 s after V). After RW it stays at about 1.6.
+  - In cell 7 (referenced at RW), the further growth over 0 to 3 s after RW is only 0.19, 0.48 and 0.25 per 1 s bin.
+  - So the difference arises between V and RW and is then held. "Does not hold" is true only of its level. This does not change the outcome, because the criterion tests V to RW only.
+- **Cell 12 and the fig8a notes: "Over the 950 successful trials the median ratio is 1.259".** Cell 10 prints "NaN 9", so the statistics cover 941 trials. Minor.
+- **iox finding (findings 2 and 9) and the Summary (cell 31): kernel "positive from -2.4 to +0.2 s".** Cell 8 prints +0.2 at −2.8 s and +1.3 at −2.6 s, so the kernel is positive from about −2.8 s.
+- **Finding 2: "no shift of more than a few tenths of a second".** This is true of the kernel's peak (lag 0). Cell 8 also shows the detrended correlation peaking with the raw current 1.5 s earlier (median; range 0.8 to 2.5 s). Finding 9 states this delay, but finding 2 and the Summary describe the iox as tied to the scans without saying it in the same place.
 
-None of these changes an outcome.
+Everything else checks against the outputs: the remaining Result cells (12, 20, 24, 28), the Summary (31), the README and the other notes. That includes the trial-133 dip and peak timings, the PSTH rates, the scan-phase bins, the spectral ratios (444 to 2174 times; 1.03 to 1.05), the SD ratios of 0.14 to 0.17, the p-value ranges for the N=4 and N=2 variants, and the 451/499 class match.
 
-**My reasons in the attempt record.** They are close, faithful paraphrases of my round-1 report. Three small omissions, none of which misrepresents me:
-
-- The fig9d reason leaves out two points:
-  - that the edge distortion does not reach the ±1 s test windows;
-  - that the independence problem also applied to cell 27, now cell 33.
-- The fig9bc reason leaves out the Plexon unit's ISI counts (1 under 1 ms, 39 under 2 ms).
+**Do the verification entries state my round-1 reasons in my own words?** Yes. They are faithful for all 13 claims, including the B1 to B8 points and the "could not check" items.
 
 **3. Round-1 points**
 
 Resolved:
+- B1: the last row is excluded and the classes match the Zenodo lists exactly (cell 3).
+- B2: the claims file's 11812.1 s offset is tested and fails (r −0.12 to −0.02, cell 5).
+- B3: the spectra show 10 Hz lines and their harmonics removed from the stored LFP (cell 5).
+- B4: the iox cross-check now runs (cell 8).
+- B5 and B8: acknowledged, with a question to a reader recorded for B5.
+- B7: unchanged and stated.
+- All five "could not check" items:
+  - midpoint vs code 128: 0.000000 s (cell 3)
+  - FSCV alignment: cell 8
+  - LFP spectra: cell 5
+  - trial-133 samples: cell 10
+  - V phase within the scan cycle: uniform, 77 to 108 trials per 10 ms bin (cell 6)
 
-- **Point 2 (fig8a test is weak):** reported. The conclusion now gives the rank (76.9%), the 64% share and when the criterion was written.
-- **Point 3 (tests treat trials as independent):** resolved. Within-block permutations give p = 0.0045 and 0.0010 for fig8b, and 0.19 for fig9d. Neither outcome changes.
-- **Point 4 (plot edge artefact):** resolved. The plot is limited to ±1.5 s and the edge values are printed (0.16 to 0.32).
-  - In the real data the edges are depressed, where my white-noise test predicted they would be inflated (2.3). Either way they are distorted.
-- **Point 5 (`reference_at`):** resolved. The function now interpolates across the gap, the synthetic ramp error is 3.6e-15, and all 62 trials that are NaN at V are dropped (23 large + 39 small).
-- **Point 6 (7 ms spike lag):** resolved. The lag-corrected value, 0.48, is in the conclusion.
-- **Point 7 (trial 1411 and the "c8c" file names):** resolved. Without trial 1411, p = 0.0031. I could not check the notebook's account of the Zenodo record's description.
-- **Point 8 (dandiset description contradicts the data):** recorded as a finding in the attempt record.
-- **Point 9 (trial-averaged beta power):** resolved. Trial-averaged power is 0.839 (large) against 0.885 (small), and the difference has a CI of −0.125 to 0.036, which spans 0.
-- **Requested outputs:** all supplied (trial 133's rank, the numeric PSTH, the dead time, the dataset shapes, the Plexon ISIs).
+Remaining points that bear on a conclusion (none changes an outcome):
+- **The "especially" judgement for fig8b (B6).** It should be softened as described in section 2.
+- **Smoothing of the trial-aligned FSCV.** iox lags the raw current by about 1.5 s (cell 8). If `da` is smoothed the same way, which is undocumented, then:
+  - the null 0 to 2 s variant of fig8b could be partly a filter delay;
+  - part of fig8a's "after V" fluctuation could come from just before V.
 
-Remaining that bears on a conclusion:
+  The notes should mention this when they interpret timing.
 
-- **Point 1 (fig9bc).** The outcome comes from a criterion that the detector's 1.562 ms dead time and the 40 µV threshold all but guarantee. The data do not show a single unit:
-  - only 54411 of the 90912 Plexon spikes coincide with thresholded unit 1;
-  - the ISI ratio of 0.106 shows reduced but not absent short intervals.
+**4. Critical findings**
 
-  The text is now honest about this, but "reproduced" carries little evidence. The "every spike exceeds 40 µV" support is checked on only 20% of the spikes.
-- **fig8a.** The criterion is inherently weak and was written after trial 133's values had been printed. This is now disclosed but not removable.
-- **fig9d.** The result depends on choices of band, windows and test that the paper does not state. It is unchanged from round 1.
-- **Figures not seen.** I still saw no figures, so the shapes of the panels have not been compared with the paper's Figures 8 and 9.
+No finding in the attempt record is rated `critical`, and I would rate none of them critical:
+- The clock offset does not hold in this version (cell 5).
+- The thresholded and Plexon units share the same spikes. Two detections of the same channel are visible as such in the file (cell 3, 0.9949 overlap), so `minor` is right.
+- The 3-spike thresholded unit 0 is evident from its count.
+
+One rating I would raise: finding 9 (iox smoothing) is currently `minor`. I would rate it `major` for any analysis of response latency, because it is undocumented and only shows up when compared with the raw scans. For the criteria tested here, `minor` is acceptable.
 
 ## End of run
 
-10 turns, 2 minutes, result: success.
+9 turns, 2 minutes, $0.81 at API prices, result: success.
