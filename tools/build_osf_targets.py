@@ -154,8 +154,18 @@ def files_of(base: str, prefix: str = "") -> tuple[list[dict], list[str]]:
     """The files of a node or registration in every storage provider, and the providers."""
     files, providers = [], []
     for storage in pages(f"{base}files/"):
-        providers.append(storage["attributes"]["provider"])
-        files += walk(related(storage, "files"), prefix)
+        provider = storage["attributes"]["provider"]
+        try:
+            found = list(walk(related(storage, "files"), prefix))
+        except urllib.error.HTTPError as err:
+            # An add-on linked to a private repository or folder is listed, but answers 403 to anyone else.
+            if err.code not in (401, 403):
+                raise
+            print(f"warning: {base}: {provider} cannot be read without an account ({err.code}); leaving it out",
+                  file=sys.stderr)
+            continue
+        providers.append(provider)
+        files += found
     return files, providers
 
 
