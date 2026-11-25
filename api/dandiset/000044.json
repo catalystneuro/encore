@@ -5,12 +5,12 @@
   "label": "DANDI:000044"
  },
  "page": "datasets/dandi/000044/",
- "generated": "2026-11-25T15:38:56+00:00",
+ "generated": "2026-11-25T15:40:14+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
-  "reproduced": 3,
+  "reproduced": 10,
   "partially_reproduced": 3,
-  "not_reproduced": 6,
+  "not_reproduced": 8,
   "blocked": 8
  },
  "outcome_counts_with_outside_data": {
@@ -21,9 +21,9 @@
  },
  "outcome_counts_elsewhere": {
   "reproduced": 0,
-  "partially_reproduced": 0,
-  "not_reproduced": 0,
-  "blocked": 0
+  "partially_reproduced": 2,
+  "not_reproduced": 1,
+  "blocked": 2
  },
  "outcome_counts_links": {
   "reproduced": 0,
@@ -738,6 +738,639 @@
      "output": null
     }
    ]
+  },
+  {
+   "id": "hiraoka-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000044",
+    "version": "0.210812.1516",
+    "doi": "10.48324/dandi.000044/0.210812.1516",
+    "relation": "reuses"
+   },
+   "datasets": [
+    "dandi:000044"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000044",
+   "label": "DANDI:000044",
+   "dataset_version": "0.210812.1516",
+   "paper": "10.1063/5.0296506",
+   "paper_title": null,
+   "date": "2026-11-21",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-18"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/44950987917"
+   },
+   "outside": null,
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "hiraoka-2025",
+   "inputs": [
+    {
+     "what": "Synthetic event sequences for the claims on the model (fig4-model-heavy-tails, fig4-model-iet-shapes, model-decremental-equivalent), not deposited by the paper. They are generated in model.ipynb by Algorithms 1 and 2 of the paper's Section IV, implemented in bursttree.py from the pseudocode and Eqs. 9 to 16, with seeds from the claims.",
+     "source": "doi:10.1063/5.0296506"
+    }
+   ],
+   "entry_title": "Hierarchical organization of bursty trains in hippocampal spike trains (Hiraoka and Jo 2025)",
+   "summary": "In the paper's example hippocampal neuron, burst sizes and merging numbers are heavy-tailed across timescales, and the scaling relation between their exponents holds. The burst-size exponent stays near the paper's 2.35 only above about 130 ms, and the rescaled merging-number distributions narrowly miss collapsing, on a fit setting the paper does not give. Other neurons share the pattern only under a fit poorly suited to integer counts. The Wikipedia and earthquake findings could not be tested, as the edit histories were never deposited and the catalog has no fixed version. In the model, heavy tails held for some timescale series only, and the two algorithms differ because the paper's memory function does not match its merging distribution.",
+   "description": "Tests the neuronal findings of Hiraoka and Jo (2025) on dandiset 000044, the hippocampal recordings of Grosmark and Buzsaki (2016) that the paper analyses. It finds the paper's representative unit, measures bursty trains and merging numbers across timescales, fits their power-law tails, and checks whether the other units, pyramidal and inhibitory, show the same pattern. It also runs the paper's two generative algorithms. The Wikipedia and earthquake sequences of the paper are not tested.",
+   "notebooks": [
+    {
+     "path": "reproduce_hiraoka_2025.ipynb",
+     "title": "Hiraoka and Jo (2025) on dandiset 000044, the representative neuron",
+     "cells": {
+      "sanity": "891d66b1",
+      "claim:fig2-neuron-representative-sequence": "e965311c",
+      "claim:fig2-iet-broad": "74eea0d1",
+      "claim:fig2-neuron-burst-size-heavy-tail": "815ab2f5",
+      "claim:fig2-neuron-beta-stable": "5889487e",
+      "claim:fig2-neuron-merging-heavy-tail": "1b869608",
+      "claim:fig2-neuron-merging-collapse": "c663651d",
+      "claim:fig2-exponents-above-two": "85f804e9",
+      "claim:fig2-neuron-beta-decrease-follows-gamma": "21354870"
+     },
+     "executed": null
+    },
+    {
+     "path": "other_neurons.ipynb",
+     "title": "Hiraoka and Jo (2025) on dandiset 000044, the other units",
+     "cells": {
+      "sanity": "1d83ca78",
+      "claim:fig2-other-neurons-similar": "69163034"
+     },
+     "executed": null
+    },
+    {
+     "path": "other_neurons_cap3.ipynb",
+     "title": "Hiraoka and Jo (2025) on dandiset 000044, the other units with the exponent capped at 3",
+     "cells": {
+      "sanity": "1d83ca78",
+      "claim:fig2-other-neurons-similar": "f5b518c3"
+     },
+     "executed": null
+    },
+    {
+     "path": "model.ipynb",
+     "title": "Hiraoka and Jo (2025), the dynamic generative algorithms of Section IV",
+     "cells": {
+      "sanity": "a1cb7903",
+      "claim:fig4-model-heavy-tails": "81088c42",
+      "claim:fig4-model-iet-shapes": "7c0b3808",
+      "claim:model-decremental-equivalent": "46c2561d"
+     },
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig2-neuron-representative-sequence",
+     "statement": "The representative neuronal sequence (unit 9 of session Achilles-10252013) has 228 356 spikes, with IETs from 1.05 ms to 1.82 x 10^4 ms.",
+     "source": "Section III, paragraph 5; Figure 2, top (Neuronal spikes panel labels)",
+     "quote": "Here, we show the results for a representative event se ... quence for each dataset ... unit 9 in the Achilles-10252013 session in the neuronal spike recordings",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-neuron-representative-sequence",
+     "notes": "Under reading (b) of O1, row 9 of the units table of Achilles-10252013 counted from 0 (unit id 18), the unit has 228 356 spikes, tau_min 1.050 ms and tau_max 18 229.7 ms. It is the only unit of the session within all three tolerances. Readings (a) id 9 (9077 spikes), (c) the ninth unit (36 797 spikes) and (d) shank_id 9 (four units) do not match. The unit is labelled inhibitory in this version and interneuron in the latest; the paper describes its neuronal data as pyramidal cells. Its 228 356 spikes are those of the whole session (96 875, 44 099 and 87 382 in the three epochs), which settles O2.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-iet-broad",
+     "statement": "The IETs of each process, the representative neuron included, extend across several orders of magnitude.",
+     "source": "Section III, paragraph 6; Figure 2, top left",
+     "quote": "First, the range of IETs in each process extends across several orders of magnitude.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-iet-broad",
+     "notes": "tau_max over tau_min is 17 362, 4.24 decades, against the three decades of the criterion; the paper's labels give the same 4.24 decades.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-neuron-burst-size-heavy-tail",
+     "statement": "For the representative neuron, the burst size distributions are heavy-tailed across different timescales.",
+     "source": "Section III, paragraph 6; Figure 2, top center and legend",
+     "quote": "we con ... firm previous findings that burst size distributions P\u03b4(b) are heavy-tailed across different timescales",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-neuron-burst-size-heavy-tail",
+     "notes": "With xmin chosen by the KS distance, discrete or continuous, the power law is supported (R > 0, p < 0.05) at 8 of 8 timescales of grid (a) and 40 of 40 of grid (b), all of those below 3000 ms included, with the exponent unbounded or capped at 3. The claim holds under one reading of O3, as the claims file's rule asks. With xmin = 1 the discrete fit is supported at 5 of 8 and 29 of 40, not all below 3000 ms; the continuous fit at 7 of 8 with all 7 below 3000 ms (grid a) and 32 of 40 with 32 of 34 below 3000 ms (grid b). On the IETs shuffled in time, a renewal reference, no timescale is supported under any of the five seeds (0 of 5 or 6, grid (a)).",
+     "deviations": [
+      "The exponent of every fit is unbounded (alpha in [1, inf)), an assumption: the locked powerlaw 2.0.0 caps the power-law alpha at 3 by default (Power_Law.DEFAULT_PARAMETER_RANGES) and its find_xmin discards every candidate xmin whose fit reaches the cap, while the estimator the paper cites (Clauset et al., ref. 36, Section 3) has no upper bound and neither had the package as its paper describes it (Alstott et al., ref. 37; releases 1.x require only alpha > 1). The paper gives no version. The capped fits are run beside the unbounded ones (readings with suffix _cap3).",
+      "The grid of delta is open (O4). Grid (b) fits a whole number of log10 steps near 0.052 between the ends of the relevant range (40 steps of 0.0514 for this unit), as the Figure 2 legend says the values shown span the entire range of relevant timescales; every 5th point then gives the delta' labels of Figure 2 and every 8th the delta labels."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-neuron-beta-stable",
+     "statement": "For neuronal spikes the fitted burst-size exponent stays near 2.35 for several decades of timescales, up to about 3000 ms.",
+     "source": "Section III, paragraph 6; Section III, paragraph 9; Figure 2, top, beta panel",
+     "quote": "our analysis shows that the estimated value of the power ... law exponent fitted to the empirical distribution remains stable for several decades of timescales ... stable around \u03b2\u03b4 \u22432.35 for neuronal spikes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-neuron-beta-stable",
+     "notes": "Neither reading of the criterion holds under any fit or grid. Under the discrete KS fit on grid (b) the median beta below 3000 ms is 2.354, inside the band, and 27 of 34 estimates are within 2.35 +/- 0.235, every one from 126.5 ms to 3000 ms (1.4 decades); at 55 ms beta is 3.349, so the range is 1.079 against the 0.47 of reading (b). With the exponent unbounded the ranges are 0.679 to 1.360 over the fits and grids (medians 2.316 to 2.433 under the KS fits, 1.521 to 1.750 with xmin = 1); capped at 3 the KS ranges are 0.552 to 0.705 and also fail. The standard errors are at most 0.088. The paper's value holds from about 130 to 3000 ms but not at the lower end of the relevant range.",
+     "deviations": [
+      "Measured is the median under the discrete KS fit on grid (b); the other readings are in the notebook.",
+      "The exponent of every fit is unbounded (alpha in [1, inf)), an assumption: the locked powerlaw 2.0.0 caps the power-law alpha at 3 by default (Power_Law.DEFAULT_PARAMETER_RANGES) and its find_xmin discards every candidate xmin whose fit reaches the cap, while the estimator the paper cites (Clauset et al., ref. 36, Section 3) has no upper bound and neither had the package as its paper describes it (Alstott et al., ref. 37; releases 1.x require only alpha > 1). The paper gives no version. The capped fits are run beside the unbounded ones (readings with suffix _cap3)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-neuron-beta-decrease-follows-gamma",
+     "statement": "For neuronal spikes, beta is stable below 3000 ms, where beta at the smaller timescale is below gamma. Above 3000 ms beta decreases, apparently driven by a decreasing gamma.",
+     "source": "Section III, paragraph 9; Figure 2, top, beta and gamma panels",
+     "quote": "for the range of \u03b4 < 3000 ms, for which we observe \u03b2\u03b4\u2032 < \u03b3\u03b4\u03b4\u2032. For \u03b4 > 3000 ms, the decreasing tendency of \u03b2\u03b4 seems to be driven by the decreasing \u03b3\u03b4\u03b4\u2032",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-neuron-beta-decrease-follows-gamma",
+     "notes": "On grid (b), under both KS fits with the exponent unbounded, beta at delta' is below gamma for 40 of 57 pairs with delta < 3000 ms (38 for the capped continuous fit); above 3000 ms the 6 grid points give a Spearman rho of -0.829 (p = 0.042) for beta, which falls from 2.064 to 1.867 (discrete), and gamma falls with delta for each ratio (rho -0.714, -0.964 and -0.943). Part (2) rests on 6 points at p = 0.042. Grid (a) has one point above 3000 ms, so parts (2) and (3) are not judged on it; its part (1) holds (7 of 12). Under xmin = 1 part (1) fails (24 of 57), so the outcome rests on the KS fits, as O3 allows for a claim on exponents. The paper names no test; the claim's \"seems to be driven\" is not tested beyond these correlations.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-neuron-merging-heavy-tail",
+     "statement": "For the representative neuron, the merging-number distributions are heavy-tailed for various pairs of timescales, and their fitted exponents gamma stay fairly constant across a wide range of timescales.",
+     "source": "Section III, paragraph 6; Figure 2, top right and gamma panel",
+     "quote": "the merging number distributions P\u03b4\u03b4\u2032(k) also ... heavy tails for various timescale pairs ... although the estimated exponents are not as stable as in burst size distribution, they remain relatively constant across a wide range of timescales",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-neuron-merging-heavy-tail",
+     "notes": "With the exponent unbounded, the discrete KS fit supports the power law for 13 of 15 pairs on grid (a) and 70 of 76 on grid (b), and the gamma of the supported pairs has an interquartile range of 0.378 and 0.415 (median 2.618 and 2.644), so both conditions hold under that reading of O3. The continuous KS fit supports 15 of 15 and 69 of 76, but its interquartile range is 0.642 and 0.546; capped at 3 it was 0.408 and 0.426, so the cap decides that reading and not the discrete one (0.383 and 0.401 capped). With xmin = 1 the discrete fit is supported for 6 of 15 and 19 of 76 pairs, and the continuous fit has an interquartile range of 0.673 and 0.597.",
+     "deviations": [
+      "The exponent of every fit is unbounded (alpha in [1, inf)), an assumption: the locked powerlaw 2.0.0 caps the power-law alpha at 3 by default (Power_Law.DEFAULT_PARAMETER_RANGES) and its find_xmin discards every candidate xmin whose fit reaches the cap, while the estimator the paper cites (Clauset et al., ref. 36, Section 3) has no upper bound and neither had the package as its paper describes it (Alstott et al., ref. 37; releases 1.x require only alpha > 1). The paper gives no version. The capped fits are run beside the unbounded ones (readings with suffix _cap3)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-neuron-merging-collapse",
+     "statement": "Rescaled merging-number distributions for different pairs of delta and delta' collapse onto each other, so the burst tree is self-similar across levels.",
+     "source": "Section III, paragraph 6; Figure 2, top right",
+     "quote": "the rescaled distributions for different pairs of \u03b4 and \u03b4\u2032 collapse on top of each other, implying that the structure of the burst tree is self-similar across hierarchical levels or timescales",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-neuron-merging-collapse",
+     "notes": "Reading (b) fails with the exponent unbounded: the gamma of the 15 pairs of Figure 2 lie up to 0.538 from their median under the discrete KS fit (median 2.610), 1.742 under the continuous KS fit, 0.521 under the discrete fit from xmin = 1 and 1.249 under the continuous one, all outside the band of 0.5. The deviation of 0.538 is the pair delta' 180 ms, delta 594 ms (gamma 3.148), which the cap at 3 holds at 2.843; the capped discrete KS fit, at 0.490, is the only fit within the band, so the outcome rests on the unbounded exponent. Reading (a) fails, as the complementary cumulative distributions of k over its mean differ by up to a factor of 12.54 (median 1.63) where all exceed 10^-3. One pair of Figure 2 (delta' 590 ms, delta 6490 ms) lies above the relevant range, with 89 bursts. The margin is small (0.538 unbounded and 0.490 capped, against 0.5). O3 (a) names the package's default, which in the locked powerlaw 2.0.0 is the capped fit, and read that way the claim would be reproduced; the verifier reads the outcome as undetermined between the two. The unbounded exponent is kept, as the method the paper cites has no cap and the cap clips the estimate that decides the band, and whether the paper's fits were capped is asked of the authors (findings).",
+     "deviations": [
+      "The pairs are the labels of Figure 2 as printed (55, 100, 180, 330 and 590 ms), as the criterion gives them. The comparison points for reading (a) are 200 values of k over its mean, log-spaced from 0.01 to 1000, a standard choice.",
+      "The exponent of every fit is unbounded (alpha in [1, inf)), an assumption: the locked powerlaw 2.0.0 caps the power-law alpha at 3 by default (Power_Law.DEFAULT_PARAMETER_RANGES) and its find_xmin discards every candidate xmin whose fit reaches the cap, while the estimator the paper cites (Clauset et al., ref. 36, Section 3) has no upper bound and neither had the package as its paper describes it (Alstott et al., ref. 37; releases 1.x require only alpha > 1). The paper gives no version. The capped fits are run beside the unbounded ones (readings with suffix _cap3)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-exponents-above-two",
+     "statement": "In most cases both gamma and the burst-size exponent at the smaller timescale exceed 2, so the scaling relation reduces to beta at delta equal to the smaller of gamma and beta at delta', which agrees with the observations.",
+     "source": "Section III, paragraphs 8 and 9 (Eqs. 7 and 8); Figure 2",
+     "quote": "Since \u03b3\u03b4\u03b4\u2032, \u03b2\u03b4\u2032 > 2 in most cases as shown in Fig. 2, we have",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_hiraoka_2025.ipynb",
+     "output": "claim:fig2-exponents-above-two",
+     "notes": "Under the KS fits with the exponent unbounded both gamma and beta at delta' exceed 2 in 15 of 15 pairs (grid a) and 76 of 76 (grid b), and beta at delta is within 10% of the smaller of the two in 9 (continuous) and 12 (discrete) of 15 and in 45 and 58 of 76 pairs (median relative error 0.058 to 0.089); capped at 3, in 11 and 12 of 15 and 48 and 58 of 76. Under xmin = 1 both conditions fail (both above 2 in 0 to 17 pairs).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-other-neurons-similar",
+     "statement": "Other neurons of the recordings show patterns similar to the representative unit, with heavy-tailed burst-size and merging-number distributions across timescales.",
+     "source": "Section III, paragraph 5",
+     "quote": "Other sequences in the datasets show similar patterns.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "other_neurons.ipynb",
+     "output": "claim:fig2-other-neurons-similar",
+     "notes": "Reproduced under the continuous fit from xmin = 1 alone, which meets the criterion's \"under one reading\": with the exponent unbounded, 502 of 554 (grid a) and 502 of 562 (grid b) pyramidal units of all sessions show the pattern (0.906 and 0.893), and 107 and 106 of 120 in Achilles-10252013 (0.892 and 0.883). No other reading meets it: in set (b) the continuous KS fit gives 0.449 and 0.454, the discrete KS fit 0.233 and 0.240, the discrete fit from xmin = 1 0.211 and 0.215; in set (a) 0.342 and 0.292, 0.117 and 0.083, and 0.017. The pass is fragile: the continuous fit from xmin = 1 treats integer sizes as continuous down to 1, where Clauset et al. (ref. 36) find the continuous approximation poor, and its exponents (median over units of the median beta 1.744 to 1.778) are far from the paper's 2.35. Capped at 3 (other_neurons_cap3.ipynb, grid a) the continuous KS fit passes in set (b) (0.547) and the continuous fit from xmin = 1 gives 0.906, so the outcome does not depend on the cap. The inhibitory units, the class the files give the paper's representative unit, show the pattern far more often under the KS fits: 92 and 87 of 128 (0.719 and 0.680, discrete) and 95 of 128 (0.742, continuous); over all 690 units the continuous KS fit gives 0.504 and 0.507. Under the discrete KS fit the median over pyramidal units of each unit's median beta is 2.471 and 2.459 (interquartile range 2.216 to 2.789, grid a), and 2.284 to 2.600 by session; the burst-size part holds in 0.744 and 0.770 of the units and the merging-number part in 0.251 and 0.249. 32 pyramidal units have fewer than three points on grid (a) and are not used there. Whether the set should hold the inhibitory units is asked of a reader (questions).",
+     "deviations": [
+      "Pyramidal units are read as those with cell_type excitatory, the only label for principal cells in this version (562 of 690 units). The paper's own representative unit is labelled inhibitory, so the inhibitory units (128) and all units (690) are run as variants.",
+      "Two of the 562 pyramidal units have unsorted spike times (data finding); the trains are sorted before the IETs are taken, and leaving them out changes no fraction by more than 0.003.",
+      "The exponent of every fit is unbounded (alpha in [1, inf)), an assumption: the locked powerlaw 2.0.0 caps the power-law alpha at 3 by default (Power_Law.DEFAULT_PARAMETER_RANGES) and its find_xmin discards every candidate xmin whose fit reaches the cap, while the estimator the paper cites (Clauset et al., ref. 36, Section 3) has no upper bound and neither had the package as its paper describes it (Alstott et al., ref. 37; releases 1.x require only alpha > 1). The paper gives no version. The capped fits are run beside the unbounded ones (readings with suffix _cap3). The capped variant is run on grid (a) alone, for run time."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-wikipedia-beta",
+     "statement": "For the most frequent Wikipedia editor (n = 1 154 494 edits), the burst-size exponent is stable around 2.50, and the merging-number distributions are heavy-tailed.",
+     "source": "Section III, paragraphs 3 and 6; Figure 2, middle",
+     "quote": "\u03b2\u03b4 \u22432.50 for Wikipedia edits",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "output": null,
+     "notes": "The paper's preprocessed edit histories were provided privately and are not deposited. The English Wikipedia dump of October 2, 2015 is no longer on dumps.wikimedia.org (the directory answers 404) but is kept on the Internet Archive (item enwiki-20151002), where the smallest file holding every revision's editor and time, the stub-meta-history, is 47.4 GB compressed. Streaming and parsing it to rebuild the editors' sequences, with a preprocessing and a definition of frequent editors the paper does not give, does not fit the run's time. The verifier would give data_missing, as the preprocessed edit histories were never deposited; the code stays too_large, as the claims file has this claim as data elsewhere, for which the protocol does not use data_missing, and the public dump it would be rebuilt from is what does not fit the run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Preprocessed edit histories derived from the English Wikipedia dump of October 2, 2015 (https://dumps.wikimedia.org/; refs. 26, 40 and 41), provided to the authors by Woo-Sik Son; not deposited",
+     "proposed": null
+    },
+    {
+     "claim": "fig2-earthquake-beta",
+     "statement": "For earthquakes in the south cluster of Southern California (n = 330 215 events, 1993 to 2020), the burst-size exponent is stable around 2.60, and the merging-number distributions are heavy-tailed.",
+     "source": "Section III, paragraphs 4 and 6; Figure 2, bottom",
+     "quote": "\u03b2\u03b4 \u22432.60 for earthquakes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "output": null,
+     "notes": "The Southern California Seismic Network catalog is public (the SCEDC event service answered a query for 1993) but it is revised continuously and has no versioned release, and the paper gives no retrieval date or event identifiers, so it cannot be pinned as the protocol requires for outside data (author, step 1.4). Not tested. The verifier finds this reason weak, since the 10% tolerance on n would allow an approximate test on the current catalog; such a test would rest on unpinned data and was not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Southern California Seismic Network catalog (FDSN network CI, https://www.fdsn.org/networks/detail/CI/), events January 1, 1993 to December 31, 2020, clustered by DBSCAN with eps 0.07 degrees and 35 minimum points",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-model-heavy-tails",
+     "statement": "Event sequences generated by the incremental dynamic algorithm, with linear, quadratic or exponential timescale series, show heavy-tailed burst-size and merging-number distributions over a wide range of timescales, with stable exponents.",
+     "source": "Section IV, paragraphs 9 and 10; Figure 4",
+     "quote": "For all of the three timescale series, the generated ... show heavy-tailed distributions of burst sizes b for a wide range of timescales \u03b4 ... numbers k are also heavy-tailed across different pairs of timescales \u03b4 and \u03b4\u2032, even though these timescales do not coincide with the preset series of timescales \u03b4l ... the power-law exponent values of the heavy tails in P\u03b4(b) and P\u03b4\u03b4\u2032(k) are stable across timescales",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "model.ipynb",
+     "output": "claim:fig4-model-heavy-tails",
+     "notes": "Sequences generated here by Algorithm 2 with the set-up of Section IV. With the exponent unbounded, no single reading of the fit holds for all three series under the claim's seed, on either grid. Under the discrete KS fit the linear and quadratic series hold on grid (a); the exponential series has heavy tails (supported at 8 of 11 timescales and 17 of 20 pairs on grid a, 42 of 52 and 79 of 94 on grid b) but its gamma has an interquartile range of 0.544 and 0.508, above the 0.5 of the criterion, and on grid (b) the linear series also fails (0.511). The fits from xmin = 1 hold for the exponential series but not the quadratic one (beta interquartile range 0.508 to 0.953). Capped at 3 (grid a), the discrete KS fit gives 0.522 for the exponential gamma. Under the four further seeds the discrete KS fit holds for all three series under seeds + 1000, + 2000 and + 3000 and not under + 4000 (the linear series fails); the exponential gamma interquartile range runs from 0.203 to 0.544 over the five seeds. Each series holds under some reading under every seed on grid (a). The criterion defines no partial outcome; partially reproduced is the protocol's outcome for a result that holds only in part, and the criterion holds for two of its three series under the adopted reading. This differs from fig2-neuron-beta-stable, which is not reproduced because no reading meets its single condition.",
+     "deviations": [
+      "One reading of the fit is applied to all three series alike, the adopted discrete KS fit; taking for each series whichever reading holds would give reproduced.",
+      "Under the four further seeds only grid (a) was run, with the exponent unbounded, for run time.",
+      "No code is linked for Algorithm 2; it is implemented from the pseudocode and Section IV (Eqs. 10, 12 to 14 and 16).",
+      "The exponent of every fit is unbounded (alpha in [1, inf)), an assumption: the locked powerlaw 2.0.0 caps the power-law alpha at 3 by default (Power_Law.DEFAULT_PARAMETER_RANGES) and its find_xmin discards every candidate xmin whose fit reaches the cap, while the estimator the paper cites (Clauset et al., ref. 36, Section 3) has no upper bound and neither had the package as its paper describes it (Alstott et al., ref. 37; releases 1.x require only alpha > 1). The paper gives no version. The capped fits are run beside the unbounded ones (readings with suffix _cap3). The capped fits are run under the claim's seed on grid (a)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's Algorithm 2 (Section IV), for which no code is linked",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-model-iet-shapes",
+     "statement": "The IET distribution of the model depends on the timescale series. With linear timescales it resembles that of the earthquakes, and with exponential timescales it is a power law reminiscent of the Wikipedia edits.",
+     "source": "Section IV, paragraph 11; Figure 4, left column, and Figure 2, left column",
+     "quote": "generated using a linear timescale series has a similar shape to that for the earthquake sequence, while the power-law IET distribution for the sequence based on the exponential timescales is reminiscent of that for the data on Wikipedia edits",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "model.ipynb",
+     "output": "claim:fig4-model-iet-shapes",
+     "notes": "Under the claim's seed tau_max is 1711.4 (linear, 0.127 below 1960), 21 390.9 (quadratic, within 10% of 20 800) and 61 320.3 (exponential, 0.249 below 81 600), so one of three is within tolerance. tau_max is an IET of the highest level the sequence reaches, which varies with the seed (levels 14 to 18 linear, 14 to 16 quadratic and 13 to 18 exponential, against 19, 14 and 16 for the paper's values); over the five seeds the values are within 10% in 2, 2 and 0 of 5. tau_min is 1.000 or 1.001 throughout, as in Figure 4. The comparison of shapes with the earthquake and Wikipedia sequences is not judged and cannot be made here; the model's P(tau) falls with log-log slopes of -2.27, -1.98 and -2.15 above tau = 10. The criterion defines no partial outcome; partially reproduced is used, as the protocol defines it, because one of the three expected values is within its tolerance and two are not.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's Algorithm 2 (Section IV), and the Wikipedia and earthquake data named in fig2-wikipedia-beta and fig2-earthquake-beta",
+     "proposed": null
+    },
+    {
+     "claim": "model-decremental-equivalent",
+     "statement": "The decremental algorithm (Algorithm 1) produces sequences statistically equivalent to those of the incremental algorithm (Algorithm 2), since the memory function of Eq. 9 encodes the whole merging-number distribution.",
+     "source": "Section IV, paragraphs 6 and 9",
+     "quote": "We omit the results for event sequences generated by the decremental algorithm since it produces statistically equivalent sequences as the incremental one.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "model.ipynb",
+     "output": "claim:model-decremental-equivalent",
+     "notes": "Under the literal set-up of Section IV (Algorithm 1 with the zeta distribution of Eq. 15, Algorithm 2 with the memory function of Eq. 16) the burst sizes differ at every relevant timescale of the three series under the claim's seed (23 of 23 on grid a, 113 of 113 on grid b; 22 to 25 and 105 to 114 over the five seeds), with KS D up to 0.4487, and the decremental sequence has more bursts at the lowest timescale (566 721 against 414 726, linear). Eq. 16 is not the memory function Eq. 9 gives for the zeta distribution (q(1) is 0.354 against 0.255; mean merging number 2.59 against 1.93). With both algorithms on one distribution (readings Z and Q) the differences are small (D at most 0.1874), but the criterion still rejects at 3 and 11 (Z) and 4 and 11 (Q) timescales under the claim's seed, as it does for two runs of the same algorithm (reference N, 4 and 11), so the KS criterion rejects even identical algorithms on these correlated sequences. Every reading is not reproduced under the claim's seed; reading Z passes under seed + 4000 (0 and 0 rejections), hence seed_sensitive. The literal reading is not reproduced under all five seeds. As a variant the verifier asked for, a test calibrated across runs takes the five runs of each algorithm as the units (mean KS distance between algorithms less within, averaged over grid (a), exact permutation over the 126 splits): L differs in all three series (p = 0.0079, the smallest possible, 0.024 after Bonferroni), two runs of one algorithm (N) differ in none (p 0.373 to 0.913), Z in none (p 0.429 to 0.857), and Q in the linear series only (p = 0.0079). It agrees with the criterion on L and finds the algorithms equivalent under Z; it does not decide the outcome. Whether the criterion's test can decide equivalence, since it rejects two runs of one algorithm, is asked of a reader (questions); the outcome stands under the calibrated test as well, as L differs there in all three series.",
+     "deviations": [
+      "The paper's \"statistically equivalent\" holds by construction when the decremental algorithm draws from the distribution whose memory function the incremental one uses. The three readings of the set-up (L literal, Z both zeta, Q both from Eq. 16) are all run, with two runs of Algorithm 2 as the reference of the test.",
+      "The relevant timescales of each comparison are those of the incremental sequence."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's Algorithms 1 and 2 (Section IV)",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "format_error",
+     "statement": "In Buddy-06272013, Cicero-09012014 and Gatsby-08022013 the spike train of unit id 2 is not sorted in time. Each is two sorted runs, the first of exactly 65 536 spikes (131 072 in Gatsby-08022013) starting in mid-session and running to the end of the recording, the second starting near the session's start. The power-of-two length suggests a fault in the conversion; whether the train holds one unit's spikes could not be told.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [
+      "000044"
+     ],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "older",
+     "seen_in": [
+      "0.210812.1516"
+     ],
+     "newest": "0.261106.0236"
+    },
+    {
+     "kind": "other",
+     "statement": "In Gatsby-08022013, 263 976 spikes (4.7%) fall after the end of the last epoch (30 413.6 s), up to 32 002.4 s, in no epoch.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [
+      "000044"
+     ],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "older",
+     "seen_in": [
+      "0.210812.1516"
+     ],
+     "newest": "0.261106.0236"
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The position series of the maze stores its sampling interval (0.0256 s) in the attribute rate of starting_time, which NWB defines in Hz. Read as a rate the series would last 3 154 777 s; read as an interval it lasts the 2067.5 s of the maze epoch.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [
+      "000044"
+     ],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "older",
+     "seen_in": [
+      "0.210812.1516"
+     ],
+     "newest": "0.261106.0236"
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "The units table ids of the cited version (id 18 for the paper's \"unit 9\") differ from those of the latest version (id 119 for the same row, with a cluster_id of 19), and neither holds the number the paper uses. The paper's unit can be found only as a row position, and only because its spike count and IETs match the paper's figure.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "severity": "minor",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [
+      "000044"
+     ],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "older",
+     "seen_in": [
+      "0.210812.1516"
+     ],
+     "newest": "0.261106.0236"
+    },
+    {
+     "kind": "other",
+     "statement": "No spike train is deposited twice (no two units share their spike count and first and last spike, within or across the eight sessions), and the spikes and the maze position share a clock (the excitatory population rate correlates with running speed at r = 0.618 at zero shift and at a median absolute r of 0.043 beyond 60 s). The epochs differ from the paper's description of 45 minutes of maze and four hours of rest each, with maze epochs of 0.57 to 1.54 h and first rest periods of 2.98 to 5.37 h.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "severity": "none",
+     "changes_results": false,
+     "checked": null,
+     "about": "data",
+     "datasets": [
+      "000044"
+     ],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null,
+     "scope": "older",
+     "seen_in": [
+      "0.210812.1516"
+     ],
+     "newest": "0.261106.0236"
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1: the handover of the first run (the executed notebooks with the conclusions and summary removed, the helper module and the claims file), with the paper under paper/. The verifier also queried the DANDI API for the dandiset's assets and ran powerlaw 2.0.0 on synthetic zeta samples.",
+     "agreed": 11,
+     "of": 14,
+     "disagreements": [
+      {
+       "claim": "fig2-neuron-beta-stable",
+       "outcome": "not_reproduced",
+       "reason": "Neither reading holds under any fit reading or grid. For example, ks_discrete on grid b has median 2.354, which is in the band, but its range is 0.705 against < 0.47 allowed. Beta is 2.6 to 2.9 for delta below about 130 to 180 ms, and only from 126 to 183 ms to 3000 ms (about 1.2 decades) do all estimates sit within 2.35 +/- 0.235. Removing the cap in problem 1 would only widen the range."
+      },
+      {
+       "claim": "fig2-neuron-merging-heavy-tail",
+       "outcome": "partially_reproduced",
+       "reason": "Support is robust, 15/15 (ks_continuous, grid a) and 72/76 (grid b). The IQR condition (0.38 to 0.43 against < 0.5) depends on an estimator that is bounded at alpha < 3 (problem 1). Six of the 15 grid-(a) gamma values sit at 2.93 to 2.99, which is that bound. Without the cap the IQR would very likely exceed 0.5, so only the first condition is secure."
+      },
+      {
+       "claim": "fig2-other-neurons-similar",
+       "outcome": "reproduced",
+       "reason": "Reproduced (fragile). The criterion is met under one reading. In set (b), ks_continuous gives 0.547 (grid a) and 0.560 (grid b), and x1_continuous gives 0.89 to 0.91. Set (a) passes only under x1_continuous (0.89). ks_discrete, the natural fit for integer data, gives 0.08 to 0.23. The set itself is questionable (problem 2)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-22",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2: the full executed notebooks of the revised run (reproduce_hiraoka_2025.ipynb, other_neurons.ipynb, other_neurons_cap3.ipynb, model.ipynb) with their conclusions and summary, the helper module, the claims file and this attempt record, with the paper under paper/.",
+     "agreed": 14,
+     "of": 14,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "other",
+     "statement": "The paper describes its neuronal data as recordings of pyramidal cells, but its representative unit (row 9 of Achilles-10252013) is labelled inhibitory in the cited version and interneuron in the latest. Which units the paper analysed, and whether it used the cell types, is not said. Under the KS fits the inhibitory units show the paper's pattern far more often than the pyramidal ones (0.68 to 0.74 of 128 against 0.23 to 0.45 of 562; in Achilles-10252013 alone 0.76 to 0.88 of 17 against 0.08 to 0.34 of 120).",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Section IV gives the zeta distribution (Eq. 15) as P(k) and calls Eq. 16 the memory function that Eq. 9 gives for it, but Eq. 9 applied to the zeta distribution gives q(1) = 0.255, not the 0.354 of Eq. 16. The incremental algorithm with Eq. 16 therefore draws merging numbers with P(K >= k) = k^-(gamma-1) (mean 2.59), and the decremental one with Eq. 15 draws zeta numbers (mean 1.93), so the two are not statistically equivalent as set up.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which power-law fit was used for burst sizes and merging numbers, discrete or continuous, and with xmin chosen by the KS distance or fixed? The paper cites Clauset et al. and the powerlaw package without its options or version. On this dataset the discrete fit with xmin by the KS distance gives the paper's beta of 2.35 for unit 9, and the choice decides whether other neurons show the pattern (23% of pyramidal units under it, 45% under the package's continuous default with xmin by the KS distance, 89% to 91% with the continuous fit from xmin = 1).",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which grid of timescales was used, and which units were meant by \"other sequences in the datasets\"? The Figure 2 labels fit a log-spaced grid of 40 steps of 0.0514 over the relevant range; this attempt used its 40 points below the upper end (55.2 to 5581.5 ms), since the upper end has fewer than 100 bursts. Whether all units or the pyramidal ones were analysed is not said. Which merging-number distribution did the decremental algorithm draw from, given that Eq. 16 is not the memory function of the zeta distribution?",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which release of powerlaw was used, and was the exponent bounded? Release 2.0.0 caps the power-law exponent at 3 by default and lets the cap move the KS choice of xmin; the method of Clauset et al. that the paper cites has no cap. On the representative unit the cap decides the collapse of the merging-number exponents (largest deviation from the median 0.490 capped, 0.538 unbounded, against a band of 0.5) and narrows the spread of beta at the smallest timescales (2.907 capped, 3.349 unbounded at 55 ms). This attempt assumed an unbounded exponent.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "severity": null,
+     "changes_results": false,
+     "checked": null,
+     "about": "paper",
+     "datasets": [],
+     "versions": [],
+     "fixed_in": null,
+     "notebook": null,
+     "output": null
+    }
+   ]
   }
  ],
  "entries": [
@@ -786,12 +1419,84 @@
    "python": "3.13",
    "pinned": 101,
    "hashed": false
+  },
+  {
+   "name": "hiraoka-2025",
+   "type": "reproduction",
+   "title": "Hierarchical organization of bursty trains in hippocampal spike trains (Hiraoka and Jo 2025)",
+   "description": "Tests the neuronal findings of Hiraoka and Jo (2025) on dandiset 000044, the hippocampal recordings of Grosmark and Buzsaki (2016) that the paper analyses. It finds the paper's representative unit, measures bursty trains and merging numbers across timescales, fits their power-law tails, and checks whether the other units, pyramidal and inhibitory, show the same pattern. It also runs the paper's two generative algorithms. The Wikipedia and earthquake sequences of the paper are not tested.",
+   "datasets": [
+    "dandi:000044"
+   ],
+   "papers": [
+    "10.1063/5.0296506"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_hiraoka_2025.ipynb",
+     "title": "Hiraoka and Jo (2025) on dandiset 000044, the representative neuron",
+     "cells": {
+      "sanity": "891d66b1",
+      "claim:fig2-neuron-representative-sequence": "e965311c",
+      "claim:fig2-iet-broad": "74eea0d1",
+      "claim:fig2-neuron-burst-size-heavy-tail": "815ab2f5",
+      "claim:fig2-neuron-beta-stable": "5889487e",
+      "claim:fig2-neuron-merging-heavy-tail": "1b869608",
+      "claim:fig2-neuron-merging-collapse": "c663651d",
+      "claim:fig2-exponents-above-two": "85f804e9",
+      "claim:fig2-neuron-beta-decrease-follows-gamma": "21354870"
+     },
+     "executed": null
+    },
+    {
+     "path": "other_neurons.ipynb",
+     "title": "Hiraoka and Jo (2025) on dandiset 000044, the other units",
+     "cells": {
+      "sanity": "1d83ca78",
+      "claim:fig2-other-neurons-similar": "69163034"
+     },
+     "executed": null
+    },
+    {
+     "path": "other_neurons_cap3.ipynb",
+     "title": "Hiraoka and Jo (2025) on dandiset 000044, the other units with the exponent capped at 3",
+     "cells": {
+      "sanity": "1d83ca78",
+      "claim:fig2-other-neurons-similar": "f5b518c3"
+     },
+     "executed": null
+    },
+    {
+     "path": "model.ipynb",
+     "title": "Hiraoka and Jo (2025), the dynamic generative algorithms of Section IV",
+     "cells": {
+      "sanity": "a1cb7903",
+      "claim:fig4-model-heavy-tails": "81088c42",
+      "claim:fig4-model-iet-shapes": "7c0b3808",
+      "claim:model-decremental-equivalent": "46c2561d"
+     },
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 23,
+   "hashed": true
   }
  ],
  "badge": {
-  "text": "3 findings reproduced",
-  "reproduced": 3,
+  "text": "10 findings reproduced \u00b7 2 papers",
+  "reproduced": 10,
   "papers": [
+   {
+    "doi": "10.1063/5.0296506",
+    "key": "hiraoka-2025",
+    "byline": "Hiraoka et al. 2025",
+    "title": "Hierarchical organization of bursty trains in event sequences",
+    "relation": "reuses",
+    "reproduced": 7,
+    "url": "https://encorescience.org/papers/hiraoka-2025/"
+   },
    {
     "doi": "10.1126/science.aad1935",
     "key": "grosmark-2016",
@@ -804,7 +1509,7 @@
   ],
   "url": "https://encorescience.org/datasets/dandi/000044/",
   "svg": "https://encorescience.org/badge/dandi/000044.svg",
-  "alt": "Encore: 3 findings reproduced, from DANDI:000044"
+  "alt": "Encore: 10 findings reproduced, from 2 papers, from DANDI:000044"
  },
  "badges": {
   "reproduced": "https://encorescience.org/badge/dandi/000044.svg",
