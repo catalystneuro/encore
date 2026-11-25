@@ -99,7 +99,7 @@ claims:
     baseline, while in short-ITI sessions a slowly decaying reward response does not resolve
     before the next trial.
   source: Results, paragraph on tonic dopamine (Fig. 4B); Figure 4B legend; Discussion,
-    paragraph 6
+    paragraph 7
   quote: long-ITI dopamine settled reliably below baseline ... while the short-ITI trace showed a
     slowly decaying reward response that did not resolve before the next trial (Fig. 4B)
   depends_on:
@@ -118,10 +118,12 @@ claims:
     sample. Baseline is read as ΔF/F of zero; the paper names no pre-cue baseline window. The
     paper reports no test for this panel; the test used is the one it uses for the matching
     stationary dip (Methods, Krausz dataset), a one-sample t-test across subjects of each
-    subject's mean tonic measure against zero, one-tailed as there. Reproduced when the long-ITI
-    measure is below zero at p < 0.05 under every reading, and, for the short-ITI part, the
-    across-subject mean ΔF/F of the last kept bin before the next cue in short-ITI trials is
-    above the long-ITI tonic measure; partially reproduced when only the long-ITI part holds.
+    subject's mean tonic measure against zero, one-tailed as there. For the short-ITI part,
+    "did not resolve" is read as the trace not having returned to baseline, so the
+    across-subject mean ΔF/F of the last kept bin before the next cue in short-ITI trials must
+    be above zero; the paper reports no test for it, so the value is reported with its SEM.
+    Reproduced when the long-ITI measure is below zero at p < 0.05 under every reading and the
+    short-ITI part holds; partially reproduced when only the long-ITI part holds.
     If the readings differ, the one the paper best supports is adopted as an assumption.
 - id: fig4d-dip-deepens-with-training
   statement: In long-ITI sessions the tonic dopamine dip deepens across training sessions (r =
@@ -261,8 +263,10 @@ claims:
   - krausz-included-observations
   criterion: Mean velocity and mean DA per distance to goal, averaged within rat then across
     rats (Methods). No test is named; per rat the Pearson r between distance and mean velocity,
-    tested across rats with a one-sample t-test. Reproduced when it is significant at p < 0.05;
-    the sign is reported, as the paper does not give it.
+    and per rat the Pearson r between mean DA and mean velocity across distance values, each
+    tested across rats with a one-sample t-test against zero. Reproduced when both are
+    significant at p < 0.05; partially reproduced when only the velocity and distance part is.
+    The signs are reported, as the paper does not give them.
 - id: fig2f-coupling-grows-near-goal
   statement: The within-position coupling of velocity and dopamine increases with proximity to
     the goal (r = -0.494, df = 18, p = 0.027).
@@ -425,3 +429,17 @@ claims:
   criterion: The analysis is in the supplement, which was not available, so its selection,
     measure and test are not known. A claim of absence must be judged on the paper's test,
     which cannot be named here; the claim is blocked until the supplement is read.
+checks:
+- date: 2026-11-25
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4b-long-iti-dip-below-baseline, source corrected from Discussion paragraph 6 to paragraph 7; paragraph 6 is the one on the recovered value function, and the tonic ITI dip is in paragraph 7 ("During periods where state variables...").
+  - fig4b-long-iti-dip-below-baseline, the short-ITI test compared the last bin with the long-ITI tonic measure, which is below zero and so passes even when the short-ITI trace has returned to baseline; the paper says the reward response "did not resolve before the next trial", so the test is now the last kept bin above baseline (ΔF/F of zero, the file's reading of baseline).
+  - fig2e-velocity-covaries-with-distance, the statement includes the Figure 2E legend's "Average dopamine and velocity covary across the distance to goal" but the criterion tested only velocity against distance; a test of the DA and velocity part, built the same way, was added.
+  - Open, the supplementary information was not in the text read. The Methods say "Further detailed methods are reported in the supplementary information", so it may settle details named open in the Figure 4 claims (ΔF/F formation, ITI reference point, the 20-observation rule, session numbering, how r was computed); the Figure 4 claims are testable from the main Methods with those readings named. figs2-no-velocity-coupling-without-goal stays blocked until the supplement is read.
+  - Open, the OSF code (https://osf.io/g3e2d/) was reported as not public, so no detail is settled by code.
+  - Open, fig4c-lick-rate-rises-with-training, the printed p ("p=so this 1e-4") is garbled and could be p = 1e-4 or p < 1e-4; it is recorded as 1e-4 and the criterion only needs p < 0.05, so the outcome does not depend on it.
+  - Open, fig2c-ramp-similar-early-late, the paper names no test for this claim of absence; the criterion borrows the paired t-test the Methods use for moving against stationary DA, and reads ramp amplitude as slope of DA on distance. Both are choices the paper does not make, and the outcome rests on them.
+  - Open, fig4b-long-iti-dip-below-baseline, the paper reports no test for the long-ITI dip; the one-sample one-tailed t-test is taken by analogy from the Krausz stationary dip, as the criterion says.
