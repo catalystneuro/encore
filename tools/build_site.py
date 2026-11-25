@@ -4538,9 +4538,10 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         here = (f'<a href="{root}papers/{e(paper["key"])}/">{e(paper["byline"])}</a> / Attempt {e(one["id"])}'
                 if one else e(paper["byline"]))
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
-               f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
-               f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
-               f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
+               # The line above the title gives the journal. The paper's byline, and the attempt on an attempt's
+               # page, are in the crumbs just above it, so they are not said again.
+               + (f'<p class="eyebrow">{e(journal_name(paper["doi"]))}</p>' if journal_name(paper["doi"]) else "")
+               + f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
                f'{authors_html(data, paper["doi"], root)}')
         # The result leads (the outcomes and the summary); what the paper is and which data were used are in a
         # column at the side, which goes under the result on a narrow screen.
