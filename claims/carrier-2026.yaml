@@ -1,0 +1,1078 @@
+# Claims for Carrier, Romano, Scaria, Palmer, O'Leary, Marder & Powell (2026), "The combined
+# effects of temperature and salinity on the stomatogastric nervous system of two species of
+# decapod crustacea", J Neurophysiol 135: 797-814, doi:10.1152/jn.00294.2025, tested on
+# Zenodo:17624449 (Part I, folder zenodo-17624449) and Zenodo:17794764 (Part II, folder
+# zenodo-17794764).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-25,
+# protocol as stated in docs/protocol.md (version pilot-19, Reader).
+#
+# Text read. The version of record (J Neurophysiol PDF, CC-BY 4.0), full text in
+# paper/10.1152-jn.00294.2025.txt: main text, Methods, figure legends 1 to 9, Table 1, Data
+# availability. The paper has no supplement and cites none. The PDF could not be rendered in this
+# run, so the bar heights of Figures 1E, 4E and 9 (percentages) were not read; only the numbers
+# the text states are used.
+#
+# Code read. None. The paper links no code repository; Data availability says "All data and
+# custom analysis scripts" are in the two Zenodo records. The archives' file lists show no
+# separate script files, so any scripts sit inside the data archives, which a reader does not
+# open. Burst detection, frequency and phase were computed with "custom Spike2 (CED) or MATLAB
+# (MathWorks) scripts" (Methods, Data Analysis and Statistics); regressions and two-sample tests
+# in GraphPad Prism; mixed-effects models of frequency in R (lme4, lmerTest); in vivo spectrograms
+# with MATLAB scripts by Ekaterina Morozova (ref. 56). The paper gives none of these scripts.
+#
+# The datasets, from their archive descriptions. Part I (zenodo-17624449) holds the raw data from
+# all dissected lobster (H. americanus) nervous systems and half of the crab (C. borealis)
+# nervous systems, with "meta data used to create the plots and graphs" (Excel, Prism, MATLAB and
+# CSV files). Part II (zenodo-17794764) holds the other half of the crab nervous systems and all
+# in vivo recordings of both species. So claims on isolated crab STNS rest on both folders, claims
+# on isolated lobster STNS on zenodo-17624449, claims comparing the two species on both, and in
+# vivo claims on zenodo-17794764.
+#
+# Data the paper used, as it reports them.
+# - Animals. Adult male C. borealis (Jonah crab), August 2022 to February 2024, kept at about
+#   11 C. Adult male and female H. americanus (American lobster), Summer 2021 to April 2024, kept
+#   at about 10 C. n is one animal or one nervous system.
+# - Isolated STNS, extracellular recordings of the lvn (PD, LP, PY), pdn (PD) and pyn (PY),
+#   digitised at 10 kHz (Micro 1401 with Spike2, or Digidata 1440 with pClamp).
+# - Salinity series at 10 C. 30 min baseline in 1x saline, then sequential 15-min applications of
+#   1.25x, 1.5x, 1.75x (increasing) or 0.75x, 0.5x, 0.25x (decreasing), stopping at the first
+#   crash. 0.25x only in initial experiments (n = 3). Crab preparations received both series
+#   (with 1 h of 1x between); lobster preparations one series each (separate sets).
+# - Temperature ramps. From 10 C in 2 C steps every 2 min until crash, then cooled. Combined
+#   experiments: 15 min at 10 C in 1x, 15 min in 0.75x or 1.25x, ramp; 15 min recovery at 10 C,
+#   then the other altered saline; order counterbalanced. Within-preparation 1x ramps serve as
+#   controls.
+# - Measured variables. PD burst frequency (pyloric frequency) from the final 30 s of each saline
+#   application or each 2-min temperature step; crash temperature of the rhythm and of each
+#   neuron; phases of PD off, LP on and off, PY on and off over ten cycles per step (lobster
+#   only).
+# - In vivo. PPG sensor (AMP03) over the pylorus, digitised at 5 kHz (Digidata 1440, pClamp).
+#   Animals moved from 1x artificial seawater (30 to 34 ppt, 10 to 12 C) to 0.75x, 0.5x, 0.25x,
+#   1.25x, 1.5x or 1.75x for 1 h; also 2.5 h (n = 6, not shown) and 15 h (n = 5) exposures, with
+#   deaths counted after 15 h.
+#
+# Method details used throughout, from the Methods.
+# - Q10. Pyloric frequency F against temperature T on a semi-log plot, m = dlogF/dT from a
+#   "nonlinear regression" in Prism, Q10 = 10^(10m), with a 95% CI. Slopes of two groups compared
+#   with Fisher's extra-sum-of-squares F test; a single group compared with zero slope. Open, and
+#   named in each Q10 claim: (Q-a) a least-squares fit of the semi-log model F = 10^(mT + b) on
+#   untransformed frequency, as Prism's semi-log nonlinear model does, or (Q-b) a linear fit of
+#   log10 F on T. The F test compares a model with one shared slope (separate intercepts) against
+#   separate slopes; the paper says it compares slopes, so the intercepts are left free. The
+#   degrees of freedom printed (for example F(1,171) with n = 11 over 10 to 24 C) fit a regression
+#   on every preparation's value at every step, not on step means; Fig. 3B (F(1,8)) is the
+#   exception, named in its claim.
+# - Crash. "the point at which two of the three pyloric motor neurons failed to rhythmically
+#   burst" (Methods); a neuron's crash is the loss of its bursts in the extracellular recording.
+#   The crash temperature is the ramp step at which this is seen (Fig. 2A, "At 26 C, this
+#   preparation crashed"). The burst detection criteria are not given (open); the analysis files
+#   the Part I description lists may hold the authors' per-preparation values, which are the
+#   paper's own reading of the recordings.
+# - Frequency. PD burst frequency over the final 30 s of the step. Whether it is the mean of
+#   1/period over the cycles or the number of PD bursts over 30 s is not given (open; it cannot
+#   change a mean by much, so mean of 1/period is the standard choice and the count is shown).
+# - Two-sample tests as each claim names (Shapiro-Wilk first, then paired or Welch t test,
+#   Wilcoxon signed-rank or Mann-Whitney U, alpha 0.05).
+# - Tolerances. Means are printed as mean plus or minus SD across preparations. The SD is the
+#   spread of preparations, not the uncertainty of the mean, so tolerances on means are the SEM
+#   computed from the stated SD and n, rounded up to two decimals. Q10 tolerances are half the
+#   width of the paper's 95% CI, and a Q10 also holds when it falls inside the printed CI.
+#
+# Inconsistencies in the text, named in the claims they touch: Fig. 4B legend n = 8, Results
+# n = 9; Fig. 4D legend labels the 1.25x comparison "1x and 0.75x" and gives P = 0.8, Results
+# P = 0.9; Fig. 3C legend says the PY-off phase changed with temperature, Results and Table 1 say
+# PY-on; the Fig. 9 legend puts crabs in panel A, the Results put lobsters in 9A; the Fig. 2
+# summary paragraph says 1.25x saline decreased pyloric frequency (Fig. 2F), the paragraph that
+# presents Fig. 2F says frequency rose similarly; crab crash temperatures in 1x are given as 29.3
+# (n = 11), 31.3 (n = 9) and 30.21 C (n = 21), for different sets of preparations; lobster 0.75x
+# ramps are n = 10 in Fig. 5C and n = 14 in Fig. 7A and 7D.
+schema_version: 2
+paper: doi:10.1152/jn.00294.2025
+claims:
+- id: fig1b-cb-075-frequency-unchanged
+  statement: In the isolated C. borealis STNS at 10 C, lowering saline from 1x to 0.75x does not
+    change pyloric frequency (1.18 plus or minus 0.2 Hz in both, paired t test P = 0.8, n = 10).
+  source: Results, The C. borealis Pyloric Rhythm Is Maintained across a Range of Salinity,
+    paragraph 2; Figure 1B
+  quote: the frequency of the pyloric rhythm was not affected by decreasing the saline
+    concentration
+  statistics:
+  - test: paired Student's t test
+    p: 0.8
+    n: 10 C. borealis preparations
+  expected:
+  - quantity: C. borealis pyloric frequency in 1x saline, 10 C
+    value: 1.18
+    tolerance: 0.07
+    unit: Hz
+  - quantity: C. borealis pyloric frequency in 0.75x saline, 10 C
+    value: 1.18
+    tolerance: 0.07
+    unit: Hz
+  criterion: A claim of absence, judged on the paper's test. Per preparation, PD burst frequency
+    over the final 30 s of the 15-min 1x baseline and of the 15-min 0.75x application (Methods,
+    Data Analysis and Statistics); a two-sided paired t test at alpha 0.05. Reproduced when P >
+    0.05 and the two means are within tolerance; the mean difference is reported either way.
+    Which 1x segment is the baseline (end of the 30-min baseline or the 1x period just before
+    the series) is not stated; both are shown.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig1d-cb-125-frequency-unchanged
+  statement: In the isolated C. borealis STNS at 10 C, raising saline from 1x to 1.25x does not
+    change pyloric frequency (1.2 plus or minus 0.1 Hz in both, paired t test P = 0.7, n = 10).
+  source: Results, The C. borealis Pyloric Rhythm Is Maintained across a Range of Salinity,
+    paragraph 3; Figure 1D
+  quote: Figure 1D shows that, similar to the application of the 0.75 ... saline did not alter the
+    pyloric frequency
+  statistics:
+  - test: paired Student's t test
+    p: 0.7
+    n: 10 C. borealis preparations
+  expected:
+  - quantity: C. borealis pyloric frequency in 1x saline, 10 C
+    value: 1.2
+    tolerance: 0.04
+    unit: Hz
+  - quantity: C. borealis pyloric frequency in 1.25x saline, 10 C
+    value: 1.2
+    tolerance: 0.04
+    unit: Hz
+  criterion: A claim of absence, judged on the paper's test, as in fig1b-cb-075-frequency-unchanged
+    with the 1.25x application. Reproduced when the paired t test gives P > 0.05 and both means are
+    within tolerance.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig1e-cb-salinity-crash-fractions
+  statement: At 10 C every C. borealis preparation kept its pyloric rhythm in 0.75x and 1.25x
+    saline, all crashed in 0.5x, all but one kept it in 1.5x, and all crashed in 1.75x; crashes
+    were reversible on return to 1x.
+  source: Results, The C. borealis Pyloric Rhythm Is Maintained across a Range of Salinity,
+    paragraph 4; Figure 1E
+  quote: All preparations in decreased saline concentrations maintained a regular pyloric rhythm in
+    0.75 ... but not in 0.5 ... All preparations withstood an increase in 1.25 ... and all but one
+    maintained rhythmicity in 1.5 ... All preparations crashed in 1.75
+  expected:
+  - quantity: fraction of C. borealis preparations crashed in 0.75x
+    value: 0
+    tolerance: 0
+  - quantity: fraction crashed in 0.5x
+    value: 1
+    tolerance: 0
+  - quantity: fraction crashed in 1.25x
+    value: 0
+    tolerance: 0
+  - quantity: preparations crashed in 1.5x
+    value: 1
+    tolerance: 0
+  - quantity: fraction crashed in 1.75x
+    value: 1
+    tolerance: 0
+  criterion: Counts, so exact. Crash as the Methods define it (two of the three pyloric neurons no
+    longer bursting) within the 15-min application. Denominators n = 10 at every salinity except
+    1.75x, n = 9 (Fig. 1E legend). Reproduced when every count matches; partially reproduced when
+    all but one salinity match.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2b-cb-crash-temp-075-unchanged
+  statement: In C. borealis, 0.75x saline does not change the crash temperature of the pyloric
+    rhythm (1x 29.3 plus or minus 4.5 C, 0.75x 30.6 plus or minus 2.5 C, Wilcoxon signed-rank P =
+    0.4, n = 11), though it lowers its variance (Levene's test P = 0.05).
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 2; Figure 2B
+  quote: There was no difference in crash temperatures between 1 ... and 0.75 ... applications
+    across preparations ... It did decrease the variance in crash temperature; Levene's test
+  statistics:
+  - about: crash temperature, 1x against 0.75x
+    test: Wilcoxon Mann-Whitney sign-rank test
+    p: 0.4
+    n: 11 C. borealis preparations
+  - about: variance of crash temperature, 1x against 0.75x
+    test: Levene's test
+    p: 0.05
+  expected:
+  - quantity: mean crash temperature in 1x
+    value: 29.3
+    tolerance: 1.36
+    unit: C
+  - quantity: mean crash temperature in 0.75x
+    value: 30.6
+    tolerance: 0.76
+    unit: C
+  criterion: A claim of absence for the means, judged on the paper's test, a two-sided Wilcoxon
+    signed-rank test on paired crash temperatures at alpha 0.05; reproduced when P > 0.05 and both
+    means are within tolerance. For the variance, Levene's test on the two sets; the paper prints P
+    = 0.05 as significant, so P <= 0.05 with the 0.75x SD lower is reproduced, and P up to 0.1
+    with the 0.75x SD lower is partially reproduced. Which centre Levene's test uses (mean, as in
+    Levene's original, or median, the Brown-Forsythe form) is not stated; both are shown.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2e-cb-crash-temp-125-lower
+  statement: In C. borealis, the pyloric rhythm crashes at a lower temperature in 1.25x than in
+    1x saline (31.3 plus or minus 4.3 against 26.2 plus or minus 3.1 C, paired t test P = 0.008,
+    n = 9), in every preparation tested.
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 4; Figure 2D and 2E
+  quote: the pyloric rhythm crashed at a lower temperature in 1.25 ... saline compared with 1 ...
+    This trend was observed for all preparations tested
+  statistics:
+  - test: paired Student's t test
+    p: 0.008
+    n: 9 C. borealis preparations
+  expected:
+  - quantity: mean crash temperature in 1x
+    value: 31.3
+    tolerance: 1.44
+    unit: C
+  - quantity: mean crash temperature in 1.25x
+    value: 26.2
+    tolerance: 1.04
+    unit: C
+  - quantity: preparations with a lower crash temperature in 1.25x than in 1x
+    value: 9
+    tolerance: 0
+  criterion: Per preparation, the crash temperature (ramp step of the crash) in the 1x and the
+    1.25x ramp; a two-sided paired t test. Reproduced when P < 0.05 with 1.25x lower and both means
+    within tolerance; partially reproduced when the test holds but a mean or the count of 9 of 9
+    does not.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2f-cb-125-frequency-rises
+  statement: In C. borealis, pyloric frequency rises with temperature in 1.25x saline much as in
+    1x saline, despite the earlier crash.
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 4; Figure 2F
+  quote: Despite crashing at a lower temperature, the pyloric frequency showed a similar increase
+    in frequency as temperature was increased
+  criterion: The paper shows this as a plot (Fig. 2F) and supports it with the Q10 comparison of
+    fig2h-cb-q10-125-unchanged, so it is judged by that claim's test over 10 to 24 C. Reproduced
+    when the 1.25x Q10 is above 1 (frequency rises) and the extra-sum-of-squares test finds no
+    difference from 1x. The Results summary paragraph says instead that 1.25x brought "a decrease
+    in the pyloric frequency (Fig. 2F)"; the mean frequency in 1.25x and in 1x at each step from
+    10 C to the 1.25x crash is shown so that both readings can be seen.
+  depends_on:
+  - fig2h-cb-q10-125-unchanged
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2g-cb-q10-075-unchanged
+  statement: In C. borealis between 10 and 24 C the Q10 of pyloric frequency is the same in 1x
+    and 0.75x saline (1.72 against 1.71; F(1,171) = 0.007, P = 0.94, n = 11).
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 5; Figure 2G
+  quote: We did not observe differences in the temperature dependencies between either 1 ... and
+    0.75
+  statistics:
+  - about: Q10 in 1x
+    ci:
+      level: 0.95
+      low: 1.54
+      high: 1.94
+  - about: Q10 in 0.75x
+    ci:
+      level: 0.95
+      low: 1.55
+      high: 1.89
+  - about: slope, 1x against 0.75x
+    test: Fisher's extra-sum-of-squares F test
+    statistic: F(1,171) = 0.007
+    p: 0.94
+    n: 11 C. borealis preparations
+  expected:
+  - quantity: Q10 of pyloric frequency, 1x, 10 to 24 C
+    value: 1.72
+    tolerance: 0.2
+  - quantity: Q10 of pyloric frequency, 0.75x, 10 to 24 C
+    value: 1.71
+    tolerance: 0.17
+  criterion: A claim of absence, judged on the paper's test. All preparations' frequencies at each
+    step from 10 to 24 C (Results, "we selected a limited range of temperature (10 C-24 C)"),
+    semi-log fit and Q10 = 10^(10m) as in the opening comment under readings Q-a and Q-b;
+    extra-sum-of-squares F test of a shared slope at alpha 0.05. Reproduced when P > 0.05 and both
+    Q10s are within tolerance under a reading; the denominator degrees of freedom are reported to
+    show the number of points used (171 + 4 = 175).
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2h-cb-q10-125-unchanged
+  statement: In C. borealis between 10 and 24 C the Q10 of pyloric frequency is the same in 1x
+    and 1.25x saline (1.67 against 1.70; F(1,148) = 0.087, P = 0.77, n = 9).
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 5; Figure 2H
+  quote: We did not observe differences in the temperature dependencies between either 1 ... or 1
+    ... 1.25
+  statistics:
+  - about: Q10 in 1x
+    ci:
+      level: 0.95
+      low: 1.56
+      high: 1.8
+  - about: Q10 in 1.25x
+    ci:
+      level: 0.95
+      low: 1.54
+      high: 1.89
+  - about: slope, 1x against 1.25x
+    test: Fisher's extra-sum-of-squares F test
+    statistic: F(1,148) = 0.087
+    p: 0.77
+    n: 9 C. borealis preparations
+  expected:
+  - quantity: Q10 of pyloric frequency, 1x, 10 to 24 C
+    value: 1.67
+    tolerance: 0.12
+  - quantity: Q10 of pyloric frequency, 1.25x, 10 to 24 C
+    value: 1.7
+    tolerance: 0.18
+  criterion: A claim of absence, judged on the paper's test, as in fig2g-cb-q10-075-unchanged with
+    the 1.25x ramps and their paired 1x ramps. Reproduced when P > 0.05 and both Q10s are within
+    tolerance under reading Q-a or Q-b.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2f-cb-mixed-model
+  statement: Over the full temperature range, a mixed-effects model of C. borealis pyloric
+    frequency finds an effect of temperature and of the temperature by salinity interaction, and
+    no effect of salinity alone.
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 6; Figure 2F legend
+  quote: This statistical model revealed an influence of temperature as well as a combined effect
+    of temperature and salinity on the pyloric frequency of C. borealis. Nonetheless, there was not
+    an effect of salinity alone on pyloric frequency
+  statistics:
+  - about: temperature
+    test: REML mixed-effects model, F test
+    statistic: F(1,21.82) = 43.92
+    p: 0.0001
+    p_relation: "<"
+    n: 11 C. borealis preparations
+  - about: temperature by salinity
+    test: REML mixed-effects model, F test
+    statistic: F(1,19.58) = 5.86
+    p: 0.025
+  - about: salinity
+    test: REML mixed-effects model, F test
+    statistic: F(1,18.61) = 2.04
+    p: 0.17
+  criterion: From the Methods, a linear mixed model (lme4) of pyloric frequency on temperature,
+    salinity and their interaction, random intercepts per animal, random slopes chosen by AIC,
+    BIC and Bayes factor, F tests with lmerTest (Satterthwaite degrees of freedom, the lmerTest
+    default, which the fractional df printed fit). Over every step up to each ramp's crash. Open,
+    with readings the paper allows. Which salinities enter (the legend sits under Fig. 2F, the
+    1.25x data, but n = 11 is the 0.75x set) are (S-a) 1x and 1.25x ramps; (S-b) 1x and 0.75x ramps;
+    (S-c) all three. Salinity enters with one degree of freedom, so as a number (0.75, 1, 1.25) or
+    a two-level factor. Response as frequency (F-a) or log frequency (F-b). Random slope candidates
+    are temperature, salinity or both. Reproduced when, under one reading, temperature and the
+    interaction have P < 0.05 and salinity P > 0.05; partially reproduced when two of the three
+    hold.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2i-cb-neuron-crash-counts
+  statement: In C. borealis in 1x saline all three pyloric neurons crashed at the same temperature
+    in 9 of 20 preparations, PY crashed in 14 of 20 and LP in all; in 0.75x PD crashed in 4 of 11
+    and LP and PY in all; in 1.25x PY crashed in 5 of 9, PD in 6 of 9 and LP in all.
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 7; Figure 2I to 2K
+  quote: in 9 of 20 preparations all three neurons crashed at the same temperature, and in 14 of 20
+    preparations, the PY neurons crashed. The LP neuron always crashed ... the PD neurons only
+    crashed in 4 of 11 preparations, whereas the LP and PY neurons crashed in all experiments ... in
+    5 of 9 preparations the PY neurons crashed and 6 of those 9 experiments included a loss of PD.
+    LP crashed in all experiments
+  expected:
+  - quantity: 1x preparations with all three neurons crashing at one temperature, of 20
+    value: 9
+    tolerance: 0
+  - quantity: 1x preparations with a PY crash, of 20
+    value: 14
+    tolerance: 0
+  - quantity: 1x preparations with a PD crash, of 20
+    value: 15
+    tolerance: 0
+  - quantity: 0.75x preparations with a PD crash, of 11
+    value: 4
+    tolerance: 0
+  - quantity: 1.25x preparations with a PY crash, of 9
+    value: 5
+    tolerance: 0
+  - quantity: 1.25x preparations with a PD crash, of 9
+    value: 6
+    tolerance: 0
+  criterion: Per ramp, each neuron's crash is the step at which its bursts stop in the lvn, pdn or
+    pyn recording (Methods); a neuron that bursts at the rhythm's crash step has not crashed. The
+    PD count in 1x (15) is the n of Fig. 2I. Reproduced when every count matches; partially
+    reproduced when each is within one. The 20 preparations in 1x pool the 1x ramps of both
+    combined sets (11 and 9).
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig2i-cb-neuron-crash-temps-similar
+  statement: In C. borealis the LP, PY and PD neurons crash at similar temperatures in 1x, 0.75x
+    and 1.25x saline, with no consistent crash order.
+  source: Results, Changes in Salinity Affect the Temperature Dependence of the Pyloric Cycle
+    Period, paragraph 7; Figure 2I to 2K
+  quote: We did not observe a difference in neuron crash temperature in 1 ... we did not observe
+    any difference in neuron crash temperature in either 0.75
+  statistics:
+  - about: 1x
+    test: REML mixed-effects model
+    statistic: F(0.57,7.67) = 1.14
+    p: 0.27
+    n: 20 LP, 14 PY, 15 PD
+  - about: 0.75x
+    test: REML mixed-effects model
+    statistic: F(1.71,11.28) = 2.68
+    p: 0.12
+    n: 11 LP, 11 PY, 4 PD
+  - about: 1.25x
+    test: REML mixed-effects model
+    statistic: F(1.25,5.62) = 1.61
+    p: 0.27
+    n: 9 LP, 5 PY, 6 PD
+  criterion: A claim of absence, judged on the paper's test. Per salinity, crash temperatures of
+    LP, PY and PD (those that crashed) in Prism's REML mixed-effects model for repeated measures
+    with missing values (neuron as the within-preparation factor, Geisser-Greenhouse correction,
+    which the fractional df printed show). Reproduced when P > 0.05 at all three salinities; not
+    reproduced when any is below 0.05. The mean crash temperature of each neuron is reported.
+  depends_on:
+  - fig2i-cb-neuron-crash-counts
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig3b-ha-frequency-q10
+  statement: In the isolated H. americanus STNS in 1x saline, pyloric frequency rises with
+    temperature between 10 and 28 C with a Q10 of 1.43, a slope different from zero.
+  source: Results, Increased Temperature Affects the Pyloric Rhythm in the H. americanus STNS,
+    paragraph 1; Figure 3B
+  quote: The pyloric frequency increased with increased temperature
+  statistics:
+  - about: Q10, 10 to 28 C
+    ci:
+      level: 0.95
+      low: 1.24
+      high: 1.66
+  - about: slope against zero
+    test: Fisher's F test
+    statistic: F(1,8) = 35.72
+    p: 0.0003
+  expected:
+  - quantity: Q10 of H. americanus pyloric frequency in 1x, 10 to 28 C
+    value: 1.43
+    tolerance: 0.21
+  criterion: Semi-log fit and Q10 as in the opening comment (readings Q-a and Q-b), 10 to 28 C,
+    the slope compared with zero by an extra-sum-of-squares F test. Open, which points are fitted.
+    F(1,8) fits ten points, the step means of Fig. 3B (10 to 28 C in 2 C steps), reading (P-a);
+    the Results later give the same Q10 with CI 1.30 to 1.59 over n = 19 (Fig. 7B), which fits all
+    preparations' points, reading (P-b). Reproduced when, under one reading, the slope differs
+    from zero at P < 0.05 and the Q10 is within tolerance.
+  datasets:
+  - zenodo-17624449
+- id: species-frequency-at-10c
+  statement: At 10 C in 1x saline the H. americanus pyloric rhythm is slower than the C. borealis
+    rhythm (0.56 against 1.21 Hz, Welch's t test P < 0.0001, n = 15 and 19).
+  source: Results, Increased Temperature Affects the Pyloric Rhythm in the H. americanus STNS,
+    paragraph 2
+  quote: the pyloric frequency of H. americanus was slower than that of C. borealis
+  statistics:
+  - test: Welch's t test
+    p: 0.0001
+    p_relation: "<"
+    n: 19 C. borealis and 15 H. americanus preparations
+  expected:
+  - quantity: C. borealis pyloric frequency at 10 C
+    value: 1.21
+    tolerance: 0.03
+    unit: Hz
+  - quantity: H. americanus pyloric frequency at 10 C
+    value: 0.56
+    tolerance: 0.03
+    unit: Hz
+  criterion: One value per preparation, the PD burst frequency at 10 C in 1x saline; two-sided
+    Welch's t test. Open, which 10 C recording and which preparations (the n of 19 and 15 matches
+    no other set the paper names). Readings (R-a) the first 10 C step of each preparation's first
+    1x ramp; (R-b) the 10 C baseline of the salinity series. Reproduced when, under one reading,
+    P < 0.05 with H. americanus slower and both means within tolerance; partially reproduced when
+    the test holds and the means do not.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig3c-ha-phase-constant
+  statement: In H. americanus between 10 and 18 C the phases of PD off, LP on, LP off and PY off
+    do not change with temperature (Q10 near 1); only the PY-on phase changes (Q10 1.233, P =
+    0.02).
+  source: Results, Increased Temperature Affects the Pyloric Rhythm in the H. americanus STNS,
+    paragraph 3; Table 1; Figure 3C
+  quote: Except for the PY-on phase, we did not observe any changes in the pyloric neuron phase
+    relationships between 10
+  statistics:
+  - about: PY-on phase slope against zero
+    test: extra-sum-of-squares F test
+    p: 0.02
+    n: 7 H. americanus preparations (6 at 16 C, 5 at 18 C)
+  expected:
+  - quantity: Q10 of PD-off phase
+    value: 0.887
+    tolerance: 0.08
+  - quantity: Q10 of LP-on phase
+    value: 0.971
+    tolerance: 0.12
+  - quantity: Q10 of LP-off phase
+    value: 1.03
+    tolerance: 0.15
+  - quantity: Q10 of PY-on phase
+    value: 1.233
+    tolerance: 0.19
+  - quantity: Q10 of PY-off phase
+    value: 1.004
+    tolerance: 0.08
+  criterion: Phases from ten cycles per step, each event's delay from the preceding PD onset over
+    that cycle's period (Methods), averaged per preparation and step, 10 to 18 C; semi-log fit and
+    Q10 as in the opening comment (Q-a, Q-b), each slope compared with zero by an extra-sum-of-
+    squares F test at alpha 0.05. Tolerances are Table 1's "95% CI" column, read as the CI
+    half-width; whether it is a half-width or a standard error is not stated. Which event is the
+    exception is inconsistent in the paper (Table 1 and Results say PY on, the Fig. 3C legend says
+    PY off); Table 1 is followed. Reproduced when only PY on has P < 0.05 and the Q10s are within
+    tolerance; partially reproduced when PY on alone differs from zero and some Q10s miss.
+  datasets:
+  - zenodo-17624449
+- id: fig4b-ha-075-frequency-unchanged
+  statement: In the isolated H. americanus STNS at 10 C, 0.75x saline does not change pyloric
+    frequency (0.72 plus or minus 0.1 Hz in both, paired t test P = 0.9).
+  source: Results, The Effects of Altered Salinity on the H. americanus Pyloric Rhythm, paragraph
+    1; Figure 4B
+  quote: Similar to what we observed in C. borealis, the H. americanus pyloric frequency was not
+    altered by this concentration
+  statistics:
+  - test: paired Student's t test
+    p: 0.9
+    n: 9 H. americanus preparations (Results); 8 in the Fig. 4B legend
+  expected:
+  - quantity: H. americanus pyloric frequency in 1x, 10 C
+    value: 0.72
+    tolerance: 0.04
+    unit: Hz
+  - quantity: H. americanus pyloric frequency in 0.75x, 10 C
+    value: 0.72
+    tolerance: 0.04
+    unit: Hz
+  criterion: A claim of absence, judged on the paper's test, a two-sided paired t test at alpha
+    0.05 on the final 30 s of 1x and of the 0.75x application, over the decreasing-salinity
+    preparations (n = 9 in the Results, 8 in the legend; all that reached 0.75x are used and the
+    count reported). Reproduced when P > 0.05 and both means are within tolerance.
+  datasets:
+  - zenodo-17624449
+- id: fig4d-ha-125-frequency-unchanged
+  statement: In the isolated H. americanus STNS at 10 C, 1.25x saline does not change pyloric
+    frequency (0.73 plus or minus 0.1 Hz in both, paired t test, n = 8).
+  source: Results, The Effects of Altered Salinity on the H. americanus Pyloric Rhythm, paragraph
+    2; Figure 4D
+  quote: Similarly to C. borealis, the H. americanus pyloric frequency was unchanged in 1.25
+  statistics:
+  - test: paired Student's t test
+    p: 0.9
+    n: 8 H. americanus preparations (the Fig. 4D legend prints P = 0.8)
+  expected:
+  - quantity: H. americanus pyloric frequency in 1x, 10 C
+    value: 0.73
+    tolerance: 0.04
+    unit: Hz
+  - quantity: H. americanus pyloric frequency in 1.25x, 10 C
+    value: 0.73
+    tolerance: 0.04
+    unit: Hz
+  criterion: A claim of absence, judged on the paper's test, as in fig4b-ha-075-frequency-unchanged
+    over the increasing-salinity preparations. Reproduced when P > 0.05 and both means are within
+    tolerance.
+  datasets:
+  - zenodo-17624449
+- id: fig4e-ha-salinity-crash-fractions
+  statement: At 10 C all H. americanus preparations kept a pyloric rhythm in 0.75x saline, a third
+    kept it in 0.5x, 1.5x crashed the rhythm in 1 of 8, and 0.25x was lethal in all.
+  source: Results, The Effects of Altered Salinity on the H. americanus Pyloric Rhythm, paragraphs
+    1 to 3; Figure 4E
+  quote: a third of preparations maintained a pyloric rhythm at this salinity ... all preparations
+    tested maintained a regular pyloric rhythm in 0.75 ... this concentration only completely
+    crashed the rhythm in 1 of 8 experiments
+  expected:
+  - quantity: fraction of preparations crashed in 0.75x, of 9
+    value: 0
+    tolerance: 0
+  - quantity: preparations crashed in 0.5x, of 9
+    value: 6
+    tolerance: 0
+  - quantity: preparations crashed in 1.5x, of 8
+    value: 1
+    tolerance: 0
+  - quantity: fraction crashed in 0.25x, of 3
+    value: 1
+    tolerance: 0
+  criterion: Counts, so exact; denominators from the Fig. 4E legend (0.25x n = 3, 0.5x n = 9, 0.75x
+    n = 9, 1.25x n = 8, 1.5x n = 8, 1.75x n = 7). Six of nine in 0.5x is the paper's "a third ...
+    maintained". The fractions at 1.25x and 1.75x are shown in the bar graph only, not read here,
+    and are reported. Reproduced when the four counts match; partially reproduced when three do.
+  datasets:
+  - zenodo-17624449
+- id: fig5b-ha-lp-crashes-before-py
+  statement: In H. americanus the LP neuron crashes at a lower temperature than the PY neurons in
+    each salinity (0.75x 25.6 against 30.4 C; 1x 21.9 against 27.8 C; 1.25x 19.9 against 25.0 C).
+  source: Results, The Effects of Combined Manipulations of Temperature and Salinity on the H.
+    americanus Pyloric Circuit, paragraph 2; Figure 5B
+  quote: At each salinity, the LP neuron crashed at a lower temperature than the PY neurons
+  statistics:
+  - about: 0.75x
+    test: paired Student's t test
+    p: 0.015
+    n: 13 H. americanus preparations
+  - about: 1x
+    test: paired Student's t test
+    p: 0.0006
+    n: 18 H. americanus preparations
+  - about: 1.25x
+    test: Wilcoxon signed-rank test
+    p: 0.002
+    n: 12 H. americanus preparations
+  expected:
+  - quantity: LP crash temperature, 0.75x
+    value: 25.6
+    tolerance: 1.56
+    unit: C
+  - quantity: PY crash temperature, 0.75x
+    value: 30.4
+    tolerance: 0.67
+    unit: C
+  - quantity: LP crash temperature, 1x
+    value: 21.9
+    tolerance: 0.95
+    unit: C
+  - quantity: PY crash temperature, 1x
+    value: 27.8
+    tolerance: 0.92
+    unit: C
+  - quantity: LP crash temperature, 1.25x
+    value: 19.9
+    tolerance: 0.9
+    unit: C
+  - quantity: PY crash temperature, 1.25x
+    value: 25
+    tolerance: 1.36
+    unit: C
+  criterion: Per ramp, the step at which LP bursts stop and the step at which PY bursts stop
+    (Methods). Per salinity, a two-sided paired t test (0.75x, 1x) or Wilcoxon signed-rank test
+    (1.25x) on preparations where both crashed. Reproduced when all three tests give P < 0.05 with
+    LP lower; partially reproduced for two of three. Means are reported against tolerance.
+  datasets:
+  - zenodo-17624449
+- id: fig5c-ha-mixed-model
+  statement: A mixed-effects model of H. americanus pyloric frequency over the full temperature
+    range finds effects of temperature, salinity and their interaction.
+  source: Results, The Effects of Combined Manipulations of Temperature and Salinity on the H.
+    americanus Pyloric Circuit, paragraph 4; Figure 5C
+  quote: The model revealed that each perturbation, as well as the combination, had an impact on
+    the H. americanus pyloric frequency
+  statistics:
+  - about: temperature
+    test: REML mixed-effects model, F test
+    statistic: F(1,78.45) = 53.27
+    p: 0.0001
+    p_relation: "<"
+    n: 10 (0.75x), 14 (1x), 8 (1.25x) H. americanus preparations
+  - about: salinity
+    test: REML mixed-effects model, F test
+    statistic: F(1,90.31) = 10.93
+    p: 0.001
+  - about: temperature by salinity
+    test: REML mixed-effects model, F test
+    statistic: F(1,114.53) = 30.68
+    p: 0.0001
+    p_relation: "<"
+  criterion: As in fig2f-cb-mixed-model (lme4, random intercepts per animal, random slopes chosen
+    by AIC, BIC and Bayes factor, lmerTest F tests), over every step to each ramp's crash, with
+    the three salinities. Open, salinity as a number (one df, as printed) or a factor, and
+    response as frequency (F-a) or log frequency (F-b). Reproduced when, under one reading, all
+    three terms have P < 0.05; partially reproduced for two.
+  datasets:
+  - zenodo-17624449
+- id: fig5d-ha-q10-salinity-unchanged
+  statement: In H. americanus the Q10 of pyloric frequency over the rising range does not differ
+    between 0.75x and its 1x controls (1.85 against 1.61, P = 0.063) or between 1.25x and its 1x
+    controls (1.48 against 1.87, P = 0.055).
+  source: Results, The Effects of Combined Manipulations of Temperature and Salinity on the H.
+    americanus Pyloric Circuit, paragraph 5; Figure 5D
+  quote: The Q10s were not different between each altered salinity compared with the 1
+  statistics:
+  - about: 1x against 0.75x
+    test: Fisher's extra-sum-of-squares F test
+    statistic: F(1,209) = 3.495
+    p: 0.063
+    n: 14 H. americanus preparations
+  - about: 1x against 1.25x
+    test: Fisher's extra-sum-of-squares F test
+    statistic: F(1,171) = 3.725
+    p: 0.055
+    n: 14 H. americanus preparations
+  - about: Q10, 1x controls of the 0.75x set
+    ci:
+      level: 0.95
+      low: 1.43
+      high: 1.82
+  - about: Q10, 0.75x
+    ci:
+      level: 0.95
+      low: 1.69
+      high: 2.05
+  - about: Q10, 1x controls of the 1.25x set
+    ci:
+      level: 0.95
+      low: 1.62
+      high: 2.18
+  - about: Q10, 1.25x
+    ci:
+      level: 0.95
+      low: 1.23
+      high: 1.8
+  expected:
+  - quantity: Q10, 1x controls of the 0.75x set
+    value: 1.61
+    tolerance: 0.2
+  - quantity: Q10, 0.75x
+    value: 1.85
+    tolerance: 0.18
+  - quantity: Q10, 1x controls of the 1.25x set
+    value: 1.87
+    tolerance: 0.28
+  - quantity: Q10, 1.25x
+    value: 1.48
+    tolerance: 0.29
+  criterion: A claim of absence, judged on the paper's test. Ranges from the Results, frequency
+    falls above 24 C in 0.75x and above 22 C in 1.25x, so fits run from 10 to 24 C (0.75x set) and
+    10 to 22 C (1.25x set), the within-preparation 1x controls over the same range (Results,
+    "across this limited temperature range"). Semi-log fit and Q10 as in the opening comment (Q-a,
+    Q-b); extra-sum-of-squares F test of a shared slope at alpha 0.05. Reproduced when both tests
+    give P > 0.05 and the four Q10s are within tolerance under a reading. Both printed P values
+    are near 0.05, so a result just below 0.05 is reported as not reproduced, with the size of
+    the difference.
+  datasets:
+  - zenodo-17624449
+- id: fig6a-ha-py-crash-temp-salinity
+  statement: H. americanus PY neurons crash at higher temperatures in 0.75x and lower temperatures
+    in 1.25x than in 1x saline (30.9, 27.7 and 24.5 C), each pair differing.
+  source: Results, The Effects of Combined Manipulations of Temperature and Salinity on the H.
+    americanus Pyloric Circuit, paragraph 6; Figure 6A
+  quote: We found that both neurons crashed at higher temperatures in 0.75 ... saline and crashed
+    at lower temperatures in 1.25 ... saline compared ... with 1 ... saline and compared with each
+    other
+  statistics:
+  - about: salinity effect
+    test: mixed-effects model
+    statistic: F(1.59,20.67) = 21.22
+    p: 0.0001
+    p_relation: "<"
+  - about: 0.75x against 1x
+    test: Holm-Sidak post hoc
+    p: 0.011
+    corrected: Holm-Sidak
+    n: 14 and 14
+  - about: 1x against 1.25x
+    test: Holm-Sidak post hoc
+    p: 0.004
+    corrected: Holm-Sidak
+    n: 14 and 14
+  - about: 0.75x against 1.25x
+    test: Holm-Sidak post hoc
+    p: 0.004
+    corrected: Holm-Sidak
+    n: 9 and 9
+  expected:
+  - quantity: PY crash temperature, 0.75x
+    value: 30.9
+    tolerance: 0.73
+    unit: C
+  - quantity: PY crash temperature, 1x
+    value: 27.7
+    tolerance: 1.07
+    unit: C
+  - quantity: PY crash temperature, 1.25x
+    value: 24.5
+    tolerance: 1.26
+    unit: C
+  criterion: Per preparation and salinity the PY crash temperature; Prism's REML mixed-effects
+    model with salinity as the repeated factor and Geisser-Greenhouse correction (fractional df as
+    printed), then Holm-Sidak comparisons of the three pairs (Methods, Data Analysis and
+    Statistics). Tolerances use n = 14 for each salinity (the pairwise n). Reproduced when the
+    model gives P < 0.05 and all three pairs differ at P < 0.05 in the stated direction; partially
+    reproduced when the model and two pairs hold.
+  depends_on:
+  - fig5b-ha-lp-crashes-before-py
+  datasets:
+  - zenodo-17624449
+- id: fig6b-ha-lp-crash-temp-salinity
+  statement: H. americanus LP neurons crash at higher temperatures in 0.75x and lower temperatures
+    in 1.25x than in 1x saline (25.6, 22.2 and 20.0 C), each pair differing.
+  source: Results, The Effects of Combined Manipulations of Temperature and Salinity on the H.
+    americanus Pyloric Circuit, paragraph 6; Figure 6B
+  quote: Similarly, the LP neuron temperature tolerance decreased as salinity was increased
+  statistics:
+  - about: salinity effect
+    test: mixed-effects model
+    statistic: F(1.566,27.40) = 12.24
+    p: 0.0004
+  - about: 0.75x against 1x
+    test: Holm-Sidak post hoc
+    p: 0.04
+    corrected: Holm-Sidak
+    n: 18 and 18
+  - about: 1x against 1.25x
+    test: Holm-Sidak post hoc
+    p: 0.013
+    corrected: Holm-Sidak
+    n: 19 and 19
+  - about: 0.75x against 1.25x
+    test: Holm-Sidak post hoc
+    p: 0.01
+    corrected: Holm-Sidak
+    n: 11 and 11
+  expected:
+  - quantity: LP crash temperature, 0.75x
+    value: 25.6
+    tolerance: 1.42
+    unit: C
+  - quantity: LP crash temperature, 1x
+    value: 22.2
+    tolerance: 0.97
+    unit: C
+  - quantity: LP crash temperature, 1.25x
+    value: 20
+    tolerance: 0.79
+    unit: C
+  criterion: As fig6a-ha-py-crash-temp-salinity, for LP. Tolerances use n = 18 for 0.75x and 1x
+    and n = 19 for 1.25x (the pairwise n).
+  depends_on:
+  - fig5b-ha-lp-crashes-before-py
+  datasets:
+  - zenodo-17624449
+- id: fig7a-species-q10-075
+  statement: In 0.75x saline between 10 and 30 C the Q10 of pyloric frequency is lower in H.
+    americanus than in C. borealis (1.40 against 1.72, F(1,250) = 12.18, P = 0.0006).
+  source: Results, Comparing Temperature Dependencies across Species at Each Salinity, paragraph
+    1; Figure 7A
+  quote: the H. americanus pyloric frequency had a lower Q10 compared with the change in pyloric
+    frequency in C. borealis
+  statistics:
+  - about: C. borealis Q10
+    ci:
+      level: 0.95
+      low: 1.6
+      high: 1.84
+  - about: H. americanus Q10
+    ci:
+      level: 0.95
+      low: 1.29
+      high: 1.53
+  - about: slope, C. borealis against H. americanus
+    test: Fisher's extra-sum-of-squares F test
+    statistic: F(1,250) = 12.18
+    p: 0.0006
+    n: 11 C. borealis and 14 H. americanus preparations
+  expected:
+  - quantity: C. borealis Q10 in 0.75x, 10 to 30 C
+    value: 1.72
+    tolerance: 0.12
+  - quantity: H. americanus Q10 in 0.75x, 10 to 30 C
+    value: 1.4
+    tolerance: 0.12
+  criterion: All preparations' 0.75x frequencies from 10 to 30 C (Results), semi-log fit and Q10 as
+    in the opening comment (Q-a, Q-b), extra-sum-of-squares F test of a shared slope. Reproduced
+    when P < 0.05 with H. americanus lower and both Q10s within tolerance under a reading;
+    partially reproduced when the test holds and a Q10 misses. The H. americanus n of 14 differs
+    from the 10 of Fig. 5C; all lobster 0.75x ramps are used and the count reported.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig7b-species-q10-1x-similar
+  statement: In 1x saline between 10 and 28 C the Q10 of pyloric frequency does not differ between
+    C. borealis and H. americanus (1.60 against 1.43, F(1,353) = 3.04, P = 0.082).
+  source: Results, Comparing Temperature Dependencies across Species at Each Salinity, paragraph
+    1; Figure 7B; Results, Increased Temperature Affects the Pyloric Rhythm in the H. americanus
+    STNS, paragraph 2
+  quote: Although we did not see a difference in the change in pyloric frequency between species
+    between 10
+  statistics:
+  - about: C. borealis Q10
+    ci:
+      level: 0.95
+      low: 1.52
+      high: 1.69
+  - about: H. americanus Q10
+    ci:
+      level: 0.95
+      low: 1.3
+      high: 1.59
+  - about: slope, C. borealis against H. americanus
+    test: Fisher's extra-sum-of-squares F test
+    statistic: F(1,353) = 3.04
+    p: 0.082
+    n: 21 C. borealis and 19 H. americanus preparations
+  expected:
+  - quantity: C. borealis Q10 in 1x, 10 to 28 C
+    value: 1.6
+    tolerance: 0.09
+  - quantity: H. americanus Q10 in 1x, 10 to 28 C
+    value: 1.43
+    tolerance: 0.15
+  criterion: A claim of absence, judged on the paper's test. All preparations' 1x frequencies from
+    10 to 28 C, semi-log fit and Q10 as in the opening comment (Q-a, Q-b), extra-sum-of-squares F
+    test of a shared slope at alpha 0.05. Reproduced when P > 0.05 and both Q10s are within
+    tolerance under a reading. Which 1x ramp counts when a preparation has two (one per combined
+    set) is not stated; n = 21 for C. borealis exceeds the 20 of Fig. 2I, so readings are (A-a)
+    every 1x ramp, (A-b) the first 1x ramp per preparation.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig7c-species-q10-125
+  statement: In 1.25x saline the Q10 of pyloric frequency is lower in H. americanus than in C.
+    borealis (1.25 against 1.61, F(1,175) = 9.371, P = 0.0026).
+  source: Results, Comparing Temperature Dependencies across Species at Each Salinity, paragraph
+    1; Figure 7C
+  quote: we did observe a difference in 1.25
+  statistics:
+  - about: C. borealis Q10
+    ci:
+      level: 0.95
+      low: 1.48
+      high: 1.76
+  - about: H. americanus Q10
+    ci:
+      level: 0.95
+      low: 1.1
+      high: 1.43
+  - about: slope, C. borealis against H. americanus
+    test: Fisher's extra-sum-of-squares F test
+    statistic: F(1,175) = 9.371
+    p: 0.0026
+    n: 10 C. borealis and 14 H. americanus preparations
+  expected:
+  - quantity: C. borealis Q10 in 1.25x
+    value: 1.61
+    tolerance: 0.14
+  - quantity: H. americanus Q10 in 1.25x
+    value: 1.25
+    tolerance: 0.17
+  criterion: Semi-log fit and Q10 as in the opening comment (Q-a, Q-b), extra-sum-of-squares F
+    test of a shared slope. The temperature range is not stated for 1.25x (Fig. 7 legend, "a
+    limited temperature range"). Readings (T-a) 10 to 22 C, the range the Results give for
+    lobster 1.25x (Fig. 5D); (T-b) 10 to 24 C, the crab range of Fig. 2H; (T-c) 10 to 28 C, as in
+    Fig. 7B. Reproduced when, under one reading, P < 0.05 with H. americanus lower and both Q10s
+    within tolerance; partially reproduced when the test holds and a Q10 misses.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig7e-species-crash-temp-1x
+  statement: In 1x saline the C. borealis pyloric rhythm crashes at a higher temperature than the
+    H. americanus rhythm (30.21 against 27.62 C, Welch's t test P = 0.047, n = 21 and 19).
+  source: Results, Comparing Temperature Dependencies across Species at Each Salinity, paragraph
+    1; Figure 7E
+  quote: we only observed a difference in crash temperature in 1
+  statistics:
+  - test: Welch's t test
+    p: 0.047
+    n: 21 C. borealis and 19 H. americanus preparations
+  expected:
+  - quantity: C. borealis crash temperature in 1x
+    value: 30.21
+    tolerance: 0.97
+    unit: C
+  - quantity: H. americanus crash temperature in 1x
+    value: 27.62
+    tolerance: 0.9
+    unit: C
+  criterion: One crash temperature per preparation in 1x (rhythm crash, Methods), two-sided Welch's
+    t test. Readings for preparations with two 1x ramps as in fig7b-species-q10-1x-similar (A-a,
+    A-b). Reproduced when, under one reading, P < 0.05 with C. borealis higher and both means
+    within tolerance; partially reproduced when the test holds and a mean misses.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig7df-species-crash-temp-075-125-similar
+  statement: In 0.75x and in 1.25x saline the two species' pyloric rhythms crash at similar
+    temperatures (0.75x 30.62 against 31.07 C, P = 0.99; 1.25x 27.28 against 24.26 C, P = 0.08).
+  source: Results, Comparing Temperature Dependencies across Species at Each Salinity, paragraph
+    1; Figure 7D and 7F
+  quote: we only observed a difference in crash temperature in 1
+  statistics:
+  - about: 0.75x
+    test: Wilcoxon Mann-Whitney U test
+    p: 0.99
+    n: 11 C. borealis and 14 H. americanus preparations
+  - about: 1.25x
+    test: Welch's t test
+    p: 0.08
+    n: 10 C. borealis and 14 H. americanus preparations
+  expected:
+  - quantity: C. borealis crash temperature in 0.75x
+    value: 30.62
+    tolerance: 0.76
+    unit: C
+  - quantity: H. americanus crash temperature in 0.75x
+    value: 31.07
+    tolerance: 0.7
+    unit: C
+  - quantity: C. borealis crash temperature in 1.25x
+    value: 27.28
+    tolerance: 1.43
+    unit: C
+  - quantity: H. americanus crash temperature in 1.25x
+    value: 24.26
+    tolerance: 1.29
+    unit: C
+  criterion: A claim of absence, judged on the paper's tests, a two-sided Mann-Whitney U test
+    (0.75x) and a two-sided Welch's t test (1.25x) at alpha 0.05. Reproduced when both give P >
+    0.05; not reproduced when either is below. Means are reported against tolerance and the
+    differences given either way.
+  datasets:
+  - zenodo-17624449
+  - zenodo-17794764
+- id: fig8-invivo-rhythm-maintained
+  statement: In intact animals of both species the pyloric rhythm, recorded by PPG, does not crash
+    during 1-h exposures to any seawater salinity from 0.25x to 1.75x, including those that crash
+    the isolated STNS.
+  source: Results, In Vivo, Both Species Withstand a Greater Salinity Range than the Isolated
+    Nervous System, paragraph 1; Figure 8A to 8D
+  quote: Importantly, we did not observe crashes in the pyloric rhythm in either species at either
+    increased or decreased salinity during these 1-h changes in saline concentration
+  expected:
+  - quantity: 1-h in vivo exposures with a crashed rhythm
+    value: 0
+    tolerance: 0
+  criterion: Per animal and exposure, a short-time Fourier transform spectrogram of the PPG signal
+    over 0 to 3 Hz (Methods); the rhythm is present when a distinct high-power band stands out in
+    the pyloric range, and crashed when no band is present (Results, Fig. 8 description). Samples
+    n = 6 crab and 5 lobster for decreased salinities, 6 and 5 for increased (Fig. 8 legend). Open,
+    with no parameter in the paper or a linked script, the STFT window and overlap (a standard
+    choice, 10-s windows with 50% overlap, cannot change whether a band exists), and when a band
+    counts as present. Readings (B-a) the peak power between 0.3 and 3 Hz exceeds three times the
+    median power of the same window in at least half the windows of the hour; (B-b) the same
+    measured over the first 30 min, the span Fig. 8 shows. Reproduced when every exposure keeps the
+    rhythm under both readings; partially reproduced when all but one do; the results of each
+    reading are shown.
+  datasets:
+  - zenodo-17794764
+- id: fig9-15h-mortality
+  statement: In 15-h exposures, crabs died only at 0.25x and 1.75x, while lobsters died at 0.25x,
+    1.5x and 1.75x and at higher rates, so C. borealis tolerates the salinity extremes better.
+  source: Results, In Vivo, Both Species Withstand a Greater Salinity Range than the Isolated
+    Nervous System, paragraph 2; Figure 9A and 9B
+  quote: Interestingly, C. borealis exhibited a greater tolerance than H. americanus to the
+    salinity extremes tested here
+  criterion: Per species and salinity, the fraction of the 5 animals that died during the 15-h
+    exposure (Fig. 9 legend). Reproduced when crab deaths occur only at 0.25x and 1.75x, lobster
+    deaths occur at 0.25x, 1.5x and 1.75x, and the lobster fraction is at least the crab fraction
+    at 0.25x and 1.75x with a higher total. The bar heights were not read; the Fig. 9 legend
+    names crabs in panel A and the Results name lobsters, and the legend text that describes each
+    panel's mortalities is followed. Whether survival records are in the dataset is for the author
+    to find; the deposit describes in vivo recordings.
+  datasets:
+  - zenodo-17794764
