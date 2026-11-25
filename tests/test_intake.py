@@ -116,6 +116,15 @@ def test_a_signature_from_anywhere_else_is_refused(over):
         intake.check_signature(attestation(**over), FORK)
 
 
+def test_a_signature_from_the_protocol_named_by_its_commit_passes():
+    # encore-runner names a release by its commit (an annotated tag breaks sequence.yml's own calls).
+    sha = "a698f8c1ab8218200a1a65f7be720bd31b5187df"
+    uri = f"https://github.com/encorescience/encore-protocol/.github/workflows/attempt.yml@{sha}"
+    assert intake.check_signature(attestation(buildSignerURI=uri), FORK).ref == sha
+    with pytest.raises(Refused):
+        intake.check_signature(attestation(buildSignerURI=uri[:-1]), FORK)   # not a whole commit
+
+
 def test_no_signature_is_refused():
     with pytest.raises(Refused):
         intake.check_signature([], FORK)
