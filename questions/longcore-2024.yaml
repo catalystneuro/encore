@@ -1,0 +1,61 @@
+# Questions from attempt longcore-2024-01 (author revision after verifier round 1, 2026-11-25) about
+# the claims file claims/longcore-2024.yaml, asked under docs/protocol.md, Author, step 1.6, and
+# "Hand over for verification". The attempt applied the criteria as written.
+dataset: DRYAD:t1g1jwtb0
+paper: doi:10.1242/jeb.247235
+questions:
+- claim: cfos-no-cct-difference
+  asked: 2026-11-25
+  question: The claims file takes the paper's 8.22 for the 3000 K group as an s.d., uses it as the
+    tolerance on that mean, and notes that the paper's means and s.d. give t near 1.28, not 0.9409.
+    The deposited values give s.d. 20.13 and s.e.m. 8.22 for that group, and t(10) = 0.9409 with the
+    s.d. of 20.13. Should the claims file read 8.22 as an s.e.m., drop the remark about t near 1.28,
+    and set the tolerance on the 3000 K mean from the s.d.?
+  passage: No differences were observed in the number of cFos positive cells in the SCN of WT mice
+    exposed to either 1950 K (123.7±17.89 s.d.) or 3000 K (113.4±8.22 s.d.) light (unpaired t-test,
+    t10=0.9409, P<0.3689). (Results, paragraph 4)
+  why: The outcome rests on the t-test and is the same either way (the mean, 113.40, is within both
+    tolerances). The question is whether the claims file's reasoning and the tolerance rest on an
+    error in the paper.
+- claim: glm-illuminance-cct-interaction
+  also: [aicc-individual-sex, sex-predicted-suppression, individual-variation, effect-size-illuminance-over-cct]
+  asked: 2026-11-25
+  question: The opening comment keeps the log link the Methods state as reading (a) and the identity
+    link as reading (b). The abstract calls the analysis a multiple linear regression, and the
+    identity link with illuminance in lux reproduces the paper's AICc differences, sex predictions,
+    their intervals and the extreme mouse effects, which the log link does not. Should the claims
+    file note the abstract's wording and treat the identity link as the paper's model?
+  passage: Multiple linear regression confirmed the influence of both CCT and intensity on changes in
+    activity, with the scaled effect size of intensity 3.6 times greater than that of CCT.
+    (Abstract); we built a generalized linear model with a normal distribution and log link function
+    (Methods, Photic suppression of nocturnal activity, paragraph 3)
+  why: The criteria accept either link, so no outcome changes. A reader of the claims file would see
+    which reading the paper's numbers support.
+- claim: glm-illuminance-cct-interaction
+  asked: 2026-11-25
+  question: The criterion tests the model with CCT, illuminance and their interaction only. Could
+    the paper's effect tests (P < 0.001, < 0.0001, < 0.0001, < 0.002) come from the model with mouse
+    identity added, which the next paragraph reports? In this attempt that model, with the identity
+    link and lux, meets every bound (interaction p 0.0007 likelihood ratio, 0.0013 Wald); the model
+    without either reaches p 0.0063 for the interaction.
+  passage: Mouse activity was associated with light conditions in a generalized linear model (P
+    <0.001), with significant contributions of illuminance (P <0.0001), spectrum (P <0.0001) and the
+    interaction term (P <0.002). (Results, paragraph 2); Sex and mouse ID were included in separate
+    models as additional explanatory factors (Methods, paragraph 3)
+  why: Under the criterion as written the claim is partially reproduced; with the model with mouse
+    identity among its readings it would be reproduced.
+- claim: cct-effect-grows-with-intensity
+  asked: 2026-11-25
+  question: The criterion measures the influence of CCT at each illuminance by the raw spread of the
+    CCT means, a choice of the claims file. The paper's sentence follows its GLM result and ties the
+    effect to the interaction term, so it may refer to the model. Should the criterion use the
+    spread of the GLM's predicted CCT means, now a variant?
+  passage: The influence of illuminance on mouse activity across the 0.01-50 lx range was several
+    times greater than the effect of CCT across the 1750-3000 K range, with the influence of CCT
+    decreasing at the lowest light strength. (Results, paragraph 2); spectrum becomes increasingly
+    important as intensity increases, as shown by the significant interaction term between CCT and
+    intensity (Discussion)
+  why: The raw spread is 9.28 at 0.01 lx and 5.64 at 0.5 lx, so it is not smallest at 0.01 lx and
+    the claim is not reproduced. The GLM spread is smallest at 0.01 lx under every reading, though a
+    model linear in illuminance for each CCT makes it grow almost by construction, and the
+    interaction p (0.0063) is above the paper's bound.

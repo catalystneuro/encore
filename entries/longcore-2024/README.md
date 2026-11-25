@@ -13,7 +13,7 @@ per-animal cFos counts in the SCN after 50 lx light at 1950 and 3000 K, and the 
 | At 0.01 lx, CCT had no significant effect | Reproduced |
 | Illuminance, CCT and their interaction each significant in the GLM | Partially reproduced |
 | Illuminance effect several times the CCT effect | Reproduced |
-| CCT effect smallest at the lowest illuminance, growing with illuminance | Partially reproduced |
+| CCT effect smallest at the lowest illuminance, growing with illuminance | Not reproduced |
 | Lower CCT suppressed activity less at equal lux | Reproduced |
 | AICc order: mouse identity, then sex, then neither | Reproduced |
 | Males suppressed less than females | Reproduced |
