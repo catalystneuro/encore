@@ -32,7 +32,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Every commit, without the contents of files that are not checked out: the queue needs the history
+          # of the branches, and the files of every earlier commit made this checkout take over five minutes.
           fetch-depth: 0
+          filter: blob:none
 
       - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
         run: bash tools/protocol.sh
