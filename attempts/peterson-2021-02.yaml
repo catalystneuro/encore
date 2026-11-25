@@ -508,6 +508,14 @@ findings:
     every file, a run of at least 25 exact zero samples (50 ms) within the 10 s around it; no other
     subject has such runs. The files do not say what the zeros mean. Leaving those electrodes out of
     each event changes no outcome of this attempt.
+- kind: metadata_error
+  severity: minor
+  found: on_prompt
+  statement: The electrode group descriptions and the data descriptor's Table 2 (doi
+    10.1038/s41597-022-01280-y) disagree for two subjects. sub-11 has groups LATD, LMTD and LTPD
+    described as depth (18 electrodes), where the descriptor gives 106 surface and no depth
+    electrodes; sub-10 has 78 electrodes in groups not described as depth and 48 in depth groups,
+    where the descriptor gives 86 and 40.
 verifications:
 - date: '2026-11-25'
   kind: agent
@@ -935,3 +943,111 @@ verifications:
       file's own flags (20 of 24 with band means, 19 with band medians), give the main set's 18 of 24
       as the alternative, and give S10 HFB's p under each electrode set. A deviation on the outcome
       states the assumption.
+reconciliation:
+  earlier: peterson-2021-01
+  date: '2026-11-25'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: earlier_findings.ipynb finds the ECoG starting_time of the three files now set to 30682.414,
+      30048.322 and 29240.566 s, so all 55 files end at 86400 s on the clock of the events, and S06 day
+      3 gives precentral HFB +1.95 dB with the ECoG read from its starting_time against -0.10 dB from 0
+      s. Finding 2 of peterson-2021-02 names the same three files, but its helper reads their ECoG from
+      0 s (ajile.py, session_spectral), so the ECoG it reports as ending early starts late.
+  - finding: 2
+    status: still_present
+    now: 1
+    note: Finding 1 of peterson-2021-02 reports the same 8088 events, 211 to 996 per subject (median
+      770.5), with nothing in the files marking the false positives or the events the paper used.
+  - finding: 3
+    status: still_present
+    now: 6
+    note: Finding 6 of peterson-2021-02 reports the same reach angle without a stated convention, in
+      image coordinates from -180 to 180 degrees, so that upward reaches are negative.
+  - finding: 4
+    status: still_present
+    now: 5
+    note: Finding 5 of peterson-2021-02 reports the same pose series labelled in meters and holding
+      pixels.
+  - finding: 5
+    status: still_present
+    now: 4
+    note: Finding 4 of peterson-2021-02 reports the same bimanual overlap described as a fraction, with
+      the same 1708 of 8088 values above 1 (up to 3.83).
+  - finding: 6
+    status: fixed
+    note: earlier_findings.ipynb finds session_start_time at 00:00:00+00:00 of its day in all 55 files,
+      the three files whose ECoG starts later included; their delay is now in the ECoG starting_time.
+  - finding: 7
+    status: still_present
+    now: 3
+    note: Finding 3 of peterson-2021-02 reports the same stretches of NaN ECoG samples, which the files
+      do not describe, in 125 events against the earlier 124.
+  - finding: 8
+    status: fixed
+    note: earlier_findings.ipynb finds sex and age in every file, 8 male and 4 female subjects with a
+      mean age of 29.42 years (SD 7.94), the paper's values.
+  - finding: 9
+    status: still_present
+    now: 11
+    note: Finding 11 of peterson-2021-02 reports the same seven subjects (sub-01, 02, 03, 09, 10, 11 and
+      12) with electrode groups described as depth, against the paper's five.
+  - finding: 10
+    status: still_present
+    now: 7
+    note: Finding 7 of peterson-2021-02 reports the same good flags differing between a subject's files
+      (bad in at least one file 3 to 32 per subject), with nothing saying which applies.
+  - finding: 11
+    status: still_present
+    now: 18
+    note: earlier_findings.ipynb finds in every file of S10 78 electrodes in groups not described as
+      depth and 48 in depth groups, and in S11 88 and 18 (LATD, LMTD and LTPD), as before. The
+      descriptor's counts are those of the earlier statement, as the descriptor is not in the repository.
+  - finding: 12
+    status: still_present
+    now: 14
+    note: Finding 14 of peterson-2021-02 asks the authors the same question, how segment power is pooled
+      over electrodes and frequencies for the 0 dB and 3 SD rules, and over which segments the SD is
+      taken.
+  - finding: 13
+    status: still_present
+    now: 15
+    note: Finding 15 of peterson-2021-02 asks the same question, which measure makes low-frequency
+      decreases more spatially widespread, with region counts tied and bins per frequency favouring the
+      low frequencies.
+  outcomes:
+  - claim: fig4-precentral-subject-variability
+    earlier: reproduced
+    cause: reading
+    choice: When a subject's files flag different electrodes as bad, which flags apply; the earlier
+      attempt took each subject's first file's flags, as the paper's code does, and this attempt the
+      electrodes good in every file, with each file's own flags as the variant it cites.
+    note: The outcome turns on part 1 for S09, whose precentral 76-100 Hz mean on this version with this
+      attempt's code is 0.097 dB with the first file's flags, against -0.039 dB with the electrodes good
+      in every file and -0.030 with each file's flags (earlier_findings.ipynb). Part 4 needs a tie-break
+      under every set, as S04 has 3 bins, tied with S03 and S05 behind S07 and S08 under the first
+      file's flags; the earlier attempt passed it with its interpolated width. This attempt's 2 bins for
+      S04 under each file's flags come from the ECoG of S04 day 3 read from 0 s (3 bins when it is read
+      from its starting_time).
+    confidence: medium
+  - claim: fig5-recording-day-effects
+    earlier: reproduced
+    cause: error
+    error_in: this
+    note: ajile.py, session_spectral, places each event at sample event time x 500 ("series starts at 0
+      s") and ignores the ECoG starting_time of sub-01 day 7, sub-04 day 3 and sub-06 day 3 (29240.566
+      to 30682.414 s), so their events were read about 8 h late, which gives the day effects of S01 LFB
+      (p = 0.047), S01 HFB (0.023) and S06 HFB (6.7e-11) where the paper has none. Read from the
+      starting_time with each file's flags, these give p = 0.777, 0.0546 and 0.847, and 23 of 24 pairs
+      agree, S10 HFB (p = 0.0935) the one left; with the first file's flags, the earlier attempt's set,
+      24 of 24 agree (earlier_findings.ipynb), so the choice of electrodes decides the rest.
+    confidence: medium
+  protocol: The pilot notes have a heading after pilot-13 only for pilot-14, which files records by
+    paper, with one claims file per paper and datasets that could not be used listed under
+    missing_datasets; the paper rests on one dandiset, so it changes nothing here. Pilot-15 to pilot-17
+    have no notes. From pilot-18 (docs/protocol.md) an attempt rates each finding about the data by
+    severity and the round-2 verifier reviews every critical rating; this attempt rated its findings
+    (one major, none critical), and the earlier attempt's were rated afterwards under findings_review.
+    No change touches a criterion or an analysis rule, and neither outcome difference comes from the
+    protocol.
