@@ -1,73 +1,44 @@
-"""Loading and measures for AJILE12, dandiset 000055, for Peterson et al. (2021), eNeuro.
+"""Loading and measures for Peterson et al. (2021) on DANDI:000055 (AJILE12).
 
-Peterson, Singh, Wang, Rao & Brunton (2021), "Behavioral and Neural Variability of Naturalistic
-Arm Movements", eNeuro 8(3), doi:10.1523/ENEURO.0007-21.2021.
+Everything is streamed from the archive at a pinned version; nothing is written to disk.
 
-Each NWB file holds one subject and one 24 h recording day: preprocessed ECoG at 500 Hz
-(`acquisition/ElectricalSeries`, stored in microvolts with a conversion of 1e-6 to volts), the
-electrode table (MNI x, y, z, group, `good`, and the paper's regression R2 per electrode), pose
-of nine key points at 30 frames per second (`processing/behavior/Position`, in pixels though the
-files say meters), the contralateral wrist movement events (`processing/behavior/ReachEvents`)
-and their ten features (`intervals/reaches`), and coarse behaviour labels (`intervals/epochs`).
-Files are streamed from the archive at the pinned version with remfile and h5py; nothing is
-written to disk.
+Where each parameter comes from:
 
-Where the parameters come from:
-
-- The spectral method follows the claims file's opening comment (Methods, "ECoG-event
-  synchronization and segmentation", and the paper's code at commit 04c6faf of
-  github.com/BruntonUWBio/naturalistic_arm_movements_ecog, config.py and tfr_utils.py):
-  10 s segments centred on each event; Morlet power at 1 to 121 Hz in 5 Hz steps with
-  n_cycles = f/4, decimated by 50 (10 Hz bins); the 0.5 s at each end cropped off (config
-  `pad_val`, `compute_tfr`), giving -4.5 to 4.5 s; 10*log10, with infinite values set to 0
-  (`compute_tfr`); the mean over -1.5 to -1 s subtracted per electrode and frequency
-  (`tfr_subtract_baseline(compute_mean=True)`). The code uses `tfr_morlet(use_fft=False)`;
-  here the same wavelets (MNE's `morlet`, zero mean) are convolved by FFT, as MNE does with
-  `use_fft=True`, which gives the same values away from the segment edges, and the edges are
-  cropped. A standard choice that cannot change a result; `segment_power` is checked against
-  MNE in the notebook.
-- Band power (Methods, "Single-event spectral power linear regression"; Figure 5 legend): 0 to
-  0.5 s, LFB 8-32 Hz (bins 11 to 31 Hz) and HFB 76-100 Hz (bins 76 to 96 Hz); the band mean
-  (Methods, "averaged") as the main measure and the code's median over time bins then over
-  frequency bins (Plot_banded_power_Fig5.ipynb) as a variant.
-- Bad segment rejection (Methods, "ECoG-event synchronization and segmentation": "discarding
+- Spectral method (claims file, opening comment, from the paper's Methods and code): Morlet
+  wavelet power at 1 to 121 Hz in 5 Hz steps with n_cycles = frequency / 4, MNE's wavelet
+  definition (sigma_t = n_cycles / (2 pi f), support of 5 sigma_t on each side, normalised;
+  zero_mean False, the MNE 0.19 default of the code), decimated by 50 samples (10 Hz bins at
+  500 Hz) aligned on the event, 10*log10 power. Because n_cycles / f is the same at every
+  frequency, every wavelet spans +-0.2 s, so power is computed only at the time bins used here
+  (-1.5 s to +1.0 s around onset); this gives the same values as convolving the whole 10 s
+  segment.
+- Baseline: each event's mean over the bins -1.5 to -1 s (inclusive) is subtracted, per
+  electrode and frequency (claims file).
+- Band power: bins 0 to 0.5 s (inclusive), LFB 11-31 Hz bins, HFB 76-96 Hz bins (claims file).
+  The band mean (Methods) and the band median (code: median over time, then over frequency)
+  are both returned.
+- Segment rejection (Methods, "ECoG-event synchronization and segmentation": "discarding
   segments with power <0 dB or with abnormally high power at 115-125 Hz (>3 SDs) compared with
-  all segments"). The paper's preprocessing code is not published, so how the segment's power
-  is summarised is an assumption: Welch power spectral density of each good electrode (1 s
-  Hann windows, half overlap, a standard choice) in microvolts squared per Hz, averaged over
-  1-200 Hz, converted to dB and averaged over good electrodes for the 0 dB test, and the same
-  over 115-125 Hz for the 3 SD test, the SD taken over all of a subject's segments. The other
-  reading, the mean of the log density, is returned as well (`segment_quality`).
-- Projection onto the eight regions uses the paper's projection matrices deposited on Figshare
-  (doi:10.6084/m9.figshare.12114408.v1, aal_XX_elecs2ROI.csv), read as the code
-  `load_project_spectral_power` reads them: the first row is the electrode density, the rows
-  whose mean is not zero are the electrodes in order, bad electrodes get weight 0 and each
-  region's weights are renormalised to sum to 1 (`rem_bad_chans=True` in the Figure 3 to 5
-  notebooks). The bad electrodes are those of the subject's first file, as the code takes the
-  bad list of the first file.
-- The wrist traces of Extended Data Figure 2-1 use the code's window (config
-  `metadata_pos_min_time = -1.5`, `baseline_vals_movement = [-1.5, -1]`) and a 1.5 s end,
-  as the claims file says.
-- Time of day: the files start at midnight local time (data descriptor, Methods: "each file
-  contained data from one entire 24-hour recording day that started and ended at midnight"),
-  so the hour of an event is its start time in the file divided by 3600.
-- Regression (claims file's opening comment; code regression_utils.py): forward selection over
-  design columns by OLS adjusted R2 (`_forward_selected_new`), unselected columns set to 0,
-  Huber regression with sklearn's HuberRegressor defaults over 200 day-balanced splits
-  (`train_test_split_day_balance`), Delta R2 by refitting with a feature shuffled, the SD of the
-  day and time-of-day one-hot coefficients, and the selection probability (`feat_select_prob`).
-  The Huber fits solve sklearn's objective by a batched Newton method (`huber_fit`), a standard
-  choice of solver that reaches the same minimum; the notebook compares it with sklearn. The
-  time-of-day bins are 0-8, 8-16 and 16-24 h without overlap (the code's bins share their edges,
-  which no event time hits exactly). The code tests whether a day or time-of-day feature was
-  selected by looking at one fixed column; here a feature counts as selected when any of its
-  columns is.
+  all segments"). The paper does not say how power is pooled over electrodes and
+  frequencies. Assumption: Welch PSD (1 s Hann windows) of the 10 s segment centred on the
+  event, averaged over the session's good electrodes; the segment's power is 10*log10 of the
+  mean PSD over 1-200 Hz, and its high-frequency power 10*log10 of the mean over 115-125 Hz,
+  compared with the mean + 3 SD over all of the subject's segments. Segments that run past the
+  ends of the recording, or that hold exact zeros on every electrode (the preprocessing zeroes
+  artifacts and breaks), count as missing data.
+- Good electrodes: the `good` column of each session's electrodes table (Methods: bad
+  electrodes removed). It differs between sessions of a subject; each event uses the flags of
+  its own session (assumption, stated in the notebook).
+- Region projection (claims file; Methods "Projecting power into regions of interest"): the
+  paper's own projection matrices from Figshare item 12114408 v1, rows matched to the
+  electrodes by order, bad electrodes weight 0, each region's weights renormalised to sum 1.
+- Pose windows for Extended Data Figure 2-1c: -1.5 to +1.5 s around onset at 30 Hz (claims
+  file criterion: baseline -1.5 to -1 s, window 0 to 1.5 s).
 """
 
-from __future__ import annotations
-
-import os
-from concurrent.futures import ProcessPoolExecutor
+import io
+import zlib
+from concurrent.futures import ThreadPoolExecutor
 
 import h5py
 import numpy as np
@@ -75,595 +46,623 @@ import pandas as pd
 import remfile
 import requests
 
-DANDISET_ID = "000055"
-DANDISET_VERSION = "0.220127.0436"
+DANDISET = "000055"
+VERSION = "0.261123.1703"
 API = "https://api.dandiarchive.org/api"
-
-FIGSHARE_ROI = "https://api.figshare.com/v2/articles/12114408/versions/1"
-ROI_COLUMNS = ["Frontal_Mid_L", "Precentral_L", "Postcentral_L", "Parietal_Inf_L",
-               "SupraMarginal_L", "Temporal_Sup_L", "Temporal_Mid_L", "Temporal_Inf_L"]
-ROI_NAMES = ["middle frontal", "precentral", "postcentral", "inferior parietal",
-             "supramarginal", "superior temporal", "middle temporal", "inferior temporal"]
+FIGSHARE_ITEM = 12114408  # ROI projection matrices and labels, version 1
 
 FS = 500.0
-SEG_HALF_S = 5.0                 # 10 s segments centred on the event
-PAD_S = 0.5                      # code: pad_val, cropped off each end
-FREQS = np.arange(1, 124, 5)     # code: np.arange(1, 124, 5) = 1, 6, ..., 121 Hz
-DECIM = 50                       # code: decim
-TIMES = np.round(np.arange(-SEG_HALF_S + PAD_S, SEG_HALF_S - PAD_S + 1e-9, DECIM / FS), 2)
-BASELINE = (-1.5, -1.0)          # Methods and code
-T_AVE = (0.0, 0.5)               # Methods: first 0.5 s after onset
-LFB = (8, 32)
-HFB = (76, 100)
-POSE_HZ = 30.0
-POSE_WIN = (-1.5, 1.5)           # code: metadata_pos_min_time; end of plotting axis
+FREQS = np.arange(1, 122, 5).astype(float)
+N_CYCLES = FREQS / 4.0
+DECIM = 50
+BIN_T = np.round(np.arange(-1.5, 1.0001, 0.1), 1)  # time bins kept, s
+BASE = (BIN_T >= -1.5) & (BIN_T <= -1.0)
+WIN = (BIN_T >= 0.0) & (BIN_T <= 0.5)
+LFB = (FREQS >= 8) & (FREQS <= 32)
+HFB = (FREQS >= 76) & (FREQS <= 100)
+SEG_HALF = 5.0  # 10 s segments centred on the event
+SHIFT_S = -3.0  # pseudo-onset for the clock check: 3 s before the event, inside the same segment
+ROIS = ["Frontal_Mid_L", "Precentral_L", "Postcentral_L", "Parietal_Inf_L",
+        "SupraMarginal_L", "Temporal_Sup_L", "Temporal_Mid_L", "Temporal_Inf_L"]
+ROI_NAMES = ["middle frontal", "precentral", "postcentral", "inferior parietal",
+             "supramarginal", "superior temporal", "middle temporal", "inferior temporal"]
+FEATURES = ["day", "time_of_day", "duration", "magnitude", "angle", "onset_speed",
+            "speech_ratio", "bimanual_ratio", "bimanual_overlap", "bimanual_class"]
 
 
-def asset_url(asset_id: str) -> str:
-    r = requests.get(f"{API}/assets/{asset_id}/download/", allow_redirects=False, timeout=60)
-    return r.headers["Location"]
-
-
-def list_assets() -> pd.DataFrame:
-    url = f"{API}/dandisets/{DANDISET_ID}/versions/{DANDISET_VERSION}/assets/?page_size=200"
+def list_assets():
+    """Assets of the pinned version, with subject and session parsed from the path."""
+    url = f"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/?page_size=200"
     rows = []
     while url:
-        d = requests.get(url, timeout=60).json()
-        for a in d["results"]:
-            p = a["path"]
-            sub = p.split("/")[0].split("-")[1]
-            day = int(p.split("_ses-")[1].split("_")[0])
-            rows.append({"path": p, "subject": sub, "day": day, "asset_id": a["asset_id"],
-                         "size_gb": a["size"] / 1e9})
-        url = d["next"]
-    return pd.DataFrame(rows).sort_values(["subject", "day"]).reset_index(drop=True)
+        r = requests.get(url, timeout=60).json()
+        rows += r["results"]
+        url = r["next"]
+    df = pd.DataFrame([{"path": a["path"], "asset_id": a["asset_id"], "size": a["size"]} for a in rows])
+    df["subject"] = df.path.str.extract(r"sub-(\d+)/")[0].astype(int)
+    df["session"] = df.path.str.extract(r"_ses-(\d+)_")[0].astype(int)
+    return df.sort_values(["subject", "session"]).reset_index(drop=True)
 
 
-def _open(asset_id):
-    return h5py.File(remfile.File(asset_url(asset_id)), "r")
+def s3_url(asset_id):
+    return requests.head(f"{API}/assets/{asset_id}/download/", allow_redirects=True, timeout=60).url
 
 
-def _s(v):
+def open_nwb(asset_id):
+    url = s3_url(asset_id)
+    return h5py.File(remfile.File(url), "r"), url
+
+
+def _txt(v):
     return v.decode() if isinstance(v, bytes) else v
 
 
-def read_session(asset_id: str) -> dict:
-    """Metadata, electrodes, events with their features, and wrist traces of one file."""
-    f = _open(asset_id)
-    out = {"asset_id": asset_id,
-           "subject_id": _s(f["general/subject/subject_id"][()]),
-           "species": _s(f["general/subject/species"][()]),
-           "session_id": _s(f["general/session_id"][()]),
-           "session_start_time": _s(f["session_start_time"][()])}
-    subj_keys = list(f["general/subject"].keys())
-    out["subject_fields"] = subj_keys
+def load_session_meta(asset_id):
+    """Small datasets of one file: subject, electrodes, reaches, epochs, series shapes."""
+    f, _ = open_nwb(asset_id)
     e = f["general/extracellular_ephys/electrodes"]
-    el = pd.DataFrame({c: e[c][:] for c in ["x", "y", "z", "group_name", "good", "low_freq_R2",
-                                             "high_freq_R2", "standard_deviation", "kurtosis"]})
-    el["group_name"] = el["group_name"].map(_s)
-    el["location"] = [_s(v) for v in e["location"][:]]
-    out["group_desc"] = {g: _s(f[f"general/extracellular_ephys/{g}"].attrs["description"])
-                         for g in f["general/extracellular_ephys"].keys()
-                         if g != "electrodes"}
-    out["electrodes"] = el
+    el = pd.DataFrame({k: e[k][:] for k in e.keys() if k != "group"})
+    for c in ("group_name", "location"):
+        el[c] = el[c].map(_txt)
+    rt = f["intervals/reaches"]
+    reaches = pd.DataFrame({k: rt[k][:] for k in rt.keys()})
+    ep = f["intervals/epochs"]
+    epochs = pd.DataFrame({k: ep[k][:] for k in ep.keys()})
+    epochs["labels"] = epochs["labels"].map(_txt)
+    groups = {k: _txt(v.attrs.get("description", "")) for k, v in f["general/extracellular_ephys"].items()
+              if isinstance(v, h5py.Group) and v.attrs.get("neurodata_type") in (b"ElectrodeGroup", "ElectrodeGroup")}
     es = f["acquisition/ElectricalSeries"]
-    out["ecog_shape"] = es["data"].shape
-    out["ecog_rate"] = float(es["starting_time"].attrs["rate"])
-    out["ecog_start"] = float(es["starting_time"][()])
-    out["ecog_unit"] = _s(es["data"].attrs["unit"])
-    out["ecog_conversion"] = float(es["data"].attrs["conversion"])
-    out["ecog_electrodes"] = es["electrodes"][:]
-    r = f["intervals/reaches"]
-    ev = pd.DataFrame({c: r[c][:] for c in r.attrs["colnames"]})
-    ev.columns = [_s(c) for c in ev.columns]
-    out["reach_columns"] = list(ev.columns)
-    ev["duration"] = ev["stop_time"] - ev["start_time"]
-    out["events"] = ev
-    re_ = f["processing/behavior/ReachEvents"]
-    out["reach_event_desc"] = _s(re_.attrs["description"])
-    out["reach_event_times"] = re_["timestamps"][:]
-    lab = [_s(v) for v in f["intervals/epochs/labels"][:]]
-    out["epochs"] = pd.DataFrame({"start": f["intervals/epochs/start_time"][:],
-                                  "stop": f["intervals/epochs/stop_time"][:], "label": lab})
     pos = f["processing/behavior/Position"]
-    out["pose_names"] = list(pos.keys())
-    out["pose_shape"] = pos["R_Wrist/data"].shape
-    out["pose_rate"] = float(pos["R_Wrist/starting_time"].attrs["rate"])
-    out["pose_start"] = float(pos["R_Wrist/starting_time"][()])
-    out["pose_unit"] = _s(pos["R_Wrist/data"].attrs["unit"])
-    # Wrist traces around each event, both wrists, -1.5 to 1.5 s at 30 frames per second.
-    n = int(round((POSE_WIN[1] - POSE_WIN[0]) * POSE_HZ)) + 1
-    tr = {}
-    for w in ["L_Wrist", "R_Wrist"]:
-        d = pos[f"{w}/data"]
-        arr = np.full((len(ev), n, 2), np.nan)
-        for k, t0 in enumerate(ev["start_time"].values):
-            i0 = int(round((t0 - out["pose_start"] + POSE_WIN[0]) * out["pose_rate"]))
-            if i0 >= 0 and i0 + n <= d.shape[0]:
-                arr[k] = d[i0:i0 + n, :]
-        tr[w] = arr
-    out["wrist"] = tr
+    out = dict(
+        asset_id=asset_id,
+        subject_id=_txt(f["general/subject/subject_id"][()]),
+        age=_txt(f["general/subject/age"][()]),
+        sex=_txt(f["general/subject/sex"][()]),
+        session_id=_txt(f["general/session_id"][()]),
+        session_start=_txt(f["session_start_time"][()]),
+        session_description=_txt(f["session_description"][()]),
+        electrodes=el, groups=groups, reaches=reaches, epochs=epochs,
+        event_times=f["processing/behavior/ReachEvents/timestamps"][:],
+        event_wrist=_txt(f["processing/behavior/ReachEvents"].attrs["description"]),
+        ecog_shape=es["data"].shape,
+        ecog_rate=float(es["starting_time"].attrs["rate"]),
+        ecog_start=float(es["starting_time"][()]),
+        ecog_conversion=float(es["data"].attrs["conversion"]),
+        ecog_unit=_txt(es["data"].attrs["unit"]),
+        ecog_chunks=es["data"].chunks,
+        es_electrodes=es["electrodes"][:],
+        pose_series=sorted(pos.keys()),
+        pose_shape=pos["R_Wrist/data"].shape,
+        pose_rate=float(pos["R_Wrist/starting_time"].attrs["rate"]),
+        pose_start=float(pos["R_Wrist/starting_time"][()]),
+        pose_unit=_txt(pos["R_Wrist/data"].attrs["unit"]),
+    )
     f.close()
     return out
 
 
-def load_sessions(assets: pd.DataFrame, workers: int = 8) -> list[dict]:
-    with ProcessPoolExecutor(workers) as ex:
-        res = list(ex.map(read_session, assets["asset_id"]))
-    for r, (_, a) in zip(res, assets.iterrows()):
-        r["subject"], r["day"], r["path"] = a["subject"], a["day"], a["path"]
-    return res
+def load_all_meta(assets, workers=12):
+    with ThreadPoolExecutor(workers) as ex:
+        return list(ex.map(load_session_meta, assets.asset_id))
 
 
 def fold_angle(a):
-    """Reach angle folded to -90 (down) to 90 (up) degrees, if not already."""
-    a = np.asarray(a, float) % 360
-    out = np.where(a > 270, a - 360, a)
-    out = np.where((a >= 90) & (a <= 270), 180 - a, out)
+    """Fold reach angles (degrees, -180 to 180) to -90..90 (Methods: 90-270 mapped to 90..-90).
+
+    An angle a in (90, 270) (that is, a > 90 or a < -90) becomes 180 - a, wrapped to -90..90.
+    """
+    a = np.mod(np.asarray(a, float), 360.0)
+    out = np.where(a <= 90, a, np.where(a >= 270, a - 360, 180 - a))
     return out
 
 
-# ---------------------------------------------------------------- regions of interest
-
-def roi_files() -> dict:
-    d = requests.get(FIGSHARE_ROI, timeout=60).json()
-    return {f["name"]: (f["download_url"], f["computed_md5"]) for f in d["files"]}
-
-
-def read_roi_matrix(subject: str, files: dict) -> pd.DataFrame:
-    url, _ = files[f"aal_{subject}_elecs2ROI.csv"]
-    return pd.read_csv(url)
-
-
-def roi_weights(df: pd.DataFrame, good: np.ndarray, normalise: bool = True) -> np.ndarray:
-    """Electrodes x 8 weights as load_project_spectral_power(rem_bad_chans=True) builds them.
-    With `normalise=False`, the rows of the file for every electrode, as they are.
-
-    The code keeps the rows whose mean is not zero. Where the file has one row per electrode
-    of the NWB file (10 of 12 subjects, with all-zero rows for some depth electrodes), every
-    row is kept in order, so that the zero rows stay with their electrodes; where it has more
-    rows (S01: 98 rows, the last four all zero, for 94 electrodes), the code's rule is used.
-    """
-    if len(df) - 1 == len(good):
-        rows = np.arange(1, len(df))       # one row per electrode, in the file's order
-    else:
-        rows = np.nonzero(df.transpose().mean().values != 0)[0][1:]   # the code's rule
-    w = df.iloc[rows][ROI_COLUMNS].to_numpy(float)
-    if len(w) != len(good):
-        raise ValueError(f"{len(w)} projection rows for {len(good)} electrodes")
-    if not normalise:
-        return w
-    w[~good] = 0
-    return w / w.sum(0, keepdims=True)
+def event_table(metas):
+    """One row per reach event, with the ten features of the paper."""
+    rows = []
+    for m in metas:
+        r = m["reaches"].copy()
+        r["subject"] = int(m["subject_id"])
+        r["day"] = int(m["session_id"])
+        r["asset_id"] = m["asset_id"]
+        r["ev_index"] = np.arange(len(r))
+        rows.append(r)
+    ev = pd.concat(rows, ignore_index=True)
+    ev["time_of_day"] = ev.start_time / 3600.0  # hours after midnight (session_description)
+    ev["duration"] = ev.stop_time - ev.start_time
+    ev["magnitude"] = ev.Reach_magnitude_px
+    ev["angle_raw"] = ev.Reach_angle_degrees
+    # The stored angle is in image coordinates (y grows downward; checked against the pose in
+    # the notebook). The code negates it before folding, so that +90 is upward (Methods).
+    ev["angle"] = fold_angle(-ev.Reach_angle_degrees.values)
+    ev["onset_speed"] = ev.Onset_speed_px_per_sec
+    ev["speech_ratio"] = ev.Speech_ratio
+    ev["bimanual_ratio"] = ev.Bimanual_ratio.fillna(0.5)
+    ev["bimanual_overlap"] = ev.Bimanual_overlap
+    ev["bimanual_class"] = ev.Bimanual_class
+    return ev
 
 
-# ---------------------------------------------------------------- spectral power
+# ----------------------------------------------------------------------------- figshare inputs
 
-def _band_idx(band):
-    return np.nonzero((FREQS >= band[0]) & (FREQS <= band[1]))[0]
-
-
-def _tidx(lo, hi):
-    return np.nonzero((TIMES >= lo - 1e-9) & (TIMES <= hi + 1e-9))[0]
+def figshare_files():
+    r = requests.get(f"https://api.figshare.com/v2/articles/{FIGSHARE_ITEM}/versions/1", timeout=60).json()
+    return {f["name"]: f["download_url"] for f in r["files"]}, r
 
 
-_WAVELET_FFT = {}
+def load_projection(subject, files):
+    """Projection matrix (rows = electrodes in file order, columns = AAL regions) and centroids."""
+    m = pd.read_csv(io.StringIO(requests.get(files[f"aal_{subject:02d}_elecs2ROI.csv"], timeout=60).text))
+    c = pd.read_csv(io.StringIO(requests.get(files[f"aal_{subject:02d}_ROIcentroids_Lside.csv"], timeout=60).text))
+    return m, c
 
 
-def _wavelet_fft(n_fft: int) -> np.ndarray:
-    """FFTs of MNE's Morlet wavelets (mne.time_frequency.morlet, zero_mean=True) for FREQS."""
-    if n_fft not in _WAVELET_FFT:
-        ws = []
-        for f, nc in zip(FREQS, FREQS / 4.0):
-            sigma_t = nc / (2.0 * np.pi * f)
-            t = np.arange(0.0, 5.0 * sigma_t, 1.0 / FS)
-            t = np.r_[-t[::-1], t[1:]]
-            osc = np.exp(2.0 * 1j * np.pi * f * t) - np.exp(-2.0 * (np.pi * f * sigma_t) ** 2)
-            w = osc * np.exp(-(t ** 2) / (2.0 * sigma_t ** 2))
-            w /= np.sqrt(0.5) * np.linalg.norm(w.ravel())
-            ws.append(w)
-        _WAVELET_FFT[n_fft] = (np.array([np.fft.fft(w, n_fft) for w in ws]),
-                               np.array([len(w) for w in ws]))
-    return _WAVELET_FFT[n_fft]
+# ----------------------------------------------------------------------------- spectral
+
+def morlet_bank():
+    """MNE's Morlet wavelets (mne.time_frequency.morlet, zero_mean=False), one column per frequency."""
+    sigma_t = N_CYCLES / (2.0 * np.pi * FREQS)
+    ws = []
+    for f, s in zip(FREQS, sigma_t):
+        t = np.arange(0.0, 5.0 * s, 1.0 / FS)
+        t = np.r_[-t[::-1], t[1:]]
+        w = np.exp(2j * np.pi * f * t) * np.exp(-t ** 2 / (2.0 * s ** 2))
+        w /= np.sqrt(0.5) * np.linalg.norm(w.ravel())
+        ws.append(w)
+    n = max(len(w) for w in ws)
+    bank = np.zeros((n, len(FREQS)), complex)
+    for i, w in enumerate(ws):
+        o = (n - len(w)) // 2
+        bank[o:o + len(w), i] = w
+    return bank
 
 
-def segment_power(x: np.ndarray) -> np.ndarray:
-    """x: electrodes x samples (10 s, microvolts) -> electrodes x freqs x times, dB, cropped.
-
-    Convolution with each wavelet by FFT, 'same' mode as in mne.time_frequency.tfr_array_morlet
-    (use_fft=True), then every 50th sample, cropped to TIMES, 10*log10 with infinite values
-    set to 0 (code, compute_tfr).
-    """
-    n = x.shape[-1]
-    n_fft = 1 << int(np.ceil(np.log2(n + 400)))
-    wf, wl = _wavelet_fft(n_fft)
-    xf = np.fft.fft(x, n_fft, axis=-1)
-    out = np.empty((x.shape[0], len(FREQS), len(range(0, n, DECIM))))
-    for i, (w, L) in enumerate(zip(wf, wl)):
-        c = np.fft.ifft(xf * w[None], axis=-1)
-        start = (L - 1) // 2
-        c = c[:, start:start + n][:, ::DECIM]
-        out[:, i] = c.real ** 2 + c.imag ** 2
-    t_all = np.arange(out.shape[-1]) * DECIM / FS - SEG_HALF_S
-    keep = np.nonzero((t_all >= TIMES[0] - 1e-6) & (t_all <= TIMES[-1] + 1e-6))[0]
-    p = out[..., keep]
-    with np.errstate(divide="ignore"):
-        p = 10 * np.log10(p)
-    p[np.isinf(p)] = 0
-    return p
-
-
-def segment_quality(x: np.ndarray, good: np.ndarray) -> tuple[float, float, float]:
-    """Welch power of a segment's good electrodes (microvolts squared per Hz), in dB.
-
-    Returns (a) 10*log10 of the power density averaged over 1-200 Hz, then averaged over
-    electrodes (the reading used for the 0 dB test); (b) the same over 115-125 Hz (the 3 SD
-    test); (c) the log density averaged over 1-200 Hz (the other reading of the 0 dB test).
-    """
-    from scipy.signal import welch
-    f, pxx = welch(x[good], fs=FS, nperseg=int(FS), axis=-1)
-    with np.errstate(divide="ignore"):
-        a = 10 * np.log10(pxx[:, (f >= 1) & (f <= 200)].mean(-1))
-        b = 10 * np.log10(pxx[:, (f >= 115) & (f <= 125)].mean(-1))
-        c = 10 * np.log10(pxx[:, (f >= 1) & (f <= 200)])
-    a[np.isinf(a)], b[np.isinf(b)], c[np.isinf(c)] = -300.0, -300.0, -300.0
-    return float(a.mean()), float(b.mean()), float(c.mean())
-
-
-def band_values(p: np.ndarray) -> dict:
-    """p: ... x freqs x times (dB). Band power over 0-0.5 s: mean (Methods) and median (code)."""
-    ti = _tidx(*T_AVE)
+def band_stats(spec):
+    """spec: (..., n_freq, n_bins) dB. Returns band mean and code-style median for LFB and HFB."""
+    w = spec[..., :, WIN]
     out = {}
-    for name, band in [("lfb", LFB), ("hfb", HFB)]:
-        fi = _band_idx(band)
-        sub = p[..., fi, :][..., ti]
-        out[f"{name}_mean"] = sub.mean(axis=(-1, -2))
-        out[f"{name}_median"] = np.median(np.median(sub, axis=-1), axis=-1)
+    for name, sel in (("lfb", LFB), ("hfb", HFB)):
+        b = w[..., sel, :]
+        out[name + "_mean"] = b.mean(axis=(-2, -1))
+        out[name + "_median"] = np.median(np.median(b, axis=-1), axis=-1)
     return out
 
 
-def ecog_session(args) -> dict:
-    """Read each event's 10 s segment of one file and reduce it.
+def _segment_psd(seg):
+    from scipy.signal import welch
+    f, p = welch(seg, fs=FS, nperseg=int(FS), axis=-1)
+    return f, p
 
-    Returns per event: segment quality, region spectrograms (8 x freqs x times, baseline
-    subtracted), region and electrode band power with and without baseline subtraction.
-    `starts` are event times on the ECoG clock (seconds from the series' first sample).
+
+def _range(sess, url, off, n):
+    for attempt in range(5):
+        try:
+            r = sess.get(url, headers={"Range": f"bytes={off}-{off + n - 1}"}, timeout=300)
+            r.raise_for_status()
+            return r.content
+        except Exception:
+            if attempt == 4:
+                raise
+
+
+def chunk_index(ds, url, sess, n_threads=16):
+    """Address and size of every chunk of a chunked 2-D dataset, read from the file's version 1
+    B-tree with parallel range requests (h5py's own lookups go node by node over the network and
+    take about 0.1 s each). Returns {(row offset, column offset): (address, size)}."""
+    import struct
+    parent, name = ds.name.rsplit("/", 1)
+    addr = h5py.h5g.get_objinfo(ds.file[parent].id, name.encode()).objno[0]
+    hdr = _range(sess, url, addr, 4096)
+    assert hdr[0] == 1, "object header version 1 expected"
+    nmsg = struct.unpack("<H", hdr[2:4])[0]
+    blocks = [(hdr, 16, 16 + struct.unpack("<I", hdr[8:12])[0])]
+    root = None
+    seen = 0
+    while blocks and root is None:
+        buf, p, end = blocks.pop(0)
+        while p + 8 <= end and seen < nmsg:
+            mtype, msize = struct.unpack("<HH", buf[p:p + 4])
+            data = buf[p + 8:p + 8 + msize]
+            seen += 1
+            if mtype == 8:  # data layout, version 3, chunked
+                assert data[0] == 3 and data[1] == 2, "chunked layout version 3 expected"
+                root = struct.unpack("<Q", data[3:11])[0]
+                rank = data[2]
+                break
+            if mtype == 0x10:  # continuation
+                caddr, clen = struct.unpack("<QQ", data[:16])
+                blocks.append((_range(sess, url, caddr, clen), 0, clen))
+            p += 8 + msize
+    assert root is not None
+    key_size = 8 + 8 * rank
+    out = {}
+
+    def read_node(a):
+        head = _range(sess, url, a, 24)
+        assert head[:4] == b"TREE" and head[4] == 1
+        level, used = head[5], struct.unpack("<H", head[6:8])[0]
+        body = _range(sess, url, a + 24, used * (key_size + 8) + key_size)
+        items = []
+        for i in range(used):
+            k = body[i * (key_size + 8): i * (key_size + 8) + key_size]
+            size = struct.unpack("<I", k[:4])[0]
+            offs = struct.unpack("<" + "Q" * rank, k[8:8 + 8 * rank])
+            child = struct.unpack("<Q", body[i * (key_size + 8) + key_size: (i + 1) * (key_size + 8)])[0]
+            items.append((offs, size, child))
+        return level, items
+    level_nodes = [root]
+    with ThreadPoolExecutor(n_threads) as ex:
+        while level_nodes:
+            nxt = []
+            for level, items in ex.map(read_node, level_nodes):
+                for offs, size, child in items:
+                    if level == 0:
+                        out[(offs[0], offs[1])] = (child, size)
+                    else:
+                        nxt.append(child)
+            level_nodes = nxt
+    return out
+
+
+def session_spectral(asset_id, event_times, good, weights, n_threads=6, batch_chunks=6,
+                     wrist_names=("L_Wrist", "R_Wrist")):
+    """Spectral measures, segment checks and wrist windows for the events of one file.
+
+    good: bool (n_ch,) good electrodes of this session. weights: (n_ch, n_roi) projection
+    weights with bad electrodes already 0 and columns summing to 1.
+    Returns a dict of arrays, one row per event.
     """
-    asset_id, starts, weights, good = args[:4]
-    max_events = args[4] if len(args) > 4 else None
-    f = _open(asset_id)
-    d = f["acquisition/ElectricalSeries/data"]
-    t0 = float(f["acquisition/ElectricalSeries/starting_time"][()])
-    n_total = d.shape[0]
-    half = int(SEG_HALF_S * FS)
-    bi = _tidx(*BASELINE)
-    res = {k: [] for k in ["ok", "q_all", "q_hf", "q_log", "roi_spec", "roi_band", "roi_band_raw",
-                           "el_band", "el_band_raw"]}
-    for k, s in enumerate(starts):
-        if max_events is not None and k >= max_events:
-            break
-        c = int(round((s - t0) * FS))
-        if c - half < 0 or c + half > n_total:
-            res["ok"].append(False)
-            for key in ["q_all", "q_hf", "q_log"]:
-                res[key].append(np.nan)
-            for key in ["roi_spec", "roi_band", "roi_band_raw", "el_band", "el_band_raw"]:
-                res[key].append(None)
-            continue
-        x = d[c - half:c + half, :].T.astype(np.float64)
-        qa, qh, ql = segment_quality(x, good)
-        p = segment_power(x)                                  # elec x f x t, dB
-        raw_roi = np.einsum("er,eft->rft", weights, p)
-        pb = p - p[..., bi].mean(-1, keepdims=True)           # baseline subtracted per electrode
-        roi = np.einsum("er,eft->rft", weights, pb)
-        res["ok"].append(True)
-        res["q_all"].append(qa)
-        res["q_hf"].append(qh)
-        res["q_log"].append(ql)
-        res["roi_spec"].append(roi.astype(np.float32))
-        res["roi_band"].append(band_values(roi))
-        res["roi_band_raw"].append(band_values(raw_roi))
-        res["el_band"].append(band_values(pb))
-        res["el_band_raw"].append(band_values(p))
+    f, url = open_nwb(asset_id)
+    ds = f["acquisition/ElectricalSeries/data"]
+    n_t, n_ch = ds.shape
+    CH = ds.chunks[0]
+    assert ds.chunks[1] == 1
+    bank = morlet_bank()
+    half = (bank.shape[0] - 1) // 2
+    n_ev = len(event_times)
+    s0 = np.round(np.asarray(event_times) * FS).astype(int)  # event sample (series starts at 0 s)
+    seg_lo, seg_hi = s0 - int(SEG_HALF * FS), s0 + int(SEG_HALF * FS)
+    inside = (seg_lo >= 0) & (seg_hi <= n_t)
+    nb, nf, nr = len(BIN_T), len(FREQS), weights.shape[1]
+    region = np.full((n_ev, nr, nf, nb), np.nan, np.float32)
+    elec = {k: np.full((n_ev, n_ch), np.nan, np.float32) for k in
+            ["lfb_mean", "hfb_mean", "lfb_median", "hfb_median", "lfb_mean_raw", "hfb_mean_raw",
+             "lfb_mean_shift", "hfb_mean_shift"]}
+    seg_db = np.full(n_ev, np.nan)
+    hf_db = np.full(n_ev, np.nan)
+    allzero = np.zeros(n_ev, bool)
+    # chunks needed
+    need = {}
+    for i in np.flatnonzero(inside):
+        for c in range(seg_lo[i] // CH, (seg_hi[i] - 1) // CH + 1):
+            need.setdefault(c, []).append(i)
+    tchunks = sorted(need)
+    sess = requests.Session()
+    sess.mount("https://", requests.adapters.HTTPAdapter(pool_connections=n_threads, pool_maxsize=n_threads))
+    raw_bytes = CH * 4
+    index = chunk_index(ds, url, sess)
+    assert len(index) == -(-n_t // CH) * n_ch, "chunk index incomplete"
+
+    def fetch(c):
+        """All channels of time chunk c, read in one range request: the file stores the chunks
+        of one time block one after another (with B-tree nodes between some of them)."""
+        locs = [index[(c * CH, ch)] for ch in range(n_ch)]
+        lo = min(a for a, _ in locs)
+        hi = max(a + n for a, n in locs)
+        buf = _range(sess, url, lo, hi - lo)
+        cols = []
+        for a, n in locs:
+            out = zlib.decompress(buf[a - lo:a - lo + n])
+            if len(out) != raw_bytes:
+                raise ValueError(f"chunk {c}: decoded {len(out)} bytes")
+            cols.append(np.frombuffer(out, dtype="<f4"))
+        return c, np.stack(cols, axis=1)
+    cache = {}
+    done = np.zeros(n_ev, bool)
+    bins_off = np.round(BIN_T * FS).astype(int)
+    with ThreadPoolExecutor(n_threads) as ex:
+        for b0 in range(0, len(tchunks), batch_chunks):
+            batch = tchunks[b0:b0 + batch_chunks]
+            args = [c for c in batch if c not in cache]
+            for c, arr in ex.map(fetch, args):
+                cache[c] = arr
+            # events whose chunks are all present
+            ready = [i for c in batch for i in need[c] if not done[i]
+                     and all(cc in cache for cc in range(seg_lo[i] // CH, (seg_hi[i] - 1) // CH + 1))]
+            for i in sorted(set(ready)):
+                cs = range(seg_lo[i] // CH, (seg_hi[i] - 1) // CH + 1)
+                block = np.concatenate([cache[c] for c in cs], axis=0)
+                start = cs[0] * CH
+                seg = block[seg_lo[i] - start: seg_hi[i] - start].T.astype(np.float64)  # (n_ch, 5000), uV
+                done[i] = True
+                allzero[i] = bool(np.all(seg[good] == 0, axis=0).any())
+                fr, p = _segment_psd(seg[good])
+                pm = p.mean(axis=0)
+                seg_db[i] = 10 * np.log10(pm[(fr >= 1) & (fr <= 200)].mean())
+                hf_db[i] = 10 * np.log10(pm[(fr >= 115) & (fr <= 125)].mean())
+                centre = int(SEG_HALF * FS)
+                taps = np.arange(-half, half + 1)[None, :]
+                idx = centre + bins_off[:, None] + taps  # (nb, taps)
+                # convolution: flip the kernel
+                pw = np.abs(seg[:, idx] @ bank[::-1, :]) ** 2  # (n_ch, nb, nf)
+                # control: the same measure around a pseudo-onset SHIFT_S before the event
+                pws = np.abs(seg[:, idx + int(SHIFT_S * FS)] @ bank[::-1, :]) ** 2
+                with np.errstate(divide="ignore"):
+                    db = 10 * np.log10(pw).transpose(0, 2, 1)  # (n_ch, nf, nb)
+                    dbs = 10 * np.log10(pws).transpose(0, 2, 1)
+                sh = band_stats(dbs - dbs[:, :, BASE].mean(axis=-1, keepdims=True))
+                elec["lfb_mean_shift"][i] = sh["lfb_mean"]
+                elec["hfb_mean_shift"][i] = sh["hfb_mean"]
+                bs = db - db[:, :, BASE].mean(axis=-1, keepdims=True)
+                st = band_stats(bs)
+                for k, v in st.items():
+                    elec[k][i] = v
+                raw = band_stats(db)
+                elec["lfb_mean_raw"][i] = raw["lfb_mean"]
+                elec["hfb_mean_raw"][i] = raw["hfb_mean"]
+                dbg = np.where(np.isfinite(db), db, 0.0)
+                region[i] = np.einsum("cr,cfb->rfb", weights, dbg)
+            # keep only chunks needed later
+            keep = {batch[-1]}
+            for c in list(cache):
+                if c not in keep:
+                    del cache[c]
+    # wrist windows, -1.5 to +1.5 s at 30 Hz
+    pos = f["processing/behavior/Position"]
+    prate = float(pos["R_Wrist/starting_time"].attrs["rate"])
+    p0 = float(pos["R_Wrist/starting_time"][()])
+    n_p = pos["R_Wrist/data"].shape[0]
+    k = np.arange(-45, 46)
+    wrist = {w: np.full((n_ev, len(k), 2), np.nan) for w in wrist_names}
+    for w in wrist_names:
+        d = pos[f"{w}/data"]
+        for i, t in enumerate(event_times):
+            c = int(round((t - p0) * prate))
+            if c - 45 >= 0 and c + 46 <= n_p:
+                wrist[w][i] = d[c - 45:c + 46, :]
     f.close()
-    return res
+    return dict(region=region, elec=elec, seg_db=seg_db, hf_db=hf_db, inside=inside, allzero=allzero,
+                wrist=wrist, wrist_t=k / prate)
 
 
-def load_ecog(jobs: list, workers: int = 8) -> list[dict]:
-    os.environ.setdefault("OMP_NUM_THREADS", "1")
-    with ProcessPoolExecutor(workers) as ex:
-        return list(ex.map(ecog_session, jobs))
+# ----------------------------------------------------------------------------- regression
 
-
-# ---------------------------------------------------------------- group statistics
-
-def boot_sig_mask(curr_power: np.ndarray, baseidx: np.ndarray, rng: np.random.Generator,
-                  n_perms: int = 2000, alpha: float = 0.05, use_median: bool = False) -> np.ndarray:
-    """tfr_boot_sig_mask of the paper's code: curr_power is freq x time x subjects.
-
-    The baseline time bins are shuffled within frequency and subject, the median over subjects
-    is taken, ceil(n_perms / n_baseline) times; two-sided percentile p; Benjamini-Hochberg over
-    all frequency and time bins at alpha; non-significant values set to 0. The average over
-    subjects is the mean (plot_specs_group is called with useMedian=False), while the bootstrap
-    takes the median, as in the code.
-    """
-    from scipy.stats import percentileofscore
-    from statsmodels.stats.multitest import multipletests
-    ave = np.median(curr_power, axis=2) if use_median else np.mean(curr_power, axis=2)
-    n_iter = int(np.ceil(n_perms / len(baseidx)))
-    nf = curr_power.shape[0]
-    boot = np.zeros((nf, len(baseidx), n_iter))
-    base = curr_power[:, baseidx, :]
-    for it in range(n_iter):
-        order = np.argsort(rng.random(base.shape), axis=1)   # shuffle time within freq, subject
-        boot[:, :, it] = np.median(np.take_along_axis(base, order, axis=1), 2)
-    boot = boot.reshape(nf, -1)
-    p = np.zeros(ave.shape)
-    for j in range(nf):
-        q = percentileofscore(boot[j], ave[j], kind="rank") / 100
-        p[j] = np.where(q > 0.5, 2 * (1 - q), 2 * q)
-    pc = multipletests(p.ravel(), alpha=alpha, method="fdr_bh")[1].reshape(ave.shape)
-    out = ave.copy()
-    out[pc >= alpha] = 0
-    return out
-
-
-def ecog_offset(session: dict) -> float:
-    """Seconds from midnight to the ECoG series' first sample.
-
-    The files' events (`intervals/reaches`) and pose are on a clock that starts at midnight.
-    Three files hold less than 24 h of ECoG (S01 day 7, S04 day 3, S06 day 3); their ECoG
-    `starting_time` is 0, but `ReachEvents` and the session start time put its first sample at
-    midnight plus the missing time, i.e. the series ends at midnight. The notebook checks this
-    against the neural response.
-    """
-    return 24 * 3600.0 - session["ecog_shape"][0] / session["ecog_rate"]
-
-
-def ecog_jobs(sessions: list, weights: dict, offset: bool = True) -> list:
-    jobs = []
-    for s in sessions:
-        good = s["subject_good"]
-        off = ecog_offset(s) if offset else 0.0
-        jobs.append((s["asset_id"], s["events"]["start_time"].values - off, weights[s["subject"]],
-                     good))
-    return jobs
-
-
-# ---------------------------------------------------------------- regression
-
-def regression_design(ev: pd.DataFrame, log_plus_one: bool = False) -> tuple[pd.DataFrame, dict]:
-    """The ten features of one subject's events, as the claims file's opening comment sets them.
-
-    Columns in the code's order (regression_utils.single_subj_regression): the eight continuous or
-    binary features, z-scored over the subject's events with pandas' SD (code,
-    standardize_feats), then the day one-hot columns and the three time-of-day one-hot columns
-    (0-8, 8-16, 16-24 h), not standardised (the code joins them after standardising). Reach
-    duration and magnitude are log transformed (Methods); `log_plus_one` gives the code's
-    log(duration), log(magnitude + 1), log(speed + 1). Returns the design and, per feature,
-    its columns.
-    """
-    cols, groups = {}, {}
-    if log_plus_one:
-        cols["duration"], cols["magnitude"] = np.log(ev["duration"]), np.log(ev["magnitude"] + 1)
-        cols["speed"] = np.log(ev["speed"] + 1)
-    else:
-        cols["duration"], cols["magnitude"] = np.log(ev["duration"]), np.log(ev["magnitude"])
-        cols["speed"] = ev["speed"].astype(float)
-    for c in ["angle", "speech", "bimanual_ratio", "bimanual_overlap", "bimanual_class"]:
-        cols[c] = ev[c].astype(float)
-    X = pd.DataFrame(cols, index=ev.index)
-    X = (X - X.mean()) / X.std().replace(0, 1)
-    for c in X.columns:
-        groups[c] = [c]
-    for d in sorted(ev["day"].unique()):
-        X[f"day_{d}"] = (ev["day"] == d).astype(float)
-    groups["day"] = [c for c in X.columns if c.startswith("day_")]
+def design_matrix(ev, log_speed=False):
+    """Features as the Methods (and code) encode them. Returns (X, column feature names)."""
+    cols, names = [], []
+    for d in sorted(ev.day.unique()):
+        cols.append((ev.day == d).astype(float).values)
+        names.append("day")
+    tod = np.digitize(ev.time_of_day.values, [8, 16])
     for b in range(3):
-        X[f"tod_{b}"] = (ev["tod_bin"] == b).astype(float)
-    groups["time_of_day"] = [f"tod_{b}" for b in range(3)]
-    return X, groups
+        cols.append((tod == b).astype(float))
+        names.append("time_of_day")
+    cont = {
+        "duration": np.log(ev.duration.values),
+        "magnitude": np.log(ev.magnitude.values + 1),
+        "angle": ev.angle.values,
+        "onset_speed": np.log(ev.onset_speed.values + 1) if log_speed else ev.onset_speed.values,
+        "speech_ratio": ev.speech_ratio.values,
+        "bimanual_ratio": ev.bimanual_ratio.values,
+        "bimanual_overlap": ev.bimanual_overlap.values,
+        "bimanual_class": ev.bimanual_class.values,
+    }
+    for k, v in cont.items():
+        sd = v.std()
+        cols.append((v - v.mean()) / sd if sd > 0 else v * 0)
+        names.append(k)
+    return np.column_stack(cols), np.array(names)
 
 
-def forward_select(X: np.ndarray, y: np.ndarray) -> list:
-    """Forward selection over columns by OLS adjusted R2 with an intercept (code,
-    _forward_selected_new, which adds one column at a time, a day or time-of-day one-hot column
-    being a column like any other). Adjusted R2 uses the rank of the design, as statsmodels does,
-    so a column that adds nothing (the last day column beside the intercept) is not taken.
-    Returns the selected column indices in the order taken."""
-    n = len(y)
+def forward_select(X, y):
+    """Forward selection over single columns by OLS adjusted R2, starting from 0 and adding the
+    best column while the score improves (code regression_utils._forward_selected_new, which
+    selects among the columns of the design, one-hot day and time-of-day columns one by one).
+    Runs on all of the subject's events, as the code does. Returns a boolean mask of columns."""
+    n, p = X.shape
+    chosen = np.zeros(p, bool)
+    current = 0.0
     yc = y - y.mean()
-    tss = yc @ yc
-    remaining, selected, current = list(range(X.shape[1])), [], 0.0
-    while remaining:
-        best, cand = -np.inf, None
-        for c in remaining:
-            A = np.column_stack([np.ones(n), X[:, selected + [c]]])
-            beta, _, rank, _ = np.linalg.lstsq(A, y, rcond=None)
+    sst = yc @ yc
+    while not chosen.all():
+        best, best_j = -np.inf, None
+        for j in np.flatnonzero(~chosen):
+            sel = chosen.copy()
+            sel[j] = True
+            A = np.column_stack([np.ones(n), X[:, sel]])
+            beta, *_ = np.linalg.lstsq(A, y, rcond=None)
             res = y - A @ beta
-            adj = 1 - (n - 1) / (n - rank) * (res @ res) / tss
+            k = sel.sum()
+            adj = 1 - (res @ res / sst) * (n - 1) / (n - k - 1)
             if adj > best:
-                best, cand = adj, c
+                best, best_j = adj, j
         if best > current:
-            selected.append(cand)
-            remaining.remove(cand)
+            chosen[best_j] = True
             current = best
         else:
             break
-    return selected
+    return chosen
 
 
-def _huber_obj(Z, y, th, alpha, eps, pen):
-    q = Z.shape[-1]
-    s = th[:, q]
-    r = y - np.einsum("bnq,bq->bn", Z, th[:, :q])
-    a = np.abs(r)
-    out = a > eps * s[:, None]
-    per = np.where(out, 2 * eps * a - eps ** 2 * s[:, None], r * r / s[:, None])
-    return Z.shape[1] * s + per.sum(1) + alpha * (pen * th[:, :q] ** 2).sum(1)
-
-
-def huber_fit(Z: np.ndarray, y: np.ndarray, alpha: float = 1e-4, epsilon: float = 1.35,
-              max_iter: int = 100, tol: float = 1e-10) -> tuple[np.ndarray, np.ndarray]:
-    """Many Huber regressions at once: Z is B x n x q (the last column all ones, the intercept),
-    y is B x n. Minimises the objective of sklearn's HuberRegressor (defaults epsilon 1.35,
-    alpha 1e-4 on the coefficients, not the intercept, with the scale estimated jointly):
-    n*sigma + sum(H(r/sigma))*sigma + alpha*|w|^2. sklearn minimises it by L-BFGS, one problem
-    at a time; here Newton's method with a backtracking line search solves all problems
-    together, which reaches the same minimum (the objective is jointly convex). The notebook
-    compares the two. Returns the coefficients (B x q, intercept last) and the scale."""
-    B, n, q = Z.shape
-    eps = epsilon
-    pen = np.ones(q)
-    pen[-1] = 0
-    G = np.einsum("bnq,bnr->bqr", Z, Z) + 1e-8 * np.eye(q)
-    w = np.linalg.solve(G, np.einsum("bnq,bn->bq", Z, y)[..., None])[..., 0]
-    r = y - np.einsum("bnq,bq->bn", Z, w)
-    s = np.maximum(np.median(np.abs(r), 1) / 0.6745, 1e-6)
-    th = np.column_stack([w, s])
-    f = _huber_obj(Z, y, th, alpha, eps, pen)
-    active = np.ones(B, bool)
-    for _ in range(max_iter):
-        idx = np.nonzero(active)[0]
-        if not len(idx):
-            break
-        Za, ya, ta = Z[idx], y[idx], th[idx]
-        s = ta[:, q]
-        r = ya - np.einsum("bnq,bq->bn", Za, ta[:, :q])
-        inl = np.abs(r) <= eps * s[:, None]
-        rin = np.where(inl, r, 0.0)
-        sgn = np.where(inl, 0.0, np.sign(r))
-        g = np.empty((len(idx), q + 1))
-        g[:, :q] = (-2 / s[:, None] * np.einsum("bnq,bn->bq", Za, rin)
-                    - 2 * eps * np.einsum("bnq,bn->bq", Za, sgn) + 2 * alpha * pen * ta[:, :q])
-        g[:, q] = n - (rin ** 2).sum(1) / s ** 2 - (~inl).sum(1) * eps ** 2
-        H = np.empty((len(idx), q + 1, q + 1))
-        H[:, :q, :q] = 2 / s[:, None, None] * np.matmul((Za * inl[..., None]).transpose(0, 2, 1), Za)
-        H[:, :q, :q] += 2 * alpha * np.diag(pen)
-        H[:, :q, q] = 2 / s[:, None] ** 2 * np.einsum("bnq,bn->bq", Za, rin)
-        H[:, q, :q] = H[:, :q, q]
-        H[:, q, q] = 2 * (rin ** 2).sum(1) / s ** 3
-        H += 1e-10 * np.eye(q + 1)
-        d = -np.linalg.solve(H, g[..., None])[..., 0]
-        dec = -(g * d).sum(1)
-        t = np.ones(len(idx))
-        fa = f[idx].copy()
-        todo = np.ones(len(idx), bool)
-        new = ta.copy()
-        for _ls in range(40):
-            ti_ = np.nonzero(todo)[0]
-            cand = ta[ti_] + t[ti_, None] * d[ti_]
-            okpos = cand[:, q] > 0
-            fc = np.full(len(ti_), np.inf)
-            if okpos.any():
-                fc[okpos] = _huber_obj(Za[ti_[okpos]], ya[ti_[okpos]], cand[okpos], alpha, eps, pen)
-            acc = fc <= fa[ti_] - 1e-4 * t[ti_] * dec[ti_]
-            new[ti_[acc]] = cand[acc]
-            fa[ti_[acc]] = fc[acc]
-            todo[ti_[acc]] = False
-            t[todo] *= 0.5
-            if not todo.any():
-                break
-        th[idx] = new
-        f[idx] = fa
-        active[idx[(dec / 2 < tol * (np.abs(fa) + 1)) | todo]] = False
-    return th[:, :q], th[:, q]
-
-
-def _r2(y, pred):
-    """Coefficient of determination per row (sklearn r2_score on each split's test events)."""
-    res = ((y - pred) ** 2).sum(-1)
-    tot = ((y - y.mean(-1, keepdims=True)) ** 2).sum(-1)
-    return 1 - res / tot
-
-
-def day_balanced_splits(days: np.ndarray, rng: np.random.Generator, n_splits: int = 200,
-                        per_train: float = 0.9) -> tuple[np.ndarray, np.ndarray]:
-    """Random train/test splits with equal numbers of test events from each day (code,
-    train_test_split_day_balance; 90/10 from the Methods, 80/20 in the code). Returns
-    n_splits x n_train and n_splits x n_test index arrays."""
-    days = np.asarray(days)
-    uni = np.unique(days)
-    n_test_day = int(((1 - per_train) * len(days)) // len(uni))
-    trs, tes = [], []
+def day_balanced_splits(days, n_splits, test_frac, rng):
+    """Random splits with equal numbers of test events from each day (code train_test_split_day_balance)."""
+    uniq = np.unique(days)
+    per_day = min((days == d).sum() for d in uniq)
+    n_test_total = int(round(test_frac * len(days)))
+    k = max(1, min(per_day, n_test_total // len(uniq)))
+    out = []
     for _ in range(n_splits):
-        tr, te = [], []
-        for d in uni:
-            idx = rng.permutation(np.nonzero(days == d)[0])
-            tr.extend(idx[:-n_test_day])
-            te.extend(idx[-n_test_day:])
-        trs.append(tr)
-        tes.append(te)
-    return np.array(trs), np.array(tes)
-
-
-def electrode_model(args) -> dict:
-    """One electrode and band: forward selection on all events, then a Huber fit per split of
-    the full model and, per selected feature, of a refit with that feature's columns shuffled
-    among the training events (all day columns together, all time-of-day columns together, as
-    the code shuffles them). Unselected columns are set to 0 (code), which is the same as
-    leaving them out, as their coefficients are then 0; a feature with no selected column gets
-    Delta R2 0 (code).
-
-    Returns the split-averaged withheld R2 of the full model; per feature the Delta R2 of the
-    Methods (refit scored on the unshuffled withheld events) and of the code (refit scored on
-    withheld events whose columns are shuffled among them; the code shuffles the column over
-    all events before splitting, here the refit is shared with the Methods' version); the
-    split-averaged coefficients per feature (for day and time of day the SD of their one-hot
-    coefficients within each split, averaged over splits, code; `coef_sd_of_mean` gives
-    instead the SD of the split-averaged one-hot coefficients); and the fraction of each feature's columns selected (code,
-    feat_select_prob). With `full_only`, only the full model is fitted.
-    """
-    X, groups, y, tr, te, seed, full_only = args
-    rng = np.random.default_rng(seed)
-    names = list(groups)
-    if not np.std(y) > 0:
-        return None                     # a flat electrode: nothing to fit
-    col_of = {g: [i for i, c in enumerate(X.columns) if c in groups[g]] for g in names}
-    Xn = X.to_numpy(float)
-    sel = forward_select(Xn, y)
-    keep = sorted(sel)
-    Z = np.column_stack([Xn[:, keep], np.ones(len(y))])
-    S = tr.shape[0]
-    Ztr, ytr, Zte, yte = Z[tr], y[tr], Z[te], y[te]
-    sel_groups = [g for g in names if any(c in keep for c in col_of[g])]
-    probs = [Ztr]
-    if not full_only:
-        for g in sel_groups:
-            zi = [keep.index(c) for c in col_of[g] if c in keep]
-            Zs = Ztr.copy()
-            perm = np.argsort(rng.random(Ztr.shape[:2]), axis=1)
-            Zs[:, :, zi] = np.take_along_axis(Ztr[:, :, zi], perm[..., None], axis=1)
-            probs.append(Zs)
-    W, _ = huber_fit(np.concatenate(probs), np.tile(ytr, (len(probs), 1)))
-    pred = np.einsum("bnq,bq->bn", Zte, W[:S])
-    r2_full = _r2(yte, pred)
-    coef_all = np.zeros((S, Xn.shape[1]))
-    coef_all[:, keep] = W[:S, :-1]
-    coefs, coefs_sdm = {}, {}
-    for g in names:
-        ci = col_of[g]
-        coefs[g] = float(coef_all[:, ci].std(1).mean() if len(ci) > 1 else coef_all[:, ci[0]].mean())
-        coefs_sdm[g] = float(coef_all[:, ci].mean(0).std() if len(ci) > 1 else coefs[g])
-    out = {"selected": [X.columns[c] for c in sel], "r2": float(r2_full.mean()), "coef": coefs,
-           "coef_sd_of_mean": coefs_sdm,
-           "keep_prob": {g: float(np.mean([c in keep for c in col_of[g]])) for g in names}}
-    if full_only:
-        return out
-    dr2, dr2_code = {g: 0.0 for g in names}, {g: 0.0 for g in names}
-    for k, g in enumerate(sel_groups):
-        Wg = W[(k + 1) * S:(k + 2) * S]
-        dr2[g] = float((r2_full - _r2(yte, np.einsum("bnq,bq->bn", Zte, Wg))).mean())
-        zi = [keep.index(c) for c in col_of[g] if c in keep]
-        Zts = Zte.copy()
-        perm = np.argsort(rng.random(Zte.shape[:2]), axis=1)
-        Zts[:, :, zi] = np.take_along_axis(Zte[:, :, zi], perm[..., None], axis=1)
-        dr2_code[g] = float((r2_full - _r2(yte, np.einsum("bnq,bq->bn", Zts, Wg))).mean())
-    out["delta_r2"], out["delta_r2_code"] = dr2, dr2_code
+        test = np.concatenate([rng.choice(np.flatnonzero(days == d), k, replace=False) for d in uniq])
+        mask = np.zeros(len(days), bool)
+        mask[test] = True
+        out.append(mask)
     return out
 
 
-def run_models(jobs: list, workers: int = 4) -> list[dict]:
+def r2(y, p):
+    return 1 - ((y - p) ** 2).sum() / ((y - y.mean()) ** 2).sum()
+
+
+def fit_models(X, names, y, splits, chosen, delta=False, shuffle_rng=None, code_shuffle=False):
+    """Huber models (sklearn HuberRegressor defaults, code) on the chosen columns over the
+    splits. Returns the mean test R2, the mean coefficients (0 for columns not chosen) and,
+    when delta is True, the mean Delta R2 per feature: the model refit with the feature's
+    columns shuffled in the training events and scored on the unshuffled test events
+    (Methods); with code_shuffle the test events are shuffled too and scored shuffled (code).
+    A feature with no chosen column gets Delta R2 0 (code: its columns are zero)."""
+    from sklearn.linear_model import HuberRegressor
+    import warnings
+    from sklearn.exceptions import ConvergenceWarning
+    feats = list(dict.fromkeys(names))
+    Xs = X[:, chosen]
+    nonconv = [0]
+
+    def fit(A, b):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always", ConvergenceWarning)
+            m = HuberRegressor().fit(A, b)
+        nonconv[0] += sum(issubclass(x.category, ConvergenceWarning) for x in w)
+        return m
+    nsel = names[chosen]
+    r2s, coefs = [], []
+    dr2 = {f: [] for f in feats}
+    for test in splits:
+        tr = ~test
+        if chosen.sum() == 0:
+            pred = np.full(test.sum(), np.mean(y[tr]))
+            r2s.append(r2(y[test], pred))
+            coefs.append(np.zeros(X.shape[1]))
+            if delta:
+                for f in feats:
+                    dr2[f].append(0.0)
+            continue
+        m = fit(Xs[tr], y[tr])
+        full = r2(y[test], m.predict(Xs[test]))
+        r2s.append(full)
+        c = np.zeros(X.shape[1])
+        c[chosen] = m.coef_
+        coefs.append(c)
+        if delta:
+            for f in feats:
+                cols = nsel == f
+                if not cols.any():
+                    dr2[f].append(0.0)
+                    continue
+                Xtr = Xs[tr].copy()
+                perm = shuffle_rng.permutation(tr.sum())
+                Xtr[:, cols] = Xtr[perm][:, cols]
+                Xte = Xs[test].copy()
+                if code_shuffle:
+                    pt = shuffle_rng.permutation(test.sum())
+                    Xte[:, cols] = Xte[pt][:, cols]
+                ms = fit(Xtr, y[tr])
+                dr2[f].append(full - r2(y[test], ms.predict(Xte)))
+    out = dict(r2=float(np.mean(r2s)), coef=np.mean(coefs, axis=0), fits=len(splits) * (1 + (len(feats) if delta else 0)),
+               nonconverged=nonconv[0])
+    if delta:
+        out["delta"] = {f: float(np.mean(v)) for f, v in dr2.items()}
+    return out
+
+
+def retention(chosen, names):
+    """Per feature, 1 when kept by forward selection; a day or time-of-day column counts as
+    1 / number of its columns (code feat_select_prob)."""
+    out = {}
+    for f in dict.fromkeys(names):
+        cols = names == f
+        out[f] = float(chosen[cols].sum() / cols.sum())
+    return out
+
+
+def coef_summary(coef, names):
+    """Coefficient per feature; for day and time of day the SD of their one-hot coefficients
+    (Figure 6 legend; code np.std over those coefficients)."""
+    out = {}
+    for f in dict.fromkeys(names):
+        c = coef[names == f]
+        out[f] = float(np.std(c)) if f in ("day", "time_of_day") else float(c[0])
+    return out
+
+
+def regress_subject(args):
+    """All models of one subject. args: dict with X, names, Y (n_ev, n_el, n_targets), days,
+    seed, target names, which targets get Delta R2. Returns a list of per-model dicts."""
+    import os
+    os.environ["OMP_NUM_THREADS"] = "1"
+    X, names, Y, days, seed = args["X"], args["names"], args["Y"], args["days"], args["seed"]
+    rng = np.random.default_rng(seed)
+    splits90 = day_balanced_splits(days, 200, 0.1, rng)
+    splits80 = day_balanced_splits(days, 200, 0.2, np.random.default_rng(seed + 1))
+    shuf = np.random.default_rng(seed + 2)
+    out = []
+    for k in range(Y.shape[1]):
+        r2_lfb = -np.inf
+        for t, tname in enumerate(args["targets"]):
+            y = Y[:, k, t]
+            chosen = forward_select(X, y)
+            row = dict(subject=args["subject"], electrode=args["electrodes"][k], target=tname,
+                       retention=retention(chosen, names))
+            if tname in args["main_targets"]:
+                main = fit_models(X, names, y, splits90, chosen)
+                row["r2"] = main["r2"]
+                row["nonconverged"] = main["nonconverged"]
+                row["coef"] = coef_summary(main["coef"], names)
+                row["r2_80"] = fit_models(X, names, y, splits80, chosen)["r2"]
+                if tname.startswith("lfb"):
+                    r2_lfb = main["r2"]
+                # Delta R2 where the band's own R2 passes, or the LFB R2 (the code's selection)
+                if max(main["r2"], r2_lfb) > args["delta_min_r2"]:
+                    row["delta"] = fit_models(X, names, y, splits90, chosen, delta=True, shuffle_rng=shuf)["delta"]
+                    row["delta_code"] = fit_models(X, names, y, splits80, chosen, delta=True, shuffle_rng=shuf,
+                                                   code_shuffle=True)["delta"]
+            else:
+                row["r2"] = fit_models(X, names, y, splits90, chosen)["r2"]
+            out.append(row)
+    return out
+
+
+def run_regression(jobs, workers=4):
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing as mp
+    with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
+        return [r for rows in ex.map(regress_subject, jobs) for r in rows]
+
+
+def _spectral_job(args):
+    import os
     os.environ.setdefault("OMP_NUM_THREADS", "1")
-    with ProcessPoolExecutor(workers) as ex:
-        return list(ex.map(electrode_model, jobs, chunksize=4))
+    asset_id, times, good, weights = args
+    return session_spectral(asset_id, times, good, weights)
+
+
+def run_spectral(jobs, workers=8):
+    """jobs: list of (asset_id, event_times, good, weights). Runs files in parallel processes."""
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing as mp
+    with ProcessPoolExecutor(workers, mp_context=mp.get_context("spawn")) as ex:
+        return list(ex.map(_spectral_job, jobs))
+
+
+def match_projection(m, positions_known):
+    """Rows of a projection matrix matched to the file's electrodes, by the paper's code
+    (tfr_utils.load_project_spectral_power, commit 04c6faf): it keeps the rows that are not all
+    zero and drops the first of them (`np.nonzero(df.transpose().mean().values != 0)[0][1:]`),
+    and applies the rest, in order, to the channels of its power files. Here they are applied,
+    in order, to the electrodes whose positions are known (electrodes without a position get
+    no weight). Returns (array n_electrodes x regions or None, note)."""
+    a = m.values.astype(float)
+    keep = np.flatnonzero(a.mean(axis=1) != 0)[1:]
+    rows = a[keep]
+    n_known = int(positions_known.sum())
+    if len(rows) != n_known:
+        return None, f"{len(rows)} rows for {n_known} electrodes with positions"
+    out = np.zeros((len(positions_known), a.shape[1]))
+    out[positions_known] = rows
+    return out, f"{len(rows)} rows for {n_known} electrodes with positions"
+
+
+def session_weights(proj, good):
+    """Weights of the eight regions: bad electrodes 0, each region renormalised to sum 1."""
+    w = proj.copy()
+    w[~good] = 0
+    s = w.sum(axis=0)
+    return w / np.where(s > 0, s, np.nan)
