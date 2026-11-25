@@ -1,91 +1,56 @@
-**Verification report, round 2: Mah et al. 2023 on DANDI:001169 (0.260825.1909)**
+## 1. Outcomes
 
-The claims file has 33 claims. The attempt record has 33 outcomes: 23 reproduced, 3 partially_reproduced, 2 not_reproduced and 5 blocked. Five of them carry `assumed: true`: fig3i, fig3f, suppfig9, fig3l and fig5c.
+The claims file has 33 claims and the attempt record has 33 outcomes: 24 reproduced, 7 partially_reproduced (fig2k, fig2l, fig3i, fig4a, fig5b, fig5c, pre-cue-session-link), 2 not_reproduced (fig3f, fig3l) and 0 blocked.
 
-### 1. Outcomes
+I agree with every outcome. Cell numbers below are from this run. "Models" means models_mah_2023.ipynb; all other cells are in reproduce_mah_2023.ipynb.
 
-**The 18 unchanged reproduced outcomes.** I agree with all of them: cohort-size, fig1e, fig1f, fig1i, suppfig2, suppfig3, fig2a, suppfig5, fig2c-d, fig2e, fig2f, fig2g-h, fig2j, fig2k, fig2l, suppfig6, fig3c, bayes, suppfig12, suppfig14, fig5b and fig5d. The re-executed outputs match round 1 or move trivially (fig2e p = 1.25e-45; fig2f p = 0.572).
-- fig2g-h now passes on the paper's test (cell 46: p = 0.187 and 0.200) and on the Methods variant (0.223 to 0.260).
+- **Changed since round 1, and I agree:**
+  - **fig3l → not_reproduced.** With the bounded, continuous logistic, wait time C at mixed to low has p = 0.417 to 0.453. At mixed to high, C has p = 0.354 to 0.371 and D has p = 0.300 to 0.319. Neither reading of the criterion holds. The initiation absence also fails (C at mixed to low, p = 0.041) (models cell 26).
+  - **fig2k, fig2l, fig5b, fig5c → partially_reproduced.** These match my round-1 outcomes.
+- **Outcomes that rest on `assumed: true`:**
+  - **fig3c.** Reading A, each rat counted at every catch probability it ran. This is stated, and the 437 total for 291 rats supports it.
+  - **fig3j, suppfig8, fig3f.** The bounds, 2 starts against the paper's 100, and the fold scheme are all stated. They are reasonable for fig3j, which wins by p ≤ 4.3e-44 under every seed. They are weak for the two outcomes that sit near a threshold or turn on fitted gaps:
+    - suppfig8: lowest p is 0.062 in this run and was 0.031 in the first run.
+    - fig3f: 4 of 5 draws give p < 0.05.
+  - **fig3l.** The lambda model is fitted once, from one start, without the cross-validation the criterion's "as in fig3j" asks for. This is stated. The wait time p-values are far from 0.05, so the outcome would not plausibly change.
+  - **fig3i.** The overshoot is read with no size floor, and the 50 log-normal simulations use a normal approximation. Both are stated. The exact 50-draw check in models cell 22 gives the same result.
 
-**pre-cue-session-link, partially_reproduced.** I agree (cell 86: 14 of 16 rats).
+## 2. Text against the printed outputs
 
-**fig3i, partially_reproduced, assumed.** I agree, and the assumption is stated and reasonable: J004's parameters are used for every rat in the Fig. 3i part.
-- Under the criterion as written, with no threshold, the alternatives show both features at 3 of 6 settings (cell 64).
-- The noise-only control's 95th percentiles come from only 20 replicates ("positive in 16 of 20"). The decisive margin is small: the RPE model at 0.8 has an overshoot of +0.0284 against a percentile of +0.0291. The control therefore cannot reverse the outcome.
-- The deviation saying the Fig. 3i direction "follows from the model's update rule for any small positive alpha_0" has no output behind it.
+Nearly every number in the conclusions, both Summary sections, the README and the record's notes matches the outputs. Five statements go beyond what the outputs show:
 
-**fig5c, partially_reproduced, assumed.** I agree, and adopting the legend's 20 µL reading is stated and reasonable. The 20 µL reading fails the population test (cell 92: rank-sum p = 0.0676 by date, 0.47 after 30 sessions).
-- The confound argument is not verified in the data. It says post-violation trials repeat the previous offer.
-  - If a 20 µL trial after a violation always repeated the offer, its previous offer would be 20 µL, and such trials are excluded from both groups.
-  - Yet dropping post-violation trials changes the 20 µL result: 14 rats become 15, and p goes from 0.0676 to 0.611 (cell 92).
-  - So offers are not always repeated. The notebook should print the share of post-violation trials that repeat the offer.
-- Under the 20 µL reading the per-rat rank-sum flags rats whose mean difference is close to 0, all at p = 0.0000 (cell 92):
-  - E008: +0.0007
-  - S042: −0.0073
-  - M044: −0.0173
+- **Cell 56, fig2k notes, and the code_mismatch finding** say "only on trials where the rat can know the coming offer" and "so the rat can know the coming offer". Cell 55 shows that the offer repeats after violations (1.0000) and that the effect comes only from post-violation trials. It does not test whether the rat uses the repeat. The effect could also come from how initiation times after a violation depend on the violated offer. Post-violation trials are also unevenly distributed: 51% of trials after small offers against 30% after large ones (cell 55). The supported wording is "only with post-violation trials".
+- **fig3l notes and models cell 27** say "no shuffle fit has C at its bound". The printout checks only "C at 5"; the lower bound C = 0 is not counted (models cell 26).
+- **Finding 3** says the threshold "would be a median 5.2 s lower". Cell 5 prints a median absolute difference of 5.189 s, so the direction is not shown. It is plausible, since the 100 s timeouts raise the threshold.
+- **Finding 2** says initiation times "depend on the offer only in those sessions". On flagged sessions S050 has ANOVA p = 0.45 and a slope of -0.0084, against -0.0076 on its unflagged sessions (cell 67).
+- **Finding 1 and the Summary** say "Only included sessions are deposited". Cell 80 shows that 22 rats have fewer final-stage sessions in the Zenodo deposit than in the dandiset, and that 1,731 of the 23,033 dandiset sessions are not found in the deposit. The text mentions neither, and both are hard to square with the dandiset being a subset of the deposit.
 
-  The count of 14 (expected 13 ± 1) is weak support for "modulated", and only 9 of the 14 are in the claimed direction.
+The verification entry gives my round-1 reasons in my own words for all 33 claims. Some reasons have the matching problem text from round 1 merged in (fig2k, fig3c, fig3l, fig4a, bayes, pre-cue). The `agrees` flags match my round-1 outcomes.
 
-**fig3f, not_reproduced, assumed.** I agree.
-- The assumption is stated: the likelihood is over opt-out catch trials, fitted with L-BFGS-B. It is reasonable, and parameter recovery on J004 works (within 0.004).
-- The effect is the model's own: mislabelled mixed trials combined with kappa_low < kappa_mixed. So it would likely appear under any fit that produces the block effect.
-- The paper gives no test for this panel, so the failure rests on the claims file's reading (p ≥ 0.05). The record says so.
+## 3. Round-1 points
 
-**suppfig9, reproduced, assumed.** I agree. The labels depend only on H0 and the session resets. The fold assumption (whole sessions) is stated, and it barely matters because the inference does not use the fitted parameters. Result: 230 of 291 rats, p = 9.72e-23 (cell 71).
+- **Resolved:**
+  - 1 (fig3l logistic): the bounded fit and the tie count are printed.
+  - 2 (fig2k Methods reading): the offer repeat and the post-violation split are shown.
+  - 3 (fig3i noise floor): no-noise runs, four more seeds and exact 50-draw means are added.
+  - 6 (bayes reading i): the sign is stated openly.
+  - 7 (fig3c first 1000 trials): justified from Figure3.m and A_Structs_Final.
+  - 8 (RatModel thresholded wait time and single C): matched to the code's lines.
+  - 5 (Zenodo order and statistic), mostly: order is checked (281 of 291 rats in date order), and the median and pooled ratio are printed.
+- **What remains that bears on a conclusion:**
+  - **Problem 4 (fit starts).** Still 2 starts. suppfig8 is fragile (p = 0.062 now, 0.031 in the first run), and fig3f's failure rests on the same fits.
+  - **Fig. 4 deposit coverage.** The 22 rats with fewer deposit sessions and the 1,731 unmatched sessions are unexplained, so "first 50 final-stage sessions" may be off for some rats. fig4a part (2) fails on the mean and passes on the median and the pooled ratio (cell 82), so it is sensitive to this.
+  - **fig2k, fig2l, fig5c interpretation.** The outcomes stand, but the explanation "rat can know the offer" is not shown (see section 2).
+  - **fig3i.** The partial outcome rests on overshoots of 0.0002 to 0.0058 z. That is the criterion applied as written, but see the claims-file note below.
+  - **fig3l.** The C = 0 bound is unchecked. The outcome is unlikely to change.
+- **Claims-file issues, reported as instructed and not corrected:**
+  - pre-cue-session-link: the statement that "nothing in the files marks" the pre-cue sessions is contradicted by `center_port_cue` (cell 67). This was problem 9 in round 1 and is now a question to a reader.
+  - fig3i: "lacks one of the two" with no size floor reads Supplementary Fig. 7 strictly. The paper judges by eye, and a floor of a tenth of the Equation 10 overshoot would exclude every alternative.
 
-**fig3l, not_reproduced, assumed.** I agree, with a caveat that should be in the notes.
-- The refit puts 128 rats at the lambda bounds: 59 at 0 and 69 at 1 (cell 74). The paper's 20/80 split gives N = 116, which ties at the bounds could not produce. So the refit's lambda distribution is not the paper's, and the groups come from a tie-break, not the paper's rule.
-- The failure therefore cannot be separated from the refit.
-- The 40/60 split has no ties and also fails: wait time C p = 0.197 at mixed to low; initiation D p = 0.006 at mixed to high.
-- The assumptions (likelihood, lambda grid, tie-break) are stated.
+## 4. Critical findings
 
-**fig3j and suppfig8, blocked as too_large.** I now accept the reason. By cell 98 the retrospective refit alone takes 1.08 h on 4 cores, plus 1.20 h for the inferential and belief state fits. The numbers in the record are stale (see 2).
+No finding in the attempt record is rated `critical`. I agree that none should be:
 
-**fig4a, fig4c and fig4d, blocked as data_missing.** I agree. The reason for not running a partial test is stated and reasonable.
-
-### 2. Text against outputs
-
-**The fig3j and suppfig8 timings are stale.** They do not match the re-executed cell 98, or cell 102 (run time 45.3 min).
-
-| statement | where | stated | cell output |
-|---|---|---|---|
-| fig3j notes | record | 0.15 ms per evaluation (19 ms pure Python) | 0.253 ms (28.3 ms) |
-| fig3j notes | record | inferential fit about 0.65 s per rat | 1.24 s |
-| fig3j notes | record | retrospective 2.6 h on one core (0.64 h on 4) | 4.32 h (1.08 h on 4) |
-| fig3j notes | record | inferential and belief state fits 0.6 h | 1.20 h |
-| fig3j notes | record | about 3 h in all | about 5.5 h |
-| fig3j notes | record | "the 26 minutes the notebook already takes" | 45.3 min (cell 102) |
-| suppfig8 notes | record | "about 3 h on one core in all" | as above |
-| fig3j, suppfig8 responses | record | 0.15 ms, about 3 h | as above |
-| fig3f response | record | "3 min for all rats" | 361 s (cell 68) |
-| fig3l response | record | "2.5 min for all rats" | 277 s (cell 74) |
-| Summary | cell 101 | fits "estimated at about 3 h on one core" | cell 98 gives 4.32 h + 1.20 h |
-
-**Minor mismatches:**
-- Cell 0 and the README say loading takes "about ten minutes"; cell 3 shows 13.5 min.
-- Cell 44 and the fig2f notes say both readings are "close to the legend's r = −0.03, p = 0.53". The code reading is r = +0.023, p = 0.693, which has the opposite sign.
-
-**Everything else is supported.** Every other sentence of the Result cells (14 to 96), the Summary, the README and the record notes matches the printed outputs.
-
-**My round-1 reasons in the record.** They are stated faithfully; most are close paraphrases of my report. One inconsistency: the record's fig3j notes call the first run's estimate "138 h", while my reason quoted in the record says 162 h (155 h for the retrospective part).
-
-### 3. Round-1 points
-
-**Resolved:**
-- **2 (fig5c):** the outcome was changed and the legend's reading adopted. A new premise check is open (see 1).
-- **3 (fig2g-h):** the variants and the bound shares were added, and they agree.
-- **4 (header misreading):** forwarded to a reader. I cannot see that file.
-- **5 (timing and block reason):** a compiled timing and real fits were added. fig3f, suppfig9 and fig3l are now tested, and too_large is supported by cell 98. Only the text is stale.
-- **6 (Fig. 4 partial test):** the author declined, with a stated reason.
-- **7 (fig2k):** the directional count is now in the notes.
-- **8 (male volumes):** the regressions now use male volumes; the coefficients moved by at most 0.001.
-- **9 (smaller points):** each is now documented as following the code, and a variant (opt-out filter) or a pooled test was added where relevant.
-- **10 (fig5b dependence on the link):** stated in the notes.
-
-**Partly resolved:**
-- **1 (fig3i overshoot measure):** controls were added and reported. The measure still does not separate the models, and the control is thin (20 replicates, a 0.0007 margin). The outcome follows the criterion, so this does not move it.
-
-**What remains that bears on a conclusion:**
-1. **fig5c.** The confound argument assumes offers repeat after violations, and cell 92 shows they do not always repeat. The per-rat count under the adopted reading includes rats with mean differences near 0. The outcome holds either way, because the 20 µL population test fails, but the stated reasoning needs the repeat rate printed.
-2. **fig3l.** The not_reproduced outcome rests on a refit whose lambda distribution (128 rats at the bounds) is not consistent with the paper's N = 116. The notes should say the failure may be the refit's.
-3. **fig3j and suppfig8.** The cost figures in the record and the Summary must be updated to cell 98's numbers (about 5.5 h on one core). The blocked status stands.
+- Finding 1, the undocumented session selection, is correctly `major`: the data are a correct subset, and Figure 4 is blocked on the dandiset alone.
+- Findings 2 to 4 are evident from the values and correctly `minor`.
+- The offer repeating after violations is a feature of the task, not a data error.

@@ -1,7 +1,7 @@
 name: Publish the dashboard
 
-# Rebuilds the public dashboard from the registry's files and publishes it to
-# the root of the gh-pages branch, which GitHub Pages serves, on every push to
+# Rebuilds the public dashboard from the registry's files and publishes it to the
+# R2 bucket encore-site and to the root of the gh-pages branch, on every push to
 # main, and again when the entry checks finish, so the executed notebooks they
 # produce are included, and when a needs-you issue opens or closes, so that the
 # pipeline page links the datasets waiting on a person. Previews of pull requests
@@ -95,6 +95,22 @@ jobs:
           # GitHub Pages would forget the domain without it.
           echo encorescience.org > site/CNAME
 
+      # The site's new home: the R2 bucket encore-site, which a Cloudflare Worker serves (next.encorescience.org until
+      # encorescience.org moves there). Only the files that changed are uploaded (tools/publish_site.py). Skipped
+      # until the bucket's access key is set as the secrets R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY.
+      - name: Publish to the site's bucket
+        env:
+          R2_ACCOUNT_ID: 008449f3dd09bf4fea5f86ee82695b6e
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          if [ -z "$R2_ACCESS_KEY_ID" ] || [ -z "$R2_SECRET_ACCESS_KEY" ]; then
+            echo "::notice::No R2 access key yet; the site is published to GitHub Pages only."; exit 0
+          fi
+          pip install --no-cache-dir boto3
+          python tools/publish_site.py site
+
+      # GitHub Pages, as before, until encorescience.org moves to the bucket.
       - uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:
           folder: site
