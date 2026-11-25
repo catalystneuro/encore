@@ -1,51 +1,52 @@
-**Verifier report, round 2: Churchland et al. 2012 (doi:10.1038/nature11129) on dandiset 000070 @ 0.260528.0919**
+**Verifier report, round 2: Churchland et al. 2012 on DANDI:000070 (0.261122.2046)**
 
-The claims file lists 22 claims and the attempt record gives 22 outcomes: 5 reproduced, 7 partially reproduced, 4 not reproduced and 6 blocked (data_missing). The notebook's Summary table and the README table match these. I did not download the paper this round. The sentences below that depend on the paper (what the SI expects of shuffles 2 and 3, and the velocity model's near-zero peak) were checked against the paper in round 1.
+The claims file has 22 claims. The attempt record has 22 outcomes:
+- 5 reproduced: fig3ef, fig6a, fig6b, rotation-frequency, suppfig5-m1-faster
+- 6 partially reproduced: composition, curvature, phase, planes-range, shuffles, velocity model
+- 5 not reproduced: var-captured, pc23, suppfig4-j-array, suppfig5-areas, complex model
+- 6 blocked (data_missing)
 
-### 1. Outcomes
+Seven outcomes carry `assumed: true`.
 
-I agree with all 22 stated outcomes; none changed from round 1. The extra analyses added since round 1 change none of them:
-- **fig3-phase-from-prep-state:** with jPCA fully refitted per held-out condition, J-array is 0.614 against a shuffle 3 median of 0.630, and N-array is 0.726 against 0.648 (cell 33). The pattern is the same as under the criterion's measure.
-- **fig3-independent-of-curvature:** the J-array clockwise class stays between 0.868 and 0.878 under every heading definition and threshold (cell 29).
-- **fig6 models:** the main models fail the angle bound under every seed with the 100 ms lead (cell 64).
+**1. Outcomes**
 
-### 2. Sentences the printed outputs do not support
+I agree with all 22 stated outcomes. Every `assumed: true` outcome states its assumption in its deviations.
 
-1. **Cell 34 and the attempt record (fig3-phase-from-prep-state notes, and the response to round 1):** "With jPCA refitted leaving each condition out, the R2 is 0.615 and 0.727, and the pattern is the same: 8 of 10 shuffle 3 runs reach the J-array value".
-   - Cell 33 prints 0.614 and 0.726.
-   - Cell 33 also prints "J-array: shuffle 3 runs at or above the data, cross-validated R2 6 of 10".
-   - The record repeats "0.615 and 0.727" and "reached by 8 of 10 shuffle 3 runs in J-array" in both places. These look like numbers from an earlier run. The outcome does not change.
-2. **Cell 54:** "J-array reaches the range only with the -100 to +100 ms window (1.45 Hz) or 10 PCs (1.68 Hz)". Cell 53 prints 1.305 Hz for the -150 to +50 ms window, which is also in range, and a later sentence of the same cell cites it. The "only" holds for the cell 52 variants alone. The record's version of this sentence omits "only" and is fine.
-3. **Attempt record, response for fig6-velocity-model:** "The failure of the angle part thus comes from choices made here". Cell 64 shows the peak near zero in both datasets only when the preparatory tuning is removed and there is no lead. The claim's model includes preparatory tuning. With preparatory tuning and no lead, N-array still peaks at 0.36 to 0.42π, above π/4. The data show that the peak depends on the model's open choices, which is how the record's notes and cell 65 put it. They do not show that the failure comes only from those choices.
-4. **README:** "It takes about 13 minutes". Cell 68 prints "Total run time 14.4 min". This is minor.
+- **Onset column** (curvature, var-captured, pc23, rotation-frequency, shuffles): the assumption is stated and is now well supported. Cell 6 prints both descriptions ("calculated offline using a robust algorithm" against just "movement onset time"). It also shows median hand speed of 43 and 15 mm/s at the offline onset, against 137 and 160 mm/s at `move_begins_time`, so the hand is already moving at the latter.
+- **fig6-velocity-model** (now partially_reproduced): I agree under the stated assumptions, with two cautions.
+  - The main reading of the preparatory term was changed after round 1, and the change flipped the outcome from not_reproduced. The record says so openly. The new `prep="lead"` reading, where preparatory activity falls from −150 to −50 ms in `reach.py`, is no less reasonable than the old one; the paper says nothing about its time course.
+  - The J-array pass is thin. Its 6-D ratio is 0.517–0.590 against a 0.6 limit, and its angle peak is 0.472π with a plane ratio of 0.909, which looks rotation-like (cell 53).
+- **fig6-complex-kinematic-model:** agreed. It is not reproduced under all five seeds of the main reading (cell 55).
 
-Every other sentence of the Result conclusions, the Summary, the README and the record's notes and findings matches the printed outputs. I checked every number in cells 23 to 66 and in the findings, including:
-- the variant ranges;
-- the M1/PMd ratios of 1.5 to 2.4;
-- the six-run lists in cell 29 and the "five loops" sentence, against the hand-path plot;
-- the angular speed of about 1.3 Hz from -60 to +20 ms, against the cell 53 plot;
-- the 6-D ratio ranges of 0.08 to 0.55 and 0.06 to 0.61;
-- the hand offsets of 35 to 53 mm;
-- the 2094 overlapping trial pairs.
+**2. Sentences the outputs do not support**
 
-**Round-1 reasons in the record:** they state my round-1 reasons faithfully and in my terms, for all 22 claims. Two small omissions:
-- fig3-phase-from-prep-state leaves out my remark that shuffle 2 also scores high.
-- My B8 (no PC smoothing) is not attached to any claim. It did not bear on a conclusion.
+- **Cell 56 and the record's fig6-complex-kinematic-model notes:** "The other readings give not reproduced, except no lead with the falling preparatory term, which gives partially reproduced under every seed." In cell 55, the reading with no lead and a persisting term gives partially reproduced for 3 of the 5 seeds (`['not', 'not', 'partially', 'partially', 'partially']`). The sentence holds for seed 0 only.
+- **Record, methods_unavailable finding on the model:** "with no lead near 0 in both, as in Figure 6a." With no lead and a persisting term, the peaks are 0.250π and 0.361π (cell 53). Only the falling term gives peaks near 0 (−0.083π and 0.083π).
+- **Record, suppfig5-m1-faster notes:** "here M1 is 1.5 to 2.4 times faster." That holds under the main reading (1.53 and 2.39). Under the other readings N-array is 1.41× (1.491/1.058) and 1.42× (1.528/1.076) (cell 50). This is minor.
+- **README:** "It takes about sixteen minutes." Cell 58 prints 19.7 min.
+- **Record, fig6-velocity-model notes:** "The stricter reading … changes only the no-lead reading." There are two no-lead readings, and only the one with the falling term changes (cell 53). This is ambiguous rather than wrong.
 
-### 3. Round-1 points
+Every other number in the "Result" cells, the Summary (cell 57), the README table and the record's notes matches the printed outputs. The record's verification entry states my round-1 reasons faithfully, in my own terms. It correctly says I agreed with 21 of 22 and disagreed on the complex model. Problems 7, 8 and 9 are folded into the relevant reasons and the `reviewed` field.
 
-**Resolved:**
-- **B1 (units are not the paper's isolations):** each variance-fraction conclusion now carries the caveat (cells 37, 40, 43, 44, 60), and cell 23 says that all claims use the 192 units.
-- **B4 (prep-prediction metric):** the full leave-one-out refit and the phase score were added. The leakage I raised does not change the outcome.
-- **B5 (orientation inflates the counter-clockwise fraction):** cell 26 and the notes now say so.
-- **B6 (curvature classes):** the hand-path plot and the alternative classifications were added. The classes match the paths.
-- **B9 and C (J-array frequency):** it is not the static-onset effect. Windows starting at 0 or +50 ms give 1.04 and 1.13 Hz, and the angular speed is higher around onset (cell 53).
-- **B3 and C (model decay):** the step and no-tuning envelopes, the extra seeds and the histograms were added (cell 64).
+**3. Round-1 points**
 
-**What remains that bears on a conclusion:**
-1. **fig3-phase-from-prep-state:** the stale figures in cell 34 and the record (item 2.1). They are reported results, though the outcome stands.
-2. **suppfig3-shuffle-controls:** not_reproduced follows the criterion's R²(M_skew), which the SI does not predict shuffles 2 and 3 to reduce. On the phase score, which does measure the link to the preparatory state, shuffle 3 matches the data in J-array (9 of 10 runs at or above it) and falls below it in N-array. The outcome is disclosed as tied to the criterion's measure. It should not be read as the paper's controls failing.
-3. **fig6-velocity-model and fig6-complex-kinematic-model:** not_reproduced describes the models as simulated here (lead, preparatory time course, modulation depths). No configuration that keeps the endpoint-tuned preparatory activity the claim specifies peaks within π/4 of zero in both datasets. The record should state the cause no more strongly than that (item 2.3).
-4. **rotation-frequency:** partially_reproduced rests on the fixed -50 to +150 ms window. The paper chose a window per dataset, and J-array is in range with windows starting at -100 or -150 ms. This is disclosed.
-5. **Variance-fraction claims** (var-captured-jpc-plane, pc23-variance, suppfig4-j-array-planes, suppfig4-planes-range, suppfig5-areas-variance) **and array-dataset-composition:** the per-electrode units cannot be resolved from the files. This is disclosed. Lower variance fractions are expected from noisier channel-level units, but this was not tested.
-6. **Not affecting a conclusion:** the single dividing time for the shuffles (B7) and the missing PC smoothing (B8) remain stated deviations.
+Resolved:
+- **Problem 1** (the unwrapped peak test): `sim_ok` now tests |peak| < π/4, and the stricter 0 ≤ peak < π/4 is also shown.
+- **Problem 7:** the hand paths are now aligned on the same onset column as the neural data (cell 19).
+- **Problem 8:** the dead polarity check is gone; `reach.py:347` only sets `v2` as the conjugate.
+- **Problem 9:** aligned on target onset, M1 lags PMd by 9 ms in N-array, with half-rise times of 99 and 101 ms. The go-cue lag is 60 ms (cell 8). A fixed clock offset between the arrays is not supported.
+- **Problem 5:** the column descriptions and the hand-speed evidence are now printed.
+- The other outputs I asked for (non-counter-clockwise conditions, model histograms, seeds) are also printed.
+
+Remaining, and bearing on a conclusion:
+- **Onset column:** it still decides 5 outcomes. The assumption is reasonable, but those outcomes are conditional on it.
+- **Problem 2** (phase test against the shuffle-3 reference): referred to a reader, with the criterion unchanged. The two new variants point opposite ways. Projected onto the original plane, the claim would be reproduced; predicting from the dividing point, it would be not reproduced (cell 22). The partial outcome rests on a reference that does not test the claim.
+- **Problem 3** (rotation strength measured by R2(M_skew) for shuffles 2 and 3): referred to a reader. N-array fails exactly on the shuffles the Supp. Fig. 2 legend says should not remove all structure.
+- **Problem 4:** the velocity-model outcome remains decided by modelling choices, now including a main reading chosen after round 1.
+- **Problem 6** ("20–35%" taken from the per-area legend): referred to a reader. It does not decide the main reading, but it is the only route by which the `move_begins_time` readings pass.
+
+**4. Critical findings**
+
+No finding in the attempt record is rated `critical`, and I see none that should be. On the other ratings:
+- **Finding 3** (two sessions missing the condition columns): I would rate it minor, not major. The paper does not use those sessions, and no main analysis is blocked.
+- **Finding 4** (the two onset columns): I would rate it major, not minor. Nothing in the files settles which column is the paper's onset, and the choice changes five outcomes (cells 20, 25, 28, 42, 45).

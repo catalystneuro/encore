@@ -1,33 +1,34 @@
-I've addressed the round-1 report and re-run the entry with `python tools/entry.py all entries/000055-peterson-2021`. It passed in 28 minutes and the checks report 0 errors. Nothing is committed.
+I've worked through every point in the round-1 report and re-run the entry twice with `python tools/entry.py all entries/peterson-2021`. Both runs passed in about 38 minutes and gave the same numbers. `tools/entry.py check` reports 0 errors and the record validates against the schema. Nothing is committed.
 
 **Outcome changes**
 
-The verifier was right that the six Figure 6 claims did not need to be blocked. I added a batched Huber solver to `ajile.py` (`huber_fit`). It minimises the same objective as the `HuberRegressor` the paper's code uses, and over 240 fits it stays within 4.4e-05 of sklearn's withheld R2. The main analysis and every variant now run in about 2 minutes.
+- **fig5-recording-day-effects: partially reproduced → not reproduced.** The verifier's problem 1 was that region power used each file's own good-electrode flags, while the claims file renormalises per subject. The main analysis now uses the electrodes good in every file of the subject, for the segment rejection, the projection and the regression. With that choice 18 of 24 subject and band pairs agree with the paper, below the criterion's 20. The outcome is marked as resting on this assumption. Each file's own flags, the round-1 choice, give 20 of 24 and are shown as a variant.
+- The other 24 outcomes are unchanged. Some numbers moved:
+  - **table1:** the best reading is now 18 of 24 inside the paper's intervals (21 with each file's flags), still partially reproduced.
+  - **fig4:** two of four parts now hold (three with each file's flags), still partially reproduced.
+  - **fig3-lfb-more-widespread:** the two readings still disagree (8 against 8 regions; 36.0 against 22.2 bins), so it stays blocked.
 
-| Claim | Was | Now |
-|---|---|---|
-| fig6-r2-at-most-025 | blocked | reproduced (largest R2 0.189; 0.192 with the code's 80/20 split, 0.203 with its band median) |
-| fig6b-best-models-sensorimotor | blocked | reproduced (both readings, both bands) |
-| fig6c-angle-and-day-most-informative | blocked | reproduced (angle and day are the top two in both bands under every variant) |
-| extfig6-2-angle-most-retained | blocked | partially reproduced (angle is retained most, but the order of the next four does not hold under either reading) |
-| fig6d-upward-reaches-enhance-pattern | blocked | reproduced (median angle coefficient -1.027 for low-frequency power, 0.535 for high-frequency) |
-| fig6d-angle-and-day-largest-coefficients | blocked | reproduced (both readings, both bands) |
+**Added or corrected**
 
-The other 19 outcomes are unchanged.
+- Region power is renormalised over electrodes with finite power in each event; no kept event needed it. The notebook now counts events with exact zeros on good electrodes. In S09 and S10 every analysed event has runs of at least 50 ms of zeros on 1 to 15 good electrodes; this is a new minor finding at the end of the list.
+- The one event whose two time stamps disagree (S08 day 4, 40.3 s against 86440.3 s, past the end of the recording) is counted and left out of reading (b).
+- The regression variants that were missing are now run: the four other seeds with Delta R² and coefficients refit, log(onset speed + 1), and the code's inclusion of bad electrodes. Day and angle stay on top, and the angle signs hold, in all of them.
+- Projection rows: the zero rows of S03 and S12 sit exactly at the electrodes without a position. Shifting the rows by 1 to 3 places lowers the agreement with the nearest region in all 12 subjects.
+- New printed outputs:
+  - a table of the angle density at ±90, ±75 and 0 degrees per subject;
+  - event counts after the Methods' 0.5–4 s filter (fewest 207, still outside the tolerance);
+  - the grid-only surface count (63.08, outside the tolerance, so the group-description reading stays).
+- The forward-selection leakage is now stated in the notebook and the deviations. The claims file prescribes the method, so it is kept.
+- One finding's number was wrong: 1708 of 8088 bimanual overlap values are above 1, not 1661 (that figure came from the analysed subset). The findings that describe the clock check, the segment rejection, the spread measure and the electrode flags now give the new numbers.
+- I added three questions for a reader in `questions/peterson-2021.yaml`:
+  - the "drop all-zero rows" wording for roi-projection-link;
+  - the 15° window on a density with no boundary correction for fig2-reach-shape;
+  - the 0.5–4 s filter for fig2-event-counts.
 
-**What I added or corrected for the other points**
-- **Event counts (B3):** the reaches table has the same nine columns in all 55 files and none marks false positives. The notes now say `fig2-event-counts` is "not reproduced" on all events, and on the cleaned events without the false-positive removal.
-- **Reach angle KDE (B2):**
-  - **Synthetic check:** on angles whose true peaks sit at ±90, the criterion's KDE puts them near ±70 to ±74.
-  - **Sensitivity output:** with the data reflected at ±90, the peaks hold pooled and in 6 of 12 subjects. That is still not more than half, so the outcome stays partial.
-  - **Question for a reader:** the criterion is added to `questions/000055.yaml`. The claim is unchanged.
-- **Bootstrap seed (B4):** I re-ran the Figure 3 masks with ten other seeds. Reading a ties at 7 against 7 regions under every seed, so `fig3-lfb-more-widespread` stays blocked.
-- **Electrode counts (B6):** a new data check prints every electrode group and its description beside the data descriptor's Table 2. With the descriptor's counts, six subjects have depth electrodes, still not five, so `cohort` stays partial. The disagreement for S10 and S11 is recorded as a new finding.
-- **Bad electrodes (B7):** the record now cites the exact place in the paper's code (`tfr_utils.py`, `load_project_spectral_power`) that takes each subject's bad-electrode list from its first file.
-- **Tie-break (B5):** the narrow margin at the third place is now in the notes. The outcome stays reproduced and is marked as resting on an assumption.
-- **Record and docs:** round 1 is recorded under `verifications` for all 25 claims. The regression claims are marked as disagreeing, since the verifier had them blocked for a different reason. I also updated the header, summary, `README.md` and `entry.yaml`.
+  No claim was changed.
+- The round is recorded under `verifications`, with all 25 claims. I also updated the notebook conclusions, the summary, the header, the helper docstring and the README.
 
 **Not done**
-- The code's log(x + 1) transforms of reach magnitude and onset speed are not run as a variant. The opening comment of the claims file names this variant, but no regression criterion does.
-- In the "code's Delta R2" variant I reused the main refit and shuffled only the test events. The paper's code shuffles across all events before splitting. Both points are recorded as deviations.
-- Only 22 (low-frequency) and 14 (high-frequency) good electrodes exceed R2 0.05. That makes the Figure 6c and 6d medians rest on few electrodes, from 4 and 6 subjects. The notes say so.
+
+- The Benjamini–Hochberg correction still runs over the −1.5 to +1.0 s bins only. The paper does not state the spectrograms' time range, and the verifier found it changes no outcome.
+- Under the other seeds, the variants refit only the models with R² above 0.03 under the main fits. The regions of the models that pass 0.05 under those seeds were not recomputed.

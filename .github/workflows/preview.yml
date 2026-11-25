@@ -107,5 +107,11 @@ jobs:
           else
             body="Preview: https://encorescience.org/pr-preview/pr-$PR/ (built from $(git rev-parse --short HEAD), $(date -u +'%Y-%m-%d %H:%M UTC'))"
           fi
-          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --edit-last --body "$body" 2>/dev/null \
-            || gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$body"
+          # The preview is published by now; a comment GitHub would not take (its API answered 500s on 2026-11-25)
+          # is tried again and then let go, with a warning that gives the address.
+          for try in 1 2 3; do
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --edit-last --body "$body" 2>/dev/null \
+              || gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$body" && exit 0
+            sleep $((try * 20))
+          done
+          echo "::warning::Could not comment on the pull request. $body"

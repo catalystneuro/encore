@@ -377,6 +377,32 @@ def test_a_chain_started_again_after_its_rounds_does_not_ask_the_questions_of_th
     assert roles_run(2, ["author", "answer", "author-answers", "verifier-1"]) == []
 
 
+def test_a_chain_whose_recorder_has_run_only_finishes(tmp_path):
+    # 2026-11-25: seven attempts stopped at their pull request. Started again by the paper's key, with no version,
+    # the chains of choi-2025 and senzai-2017 (repeat attempts on a new version, which keep their claims) began to
+    # read the claims again. Between its start and its finish, a chain whose recorder has run starts no run.
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    block = chain[chain.index('recorded=""\n'):chain.index("# Finish. Each chain finishes")]
+    (tmp_path / "chain.sh").write_text('#!/bin/bash\necho "RUN the paper match of $1"\n'); (tmp_path / "chain.sh").chmod(0o755)
+    (tmp_path / "merge_claims.sh").write_text("#!/bin/bash\n"); (tmp_path / "merge_claims.sh").chmod(0o755)
+    def runs(done, proposed="false"):
+        script = (f'here={tmp_path}\nd=x-2020\nbr=attempt/x-2020\nmark=/dev/null\nVERSION=""\nREPLICATE=""\n'
+                  f'is_done(){{ case " {" ".join(done)} " in *" $1 "*) return 0;; esac; return 1; }}\n'
+                  'log(){ echo "LOG $*"; }\nfetch(){ :; }\nend(){ echo "END $*"; }\nstep(){ is_done "$1" || echo "RUN $1"; }\n'
+                  'on_branch(){ echo "checks: [{ready: true}]"; }\nclaims_file(){ echo claims/x-2020.yaml; }\n'
+                  'records_on_branch(){ echo attempts/x-2020-01.yaml; echo attempts/x-2020-02.yaml; }\n'
+                  f'git(){{ echo "outcomes: [{{proposed: {proposed}}}]"; echo "datasets: [{{relation: reuses}}]"; }}\n'
+                  'python(){ case "$*" in *"describe.py siblings"*) echo dandi-000001;; *"describe.py deprecated"*) echo false;;\n'
+                  f'  *"describe.py claims-ready"*) echo false;; *) {sys.executable} "$@";; esac; }}\n' + block)
+        out = subprocess.run(["bash", "-c", script], capture_output=True, text=True).stdout
+        return [line.split("RUN ", 1)[1] for line in out.splitlines() if "RUN " in line]
+    rounds = ["author", "verifier-1", "author-revise-1", "verifier-2", "author-revise-2", "reconcile"]
+    assert runs(rounds + ["recorder"], proposed="true") == []
+    # Before the recorder, a chain started again goes on as it did: here the paper match of the paper's other dataset,
+    # the claims with no version given, and a third round for a record with proposed changes.
+    assert runs(rounds, proposed="true") == ["the paper match of dandi-000001", "claims", "claims-check", "verifier-3", "author-revise-3"]
+
+
 def test_a_failed_commit_job_is_found_by_its_name_in_a_called_workflow():
     # Since the runs are encore-protocol's workflows, called from the registry's, the commit job is named
     # `attempt / commit` or `papers / commit` in the failed log; before, `commit`.
