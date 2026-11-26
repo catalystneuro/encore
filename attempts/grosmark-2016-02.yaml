@@ -1,0 +1,893 @@
+schema_version: 3
+id: grosmark-2016-02
+datasets:
+- archive: dandi
+  id: '000044'
+  version: 0.261106.0236
+  doi: 10.48324/dandi.000044/0.261106.0236
+  relation: primary
+- archive: crcns
+  id: hc-11
+  version: unversioned
+  doi: 10.6080/K0862DC5
+  relation: primary
+paper: doi:10.1126/science.aad1935
+date: 2026-11-25
+entry: grosmark-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45716531194
+outcomes:
+- claim: sessions-and-tracks
+  outcome: reproduced
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:sessions-and-tracks
+  measured:
+  - 4
+  - 8
+  notes: Both datasets hold 4 rats (Achilles, Buddy, Cicero, Gatsby) and 8 sessions, each with PRE, MAZE
+    and POST epochs that abut in this order. MAZE is on a 1.6 m linear track in 4 sessions, a 2 m linear
+    track in 1 and the circular track in 3, as the Methods give them. Track lengths as linearised are
+    1.6 m and 2.0 m for the linear tracks and 2.84 to 2.90 m for the circular one. PRE lasts 2.98 to 5.37
+    h and POST 2.22 to 4.51 h.
+- claim: place-cell-count
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:place-cell-count
+  measured:
+  - 573
+  - 562
+  - 63.0
+  notes: The datasets hold 562 pyramidal cells (and 128 interneurons), as the paper states. The place-field
+    method of the Methods finds 573 place cells per running direction (442 to 540 expected), 63.0% of
+    the 910 pyramidal cells times directions (reading a; 54% expected within 5.4) and 102.0% of the 562
+    (reading b). 409 distinct cells have a field in some direction. By session and direction the place
+    cells are 19 to 87.
+  deviations:
+  - The running direction on the linear tracks is the sign of the smoothed 1D velocity, and the lab's
+    1D position (defined only while the rat runs along the track) is taken as the track outside the reward
+    areas; the paper does not say how direction was assigned. This is an assumption.
+  - The 5 cm Gaussian kernel is read as its SD, as the claims file says.
+- claim: fig1c-above-chance
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig1c-above-chance
+  notes: Under the main reading (Y-a, L-a, S-a, D-a) mean rZ is 0.233 in PRE (n 20031), 0.652 in MAZE
+    (n 2979) and 0.311 in POST (n 26429), signed-rank p 6.93e-80, 9.63e-105 and 3.25e-211. All 24 readings
+    of Y, L, S and D give rZ above zero at p below 1e-12 in every epoch. The time-bin-shuffle variant
+    of Figure S22B was not run.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+- claim: fig1c-post-gt-pre
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig1c-post-gt-pre
+  notes: Mean rZ is 0.311 in POST and 0.233 in PRE under the main reading; Kruskal-Wallis p 8.99e-53 and
+    Tukey-Kramer on mean ranks POST above PRE at p < 0.05 under all 24 readings (largest p 3.84e-05),
+    and on values under all 24. By animal POST exceeds PRE in all four, significantly in Achilles (+0.155,
+    p 8.69e-11) and Cicero (+0.042, p 0.0275) and not in Buddy (+0.076, p 0.259) or Gatsby (+0.052, p
+    0.169). Gatsby is rat B in the data set's channel documentation, the animal Figure S6 shows without
+    the increase. The POST - PRE change of mean |r| (0.0149) exceeds the null change (0.0046); the bootstrap
+    interval of the difference is 0.0078 to 0.0127.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The post hoc test is Tukey-Kramer on mean ranks, the test MATLAB's multcompare applies after kruskalwallis,
+    as the Figure 1C legend's "Kruskal-Wallis test, followed by post hoc Tukey-Kramer tests" suggests;
+    Tukey-Kramer on the values is shown and agrees.
+- claim: fig1c-maze-gt-pre
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig1c-maze-gt-pre
+  notes: Mean MAZE rZ is 0.652 against 0.233 in PRE under the main reading, Tukey-Kramer p < 1e-15 under
+    all 24 readings. MAZE is the highest of the three epochs in each animal (MAZE minus PRE +0.150 to
+    +0.579) and exceeds POST under every reading. MAZE events are those during immobility below 5 cm/s
+    on the maze.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+- claim: figs5b-abs-r-above-null
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs5b-abs-r-above-null
+  notes: Observed |r| exceeds the pooled null |r| in PRE (median 0.142 against 0.122), MAZE (0.187 against
+    0.124) and POST (0.155 against 0.127) under the main reading, rank-sum p below 1e-18 in every epoch
+    under all 24 readings. The POST - PRE change of mean |r| is 0.0149 observed against 0.0046 null; reading
+    (a), the bootstrap interval of the difference, is 0.0078 to 0.0125, and reading (b), the 95th percentile
+    of the null change, is 0.0056; both hold under all 24 readings. Over the five seeds the interval's
+    lower bound is 0.0078 to 0.0080. Compared with each event's own null mean in place of the pooled null
+    samples, PRE |r| is not higher (p 1).
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The null |r| distribution is 20 null values kept per event, pooled over events; all 200 were not kept,
+    for memory.
+- claim: figs5e-duration-unchanged
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs5e-duration-unchanged
+  measured:
+  - 180
+  - 176
+  notes: On the events of the replay analysis under the main reading the medians are 180 ms in PRE and
+    176 ms in POST, both within tolerance, and the paper's rank-sum test finds the difference (p 0.000531,
+    n 12445 and 17118). The yoking reading decides the test; under Y-b p is 0.455 (L-a) and 0.717 (L-b),
+    and under Y-a with L-b 0.0763; the other readings give p 0.0419 or less. On all ripple events (the
+    variant) the difference is significant under every reading (158 against 152 ms under the main one).
+    The difference is 4 ms, about 2% of the median. The question of which part of the longer epoch the
+    yoking keeps is for the paper's authors (findings).
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The yoking reading Y-a (the last T of PRE and the first T of POST, the parts nearest the maze) is
+    adopted for all claims that depend on yoking; the paper says only that PRE and POST analyses were
+    yoked to the shorter epoch. Assumption.
+- claim: figs5f-more-participation-post
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs5f-more-participation-post
+  notes: Under the main reading a mean 35.6% of the template's place cells fire in POST events against
+    34.9% in PRE (medians 34.1% and 33.3%), rank-sum p 2.66e-08; all 24 readings give POST above PRE at
+    p < 0.05 (largest p 0.0195). The difference is under one percentage point.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+- claim: figs9b-pcc-post-higher
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs9b-pcc-post-higher
+  measured:
+  - 0.0185
+  - 0.134
+  - 0.134
+  notes: Over 573 place-cell units, POST PCC exceeds PRE PCC (rank-sum p 3.38e-07) and dPCC exceeds zero
+    (signed-rank p 6.4e-14) under the main reading, and both tests hold under all six readings of Y and
+    D. The medians are outside tolerance under every reading; PRE 0.018 to 0.035, POST 0.128 to 0.136
+    and dPCC 0.079 to 0.134 (expected -0.011, 0.183 and 0.159). Median dPCC by session ranges from -0.046
+    to 0.420; three sessions (Achilles twice, Gatsby_08022013) carry the increase.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The rZ of a cell-shuffled template uses the event's own null mean and SD, as the claims file reads
+    the equations.
+- claim: fig2b-strong-contributors
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig2b-strong-contributors
+  measured:
+  - 217
+  - 98
+  - 172
+  - 53
+  notes: Under reading D-b with the signed-rank test (P-a) and yoking Y-a the counts are 217 strongly
+    contributing cells (216 expected), 98 in PRE (97), 172 in POST (190 within 19) and 53 in both (71
+    within 7.1, outside). No reading puts all four within tolerance. Under the main reading D-a they are
+    246, 120, 212 and 86, all above tolerance. The rank-sum reading P-b finds 13 to 24 strongly contributing
+    cells under every reading. The measured values are those of D-b, the reading under which the total
+    matches.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+- claim: fig2-pre-post-overlap
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig2b-strong-contributors
+  measured: 71.7
+  notes: Under the main reading (Y-a, D-a, P-a) 86 of 120 PRE-significant cells are also POST-significant,
+    71.7%, against a chance level of 37.0% (POST-significant fraction of all place cells). Under D-b the
+    overlap is 51 to 55%, outside tolerance; under P-b 67 to 80% on 6 to 13 cells.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+- claim: rigid-plastic-counts
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig2b-strong-contributors
+  measured:
+  - 120
+  - 120
+  notes: Under the main reading (Y-a, D-a, P-a) the median split of strongly contributing cells within
+    each session and direction gives 120 rigid and 120 plastic units (105 expected within 10.5). Under
+    D-b it gives 104 and 104 (Y-a), within tolerance; under Y-b and Y-c with D-a 119 and 120. By session
+    the rigid count is 5 to 39.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - Reading D-a (each event scored with each direction's template) is adopted as the main reading for
+    the PCC and the rigid and plastic split, as the Figure S20 legend's "we independently compared the
+    results of each running direction to its null distribution" suggests; the Methods give the direction
+    decoder only for Figure 1D and the forward and reverse analyses. Assumption; the outcome depends on
+    it.
+- claim: figs19c-pcc-change-per-cell
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs19c-pcc-change-per-cell
+  measured:
+  - 4.19
+  - 15.7
+  notes: Of 573 units, 4.19% have per-event PCC significantly higher in PRE than in POST and 15.7% higher
+    in POST (one-tailed rank-sum, p < 0.05), against 2.2% and 21.4%; with 491 as denominator 4.89% and
+    18.3%. Over the six readings of Y and D the values are 3.84 to 4.54% and 11.9 to 16.2%; none is within
+    tolerance. POST above PRE cells are three to four times as common as the reverse.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+- claim: fig2d-shuffle-high-dpcc
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig2d-shuffle-high-dpcc
+  measured: 5
+  notes: Without shuffling, POST - PRE rZ is 0.0792 (interval 0.0572 to 0.101). Shuffling the highest-dPCC
+    place cells, it is -0.00446 at 5% (interval -0.0256 to 0.0189), -0.0278 at 10%, -0.0175 at 15%, -0.0501
+    at 20% and -0.0369 at 25%; replay is first eliminated at 5% under both readings of "eliminated", below
+    the criterion's 9 to 22%. Shuffling the lowest-dPCC cells it stays above zero at 50% (0.116) and 75%
+    (0.0545, interval 0.0335 to 0.075). The statement holds (replay gone after shuffling 10 to 20%, present
+    after shuffling 75%), the criterion's onset does not. The ranking and the rerun use the same events,
+    as in the paper.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The reruns use 30 null templates per event, main reading only, and 5% steps from 5 to 25% from the
+    highest and 50 and 75% from the lowest.
+  - Each percentage uses one template in which the chosen cells' maps are circularly shuffled once; the
+    paper's "templates (n = 1,000 each)" is read as the null templates. Assumption.
+  - The bootstrap intervals are computed under the claim's seed only.
+- claim: figs12-high-dpcc-exclusion
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs12-high-dpcc-exclusion
+  measured: 10
+  notes: Excluding the highest-dPCC cells, POST - PRE rZ is 0.0195 at 5% (interval -0.00294 to 0.0423)
+    and falls below zero first at 10% (-0.0155), staying below zero at 15, 20 and 25% (-0.0338, -0.0501,
+    -0.0625). Excluding the lowest-dPCC cells, the interval's lower bound is 0.159 at 50% and at 75% (POST
+    - PRE 0.183 and 0.202). The event criteria are applied after exclusion; at 75% 6195 PRE and 7975 POST
+    events remain.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The reruns use 30 null templates per event, main reading only; percentages 5 to 25% from the highest
+    and 50 and 75% from the lowest.
+- claim: fig2e-remove-plastic
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig2e-remove-plastic
+  notes: Removing all plastic cells turns POST - PRE rZ to -0.0312 (interval -0.0546 to -0.00948); removing
+    all rigid cells leaves 0.0972 (interval 0.074 to 0.12), against 0.0792 with all cells.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The reruns use 30 null templates per event, main reading only.
+- claim: figs2-track-distribution
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs2-track-distribution
+  notes: Rigid and plastic peak positions do not differ (two-sample KS p 0.484; rank-sum on the distance
+    to the nearer end p 0.0991; n 120 and 120). 0.617 of rigid and 0.708 of plastic peaks lie in the outer
+    fifths of the track, against 0.4 for a uniform spread and 0.518 for all place cells.
+  deviations:
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+  - Peak position is the bin of the smoothed rate map's maximum, as a fraction of the track from the start
+    of the run.
+- claim: fig3a-plastic-specificity
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig3a-plastic-specificity
+  notes: Plastic cells are higher than rigid cells on all five specificity measures and have fewer fields
+    on average, but four of six differences reach p < 0.05. In/out rate ratio median 8.743 against 6.012
+    (p 0.0026); information per spike 0.970 against 0.667 (p 0.00248); per second 1.144 against 0.839
+    (p 0.0127); coherence 1.188 against 1.089 (p 0.209); stability first against second half 0.789 against
+    0.735 (p 0.0125) and odd against even laps 0.939 against 0.912 (p 0.0301); number of fields mean 1.308
+    against 1.475 (p 0.0641). Without the PRE-only cells (Figure S19E variant) only information per spike
+    and the in/out ratio reach p < 0.05.
+  deviations:
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+  - Coherence is the Fisher z of the correlation between each bin's rate and its neighbours' mean (Muller
+    and Kubie), as in reference 32; stability is the correlation of the two half maps. Laps are stretches
+    of defined 1D position with net displacement above half the track. Standard choices.
+- claim: fig3b-plastic-improve
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig3b-plastic-improve
+  notes: Of 120 plastic and 120 rigid units, 99 and 103 have at least 3 laps with 5 or more spikes. Plastic
+    cells' correlations of the measure with lap number are not above zero under any reading (a, percentage
+    of spikes in field, median r -0.028, p 0.383; b, in-field over lap rate, +0.033, p 0.76; c, in-field
+    over out-of-field rate, +0.040, p 0.789) and do not exceed rigid cells' (p 0.936, 0.83, 0.831). Rigid
+    cells' correlations are above zero under a (+0.092, p 0.00572) and c (+0.084, p 0.0404).
+  deviations:
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+  - Laps are the stretches of defined 1D position (84, 93, 57, 92, 36, 61, 84 and 82 per session); the
+    lab's NWB trials (66 to 141 on the linear tracks) are not used. Standard choice.
+  - Each unit's measure correlates with its own lap index among laps with at least 5 spikes; units with
+    fewer than 3 such laps are dropped.
+- claim: figs13-outfield-rate-falls
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig3b-plastic-improve
+  notes: The out-of-field rate falls over laps in rigid cells (median r -0.103, signed-rank p 0.00549)
+    and not significantly in plastic cells (-0.048, p 0.0648), the reverse of the claim. As the claim
+    says, neither group's overall lap rate changes (rigid -0.035, p 0.134; plastic -0.066, p 0.165) and
+    neither group's within-field rate increases (rigid +0.015, p 0.818; plastic -0.106, p 0.184).
+  deviations:
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+  - Laps are the stretches of defined 1D position; standard choice.
+- claim: fig4a-rigid-faster
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig4a-rigid-faster
+  measured:
+  - 0.713
+  - 0.527
+  - 0.959
+  - 1.167
+  - 0.652
+  - 0.532
+  - 0.659
+  - 0.472
+  notes: Rigid cells fire faster offline; session-wide reading (a) 0.713 against 0.527 Hz (rank-sum p
+    0.0412), reading (b) 0.693 against 0.520 (p 0.0278), reading (c) the whole recording 0.720 against
+    0.631 (p 0.108); POST 0.659 against 0.472 (p 0.0162); PRE 0.652 against 0.532 (p 0.0659, not significant).
+    MAZE does not differ (all MAZE time 0.959 against 1.167, p 0.159; running 1.212 against 1.442, p 0.117).
+    The session-wide medians of reading (a) are within tolerance; the PRE medians, the rigid POST median
+    and the rigid MAZE median are not. With the P-b split (7 units per group) no difference is significant.
+    By session the rigid median exceeds the plastic one in 6 of 8 sessions (reading b).
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+- claim: figs14-plastic-ripple-gain
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs14-plastic-ripple-gain
+  measured:
+  - 5.763
+  - 4.757
+  - 4.754
+  - 4.528
+  - 4.833
+  - 4.518
+  - 0.79
+  - 0.259
+  notes: Plastic cells have a higher within-ripple gain in POST (5.763 against 4.757, p 0.00277), session-wide
+    (reading a 4.833 against 4.518, p 0.0234; reading b p 0.0249; reading c p 0.221) and a larger PRE
+    to POST change (0.790 against 0.259, p 0.0311). The PRE difference (4.754 against 4.528, p 0.173)
+    is not significant. Seven of the eight medians are within tolerance; the rigid change (0.259; 0.14
+    within 0.1) is not.
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+  - Ripple events for the gain are all ripple events of the main reading in each epoch (not only those
+    of the replay analysis); within-ripple rate over concatenated event time, over the offline rate.
+- claim: figs14-plastic-ripple-bursting
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs14-plastic-ripple-gain
+  measured:
+  - 26.267
+  - 24.062
+  - 1.581
+  - 2.403
+  notes: POST within-ripple burstiness does not differ (reading a, ISIs within one event; plastic 26.267%
+    against rigid 24.062%, p 0.264; reading b, concatenated ripple time, 11.543% against 10.574%, p 0.233),
+    and the change is not larger in plastic cells (reading a 1.581 against 2.403 percentage points, p
+    0.2; reading b 0.810 against 1.054, p 0.853). The POST medians of reading a are within tolerance.
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+- claim: figs16ab-plastic-synchrony-increase
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs16ab-plastic-synchrony-increase
+  notes: The per-unit PRE to POST change in coactivity is larger in plastic than in rigid units (reading
+    c, all pairs on other shanks, median 0.0080 against 0.0054, p 0.0398; reading d, pairs within the
+    own group, 0.0089 against 0.0039, p 0.00942). The ripple-triggered rate increase is not significant
+    in plastic units (reading a, 0 to 100 ms, median +0.070 Hz, p 0.311; reading b, peak bin at 40 ms,
+    +0.259 Hz, p 0.0793) nor in rigid units (p 0.459 and 0.465); over all 573 units it is significant
+    under b (p 0.00814). Rigid-rigid and plastic-plastic pairs both increase (p 0.00645 and 2.28e-08).
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+  - The ripple-triggered rate uses 10 ms bins; standard choice.
+- claim: figs11-cluster-quality-similar
+  outcome: blocked
+  blocked_by: too_large
+  notes: The PCA features (.fet) and cluster files (.clu) are only inside the per-session tarballs of
+    hc-11 (X.tar.gz, 0.8 to 2.3 GB each, 12.7 GB in all), which are gzipped tar files that must be read
+    from the start to reach a member. Streaming all eight was estimated at over 15 minutes of reading
+    on top of a notebook that already takes 36 minutes, and was not attempted in this run. DANDI:000044
+    holds no spike features. The waveforms (X_spk.tar.gz, 4.8 to 14.7 GB each) were not read either.
+- claim: rate-split-medians
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:rate-split-medians
+  measured:
+  - 0.392
+  - 1.104
+  notes: All six readings give medians within tolerance; the first listed, a median split within each
+    session and direction on the offline PRE and POST rate (a, i), gives 0.392 and 1.104 Hz (284 units
+    each). On the PRE rate alone the medians are 0.377 and 1.073 to 1.074 Hz. Split (a, i) is used by
+    the dependent claims.
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - Units are the place cells per running direction (573), as in place-cell-count; a cell with fields
+    in both directions counts twice.
+- claim: figs16c-low-rate-coding
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs16c-low-rate-coding
+  measured:
+  - 0.811
+  - 0.457
+  - 6.954
+  - 4.176
+  - 1.237
+  - 1.425
+  - 0.81
+  - 0.21
+  notes: All four rank-sum tests hold in the stated direction (information per spike p 2.03e-15; in/out
+    ratio p 1.13e-14; number of fields p 0.00061; change in gain p 0.00326). Within tolerance are both
+    in/out ratios and the low-rate geometric mean number of fields; outside are information per spike
+    (0.811 and 0.457 against 0.91 and 0.56), the high-rate field count (1.425 against 1.59) and both gain
+    changes (0.810 and 0.210 against 0.71 and 0.06).
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - Number of fields is the count of runs of at least 5 bins above the null 99th percentile with a 1 Hz
+    peak; log-mean read as the geometric mean.
+- claim: fig4c-pre-fast-coactivation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig4c-pre-fast-coactivation
+  notes: PRE coactivity rises with the window's rate rank (Spearman rho 0.867, p 1.25e-25 with ranks within
+    session; 0.808, p 7.2e-20 pooled). The POST - PRE change in the fastest window is not significant
+    (-0.0010, p 0.572; +0.0035, p 0.172), against +0.0036 and +0.0014 in the slowest. The window p-values
+    are indicative, as the windows overlap. The high-rate half's pairs do increase from PRE to POST (signed-rank
+    p 1.14e-07), as Figure S16B shows.
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - The session firing rate for ranking is the whole-recording rate (reading c of fig4a-rigid-faster);
+    the other two readings were not run for these windows.
+- claim: fig4c-slow-coactivation-increase
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig4c-pre-fast-coactivation
+  notes: The coactivity change falls with rate rank under ranking (a) (rho -0.258, p 0.02) but not under
+    (b) (rho -0.171, p 0.126), and the low-rate half's pairs do not increase more than the high-rate half's
+    (+0.0059 against +0.0053, rank-sum p 0.205).
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - The session firing rate for ranking is the whole-recording rate; the halves are those of rate-split-medians.
+- claim: fig4c-slow-replay
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig4c-pre-fast-coactivation
+  notes: With pooled ranks (b) the partial correlation of RUN and POST coactivity given PRE falls with
+    rate rank (rho -0.756, p 3.25e-16) and peaks at window 13 of 80 (0.309 in the slowest, 0.200 in the
+    fastest). With ranks within session (a) it does not (rho -0.055, p 0.624; peak at window 58), though
+    the slowest window (0.397) is above the fastest (0.191). The criterion asks for both rankings.
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - The session firing rate for ranking is the whole-recording rate.
+- claim: fig4d-slow-sequences
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig4d-slow-sequences
+  notes: With templates of only the low-rate place cells POST - PRE rZ is 0.0631 (bootstrap interval 0.0329
+    to 0.0946; rank-sum POST above PRE p 0.000539); with only the high-rate cells it is -0.00836 (interval
+    -0.0318 to 0.0158; p 0.793). Both test readings agree. The paired-latency, burst-decimated and time-bin-shuffle
+    variants were not run.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The reruns use 30 null templates per event, main reading only.
+- claim: fig4e-gain-sequences
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:fig4d-slow-sequences
+  notes: With only the high-gain cells POST - PRE rZ is 0.0705 (interval 0.0447 to 0.0961, p 1.48e-07);
+    with only the low-gain cells it also rises, less (0.0354, interval 0.0117 to 0.0613, p 0.0144). Gain
+    is the within-ripple gain over PRE and POST (session-wide reading b), split as in rate-split-medians.
+  deviations:
+  - 200 null templates per event in place of the paper's 1,000, and 100 cell-specific shuffles per cell
+    and event for the PCC in place of 1,000; a full run with 1,000 of each took over an hour for five
+    of the eight sessions while preparing, beyond the notebook limit.
+  - Offline states (reading S-a) are the lab's NREM, Intermediate and Drowsy epochs in PRE and POST, with
+    Drowsy read as quiet waking, and immobility below 5 cm/s on the maze; reading S-b is the automatic
+    buzcode NREM scoring held in the NWB files. The paper defines offline states as quiet waking and NREM
+    (Methods, Ripple Event Detection) without thresholds. Assumption.
+  - LFP ripples are detected on one channel, the one with the highest 150-250 Hz power among the 16 channels
+    of the chunk column holding the shank with most pyramidal cells; Hilbert envelope smoothed 8 ms, z-scored
+    over NREM. The paper does not describe its detector beyond the band. Assumption.
+  - The replay pipeline was run under the claims' seeds only; the five-seed check was not run for it,
+    as one run takes 35 minutes.
+  - The reruns use 30 null templates per event, main reading only.
+- claim: figs16de-more-ripples-post
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs16de-more-ripples-post
+  measured:
+  - 2.424
+  - 1.944
+  - 0.939
+  - 0.625
+  notes: Intervals between ripple events within offline states are shorter in POST (median 2.424 s against
+    1.944 s, rank-sum p 2.37e-62), and so are those between LFP ripples (L-a 0.939 against 0.625 s; L-b
+    2.232 against 1.234 s; p below 1e-140), under all three yokings. The ripple-event medians are outside
+    tolerance (3 and 2.47 s expected), and the LFP medians are within tolerance under neither threshold
+    (1.21 and 1.06 s expected).
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - Intervals are between consecutive events inside one offline stretch, under 60 s (Figure S16 legend).
+- claim: figs17-coactivity-preservation
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs17-coactivity-preservation
+  measured:
+  - 0.094
+  - 0.267
+  - 0.393
+  - 0.173
+  - 0.126
+  notes: Over 11014 place-cell pairs on different shanks, PRE-RUN r is 0.094 (p 6.35e-23), RUN-POST 0.267
+    and PRE-POST 0.393; RUN-POST exceeds RUN-PRE by 0.173 (Fisher z p 1.9e-40 independent, 1.05e-63 dependent)
+    and PRE-POST exceeds RUN-POST by 0.126 (p 6.95e-26 and 7.96e-27). The order of the claim holds; all
+    five values are outside tolerance. By session PRE-RUN ranges 0.013 to 0.529 (Gatsby_08282013 is the
+    outlier at 0.529).
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - RUN is running at 5 cm/s or more on the maze, from the smoothed 2D position (Methods, Pair-Wise Co-Activity
+    Analysis).
+- claim: figs17d-rigid-plastic-coactivity
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs17d-rigid-plastic-coactivity
+  measured:
+  - 0.118
+  - 0.002
+  - 0.208
+  - 0.324
+  - 0.44
+  - 0.203
+  notes: Rigid pairs (n 641) preserve PRE coactivity into POST more than plastic pairs (n 509; 0.440 against
+    0.203, Fisher z p 7.44e-06), and plastic pairs preserve RUN coactivity into POST more (0.324 against
+    0.208, p 0.0362). Rigid pairs preserve PRE coactivity into RUN more (0.118 against 0.002) but not
+    significantly (p 0.051). Within tolerance is the plastic PRE-RUN value, and the plastic RUN-POST value
+    is at the edge (0.324 against 0.36 within 0.036). Cells labelled rigid in one direction and plastic
+    in the other (18) are left out of the pair groups.
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - RUN is running at 5 cm/s or more on the maze, from the smoothed 2D position (Methods, Pair-Wise Co-Activity
+    Analysis).
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+- claim: figs18-temporal-bias
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_grosmark_2016.ipynb
+  output: claim:figs18-temporal-bias
+  measured:
+  - 0.007
+  - 0.119
+  - 0.221
+  - 0.3
+  - 0.193
+  notes: Median r over 1,000 sign randomisations; all pairs PRE-RUN 0.007 (p 0.50, n 10211), RUN-POST
+    0.119 and PRE-POST 0.221 (p ~ 0); rigid pairs PRE-POST 0.300 (p ~ 0) and RUN-POST 0.131 (p 0.00127);
+    plastic pairs RUN-POST 0.193 (p 2.5e-05) and PRE-POST 0.071 (p 0.111). The pattern holds except that
+    rigid RUN-POST is significant, where the claim has it not (0.024 in the paper). Four of five values
+    are within tolerance; plastic RUN-POST (0.193 against 0.26) is not. The five seeds give the same r
+    to three decimals (plastic RUN-POST 0.192 to 0.193).
+  deviations:
+  - Offline time is the lab's NREM, Intermediate and Drowsy epochs (Drowsy read as quiet waking) within
+    the yoked windows Y-a (the last T of PRE and the first T of POST), and immobility below 5 cm/s on
+    the maze; the paper gives neither. Assumption.
+  - RUN is running at 5 cm/s or more on the maze, from the smoothed 2D position (Methods, Pair-Wise Co-Activity
+    Analysis).
+  - Rigid and plastic cells are those of the main reading (Y-a, D-a, P-a), 120 of each; under D-b the
+    split would give 104 of each. Assumption (see rigid-plastic-counts).
+findings:
+- kind: other
+  about: data
+  severity: none
+  datasets:
+  - '000044'
+  - crcns-hc-11
+  statement: DANDI 000044 and CRCNS hc-11 hold the same eight sessions. In every session the unit ids,
+    the putative cell types, every spike time and the lab's state epochs are identical between the NWB
+    files and the sessInfo files, so the two datasets are one recording deposited twice, as both descriptions
+    say. The counts (4 rats, 8 sessions, 562 pyramidal cells, 128 interneurons, mazes) agree with the
+    paper, and the LFP and position share the spikes' clock.
+  notebook: reproduce_grosmark_2016.ipynb
+  output: sanity
+- kind: metadata_error
+  severity: minor
+  datasets:
+  - '000044'
+  - crcns-hc-11
+  statement: In session Gatsby_08022013 the session duration (sessInfo.Epochs.sessDuration) and the end
+    of the POST epoch (in sessInfo and in the NWB epochs table) are 30413.6 s, but 263,976 spikes, the
+    LFP and the lab's own state epochs continue to 32002.4 s, about 26 minutes more. An analysis that
+    takes the POST epoch as given drops the end of the recording; in the other seven sessions the stated
+    end matches the data.
+  notebook: reproduce_grosmark_2016.ipynb
+  output: finding-spikes-after-session-end
+- kind: metadata_error
+  severity: minor
+  datasets:
+  - '000044'
+  - crcns-hc-11
+  statement: Position is sampled at 39.06 Hz in every session, where the Methods state 39.69 Hz.
+  notebook: reproduce_grosmark_2016.ipynb
+  output: finding-position-rate
+- kind: metadata_insufficient
+  severity: minor
+  datasets:
+  - '000044'
+  - crcns-hc-11
+  statement: On the circular maze the 1D position runs from 0 to 2.84 to 2.90 m. The data description
+    says the rat was rewarded at position 0, while the paper linearises from the edge of the 30 cm reward
+    area and excludes it; the files do not say whether the reward area is excluded, so the stretch to
+    drop cannot be told. The lap directions of the NWB trials table exist only for the linear tracks and
+    are not in the CRCNS sessInfo files.
+  notebook: reproduce_grosmark_2016.ipynb
+  output: finding-position-rate
+- kind: metadata_insufficient
+  severity: minor
+  datasets:
+  - '000044'
+  - crcns-hc-11
+  statement: The paper's offline states are quiet waking and NREM sleep, but the lab's state epochs label
+    Wake, Drowsy, NREM, Intermediate and REM, with no quiet waking state, and no movement signal marks
+    immobility outside the maze. Which epochs the paper counted as quiet waking is not recorded; this
+    attempt took Drowsy.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. PRE and POST analyses were "yoked to the duration of the
+    shortest of the two epochs", but which part of the longer epoch was kept is not stated (the part nearest
+    the maze, the first part of each, or offline time). The figs5e duration test turns on it (p 0.000531
+    with the parts nearest the maze, 0.455 with the first part of each). This attempt assumed the parts
+    nearest the maze.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. For the PCC and the rigid and plastic split on the linear
+    tracks, was each event scored with both direction templates, or assigned to one direction by the decoder
+    of equation 6? With both, the split gives 120 rigid and 120 plastic cells and 246 strongly contributing
+    cells; with one, 104, 104 and 217, close to the paper's 105, 105 and 216. This attempt assumed both.
+- kind: paper_inconsistency
+  about: paper
+  statement: The Methods test strongly contributing cells with a one-tailed rank-sum test over the per-event
+    PCC scores, while the Figure S19B legend names a one-tailed signed-rank test. A signed-rank test of
+    the PCC against zero gives 217 to 249 cells (216 in the paper); a rank-sum test of the events' observed
+    rZ against their cell-shuffled rZ gives 13 to 24.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. The LFP sharp wave-ripple detector (channel, envelope,
+    threshold) is not described beyond the 150-250 Hz band of Figure S4. With a 3 SD threshold 34.6% to
+    58.6% of population events hold a ripple (50.6% in the paper); the inter-ripple intervals of Figure
+    S16E (1.21 and 1.06 s) are matched by neither a 3 SD nor a 5 SD threshold here.
+- kind: methods_unavailable
+  about: paper
+  statement: Question for the paper's authors. For Figure 2D, is each percentage tested with one template
+    in which the chosen cells' fields are shuffled, or with many, averaged? This attempt used one per
+    percentage.
