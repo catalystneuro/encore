@@ -7796,26 +7796,25 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-00">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c00">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Earlier-findings-checked-on-dandiset-001538-version-draft">Earlier findings checked on dandiset 001538 version draft<a class="anchor-link" href="#Earlier-findings-checked-on-dandiset-001538-version-draft">¶</a></h1><p>This notebook belongs to the reconciliation of attempt zhai-2025-02 with attempt zhai-2025-01
-(docs/protocol.md, "Repeat attempts"). zhai-2025-01 was made on version 0.260527.1302 and
-zhai-2025-02 on the draft. Of the fifteen findings of zhai-2025-01, findings 3, 4, 9, 10, 11, 12,
-14 and 15 are not reported by zhai-2025-02, and each is checked here directly on
-<a href="https://dandiarchive.org/dandiset/001538/draft">DANDI:001538</a>, version draft. Findings 1, 6 and 7
-are reported by zhai-2025-02 in part; the parts it does not report are checked here too. Each
-section opens with the earlier statement. The files are streamed with the entry's helper module,
-<code>lid.py</code>, and only the tables, headers and stimulus series the checks need are read. Finding 14 is
-about the paper and is checked on the paper's per-cell tables (doi:10.5281/zenodo.17307059).
-The conclusion for each finding is in the reconciliation block of <code>attempts/zhai-2025-02.yaml</code>.</p>
+<h1 id="Earlier-findings-checked-on-dandiset-001538-version-0.261124.1858">Earlier findings checked on dandiset 001538 version 0.261124.1858<a class="anchor-link" href="#Earlier-findings-checked-on-dandiset-001538-version-0.261124.1858">¶</a></h1><p>This notebook belongs to the reconciliation of attempt zhai-2025-03 with attempt zhai-2025-02
+(docs/protocol.md, "Repeat attempts"). zhai-2025-02 was made on the draft (modified 2026-11-09)
+and zhai-2025-03 on version 0.261124.1858. Of the fifteen findings of zhai-2025-02, findings 1, 5,
+6, 9, 13 and 14 are not reported by zhai-2025-03, and each is checked here directly on
+<a href="https://dandiarchive.org/dandiset/001538/0.261124.1858">DANDI:001538</a>, version 0.261124.1858.
+Each section opens with the earlier statement. The files are streamed with the entry's helper
+module, <code>zhai.py</code>, and only the files each check needs are read. Findings 9 and 14 are about the
+paper and are checked on the paper's per-cell tables (doi:10.5281/zenodo.17307059). The
+conclusion for each finding is in the reconciliation block of <code>attempts/zhai-2025-03.yaml</code>.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cell-01">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=c01">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7823,22 +7822,20 @@ The conclusion for each finding is in the reconciliation block of <code>attempts
 <div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">lid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zhai</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_rows"</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_colwidth"</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
-<span class="n">info</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">version_info</span><span class="p">()</span>
-<span class="n">assets</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">list_assets</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"dandiset"</span><span class="p">,</span> <span class="n">lid</span><span class="o">.</span><span class="n">DANDISET</span><span class="p">,</span> <span class="s2">"version"</span><span class="p">,</span> <span class="n">lid</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="s2">"| modified"</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">"modified"</span><span class="p">],</span> <span class="s2">"| NWB files"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">assets</span><span class="p">))</span>
+<span class="n">assets</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">list_assets</span><span class="p">()</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">paper_tables</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"dandiset"</span><span class="p">,</span> <span class="n">zhai</span><span class="o">.</span><span class="n">DANDISET</span><span class="p">,</span> <span class="s2">"version"</span><span class="p">,</span> <span class="n">zhai</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="s2">"| assets"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">assets</span><span class="p">),</span> <span class="s2">"| NWB files"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">assets</span><span class="o">.</span><span class="n">nwb</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+      <span class="s2">"| subjects"</span><span class="p">,</span> <span class="n">assets</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"paper tables read:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="s2">"sheets"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7851,13 +7848,32 @@ The conclusion for each finding is in the reconciliation block of <code>attempts
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>dandiset 001538 version draft | modified 2026-11-09T19:30:00.396929Z | NWB files 391
+<pre>dandiset 001538 version 0.261124.1858 | assets 1288 | NWB files 391 | subjects 173
+paper tables read: 46 sheets
 </pre>
 </div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cell-02">
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c02">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Earlier-finding-1-(data_missing)">Earlier finding 1 (data_missing)<a class="anchor-link" href="#Earlier-finding-1-(data_missing)">¶</a></h2><blockquote>
+<p>Two cells with dendritic line scans were imaged at one dendritic site only, at two spots:
+2016-05-26 cell 3 (CDGI knockout, off-state, Distal1 Spot1 and Spot2) and 2016-06-08 cell 1
+(on-state, Proximal1 Spot1 and Spot2). They have no proximal-distal pair and no index, while the
+paper counts them in Figures 3F and 7F (10 and 11 cells).</p>
+</blockquote>
+<p>The line-scan sites of every cell in the two files, and the proximal-distal pairs with their
+index, computed as in the main notebook.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_earlier-finding-1" id="cell-id=c03">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7865,89 +7881,15 @@ The conclusion for each finding is in the reconciliation block of <code>attempts
 <div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_s</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">header</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Header fields of one file, and every object that carries a description."""</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">open_asset</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">)</span>
-    <span class="n">get</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">_s</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">k</span><span class="p">][()])</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">f</span> <span class="k">else</span> <span class="s2">""</span>
-    <span class="n">names</span><span class="p">,</span> <span class="n">descs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">"description"</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
-            <span class="n">descs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">_s</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"description"</span><span class="p">])))</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">visititems</span><span class="p">(</span><span class="n">visit</span><span class="p">)</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span> <span class="n">name_genotype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">genotype</span><span class="p">,</span>
-               <span class="n">related</span><span class="o">=</span><span class="p">[</span><span class="n">_s</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="s2">"general/related_publications"</span><span class="p">][:]]</span> <span class="k">if</span> <span class="s2">"general/related_publications"</span> <span class="ow">in</span> <span class="n">f</span> <span class="k">else</span> <span class="p">[],</span>
-               <span class="n">session_description</span><span class="o">=</span><span class="n">get</span><span class="p">(</span><span class="s2">"session_description"</span><span class="p">),</span> <span class="n">experiment_description</span><span class="o">=</span><span class="n">get</span><span class="p">(</span><span class="s2">"general/experiment_description"</span><span class="p">),</span>
-               <span class="n">subject_genotype</span><span class="o">=</span><span class="n">get</span><span class="p">(</span><span class="s2">"general/subject/genotype"</span><span class="p">),</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">descs</span><span class="o">=</span><span class="n">descs</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">out</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">patch_tables</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The per-sweep tables of one patch-clamp file, its dendritic stimulus series and, for the</span>
-<span class="sd">    Sr2+-oEPSC files, the light pulses found in each sweep."""</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">open_asset</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">)</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">cell_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">cell_type</span><span class="p">,</span> <span class="n">name_drug</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">drug</span><span class="p">,</span>
-               <span class="n">description</span><span class="o">=</span><span class="n">_s</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">"session_description"</span><span class="p">][()]))</span>
-    <span class="n">irt</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">"general/intracellular_ephys/intracellular_recordings"</span><span class="p">]</span>
-    <span class="n">resp</span><span class="p">,</span> <span class="n">stim</span><span class="p">,</span> <span class="n">cell</span> <span class="o">=</span> <span class="n">irt</span><span class="p">[</span><span class="s2">"responses/response"</span><span class="p">][:],</span> <span class="n">irt</span><span class="p">[</span><span class="s2">"stimuli/stimulus"</span><span class="p">][:],</span> <span class="n">irt</span><span class="p">[</span><span class="s2">"cell_id"</span><span class="p">][:]</span>
-    <span class="k">if</span> <span class="s2">"processing/icephys/RecordingsIndexTable"</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">"processing/icephys/RecordingsIndexTable"</span><span class="p">]</span>
-        <span class="n">rit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">lid</span><span class="o">.</span><span class="n">_str</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">][:])</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"O"</span> <span class="k">else</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">][:]</span>
-                            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"cell_id"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"dendrite_type"</span><span class="p">,</span> <span class="s2">"site"</span><span class="p">,</span> <span class="s2">"stimulus_current_pA"</span><span class="p">,</span> <span class="s2">"irt_row"</span><span class="p">]})</span>
-        <span class="n">rit</span><span class="p">[</span><span class="s2">"drug"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">_str</span><span class="p">(</span><span class="n">irt</span><span class="p">[</span><span class="s2">"drug"</span><span class="p">][:])[</span><span class="n">rit</span><span class="o">.</span><span class="n">irt_row</span><span class="p">]</span>
-        <span class="n">lengths</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"line_scan_alexa568"</span><span class="p">,</span> <span class="s2">"line_scan_fluo4"</span><span class="p">]:</span>
-            <span class="n">ok</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">ref</span> <span class="ow">in</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">col</span><span class="p">][:]</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">t</span> <span class="k">else</span> <span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">rit</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">ok</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-                    <span class="k">continue</span>
-                <span class="n">ds</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">ref</span><span class="p">]</span>
-                <span class="n">lengths</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="n">ok</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start</span> <span class="o">+</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">lengths</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
-            <span class="n">rit</span><span class="p">[</span><span class="n">col</span> <span class="o">+</span> <span class="s2">"_ok"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ok</span>
-        <span class="n">out</span><span class="p">[</span><span class="s2">"rit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rit</span>
-        <span class="n">out</span><span class="p">[</span><span class="s2">"dendritic_stimulus"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">dict</span><span class="p">(</span><span class="n">series</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span> <span class="o">:=</span> <span class="n">f</span><span class="p">[</span><span class="s2">"stimulus/presentation"</span><span class="p">][</span><span class="n">n</span><span class="p">][</span><span class="s2">"data"</span><span class="p">][:]),</span>
-                 <span class="n">peak</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
-                 <span class="n">unit</span><span class="o">=</span><span class="n">_s</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">"stimulus/presentation"</span><span class="p">][</span><span class="n">n</span><span class="p">][</span><span class="s2">"data"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"unit"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)),</span>
-                 <span class="n">conversion</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s2">"stimulus/presentation"</span><span class="p">][</span><span class="n">n</span><span class="p">][</span><span class="s2">"data"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"conversion"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="s2">"stimulus/presentation"</span><span class="p">]</span> <span class="k">if</span> <span class="s2">"Dendritic"</span> <span class="ow">in</span> <span class="n">n</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">"intervals/optogenetic_pulses_table"</span><span class="p">]</span>
-        <span class="n">ps</span><span class="p">,</span> <span class="n">pc</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">"start_time"</span><span class="p">][:],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"cell_id"</span><span class="p">][:]</span>
-        <span class="n">ts</span><span class="p">,</span> <span class="n">rows</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">resp</span><span class="p">)):</span>
-            <span class="n">start</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">ds</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">ref</span><span class="p">]</span>
-            <span class="n">ts</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">lid</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">(</span><span class="n">ds</span><span class="p">))</span>
-            <span class="n">sweep</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">count</span><span class="p">]</span>
-            <span class="n">mine</span> <span class="o">=</span> <span class="n">ps</span><span class="p">[(</span><span class="n">pc</span> <span class="o">==</span> <span class="n">cell</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ps</span> <span class="o">&gt;=</span> <span class="n">sweep</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ps</span> <span class="o">&lt;=</span> <span class="n">sweep</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span>
-            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">cell</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">pulses</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">mine</span><span class="p">),</span> <span class="n">pulse_s</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">mine</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sweep</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mine</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
-                             <span class="n">stimulus_rows</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">stim</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">))</span>
-        <span class="n">out</span><span class="p">[</span><span class="s2">"sr"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
-        <span class="n">types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">visititems</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_s</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"neurodata_type"</span><span class="p">,</span> <span class="s2">""</span><span class="p">))))</span>
-        <span class="n">out</span><span class="p">[</span><span class="s2">"types"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">types</span> <span class="o">-</span> <span class="p">{</span><span class="s2">""</span><span class="p">})</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">out</span>
-
-
-<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-    <span class="n">heads</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">assets</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()])))</span>
-    <span class="n">patch</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[</span><span class="n">assets</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"icephys"</span><span class="p">,</span> <span class="s2">"icephys+ophys"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">assets</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"SPN"</span><span class="p">)]</span>
-    <span class="n">ptabs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">patch_tables</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">patch</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()]))</span>
-<span class="n">cc</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ptabs</span> <span class="k">if</span> <span class="s2">"rit"</span> <span class="ow">in</span> <span class="n">p</span><span class="p">]</span>
-<span class="n">srt</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ptabs</span> <span class="k">if</span> <span class="s2">"sr"</span> <span class="ow">in</span> <span class="n">p</span><span class="p">]</span>
-<span class="n">R</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="s2">"rit"</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">"path"</span><span class="p">],</span> <span class="n">date</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">"date"</span><span class="p">],</span> <span class="n">cell_type</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">"cell_type"</span><span class="p">],</span> <span class="n">name_drug</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">"name_drug"</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">cc</span><span class="p">],</span>
-              <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">tables</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">paper_tables</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"headers read:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">),</span> <span class="s2">"| current-clamp files:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">),</span> <span class="s2">"| Sr2+-oEPSC files:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">srt</span><span class="p">))</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">f1</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[</span><span class="n">assets</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"20160526"</span><span class="p">,</span> <span class="s2">"20160608"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">assets</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"icephys+ophys"</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f1</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">open_h5</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">recordings_table</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"Prox|Dist"</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"cell_id"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">])</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="p">)))</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">dendritic_file</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">[[</span><span class="s2">"cell"</span><span class="p">,</span> <span class="s2">"proximal"</span><span class="p">,</span> <span class="s2">"distal"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">,</span> <span class="s2">"basal_ratio"</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7960,33 +7902,68 @@ The conclusion for each finding is in the reconciliation block of <code>attempts
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>headers read: 391 | current-clamp files: 63 | Sr2+-oEPSC files: 14
+<pre>sub-Subject20160526LIDOFFCDGIkoXeGFP/sub-Subject20160526LIDOFFCDGIkoXeGFP_ses-iSPN++OffState++none++CDGIKO++20160526_icephys+ophys.nwb
+cell_id  condition                   
+1        CDGI knockout, LID off-state    [Distal1, Distal2, Proximal1, Proximal2]
+2        CDGI knockout, LID off-state    [Distal1, Distal3, Proximal1, Proximal3]
+3        CDGI knockout, LID off-state                        [Distal1, Proximal1]
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>   cell   proximal   distal  index  basal_ratio
+0     1  Proximal1  Distal1  0.588        0.923
+1     1  Proximal2  Distal2  0.535        0.880
+2     2  Proximal1  Distal1  0.215        1.283
+3     2  Proximal3  Distal3  0.392        0.987
+4     3  Proximal1  Distal1  0.293        0.910 
+
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>sub-Subject20160608LIDONeGFP/sub-Subject20160608LIDONeGFP_ses-iSPN++OnState++none++WT++20160608_icephys+ophys.nwb
+cell_id  condition   
+1        LID on-state                        [Distal1, Proximal1]
+2        LID on-state                        [Distal1, Proximal1]
+3        LID on-state    [Distal1, Distal2, Proximal1, Proximal2]
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>   cell   proximal   distal  index  basal_ratio
+0     1  Proximal1  Distal1  0.146        1.315
+1     2  Proximal1  Distal1  0.339        1.024
+2     3  Proximal1  Distal1  0.220        0.947
+3     3  Proximal2  Distal2  0.234        1.151 
+
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-03">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c04">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-1-(data_missing),-the-part-not-reported-again">Earlier finding 1 (data_missing), the part not reported again<a class="anchor-link" href="#Earlier-finding-1-(data_missing),-the-part-not-reported-again">¶</a></h2><blockquote>
-<p>The dandiset holds no patch-clamp recordings from unlesioned control or 6-OHDA-lesioned mice,
-which make up the control and 6-OHDA groups of Figures 1E, 1F, 1I, 3C, 3D and 3F (10, 12, 11 and
-9 dSPNs; 21, 11, 14 and 9 iSPNs), nor the oxo-M line scans of Figure 7E or the open-field data of
-Figure 10. The paper's raw data on Zenodo (doi:10.5281/zenodo.17260198) list folders for all of
-these.</p>
+<h2 id="Earlier-finding-5-(other,-data)">Earlier finding 5 (other, data)<a class="anchor-link" href="#Earlier-finding-5-(other,-data)">¶</a></h2><blockquote>
+<p>Mouse 7830 (Figure 10, control) has identical AIM sheets for sessions 4 and 5; the paper's table
+has the same values for both sessions.</p>
 </blockquote>
-<p>zhai-2025-02 reports the control and 6-OHDA recordings and the open-field data again (its finding
-11). The oxo-M line scans are checked here: the files by session-name fields and kind, and the
-oxo-M cells by condition.</p>
+<p>The AIM scores of mouse 7830 per session, and the paper's Figure 10B totals for the mouse.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-04">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_earlier-finding-5" id="cell-id=c05">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7994,13 +7971,17 @@ oxo-M cells by condition.</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">assets</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"cell_type"</span><span class="p">,</span> <span class="s2">"state"</span><span class="p">,</span> <span class="s2">"drug"</span><span class="p">,</span> <span class="s2">"kind"</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
-<span class="n">ox</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">R</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"naive"</span><span class="p">)]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">oxo-M files: cells by condition and compartment"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ox</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"dendrite_type"</span><span class="p">])</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"date"</span><span class="p">,</span> <span class="s2">"cell_id"</span><span class="p">])</span><span class="o">.</span><span class="n">ngroups</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">patch-clamp files of unlesioned or 6-OHDA mice:"</span><span class="p">,</span>
-      <span class="nb">int</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"UnlesionedControl"</span><span class="p">,</span> <span class="s2">"LesionedControl"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-      <span class="s2">"| files of those states by kind:"</span><span class="p">,</span> <span class="n">assets</span><span class="p">[</span><span class="n">assets</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"UnlesionedControl"</span><span class="p">,</span> <span class="s2">"LesionedControl"</span><span class="p">])]</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"spine stacks"</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">f5</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[</span><span class="n">assets</span><span class="o">.</span><span class="n">nwb</span> <span class="o">&amp;</span> <span class="n">assets</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"M7830"</span><span class="p">)]</span>
+<span class="n">aim</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">zhai</span><span class="o">.</span><span class="n">aim_file</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f5</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"sessions:"</span><span class="p">,</span> <span class="n">aim</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"session"</span><span class="p">)</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">aim</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"behavior"</span><span class="p">,</span> <span class="s2">"timestamp"</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"session"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"score"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">sessions 4 and 5 identical at every time point and behaviour:"</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">5</span><span class="p">])))</span>
+<span class="n">tot</span> <span class="o">=</span> <span class="n">aim</span><span class="p">[</span><span class="n">aim</span><span class="o">.</span><span class="n">behavior</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"axial"</span><span class="p">,</span> <span class="s2">"limb"</span><span class="p">,</span> <span class="s2">"orolingual"</span><span class="p">])]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"session"</span><span class="p">)</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">p10</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="s2">"Fig 10B_total AIMs"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"mouse"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">,</span> <span class="s2">"session"</span><span class="p">,</span> <span class="s2">"total"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">p10</span> <span class="o">=</span> <span class="n">p10</span><span class="p">[</span><span class="n">p10</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"7830"</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"session totals, dandiset:"</span><span class="p">,</span> <span class="n">tot</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"session totals, paper:"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">p10</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">p10</span><span class="o">.</span><span class="n">total</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -8013,73 +7994,59 @@ oxo-M cells by condition.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>cell_type  state              drug      kind         
-dSPN       LesionedControl    none                         5
-           OffState           none                         8
-                                        icephys            4
-                                        icephys+ophys      7
-           OnState            D1RaSch   icephys+ophys      5
-                              none                         9
-                                        icephys            4
-                                        icephys+ophys      5
-           UnlesionedControl  none                         6
-iSPN       LesionedControl    none                        10
-           M1RAntag           none      icephys            2
-                                        icephys+ophys      4
-           M1RCRISPR          none      icephys            3
-           Naive              M1RaOxoM  icephys+ophys      5
-           OffState           M1RaThp                      5
-                              none                        24
-                                        icephys            5
-                                        icephys+ophys     15
-           OnState            D2RaSul   icephys+ophys      6
-                              none                        12
-                                        icephys            4
-                                        icephys+ophys      8
-           UnlesionedControl  none                        14
-pan        LesionedControl    none      ophys              3
-           OffState           none      ophys              5
-           OnState            none                        17
-                                        image            193
-           UnlesionedControl  none      ophys              3
+<pre>sessions: {1: 'sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231208_image.nwb', 2: 'sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231211_image.nwb', 3: 'sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231213_image.nwb', 4: 'sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231215.nwb', 5: 'sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231218_image.nwb'}
+session                 1    2    3    4    5
+behavior   timestamp                         
+axial      1200.0     2.0  2.0  3.0  4.0  4.0
+           2400.0     2.0  2.5  2.5  4.0  4.0
+           3600.0     2.0  3.0  3.0  4.0  4.0
+           4800.0     2.0  3.0  3.0  4.0  4.0
+           6000.0     NaN  2.0  3.0  2.0  2.0
+limb       1200.0     2.0  2.0  2.5  2.5  2.5
+           2400.0     2.0  2.5  2.0  2.5  2.5
+           3600.0     2.0  2.5  2.5  2.5  2.5
+           4800.0     1.0  2.0  2.5  2.5  2.5
+           6000.0     NaN  1.0  2.5  1.0  1.0
+orolingual 1200.0     2.0  2.0  3.0  2.5  2.5
+           2400.0     3.0  3.0  3.0  2.5  2.5
+           3600.0     2.5  2.5  3.0  2.5  2.5
+           4800.0     3.0  2.0  2.5  2.0  2.0
+           6000.0     NaN  1.0  2.5  1.0  1.0
+total      1200.0     6.0  6.0  8.5  9.0  9.0
+           2400.0     7.0  8.0  7.5  9.0  9.0
+           3600.0     6.5  8.0  8.5  9.0  9.0
+           4800.0     6.0  7.0  8.0  8.5  8.5
+           6000.0     NaN  4.0  8.0  4.0  4.0
 
-oxo-M files: cells by condition and compartment
-condition                        dendrite_type
-CDGI knockout, naive             Distal           6
-                                 Proximal         6
-CDGI knockout, naive with oxo-M  Distal           6
-                                 Proximal         6
-naive                            Distal           5
-                                 Proximal         5
-naive with oxo-M                 Distal           5
-                                 Proximal         5
-
-patch-clamp files of unlesioned or 6-OHDA mice: 0 | files of those states by kind: {'spine stacks': 35, 'ophys': 6}
+sessions 4 and 5 identical at every time point and behaviour: True
+session totals, dandiset: {1: 25.5, 2: 33.0, 3: 40.5, 4: 39.5, 5: 39.5}
+session totals, paper: {1: 25.5, 2: 33.0, 3: 40.5, 4: 39.5, 5: 39.5}
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-05">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c06">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-3-(metadata_error)">Earlier finding 3 (metadata_error)<a class="anchor-link" href="#Earlier-finding-3-(metadata_error)">¶</a></h2><blockquote>
-<p>Session names state a drug (D1RaSch, D2RaSul) for files that also hold baseline on-state
-sweeps. 11 cells in such files have a baseline condition; 7 of them were also recorded with the
-drug and 4 are baseline only (dSPN 20190507 cell 1, iSPN 20190408 cell 1, 20190409 cell 1 and
-20190508 cell 2). The condition of each sweep is only in the RecordingsIndexTable column
-condition_subfolder; grouping by session name puts baseline cells in the drug groups.</p>
+<h2 id="Earlier-finding-6-(metadata_insufficient)">Earlier finding 6 (metadata_insufficient)<a class="anchor-link" href="#Earlier-finding-6-(metadata_insufficient)">¶</a></h2><blockquote>
+<p>Subjects are defined per recording day. Mouse counts differ from the paper's legends in four
+groups (Sr2+-oEPSC dSPN and iSPN off-state, 3 subjects against 4 mice; M1R CRISPR control and
+deletion somatic cells, 2 and 3 against 3 and 4), which mice sharing a recording day would
+explain; the files do not say which mouse each cell came from.</p>
 </blockquote>
-<p>The somatic cells of the files whose session name states a drug, with the conditions their
-sweeps carry, and the columns that give each sweep's condition and drug.</p>
+<p>Cells and subjects of these four groups, read from the files' recordings tables, and the subject
+description of one file. The paper's legends give 10 cells from four mice (Figure 2I, off-state),
+7 cells from four mice (Figure 4H, off-state), and 6 cells from three mice and 8 cells from four
+mice (Figure 9D, control and M1R deletion).</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-06">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_earlier-finding-6" id="cell-id=c07">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8087,16 +8054,20 @@ sweeps carry, and the columns that give each sweep's condition and drug.</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">named</span> <span class="o">=</span> <span class="n">R</span><span class="p">[(</span><span class="n">R</span><span class="o">.</span><span class="n">dendrite_type</span> <span class="o">==</span> <span class="s2">"Soma"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">R</span><span class="o">.</span><span class="n">name_drug</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"D1RaSch"</span><span class="p">,</span> <span class="s2">"D2RaSul"</span><span class="p">])]</span>
-<span class="n">c3</span> <span class="o">=</span> <span class="n">named</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"name_drug"</span><span class="p">,</span> <span class="s2">"cell_type"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">,</span> <span class="s2">"cell_id"</span><span class="p">])</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-<span class="n">c3</span><span class="p">[</span><span class="s2">"baseline"</span><span class="p">]</span> <span class="o">=</span> <span class="n">c3</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="s2">"with"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">))</span>
-<span class="n">c3</span><span class="p">[</span><span class="s2">"with_drug"</span><span class="p">]</span> <span class="o">=</span> <span class="n">c3</span><span class="o">.</span><span class="n">condition</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="s2">"with"</span> <span class="ow">in</span> <span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">c3</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">cells with a baseline condition:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">c3</span><span class="o">.</span><span class="n">baseline</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="s2">"| also recorded with the drug:"</span><span class="p">,</span>
-      <span class="nb">int</span><span class="p">((</span><span class="n">c3</span><span class="o">.</span><span class="n">baseline</span> <span class="o">&amp;</span> <span class="n">c3</span><span class="o">.</span><span class="n">with_drug</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="s2">"| baseline only:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">c3</span><span class="o">.</span><span class="n">baseline</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">c3</span><span class="o">.</span><span class="n">with_drug</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">c3</span><span class="p">[</span><span class="n">c3</span><span class="o">.</span><span class="n">baseline</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">c3</span><span class="o">.</span><span class="n">with_drug</span><span class="p">][[</span><span class="s2">"cell_type"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">,</span> <span class="s2">"cell_id"</span><span class="p">]]</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">condition and drug columns of the intracellular recordings table, in these files:"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">named</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"name_drug"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"drug"</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">f6</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[(</span><span class="n">assets</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"icephys"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(((</span><span class="n">assets</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">"OffState"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">assets</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"2023"</span><span class="p">))</span>
+                                          <span class="o">|</span> <span class="n">assets</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"20221004"</span><span class="p">,</span> <span class="s2">"20221005"</span><span class="p">,</span> <span class="s2">"20221012"</span><span class="p">,</span> <span class="s2">"20221129"</span><span class="p">,</span> <span class="s2">"20221130"</span><span class="p">]))]</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">f6</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">open_h5</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">recordings_table</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">r_series</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"VoltageClamp"</span><span class="p">),</span> <span class="s2">"Sr2+-oEPSC"</span><span class="p">,</span> <span class="s2">"somatic"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">cond</span><span class="p">),</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"kind"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">]):</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">cell_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">cell_type</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">cond</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">cell_id</span><span class="o">.</span><span class="n">nunique</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="s2">"20221004"</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s2">"general/subject"</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"subject_id:"</span><span class="p">,</span> <span class="n">zhai</span><span class="o">.</span><span class="n">_str</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">"subject_id"</span><span class="p">][()]),</span> <span class="s2">"| description:"</span><span class="p">,</span> <span class="n">zhai</span><span class="o">.</span><span class="n">_str</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">"description"</span><span class="p">][()]),</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">g6</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">g6</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"cell_type"</span><span class="p">,</span> <span class="s2">"kind"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">cells</span><span class="o">=</span><span class="p">(</span><span class="s2">"cells"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">),</span> <span class="n">subjects</span><span class="o">=</span><span class="p">(</span><span class="s2">"subject"</span><span class="p">,</span> <span class="s2">"nunique"</span><span class="p">))</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -8109,68 +8080,43 @@ sweeps carry, and the columns that give each sweep's condition and drug.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>name_drug cell_type     date  cell_id                                   condition  baseline  with_drug
-  D1RaSch      dSPN 20190411        1 [LID on-state, LID on-state with SCH 23390]      True       True
-  D1RaSch      dSPN 20190411        2               [LID on-state with SCH 23390]     False       True
-  D1RaSch      dSPN 20190412        1 [LID on-state, LID on-state with SCH 23390]      True       True
-  D1RaSch      dSPN 20190412        2               [LID on-state with SCH 23390]     False       True
-  D1RaSch      dSPN 20190501        1 [LID on-state, LID on-state with SCH 23390]      True       True
-  D1RaSch      dSPN 20190501        2               [LID on-state with SCH 23390]     False       True
-  D1RaSch      dSPN 20190503        1 [LID on-state, LID on-state with SCH 23390]      True       True
-  D1RaSch      dSPN 20190503        2               [LID on-state with SCH 23390]     False       True
-  D1RaSch      dSPN 20190507        1                              [LID on-state]      True      False
-  D1RaSch      dSPN 20190507        2 [LID on-state, LID on-state with SCH 23390]      True       True
-  D1RaSch      dSPN 20190507        3               [LID on-state with SCH 23390]     False       True
-  D2RaSul      iSPN 20190408        1                              [LID on-state]      True      False
-  D2RaSul      iSPN 20190409        1                              [LID on-state]      True      False
-  D2RaSul      iSPN 20190426        2 [LID on-state, LID on-state with sulpiride]      True       True
-  D2RaSul      iSPN 20190426        3               [LID on-state with sulpiride]     False       True
-  D2RaSul      iSPN 20190429        1 [LID on-state, LID on-state with sulpiride]      True       True
-  D2RaSul      iSPN 20190429        2               [LID on-state with sulpiride]     False       True
-  D2RaSul      iSPN 20190429        3               [LID on-state with sulpiride]     False       True
-  D2RaSul      iSPN 20190508        2                              [LID on-state]      True      False
-  D2RaSul      iSPN 20190508        3               [LID on-state with sulpiride]     False       True
-  D2RaSul      iSPN 20190509        2               [LID on-state with sulpiride]     False       True
+<pre>subject_id: Subject20221004M1RCRSPRAdora2Cre | description: Adora2a-Cre transgenic mouse, whose indirect-pathway spiny projection neurons (iSPNs) express Cre recombinase. It received a unilateral 6-hydroxydopamine (6-OHDA) lesion of the medial forebrain bundle and, after the cylinder test, an injection of adeno-associated viruses (AAVs) carrying Cre-dependent Cas9 and guide RNAs against Chrm1, the gene of the M1 muscarinic receptor (M1R), which delete M1R from iSPNs, into the dorsolateral striatum on the side of the lesion. About a month later it was given levodopa (with benserazide) every other day for at least five sessions to induce dyskinesia, and it was studied in the off-state of levodopa-induced dyskinesia (LID). The lab gave this mouse no number; its Data Connections sheet identifies it by date, line and condition. 
 
-cells with a baseline condition: 11 | also recorded with the drug: 7 | baseline only: 4
-cell_type     date  cell_id
-     dSPN 20190507        1
-     iSPN 20190408        1
-     iSPN 20190409        1
-     iSPN 20190508        2
-
-condition and drug columns of the intracellular recordings table, in these files:
-name_drug  condition                    drug     
-D1RaSch    LID on-state                 none         126
-           LID on-state with SCH 23390  SCH 23390    210
-D2RaSul    LID on-state                 none         105
-           LID on-state with sulpiride  sulpiride    146
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>                                                         cells  subjects
+cell_type kind       condition                                          
+dSPN      Sr2+-oEPSC LID off-state                          10         3
+iSPN      Sr2+-oEPSC LID off-state                           7         3
+          somatic    LID off-state, M1R deletion             8         3
+                     LID off-state, control (gRNA only)      6         2
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-07">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c08">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-4-(metadata_error)">Earlier finding 4 (metadata_error)<a class="anchor-link" href="#Earlier-finding-4-(metadata_error)">¶</a></h2><blockquote>
-<p>The genotypes of the CDGI behaviour mice contradict each other. Subject genotype is Wild-type
-CDGI and every session name says WT for all of them; the AIM table's genotype column says CDGI
-Knockout, Wild Type or unknown, changing between sessions of one animal; the video files of mice
-1945, 2519, 2587, 2828 and 6572 say CDGI KO. The paper lists 2587 as wild type and the others as
-KO.</p>
+<h2 id="Earlier-finding-9-(other,-paper)">Earlier finding 9 (other, paper)<a class="anchor-link" href="#Earlier-finding-9-(other,-paper)">¶</a></h2><blockquote>
+<p>The per-cell Sr2+-oEPSC amplitudes of Figures 2H and 4G, labelled average amplitude in the
+paper's tables, equal the median of each cell's event list in the Figure 2G and 4F sheets for all
+33 cells and the mean for none.</p>
 </blockquote>
-<p>For every behaviour file (AIM scores and videos): the mouse and group in the session description,
-the genotype in the session name and the subject genotype, per mouse, against the groups of the
-paper's Figure 8 table.</p>
+<p>The paper's per-cell amplitudes against the mean and the median of each cell's events in its own
+event lists.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-08">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_earlier-finding-9" id="cell-id=c09">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8178,25 +8124,16 @@ paper's Figure 8 table.</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">beh</span> <span class="o">=</span> <span class="n">heads</span><span class="p">[</span><span class="n">heads</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"ses-pan"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">heads</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">"ophys"</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">beh</span><span class="o">.</span><span class="n">session_description</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="sa">r</span><span class="s2">"of mouse (\d+) \(([^,]+), Figure (\d+)\)"</span><span class="p">)</span>
-<span class="n">beh</span><span class="p">[</span><span class="s2">"mouse"</span><span class="p">],</span> <span class="n">beh</span><span class="p">[</span><span class="s2">"group"</span><span class="p">],</span> <span class="n">beh</span><span class="p">[</span><span class="s2">"figure"</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="n">beh</span><span class="p">[</span><span class="s2">"subject_genotype"</span><span class="p">]</span> <span class="o">=</span> <span class="n">beh</span><span class="o">.</span><span class="n">subject_genotype</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">";"</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">beh</span><span class="p">[</span><span class="s2">"file"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">beh</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"image"</span><span class="p">,</span> <span class="s2">"video"</span><span class="p">,</span> <span class="s2">"AIM"</span><span class="p">)</span>
-<span class="n">per</span> <span class="o">=</span> <span class="n">beh</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"figure"</span><span class="p">,</span> <span class="s2">"mouse"</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="p">(</span><span class="s2">"group"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="n">name_genotype</span><span class="o">=</span><span class="p">(</span><span class="s2">"name_genotype"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span>
-                                           <span class="n">subject_genotype</span><span class="o">=</span><span class="p">(</span><span class="s2">"subject_genotype"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span> <span class="n">files</span><span class="o">=</span><span class="p">(</span><span class="s2">"file"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-<span class="n">mixed</span> <span class="o">=</span> <span class="n">per</span><span class="p">[(</span><span class="n">per</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">per</span><span class="o">.</span><span class="n">name_genotype</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">per</span><span class="o">.</span><span class="n">subject_genotype</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"behaviour files:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">beh</span><span class="p">),</span> <span class="s2">"| mice:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">per</span><span class="p">),</span> <span class="s2">"| mice with more than one label:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mixed</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">beh</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"figure"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">,</span> <span class="s2">"name_genotype"</span><span class="p">,</span> <span class="s2">"subject_genotype"</span><span class="p">])</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
-<span class="n">p8</span> <span class="o">=</span> <span class="n">tables</span><span class="p">[</span><span class="s2">"Fig 8"</span><span class="p">][</span><span class="s2">"Fig 8B_total AIMs"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"mouse"</span><span class="p">,</span> <span class="s2">"pgroup"</span><span class="p">,</span> <span class="s2">"session"</span><span class="p">,</span> <span class="s2">"total"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">p8</span><span class="p">[</span><span class="s2">"mouse"</span><span class="p">]</span> <span class="o">=</span> <span class="n">p8</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(\d+)"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="n">pg</span> <span class="o">=</span> <span class="n">p8</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"mouse"</span><span class="p">)</span><span class="o">.</span><span class="n">pgroup</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"paper_group"</span><span class="p">)</span>
-<span class="n">cmp8</span> <span class="o">=</span> <span class="n">per</span><span class="p">[</span><span class="n">per</span><span class="o">.</span><span class="n">figure</span> <span class="o">==</span> <span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">pg</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s2">"mouse"</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">mice 1945, 2519, 2587, 2828 and 6572:"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">cmp8</span><span class="p">[</span><span class="n">cmp8</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">1945</span><span class="p">,</span> <span class="mi">2519</span><span class="p">,</span> <span class="mi">2587</span><span class="p">,</span> <span class="mi">2828</span><span class="p">,</span> <span class="mi">6572</span><span class="p">])]</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="n">both</span> <span class="o">=</span> <span class="n">cmp8</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">"paper_group"</span><span class="p">])</span>
-<span class="n">agree</span> <span class="o">=</span> <span class="n">both</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="p">(</span><span class="s2">"knockout"</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">any</span><span class="p">(</span><span class="s2">"KO"</span> <span class="ow">in</span> <span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">paper_group</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Figure 8 mice in the paper's table:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">both</span><span class="p">),</span> <span class="s2">"| dandiset group agrees with the paper's:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">agree</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">ev</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">T</span><span class="p">[</span><span class="s2">"Fig 2G_dSPN Sr-oEPSC histogram"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">,</span> <span class="s2">"ev"</span><span class="p">,</span> <span class="s2">"amp"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">[</span><span class="s2">"Fig 4F_iSPN Sr-oEPSC histogram"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">,</span> <span class="s2">"ev"</span><span class="p">,</span> <span class="s2">"amp"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">T</span><span class="p">[</span><span class="s2">"Fig 2H_dSPN Sr-oEPSC amp"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">,</span> <span class="s2">"paper"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">T</span><span class="p">[</span><span class="s2">"Fig 4G_iSPN Sr-oEPSC amp"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">,</span> <span class="s2">"paper"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)])</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"median"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">"id"</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="s2">"eq_median"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">"median"</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">paper</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">0.006</span><span class="p">)</span>
+<span class="n">s</span><span class="p">[</span><span class="s2">"eq_mean"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">"mean"</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">paper</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">0.006</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"cells:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="s2">"| equal to the median (within 0.006 pA):"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">eq_median</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+      <span class="s2">"| equal to the mean:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">eq_mean</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -8209,47 +8146,66 @@ paper's Figure 8 table.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>behaviour files: 210 | mice: 42 | mice with more than one label: 0
-figure  group          name_genotype  subject_genotype                                         
-8       CDGI knockout  CDGIKO         CDGI knockout                                                11
-        control        WT             Tg(Drd2-EGFP)S118Gsat, hemizygous (RRID:MMRRC_000230-UNC)    10
-10      M1R CRISPR     M1RCRISPR      Tg(Adora2a-cre)KG139Gsat (RRID:MMRRC_031168-UCD)             10
-        control        WT             Tg(Adora2a-cre)KG139Gsat (RRID:MMRRC_031168-UCD)             11
-
-mice 1945, 2519, 2587, 2828 and 6572:
- figure  mouse          groups name_genotype                                            subject_genotype        files paper_group
-      8   1945 [CDGI knockout]      [CDGIKO]                                             [CDGI knockout]      [video]        [KO]
-      8   2519 [CDGI knockout]      [CDGIKO]                                             [CDGI knockout]      [video]        [KO]
-      8   2587       [control]          [WT] [Tg(Drd2-EGFP)S118Gsat, hemizygous (RRID:MMRRC_000230-UNC)]      [video]        [WT]
-      8   2828 [CDGI knockout]      [CDGIKO]                                             [CDGI knockout]      [video]        [KO]
-      8   6572 [CDGI knockout]      [CDGIKO]                                             [CDGI knockout] [AIM, video]        [KO]
-
-Figure 8 mice in the paper's table: 18 | dandiset group agrees with the paper's: 18
+<pre>cells: 33 | equal to the median (within 0.006 pA): 33 | equal to the mean: 0
+           id    mean  median  size    group   paper  eq_median  eq_mean
+0   07052023a  17.016  15.338    71   LID on  15.340       True    False
+1   07052023b  16.602  14.998    94   LID on  15.000       True    False
+2   07062023a  11.273   9.354    45  LID off   9.354       True    False
+3   07062023b  18.266  15.792    81  LID off  15.790       True    False
+4   07062023c  12.368  11.126    56  LID off  11.130       True    False
+5   07102023a  17.843  16.479    63   LID on  16.480       True    False
+6   07102023b  20.952  16.855    49   LID on  16.850       True    False
+7   07132023a  11.512  10.216    49  LID off  10.220       True    False
+8   07132023c  15.122  12.269    68  LID off  12.270       True    False
+9   07132023d  13.634  11.611    45  LID off  11.610       True    False
+10  08022023a  19.891  18.877    55   LID on  18.880       True    False
+11  08022023b  23.953  20.846   127   LID on  20.850       True    False
+12  08162023a  17.777  15.537    89   LID on  15.540       True    False
+13  08162023b  22.794  17.846    74   LID on  17.850       True    False
+14  08172023a  13.590  13.098    71  LID off  13.100       True    False
+15  08172023b  14.525  12.457    63  LID off  12.460       True    False
+16  08172023c  10.558   9.610    88  LID off   9.610       True    False
+17  08172023d  13.934  13.131    53  LID off  13.130       True    False
+18  20230222a  16.534  15.238   101  LID off  15.240       True    False
+19  20230222b  15.694  14.051   106  LID off  14.050       True    False
+20  20230228a   6.059   5.918    33   LID on   5.918       True    False
+21  20230228b   9.266   7.600    56   LID on   7.600       True    False
+22  20230301a  10.768   9.065    90   LID on   9.065       True    False
+23  20230301b  10.200   7.104    29   LID on   7.104       True    False
+24  20230330a  14.586  12.307    52  LID off  12.310       True    False
+25  20230330b  12.365  11.877    66  LID off  11.880       True    False
+26  20230331a   7.885   6.855    65   LID on   6.855       True    False
+27  20230331b  10.188   9.355    72   LID on   9.355       True    False
+28  20230405a  11.312  10.120    75   LID on  10.120       True    False
+29  20230405b   7.544   6.580    73   LID on   6.580       True    False
+30  20230406a  12.544  10.887    73  LID off  10.890       True    False
+31  20230406b  12.395  10.496    58  LID off  10.500       True    False
+32  20230406c  14.052  12.440    96  LID off  12.440       True    False
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-09">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c10">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-6-(metadata_error),-the-parts-not-reported-again">Earlier finding 6 (metadata_error), the parts not reported again<a class="anchor-link" href="#Earlier-finding-6-(metadata_error),-the-parts-not-reported-again">¶</a></h2><blockquote>
-<p>Three dendritic site series hold six trials, two sites under one name, while the cell has no
-series of the other compartment with that number (iSPN 20160526 cell 3 Distal1, iSPN 20160608
-cell 1 Proximal1, dSPN 20170204 cell 1 Proximal1); their first and last three trials differ in
-baseline and area. Split, they give the paper's values for these cells. One series holds a single
-trial (iSPN 20160524 cell 2 Proximal1), one two and one four.</p>
+<h2 id="Earlier-finding-13-(metadata_error)">Earlier finding 13 (metadata_error)<a class="anchor-link" href="#Earlier-finding-13-(metadata_error)">¶</a></h2><blockquote>
+<p>The session names of the SCH 23390 and sulpiride files (D1RaSch, D2RaSul) state a drug, while 11
+somatic cells in these files have baseline on-state sweeps and 4 of them are baseline only (dSPN
+2019-05-07 cell 1, iSPN 2019-04-08 cell 1, 2019-04-09 cell 1 and 2019-05-08 cell 2). Each sweep's
+group is in the condition and drug columns of the intracellular recordings table; grouping by
+session name puts these cells in the drug groups.</p>
 </blockquote>
-<p>zhai-2025-02 reports the first two cells (its finding 1). The sites of all four named cells, and
-every site whose trial count is not three.</p>
+<p>The somatic cells of the files whose session name states a drug, with the conditions their
+sweeps carry.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-10">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_earlier-finding-13" id="cell-id=c11">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8257,12 +8213,20 @@ every site whose trial count is not three.</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">den</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="n">R</span><span class="o">.</span><span class="n">dendrite_type</span> <span class="o">!=</span> <span class="s2">"Soma"</span><span class="p">]</span>
-<span class="n">sites</span> <span class="o">=</span> <span class="n">den</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"cell_type"</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">,</span> <span class="s2">"cell_id"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"dendrite_type"</span><span class="p">,</span> <span class="s2">"site"</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"trials"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">ct</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">"iSPN"</span><span class="p">,</span> <span class="s2">"20160526"</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="s2">"iSPN"</span><span class="p">,</span> <span class="s2">"20160608"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s2">"dSPN"</span><span class="p">,</span> <span class="s2">"20170204"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s2">"iSPN"</span><span class="p">,</span> <span class="s2">"20160524"</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">sites</span><span class="p">[(</span><span class="n">sites</span><span class="o">.</span><span class="n">cell_type</span> <span class="o">==</span> <span class="n">ct</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sites</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="n">d</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sites</span><span class="o">.</span><span class="n">cell_id</span> <span class="o">==</span> <span class="n">c</span><span class="p">)]</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"sites by number of trials:"</span><span class="p">,</span> <span class="n">sites</span><span class="o">.</span><span class="n">trials</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">sites</span><span class="p">[</span><span class="n">sites</span><span class="o">.</span><span class="n">trials</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">[</span><span class="n">assets</span><span class="o">.</span><span class="n">drug</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"D1RaSch"</span><span class="p">,</span> <span class="s2">"D2RaSul"</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">assets</span><span class="o">.</span><span class="n">nwb</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">open_h5</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">zhai</span><span class="o">.</span><span class="n">recordings_table</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">[(</span><span class="n">t</span><span class="o">.</span><span class="n">site</span> <span class="o">==</span> <span class="s2">"Soma"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">t</span><span class="o">.</span><span class="n">r_series</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">"CurrentClamp"</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"cell_id"</span><span class="p">):</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"_ses-"</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">date</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">name_drug</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">drug</span><span class="p">,</span>
+                         <span class="n">conditions</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">condition</span><span class="p">)),</span> <span class="n">drugs</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">drug</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)))))</span>
+<span class="n">g13</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="n">g13</span><span class="p">[</span><span class="s2">"baseline"</span><span class="p">]</span> <span class="o">=</span> <span class="n">g13</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="s2">"LID on-state"</span> <span class="ow">in</span> <span class="n">c</span><span class="p">)</span>
+<span class="n">g13</span><span class="p">[</span><span class="s2">"baseline_only"</span><span class="p">]</span> <span class="o">=</span> <span class="n">g13</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span> <span class="o">==</span> <span class="p">[</span><span class="s2">"LID on-state"</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">g13</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">somatic cells in drug-named files:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">g13</span><span class="p">),</span> <span class="s2">"| with baseline on-state sweeps:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">g13</span><span class="o">.</span><span class="n">baseline</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+      <span class="s2">"| baseline only:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">g13</span><span class="o">.</span><span class="n">baseline_only</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
@@ -8275,57 +8239,54 @@ every site whose trial count is not three.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>cell_type     date  cell_id                    condition dendrite_type         site  trials
-     iSPN 20160526        3 CDGI knockout, LID off-state        Distal Distal1Spot1       3
-     iSPN 20160526        3 CDGI knockout, LID off-state        Distal Distal1Spot2       3 
+<pre>                                                      path      date  cell name_drug                                   conditions              drugs  baseline  baseline_only
+0   iSPN++OnState++D2RaSul++WT++20190408_icephys+ophys.nwb  20190408     1   D2RaSul                               [LID on-state]             [none]      True           True
+1   iSPN++OnState++D2RaSul++WT++20190409_icephys+ophys.nwb  20190409     1   D2RaSul                               [LID on-state]             [none]      True           True
+2   dSPN++OnState++D1RaSch++WT++20190411_icephys+ophys.nwb  20190411     1   D1RaSch  [LID on-state, LID on-state with SCH 23390]  [SCH 23390, none]      True          False
+3   dSPN++OnState++D1RaSch++WT++20190411_icephys+ophys.nwb  20190411     2   D1RaSch                [LID on-state with SCH 23390]        [SCH 23390]     False          False
+4   dSPN++OnState++D1RaSch++WT++20190412_icephys+ophys.nwb  20190412     1   D1RaSch  [LID on-state, LID on-state with SCH 23390]  [SCH 23390, none]      True          False
+5   dSPN++OnState++D1RaSch++WT++20190412_icephys+ophys.nwb  20190412     2   D1RaSch                [LID on-state with SCH 23390]        [SCH 23390]     False          False
+6   dSPN++OnState++D1RaSch++WT++20190501_icephys+ophys.nwb  20190501     1   D1RaSch  [LID on-state, LID on-state with SCH 23390]  [SCH 23390, none]      True          False
+7   dSPN++OnState++D1RaSch++WT++20190501_icephys+ophys.nwb  20190501     2   D1RaSch                [LID on-state with SCH 23390]        [SCH 23390]     False          False
+8   iSPN++OnState++D2RaSul++WT++20190429_icephys+ophys.nwb  20190429     1   D2RaSul  [LID on-state, LID on-state with sulpiride]  [none, sulpiride]      True          False
+9   iSPN++OnState++D2RaSul++WT++20190429_icephys+ophys.nwb  20190429     2   D2RaSul                [LID on-state with sulpiride]        [sulpiride]     False          False
+10  iSPN++OnState++D2RaSul++WT++20190429_icephys+ophys.nwb  20190429     3   D2RaSul                [LID on-state with sulpiride]        [sulpiride]     False          False
+11  iSPN++OnState++D2RaSul++WT++20190426_icephys+ophys.nwb  20190426     2   D2RaSul  [LID on-state, LID on-state with sulpiride]  [none, sulpiride]      True          False
+12  iSPN++OnState++D2RaSul++WT++20190426_icephys+ophys.nwb  20190426     3   D2RaSul                [LID on-state with sulpiride]        [sulpiride]     False          False
+13  dSPN++OnState++D1RaSch++WT++20190503_icephys+ophys.nwb  20190503     1   D1RaSch  [LID on-state, LID on-state with SCH 23390]  [SCH 23390, none]      True          False
+14  dSPN++OnState++D1RaSch++WT++20190503_icephys+ophys.nwb  20190503     2   D1RaSch                [LID on-state with SCH 23390]        [SCH 23390]     False          False
+15  dSPN++OnState++D1RaSch++WT++20190507_icephys+ophys.nwb  20190507     1   D1RaSch                               [LID on-state]             [none]      True           True
+16  dSPN++OnState++D1RaSch++WT++20190507_icephys+ophys.nwb  20190507     2   D1RaSch  [LID on-state, LID on-state with SCH 23390]  [SCH 23390, none]      True          False
+17  dSPN++OnState++D1RaSch++WT++20190507_icephys+ophys.nwb  20190507     3   D1RaSch                [LID on-state with SCH 23390]        [SCH 23390]     False          False
+18  iSPN++OnState++D2RaSul++WT++20190508_icephys+ophys.nwb  20190508     2   D2RaSul                               [LID on-state]             [none]      True           True
+19  iSPN++OnState++D2RaSul++WT++20190508_icephys+ophys.nwb  20190508     3   D2RaSul                [LID on-state with sulpiride]        [sulpiride]     False          False
+20  iSPN++OnState++D2RaSul++WT++20190509_icephys+ophys.nwb  20190509     2   D2RaSul                [LID on-state with sulpiride]        [sulpiride]     False          False
 
-cell_type     date  cell_id    condition dendrite_type           site  trials
-     iSPN 20160608        1 LID on-state      Proximal Proximal1Spot1       3
-     iSPN 20160608        1 LID on-state      Proximal Proximal1Spot2       3 
-
-cell_type     date  cell_id     condition dendrite_type           site  trials
-     dSPN 20170204        1 LID off-state        Distal        Distal2       3
-     dSPN 20170204        1 LID off-state      Proximal Proximal1Spot1       3
-     dSPN 20170204        1 LID off-state      Proximal Proximal1Spot2       3
-     dSPN 20170204        1 LID off-state      Proximal      Proximal2       3 
-
-cell_type     date  cell_id     condition dendrite_type         site  trials
-     iSPN 20160524        2 LID off-state        Distal Distal1Spot1       3
-     iSPN 20160524        2 LID off-state        Distal Distal1Spot2       3
-     iSPN 20160524        2 LID off-state        Distal      Distal2       3
-     iSPN 20160524        2 LID off-state      Proximal    Proximal1       1
-     iSPN 20160524        2 LID off-state      Proximal    Proximal2       3 
-
-sites by number of trials: {1: 1, 2: 1, 3: 421, 4: 1, 6: 1}
-cell_type     date  cell_id                          condition dendrite_type      site  trials
-     dSPN 20170707        1                       LID on-state        Distal   Distal2       2
-     iSPN 20160524        2                      LID off-state      Proximal Proximal1       1
-     iSPN 20180314        2    CDGI knockout, naive with oxo-M        Distal   Distal2       6
-     iSPN 20240430        2 LID off-state with M1R antagonists        Distal   Distal2       4
+somatic cells in drug-named files: 21 | with baseline on-state sweeps: 11 | baseline only: 4
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-11">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c12">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-7-(data_missing),-the-part-not-reported-again">Earlier finding 7 (data_missing), the part not reported again<a class="anchor-link" href="#Earlier-finding-7-(data_missing),-the-part-not-reported-again">¶</a></h2><blockquote>
-<p>Two dendritic cells lack the sites the paper's values need. dSPN on+SCH 20190411 cell 1 has
-only its second pair of sites, which gives 0.584 against the paper's 0.228; [...] iSPN on+sul
-20190508 cell 3 has only a distal site; with the paper's 0.217 the sulpiride test gives the
-paper's P (0.0545), without it P = 0.0097. [...]</p>
+<h2 id="Earlier-finding-14-(paper_inconsistency)">Earlier finding 14 (paper_inconsistency)<a class="anchor-link" href="#Earlier-finding-14-(paper_inconsistency)">¶</a></h2><blockquote>
+<p>Recomputed on the paper's per-cell tables (doi:10.5281/zenodo.17307059), two reported P values
+differ. The Wilcoxon test of oxo-M in CDGI KO iSPNs (Figure 7E, 12 cells) gives P = 0.4697 where
+the paper reports 0.910, and the Mann-Whitney test of rotations in Figure 8A (10 KO and 12
+wild-type mice) gives P = 0.01198 where the paper reports 0.0092. The wild-type oxo-M test gives
+P = 0.009766, as the paper's 0.0098.</p>
 </blockquote>
-<p>zhai-2025-02 reports the first cell again (its finding 2). The sites of iSPN 20190508 cell 3, and
-its index from the entry's dendritic rule, against the paper's 0.217.</p>
+<p>The same tests on the same tables, which do not depend on the dandiset's version.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-12">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_earlier-finding-14" id="cell-id=c13">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8333,289 +8294,14 @@ its index from the entry's dendritic rule, against the paper's 0.217.</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">sites</span><span class="p">[(</span><span class="n">sites</span><span class="o">.</span><span class="n">cell_type</span> <span class="o">==</span> <span class="s2">"iSPN"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sites</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="s2">"20190508"</span><span class="p">)]</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">patch</span><span class="p">[(</span><span class="n">patch</span><span class="o">.</span><span class="n">cell_type</span> <span class="o">==</span> <span class="s2">"iSPN"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">date</span> <span class="o">==</span> <span class="s2">"20190508"</span><span class="p">)]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">_</span><span class="p">,</span> <span class="n">d7</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">load_patch_file</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="n">cells7</span><span class="p">,</span> <span class="n">pairs7</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lid</span><span class="o">.</span><span class="n">dendritic_index</span><span class="p">(</span><span class="n">d7</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">cells7</span><span class="p">[[</span><span class="s2">"date"</span><span class="p">,</span> <span class="s2">"cell"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>cell_type     date  cell_id                   condition dendrite_type      site  trials
-     iSPN 20190508        3 LID on-state with sulpiride        Distal   Distal2       3
-     iSPN 20190508        3 LID on-state with sulpiride      Proximal Proximal2       3
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>    date  cell                   condition  index
-20190508     3 LID on-state with sulpiride  0.217
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-13">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-9-(metadata_error)">Earlier finding 9 (metadata_error)<a class="anchor-link" href="#Earlier-finding-9-(metadata_error)">¶</a></h2><blockquote>
-<p>The stimulus series of every dendritic sweep (CurrentClampSeries_CellN_Dendritic_Stimulus) is all
-zero, though the three spikes per sweep show the 2 nA injections were delivered; and the index
-table gives no kymograph slice for 53 of 997 dendritic sweeps.</p>
-</blockquote>
-<p>The peak of each dendritic stimulus series, and whether each dendritic sweep's two line-scan
-(kymograph) references point at data.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-14">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">"path"</span><span class="p">],</span> <span class="o">**</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">cc</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="s2">"dendritic_stimulus"</span><span class="p">]])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"dendritic stimulus series:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">),</span> <span class="s2">"| all zero:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">ds</span><span class="o">.</span><span class="n">peak</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-      <span class="s2">"| peak values:"</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">"| units:"</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-      <span class="s2">"| conversion:"</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">conversion</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">"| peak (nA):"</span><span class="p">,</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">peak</span> <span class="o">*</span> <span class="n">ds</span><span class="o">.</span><span class="n">conversion</span> <span class="o">*</span> <span class="mf">1e9</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
-<span class="n">ok</span> <span class="o">=</span> <span class="n">den</span><span class="o">.</span><span class="n">line_scan_alexa568_ok</span> <span class="o">&amp;</span> <span class="n">den</span><span class="o">.</span><span class="n">line_scan_fluo4_ok</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"dendritic sweeps:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">den</span><span class="p">),</span> <span class="s2">"| without a valid kymograph slice:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">ok</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>dendritic stimulus series: 102 | all zero: 0 | peak values: {2000.0: 102} | units: {'amperes': 102} | conversion: {1e-12: 102} | peak (nA): {2.0: 102}
-dendritic sweeps: 1276 | without a valid kymograph slice: 0
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-15">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-10-(metadata_error)">Earlier finding 10 (metadata_error)<a class="anchor-link" href="#Earlier-finding-10-(metadata_error)">¶</a></h2><blockquote>
-<p>In the Sr2+-oEPSC files the light-pulse OptogeneticSeries is all zero in 69 of 140 sweeps, and
-the intracellular recordings table references no stimulus (its stimulus rows are empty). The
-pulse time (0.02 s) is only in the optogenetic epochs table.</p>
-</blockquote>
-<p>For each Sr2+-oEPSC sweep: the light pulses in the file's optogenetic pulses table that fall in
-the sweep, their time from the sweep start, and the length of the stimulus the intracellular
-recordings table references; and the neurodata types in the files.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-16">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">sr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="s2">"sr"</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">"path"</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">srt</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"files:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">srt</span><span class="p">),</span> <span class="s2">"| cells:"</span><span class="p">,</span> <span class="n">sr</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"path"</span><span class="p">,</span> <span class="s2">"cell"</span><span class="p">])</span><span class="o">.</span><span class="n">ngroups</span><span class="p">,</span> <span class="s2">"| sweeps:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sr</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"light pulses per sweep:"</span><span class="p">,</span> <span class="n">sr</span><span class="o">.</span><span class="n">pulses</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">"| pulse time from sweep start (s):"</span><span class="p">,</span> <span class="n">sr</span><span class="o">.</span><span class="n">pulse_s</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"sweeps whose stimulus reference is empty:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">sr</span><span class="o">.</span><span class="n">stimulus_rows</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
-<span class="n">types</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">t</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">srt</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="s2">"types"</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"OptogeneticSeries in any file:"</span><span class="p">,</span> <span class="s2">"OptogeneticSeries"</span> <span class="ow">in</span> <span class="n">types</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"optogenetic and stimulus types:"</span><span class="p">,</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">if</span> <span class="s2">"Optogenetic"</span> <span class="ow">in</span> <span class="n">t</span> <span class="ow">or</span> <span class="s2">"Stimulus"</span> <span class="ow">in</span> <span class="n">t</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>files: 14 | cells: 33 | sweeps: 333
-light pulses per sweep: {1: 333} | pulse time from sweep start (s): {0.02: 333}
-sweeps whose stimulus reference is empty: 0
-OptogeneticSeries in any file: False
-optogenetic and stimulus types: ['OptogeneticEffectors', 'OptogeneticExperimentMetadata', 'OptogeneticPulsesTable', 'OptogeneticSitesTable', 'OptogeneticVirusInjections', 'OptogeneticViruses', 'VoltageClampStimulusSeries']
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-17">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-11-(metadata_error)">Earlier finding 11 (metadata_error)<a class="anchor-link" href="#Earlier-finding-11-(metadata_error)">¶</a></h2><blockquote>
-<p>The GRAB-ACh background reference images are described as taken at zero laser power, but their
-mean (381 to 525) is above the signal (F0 179 to 355), so they cannot be the PMT background the
-Methods subtract.</p>
-</blockquote>
-<p>Every object of the GRAB-ACh3.0 files whose name or description mentions a background, the PMT or
-the laser power, and the description of the reference images the files hold.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-18">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">grab</span> <span class="o">=</span> <span class="n">heads</span><span class="p">[</span><span class="n">heads</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"ophys"</span><span class="p">]</span>
-<span class="n">pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"background|laser power|PMT|zero"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-<span class="n">hits</span> <span class="o">=</span> <span class="p">[(</span><span class="n">h</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">grab</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">names</span> <span class="k">if</span> <span class="n">pat</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
-<span class="n">hits</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">h</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="p">[:</span><span class="mi">200</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">grab</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">descs</span> <span class="k">if</span> <span class="n">pat</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"GRAB-ACh3.0 files:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">grab</span><span class="p">),</span> <span class="s2">"| objects that mention a background, the PMT, the laser power or zero:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">hits</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">refs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">d</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">grab</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">descs</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"ImagesPrairieViewReferences"</span><span class="p">)})</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">reference image descriptions:"</span><span class="p">,</span> <span class="n">refs</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>GRAB-ACh3.0 files: 11 | objects that mention a background, the PMT, the laser power or zero: 0
-
-reference image descriptions: ["Reference images Prairie View saved with each recording, 16-bit, one per channel and trial. They show the field of view but are not frames of the trial, and consecutive trials often share the same image. Prairie View's 8-bit screen captures of the same images are left out."]
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-19">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-12-(metadata_error)">Earlier finding 12 (metadata_error)<a class="anchor-link" href="#Earlier-finding-12-(metadata_error)">¶</a></h2><blockquote>
-<p>The files cite the bioRxiv preprint (related_publications) and describe the behaviour data with
-the preprint's figure numbers ("Figure 7J" for the CDGI AIM scores, "Figure 8" for the M1R
-study), which are Figures 8 and 10 in the published paper the dandiset names.</p>
-</blockquote>
-<p>The related publications of every file, any mention of the preprint, and the figures the
-behaviour files name.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-20">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"related_publications over"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">heads</span><span class="p">),</span> <span class="s2">"files:"</span><span class="p">,</span> <span class="n">heads</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
-<span class="n">pre</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"biorxiv|preprint|10\.1101|7J"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-<span class="n">texts</span> <span class="o">=</span> <span class="p">[(</span><span class="n">h</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">heads</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">session_description</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">experiment_description</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">descs</span><span class="p">]]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"descriptions that mention the preprint or Figure 7J:"</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">pre</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"behaviour files by figure named and group:"</span><span class="p">,</span> <span class="n">beh</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"figure"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>related_publications over 391 files: {"['https://doi.org/10.1126/sciadv.adv8224']": 391}
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>descriptions that mention the preprint or Figure 7J: 0
-behaviour files by figure named and group: {(8, 'CDGI knockout'): 55, (8, 'control'): 50, (10, 'M1R CRISPR'): 50, (10, 'control'): 55}
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-21">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-14-(paper_inconsistency)">Earlier finding 14 (paper_inconsistency)<a class="anchor-link" href="#Earlier-finding-14-(paper_inconsistency)">¶</a></h2><blockquote>
-<p>Recomputed on the paper's own per-cell tables, some reported P values differ; the oxo-M test in
-CDGI KO gives P = 0.47 where the paper reports 0.910, and the rotation test of Figure 8A gives
-0.012 where the text reports 0.0092. Others agree closely (0.009766 against 0.0098 for oxo-M in
-wild type).</p>
-</blockquote>
-<p>On the paper's tables: the two-sided Wilcoxon tests of Figure 7E, before against after oxo-M,
-paired by experiment number, and the two-sided Mann-Whitney test of Figure 8A, as the claims file
-states them.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-22">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">e7</span> <span class="o">=</span> <span class="n">tables</span><span class="p">[</span><span class="s2">"Fig 7"</span><span class="p">][</span><span class="s2">"Fig 7E_oxoM effect on DE"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"genotype"</span><span class="p">,</span> <span class="s2">"treatment"</span><span class="p">,</span> <span class="s2">"v"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">e7</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="s2">"Fig 7E_oxoM effect on DE"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"genotype"</span><span class="p">,</span> <span class="s2">"treatment"</span><span class="p">,</span> <span class="s2">"v"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"WT"</span><span class="p">,</span> <span class="s2">"KO"</span><span class="p">]:</span>
     <span class="n">w</span> <span class="o">=</span> <span class="n">e7</span><span class="p">[</span><span class="n">e7</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="n">gt</span><span class="p">]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"treatment"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"v"</span><span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">wilcoxon</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="s2">"before (control)"</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="s2">"oxoM"</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Figure 7E </span><span class="si">{</span><span class="n">gt</span><span class="si">}</span><span class="s2">: n=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="si">}</span><span class="s2">, Wilcoxon W=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, P=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="n">a8</span> <span class="o">=</span> <span class="n">tables</span><span class="p">[</span><span class="s2">"Fig 8"</span><span class="p">][</span><span class="s2">"Fig 8A_rotations 5th"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"group"</span><span class="p">,</span> <span class="s2">"v"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">a8</span><span class="p">[</span><span class="n">a8</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">"KO"</span><span class="p">]</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="n">a8</span><span class="p">[</span><span class="n">a8</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">"WT"</span><span class="p">]</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">"two-sided"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Figure 8A: KO n=</span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">a8</span><span class="o">.</span><span class="n">group</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'KO'</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">, WT n=</span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">a8</span><span class="o">.</span><span class="n">group</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'WT'</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">, Mann-Whitney U=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, P=</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Figure 7E </span><span class="si">{</span><span class="n">gt</span><span class="si">}</span><span class="s2">: n = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="si">}</span><span class="s2">, Wilcoxon P = </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">wilcoxon</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="s1">'before (control)'</span><span class="p">],</span><span class="w"> </span><span class="n">w</span><span class="p">[</span><span class="s1">'oxoM'</span><span class="p">])</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">r8</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="s2">"Fig 8A_rotations 5th"</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis</span><span class="p">([</span><span class="s2">"mouse"</span><span class="p">,</span> <span class="s2">"genotype"</span><span class="p">,</span> <span class="s2">"rot"</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ko</span><span class="p">,</span> <span class="n">wt</span> <span class="o">=</span> <span class="n">r8</span><span class="p">[</span><span class="n">r8</span><span class="o">.</span><span class="n">genotype</span> <span class="o">!=</span> <span class="s2">"WT"</span><span class="p">]</span><span class="o">.</span><span class="n">rot</span><span class="p">,</span> <span class="n">r8</span><span class="p">[</span><span class="n">r8</span><span class="o">.</span><span class="n">genotype</span> <span class="o">==</span> <span class="s2">"WT"</span><span class="p">]</span><span class="o">.</span><span class="n">rot</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Figure 8A groups:"</span><span class="p">,</span> <span class="n">r8</span><span class="o">.</span><span class="n">genotype</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Figure 8A: Mann-Whitney P = </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">ko</span><span class="p">,</span><span class="w"> </span><span class="n">wt</span><span class="p">,</span><span class="w"> </span><span class="n">alternative</span><span class="o">=</span><span class="s1">'two-sided'</span><span class="p">)</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8628,81 +8314,10 @@ states them.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Figure 7E WT: n=10, Wilcoxon W=3.0, P=0.009766
-Figure 7E KO: n=12, Wilcoxon W=29.0, P=0.4697
-Figure 8A: KO n=10, WT n=12, Mann-Whitney U=98.5, P=0.01198
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cell-23">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Earlier-finding-15-(other,-about-the-data)">Earlier finding 15 (other, about the data)<a class="anchor-link" href="#Earlier-finding-15-(other,-about-the-data)">¶</a></h2><blockquote>
-<p>18 somatic cells miss one or more current steps between 20 and 300 pA and 14 repeat a step;
-spike counts for these cells cannot be complete.</p>
-</blockquote>
-<p>For each somatic cell and condition, the steps from 20 to 300 pA (in steps of 20 pA) that have no
-sweep and the steps recorded more than once, from the RecordingsIndexTable.</p>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell celltag_sanity" id="cell-id=cell-24">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">steps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">301</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
-<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">cond</span><span class="p">),</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">R</span><span class="p">[</span><span class="n">R</span><span class="o">.</span><span class="n">dendrite_type</span> <span class="o">==</span> <span class="s2">"Soma"</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"path"</span><span class="p">,</span> <span class="s2">"cell_id"</span><span class="p">,</span> <span class="s2">"condition"</span><span class="p">]):</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">stimulus_current_pA</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"ses-(.*)\.nwb"</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">cond</span><span class="p">,</span>
-                     <span class="n">missing</span><span class="o">=</span><span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">steps</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="p">)],</span> <span class="n">repeated</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()]))))</span>
-<span class="n">f15</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"somatic cells:"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">f15</span><span class="p">),</span> <span class="s2">"| missing a step from 20 to 300 pA:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">f15</span><span class="o">.</span><span class="n">missing</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-      <span class="s2">"| with a repeated step:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">f15</span><span class="o">.</span><span class="n">repeated</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
-      <span class="s2">"| both:"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(((</span><span class="n">f15</span><span class="o">.</span><span class="n">missing</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f15</span><span class="o">.</span><span class="n">repeated</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">f15</span><span class="p">[(</span><span class="n">f15</span><span class="o">.</span><span class="n">missing</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">f15</span><span class="o">.</span><span class="n">repeated</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>somatic cells: 123 | missing a step from 20 to 300 pA: 18 | with a repeated step: 14 | both: 14
-                                                file  cell                          condition                        missing   repeated
-    iSPN++OffState++none++WT++20160524_icephys+ophys     4                      LID off-state                          [200]      [-20]
-iSPN++OffState++none++CDGIKO++20160527_icephys+ophys     3       CDGI knockout, LID off-state                          [220]      [200]
-     iSPN++OnState++none++WT++20160609_icephys+ophys     2                       LID on-state                          [280]         []
- iSPN++OnState++none++CDGIKO++20160913_icephys+ophys     2        CDGI knockout, LID on-state                          [100]       [20]
-    dSPN++OffState++none++WT++20161116_icephys+ophys     3                      LID off-state                           [80]      [200]
-    dSPN++OffState++none++WT++20170202_icephys+ophys     1                      LID off-state                          [280]         []
-    dSPN++OffState++none++WT++20170202_icephys+ophys     3                      LID off-state                          [240]      [280]
-    dSPN++OffState++none++WT++20170203_icephys+ophys     3                      LID off-state                          [240]       [40]
-    dSPN++OffState++none++WT++20170204_icephys+ophys     1                      LID off-state                          [160]      [220]
-iSPN++OffState++none++CDGIKO++20170616_icephys+ophys     1       CDGI knockout, LID off-state                          [200]      [220]
-     dSPN++OnState++none++WT++20170707_icephys+ophys     2                       LID on-state [100, 220, 240, 260, 280, 300]      [-20]
-     dSPN++OnState++none++WT++20170720_icephys+ophys     2                       LID on-state                          [300]      [260]
-  iSPN++OnState++D2RaSul++WT++20190426_icephys+ophys     2        LID on-state with sulpiride                          [180]         []
-  dSPN++OnState++D1RaSch++WT++20190507_icephys+ophys     1                       LID on-state                     [120, 300] [-20, 140]
-    iSPN++OffState++none++WT++20200217_icephys+ophys     1     LID off-state, vehicle control                     [100, 120]      [200]
-    iSPN++OffState++none++WT++20200225_icephys+ophys     1     LID off-state, vehicle control                          [100]       [80]
-    iSPN++M1RAntag++none++WT++20200312_icephys+ophys     1 LID off-state with M1R antagonists                          [300]       [40]
-    iSPN++OffState++none++WT++20200812_icephys+ophys     2     LID off-state, vehicle control                          [300]         []
+<pre>Figure 7E WT: n = 10, Wilcoxon P = 0.009766
+Figure 7E KO: n = 12, Wilcoxon P = 0.4697
+Figure 8A groups: {'WT': 12, 'KO': 10}
+Figure 8A: Mann-Whitney P = 0.01198
 </pre>
 </div>
 </div>
