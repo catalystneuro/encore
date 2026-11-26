@@ -40,12 +40,18 @@ github.com/jesshaley/haley_hampton_marder_2018 at commit 83f5904):
   (pHCumulative.m). The value of a preparation and condition is the mean of its 48 bins
   (pHCumulative.m csv export). Variant (code): 48 bins from the first burst of the file
   (`window="code"`; claims header [EXT]).
-- [STATE] proxy: the manual state annotations are not in the dataset. `rhythmic_fraction` gives,
-  per second of the last 8 min, whether the pacemaker unit (PD, or LC) is bursting rhythmically:
-  the second lies between two burst onsets no more than `RHYTHM_GAP_FACTOR` times the unit's median
-  period in its first control step apart (an assumption; see the notebook). Runs shorter than 10 s
-  are merged into their surroundings, as the paper notes a transition only after 10 s in the new
-  state (Methods paragraph 3).
+- [STATE] reading: the manual state annotations are not in the dataset, and the claims file asks
+  for states annotated from its definitions. `rhythmic_seconds` gives, per second of the last 8
+  min, whether the pacemaker unit (PD, or LC) is bursting rhythmically: the second lies between
+  two burst onsets no more than `RHYTHM_GAP_FACTOR` times the unit's median period in its first
+  control step apart (an assumption; see the notebook). Runs shorter than 10 s are merged into
+  their surroundings, as the paper notes a transition only after 10 s in the new state (Methods
+  paragraph 3). For the CG this reads state 1. For the STG, `triphasic_seconds` also requires
+  `MIN_OTHER_SPIKES` lvn spikes between successive PD bursts (LP and PY firing, which states 1 and
+  2 require; an assumption), so that state 3 is not counted; PD bursting alone is kept as
+  "rhythmic_pd".
+- Reading OSF: files are read from WaterButler with at most one request every `MIN_INTERVAL_S`
+  and tried again on 429 (`url`, `throttle`, `retry`); a standard choice that changes no result.
 - [INTRA]: last minute of each file (paper, Methods paragraph 5); slow wave = Vm minus its high-pass
   (2nd order Butterworth at 10 Hz, zero phase), slow-wave peaks and troughs with prominence 1 mV and
   minimum distance 1/maxBurstFreq, spikes as peaks of the high-passed trace with prominence of at
@@ -67,6 +73,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -76,6 +83,7 @@ import fsspec
 import numpy as np
 import pandas as pd
 import pyabf
+import requests
 from scipy import signal, stats
 
 import r7aes_files
@@ -120,16 +128,48 @@ MAX_SPIKES = {"STG": 15, "CG": 30}  # extracellularAnalysis.m
 MAX_DUTY = 0.4                      # extracellularAnalysis.m
 RHYTHM_GAP_FACTOR = 3.0             # assumption for the [STATE] proxy
 MIN_STATE_S = 10                    # paper, Methods paragraph 3
+# STG states 1 and 2 need LP and PY firing between PD bursts ([STATE]); lvn spikes above NOISE_K
+# noise SDs outside the PD bursts are counted per cycle. Both values are assumptions (two spikes:
+# the fewest that two units can give; 30 ms: a standard margin for conduction between the lvn and
+# the pdn); 1 and 4 spikes are shown as variants.
+MIN_OTHER_SPIKES = 2
+OTHER_MARGIN_S = 0.03
 INTRA_PARAMS = {"PD": (2.0, 10.0), "LP": (10.0, 3.0)}   # intracellularAnalysis.m starting values
+PDN_MAX_LAG_S, PDN_HALF_S = 0.06, 0.002   # PD label check: lags up to 60 ms, 4 ms bins (standard choice)
 WAVE_HP_HZ = 10.0                   # analyzeWaveform.m
 
 
 # ----------------------------------------------------------------------------------------------
 # Reading
 
+_WB = {}
+
+
 def url(path):
+    """The WaterButler address of the pinned version (docs/archives.md: osf.io/download/<key>/
+    redirects there). osf.io answers more than about one request in three seconds with 429, and
+    each read of a stream is a request, so files are read from WaterButler directly. A key that
+    is a GUID, not a file id, is resolved once through osf.io."""
     f = FILES[path]
-    return f"https://osf.io/download/{f['key']}/?version={f['version']}"
+    if len(f["key"]) == 24:
+        return (f"https://files.osf.io/v1/resources/{OSF_NODE}/providers/osfstorage/{f['key']}"
+                f"?version={f['version']}")
+    if path not in _WB:
+        def resolve():
+            r = requests.get(f"https://osf.io/download/{f['key']}/?version={f['version']}",
+                             allow_redirects=False, timeout=60)
+            if r.status_code == 429:
+                raise _Status(429)
+            assert r.status_code in (301, 302), (path, r.status_code)
+            return r.headers["Location"]
+        _WB[path] = retry(resolve)
+    return _WB[path]
+
+
+class _Status(Exception):
+    def __init__(self, status):
+        super().__init__(status)
+        self.status = status
 
 
 def open_file(path):
@@ -138,7 +178,7 @@ def open_file(path):
 
 
 def read_text(path):
-    data = open_file(path).read()
+    data = retry(lambda: (throttle(), open_file(path).read())[1])
     assert hashlib.sha256(data).hexdigest() == FILES[path]["sha256"], path
     return data.decode()
 
@@ -156,7 +196,45 @@ def abf_header(fh, path):
     return a
 
 
+_LOCK, _LAST = threading.Lock(), [0.0]
+MIN_INTERVAL_S = 0.4      # between requests to OSF, which answers bursts with 429
+
+
+def throttle():
+    with _LOCK:
+        wait = _LAST[0] + MIN_INTERVAL_S - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        _LAST[0] = time.monotonic()
+
+
+def read(fh, n=-1):
+    """fh.read(n) after the throttle, tried again on 429 (fsspec moves the position only when a
+    read succeeds)."""
+    def go():
+        throttle()
+        return fh.read(n)
+    return retry(go)
+
+
+def retry(fn, *args, tries=10, wait=10.0):
+    """Call fn(*args), waiting and trying again when OSF answers 429 (too many requests) or 5xx."""
+    for i in range(tries):
+        try:
+            return fn(*args)
+        except Exception as e:  # aiohttp.ClientResponseError, raised through fsspec
+            status = getattr(e, "status", None)
+            if status not in (429, 500, 502, 503, 504) or i == tries - 1:
+                raise
+            time.sleep(wait * (i + 1))
+
+
 def header_info(path):
+    return retry(_header_info, path)
+
+
+def _header_info(path):
+    throttle()
     with open_file(path) as fh:
         a = abf_header(fh, path)
     n = a.dataPointCount // a.channelCount
@@ -165,13 +243,18 @@ def header_info(path):
                 dtype_bytes=a.dataPointByteSize)
 
 
-def stream_abf(path, keep, whole=True, chunk_mb=32):
+def stream_abf(path, keep, whole=True, chunk_mb=128):
+    return retry(_stream_abf, path, keep, whole, chunk_mb)
+
+
+def _stream_abf(path, keep, whole=True, chunk_mb=128):
     """Read an ABF file and keep windows of chosen channels.
 
     keep: {channel: [(t0, t1), ...]} with times in seconds, negative counting from the end.
     whole: read the whole file and check its SHA-256; otherwise read only the windows.
     Returns (dict channel -> list of float32 arrays, header info, sha256 ok or None).
     """
+    throttle()
     with open_file(path) as fh:
         a = abf_header(fh, path)
         nch, rate = a.channelCount, a.dataRate
@@ -201,13 +284,13 @@ def stream_abf(path, keep, whole=True, chunk_mb=32):
         if whole:
             h = hashlib.sha256()
             fh.seek(0)
-            head = fh.read(a.dataByteStart)
+            head = read(fh, a.dataByteStart)
             h.update(head)
             frame = nch * 2
             step = max(1, (chunk_mb << 20) // frame) * frame
             f0, left = 0, n * frame
             while left > 0:
-                buf = fh.read(min(step, left))
+                buf = read(fh, min(step, left))
                 if not buf:
                     break
                 h.update(buf)
@@ -216,13 +299,13 @@ def stream_abf(path, keep, whole=True, chunk_mb=32):
                 take(raw, f0)
                 f0 += raw.shape[0]
                 left -= len(buf)
-            h.update(fh.read())
+            h.update(read(fh))
             ok = h.hexdigest() == FILES[path]["sha256"]
         else:
             spans = sorted({w for c in wins for w in wins[c]})
             for i0, i1 in spans:
                 fh.seek(a.dataByteStart + i0 * nch * 2)
-                raw = np.frombuffer(fh.read((i1 - i0) * nch * 2), np.int16).reshape(-1, nch)
+                raw = np.frombuffer(read(fh, (i1 - i0) * nch * 2), np.int16).reshape(-1, nch)
                 take(raw, i0)
     info = dict(path=path, rate=rate, seconds=n / rate, channels=list(a.adcNames),
                 units=list(a.adcUnits))
@@ -376,20 +459,25 @@ def burst_bins(b, t0, ganglion, nbins=WINDOW_S // BIN_S):
     return out
 
 
-def rhythmic_seconds(onsets, t0, t1, max_gap):
+def rhythmic_seconds(onsets, t0, t1, max_gap, cycle_ok=None):
     """Per second in [t0, t1): True when the second lies between two burst onsets at most max_gap
     apart (the window's edges count as onsets when the first or last onset is within max_gap of
-    them); then runs shorter than MIN_STATE_S are merged into the state before them."""
+    them); then runs shorter than MIN_STATE_S are merged into the state before them.
+    cycle_ok: optional, one bool per pair of successive onsets; a cycle marked False is not
+    rhythmic (an edge segment takes the value of the cycle next to it)."""
     n = int(round(t1 - t0))
     r = np.zeros(n, bool)
     on = np.sort(np.asarray(onsets, float))
+    ok = list(cycle_ok) if cycle_ok is not None else [True] * max(0, len(on) - 1)
     if len(on):
         if on[0] - t0 <= max_gap:
             on = np.r_[t0, on]
+            ok = [ok[0] if ok else True] + ok
         if t1 - on[-1] <= max_gap:
             on = np.r_[on, t1]
-    for a, b in zip(on[:-1], on[1:]):
-        if b - a <= max_gap:
+            ok = ok + [ok[-1] if ok else True]
+    for a, b, good in zip(on[:-1], on[1:], ok):
+        if b - a <= max_gap and good:
             i0, i1 = int(np.floor(a - t0)), int(np.ceil(b - t0))
             r[max(0, i0):max(0, min(n, i1))] = True
     s = r.copy()
@@ -402,6 +490,21 @@ def rhythmic_seconds(onsets, t0, t1, max_gap):
             s[i:j] = s[i - 1]
         i = j
     return s
+
+
+def triphasic_seconds(bursts, other_t, t0, t1, max_gap, min_other=None, margin=OTHER_MARGIN_S):
+    """[STATE] reading for the STG from the pdn and the lvn: a second is triphasic (state 1 or 2)
+    when it is rhythmic by `rhythmic_seconds` on the PD bursts and its cycle (PD onset to the next)
+    holds at least `min_other` lvn spikes outside the PD bursts (more than `margin` s after the PD
+    burst ends and before the next begins), the LP and PY firing between PD bursts that states 1
+    and 2 require. A PD rhythm with silent LP and PY (state 3) does not count."""
+    min_other = MIN_OTHER_SPIKES if min_other is None else min_other
+    on, en = bursts["tstart"].to_numpy(float), bursts["tend"].to_numpy(float)
+    ot = np.sort(np.asarray(other_t, float))
+    lo = np.searchsorted(ot, en[:-1] + margin, side="right")
+    hi = np.searchsorted(ot, on[1:] - margin, side="left")
+    ok = (hi - lo) >= min_other
+    return rhythmic_seconds(on, t0, t1, max_gap, cycle_ok=ok)
 
 
 # ----------------------------------------------------------------------------------------------
@@ -560,10 +663,11 @@ def osf_listing():
     def get(u):
         for attempt in range(6):
             try:
+                throttle()
                 with urllib.request.urlopen(u, timeout=120) as r:
                     return json.load(r)
             except urllib.error.HTTPError as e:
-                if e.code < 500 or attempt == 5:
+                if (e.code < 500 and e.code != 429) or attempt == 5:
                     raise
             except (TimeoutError, urllib.error.URLError):
                 if attempt == 5:
@@ -618,6 +722,14 @@ def pd_channel(desc, names_per_file):
     """The pdn channel (the PD unit, pHCumulative.m) that every file of the experiment holds."""
     for k, v in desc["electrodes"]:
         if v.strip().lower() == "pdn" and all(abf_channel(k, n) for n in names_per_file):
+            return abf_channel(k, names_per_file[0])
+    return None
+
+
+def nerve_channel(desc, nerve, names_per_file):
+    """The first README electrode on a nerve (e.g. "lvn") that every file of the experiment holds."""
+    for k, v in desc["electrodes"]:
+        if v.strip().lower() == nerve and all(abf_channel(k, n) for n in names_per_file):
             return abf_channel(k, names_per_file[0])
     return None
 
@@ -716,9 +828,11 @@ def unit_threshold(sd, heights, floor, ganglion="STG"):
     return max(NOISE_K * sd, split, floor)
 
 
-def unit_measures(results_by_file, channel, columns, ganglion, ref_file, burst_rule=None):
+def unit_measures(results_by_file, channel, columns, ganglion, ref_file, burst_rule=None, other=None):
     """Per condition column: bins of the Methods window and of the code window, rhythmic seconds,
-    burst table, thresholds. results_by_file: {file path: process_file result}."""
+    burst table, thresholds. results_by_file: {file path: process_file result}. other: the lvn
+    channel of an STG experiment; then "rhythmic" is `triphasic_seconds` and the PD-only reading
+    is kept as "rhythmic_pd"."""
     r0 = results_by_file[ref_file]["ext"][channel]
     h0 = r0["late"][1]
     thr0 = unit_threshold(r0["sd_late"], h0, 0.0, ganglion)
@@ -757,7 +871,13 @@ def unit_measures(results_by_file, channel, columns, ganglion, ref_file, burst_r
             continue
         gap = RHYTHM_GAP_FACTOR * ctl_period if np.isfinite(ctl_period) else 0
         sec = v["seconds"]
-        v["rhythmic"] = rhythmic_seconds(v["bursts"]["tstart"].to_numpy(), sec - v["window_s"], sec, gap)
+        v["rhythmic_pd"] = rhythmic_seconds(v["bursts"]["tstart"].to_numpy(), sec - v["window_s"], sec, gap)
+        v["rhythmic"] = v["rhythmic_pd"]
+        if other:
+            o = results_by_file[v["file"]]["ext"][other]
+            ot = o["late"][0][o["late"][1] >= NOISE_K * o["sd_late"]]
+            v["other_spikes"] = len(ot)
+            v["rhythmic"] = triphasic_seconds(v["bursts"], ot, sec - v["window_s"], sec, gap)
     return out, ref, ctl_period
 
 
@@ -802,7 +922,7 @@ def plan_extracellular(stg=STG_EXPERIMENTS, cg=CG_UNITS):
     exps = sorted(set(stg) | {e for e, _ in cg})
     plans, missing = {}, [e for e in exps if e not in folders]
     exps = [e for e in exps if e in folders]
-    with ThreadPoolExecutor(16) as ex:
+    with ThreadPoolExecutor(6) as ex:
         descs = dict(zip(exps, ex.map(describe_experiment, exps)))
         paths = sorted({resolve_file(e, f) for e in exps for f, _ in descs[e]["files"]} - {None})
         all_heads = dict(zip(paths, ex.map(header_info, paths)))
@@ -815,8 +935,10 @@ def plan_extracellular(stg=STG_EXPERIMENTS, cg=CG_UNITS):
         cols, order = protocol_columns(seq)
         names = [heads[f]["channels"] for f, _ in seq]
         units = {}
+        lvn = None
         if e in stg:
             units["PD"] = ("STG", pd_channel(d, names))
+            lvn = nerve_channel(d, "lvn", names)
         for ee, u in cg:
             if ee == e:
                 units[u] = ("CG", cg_channel(d, u, names))
@@ -826,12 +948,12 @@ def plan_extracellular(stg=STG_EXPERIMENTS, cg=CG_UNITS):
                 chans = [intra_channels(d, n).get(unit) for n in names]
                 if chans and all(chans) and len(set(chans)) == 1:
                     intra[unit] = chans[0]
-        plans[e] = dict(desc=d, seq_raw=seq_raw, seq=seq, columns=cols, order=order, units=units,
+        plans[e] = dict(desc=d, seq_raw=seq_raw, seq=seq, columns=cols, order=order, units=units, lvn=lvn,
                         intra=intra, heads=heads, unlisted=[f for f in experiment_files(e)
                                                             if f not in {x for x, _ in seq_raw}])
     jobs = []
     for e, pl in plans.items():
-        ext = sorted({c for _, c in pl["units"].values() if c})
+        ext = sorted({c for _, c in pl["units"].values() if c} | ({pl["lvn"]} if pl["lvn"] else set()))
         for f, _ in pl["seq"]:
             jobs.append(dict(path=f, ext=ext, intra=pl["intra"], whole=True))
     return plans, missing, jobs
@@ -860,8 +982,8 @@ def ptx_jobs(exp):
 
 
 def process_ptx(job):
-    """Last minute of a PTX file: [INTRA] measures of PD and LP, the pH signal, and the fraction of
-    PD intracellular spikes that fall within 5 ms of a pdn spike (a check of the PD label)."""
+    """Last minute of a PTX file: [INTRA] measures of PD and LP, the pH signal, and for each unit
+    `pdn_check` against the pdn spikes (a check of the PD label)."""
     path, intra = job["path"], job["intra"]
     keep = {c: [(-INTRA_S, None)] for c in intra.values()}
     names = header_info(path)["channels"]
@@ -881,14 +1003,25 @@ def process_ptx(job):
     if job["pdn"]:
         t, h, sd, pol = events(data["pdn"][0], fs, k=NOISE_K)
         for unit, w in ws.items():
-            st = w["spike_t"]
-            if len(st) and len(t):
-                j = np.searchsorted(t, st)
-                d = np.minimum(np.abs(t[np.clip(j, 0, len(t) - 1)] - st), np.abs(t[np.clip(j - 1, 0, len(t) - 1)] - st))
-                res["intra"][unit]["pdn_match"] = float(np.mean(d < 0.005))
-            else:
-                res["intra"][unit]["pdn_match"] = np.nan
+            res["intra"][unit].update(pdn_check(w["spike_t"], t, len(data["pdn"][0]) / fs))
     return res
+
+
+def pdn_check(st, t, seconds, max_lag=PDN_MAX_LAG_S, half=PDN_HALF_S):
+    """Does an intracellular unit project down the pdn? The modal lag (bins of 2 * half s) from
+    each intracellular spike to the pdn events that follow it within max_lag, the fraction of its
+    spikes with a pdn event within half of that lag, and that fraction by chance at the pdn's rate.
+    The PD axons run down the pdn, so the PD unit's spikes are followed by pdn spikes at a fixed
+    conduction delay; other units' are not."""
+    if len(st) < 5 or len(t) < 5:
+        return dict(pdn_lag=np.nan, pdn_match=np.nan, pdn_chance=np.nan)
+    lags = np.concatenate([t[np.searchsorted(t, s, "right"):np.searchsorted(t, s + max_lag, "right")] - s for s in st])
+    hist, edges = np.histogram(lags, bins=np.arange(0, max_lag + 1e-9, 2 * half))
+    lag = float(edges[np.argmax(hist)] + half)
+    j = np.searchsorted(t, st + lag - half)
+    hit = (j < len(t)) & (t[np.clip(j, 0, len(t) - 1)] <= st + lag + half)
+    return dict(pdn_lag=lag, pdn_match=float(np.mean(hit)),
+                pdn_chance=float(1 - np.exp(-len(t) / seconds * 2 * half)))
 
 
 # ----------------------------------------------------------------------------------------------
@@ -907,7 +1040,8 @@ def ext_units(plans, results, cg_rule=None):
                 row.update(out=None)
             else:
                 out, ref, cp = unit_measures(R, ch, pl["columns"], g, pl["seq"][0][0],
-                                             cg_rule if g == "CG" else None)
+                                             cg_rule if g == "CG" else None,
+                                             other=pl.get("lvn") if g == "STG" else None)
                 row.update(out=out, ref=ref, ctl_period=cp)
             units.append(row)
     return units
@@ -926,12 +1060,14 @@ def measure_frame(units, ganglion, measure, window="methods", missing="zero"):
     return pd.DataFrame(rows).T[COLUMNS]
 
 
-def rhythmic_frame(units, ganglion, missing="zero"):
+def rhythmic_frame(units, ganglion, missing="zero", key="rhythmic"):
+    """Per unit and condition, the fraction of the last 8 min rhythmic. key: "rhythmic" (for the
+    STG the pdn and lvn reading), or "rhythmic_pd" (PD bursting alone)."""
     rows = {}
     for u in units:
         if u["ganglion"] != ganglion or u["out"] is None:
             continue
-        rows[u["label"]] = {c: (u["out"][c]["rhythmic"].mean() if u["out"][c] is not None
+        rows[u["label"]] = {c: (u["out"][c][key].mean() if u["out"][c] is not None
                                 else (0.0 if missing == "zero" else np.nan)) for c in COLUMNS}
     return pd.DataFrame(rows).T[COLUMNS]
 
@@ -962,8 +1098,11 @@ def ptx_tables(ptx_results):
                               order=order, used=f in cols.values(),
                               PD_channel=r["intra"].get("PD", {}).get("channel"),
                               LP_channel=r["intra"].get("LP", {}).get("channel"),
+                              PD_pdn_lag_ms=1000 * r["intra"].get("PD", {}).get("pdn_lag", np.nan),
                               PD_pdn_match=r["intra"].get("PD", {}).get("pdn_match", np.nan),
-                              LP_pdn_match=r["intra"].get("LP", {}).get("pdn_match", np.nan)))
+                              LP_pdn_lag_ms=1000 * r["intra"].get("LP", {}).get("pdn_lag", np.nan),
+                              LP_pdn_match=r["intra"].get("LP", {}).get("pdn_match", np.nan),
+                              pdn_chance=r["intra"].get("PD", {}).get("pdn_chance", np.nan)))
         for unit in ("PD", "LP"):
             for c in COLUMNS:
                 f = cols.get(c)
