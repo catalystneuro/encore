@@ -1,0 +1,401 @@
+schema_version: 3
+id: andreassen-2022-01
+datasets:
+- archive: figshare
+  id: '19640805'
+  version: '4'
+  doi: 10.6084/m9.figshare.19640805.v4
+  relation: primary
+paper: doi:10.1073/pnas.2207052119
+date: 2026-11-26
+entry: andreassen-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45781858367
+outcomes:
+- claim: fig1c-ctmax-5dpf
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig1c-ctmax-5dpf
+  measured: 41.36
+  notes: The 12 heat-ramp 5 dpf fish of CTmax5and9dpfAdults.csv have a mean CTmax of 41.36 °C (SE
+    0.14, range 40.1 to 42.05), within 0.1 °C of 41.4.
+- claim: fig1c-ctmax-similar-across-ages
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig1c-ctmax-similar-across-ages
+  measured:
+  - 41.26
+  - 40.95
+  notes: The rule of the R script (rstatix extreme outliers within age group) removes one adult
+    (38.9 °C), leaving 39 fish. In Model 2 the 9 dpf mean is 41.26 °C and the adult mean 40.95 °C;
+    5 against 9 dpf p = 0.66, 5 dpf against adult p = 0.073, 9 dpf against adult p = 0.18 (model
+    releveled to 9 dpf), overall F(2,36) = 1.89, p = 0.165, as in Table S3. With all 16 adults
+    (Model 1) the adult mean is 40.83 °C and the 5 dpf against adult contrast is significant (p =
+    0.038), so the absence rests on the outlier removal the paper made.
+- claim: figs1a-swim-speed-no-treatment-difference
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:figs1a-swim-speed-no-treatment-difference
+  measured:
+  - 2.9
+  - 1.72
+  notes: In the model including treatment (26 fish, 130 observations) the heat-ramp effect is 0.76
+    mm/s (SE 0.62, t = 1.22, p = 0.233 with Satterthwaite degrees of freedom, 0.22 with the normal
+    approximation), as in Table S1. The swim speed model gives 2.90 mm/s at interval 1 and 1.72 at
+    interval 5 (time 5 term -1.18, t(100) = -2.44, p = 0.017). In the variant with a time by
+    treatment interaction no interaction term has p < 0.05 (smallest 0.39).
+  deviations:
+  - Mixed models are fitted in Python by REML (thermal.LMM), and p-values use Satterthwaite degrees
+    of freedom, the claims file's main reading. The paper's R script takes its table p-values with
+    sjPlot's p.val = "kr" (Kenward-Roger). The normal approximation is printed as well; no outcome
+    changes between the two.
+- claim: figs1bc-spiral-swimming
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The item holds no table of spiral swimming. The R script types the counts into a matrix
+    (Swirling<-matrix(c(0,14,10,2),nrow=2)) and runs chisq.test on it, so the counts are the
+    paper's numbers, not deposited data; testing them would not test the dataset. The behaviour
+    videos and their scoring are not public.
+- claim: figs1d-loss-of-equilibrium
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:figs1d-loss-of-equilibrium
+  measured: 0.577
+  notes: LOEData.csv, 14 control and 12 heat-ramp fish. Median time in loss of equilibrium 15.34%
+    in heat-ramp fish and 0.83% in controls; W = 27 with control first (continuity corrected,
+    p = 0.0035), Z = -2.94, r = |Z| / sqrt(26) = 0.577, as in Table S2.
+  deviations:
+  - The test settings are those of the R script (section S1D, wilcox.test with exact = F, and
+    rstatix::wilcox_effsize, which uses the asymptotic Z without continuity correction).
+- claim: figs1e-loss-of-response-specific
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CTmax5and9dpfAdults.csv gives a CTmax (temperature at loss of response) for all 12
+    heat-ramp 5 dpf fish, consistent with the first half of the claim, but the item records
+    nothing about loss of response in the 14 control fish (LOEData.csv and Swimspeed.csv hold
+    loss of equilibrium and speed only). The claim cannot be tested as a whole.
+- claim: fig2f-medulla-control-stable
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig2f-medulla-control-stable
+  measured: 1.58
+  notes: CalciumPeaksLong.csv, 8 control and 11 heat-ramp fish with 14 three-minute bins each (266
+    observations). Control fish average 1.577 peaks/min (SE over fish 0.144); readings (a) and (b)
+    are equal as every fish has 14 bins. In the Table S4 model the control time term is 0.018 per
+    min (p = 0.39) and time squared -0.0006 (p = 0.27), matching the paper's p = 0.4 and 0.3.
+  deviations:
+  - Frequency per minute and the time variable (42 minus Interval, minutes from the start of the
+    measuring period) are those of the R script, section Fig 2F.
+  - Satterthwaite degrees of freedom in place of the R script's Kenward-Roger (see
+    figs1a-swim-speed-no-treatment-difference).
+- claim: fig2f-medulla-heat-rise-then-fall
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig2f-medulla-heat-rise-then-fall
+  measured: 3.59
+  notes: Time by heat ramp 0.226 (SE 0.028, t = 8.00) and time squared by heat ramp -0.0062 (t =
+    -8.81), both p < 0.001, as in Table S4. Reading (a), the maximum of the heat-ramp mean curve, is
+    3.59 peaks/min 18 min before the depolarization, 2.08 times the first bin (1.73); the last bin
+    before the depolarization is 0.29, below the control mean of 1.58. Reading (b), the mean of
+    per-fish maxima, is 4.30, outside 3.6 ± 0.4. The criterion lists both readings and is met
+    under (a).
+  deviations:
+  - The peak can be read two ways (criterion); it matches under the group mean curve and not under
+    per-fish maxima.
+  - Satterthwaite degrees of freedom in place of Kenward-Roger.
+- claim: figs2a-medulla-decrease-39-41
+  outcome: blocked
+  blocked_by: data_missing
+  notes: CalciumPeaksLong.csv gives the experiment-2 frequencies against time to the
+    depolarization only (columns Treatment, FishID, Interval, Frequency3min). It has no
+    temperature, and the experiment-2 onset temperatures are not in the item either, so the
+    frequencies cannot be aligned to temperature.
+- claim: fig2g-depolarization-onset-temperature
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The only onset temperatures in the item are the 40 of experiment 5
+    (DepolarizationPeakandRecovery.csv, three oxygen treatments). The 11 onsets of experiment 2
+    are not deposited.
+- claim: fig2e-depolarization-spread
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the imaging of a laterally mounted fish; the item holds no imaging or time series.
+- claim: fig2d-recovery-after-depolarization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the medulla activity after the depolarization in experiment 2; CalciumPeaksLong.csv
+    ends at the depolarization and the item holds no time series.
+- claim: fig3d-ctmax-precedes-depolarization
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig3d-ctmax-precedes-depolarization
+  measured:
+  - 40.86
+  - 41.36
+  - 0.5
+  - 7
+  notes: CTmaxandDepolarization.csv, 7 fish. Mean CTmax 40.86 °C (SE 0.18), mean onset 41.36 °C (SE
+    0.16), difference 0.50 °C (SE 0.11, t = 4.49, 6 Satterthwaite degrees of freedom, p = 0.0041,
+    equal to the paired t-test); the depolarization follows CTmax in all 7 fish, by 0.2 to 1.1 °C.
+  deviations:
+  - Satterthwaite degrees of freedom in place of Kenward-Roger; with two balanced observations per
+    fish both equal the paired t-test.
+- claim: fig4c-heart-rate-rises-to-34
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig4c-heart-rate-rises-to-34
+  measured:
+  - 4.45
+  - 5.67
+  - 1.5
+  notes: Heartbeat.csv, 9 fish, 50 values. Mean heart rate 4.448 Hz at 28 °C (8 fish) and 5.665 Hz
+    at 34 °C (9 fish); the 34 against 28 °C term is 1.27 Hz (SE 0.185, t = 6.89, p < 0.001), as in
+    Table S6. Q10 is 1.497 on group means and 1.55 as the mean of 8 per-fish values.
+  deviations:
+  - Group means are over the fish with a value in the category, as the R script's summary takes
+    them (one fish lacks the 28 °C value).
+  - Satterthwaite degrees of freedom in place of Kenward-Roger.
+- claim: fig4c-heart-rate-falls-then-stable
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig4c-heart-rate-falls-then-stable
+  measured:
+  - 4.73
+  - 0.55
+  notes: Mean heart rate at 37 °C is 4.734 Hz (8 fish). The 37 against 34 °C contrast is -0.91 Hz
+    (t = -4.92, p < 0.001); the depolarization against 37 °C contrast is -0.11 Hz (p = 0.57), so
+    the paper's test finds no change. Q10 from 34 to 37 °C is 0.550 on group means, inside 0.6 ±
+    0.06 by 0.01; the mean of per-fish values is 0.58.
+  deviations:
+  - Satterthwaite degrees of freedom in place of Kenward-Roger.
+- claim: figs2b-medulla-lateral-mount
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Heartbeat.csv holds the experiment-4 heart rates only; the medulla counts of Fig. S2B are
+    not in the item.
+- claim: fig5a-ctmax-oxygen
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig5a-ctmax-oxygen
+  measured:
+  - 39.07
+  - 39.65
+  - 40.14
+  notes: CTmaxData_Total.csv, 76 fish with a value. Outliers within treatment remove 33.8 and 34.8
+    °C (hyperoxia) and 36.6 °C (hypoxia), leaving 24, 28 and 21 fish. Model 2.2 hypoxia -0.58 °C
+    (t = -2.79, p = 0.0068), hyperoxia +0.49 °C (t = 2.29, p = 0.025), F(2,70) = 11.67, as in Table
+    S7. Quartiles over all fish remove only the two hyperoxic fish; both contrasts stay significant
+    (p = 0.0028 and 0.035) but the hypoxic mean of 25 fish (38.97 °C) is outside 39.1 ± 0.1. With
+    all 76 fish (Model 1) neither contrast is significant (p = 0.10 and 0.97), so the outcome rests
+    on the outlier removal the paper made.
+  deviations:
+  - The claims file leaves open whether outlier quartiles are taken within treatment or over all
+    fish. The R script settles it (section Fig 5A, group_by(Treatment) then identify_outliers), and
+    the within-treatment rule is the one that removes the three fish the paper names.
+- claim: fig5b-depolarization-oxygen
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig5b-depolarization-oxygen
+  measured:
+  - 40.15
+  - 37.71
+  - 41.49
+  notes: DepolarizationPeakandRecovery.csv, 12 normoxia, 14 hypoxia, 14 hyperoxia fish. Mean onset
+    40.15, 37.71 and 41.49 °C. With Experiment in the model, hypoxia -2.69 °C (t = -6.90, p < 0.001),
+    hyperoxia +1.22 °C (t = 3.13, p = 0.0034), F(3,36) = 45.5, as in Table S8. Raw differences -2.44
+    and +1.34 °C.
+- claim: figs3b-amplitude-no-oxygen-effect
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:figs3b-amplitude-no-oxygen-effect
+  notes: Hypoxia +14.9 %ΔF/F0 (SE 14.8, p = 0.32) and hyperoxia -10.6 (SE 14.7, p = 0.48) against
+    normoxia, neither significant, as in Table S8. Experiment 2 amplitudes are 53.7 higher (p =
+    0.0001).
+- claim: figs3c-recovery-longer-in-hypoxia
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:figs3c-recovery-longer-in-hypoxia
+  measured: 2.57
+  notes: 39 fish (one hyperoxic fish has no recovery time). Hypoxia +2.57 min (SE 0.44, t = 5.86,
+    p < 0.001), hyperoxia -0.71 min (p = 0.12). Mean recovery 2.37 min in normoxia, 4.99 in hypoxia,
+    1.68 in hyperoxia.
+  deviations:
+  - Recovery in minutes is round(Recovery / 60, 2), as in the R script (section S3C); the file
+    gives seconds.
+- claim: figs3d-medulla-drops-before-depolarization
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:figs3d-medulla-drops-before-depolarization
+  notes: On 32 fish with both medulla bins and an onset (10 normoxia, 11 hyperoxia, 11 hypoxia), the
+    mean over the last 2 min before onset is 0.96, 0.93 and 0.87 peaks/min, 0.42, 0.29 and 0.49 of
+    each group's maximum in the 30 min window, all below one half. Over the last 5 min the ratios
+    are 0.50, 0.36 and 0.64, so that reading fails in normoxia and hypoxia. With a threshold of 0.4
+    the 2 min reading fails too (hypoxia 0.49, normoxia 0.42). The question of how the drop was
+    judged is recorded for the paper's authors (finding 4).
+  deviations:
+  - The item holds the experiment-5 medulla frequencies only in 1 °C bins, not in time. Assumed
+    that a bin's time before onset is (onset temperature - bin temperature) / 0.3 min, from the
+    heating rate of 0.3 °C/min (Methods, CTmax assay; Results, experiment 5 uses the same ramp),
+    and that a window's mean is the mean of the bins weighted by their overlap with it. The 30 min
+    profile uses the 10 bins counted back from the bin that holds the onset. The 0.3 °C/min is
+    stated for experiments 1 and 2 (Methods; Fig. 2 legend), and experiment 5 uses the setup of
+    experiment 2 (Methods). Across the fish of the second period of experiment 5 the onset
+    temperature rises 0.225 °C per minute of recording (r = 0.98); with that ramp the ratios are
+    0.42, 0.28 and 0.46 and the outcome is the same.
+  - The threshold of half the window maximum is the claims file's, set by the reader for "sharply",
+    which the paper does not quantify.
+- claim: fig5d-medulla-normoxia
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig5d-medulla-normoxia
+  measured:
+  - 2.51
+  - 36
+  - 1.71
+  notes: CalciumPeakExperiment.csv from the 28 °C bin on (391 values, 33 fish). Reading (a), the
+    normoxia mean curve, peaks at 2.51 peaks/min (SE 0.35, 10 fish) in the 36 °C bin; Q10 from 28 to
+    36 °C is 1.715. Reading (b), the mean of per-fish maxima, is 2.89 at a mean of 34.9 °C, just
+    outside the one-bin tolerance on temperature.
+  deviations:
+  - Bins are the deposited 1 °C bins named by their lower bound (28 = 28 to 29 °C), starting at 28
+    °C, as in the R script (section Fig 5D, filter(LowerTemp>27), CalciumPeaksSummaryTreatments).
+- claim: fig5d-medulla-hyperoxia
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig5d-medulla-hyperoxia
+  measured:
+  - 3.23
+  - 37
+  - 1.84
+  notes: The hyperoxia mean curve peaks at 3.23 peaks/min (SE 0.27, 11 fish) in the 37 °C bin; Q10
+    from 28 to 37 °C is 1.84. In the Table S9 model (CalciumPeaksLmm2 of the R script, 391
+    observations, 33 fish) hyperoxia by temperature is 0.089 per °C (SE 0.024, t = 3.75, p =
+    0.0002). Reading (b) gives 4.04 at a mean of 35.7 °C.
+  deviations:
+  - Temperature in the model is LowerTemp - 28 in °C, as the R script defines stLowTemp; the model
+    is the script's reduced model with the treatment by temperature interaction only.
+  - Satterthwaite degrees of freedom in place of Kenward-Roger.
+- claim: fig5d-medulla-hypoxia
+  outcome: partially_reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig5d-medulla-hypoxia
+  measured:
+  - 0.883
+  - 0.027
+  notes: Hypoxic means are 1.950 peaks/min at 28 °C (12 fish), 1.809 at 34 °C (12) and 0.426 at 38
+    °C (5). The Q10 from 34 to 38 °C is 0.027, below 0.1, and the hypoxia by temperature term of the
+    Table S9 model is -0.161 per °C (t = -5.67, p < 0.001), so activity falls at an accelerating
+    rate. The Q10 from 28 to 34 °C is 0.883, just outside 0.8 ± 0.08, so one of three parts of the
+    criterion fails. Over the 5 fish with both the 34 and 38 °C bins the second Q10 is 0.042.
+  deviations:
+  - Satterthwaite degrees of freedom in place of Kenward-Roger.
+- claim: figs4ab-light-response-amplitude-falls
+  outcome: blocked
+  blocked_by: data_missing
+  notes: LightResponse.csv holds counts of responses and non-responses per fish and 1 °C bin; the
+    amplitudes of the light-evoked responses are not in the item.
+- claim: fig6c-light-responsiveness-by-oxygen
+  outcome: partially_reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:fig6c-light-responsiveness-by-oxygen
+  measured:
+  - 33.0
+  - 36.1
+  - 36.5
+  - 31
+  - 29
+  notes: Measured values are those of the pooled reading, in the order of the expected values.
+    Percentages pooled over flashes (per-fish mean in brackets) are normoxia 33.0% (31.7%) over 28
+    to 31 °C, hypoxia 36.1% (33.4%) in the first bin, falling to 19.7% (20.1%) in the next, and
+    hyperoxia 36.5% (36.2%) over 28 to 36 °C, all within tolerance. Normoxic responsiveness is kept
+    to 31 °C (it falls to 27.3% at 32 °C). In hyperoxia the 30 °C bin (31.6%, per fish 28.2%) is
+    already below the initial level minus its tolerance (32.9%), so by the criterion's rule the
+    level is kept only to 29 °C under both readings, and to 30 °C with bins named by their upper
+    bound; the 5 °C gain is not met as the criterion defines it. As a variant outside the
+    criterion, the hyperoxic percentage stays below the threshold from 37 °C on.
+  deviations:
+  - The R script (section Fig 6D, which draws Fig. 6C) drops the first bin (Temperature > 28) and
+    names bins by their lower bound (Temperature - 1); both are followed. The script plots the mean
+    of per-fish percentages, the claims file's variant; both readings are shown and give the same
+    outcome.
+- claim: tables10-light-response-model
+  outcome: reproduced
+  notebook: reproduce_andreassen_2022.ipynb
+  output: claim:tables10-light-response-model
+  measured:
+  - 26.2
+  - 36.6
+  - 13.2
+  notes: 411 rows with counts (2763 flashes, 38 fish). Hypoxia -0.85 (SE 0.22, p < 0.001),
+    hyperoxia 0.49 (SE 0.18, p = 0.0075), temperature -0.126 per °C (p < 0.001), hyperoxia by
+    temperature 0.065 (SE 0.030, p = 0.030), as in Table S10. At the script's mean temperature (34.49
+    °C over the 440 rows) the probabilities are 26.2%, 36.6% and 13.2%; centering over flashes gives
+    26.1%, 36.5% and 13.2%. Predicting at each treatment's own mean temperature puts hypoxia at
+    14.5%, outside 13 ± 1.3; the script centers over all rows, which settles the reading. Estimates
+    change by at most 0.0002 with 9 quadrature nodes in place of the Laplace approximation.
+  deviations:
+  - The model is fitted in Python (thermal.BinomialGLMM) by maximum likelihood with the Laplace
+    approximation, glmer's default, on the R script's formula (modelLightResponse1) and centering
+    (scale(Temperature, scale = F) over rows with Temperature above 28).
+- claim: discussion-depolarization-magnitude
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the amplitudes of the medulla calcium peaks of experiment 2 and that experiment's
+    depolarization amplitudes; neither is in the item (the only amplitudes are the 40
+    depolarizations of experiment 5, and CalciumPeaksLong.csv holds counts of peaks).
+findings:
+- kind: data_missing
+  severity: major
+  versions:
+  - '3'
+  - '4'
+  notebook: reproduce_andreassen_2022.ipynb
+  output: finding-missing-measures
+  statement: The item holds part of the paper's data. Not deposited are the experiment-2 temperatures
+    and onset temperatures (CalciumPeaksLong.csv gives frequencies against time to depolarization
+    only), the experiment-4 medulla counts, the spiral-swimming and loss-of-response scores of Fig.
+    S1B, C and E (the R script types the spiral-swimming counts into a matrix), the amplitudes of
+    the light responses, the medulla peak amplitudes, and any imaging time series. Nine of the 28
+    claims cannot be tested.
+- kind: metadata_error
+  severity: minor
+  versions:
+  - '3'
+  - '4'
+  notebook: reproduce_andreassen_2022.ipynb
+  output: finding-fish-ids
+  statement: The Readme says FishID corresponds across DepolarizationPeakandRecovery.csv,
+    CalciumPeakExperiment.csv and LightResponse.csv, but LightResponse.csv names three fish Fish3,
+    Fish4 and Fish5 where the depolarization table has Fish03, Fish04 and Fish05. Fish33 has medulla
+    and light values but no row in the depolarization table.
+- kind: other
+  about: data
+  severity: minor
+  versions:
+  - '3'
+  - '4'
+  notebook: reproduce_andreassen_2022.ipynb
+  output: finding-fish-ids
+  statement: In 30 of 32 embedded fish of experiment 5 the medulla series ends in the 1 °C bin that
+    holds the onset temperature; in Fish03 it ends one bin earlier (last bin 39 to 40 °C, onset 40.4
+    °C) and in Fish35 two bins earlier (39 to 40 °C, onset 41.1 °C). The light recordings of Fish27
+    and Fish29 end about 10 °C below their onsets. Neither the Readme nor the paper says why.
+    CTmaxData_Total.csv has 90 rows, 2 without a treatment or temperature and 12 more without a
+    temperature, also without explanation (the paper reports 6 of 92 larvae that died and were excluded).
+- kind: methods_unavailable
+  statement: Question for the authors. The paper says medulla activity "sharply decreased in the
+    minutes prior to the brain-wide depolarization" in all oxygen treatments (Fig. S3D) but gives no
+    window or measure, and the deposited frequencies of experiment 5 are in 1 °C bins, not in time.
+    Over what window was the drop judged, and are the time-resolved frequencies of Fig. S3D
+    available? This attempt converts bins to time with the 0.3 °C/min ramp; the drop is below half
+    the maximum over the last 2 min in every treatment but not over the last 5 min.
