@@ -1,0 +1,553 @@
+# Claims for Alonso & Marder (2020), "Temperature compensation in a small rhythmic circuit",
+# eLife 9:e55470, tested on Dryad m31b1h7.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-25, protocol pilot-19 (docs/protocol.md, Reader).
+#
+# Text read. The version of record (eLife PDF, text extracted with PyMuPDF, under paper/),
+# main text, figure legends and Materials and methods. The figure supplements (Figure 1, figure
+# supplements 1 to 3; Figure 2, figure supplement 1; Figure 6, figure supplement 1) are not in
+# paper/ beyond their titles, so their legends and panels were not read. The claims that rest
+# on them use the sentences of the main text that describe them. The PDF could not be rendered
+# here, so no figure was read from it; the pie-chart counts of Figure 10B are therefore not
+# recorded.
+#
+# Code. The paper's only deposit is the dataset itself. Its Data availability says "Code and
+# parameters to reproduce the results in this work was uploaded to Dryad", and the archive
+# lists a single zip of about 99 kB. As the reader may not open the dataset, that code was not
+# read. Where these criteria leave a detail open and the deposited code fixes it, the author
+# follows the code and says so; where the code disagrees with the Methods, the Methods govern
+# the main result and the code's choice is a variant (protocol, Reader, step 2).
+#
+# The data. No recordings. The paper simulates a three-cell model of the crustacean pyloric
+# network (PD, the AB-PD pacemaker kernel in one compartment; LP; PY) after Prinz et al. 2004.
+# Each cell is a single compartment with eight currents (INa, ICaT, ICaS, IA, IKCa, IKd, IH,
+# Ileak) and 13 state variables; seven chemical synapses of two types (glutamatergic and
+# cholinergic). Each model is 31 maximal conductances plus three calcium time constants and 24
+# Q10 values (shared across cells), Tref = 10 degrees C, Q10 in [1, 2] for conductances and
+# [1, 4] for time scales. Simulated with RK4 at dt = 0.05 ms from V = -51 mV, gating variables 0
+# and [Ca] = 5 uM. 36 temperature-compensated models are studied, each with a six-character
+# name. The Methods list the model of each figure. Figure 1, 4?6W66 (the second character is
+# unreadable in the extracted text); Figure 1 supplement 1, WWZ3CN, FGFKQS, 71G6LA; Figure 1
+# supplement 2, PLKTEM; Figure 1 supplement 3, all models; Figure 2, G7P2WE; Figure 2
+# supplement 1, G7P2WE, 4?6W66, MAXTTP; Figure 3, 4?6W66 and SJR46Y; Figure 4, WWZ3CN;
+# Figure 5, FGFKQS; Figure 6, FGFKQS and 71G6LA; Figure 6 supplement 1, B7SDOL, J9U8SQ, 4R2719,
+# R3VIEW, Q8FBN1, RMZ8KZ, EF84RN, SJR46Y; Figure 7 (A to E), J9U8SQ, G81PUL, G7EOZ8, SAXT8Y,
+# KNMLBC; Figure 8, OSHNMD and H5AIZR; Figure 9, WWZ3CN and FGFKQS; Figure 10, 4?6W66.
+# Some figure legends name models differently (Figure 5 and Figure 9B say "same model as in
+# Figure 7A"); the claims that are affected name both readings.
+#
+# Every claim's test is a new simulation of the deposited models with the deposited code, so
+# data is the dataset throughout. The paper reports no statistical tests.
+#
+# Shared method, from the Methods unless said otherwise. Bursts are formed by grouping spikes
+# with a 200 ms threshold (Classification scheme), the slow-wave threshold is -50 mV, duty
+# cycle is burst duration over period and phases are burst onsets and offsets in units of the
+# period from the PD burst start (Results, Duty cycle and phase maintenance, paragraph 1).
+# The cell and network activity classes are those of the Classification scheme (CV of ISI
+# 0.1; lag 20 ms; CV of duty cycle 1; CV of burst frequency 0.1; triphasic when the cell
+# frequencies agree within 5% and the cells fire in the order PD, LP, PY). Open in the paper,
+# for every claim, and to be taken from the deposited code where it fixes them: the spike
+# detection threshold, whether an initial transient is dropped (the Methods drop the first
+# 10 s when scoring and use the last 10 s of 30 s for voltage distributions), the initial
+# state of the synapses, and how "fired in the right order" is tested.
+schema_version: 2
+paper: doi:10.7554/elife.55470
+claims:
+- id: deposit-models
+  kind: link
+  statement: The deposit holds the code and the parameters of the paper's models, under the
+    names the Methods give, and simulating them at 10 degrees C gives the control rhythm the
+    models were fitted to, about 1 Hz with a PD duty cycle near 20% and LP and PY duty cycles
+    near 25%.
+  source: Data availability; Materials and methods, Finding parameters, paragraph 3, and
+    Parameters used in this study
+  quote: The target control behavior was defined as having all cells bursting with 20% duty cycle
+    for PD
+  expected:
+  - quantity: burst frequency of each cell at 10 degrees C, per model
+    value: 1.0
+    tolerance: 0.1
+    unit: Hz
+  - quantity: PD duty cycle at 10 degrees C, per model
+    value: 0.2
+    tolerance: 0.02
+  - quantity: LP and PY duty cycle at 10 degrees C, per model
+    value: 0.25
+    tolerance: 0.025
+  criterion: Each model named in the Methods' list (Parameters used in this study) is found
+    in the deposit, and the deposit holds 36 models (Results, Duty cycle and phase
+    maintenance, paragraph 3). Every Q10 is within [1, 2] for maximal conductances and [1, 4]
+    for time scales (Materials and methods, Finding parameters, paragraph 5). Each model is
+    simulated at 10 degrees C for 20 s and the first 10 s dropped, as the Methods score
+    solutions. The targets are a fit, not an exact result, so the link holds (reproduced)
+    when the values are within tolerance for at least 30 of the 36 models, partially
+    reproduced for 18 to 29, not reproduced below 18 (these counts are a standard choice; the
+    paper gives none). The LP and PY target is 25% in the
+    Methods and "duty cycle = 20% for LP and PY" in the Results (paragraph 3); 0.2 is shown
+    as a variant.
+- id: fig1c-frequency-q10-phase-constant
+  statement: In the model of Figure 1, as temperature rises from 10 to 25 degrees C the burst
+    frequency of all three cells increases with a Q10 near 2, while each cell's duty cycle and
+    the phases of burst onsets and offsets stay approximately constant.
+  source: Figure 1B and 1C; Results, Duty cycle and phase maintenance in model pyloric networks,
+    paragraph 4
+  quote: While the burst frequency increases with Q10 » 2, the duty cycle of the cells, and the
+    phases of the onsets/offsets of activity, remain approximately constant.
+  expected:
+  - quantity: Q10 of burst frequency, model 4?6W66, 10 to 25 degrees C
+    value: 2.0
+    tolerance: 0.2
+  criterion: Model 4?6W66 simulated at 16 temperatures from 10 to 25 degrees C (1 degree
+    apart), with averages over 30 s (Figure 1 legend). The paper does not say how Q10 is
+    computed. The readings are (a) exp(10 times the slope) of a least-squares fit of ln
+    frequency on temperature; (b) (f25 / f10) to the power 10/15; (c) f20 / f10. Nor does it
+    give a bound for "approximately constant". The readings are (i) every cell's mean duty
+    cycle and every onset and offset phase stays within 0.1 of a cycle over the 16
+    temperatures (a standard choice); (ii) each stays within 20% of its 10 degree value (a
+    standard choice; the Methods' 0.2 bound on std over mean of duty cycle, Finding
+    parameters, paragraph 2, is a burst-to-burst stability test within one temperature and
+    does not bound change across temperatures). Reproduced when the frequency Q10 is within tolerance under one reading and
+    duty cycles and phases are constant under one reading; partially reproduced when only one
+    of the two holds. The three cells' frequencies are reported (the legend says they nearly
+    coincide).
+- id: fig1s1-three-models
+  statement: In three further models with different maximal conductances and Q10 values, the
+    duty cycles and phases also stay approximately constant while the frequency increases
+    from 10 to 25 degrees C.
+  source: Results, Duty cycle and phase maintenance in model pyloric networks, paragraph 4;
+    Figure 1, figure supplement 1A
+  quote: shows the same analysis performed on three different models. In all cases, the duty cycle and the phases stay approximately constant while the
+    frequency increases.
+  depends_on:
+  - fig1c-frequency-q10-phase-constant
+  criterion: Models WWZ3CN, FGFKQS and 71G6LA, the same analysis and the same readings of
+    "approximately constant" as fig1c-frequency-q10-phase-constant (the supplement's legend is
+    not in the text read, so its temperatures are taken as those of Figure 1C). Frequency must
+    rise from 10 to 25 degrees C in every cell. Reproduced when all three models meet both
+    parts under one reading of constancy; partially reproduced for two.
+- id: all-models-compensated
+  statement: All 36 models produce a triphasic pyloric rhythm over the working range of 10 to
+    25 degrees C; for every set of maximal conductances tried, multiple sets of Q10 values that
+    make the rhythm temperature robust could be found.
+  source: Results, Duty cycle and phase maintenance in model pyloric networks, paragraph 3;
+    Materials and methods, Finding parameters, paragraph 6
+  quote: We then selected 36 of these models and for each of them we searched for Q10 values so
+    that the activity is preserved over a temperature range. We found that, regardless of the
+    maximal conductances G, it was always possible to find multiple sets of Q10 values that
+    produced a temperature robust pyloric rhythm.
+  expected:
+  - quantity: number of models
+    value: 36
+    tolerance: 0
+  criterion: The search itself (a genetic algorithm with 1000 individuals for 10,000
+    generations) is not repeated; that several Q10 sets exist per model cannot be tested
+    unless the deposit holds them, and the author says whether it does. Each of the 36
+    deposited models is simulated at 10 to 25 degrees C in 1 degree steps, as in Figure 1C,
+    and its network activity is classified with the Methods' scheme. Reproduced when every
+    model is triphasic at every temperature; partially reproduced when at least 34 are (a
+    standard choice; the paper says compensation "was confirmed in all cases", Finding
+    parameters, paragraph 6); not reproduced otherwise. The count of
+    temperatures that fail is reported per model.
+- id: intermediate-temperature-failures
+  statement: Of the Q10 solutions that met the target at the control temperatures, 2 in 40 did
+    not display the correct activity at temperatures in between.
+  source: Materials and methods, Finding parameters, paragraph 6
+  quote: We found that if the system meets the target activity at the control temperatures, in
+    the vast majority of the cases, the models also displayed the correct activity for
+    temperatures in between, but there were exceptions (2 in 40 cases).
+  expected:
+  - quantity: solutions failing between control temperatures
+    value: 2
+    tolerance: 0
+  - quantity: solutions screened
+    value: 40
+    tolerance: 0
+  criterion: Testable only if the deposit holds the 40 solutions, including the 2 that were
+    discarded. Each is scored at 15, 20 and 25 degrees C with the objective of Equation 6 and
+    screened at the temperatures in between (1 degree steps from 10 to 25 degrees C, as in
+    Figure 1C) with the network classification. Reproduced when 2 of the 40 fail between
+    control temperatures and none of the other 38 do.
+- id: figs2-ramp-largest-isi
+  statement: During a temperature ramp from 10 to 25 degrees C over 60 min, the spiking
+    patterns change in complicated ways and the largest ISI decreases monotonically, in step
+    with the rising burst frequency.
+  source: Results, Duty cycle and phase maintenance in model pyloric networks, paragraph 5;
+    Figure 1, figure supplement 2
+  quote: As temperature is increased the spiking patterns change in complicated ways and the
+    largest ISI decreases monotonically, consistent with the overall increase in bursting
+    frequency of the cells.
+  criterion: Model PLKTEM ramped linearly from 10 to 25 degrees C over 60 min, spike times of
+    each cell recorded. The largest ISI is taken per burst cycle (the interburst interval).
+    How it is followed over the ramp is open. The readings are (a) the largest ISI in
+    successive windows of 1 degree C (4 min); (b) in successive windows of 1 min. Reproduced
+    when, under one reading, the largest ISI decreases from window to window in every cell
+    (a Spearman correlation with temperature below -0.9 in each cell, a standard choice, with
+    any increase between windows reported); partially reproduced when that holds for one or
+    two cells.
+- id: figs3-duty-cycle-variable-across-models
+  statement: Across the 36 models the LP duty cycle depends on temperature in different ways,
+    so that the duty cycle distributions differ from model to model.
+  source: Results, Duty cycle and phase maintenance in model pyloric networks, paragraph 5;
+    Figure 1, figure supplement 3; Discussion, paragraph beginning "One of the most significant
+    results"
+  quote: Across the models, different values of the maximal conductances G and temperature
+    sensitivities Q10 result in consistent differences in the duty cycle distributions.
+  criterion: The supplement's legend is not in the text read. For each of the 36 models, the
+    per-burst duty cycles of LP over 10 to 25 degrees C (the ramp of Figure 1, figure
+    supplement 2, 10 to 25 degrees C over 60 min, is the reading taken; simulations at the 16
+    temperatures of Figure 1C are the variant). Reproduced when the models' LP duty-cycle
+    distributions differ by a two-sample Kolmogorov-Smirnov test at p < 0.05 for most model
+    pairs (more than half of the 630 pairs), a standard choice; the median and range of each
+    model's LP duty cycle are reported.
+- id: fig2-lp-spike-amplitude-threshold
+  statement: In the LP cell of the model of Figure 2, spike amplitude decreases and the spike
+    threshold depolarizes as temperature rises from 10 to 25 degrees C.
+  source: Figure 2; Results, Changes in membrane potential over temperature, paragraph 1
+  quote: The membrane potential changes with temperature in several ways... the spike amplitude
+    decreases and the spike threshold depolarizes as temperature increases.
+  criterion: Model G7P2WE, LP cell, 101 temperatures from 10 to 25 degrees C, each simulated
+    for 30 s from identical initial conditions at dt = 0.001 (ms, read from the Methods' dt
+    units elsewhere), the last 10 s used (Materials and methods, Membrane potential and
+    current shares distributions). The paper does not define amplitude or threshold. The
+    readings are, for amplitude, (a) the mean spike peak minus the mean trough before each
+    spike, (b) the upper envelope of the voltage distribution (its highest voltage with
+    nonzero occupancy); for threshold, (a) V where dV/dt first exceeds 10 mV/ms before each
+    spike (a standard choice), (b) the voltage at which the distribution's spike region
+    begins. Reproduced when, under one reading of each, amplitude falls and threshold rises
+    from 10 to 25 degrees C (Spearman correlation with temperature below -0.5 and above 0.5,
+    a standard choice); partially reproduced when one of the two holds.
+- id: fig2s1-peak-voltage-diverse
+  statement: The effect of temperature on the membrane potential differs across models; in
+    three example models the peak voltage of spikes decreases, increases, or stays relatively
+    constant with temperature, and cells can become more depolarized or more hyperpolarized.
+  source: Results, Changes in membrane potential over temperature, paragraph 1; Figure 2,
+    figure supplement 1
+  quote: In some models, the peak voltage of spikes, as indicated by the upper envelope of the
+    distributions, decreases (left), increases (middle), or remains relatively constant
+    (right). In addition, we found that cells can either become more depolarized or more
+    hyperpolarized as temperature increases.
+  depends_on:
+  - fig2-lp-spike-amplitude-threshold
+  criterion: Models G7P2WE (left), 4?6W66 (middle) and MAXTTP (right), voltage distributions
+    as in fig2-lp-spike-amplitude-threshold for every cell. The upper envelope is the highest
+    voltage with nonzero occupancy at each temperature. The supplement does not say which cell
+    shows the trend, so a model counts when any of its cells does. Decrease or increase is a
+    change of more than 5 mV from 10 to 25 degrees C in that direction, and relatively
+    constant is a change within 5 mV over the range in every cell (5 mV is a standard choice;
+    2 mV and 10 mV are shown as variants). Reproduced when all three models show their stated
+    pattern and, among all cells of the three models, the mean voltage rises with temperature
+    in at least one and falls in at least one; partially reproduced when two models do.
+- id: fig3-current-amplitudes
+  statement: In the PD cell of one model, from 10 to 25 degrees C the Na current peak more than
+    doubles, the CaT current peak falls to about half despite its larger conductance, and the
+    KCa current grows about six-fold; in a second model the Na current falls slightly and the
+    KCa current falls moderately.
+  source: Figure 3A and 3B; Results, Dynamics of the currents at different temperatures,
+    the passage from "We first compared" to "moderately decreased by temperature in Figure 3B"
+  quote: In this example, the Na current increases its amplitude by more than two fold over the 15
+    ̊C range. Despite the fact that gCaT increases with temperature, the ... amplitude of the
+    current decreases to about half its control value at 10 ̊C
+  expected:
+  - quantity: model 4?6W66, PD, CaT peak at 25 over 10 degrees C
+    value: 0.5
+    tolerance: 0.05
+  - quantity: model 4?6W66, PD, KCa peak at 25 over 10 degrees C
+    value: 6
+    tolerance: 0.6
+  criterion: Model 4?6W66 (Figure 3A) and SJR46Y (Figure 3B), PD cell, at 10 and 25 degrees C.
+    The Methods list the two models without saying which panel each is; the listed order is
+    taken as A then B, and the swapped assignment is shown as a variant.
+    The peak amplitude is the absolute peak of each current (the legend's red dashed line at
+    the control peak). Over how long is open. The readings are (a) the largest absolute value
+    over the analysed window; (b) the mean over cycles of each cycle's peak. Reproduced when,
+    under one reading, in 4?6W66 the Na ratio exceeds 2 and the CaT and KCa ratios are within
+    tolerance, and in SJR46Y the Na ratio is below 1 and the KCa ratio is below 1 (the paper's
+    words are "a small amount" and "moderately", so no bound is set; the ratios are
+    reported). Partially reproduced when at least three of these five hold.
+- id: fig4-currentscapes-reorganize
+  statement: In the model of Figure 4, currentscapes differ between 10 and 25 degrees C; in PD
+    the leak current's inward share is seen at both the start and end of the burst at 10
+    degrees C but mainly at the start at 25 degrees C, the A current's share is even across
+    the burst at 10 degrees C and larger at its start at 25 degrees C, and in all cells, most
+    in LP and PY, temperature raises the KCa share toward the end of bursts.
+  source: Figure 4; Results, Dynamics of the currents at different temperatures, paragraph
+    beginning "Because the total number of currents"
+  quote: in the PD cell the Leak current contributes a visible share of the inward current both
+    at the beginning and the end of the burst at 10 ̊C, but at 25 ̊C its contribution is mainly
+    confined to the ... beginning of the burst. The A current is evenly distributed during the
+    burst at 10 ̊C but at 25 ̊C its contribution is visibly larger at the beginning of the burst.
+    In all cells, but most notably in the LP and PY neurons in this example model, temperature
+    substantially increases the contribution of the KCa current toward the end of the bursts.
+  criterion: Model WWZ3CN at 10 and 25 degrees C. Currentscape shares are each current's
+    percent of the total inward (or outward) current at each time (Alonso and Marder 2019, as
+    the Results cite). Shares are averaged over bursts. Start and end of the burst are open.
+    The readings are (a) the first and last third of the burst; (b) the first and last 20%
+    of it. Reproduced when, under one reading, in PD the leak's inward share at the end over
+    that at the start is lower at 25 than at 10 degrees C, the A share at the start over that
+    at the end is near 1 at 10 degrees C (within 0.8 to 1.25, a standard choice) and higher
+    at 25 degrees C, and the KCa outward share at the end of the burst is higher at 25 than at
+    10 degrees C in all three cells, with the increase in LP and PY larger than in PD.
+    Partially reproduced when the KCa part holds and one of the two PD parts.
+- id: currentscapes-dominant-currents
+  statement: In all models and at all temperatures, spikes are driven first by INa and then by
+    IKd, which then dominate the inward and outward currents, and when the cells are most
+    hyperpolarized IH and the synaptic currents dominate.
+  source: Results, Dynamics of the currents at different temperatures, paragraph beginning
+    "The currentscapes show"
+  quote: During spike production, the activity is first driven by INa and later by IKd. During
+    these periods, the total inward and outward currents differ by orders of magnitude and are
+    entirely dominated by one current type. Similarly, when the cells are most hyperpolarized
+    the dominant currents are IH and the synaptic currents ISyn.
+  criterion: All 36 models, every cell, at 10, 15, 20 and 25 degrees C (the paper does not say
+    which temperatures were inspected; these are the reference temperature and the three
+    control temperatures of Equation 7 within the working range). Near each spike
+    peak (the 1 ms before the peak, and the 1 ms after it, a standard choice), INa has the
+    largest share of the inward current before the peak and IKd the largest share of the
+    outward current after it. At the 5% of time with the lowest voltage, IH has the largest
+    share of the inward current and the synaptic current the largest share of the outward
+    current (the paper does not say on which side each dominates; this split is a reading, and
+    the variant counts IH and ISyn as dominant when they hold the largest shares on either
+    side). Reproduced when this holds in at least 90% of spikes and of model, cell and
+    temperature cases (a standard bound for "all"); the fractions are reported.
+- id: fig5-a-to-kca-tradeoff
+  statement: In the 20 ms after the PD burst, the share of the A current falls smoothly and the
+    share of the KCa current rises smoothly as temperature goes from 10 to 25 degrees C, so the
+    neuron slides between burst termination mechanisms; in repolarization of the last spike IA
+    contributes a large share at 10 degrees C and a small one at 25 degrees C, while IKCa
+    contributes little at 10 degrees C and dominates at 25 degrees C.
+  source: Figure 5; Results, Dynamics of the currents at different temperatures, paragraph
+    beginning "Figure 5 shows"; Discussion, paragraph beginning "One of the most important"
+  quote: Almost all of the currents change over this temperature range, most notably there is
+    almost a tradeoff between the contributions of the A and KCa currents, with A decreasing
+    smoothly and KCa increasing smoothly.
+  criterion: The model is open. The Methods name FGFKQS for Figure 5 and the legend says "same
+    model as in Figure 7A", which the Methods name J9U8SQ; both are run. PD cell, the 20 ms
+    after burst termination (last spike of the burst), outward shares averaged over bursts,
+    at the 16 temperatures of Figure 1C (the number Figure 5 shows is not in the text; 1
+    degree steps are a standard choice). Reproduced when, in one of the two models, the A
+    share falls and the KCa share rises with temperature (Spearman correlation below -0.9 and
+    above 0.9, a standard bound for "smoothly"), the A share exceeds the KCa share at 10
+    degrees C and the KCa share exceeds the A share at 25 degrees C. Partially reproduced when
+    the two trends hold without the crossover.
+- id: fig6-crash-different-mechanisms
+  statement: Two models that are phase compensated at 10 and 25 degrees C crash at 30 degrees C
+    with complete loss of PD activity, by different currents in each.
+  source: Figure 6; Results, Dynamics of the currents at different temperatures, paragraph
+    beginning "Different compensation mechanisms"
+  quote: Figure 6 shows full currentscapes for two network models as they ‘crash’ at high
+    temperature. Note that the complete loss of activity in the PD neurons results from
+    different currents being active in the two examples.
+  criterion: Models FGFKQS and 71G6LA at 10, 25 and 30 degrees C. Reproduced when both are
+    triphasic at 10 and 25 degrees C, PD is quiescent at 30 degrees C in both (the Methods'
+    quiescent class, no more than one ISI in the analysed window), and the current with the
+    largest inward share and the current with the largest outward share in PD at 30 degrees
+    C, averaged over the analysed window, are not both the same in the two models (a reading
+    of "different currents being active"; the paper gives no measure). Partially
+    reproduced when the two crash with PD quiescent but the dominant currents match.
+- id: fig6s1-crash-mechanisms
+  statement: In eight further models, currentscapes at crashed states show that the networks
+    crash by different mechanisms in each case.
+  source: Results, Dynamics of the currents at different temperatures, paragraph beginning
+    "Different compensation mechanisms"; Figure 6, figure supplement 1
+  quote: Further examples of high temperature ‘crashes’ are shown in Figure 6—figure supplement
+    1. These examples show that the networks are crashing by different mechanisms in each case.
+  depends_on:
+  - fig6-crash-different-mechanisms
+  criterion: Models B7SDOL, J9U8SQ, 4R2719, R3VIEW, Q8FBN1, RMZ8KZ, EF84RN and SJR46Y (Methods,
+    Parameters used in this study). The supplement's legend is not in the text read, so the
+    temperature of each crashed state is open; each model is taken at the lowest temperature
+    above 25 degrees C, in 1 degree steps up to 35 degrees C, at which the network is not
+    triphasic (a standard choice). As in fig6-crash-different-mechanisms, the mechanism of a
+    crash is read as the pair of currents with the largest inward and the largest outward
+    share in each cell, averaged over the analysed window (a reading; the paper gives no
+    measure). Reproduced when every model crashes below 35 degrees C and no two models have
+    the same pairs in all three cells; partially reproduced when every model crashes and at
+    least six distinct patterns occur among the eight (a standard choice).
+- id: fig7-high-temperature-slow-timescales
+  statement: At temperatures above 25 degrees C the models crash in different ways (quiescence,
+    subthreshold oscillations, or irregular activity), and in five models at 29 to 34 degrees
+    C time scales much longer than the 1 s period at 10 degrees C emerge.
+  source: Figure 7; Results, High temperatures produce disordered circuits or ‘crashes’,
+    paragraph 1
+  quote: In all cases, there are timescales in the behavior that are much longer than the period
+    of the rhythm at 10 ̊C ( » 1 s).
+  criterion: Models J9U8SQ, G81PUL, G7EOZ8, SAXT8Y and KNMLBC at 34, 34, 33, 29 and 30 degrees C
+    (Figure 7 legend), 30 s analysed. The legends of Figures 5 and 9B tie Figure 7A to the
+    model the Methods name FGFKQS for those figures, so FGFKQS at 34 degrees C is a variant
+    for panel A. A time scale much longer than 1 s is read as (a) an
+    interval longer than 2 s between successive bursts or spikes of some cell, or (b) a
+    dominant period of the slow voltage (spikes removed by a 50 ms median filter, a standard
+    choice) longer than 2 s, the factor 2 a standard bound for "much longer". Reproduced when
+    all five models show it under one reading and none is triphasic; partially reproduced for
+    three or four. The cell and network classes of each are reported, as is how many of the
+    36 models at 26 to 35 degrees C are quiescent, subthreshold or irregular.
+- id: fig8a-hysteresis-quiescence
+  statement: During a temperature ramp from 10 to 35 degrees C and back, the PD cell of one
+    model becomes quiescent before reaching 35 degrees C and resumes spiking on the way down at
+    a temperature about 2 degrees C lower than where it stopped, so the model is multistable
+    over that range.
+  source: Figure 8A; Results, Hysteresis and multistability, paragraph 1
+  quote: The temperature at which the cell resumes spiking is » 2 ̊C lower than the temperature
+    at which it became quiescent, indicating that the system is multi-stable over that
+    temperature range.
+  expected:
+  - quantity: temperature of quiescence onset minus temperature of recovery, model OSHNMD
+    value: 2
+    tolerance: 0.2
+    unit: degrees C
+  criterion: Model OSHNMD (the Methods list OSHNMD, H5AIZR for Figure 8 without saying which
+    panel each is; the listed order is taken, and H5AIZR is shown as the variant), temperature
+    raised linearly from 10 to 35 degrees C in 30 min and
+    lowered back at the same rate (Results, Hysteresis, paragraph 1). Quiescence onset is the
+    temperature of the last PD spike on the up ramp and recovery the temperature of the first
+    PD spike on the down ramp. Reproduced when PD stops spiking before 35 degrees C and stays
+    quiescent until the down ramp, and the difference is within tolerance. The legend's
+    "before 600 s" cannot be squared with the stated ramp (600 s is about 18 degrees C), so
+    the time of the last spike is reported and not judged.
+- id: fig8-up-down-ramps
+  statement: In 34 of the 36 models the spiking patterns over the working range are similar
+    but not identical on the up and down ramps, suggesting several stable attractors that
+    differ slightly in their spiking patterns.
+  source: Results, Hysteresis and multistability, paragraph 1; Figure 1, figure supplement 2E
+  quote: In most models (34 of 36), the spiking patterns over the working temperature range are
+    similar across the up and down ramps but are not identical
+  expected:
+  - quantity: models with similar but not identical patterns on the two ramps
+    value: 34
+    tolerance: 3
+  criterion: All 36 models on the ramp of fig8a-hysteresis-quiescence, comparing the up and down
+    ramps over 10 to 25 degrees C; the ramp of Figure 1, figure supplement 2 (10 to 25 degrees
+    C over 60 min and back) is the alternative reading, as the supplement's legend is not in
+    the text read. Per cell and per 1 degree window, the mean duty cycle, burst frequency and
+    largest ISI on each ramp. Similar is all of these within 10% between the ramps in every
+    window and the network triphasic on both (a standard bound); not identical is spike times
+    not coinciding. The tolerance is 10% of the reported 34, rounded down. Reproduced when the count of similar
+    models is within tolerance under one ramp reading.
+- id: fig8b-pathological-attractor
+  statement: In a second model hysteresis is marked; at high temperatures it produces ISIs as
+    long as about 1 s while spiking at all temperatures, and its PD cell passes from regular
+    bursting into a pathological state that persists on the down ramp until about 20 degrees C.
+  source: Figure 8B; Results, Hysteresis and multistability, paragraph 2
+  quote: At high temperatures (times between 25 and 35 min), this model produces ISI values as
+    long as » 1 s and remains spiking at all temperatures. The spiking patterns differ
+    noticeably on the up and down ramps. The spiking pattern of the PD cell changes from
+    regular bursting to a pathological state that remains stable until the model is ramped
+    back down to » 20 ̊C.
+  expected:
+  - quantity: temperature on the down ramp at which PD returns to regular bursting, model H5AIZR
+    value: 20
+    tolerance: 2
+    unit: degrees C
+  - quantity: longest PD ISI between 25 and 35 min
+    value: 1
+    tolerance: 0.1
+    unit: s
+  criterion: Model H5AIZR on the ramp of fig8a-hysteresis-quiescence (panel order as taken
+    there; OSHNMD is the variant). PD is classified in successive 1 min windows (a standard
+    choice) with the Methods' scheme. Reproduced when PD spikes in every
+    window, is regular bursting early on the up ramp, leaves regular bursting on the up ramp
+    and returns to it on the down ramp at a temperature within tolerance, and the longest ISI
+    between 25 and 35 min is within tolerance. Partially reproduced when the hysteresis holds
+    and one of the two numbers is out of tolerance.
+- id: fig9a-remove-a-current
+  statement: Removing the A current at 10 degrees C makes the network irregular, while the same
+    deletion at 25 degrees C leaves a nearly normal triphasic rhythm except for irregular PY
+    bursting.
+  source: Figure 9A; Results, Response to perturbations at different temperatures, paragraph 2
+  quote: Figure 9A (top) shows that removing the A current at 10 ̊C has catastrophic
+    consequences for the network activity which becomes irregular. When the same perturbation
+    is performed at 25 ̊C (bottom), the triphasic rhythm is almost normal except for the
+    irregular bursting of PY.
+  criterion: Model WWZ3CN (Methods; the legend's "same model as in Figure 4" agrees). The
+    timing is open. The Results say 20 s of control and then 20 s with IA removed; the legend
+    says the A current is removed at 4 s. Both are run, and the classes are taken over the
+    period after removal (dropping its first 2 s, a standard choice). Reproduced when, under
+    one timing, at 10 degrees C the network is not triphasic and at least one cell is
+    irregular bursting or irregular spiking, and at 25 degrees C PD and LP are regular
+    bursting and PY is irregular bursting. Partially reproduced when the 10 degree part holds
+    and at 25 degrees C PY is irregular but another cell is not regular.
+- id: fig9b-remove-kca-current
+  statement: In another model, removing the KCa current at 10 degrees C slows the rhythm but
+    keeps it triphasic, while the same deletion at 25 degrees C silences the network, so KCa is
+    needed at 25 degrees C but not at 10 degrees C.
+  source: Figure 9B; Results, Response to perturbations at different temperatures, paragraph 2
+  quote: This model displayed normal ... triphasic behavior at 10 ̊C (top) and when the KCa
+    current was removed its activity slowed but the triphasic rhythm was maintained. The same
+    perturbation at 25 ̊C results in quiescence.
+  criterion: The model is open. The Methods name FGFKQS for Figure 9 and the legend says "a
+    different model (Figure 7A)", which the Methods name J9U8SQ; both are run. Timing as in
+    fig9a-remove-a-current. Reproduced when, in one model and timing, at 10 degrees C the
+    network is triphasic before and after removal with a lower burst frequency after, and at
+    25 degrees C all three cells are quiescent after removal.
+- id: fig10a-graded-removal
+  statement: In the model of Figure 10A, reducing gNa to 75% makes LP burst irregularly and the
+    network non-triphasic at 10 degrees C but not at 25 degrees C; removing KCa has little
+    effect at 10 degrees C but complete removal makes it quiescent at 25 degrees C; complete
+    removal of CaT or CaS gives different non-triphasic activity at each temperature.
+  source: Figure 10A; Results, Response to perturbations at different temperatures, paragraphs
+    3 and 4
+  quote: At 10 ̊C, when gNa ! 75%gNa the LP cell bursts irregularly and the activity of the
+    network is not triphasic, but if the same perturbation is performed at 25 ̊C the activity
+    remains triphasic. Removing the KCa current in this model has little effect at 10 ̊C as the
+    activity remains triphasic. However, this current plays an important role at 25 ̊C and the
+    model becomes quiescent upon complete removal of IKCa.
+  criterion: Model 4?6W66 at 10 and 25 degrees C, each of gNa, gKCa, gCaT and gCaS set to 100,
+    75, 50, 25 and 0% in all three cells (the five steps and the 5 by 4 grids of the Results;
+    that a reduction applies to all cells is read from the shared current types and is
+    assumed). Each condition simulated and classified with the Methods' scheme; the length
+    of the simulation is open, and the 20 s with the first 10 s dropped of the Methods'
+    scoring is used. Reproduced when the five stated cells of the grids match (Na 75% at 10
+    degrees C, LP irregular bursting and NET not triphasic; Na 75% at 25 degrees C, NET
+    triphasic; KCa at every step, 0% included, at 10 degrees C, NET triphasic; KCa 0% at 25
+    degrees C, all
+    cells quiescent; CaT and CaS 0%, NET not triphasic at both temperatures with some cell
+    class differing between them). Partially reproduced when three or four match. The full
+    grids are reported.
+- id: fig10b-complete-removal-differs
+  statement: Across the 36 models, the response to complete removal of a current differs
+    between 10 and 25 degrees C in about half of the models for most currents; most models
+    respond differently for CaT, while removing H gives the same state (quiescence) at both
+    temperatures.
+  source: Figure 10B; Results, Response to perturbations at different temperatures, paragraph 4
+  quote: In most cases, about half of the models respond to complete removal in different ways
+    at each temperature. The exceptions are the CaT current for which most models respond in
+    different ways, and the H current where complete removal results in equivalent states
+    (quiescence in this case) at both temperatures.
+  depends_on:
+  - fig10a-graded-removal
+  criterion: All 36 models, each current type set to 0% at 10 and at 25 degrees C, classified
+    as in fig10a-graded-removal. The pie-chart counts were not read (no figure could be
+    rendered). Which currents are included is open (the eight intrinsic currents, or the
+    seven without leak), and so is what counts as the same response. The readings are (a)
+    all four classes (PD, LP, PY, NET) equal at the two temperatures; (b) the NET class
+    equal. "About half" is a fraction of models responding differently from 0.3 to 0.7 and
+    "most" above 0.5 (standard bounds). Reproduced when, under one reading, CaT has the
+    largest fraction responding differently and above 0.5, H has all or nearly all models
+    (at least 33, a standard choice) the same and quiescent at both temperatures, and at least half of the
+    other currents fall within 0.3 to 0.7. Partially reproduced when the CaT and H parts hold
+    and fewer of the other currents do.
+checks:
+- date: 2026-11-25
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - deposit-models, source of the Q10 ranges corrected to Finding parameters paragraph 5 (the paragraph beginning "Temperature robustness is achieved"); the 30 and 18 model counts marked as a standard choice, as the paper gives none.
+  - fig1c-frequency-q10-phase-constant, reading (ii) no longer attributed to the Methods; their 0.2 bound is a burst-to-burst stability test on std over mean of duty cycle within one temperature, so the 20% bound is now a standard choice.
+  - all-models-compensated, statement adds "multiple sets of" Q10 values, as the quote says; source corrected to Finding parameters paragraph 6; the 34 model bound no longer justified by the 2 in 40 failures (those were screened out before the 36 were kept) and marked as a standard choice.
+  - intermediate-temperature-failures, source corrected to Finding parameters paragraph 6 (the paragraph beginning "Because we only target").
+  - figs3-duty-cycle-variable-across-models, Discussion paragraph 9 is the hysteresis paragraph; the source now names the paragraph beginning "One of the most significant results", where the quote is.
+  - fig3-current-amplitudes, source names the passage that holds both models (the text runs as one passage, paragraph 3 is the currentscape paragraph); the criterion notes that the Methods do not say which listed model is panel A and adds the swapped assignment as a variant.
+  - fig4-currentscapes-reorganize, currentscapes-dominant-currents, fig5-a-to-kca-tradeoff, fig6-crash-different-mechanisms, Results sources given by the paragraph's opening words, as the numbering was off by one for fig4 and inconsistent across claims.
+  - currentscapes-dominant-currents, 10 degrees C described as the reference temperature (the control temperatures of Equation 7 are 15, 20, 25 and 35); the inward IH and outward ISyn split marked as a reading, as the paper does not say on which side each dominates, with a variant.
+  - fig5-a-to-kca-tradeoff, statement said IA dominates at 10 degrees C; the Discussion says IA makes a large contribution at 10 degrees C and IKCa becomes dominant at 25 degrees C, so the statement now says that; Discussion source named by its opening words.
+  - fig6-crash-different-mechanisms, quiescence corrected to the Methods' class (no more than one ISI), not "no spikes"; the dominant-current comparison marked as a reading.
+  - fig7-high-temperature-slow-timescales, source corrected to paragraph 1 (the section's first paragraph runs across the page break); FGFKQS added as a variant for panel A, as the legends of Figures 5 and 9B tie Figure 7A to the model the Methods name FGFKQS.
+  - fig8a-hysteresis-quiescence and fig8b-pathological-attractor, the Methods list OSHNMD, H5AIZR for Figure 8 without a panel order; the order is now stated as assumed, with the swap as a variant; the 1 min windows of fig8b marked as a standard choice.
+  - fig8-up-down-ramps, the tolerance reason said 10% of 36 rounded, which gives 4; the tolerance of 3 is 10% of the reported 34, rounded down, and the reason now says so.
+  - fig10a-graded-removal, the Results say removing KCa at 10 degrees C leaves the activity triphasic, which includes complete removal; the criterion tested only 25 to 100% and now includes 0%.
+  - fig10b-complete-removal-differs, the 33 model bound for H marked as a standard choice.
+  - fig6s1-crash-mechanisms added, as the Results state a finding on Figure 6, figure supplement 1 (eight more models crash by different mechanisms) that had no claim; its temperatures and measure are open and named as such.
+  - Open, the second character of model 4?6W66 (Figures 1, 2 supplement 1, 3, 10) is garbled in the extracted text and no PDF tool was available here to read it; the author must match it in the deposit.
+  - Open, the figure supplements' legends are not in paper/, so the temperatures and windows of figs2, figs3, fig2s1 and fig6s1 rest on the main text; the Figure 10B pie-chart counts are not recorded.
+  - Open, the Results give the LP and PY target duty cycle as 20% and the Methods as 25%; deposit-models keeps 25% as main and 20% as a variant, as the protocol puts the Methods first.

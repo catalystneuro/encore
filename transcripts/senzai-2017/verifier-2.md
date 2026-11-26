@@ -1,4 +1,4 @@
-# 000003 · verifier-2 · run 38858016767
+# senzai-2017 · verifier-2 · run 45318860893
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
@@ -9,424 +9,500 @@ cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
 ```
 
 ```
-total 760
-drwxr-xr-x 5 runner runner    4096 Oct 16 06:00 .
-drwxr-xr-x 7 runner runner    4096 Oct 16 06:00 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 05:16 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 05:16 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 16 06:00 .claude
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env.development
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env.local
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env.production
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env.test
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .env.test.local
-drwx------ 2 runner runner    4096 Oct 16 06:00 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 05:16 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 05:16 .github
--rw-r--r-- 1 runner runner       0 Oct 16 06:00 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 05:16 .idea
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 16 05:16 .mcp.json
-[... 87 more lines not kept]
+total 388
+drwxr-xr-x 6 runner runner    4096 Nov 24 03:59 .
+drwxr-xr-x 8 runner runner    4096 Nov 24 03:59 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 03:20 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 03:20 .bashrc
+drwxr-xr-x 5 runner runner    4096 Nov 24 03:59 .claude
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env.development
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env.development.local
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env.local
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env.production
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env.production.local
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env.test
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .env.test.local
+drwx------ 2 runner runner    4096 Nov 24 03:59 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 03:20 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 03:20 .github
+-rw-r--r-- 1 runner runner       0 Nov 24 03:59 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 03:20 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Nov 24 03:20 .mcp.json
+[... 96 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat README.md; cat 000003-senzai-2017-01.yaml
+cd  head -50 senzai-2017.yaml; echo ----; head -30 senzai-2017-02.yaml; cat README.md
+```
+
+```
+# Claims for Senzai & Buzsaki (2017) on dandiset 000003.
+# Source: the accepted author manuscript in PubMed Central (PMC5293146), full text, read from its
+# Results, figure legends and STAR Methods. The version of record is not open access. The
+# supplementary figures (S1 to S7) were not available; claims citing them rest on the main text.
+#
+# What the author had seen when these criteria were written: the file list, the contents of every
+# file, the data check, and exploratory runs of the helper module on all files, made while
+# writing and debugging it. Those runs printed, for each type of unit, the counts, the median
+# rates by state, burst indices and trough-to-peak latencies; the open-field remapping index and
+# the fraction of remapping place cells; the T-maze place field counts; the optogenetic
+# suppression counts with the 20 ms pre-pulse baseline; the DS2 peak ratios and times; the theta
+# and gamma modulation and the rate correlations; and the number of GC-MC pairs the automatic
+# CCG test detects. Nothing was tuned on these results: every threshold below is the paper's,
+# or a choice stated in the helper module's docstring, fixed when the function was written. The
+# one change made after a run was to the T-maze run segment, whose first version took the
+# waiting area at the ends of the side arms for the reward port. Results not seen before the
+# criteria: burst facilitation, state-dependent transmission, synchrony, splitter cells,
+# population-vector remapping, the central-arm activity, the T-maze peak rate and information,
+# and the inheritance of place fields. The criteria of mc-deeper and gc-mc-classification were
+# written after the rest, once the shank of each unit was found in 17 files, and before their
+[... 112 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 30,400p senzai-2017-02.yaml
+```
+
+```
+- 503
+  notes: The cell_type labels give 583 granule cells and 503 mossy cells in the 15 mice of the
+    paper, each with its own global_id (no repeats), within 10% of 586 and 500. With YutaMouse57,
+    which is not in the paper, the labels give 609 and 568. Whether the two files of a day hold the
+    same neurons is not settled. In YutaMouse51 on 16 May, 0.56 of the 9 GC, MC or CA3 units of the
+    'b' file have a same-type unit on the same shank in the other file of the day with a waveform
+    correlation above 0.95, against none of 9 on another day. In the other six pairs at most 0.38
+    exceed 0.95, and in two of them a file of another day matches as often or more often (YutaMouse54
+    'b' 1 July 0.18 against 0.29; YutaMouse55 'b' 7 September 0.38 and 0.38).
+  deviations:
+  - The labels are the authors' (the files' cell_type, from their unit summary); the second-stage
+    k-means is repeated separately under gc-mc-classification.
+- claim: first-stage-labels
+  outcome: partially_reproduced
+  notebook: reproduce_senzai_2017.ipynb
+  output: claim:first-stage-labels
+  notes: Under both thresholds 98.5% of the 1086 GC and MC are at or above 0.425 ms with a burst
+    index above the threshold, and 90.6% (1.2) or 92.6% (1.8) of the 256 dentate wide-waveform
+    interneurons with a waveform are at or above 0.425 ms with a burst index at or below it. Of 247
+    dentate narrow-waveform interneurons, 222 (89.9%) are below 0.425 ms, just short of 90%. Two of
+[... 351 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 400,800p senzai-2017-02.yaml
+```
+
+```
+output: claim:gc-mc-classification
+  notes: K-means on the four standardised features of 376 units (136 GC, 240 MC), with the
+    unfiltered wide-band waveform at the site as the criterion asks, agrees with the labels for
+    94.4%, under all five seeds. Without the waveform components 89.9%, so the waveform term carries
+    the agreement over 90%; the DS2 amplitude alone 85.1%, the waveform components alone 85.4%, the
+    rate ratio alone 68.9%. With the 300 Hz high-passed wide-band waveform (the first run's main
+    result) 94.9%. The variant with the stored waveforms (first 0.4 ms after the trough, as the
+    stored 1.6 ms often ends sooner) and the table site on all files gives 92.7% of 1086 units.
+- claim: gc-mc-distance
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The distance needs the vertical position of each recording site. The electrodes table holds
+    channel_id, group_name, location, hilus_reference and shank_electrode_number (a channel's place
+    in its shank's list in the lab's .xml file) and no coordinate, and the files do not say which
+    list position is which depth. The DS2 profile, which reverses at the granule layer, does not
+    show the lists to be in depth order. On the 261 shanks where the DS2 reverses, its amplitude
+    rises with the list place on some (Spearman above 0.8 on 0.46) and falls on others (below 0 on
+    0.43), and the sign changes between days of one mouse (YutaMouse42 median 0.39 on 2 November,
+    -0.83 on 13 November). Read as depth at 20 um per place, the MC site lies 13 +- 49 um below its
+    GC partner's on the authors' 17 same-shank pairs (paper 59 +- 35 um), a number that cannot be
+[... 381 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 800,900p senzai-2017-02.yaml; grep -n "severity: critical" senzai-2017-02.yaml
+```
+
+```
+about: data
+  severity: minor
+  statement: The files do not say whether the two files recorded on the same day (the seven 'b'
+    files and their partners) hold the same neurons, which carry different global_ids. In
+    YutaMouse51 on 16 May, 5 of the 9 GC, MC or CA3 units of the 'b' file (0.56) have a same-type
+    unit on the same shank in the other file of the day whose mean waveform correlates above 0.95
+    with theirs, against none of 9 in a file of another day. In the other six pairs at most 0.38 of
+    the units do, no more often than with another day, so the data do not settle it. If the same
+    neurons are in both files, a few units are counted twice.
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'E'
+import json
+nb=json.load(open('reproduce_senzai_2017.ipynb'))
+for i,c in enumerate(nb['cells']):
+    src=''.join(c['source'])
+    out=''
+    for o in c.get('outputs',[]):
+        if 'text' in o: out+=''.join(o['text'])
+        elif 'data' in o and 'text/plain' in o['data']: out+=''.join(o['data']['text/plain'])
+    print(f"=== cell {i} [{c['cell_type']}] ===")
+    if c['cell_type']=='markdown': print(src)
+    else:
+        print(src[:300]+('...' if len(src)>300 else ''))
+        print('--- out ---'); print(out[:6000])
+E
 ```
 
 ```
 <persisted-output>
-Output too large (46.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/265796f5-fedb-492f-ba09-6abad20fa416/tool-results/b2o2lv0kl.txt
+Output too large (109.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/e1be1660-506f-4744-a445-ce1217105003/tool-results/bwe271w8u.txt
 
 Preview (first 2KB):
-# Senzai and Buzsaki (2017) from dandiset 000003
+=== cell 0 [markdown] ===
+# Reproducing Senzai & Buzsaki (2017) from DANDI:000003
 
-Tests the findings of [Senzai and Buzsaki (2017)](https://doi.org/10.1016/j.neuron.2016.12.011) on
-[DANDI:000003](https://dandiarchive.org/dandiset/000003/0.260218.2052), which holds silicon probe
-recordings of the dentate gyrus and CA3 in 16 mice over 101 recording days, with each unit labelled
-as a granule cell, mossy cell, CA3 pyramidal cell or interneuron.
+Paper. Senzai Y, Buzsaki G (2017). Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells. *Neuron* 93, 691-704. doi:10.1016/j.neuron.2016.12.011.
 
-| Claim | Outcome |
+Dataset. DANDI:000003, version 0.261122.2143 (doi:10.48324/dandi.000003/0.261122.2143). This version was asked for in the attempt's prompt; it is also the most recent published version, and the paper cites no version (its data statement names CRCNS). Every file is streamed from the archive; nothing is downloaded to disk.
+
+Text read. The claims file (`claims/senzai-2017.yaml`) was written from the accepted author manuscript in PubMed Central (PMC5293146): Results, figure legends and STAR Methods. The author of this attempt read the same text under `paper/`.
+
+What the dataset holds. 101 NWB files from 16 mice. YutaMouse57 (8 files) is not in the paper (dataset description) and is left out of every analysis. Each file has the sorted units with the authors' cell-type labels, spike times and stored waveforms (one file has none), the 1250 Hz LFP, brain states, dentate spikes, light pulses, the authors' tables of monosynaptic and zero-lag pairs (in most files), and T-maze trials and positions (42 files) or open-field positions (43 files). 17 files also hold the 20 kHz wide-band signal.
+
+Claims, and which are tested (outcomes in the Summary at the end):
+
+| Claim | Status |
 |---|---|
-| Unit counts (586 GC, 500 MC) | Partially reproduced |
-| First-stage labels follow latency and burst criteria | Partially reproduced |
-| Narrow interneurons faster than wide ones (7.97 and 2.11 Hz) | Partially reproduced |
-| GC waveforms narrower than MC | Reproduced |
-| Light suppresses 29 of 107 MC and no GC in DRD2 mice | Partially reproduced |
-| MC more active than GC in wake and NREM | Reproduced |
-| GC fire most in NREM, similarly in wake and REM | Partially reproduced |
-[... 19 more lines not kept]
+| unit-counts | tested |
+[... 18 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "README.md"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/e1be1660-506f-4744-a445-ce1217105003/tool-results/bwe271w8u.txt"
 }
 ```
 
 ```
-1	# Senzai and Buzsaki (2017) from dandiset 000003
-2	
-3	Tests the findings of [Senzai and Buzsaki (2017)](https://doi.org/10.1016/j.neuron.2016.12.011) on
-4	[DANDI:000003](https://dandiarchive.org/dandiset/000003/0.260218.2052), which holds silicon probe
-5	recordings of the dentate gyrus and CA3 in 16 mice over 101 recording days, with each unit labelled
-6	as a granule cell, mossy cell, CA3 pyramidal cell or interneuron.
+1	=== cell 0 [markdown] ===
+2	# Reproducing Senzai & Buzsaki (2017) from DANDI:000003
+3	
+4	Paper. Senzai Y, Buzsaki G (2017). Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells. *Neuron* 93, 691-704. doi:10.1016/j.neuron.2016.12.011.
+5	
+6	Dataset. DANDI:000003, version 0.261122.2143 (doi:10.48324/dandi.000003/0.261122.2143). This version was asked for in the attempt's prompt; it is also the most recent published version, and the paper cites no version (its data statement names CRCNS). Every file is streamed from the archive; nothing is downloaded to disk.
 7	
-8	| Claim | Outcome |
-9	|---|---|
-10	| Unit counts (586 GC, 500 MC) | Partially reproduced |
-11	| First-stage labels follow latency and burst criteria | Partially reproduced |
-12	| Narrow interneurons faster than wide ones (7.97 and 2.11 Hz) | Partially reproduced |
-13	| GC waveforms narrower than MC | Reproduced |
-14	| Light suppresses 29 of 107 MC and no GC in DRD2 mice | Partially reproduced |
-15	| MC more active than GC in wake and NREM | Reproduced |
-16	| GC fire most in NREM, similarly in wake and REM | Partially reproduced |
-17	| CA3 most active in wake, least in REM | Not reproduced |
-18	| GC raise their rate in NREM, MC do not | Reproduced |
-19	| GC more theta-modulated, at later phases | Reproduced |
-20	| GC more gamma-modulated, at earlier phases | Reproduced |
-[... 34 more lines not kept]
+8	Text read. The claims file (`claims/senzai-2017.yaml`) was written from the accepted author manuscript in PubMed Central (PMC5293146): Results, figure legends and STAR Methods. The author of this attempt read the same text under `paper/`.
+9	
+10	What the dataset holds. 101 NWB files from 16 mice. YutaMouse57 (8 files) is not in the paper (dataset description) and is left out of every analysis. Each file has the sorted units with the authors' cell-type labels, spike times and stored waveforms (one file has none), the 1250 Hz LFP, brain states, dentate spikes, light pulses, the authors' tables of monosynaptic and zero-lag pairs (in most files), and T-maze trials and positions (42 files) or open-field positions (43 files). 17 files also hold the 20 kHz wide-band signal.
+11	
+12	Claims, and which are tested (outcomes in the Summary at the end):
+13	
+14	| Claim | Status |
+15	|---|---|
+16	| unit-counts | tested |
+17	| first-stage-labels | tested |
+18	| interneuron-rates | tested |
+19	| gc-narrower-waveform | tested |
+20	| optotag-drd2 | tested |
+[... 698 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "000003-senzai-2017-01.yaml"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/e1be1660-506f-4744-a445-ce1217105003/tool-results/bwe271w8u.txt",
+ "offset": 719,
+ "limit": 500
 }
 ```
 
 ```
-1	schema_version: 1
-2	id: 000003-senzai-2017-01
-3	dandiset: '000003'
-4	dandiset_version: 0.260218.2052
-5	paper: doi:10.1016/j.neuron.2016.12.011
-6	date: 2026-10-16
-7	entry: 000003-senzai-2017
-8	provenance:
-9	  kind: agent
-10	  accountable:
-11	    name: CatalystNeuro
-12	  agent:
-13	    harness: Claude Code (GitHub Actions)
-14	    model: claude-opus-5-5
-15	    protocol: pilot-7
-16	outcomes:
-17	- claim: unit-counts
-18	  outcome: partially_reproduced
-19	  notebook: reproduce_senzai_2017.ipynb
-20	  output: claim:unit-counts
-[... 693 more lines not kept]
+719	
+720	> Slow-firing neurons are more strongly coupled to gamma than fast-firing ones (GC r = -0.176, MC r = -0.184, P < 0.0001 for each).
+721	
+722	Rate is spikes over the recording span. Readings (a) all GC or MC with a gamma MRL, (b) only the units passing Rayleigh P < 0.05 and kappa > 0.1.
+723	=== cell 38 [code] ===
+724	for rd, sel in [("a all", lambda x: x), ("b passing", lambda x: x[(x.gamma_p < 0.05) & (x.gamma_kappa > 0.1)])]:
+725	    for t in ["GC", "MC"]:
+726	        x = sel(U[(U.type == t) & U.gamma_mrl.notna()])
+727	        r, p = stats.pearsonr(x.rate, x.gamma_mrl)
+728	        print(f"reading {rd:10s} {t}: n={len(x)}, Pea...
+729	--- out ---
+730	reading a all      GC: n=566, Pearson r = -0.234, P = 1.69e-08
+731	reading a all      MC: n=499, Pearson r = -0.119, P = 0.00758
+732	reading b passing  GC: n=327, Pearson r = -0.413, P = 6.69e-15
+733	reading b passing  MC: n=419, Pearson r = -0.182, P = 0.000187
+734	
+735	variant, Spearman (reading a): GC rho = -0.272, MC rho = -0.138
+736	gamma spike counts used per unit: median GC 58.0 , MC 447.0
+737	
+738	count-matched (50 spikes): units GC 308 , MC 453
+[... 480 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/e1be1660-506f-4744-a445-ce1217105003/tool-results/bwe271w8u.txt",
+ "offset": 1219,
+ "limit": 450
+}
+```
+
+```
+1219	=== cell 68 [code] ===
+1220	for t in ["GC", "MC", "CA3"]:
+1221	    M = np.vstack(T[T.type == t]["map"].values)
+1222	    frac = np.nansum(M > 1, axis=0) / np.sum(np.isfinite(M), axis=0)
+1223	    cen, side = frac[:S.N_CEN], frac[S.N_CEN:]
+1224	    cen, side = cen[np.isfinite(cen)], side[np.isfinite(side)]
+1225	    print(f"{t}: units {len(M)}; median fra...
+1226	--- out ---
+1227	GC: units 225; median fraction active central 0.018 (35 bins), side 0.022 (80 bins); KW P = 0.41
+1228	     YutaMouse33: n=4, central 0.000, side 0.000
+1229	     YutaMouse39: n=34, central 0.000, side 0.000
+1230	     YutaMouse41: n=127, central 0.024, side 0.031
+1231	     YutaMouse42: n=36, central 0.000, side 0.000
+1232	     YutaMouse45: n=24, central 0.000, side 0.000
+1233	MC: units 238; median fraction active central 0.328 (35 bins), side 0.239 (80 bins); KW P = 5.4e-10
+1234	     YutaMouse33: n=17, central 0.588, side 0.529
+1235	     YutaMouse37: n=2, central 0.000, side 0.000
+1236	     YutaMouse39: n=28, central 0.286, side 0.179
+1237	     YutaMouse41: n=85, central 0.353, side 0.224
+1238	     YutaMouse42: n=99, central 0.283, side 0.278
+[... 430 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF'
+cd  python3 - <<'E'
 import json
 nb=json.load(open('reproduce_senzai_2017.ipynb'))
-out=[]
-for i,c in enumerate(nb['cells']):
-    src=''.join(c['source'])
-    out.append(f"\n===== CELL {i} [{c['cell_type']}] =====\n{src}")
-    if c['cell_type']=='code':
-        for o in c.get('outputs',[]):
-            if 'text' in o: out.append("--- OUT ---\n"+''.join(o['text']))
-            elif 'data' in o:
-                d=o['data']
-                if 'text/plain' in d and 'image/png' not in d: out.append("--- OUT ---\n"+''.join(d['text/plain']))
-                elif 'image/png' in d: out.append("--- [image] ---")
-            elif o.get('output_type')=='error': out.append("--- ERROR ---\n"+o['ename']+o['evalue'])
-open('/tmp/claude/nb.txt','w').write('\n'.join(out)) if False else None
-import os
-p=os.environ.get('TMPDIR','/tmp/claude')+'/nb.txt'
-open(p,'w').write('\n'.join(out)); print(p, len(nb['cells']))
-EOF
-wc -l $TMPDIR/nb.txt
+for i in [23,58,100]:
+    c=nb['cells'][i]
+    out=''
+    for o in c.get('outputs',[]):
+        if 'text' in o: out+=''.join(o['text'])
+        elif 'data' in o and 'text/plain' in o['data']: out+=''.join(o['data']['text/plain'])
+    print(f"=== cell {i}"); print(out[5500:])
+E
 ```
 
 ```
-/tmp/claude-1001/nb.txt 115
-2638 /tmp/claude-1001/nb.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "limit": 700
-}
-```
-
-```
-1	
-2	===== CELL 0 [markdown] =====
-3	# Reproducing Senzai & Buzsaki (2017) from dandiset 000003
-4	
-5	**Paper.** Senzai Y, Buzsaki G (2017). Physiological properties and behavioral correlates of
-6	hippocampal granule cells and mossy cells. *Neuron* 93:691-704.
-7	[doi:10.1016/j.neuron.2016.12.011](https://doi.org/10.1016/j.neuron.2016.12.011). This attempt used
-8	the full text of the accepted author manuscript in PubMed Central (PMC5293146); the version of
-9	record is not open access, and the supplementary figures were not available.
-10	
-11	**Dandiset.** [DANDI:000003](https://dandiarchive.org/dandiset/000003/0.260218.2052), version
-12	0.260218.2052. The paper cites no DANDI version (it points to CRCNS). This is the most recent of
-13	four published versions (0.210812.1448, 0.230629.1955, 0.250624.0409, 0.260218.2052). All four hold
-14	the same 101 assets with the same paths, sizes and content checksums, and differ only in metadata (contributors,
-15	keywords, schema version), none of which the analysis uses; the data check prints the comparison.
-16	
-17	**What the dandiset holds.** One NWB file per recording day (101 files, 16 mice): sorted units with
-18	a cell type label, spike times and per-spike waveforms; sleep and wake periods; the LFP; type 2
-19	dentate spike (DS2) events; light pulse times; and, on days with behaviour, positions on the
-20	circular T-maze and in the open fields, with the T-maze trials. The raw wide-band signal is in 17
-[... 680 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 700,
- "limit": 700
-}
-```
-
-```
-700	
-701	===== CELL 22 [markdown] =====
-702	In the 17 files that give each unit's shank, the electrodes table numbers the sites of each shank
-703	0 to 7 and gives no coordinates. The LFP and the wide-band signal have one column per electrode
-704	row, in table order, and their columns hold the same electrodes: the decimated wide-band signal
-705	of each column correlates best with the LFP column of the same index (printed above). The table's map does not fit the data. If the site numbers
-706	followed depth, the DS2 amplitude would change smoothly along them and cross zero once; it crosses
-707	more than once on 43 of the 64 shanks where it crosses at all. A unit's spike is largest in the
-708	wide-band signal on the shank the units table gives for only 45% of units, and on the table's own
-709	site for 9%. The stored waveforms are about 5 times larger than the same spikes in the wide-band
-710	signal (median 421 against 81 uV). The analysis therefore reads each unit's site from the
-711	wide-band signal, where the spike is largest, and takes the DS2 amplitude at that LFP column; the
-712	table's site is shown as a variant. The theta-reference channel has a positive DS2 in every one of
-713	these files, so it lies below the DS2 reversal.
-714	
-715	===== CELL 23 [markdown] =====
-716	## Unit measures
-717	
-718	Rates by state, burst index, trough-to-peak latency, phase statistics and the DS2 response of every
-719	kept unit, used by several claims below.
-[... 680 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1399,
- "limit": 650
-}
-```
-
-```
-1399	**Result: reproduced.** Of the modulated units (345 GC, 475 MC), GC have the higher gamma MRL
-1400	(0.319 against 0.212, Kruskal-Wallis P = 4.8e-43; 0.219 against 0.166, P = 4.1e-18 after
-1401	subtracting the uniform-phase expectation) and fire earlier in the gamma cycle (circular mean
-1402	-20.2 against 1.7 degrees; P = 1.2e-23 with phases on (-pi, pi], P = 0.18 on [0, 2 pi)).
-1403	
-1404	===== CELL 58 [markdown] =====
-1405	## gamma-rate-correlation
-1406	
-1407	> Slow-firing neurons are more strongly coupled to gamma than fast-firing ones (GC r = -0.176,
-1408	> MC r = -0.184, P < 0.0001 for each).
-1409	
-1410	===== CELL 59 [code] =====
-1411	for reading, sel in (("(a) all units with an MRL", R.gamma_mrl.notna()), ("(b) modulated units", R.gamma_sig)):
-1412	    for ty in ("GC", "MC"):
-1413	        x = R[sel & (R.type == ty)]
-1414	        r, p = stats.pearsonr(x.rate_overall, x.gamma_mrl)
-1415	        print(f"{reading}, {ty}: r = {r:.3f}, P = {p:.2g}, n = {len(x)}")
-1416	print("Paper: GC -0.176 (tolerance -0.194 to -0.158), MC -0.184 (-0.202 to -0.166).")
-1417	for ty in ("GC", "MC"):
-1418	    x = R[R.gamma_mrl.notna() & (R.type == ty)]
-[... 630 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 2048,
- "limit": 600
-}
-```
-
-```
-2048	for a, b in (("GC", "MC"), ("GC", "CA3"), ("MC", "CA3")):
-2049	    t2 = tab.loc[[a, b]].reindex(columns=[False, True], fill_value=0)
-2050	    print(f"Fisher's exact test {a} against {b}: P = {stats.fisher_exact(t2.values)[1]:.2g}")
-2051	print("Expected GC splitters under equal fractions: %.2f" % chi[3][list(tab.index).index("GC")][-1])
-2052	--- OUT ---
-2053	Units with a central-arm field, and splitters among them:
-2054	splitter  False  True 
-2055	type                  
-2056	CA3         137      4
-2057	GC           17      0
-2058	MC          175      4
-2059	Fractions: {'CA3': 0.028, 'GC': 0.0, 'MC': 0.022}
-2060	Chi-square across the three types: chi2 = 0.56, P = 0.76
-2061	Fisher's exact test GC against MC: P = 1
-2062	Fisher's exact test GC against CA3: P = 1
-2063	Fisher's exact test MC against CA3: P = 0.73
-2064	Expected GC splitters under equal fractions: 0.40
-2065	
-2066	
-2067	===== CELL 87 [markdown] =====
-[... 572 more lines not kept]
+=== cell 23
+04.1 0.68 0.62 0.61 0.58 0.59 0.43 0.63 0.67 0.64 0.52 0.65 0.57 0.72  0.61
+YutaMouse54-160702#43           False                 71.6 0.82 0.66 0.50 0.74 0.48 0.66 0.61 0.71 0.52 0.48 0.48 0.60 0.64  0.61
+YutaMouse54-160702#59           False                 41.2 0.90 0.97 0.78 0.63 0.63 0.56 0.46 0.44 0.58 0.56 0.61 0.36 0.63  0.62
+YutaMouse56-160911#65            True                 74.6 0.59 0.56 0.71 0.64 0.70 0.48 0.52 0.74 0.63 0.58 0.63 0.64 0.60  0.62
+YutaMouse56-160912#59            True                 58.0 0.64 0.66 0.64 0.53 0.52 0.55 0.62 0.67 0.59 0.72 0.47 0.79 0.60  0.62
+YutaMouse54-160702#60           False                 90.0 0.66 0.74 0.86 0.69 0.63 0.67 0.58 0.49 0.57 0.56 0.62 0.62 0.53  0.63
+YutaMouse54-160702#64            True                 91.6 0.76 0.74 0.63 0.71 0.56 0.50 0.66 0.48 0.68 0.50 0.69 0.64 0.59  0.63
+YutaMouse54b160701#44           False                 22.4 0.76 0.98 0.89 0.45 0.58 0.53 0.45 0.40 0.62 0.67 0.31 0.94 0.62  0.63
+ YutaMouse54-160630#7            True                 82.8 0.71 0.53 0.62 0.62 0.75 0.57 0.75 0.68 0.65 0.52 0.59 0.57 0.60  0.63
+YutaMouse56-160912#63           False                 86.6 0.87 0.76 0.65 0.73 0.67 0.68 0.69 0.57 0.32 0.62 0.53 0.61 0.57  0.64
+YutaMouse56-160912#34           False                  9.4 0.63 0.63 0.42 1.06 0.74 0.53 0.53 0.63 0.95 0.85 0.42 0.53 0.42  0.64
+YutaMouse56-160913#22           False                 15.2 0.79 0.92 1.39 0.53 0.40 0.59 0.26 0.86 0.66 0.40 0.46 0.53 0.53  0.64
+YutaMouse54-160701#30           False                 77.7 0.86 0.75 0.86 0.73 0.69 0.55 0.66 0.50 0.59 0.62 0.53 0.58 0.45  0.64
+YutaMouse54b160702#64           False                 61.7 0.66 0.88 0.66 0.60 0.58 0.70 0.49 0.81 0.53 0.58 0.70 0.50 0.58  0.64
+YutaMouse56-160913#25            True                 96.0 0.68 0.67 0.68 0.74 0.66 0.70 0.47 0.56 0.75 0.71 0.52 0.44 0.77  0.64
+YutaMouse54-160702#65           False                153.7 0.75 0.63 0.83 0.64 0.64 0.54 0.6
+[... 129 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "^- id\|^  - id\|id:" 10.1016-j.neuron.2016.12.011.yaml | head -50; grep -c "outcome:" 000003-senzai-2017-01.yaml
+cd  grep -n "^- id:\|^  id:\|criterion\|seed" senzai-2017.yaml | head -120
 ```
 
 ```
-53:- id: unit-counts
-66:- id: first-stage-labels
-79:- id: interneuron-rates
-97:- id: gc-narrower-waveform
-103:- id: optotag-drd2
-118:- id: mc-more-active
-125:- id: gc-nrem-highest
-133:- id: ca3-wake-highest
-139:- id: nrem-wake-ratio
-147:- id: theta-modulation
-158:- id: gamma-modulation
-164:- id: gamma-rate-correlation
-179:- id: ds2-recruitment
-186:- id: monosyn-gc-to-mc
-200:- id: burst-facilitation
-210:- id: state-transmission
-219:- id: zero-lag-synchrony
-240:- id: tmaze-central-active
-249:- id: tmaze-multiple-fields
-268:- id: tmaze-peak-info
-[... 12 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "10.1016-j.neuron.2016.12.011.yaml"
-}
-```
-
-```
-1	# Claims for Senzai & Buzsaki (2017) on dandiset 000003.
-2	# Source: the accepted author manuscript in PubMed Central (PMC5293146), full text, read from its
-3	# Results, figure legends and STAR Methods. The version of record is not open access. The
-4	# supplementary figures (S1 to S7) were not available; claims citing them rest on the main text.
-5	#
-6	# What the author had seen when these criteria were written: the file list, the contents of every
-7	# file, the data check, and exploratory runs of the helper module on all files, made while
-8	# writing and debugging it. Those runs printed, for each type of unit, the counts, the median
-9	# rates by state, burst indices and trough-to-peak latencies; the open-field remapping index and
-10	# the fraction of remapping place cells; the T-maze place field counts; the optogenetic
-11	# suppression counts with the 20 ms pre-pulse baseline; the DS2 peak ratios and times; the theta
-12	# and gamma modulation and the rate correlations; and the number of GC-MC pairs the automatic
-13	# CCG test detects. Nothing was tuned on these results: every threshold below is the paper's,
-14	# or a choice stated in the helper module's docstring, fixed when the function was written. The
-15	# one change made after a run was to the T-maze run segment, whose first version took the
-16	# waiting area at the ends of the side arms for the reward port. Results not seen before the
-17	# criteria: burst facilitation, state-dependent transmission, synchrony, splitter cells,
-18	# population-vector remapping, the central-arm activity, the T-maze peak rate and information,
-19	# and the inheritance of place fields. The criteria of mc-deeper and gc-mc-classification were
-20	# written after the rest, once the shank of each unit was found in 17 files, and before their
-[... 363 more lines not kept]
+54:  id: "000003"
+57:- id: unit-counts
+71:  criterion: Counted from the units' cell_type labels over all files, once per recording day.
+73:- id: first-stage-labels
+81:  criterion: Trough-to-peak latency from the mean of each unit's first 200 stored waveforms, on the
+89:- id: interneuron-rates
+109:  criterion: The rate is not defined in the paper; readings are (a) spikes over the span of the
+114:- id: gc-narrower-waveform
+119:  criterion: Trough-to-peak latency as in first-stage-labels. Reproduced when the GC median is
+122:- id: optotag-drd2
+135:  criterion: Units of DRD2-Cre::Ai35 sessions that hold the 20 ms light pulses; suppressed when
+141:- id: mc-more-active
+155:  criterion: Per-unit rates in each state from the `states` table. Reproduced when, under one
+158:- id: gc-nrem-highest
+167:  criterion: The paper's test, a Kruskal-Wallis test across the three states followed by pairwise
+172:- id: ca3-wake-highest
+186:  criterion: As in gc-nrem-highest. Reproduced when, under one reading of wake, the wake median is
+189:- id: nrem-wake-ratio
+196:  criterion: Per-unit ratio of the NREM rate to the wake rate (units with a wake rate above 0).
+200:- id: theta-modulation
+[... 43 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  mkdir -p paper; curl -sL -A "Mozilla/5.0" "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_json/PMC5293146/unicode" -o paper/PMC5293146_bioc.json; ls -la paper; head -c 300 paper/PMC5293146_bioc.json
+cd  sed -n 73,140p senzai-2017.yaml; sed -n 332,355p senzai-2017.yaml; sed -n 492,600p senzai-2017.yaml
 ```
 
-Result: the fetched text is not kept.
+```
+- id: first-stage-labels
+  statement: Narrow-waveform interneurons have a trough-to-peak latency below 0.425 ms, and among
+    wide-waveform units the excitatory cells have a burst index above the threshold separating
+    them from wide-waveform interneurons.
+  source: Figure 1A; STAR Methods, Unit classification
+  quote: Units with trough-to-peak latency < 0.425 ms were classified as narrow-waveform putative
+    interneurons ... Wide-waveform units were grouped into putative excitatory cells (E cells, red;
+    burst index>1.8) and wide-waveform putative interneurons
+  criterion: Trough-to-peak latency from the mean of each unit's first 200 stored waveforms, on the
+    channel of largest amplitude, upsampled to 100 kHz; burst index from the spike times as the
+    Methods define it. The threshold reads 1.2 in the Methods and 1.8 in the Figure 1A legend;
+    both readings are tested. Reproduced when, under one reading, at least 90% of labelled
+    narrow-waveform units are below 0.425 ms, at least 90% of GC and MC are at or above
+    0.425 ms with a burst index above the threshold, and at least 90% of wide-waveform
+    interneurons are at or above 0.425 ms with a burst index at or below it. Partially
+    reproduced when two of the three groups meet it.
+- id: interneuron-rates
+  statement: Narrow-waveform interneurons fire faster than wide-waveform interneurons (medians
+    7.97 and 2.11 Hz; Kruskal-Wallis P < 0.00001).
+  source: Results, Identification of granule cells and mossy cells in extracellular recordings,
+[... 181 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 -c "
-import json
-d=json.load(open('paper/PMC5293146_bioc.json'))
-t='\n\n'.join(p['text'] for p in d[0]['documents'][0]['passages'])
-open('paper/senzai2017.txt','w').write(t)
-"; grep -n -i "37 \|29 of\|suppressed\|home cage\|5.5%\|reversal\|theta phase\|reference" paper/senzai2017.txt | head -40
+cd  grep -c "^- id:" senzai-2017.yaml; python3 -c "
+import yaml;d=yaml.safe_load(open('senzai-2017-02.yaml'))
+from collections import Counter
+print(len(d['outcomes']),Counter(o['outcome'] for o in d['outcomes']))
+print([o['claim'] for o in d['outcomes'] if o.get('assumed')])
+print([(i+1,f.get('severity'),f['kind']) for i,f in enumerate(d['findings'])])"; grep -n "sig_0001\|binom" senzai.py reproduce_senzai_2017.ipynb | head
+```
+
+```
+31
+31 Counter({'reproduced': 17, 'partially_reproduced': 8, 'not_reproduced': 4, 'blocked': 2})
+['tmaze-multiple-fields', 'inheritance-tmaze']
+[(1, 'major', 'metadata_insufficient'), (2, 'minor', 'metadata_error'), (3, 'minor', 'other'), (4, 'minor', 'other'), (5, 'none', 'other'), (6, 'none', 'other'), (7, None, 'methods_unavailable'), (8, None, 'methods_unavailable'), (9, None, 'methods_unavailable'), (10, None, 'methods_unavailable'), (11, 'minor', 'other')]
+reproduce_senzai_2017.ipynb:1073:      "        n  mean_i  per_bin  sig_005  sig_0001  authors  frac_mean_i  frac_per_bin  frac_sig_005  frac_sig_0001\n",
+reproduce_senzai_2017.ipynb:1222:    "# their sum (binomial, the two windows' lengths as weights), P < 0.05 and, as a stricter level, P < 0.001.\n",
+reproduce_senzai_2017.ipynb:1228:    "d[\"p_sig\"] = [stats.binomtest(int(a), int(a + b), 13 / 33, alternative=\"less\").pvalue if a + b > 0 else 1.0 for a, b in zip(n_resp, n_base)]\n",
+reproduce_senzai_2017.ipynb:1232:    "                             sig_0001=(\"sup_sig001\", \"sum\"), authors=(\"drd2_tagged\", \"sum\"))\n",
+reproduce_senzai_2017.ipynb:1233:    "for c in [\"mean_i\", \"per_bin\", \"sig_005\", \"sig_0001\"]:\n",
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o -i "[^.]*\b\(mice\)\b[^.]*(n = [0-9]*[^.]*\|n = 1[0-9] mice[^.]*" paper/*.txt | head; grep -o -i "[^.]*1[0-9] mice[^.]*" paper/*.txt | head
 ```
 
 Result: not kept, because it reads the paper's text.
 
 **Agent**
 
-**Verifier report, round 2: Senzai & Buzsaki 2017 on DANDI:000003 (0.260218.2052)**
+**Verifier report, round 2: senzai-2017-02 (Senzai & Buzsáki 2017, DANDI:000003 0.261122.2143)**
 
-The claims file has 31 claims. The attempt record has 31 outcomes: 15 reproduced, 11 partially reproduced, 3 not reproduced and 2 blocked. Cell numbers below are 0-based indices in the re-executed notebook. They are not the numbers I used in round 1. I saved the paper text (the PMC author manuscript) under `paper/`.
+Counts come from the files. The claims file has 31 claims. The attempt record has 31 outcomes: 17 reproduced, 8 partially reproduced, 4 not reproduced and 2 blocked. Two outcomes are flagged `assumed: true`: tmaze-multiple-fields and inheritance-tmaze.
 
-**1. Outcomes**
+## 1. Outcomes and assumptions
 
-I agree with all 31 stated outcomes. Each follows from the printed numbers under the criterion in the claims file. Four of the "reproduced" outcomes are weaker than the label suggests, and the record says so for each:
-- **theta-modulation:** The phase part holds on one cut of the cycle only (P = 1e-17 vs 0.82). The spike-count-corrected MRL gives P = 0.00056, which misses the paper's P < 0.0001.
-- **pv-remap:** The only valid test, a label permutation on all place cells, gives P = 0.32.
-- **inheritance-tmaze:** The overlap of 0.31 is at chance (shuffled partners give 0.38, range 0.19 to 0.62).
-- **gc-narrower-waveform:** On all files the result is mostly driven by waveform truncation. On the unfiltered wide-band signal of the 17 files, GC are still narrower (P = 0.017).
+**I agree with 28 outcomes as tested against the criteria.**
 
-**2. Sentences the outputs do not support**
+**pv-remap (reproduced, seed sensitive):** I now accept this as the literal outcome. At the claim's seed, the GC median is below the MC median at every size (n = 20: 0.2877 against 0.2902) and the Kruskal-Wallis P is below 1e-5 (cell 91). This withdraws my round-1 rating of partial. The remaining problem is in the claims file (see 3).
 
-- **Cell 66 and the record's monosyn-gc-to-mc notes:** "4 are also detected as GC to MC pairs". The MC→GC listing in cell 65 shows `GC to MC True` for 5 of the 8 pairs (33-150223 45/55; 33-150224 3/16, 3/19, 3/29; 51b160516 17/8).
-- **Cell 0:** "The raw wide-band signal is in 17 files and is not used." Cell 5 also prints "(not used)". Both are stale: cells 21, 24, 29, 35, 107 and 110 now use the wide-band signal.
-- **README line 5:** "16 mice over 101 recording days". Cell 0 likewise says "One NWB file per recording day (101 files…)". Cell 18 shows that seven dates hold two files each, so the 101 files cover 94 days.
-- **Record finding on the stored waveforms:** "cuts off the peak of most GC, MC and CA3 waveforms". Cell 29 prints that the peak is at the window's end for GC 0.43, MC 0.67 and CA3 0.78. That is a minority of GC.
-- **Record remap-positive notes:** "Place cells … CA3 143". Cell 89 prints 145 CA3 place cells, of which 143 have a remapping index.
-- **Record gc-mc-distance notes and cell 112:** "The Methods give 8 sites per shank". The Methods say 8 sites per shank on the 8-shank probes and 10 on the 6-shank probes.
-- **Record response on gc-mc-classification:** "padding median 5 of 80 samples". This omits that cell 110 prints padding for all 391 units in the stored-waveform variant.
+**gc-mc-distance and gc-backpropagation (blocked):** I agree they are blocked. I still disagree with `metadata_insufficient` as the reason (see 3, point 8). The real block is that the claims file gives no criterion for either claim.
 
-Everything else in the "Result:" cells, the Summary, the README and the record notes matches the printed outputs. I checked the Figure 1H response against the paper: the legend gives 37 units with a >20% decrease, which equals 29 MC plus 8 wide-waveform interneurons.
+**Assumptions:**
+- tmaze-multiple-fields: fields are taken from the highest local maximum down. This is stated in the deviations, reasonable, and asked of the authors.
+- inheritance-tmaze: uses the same fields. Stated and reasonable.
+- One assumption is not flagged anywhere. Each T-maze run starts at the mouse's last entry into the central arm, because the files do not mark the gate opening. Cell 63 calls this "an assumption", and it bears on tmaze-central-active, tmaze-peak-info and tmaze-splitters. None of these outcomes is flagged `assumed`, and the record gives it only as a deviation.
 
-The record states my round-1 reasons faithfully and mostly in my own words. One small omission: my B2 point that pooling CA3 interneurons also affects the optogenetics nI/wI fractions is not carried into the optotag-drd2 reason.
+## 2. Sentences the outputs do not support
 
-**3. Round-1 points**
+**Cell 102 (Summary) says:** "in the others the match is no better than with another day."
+- The record's finding 11 ("no more often than with another day") and the round-1 response under unit-counts ("the match is no better than with another day") say the same.
+- Cell 5 contradicts this for two of the six pairs:
+  - YutaMouse54b160702: 0.10 of units above 0.95 on the same day against 0.00 on another day, with median r 0.864 against 0.512.
+  - YutaMouse56b160915: no units on another day (NaN), so there is nothing to compare with.
+- Cell 12's own wording ("in two of them a file of another day matches as often or more often") is correct.
 
-Resolved:
-- **B4 (burst windows):** The 3.5 to 6 ms variant gives 58 of 65, P = 7.6e-10. Why first spikes transmit less than single spikes remains unexplained, but this does not affect the outcome.
-- **B5 (synchrony by shank):** No synchronous pair is on one shank, and spike coincidence is at most 5.8%.
-- **B6:** Fisher's exact tests have been added.
-- **B9:** The classification now uses the Methods' ratio, with agreement 0.953.
-- **B10:** Home-cage awake time has been added as a variant, and no outcome changes.
-- **B11:** The channel-map check found the electrodes table disagrees with the wide-band signal. This became a new finding, and mc-deeper now uses the wide-band site (P = 2e-40, holds in each of the 4 mice).
-- **B12:** A unit-by-unit variant has been added.
-- **B13:** Resolved by the 37 = 29 + 8 check above.
-- **Chance level for inheritance-tmaze:** Added.
+**Cell 15 and the first-stage-labels note say:** "With the waveform source changed, no variant meets the criterion in all three groups."
+- This is true only of the changed sources.
+- The stored-waveform variant on the 17 wide-band files does meet all three groups: 0.936, 0.987 and 0.906 (rows 6–11 of cell 14). The sentence quotes these numbers without saying that they pass.
+- So the shortfall of 0.899 for narrow-waveform interneurons depends on which units are included as well as on the waveform source.
 
-Partly resolved, and still bearing on a conclusion:
-- **B1 (truncated waveforms):** gc-narrower-waveform on all 101 files still rests on truncated waveforms. Only the 17 wide-band files give an untruncated test (P = 0.017 unfiltered, P = 0.4 after a 300 Hz high-pass).
-- **B2 (pooled interneurons):** interneuron-rates and first-stage-labels fall short only on the pooled interneuron labels. The 17-file subset on shanks with no CA3 unit passes (8.56 and 2.29 Hz; 94.4% below 0.425 ms). The partial outcomes may therefore reflect the labels, not the paper.
-- **B3 (uncurated monosynaptic pairs):** The pairs are still the automatic detections: 65 against the paper's 32, with 8 MC→GC pairs. These pairs underlie monosyn-gc-to-mc, the not-reproduced state-transmission (P = 0.39, or 0.27 without the first-bin pairs) and both inheritance claims. This cannot be settled without the authors' unconverted pairs.
-- **B8 (phase measures):** For theta-modulation, see section 1. The theta-reference channel was checked in 17 files only.
+**Everything else checks against the outputs.** I checked every other number in the "**Result:**" cells, the Summary, the README and the record's notes, including these per-mouse counts:
+- 13 of 14 and 8 of 14 mice (cell 26)
+- REM above wake in every GC mouse (cell 29)
+- CA3 wake highest in 3 of 6 mice (cell 29)
+- theta MRL higher for GC in 12 of 13 mice (cell 35)
+- MC above GC in 14 of 15 files for DS2 (cell 44)
 
-Still open:
-- **Electrodes-table mismatch:** The notebook does not show whether the units' `electrode_group` or the table's column map is wrong. Zero same-shank synchronous pairs points to `electrode_group` being correct, which the B2 variants and the synchrony split depend on. Neither side is shown directly.
-- **Blocked claims:** gc-mc-distance and gc-backpropagation stay blocked. That is reasonable, but no one tried recovering depth order from the wide-band columns.
-- **Stored waveforms:** Their filtering and the 5× scaling are still undescribed.
+**Round-1 reasons in the record:** all 12 points and the section-C requests appear in the `verifications` block. They are stated faithfully and close to my own words.
+
+## 3. Status of round-1 points
+
+**Resolved:**
+- **2:** the classification now uses the unfiltered wide band: 0.944 under all five seeds (cell 47).
+- **4:** per-pair table added (cell 58).
+- **6:** count-matched control added (cell 38).
+- **7:** NaN fixed, and the Freeman-Halton exact test gives P = 0.835 (cell 77).
+- **9:** the shank variant is reported.
+- **10:** the MC half is reported.
+- **12:** circular permutation test added.
+- **Section C:** filter attributes (cell 7), the hilus_reference DS2 (cell 8) and the linearisation table (cell 66) are all added.
+
+**Resolved as analysis; the conclusion now rests on the claims file:**
+- **Point 1, optotag-drd2.** The per-bin reading gives 28 of 106 MC (0.264, within tolerance), 0 GC, 7 of 62 wI and 0 of 68 nI, with 28 of the 29 tagged MC among them (cell 23). The claims file's mean-rate criterion, which ignores "suppressed significantly", looks like a misreading of the Methods. Under the per-bin reading the claim would be reproduced. The question has been put to a reader.
+- **Point 5, gc-narrower-waveform and first-stage-labels.** The files state no filter for the stored waveforms. With the unfiltered wide band, the GC < MC result depends on how the peak is defined: P = 0.175 to the largest later sample, P = 7.9e-10 to the first local peak (cell 20). The outcome is correct on the criterion but fragile, and this is disclosed.
+
+**Still open, bearing on a conclusion:**
+- **Point 3, pv-remap (a claims-file issue).**
+  - The claim's own `statistics` list a Bonferroni post-hoc test at n = 20 with P < 1e-5. The statement is "smaller … than mossy cells", which only the post-hoc test addresses.
+  - At the claim's seed, the GC-vs-MC post-hoc test gives P = 0.84 (cell 91). So this fails at seed 0 itself, not only under other seeds.
+  - The criterion leaves the post-hoc test out. Under the claim's own statistics the outcome would be partial.
+  - The P-values come from 1000 resampled draws of 24 GC place cells, so they shrink as draws are added and say little about the cells. The draw-level probability that a GC draw is below an MC draw, which does not grow with the draws, is 0.514–0.537 at n = 20.
+- **Point 8, blocked claims.**
+  - The record argues that a negative Spearman correlation on 43% of the shanks where the DS2 reverses means the shank list is not in depth order. That test cannot tell the two cases apart.
+  - Below the hilus, a shank that descends into the infrapyramidal blade sees the DS2 reverse again. The record's own example, YutaMouse42, goes from +0.39 to −0.83 over days while the probe was lowered 70 µm a day, which fits a shank moving into that blade.
+  - Cell 100's example shank shows a smooth, monotonic DS2 profile in list order (−793 to +1323 µV), while channel_id runs interleaved (33, 40, 32, 41, …). That is the pattern of a list in depth order.
+  - A smoothness test would settle it: compare adjacent-site differences in list order against random permutations.
+  - Finding 1's sentence "The DS2 profile does not settle it either" is stronger than the evidence allows.
+- **Point 11, same-day files.** The data are suggestive for YutaMouse51 on 16 May: 5 of 9 units match above 0.95, against 0 of 9 on another day. It remains unsettled, and the effect on counts is small.
+
+**Also noted, not bearing on a conclusion:**
+- **Contradictory claims file.** The header and the mc-deeper criterion say only 17 files give each unit's shank, but the record and cell 61 use a shank column present in every file.
+- **Arm assignment in the T-maze runs.** Cell 66, run 1, is a right-turn run whose first excursion goes to positive angles (+0.19 to +0.36 rad), the left-arm side. Those samples are linearised onto the right arm (65–77 cm). Short excursions into the arm not chosen are therefore binned into the chosen arm. The effect is probably small.
+- **Spike loss at light onset.** In cell 23, the +1 ms light-onset bin falls to 0.27 of baseline for all units, which looks like spike loss at onset. It lies outside the +2 to +15 ms window used, but nothing checks whether it extends into +2 ms.
+
+## 4. Critical findings
+
+No finding in the record is rated `critical`. Their ratings are:
+
+| # | Rating | Kind |
+|---|---|---|
+| 1 | major | metadata_insufficient |
+| 2–4 | minor | |
+| 5–6 | none | |
+| 7–10 | unrated | methods_unavailable |
+| 11 | minor | |
+
+Finding 11 (same neurons possibly recorded in both files of a day under different global_ids) would be `critical` if it were shown, because it would be one unit deposited as two. Cell 5 does not establish it, so `minor` is appropriate for now.
 
 ## End of run
 
-14 turns, 3 minutes, result: success.
+15 turns, 3 minutes, $1.16 at API prices, result: success.

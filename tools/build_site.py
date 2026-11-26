@@ -45,6 +45,7 @@ import urllib.parse
 import random
 import re
 import shutil
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -170,6 +171,16 @@ def finding_severity(record: dict, finding: dict, n: int) -> dict:
     return {"severity": review.get("severity"), "changes_results": review.get("severity") == "critical" and agreed,
             "checked": squash(review.get("note")) if agreed else None}
 
+
+def records_updated() -> str:
+    """The time of the checkout's latest commit, in UTC: when the registry's records last changed. The time now when
+    there is no commit to read (a copy of the files outside Git)."""
+    r = subprocess.run(["git", "log", "-1", "--format=%cI"], cwd=ROOT, capture_output=True, text=True)
+    try:
+        when = datetime.datetime.fromisoformat(r.stdout.strip())
+    except ValueError:
+        when = datetime.datetime.now(datetime.timezone.utc)
+    return when.astimezone(datetime.timezone.utc).isoformat(timespec="seconds")
 
 def load_yaml(path: Path):
     # libyaml when PyYAML has it: the site reads every claims file and record, and the pure-Python parser
@@ -400,7 +411,12 @@ def collect(executed: Path | None = None) -> dict:
             "findings": [{"kind": f["kind"], "statement": squash(f["statement"]), "found": f.get("found"),
                           "status": None, "n": n, **finding_severity(a, f, n),
                           "about": f.get("about") or ("paper" if f["kind"] in ABOUT_PAPER else "data"),
-                          "datasets": [str(x) for x in f.get("datasets") or []]}
+                          "datasets": [str(x) for x in f.get("datasets") or []],
+                          # The versions of the dataset it was seen in and the one that fixed it, and the cell
+                          # that shows it (docs/protocol.md, the attempt record); scoped in finish().
+                          "versions": [str(v) for v in f.get("versions") or []],
+                          "fixed_in": str(f["fixed_in"]) if f.get("fixed_in") else None,
+                          "notebook": f.get("notebook"), "output": f.get("output")}
                          for n, f in enumerate(a.get("findings") or [], 1)],
             "reconciliation": a.get("reconciliation"),
             "verifications": [{
@@ -438,6 +454,9 @@ def collect(executed: Path | None = None) -> dict:
         targets.append({
             "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
             "files": t["asset_count"], "status": status, "match": match,
+            # The dataset's newest published version, as its archive's target list has it: what a finding on an
+            # earlier version is held against (finding_scope).
+            "version": str(t["published_version"]) if t.get("published_version") else None,
             "paper": first["doi"], "paper_title": first["title"] or t["name"],
             "papers": [p["doi"] for p in t["papers"]],
             "n_papers": len(t["papers"]),
@@ -512,6 +531,10 @@ def collect(executed: Path | None = None) -> dict:
         "transcripts": {**transcripts, **archived},
         "transcript_dirs": transcript_dirs,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        # When the registry's records last changed: the time of the checkout's commit. The files that say when they
+        # were made give this, not the build's own time, so that a build with no new records changes no file but the
+        # few that show the live queue, and publishing uploads only what changed (site.yml).
+        "records_updated": records_updated(),
         "queue_generated": queue["generated"],
         "queue_counts": {**queue["counts"], "with_a_paper": len(targets)},   # every archive's targets
         "attempts": attempts,
@@ -552,8 +575,43 @@ def pipeline_inputs() -> dict:
             "question_items": items, "paper_checks": paper_checks, "paper_questions": paper_questions}
 
 
+DATED_VERSION = re.compile(r"0\.\d{6}\.\d{4}")   # DANDI's: they sort as text, oldest first
+
+
+def finding_scope(finding: dict, tested: str | None, latest: str | None) -> tuple[str, list[str]]:
+    """Where a finding about the data stands against its dataset's newest published version, and the versions it
+    was seen in (its own `versions`, else the one its attempt read):
+
+    - `fixed`: the attempt looked for it in a later version and it was gone (`fixed_in`);
+    - `current`: seen in the newest version, or there is no newer published version to hold it against (a draft, an
+      archive without versions, a dataset that is not a target, a target list older than the attempt);
+    - `older`: seen only in an earlier version, and not looked for in the newest.
+
+    Only a current finding counts towards what a dataset's page and the lists say is wrong with the dataset now. A
+    fixed or older one still counts for the paper whose attempt found it."""
+    seen = finding.get("versions") or ([tested] if tested else [])
+    if finding.get("fixed_in"):
+        return "fixed", seen
+    real = [v for v in seen if v not in ("draft", "unversioned")]
+    if not latest or latest in ("draft", "unversioned") or len(real) < len(seen) or not real or latest in real:
+        return "current", seen
+    if DATED_VERSION.fullmatch(latest) and all(DATED_VERSION.fullmatch(v) for v in real) and max(real) > latest:
+        return "current", seen   # the target list is behind the attempt
+    return "older", seen
+
+
+def counts_now(f: dict) -> bool:
+    """Whether a finding is one of the dataset's problems that change results as it is now."""
+    return bool(f.get("changes_results")) and f.get("scope", "current") == "current"
+
+
 def finish(data: dict) -> dict:
     """Totals, and each target's status, derived from the attempts."""
+    newest = {t["key"]: t.get("version") for t in data["targets"]}
+    for a in data["attempts"]:
+        for f in a["findings"]:
+            f["scope"], f["seen_in"] = finding_scope(f, a.get("dataset_version"), newest.get(a["key"]))
+            f["newest"] = newest.get(a["key"])
     data["outcome_counts"] = outcome_counts(data["attempts"])
     data["outcome_counts_with_outside_data"] = outcome_counts(data["attempts"], "with_inputs")
     data["outcome_counts_elsewhere"] = outcome_counts(data["attempts"], "elsewhere")
@@ -1103,14 +1161,18 @@ def rows(data: dict) -> dict[str, list]:
             "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["key"])),
             "page": page_of(t["key"]) if atts else None, "url": archive_url(t["key"]),
-            "findings": sum(len(a["findings"]) for a in atts if not a.get("deprecated")) if atts else None,
-            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]})
-                     + ([CHANGES_RESULTS] if any(f["changes_results"] for a in atts or [] if not a.get("deprecated")
+            # A finding a later version fixed is not open, and one seen only in an earlier version does not make
+            # the dataset one whose data change results now (finding_scope).
+            "findings": sum(1 for a in atts if not a.get("deprecated") for f in a["findings"]
+                            if f.get("scope") != "fixed") if atts else None,
+            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]
+                             if f.get("scope") != "fixed"})
+                     + ([CHANGES_RESULTS] if any(counts_now(f) for a in atts or [] if not a.get("deprecated")
                                                  for f in a["findings"]) else []),
             # For the datasets list, which a curator reads: the open findings by kind (most first), the versions
             # the attempts ran on, and how many papers were tested on the dataset.
             "found_counts": dict(Counter(f["kind"] for a in atts or [] if not a.get("deprecated")
-                                         for f in a["findings"]).most_common()),
+                                         for f in a["findings"] if f.get("scope") != "fixed").most_common()),
             "versions": list(dict.fromkeys(version_plain(a) for a in sorted(
                 atts or [], key=version_order, reverse=True) if not a.get("deprecated"))),
             "tested": sorted({version_state(a) for a in atts or [] if not a.get("deprecated")}),
@@ -1145,7 +1207,9 @@ def rows(data: dict) -> dict[str, list]:
                                "notebook_title": nb["title"] if nb else None})
             for f in a["findings"]:
                 findings.append({**common, "kind": f["kind"], "statement": f["statement"],
-                                 "changes_results": f["changes_results"]})
+                                 "changes_results": f["changes_results"],
+                                 # current, fixed or older, against the dataset's newest version (finding_scope).
+                                 "scope": f.get("scope", "current")})
     return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings,
             "authors": author_rows(data)}
 
@@ -2104,7 +2168,7 @@ def footer(data: dict, root: str) -> str:
 </div>
 <p class="foot-note">Outcomes describe what one attempt could reproduce from the data in the dataset, with the methods
 available. A failure to reproduce may be a failure of the agent, and is not a judgement of the paper.</p>
-<p class="foot-legal">Generated {e(data["generated"][:10])} from the registry's files. Code under the
+<p class="foot-legal">Generated {e(data["records_updated"][:10])} from the registry's files. Code under the
 <a href="{REPO_URL}/blob/main/LICENSE">Apache-2.0 license</a>; the registry's records are in the public domain
 (<a href="{REPO_URL}/blob/main/LICENSE-data">CC0</a>).</p>
 </div></footer>'''
@@ -3026,12 +3090,15 @@ var steps=[].slice.call(document.getElementById('pstep').options,1).map(function
 var rank={done:0,waiting:1,deprecated:2,todo:3,none:4};
 var state={q:'',step:'',st:'',col:-1,dir:1,page:1,size:50};
 var $=function(id){return document.getElementById(id);};
+// As list.js: lower case, without accents, so that "jerome" finds "Jérôme".
+var FOLDED={'ß':'ss','æ':'ae','œ':'oe','ø':'o','ł':'l','đ':'d','ð':'d','þ':'th','ı':'i','ħ':'h'};
+function fold(t){return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[ßæœøłđðþıħ]/g,function(c){return FOLDED[c];});}
 function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
   if(td.dataset.sort!==undefined)return [0,td.dataset.sort];
   return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
 function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
 function shown(tr){
-  if(state.q&&(tr.cells[0].textContent+' '+tr.cells[1].textContent+' '+tr.cells[2].textContent).toLowerCase().indexOf(state.q)<0)return false;
+  if(state.q&&fold(tr.cells[0].textContent+' '+tr.cells[1].textContent+' '+tr.cells[2].textContent).indexOf(state.q)<0)return false;
   var keys=state.step?[state.step]:steps;
   if(state.st)return keys.some(function(k){return tr.dataset[k]===state.st;});
   return true;}
@@ -3058,7 +3125,7 @@ function draw(){
       return '<option value="'+s+'"'+(s===state.size?' selected':'')+'>'+s+' per page</option>';}).join('')+'</select>';}
 var timer;
 $('pq').addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(function(){
-  state.q=$('pq').value.trim().toLowerCase();state.page=1;draw();},120);});
+  state.q=fold($('pq').value.trim());state.page=1;draw();},120);});
 $('pstep').addEventListener('change',function(){state.step=this.value;state.page=1;draw();});
 $('pstate').addEventListener('change',function(){state.st=this.value;state.page=1;draw();});
 table.tHead.addEventListener('click',function(ev){var b=ev.target.closest('button.sort');if(!b)return;
@@ -3702,9 +3769,31 @@ CHANGES_NOTE = ("The data are wrong in a way the files do not show, so an analys
                 "attempt&rsquo;s author.")
 
 
-def finding_tags(f: dict) -> str:
-    tags = (f'<span class="tag changes" title="The data are wrong in a way the files do not show; checked against '
-            f'the notebook&rsquo;s outputs">{CHANGES_LABEL}</span>' if f.get("changes_results") else "")
+def scope_tags(f: dict) -> str:
+    """For a finding seen in an earlier version of its dataset (finding_scope): that a later version fixed it, or
+    that nobody has looked for it in the newest."""
+    seen = ", ".join(f.get("seen_in") or [])
+    if f.get("scope") == "fixed":
+        return (f'<span class="tag status-fixed" title="Seen in version {e(seen)}. The attempt looked for it in '
+                f'{e(f["fixed_in"])} and it was gone.">Fixed in {e(f["fixed_in"])}</span>')
+    if f.get("scope") == "older":
+        return (f'<span class="tag status-older" title="Seen in version {e(seen)}. It has not been looked for in '
+                f'{e(f.get("newest") or "")}, the newest version, so it may be out of date.">Seen in {e(seen)}, '
+                f'not rechecked since</span>')
+    return ""
+
+
+def finding_tags(f: dict, paper: bool = False) -> str:
+    """A finding's tags. On a dataset's page a problem that changes results is marked as one only while it is in the
+    newest version; on a paper's page (`paper`) always, since the paper's attempt found it in the data it used."""
+    tags = ""
+    if f.get("changes_results") and (paper or counts_now(f)):
+        tags = (f'<span class="tag changes" title="The data are wrong in a way the files do not show; checked against '
+                f'the notebook&rsquo;s outputs">{CHANGES_LABEL}</span>')
+    elif f.get("changes_results"):
+        tags = ('<span class="tag" title="The data of that version were wrong in a way its files did not show; '
+                'checked against the notebook&rsquo;s outputs">Changed results in that version</span>')
+    tags += scope_tags(f)
     tags += (f'<span class="tag status-{e(f["status"])}">{FINDING_STATUS[f["status"]]}</span>'
              if f.get("status") else "")
     if f.get("found") == "on_prompt":
@@ -3731,14 +3820,25 @@ def finding_link(anchor: str | None) -> str:
             f'aria-label="Link to this finding">#</a>') if anchor else ""
 
 
-def findings_list(findings: list[dict], root: str, note=None, anchor=None) -> str:
+def finding_code(href: str | None) -> str:
+    """A link from a finding to the cell of the executed notebook whose output shows it, as a claim has to the cell
+    that tests it (cell_href)."""
+    if not href:
+        return ""
+    return (f'<br><a class="finding-code small" href="{e(href)}">See the code that shows this finding</a> '
+            f'<span class="muted small">in the executed notebook, with its output</span>')
+
+
+def findings_list(findings: list[dict], root: str, note=None, anchor=None, code=None) -> str:
     """Findings about the data as a list, each with its kind (a link to the datasets with an open finding of that
-    kind), given `note`, a line under it (which attempt found it), and given `anchor` (finding -> its id on the page,
-    finding_anchor), an id and a link to itself."""
+    kind), given `note`, a line under it (which attempt found it), given `anchor` (finding -> its id on the page,
+    finding_anchor), an id and a link to itself, and given `code` (finding -> the address of the cell that shows it),
+    a link to that cell."""
     return "".join(
         f'{finding_open(anchor(f) if anchor else None)}<span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
         f'{finding_link(anchor(f) if anchor else None)}'
+        + (finding_code(code(f)) if code else "")
         + (f'<br><span class="muted small">Checked: {e(f["checked"])}</span>' if f.get("checked") else "")
         + (f'<br><span class="muted small">{note(f)}</span>' if note else "") + '</span></li>'
         for f in findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
@@ -3768,6 +3868,10 @@ def page_dataset(data: dict, key: str) -> str:
                    f'; also about {e(", ".join(dataset_label(key_of_dir(x)) for x in named if key_of_dir(x) != key))}'
                    if len(named) > 1 else ""))
     findings = [(f, a) for a in atts for f in a["findings"]]
+    earlier = [(f, a) for f, a in findings if f.get("scope", "current") != "current"]
+    listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f),
+                                                 anchor=lambda f, a=a: finding_anchor(a, f),
+                                                 code=lambda f, a=a: cell_href(data, a, f, root)) for f, a in pairs)
     # Open findings under the version of the dataset they were found on, the newest version first: a finding on
     # an older version has not been checked on a newer one unless a later attempt on the same paper says so.
     by_version: dict = {}
@@ -3775,17 +3879,20 @@ def page_dataset(data: dict, key: str) -> str:
         by_version.setdefault(version_text(a), []).append(a)
     findings_html = ""
     for i, (version, group) in enumerate(by_version.items()):
-        n = sum(len(a["findings"]) for a in group)
+        # Under a version, the findings that are in the dataset as it is now; those a later version fixed, and
+        # those seen only in an earlier version, are listed after, apart (finding_scope).
+        now = lambda a: [f for f in a["findings"] if f.get("scope", "current") == "current"]
+        n = sum(len(now(a)) for a in group)
+        if not n and earlier:
+            continue   # every finding of this version is listed under "In earlier versions"
         dates = sorted({a["date"] for a in group})
         when = dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
         older = ("" if i == 0 else ' <span class="tag" title="A newer version was tested too; these findings were '
                  'not checked on it">an older version</span>')
         # Under its version, the problems that change results come first, under their own heading: a finding is
         # about the version it was found on, these as much as the others.
-        worst = [(f, a) for a in group for f in a["findings"] if f["changes_results"]]
-        rest = [(f, a) for a in group for f in a["findings"] if not f["changes_results"]]
-        listed = lambda pairs: "".join(findings_list([f], root, note=lambda f, a=a: found_by(a, f),
-                                                     anchor=lambda f, a=a: finding_anchor(a, f)) for f, a in pairs)
+        worst = [(f, a) for a in group for f in now(a) if f["changes_results"]]
+        rest = [(f, a) for a in group for f in now(a) if not f["changes_results"]]
         findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
                           f'{n} open finding{"" if n == 1 else "s"}</span></h3>')
         if worst:
@@ -3796,6 +3903,18 @@ def page_dataset(data: dict, key: str) -> str:
                                  if rest else ""))
         if rest or not worst:
             findings_html += f'<ul class="findings">{listed(rest) or findings_list([], root)}</ul>'
+    if earlier:
+        # Fixed first, then those nobody has looked for since; within each, the problems that changed results.
+        earlier.sort(key=lambda fa: (fa[0]["scope"] != "fixed", not fa[0]["changes_results"]))
+        n_fixed = sum(1 for f, _ in earlier if f["scope"] == "fixed")
+        said = ", ".join(x for x in (f"{n_fixed} fixed since" if n_fixed else "",
+                                     f"{len(earlier) - n_fixed} not rechecked" if len(earlier) - n_fixed else "") if x)
+        findings_html += (f'<h3 class="vhead">In earlier versions<span class="muted small"> · {e(said)}</span></h3>'
+                          '<p class="sub small" style="margin:4px 0 0">Seen in an earlier version of the dataset. '
+                          'A fixed finding was looked for in a later version and was gone. One not rechecked may be '
+                          'out of date: it has not been looked for in the newest version. Neither counts among the '
+                          'dataset&rsquo;s open findings; each still counts for the paper whose attempt found it.</p>'
+                          f'<ul class="findings">{listed(earlier)}</ul>')
     if not atts:
         findings_html = f'<ul class="findings">{findings_list([], root)}</ul>'
     # Findings of an earlier attempt that a repeat attempt found fixed, on the version it ran on.
@@ -3874,7 +3993,7 @@ def page_dataset(data: dict, key: str) -> str:
     <p class="sub small" style="margin-top:12px">Each opens the paper&rsquo;s page, with every claim, its outcome
     and the notebook that tested it.</p>
     <div class="results" style="margin-top:12px">{paper_rows_html or '<p class="empty">None yet.</p>'}</div></section>
-  <section class="panel" id="findings"><h2>Open findings about the data <span class="count">{len(findings)}</span></h2>
+  <section class="panel" id="findings"><h2>Open findings about the data <span class="count">{len(findings) - len(earlier)}</span></h2>
     <p class="sub small" style="margin-top:12px">What the attempts that used this dataset found about the data
     themselves, for its owner and the archive, under the version of the dataset each was found on.</p>
     {findings_html}</section>
@@ -4048,8 +4167,8 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     all_findings.sort(key=lambda fa: not fa[0]["changes_results"])   # stable: the record's order within each
     findings_html = "".join(
         f'{finding_open(finding_anchor(a, f))}<span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
-        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
-        f'{finding_link(finding_anchor(a, f))}</span></li>'
+        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f, paper=True)}{e(f["statement"])}'
+        f'{finding_link(finding_anchor(a, f))}{finding_code(cell_href(data, a, f, root))}</span></li>'
         for f, a in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
     for a in atts:
         rec = a.get("reconciliation")
@@ -4351,7 +4470,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         for k in listed:
             mine_ = used_rows.get(k, [])
             t = by_target.get(k) or {}
-            n_k = sum(len(x["findings"]) for x in mine_ if not x.get("deprecated"))
+            n_k = sum(1 for x in mine_ if not x.get("deprecated") for f in x["findings"] if f.get("scope") != "fixed")
             has_page = k in current or k in data.get("claim_files", {})
             name_ = (f'<a href="{root}{e(page_of(k))}">{e(dataset_label(k))}</a>' if has_page else e(dataset_label(k)))
             cells = [name_,
@@ -4360,7 +4479,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      (f'<span title="{t["size_gb"]:,.1f} GB, {t["files"]:,} files">{human_size(t["size_gb"])}</span>'
                       if t.get("size_gb") is not None else ""),
                      "" if not mine_ else
-                     f'<a href="{root}{e(page_of(k))}#findings">{n_k} finding{"" if n_k == 1 else "s"} about the data</a>'
+                     f'<a href="{root}{e(page_of(k))}#findings">{n_k} open finding{"" if n_k == 1 else "s"} about the data</a>'
                      if n_k else '<span class="muted">no findings about the data</span>',
                      archive_link(k, f"on {archive_of(k)}"),
                      f'<a href="{root}api/{page_of(k).rstrip("/")}.json">JSON</a>' if mine_ and k in current else ""]
@@ -4368,6 +4487,26 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             # findings about it and its links (a cell that only breaks the line, before the findings).
             lines += ("<tr>" + f"<th scope=\"row\">{cells[0]}</th>" + "".join(f"<td>{c}</td>" for c in cells[1:3])
                       + '<td class="sets-break" aria-hidden="true"></td>' + "".join(f"<td>{c}</td>" for c in cells[3:]) + "</tr>")
+            # Under the dataset's line, each problem this paper's attempts found in it that changes results, with
+            # where it stands now: such a problem bears on the paper whichever version it was in, and the dataset's
+            # own page counts it only while it is in the newest version (finding_scope).
+            for x in mine_:
+                for f in ([] if x.get("deprecated") else x["findings"]):
+                    if not f.get("changes_results"):
+                        continue
+                    seen = e(", ".join(f.get("seen_in") or []))
+                    where = (f'A problem in version {seen} of this dataset changed results; version '
+                             f'{e(f["fixed_in"])} fixed it' if f["scope"] == "fixed" else
+                             f'A problem in version {seen} of this dataset changed results; it has not been looked '
+                             f'for in the newest version, {e(f.get("newest") or "")}' if f["scope"] == "older" else
+                             'A problem in this dataset changes results')
+                    # The dataset's page lists the findings of its current attempts: an attempt a later one
+                    # replaced has no anchor there to link to (senzai-2017-01, 2026-11-25).
+                    see = (f' <a href="{root}{e(page_of(k))}#{e(finding_anchor(x, f))}">See the finding</a>'
+                           if any(c["id"] == x["id"] for c in current.get(k, [])) else "")
+                    lines += (f'<tr class="sets-own"><td colspan="{len(cells)}"><span class="tag changes">'
+                              f'{CHANGES_LABEL if f["scope"] == "current" else "Changed results"}</span> {where}.'
+                              f'{see}</td></tr>')
             # Under the dataset's line, the claims that rest on it alone, when they are only some of the paper's:
             # the others also use outside data, or are on data in another archive. What the dataset's own page counts.
             own = outcome_counts([x for x in mine_ if not x.get("deprecated")]) if mine_ else {}
@@ -4402,9 +4541,10 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
         here = (f'<a href="{root}papers/{e(paper["key"])}/">{e(paper["byline"])}</a> / Attempt {e(one["id"])}'
                 if one else e(paper["byline"]))
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {here}</p>'
-               f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
-               f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
-               f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
+               # The line above the title gives the journal. The paper's byline, and the attempt on an attempt's
+               # page, are in the crumbs just above it, so they are not said again.
+               + (f'<p class="eyebrow">{e(journal_name(paper["doi"]))}</p>' if journal_name(paper["doi"]) else "")
+               + f'<div class="dhead"><h1>{e(paper["title"])}</h1></div>'
                f'{authors_html(data, paper["doi"], root)}')
         # The result leads (the outcomes and the summary); what the paper is and which data were used are in a
         # column at the side, which goes under the result on a narrow screen.
@@ -4593,7 +4733,7 @@ def build(data: dict, output: Path) -> None:
                 redirect_page(own, "../" * (page_of(key).count("/") + 1)) if own else page_dandiset(data, key, a))
         api = json.dumps({
             "dataset": {"archive": split_key(key)[0], "id": split_key(key)[1], "label": dataset_label(key)},
-            "page": page_of(key), "generated": data["generated"],
+            "page": page_of(key), "generated": data["records_updated"],
             "caution": CAUTION + " It may be a failure of the attempt.",
             "outcome_counts": outcome_counts(attempts),
             "outcome_counts_with_outside_data": outcome_counts(attempts, "with_inputs"),
@@ -4643,7 +4783,7 @@ def build(data: dict, output: Path) -> None:
         (output / "api" / "papers" / f'{p["key"]}.json').write_text(json.dumps({
             "key": p["key"], "doi": p["doi"], "title": p["title"], "byline": p["byline"],
             "journal": journal_name(p["doi"]), "url": SITE_URL + f'papers/{p["key"]}/', "status": p["status"],
-            "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+            "generated": data["records_updated"], "caution": CAUTION + " It may be a failure of the attempt.",
             "authors": [{"name": a["name"], "orcid": a.get("orcid"),
                          "url": SITE_URL + f'authors/{a["orcid"]}/' if a.get("orcid") else None}
                         for a in authors_of(data, p["doi"])],
@@ -4683,7 +4823,7 @@ def build(data: dict, output: Path) -> None:
         counts = {x["id"]: x for x in r["papers"]}
         (output / "api" / "authors" / f"{orcid}.json").write_text(json.dumps({
             "orcid": orcid, "name": author["name"], "page": f"authors/{orcid}/", "url": SITE_URL + f"authors/{orcid}/",
-            "generated": data["generated"], "caution": CAUTION + " It may be a failure of the attempt.",
+            "generated": data["records_updated"], "caution": CAUTION + " It may be a failure of the attempt.",
             "badge": badge,
             # Every outcome across their papers, verified or not, and the badges that show them.
             "outcome_counts": every["counts"] if every else None,

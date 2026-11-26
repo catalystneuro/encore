@@ -1,25 +1,23 @@
-I've worked through the round-1 report. No outcome changed: the verifier's 22 outcomes all match the record (5 reproduced, 7 partially reproduced, 4 not reproduced, 6 blocked). `python tools/entry.py all` passes, and the final run took 13 minutes. The notebook's numbers match the run's outputs, as do the conclusions, the record's notes and the new `verifications` round (one entry per claim, with its reason and response).
+I revised the attempt for verifier round 1: two outcomes changed, and the other 20 stay as the verifier agreed. The last run of `python tools/entry.py all entries/churchland-2012` passed: the checks gave 0 errors and the notebook ran in 16 minutes. Every conclusion matches the new numbers.
 
-**Outputs added for the verifier's requests:**
-- **Curvature (B6):** I added hand paths coloured by class. The classes match the paths, and in J-array the clockwise-curving reaches whose neural state turns clockwise are loops of 162 to 180°. I added a `contiguous` option to `heading_change` and tried thresholds of 10 and 30°. The J-array clockwise class stays at 0.868 to 0.878 under all of them, so the outcome doesn't depend on how the classes are drawn.
-- **Phase from the preparatory state (B4):** I added the per-run R² of shuffles 1 and 3, and `prep_prediction_cv`, which refits the whole jPCA for each left-out condition, so nothing leaks. It also adds a phase score that rewards only rotation.
-  - Cross-validated R² is 0.615 (J) and 0.727 (N).
-  - On the phase score the data beat shuffle 1 clearly. Shuffle 3 still reaches J's value but not N's, so the result stays partially reproduced.
-- **J-array frequency (B9):** I added the plane over time, its angular speed, windows starting at -150 to +50 ms, and a synthetic check. The verifier's suspected bias from a window that starts before the rotation does not explain J's 1.03 Hz: windows starting later give 1.04 to 1.13 Hz. J rotates faster before movement onset, and windows starting at -150 or -100 ms give 1.31 and 1.45 Hz.
-- **Kinematic models (B3):** I added a `prep_decay_ms` option to `simulate_population`, with variants where the preparatory component is held on or left out, at leads of 100 and 0 ms, plus four more seeds and the angle histograms.
-  - The velocity model's angle peak falls near zero (0.028π) only with no preparatory component and no lead, which matches the paper's description.
-  - The complex model gets within π/4 of zero in both datasets under none of the choices tried.
-  - I kept "not reproduced", because the criterion fixes the model as specified. The notes now say the angle failure comes from choices made in this attempt.
+**Outcomes that changed**
+- **fig6-complex-kinematic-model: partially reproduced → not reproduced.** The verifier was right that the peak test let any negative angle pass, so J-array's peak at −0.972π counted as a peak near zero. The test now requires the peak to be within π/4 of zero (the stricter version, between 0 and π/4, is shown too). The main reading peaks at −0.972π (J-array) and 0.806π (N-array) and fails under all five seeds. It is no longer seed-sensitive.
+- **fig6-velocity-model: not reproduced → partially reproduced.** The verifier pointed out that the switch from preparatory to movement tuning fell inside the analysed window. In the main reading the preparatory term now ends when the simulated movement activity starts, 100 ms before the hand moves; I chose this from how the model is built, before running it. N-array then passes (peak 0.083π) and J-array fails (peak 0.472π), under all five seeds. The old timing is kept as a reading and still gives not reproduced. The outcome still rests on the model assumptions, and every reading now runs under five seeds.
 
-**Text corrections:**
-- **Variance claims (B1):** each variance-fraction conclusion now says it compares per-electrode units with the paper's sorted isolations. I also added that deviation to `pc23-variance` in the record.
-- **Same-direction claim (B5):** the conclusion now says the counter-clockwise fraction is high for the controls too, because jPCA orients each plane that way.
-- **Shuffle controls (B2):** the conclusion now gives the supplement's own expectation for shuffles 2 and 3.
-- **Data check:** I corrected the hand-position range to -220 to +165, with targets up to 145.
-- **Runtime:** updated in `entry.py` and the README to 13 minutes.
+**What I added or corrected**
+- **Onset columns:** the notebook prints both columns' descriptions from the files. `move_begins_time` is described only as "movement onset time". The hand is already moving at 137 and 160 mm/s at that time, against 43 and 15 mm/s at `offline_move_onset_time`, which supports the offline column as the main reading.
+- **Curvature claim:** under the `move_begins_time` readings the hand paths are now aligned on that column too; the outcome is unchanged. The J-array conditions that don't rotate counter-clockwise are listed with their curvature: four of the five curve strongly clockwise.
+- **Phase claim:** I added the two outputs the verifier asked for, as variants that don't decide the outcome:
+  - With the shuffled data projected onto the original plane, the data beat the shuffles in both datasets.
+  - Predicted from the state at the dividing point, the data beat the shuffles but stay far below the 0.5 bar (0.103 and 0.252).
+- **Lag between the arrays:** after target onset the two N-array arrays respond within 9 ms of each other. So a fixed clock offset of 25 ms or more is not supported, and the later M1 change around movement looks like a real response. The clock finding is updated.
+- **Smaller fixes:** I removed a dead sign check in `jpca`, which changes no number. I updated the notebook text, the entry README, the runtime in `entry.yaml`, and two findings (onset columns, and the authors' question about the models).
+- **Record:** round 1 is recorded under `verifications`, with the verifier's reasons in its words and my response for each claim. It agreed with 21 of 22 outcomes; the exception was the complex model.
 
-**What I did not do:**
-- **Isolation counts and the N-0910 unit count (C1, C6):** these cannot be checked, because the files hold no sort labels or isolation quality.
-- **Shuffle controls and smoothing (B7, B8):** I kept the single go-cue dividing time and the missing PC smoothing. They are stated deviations, and the verifier marked both as not affecting a conclusion.
-- **Paper text:** I downloaded none, as the verifier's copies were already under `paper/`.
-- **Commit:** nothing is committed, as instructed.
+**What I did not do**
+- **Claims file:** I left it unchanged. The verifier's three points about how it reads the paper are now questions for a reader in the new file `questions/churchland-2012.yaml`:
+  - the shuffle-3 reference for the phase claim;
+  - whether R2(M_skew) is the right measure for shuffles 2 and 3;
+  - whether the "typically 20–35%" range applies to the whole population.
+- **Critical findings:** none of the record's findings are rated critical, so there was nothing to review.
+- **Commit:** nothing is committed or pushed; the workflow does that.

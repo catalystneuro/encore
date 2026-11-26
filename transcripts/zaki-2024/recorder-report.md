@@ -1,92 +1,15 @@
-I ran `tools/readme_row.py 000718 --write`, which added the row `2 (+1) | 0 | 2 | 21` to README.md, and appended the subsection below to the end of `docs/pilot-notes.md`. Nothing is committed.
+I wrote both files and changed nothing else. The summary is 116 words, and the counts in the notes match what `tools/readme_row.py zaki-2024` prints: 3 reproduced, 1 partial, 1 not reproduced and 20 blocked. Nothing is committed.
 
-### 000718, Zaki et al. 2024
+**docs/pilot-notes/zaki-2024-02.md**
 
-Two claims reproduced, two not reproduced and twenty-one blocked on the
-dandiset. With outside data, counted apart: one reproduced. Round 1 gave its
-own outcome for each claim from the notebook with its conclusions removed and
-agreed with 25 of the 26; it gave not reproduced for
-`offline-bursts-above-shuffle`, as the criterion is written, and suggested
-blocking it as `methods_underspecified`, which the record already did, as
-round 1 had not seen the record. Round 1 agreed that
-`fig5c-wake-overlap-neutral-coburst` was partially reproduced by the letter of
-the criterion, but argued that the Methods' scoring has no quiet-wake class;
-applied to Ca_EEG2-1's EMG it puts 94.1% of quiet-wake frames and all 87
-bursts in wake, and under that reading the overlap ensemble co-bursts less
-with the neutral than with the aversive ensemble (26.4 against 35.6%, McNemar
-p = 0.13), so the author changed the claim to not reproduced and recorded the
-departure from the criterion as a deviation. Round 2 agreed with all 26 and
-nothing was proposed, so there was no third round. The paper reports that a
-strong aversive experience links fear to a neutral context experienced two
-days before, that neutral and aversive ensembles in CA1 co-reactivate in
-offline population bursts, mostly during wake, and that this co-bursting of
-the overlap ensemble with the neutral ensemble goes with the linking. The link
-to the paper's per-mouse source data, aversive freezing of the high- against
-the low-shock mouse, bursts and skew against shuffled data, the pause in
-movement before bursts and wake co-bursting were tested, the last four on the
-EEG/EMG cohort where the paper shows three of them in another cohort. The
-bursts claim is blocked as `methods_underspecified`, since surrogate over true
-burst rate is 1.26 to 1.60 against the paper's 0.72 to 0.96, and a synthetic
-control shows the criterion's test cannot detect coordination (5.6 true
-against 34.98 surrogate bursts per min); the other 20 blocked claims are
-`data_missing`. Some outcomes rest on weak ground:
-`ed9b-aversive-freezing-high-vs-low` compares one mouse per group over 30 s
-bins that are not independent; in `offline-skew-above-shuffle` both arms are
-below the paper's Extended Data Figure 3o values, so the chance level is not
-shown to match the paper's; `burst-locomotion-pause` uses the telemetry
-activity signal as a proxy for the paper's webcam tracking, and the test gives
-p = 0.016 at 300 random times in Ca_EEG2-1; and
-`fig5c-wake-overlap-neutral-coburst` rests on one 10 min recording of one
-mouse, z-scored within it, and on a log EMG RMS measure chosen after the data
-were seen. The author used the open access full text (PMC11666460).
+# zaki-2024, Zaki et al. 2024, second attempt
 
-The dandiset was converted by CatalystNeuro (catalystneuro/cai-lab-to-nwb). It
-holds two of the nine mice of the calcium imaging and EEG/EMG experiment
-(Ca_EEG2-1, high shock; Ca_EEG3-4, low shock) and, of each offline period,
-only the first 10 min recording of the 24 the Methods describe; Ca_EEG2-1 has
-no offline-day-1 recording and no neutral or novel recall session, and the
-mice of the one-hour imaging and offline experiments, the behaviour-only
-experiments and the inhibitory tagging and no-shock experiments are not
-deposited, so twenty of the 26 claims cannot be tested. Ca_EEG3-4 has no cell
-registration, so its ensembles cannot be formed, and the Week file of
-Ca_EEG2-1 holds 19 registration tables for offline-day-2 recordings, of which
-only the first recording is deposited, and none for offline day 1. The
-dandiset does not say why these two mice and only the first offline recording
-of each period were deposited, nor that the paper analysed more. The session
-start times of the Ca_EEG2-1 behaviour sessions, and the Week epochs built
-from them, are about 1 h later than the telemetry and Miniscope clock, so that
-OfflineDay2Session1 starts 47 min before the FC session it follows; the
-telemetry is absent in windows that contain each of these epochs moved 1 h
-earlier. Other findings: the OnePhotonSeries timestamps of three files run at
-16.7 ms and end at half the recording's length, while their frame counts fit
-30 Hz over the full length; the sleep states include `quiet wake`, which the
-paper neither uses nor maps to its states, and the three offline recordings
-hold no NREM or REM epochs; the telemetry is sampled at 500 Hz where the
-Methods say 100 Hz; the offline session description speaks of an hour of
-recording with a webcam, where the deposited recordings last 10 min and hold
-telemetry and no video; the fluorescence series carry placeholder
-descriptions and unit "n.a.", the FC session descriptions give the shock
-amplitude without a unit, and the Week file has an empty session
-description; and the analysis code repository the paper names returns 404.
-The registration tables agree with the ROI centroids, no recording is
-deposited twice, and calcium, behaviour and telemetry are consistent with a
-shared clock except in Ca_EEG3-4 offline day 1, where it could not be
-established.
+Three claims reproduced, one partially, one not reproduced and 20 blocked, all for missing data, plus one claim linking the dandiset to the paper's per-mouse source data, reproduced (the freezing of both mice within tolerance, 64.09, 8.82, 17.40 and 15.06% against 63.87, 8.46, 16.90 and 14.60); two outcomes rest on an assumption. The first verification round agreed with all 26 outcomes and the second with all 26; the second would rate the clock finding critical where the record had major, the author changed the rating, and nothing else was proposed, so there was no third round. It pins version 0.261122.2159, where the claims were written against 0.260825.1902. The paper, Zaki et al., "Offline ensemble co-reactivation links memories across days" (Nature 637, 145-155), reports that fear of an aversive context spreads to a neutral context experienced two days before, more after a strong shock, that this needs the hippocampus in the hours after aversive encoding, that the neutral ensemble is recruited into offline population bursts, and that the ensemble shared by both experiences co-bursts more with the neutral than with the aversive ensemble during offline wake. The claims were written from the full text (PMC11666460); the analysis code the paper names is not public, and the paper's source-data repository (at commit a508164) served as input for the link claim. The dataset holds two of the nine mice of the calcium imaging and EEG/EMG experiment, so only the cohort's freezing, the offline burst and skew tests, the movement around bursts and the Fig. 5c wake co-bursting could be tested. Reproduced are the higher aversive recall freezing of the high-shock mouse (64.09% against 8.82%, higher in 10 of 10 bins), the skew of the population trace above every shuffle (1.645, 1.339 and 1.721 against 95th percentiles of 0.708, 0.508 and 0.466), and the burst frequency above the shuffles, under reading (b) only, with the shuffled trace held to the true trace's threshold (8.73, 6.42 and 5.31 bursts per minute against 95th percentiles of 0.30, 0.10 and 0.00); with each shuffle z-scored again, reading (a), the true frequency is below the shuffle mean in all three recordings, and a synthetic check shows that cells sharing only a slow drift pass reading (b). The author's first run recorded the burst claim as not reproduced under reading (a) and asked a reader, who amended the criterion to accept either reading. The movement pause before bursts is not reproduced (one-sided p 0.45 to 0.92, and no shift of the telemetry from -8 to +8 s gives it in all three recordings). The Fig. 5c wake claim is partial on wake alone (overlap-neutral 33.3% against overlap-aversive 29.2% of 24 bursts, McNemar p = 1.0), marked assumed in round 2; with the files' quiet wake counted as wake, the better match to the paper, it reverses (25.9% against 35.3% of 85 bursts). Round 1 also found that the low-shock mouse's recall freezing and one mouse's sleep could be described, and both were added while the claims stayed blocked; round 2 found sentences the outputs did not support, which were corrected. The reconciliation with zaki-2024-01 found the attempt blind, one earlier finding fixed (the OnePhotonSeries timestamps) and two outcomes changed, the burst claim from blocked through the amended criterion and the Fig. 5c claim from not reproduced through the reading applied. The author's session took about 35 min and the notebook about 3 min at first, with peak memory 0.87 GB; the last full run took 6.4 min, after a first attempt failed on a read timeout from the archive.
 
-The notebook ran in 81 s in the first clean run, and `tools/entry.py all`
-took about 2 minutes after round 1. `git clone` from GitHub asked for
-credentials, so the source-data and conversion repositories were fetched as
-tarballs at pinned commits; removing `__pycache__` and an empty `.claude/`
-directory in the entry was denied, and untracked files in the repository root
-that the author did not create were left alone. Round 2 found sentences the
-outputs did not support, among them that the skew values lie in the range of
-the paper's, and a wrong grouping of `fig1ef` and `fig1g`, and these were
-corrected. The author's points on the protocol: general claims shown only in a
-cohort that is not deposited; a chance level the paper states only in its
-source data, for another cohort at another frame rate; whether the lab's
-repository of per-mouse figure values counts as data deposited elsewhere; a
-link claim on which no claim depends; across-mouse claims with one mouse per
-group; a clock check that covers streams within a session but not start times
-across sessions; a value seen in the data check before the criteria were
-written; and which year to use in the entry name for a paper online in 2024
-and in an issue of 2025.
+The dataset was converted by CatalystNeuro (catalystneuro/cai-lab-to-nwb). In sub-Ca-EEG2-1 the behaviour sessions are timestamped about 1 h later than the offline recordings and the telemetry: the telemetry drops out from 3780 to 2560 s before the NeutralExposure start, 3710 to 2930 s before FC's and 3730 to 2850 s before Recall1's, and OfflineDay2Session1, described as recorded after fear conditioning, starts 47 min before FC; the files do not say which clock is right. The dataset holds 2 of the 9 mice of the experiment and one offline recording per offline period, for Ca_EEG2-1 1 of the 24 after aversive encoding, with cell registration for 19 recordings of that day whose imaging is not deposited; Ca_EEG3-4 has no cell registration, Ca_EEG2-1 no neutral or novel recall, the recordings no NREM or REM, and the mice of the other experiments are absent, so 20 of the 26 claims cannot be tested. The sleep labels add a quiet wake state the paper does not score; its description defines it as waking, the Methods' split scores 64 of its 68 epochs as wake, and leaving it out drops 61 of 87 bursts and reverses the Fig. 5c comparison. The offline files' session descriptions describe the one-hour webcam experiment while they hold 10-min recordings with telemetry, the telemetry is stored at 500 Hz where the Methods give 100 Hz, the shock amplitudes "1.5" and "0.25" carry no unit, the Week file's start time is local time labelled UTC, the fluorescence series carry placeholder descriptions and unit "n.a.", and nothing says why these two mice and first recordings were deposited. The cell registration gives 97 neutral, 80 aversive, 166 overlap and 282 remaining cells, and no recording is deposited twice. The authors are asked whether shuffled traces are z-scored again before bursts are counted and which states the wake of Fig. 5c holds.
+
+The author's points on the protocol: the claims header carries an earlier author's data-check facts into a blind attempt; the suggested clock check does not fit offline imaging, and lagged correlations were used instead; the severity table puts events on different clocks under critical where the contradiction is visible and the right clock unknown; a method the criterion fixes but the paper does not state fits neither the reader nor the authors route cleanly, and both were used; and the variant's generator uses seed + 1 while the sensitivity runs use + 1000 to + 4000.
+
+**summaries/zaki-2024-02.md**
+
+Most of this paper's main findings could not be tested, because the dataset holds only 2 of the 9 mice of one experiment and none behind the retrospective memory linking, burst recruitment and recall results. The overlap ensemble co-bursting more with the neutral than the aversive ensemble during offline wake held only weakly in one mouse. It reversed when the files' quiet wake, a state the paper does not mention, was counted as wake. The brief slowing of movement before population bursts did not reproduce with telemetry, the files' only movement measure. Of the minor claims, higher freezing after a strong shock and offline bursts above shuffled data held, the burst frequency only under a lenient reading.

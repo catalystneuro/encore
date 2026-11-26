@@ -1,264 +1,266 @@
-# 000718 · author-revise-1 · run 39086999774
+# zaki-2024 · author-revise-1 · run 45550419896
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; cat transcripts/000718/verifier-1-report.md; ls -R entries/000718-zaki-2024 | head -50
+date -u; cat docs/protocol.md | head -c 200000 | wc -c; cat transcripts/zaki-2024/verifier-1-report.md; ls entries/zaki-2024 transcripts/zaki-2024 questions paper
 ```
 
 ```
-# Protocol for an attempt
+Wed Nov 25 05:04:51 UTC 2026
+47667
+**Verifier report, round 1: Zaki et al. (2024) on DANDI:000718 v0.261122.2159**
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
+The claims file holds 26 claims. The notebook tests 6 and treats 20 as blocked: 4 with their own reasons and 16 because the mice are not in the dataset. I had only the notebook, the helper module and the claims file, not the attempt record, so these counts come from those.
 
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+### A. Outcomes
 
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 399 more lines not kept]
+| Claim | My outcome | Reason |
+|---|---|---|
+| source-data-link | reproduced | Both mice are found and their shock amplitudes match the source-data groups (cell 17). All 4 freezing values are within tolerance under both readings: (a) 64.09/8.82/17.40/15.06, (b) 63.45/8.46/16.90/14.60. Reading (b) gives the CSV value exactly for 3 of the 4. |
+| ed9b-aversive-freezing-high-vs-low | reproduced | Recall1 freezing is 64.09% for Ca_EEG2-1 against 8.82% for Ca_EEG3-4. The high-shock mouse is higher in 10 of 10 bins; Mann-Whitney U = 100, p = 1.8e-4 (cell 19). |
+| offline-bursts-above-shuffle | reproduced, under reading (b) only | (b): the true rates of 8.73/6.42/5.31 per min are above every surrogate, whose 95th percentiles are 0.30/0.10/0.00, for all 5 seed sets. (a): the true rate is *below* the surrogate mean in all 3 recordings (fraction ≥ true 0.999–1.000), which is not reproduced. The criterion lets one reading decide, but see B1. |
+| offline-skew-above-shuffle | reproduced | True skew is 1.645/1.339/1.721 against surrogate 95th percentiles of 0.708/0.508/0.466. No surrogate reaches the true value, for all 5 seed sets (cell 24). |
+| burst-locomotion-pause | not_reproduced | p < 0.05 in 0 of 3 recordings under both the peak and onset readings, with p from 0.45 to 0.92 (cell 26). The mean traces rise at time zero rather than dip in Ca_EEG2-1 (0.22 → 0.26). See B3 and B4. |
+| fig5c-wake-overlap-neutral-coburst | partially_reproduced, under wake reading (b) only | Wake alone (24 bursts): OxN is above OxA (33.3 vs 29.2; 8.3 vs 4.2), but on only 2 against 1 discordant bur
+[... 256 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep 000718; cat attempts/000718-zaki-2024-01.yaml; ls claims/000718; ls transcripts/000718; ls paper
+cat docs/protocol.md
 ```
 
 ```
-Exit code 2
-000718-zaki-2024-01.yaml
-schema_version: 1
-id: 000718-zaki-2024-01
-dandiset: "000718"
-dandiset_version: 0.260825.1902
+<persisted-output>
+Output too large (46.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/4b0d5dec-f622-4ffa-b73c-6086b65333c5/tool-results/bhaog199v.txt
+
+Preview (first 2KB):
+# Protocol for an attempt
+
+Version: `pilot-18`. Record this version in the attempt's provenance.
+
+This is what agents, or people, do to attempt a target and deposit the
+result. A target is a dataset in a public archive and a paper it names. How
+each archive's datasets are named, versioned and read is in
+[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+
+An attempt has three roles, each a separate run with a separate context:
+
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dataset's data.
+- The **author** tests the claims on the dataset. It reads the paper to
+[... 19 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/4b0d5dec-f622-4ffa-b73c-6086b65333c5/tool-results/bhaog199v.txt"
+}
+```
+
+```
+1	# Protocol for an attempt
+2	
+3	Version: `pilot-18`. Record this version in the attempt's provenance.
+4	
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+10	
+11	An attempt has three roles, each a separate run with a separate context:
+12	
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 760 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts | grep zaki; cat attempts/zaki-2024-02.yaml; cat questions/zaki-2024.yaml; cat entries/zaki-2024/entry.yaml entries/zaki-2024/README.md
+```
+
+```
+zaki-2024-02.yaml
+schema_version: 3
+id: zaki-2024-02
+datasets:
+- archive: dandi
+  id: "000718"
+  version: 0.261122.2159
+  doi: 10.48324/dandi.000718/0.261122.2159
+  relation: primary
 paper: doi:10.1038/s41586-024-08168-4
-date: 2026-10-18
-entry: 000718-zaki-2024
+date: '2026-11-25'
+entry: zaki-2024
 provenance:
   kind: agent
   accountable:
     name: CatalystNeuro
   agent:
-    harness: Claude Code (GitHub Actions)
+    harness: Claude Code
     model: claude-opus-5-5
-    protocol: pilot-7
-inputs:
-- what: Per-mouse freezing of Ca_EEG2-1 and Ca_EEG3-4 (ExtendedData9/ExtData9b.csv and ExtData9c.csv), used
-    as reference values for source-data-link; the per-mouse true and shuffled burst frequency and skew of
-[... 148 more lines not kept]
+    protocol: pilot-18
+[... 409 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 95,200p attempts/000718-zaki-2024-01.yaml
+cat entries/zaki-2024/zaki.py; wc -l entries/zaki-2024/zaki.py
 ```
 
 ```
-outcome: not_reproduced
-  notebook: reproduce_zaki_2024.ipynb
-  output: claim:burst-locomotion-pause
-  notes: Telemetry movement in the second before a burst is not lower than 3 to 5 s before it in any of the
-    three recordings under either reading of time zero (peak, one-sided Wilcoxon p = 0.76, 0.89, 0.39; onset,
-    p = 0.88, 0.94, 0.41); 30 to 60% of bursts have lower movement before them. Movement 1 to 2 s after the
-    peak is lower than in the second before it in two of three recordings (0.155 against 0.225, and 0.129
-    against 0.257). The telemetry activity signal is a coarse proxy whose relation to calcium activity is weak
-    (movement decoded at r = 0.06 to 0.24 at zero shift; Spearman r with the population trace 0.07 to 0.32 in
-    1 s bins), and the lab did not use it for analysis (conversion notes). The outcome says this proxy does not
-    show the pause; it is not evidence that the pause is absent.
-  deviations:
-  - Movement is the magnitude of the HD-X02 telemetry activity signal; the paper tracked locomotion with a
-    webcam, whose video is not deposited.
-  - Tested on the EEG/EMG experiment's offline recordings; the paper shows the effect for the
-    single-experience cohort (Figure 2d and 2e) and the inhibitory tagging cohort (Extended Data Figure 6e).
-- claim: fig5c-wake-overlap-neutral-coburst
-  outcome: partially_reproduced
-  notebook: reproduce_zaki_2024.ipynb
-  output: claim:fig5c-wake-overlap-neutral-coburst
-[... 86 more lines not kept]
+"""Loading and measures for Zaki et al. (2024) on DANDI:000718.
+
+Zaki, Pennington, Morales-Rodriguez et al., "Offline ensemble co-reactivation links memories
+across days", Nature 637, 145-155, doi:10.1038/s41586-024-08168-4.
+
+Every file is streamed from the archive at the pinned version (``VERSION``) with remfile and h5py;
+nothing is written to disk. Only the arrays an analysis needs are read (the raw Miniscope movies are
+never touched).
+
+Where each parameter comes from:
+
+- Deconvolved activity is analysed (Methods, "Miniscope data processing and data alignment":
+  "Deconvolved calcium activities were analysed in these studies"); claims file, method choices.
+- Burst detection (``population_trace``, ``burst_events``): each cell z-scored over time, the mean
+  over cells z-scored, and a burst is a maximal run of frames above z = 2 (Methods, "Burst
+  participation analysis": "all cells that were recorded during that session were z-scored along
+  the time dimension ... the mean population activity across the whole population was computed
+  across the session and that one-dimensional trace was z-scored. Time periods when the mean
+  population activity reached above a threshold of z = 2 were considered to be burst events").
+  Cells with no activity (zero variance) cannot be z-scored and are left out (claims file).
+[... 268 more lines not kept]
 ```
-
-**Agent calls Bash**
-
-```bash
-sed -n 75,94p attempts/000718-zaki-2024-01.yaml; cat claims/000718/*.yaml | head -150
-```
-
-```
-above them (5.30 to 8.71 against at most 0.50 per min). At z = 2.5 the true rate is above the surrogate
-    mean in 2 of 3 recordings and above the 95th percentile in none.
-  deviations:
-  - Run on the three 10 min offline recordings of the EEG/EMG experiment at 15 Hz; the paper shows the test
-    for the one-hour recordings at 30 Hz of the single-experience cohort (Extended Data Figure 3), which is
-    not deposited.
-  - Burst events taken as maximal runs of frames above threshold, as the Methods do not define an event
-    further.
-- claim: offline-skew-above-shuffle
-  outcome: reproduced
-  notebook: reproduce_zaki_2024.ipynb
-  output: claim:offline-skew-above-shuffle
-  notes: The population trace's skewness is 1.65, 1.34 and 1.72 in the three offline recordings, above all
-    1000 circular-shift surrogates in each (surrogate means 0.60, 0.40 and 0.37, 95th percentiles 0.72, 0.51
-    and 0.48). The surrogate values are in the range of the paper's own chance level (shuffled skew 0.47 to
-    1.91 in the source data for Extended Data Figure 3o), so here the procedures agree.
-  deviations:
-  - Run on the EEG/EMG experiment's three 10 min offline recordings; the paper shows the test for another
-    cohort (Extended Data Figure 3o), which is not deposited.
-- claim: burst-locomotion-pause
-[... 150 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000718-zaki-2024; cat entry.yaml README.md; wc -l memlink.py; python -c "
-import json;nb=json.load(open('reproduce_zaki_2024.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print('=====',i,c['cell_type'],c['metadata'].get('tags'))
-    print(''.join(c['source'])[:600])
-"
-```
-
-```
-schema_version: 1
-name: 000718-zaki-2024
-type: reproduction
-title: Offline ensemble co-reactivation in the EEG/EMG experiment (Zaki et al. 2024)
-description: Tests the findings of Zaki et al. (2024) that can be tested on dandiset 000718, which holds
-  two of the nine mice of the paper's calcium imaging and EEG/EMG experiment (one high-shock, one
-  low-shock) with their encoding and recall sessions, the first offline recording after encoding, and
-  cell registration for the high-shock mouse. It checks the deposited freezing against the paper's
-  per-mouse values, compares freezing between the two mice, tests offline population bursts and their
-  skew against shuffled activity and against movement, and compares overlap-neutral with
-  overlap-aversive co-bursting in wake. The one-hour offline, behaviour-only, inhibitory tagging and
-  no-shock experiments are not in the dandiset.
-license: Apache-2.0
-notebooks:
-- path: reproduce_zaki_2024.ipynb
-  title: Reproducing Zaki et al. (2024) from dandiset 000718
-  runtime_minutes: 2
-helpers:
-- memlink.py
-related:
-[... 419 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import json;nb=json.load(open('reproduce_zaki_2024.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print('=====',i,c['cell_type'],c['metadata'].get('tags'))
-    print(''.join(c['source']))
-" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "entries/000718-zaki-2024/memlink.py"
-}
-```
-
-```
-666 /tmp/claude-1001/nb.txt
-```
-
-```
-1	"""Loading and measures for dandiset 000718 (Zaki et al., Nature 2024, doi:10.1038/s41586-024-08168-4).
-2	
-3	The dandiset holds two mice of the paper's calcium imaging and EEG/EMG experiment (Figure 5):
-4	Ca_EEG2-1 (1.5 mA, high shock) and Ca_EEG3-4 (0.25 mA, low shock). Each session file holds the
-5	Minian output of one Miniscope recording (deconvolved activity `S`, 15 Hz after the 2x temporal
-6	downsampling of the Methods, and ROI centroids), and, by session type, ezTrack freezing intervals
-7	and motion (behaviour sessions), shock times (FC), telemetry signals at 500 Hz and 6 s sleep-state
-8	intervals (offline sessions). The `Week` file of Ca_EEG2-1 holds a week of telemetry, an epoch table
-9	of all sessions, and the CellReg tables that map each offline-day-2 recording's ROIs to the encoding
-10	and recall sessions (-9999 for no match). Files are streamed from the archive at the pinned version;
-11	nothing is written to disk.
-12	
-13	Where the parameters come from (the analysis code the paper names,
-14	github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024, is not public):
-15	
-16	- Burst detection, participation and co-participation follow the Methods ("Burst participation
-17	  analysis", "Ensemble co-participation analysis"): each cell z-scored over time; the mean over
-18	  cells z-scored again; frames above `BURST_Z` = 2 form burst events (maximal runs of such frames,
-19	  a common reading of "time periods when the mean population activity reached above a threshold");
-20	  a cell or ensemble participates when its z-scored activity exceeds 2 at any frame of the event.
-[... 283 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt"
-}
-```
-
-```
-1	===== 0 markdown None
-2	# Reproducing Zaki et al. (2024) from dandiset 000718
-3	
-4	Paper. Zaki Y, Pennington ZT, Morales-Rodriguez D, et al. (2024). Offline ensemble co-reactivation
-5	links memories across days. *Nature* 637, 145-155 (issue of January 2025; published online 6 November
-6	2024).
-7	[doi:10.1038/s41586-024-08168-4](https://doi.org/10.1038/s41586-024-08168-4). This attempt used the
-8	full text, which is open access under CC BY (PMC11666460).
-9	
-10	Dandiset. [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.260825.1902), version
-11	0.260825.1902. The paper cites no DANDI version (its data statement says the imaging data are
-12	available "upon reasonable request"). This is the only published version, so it is pinned; the
-13	draft holds the same 20 assets (same asset ids and sizes).
-14	
-15	What the dandiset holds. Two of the nine mice of the calcium imaging and EEG/EMG experiment of
-16	Figure 5 and Extended Data Figures 9 and 10: Ca_EEG2-1 (high shock, 1.5 mA) and Ca_EEG3-4 (low
-17	shock, 0.25 mA). For each, the Miniscope recordings of encoding and recall sessions with Minian
-18	output, freezing from ezTrack, and the first 10 min offline recording after aversive encoding (of the
-19	24 the Methods describe per offline period); for Ca_EEG3-4 also the first after neutral encoding.
-20	Ca_EEG2-1 has no neutral or novel recall session. Only Ca_EEG2-1 has cell registration (CellReg tables, in its
-[... 647 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  && mkdir -p paper && curl -sL "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11666460/fullTextXML" -o paper/zaki2024.xml && ls -la paper && python -c "
-import re;t=open('paper/zaki2024.xml').read();t=re.sub(r'<[^>]+>',' ',t);t=re.sub(r'[ \t]+',' ',t);open('paper/zaki2024.txt','w').write(t)" && grep -n -i -E "100 ?Hz|500 ?Hz|quiet|concatenat|Gaussian mixture|GMM|re-computed|recomputed" paper/zaki2024.txt | cut -c1-600
-```
-
-Result: the fetched text is not kept.
 
 **Agent**
 
-Single-line text; split into sentences for searching.
+Now the notebook.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import re
-t=open('paper/zaki2024.txt').read()
-for kw in ['Hz','quiet','concatenat','mixture','re-computed','sleep scor','EMG','co-participation','wake']:
-    for m in re.finditer(kw,t,flags=re.I):
-        print(kw,'::',t[max(0,m.start()-300):m.end()+300].replace('\n',' '))
-        print('--')
+cd entries/zaki-2024; python -c "
+import json
+nb=json.load(open('reproduce_zaki_2024.ipynb'))
+for i,c in enumerate(nb['cells']):
+    print('=== cell',i,c['cell_type'],c.get('metadata',{}).get('tags'))
+    print(''.join(c['source']))
+"; ls ../../executed/zaki-2024 2>/dev/null
+```
+
+```
+<persisted-output>
+Output too large (44.8KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/4b0d5dec-f622-4ffa-b73c-6086b65333c5/tool-results/bywrss96s.txt
+
+Preview (first 2KB):
+=== cell 0 markdown None
+# Reproducing Zaki et al. (2024) on DANDI:000718
+
+**Paper.** Zaki, Pennington, Morales-Rodriguez et al., "Offline ensemble co-reactivation links memories across days", *Nature* 637, 145-155 (2025), [doi:10.1038/s41586-024-08168-4](https://doi.org/10.1038/s41586-024-08168-4).
+
+**Dataset.** [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.261122.2159), version **0.261122.2159**, which this attempt was asked to use (it is a repeat attempt, made blind, on the data as they are now). It is the most recent published version. The claims file's description was written against version 0.260825.1902; three NWB files differ between the two versions, and the data check below shows that the values this analysis uses are the same in both. Files are streamed from the archive; nothing is downloaded.
+
+**Text read.** The claims file (`claims/zaki-2024.yaml`) was written from the full text of the version of record (PMC11666460): Results, figure and Extended Data legends, and Methods. The paper's analysis code (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) is not public (404 when this attempt was made). The source-data repository the paper names under Data availability is read, at commit a508164, only for the link claim and as a reference value for one claim.
+
+**What the dataset holds.** Two of the nine mice of the calcium imaging and EEG/EMG experiment (Figure 5, Extended Data Figures 9 and 10): Ca_EEG2-1 (1.5 mA) and Ca_EEG3-4 (0.25 mA), with one offline recording for each offline period deposited (Ca_EEG2-1: the first offline recording after aversive encoding; Ca_EEG3-4: the first after neutral and the first after aversive encoding).
+
+| Claim | Tested here |
+|---|---|
+| source-data-link | tested (link,
+[... 6 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/4b0d5dec-f622-4ffa-b73c-6086b65333c5/tool-results/bywrss96s.txt"
+}
+```
+
+```
+1	=== cell 0 markdown None
+2	# Reproducing Zaki et al. (2024) on DANDI:000718
+3	
+4	**Paper.** Zaki, Pennington, Morales-Rodriguez et al., "Offline ensemble co-reactivation links memories across days", *Nature* 637, 145-155 (2025), [doi:10.1038/s41586-024-08168-4](https://doi.org/10.1038/s41586-024-08168-4).
+5	
+6	**Dataset.** [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.261122.2159), version **0.261122.2159**, which this attempt was asked to use (it is a repeat attempt, made blind, on the data as they are now). It is the most recent published version. The claims file's description was written against version 0.260825.1902; three NWB files differ between the two versions, and the data check below shows that the values this analysis uses are the same in both. Files are streamed from the archive; nothing is downloaded.
+7	
+8	**Text read.** The claims file (`claims/zaki-2024.yaml`) was written from the full text of the version of record (PMC11666460): Results, figure and Extended Data legends, and Methods. The paper's analysis code (github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024) is not public (404 when this attempt was made). The source-data repository the paper names under Data availability is read, at commit a508164, only for the link claim and as a reference value for one claim.
+9	
+10	**What the dataset holds.** Two of the nine mice of the calcium imaging and EEG/EMG experiment (Figure 5, Extended Data Figures 9 and 10): Ca_EEG2-1 (1.5 mA) and Ca_EEG3-4 (0.25 mA), with one offline recording for each offline period deposited (Ca_EEG2-1: the first offline recording after aversive encoding; Ca_EEG3-4: the first after neutral and the first after aversive encoding).
+11	
+12	| Claim | Tested here |
+13	|---|---|
+14	| source-data-link | tested (link, with the paper's source data) |
+15	| ed9b-aversive-freezing-high-vs-low | tested |
+16	| offline-bursts-above-shuffle | tested |
+17	| offline-skew-above-shuffle | tested |
+18	| burst-locomotion-pause |
+[... 520 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd ../..; python - <<'EOF'
+import yaml
+c=yaml.safe_load(open('claims/zaki-2024.yaml'))
+for cl in c['claims']:
+    if cl['id'] in ('offline-bursts-above-shuffle','burst-locomotion-pause','fig5c-wake-overlap-neutral-coburst','ed9-ed10-sleep-unchanged','ed9c-eeg-cohort-linking','fig5c-low-shock-wake-no-difference'):
+        print(yaml.safe_dump(cl, width=110, sort_keys=False))
+EOF
+grep -n -i "quiet wake\|quiet" paper/*.txt | head; grep -n -i "sleep scoring\|Gaussian mixture\|GMM\|6-s\|6 s epoch" paper/*.txt | head -20
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+head -c 9000 /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/4b0d5dec-f622-4ffa-b73c-6086b65333c5/tool-results/bgg1xrhdv.txt | tail -c 7000; wc -l paper/*.txt
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -o -i ".\{300\}sleep scoring.\{1500\}" *.txt | head -3; echo ----; grep -o -i ".\{200\}Extended Data Fig. 9d\|.\{600\}sleep features.\{400\}" *.txt | head -5; echo; grep -c -i quiet *.txt
+```
+
+```
+TTL pulse to record for 10 min, with a 20 min break in between, repeated 24 times. Thus, we sampled 4 h worth of calcium imaging data across 12 h. The telemetry probe recorded continuously for the duration of the experiment while the mouse was in its home cage in the vivarium. Sleep recordings and sleep scoring The HD-X02 implants recorded EEG, EMG, temperature and locomotion continuously throughout the experiment at 100 Hz. After the experiment was completed, the data were run through an automatic custom-written algorithm to detect sleep states. First, the data were binned into 6 s epochs (to allow enough cycles of slow-wave oscillations). To separate sleep and wake states, the EMG data were fit with a Gaussian mixture model with two states, in which the lower state represented sleep and the higher state represented wake. To separate REM versus NREM periods, the EEG was band-pass filtered for theta (5–9 Hz) and delta (0.5–4 Hz) signals, and a ratio of theta to delta signal was calculated. A Gaussian mixture model was fit to this theta/delta ratio with two states, in which high theta/delta meant REM, while low theta/delta meant NREM. The algorithm was validated against manually scored data. Miniscope data processing and data alignment To extract calcium transients from the calcium imaging data, we used our previously published open-source calcium imaging data processing pipeline, Minian 63 v.1.2.1. In brief, videos were preprocessed for background fluorescence and sensor noise, and motion corrected. Putative cell bodies were then detected to feed into a constrained non-negative matrix factorization algorithm to decompose the three-dimensional video array into a three-dimensional array representing the spatial footprint of each cell, as well as a two-dimensional matrix representing 
+.S.; F32NS116416 to Z.C.W. We thank B. Wei, M. La-Vu and C. Lee for experimental support; the members of D. Cai’s and T. Shuman’s laboratories for their feedback throughout the duration o
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o -i ".\{300\}quiet.\{300\}" paper/*.txt; echo; grep -o "Extended Data Fig. 10.\{0,20\}|.\{0,50\}" paper/*.txt | head; grep -o -i "[^.]*\(Fig\.\|Figure\) 10[^0-9][^|]\{0,1500\}" paper/*.txt | grep -i "pre-experiment\|baseline\|bout" | head -3; python - <<'EOF'
+import yaml
+c=yaml.safe_load(open('claims/zaki-2024.yaml'))
+for cl in c['claims']:
+    if cl['id']=='ed9-ed10-sleep-unchanged': print(yaml.safe_dump(cl,width=110,sort_keys=False))
 EOF
 ```
 
@@ -267,389 +269,388 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import re
-t=open('paper/zaki2024.txt').read()
-for kw in ['Ensemble co-participation analysis','Burst participation analysis','re-computed','concatenat','locomotion','quiet']:
-    for m in re.finditer(kw,t):
-        print(kw,'::',t[max(0,m.start()-200):m.end()+1200])
-        print('--')
-        break
-EOF
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import re
-t=open('paper/zaki2024.txt').read()
-i=t.find('In the calcium imag', t.find('Ensemble co-participation analysis'))
-print(t[i:i+1500])
-print("=====")
-for kw in ['ten-minute','10-min','24 ','telemetry','home cage']:
-    for m in re.finditer(kw,t):
-        print(kw,'::',t[max(0,m.start()-250):m.end()+300]); print('--')
-EOF
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && (test -d cai-lab-to-nwb || git clone -q https://github.com/catalystneuro/cai-lab-to-nwb) && cd cai-lab-to-nwb && git checkout -q a37dadafecaec507669c25baa705333460e0f48d && grep -rn -i -E "quiet|ActivitySignal|motion of the probe|sws|rate" --include=*.py . | grep -v -i "frame_rate\|sampling_rate =" | head -40
-```
-
-```
-./src/cai_lab_to_nwb/zaki_2024/zaki_2024_convert_session.py:56:        If True, generates a smaller, test-friendly NWB file. Default is False.
-./src/cai_lab_to_nwb/zaki_2024/utils/define_conversion_parameters.py:5:from cai_lab_to_nwb.zaki_2024.utils.generate_session_description import generate_session_description
-./src/cai_lab_to_nwb/zaki_2024/utils/define_conversion_parameters.py:67:        session_description = generate_session_description(
-./src/cai_lab_to_nwb/zaki_2024/utils/generate_session_description.py:7:def generate_session_description(experiment_design_file_path: Union[Path, str], subject_id: str, session_id: str):
-./src/cai_lab_to_nwb/zaki_2024/utils/generate_session_description.py:37:    session_description = generate_session_description(
-./src/cai_lab_to_nwb/zaki_2024/utils/__init__.py:14:from .generate_session_description import generate_session_description
-./src/cai_lab_to_nwb/zaki_2024/interfaces/eztrack_interface.py:83:            rate=self.video_sampling_frequency,
-./src/cai_lab_to_nwb/zaki_2024/interfaces/eztrack_interface.py:93:            Freezing behavior intervals generated using EzTrack software for file {file}. 
-./src/cai_lab_to_nwb/zaki_2024/interfaces/miniscope_imaging_interface.py:350:        # use the frame rate of the json configuration to set the metadata
-./src/cai_lab_to_nwb/zaki_2024/interfaces/zaki_2024_edf_interface.py:78:                "name": "ActivitySignal",
-./src/cai_lab_to_nwb/zaki_2024/interfaces/zaki_2024_edf_interface.py:79:                "description": "Activity signal recorder with HD-X02 wireless telemetry probe. It refers to the motion of the probe relative to the receiver and it can be used as a proxy for locomotion.",
-./src/cai_lab_to_nwb/zaki_2024/interfaces/zaki_2024_edf_interface.py:111:        for channel_index, channel_name in enumerate(channels_dict.keys()):
-./src/cai_lab_to_nwb/zaki_2024/interfaces/zaki_2024_edf_interface.py:114:                data=data[channel_index], starting_time=starting_time, rate=edf_
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,120p $TMPDIR/cai-lab-to-nwb/src/cai_lab_to_nwb/zaki_2024/interfaces/zaki_2024_sleep_classification_interface.py
-```
-
-```
-"""Primary class for converting experiment-specific behavior."""
-
-import pandas as pd
-from pydantic import FilePath
-from typing import Optional, List
-
-from pynwb.file import NWBFile
-from pynwb.epoch import TimeIntervals
-from neuroconv.basedatainterface import BaseDataInterface
-from neuroconv.utils import DeepDict
-
-
-class Zaki2024SleepClassificationInterface(BaseDataInterface):
-    """Adds intervals of sleeping behavior."""
-
-    keywords = ["behavior", "sleep stages"]
-
-    def __init__(self, file_path: FilePath, sampling_frequency: float, verbose: bool = False):
-        # This should load the data lazily and prepare variables you need
-
-[... 66 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && (test -d srcdata || git clone -q https://github.com/denisecailab/RetrospectiveMemoryLinkingData_2024 srcdata) && cd srcdata && git checkout -q a5081645d3d3e5743ade58ea632c28b003794345 && ls Figure5 ExtendedData9 ExtendedData10 2>/dev/null; head -20 Figure5/Fig_5c.csv; grep -ril "quiet" . | head
-```
-
-```
-ExtendedData10:
-ExtData10b.csv
-ExtData10c.csv
-ExtData10d.csv
-ExtData10e.csv
-ExtData10f.csv
-
-ExtendedData9:
-ExtData9b.csv
-ExtData9c.csv
-ExtData9d.csv
-ExtData9e.csv
-ExtData9g_left.csv
-ExtData9g_right.csv
-
-Figure5:
-Fig_5c.csv
-,Mouse,Amplitude,SleepState,EnsembleCombo,Fraction
-3,Ca_EEG_Pilot1,HighShock,nrem,Overlap x Neutral,17.589285714285715
-4,Ca_EEG_Pilot1,HighShock,nrem,Overlap x Aversive,10.982142857142858
-[... 21 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000718-zaki-2024 && cat requirements.in && time python - <<'EOF'
-import memlink as ml, time, numpy as np
-f=ml.open_nwb(ml.session_path("Ca_EEG2-1","Week"))
-for k in f["acquisition"]:
-    d=f[f"acquisition/{k}"]
-    if "data" in d:
-        print(k, d["data"].shape, d["data"].dtype, d["data"].chunks, d["data"].compression, dict(d["data"].attrs).get("unit"), d.attrs.get("description"))
-w=ml.load_week()
-a,b=w["epochs"]["OfflineDay2Session1"]
-t=time.time(); x=ml.week_signal(a, a+3600, "EMGSignal"); print(len(x), time.time()-t)
-e=f["intervals/epochs"]; print(list(e.keys()))
+cd entries/zaki-2024; date -u; time python - <<'EOF'
+import zaki, numpy as np
+A=zaki.assets()
+for p in sorted(A):
+    if p.endswith('.nwb'): print(p, round(A[p]['size']/1e9,2))
+f=zaki.open_h5(zaki.OFFLINE["Ca_EEG2-1 Day2 S1"])
+a=f["acquisition/ActivitySignal"]
+print(dict(a.attrs)); print({k:dict(a[k].attrs) for k in a if hasattr(a[k],'attrs')})
+print(zaki.text(f["session_description"]))
+print(dict(f["processing/sleep/SleepIntervals"].attrs)); print({k:dict(v.attrs) for k,v in f["processing/sleep/SleepIntervals"].items()})
+for k in zaki.OFFLINE.values():
+    g=zaki.open_h5(k); print(k, list(g["processing"]), list(g["processing/ophys"]), zaki.text(g["session_description"])[:300])
+w=zaki.open_h5(zaki.WEEK)
+print(list(w["acquisition"]), {k: w["acquisition"][k]["data"].shape for k in w["acquisition"]}, w["acquisition/EEGSignal/data"].dtype, w["acquisition/EEGSignal/data"].chunks)
+print(list(w["processing"]))
 EOF
 ```
 
 ```
 Exit code 1
-dandi
+Wed Nov 25 05:06:15 UTC 2026
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "entries/zaki-2024/zaki.py", line 51, in <module>
+    import h5py
+ModuleNotFoundError: No module named 'h5py'
+
+real	0m0.022s
+user	0m0.017s
+sys	0m0.004s
+```
+
+**Agent calls Bash**
+
+```bash
+ls -a ../../ | head -50; ls ../../.venv* ../../executed/zaki-2024 2>/dev/null; grep -n "def \|venv" ../../tools/entry.py | head -60
+```
+
+```
+.
+..
+.claude
+.mcp.json
+_PipelineMapping
+_actions
+_temp
+encore-registry
+grep: ../../tools/entry.py: No such file or directory
+```
+
+**Agent calls Bash**
+
+```bash
+cd  pwd; ls; grep -n "venv\|def cmd_\|def run" tools/entry.py | head -40
+```
+
+```
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+entries
+executed
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+protocol.lock
+[... 17 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls -a executed/zaki-2024/; ls executed/zaki-2024/.venv/bin 2>/dev/null | head
+```
+
+```
+.
+..
+.clean-run.json
+.venv
+reproduce_zaki_2024.ipynb
+result.json
+activate
+activate.bat
+activate.csh
+activate.fish
+activate.nu
+activate.ps1
+activate.xsh
+activate_this.py
+deactivate.bat
+debugpy
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/zaki-2024; PY=executed/zaki-2024/.venv/bin/python; time $PY - <<'EOF'
+import zaki, numpy as np
+A=zaki.assets()
+for p in sorted(A):
+    if p.endswith('.nwb'): print(p, round(A[p]['size']/1e9,2))
+f=zaki.open_h5(zaki.OFFLINE["Ca_EEG2-1 Day2 S1"])
+a=f["acquisition/ActivitySignal"]
+print(dict(a.attrs)); print({k:dict(a[k].attrs) for k in a if hasattr(a[k],'attrs')})
+print(dict(f["processing/sleep/SleepIntervals"].attrs)); print({k:dict(v.attrs) for k,v in f["processing/sleep/SleepIntervals"].items()})
+for k in zaki.OFFLINE.values():
+    g=zaki.open_h5(k); print(k, list(g["processing"]), list(g["processing/ophys"]), zaki.text(g["session_description"])[:400])
+w=zaki.open_h5(zaki.WEEK)
+print(list(w["acquisition"]), {k: w["acquisition"][k]["data"].shape for k in w["acquisition"]}, w["acquisition/EEGSignal/data"].dtype, w["acquisition/EEGSignal/data"].chunks)
+print(list(w["processing"]))
+EOF
+```
+
+```
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-FC_image+ophys.nwb 2.16
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-NeutralExposure_image+ophys.nwb 4.66
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-OfflineDay2Session1_ophys.nwb 4.67
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-Recall1_image+ophys.nwb 2.31
+sub-Ca-EEG2-1/sub-Ca-EEG2-1_ses-Week.nwb 3.67
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-FC_image+ophys.nwb 2.13
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-NeutralExposure_image+ophys.nwb 4.72
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-OfflineDay1Session1_ophys.nwb 4.63
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-OfflineDay2Session1_ophys.nwb 4.62
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Recall1_image+ophys.nwb 2.3
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Recall2_image+ophys.nwb 2.32
+sub-Ca-EEG3-4/sub-Ca-EEG3-4_ses-Recall3_image+ophys.nwb 2.34
+{'comments': 'no comments', 'description': 'Activity signal recorder with HD-X02 wireless telemetry probe. It refers to the motion of the probe relative to the receiver and it can be used as a proxy for locomotion.', 'namespace': 'core', 'neurodata_type': 'TimeSeries', 'object_id': '9c21574d-9a59-4227-9b6b-a61618135c55'}
+{'data': {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'n.a.'}, 'starting_time': {'rate': np.float64(500.0), 'unit': 'seconds'}}
+{'colnames': array(['start_time', 'stop_time', 'sleep_state'], dtype=object), 'description': 'Sleep states classified with custom algorithm using the data from the HD-X02 sensor (EEG, EMG, temperature, etc.).', 'namespace': 'core', 'neurodata_type': 'TimeIntervals', 'object_id': '35f131e4-2fa6-4cdb-9ae1-4adfa3dc9e5f'}
+{'id': {'namespace': 'hdmf-common', 'neurodata_type': 'ElementIdentifiers', 'object_id': '44ad6a1d-0d0a-40d8-8fc3-e33c1c7972dd'}, 'sleep_state': {'description': "\n            Sleep State Classification, it can be one of the following: \n            - 'quiet wake': The animal is awake and alert but at rest, without engaging in any voluntary movement or significant cognitive activity\n            - 'rem': Sleep stage characterized b
+[... 9 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/zaki-2024; PY=executed/zaki-2024/.venv/bin/python; $PY - <<'EOF'
+import zaki, numpy as np, time
+w=zaki.open_h5(zaki.WEEK)
+d=w["acquisition/EMGSignal/data"]
+t=time.time(); x=d[0:25_000_000]; print("100MB", time.time()-t, "s")
+ep=zaki.table(w["intervals/epochs"]); 
+import pandas as pd
+print(pd.DataFrame({"s":ep["session_ids"],"start":ep["start_time"],"stop":ep["stop_time"]}).sort_values("start").to_string())
+print(zaki.text(w["session_start_time"]), float(w["acquisition/EMGSignal/starting_time"][()]))
+EOF
+```
+
+```
+/bin/bash: line 1: cd: entries/zaki-2024: No such file or directory
+100MB 1.438687801361084 s
+                       s       start        stop
+22   OfflineDay1Session1  356757.595  356813.764
+23   OfflineDay1Session2  356897.828  357005.289
+24   OfflineDay1Session3  357044.154  357312.538
+25   OfflineDay1Session4  357350.761  357417.826
+0        NeutralExposure  359058.744  359658.717
+26   OfflineDay1Session5  364070.226  364370.844
+3    OfflineDay2Session1  527067.677  527667.538
+4    OfflineDay2Session2  528867.463  529467.359
+2                     FC  529884.777  530158.743
+5    OfflineDay2Session3  530667.282  531267.178
+6    OfflineDay2Session4  532467.102  533066.997
+7    OfflineDay2Session5  534266.922  534866.817
+8    OfflineDay2Session6  536066.738  536666.632
+9    OfflineDay2Session7  537866.553  538466.447
+10   OfflineDay2Session8  539666.372  540266.265
+11   OfflineDay2Session9  541466.187  542066.080
+12  OfflineDay2Session10  543266.005  543865.900
+[... 11 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat entries/zaki-2024/requirements.in; echo $TMPDIR
+```
+
+```
 h5py
 matplotlib
 numpy
 pandas
 remfile
+requests
 scipy
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "entries/000718-zaki-2024/memlink.py", line 36, in <module>
-    import h5py
-ModuleNotFoundError: No module named 'h5py'
-
-real	0m0.029s
-user	0m0.022s
-sys	0m0.007s
+/tmp/claude-1001
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 1,80p tools/entry.py | head -80; ls -a; ls .venv* envs 2>/dev/null | head
+mkdir -p $TMPDIR/z; cat > $TMPDIR/z/loco.py <<'EOF'
+import sys; sys.path.insert(0,'entries/zaki-2024')
+import zaki, numpy as np, time, pickle
+from scipy import stats
+t=time.time()
+OFF={}
+for name,path in zaki.OFFLINE.items():
+    f=zaki.open_h5(path); X,ts,rois=zaki.deconvolved(f); Z,keep=zaki.zscore_cells(X)
+    a=f["acquisition/ActivitySignal"]
+    OFF[name]=dict(Z=Z,ts=ts,act=a["data"][()],act_t0=float(a["starting_time"][()]),act_rate=float(a["starting_time"].attrs["rate"]))
+print("load",time.time()-t)
+pickle.dump(OFF,open('/tmp/claude-1001/z/off.pkl','wb'))
+EOF
+cd $TMPDIR/z; executed/zaki-2024/.venv/bin/python loco.py
 ```
 
 ```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 107 more lines not kept]
-```
-
-**Agent**
-
-Let me build a scratch environment from the lock file for exploration.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q -p 3.13 dev && uv pip install -q -p dev/bin/python -r entries/000718-zaki-2024/requirements.lock.txt scikit-learn && echo ok
-```
-
-```
-ok
+load 6.589227914810181
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000718-zaki-2024 && time $TMPDIR/dev/bin/python - <<'EOF'
-import memlink as ml, time, numpy as np
-f=ml.open_nwb(ml.session_path("Ca_EEG2-1","Week"))
-for k in f["acquisition"]:
-    d=f[f"acquisition/{k}"]
-    if "data" in d:
-        print(k, d["data"].shape, d["data"].dtype, d["data"].chunks, d["data"].compression, d["data"].attrs.get("unit"), d.attrs.get("description"))
-w=ml.load_week()
-a,b=w["epochs"]["OfflineDay2Session1"]
-t=time.time(); x=ml.week_signal(a, a+3600, "EMGSignal"); print(len(x), time.time()-t)
-e=f["intervals/epochs"]; print(list(e.keys()))
-off=ml.open_nwb(ml.session_path("Ca_EEG2-1","OfflineDay2Session1"))
-for k in off["acquisition"]:
-    d=off[f"acquisition/{k}"]
-    if "data" in d: print(k, d["data"].shape, d["starting_time"].attrs["rate"], d.attrs.get("description"))
-print(off["processing/sleep/SleepIntervals"].attrs["description"])
-print(off["processing/sleep/SleepIntervals/sleep_state"].attrs["description"])
+cat > $TMPDIR/z/loco2.py <<'EOF'
+import sys; sys.path.insert(0,'entries/zaki-2024')
+import zaki, numpy as np, pickle
+from scipy import stats
+OFF=pickle.load(open('/tmp/claude-1001/z/off.pkl','rb'))
+def lagged_corr(x, y, lags):
+    out = []
+    for L in lags:
+        if L >= 0: out.append(np.corrcoef(x[L:], y[:len(y) - L])[0, 1])
+        else: out.append(np.corrcoef(x[:L], y[-L:])[0, 1])
+    return np.array(out)
+lags_s = np.arange(-10, 10.5, 0.5)
+for name,o in OFF.items():
+    c_, mv = zaki.movement_bins(o["act"], o["act_t0"], o["act_rate"], 0.5)
+    edges = np.r_[c_ - 0.25, c_[-1] + 0.25]
+    pb = np.histogram(o["ts"], edges, weights=o["Z"].mean(1))[0] / np.maximum(np.histogram(o["ts"], edges)[0], 1)
+    ok = np.histogram(o["ts"], edges)[0] > 0
+    cc = lagged_corr(pb[ok], mv[ok], (lags_s / 0.5).astype(int)); peak=lags_s[np.argmax(np.abs(cc))]
+    c, m = zaki.movement_bins(o["act"], o["act_t0"], o["act_rate"], 0.1)
+    p = zaki.population_trace(o["Z"]); ev = zaki.burst_events(p)
+    row=[]
+    for sh in [peak]+list(np.arange(-8,8.5,1.0)):
+        cs=c+sh
+        def win(tz):
+            if tz-5<cs[0] or tz+5>cs[-1]: return None
+            return m[(cs>=tz-1)&(cs<tz)].mean(), m[(cs>=tz-5)&(cs<tz-3)].mean()
+        for ix in (2,0):
+            w=[win(o["ts"][e[ix]]) for e in ev]; w=[x for x in w if x is not None]
+            pre,base=np.array(w).T
+            row.append((sh,ix,len(w),stats.wilcoxon(pre,base,alternative="less").pvalue))
+    print(name, "peak", peak, [(f"{s:+.1f}",i,n,round(pv,3)) for s,i,n,pv in row])
 EOF
+cd $TMPDIR/z && executed/zaki-2024/.venv/bin/python loco2.py
 ```
 
 ```
-Exit code 1
-ActivitySignal (404395000,) float32 (2500000,) gzip n.a. Activity signal recorder with HD-X02 wireless telemetry probe. It refers to the motion of the probe relative to the receiver and it can be used as a proxy for locomotion.
-EEGSignal (404395000,) float32 (2500000,) gzip volts EEG signal recorder with HD-X02 wireless telemetry probe
-EMGSignal (404395000,) float32 (2500000,) gzip volts EMG signal recorder with HD-X02 wireless telemetry probe
-TemperatureSignal (404395000,) float32 (2500000,) gzip celsius Temperature signal recorder with HD-X02 wireless telemetry probe
-1800000 2.088432550430298
-['id', 'session_ids', 'start_time', 'stop_time']
-ActivitySignal (299931,) 500.0 Activity signal recorder with HD-X02 wireless telemetry probe. It refers to the motion of the probe relative to the receiver and it can be used as a proxy for locomotion.
-EEGSignal (299931,) 500.0 EEG signal recorder with HD-X02 wireless telemetry probe
-EMGSignal (299931,) 500.0 EMG signal recorder with HD-X02 wireless telemetry probe
-Traceback (most recent call last):
-  File "<stdin>", line 14, in <module>
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
-    return self._get(name)
-           ~~~~~~~~~^^^^^^
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/h5py/_hl/group.py", line 421, in _get
-    oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-[... 7 more lines not kept]
+Ca_EEG2-1 Day2 S1 peak 1.5 [('+1.5', 2, 85, np.float32(0.805)), ('+1.5', 0, 85, np.float32(0.798)), ('-8.0', 2, 87, np.float32(0.021)), ('-8.0', 0, 87, np.float32(0.045)), ('-7.0', 2, 87, np.float32(0.209)), ('-7.0', 0, 87, np.float32(0.366)), ('-6.0', 2, 87, np.float32(0.186)), ('-6.0', 0, 87, np.float32(0.249)), ('-5.0', 2, 87, np.float32(0.067)), ('-5.0', 0, 87, np.float32(0.134)), ('-4.0', 2, 87, np.float32(0.07)), ('-4.0', 0, 87, np.float32(0.023)), ('-3.0', 2, 86, np.float32(0.013)), ('-3.0', 0, 86, np.float32(0.007)), ('-2.0', 2, 86, np.float32(0.216)), ('-2.0', 0, 86, np.float32(0.226)), ('-1.0', 2, 85, np.float32(0.544)), ('-1.0', 0, 85, np.float32(0.55)), ('+0.0', 2, 85, np.float32(0.763)), ('+0.0', 0, 85, np.float32(0.885)), ('+1.0', 2, 85, np.float32(0.77)), ('+1.0', 0, 85, np.float32(0.837)), ('+2.0', 2, 85, np.float32(0.752)), ('+2.0', 0, 85, np.float32(0.749)), ('+3.0', 2, 85, np.float32(0.704)), ('+3.0', 0, 85, np.float32(0.588)), ('+4.0', 2, 85, np.float32(0.936)), ('+4.0', 0, 85, np.float32(0.902)), ('+5.0', 2, 85, np.float32(0.759)), ('+5.0', 0, 85, np.float32(0.722)), ('+6.0', 2, 85, np.float32(0.468)), ('+6.0', 0, 85, np.float32(0.33)), ('+7.0', 2, 85, np.float32(0.182)), ('+7.0', 0, 85, np.float32(0.155)), ('+8.0', 2, 85, np.float32(0.229)), ('+8.0', 0, 85, np.float32(0.242))]
+Ca_EEG3-4 Day1 S1 peak 5.5 [('+5.5', 2, 62, np.float32(0.982)), ('+5.5', 0, 62, np.float32(0.977)), ('-8.0', 2, 62, np.float32(0.612)), ('-8.0', 0, 62, np.float32(0.606)), ('-7.0', 2, 62, np.float32(0.848)), ('-7.0', 0, 62, np.float32(0.827)), ('-6.0', 2, 62, np.float32(0.751)), ('-6.0', 0, 62, np.float32(0.73)), ('-5.0', 2, 62, np.float32(0.651)), ('-5.0', 0, 62, np.float32(0.628)), ('-4.0', 2, 62, np.float32(0.654)), ('-4.0', 0, 62, np.float32(0.702)), ('-3.0', 2, 63, np.float32(0.794)), ('-3.0', 0, 63, np.float32(0.821)), ('-2.0', 2, 63, np.float32(0.514)), ('-2.0', 0, 63, np.float32(0.544)), ('-1.0', 2, 63, np.float32(0.881)), ('-1.0', 0, 62, np.float32(0.963)), ('+0.
+[... 2 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000718-zaki-2024 && $TMPDIR/dev/bin/python - <<'EOF'
-import memlink as ml, numpy as np
-off=ml.open_nwb(ml.session_path("Ca_EEG2-1","OfflineDay2Session1"))
-g=off["processing/sleep/SleepIntervals"]
-print(dict(g.attrs)); print(dict(g["sleep_state"].attrs))
-a=off["acquisition/ActivitySignal"]; print(list(a.keys()), dict(a["data"].attrs), dict(a["timestamps"].attrs) if "timestamps" in a else None)
-print(a["starting_time"][()] if "starting_time" in a else a["timestamps"][:3])
-x=a["data"][:]; print(np.percentile(x,[0,1,25,50,75,99,100]), (x==0).mean(), len(np.unique(x)))
-e=off["acquisition/EMGSignal"]; print(list(e.keys()))
+cat > $TMPDIR/z/sleep.py <<'EOF'
+import sys; sys.path.insert(0,'entries/zaki-2024')
+import zaki, numpy as np, time, pickle
+t=time.time()
+w=zaki.open_h5(zaki.WEEK)
+fs=500.0; E=3000; CH=2_500_000  # 6 s epochs, 5000 s chunks (multiple of 3000? 2.5M/3000 not int)
+CH=E*800  # 4800 s
+eeg=w["acquisition/EEGSignal/data"]; emg=w["acquisition/EMGSignal/data"]
+n=eeg.shape[0]//E
+freqs=np.fft.rfftfreq(E,1/fs); dl=(freqs>=0.5)&(freqs<4); th=(freqs>=5)&(freqs<=9)
+rms=np.empty(n); delta=np.empty(n); theta=np.empty(n); flat=np.empty(n,bool)
+for i0 in range(0,n,800):
+    i1=min(n,i0+800)
+    a=eeg[i0*E:i1*E].reshape(-1,E).astype(np.float64); b=emg[i0*E:i1*E].reshape(-1,E).astype(np.float64)
+    flat[i0:i1]=(np.ptp(a,axis=1)==0)|(np.ptp(b,axis=1)==0)
+    bb=b-b.mean(1,keepdims=True); rms[i0:i1]=np.sqrt((bb**2).mean(1))
+    P=np.abs(np.fft.rfft(a-a.mean(1,keepdims=True),axis=1))**2
+    delta[i0:i1]=P[:,dl].sum(1); theta[i0:i1]=P[:,th].sum(1)
+print("read",time.time()-t, n, flat.mean())
+pickle.dump(dict(rms=rms,delta=delta,theta=theta,flat=flat),open('/tmp/claude-1001/z/sleep.pkl','wb'))
 EOF
+cd $TMPDIR/z && executed/zaki-2024/.venv/bin/python sleep.py; date -u
 ```
 
 ```
-{'colnames': array(['start_time', 'stop_time', 'sleep_state'], dtype=object), 'description': 'Sleep states classified with custom algorithm using the data from the HD-X02 sensor (EEG, EMG, temperature, etc.).', 'namespace': 'core', 'neurodata_type': 'TimeIntervals', 'object_id': '35f131e4-2fa6-4cdb-9ae1-4adfa3dc9e5f'}
-{'description': "\n            Sleep State Classification, it can be one of the following: \n            - 'quiet wake': The animal is awake and alert but at rest, without engaging in any voluntary movement or significant cognitive activity\n            - 'rem': Sleep stage characterized by Rapid Eye Movements (REM) beneath closed eyelids.\n            - 'sws':  Slow-Wave Sleep (SWS) is a stage of non-REM (NREM) sleep characterized by slow, high-amplitude brain waves\n            - 'wake': State of full consciousness when the animal is alert, responsive to the environment, and capable of voluntary movement\n        ", 'namespace': 'hdmf-common', 'neurodata_type': 'VectorData', 'object_id': '12ab6238-50fd-4ea5-8ac4-778747e28a47'}
-['data', 'starting_time'] {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'n.a.'} None
-0.006
-[-9.12926078e-01 -2.69353187e-01 -2.07550488e-02  2.18907744e-03
-  3.21380869e-02  1.91786441e+00  4.00050259e+00] 3.334100176373899e-06 299527
-['data', 'starting_time']
+read 41.474790811538696 134798 0.012188608139586641
+Wed Nov 25 05:09:04 UTC 2026
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-time $TMPDIR/dev/bin/python - <<'EOF'
-import memlink as ml, numpy as np, pandas as pd
-from sklearn.mixture import GaussianMixture
-w=ml.load_week()
-a,b=w["epochs"]["OfflineDay2Session1"]
-print("offline epoch", a, b)
-s=ml.load_session(ml.session_path("Ca_EEG2-1","OfflineDay2Session1"))
-print("activity_t0", s["activity_t0"])
-st,sp,lab=s["sleep"]; print(st[:5], sp[:5], lab[:5], len(st))
-rate=500; E=6*rate
-emg=ml.week_signal(a, a+12*3600, "EMGSignal"); eeg=ml.week_signal(a, a+12*3600, "EEGSignal")
-n=len(emg)//E
-X=emg[:n*E].reshape(n,E); 
-rms=np.sqrt(((X-X.mean(1,keepdims=True))**2).mean(1))
-zero=(X==0).mean(1)>0.9
-print("epochs", n, "dropped", zero.sum())
-f=np.log(rms[~zero])[:,None]
-g=GaussianMixture(2, random_state=0).fit(f)
-hi=np.argmax(g.means_[:,0])
-cls=np.full(n,-1); cls[~zero]=(g.predict(f)==hi).astype(int)
-print("means", np.exp(g.means_.ravel()), "weights", g.weights_, "wake frac", (cls==1).mean())
-# offline epochs: label per 6s epoch of week time a + t
-rows=[]
-for x0,x1,l in zip(st,sp,lab):
-    for t in np.arange(x0, x1+0.01, 6.0):
-        i=int((t)//6)
-        if i<n: rows.append((l, cls[i]))
-df=pd.DataFrame(rows,columns=["label","gmm_wake"])
-print(pd.crosstab(df.label, df.gmm_wake))
-# activity relation
-act=ml.week_signal(a, a+600, "ActivitySignal")
-ne=len(act)//E
-am=np.abs(act[:ne*E]).reshape(ne,E).mean(1)
-lab_e=np.array([dict(zip(range(ne),[None]*ne))]) 
+cat > $TMPDIR/z/sleep2.py <<'EOF'
+import sys; sys.path.insert(0,'entries/zaki-2024')
+import zaki, numpy as np, pickle
+d=pickle.load(open('/tmp/claude-1001/z/sleep.pkl','rb'))
+def gmm2(x, iters=200):
+    x=np.asarray(x,float); mu=np.percentile(x,[25,75]); sd=np.array([x.std(),x.std()])/2; pi=np.array([.5,.5])
+    for _ in range(iters):
+        ll=np.stack([np.log(pi[k])-np.log(sd[k])-0.5*((x-mu[k])/sd[k])**2 for k in range(2)],1)
+        r=np.exp(ll-ll.max(1,keepdims=True)); r/=r.sum(1,keepdims=True)
+        nk=r.sum(0); pi=nk/len(x); mu=(r*x[:,None]).sum(0)/nk; sd=np.sqrt((r*(x[:,None]-mu)**2).sum(0)/nk)
+    o=np.argsort(mu); return mu[o],sd[o],pi[o],r[:,o]
+ok=~d['flat']
+lr=np.log(d['rms'][ok]); mu,sd,pi,r=gmm2(lr); print("EMG",mu,sd,pi)
+sleep=np.zeros(len(ok),bool); sleep[np.flatnonzero(ok)]=r[:,0]>0.5
+td=np.log(d['theta']/d['delta'])
+mu2,sd2,pi2,r2=gmm2(td[sleep]); print("TD",mu2,sd2,pi2)
+state=np.full(len(ok),'x',dtype='<U4'); state[ok]='wake'; si=np.flatnonzero(sleep); state[si]=np.where(r2[:,1]>0.5,'rem','nrem')
+print({s:(state==s).mean() for s in ['wake','nrem','rem','x']})
+pickle.dump(state,open('/tmp/claude-1001/z/state.pkl','wb'))
+# daily fraction
+day=np.arange(len(ok))*6//86400
+for k in range(day.max()+1):
+    m=(day==k)&ok; print(k, round(100*np.mean(state[m]!='wake'),1), round(100*np.mean(state[m]=='rem'),1))
+# validate vs offline file labels of Day2S1 (epoch start 527067.677)
+f=zaki.open_h5(zaki.OFFLINE["Ca_EEG2-1 Day2 S1"]); sl=zaki.table(f["processing/sleep/SleepIntervals"])
+t0=527067.677
+for s,e,st in zip(sl['start_time'],sl['stop_time'],sl['sleep_state']):
+    i0=int((t0+s)//6); i1=int((t0+e)//6); print(st, round(e-s), dict(zip(*np.unique(state[i0:i1],return_counts=True))))
 EOF
+cd $TMPDIR/z && executed/zaki-2024/.venv/bin/python sleep2.py
 ```
 
 ```
-offline epoch 527067.677 527667.538
-activity_t0 0.006
-[6.00000000e-03 1.36726667e+01 3.16726667e+01 4.96726667e+01
- 9.76726667e+01] [ 13.606  31.606  49.606  97.606 103.606] ['wake' 'quiet wake' 'wake' 'quiet wake' 'wake'] 26
-epochs 7200 dropped 0
-means [5.1061994e-05 2.1430402e-05] weights [0.36038968 0.63961035] wake frac 0.36625
-gmm_wake    0   1
-label            
-quiet wake  5  79
-wake        0  22
-
-real	0m20.664s
-user	0m4.880s
-sys	0m0.458s
-```
-
-**Agent calls Bash**
-
-```bash
-cd  && python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s['properties']['verifications'],indent=1)); print(json.dumps(s.get('\$defs',{}),indent=1)[:4000])"; grep -l "verifications:" attempts/*.yaml | head -3
-```
-
-```
-{
- "type": "array",
- "items": {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-   "date",
-   "kind",
-   "by",
-   "results"
-  ],
-  "properties": {
-   "date": {
-    "type": "string",
-    "format": "date"
-   },
-   "kind": {
-    "enum": [
-     "agent",
-     "person",
-[... 53 more lines not kept]
+/tmp/claude-1001/z/sleep2.py:14: RuntimeWarning: invalid value encountered in divide
+  td=np.log(d['theta']/d['delta'])
+EMG [-10.81262155  -9.77740075] [0.3798828  0.23416119] [0.53685434 0.46314566]
+TD [-0.61749486 -0.10292845] [0.41790946 0.54353341] [0.5207854 0.4792146]
+{'wake': np.float64(0.4679446282585795), 'nrem': np.float64(0.3166664193830769), 'rem': np.float64(0.20320034421875696), 'x': np.float64(0.012188608139586641)}
+0 50.9 19.5
+1 48.4 19.1
+2 49.8 19.6
+3 49.7 20.9
+4 53.9 21.1
+5 49.4 19.0
+6 57.0 22.0
+7 52.3 20.1
+8 55.9 21.8
+9 73.2 26.9
+wake 14 {np.str_('wake'): np.int64(2)}
+quiet wake 18 {np.str_('wake'): np.int64(3)}
+wake 18 {np.str_('wake'): np.int64(3)}
+quiet wake 48 {np.str_('wake'): np.int64(8)}
+wake 6 {np.str_('wake'): np.int64(1)}
+[... 22 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n -A30 "^verifications:" attempts/000559*.yaml | head -60; grep -n "blocked_by\|agrees" tools/entry.py | head -30
+cat >> $TMPDIR/z/sleep2.py <<'EOF'
+print("raw ratio")
+tdr=(d['theta']/d['delta'])
+mu3,sd3,pi3,r3=gmm2(tdr[sleep]); print(mu3,sd3,pi3, np.mean(r3[:,1]>0.5))
+print(np.percentile(td[sleep],[5,25,50,75,95]))
+h,e=np.histogram(td[sleep],40); print(h)
+EOF
+cd $TMPDIR/z && executed/zaki-2024/.venv/bin/python sleep2.py 2>&1 | tail -6
 ```
 
 ```
-301:verifications:
-302-- date: 2026-10-17
-303-  kind: agent
-304-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-305-  reviewed: The executed notebook of the first run with the conclusion cells and the summary
-306-    removed, the helper module and the claims file. The header still listed which claims were
-307-    tested and blocked.
-308-  results:
-309-  - claim: fig1e-velocity-timescales
-310-    agrees: true
-311-    outcome: partially_reproduced
-312-    reason: Both measures are significantly negative at all 20 timescales under 10 s. The rate
-313-      measure is significantly positive at 27 of 100 timescales of 10 s or more (max r 0.185). The
-314-      amplitude measure is never significantly positive at 10 s or more (max r 0.007), so the claim
-315-      holds for one measure. It also noted that keep = cnt == mode drops bins with more frames than
-316-      the mode, while the criterion drops only those with fewer, which at timescales of non-integer
-317-      frames can discard about half the bins (not affecting a conclusion).
-318-    response: Bins are now dropped only when they have fewer frames than the mode, as the
-319-      criterion says. Habituation sessions are now left out (see fig1h). The re-run gives 121
-320-      sessions, the rate significantly positive at 47 of 100 longer timescales (max 0.113) and the
-[... 13 more lines not kept]
+raw ratio
+[0.60311596 1.36348808] [0.22281956 0.64908113] [0.73138914 0.26861086] 0.2078570715070565
+[-1.21560322 -0.75215438 -0.40596669 -0.02052187  0.58628253]
+[   1    0    0    0    0    1    2    3    4   12   25   83  169  394
+  771 1410 2261 3348 4557 5687 6581 6954 6786 6286 5706 4708 3824 3107
+ 2299 1796 1217  831  574  314  184   99   54   16    6    7]
+Shell cwd was reset to
 ```
 
 **Agent calls Edit**
@@ -657,999 +658,1197 @@ grep -n -A30 "^verifications:" attempts/000559*.yaml | head -60; grep -n "blocke
 ```json
 {
  "replace_all": false,
- "file_path": "entries/000718-zaki-2024/memlink.py",
- "old_string": "- Movement in offline recordings is the magnitude of the telemetry ActivitySignal averaged in\n  `MOVE_BIN_S` bins (a choice made here; the paper used a webcam the dandiset does not hold).\n\"\"\"",
- "new_string": "- Movement in offline recordings is the magnitude of the telemetry ActivitySignal averaged in\n  `MOVE_BIN_S` bins (a choice made here; the paper used a webcam the dandiset does not hold).\n- Sleep scoring as in the Methods (\"Sleep recordings and sleep scoring\"): 6 s epochs, and a\n  two-state Gaussian mixture on EMG whose higher state is wake. The EMG feature is the log of the\n  epoch's RMS, a common choice; the Methods do not name one. The Methods give the telemetry at\n  100 Hz; the files hold it at 500 Hz.\n\"\"\""
+ "file_path": "entries/zaki-2024/zaki.py",
+ "old_string": "def source_data_csv(path: str):",
+ "new_string": "def epoch_features(f: h5py.File, epoch_s: float = 6.0, chunk_epochs: int = 800) -> dict:\n    \"\"\"Per-epoch telemetry features of a file's continuous EEG and EMG, read in chunks.\n\n    6 s epochs (Methods, \"Sleep recordings and sleep scoring\": \"the data were binned into 6 s\n    epochs\"). Per epoch: EMG RMS, EEG power in delta (0.5-4 Hz) and theta (5-9 Hz) (the bands of\n    the same passage), and whether the EEG or EMG is exactly constant (the mouse off its\n    receiver). Power is the periodogram summed over the band, a standard choice.\"\"\"\n    eeg, emg = f[\"acquisition/EEGSignal/data\"], f[\"acquisition/EMGSignal/data\"]\n    fs = float(f[\"acquisition/EEGSignal/starting_time\"].attrs[\"rate\"])\n    E = int(round(epoch_s * fs))\n    n = eeg.shape[0] // E\n    fr = np.fft.rfftfreq(E, 1 / fs)\n    dl, th = (fr >= 0.5) & (fr < 4), (fr >= 5) & (fr <= 9)\n    out = {k: np.empty(n) for k in (\"rms\", \"delta\", \"theta\")}\n    out[\"flat\"] = np.empty(n, bool)\n    for i0 in range(0, n, chunk_epochs):\n        i1 = min(n, i0 + chunk_epochs)\n        a = eeg[i0 * E:i1 * E].reshape(-1, E).astype(np.float64)\n        b = emg[i0 * E:i1 * E].reshape(-1, E).astype(np.float64)\n        out[\"flat\"][i0:i1] = (np.ptp(a, axis=1) == 0) | (np.ptp(b, axis=1) == 0)\n        out[\"rms\"][i0:i1] = np.sqrt(((b - b.mean(1, keepdims=True)) ** 2).mean(1))\n        P = np.abs(np.fft.rfft(a - a.mean(1, keepdims=True), axis=1)) ** 2\n        out[\"delta\"][i0:i1], out[\"theta\"][i0:i1] = P[:, dl].sum(1), P[:, th].sum(1)\n    out[\"epoch_s\"] = epoch_s\n    return out\n\n\ndef gmm2(x: np.ndarray, iters: int = 300):\n    \"\"\"Two-component 1-D Gaussian mixture by EM; returns (means, SDs, weights, responsibilities),\n    components ordered by mean. Starts from the 25th and 75th percentiles (a standard choice).\"\"\"\n    x = np.asarray(x, float)\n    mu, sd, pi = np.percentile(x, [25, 75]), np.full(2, x.std() / 2), np.array([0.5, 0.5])\n    for _ in range(iters):\n        ll = np.stack([np.log(pi[k]) - np.log(sd[k]) - 0.5 * ((x - mu[k]) / sd[k]) ** 2 for k in range(2)], 1)\n        r = np.exp(ll - ll.max(1, keepdims=True))\n        r /= r.sum(1, keepdims=True)\n        nk = r.sum(0)\n        pi, mu = nk / len(x), (r * x[:, None]).sum(0) / nk\n        sd = np.sqrt((r * (x[:, None] - mu) ** 2).sum(0) / nk)\n    o = np.argsort(mu)\n    return mu[o], sd[o], pi[o], r[:, o]\n\n\ndef score_sleep(feat: dict, log_ratio: bool = False) -> np.ndarray:\n    \"\"\"Wake / nrem / rem per epoch ('none' where the telemetry is constant).\n\n    Methods, \"Sleep recordings and sleep scoring\": \"the EMG data were fit with a Gaussian mixture\n    model with two states, in which the lower state represented sleep and the higher state\n    represented wake\", then \"a ratio of theta to delta signal was calculated. A Gaussian mixture\n    model was fit to this theta/delta ratio with two states, in which high theta/delta meant REM\".\n    The EMG is fitted as log RMS (an assumption: the Methods do not name the EMG feature, and\n    amplitude is usually fitted on a log scale); the ratio as given, or its log with\n    ``log_ratio``.\"\"\"\n    ok = ~feat[\"flat\"]\n    state = np.full(len(ok), \"none\", dtype=object)\n    _, _, _, r = gmm2(np.log(feat[\"rms\"][ok]))\n    idx = np.flatnonzero(ok)\n    sleep = idx[r[:, 0] > 0.5]\n    state[idx] = \"wake\"\n    ratio = feat[\"theta\"][sleep] / feat[\"delta\"][sleep]\n    _, _, _, r2 = gmm2(np.log(ratio) if log_ratio else ratio)\n    state[sleep] = np.where(r2[:, 1] > 0.5, \"rem\", \"nrem\")\n    return state\n\n\ndef sleep_features(state: np.ndarray, epoch_s: float = 6.0) -> dict:\n    \"\"\"Percent time per state, mean bout length (s) per state, and transition probabilities\n    between states, over the scored epochs of ``state`` (Extended Data Fig. 10 legend: \"time\n    spent in each sleep state\", \"bout length\", \"transition probabilities\").\"\"\"\n    ok = state != \"none\"\n    out = {f\"% {s}\": 100 * np.mean(state[ok] == s) for s in (\"wake\", \"nrem\", \"rem\")}\n    out[\"% sleep\"] = out[\"% nrem\"] + out[\"% rem\"]\n    b = np.flatnonzero(np.r_[True, state[1:] != state[:-1]])\n    lab, ln = state[b], np.diff(np.r_[b, len(state)])\n    for s in (\"wake\", \"nrem\", \"rem\"):\n        out[f\"bout {s} (s)\"] = epoch_s * ln[lab == s].mean() if np.any(lab == s) else np.nan\n    seq = [x for x in lab if x != \"none\"]\n    pairs = list(zip(seq[:-1], seq[1:]))\n    for a in (\"wake\", \"nrem\", \"rem\"):\n        na = sum(1 for x, _ in pairs if x == a)\n        for c in (\"wake\", \"nrem\", \"rem\"):\n            if a != c:\n                out[f\"P({a}->{c})\"] = sum(1 for x, y in pairs if x == a and y == c) / na if na else np.nan\n    return out\n\n\ndef source_data_csv(path: str):"
 }
 ```
 
 ```
-The file entries/000718-zaki-2024/memlink.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000718-zaki-2024/memlink.py",
- "old_string": "def window_mean(",
- "new_string": "def emg_wake_gmm(emg: np.ndarray, rate: float, epoch_s: float = SCORE_EPOCH_S, log: bool = True,\n                 seed: int = 0) -> np.ndarray:\n    \"\"\"Wake (1) or sleep (0) for each whole epoch of an EMG trace, by a two-state Gaussian mixture.\n\n    Epochs where the telemetry is absent (more than 90% zeros) get -1 and are left out of the fit.\n    \"\"\"\n    from sklearn.mixture import GaussianMixture\n\n    k = int(round(epoch_s * rate))\n    X = emg[:len(emg) // k * k].reshape(-1, k).astype(np.float64)\n    ok = (X == 0).mean(1) <= 0.9\n    rms = np.sqrt(((X - X.mean(1, keepdims=True)) ** 2).mean(1))\n    f = (np.log(rms[ok]) if log else rms[ok])[:, None]\n    g = GaussianMixture(2, random_state=seed).fit(f)\n    out = np.full(len(X), -1)\n    out[ok] = (g.predict(f) == int(np.argmax(g.means_[:, 0]))).astype(int)\n    return out\n\n\ndef window_mean("
-}
-```
-
-```
-The file entries/000718-zaki-2024/memlink.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000718-zaki-2024/memlink.py",
- "old_string": "MOVE_BIN_S = 0.1\n",
- "new_string": "MOVE_BIN_S = 0.1\nSCORE_EPOCH_S = 6.0\n"
-}
-```
-
-```
-The file entries/000718-zaki-2024/memlink.py has been updated successfully. (file state is current in your context — no need to Read it back)
+The file entries/zaki-2024/zaki.py has been updated successfully.
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000718-zaki-2024 && time $TMPDIR/dev/bin/python - <<'EOF'
-import memlink as ml, numpy as np
-rng=np.random.default_rng(7185)
-T,N=9000,400; minutes=T/15/60
-def synth(coord):
-    S=(rng.random((T,N))<0.01)*rng.exponential(1,(T,N))
-    if coord:
-        for t0 in rng.choice(T-3, int(6*minutes), replace=False):
-            cells=rng.random(N)<0.3
-            S[t0:t0+2, cells]+=rng.exponential(1,(2,cells.sum()))
-    return S
-for coord in (True, False):
-    Z,keep=ml.zscore_cells(synth(coord)); pop=ml.population(Z)
-    true=len(ml.burst_events(pop))/minutes
-    fr,sk=ml.shuffle_surrogates(Z,200,rng,minutes)
-    raw=Z.mean(1); thr=raw.mean()+2*raw.std()
-    fr2,_=ml.shuffle_surrogates(Z,200,rng,minutes,fixed=thr)
-    print(coord, round(true,2), fr.mean().round(2), np.percentile(fr,95).round(2), len(ml.burst_events(raw,thr))/minutes, fr2.mean().round(2), np.percentile(fr2,95).round(2), "skew", round(float(__import__('scipy').stats.skew(pop)),2), sk.mean().round(2), np.percentile(sk,95).round(2))
+cat > $TMPDIR/z/sleep3.py <<'EOF'
+import sys; sys.path.insert(0,'entries/zaki-2024')
+import zaki, numpy as np, pickle, pandas as pd
+d=pickle.load(open('/tmp/claude-1001/z/sleep.pkl','rb')); d['epoch_s']=6.0
+week=zaki.open_h5(zaki.WEEK)
+ep=zaki.table(week["intervals/epochs"]); epochs=pd.DataFrame({"session": ep["session_ids"], "start": ep["start_time"], "stop": ep["stop_time"]})
+for lr in (False, True):
+    st=zaki.score_sleep(d, log_ratio=lr)
+    es=6.0; flat=d['flat']
+    # runs of constant telemetry of at least 1 min
+    dd=np.diff(np.r_[0,flat.astype(int),0]); rs,re_=np.flatnonzero(dd==1),np.flatnonzero(dd==-1)
+    runs=[(a*es,b*es) for a,b in zip(rs,re_) if b-a>=10]
+    print("runs >=1min:", len(runs), [(round(a),round(b)) for a,b in runs][:30])
+    def enc(sess):
+        s0=float(epochs.start[epochs.session==sess].iloc[0])
+        c=[r for r in runs if s0-7200<=r[0]<=s0+600]; return c[0]
+    rows={}
+    nA,nB=enc("NeutralExposure"); fA,fB=enc("FC")
+    W={"pre-neutral":(nA-86400,nA),"post-neutral":(nB,nB+86400),"post-aversive":(fB,fB+86400)}
+    for k,(a,b) in W.items():
+        rows[k]=zaki.sleep_features(st[int(a//es):int(b//es)])
+        rows[k]["scored h"]=np.sum(st[int(a//es):int(b//es)]!="none")*es/3600
+    print("log_ratio",lr); print(pd.DataFrame(rows).round(2).to_string())
+    # first 2 h after encoding, 30-min bins, % wake, vs same clock 24 h before neutral
+    for k,(a,b) in W.items():
+        base = a if k!="pre-neutral" else nA  # pre: the 2 h at the same clock time... 
+    for name,start in (("post-neutral",nB),("post-aversive",fB),("pre-neutral (24 h before post-neutral)",nB-86400)):
+        print(name,[round(100*np.mean(st[int((start+i*1800)//es):int((start+(i+1)*1800)//es)][st[int((start+i*1800)//es):int((start+(i+1)*1800)//es)]!="none"]=="wake"),1) for i in range(4)])
+    # ed9g: imaging epochs day 2 vs span
+    off=epochs[epochs.session.str.startswith("OfflineDay2")]
+    m=np.zeros(len(st),bool)
+    for s,e in zip(off.start,off.stop): m[int(s//es):int(e//es)]=True
+    span=slice(int(off.start.min()//es),int(off.stop.max()//es))
+    print("ed9g imaging epochs", {s:round(100*np.mean(st[m][st[m]!='none']==s),1) for s in ('wake','nrem','rem')}, "span", {s:round(100*np.mean(st[span][st[span]!='none']==s),1) for s in ('wake','nrem','rem')})
 EOF
+cd $TMPDIR/z && executed/zaki-2024/.venv/bin/python sleep3.py
 ```
 
 ```
-True 5.7 34.85 36.6 5.7 0.0 0.0 skew 8.53 0.88 0.94
-False 38.8 37.37 38.9 38.8 37.4 39.5 skew 1.03 1.02 1.07
-
-real	0m2.336s
-user	0m2.836s
-sys	0m0.119s
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit1.py <<'EOF'
-import json
-P = "reproduce_zaki_2024.ipynb"
-nb = json.load(open(P))
-C = nb["cells"]
-def src(i): return "".join(C[i]["source"])
-def setsrc(i, s): C[i]["source"] = s.splitlines(keepends=True)
-def code(s, tags=None):
-    return {"cell_type": "code", "execution_count": None, "metadata": {"tags": tags} if tags else {}, "outputs": [], "source": s.splitlines(keepends=True)}
-def md(s):
-    return {"cell_type": "markdown", "metadata": {}, "source": s.splitlines(keepends=True)}
-
-# cell 3: telemetry rates
-s = src(3)
-s += '''print("\\nTelemetry sampling rate in the offline files (Hz):",
-      {" ".join(k): data[k]["activity_rate"] for k in data if "activity" in data[k]}, "; Week file:", week["eeg_rate"])
-'''
-setsrc(3, s)
-
-# cell 5: full epoch table
-s = src(5).replace('''print(ep[ep.session.isin(["NeutralExposure", "FC", "Recall1"]) | ep.session.str.contains("Session1$|Day1")].to_string(index=False))''',
-'''print("Epoch table of the Week file, all", len(ep), "rows, in order of start time:")
-print(ep.to_string(index=False))''')
-setsrc(5, s)
-
-# cell 15: descriptions
-s = src(15) + '''print("\\nSleepIntervals description:", off_desc := ml.open_nwb(ml.session_path("Ca_EEG2-1", "OfflineDay2Session1"))["processing/sleep/SleepIntervals"].attrs["description"])
-print("sleep_state column description:", " ".join(ml.open_nwb(ml.session_path("Ca_EEG2-1", "OfflineDay2Session1"))["processing/sleep/SleepIntervals/sleep_state"].attrs["description"].split()))
-'''
-setsrc(15, s)
-
-score = code('''# The Methods' sleep scoring applied to Ca_EEG2-1: 6 s epochs, two-state Gaussian mixture on EMG,
-# fitted over the 12 h offline period that starts with OfflineDay2Session1 (telemetry clock of the
-# Week file). Which class do the deposited `wake` and `quiet wake` epochs fall in?
-a_off = week["epochs"]["OfflineDay2Session1"][0]
-emg12 = ml.week_signal(a_off, a_off + 12 * 3600, "EMGSignal")
-score = {"log_rms_12h": ml.emg_wake_gmm(emg12, week["eeg_rate"]),
-         "rms_12h": ml.emg_wake_gmm(emg12, week["eeg_rate"], log=False),
-         "log_rms_first_6h": ml.emg_wake_gmm(emg12[: len(emg12) // 2], week["eeg_rate"])}
-t_off = data[("Ca_EEG2-1", "OfflineDay2Session1")]["t"]
-lab_off = ml.state_of_frames(t_off, data[("Ca_EEG2-1", "OfflineDay2Session1")]["sleep"])
-rows = []
-for name, sc in score.items():
-    gmm_frames = sc[np.minimum((t_off // ml.SCORE_EPOCH_S).astype(int), len(sc) - 1)]
-    for lab_ in ("wake", "quiet wake"):
-        sel = lab_off == lab_
-        rows.append({"scoring": name, "deposited_label": lab_, "frames": int(sel.sum()),
-                     "pct_scored_wake": round(100 * (gmm_frames[sel] == 1).mean(), 1),
-                     "pct_scored_sleep": round(100 * (gmm_frames[sel] == 0).mean(), 1)})
-    print(f"{name}: wake in {100 * (sc == 1).mean():.1f}% of the {len(sc)} epochs of 12 h (epochs without telemetry: {(sc == -1).sum()})")
-print(pd.DataFrame(rows).to_string(index=False))
-gmm_wake_frames = score["log_rms_12h"][np.minimum((t_off // ml.SCORE_EPOCH_S).astype(int), len(score["log_rms_12h"]) - 1)] == 1
-
-# ActivitySignal: description, distribution, relation to EMG and to the deposited labels (6 s epochs).
-print("\\nActivitySignal description:", " ".join(ml.open_nwb(ml.session_path("Ca_EEG2-1", "OfflineDay2Session1"))["acquisition/ActivitySignal"].attrs["description"].split()))
-for k in [("Ca_EEG2-1", "OfflineDay2Session1"), ("Ca_EEG3-4", "OfflineDay1Session1"), ("Ca_EEG3-4", "OfflineDay2Session1")]:
-    d = data[k]
-    f = ml.open_nwb(d["path"])
-    emg = f["acquisition/EMGSignal/data"][:]
-    act = d["activity"]
-    n = int(ml.SCORE_EPOCH_S * d["activity_rate"])
-    m = min(len(act), len(emg)) // n
-    act_e = np.abs(act[: m * n]).reshape(m, n).mean(1)
-    emg_e = emg[: m * n].reshape(m, n).std(1)
-    mid = (np.arange(m) + 0.5) * ml.SCORE_EPOCH_S + d["activity_t0"]
-    lab_e = ml.state_of_frames(mid, d["sleep"])
-    q = np.percentile(act, [0, 1, 50, 99, 100])
-    print(f"{' '.join(k)}: ActivitySignal unit {f['acquisition/ActivitySignal/data'].attrs['unit']}, "
-          f"percentiles 0/1/50/99/100: {np.round(q, 3).tolist()}; "
-          f"Spearman r of |activity| with EMG SD over {m} epochs {stats.spearmanr(act_e, emg_e).statistic:.2f}; "
-          f"mean |activity| wake {act_e[lab_e == 'wake'].mean():.3f} (n={int((lab_e == 'wake').sum())}), "
-          f"quiet wake {act_e[lab_e == 'quiet wake'].mean():.3f} (n={int((lab_e == 'quiet wake').sum())}); "
-          f"EMG SD wake {emg_e[lab_e == 'wake'].mean():.2e}, quiet wake {emg_e[lab_e == 'quiet wake'].mean():.2e} V")
-''', ["sanity"])
-C.insert(16, score)
-C.insert(17, md("PLACEHOLDER_SCORE_TEXT"))
-json.dump(nb, open(P, "w"), indent=1, ensure_ascii=False)
-open(P, "a").write("\n")
-EOF
-$TMPDIR/dev/bin/python $TMPDIR/edit1.py && python -c "
-import json;nb=json.load(open('reproduce_zaki_2024.ipynb'))
-for i,c in enumerate(nb['cells']): print(i, c['cell_type'], ''.join(c['source'])[:70].replace(chr(10),' '))"
-```
-
-```
-0 markdown # Reproducing Zaki et al. (2024) from dandiset 000718  Paper. Zaki Y, 
-1 code import os os.environ.setdefault("OMP_NUM_THREADS", "1") import time im
-2 markdown ## Data check  Each check of the metadata against the values is stated
-3 code rows = [] for (m, s), d in data.items():     rows.append({"mouse": m, 
-4 markdown Deconvolved activity is sampled at 15 Hz (67 ms), as the Methods state
-5 code # Session order and clocks. Behaviour sessions take their start time f
-6 markdown For Ca_EEG2-1 the epoch table puts the first offline recording after a
-7 code # Behaviour: freezing intervals against motion, and shocks against mot
-8 markdown Motion inside the freezing intervals is near zero and outside them in 
-9 code # Cell registration (Ca_EEG2-1 only). reg = week["registration"] print
-10 markdown Every ROI of each of the four sessions appears once in the table, and 
-11 code # Shared clock between calcium and the other streams: decode each stre
-12 markdown For every behaviour session, motion decoded from the calcium activity 
-13 code # Recordings deposited more than once: frame counts, maximum projectio
-14 markdown No two sessions share a trace shape or telemetry, so no recording is d
-15 code # Sleep states in the offline recordings. for m, s in [("Ca_EEG2-1", "
-16 code # The Methods' sleep scoring applied to Ca_EEG2-1: 6 s epochs, two-sta
-17 markdown PLACEHOLDER_SCORE_TEXT
-18 markdown The three offline recordings hold only `wake` and `quiet wake`, in 6 s
-19 markdown ## source-data-link  > The two deposited mice are the mice of the same
+runs >=1min: 11 [(27042, 27750), (104922, 105366), (118866, 118974), (186726, 187314), (355272, 356502), (457716, 457806), (526176, 526956), (613872, 614754), (708774, 709680), (795882, 796740), (805584, 808788)]
+log_ratio False
+               pre-neutral  post-neutral  post-aversive
+% wake               52.19         46.88          42.85
+% nrem               37.03         41.74          45.48
+% rem                10.78         11.38          11.67
+% sleep              47.81         53.12          57.15
+bout wake (s)        87.89         83.33          59.62
+bout nrem (s)        33.12         34.68          34.17
+bout rem (s)         10.22         10.44          10.06
+P(wake->nrem)         0.54          0.58           0.60
+P(wake->rem)          0.46          0.42           0.40
+P(nrem->wake)         0.30          0.29           0.34
+P(nrem->rem)          0.70          0.71           0.66
+P(rem->wake)          0.24          0.19           0.23
+P(rem->nrem)          0.76          0.81           0.77
+scored h             24.00         24.00          24.00
+post-neutral [np.float64(67.0), np.float64(2.7), np.float64(2.3), np.float64(6.0)]
+post-aversive [np.float64(49.0), np.float64(9.0), np.float64(6.0), np.float64(79.3)]
+pre-neutral (24 h before post-neutral) [np.float64(93.0), np.float64(53.0), np.float64(3.0), np.float64(6.3)]
 [... 23 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/edit2.py <<'EOF'
-import json
-P = "reproduce_zaki_2024.ipynb"
-nb = json.load(open(P))
-C = nb["cells"]
-def src(i): return "".join(C[i]["source"])
-def setsrc(i, s): C[i]["source"] = s.splitlines(keepends=True)
-def code(s, tags=None):
-    return {"cell_type": "code", "execution_count": None, "metadata": {"tags": tags} if tags else {}, "outputs": [], "source": s.splitlines(keepends=True)}
-def md(s):
-    return {"cell_type": "markdown", "metadata": {}, "source": s.splitlines(keepends=True)}
-# reorder: old desc md (18) right after cell 15
-C.insert(16, C.pop(18))
-setsrc(15, src(15).replace('print("\\nSleepIntervals description:", off_desc := ml.open_nwb(ml.session_path("Ca_EEG2-1", "OfflineDay2Session1"))["processing/sleep/SleepIntervals"].attrs["description"])',
- 'print("\\nSleepIntervals description:", ml.open_nwb(ml.session_path("Ca_EEG2-1", "OfflineDay2Session1"))["processing/sleep/SleepIntervals"].attrs["description"])'))
-assert "off_desc" not in src(15)
-# positive control after burst variant cell (index 28)
-assert src(28).startswith("# A variant: count surrogate")
-pc = code('''# Positive and negative control of the shuffle tests on synthetic data of the size of an offline
-# recording (10 min at 15 Hz, 400 cells, each active independently in 1% of frames). "Coordinated"
-# adds 6 events per minute in which a random 30% of cells are active together for 2 frames.
-rng_ctrl = np.random.default_rng(7185)
-T_s, N_s = 9000, 400
-min_s = T_s / 15 / 60
-rows = []
-for coordinated in (True, False):
-    S_s = (rng_ctrl.random((T_s, N_s)) < 0.01) * rng_ctrl.exponential(1, (T_s, N_s))
-    if coordinated:
-        for t0 in rng_ctrl.choice(T_s - 2, int(6 * min_s), replace=False):
-            on = rng_ctrl.random(N_s) < 0.3
-            S_s[t0:t0 + 2, on] += rng_ctrl.exponential(1, (2, on.sum()))
-    Z_s, _ = ml.zscore_cells(S_s)
-    pop_s = ml.population(Z_s)
-    raw_s = Z_s.mean(1)
-    thr_s = raw_s.mean() + 2 * raw_s.std()
-    fq, sk = ml.shuffle_surrogates(Z_s, ml.N_SHUFFLES, rng_ctrl, min_s)
-    fq_fix, _ = ml.shuffle_surrogates(Z_s, ml.N_SHUFFLES, rng_ctrl, min_s, fixed=thr_s)
-    rows.append({"synthetic": "coordinated" if coordinated else "independent",
-                 "criterion_true_per_min": round(len(ml.burst_events(pop_s)) / min_s, 2),
-                 "criterion_shuffle_mean": round(fq.mean(), 2), "criterion_shuffle_p95": round(np.percentile(fq, 95), 2),
-                 "fixed_true_per_min": round(len(ml.burst_events(raw_s, thr_s)) / min_s, 2),
-                 "fixed_shuffle_mean": round(fq_fix.mean(), 2), "fixed_shuffle_p95": round(np.percentile(fq_fix, 95), 2),
-                 "true_skew": round(stats.skew(pop_s), 2), "shuffle_skew_p95": round(np.percentile(sk, 95), 2)})
-print(pd.DataFrame(rows).to_string(index=False))
-''', ["claim:offline-bursts-above-shuffle"])
-C.insert(29, pc)
-# fig5c: Methods-scored wake as a variant, and outside-burst windows wholly in one state
-i = [j for j, c in enumerate(C) if "".join(c["source"]).startswith('k = ("Ca_EEG2-1", "OfflineDay2Session1")')][0]
-s = src(i)
-s = s.replace('''    for wake_reading, states in [("a_wake+quiet", {"wake", "quiet wake"}), ("b_wake_only", {"wake"}), ("all_bursts", None)]:
-        sel = np.ones(len(ev), bool) if states is None else np.isin(state[pk], list(states))''',
-'''    for wake_reading, states in [("a_wake+quiet", {"wake", "quiet wake"}), ("b_wake_only", {"wake"}), ("all_bursts", None),
-                                 ("methods_emg_wake", "gmm")]:
-        if states is None:
-            sel = np.ones(len(ev), bool)
-        elif states == "gmm":
-            sel = gmm_wake_frames[pk]
-        else:
-            sel = np.isin(state[pk], list(states))''')
-s = s.replace('main = cob[cob.wake != "all_bursts"]', 'main = cob[cob.wake.isin(["a_wake+quiet", "b_wake_only"])]')
-s = s.replace('print("\\nReadings with OxN > OxA:"', 'print("\\nThe criterion\'s four readings (a, b by i, ii); methods_emg_wake is the Methods\' EMG scoring, a variant.")\nprint("Readings with OxN > OxA:"')
-setsrc(i, s)
-s = src(i + 1)
-old = '''    starts = [i for i in range(0, len(p["pop"]) - win, win) if not inburst[i:i + win].any() and state[i] in states]'''
-assert old in s
-s = s.replace(old, '''    starts = [i for i in range(0, len(p["pop"]) - win, win)
-              if not inburst[i:i + win].any() and all(x in states for x in state[i:i + win])]''')
-s = s.replace('print("\\nOutside bursts (inclusive reading):")', 'print("\\nOutside bursts (inclusive reading; windows with every frame in the state):")')
-setsrc(i + 1, s)
-json.dump(nb, open(P, "w"), indent=1, ensure_ascii=False)
-open(P, "a").write("\n")
-EOF
-$TMPDIR/dev/bin/python $TMPDIR/edit2.py && grep -n "gmm\|every frame" reproduce_zaki_2024.ipynb | head
+date -u; grep -n "claim:" tools/entry.py | head -20; grep -n "proposed\|verifications" tools/entry.py | head -30
 ```
 
 ```
-454:    "score = {\"log_rms_12h\": ml.emg_wake_gmm(emg12, week[\"eeg_rate\"]),\n",
-455:    "         \"rms_12h\": ml.emg_wake_gmm(emg12, week[\"eeg_rate\"], log=False),\n",
-456:    "         \"log_rms_first_6h\": ml.emg_wake_gmm(emg12[: len(emg12) // 2], week[\"eeg_rate\"])}\n",
-461:    "    gmm_frames = sc[np.minimum((t_off // ml.SCORE_EPOCH_S).astype(int), len(sc) - 1)]\n",
-465:    "                     \"pct_scored_wake\": round(100 * (gmm_frames[sel] == 1).mean(), 1),\n",
-466:    "                     \"pct_scored_sleep\": round(100 * (gmm_frames[sel] == 0).mean(), 1)})\n",
-469:    "gmm_wake_frames = score[\"log_rms_12h\"][np.minimum((t_off // ml.SCORE_EPOCH_S).astype(int), len(score[\"log_rms_12h\"]) - 1)] == 1\n",
-985:    "                                 (\"methods_emg_wake\", \"gmm\")]:\n",
-988:    "        elif states == \"gmm\":\n",
-989:    "            sel = gmm_wake_frames[pk]\n",
+Wed Nov 25 05:10:57 UTC 2026
+516:            if tag.startswith("claim:"):
+380:        for r, rnd in enumerate(attempt.get("verifications") or [], 1):
+388:        for rnd in (attempt.get("verifications") or [])[1:]:
+410:                                    f"verification agreed with {verified!r}; record the change under `proposed`, "
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  && echo scikit-learn >> entries/000718-zaki-2024/requirements.in && python tools/entry.py lock entries/000718-zaki-2024 2>&1 | tail -3 && time python tools/entry.py all entries/000718-zaki-2024 2>&1 | tail -15
+sed -n 340,440p tools/entry.py; sed -n 505,530p tools/entry.py; ls schemas; grep -l "verifications" attempts/*.yaml | head -3
 ```
 
 ```
-wrote entries/000718-zaki-2024/requirements.lock.txt
-print(bad[["mouse", "session", "video_frames", "video_t_last", "video_dt_ms", "t_last"]].to_string(index=False))print("\nTelemetry sampling rate in the offline files (Hz):",
-      {" ".join(k): data[k]["activity_rate"] for k in data if "activity" in data[k]}, "; Week file:", week["eeg_rate"])
-
-------------------
-
-
-  [36mCell[39m[36m [39m[32mIn[2][39m[32m, line 24[39m
-[31m    [39m[31mprint(bad[["mouse", "session", "video_frames", "video_t_last", "video_dt_ms", "t_last"]].to_string(index=False))print("\nTelemetry sampling rate in the offline files (Hz):",[39m
-                                                                                                                    ^
-[31mSyntaxError[39m[31m:[39m invalid syntax
-
-
-
-0 error(s)
-FAIL  reproduce_zaki_2024.ipynb  (37 s)
-
-real	0m47.387s
-user	0m14.991s
-sys	0m2.769s
+import author_notes
+            import paper_records
+            key = paper_records.key_of_doi(attempt["paper"])
+            there = [n["issue"] for n in (author_notes.load(key) if key else []) if str(n["date"]) <= str(attempt.get("date"))]
+            named = (attempt.get("provenance") or {}).get("author_notes") or []
+            for issue in named:
+                if issue not in there:
+                    report.error(where, f"`provenance: author_notes` names {issue}, which is not a note in "
+                                        f"papers/author-notes/{key}.yaml")
+            if there and not named:
+                report.error(where, f"the paper's authors had sent notes (papers/author-notes/{key}.yaml) when this "
+                                    "attempt was made; list those it used under `provenance: author_notes`")
+        for n, f in enumerate(attempt.get("findings") or [], 1):
+            if told and f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
+            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
+                                                                   "paper_inconsistency") else "data")
+            if told and about == "data" and len(used) > 1 and not f.get("datasets"):
+                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
+                                    f"(`datasets:`, from {', '.join(used)})")
+[... 114 more lines not kept]
 ```
 
 **Agent**
 
-Missing newline at the end of cell 3; fixing, and checking the same issue in cell 15.
+Let me look at the schema for `verifications` and an example.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000718-zaki-2024 && $TMPDIR/dev/bin/python - <<'EOF'
+python3 - <<'EOF'
 import json
-P="reproduce_zaki_2024.ipynb"; nb=json.load(open(P))
-for c in nb["cells"]:
-    s="".join(c["source"])
-    s=s.replace('to_string(index=False))print("\\nTelemetry','to_string(index=False))\nprint("\\nTelemetry')
-    s=s.replace('{frames}")print("\\nSleepIntervals','{frames}")\nprint("\\nSleepIntervals')
-    if c["cell_type"]=="code": s=s.rstrip("\n")
-    c["source"]=s.splitlines(keepends=True)
-json.dump(nb,open(P,"w"),indent=1,ensure_ascii=False); open(P,"a").write("\n")
+s=json.load(open('schemas/attempt.schema.json'))
+def find(o,k,path=''):
+    if isinstance(o,dict):
+        for kk,v in o.items():
+            if kk==k: print(path+'/'+kk, json.dumps(v)[:3000]); 
+            find(v,k,path+'/'+kk)
+    elif isinstance(o,list):
+        for i,v in enumerate(o): find(v,k,path+f'[{i}]')
+find(s,'verifications'); find(s,'proposed')
 EOF
-grep -n 'print("\\\\nSleepIntervals\|Telemetry sampling' reproduce_zaki_2024.ipynb; cd ../.. && python tools/entry.py all entries/000718-zaki-2024 2>&1 | tail -15
+grep -n -A40 "^verifications" attempts/andrews-2024-01.yaml | head -60
 ```
 
 ```
-138:    "print(\"\\nTelemetry sampling rate in the offline files (Hz):\",\n",
-/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
-  _validate(nbdict, ref, version, version_minor, relax_add_props)
-Installed kernelspec registry-000718-zaki-2024 in executed/000718-zaki-2024/.venv/share/jupyter/kernels/registry-000718-zaki-2024
-0 error(s)
-pass  reproduce_zaki_2024.ipynb  (116 s)
+/properties/verifications {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["date", "kind", "by", "results"], "properties": {"date": {"type": "string", "format": "date"}, "kind": {"enum": ["agent", "person", "paper_author"]}, "by": {"type": "string"}, "results": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["claim", "agrees"], "properties": {"claim": {"type": "string"}, "agrees": {"type": "boolean"}, "reason": {"description": "The verifier's reason, in its own words.", "type": "string"}, "response": {"description": "What the author changed or replied, kept apart from the verifier's reason.", "type": "string"}, "outcome": {"description": "The outcome the verifier would give.", "enum": ["reproduced", "partially_reproduced", "not_reproduced", "blocked"]}}}}, "reviewed": {"description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.", "type": "string"}, "findings": {"description": "From protocol pilot-18, in round 2: what the verifier said of each finding the record rates `critical` (docs/protocol.md, the attempt record).", "type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["finding", "agrees"], "properties": {"finding": {"description": "The finding's number in this record's `findings`, from 1.", "type": "integer", "minimum": 1}, "agrees": {"description": "Whether the verifier agreed that the outputs show the finding and that it is critical.", "type": "boolean"}, "severity": {"description": "The severity the verifier would give, where it differs.", "enum": ["critical", "major", "minor", "none"]}, "reason": {"description": "The verifier's reason, in its own words.", "type": "string"}, "response": {"description": "What the author changed or replied.", "type": "string"}}}}}}}
+/properties/outcomes/items/properties/proposed {"description": "A change of outcome found after the last verification round, held until a further round agr
+[... 41 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd executed/000718-zaki-2024 && ls && python -c "
-import json;nb=json.load(open('reproduce_zaki_2024.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print('=====',i,c['metadata'].get('tags'))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:200])
-" > $TMPDIR/out.txt; wc -l $TMPDIR/out.txt
-```
-
-```
-reproduce_zaki_2024.ipynb
-result.json
-322 /tmp/claude-1001/out.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/out.txt"
-}
-```
-
-```
-1	===== 1 None
-2	NWB files at the pinned version: 12
-3	loaded 11 session files and the Week file of Ca_EEG2-1 from dandiset 000718 version 0.260825.1902 in 29 s
-4	
-5	===== 3 ['sanity']
-6	    mouse             session          session_id               start  frames  rois  t_first  t_last  dt_ms  max_gap_ms  S_min  S_max  frac_zero  silent_rois  video_frames  video_t_last  video_dt_ms
-7	Ca_EEG2-1     NeutralExposure     NeutralExposure 2021-10-12T10:44:18    8880   623    0.335   599.9   67.0         906    0.0   2354      0.985            0         17770         296.1         16.7
-8	Ca_EEG2-1                  FC                  FC 2021-10-14T10:11:24    4076   597    0.336   274.0   67.0          70    0.0   2174      0.981            0          8161         274.0         34.0
-9	Ca_EEG2-1 OfflineDay2Session1 OfflineDay2Session1 2021-10-14T09:24:27    8929   625    0.335   599.8   67.0          69    0.0   2346      0.984            0         17868         599.9         34.0
-10	Ca_EEG2-1             Recall1             Recall1 2021-10-15T10:33:19    4463   336    0.335   300.0   67.0          69    0.0   1806      0.987            0          8935         300.0         34.0
-11	Ca_EEG3-4     NeutralExposure     NeutralExposure 2022-09-17T09:23:03    8931   851    0.335   599.9   67.0          69    0.0   1141      0.976            0         17871         599.9         34.0
-12	Ca_EEG3-4 OfflineDay1Session1 OfflineDay1Session1 2022-09-17T09:40:40    8933   711    0.335   600.1   67.0          69    0.0   1099      0.976            0         17876         297.9         16.7
-13	Ca_EEG3-4                  FC                  FC 2022-09-19T09:18:41    4076   783    0.335   274.0   67.0          69    0.0    850      0.969            0          8161         274.0         34.0
-14	Ca_EEG3-4 OfflineDay2Session1 OfflineDay2Session1 2022-09-19T09:30:07    8933   858    0.335   600.1   67.0          69    0.0    907      0.977            0         17876         600.1         34.0
-1
-[... 308 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000718-zaki-2024 && cat > $TMPDIR/edit3.py <<'EOF'
-import json
-P = "reproduce_zaki_2024.ipynb"
-nb = json.load(open(P))
-C = nb["cells"]
-def find(prefix):
-    r = [j for j, c in enumerate(C) if "".join(c["source"]).startswith(prefix)]
-    assert len(r) == 1, prefix
-    return r[0]
-def src(i): return "".join(C[i]["source"])
-def setsrc(i, s): C[i]["source"] = s.rstrip("\n").splitlines(keepends=True)
-def rep(i, old, new):
-    s = src(i); assert old in s, old; setsrc(i, s.replace(old, new))
-
-i = find("# The Methods' sleep scoring applied")
-rep(i, '''    print(f"{name}: wake in {100 * (sc == 1).mean():.1f}% of the {len(sc)} epochs of 12 h (epochs without telemetry: {(sc == -1).sum()})")''',
-'''    print(f"{name}: {(sc == 1).sum()} of {len(sc)} epochs ({100 * (sc == 1).mean():.1f}%) scored wake; epochs without telemetry: {(sc == -1).sum()}")''')
-
-i = find("Deconvolved activity is sampled at 15 Hz")
-setsrc(i, src(i) + '''
-The telemetry (EEG, EMG, activity) is sampled at 500 Hz in every offline file and in the Week
-file, while the Methods say the HD-X02 implants recorded at 100 Hz. The files are trusted here, and
-the difference is recorded as a finding.''')
-
-i = find("For Ca_EEG2-1 the epoch table puts")
-setsrc(i, '''The Week file's epoch table has 27 rows: neutral exposure, FC, Recall1, five offline-day-1
-recordings (the first four last 56 to 268 s) and 19 offline-day-2 recordings, against the 24 per
-offline period of the Methods. It puts the first offline recording after aversive encoding
-(`OfflineDay2Session1`, starting 527068 s) 47 min before the FC session (529885 s), and the session
-start times in the files say the same (09:24 against 10:11). The telemetry shows otherwise: the EEG
-of the offline file sits exactly at the epoch's start (527067.679 against 527067.677 s), and the
-telemetry is absent, as when the mouse is out of its home cage, from 526175 to 526955 s, which
-contains the FC epoch moved 1 h earlier and ends 113 s before that offline recording. The next
-offline recording starts 1800 s after it, and the others follow every 1800 s (10 min of recording
-and a 20 min break, as the Methods describe), so no offline-day-2 recording lies between the FC
-session, read 1 h earlier, and `OfflineDay2Session1`. The output above gives the same one-hour lead
-for the neutral exposure and Recall1 epochs. The data are consistent with the behaviour-session
-times of Ca_EEG2-1 being about 1 h late, and with the offline recording being the first after FC,
-as its name says; it is treated so here, and the start times are recorded as a finding. If this
-order were wrong, the fig5c analysis below would not test the claim. For Ca_EEG3-4 the offline
-recordings start 7.6 and 6.9 min after the end of the session they follow.''')
-
-i = find("The three offline recordings hold only `wake` and `quiet wake`")
-setsrc(i, '''The three offline recordings hold only `wake` and `quiet wake`, in 6 s epochs (the Methods' scoring
-epoch), with quiet wake in 58 to 81% of the time. The file describes the states as classified "with
-custom algorithm" and defines quiet wake as awake and at rest. The paper's states are wake, NREM and
-REM, and its scoring has no quiet-wake class, so the criterion of fig5c fixed two readings before
-the analysis. The next cell applies the Methods' own scoring to the EMG of Ca_EEG2-1 to see where
-quiet wake falls. No NREM or REM falls in these first recordings, consistent with the mice staying
-awake for about 30 min after encoding (Extended Data Figure 10c).''')
-
-i = find("PLACEHOLDER_SCORE_TEXT")
-setsrc(i, '''Scored as the Methods describe (6 s epochs, a two-state Gaussian mixture on EMG, the higher state
-wake), with the log EMG RMS of each epoch over the 12 h after aversive encoding, 36.6% of epochs are
-wake, and 94.1% of the frames labelled `quiet wake` in the offline recording fall in the wake state
-(98.5% of those labelled `wake`). Fitted on the first 6 h only, 97.9% of quiet-wake frames are wake.
-Fitted on the RMS without the log, the mixture puts every epoch of the 12 h in one state, so it does
-not separate sleep from wake. Under the Methods' scoring, the deposited quiet wake is wake. This is
-consistent with the data, not shown, as the paper does not name its EMG feature.
-
-The ActivitySignal is described in the files as the motion of the probe relative to the receiver,
-"a proxy for locomotion"; the Methods call the same channel locomotion. Its mean magnitude is 4 to
-15 times higher in `wake` epochs than in `quiet wake` epochs in all three recordings (0.322 against
-0.080, 0.349 against 0.023, 0.419 against 0.055), and it correlates with the epoch's EMG SD at
-Spearman r = 0.26, 0.55 and 0.11. This is consistent with it tracking movement, at the coarse scale
-of 6 s epochs; it does not show that it resolves the brief slowing of Figure 2d.''')
-
-i = find("**Result: reproduced.** The high-shock mouse froze")
-setsrc(i, src(i) + ''' The 30 s bins are consecutive parts of one session of each mouse, so they are
-not independent and the p-values overstate the evidence; the difference in freezing itself is large.''')
-
-i = find("**Result: blocked (methods underspecified).**")
-setsrc(i, src(i) + '''
-
-The controls on synthetic data show why. With 6 coordinated events per minute planted, the
-criterion's test (surrogates z-scored again and thresholded at z = 2) gives 5.6 true bursts per min
-against a surrogate mean of 34.98, and with independent cells 34.8 against 37.36. Re-z-scoring each
-surrogate makes it cross z = 2 as often as any trace with the same spread, so the test cannot detect
-coordination and its "not reproduced" says nothing about the claim. The fixed-threshold variant
-separates the two cases (5.6 against 0.00 per min with coordination, 34.8 against 38.37 without),
-but its chance level, at most 0.10 surrogate bursts per min against 5.30 to 8.71 true, is far below
-the paper's (surrogate over true 0.72 to 0.96). Neither matches the paper's procedure.''')
-
-i = find("**Result: reproduced.** The skewness of the population trace")
-setsrc(i, src(i) + ''' In the synthetic controls the skew test separates coordinated
-activity (8.54 against a surrogate 95th percentile of 0.94) from independent cells (0.98 against
-1.09), so this test, unlike the burst count, detects coordination.''')
-
-i = find("**Result: not reproduced.** Telemetry movement")
-setsrc(i, '''**Result: not reproduced.** Telemetry movement in the second before a burst is not lower than 3 to
-5 s before it in any recording, under either reading of time zero (peak: one-sided Wilcoxon p = 0.76,
-0.89 and 0.39; onset: p = 0.88, 0.94 and 0.41), and the share of bursts with lower movement before
-them is 0.30 to 0.60. Movement 1 to 2 s after the burst peak is lower than in the second before it in
-two of three recordings (0.155 against 0.225, and 0.129 against 0.257), which is not a resumption of
-movement. The test is not calibrated: at 300 random times it gives p = 0.016 in Ca_EEG2-1 (0.9999
-and 0.92 in the others), as overlapping windows of a slowly varying signal are not independent. The
-test rests on the telemetry ActivitySignal, which the files describe as motion of the probe relative
-to the receiver and a proxy for locomotion; it is higher in wake than in quiet wake (data check), but
-its relation to the calcium activity is weak (movement decoded at r = 0.06 to 0.24 at zero shift;
-Spearman r with the population trace 0.07 to 0.32 in 1 s bins). The paper used webcam tracking, which
-is not deposited, in another cohort. The result says that this proxy does not show the pause, and is
-weak evidence that the pause is absent.''')
-
-i = find("**Result: partially reproduced.** In the one deposited")
-setsrc(i, '''**Result: not reproduced.** In the one deposited high-shock recording, with wake read as wake and
-quiet wake together, overlap-aversive co-bursting exceeds overlap-neutral co-bursting (26.4 against
-35.6% of all 87 bursts with both ensembles counted whatever the third does, 8.0 against 17.2% with the
-third excluded; 7 against 15 discordant bursts, McNemar p = 0.13). This is the reading the Methods
-imply: their sleep scoring, applied to this mouse's EMG in the data check, puts 94.1% of quiet-wake
-frames in wake, and all 87 bursts fall in its wake (the `methods_emg_wake` rows give the same
-numbers). With wake read as the `wake` label alone, the other reading the criterion fixed, OxN
-exceeds OxA (32.0 against 28.0% of 25 bursts, and 8.0 against 4.0%), on 2 against 1 discordant
-bursts (McNemar p = 1.0); that reading picks out epochs the Methods' scoring does not separate, so
-the outcome is judged on the first. The order under the Methods' reading holds at thresholds 1.5
-(34.9 against 41.1%) and 2.5 (21.7 against 30.0%), and no difference reaches p < 0.05. The evidence
-is weak: this is the first of the 24 offline recordings of one of the five high-shock mice; the
-ensemble traces are z-scored within this 10 min recording, while the Methods z-score them over all
-24 concatenated, so co-participation here (26 to 36%) is not on the scale of the paper's values for
-this mouse (10.37% OxN and 8.39% OxA in wake); and the paper's test across mice cannot be run.
-Outside bursts both co-participations are at most 1.02% of 0.5 s windows. The neutral, aversive and
-overlap ensembles each have a larger fraction of their cells in bursts than the remaining cells
-(median differences 0.005 to 0.010, Wilcoxon p = 0.041 to 0.0003).''')
-
-i = find("## Summary")
-s = src(i)
-s = s.replace("| `burst-locomotion-pause`: movement pauses around bursts | not reproduced (telemetry proxy) |",
-              "| `burst-locomotion-pause`: movement pauses around bursts | not reproduced (telemetry proxy, weak evidence) |")
-s = s.replace("| `fig5c-wake-overlap-neutral-coburst`: overlap-neutral exceeds overlap-aversive co-bursting in wake, high shock | partially reproduced (one recording, one reading) |",
-              "| `fig5c-wake-overlap-neutral-coburst`: overlap-neutral exceeds overlap-aversive co-bursting in wake, high shock | not reproduced (one recording of one mouse; changed from partially reproduced after the first verification) |")
-s = s.replace("tracking. Quiet wake is not a state of the paper; both mappings were tested.",
-"""tracking. Quiet wake is not a state of the paper; the criterion fixed two mappings, and the
-Methods' EMG scoring, applied to Ca_EEG2-1, puts quiet wake in wake, so fig5c is judged on that
-mapping. In fig5c the ensemble traces are z-scored within one 10 min recording, not over 24
-concatenated recordings as in the Methods. The burst shuffle test of the criterion cannot detect
-coordinated firing (synthetic controls), and no variant matches the paper's chance level.""")
-s = s.replace("""- The offline session description says""", """- The telemetry is sampled at 500 Hz; the Methods say 100 Hz.
-- The offline session description says""")
-setsrc(i, s)
-assert "500 Hz" in src(i) and "weak evidence" in src(i)
-import nbformat
-json.dump(nb, open(P, "w"), indent=1, ensure_ascii=False); open(P, "a").write("\n")
-n = nbformat.read(P, 4); nbformat.validator.normalize(n)
-nb2 = nbformat.validator.normalize(nbformat.read(P, as_version=4))[1]
-nbformat.write(nbformat.from_dict(nb2), P)
+cat > $TMPDIR/z/syn.py <<'EOF'
+import sys, zlib, time; sys.path.insert(0,'entries/zaki-2024')
+import zaki, numpy as np
+seed=lambda c: zlib.crc32(f"zaki-2024/{c}".encode())
+t0=time.time()
+rng = np.random.default_rng(seed("offline-bursts-above-shuffle") + 2)
+T, N, n_sur = 9000, 600, 200
+noise = rng.standard_normal((T, N))
+ar = np.empty((T, N)); ar[0] = noise[0]
+for t in range(1, T): ar[t] = 0.9 * ar[t - 1] + noise[t]
+walk = np.convolve(np.cumsum(rng.standard_normal(T + 899)), np.ones(900) / 900, "valid")
+for lab, D in (("no shared drift", 0.0), ("slow shared drift", 0.3)):
+    Zs, _ = zaki.zscore_cells(ar + D * zaki.zscore(walk)[:, None] * ar.std())
+    p = zaki.population_trace(Zs); dur = T / 15 / 60
+    true = zaki.burst_frequency(p, dur)
+    m = Zs.mean(1); mu, sd = m.mean(), m.std()
+    sa = zaki.circular_shift_surrogates(Zs, rng, n_sur, lambda q: zaki.burst_frequency(q, dur))
+    sb = zaki.circular_shift_surrogates(Zs, rng, n_sur, lambda q: zaki.burst_frequency((q - mu) / sd, dur), normalise=False)
+    print(f"{lab}: mean pairwise r {np.corrcoef(Zs[:, :50].T)[np.triu_indices(50, 1)].mean():.4f}; true {true:.2f}/min, skew {zaki.skew(p):.3f}; "
+          f"(a) mean {sa.mean():.2f}, 95th {np.percentile(sa, 95):.2f}; (b) mean {sb.mean():.2f}, 95th {np.percentile(sb, 95):.2f}")
+print(time.time()-t0)
 EOF
-$TMPDIR/dev/bin/python -m pip --version >/dev/null 2>&1; uv pip install -q -p $TMPDIR/dev/bin/python nbformat && $TMPDIR/dev/bin/python $TMPDIR/edit3.py && git diff --stat
+cd $TMPDIR/z && executed/zaki-2024/.venv/bin/python syn.py
 ```
 
 ```
-/tmp/claude-1001/dev/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
-  _validate(nbdict, ref, version, version_minor, relax_add_props)
- entries/000718-zaki-2024/memlink.py                |  24 ++
- entries/000718-zaki-2024/reproduce_zaki_2024.ipynb | 253 +++++++++++++++++----
- entries/000718-zaki-2024/requirements.in           |   1 +
- entries/000718-zaki-2024/requirements.lock.txt     |  12 +-
- 4 files changed, 246 insertions(+), 44 deletions(-)
+no shared drift: mean pairwise r -0.0011; true 8.30/min, skew 0.095; (a) mean 8.46, 95th 9.80; (b) mean 9.74, 95th 11.40
+slow shared drift: mean pairwise r 0.0776; true 0.00/min, skew -1.051; (a) mean 8.16, 95th 9.60; (b) mean 0.00, 95th 0.00
+1.8347971439361572
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-$TMPDIR/dev/bin/python - <<'EOF'
+cd $TMPDIR/z && sed -i 's/(("no shared drift", 0.0), ("slow shared drift", 0.3))/(("none", 0.0), ("0.02", 0.02), ("0.04", 0.04), ("0.08", 0.08))/' syn.py && executed/zaki-2024/.venv/bin/python syn.py
+```
+
+```
+none: mean pairwise r -0.0011; true 8.30/min, skew 0.095; (a) mean 8.46, 95th 9.80; (b) mean 9.74, 95th 11.40
+0.02: mean pairwise r -0.0010; true 8.60/min, skew 0.042; (a) mean 8.41, 95th 9.90; (b) mean 6.70, 95th 8.30
+0.04: mean pairwise r -0.0002; true 5.90/min, skew -0.276; (a) mean 8.48, 95th 9.70; (b) mean 1.74, 95th 2.60
+0.08: mean pairwise r 0.0039; true 1.00/min, skew -0.735; (a) mean 8.38, 95th 9.60; (b) mean 0.01, 95th 0.10
+3.680596113204956
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/z/edit1.py <<'PYEOF'
 import nbformat
-P="reproduce_zaki_2024.ipynb"; nb=nbformat.read(P,4)
-for c in nb.cells:
-    s=c.source
-    s=s.replace("quiet wake together, overlap-aversive co-bursting exceeds overlap-neutral co-bursting (26.4 against\n35.6% of all 87 bursts",
-                "quiet wake together, overlap-neutral co-bursting (OxN) is below overlap-aversive co-bursting (OxA):\n26.4 against 35.6% of all 87 bursts")
-    s=s.replace("but its chance level, at most 0.10 surrogate bursts per min against 5.30 to 8.71 true,",
-                "but its chance level, surrogate means of at most 0.10 bursts per min against 5.30 to 8.71 true,")
-    c.source=s
+P='entries/zaki-2024/reproduce_zaki_2024.ipynb'
+nb=nbformat.read(P,as_version=4)
+C=nb.cells
+def code(src,tag=None):
+    c=nbformat.v4.new_code_cell(src)
+    if tag: c.metadata['tags']=[tag]
+    return c
+def md(src): return nbformat.v4.new_markdown_cell(src)
+assert C[7].source.startswith('# Cell registration')
+assert C[14].source.startswith('# (4)')
+assert C[24].source.startswith('fig, ax')
+assert C[30].source.startswith('rng = np.random.default_rng(seed("burst-locomotion-pause"))')
+assert C[35].source.startswith('## Blocked')
+desc = code('''# What the variables are and which modules each offline file holds, from the files' own descriptions.
+of = OFF["Ca_EEG2-1 Day2 S1"]["f"]
+a = of["acquisition/ActivitySignal"]
+print("ActivitySignal:", a.attrs["description"], "| unit:", a["data"].attrs["unit"], "| rate:", a["starting_time"].attrs["rate"], "Hz")
+print("SleepIntervals:", of["processing/sleep/SleepIntervals"].attrs["description"])
+print("sleep_state column:", " ".join(of["processing/sleep/SleepIntervals/sleep_state"].attrs["description"].split()))
+for name in zaki.OFFLINE:
+    f = OFF[name]["f"]
+    print(f"{name}: processing modules {list(f['processing'])}; processing/ophys {list(f['processing/ophys'])}; "
+          f"sleep states {sorted(set(OFF[name]['sleep']['sleep_state']))}")
+    print("    session_description:", zaki.text(f["session_description"])[:400])
+print("files with a cell_registration module:",
+      [p.split("/")[-1] for p in sorted(A) if p.endswith(".nwb") and "cell_registration" in zaki.open_h5(p)["processing"]])''','sanity')
+sleep = code('''# (5) Sleep scoring of Ca_EEG2-1's Week telemetry by the Methods' procedure ("Sleep recordings and sleep scoring":
+# 6 s epochs, a two-state Gaussian mixture on the EMG for sleep against wake, then one on the theta/delta ratio of
+# the sleep epochs for REM against NREM), and the offline file's own labels against it.
+t0 = time.time()
+FEAT = zaki.epoch_features(week)
+es = FEAT["epoch_s"]
+STATE = zaki.score_sleep(FEAT)                    # theta/delta ratio as the Methods name it
+STATE_LOG = zaki.score_sleep(FEAT, log_ratio=True)  # variant: its log
+frac = lambda st: {s: round(100 * np.mean(st[st != "none"] == s), 1) for s in ("wake", "nrem", "rem")}
+print(f"{len(STATE)} epochs of {es:.0f} s ({len(STATE) * es / 86400:.2f} days) read and scored in {time.time() - t0:.0f} s; "
+      f"constant telemetry (mouse off the receiver) in {100 * FEAT['flat'].mean():.1f}% of epochs")
+print("percent of scored epochs, ratio as given:", frac(STATE), "; log ratio:", frac(STATE_LOG))
+r = FEAT["theta"][STATE != "none"] / FEAT["delta"][STATE != "none"]
+print("theta/delta ratio of the sleep epochs, 5/25/50/75/95th percentiles:",
+      np.percentile(FEAT["theta"][np.isin(STATE, ["nrem", "rem"])] / FEAT["delta"][np.isin(STATE, ["nrem", "rem"])], [5, 25, 50, 75, 95]).round(2))
+# the deposited offline recording: every 6 s epoch wholly inside one of its SleepIntervals rows
+st0 = float(epochs.start[epochs.session == "OfflineDay2Session1"].iloc[0])
+o = OFF["Ca_EEG2-1 Day2 S1"]
+pairs = [(lab_, STATE[i]) for s, e, lab_ in zip(o["sleep"]["start_time"], o["sleep"]["stop_time"], o["sleep"]["sleep_state"])
+         for i in range(int(np.ceil((st0 + s) / es)), int((st0 + e) // es))]
+print("\\nCa_EEG2-1 OfflineDay2Session1, file's label (rows) against the Methods' scoring (columns), 6 s epochs:")
+print(pd.crosstab(pd.Series([x for x, _ in pairs], name="file"), pd.Series([y for _, y in pairs], name="scored")).to_string())''','sanity')
+syn = code('''# Synthetic check of the two readings, on cells with no bursts (verifier, round 1). 600 independent AR(1) cells
+# (coefficient 0.9) over 9000 frames (10 min at 15 Hz), alone and with a slow drift shared by all cells (a random
+# walk smoothed over 60 s, at 4% of a cell's SD, which gives the mean trace a drift about as large as its noise).
+# 200 surrogates of each reading; the claim's third generator (seed + 2).
+rng = np.random.default_rng(seed("offline-bursts-above-shuffle") + 2)
+T_, N_, n_sur, dur = 9000, 600, 200, 9000 / 15 / 60
+noise = rng.standard_normal((T_, N_))
+ar = np.empty((T_, N_)); ar[0] = noise[0]
+for t in range(1, T_):
+    ar[t] = 0.9 * ar[t - 1] + noise[t]
+walk = zaki.zscore(np.convolve(np.cumsum(rng.standard_normal(T_ + 899)), np.ones(900) / 900, "valid"))
+for lab_, D in (("independent cells", 0.0), ("with a shared slow drift", 0.04)):
+    Zs, _ = zaki.zscore_cells(ar + D * walk[:, None] * ar.std())
+    ps = zaki.population_trace(Zs); m_ = Zs.mean(1); mu, sd = m_.mean(), m_.std()
+    true = zaki.burst_frequency(ps, dur)
+    sa = zaki.circular_shift_surrogates(Zs, rng, n_sur, lambda q: zaki.burst_frequency(q, dur))
+    sb = zaki.circular_shift_surrogates(Zs, rng, n_sur, lambda q: zaki.burst_frequency((q - mu) / sd, dur), normalise=False)
+    sk = zaki.circular_shift_surrogates(Zs, rng, n_sur, zaki.skew)
+    print(f"{lab_}: true {true:.2f} bursts/min; (a) surrogate mean {sa.mean():.2f}, 95th pct {np.percentile(sa, 95):.2f} -> "
+          f"{'above' if true > np.percentile(sa, 95) else 'not above'}; (b) mean {sb.mean():.2f}, 95th pct {np.percentile(sb, 95):.2f} -> "
+          f"{'above' if true > np.percentile(sb, 95) else 'not above'}; skew {zaki.skew(ps):.3f} against surrogate 95th pct {np.percentile(sk, 95):.3f}")''','claim:offline-bursts-above-shuffle')
+shift = code('''# Sensitivity to the clock and to the window lengths (verifier, round 1). The telemetry is moved by s seconds
+# against the imaging (movement at telemetry time t placed at t + s), for s from -8 to +8 s and for each recording's
+# lag of peak correlation of population activity with movement (data check, (3)). As a variant, the baseline window
+# is shortened to 1 s (-4 to -3 s), the length of the window before the burst. Random times (the claim's second
+# generator, seed + 1) give each test's reference.
+def peak_lag(o):
+    c_, mv = zaki.movement_bins(o["act"], o["act_t0"], o["act_rate"], 0.5)
+    edges = np.r_[c_ - 0.25, c_[-1] + 0.25]
+    cnt = np.histogram(o["ts"], edges)[0]
+    pb = np.histogram(o["ts"], edges, weights=o["Z"].mean(1))[0] / np.maximum(cnt, 1)
+    cc = lagged_corr(pb[cnt > 0], mv[cnt > 0], (lags_s / 0.5).astype(int))
+    return float(lags_s[np.argmax(np.abs(cc))])
+def pause_test(o, times, shift, base=(-5, -3)):
+    c, m = zaki.movement_bins(o["act"], o["act_t0"], o["act_rate"], 0.1)
+    c = c + shift
+    w = [(m[(c >= t - 1) & (c < t)].mean(), m[(c >= t + base[0]) & (c < t + base[1])].mean())
+         for t in times if t - 5 >= c[0] and t + 5 <= c[-1]]
+    pre, b = np.array(w).T
+    return len(w), stats.wilcoxon(pre, b, alternative="less").pvalue
+rng = np.random.default_rng(seed("burst-locomotion-pause") + 1)
+SH, EQ = [], []
+for name, o in OFF.items():
+    ev = zaki.burst_events(zaki.population_trace(o["Z"]))
+    pk = peak_lag(o)
+    rt = rng.uniform(o["ts"][0] + 5, o["ts"][-1] - 5, 1000)
+    for s in [pk] + list(np.arange(-8.0, 9.0, 1.0)):
+        for rd, ix in (("a peak", 2), ("b onset", 0)):
+            n, pv = pause_test(o, o["ts"][[e[ix] for e in ev]], s)
+            SH.append(dict(recording=name, shift="peak lag %+.1f s" % pk if s == pk else "%+.0f s" % s, reading=rd, n=n, p=pv))
+    for s in (0.0, pk):
+        for base in ((-5, -3), (-4, -3)):
+            n, pv = pause_test(o, o["ts"][[e[2] for e in ev]], s, base)
+            nr, pr = pause_test(o, rt, s, base)
+            EQ.append(dict(recording=name, shift=f"{s:+.1f} s", baseline=f"{base[0]} to {base[1]} s", bursts=n, p_bursts=round(pv, 3),
+                           random_times=nr, p_random=round(pr, 3)))
+SH = pd.DataFrame(SH)
+for rd in ("a peak", "b onset"):
+    t_ = SH[SH.reading == rd].pivot(index="shift", columns="recording", values="p")
+    t_["recordings with p < 0.05"] = (t_ < 0.05).sum(axis=1)
+    print(f"reading ({rd}): one-sided Wilcoxon p by shift of the telemetry\\n", t_.round(3).to_string(), "\\n")
+print(pd.DataFrame(EQ).to_string(index=False))''','claim:burst-locomotion-pause')
+sleepd = code('''# ed9-ed10-sleep-unchanged, descriptive, one mouse (the claim stays blocked). Sleep features of Ca_EEG2-1 in the 24 h
+# before neutral encoding and the 24 h after neutral and after aversive encoding (Extended Data Fig. 10a: "the 24 h
+# prior to the start of the first Neutral encoding experience, and ... the 24 hrs following Neutral encoding and after
+# Aversive encoding"). The mouse is away from its home cage, and its telemetry constant, while it is in the
+# behaviour room; the encoding period is taken as that dropout (data check, (4)), not the session's timestamp, which
+# is about 1 h later on this clock.
+flat = FEAT["flat"]
+d_ = np.diff(np.r_[0, flat.astype(int), 0])
+runs = [(a * es, b * es) for a, b in zip(np.flatnonzero(d_ == 1), np.flatnonzero(d_ == -1)) if b - a >= 10]
+def away(sess):
+    s0 = float(epochs.start[epochs.session == sess].iloc[0])
+    return [r for r in runs if s0 - 7200 <= r[0] <= s0 + 600][0]
+nA, nB = away("NeutralExposure"); fA, fB = away("FC")
+print(f"away for neutral encoding {nA:.0f}-{nB:.0f} s, for aversive encoding {fA:.0f}-{fB:.0f} s")
+W = {"pre-neutral": (nA - 86400, nA), "post-neutral": (nB, nB + 86400), "post-aversive": (fB, fB + 86400)}
+sl_ = lambda st, a, b: st[int(a // es):int(b // es)]
+for lab_, st in (("theta/delta as given", STATE), ("log theta/delta", STATE_LOG)):
+    tab = pd.DataFrame({k: zaki.sleep_features(sl_(st, a, b), es) for k, (a, b) in W.items()})
+    print(f"\\n{lab_}:\\n", tab.round(2).to_string())
+print("\\nscored hours per window:", {k: round(np.sum(sl_(STATE, a, b) != "none") * es / 3600, 2) for k, (a, b) in W.items()})
+print("percent wake in the first four 30-min bins after encoding, and at the same clock time on the day before neutral encoding:")
+for lab_, t_ in (("post-neutral", nB), ("post-aversive", fB), ("same time, 24 h before post-neutral", nB - 86400)):
+    print(f"  {lab_:38s}", [round(100 * np.mean(x[x != "none"] == "wake"), 1) for x in (sl_(STATE, t_ + i * 1800, t_ + (i + 1) * 1800) for i in range(4))])
+# Extended Data Fig. 9g: the recording scheme against the whole offline period (day 2, the 19 imaging epochs)
+off_ = epochs[epochs.session.str.startswith("OfflineDay2")]
+inside = np.zeros(len(STATE), bool)
+for s, e in zip(off_.start, off_.stop):
+    inside[int(s // es):int(e // es)] = True
+span = STATE[int(off_.start.min() // es):int(off_.stop.max() // es)]
+print(f"\\nday 2: {len(off_)} imaging epochs, state (%):", frac(STATE[inside]), "; whole span from the first to the last:", frac(span))''','claim:ed9-ed10-sleep-unchanged')
+ed9c = code('''# ed9c-eeg-cohort-linking, descriptive, the low-shock mouse only (the claim stays blocked: the high-shock mouse has no
+# neutral or novel recall here, and the paper's test is a paired t-test over 4 low-shock mice).
+for c_ in ("Neutral", "Novel"):
+    k_ = [k for k, v in ctx.items() if k[0] == "Ca_EEG3-4" and v == c_][0]
+    print(f"Ca_EEG3-4 {c_:8s} recall ({k_[1]}): freezing (a) {FREEZE[k_]['a_frames']:.2f}%, (b) {FREEZE[k_]['b_duration']:.2f}%")''','claim:ed9c-eeg-cohort-linking')
+new=[]
+for i,c in enumerate(C):
+    new.append(c)
+    if i==7: new.append(desc)
+    if i==14: new.append(sleep)
+    if i==24: new.append(syn)
+    if i==30: new.append(shift)
+    if i==35: new += [ed9c, sleepd]
+nb.cells=new
+nbformat.write(nb,P)
+for i,c in enumerate(nb.cells): print(i,c.cell_type,c.metadata.get('tags'),c.source[:60].replace('\n',' '))
+PYEOF
+executed/zaki-2024/.venv/bin/python $TMPDIR/z/edit1.py
+```
+
+```
+0 markdown None # Reproducing Zaki et al. (2024) on DANDI:000718  **Paper.**
+1 code None import zlib, time, resource import numpy as np import pandas
+2 markdown None ## Data check  The assets of the pinned version, each file's
+3 code ['sanity'] A = zaki.assets() rows = [] for path in sorted(A):     if no
+4 code ['sanity'] # Session descriptions name the context of each recall and t
+5 markdown None ### Freezing, ensembles and value ranges
+6 code ['sanity'] FREEZE = {} for path in sorted(A):     if path.endswith("ima
+7 code ['sanity'] # Cell registration of Ca_EEG2-1 (in its Week file), and the
+8 code ['sanity'] # What the variables are and which modules each offline file
+9 markdown None ### Versions, duplicates and clocks  Three NWB files changed
+10 code ['sanity'] old = zaki.assets("0.260825.1902") changed = [p for p in sor
+11 code ['sanity'] # Recordings deposited twice? Asset digests, and the arrays 
+12 markdown None **Clocks.** Four checks: (1) the behaviour clock, from the m
+13 code ['sanity'] # (1) shocks in the FC sessions, against every other 2 s win
+14 code ['sanity'] # (3) offline files: imaging against telemetry, and sleep la
+15 code ['sanity'] # (4) Ca_EEG2-1: session times against the Week file's conti
+16 code ['sanity'] # (5) Sleep scoring of Ca_EEG2-1's Week telemetry by the Met
+17 markdown None **What the checks show.** The printed numbers above are read
+18 markdown None ## source-data-link  > The two deposited mice are the mice o
+19 code ['claim:source-data-link'] ed9b = zaki.source_data_csv("ExtendedData9/ExtData9b.csv") e
+[... 25 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/zaki-2024 && executed/zaki-2024/.venv/bin/python - <<'EOF'
+import nbformat
+P='reproduce_zaki_2024.ipynb'
+nb=nbformat.read(P,as_version=4)
+s=nb.cells[16].source
+s=s.replace('r = FEAT["theta"][STATE != "none"] / FEAT["delta"][STATE != "none"]\n','')
+nb.cells[16].source=s
+s=nb.cells[34].source
+s=s.replace('for s in [pk] + list(np.arange(-8.0, 9.0, 1.0)):','for s in [pk] + [x for x in np.arange(-8.0, 9.0, 1.0) if x != pk]:')
+nb.cells[34].source=s
 nbformat.write(nb,P)
 EOF
-grep -c "OxN) is below\|surrogate means of at most" reproduce_zaki_2024.ipynb; git diff reproduce_zaki_2024.ipynb | grep '^[-+].*"id"' | head
+date -u; cd  && time python tools/entry.py all entries/zaki-2024 2>&1 | tail -20
+```
+
+```
+Wed Nov 25 05:13:08 UTC 2026
+Installed kernelspec registry-zaki-2024 in executed/zaki-2024/.venv/share/jupyter/kernels/registry-zaki-2024
+0 error(s)
+pass  reproduce_zaki_2024.ipynb  (380 s)
+
+real	6m30.270s
+user	2m49.760s
+sys	0m6.613s
+```
+
+**Agent calls Bash**
+
+```bash
+python3 - <<'EOF'
+import json
+nb=json.load(open('executed/zaki-2024/reproduce_zaki_2024.ipynb'))
+for i in [8,14,16,25,27,33,34,37,40,41,43]:
+    c=nb['cells'][i]
+    print('=== cell',i)
+    for o in c.get('outputs',[]):
+        t=o.get('text') or o.get('data',{}).get('text/plain','')
+        print(''.join(t) if isinstance(t,list) else t)
+EOF
+```
+
+```
+=== cell 8
+ActivitySignal: Activity signal recorder with HD-X02 wireless telemetry probe. It refers to the motion of the probe relative to the receiver and it can be used as a proxy for locomotion. | unit: n.a. | rate: 500.0 Hz
+SleepIntervals: Sleep states classified with custom algorithm using the data from the HD-X02 sensor (EEG, EMG, temperature, etc.).
+sleep_state column: Sleep State Classification, it can be one of the following: - 'quiet wake': The animal is awake and alert but at rest, without engaging in any voluntary movement or significant cognitive activity - 'rem': Sleep stage characterized by Rapid Eye Movements (REM) beneath closed eyelids. - 'sws': Slow-Wave Sleep (SWS) is a stage of non-REM (NREM) sleep characterized by slow, high-amplitude brain waves - 'wake': State of full consciousness when the animal is alert, responsive to the environment, and capable of voluntary movement
+Ca_EEG2-1 Day2 S1: processing modules ['ophys', 'sleep']; processing/ophys ['Fluorescence', 'ImageSegmentation', 'SegmentationImages']; sleep states [np.str_('quiet wake'), np.str_('wake')]
+    session_description: After Neutral Exposure and Fear Conditioning sessions, mice were taken out of the testing chambers and immediately placed in their homecage (scope was not removed).The homecage was placed in a dark grey storage bin with a webcam on top of the bin, taped to a wooden plank, looking down into the homecage. Mouse behavior and calcium were recorded for an hour.
+Ca_EEG3-4 Day1 S1: processing modules ['ophys', 'sleep']; processing/ophys ['Fluorescence', 'ImageSegmentation', 'SegmentationImages']; sleep states [np.str_('quiet wake'), np.str_('wake')]
+    session_description: After Neutral Exposure and Fear Conditioning sessions, mice were taken out of the testing chambers and immediately placed in their homecage (scope was not removed).The homecage was placed in a dark grey storage bin with a webcam on top of the bin, taped to a wooden plank, looking down into the homecage
+[... 203 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; python3 - <<'EOF'
+import json
+nb=json.load(open('entries/zaki-2024/reproduce_zaki_2024.ipynb'))
+for i in [12,17]:
+    print(i, ''.join(nb['cells'][i]['source']))
+EOF
+```
+
+```
+Wed Nov 25 05:20:00 UTC 2026
+12 **Clocks.** Four checks: (1) the behaviour clock, from the motion at the shock times the FC description gives (120, 180 and 240 s); (2) the imaging clock against the behaviour clock, from the cross-correlation of population activity and motion; (3) the imaging clock against the telemetry in the offline files, the same way with the ActivitySignal, and the sleep labels against the EMG with the labels shifted in time; (4) the session times of Ca_EEG2-1 against its continuous telemetry in the Week file.
+17 **What the checks show.** The printed numbers above are read as follows (each statement is backed by a printed number).
+
+- Counts: two subjects, 12 NWB files (Ca_EEG2-1: neutral exposure, FC, Recall1, one offline recording and the Week telemetry with 19 cell-registration tables; Ca_EEG3-4: five behaviour sessions and two offline recordings). Imaging is at about 15 Hz (the Methods: "temporally downsampled by 2 (to 15 Hz)"), behaviour video at 30 Hz. The telemetry is stored at 500 Hz, and its sample count matches the 600 s recording at that rate; the Methods say the HD-X02 implants "recorded ... at 100 Hz". The data are trusted on this.
+- The offline recordings hold only wake and quiet wake; no NREM or REM.
+- The freezing intervals come from ezTrack with a minimum of 15 frames (0.5 s at 30 Hz); the shortest interval is printed above.
+- The FC descriptions give the shock amplitude as "1.5" and "0.25" without a unit; the experiment description gives the two amplitudes in mA.
+- The cell registration of Ca_EEG2-1 gives 97 neutral, 80 aversive, 166 overlap and 282 remaining cells in its offline recording, every one of its 625 ROIs once.
+- The three files that changed since 0.260825.1902 hold the same values for every array used here (differences of 0 or float rounding).
+- No two assets share a digest, and no two behaviour sessions of equal length have correlated motion; the two offline recordings of Ca_EEG3-4 hold different numbers of cells an
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/z/edit2.py <<'PYEOF'
+import nbformat
+P='entries/zaki-2024/reproduce_zaki_2024.ipynb'
+nb=nbformat.read(P,as_version=4)
+C=nb.cells
+def rep(i, old, new):
+    assert old in C[i].source, (i, old[:50])
+    C[i].source = C[i].source.replace(old, new)
+rep(12, "**Clocks.** Four checks:", "**Clocks and sleep labels.** Five checks:")
+rep(12, "against its continuous telemetry in the Week file.", "against its continuous telemetry in the Week file; (5) the sleep labels of Ca_EEG2-1's offline recording against a scoring of the Week telemetry by the Methods' procedure.")
+rep(17, "- The offline recordings hold only wake and quiet wake; no NREM or REM.\n",
+"""- The offline recordings hold only wake and quiet wake; no NREM or REM. The sleep_state column defines four states: "quiet wake" ("awake and alert but at rest, without engaging in any voluntary movement"), "wake" ("capable of voluntary movement"), "sws" and "rem". So quiet wake is a state of waking; the paper's scoring (Methods, "Sleep recordings and sleep scoring") has wake, NREM and REM only.
+- Scored by the Methods' procedure (6 s epochs, a two-state Gaussian mixture on log EMG RMS for sleep against wake), 64 of the 68 epochs that Ca_EEG2-1's offline file labels quiet wake are wake (2 NREM, 2 REM), as are all 6 labelled wake. The paper's own sleep/wake split therefore puts quiet wake in wake. Over the 9.36 days of the Week file this scoring gives 47.4% wake; the REM share of the rest depends on whether the theta/delta ratio or its log is fitted (10.9% or 21.1% of the time), so the REM split is not well determined.
+- ActivitySignal is described as "the motion of the probe relative to the receiver", "a proxy for locomotion", unit "n.a."; it is signed and continuous (ranges above), and its absolute value is used as movement.
+- The three offline files hold the processing modules ophys and sleep only; the one cell_registration module in the dataset is in Ca_EEG2-1's Week file. Ca_EEG3-4 has no cell registration.
+- The session descriptions of the three offline files describe the one-hour webcam experiment ("a webcam on top of the bin ... Mouse behavior and calcium were recorded for an hour"), while the files hold 10-min recordings with home-cage telemetry and sleep labels, as the Methods describe for the EEG/EMG mice.
+""")
+rep(17, "so offline imaging, its telemetry and the Week file share one clock.", "so the offline file's telemetry and the Week file share one clock.")
+C[28].source = """**Result: reproduced, under reading (b), an assumption.** With each surrogate thresholded at the true trace's own mean plus 2 SD, the true burst frequency (8.73, 6.42 and 5.31 bursts per minute) is above the 95th percentile of the surrogates (0.30, 0.10 and 0.00) and above every surrogate in all three recordings (fraction at or above the true value 0), under the second generator's seed and the four others. Under reading (a), with each surrogate z-scored again, the true frequency is below the surrogate mean in all three recordings (10.94, 8.81 and 8.48) under all five seeds; that reading alone would give not reproduced. The criterion accepts either reading, so the outcome rests on reading (b), which the paper does not confirm.
+
+Reading (b) is a weak test. A circular shift keeps each cell's mean, so a surrogate mean trace has the true trace's mean and a smaller SD whenever the cells co-vary positively, and it rarely reaches the true trace's threshold. On synthetic cells with no bursts and only a slow drift shared by all of them, reading (b) puts the true frequency above the surrogates (5.90 against a 95th percentile of 2.60) and reading (a) below them (5.90 against a mean of 8.55), the pattern of the real data; on independent cells neither reading does (8.30 against 95th percentiles of 9.80 and 11.40). So the result under (b) shows that the cells co-vary positively, not that the co-variation comes as bursts. The reading-(a) result is the one that tests burst structure, and it does not hold here. A reader is asked whether reading (b) belongs in the criterion (`questions/zaki-2024.yaml`)."""
+C[31].source = """**Result: reproduced.** In all three recordings the true skew of the population trace is above every one of the 1000 surrogates (fraction at or above the true value 0), well above their 95th percentile, under all five seeds. Skew does not depend on the scale of the trace, so the thresholding readings of the burst claim do not bear on it. Unlike reading (b) of the burst claim, this test is not passed by co-variation alone: on the synthetic cells with a shared slow drift the true skew is -0.276 against a surrogate 95th percentile of 0.105, and on independent cells 0.095 against 0.103."""
+C[35].source = """**Result: not reproduced.** Under neither reading is movement in the second before a burst lower than 3 to 5 s before it in any recording (one-sided p 0.45 to 0.92). In all three recordings the mean |ActivitySignal| at -5 and -1 s around bursts is higher than around random times (0.13 to 0.36 against 0.08 to 0.21), while the medians are low throughout (0.03 to 0.10). Around random times movement in the later window is lower in Ca_EEG2-1 (p < 0.001), as movement declines over the recording.
+
+The test assumes the imaging and telemetry share a clock, which the data check found consistent but could not show. With the telemetry moved to each recording's lag of peak correlation with population activity (+1.5, +5.5 and +6.5 s), p is 0.805, 0.982 and 0.863 (peak) and 0.798, 0.977 and 0.853 (onset), so the negative result survives that alignment. Over shifts from -8 to +8 s in 1 s steps, Ca_EEG3-4 Day 1 never reaches p < 0.05 (smallest 0.514), so no shift gives the result in all three recordings; at most two reach it, at -3 and -4 s, shifts that place movement earlier, against the direction of the correlation. With a 1 s baseline window (-4 to -3 s) in place of the criterion's 2 s, p is 0.809, 0.997 and 0.306 at lag 0, while random times give 0.009, 1.000 and 0.307, so the unequal windows of the criterion do not hide a pause. The only movement measure in the offline files is the telemetry ActivitySignal, described as the motion of the probe relative to the receiver; the paper's measure for Fig. 2d,e is webcam locomotion from the one-hour experiment, whose mice are not in the dataset."""
+C[38].source = """**Result: partially reproduced.** Under wake alone (reading b), OxN exceeds OxA in both co-participation readings (33.3% against 29.2% with both participating; 8.3% against 4.2% with the third ensemble absent), but over 24 wake bursts the McNemar test is far from significant (2 against 1 discordant bursts, p = 1.0). Under wake and quiet wake together (reading a, 85 bursts) the order reverses (25.9% against 35.3%, and 8.2% against 17.6%; 7 against 15 discordant bursts, p = 0.134). The criterion's partial outcome is met under reading (b) alone, on 3 discordant bursts.
+
+Reading (a) is the better match to the paper: the file defines quiet wake as a waking state ("awake and alert but at rest"), the Methods' sleep/wake split scores 64 of its 68 quiet-wake epochs as wake (data check), and the paper places this co-reactivation "during brief periods of quiet wake" (Results, "Co-reactivation occurs more during wake"). Under that reading OxN is below OxA. The outcome is kept as the criterion gives it, and a reader is asked whether reading (b) belongs in the criterion (`questions/zaki-2024.yaml`). The paper's value for this mouse, over all 24 recordings, is 10.4% against 8.4% in wake (source data). One of the mouse's 24 offline recordings and one of the paper's five high-shock mice are tested here, z-scored over this one recording."""
+rep(39, "the low-shock mouse alone cannot test a group difference (its values are in source-data-link).", "the low-shock mouse alone cannot test a group difference; its values are printed below.")
+rep(39, "and one week of unscored telemetry for one mouse.", "and one week of unscored telemetry for one mouse, scored below by the Methods' procedure as a description of one mouse.")
+blk = nbformat.v4.new_markdown_cell("""**Result: both claims stay blocked; descriptive values for one mouse.** The low-shock mouse froze 17.40% (a) or 16.90% (b) in neutral recall and 15.06% or 14.60% in novel recall, a difference of about 2 points; the paper's test is over four low-shock and five high-shock mice. For Ca_EEG2-1, scored by the Methods' procedure, the time asleep is 47.8% in the 24 h before neutral encoding, 53.1% after it and 57.2% after aversive encoding, with mean wake bouts of 88, 83 and 60 s; NREM bouts are 33 to 35 s under the ratio as given. The REM figures (REM bouts of about 10 s, and 40 to 46% of wake bouts followed by REM) are not physiological, so this scoring does not determine REM. In the first 30 min back in the home cage the mouse is awake 67% (after neutral) and 49% (after aversive) of the time, against 93% at the same clock time the day before. On day 2 the 19 imaging epochs hold 27.4% wake, 59.7% NREM and 12.9% REM, against 25.8%, 59.9% and 14.3% over the whole span they sample, in line with Extended Data Fig. 9g. With one mouse none of the paper's tests (across 9 mice, and against 4 mice without a Miniscope, which are not in the dataset) can be run.""")
+i41 = [i for i,c in enumerate(C) if 'claim:ed9-ed10-sleep-unchanged' in c.metadata.get('tags',[])][0]
+C.insert(i41+1, blk)
+s = [i for i,c in enumerate(C) if c.source.startswith('A failure to reproduce')][0]
+rep(s, "Circular-shift offsets are drawn uniformly over the recording (a standard choice).", "Circular-shift offsets are drawn uniformly over the recording (a standard choice). Wake is read with and without the dataset's quiet wake, a state the paper does not name.")
+rep(s, "so its outcome rests on that reading.", "so its outcome rests on that reading, and a synthetic check shows that reading (b) is passed by cells that only share a slow drift.")
+rep(s, "- The telemetry is stored at 500 Hz; the Methods say 100 Hz.", "- The telemetry is stored at 500 Hz; the Methods say 100 Hz.\n- The offline files' session descriptions describe the one-hour webcam experiment, not the 10-min home-cage recordings with telemetry that they hold.\n- The sleep labels include a quiet wake state, defined in the column's description as a waking state, which the paper's scoring does not have; the Methods' sleep/wake split scores it as wake.")
+nbformat.write(nb,P)
+PYEOF
+executed/zaki-2024/.venv/bin/python $TMPDIR/z/edit2.py && echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/zaki-2024 && executed/zaki-2024/.venv/bin/python - <<'EOF'
+import nbformat
+P='reproduce_zaki_2024.ipynb'
+nb=nbformat.read(P,as_version=4)
+n=0
+for c in nb.cells:
+    for o,nw in (("the time asleep is 47.8% in the 24 h before neutral encoding, 53.1% after it and 57.2% after aversive encoding","the time asleep is 47.81% in the 24 h before neutral encoding, 53.12% after it and 57.15% after aversive encoding"),
+                 ("at most two reach it, at -3 and -4 s, shifts that place movement earlier","at most two reach it, at -3 s (peak) and -3 and -4 s (onset), shifts that place movement earlier")):
+        if o in c.source: c.source=c.source.replace(o,nw); n+=1
+print(n); nbformat.write(nb,P)
+EOF
 ```
 
 ```
 2
-+   "id": "4a646427",
-+   "id": "e0a31559",
-+   "id": "d38c7a52",
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  && sed -n 50,70p attempts/000718-zaki-2024-01.yaml
+executed/zaki-2024/.venv/bin/python - <<'EOF'
+import nbformat
+P='reproduce_zaki_2024.ipynb'
+nb=nbformat.read(P,as_version=4)
+for c in nb.cells:
+    if c.source.startswith('summary = pd.DataFrame'):
+        c.source=c.source.replace('("ed9c-eeg-cohort-linking", "blocked", "data_missing")','("ed9c-eeg-cohort-linking", "blocked", "data_missing (low-shock mouse shown descriptively)")')
+        c.source=c.source.replace('("ed9-ed10-sleep-unchanged", "blocked", "data_missing")','("ed9-ed10-sleep-unchanged", "blocked", "data_missing (one mouse scored descriptively)")')
+        c.source=c.source.replace('"no pre-burst slowing in 0 of 3 recordings under either reading"','"no pre-burst slowing in 0 of 3 recordings under either reading, also at the lag of peak correlation"')
+        c.source=c.source.replace('"OxN > OxA under wake alone, McNemar p = 1.0"','"OxN > OxA under wake alone, McNemar p = 1.0; OxN < OxA with quiet wake"')
+nbformat.write(nb,P)
+EOF
+python3 - <<'EOF'
+p='zaki.py'; s=open(p).read()
+old='''  offline-skew-above-shuffle. The offsets are drawn uniformly from 0 to T-1 frames: the legend does
+  not give their range; a uniform draw over the whole recording is the standard choice and is an
+  assumption stated in the record.'''
+new='''  offline-skew-above-shuffle. The offsets are drawn uniformly from 0 to T-1 frames: the legend does
+  not give their range; a uniform draw over the whole recording is the standard choice and is an
+  assumption stated in the record. With ``normalise=False`` (reading (b) of the burst claim's
+  criterion) the surrogate trace keeps the true trace's mean and, for positively co-varying cells,
+  has a smaller SD, so it rarely reaches the true trace's threshold whether or not the cells burst
+  (the notebook's synthetic check).'''
+assert old in s; s=s.replace(old,new)
+old='''- Movement (``movement_bins``):'''
+new='''- Sleep scoring (``epoch_features``, ``gmm2``, ``score_sleep``, ``sleep_features``): 6 s epochs, a
+  two-state Gaussian mixture on the EMG (lower state sleep), then one on the theta (5-9 Hz) / delta
+  (0.5-4 Hz) ratio of the sleep epochs (higher state REM) (Methods, "Sleep recordings and sleep
+  scoring"). The EMG feature (log RMS) and the band power (periodogram) are not given by the paper
+  and are assumptions; the ratio is fitted as given and, as a variant, as its log.
+- Movement (``movement_bins``):'''
+assert old in s; s=s.replace(old,new); open(p,'w').write(s)
+EOF
+date -u
 ```
 
 ```
-- claim: ed9b-aversive-freezing-high-vs-low
-  outcome: reproduced
-  notebook: reproduce_zaki_2024.ipynb
-  output: claim:ed9b-aversive-freezing-high-vs-low
-  notes: Recall1 freezing is 64.09% for the high-shock mouse and 8.82% for the low-shock mouse (difference
-    55.27 percentage points). The 30 s bins differ by Mann-Whitney (U = 100, p = 0.00018); 15 s and 60 s bins
-    give p = 8.9e-07 and 0.0079. The paper's t-test (t7 = 8.99, p = 0.020) over 5 and 4 mice cannot be run
-    with one mouse per group, so its statistic is not tested.
-  deviations:
-  - One mouse per group (the paper has 5 high-shock and 4 low-shock mice); the test is within sessions, over
-    30 s bins, chosen here.
+Wed Nov 25 05:21:05 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  head -3 questions/zaki-2024.yaml; grep -n "^[a-z]" questions/zaki-2024.yaml; cat questions/README.md | head -60
+```
+
+```
+questions:
 - claim: offline-bursts-above-shuffle
-  outcome: blocked
-  blocked_by: methods_underspecified
-  notebook: reproduce_zaki_2024.ipynb
-  output: claim:offline-bursts-above-shuffle
-  notes: The analysis ran. Under the criterion's procedure (surrogates z-scored and thresholded at z = 2 as
-    the data) the true burst rate is below the surrogate mean in all three offline recordings (5.30, 6.40 and
-    8.71 per min against 8.48 to 10.94; true over surrogate mean 0.63 to 0.80), which would be not
-    reproduced. The paper's chance level for this test (source data for Extended Data Figure 3m, another
-[... 1 more lines not kept]
+  question: The criterion compares the true burst frequency with surrogates whose mean population
+1:questions:
+# Questions
+
+`<dandiset>.yaml` holds an attempt's questions to a reader: places where the author or a verifier
+believes the claims file misreads the paper (docs/protocol.md, "Author", step 1.6, and "Hand over for
+verification"), and the reader's answers ("Reader", step 6), which say whether the claims file was
+amended and why. Each question has `claim`, `question`, `passage`, `why` (how the misreading could
+change the outcome), and, once answered, `answer` and `answered` (a date). Method details the claims
+file lacks are not asked here: the author takes them from the paper, and a detail the paper does not
+settle is a question for the paper's authors, recorded in the claim's notes and as a
+`methods_unavailable` finding in the attempt. Files from before protocol `pilot-11` also hold
+questions about method details, asked under the earlier rule.
 ```
-
-**Agent**
-
-Now editing the attempt record.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-P="attempts/000718-zaki-2024-01.yaml"
-s=open(P).read()
-def rep(old,new):
-    global s
-    assert s.count(old)==1, old[:60]
-    s=s.replace(old,new)
-rep("""    with one mouse per group, so its statistic is not tested.
-  deviations:""","""    with one mouse per group, so its statistic is not tested. The bins are consecutive parts of one session
-    per mouse and not independent, so the p-values overstate the evidence.
-  deviations:""")
-rep("""    mean in 2 of 3 recordings and above the 95th percentile in none.
-  deviations:""","""    mean in 2 of 3 recordings and above the 95th percentile in none. On synthetic data with 6 coordinated
-    events per minute, the criterion's test gives 5.6 true bursts per min against a surrogate mean of
-    34.98, and with independent cells 34.8 against 37.36, so it cannot detect coordination; the
-    fixed-threshold variant separates the two (5.6 against 0.00, 34.8 against 38.37), but its chance level
-    in the data (surrogate means at most 0.10 per min) is far below the paper's.
-  deviations:""")
-rep("""    1.91 in the source data for Extended Data Figure 3o), so here the procedures agree.""",
-"""    1.91 in the source data for Extended Data Figure 3o), so here the procedures agree. On synthetic data
-    the test separates coordinated activity (skew 8.54 against a surrogate 95th percentile of 0.94) from
-    independent cells (0.98 against 1.09).""")
-rep("""    1 s bins), and the lab did not use it for analysis (conversion notes). The outcome says this proxy does not
-    show the pause; it is not evidence that the pause is absent.""",
-"""    1 s bins), and the lab did not use it for analysis (conversion notes). The files describe it as motion of
-    the probe relative to the receiver and a proxy for locomotion; its mean magnitude is 4 to 15 times higher
-    in wake than in quiet wake epochs. The test is not calibrated, giving p = 0.016 at 300 random times in
-    Ca_EEG2-1 (0.9999 and 0.92 in the others). The outcome says this proxy does not show the pause, and is
-    weak evidence that the pause is absent.""")
-old_start = s.index("- claim: fig5c-wake-overlap-neutral-coburst\n  outcome: partially_reproduced")
-old_end = s.index("- claim: fig1bc-retrospective-not-prospective")
-s = s[:old_start] + """- claim: fig5c-wake-overlap-neutral-coburst
-  outcome: not_reproduced
-  notebook: reproduce_zaki_2024.ipynb
-  output: claim:fig5c-wake-overlap-neutral-coburst
-  notes: In Ca_EEG2-1's first offline recording after aversive encoding, under reading (a), wake and quiet
-    wake together (all 87 bursts), OxN is below OxA (26.4 against 35.6% inclusive, 8.0 against 17.2%
-    exclusive; 7 against 15 discordant bursts, McNemar p = 0.13). Reading (a) is the one the Methods imply.
-    Their scoring (6 s epochs, two-state Gaussian mixture on EMG) applied to this mouse's log EMG RMS over
-    the 12 h offline period puts 94.1% of quiet-wake frames and 98.5% of wake frames in wake (97.9% of
-    quiet wake when fitted on the first 6 h), and all 87 bursts in wake. Under reading (b), wake alone, OxN
-    exceeds OxA (32.0 against 28.0% of 25 bursts; 8.0 against 4.0%) on 2 against 1 discordant bursts
-    (McNemar p = 1.0). Under the Methods' wake the order holds at thresholds 1.5 (34.9 against 41.1%) and
-    2.5 (21.7 against 30.0%), and no difference reaches p < 0.05. Outside bursts both are at most 1.02% of
-    0.5 s windows. The neutral, aversive and overlap ensembles each have more of their cells in bursts than
-    the remaining cells (median differences 0.005 to 0.010, Wilcoxon p = 0.041 to 0.0003). The paper's
-    statistic (t4 = 4.94, P = 0.016, across five mice) cannot be tested. The evidence against the paper is
-    weak; one 10 min recording of 24 for one mouse of five, with ensemble traces z-scored within it.
-    Co-participation here (26 to 36%) is not on the scale of the paper's source data for this mouse over
-    all 24 recordings (10.37% OxN against 8.39% OxA in wake).
-  deviations:
-  - One high-shock mouse of five, and its first offline recording of 24 (10 min of 4 h).
-  - The Methods z-score the ensemble traces over all 24 offline recordings concatenated; here only one is
-    deposited, so they are z-scored within it.
-  - The criterion fixed four readings (quiet wake in or out of wake; co-participation with or without the
-    third ensemble) and would count the claim under any of them. After the first verification the outcome
-    is judged on wake including quiet wake, as the Methods' own EMG scoring puts quiet wake in wake; under
-    wake alone OxN exceeds OxA without a significant difference, which the criterion would have called
-    partially reproduced.
-  - The EMG feature of the Methods' scoring (log RMS per 6 s epoch) is chosen here; the Methods do not name
-    one. Without the log the mixture does not separate sleep from wake.
-  - Bursts are assigned the sleep state of their peak frame, a choice made here.
-""" + s[old_end:]
-rep("""- kind: metadata_insufficient
-  statement: The sleep states include `quiet wake`, which the paper neither uses nor maps to its wake, NREM
-    and REM states, so it is not known which state the paper assigned these epochs to. The three offline
-    recordings hold no NREM (`sws`) or REM epochs.""","""- kind: metadata_insufficient
-  statement: The sleep states include `quiet wake`, which the paper neither uses nor maps to its wake, NREM
-    and REM states, so it is not known which state the paper assigned these epochs to. The Methods' scoring,
-    applied to the EMG of Ca_EEG2-1, puts 94% of them in wake. The three offline recordings hold no NREM
-    (`sws`) or REM epochs.
-- kind: other
-  statement: The telemetry (EEG, EMG, activity) is sampled at 500 Hz in the offline files and the Week file;
-    the Methods say the HD-X02 implants recorded at 100 Hz.""")
-open(P,"w").write(s)
+cat >> questions/zaki-2024.yaml <<'EOF'
+- claim: offline-bursts-above-shuffle
+  question: The verifier of attempt zaki-2024-02 (round 1) reports that reading (b) of the amended criterion,
+    each surrogate held to the true trace's mean plus 2 SD, cannot tell burst structure from any positive
+    co-variation of the cells, and that the Extended Data Fig. 3l legend reads most naturally as reading (a),
+    the full detection, z-scoring included, run on each surrogate. Should reading (b) stay in the criterion as a
+    reading that alone can give reproduced?
+  passage: 'Extended Data Fig. 3l legend, "Neuron activities were circularly shuffled 1000 times relative to one
+    another and the mean population activity was re-computed each time ... The burst frequency was computed for
+    each of these shuffles to produce a shuffled burst frequency distribution"; Methods, Burst participation
+    analysis, "that one-dimensional trace was z-scored. Time periods when the mean population activity reached
+    above a threshold of z = 2 were considered to be burst events".'
+  why: A circular shift keeps each cell's mean, so a surrogate mean trace has the true trace's mean and, when the
+    cells co-vary positively, a smaller SD; it then rarely reaches the true trace's threshold whether the cells
+    burst or not. On synthetic cells with no bursts and only a slow shared drift, reading (b) gives the true
+    frequency above the surrogates (5.90 against a 95th percentile of 2.60 bursts per minute) and reading (a)
+    below them (5.90 against a mean of 8.55), the pattern of the deposited recordings. The outcome is reproduced
+    under (b) and not reproduced under (a), so whether (b) stays in the criterion decides it.
+- claim: fig5c-wake-overlap-neutral-coburst
+  question: The criterion reads wake two ways, (a) wake and quiet wake together and (b) wake alone, and lets
+    either decide. The paper's scoring has wake, NREM and REM only, its source data (Fig_5c.csv) have only those
+    three states, and the Results place the effect "during brief periods of quiet wake". Does the paper allow
+    reading (b), which leaves out quiet wake, as a reading of its wake?
+  passage: 'Methods, Sleep recordings and sleep scoring, "the EMG data were fit with a Gaussian mixture model with
+    two states, in which the lower state represented sleep and the higher state represented wake"; Results,
+    Co-reactivation occurs more during wake, "suggest that this preferential ensemble co-reactivation occurs
+    during brief periods of quiet wake".'
+  why: The dataset's sleep_state column defines quiet wake as a waking state ("awake and alert but at rest"), and
+    the Methods' sleep/wake split scores 64 of the 68 quiet-wake epochs of the deposited recording as wake. Under
+    reading (a) overlap-neutral co-bursting is below overlap-aversive (25.9% against 35.3% of 85 bursts), which
+    gives not reproduced; the partial outcome rests on reading (b) alone (33.3% against 29.2% of 24 bursts, 2
+    against 1 discordant bursts). Raised by the verifier of attempt zaki-2024-02 (round 1).
 EOF
-grep -n "^verifications" attempts/000718-zaki-2024-01.yaml
+python3 -c "import yaml;print(len(yaml.safe_load(open('questions/zaki-2024.yaml'))['questions']))"
 ```
 
 ```
-296:verifications: []
+3
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "    to reproduced, resting on reading (b). All 625, 711 and 858 cells have activity and none is\n    dropped.",
+ "new_string": "    to reproduced, resting on reading (b). All 625, 711 and 858 cells have activity and none is\n    dropped. Reading (b) is a weak test, as the verifier found. A circular shift keeps each cell's\n    mean, so a surrogate trace has the true trace's mean and, for positively co-varying cells, a\n    smaller SD. On synthetic cells with no bursts (600 AR(1) cells, 9000 frames) sharing a slow drift,\n    reading (b) puts the true frequency above the surrogates (5.90 against a 95th percentile of 2.60)\n    and reading (a) below them (5.90 against a mean of 8.55), the pattern of the real data; on\n    independent cells neither does (8.30 against 95th percentiles of 9.80 and 11.40). The result\n    under (b) therefore shows that the cells co-vary positively, not that they burst together; the\n    reading that tests burst structure, (a), does not hold here. The outcome is the criterion's, and a\n    reader is asked whether reading (b) belongs in it (questions/zaki-2024.yaml)."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "    the true trace z-scored again and threshold it at z = 2, without saying what is done to a shuffle. Reading (b)\n    is the one that tests what the legend's sentence \"disrupting the co-firing relationships between\n    neurons\" sets out to test, whether decorrelated cells reach the true trace's burst level; a trace\n    z-scored again measures the shape of its own distribution instead. The analysis code is not\n    public, so the authors are asked (a methods_unavailable finding). Under reading (a) the outcome\n    would be not reproduced.",
+ "new_string": "PLACEHOLDER"
+}
+```
+
+```
+<tool_use_error>String to replace not found in file.
+String:     the true trace z-scored again and threshold it at z = 2, without saying what is done to a shuffle. Reading (b)
+    is the one that tests what the legend's sentence "disrupting the co-firing relationships between
+    neurons" sets out to test, whether decorrelated cells reach the true trace's burst level; a trace
+    z-scored again measures the shape of its own distribution instead. The analysis code is not
+    public, so the authors are asked (a methods_unavailable finding). Under reading (a) the outcome
+    would be not reproduced.</tool_use_error>
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "without saying what is done to a shuffle. Reading (b)\n    is the one that tests what the legend's sentence \"disrupting the co-firing relationships between\n    neurons\" sets out to test, whether decorrelated cells reach the true trace's burst level; a trace\n    z-scored again measures the shape of its own distribution instead. The analysis code is not\n    public, so the authors are asked (a methods_unavailable finding). Under reading (a) the outcome\n    would be not reproduced.",
+ "new_string": "without saying what is done to a shuffle. The criterion\n    names both readings and is met under either. Reading (b) is not the better-supported one: the\n    legend's \"The burst frequency was computed for each of these shuffles\" reads most naturally as\n    the full detection, z-scoring included (the verifier's reading), and reading (b) is passed by\n    cells that only share a slow drift (notes). The outcome is kept as the criterion gives it, marked\n    as resting on reading (b), and a reader is asked whether that reading belongs in the criterion.\n    The analysis code is not public, so the authors are asked which was done (a methods_unavailable\n    finding). Under reading (a) the outcome would be not reproduced."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "    does not bear on this one. The reader's answer on that claim (questions/zaki-2024.yaml) says the\n    same, and this claim is unchanged by it.",
+ "new_string": "    does not bear on this one. The reader's answer on that claim (questions/zaki-2024.yaml) says the\n    same, and this claim is unchanged by it. Unlike reading (b) of the burst claim, this test is not\n    passed by co-variation alone. On the synthetic cells with a shared slow drift and no bursts the\n    true skew is -0.276 against a surrogate 95th percentile of 0.105, and on independent cells 0.095\n    against 0.103 (200 surrogates each)."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "    activity and movement correlate positively at lag 0, +0.03 to +0.15, with peaks 1.5 to 6.5 s\n    later) but could not show it.",
+ "new_string": "    activity and movement correlate positively at lag 0, +0.03 to +0.15, with peaks 1.5 to 6.5 s\n    later) but could not show it. With the telemetry moved to each recording's lag of peak\n    correlation (+1.5, +5.5 and +6.5 s), p = 0.805, 0.982 and 0.863 (peak) and 0.798, 0.977 and\n    0.853 (onset). Over shifts of -8 to +8 s in 1 s steps, Ca_EEG3-4 Day 1 never reaches p < 0.05\n    (smallest 0.514), so no shift gives the result in all three recordings; two recordings reach it\n    at -3 s (peak) and at -3 and -4 s (onset), shifts that move movement earlier, against the\n    direction of the correlation. With a 1 s baseline (-4 to -3 s) in place of the criterion's 2 s,\n    p = 0.809, 0.997 and 0.306 at lag 0 (random times 0.009, 1.000 and 0.307). The file describes\n    ActivitySignal as \"the motion of the probe relative to the receiver\" that \"can be used as a\n    proxy for locomotion\", unit n.a."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "    reading (b). The paper's source data give this mouse 10.37% against 8.39% in wake over all 24\n    recordings, the direction of reading (b); NREM and REM are not in the deposited recording. The\n    dataset's \"quiet wake\" is a state the paper does not name, and which of the readings matches the\n    paper's \"wake\" cannot be told from the files (a finding). Outside bursts, in wake and quiet wake,\n    overlap and neutral are above z = 2 together in 0.18% of frames and overlap and aversive in\n    0.27%.",
+ "new_string": "    reading (b) alone, on 3 discordant bursts. The paper's source data give this mouse 10.37%\n    against 8.39% in wake over all 24 recordings, the direction of reading (b); NREM and REM are not\n    in the deposited recording. Reading (a) is the better match to the paper's wake. The file's\n    sleep_state description defines quiet wake as a waking state (\"awake and alert but at rest\");\n    the Methods' sleep/wake split (two-state Gaussian mixture on the EMG, 6 s epochs) scores 64 of\n    the 68 quiet-wake epochs of this recording as wake; and the Results place the effect \"during\n    brief periods of quiet wake\". Under reading (a) OxN is below OxA. The outcome is kept as the\n    criterion gives it, and a reader is asked whether reading (b) belongs in the criterion\n    (questions/zaki-2024.yaml). Outside bursts, in wake and quiet wake, overlap and neutral are above\n    z = 2 together in 0.18% of frames and overlap and aversive in 0.27%."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "  - The last of the ten bins holds 29.9 s, as the sessions hold 8998 and 8999 frames at 30 Hz.",
+ "new_string": "  - The last of the ten bins holds 29.9 s, as the sessions hold 8998 and 8999 frames at 30 Hz.\n  - The 30 s bins of one session are autocorrelated, so the criterion's Mann-Whitney test treats\n    dependent samples as independent and its p-value is too small; the direction (all 10 bins) does\n    not depend on it."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "  notes: The low-shock mouse Ca_EEG3-4 has no cell registration in the dataset, so its offline cells\n    cannot be assigned to neutral, aversive and overlap ensembles; and one of four low-shock mice\n    cannot be tested by the paper's paired t-test across mice.",
+ "new_string": "  notes: The low-shock mouse Ca_EEG3-4 has no cell registration in the dataset, so its offline cells\n    cannot be assigned to neutral, aversive and overlap ensembles; and one of four low-shock mice\n    cannot be tested by the paper's paired t-test across mice. Its two offline files hold the\n    processing modules ophys (Fluorescence, ImageSegmentation, SegmentationImages) and sleep only,\n    and the one cell_registration module in the dataset is in Ca_EEG2-1's Week file (data check)."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "  notes: The high-shock mouse Ca_EEG2-1 has no neutral or novel recall in the dataset (only Recall1,\n    aversive). The low-shock mouse froze 16.90% in neutral and 14.60% in novel recall (reading b, see\n    source-data-link), but one mouse per group cannot test the paper's t-tests over 5 and 4 mice.",
+ "new_string": "  notebook: reproduce_zaki_2024.ipynb\n  output: claim:ed9c-eeg-cohort-linking\n  notes: The high-shock mouse Ca_EEG2-1 has no neutral or novel recall in the dataset (only Recall1,\n    aversive). The low-shock half is shown descriptively. Ca_EEG3-4 froze 17.40% (reading a) or 16.90%\n    (reading b) in neutral recall and 15.06% or 14.60% in novel recall, about 2 points apart, but one\n    mouse cannot test the paper's paired t-test over 4 low-shock mice, and the high-shock half is\n    missing."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "  notes: Needs sleep scoring over whole days, before and after encoding, for 9 Miniscope mice and 4\n    mice without a Miniscope. The dataset holds sleep labels only inside its three 10-min offline\n    recordings (wake and quiet wake only) and one week of unscored telemetry for Ca_EEG2-1; the\n    no-Miniscope mice are not in it.",
+ "new_string": "  notebook: reproduce_zaki_2024.ipynb\n  output: claim:ed9-ed10-sleep-unchanged\n  notes: Needs sleep scoring over whole days, before and after encoding, for 9 Miniscope mice and 4\n    mice without a Miniscope. The dataset holds sleep labels only inside its three 10-min offline\n    recordings (wake and quiet wake only) and 9.36 days of unscored telemetry for Ca_EEG2-1; the\n    no-Miniscope mice are not in it, so the Miniscope comparison (Extended Data Fig. 9d to 9f) cannot\n    be made, and the paper's tests across mice cannot be run on one. One mouse is described instead,\n    scored by the Methods' procedure (6 s epochs, two-state Gaussian mixtures on the EMG and on the\n    theta/delta ratio of the sleep epochs; the EMG feature, log RMS, is an assumption). The encoding\n    periods are taken from the telemetry dropouts, when the mouse is off its home-cage receiver.\n    Time asleep is 47.81% in the 24 h before neutral encoding, 53.12% after it and 57.15% after\n    aversive encoding; mean wake bouts 88, 83 and 60 s, NREM bouts 33 to 35 s. In the first 30 min\n    back in the home cage the mouse is awake 67% (after neutral) and 49% (after aversive) of the\n    time, against 93% at the same clock time the day before. The REM split is not determined: the\n    REM share is 10.9% or 21.1% of all epochs depending on whether the ratio or its log is fitted,\n    REM bouts last about 10 s and 40 to 46% of wake bouts are followed by REM, which is not\n    physiological. On day 2 the 19 imaging epochs hold 27.4% wake, 59.7% NREM and 12.9% REM against\n    25.8%, 59.9% and 14.3% over the span they sample, in line with Extended Data Fig. 9g."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "- kind: metadata_insufficient\n  about: data\n  severity: major\n  statement: The sleep_state column of SleepIntervals in the offline files holds \"wake\" and \"quiet\n    wake\", with no description of \"quiet wake\". The paper scores wake, NREM and REM (Methods, Sleep\n    recordings and sleep scoring) and names no quiet wake, so whether quiet wake is part of the\n    paper's wake, or a low-EMG state the paper scores otherwise, cannot be told. In Ca_EEG2-1 61 of\n    87 bursts peak in quiet wake, and the overlap-neutral against overlap-aversive comparison of Fig.\n    5c reverses between the two readings.",
+ "new_string": "- kind: other\n  about: data\n  severity: minor\n  statement: The sleep_state column of SleepIntervals in the offline files uses four states, \"quiet\n    wake\", \"wake\", \"sws\" and \"rem\", where the paper scores wake, NREM and REM (Methods, Sleep\n    recordings and sleep scoring) and names no quiet wake state. The column's description defines\n    quiet wake as a waking state (\"The animal is awake and alert but at rest\"), and the Methods'\n    sleep/wake split scores 64 of the 68 quiet-wake epochs of Ca_EEG2-1's offline recording as wake,\n    so quiet wake is part of the paper's wake. A user who takes \"wake\" for the paper's wake leaves\n    out 61 of 87 bursts in Ca_EEG2-1, and the overlap-neutral against overlap-aversive comparison of\n    Fig. 5c reverses. (The first version of this finding said the column had no description of quiet\n    wake; it has one.)"
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "    where the correlation of population activity with motion peaks away from lag 0; no claim here\n    uses imaging and behaviour together.",
+ "new_string": "    where the correlation of population activity with motion peaks away from lag 0; no claim here\n    uses imaging and behaviour together. The offline file's sleep labels of Ca_EEG2-1 agree with a\n    scoring of the Week telemetry by the Methods' procedure (70 of 74 epochs labelled wake or quiet\n    wake are scored wake)."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/zaki-2024-02.yaml",
+ "old_string": "    are asked which was done. A reader found that the paper does not settle it and amended the claims\n    file to run both; the outcome, reproduced, rests on thresholding at the true trace's level.",
+ "new_string": "    are asked which was done. A reader found that the paper does not settle it and amended the claims\n    file to run both; the outcome, reproduced, rests on thresholding at the true trace's level, a\n    test that cells sharing only a slow drift also pass (the notebook's synthetic check).\n- kind: metadata_error\n  about: data\n  severity: minor\n  statement: The session descriptions of the three offline files (OfflineDay2Session1 of Ca_EEG2-1,\n    OfflineDay1Session1 and OfflineDay2Session1 of Ca_EEG3-4) describe the one-hour webcam\n    experiment (\"The homecage was placed in a dark grey storage bin with a webcam on top of the bin\n    ... Mouse behavior and calcium were recorded for an hour\"). The files hold 10-min recordings with\n    home-cage telemetry and sleep labels and no webcam video, the EEG/EMG protocol the Methods\n    describe (10 min of imaging every 30 min, with continuous telemetry)."
+}
+```
+
+```
+The file attempts/zaki-2024-02.yaml has been updated successfully.
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 205,260p tools/entry.py
-```
-
-```
-if pinned and path == mine[-1] and attempt.get("dandiset_version") != pinned:
-            report.error(where, f"dandiset_version {attempt.get('dandiset_version')!r} differs from "
-                                f"{pinned!r} in entry.yaml")
-        known = claims_by_target.get((attempt.get("dandiset"), attempt.get("paper")))
-        if labels_used.get((attempt.get("dandiset"), attempt.get("paper"))):
-            kinds = {f.get("kind") for f in attempt.get("findings") or []}
-            if not attempt.get("inputs") or not kinds & {"metadata_insufficient", "identifier_missing"}:
-                report.error(where, "claims take names for the dandiset's codes from elsewhere (`with_labels`), so "
-                                    "list the source under `inputs` and record the missing names as a finding "
-                                    "(metadata_insufficient or identifier_missing)")
-        if known is None:
-            report.error(where, "no claims file for this dandiset and paper")
-            continue
-        recorded = [o.get("claim") for o in attempt.get("outcomes", [])]
-        for claim in sorted(known - set(recorded)):
-            report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
-        for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
-            report.error(where, f"claim {claim!r} has more than one outcome")
-        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
-        # does not bind: the revision after it may change outcomes, and round 2 reviews them.
-[... 36 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-P="attempts/000718-zaki-2024-01.yaml"
-s=open(P).read()
-block = '''verifications:
-- date: 2026-10-18
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed, the
-    helper module and the claims file. The attempt record was not among its materials, so it took its
-    counts from the claims file and the notebook.
-  results:
-  - claim: source-data-link
-    agrees: true
-    outcome: reproduced
-    reason: Both mice are found, their shock amplitudes (1.5 and 0.25 mA) match the source data's groups, and
-      all 4 freezing values fall within tolerance under both readings. It fetched ExtData9b.csv and
-      ExtData9c.csv at commit a508164 and the typed reference values match them exactly.
-    response: No change.
-  - claim: ed9b-aversive-freezing-high-vs-low
-    agrees: true
-    outcome: reproduced
-    reason: Recall1 freezing is 64.09% for Ca_EEG2-1 against 8.82% for Ca_EEG3-4, and the Mann-Whitney test on
-      30 s bins gives p = 0.00018. This compares two animals, not the paper's groups (n = 5 and 4). It also
-      noted that the 30 s bins are autocorrelated, pseudo-replicated units from two animals (not affecting a
-      conclusion).
-    response: The conclusion and the notes now say that the bins are not independent and the p-values
-      overstate the evidence. Outcome unchanged.
-  - claim: offline-bursts-above-shuffle
-    agrees: false
-    outcome: not_reproduced
-    reason: Not reproduced as the criterion is written, as the true burst rate is below the shuffled mean in
-      all 3 recordings at z = 2. It did not count this as evidence against the paper, because z-scoring each
-      surrogate again makes the test unable to detect coordination (in its synthetic data, 5.9 per min true
-      against a null mean of 31.7 with planted coordination); the fixed-threshold variant behaves correctly
-      but neither variant matches the paper's chance level. The criterion needs revising, or the claim should
-      be treated as blocked with methods_underspecified. It asked for a positive control in the notebook.
-    response: The outcome was already blocked with methods_underspecified in the record, which the verifier
-      did not see, as its own reason suggests. A positive and negative control on synthetic data now runs in
-      the notebook and shows the same as the verifier's test (5.6 true against 34.98 surrogate bursts per min
-      with coordination); the conclusion and notes say so. Outcome kept as blocked.
-  - claim: offline-skew-above-shuffle
-    agrees: true
-    outcome: reproduced
-    reason: True skew is 1.65, 1.34 and 1.72, against shuffled 95th percentiles of 0.72, 0.51 and 0.48, and
-      no surrogate reaches the true value. Skew is lower than the paper's chance-level data in both arms
-      (another cohort recorded at 30 Hz for 1 h).
-    response: The synthetic control now also shows that the skew test detects coordination (8.54 against a
-      surrogate 95th percentile of 0.94) and not independent firing (0.98 against 1.09). Outcome unchanged.
-  - claim: burst-locomotion-pause
-    agrees: true
-    outcome: not_reproduced
-    reason: The one-sided Wilcoxon gives p of 0.39 or more in all 3 recordings under both time-zero readings.
-      The measure is the telemetry probe signal, described in the file as motion of the probe relative to the
-      receiver, not the paper's webcam locomotion, and the notebook never printed its description or
-      validated it, so it is weak evidence against the paper. The same Wilcoxon gives p = 0.016 at 300 random
-      times in Ca_EEG2-1, so the test on overlapping windows is not calibrated.
-    response: The data check now prints the ActivitySignal's description, its distribution, its correlation
-      with EMG (Spearman r 0.11 to 0.55 over 6 s epochs) and its magnitude in wake against quiet wake (4 to 15
-      times higher). The conclusion and notes now say the test is not calibrated (p = 0.016 at random times)
-      and that the result is weak evidence. Outcome unchanged.
-  - claim: fig5c-wake-overlap-neutral-coburst
-    agrees: true
-    outcome: partially_reproduced
-    reason: Partially reproduced by the letter of the criterion. OxN exceeds OxA only under wake alone, resting
-      on 2 against 1 discordant bursts (McNemar p = 1.0); under wake plus quiet wake, the reading closer to the
-      Methods, the direction reverses (26.4 against 35.6%, p = 0.13). The Methods' sleep scoring has no
-      quiet-wake class, which makes wake plus quiet wake the faithful reading, and the any-reading rule across
-      4 readings allows a post hoc pick. The ensemble means are z-scored within one 10 min recording, while
-      the Methods concatenate all 24 first, so co-participation of 26 to 36% is not comparable to the source
-      data's 10.37 and 8.39% for this mouse. It also noted that the analysis rests on the inferred 1 h clock
-      error for the order of the offline recording, and asked for the full epoch table and the relation of
-      quiet wake to the paper's states.
-    response: Outcome changed to not_reproduced. The data check now applies the Methods' scoring (6 s epochs,
-      two-state Gaussian mixture on log EMG RMS over the 12 h offline period) to Ca_EEG2-1 and finds 94.1% of
-      quiet-wake frames scored as wake and all 87 bursts in wake, so the outcome is judged on wake including
-      quiet wake, under which OxN is below OxA; this is recorded as a deviation from the criterion. The
-      within-recording z-scoring is now a deviation and the conclusion says the levels are not comparable.
-      The full 27-row epoch table is printed; the offline recordings of day 2 follow every 1800 s from
-      OfflineDay2Session1, which starts 113 s after the telemetry absence that contains FC moved 1 h
-      earlier.
-'''
-blocked = {
- "fig1bc-retrospective-not-prospective": "The archive holds only the two Ca_EEG mice (20 assets, 12 NWB files and 8 behaviour videos), with no behaviour-only mice.",
- "fig1ef-high-shock-drives-linking": "The archive holds only the two Ca_EEG mice, with no behaviour-only or one-hour cohort mice.",
- "fig1g-aversive-freezing-predicts-linking": "The archive holds only the two Ca_EEG mice, with no behaviour-only or one-hour cohort mice.",
- "ed1n-offline-hippocampus-needed": "The archive holds only the two Ca_EEG mice, with no behaviour-only mice.",
- "ed2-cocaine-retrospective-linking": "The archive holds only the two Ca_EEG mice, with no behaviour-only mice.",
- "ed3-aversive-ensemble-reactivated": "The one-hour cohort (RLI mice in the source data) is absent. Analogues could be run on Ca_EEG2-1 but would not test this claim.",
- "ed4f-neutral-ensemble-reactivated-high-shock": "The one-hour cohort is absent. Analogues could be run on Ca_EEG2-1 but would not test this claim.",
- "fig3c-offline1-neutral-participation": "The one-hour cohort is absent. Analogues could be run on Ca_EEG2-1 but would not test this claim.",
- "fig3f-neutral-recruited-high-shock": "The one-hour cohort is absent. The notebook already computes a comparison like Figure 3f (neutral against remaining participation, Wilcoxon p = 0.041 across bursts, bursts treated as independent).",
- "fig4b-overlap-independent-participation": "The one-hour cohort is absent. Analogues could be run on Ca_EEG2-1 but would not test this claim.",
- "fig4e-overlap-neutral-coburst": "The one-hour cohort is absent. Analogues could be run on Ca_EEG2-1 but would not test this claim.",
- "ed7-contexts-discriminable": "The one-hour cohort is absent. It could be run as a one-mouse SVM on the registered neutral-encoding and FC cells of Ca_EEG2-1.",
- "fig6a-overlap-reactivated-neutral-recall": "The one-hour cohort is missing, and the high-shock mouse has no neutral or novel recall session; there is no Recall2 or Recall3 asset for Ca_EEG2-1.",
- "fig6b-neutral-representation-changed": "The one-hour cohort is missing, and the high-shock mouse has no neutral or novel recall session; there is no Recall2 or Recall3 asset for Ca_EEG2-1.",
- "ed6-overlap-inhibitory": "The Gad2 chemotagging mice are not deposited.",
- "ed8-no-shock-no-coburst": "The no-shock mice are not deposited.",
- "ed9c-eeg-cohort-linking": "The high-shock half cannot be tested (no Ca_EEG2-1 Recall2 or Recall3). The low-shock half could be described for one mouse (neutral 17.40% against novel 15.06%), with no test.",
- "fig5c-sleep-no-coburst-difference": "The deposited offline calcium recordings contain only wake and quiet wake; the NREM and REM recordings, among the other 23 per offline period, are not deposited.",
- "fig5c-low-shock-wake-no-difference": "Ca_EEG3-4 has no CellReg tables. Its neutral encoding, FC and offline day 2 files hold ROI centroids, so a one-recording test with centroid-based registration was possible but not attempted.",
- "ed9-ed10-sleep-unchanged": "One part was testable. The Week file holds 9.36 days of raw EEG, EMG, activity and temperature for Ca_EEG2-1, with a 27-row epoch table and no sleep scoring. Extended Data Figure 10 (sleep before against after encoding) and 9g (sampled against total state time) could be checked for one mouse by applying the Methods' scoring. 9d and 9e need the no-Miniscope mice, which are absent.",
-}
-responses = {
- "fig5c-low-shock-wake-no-difference": "Not attempted. Registering cells by centroids would replace the paper's CellReg registration with a method of this attempt, the claim's paired test needs several low-shock mice, and an absence claim cannot be judged on one recording of one mouse. Kept blocked.",
- "ed9-ed10-sleep-unchanged": "Not run. The claim compares sleep across days and groups of mice (nine Miniscope mice and controls), so one mouse's scored sleep would describe it without testing it. The scoring itself is now applied to 12 h of Ca_EEG2-1's EMG in the data check, for fig5c. Kept blocked.",
- "ed7-contexts-discriminable": "Not run. The paper reports this analysis for the one-hour cohort only, so a one-mouse SVM in the EEG cohort would not test the claim. Kept blocked.",
- "ed9c-eeg-cohort-linking": "No change; the low-shock values are shown under source-data-link. Kept blocked.",
- "fig3f-neutral-recruited-high-shock": "No change; the comparison stays as context in the fig5c section. Kept blocked.",
-}
-for c, r in blocked.items():
-    block += f"  - claim: {c}\n    agrees: true\n    outcome: blocked\n"
-    import textwrap
-    block += "    reason: " + "\n      ".join(textwrap.wrap(r, 100)) + "\n"
-    block += "    response: " + "\n      ".join(textwrap.wrap(responses.get(c, "No change."), 100)) + "\n"
-assert s.count("verifications: []\n")==1
-s=s.replace("verifications: []\n", block)
-open(P,"w").write(s)
+python3 - <<'EOF'
+p='attempts/zaki-2024-02.yaml'; s=open(p).read()
+o="""    home-cage telemetry and sleep labels and no webcam video, the EEG/EMG protocol"""
+assert o in s
+s=s.replace(o,"""    home-cage telemetry and sleep labels, the EEG/EMG protocol""")
+open(p,'w').write(s)
 EOF
-python -c "import yaml;d=yaml.safe_load(open('attempts/000718-zaki-2024-01.yaml'));print(len(d['outcomes']),len(d['verifications'][0]['results']))"; grep -n ': [^ ]*: ' attempts/000718-zaki-2024-01.yaml | grep -v '^\s*[0-9]*:\s*-\? *[a-z_]*: ' | head
+date -u
 ```
 
 ```
-26 26
+Wed Nov 25 05:22:43 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
+python3 - <<'EOF'
 import yaml
-def walk(x,p=""):
-    if isinstance(x,dict):
-        for k,v in x.items(): walk(v,p+"/"+str(k))
-    elif isinstance(x,list):
-        for i,v in enumerate(x): walk(v,p+f"[{i}]")
-    elif isinstance(x,str) and (": " in x or "—" in x or "rather" in x.lower()): print(p, x[:100])
-walk(yaml.safe_load(open("attempts/000718-zaki-2024-01.yaml")))
+others = ["fig1bc-retrospective-not-prospective","fig1ef-high-shock-drives-linking","fig1g-aversive-freezing-predicts-linking","ed1n-offline-hippocampus-needed","ed2-cocaine-retrospective-linking","ed3-aversive-ensemble-reactivated","ed4f-neutral-ensemble-reactivated-high-shock","fig3c-offline1-neutral-participation","fig3f-neutral-recruited-high-shock","fig4b-overlap-independent-participation","fig4e-overlap-neutral-coburst","ed6-overlap-inhibitory","ed8-no-shock-no-coburst","ed7-contexts-discriminable","fig6a-overlap-reactivated-neutral-recall","fig6b-neutral-representation-changed"]
+known = [c['id'] for c in yaml.safe_load(open('claims/zaki-2024.yaml'))['claims']]
+assert all(o in known for o in others), [o for o in others if o not in known]
+R = [
+ dict(claim="source-data-link", agrees=True, outcome="reproduced",
+  reason="Both mice are found and their shock amplitudes match the source-data groups (cell 17). All 4 freezing values are within tolerance under both readings, (a) 64.09/8.82/17.40/15.06, (b) 63.45/8.46/16.90/14.60. Reading (b) gives the CSV value exactly for 3 of the 4.",
+  response="No change."),
+ dict(claim="ed9b-aversive-freezing-high-vs-low", agrees=True, outcome="reproduced",
+  reason="Recall1 freezing is 64.09% for Ca_EEG2-1 against 8.82% for Ca_EEG3-4. The high-shock mouse is higher in 10 of 10 bins; Mann-Whitney U = 100, p = 1.8e-4 (cell 19). Problem 6: the 30 s bins within one session are autocorrelated, so the Mann-Whitney test treats non-independent samples as independent. The test is the criterion's, and the direction is unambiguous.",
+  response="Outcome unchanged. A deviation now says that the bins are autocorrelated, so the p-value is too small, and that the direction does not depend on it."),
+ dict(claim="offline-bursts-above-shuffle", agrees=True, outcome="reproduced",
+  reason="Reproduced, under reading (b) only. Under (b) the true rates of 8.73/6.42/5.31 per min are above every surrogate, whose 95th percentiles are 0.30/0.10/0.00, for all 5 seed sets; under (a) the true rate is below the surrogate mean in all 3 recordings, which is not reproduced. The criterion lets one reading decide, but (problem 1) a circular shift keeps each cell's mean, so the surrogate mean trace has the true trace's mean but a smaller SD, and a threshold at the true mean + 2 SD almost never fires on a surrogate once cells share any positive covariance, burst-like or not. On independent AR(1) cells with only a slow shared drift and no bursts, reading (b) gives a reproduced result (true 2.40/min against a surrogate 95th percentile of 0.00) and reading (a) the same reversal as the real data. So the reproduced outcome is near-guaranteed and does not show burst structure. The Extended Data Fig. 3l legend reads most naturally as running the full detection, z-scoring included, on each surrogate, reading (a), and under it the claim fails clearly. This comes from the claims file.",
+  response="Outcome kept, as the criterion gives it and the verifier agreed, marked as resting on reading (b). A synthetic check is added to the notebook (cell 27). On 600 AR(1) cells with no bursts and a shared slow drift, reading (b) puts the true frequency above the surrogates (5.90 against a 95th percentile of 2.60) and reading (a) below them (mean 8.55); on independent cells neither does. The notes, the deviation, the notebook's conclusion and the methods_unavailable finding now say that the result under (b) shows positive co-variation, not burst structure, and the deviation no longer calls (b) the better-supported reading. The verifier's point that the claims file's reading (b) cannot fail is added to questions/zaki-2024.yaml for a reader; the claim is not changed."),
+ dict(claim="offline-skew-above-shuffle", agrees=True, outcome="reproduced",
+  reason="True skew is 1.645/1.339/1.721 against surrogate 95th percentiles of 0.708/0.508/0.466. No surrogate reaches the true value, for all 5 seed sets (cell 24).",
+  response="No change of outcome. The synthetic check shows that this test, unlike reading (b) of the burst claim, is not passed by co-variation alone (drift-only cells give skew -0.276 against a surrogate 95th percentile of 0.105); the notes and conclusion say so."),
+ dict(claim="burst-locomotion-pause", agrees=True, outcome="not_reproduced",
+  reason="p < 0.05 in 0 of 3 recordings under both the peak and onset readings, with p from 0.45 to 0.92 (cell 26). The mean traces rise at time zero rather than dip in Ca_EEG2-1 (0.22 to 0.26). Problem 3: activity correlates best with |ActivitySignal| at lags of +1.5, +5.5 and +6.5 s, and a few seconds of offset between imaging and telemetry would move the windows by more than their width; the notebook never tests the outcome's sensitivity to it. Problem 4: the test compares a 1 s window with a 2 s window, which on heavy-tailed movement leans towards lower before (false-positive rate 0.195 on synthetic data; Ca_EEG2-1's random-time reference gives p = 0.000); the outcome is negative anyway. Problem 5: the claim is tested on the EEG mice's 10-min recordings with the telemetry signal, not the paper's one-hour webcam experiment. What ActivitySignal measures was not printed (C1).",
+  response="Outcome unchanged. A new cell (34) moves the telemetry to each recording's lag of peak correlation (p = 0.805, 0.982 and 0.863 at the peak) and over -8 to +8 s; no shift gives p < 0.05 in all three recordings (Ca_EEG3-4 Day 1 never below 0.514), and at most two reach it, at shifts that move movement earlier, against the correlation. A variant with a 1 s baseline (-4 to -3 s) gives p = 0.809, 0.997 and 0.306, with random-time references. The data check prints the ActivitySignal description (\"the motion of the probe relative to the receiver\", \"a proxy for locomotion\", unit n.a.). Problems 4 and 5 are the criterion's; the deviation already records 5."),
+ dict(claim="fig5c-wake-overlap-neutral-coburst", agrees=True, outcome="partially_reproduced",
+  reason="Partially reproduced, under wake reading (b) only. Wake alone (24 bursts) has OxN above OxA (33.3 vs 29.2; 8.3 vs 4.2) on only 2 against 1 discordant bursts, McNemar p = 1.0; wake + quiet wake (85 bursts) has OxN below OxA under both co-participation readings (25.9 vs 35.3; 8.2 vs 17.6), p = 0.134 (cell 28). Problem 2: the paper's sleep scoring has only wake, NREM and REM, and the source data only those three states, so the files' quiet wake has no counterpart and the paper's wake most plausibly corresponds to reading (a), under which OxN is below OxA; the Methods also count the triple combination separately, which favours co-participation reading (ii). The partial outcome rests on (b), with 3 discordant bursts. The criterion permits this, so the outcome stands, but it is fragile. Problem 7: ensembles are z-scored over one session, not 24, which is unavoidable. What quiet wake means was not printed (C3).",
+  response="Outcome kept as the criterion gives it. The data check now prints the sleep_state description, which defines quiet wake as a waking state (\"awake and alert but at rest\"), and scores the Week telemetry by the Methods' procedure, which puts 64 of the 68 quiet-wake epochs of this recording in wake. The notes and conclusion now say that reading (a) is the better match to the paper and that under it OxN is below OxA. The verifier's point that reading (b) has no counterpart in the paper is added to questions/zaki-2024.yaml for a reader. Finding 2, which said quiet wake had no description, is corrected and rated minor."),
+ dict(claim="fig5c-sleep-no-coburst-difference", agrees=True, outcome="blocked",
+  reason="Confirmed: the three deposited offline files hold only wake and quiet wake (cell 3). The Week file holds no sleep scoring and no imaging.",
+  response="No change."),
+ dict(claim="fig5c-low-shock-wake-no-difference", agrees=True, outcome="blocked",
+  reason="The archive list has no Week or registration file for Ca_EEG3-4; Ca_EEG2-1's registration is in its Week file. The notebook never prints the processing groups of the Ca_EEG3-4 files, so its claim that they hold no registration rests on the claims file's data check (C2).",
+  response="The data check now prints the processing modules of every offline file (ophys and sleep only) and the files that hold a cell_registration module (Ca_EEG2-1's Week file only). Outcome unchanged."),
+ dict(claim="ed9c-eeg-cohort-linking", agrees=True, outcome="blocked",
+  reason="Blocked (data_missing), partly testable. Ca_EEG2-1 has no Recall2 or Recall3 asset. The low-shock half could be tested descriptively on Ca_EEG3-4, neutral vs novel recall 17.40 vs 15.06 (a), 16.90 vs 14.60 (b). The notebook does not do this.",
+  response="A cell (40) now prints the low-shock mouse's neutral and novel recall freezing under both readings, and the notes give them. The claim stays blocked: the paper's test is a paired t-test over 4 low-shock mice, and the high-shock half is missing."),
+ dict(claim="ed9-ed10-sleep-unchanged", agrees=True, outcome="blocked",
+  reason="Blocked (data_missing / methods_underspecified), partly testable. No mouse without a Miniscope is in the dataset (2 subjects), so the comparison with no-Miniscope mice is blocked. Whether sleep structure changes after encoding could be tested for one mouse, by scoring the Week file's continuous EEG/EMG with the Methods' 6 s epochs and two-state GMMs. The notebook does not try.",
+  response="The Week telemetry of Ca_EEG2-1 is now scored by the Methods' procedure (cells 16 and 41), and the sleep features of the 24 h before neutral encoding and after neutral and aversive encoding, the first 2 h after encoding and the imaging scheme's coverage are given for this one mouse. Time asleep is 47.81%, 53.12% and 57.15%; the REM split is not determined by the scoring. The claim stays blocked as data_missing: the no-Miniscope mice are not in the dataset and the paper's tests across mice cannot be run on one."),
+]
+for o in others:
+    R.append(dict(claim=o, agrees=True, outcome="blocked",
+      reason="Confirmed from the archive. numberOfSubjects is 2, and the 20 assets are 12 NWB files of Ca_EEG2-1 and Ca_EEG3-4 plus 8 behaviour videos.",
+      response="No change."))
+v = [dict(date="2026-11-25", kind="agent",
+  by="Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did not write the notebook)",
+  reviewed="The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text under paper/. The verifier checked the blocked claims against the archive's asset list and metadata, and tested burst_events, burst_frequency, the circular shift, binned_freezing and the McNemar test on synthetic inputs. It also reported metadata problems (the offline-session descriptions describe the one-hour webcam protocol, the telemetry is stored at 500 Hz, the Week file's start time is local time labelled UTC); the first is a new finding (10), the other two were findings already.",
+  results=R)]
+txt = yaml.safe_dump({"verifications": v}, sort_keys=False, width=100, allow_unicode=True)
+s = open('attempts/zaki-2024-02.yaml').read()
+assert 'verifications' not in s
+open('attempts/zaki-2024-02.yaml','a').write(txt)
+d = yaml.safe_load(open('attempts/zaki-2024-02.yaml'))
+print(len(d['verifications'][0]['results']), len(d['outcomes']), len(d['findings']))
 EOF
-grep -n "—\|rather" entries/000718-zaki-2024/reproduce_zaki_2024.ipynb entries/000718-zaki-2024/README.md entries/000718-zaki-2024/memlink.py | head
 ```
 
-```
-(Bash completed with no output)
-```
-
-**Agent**
-
-Now the README table, then the full re-run.
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-P="entries/000718-zaki-2024/README.md"
-s=open(P).read()
-old="| Overlap-neutral exceeds overlap-aversive co-bursting in wake after a high shock | Partially reproduced |"
-assert old in s
-s=s.replace(old,"| Overlap-neutral exceeds overlap-aversive co-bursting in wake after a high shock | Not reproduced |")
-s=s.replace("""- `memlink.py`: loading the session, Week and registration data, freezing, burst detection,
-  ensembles, co-participation, circular-shift surrogates and time-shift decoding.""","""- `memlink.py`: loading the session, Week and registration data, freezing, burst detection,
-  ensembles, co-participation, circular-shift surrogates, time-shift decoding and the Methods' EMG
-  sleep/wake scoring.""")
-open(P,"w").write(s)
-EOF
-grep -n "Not reproduced\|scoring" entries/000718-zaki-2024/README.md; python tools/entry.py all entries/000718-zaki-2024 2>&1 | tail -4
+sed -n 95,110p attempts/zaki-2024-02.yaml; grep -n "^verifications" attempts/zaki-2024-02.yaml
 ```
 
 ```
-16:| Movement pauses around offline bursts | Not reproduced |
-17:| Overlap-neutral exceeds overlap-aversive co-bursting in wake after a high shock | Not reproduced |
-33:  sleep/wake scoring. Other notebooks
-Installed kernelspec registry-000718-zaki-2024 in executed/000718-zaki-2024/.venv/share/jupyter/kernels/registry-000718-zaki-2024
+deviations:
+  - The paper shows this on the eight mice of the one-hour offline experiment (Extended Data Fig. 3),
+    none of which is in the dataset; it is tested on the three offline recordings of the two EEG/EMG
+    mice, each 10 min at 15 Hz, as the criterion says.
+  - Assumed that each shuffled mean population trace is held to the burst threshold of the true
+    trace (its mean plus 2 SD), reading (b) of the criterion. The Extended Data Fig. 3l legend says
+    only that "the mean population activity was re-computed each time" and that "The burst frequency
+    was computed for each of these shuffles", and the Methods (Burst participation analysis) z-score
+    the true trace and threshold it at z = 2, without saying what is done to a shuffle. The criterion
+    names both readings and is met under either. Reading (b) is not the better-supported one: the
+    legend's "The burst frequency was computed for each of these shuffles" reads most naturally as
+    the full detection, z-scoring included (the verifier's reading), and reading (b) is passed by
+    cells that only share a slow drift (notes). The outcome is kept as the criterion gives it, marked
+    as resting on reading (b), and a reader is asked whether that reading belongs in the criterion.
+    The analysis code is not public, so the authors are asked which was done (a methods_unavailable
+    finding). Under reading (a) the outcome would be not reproduced.
+395:verifications:
+```
+
+**Agent calls Bash**
+
+```bash
+python3 - <<'EOF'
+p='attempts/zaki-2024-02.yaml'; s=open(p).read()
+s=s.replace("Reading (b) is not the better-supported one: the\n    legend's","Reading (b) is not the better-supported one. The\n    legend's")
+open(p,'w').write(s)
+import yaml
+d=yaml.safe_load(open(p)); print(len(d['verifications'][0]['results']), len(d['outcomes']), len(d['findings']))
+EOF
+grep -n "verifications:" attempts/zaki-2024-02.yaml; sed -n '395,420p' attempts/zaki-2024-02.yaml
+```
+
+```
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/constructor.py", line 49, in get_single_data
+    node = self.get_single_node()
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 36, in get_single_node
+    document = self.compose_document()
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 55, in compose_document
+    node = self.compose_node(None, None)
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 133, in compose_mapping_node
+    item_value = self.compose_node(node, item_key)
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/yaml/composer.py", line 111, in compose_sequence_node
+[... 52 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 225,235p attempts/zaki-2024-02.yaml; grep -n ": .*: " attempts/zaki-2024-02.yaml | grep -v "^\s*[0-9]*:\s*- \?[a-z_]*: '" | head
+```
+
+```
+scored by the Methods' procedure (6 s epochs, two-state Gaussian mixtures on the EMG and on the
+    theta/delta ratio of the sleep epochs; the EMG feature, log RMS, is an assumption). The encoding
+    periods are taken from the telemetry dropouts, when the mouse is off its home-cage receiver.
+    Time asleep is 47.81% in the 24 h before neutral encoding, 53.12% after it and 57.15% after
+    aversive encoding; mean wake bouts 88, 83 and 60 s, NREM bouts 33 to 35 s. In the first 30 min
+    back in the home cage the mouse is awake 67% (after neutral) and 49% (after aversive) of the
+    time, against 93% at the same clock time the day before. The REM split is not determined: the
+    REM share is 10.9% or 21.1% of all epochs depending on whether the ratio or its log is fitted,
+    REM bouts last about 10 s and 40 to 46% of wake bouts are followed by REM, which is not
+    physiological. On day 2 the 19 imaging epochs hold 27.4% wake, 59.7% NREM and 12.9% REM against
+    25.8%, 59.9% and 14.3% over the span they sample, in line with Extended Data Fig. 9g.
+496:    reason: 'Confirmed: the three deposited offline files hold only wake and quiet wake (cell 3). The
+```
+
+**Agent calls Bash**
+
+```bash
+python3 - <<'EOF'
+p='attempts/zaki-2024-02.yaml'; s=open(p).read()
+s=s.replace("The REM split is not determined: the\n    REM share","The REM split is not determined. The\n    REM share")
+open(p,'w').write(s)
+import yaml
+d=yaml.safe_load(open(p)); print(len(d['verifications'][0]['results']), len(d['outcomes']), len(d['findings']))
+EOF
+cd  && python tools/entry.py check entries/zaki-2024 2>&1 | tail -15
+```
+
+```
+26 26 9
 0 error(s)
-pass  reproduce_zaki_2024.ipynb  (117 s)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd executed/000718-zaki-2024 && python -c "
-import json;nb=json.load(open('reproduce_zaki_2024.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print('=====',c['metadata'].get('tags'))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:200])
-" > $TMPDIR/out2.txt; diff <(grep -v "loaded 11\|Notebook ran\|=====" $TMPDIR/out.txt) <(grep -v "loaded 11\|Notebook ran\|=====" $TMPDIR/out2.txt)
+python3 - <<'EOF'
+p='attempts/zaki-2024-02.yaml'; s=open(p).read()
+assert "the first is a new finding\n    (10)" in s
+s=s.replace("the first is a new finding\n    (10)","the first is a new finding\n    (9)")
+open(p,'w').write(s)
+p='entries/zaki-2024/README.md'; s=open(p).read()
+old="is reproduced; z-scored again, they hold more bursts than the data. The outcome rests on the first."
+assert old in s
+s=s.replace(old, "is reproduced; z-scored again, they hold more bursts than the data. The outcome rests on the first,\nwhich a synthetic check shows is also passed by cells that only share a slow drift, so it shows that\nthe cells co-vary, not that they burst. The wake co-bursting outcome rests on reading wake without\nthe dataset's quiet wake, which the files define as a waking state; with it, the order reverses.")
+open(p,'w').write(s)
+EOF
+grep -n "" entries/zaki-2024/README.md | sed -n 20,35p
 ```
 
 ```
-148,150c148,150
-< log_rms_12h: wake in 36.6% of the 7200 epochs of 12 h (epochs without telemetry: 0)
-< rms_12h: wake in 0.0% of the 7200 epochs of 12 h (epochs without telemetry: 0)
-< log_rms_first_6h: wake in 24.8% of the 3600 epochs of 12 h (epochs without telemetry: 0)
----
-> log_rms_12h: 2637 of 7200 epochs (36.6%) scored wake; epochs without telemetry: 0
-> rms_12h: 0 of 7200 epochs (0.0%) scored wake; epochs without telemetry: 0
-> log_rms_first_6h: 894 of 3600 epochs (24.8%) scored wake; epochs without telemetry: 0
+20:
+21:A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+22:reasoning and the differences from the paper's method.
+23:
+24:The burst-frequency outcome turns on whether the shuffled population trace is z-scored again
+25:before bursts are counted, which the paper does not say. After a reader's answer the criterion names
+26:both readings: held to the true trace's threshold, the shuffles hold almost no bursts and the claim
+27:is reproduced; z-scored again, they hold more bursts than the data. The outcome rests on the first,
+28:which a synthetic check shows is also passed by cells that only share a slow drift, so it shows that
+29:the cells co-vary, not that they burst. The wake co-bursting outcome rests on reading wake without
+30:the dataset's quiet wake, which the files define as a waking state; with it, the order reverses. In Ca_EEG2-1 the behaviour sessions are timestamped about 1 h later
+31:than the offline recordings and the telemetry, so that the first offline recording after fear
+32:conditioning appears to start before it. The attempt record, with the reasons and the differences
+33:from the paper's method, is [`attempts/zaki-2024-02.yaml`](../../attempts/zaki-2024-02.yaml).
+34:
+35:- `reproduce_zaki_2024.ipynb`: the analysis. It takes about four minutes, most of it the
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000718-zaki-2024 && python -c "
-import json;nb=json.load(open('reproduce_zaki_2024.ipynb'))
-print(''.join(nb['cells'][-2]['source']))"; git status --short
+sed -i 's/It takes about four minutes, most of it the/It takes about six minutes, most of it the/' entries/zaki-2024/README.md; sed -n 35,37p entries/zaki-2024/README.md; sed -i 's/runtime_minutes: 4/runtime_minutes: 6/' entries/zaki-2024/entry.yaml; grep runtime entries/zaki-2024/entry.yaml
 ```
 
 ```
-## Summary
+- `reproduce_zaki_2024.ipynb`: the analysis. It takes about six minutes, most of it the
+  surrogates.
+- `zaki.py`: streaming the files, freezing, burst detection, circular-shift surrogates, ensembles
+  runtime_minutes: 6
+```
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
+**Agent calls Bash**
 
-| Claim | Outcome |
-|---|---|
-| `source-data-link`: the deposited mice match the paper's per-mouse freezing (outside data) | reproduced |
-| `ed9b-aversive-freezing-high-vs-low`: high-shock mouse freezes more in aversive recall | reproduced (one mouse per group) |
-| `offline-bursts-above-shuffle`: bursts exceed shuffled expectation | blocked: methods underspecified (chance level differs from the paper's) |
-| `offline-skew-above-shuffle`: population activity more skewed than shuffled | reproduced |
-| `burst-locomotion-pause`: movement pauses around bursts | not reproduced (telemetry proxy, weak evidence) |
-| `fig5c-wake-overlap-neutral-coburst`: overlap-neutral exceeds overlap-aversive co-bursting in wake, high shock | not reproduced (one recording of one mouse; changed from partially reproduced after the first verification) |
-| Behaviour-only experiments, five claims | blocked: data missing |
-| One-hour offline and single-experience experiments, nine claims | blocked: data missing |
-| Inhibitory tagging and no-shock experiments, two claims | blocked: data missing |
-| EEG cohort claims needing missing mice, sessions or registration, four claims | blocked: data missing |
+```bash
+sed -i 's/^  surrogates\.$/  surrogates and reading the week of telemetry./' entries/zaki-2024/README.md; sed -i 's/from the cell registration, and movement from the telemetry\./from the cell registration, movement from the telemetry, and sleep scoring of the continuous telemetry./' entries/zaki-2024/README.md; tail -5 entries/zaki-2024/README.md; date -u; time python tools/entry.py all entries/zaki-2024 2>&1 | tail -5
+```
 
-How the analysis differs from the paper's: The paper's analysis code could not be read (its
-repository returns 404), so bursts, participation and co-participation follow the Methods, with
-[... 47 more lines not kept]
+```
+- `reproduce_zaki_2024.ipynb`: the analysis. It takes about six minutes, most of it the
+  surrogates and reading the week of telemetry.
+- `zaki.py`: streaming the files, freezing, burst detection, circular-shift surrogates, ensembles
+  from the cell registration, movement from the telemetry, and sleep scoring of the continuous telemetry. Other notebooks on this dandiset can
+  import it.
+Wed Nov 25 05:24:09 UTC 2026
+Installed kernelspec registry-zaki-2024 in executed/zaki-2024/.venv/share/jupyter/kernels/registry-zaki-2024
+0 error(s)
+pass  reproduce_zaki_2024.ipynb  (263 s)
+
+real	4m32.922s
+user	2m52.812s
+sys	0m5.738s
 ```
 
 **Agent**
 
-The verifier's round-1 points are answered, and the entry re-runs cleanly: `tools/entry.py all` passes with 0 errors in about 2 minutes. One outcome changed. Nothing is committed.
+Now let me confirm the re-run's numbers match what I wrote.
 
-**Outcome change**
-- **`fig5c-wake-overlap-neutral-coburst`** goes from partially reproduced to not reproduced. The verifier argued that the Methods' sleep scoring has no quiet-wake class, so "wake plus quiet wake" is the faithful reading. I tested that by applying the Methods' own scoring to 12 h of Ca_EEG2-1's EMG (6 s epochs, a two-state model on log EMG RMS). It puts 94.1% of quiet-wake frames in wake, and all 87 bursts. Under that reading overlap-neutral co-bursting is below overlap-aversive: 26.4% against 35.6%, McNemar p = 0.13. The criterion had allowed the wake-only reading too, so judging on one reading is recorded as a deviation.
-- Two limits are stated alongside it:
-  - Only one of the 24 offline recordings is deposited, so the ensemble traces are z-scored within that recording, not over all 24 as in the Methods. The levels here (26 to 36%) are not comparable with the paper's 10.37% and 8.39% for this mouse.
-  - The Methods don't name the EMG measure. Without the log, the model puts every epoch in one state.
+**Agent calls Bash**
 
-**Unchanged outcomes**
-- **`offline-bursts-above-shuffle`** stays blocked (methods underspecified). The record already had it that way; the verifier didn't see the record and suggested the same. A synthetic control now in the notebook confirms the criterion's shuffle test can't detect coordinated firing: 5.6 true bursts per minute against 34.98 in the shuffled data, even with coordination planted.
-- **`offline-skew-above-shuffle`** stays reproduced. The same synthetic control shows this test does detect coordination.
-- **`burst-locomotion-pause`** stays not reproduced. The notes now say the test gives p = 0.016 at random times in Ca_EEG2-1, so it is not calibrated, and that the result is weak evidence against the paper.
-- **`ed9b-aversive-freezing-high-vs-low`** stays reproduced. The notes now say the 30 s bins are not independent, so the p-values overstate the evidence.
+```bash
+python3 - <<'EOF'
+import json
+nb=json.load(open('executed/zaki-2024/reproduce_zaki_2024.ipynb'))
+for i in [16,27,34,41,44]:
+    c=nb['cells'][i]
+    print('=== cell',i, c['metadata'].get('tags'))
+    for o in c.get('outputs',[]):
+        t=o.get('text') or o.get('data',{}).get('text/plain','')
+        t=''.join(t) if isinstance(t,list) else t
+        print(t[:1500])
+EOF
+```
 
-**Outputs added at the verifier's request**
-- **Activity signal:** its description and value range, its correlation with EMG (r = 0.11 to 0.55), and that it is 4 to 15 times higher in wake than in quiet wake.
-- **Sleep-state descriptions** from the files.
-- **The full 27-row epoch table:** it supports Ca_EEG2-1's first offline recording being the first after fear conditioning.
-- **Telemetry rate:** the files hold telemetry at 500 Hz, where the Methods say 100 Hz. This is now a new finding.
+```
+=== cell 16 ['sanity']
+134798 epochs of 6 s (9.36 days) read and scored in 49 s; constant telemetry (mouse off the receiver) in 1.2% of epochs
+percent of scored epochs, ratio as given: {'wake': np.float64(47.4), 'nrem': np.float64(41.7), 'rem': np.float64(10.9)} ; log ratio: {'wake': np.float64(47.4), 'nrem': np.float64(31.5), 'rem': np.float64(21.1)}
+theta/delta ratio of the sleep epochs, 5/25/50/75/95th percentiles: [0.3  0.47 0.67 0.98 1.8 ]
 
-The co-bursting outside bursts now uses only windows where every frame is in the same state. With that fix the top value is 1.02%, so the earlier "under 1%" was corrected.
+Ca_EEG2-1 OfflineDay2Session1, file's label (rows) against the Methods' scoring (columns), 6 s epochs:
+scored      nrem  rem  wake
+file                       
+quiet wake     2    2    64
+wake           0    0     6
 
-**Other edits**
-- `memlink.py` has a new `emg_wake_gmm` helper, and scikit-learn was added to the requirements and the lock file.
-- The README table and the notebook summary match the new outcomes.
-- The attempt record has the round under `verifications` for all 26 claims, with the verifier's reasons and my responses.
-- The paper's text is saved under `paper/`.
+=== cell 27 ['claim:offline-bursts-above-shuffle']
+independent cells: true 8.30 bursts/min; (a) surrogate mean 8.46, 95th pct 9.80 -> not above; (b) mean 9.74, 95th pct 11.40 -> not above; skew 0.095 against surrogate 95th pct 0.103
 
-**Not done**
-- **Partial tests the verifier said were possible on three blocked claims:**
-  - Centroid-based registration for the low-shock fig5c claim: it would replace the paper's registration method with mine, and a "no difference" claim can't be judged on one recording of one mouse.
-  - One-mouse sleep scoring for ED9/ED10: the claim compares mice across days and groups, so one mouse would only describe it.
-  - A one-mouse SVM for ED7: the paper reports that analysis only for the one-hour cohort.
+with a shared slow drift: true 5.90 bursts/min; (a) surrogate mean 8.55, 95th pct 9.80 -> not above; (b) mean 1.75, 95th pct 2.60 -> above; skew -0.276 against surrogate 95th pct 0.105
 
-  All three stay blocked, with the reasons in the record.
-- **Handover package:** I did not rebuild it, since round 2 gets the full executed notebook.
+=== cell 34 ['claim:burst-locomotion-pause']
+reading (a peak): one-sided Wilcoxon p by shift of the telemetry
+ recording        Ca_EEG2-1 Day2 S1  Ca_EEG3-4 Day1 S1  Ca_EEG3-4 Day2 S1  recordings with p < 0.05
+shift                                                                                             
+[... 55 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -n -i "rather\|—" attempts/zaki-2024-02.yaml questions/zaki-2024.yaml entries/zaki-2024/README.md entries/zaki-2024/zaki.py entries/zaki-2024/reproduce_zaki_2024.ipynb | head
+```
+
+```
+attempts/zaki-2024-02.yaml:458:      0.92 (cell 26). The mean traces rise at time zero rather than dip in Ca_EEG2-1 (0.22 to 0.26). Problem
+```
+
+**Agent calls Bash**
+
+```bash
+sed -i '458s/rise at time zero rather than dip/rise at time zero, and do not dip,/' attempts/zaki-2024-02.yaml && python3 -c "import yaml;yaml.safe_load(open('attempts/zaki-2024-02.yaml'))" && python tools/entry.py check entries/zaki-2024 2>&1 | tail -2; date -u
+```
+
+```
+0 error(s)
+Wed Nov 25 05:29:03 UTC 2026
+```
+
+**Agent**
+
+I've answered every point in the round-1 report and re-run the entry. No outcome changed. `python tools/entry.py all entries/zaki-2024` passes with 0 errors in 263 s, and the conclusions match the new numbers. Nothing is committed.
+
+**Outcomes.** All 26 stay as they were, and the verifier agreed with all 26 in round 1:
+- `offline-bursts-above-shuffle`: reproduced, resting on reading (b).
+- `fig5c-wake-overlap-neutral-coburst`: partially reproduced, resting on reading (b).
+- `burst-locomotion-pause`: not reproduced.
+- The other 23 are unchanged.
+
+The two outcomes resting on reading (b) are the criterion's verdict, but both are fragile. The record now says so and adds a question for a reader about each.
+
+**What I added or corrected:**
+- **Burst-frequency reading (b) (B1):** I added a synthetic check. On cells with no bursts that share only a slow drift, reading (b) still passes (5.90 bursts/min against a surrogate 95th percentile of 2.60). Reading (a) fails (surrogate mean 8.55), which is the same pattern as the real data. On independent cells neither reading passes. So the reproduced result shows only that the cells co-vary. I removed my earlier claim that (b) was the better-supported reading and added a question to `questions/zaki-2024.yaml`.
+- **Skew claim:** the same synthetic cells fail the skew test (skew −0.276 against a surrogate 95th percentile of 0.105). So that outcome is not an artefact of co-variation.
+- **Quiet wake (B2, C3):** the file's sleep-state description defines quiet wake as a waking state. Scoring the week of telemetry the way the paper's Methods describe puts 64 of the 68 quiet-wake epochs in wake. Reading (a), which counts quiet wake as wake, is therefore the better match to the paper, and under it overlap-neutral co-bursting is below overlap-aversive. I added a question for a reader. I also corrected finding 2, which wrongly said quiet wake had no description, and lowered it from major to minor.
+- **Locomotion clock (B3, B4, C1):** I aligned the telemetry to each recording's lag of peak correlation, which gives p = 0.805, 0.982 and 0.863. I also swept shifts from −8 to +8 s: no shift gives the result in all three recordings. A 1 s baseline window gives the same negative result. The notebook now prints the description of the movement signal.
+- **Ca_EEG3-4 cell registration (C2):** the notebook now prints the processing modules of every file. The only cell-registration module in the dataset is in Ca_EEG2-1's Week file.
+- **Two blocked claims, shown descriptively:** both stay blocked.
+  - `ed9c-eeg-cohort-linking`: the low-shock mouse's neutral and novel recall freezing is printed.
+  - `ed9-ed10-sleep-unchanged`: one mouse's 9.36 days of telemetry are now scored by the Methods' procedure. Time asleep is 47.81% in the 24 h before neutral encoding, 53.12% after it and 57.15% after aversive encoding. The scoring cannot settle REM (its REM bouts of about 10 s are not physiological).
+- **New finding (9):** the offline files' session descriptions describe the one-hour webcam experiment, not the 10-minute home-cage recordings they hold.
+- **Other record edits:**
+  - A deviation on ed9b notes that its 30 s bins are autocorrelated.
+  - Round 1 is recorded under `verifications`.
+  - The README now includes these points and gives a runtime of about six minutes.
+
+**Not done:** B4 (unequal window lengths), B5 (the claims are tested on different mice and a different movement measure than the paper's) and B6 (autocorrelated bins) come from the criterion, so I recorded them and left the criterion alone. C5, the amendment record, was only missing from what the verifier was given; it is in the questions file.
 
 ## End of run
 
-44 turns, 13 minutes, result: success.
+65 turns, 25 minutes, $4.14 at API prices, result: success.

@@ -1,66 +1,81 @@
-All five Author steps are done and the handover is built. The entry passed `tools/entry.py all` with 0 check errors, and the notebook ran from a clean environment in 1723 s (29 min). I did not verify my own work, commit or push.
+The attempt is complete: the entry ran from a clean environment, its checks pass, and the handover package for the verifier is built. I did not verify my own work. I did not come across any earlier attempt on this paper. Besides the paper, the claims file and the dataset, I read only the paper's own code on GitHub (commit 04c6faf) and the Figshare projection matrices it names.
 
-**1. Outcome per claim** (pinned version 0.220127.0436: it is the only published version, the paper cites no DANDI version, and the draft lists the same 55 files with the same total size)
+## 1. Outcomes (DANDI:000055, version 0.261123.1703)
 
 | Claim | Outcome |
 |---|---|
-| subject-days (link) | reproduced |
-| roi-projection-link (link claim I added) | reproduced |
-| cohort | partially reproduced |
-| fig2-event-counts | not reproduced: 211 to 996 events per subject, median 770.5 |
+| subject-days | reproduced |
+| roi-projection-link | reproduced |
+| cohort | partially reproduced (7 subjects have depth electrodes, the paper says 5) |
+| fig2-event-counts | not reproduced (fewest events per subject is 210, against 151 ± 15.1) |
 | fig2-features-differ-across-subjects | reproduced |
-| fig2-reach-shape | partially reproduced: angle peaks near ±70, not ±90 |
+| fig2-reach-shape | partially reproduced (no angle density peaks within 15° of ±90) |
 | fig2-bimanual-skew | reproduced |
 | extfig2-1c-contralateral-larger | reproduced |
-| extfig2-2-feature-correlations | partially reproduced: 5 of 6, magnitude–duration r = 0.233 against 0.26 ± 0.026 |
-| fig2-days-and-waking | partially reproduced: S04's busiest day holds 38% |
-| fig3-group-lfb-decrease-hfb-increase | reproduced (assumed) |
-| fig3-sensorimotor-largest | reproduced (assumed) |
-| fig3-lfb-more-widespread | blocked, methods_underspecified: the criterion's two readings disagree |
-| fig4-precentral-subject-variability | reproduced (assumed; one tie broken) |
-| fig5-band-power-differs-across-subjects | reproduced |
-| table1-subject-band-power-ci | partially reproduced: 23 of 24 inside |
-| fig5-recording-day-effects | reproduced: 24 of 24 agree |
-| extfig5-1-baseline-reduces-day-variability | reproduced (assumed) |
-| discussion-day-changes-small | reproduced (assumed) |
-| The six Figure 6 and Extended Data 6-2 regression claims | blocked, too_large |
+| extfig2-2-feature-correlations | partially reproduced (5 of 6) |
+| fig2-days-and-waking | partially reproduced (S04's busiest day holds 40% of its events) |
+| fig3-group-lfb-decrease-hfb-increase | reproduced, assumed |
+| fig3-sensorimotor-largest | reproduced, assumed |
+| fig3-lfb-more-widespread | blocked, methods_underspecified (the two readings disagree: 7 vs 7 regions, 34.2 vs 23.9 bins) |
+| fig4-precentral-subject-variability | partially reproduced, assumed (3 of 4 parts; S09 shows no high-frequency increase) |
+| fig5-band-power-differs-across-subjects | reproduced, assumed |
+| table1-subject-band-power-ci | partially reproduced, assumed (21 of 24 values inside the intervals) |
+| fig5-recording-day-effects | partially reproduced, assumed (20 of 24 agree) |
+| extfig5-1-baseline-reduces-day-variability | reproduced, assumed |
+| discussion-day-changes-small | reproduced, assumed |
+| fig6b, fig6-r2 (largest R² 0.177), fig6c, fig6d-upward, fig6d-largest | reproduced, assumed |
+| extfig6-2-angle-most-retained | partially reproduced, assumed (the order of the next four features differs) |
 
-The regression claims are blocked because one model timed in the notebook took 8.0 s. The 2192 models give an estimate of 4.9 h on one core, or 1.2 h on 4 cores, before the variants the claims ask for.
+## 2. Dataset, assumptions, questions
 
-**2. Dataset, assumptions, questions**
+**What the dataset holds:**
+- The subjects and days match Table 2 exactly.
+- The Figshare projection matrices match the electrodes of all 12 subjects. This uses the code's row rule; the first row of each file is the region density.
+- The ECoG of three files ends hours before the day ends (sub-01 day 7, sub-04 day 3, sub-06 day 3), so 237 events have no neural data. Another 125 events fall on NaN samples.
+- There are 8088 events, more than the paper analysed, and nothing marks the paper's subset (rated major).
+- Undocumented conventions:
+  - the reach angle is in image coordinates (y downward);
+  - the bimanual overlap is in seconds although it is described as a fraction;
+  - the pose is labelled meters but holds pixels;
+  - the good-electrode flags differ between a subject's days;
+  - 24 electrodes have no position;
+  - the R² columns in the electrodes table have no description.
+- One event in sub-08 day 4 has timestamps a day apart in two tables.
+- The clock is consistent with the events in 11 of 12 subjects. It could not be established for sub-09.
 
-What I found about the dataset:
-- **ECoG clock:** in three files (sub-01 ses-7, sub-04 ses-3, sub-06 ses-3) the ECoG covers only the end of the day but has `starting_time` 0. The events and pose use a clock that starts at midnight. Shifting the ECoG by 29241 to 30682 s fixes it, and the neural response confirms the shift.
-- **Event count:** the files hold 8088 events with no false positives marked. The data descriptor says 6931, and the paper's counts per subject are lower.
-- **Undocumented conventions:**
-  - The reach angle is stored in image coordinates and not folded.
-  - The pose is labelled meters but holds pixels.
-  - Bimanual overlap is described as a fraction but reaches 3.83.
-  - `session_start_time` gives midnight UTC labelled as 19:00 at UTC-5.
-- **Missing values:** 124 event segments have missing (NaN) ECoG samples.
-- **Subjects:** sex and age are not recorded. Seven subjects have electrode groups described as depth, where the paper says five.
-- **Good flags:** the electrode `good` flags differ between days. I used each subject's first file, as the paper's code does.
+**Assumptions** (recorded as `assumed: true` on the outcomes):
+- how the segment rejection pools power over electrodes and frequencies;
+- each event is projected to regions with its own day's good-electrode flags;
+- the regression and electrode-level analyses use electrodes that are good on every day.
 
-Inputs: the paper's projection matrices on Figshare (doi:10.6084/m9.figshare.12114408.v1), checked by the link claim, and the paper's code at commit 04c6faf, which I only read.
+**Questions for the paper's authors** (recorded as `methods_unavailable` findings): the pooling in the segment rejection, the measure behind "widespread", and whether bad electrodes were removed per day or per subject.
 
-Assumption: how a segment's power is summarised for the 0 dB and 3 SD rejection rules. I checked that it does not change the outcomes of the Figure 5, Table 1 and day-effect claims. I did not check that for the claims marked "assumed" in the table, so those carry `assumed: true`.
+**Questions to a reader:** none.
 
-Two questions for the paper's authors are recorded as `methods_unavailable` findings:
-- How was each segment's power summarised for the bad-segment rules?
-- What measure decided that low-frequency decreases are "more spatially widespread"?
+## 3. Protocol points
 
-I asked a reader no questions.
+1. The roi-projection-link criterion says "drop all-zero rows", but the code also drops the first non-zero row. I used the code's rule and recorded it as a deviation.
+2. The protocol asks for notebooks under about 10 minutes. This one cannot be, because the data are about 150 GB of ECoG chunks. It runs in 37 minutes and I recorded that.
+3. Running every random step under five seeds is too costly for 3904 Huber models. Under the four extra seeds I refit only the full-model R² of the top models; Delta R², coefficients and retention were not refit. This is recorded as a deviation.
+4. For the clock check with an event table on continuous recordings, the protocol's guidance did not fit directly. I contrasted band power at true onsets with pseudo-onsets 3 s earlier in the same segments.
+5. The cohort claim has no rule for a partial result. I used `partially_reproduced` because one count differs.
+6. It is unclear when a small event-set choice counts as "resting on an assumption". I marked every spectral and regression outcome `assumed: true`.
 
-**3. Where the protocol was unclear**
-1. Step 4 says the author writes link claims but not whether that can happen after looking at the data. I wrote `roi-projection-link` after listing electrode and row counts, said so in its deviations, and added it to `depends_on` of the claims that use the Figshare matrices. I changed no statement, expected value or criterion.
-2. Ties in a criterion's ranking: the protocol says to break them "as the paper implies", and here the paper implies nothing. In fig4 I broke the tie with a finer form of the same measure (interpolated width in Hz), recorded it as a deviation and gave the other result.
-3. `measured` cannot hold null when some expected values cannot be measured. I left it out for cohort and explained in the notes.
-4. After the run I corrected one conclusion's numbers (reading b gives 211 to 979, median 739, not 211 to 989, median 764). I edited that markdown cell in both the committed and executed notebooks, which is not re-run evidence. The protocol does not say how to handle this.
+## 4. Runtime and failures
 
-**4. Runtime and failures**
+- The run took about 2 h 33 min (05:06 to 07:39 UTC).
+- Notebook: 36.6 min. The ECoG streaming took 8 min, the regression 23 min and the seed refits 3.5 min. Peak memory was 1.8 GB per worker.
+- Nothing failed in the final run.
 
-About 1 h 30 min of the 5 h (03:15 to about 04:43). Reading the ECoG segments takes 26.5 min of each notebook run, so it is close to the 60-minute limit. Nothing failed.
+During development I fixed these:
+- h5py's remote chunk lookups took about 0.1 s each, so I read the chunk index from the file directly and fetch byte ranges in parallel;
+- NaN samples in the ECoG were at first not caught by the segment rejection;
+- I had accidentally deleted part of the helper module in an earlier edit and restored it.
 
-Two leftovers in the checkout:
-- `entries/000055-peterson-2021/.claude/` is an empty folder the harness created. Removing it needed approval, which was denied automatically. Git ignores empty folders, so it should not show up in the commit.
-- The untracked dotfiles at the repository root are sandbox device mounts dated 03:10, before this run. I left them alone.
+Files are in `entries/peterson-2021`:
+- reproduce_peterson_2021.ipynb
+- ajile.py
+- entry.yaml
+- README.md
+
+The record is `attempts/peterson-2021-02.yaml`.

@@ -103,13 +103,28 @@ def test_rows_match_the_attempts(built):
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
     assert len(rows["datasets"]) == data["queue_counts"]["with_a_paper"]
     assert sum(r["claims"] or 0 for r in rows["datasets"]) == sum(len(a["outcomes"]) for a in attempts)
-    assert sum(r["findings"] or 0 for r in rows["datasets"]) == sum(len(a["findings"]) for a in attempts)
+    # A finding that a later version of its dataset fixed is no longer open (finding_scope).
+    assert sum(r["findings"] or 0 for r in rows["datasets"]) == sum(
+        1 for a in attempts for f in a["findings"] if f["scope"] != "fixed")
     assert sum(1 for r in rows["datasets"] if r["status"] == "attempted") == len(current)
 
 
 def test_no_internal_link_is_broken(built):
     _, out = built
     assert broken_links(out) == []
+
+
+def test_a_replaced_attempts_page_does_not_link_to_findings_the_datasets_page_no_longer_lists(tmp_path):
+    # 2026-11-25: senzai-2017-01 found a problem that changes results; once senzai-2017-02 replaced it, its page
+    # still linked to that finding's anchor on the dataset's page, which lists the findings of current attempts.
+    data = site.collect()
+    latest = {a["id"] for atts in site.current_attempts(data).values() for a in atts}
+    replaced = next(a for a in data["attempts"] if a["id"] not in latest and not a.get("deprecated") and a["findings"])
+    replaced["findings"][0]["changes_results"] = True
+    site.build(data, tmp_path)
+    assert broken_links(tmp_path) == []
+    page = (tmp_path / site.attempt_path(data, replaced) / "index.html").read_text()
+    assert "changed results" in page or "changes results" in page      # the problem is still named there
 
 
 def test_pages_load_nothing_from_other_sites(built):
@@ -243,8 +258,10 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["id"] == dandiset)
         attempts = [a for a in attempts if not a.get("deprecated")]
-        assert row["findings"] == sum(len(a["findings"]) for a in attempts)
-        kinds = sorted({f["kind"] for a in attempts for f in a["findings"]})
+        # Open: not fixed by a later version of the dataset (finding_scope).
+        open_ = [f for a in attempts for f in a["findings"] if f["scope"] != "fixed"]
+        assert row["findings"] == len(open_)
+        kinds = sorted({f["kind"] for f in open_})
         # Beside the kinds, the lists' filter has the datasets with a problem that changes results.
         assert [k for k in row["found"] if k != site.CHANGES_RESULTS] == kinds
         page = (out / row["page"] / "index.html").read_text()
@@ -254,7 +271,13 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
                 assert site.e(f["statement"]) in page
         # The findings are under the version of the dataset they were found on, and the row has what a curator
         # reads: the versions tested, the open findings by kind, and the papers tested.
-        assert page.count('<h3 class="vhead">') == len({site.version_text(a) for a in attempts})
+        # One heading for each version with a finding that is in the dataset now, and one, "In earlier versions",
+        # for those a later version fixed or that were not looked for since.
+        earlier = [f for a in attempts for f in a["findings"] if f["scope"] != "current"]
+        now = {site.version_text(a) for a in attempts if any(f["scope"] == "current" for f in a["findings"])}
+        every = {site.version_text(a) for a in attempts}
+        assert page.count('<h3 class="vhead">') == (len(now) + 1 if earlier else len(every))
+        assert ("In earlier versions" in page) == bool(earlier)
         assert all(site.version_text(a) in page for a in attempts)
         assert sum(row["found_counts"].values()) == row["findings"] and sorted(row["found_counts"]) == kinds
         assert row["versions"] == list(dict.fromkeys(
@@ -1509,10 +1532,11 @@ def test_problems_that_change_results_come_first_under_their_version_on_a_datase
         live = [a for a in atts if not a.get("deprecated")]
         if not live:
             continue
-        worst = [f for a in live for f in a["findings"] if f["changes_results"]]
+        # Only a problem that is in the dataset's newest version counts as one that changes results now.
+        worst = [f for a in live for f in a["findings"] if site.counts_now(f)]
         page = (out / site.page_of(key) / "index.html").read_text()
         # The heading is there only with such a finding; each is listed once, under it, with what the check found.
-        rest = [f for a in live for f in a["findings"] if not f["changes_results"]]
+        rest = [f for a in live for f in a["findings"] if not f["changes_results"] and f["scope"] == "current"]
         for f in worst[:1]:
             for g in rest[:1]:
                 assert page.index(site.e(f["statement"])) < page.index("Other findings") < page.index(site.e(g["statement"])) \
@@ -1868,10 +1892,46 @@ def test_an_outside_run_says_who_ran_it_under_provenance(tmp_path):
     # An outside organization's attempt (encore-protocol docs/outside-runs.md): its paper's page names the
     # organization and says that Encore's verifiers check it here.
     data = site.collect()
-    attempt = next(a for a in data["attempts"] if not a.get("deprecated") and a["kind"] == "agent")
+    # A paper's page describes its latest attempt: the first attempt in the list can be one a later attempt replaced.
+    latest = [a for atts in site.current_attempts(data).values() for a in atts]
+    attempt = next(a for a in latest if not a.get("deprecated") and a["kind"] == "agent")
     attempt.update(accountable="Acme Lab", outside="acme-lab",
                    runner={"platform": "GitHub Actions", "url": "https://github.com/acme-lab/encore-registry/actions/runs/1"})
     site.build(data, tmp_path)
     page = _paper_page(data, tmp_path, attempt)
     assert "run by Acme Lab in its own GitHub organization (acme-lab)" in page
     assert "https://github.com/acme-lab/encore-registry/actions/runs/1" in page
+
+
+# A finding against its dataset's newest version (finding_scope).
+
+def test_a_finding_is_current_fixed_or_seen_only_in_an_earlier_version():
+    scope = lambda f, tested, latest: site.finding_scope(f, tested, latest)[0]
+    new, old = "0.240923.1441", "0.240503.0152"
+    # The attempt read the newest version, or there is nothing newer to hold the finding against.
+    assert scope({}, new, new) == "current"
+    assert scope({}, "draft", new) == scope({}, "unversioned", None) == scope({}, old, None) == "current"
+    # The attempt read an earlier version and nobody has looked since.
+    assert scope({}, old, new) == "older"
+    # The finding says which versions it was seen in: the one the paper cites, whatever the attempt read.
+    assert site.finding_scope({"versions": [old]}, new, new) == ("older", [old])
+    assert scope({"versions": [old, new]}, new, new) == "current"
+    assert scope({"versions": [old], "fixed_in": new}, new, new) == "fixed"
+    # A target list that is behind the attempt does not make the attempt's version an earlier one.
+    assert scope({}, new, old) == "current"
+
+
+def test_only_a_current_finding_makes_a_dataset_one_whose_data_change_results():
+    assert site.counts_now({"changes_results": True, "scope": "current"})
+    assert site.counts_now({"changes_results": True})   # a finding with no scope is about the version read
+    assert not site.counts_now({"changes_results": True, "scope": "fixed"})
+    assert not site.counts_now({"changes_results": True, "scope": "older"})
+    assert not site.counts_now({"changes_results": False, "scope": "current"})
+    fixed = {"changes_results": True, "scope": "fixed", "seen_in": ["0.1"], "fixed_in": "0.2", "newest": "0.2"}
+    # On the dataset's page a fixed problem is marked fixed, not as one that changes results; on the paper's it is.
+    assert "Fixed in 0.2" in site.finding_tags(fixed) and site.CHANGES_LABEL not in site.finding_tags(fixed)
+    assert site.CHANGES_LABEL in site.finding_tags(fixed, paper=True)
+    older = {"changes_results": False, "scope": "older", "seen_in": ["0.1"], "newest": "0.2"}
+    assert "not rechecked since" in site.finding_tags(older)
+    assert "See the code that shows this finding" in site.finding_code("notebooks/x/a.html#cell-id=c1")
+    assert site.finding_code(None) == ""
