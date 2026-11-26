@@ -79,8 +79,10 @@
 #   intracellularAnalysis.m, pHCumulativePTX.m). Last minute of each step. Slow wave is Vm minus
 #   its high-pass (2nd order Butterworth at 10 Hz, filtfilt). Slow-wave troughs and peaks by
 #   findpeaks with prominence 1 mV and minimum distance 1/maxBurstFreq (starting values 2 Hz
-#   for PD, 10 Hz for LP, set by hand). Minimum membrane potential is the slow-wave troughs; a
-#   bin with no trough takes the mean of the per-second minima of the slow wave. Spikes are
+#   for PD, 10 Hz for LP, set by hand). Minimum membrane potential is, in the Methods, the
+#   minimum voltage of the unfiltered recording between bursts, measured before filtering (main
+#   reading); the code takes the slow-wave troughs instead, and a bin with no trough takes the
+#   mean of the per-second minima of the slow wave (pHCumulativePTX.m), shown as a variant. Spikes are
 #   peaks of the high-passed trace with prominence of at least minSpikeHeight (starting 10 mV
 #   PD, 3 mV LP, set by hand); spike amplitude is peak minus trough. PD burst frequency is the
 #   inverse of the trough-to-trough interval of the slow wave (Methods; analyzeWaveform.m uses
@@ -94,19 +96,21 @@
 #   univariate p). Post hoc, for each step a paired t-test against that control, p multiplied
 #   by 4 (acid) or 5 (base). T-tests are not run for a non-significant ANOVA. Alpha 0.05.
 # [MIX] Ganglion comparison (Methods, Statistics; Figure 8, figure supplement 1). Per protocol,
-#   a two-way mixed-measures Type III ANOVA, ganglion between preparations and pH within, on
+#   a two-way mixed-measures Type III ANOVA (car package), ganglion between preparations and pH within, on
 #   per-preparation fraction of time rhythmic. statistics.R at this commit fits ~1 with no
 #   ganglion term and then reads rows that model does not have, so it cannot be the code that
 #   made the table; the model is taken from the Methods. Open: the contrast coding of
 #   ganglion, which changes Type III main effects; readings (a) sum-to-zero contrasts, (b) R's
-#   default treatment contrasts. Post hoc, per pH an independent samples t-test, Welch's form
+#   default treatment contrasts. Also open: the legend of Figure 8, figure supplement 1 calls
+#   the test "Multivariate", the Methods "Two-Way" and statistics.R reads the univariate tests;
+#   readings (c) univariate tests (Methods, code), (d) multivariate tests (legend). Post hoc, per pH an independent samples t-test, Welch's form
 #   (t.test default in statistics.R), p multiplied by 4 (acid) or 5 (base).
 schema_version: 2
 paper: doi:10.7554/elife.41877
 claims:
 - id: fig2a-stg1-traces
   statement: In the example acid-first STG preparation, the pyloric rhythm stayed triphasic
-    down to pH 6.1 and changed at 5.5; in base it stayed triphasic up to 10.4 with fewer spikes
+    in acid until the most acidic pH, 5.5; in base it stayed triphasic up to 10.4 with fewer spikes
     per burst and smaller slow waves at 10.4, and it recovered in control saline after each
     protocol.
   source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
@@ -201,8 +205,8 @@ claims:
     to the next state in the order 1, 2, 3, 4; (b) the same with 20% and with a plurality.
     Reproduced when one reading holds; the counts are reported.
 - id: fig3d-stg-frequency
-  statement: Mean pyloric burst frequency did not vary significantly across acid steps but did
-    across base steps, being significantly slower than control at pH 9.3 and 10.4.
+  statement: Mean pyloric burst frequency was relatively invariant across acid steps but varied
+    significantly across base steps, being significantly slower than control at pH 9.3 and 10.4.
   source: Results, The pyloric rhythm is surprisingly robust to extreme changes in pH, paragraph
     7; Figure 3D; Figure 3, figure supplement 1
   quote: Mean pyloric burst frequency was relatively invariant across pH values in the presence
@@ -301,7 +305,7 @@ claims:
     one spike) are readings of the words, named here because the paper gives none.
 - id: fig4bc-membrane-potential
   statement: With PTX, the PD neuron depolarized significantly in extreme acid (pH 5.5 and 6.1)
-    while LP stayed constant, and in base PD stayed constant while LP hyperpolarized
+    while LP stayed relatively constant, and in base PD stayed relatively constant while LP hyperpolarized
     significantly at pH 8.8, 9.3, 9.8 and 10.4.
   source: Results, Semi-isolated pyloric neurons are sensitive to extreme pH, paragraph 2; Figure
     4B, 4C; Figure 4, figure supplement 1
@@ -405,7 +409,7 @@ claims:
     tolerance: 0.7
   criterion: Tolerances are 10% of each count, so the three smaller counts must match exactly.
     The paper defines a gastric mill period as the time from one LG burst onset to the next
-    (Results, paragraph 4 of this section) and identifies the rhythm by eye, with no further
+    (Results, paragraph 3 of this section) and identifies the rhythm by eye, with no further
     criterion; the code marks it as state 8.x in the manual STG annotation (pHCumulative.m).
     Open is the window searched; readings (a) the whole of each step and recovery, (b) the last
     8 min of each, as for states. Each count is made under both readings, from the 8.x codes if
@@ -468,8 +472,10 @@ claims:
     above. A normal bursting rhythm recovered after superfusion of control saline
   criterion: The example (acid-first) is not named in the paper or the code. Reproduced when among
     the acid-first CG preparations other than 877_149 CG2L one has a fraction of time in state 1
-    ([STATE]) below its control at 5.5, 9.8 and 10.4, at or near its control from 6.1 to 9.3,
-    and back to state 1 for most of the final recovery.
+    ([STATE]) below its control at 5.5, 9.8 and 10.4, a fraction at each step from 6.1 to 9.3
+    higher than at each of 5.5, 9.8 and 10.4, and back to state 1 for most of the final
+    recovery. The comparison of 6.1 to 9.3 with the less rhythmic steps is a reading of "less
+    rhythmic in pH 5.5 and in pH 9.8 and above", named here.
 - id: fig7b-cg-rhythmic-fraction
   statement: Acid and base both significantly affected the fraction of time cardiac preparations
     were rhythmic (SC and LC bursting together), which was significantly lower at pH 5.5, 9.3, 9.8
@@ -597,7 +603,7 @@ claims:
   - fig3c-stg-rhythmic-fraction
   - fig7b-cg-rhythmic-fraction
   criterion: Per preparation fraction of time rhythmic ([STATE]) for both ganglia, tested with
-    [MIX] under readings (a) and (b) of its contrast coding. Reproduced when, under one reading,
+    [MIX] under readings (a) and (b) of its contrast coding, each with (c) and (d). Reproduced when, under one reading,
     all six effects (pH, ganglion, interaction; acid and base) have p < 0.05 and the corrected
     t-tests show the STG lower at 5.5 and higher at 9.3 and 9.8 (p < 0.05 each). Partially
     reproduced when the three t-tests hold but some ANOVA effect does not.
@@ -682,7 +688,7 @@ claims:
 - id: intact-depolarize-in-acid
   statement: In intact (no PTX) preparations both PD and LP neurons depolarized in acid, unlike
     the semi-isolated neurons where only PD did.
-  source: Discussion, paragraph 5
+  source: Discussion, paragraph 6
   quote: In intact preparations, we observed depolarization in acid for both neurons, suggesting
     an important role of circuit connectivity in regulating network activity across pH
   criterion: No figure or test is given. On the intact STG preparations with intracellular PD and
@@ -691,3 +697,22 @@ claims:
     in acid" requires; readings (a) the acid ANOVA p < 0.05 and a higher mean at 5.5 than
     control for each neuron, (b) a higher mean at 5.5 than control in most preparations for each
     neuron. Reproduced when one reading holds for both PD and LP.
+checks:
+- date: 2026-11-26
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header [INTRA]. Minimum membrane potential was fixed as the slow-wave troughs of the code. The Methods (Data acquisition and analysis, paragraph 5) take the minimum voltage between bursts first and only then low-pass filter, so the unfiltered minimum is now the main reading and the code's slow-wave troughs (with the per-second fallback) a variant, as the protocol orders Methods over code. Affects fig4bc-membrane-potential and intact-depolarize-in-acid.
+  - Header [MIX], fig8a-ganglion-difference. The legend of Figure 8, figure supplement 1 calls the ANOVA "Multivariate" while the Methods say "Two-Way" and statistics.R reads the univariate tests; named readings (c) univariate and (d) multivariate, and the criterion now runs them with each contrast coding.
+  - fig2a-stg1-traces. The statement said the rhythm "changed at 5.5", which fixes one of the two readings the criterion itself leaves open; restated with the paper's words (triphasic until the most acidic pH, 5.5).
+  - fig3d-stg-frequency. The statement said frequency "did not vary significantly" in acid; the text says "relatively invariant" and the table is not in the text. Restated in the paper's words; the criterion still judges it as absence on the acid ANOVA.
+  - fig4bc-membrane-potential. The statement said "stayed constant"; the paper says "relatively constant". Restated.
+  - fig6a-cg2-less-rhythmic. The criterion required the fraction to be "at or near" control from 6.1 to 9.3, with no rule for "near". Replaced by a named reading (each step from 6.1 to 9.3 more rhythmic than 5.5, 9.8 and 10.4).
+  - gastric-like-rhythm-counts. The criterion cited paragraph 4 for the definition of a gastric mill period; it is the last sentence of paragraph 3 of that section.
+  - intact-depolarize-in-acid. The source cited Discussion paragraph 5; the sentence is in paragraph 6.
+  - Checked, unchanged. Every quote and source paragraph against the text; the code facts of the header against github.com/jesshaley/haley_hampton_marder_2018 at 83f5904 (experiment and unit lists, examples 897_037 and 877_149 CG2L, column order and the Figure 8B control columns, 10 s bins with empty bins as 0, the discard rules for duty cycle and spike count, per-second states over the last 480 s, Bonferroni factors 4 and 5, Welch t-tests, the two-way model in statistics.R that has no ganglion term, the 480 s window bug, peak-to-peak PD burst frequency, the PTX fallback to per-second minima).
+  - Open. The four statistics tables are images not in the text and no PDF was supplied, so no F, t or exact p is recorded and which acid ANOVAs were non-significant (fig3d acid, fig7c acid, fig7e acid, fig4de PD base) rests on the Results wording.
+  - Open. spikenburst.s2s calls BurstMake with minSpike% as its seventh argument while its dialog labels 0.3 s "Minimum delay between bursts"; which BurstMake parameter each value sets was not checked against the Spike2 manual.
+  - Open. gastric-conditions-co-occur judges "likely" as reading (a) holding for five of six pairs, and the variability claims (fig3s2, fig7s2) use thresholds of this file; the paper gives none, and each criterion says so.
+  - Open. The Discussion's observation that neurons impaled with sharp electrodes were more labile than unimpaled ones (paragraph 8) has no claim; the paper gives no measure or comparison for it, and it is not a main finding.
