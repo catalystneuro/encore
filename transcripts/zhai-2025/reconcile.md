@@ -1,15 +1,15 @@
-# zhai-2025 · reconcile · run 43677730158
+# zhai-2025 · reconcile · run 45879331285
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-date -u; cd  grep -n "^#" docs/protocol.md | head -80
+date -u; grep -n "^#" docs/protocol.md | head -80; ls; ls attempts | grep zhai; ls entries/zhai-2025 earlier-entry
 ```
 
 ```
-Sun Nov 15 04:46:02 UTC 2026
+Thu Nov 26 18:58:14 UTC 2026
 1:# Protocol for an attempt
 43:## Reader
 45:### 1. Get the paper
@@ -20,34 +20,34 @@ Sun Nov 15 04:46:02 UTC 2026
 186:### 6. Answer questions
 199:## Author
 215:### 1. Establish what can be tested
-345:### 2. Check the data against its description
-360:### 3. Write the entry
-431:### 4. Lock, check and run
-451:### 5. Record the attempt
-524:### 6. Hand over for verification
-562:## Repeat attempts
-604:## Local and remote datasets
-627:## Verifier
-631:### Round 1: without the author's conclusions
-[... 2 more lines not kept]
+374:### 2. Check the data against its description
+397:### 3. Write the entry
+482:### 4. Lock, check and run
+502:### 5. Record the attempt
+633:### 6. Hand over for verification
+671:## Repeat attempts
+737:## Local and remote datasets
+760:## Verifier
+764:### Round 1: without the author's conclusions
+[... 51 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 1,42p docs/protocol.md; sed -n 199,215p docs/protocol.md; sed -n 431,630p docs/protocol.md
+sed -n 1,42p docs/protocol.md; sed -n 500,760p docs/protocol.md
 ```
 
 ```
 # Protocol for an attempt
 
-Version: `pilot-15`. Record this version in the attempt's provenance.
+Version: `pilot-19`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
 each archive's datasets are named, versioned and read is in
 [archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
 
 An attempt has three roles, each a separate run with a separate context:
 
@@ -59,13 +59,94 @@ An attempt has three roles, each a separate run with a separate context:
   claim's statement, expected values or criterion. A method detail the file
   lacks it takes from the paper, citing the passage, and it asks a reader
   only when it believes the file misreads the paper.
-[... 238 more lines not kept]
+[... 283 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat docs/agents/reconcile.md 2>/dev/null; echo ----; tools/blind.sh audit zhai-2025
+cat attempts/zhai-2025-02.yaml; echo =====; cat attempts/zhai-2025-03.yaml
+```
+
+```
+<persisted-output>
+Output too large (156.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/b3c8c687-640f-4d62-8e6f-eaee02398837/tool-results/b9y8feuae.txt
+
+Preview (first 2KB):
+schema_version: 3
+id: zhai-2025-02
+datasets:
+- archive: dandi
+  id: 001538
+  version: draft
+  modified: '2026-11-09T19:30:00.396929Z'
+  relation: primary
+paper: doi:10.1126/sciadv.adv8224
+date: '2026-11-15'
+entry: zhai-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+import yaml
+for f in ['attempts/zhai-2025-02.yaml','attempts/zhai-2025-03.yaml']:
+    d=yaml.safe_load(open(f))
+    print('=====',f, list(d.keys()))
+    print(d.get('datasets'), d.get('provenance'))
+    for o in d['outcomes']:
+        print(o['claim'], o['outcome'], o.get('measured'), o.get('blocked_by'))
+    print('--findings')
+    for i,x in enumerate(d.get('findings',[]),1):
+        print(i, x.get('kind'), x.get('about'), x.get('severity'), x.get('found'), x.get('notebook'), x.get('output'))
+        print('   ', x.get('statement'))
+EOF
+```
+
+```
+===== attempts/zhai-2025-02.yaml ['schema_version', 'id', 'datasets', 'paper', 'date', 'entry', 'provenance', 'inputs', 'outcomes', 'findings', 'verifications', 'reconciliation', 'findings_review']
+[{'archive': 'dandi', 'id': '001538', 'version': 'draft', 'modified': '2026-11-09T19:30:00.396929Z', 'relation': 'primary'}] {'kind': 'agent', 'accountable': {'name': 'CatalystNeuro'}, 'agent': {'harness': 'Claude Code', 'model': 'claude-opus-5-5', 'protocol': 'pilot-15'}, 'runner': {'platform': 'GitHub Actions', 'url': 'https://github.com/catalystneuro/encore/actions/runs/43662525204'}}
+link-somatic-cells partially_reproduced None None
+link-dendritic-cells reproduced None None
+link-sr-cells partially_reproduced None None
+link-grab-rois not_reproduced None None
+link-aim-mice not_reproduced None None
+fig1f-dspn-rheobase-on-lower reproduced None None
+fig1e-dspn-fi-on-higher reproduced None None
+fig1f-dspn-sch-no-change reproduced None None
+fig1i-dspn-dendritic-on-higher reproduced None None
+fig1i-dspn-dendritic-sch-lower reproduced None None
+fig1-dspn-lesion-and-off-somatic reproduced None None
+fig1-dspn-lesion-dendritic-unchanged reproduced None None
+fig2h-dspn-sr-amplitude-on-larger reproduced None None
+fig2i-dspn-sr-frequency-unchanged reproduced None None
+fig2bc-dspn-spines blocked None methods_underspecified
+fig3d-ispn-rheobase-on-higher reproduced None None
+fig3c-ispn-fi-on-lower reproduced None None
+fig3d-ispn-sul-no-change reproduced None None
+[... 122 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat docs/agents/reconcile.md 2>/dev/null | head -200; python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'))
+import sys
+def find(o,path=''):
+    if isinstance(o,dict):
+        for k,v in o.items():
+            if k=='reconciliation': print(path+'/'+k); print(json.dumps(v,indent=1)[:6000])
+            find(v,path+'/'+k)
+find(s)
+"
 ```
 
 ```
@@ -76,21 +157,23 @@ You reconcile a repeat attempt in the reproduction registry, checked out in the 
    - `fixed`, when the check shows the problem is gone;
    - `still_present`, when it is still there: add it to `{attempt}`'s findings with `found: on_prompt` and a statement in the protocol's usual style, and point `now` at it;
    - `not_checked`
-[... 13 more lines not kept]
+[... 163 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls transcripts/zhai-2025/; sed -n 4610,4640p transcripts/zhai-2025/author.md; cat tools/blind.sh | sed -n 1,80p
+tools/blind.sh audit zhai-2025 2>&1 | head -100; ls transcripts/zhai-2025/
 ```
 
 ```
-answer-report.md
-answer.md
+transcripts/zhai-2025/author-revise-1.md:50:([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+transcripts/zhai-2025/author.md:52:9	([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+transcripts/zhai-2025/author.md:140:Encore Science checks datasets against the papers they came from. This repository holds its public record, the Encore registry, served at <https://encorescience.org>. The protocol the checks follow, and the `encore` command that runs the same check on your own data, are in [encore-protocol](https://github.com/encorescience/encore-protocol). It is developed by [CatalystNeuro](https://www.catalystneuro.com).
+transcripts/zhai-2025/author.md:153:**Site:** <https://encorescience.org/>, with the registry's dashboard at <https://encorescience.org/registry/> and what Encore offers a journal at <https://encorescience.org/journals/>.
+transcripts/zhai-2025/author.md:3356:                  runner=dict(platform="GitHub Actions", url="https://github.com/encorescience/encore-registry/actions/runs/45855764253")),
 attempt-01
-author-answers-report.md
-author-answers.md
+attempt-02
 author-report.md
 author-revise-1-report.md
 author-revise-1.md
@@ -101,2308 +184,48 @@ verifier-1-report.md
 verifier-1.md
 verifier-2-report.md
 verifier-2.md
- o("fig3-ispn-lesion-and-off-somatic", "reproduced",
-   "On the paper's table: iSPN rheobase median 200 pA after 6-OHDA against 120 pA in controls (P = 0.00040), 130 pA "
-   "off-state against 200 pA (P = 0.00061); paper P = 0.002 for both."),
- o("fig3-ispn-lesion-dendritic-up", "reproduced",
-   "On the paper's table: index median 0.516 after 6-OHDA and 0.519 off-state against 0.405 in controls, P = 0.035 and "
-[... 106 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -nE "260527|zhai-2025-01|earlier attempt|previous attempt|attempt-01" transcripts/zhai-2025/author*.md | head -20
+cd transcripts/zhai-2025; grep -n -E "zhai-2025-0[12]|attempt-0[12]|earlier_findings|reconcil|lid\.py|git log|git show" author.md author-revise-1.md author-revise-2.md | head -30; sed -n 135,155p author.md | cut -c1-300
 ```
 
+````
+author.md:86:# detector in lid.py and their per-cell counts and mean amplitudes; the GRAB-ACh areas per mouse;
+author.md:114:9	# detector in lid.py and their per-cell counts and mean amplitudes; the GRAB-ACh areas per mouse;
+author.md:3534:   - The claims file's opening comment describes an earlier author's data check. It names its helper and detector (`lid.py`, `lid.detect_events`) and a `condition_subfolder` column that is no longer in the files.
+author-revise-1.md:440:# detector in lid.py and their per-cell counts and mean amplitudes; the GRAB-ACh areas per mouse;
 ```
-transcripts/zhai-2025/author-answers.md:235:Dataset: DANDI:001538, version `draft`. This attempt was asked to use the draft (a repeat attempt on data that changed after an earlier one). A draft can change: the archive gives its last modification as 2026-11-09T19:30:00Z, printed below as the notebook reads it. The draft holds 1288 assets (391 NWB files and the AIM session videos); the latest published version, 0.260527.1302, holds 468 and predates the changes.
-transcripts/zhai-2025/author-report.md:1:I've written the entry at `entries/zhai-2025/`, the record at `attempts/zhai-2025-02.yaml`, and one question to a reader in `questions/zhai-2025.yaml`. `entry.py all` passes with 0 errors; the notebook ran clean in 6.1 min with peak memory 0.7 GB. The verifier's package is built in `executed/zhai-2025/handover/`. I worked blind: I did not look for the earlier attempts and did not come across any of their results.
-transcripts/zhai-2025/author-revise-1.md:247:Dataset: DANDI:001538, version `draft`. This attempt was asked to use the draft (a repeat attempt on data that changed after an earlier one). A draft can change: the archive gives its last modification as 2026-11-09T19:30:00Z, printed below as the notebook reads it. The draft holds 1288 assets (391 NWB files and the AIM session videos); the latest published version, 0.260527.1302, holds 468 and predates the changes.
-transcripts/zhai-2025/author-revise-1.md:275:6	Dataset: DANDI:001538, version `draft`. This attempt was asked to use the draft (a repeat attempt on data that changed after an earlier one). A draft can change: the archive gives its last modification as 2026-11-09T19:30:00Z, printed below as the notebook reads it. The draft holds 1288 assets (391 NWB files and the AIM session videos); the latest published version, 0.260527.1302, holds 468 and predates the changes.
-transcripts/zhai-2025/author-revise-1.md:2249:275:        # The entry streams the versions of its latest attempt; earlier attempts keep the versio
-[... 2 more lines not kept]
-```
+ls: cannot access 'entries/zhai-2025': No such file or directory
+ls: cannot access 'executed': No such file or directory
+# Encore Science: the registry
 
-**Agent**
+Encore Science checks datasets against the papers they came from. This repository holds its public record, the Encore registry, served at <https://encorescience.org>. The protocol the checks follow, and the `encore` command that runs the same check on your own data, are in [encore-protocol](https://
 
-The blind audit has one hit: the runner URL in the attempt's own provenance block. The author's transcripts never point at the earlier attempt, so the author was blind. Next I'll read both records.
+Agents, and people, try to reproduce the key findings of papers from the open
+data in public archives, starting with the [DANDI Archive](https://dandiarchive.org), and register the result
+here: the notebooks when it works, and the reason when it does not.
+
+- **For the archive:** evidence of whether each dandiset is complete and
+  accurate enough to support the findings of its paper.
+- **For analysts:** working notebooks to build new analyses on.
+
+Status: pilot. All eight pilot targets have been attempted and checked by an
+[... 5 more lines not kept]
+````
 
 **Agent calls Bash**
 
 ```bash
-cd  cat attempts/zhai-2025-01.yaml
+cd  sed -n 75,100p transcripts/zhai-2025/author.md | cut -c1-400; sed -n 3525,3540p transcripts/zhai-2025/author.md | cut -c1-600; grep -n -i "encorescience.org" transcripts/zhai-2025/author*.md | grep -iv "README\|^.*:14[0-9]:\|:15[0-9]:" | head; grep -n -i "WebFetch\|curl " transcripts/zhai-2025/author*.md | head
 ```
 
 ```
-<persisted-output>
-Output too large (57.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/280412ce-772a-4c8a-91fb-1f64655d390e/tool-results/bs24w0dpl.txt
+Output too large (35.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/b937f103-b718-499c-ad77-8630cf003b99/tool-results/bnnqc7yze.txt
 
 Preview (first 2KB):
-schema_version: 3
-id: zhai-2025-01
-datasets:
-- archive: dandi
-  id: "001538"
-  version: 0.260527.1302
-  doi: 10.48324/dandi.001538/0.260527.1302
-  relation: primary
-paper: doi:10.1126/sciadv.adv8224
-date: 2026-10-18
-entry: zhai-2025
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-[... 28 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import yaml
-for a in ['01','02']:
-    r=yaml.safe_load(open(f'attempts/zhai-2025-{a}.yaml'))
-    print('=====',a, list(r.keys()))
-    for o in r['outcomes']: print(o['claim'], o['outcome'], o.get('blocked_by',''))
-"
-```
-
-```
-===== 01 ['schema_version', 'id', 'datasets', 'paper', 'date', 'entry', 'provenance', 'inputs', 'outcomes', 'findings', 'verifications']
-link-somatic-cells partially_reproduced 
-link-dendritic-cells reproduced 
-link-sr-cells partially_reproduced 
-link-grab-rois not_reproduced 
-link-aim-mice not_reproduced 
-fig1f-dspn-rheobase-on-lower reproduced 
-fig1e-dspn-fi-on-higher reproduced 
-fig1f-dspn-sch-no-change reproduced 
-fig1i-dspn-dendritic-on-higher reproduced 
-fig1i-dspn-dendritic-sch-lower not_reproduced 
-fig2h-dspn-sr-amplitude-on-larger blocked other
-fig2i-dspn-sr-frequency-unchanged blocked other
-fig2bc-dspn-spines blocked methods_underspecified
-fig3d-ispn-rheobase-on-higher reproduced 
-fig3c-ispn-fi-on-lower reproduced 
-fig3d-ispn-sul-no-change reproduced 
-fig3f-ispn-dendritic-on-lower reproduced 
-fig3f-ispn-dendritic-sul-no-change not_reproduced 
-fig4g-ispn-sr-amplitude-on-smaller blocked other
-[... 72 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import yaml
-for a in ['01','02']:
-    r=yaml.safe_load(open(f'attempts/zhai-2025-{a}.yaml'))
-    print('=====',a)
-    for i,f in enumerate(r['findings'],1): print(i, {k:v for k,v in f.items()}, '\n')
-"
-```
-
-```
-===== 01
-1 {'kind': 'data_missing', 'statement': "The dandiset holds no patch-clamp recordings from unlesioned control or 6-OHDA-lesioned mice, which make up the control and 6-OHDA groups of Figures 1E, 1F, 1I, 3C, 3D and 3F (10, 12, 11 and 9 dSPNs; 21, 11, 14 and 9 iSPNs), nor the oxo-M line scans of Figure 7E or the open-field data of Figure 10. The paper's raw data on Zenodo (doi:10.5281/zenodo.17260198) list folders for all of these."} 
-
-2 {'kind': 'selection_undocumented', 'about': 'data', 'statement': "The Sr2+-oEPSC files hold one cell per mouse (14 of the paper's 33 cells), the GRAB-ACh files one region per mouse (11 of 34 regions) and the AIM tables 7 of the paper's 44 mice plus two mice (4124, 5871) not in the paper. The dandiset does not say that it holds a subset or how the cells, regions and mice were chosen, and with these numbers the paper's tests cannot reach P < 0.05 for most comparisons."} 
-
-3 {'kind': 'metadata_error', 'statement': 'Session names state a drug (D1RaSch, D2RaSul) for files that also hold baseline on-state sweeps. 11 cells in such files have a baseline condition; 7 of them were also recorded with the drug and 4 are baseline only (dSPN 20190507 cell 1, iSPN 20190408 cell 1, 20190409 cell 1 and 20190508 cell 2). The condition of each sweep is only in the RecordingsIndexTable column condition_subfolder; grouping by session name puts baseline cells in the drug groups.'} 
-
-4 {'kind': 'metadata_error', 'statement': "The genotypes of the CDGI behaviour mice contradict each other. Subject genotype is Wild-type CDGI and every session name says WT for all of them; the AIM table's genotype column says CDGI Knockout, Wild Type or unknown, changing between sessions of one animal; the video files of mice 1945, 2519, 2587, 2828 and 6572 say CDGI KO. The paper lists 2587 as wild type and the others as KO."} 
-
-5 {'kind': 'other', 'about': 'data', 'statement': "The AIM session totals of the five Figure 8 mice in the dandiset differ from the paper's ta
-[... 45 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  ls -la entries/zhai-2025 executed/zhai-2025 2>&1; cat entries/zhai-2025/entry.yaml; c=$(git log -1 --format=%H -- attempts/zhai-2025-01.yaml); echo $c; git show --stat $c | head; git ls-tree --name-only $c entries/zhai-2025/
-```
-
-```
-ls: cannot access 'executed/zhai-2025': No such file or directory
-entries/zhai-2025:
-total 252
-drwxr-xr-x   2 runner runner   4096 Nov 15 04:40 .
-drwxr-xr-x 298 runner runner  12288 Nov 15 04:40 ..
--rw-r--r--   1 runner runner   3226 Nov 15 04:40 README.md
--rw-r--r--   1 runner runner   1075 Nov 15 04:40 entry.yaml
--rw-r--r--   1 runner runner  24739 Nov 15 04:40 lid.py
--rw-r--r--   1 runner runner 124445 Nov 15 04:40 reproduce_zhai_2025.ipynb
--rw-r--r--   1 runner runner     52 Nov 15 04:40 requirements.in
--rw-r--r--   1 runner runner  72675 Nov 15 04:40 requirements.lock.txt
-schema_version: 1
-name: zhai-2025
-type: reproduction
-title: State-dependent modulation of spiny projection neurons in levodopa-induced dyskinesia (Zhai et al. 2025)
-description: Tests the findings of Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier
-  (2025) on the draft of dandiset 001538, which holds whole-cell somatic and dendritic excitability
-  recordings of dSPNs and iSPNs in the on- and off-states of levodopa-induced dyskinesia, Sr2+-oEPSC
-  recordings, GRAB-ACh3.0 imaging, AIM score sheets and two-photon spine images. It compares rheobase,
-  spike counts, the dendritic excitability index, Sr2+-oEPSC amplitude and frequency, evoked ACh release
-[... 31 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  git rev-parse --is-shallow-repository; git log --oneline | wc -l; git log --oneline -5 -- attempts/zhai-2025-01.yaml; git log --oneline -3 -- attempts/zhai-2025-02.yaml
-```
-
-```
-true
-1
-7d2a63c Agent run on zhai-2025: author-revise-2 (success)
-7d2a63c Agent run on zhai-2025: author-revise-2 (success)
-```
-
-**Agent**
-
-The checkout is a shallow clone with one commit, so the earlier entry's history is not there. I'll try deepening the fetch.
-
-**Agent calls Bash**
-
-```bash
-cd  timeout 300 git fetch --deepen=200 origin 2>&1 | tail -5; git log --oneline | wc -l; git log --oneline -3 -- attempts/zhai-2025-01.yaml
-```
-
-```
-* [new branch]              zenodo-metadata         -> origin/zenodo-metadata
- * [new tag]                 encore-v0.1.0           -> encore-v0.1.0
- * [new tag]                 v2026.10.0              -> v2026.10.0
- * [new tag]                 v2026.10.1              -> v2026.10.1
- * [new tag]                 v2026.10.2              -> v2026.10.2
-4479
-72c9fcd4cb0 A finding is about the data or about the paper
-8b3aeba6f78 The cutover: records under paper-first names (tools/migrate_paper_first.py)
-```
-
-**Agent calls Bash**
-
-```bash
-cd  c=$(git log -1 --format=%H -- attempts/zhai-2025-01.yaml); echo $c; git ls-tree --name-only $c entries/zhai-2025/; git diff --stat $c HEAD -- attempts/zhai-2025-01.yaml
-```
-
-```
-72c9fcd4cb0dd5935a0f92825fb534e8f15b401b
-entries/zhai-2025/README.md
-entries/zhai-2025/entry.yaml
-entries/zhai-2025/lid.py
-entries/zhai-2025/reproduce_zhai_2025.ipynb
-entries/zhai-2025/requirements.in
-entries/zhai-2025/requirements.lock.txt
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'))
-import pprint
-p=s['properties']
-print(json.dumps(p.get('reconciliation'),indent=1))
-print(json.dumps(s.get('\$defs',{}).get('reconciliation', s.get('definitions',{}).get('reconciliation')),indent=1))
-" | head -150; grep -l "reconciliation:" attempts/*.yaml | head
-```
-
-```
-{
- "description": "A repeat attempt's comparison with the attempt before it, written by the reconcile step once this attempt, made blind, has been verified (docs/protocol.md, \"Repeat attempts\"). A finding of this attempt that no item of `findings` points at is new.",
- "type": "object",
- "additionalProperties": false,
- "required": [
-  "earlier",
-  "date",
-  "blind",
-  "findings"
- ],
- "properties": {
-  "earlier": {
-   "description": "The id of the attempt compared with.",
-   "type": "string"
-  },
-  "date": {
-   "type": "string",
-   "format": "date"
-  },
-  "blind": {
-[... 84 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n '/^reconciliation:/,$p' attempts/park-2019-02.yaml | head -80; grep -n "found: on_prompt" -B3 -A8 attempts/park-2019-02.yaml attempts/kim-2022-02.yaml attempts/gao-2018-02.yaml | head -50; ls entries/park-2019 entries/kim-2022 entries/gao-2018
-```
-
-```
-reconciliation:
-  earlier: park-2019-01
-  date: '2026-11-13'
-  blind: false
-  blind_note: The author's first run saw nothing of park-2019-01, and all 17 of its first findings and
-    the figs3 outcome were written then. In the author-answers run it printed questions/park-2019.yaml,
-    which the answer run had copied from main and which held the two questions of park-2019-01 with
-    that attempt's results (fig5 error r of 0.014 to 0.211, one of 14 figs3 tests at p = 0.0134 with n
-    the number of bins), and the first lines of the author-answers and author-revise-3 reports of
-    park-2019-01, left in transcripts/park-2019 (figs3 changed to not_reproduced, the outcomes of
-    fig1c-speed, fig4-internal-tuning-preserved and no-angular-velocity-tuning, and the topics of its
-    two methods_unavailable findings, among them the Tukey error term). In author-revise-2 it read the
-    round 3 verifier report of park-2019-01 (figs3 not reproduced with n the number of bins) and said
-    so in its report. It kept figs3 as reproduced, and the one finding added after these runs (number
-    15, on the Tukey error term) answers point 1 of its own round 1 verifier.
-  findings:
-  - finding: 1
-    status: still_present
-    now: 1
-    note: Both report that the data set holds only the 115 head-direction cells, without the other MEC
-[... 136 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat entries/kim-2022/entry.yaml; python -c "
-import json;nb=json.load(open('entries/kim-2022/earlier_findings.ipynb'))
-for c in nb['cells'][:8]: print('---',c['cell_type']); print(''.join(c['source'])[:1500])
-"
-```
-
-```
-schema_version: 1
-name: kim-2022
-type: reproduction
-title: Bipolar cancellation of electroporation and membrane charging kinetics (Kim et al. 2022)
-description: Tests the findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler and Pakhomov (2022) on
-  dandisets 000489 and 000448. 000489 holds the stitched dish images of the Fig. 2 experiment, YO-PRO-1
-  uptake by BPAE monolayers after uni- and bipolar 600 ns pulses with second phases of 25 to 100%;
-  000448 holds strobe images of the membrane potential of 9 CHO cells during 833 kHz trains (Fig. 7).
-  YP is measured in 200 um ROI along the bb' line with fields from a two-cylinder model, and pole
-  traces are extracted from the strobe stacks. The experiments of Figs. 3 to 6 and the thermometry of
-  Fig. 1E are not in either dandiset.
-license: Apache-2.0
-python: "3.13"
-notebooks:
-- path: reproduce_kim_2022.ipynb
-  title: Reproducing Kim et al. (2022) from dandisets 000489 and 000448
-  runtime_minutes: 14
-- path: earlier_findings.ipynb
-  title: Findings of attempt kim-2022-01 checked on 000489 version 0.230518.1811
-  runtime_minutes: 5
-[... 100 more lines not kept]
-```
-
-**Agent**
-
-Now the current helper module, to reuse its loaders.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -nE "^def |^[A-Z_]+ *=|^class " entries/zhai-2025/lid.py; sed -n 1,60p entries/zhai-2025/lid.py
-```
-
-```
-53:DANDISET = "001538"
-54:VERSION = "draft"
-55:API = "https://api.dandiarchive.org/api"
-58:TABLES_URL = ("https://zenodo.org/api/records/17307059/files/"
-62:SMOOTH = 6                              # [code-dendritic]
-63:BASE_WIN = (0.5, 0.95)                  # [code-dendritic]
-64:AUC_WIN = (0.95, 1.5)                   # [code-dendritic]
-65:BASAL_RATIO_RANGE = (0.5, 2.0)          # claims file, from [methods-dendritic]
-66:FI_STEPS = list(range(20, 301, 20))     # claims file: sum of spike counts 20 to 300 pA
-67:SR_WIN = (0.040, 0.400)                 # [methods-sr], after the flash onset
-68:SR_SD = 5.0                             # [methods-sr]
-69:SR_LATE = (0.480, 0.840)                # clock check only, a standard choice
-71:GRAB_AUC = 2.0                          # [code-grab], s from the stimulus
-72:GRAB_FLIM = (2.0, 4.0)                  # [code-grab], s from the start of the ACh/TTX trial
-73:GRAB_ROI_UM = 50.0                      # [methods-grab]
-76:def _get(url):
-81:def version_info():
-86:def list_assets():
-106:def open_asset(asset_id):
-122:def _str(a):
-[... 78 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 76,235p entries/zhai-2025/lid.py
-```
-
-```
-def _get(url):
-    with urllib.request.urlopen(url) as r:
-        return r.read()
-
-
-def version_info():
-    """The pinned version's metadata (name, modified time, asset count)."""
-    return json.loads(_get(f"{API}/dandisets/{DANDISET}/versions/{VERSION}/info/"))
-
-
-def list_assets():
-    """All assets of the pinned version, as a DataFrame with the session fields parsed."""
-    url = f"{API}/dandisets/{DANDISET}/versions/{VERSION}/assets/?page_size=1000"
-    rows = []
-    while url:
-        page = json.loads(_get(url))
-        rows += page["results"]
-        url = page["next"]
-    df = pd.DataFrame(rows)[["asset_id", "path", "size"]]
-    df = df[df.path.str.endswith(".nwb")].copy()
-[... 140 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -niE "repeat|miss|condition|genotype|preprint|biorxiv|background|optogenetic|stimulus|kymograph|20190508|20170204|oxo|rotation" attempts/zhai-2025-02.yaml | cut -c1-250 | head -60
-```
-
-```
-29:- what: The paper's dendritic excitability script (backgrounds, smoothing, windows, basal ratio), read for method details.
-39:    on-state with sulpiride (57%); the largest misses are 20 and 24 spikes. The rheobase equals the first step with a
-44:  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version
-46:  - A step recorded twice keeps its first sweep (the paper's script does not say); 14 of 123 cells have a repeated step.
-56:  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version
-104:    7742 and 7744 of the paper are missing), and their session totals equal the paper''s in 6% (control) and 16% (CDGI
-106:    are equal; mouse 4790 session 3 (44 against 43) and mouse 5845 session 4 (39.5 against 36.5) differ. Genotype labels
-117:    P = 8.9e-06 (paper P < 0.0001). Keeping the last sweep of a repeated step gives the same.
-121:  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version
-126:    from 120 pA, P < 0.05 at each step from 100 to 300 pA. 3 on-state and 5 off-state cells miss a step; the mean per
-127:    step present gives P = 1.4e-04. Keeping the last sweep of a repeated step gives P = 8.8e-05.
-131:  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version
-136:    The 5 cells recorded in both conditions give Wilcoxon P = 1.0. Keeping the last sweep of a repeated step gives P
-141:  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version
-150:  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version
-152:  - 'The index follows the paper''s script (doi:10.5281/zenodo.14163502) on the stored line profiles: backgrounds 55
-162:    row. No cell has an index in both conditions; the on-state cel
-[... 43 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 36,50p attempts/zhai-2025-02.yaml; sed -n 100,110p attempts/zhai-2025-02.yaml; sed -n 419,460p attempts/zhai-2025-02.yaml; sed -n 570,580p attempts/zhai-2025-02.yaml
-```
-
-```
-notes: All 12 groups hold the paper's n (123 cells). Over 20 to 300 pA, 73.2% of cells match a row of the paper's table
-    exactly and 85.4% within 3 spikes in total (criterion 80% and 95%; partial at 50% exact). 97.8% of exact matches
-    fall on the row at the cell's position in date and cell order. Exact matches are lowest in dSPN on-state (40%) and
-    on-state with sulpiride (57%); the largest misses are 20 and 24 spikes. The rheobase equals the first step with a
-    spike in the matched row for 97.8% of exact matches and 87.8% of all cells.
-  notebook: reproduce_zhai_2025.ipynb
-  output: claim:link-somatic-cells
-  deviations:
-  - Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version
-    of the dandiset does not have.
-  - A step recorded twice keeps its first sweep (the paper's script does not say); 14 of 123 cells have a repeated step.
-- claim: link-dendritic-cells
-  outcome: reproduced
-  notes: The count of cells with an index equals the paper's n in 8 of 10 groups; iSPN on-state (9 against 10) and CDGI
-    KO off-state (10 against 11) each lack a cell imaged at one dendritic site only, at two spots. Over 90 matched cells
-    baseline, as the Methods allow.
-- claim: link-aim-mice
-  outcome: not_reproduced
-  notes: 'Figure 8: 18 of the 21 dandiset mice are in the paper''s table (4123, 4124 and 5871 are not; 2346, 2347, 7741,
-    7742 and 7744 of the paper are missing), and their session totals equal the paper''s in 6% (control) and 16% (CDGI
-[... 59 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  c=72c9fcd4cb0dd5935a0f92825fb534e8f15b401b; git show $c:entries/zhai-2025/reproduce_zhai_2025.ipynb > $TMPDIR/nb01.ipynb; git show $c:entries/zhai-2025/lid.py > $TMPDIR/lid01.py; python -c "
-import json;nb=json.load(open('$TMPDIR/nb01.ipynb'))
-for i,c in enumerate(nb['cells']):
-    s=''.join(c['source'])
-    if c['cell_type']=='markdown' and s.startswith('#'): print(i, s.splitlines()[0][:120])
-"
-```
-
-```
-0 # Reproducing Zhai et al. (2025) from dandiset 001538
-2 ## Data check
-19 ## Links to the paper's per-cell tables
-20 ### link-somatic-cells
-23 ### link-dendritic-cells
-26 ### link-sr-cells
-30 ### link-grab-rois
-33 ### link-aim-mice
-36 ## Claims on the dandiset: dSPNs (Figures 1 and 2)
-37 ### fig1f-dspn-rheobase-on-lower
-40 ### fig1e-dspn-fi-on-higher
-43 ### fig1f-dspn-sch-no-change
-46 ### fig1i-dspn-dendritic-on-higher
-49 ### fig1i-dspn-dendritic-sch-lower
-52 ## Claims on the dandiset: iSPNs (Figure 3)
-53 ### fig3d-ispn-rheobase-on-higher
-56 ### fig3c-ispn-fi-on-lower
-59 ### fig3d-ispn-sul-no-change
-62 ### fig3f-ispn-dendritic-on-lower
-65 ### fig3f-ispn-dendritic-sul-no-change
-[... 19 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json;nb=json.load(open('$TMPDIR/nb01.ipynb'))
-for i,c in enumerate(nb['cells'][2:19],2):
-    print('-----',i,c['cell_type']); print(''.join(c['source']))
-"
-```
-
-```
------ 2 markdown
-## Data check
-
-Each check of the description against the values is stated under its output.
------ 3 code
-def kind(p):
-    if "_icephys+ogen" in p: return "Sr2+-oEPSC"
-    if "_icephys" in p: return "somatic/dendritic patch"
-    if p.endswith("_ophys.nwb"): return "GRAB-ACh imaging"
-    if p.endswith("_image.nwb"): return "behaviour video"
-    if "_ses-pan++ON" in p: return "AIM scores"
-    if "confocal" in p: return "confocal spine stacks"
-    return "2PLSM spine stacks"
-
-inv = pd.DataFrame([{"kind": kind(p), **lid.parse_session(p)} for p, _ in urls])
-print("NWB files by kind and session-name fields:")
-print(inv.groupby(["kind", "cell_type", "state", "drug", "genotype"]).size().to_string())
-print("Subject folders in the archive:", len({p.split("/")[0] for p, _ in urls}))
------ 4 markdown
-The session names give cell type, state, drug and genotype. The dandiset holds patch-clamp files
-[... 204 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; ls ~/.venv* /opt 2>/dev/null | head; which python; python -c "import h5py,remfile,pandas;print('ok')"; timeout 600 python -c "
-import lid, pandas as pd
-a=lid.list_assets()
-print(len(a)); print(a.kind.value_counts()); print(a.groupby(['cell_type','state','drug','genotype']).size().to_string())
-a.to_pickle('$TMPDIR/assets.pkl')
-"
-```
-
-```
-Exit code 1
-/opt:
-actionarchivecache
-az
-containerd
-google
-hca
-hostedtoolcache
-microsoft
-pipelinesagent-cache
-pipx
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import h5py,remfile,pandas;print('ok')
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'h5py'
-Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import lid, pandas as pd
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -nE "venv|uv |pip" tools/entry.py | head -20; ls ~/.cache 2>/dev/null; which uv
-```
-
-```
-301:        # tested on may already have been replaced (docs/pipeline.md), so it is not held to the current one.
-316:        # reach main ahead of the repeat attempt: the checkpoint in docs/pipeline.md) are the next attempt's to test.
-448:    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--generate-hashes", "--python-version", version,
-519:        if any(part in ("__pycache__", ".ipynb_checkpoints", ".venv") or part.endswith(".pyc") for part in rel.parts):
-555:    venv = (output_dir / ".venv").resolve()
-556:    python = venv / "bin" / "python"
-560:    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", python_of(entry_dir), str(venv)],
-561:                ["uv", "pip", "install", "--quiet", "--python", str(python),
-563:                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
-577:            env={**os.environ, "JUPYTER_PATH": str(venv / "share" / "jupyter")})
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/uv
-```
-
-**Agent calls Bash**
-
-```bash
-cd  uv venv --quiet --python 3.13 $TMPDIR/venv && uv pip install --quiet --python $TMPDIR/venv/bin/python -r entries/zhai-2025/requirements.lock.txt 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "import h5py,remfile,pandas,scipy;print('ok')"; cat entries/zhai-2025/requirements.in
-```
-
-```
-ok
-h5py
-matplotlib
-numpy
-openpyxl
-pandas
-remfile
-scipy
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; timeout 600 $TMPDIR/venv/bin/python -c "
-import lid, pandas as pd
-pd.set_option('display.width',250)
-a=lid.list_assets()
-print(len(a)); print(a.kind.value_counts().to_string()); print(a.groupby(['cell_type','state','drug','genotype']).size().to_string())
-a.to_pickle('$TMPDIR/assets.pkl')
-print(a.path.head(3).tolist())
-"
-```
-
-```
-391
-kind
-image            193
-                 110
-icephys+ophys     55
-icephys           22
-ophys             11
-cell_type  state              drug      genotype  
-dSPN       LesionedControl    none      WT              5
-           OffState           none      WT             19
-           OnState            D1RaSch   WT              5
-                              none      WT             18
-           UnlesionedControl  none      WT              6
-iSPN       LesionedControl    none      WT             10
-           M1RAntag           none      WT              6
-           M1RCRISPR          none      M1RCRISPR       3
-           Naive              M1RaOxoM  CDGIKO          3
-                                        WT              2
-           OffState           M1RaThp   WT              5
-                              none      CDGIKO         11
-[... 13 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; $TMPDIR/venv/bin/python -c "
-import pandas as pd
-pd.set_option('display.width',250)
-a=pd.read_pickle('$TMPDIR/assets.pkl')
-print(a.groupby(['kind','cell_type','state','drug','genotype']).size().to_string())
-print(a[a.kind==''].path.head(5).tolist())
-print(a[a.kind=='image'].path.head(3).tolist())
-"
-```
-
-```
-kind           cell_type  state              drug      genotype  
-               dSPN       LesionedControl    none      WT              5
-                          OffState           none      WT              8
-                          OnState            none      WT              9
-                          UnlesionedControl  none      WT              6
-               iSPN       LesionedControl    none      WT             10
-                          OffState           M1RaThp   WT              5
-                                             none      CDGIKO          6
-                                                       WT             15
-                                                       iSPN-M1RKO      3
-                          OnState            none      CDGIKO          3
-                                                       WT              9
-                          UnlesionedControl  none      WT             14
-               pan        OnState            none      CDGIKO         14
-                                                       WT              3
-icephys        dSPN       OffState           none      WT              4
-                          OnState            none      WT              4
-               iSPN       M1RAntag           none      WT              2
-                          M1RCRISPR          none      M1RCRISPR       3
-                          OffState           none      WT              5
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; cat > $TMPDIR/tree.py <<'EOF'
-import sys, lid, pandas as pd, h5py
-a=pd.read_pickle(sys.argv[1])
-for p in sys.argv[2:]:
-    r=a[a.path.str.contains(p,regex=False)].iloc[0]
-    print('=====',r.path)
-    f=lid.open_asset(r.asset_id)
-    def show(name,obj):
-        d=name.count('/')
-        if d>3: return
-        if isinstance(obj,h5py.Dataset):
-            if d<=3: print('  '*d+name.split('/')[-1], obj.shape, obj.dtype)
-        else:
-            print('  '*d+name.split('/')[-1]+'/', dict(obj.attrs).get('neurodata_type',''))
-    f.visititems(show)
-    for k in ['general/related_publications','session_description','general/experiment_description']:
-        if k in f: print(k, f[k][()])
-EOF
-timeout 900 $TMPDIR/venv/bin/python $TMPDIR/tree.py $TMPDIR/assets.pkl "dSPN++OnState++D1RaSch" "dSPN++OnState++none++WT++" 2>&1 | grep -v "^      " | head -150
-```
-
-```
-Traceback (most recent call last):
-  File "/tmp/claude-1001/tree.py", line 1, in <module>
-    import sys, lid, pandas as pd, h5py
-ModuleNotFoundError: No module named 'lid'
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; timeout 900 $TMPDIR/venv/bin/python $TMPDIR/tree.py $TMPDIR/assets.pkl "dSPN++OnState++D1RaSch" 2>&1 | head -120
-```
-
-```
-===== sub-Subject20190411LIDONtDTomato/sub-Subject20190411LIDONtDTomato_ses-dSPN++OnState++D1RaSch++WT++20190411_icephys+ophys.nwb
-acquisition/ 
-  CurrentClampSeriesCell1Dendritic/ CurrentClampSeries
-    data (240000,) float64
-    gain () float64
-    timestamps (240000,) float64
-  CurrentClampSeriesCell1Somatic/ CurrentClampSeries
-    data (420000,) float64
-    gain () float64
-    timestamps (420000,) float64
-  CurrentClampSeriesCell2Dendritic/ CurrentClampSeries
-    data (240000,) float64
-    gain () float64
-    timestamps (240000,) float64
-  CurrentClampSeriesCell2Somatic/ CurrentClampSeries
-    data (210000,) float64
-    gain () float64
-    timestamps (210000,) float64
-  ImageLineScanSource/ Images
-    ImageAlexa568Cell1Distal2Trial1 (128, 128) uint16
-[... 100 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; timeout 900 $TMPDIR/venv/bin/python $TMPDIR/tree.py $TMPDIR/assets.pkl "dSPN++OnState++D1RaSch" 2>&1 | sed -n '121,260p'
-```
-
-```
-sequential_recordings/ SequentialRecordingsTable
-      id (7,) int64
-      simultaneous_recordings (75,) int64
-      simultaneous_recordings_index (7,) uint8
-      stimulus_type (7,) object
-    simultaneous_recordings/ SimultaneousRecordingsTable
-      id (75,) int64
-      recordings (75,) int64
-      recordings_index (75,) uint8
-  keywords (11,) object
-  lab () object
-  optophysiology/ 
-    ImagingPlaneAlexa568/ ImagingPlane
-      OpticalChannelAlexa568/ OpticalChannel
-      description () object
-      excitation_lambda () float64
-      indicator () object
-      location () object
-    ImagingPlaneFluo4/ ImagingPlane
-      OpticalChannelFluo4/ OpticalChannel
-[... 120 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; date -u; grep -nE "def load_sr_file" -A46 lid.py; grep -nE "def load_grab_file" -A33 lid.py; grep -n "def load_aim_file" -A36 lid.py
-```
-
-```
-Sun Nov 15 04:50:51 UTC 2026
-346:def load_sr_file(asset, n_sd_list=(SR_SD,)):
-347-    """Sweeps of an Sr2+-oEPSC file, with the events found at each threshold in n_sd_list.
-348-
-349-    Returns one row per cell: the number of sweeps, the noise SD, and for each
-350-    threshold the event amplitudes, their count, mean and median, and the frequency.
-351-    """
-352-    f = open_asset(asset.asset_id)
-353-    irt = f["general/intracellular_ephys/intracellular_recordings"]
-354-    resp = irt["responses/response"][:]
-355-    cell = irt["cell_id"][:]
-356-    cond = _str(irt["condition"][:])
-357-    pulses = f["intervals/optogenetic_pulses_table"]
-358-    p_start, p_cell = pulses["start_time"][:], pulses["cell_id"][:]
-359-    cache, sweeps = {}, {}
-360-    for i in range(len(resp)):
-361-        v, ts = _series_values(f, resp[i], cache)
-362-        fs = 1.0 / float(np.median(np.diff(ts)))
-363-        mine = p_start[(p_cell == cell[i]) & (p_start >= ts[0]) & (p_start <= ts[-1])]
-364-        if len(mine) == 0:
-[... 99 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; $TMPDIR/venv/bin/python -c "
-import pandas as pd
-a=pd.read_pickle('$TMPDIR/assets.pkl')
-print(a[a.kind=='icephys'].path.tolist()[:6])
-print(a[a.kind=='ophys'].path.tolist()[:2])
-print(a[(a.cell_type=='pan')&(a.kind=='')].path.tolist()[:3])
-"; timeout 900 $TMPDIR/venv/bin/python $TMPDIR/tree.py $TMPDIR/assets.pkl "_ses-dSPN++OffState++none++WT++" 2>&1 | grep -vE "^\s+(Image|data|gain|timestamps|starting_time)" | head -5
-```
-
-```
-['sub-Subject20170525LIDOFFtDTomato/sub-Subject20170525LIDOFFtDTomato_ses-dSPN++OffState++none++WT++20170525_icephys.nwb', 'sub-Subject20200721M1RanteGFP/sub-Subject20200721M1RanteGFP_ses-iSPN++M1RAntag++none++WT++20200721_icephys.nwb', 'sub-Subject20200722M1RanteGFP/sub-Subject20200722M1RanteGFP_ses-iSPN++M1RAntag++none++WT++20200722_icephys.nwb', 'sub-Subject20221004M1RCRSPRAdora2Cre/sub-Subject20221004M1RCRSPRAdora2Cre_ses-iSPN++M1RCRISPR++none++M1RCRISPR++20221004_icephys.nwb', 'sub-Subject20221005M1RCRSPRAdora2Cre/sub-Subject20221005M1RCRSPRAdora2Cre_ses-iSPN++M1RCRISPR++none++M1RCRISPR++20221005_icephys.nwb', 'sub-Subject20221012CONTAdora2Cre/sub-Subject20221012CONTAdora2Cre_ses-iSPN++OffState++none++WT++20221012_icephys.nwb']
-['sub-Subject20240405CONTC57bl6J/sub-Subject20240405CONTC57bl6J_ses-pan++UnlesionedControl++none++WT++20240405_ophys.nwb', 'sub-Subject202404166OHDAC57bl6J/sub-Subject202404166OHDAC57bl6J_ses-pan++LesionedControl++none++WT++20240416_ophys.nwb']
-['sub-Subject20171120koM4123/sub-Subject20171120koM4123_ses-pan++OnState++none++CDGIKO++20171120.nwb', 'sub-Subject20171120koM4123/sub-Subject20171120koM4123_ses-pan++OnState++none++CDGIKO++20171122.nwb', 'sub-Subject20171120koM4123/sub-Subject20171120koM4123_ses-pan++OnState++none++CDGIKO++20171124.nwb']
-===== sub-Subject20160812LIDOFFtDTomato/sub-Subject20160812LIDOFFtDTomato_ses-dSPN++OffState++none++WT++20160812.nwb
-acquisition/ 
-    order_of_images (168,) object
-    order_of_images (107,) object
-analysis/
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; python -c "
-import json;nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for i,c in enumerate(nb['cells'][:40]):
-    s=''.join(c['source'])
-    if c['cell_type']=='code': print('-----',i); print(s[:2500])
-" | head -230
-```
-
-```
------ 1
-import time, resource, warnings
-warnings.filterwarnings("ignore")
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy import stats
-import lid
-
-pd.set_option("display.width", 200)
-pd.set_option("display.max_columns", 30)
-pd.set_option("display.max_rows", 400)
-T0 = time.time()
-info = lid.version_info()
-print("dandiset", lid.DANDISET, "version", lid.VERSION, "| modified", info["modified"],
-      "| assets", info["asset_count"], "| status", info["status"])
-assets = lid.list_assets()
-print(len(assets), "NWB files (videos are external mp4 files, not counted)")
-print(assets.groupby(["cell_type", "state", "drug", "genotype", "kind"]).size().to_string())
------ 3
-[... 210 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; cat > $TMPDIR/probe.py <<'EOF'
-import lid, pandas as pd, numpy as np, h5py
-a=pd.read_pickle('/tmp/claude-1001/assets.pkl') if False else None
-EOF
-timeout 1200 $TMPDIR/venv/bin/python - <<EOF
-import lid, pandas as pd, numpy as np, h5py, os
-a=pd.read_pickle(os.environ.get('TMPDIR')+'/assets.pkl')
-def tree(f, maxd=2, skip=('specifications',)):
-    def show(name,obj):
-        if name.split('/')[0] in skip: return
-        d=name.count('/')
-        if d>maxd: return
-        print('  '*d+name.split('/')[-1], getattr(obj,'shape',''), dict(obj.attrs).get('neurodata_type',''))
-    f.visititems(show)
-# Sr file
-desc={}
-for _,r in a[a.kind=='icephys'].iterrows():
-    desc[r.path]=lid.session_description(r.asset_id)
-sr=[p for p,d in desc.items() if d.startswith('Sr2+')]
-print(len(sr), sr[:2])
-r=a[a.path==sr[0]].iloc[0]
-f=lid.open_asset(r.asset_id); tree(f,2)
-for k in ['general/related_publications','general/experiment_description']: print(k, f[k][()])
-print(f['session_description'][()])
-EOF
-```
-
-```
-14 ['sub-Subject20230222LIDOFFeGFP/sub-Subject20230222LIDOFFeGFP_ses-iSPN++OffState++none++WT++20230222_icephys.nwb', 'sub-Subject20230228LIDONeGFP/sub-Subject20230228LIDONeGFP_ses-iSPN++OnState++none++WT++20230228_icephys.nwb']
-acquisition  
-  VoltageClampSeriesCell1  VoltageClampSeries
-    data (240012,) 
-    gain () 
-    timestamps (240012,) 
-  VoltageClampSeriesCell2  VoltageClampSeries
-    data (200010,) 
-    gain () 
-    timestamps (200010,) 
-analysis  
-file_create_date (1,) 
-general  
-  devices  
-    BlueLED  ExcitationSource
-    MultiClamp700B  Device
-    models  
-  experiment_description () 
-  experimenter (8,) 
-  external_resources  HERD
-[... 59 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; timeout 1200 $TMPDIR/venv/bin/python - <<EOF
-import lid, pandas as pd, numpy as np, h5py, os
-a=pd.read_pickle(os.environ.get('TMPDIR')+'/assets.pkl')
-def tree(f, maxd=2, skip=('specifications',)):
-    def show(name,obj):
-        if name.split('/')[0] in skip: return
-        d=name.count('/')
-        if d>maxd: return
-        extra=''
-        if isinstance(obj,h5py.Group) and 'description' in obj.attrs: extra=str(obj.attrs['description'])[:200]
-        print('  '*d+name.split('/')[-1], getattr(obj,'shape',''), dict(obj.attrs).get('neurodata_type',''), extra)
-    f.visititems(show)
-r=a[a.kind=='ophys'].iloc[0]
-f=lid.open_asset(r.asset_id); tree(f,3)
-print(f['session_description'][()])
-EOF
-```
-
-```
-acquisition   
-  ImagesPrairieViewReferences  Images Reference images Prairie View saved with each recording, 16-bit, one per channel and trial. They show the field of view but are not frames of the trial, and consecutive trials often share the same ima
-    ImageDodtSlice1Roi1Trial1 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial10 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial11 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial12 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial13 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial14 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial2 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial3 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial4 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial5 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial6 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial7 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial8 (128, 128) Image 
-    ImageDodtSlice1Roi1Trial9 (128, 128) Image 
-    ImageDodtSlice1Roi2Trial1 (128, 128) Image 
-    ImageDodtSlice1Roi2Trial10 (128, 128) Image 
-    ImageDodtSlice1Roi2Trial11 (128, 128) Image 
-    ImageDodtSlice1Roi2Trial12 (128, 128) Image 
-[... 173 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; timeout 1200 $TMPDIR/venv/bin/python - <<EOF
-import lid, pandas as pd, numpy as np, h5py, os
-a=pd.read_pickle(os.environ.get('TMPDIR')+'/assets.pkl')
-def tree(f, maxd=2, skip=('specifications',)):
-    def show(name,obj):
-        if name.split('/')[0] in skip: return
-        d=name.count('/')
-        if d>maxd: return
-        v=''
-        if isinstance(obj,h5py.Dataset) and obj.shape==(): v=str(obj[()])[:300]
-        print('  '*d+name.split('/')[-1], getattr(obj,'shape',''), dict(obj.attrs).get('neurodata_type',''), v)
-    f.visititems(show)
-for sel in [(a.cell_type=='pan')&(a.kind=='')&(a.genotype=='CDGIKO'), (a.kind=='image')&(a.genotype=='CDGIKO')]:
-    r=a[sel].iloc[0]; print('=====',r.path)
-    f=lid.open_asset(r.asset_id); tree(f,3)
-EOF
-```
-
-```
-===== sub-Subject20171120koM4123/sub-Subject20171120koM4123_ses-pan++OnState++none++CDGIKO++20171120.nwb
-acquisition   
-analysis   
-events   
-  aim_scores  EventsTable 
-    behavior (20,) VectorData 
-    duration (20,) DurationVectorData 
-    id (20,) ElementIdentifiers 
-    meanings_tables   
-      behavior_meanings  MeaningsTable 
-    score (20,) HedValueVector 
-    timestamp (20,) TimestampVectorData 
-file_create_date (1,)  
-general   
-  experiment_description ()  b'Levodopa-induced dyskinesia in 6-OHDA-lesioned mice: CDGI knockout and wild-type mice (Figure 8 and fig. S2A), and mice with M1R deleted from iSPNs by CRISPR-Cas9 and their controls (Figure 10).'
-  experimenter (8,)  
-  external_resources  HERD 
-    entities (11,) Data 
-    entity_keys (11,) Data 
-    files (1,) Data 
-[... 117 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; python -c "
-import json;nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-    s=''.join(c['source'])
-    if 'fig7e' in s or 'fig8a' in s or 'Figure 7E' in s or 'Fig 8' in s: print('-----',i,c['cell_type']); print(s[:3000])
-"
-```
-
-```
------ 0 markdown
-# Zhai et al. (2025) on dandiset 001538
-
-Paper: Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier (2025), "State-dependent modulation of spiny projection neurons controls levodopa-induced dyskinesia in a mouse model of Parkinson's disease", Science Advances 11, eadv8224, doi:10.1126/sciadv.adv8224. The claims file (`claims/zhai-2025.yaml`) was written from the full text of the version of record in PubMed Central (PMC12674127), its Results, figure legends and Materials and Methods.
-
-Dataset: DANDI:001538, version `draft`. This attempt was asked to use the draft (a repeat attempt on data that changed after an earlier one). A draft can change: the archive gives its last modification as 2026-11-09T19:30:00Z, printed below as the notebook reads it. The draft holds 1288 assets (391 NWB files and the AIM session videos); the latest published version, 0.260527.1302, holds 468 and predates the changes.
-
-Outside inputs: the paper's per-cell and per-mouse tables (Zenodo doi:10.5281/zenodo.17307059), used by the link claims and by the claims the claims file marks `data: elsewhere`. Method details come from the paper's analysis scripts, cited in `lid.py` (doi:10.5281/zenodo.14145776, 14163502 and 14163731).
-
-No step uses random numbers.
-
-| Claim | Data | Tested here |
-|---|---|---|
-| link-somatic-cells | with inputs | tested |
-| link-dendritic-cells | with inputs | tested |
-| link-sr-cells | with inputs | tested |
-| link-grab-rois | with inputs | tested |
-| link-aim-mice | with labels | tested |
-| fig1f-dspn-rheobase-on-lower, fig1e-dspn-fi-on-higher, fig1f-dspn-sch-no-change | dataset | tested |
-| fig1i-dspn-dendritic-on-higher, fig1i-dspn-dendritic-sch-lower | dataset | tested |
-[... 107 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; python -c "
-import json;nb=json.load(open('reproduce_zhai_2025.ipynb'))
-for i,c in enumerate(nb['cells']):
-    s=''.join(c['source'])
-    if 'def tab' in s: print('-----',i); print(s[:1500])
-"; grep -n "def session_description" -A12 lid.py; date -u
-```
-
-```
------ 114
-def tab(book, sheet):
-    return tables[book][sheet]
-r1 = tab("Fig 1", "Fig 1F_dSPN rheobase").set_axis(["id", "group", "v"], axis=1)
-print("fig1-dspn-lesion-and-off-somatic (rheobase, pA):")
-report("6-OHDA", r1[r1.group == "6-OHDA"].v, "control", r1[r1.group == "control"].v, " pA")
-report("off-state", r1[r1.group == "LID off"].v, "6-OHDA", r1[r1.group == "6-OHDA"].v, " pA")
-525:def session_description(asset_id):
-526-    """The session description of one file, read from its header only."""
-527-    f = open_asset(asset_id)
-528-    d = f["session_description"][()]
-529-    f.close()
-530-    return d.decode() if isinstance(d, bytes) else d
-Sun Nov 15 04:52:12 UTC 2026
-```
-
-**Agent**
-
-Most of the file layout is clear now. I'll write the checks as a scratch script first, then turn it into the notebook.
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; cat > $TMPDIR/s1.py <<'EOF'
-import os, re, time
-from concurrent.futures import ThreadPoolExecutor
-import numpy as np, pandas as pd, h5py
-import lid
-pd.set_option("display.width", 220); pd.set_option("display.max_rows", 300)
-t0=time.time()
-assets = lid.list_assets()
-patch = assets[assets.kind.isin(["icephys", "icephys+ophys"]) & assets.path.str.contains("SPN")]
-
-def ic_tables(a):
-    f = lid.open_asset(a.asset_id)
-    out = {"path": a.path, "date": a.date, "cell_type": a.cell_type, "state": a.state, "name_drug": a.drug,
-           "desc": f["session_description"][()].decode()}
-    irt = f["general/intracellular_ephys/intracellular_recordings"]
-    out["irt"] = pd.DataFrame({"cell": irt["cell_id"][:], "condition": lid._str(irt["condition"][:]),
-                               "drug": lid._str(irt["drug"][:]), "dendrite_type": lid._str(irt["dendrite_type"][:]),
-                               "site": lid._str(irt["site"][:]), "current_pA": irt["stimulus_current_pA"][:]})
-    st = irt["stimuli/stimulus"][:]
-    out["irt"]["stim_start"] = [s[0] for s in st]; out["irt"]["stim_count"] = [s[1] for s in st]
-    if "processing/icephys/RecordingsIndexTable" in f:
-        t = f["processing/icephys/RecordingsIndexTable"]
-        rit = pd.DataFrame({k: (lid._str(t[k][:]) if t[k].dtype.kind == "O" else t[k][:]) for k in
-                            ["cell_id", "condition", "dendrite_type", "site", "stimulus_current_pA", "irt_row"]})
-        for col in ["line_scan_alexa568", "line_scan_fluo4"]:
-            if col in t:
-                v = t[col][:]
-                lens = {}
-                ok = []
-                for s, c, ref in v:
-                    if s < 0: ok.append(False); continue
-                    ds = f[ref]
-                    if ds.name not in lens: lens[ds.name] = ds["data"].shape[0]
-                    ok.append(s + c <= lens[ds.name])
-                rit[col + "_ok"] = ok
-        out["rit"] = rit
-        stim = {}
-        for name in f["stimulus/presentation"]:
-            if "Dendritic" in name:
-                d = f["stimulus/presentation"][name]["data"][:]
-                stim[name] = (len(d), float(np.max(np.abs(d))) if len(d) else np.nan)
-        out["den_stim"] = stim
-    f.close()
-    return out
-
-with ThreadPoolExecutor(12) as ex:
-    ic = list(ex.map(ic_tables, [a for _, a in patch.iterrows()]))
-print("files", len(ic), time.time()-t0)
-import pickle; pickle.dump(ic, open(os.environ["TMPDIR"]+"/ic.pkl","wb"))
-EOF
-timeout 3000 $TMPDIR/venv/bin/python $TMPDIR/s1.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/s1.py", line 46, in <module>
-    ic = list(ex.map(ic_tables, [a for _, a in patch.iterrows()]))
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/concurrent/futures/_base.py", line 625, in result_iterator
-    yield _result_or_cancel(fs.pop())
-          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/concurrent/futures/_base.py", line 318, in _result_or_cancel
-    return fut.result(timeout)
-           ~~~~~~~~~~^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/concurrent/futures/_base.py", line 453, in result
-    return self.__get_result()
-           ~~~~~~~~~~~~~~~~~^^
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/concurrent/futures/_base.py", line 402, in __get_result
-    raise self._exception
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/concurrent/futures/thread.py", line 59, in run
-    result = self.fn(*self.args, **self.kwargs)
-  File "/tmp/claude-1001/s1.py", line 16, in ic_tables
-    "drug": lid._str(irt["drug"][:]), "dendrite_type": lid._str(irt["dendrite_type"][:]),
-                     ~~~^^^^^^^^
-[... 11 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; python - <<'EOF'
-import os
-p=os.environ["TMPDIR"]+"/s1.py"
-s=open(p).read()
-s=s.replace('''    out["irt"] = pd.DataFrame({"cell": irt["cell_id"][:], "condition": lid._str(irt["condition"][:]),
-                               "drug": lid._str(irt["drug"][:]), "dendrite_type": lid._str(irt["dendrite_type"][:]),
-                               "site": lid._str(irt["site"][:]), "current_pA": irt["stimulus_current_pA"][:]})''',
-'''    out["irt"] = pd.DataFrame({k: (lid._str(irt[k][:]) if irt[k].dtype.kind == "O" else irt[k][:])
-                               for k in ["cell_id", "condition", "drug", "dendrite_type", "site", "stimulus_current_pA", "state"] if k in irt})''')
-s=s.replace("ThreadPoolExecutor","ProcessPoolExecutor")
-open(p,"w").write(s)
-EOF
-timeout 3000 $TMPDIR/venv/bin/python $TMPDIR/s1.py
-```
-
-```
-files 77 20.093579053878784
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; $TMPDIR/venv/bin/python - <<'EOF'
-import os, pickle, pandas as pd, numpy as np
-pd.set_option("display.width", 220); pd.set_option("display.max_rows", 300)
-ic = pickle.load(open(os.environ["TMPDIR"]+"/ic.pkl","rb"))
-cc = [d for d in ic if "rit" in d]; sr = [d for d in ic if "rit" not in d]
-print(len(cc), len(sr))
-# F3
-rows=[]
-for d in cc:
-    r=d["rit"].copy(); r["path"]=d["path"]; r["date"]=d["date"]; r["cell_type"]=d["cell_type"]; r["state"]=d["state"]; r["name_drug"]=d["name_drug"]
-    irt=d["irt"]; r["drug"]=irt["drug"].values[r.irt_row] if "drug" in irt else None
-    rows.append(r)
-R=pd.concat(rows,ignore_index=True)
-print(R.groupby(["cell_type","state","name_drug","condition","drug"]).size().to_string())
-cells=R.groupby(["cell_type","date","cell_id","name_drug","condition"]).size().reset_index()
-print(cells[cells.name_drug!="none"].to_string())
-# F15
-s=R[R.dendrite_type=="Soma"]
-steps=list(range(20,301,20))
-out=[]
-for k,g in s.groupby(["path","cell_id","condition"]):
-    c=g.stimulus_current_pA.round().astype(int)
-    out.append(dict(path=k[0],cell=k[1],condition=k[2],missing=[x for x in steps if x not in set(c)],rep=int(c.duplicated().sum()), reps=sorted(set(c[c.duplicated()]))))
-O=pd.DataFrame(out)
-print("cells", len(O), "missing", (O.missing.str.len()>0).sum(), "repeat", (O.rep>0).sum())
-print(O[(O.missing.str.len()>0)|(O.rep>0)].assign(path=O.path.str.extract(r"ses-(.*)\.nwb")[0]).to_string())
-EOF
-```
-
-```
-63 14
-cell_type  state      name_drug  condition                           drug      
-dSPN       OffState   none       LID off-state                       none          478
-           OnState    D1RaSch    LID on-state                        none          126
-                                 LID on-state with SCH 23390         SCH 23390     294
-                      none       LID on-state                        none          284
-iSPN       M1RAntag   none       LID off-state with M1R antagonists  VU 0255035    295
-           M1RCRISPR  none       LID off-state, M1R deletion         none          168
-           Naive      M1RaOxoM   CDGI knockout, naive                none           72
-                                 CDGI knockout, naive with oxo-M     oxo-M          75
-                                 naive                               none           60
-                                 naive with oxo-M                    oxo-M          60
-           OffState   none       CDGI knockout, LID off-state        none          387
-                                 LID off-state                       none          373
-                                 LID off-state, control (gRNA only)  none          126
-                                 LID off-state, vehicle control      none          275
-           OnState    D2RaSul    LID on-state                        none          117
-                                 LID on-state with sulpiride         sulpiride     230
-                      none       CDGI knockout, LID on-state         none          252
-                                 LID on-state                        none          221
-[... 74 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; $TMPDIR/venv/bin/python - <<'EOF'
-import os, pickle, pandas as pd, numpy as np
-pd.set_option("display.width", 220); pd.set_option("display.max_rows", 300)
-ic = pickle.load(open(os.environ["TMPDIR"]+"/ic.pkl","rb"))
-cc = [d for d in ic if "rit" in d]; sr = [d for d in ic if "rit" not in d]
-rows=[]
-for d in cc:
-    r=d["rit"].copy(); r["path"]=d["path"]; r["date"]=d["date"]; r["cell_type"]=d["cell_type"]; r["name_drug"]=d["name_drug"]
-    rows.append(r)
-R=pd.concat(rows,ignore_index=True)
-print(R.dendrite_type.value_counts())
-s=R[(R.dendrite_type=="Soma")&(R.name_drug.isin(["D1RaSch","D2RaSul"]))]
-c=s.groupby(["cell_type","date","cell_id"]).condition.apply(lambda x: sorted(set(x))).reset_index()
-c["baseline"]=c.condition.apply(lambda x: any("with" not in y for y in x)); c["drug"]=c.condition.apply(lambda x: any("with" in y for y in x))
-print(c.to_string()); print("cells with baseline", c.baseline.sum(), "baseline only", (c.baseline&~c.drug).sum())
-# F9
-den=R[R.dendrite_type!="Soma"]
-print("dendritic sweeps", len(den), "cells", den.groupby(["path","cell_id"]).ngroups)
-for col in ["line_scan_alexa568_ok","line_scan_fluo4_ok"]:
-    print(col, "not ok:", int((~den[col].astype(bool)).sum()))
-st=[(d["path"],k,v[0],v[1]) for d in cc for k,v in d.get("den_stim",{}).items()]
-st=pd.DataFrame(st,columns=["path","series","n","maxabs"])
-print("dendritic stimulus series", len(st), "all zero:", int((st.maxabs==0).sum()), "max", st.maxabs.max(), st.maxabs.describe().to_dict())
-print(st.head())
-# F7/F6 cells
-for date,cell in [("20190508",3),("20170204",1),("20160526",3),("20160608",1),("20160524",2)]:
-    g=R[(R.date==date)&(R.cell_id==cell)&(R.dendrite_type!="Soma")]
-    print(date,cell,g.groupby(["condition","dendrite_type","site"]).size().to_dict())
-# Sr
-print(len(sr))
-for d in sr[:2]: print(d["irt"].head(3)); print(d["irt"].columns.tolist())
-EOF
-```
-
-```
-dendrite_type
-Soma        2617
-Distal       639
-Proximal     637
-Name: count, dtype: int64
-   cell_type      date  cell_id                                    condition  baseline   drug
-0       dSPN  20190411        1  [LID on-state, LID on-state with SCH 23390]      True   True
-1       dSPN  20190411        2                [LID on-state with SCH 23390]     False   True
-2       dSPN  20190412        1  [LID on-state, LID on-state with SCH 23390]      True   True
-3       dSPN  20190412        2                [LID on-state with SCH 23390]     False   True
-4       dSPN  20190501        1  [LID on-state, LID on-state with SCH 23390]      True   True
-5       dSPN  20190501        2                [LID on-state with SCH 23390]     False   True
-6       dSPN  20190503        1  [LID on-state, LID on-state with SCH 23390]      True   True
-7       dSPN  20190503        2                [LID on-state with SCH 23390]     False   True
-8       dSPN  20190507        1                               [LID on-state]      True  False
-9       dSPN  20190507        2  [LID on-state, LID on-state with SCH 23390]      True   True
-10      dSPN  20190507        3                [LID on-state with SCH 23390]     False   True
-11      iSPN  20190408        1                               [LID on-state]      True  False
-12      iSPN  20190409        1                               [LID on-state]      True  False
-13      iSPN  20190426        2  [LID on-state, LID on-state with sulpiride]      True   True
-[... 36 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; export PYTHONPATH=$PWD; cat > $TMPDIR/s2.py <<'EOF'
-import os, re, time, pickle
-from concurrent.futures import ProcessPoolExecutor
-import numpy as np, pandas as pd, h5py
-import lid
-pd.set_option("display.width", 220); pd.set_option("display.max_rows", 400)
-assets = lid.list_assets()
-
-def sr_check(a):
-    f = lid.open_asset(a.asset_id)
-    irt = f["general/intracellular_ephys/intracellular_recordings"]
-    resp = irt["responses/response"][:]; stim = irt["stimuli/stimulus"][:]; cell = irt["cell_id"][:]
-    p = f["intervals/optogenetic_pulses_table"]; ps, pc = p["start_time"][:], p["cell_id"][:]
-    ts_cache = {}
-    rows = []
-    for i in range(len(resp)):
-        s, c, ref = resp[i]; ds = f[ref]
-        if ds.name not in ts_cache: ts_cache[ds.name] = lid._timestamps(ds)
-        ts = ts_cache[ds.name][s:s + c]
-        n = int(np.sum((pc == cell[i]) & (ps >= ts[0]) & (ps <= ts[-1])))
-        rows.append(dict(path=a.path, cell=int(cell[i]), sweep=i, pulses=n, stim_ref=stim[i][0] >= 0 and stim[i][1] > 0,
-                         pulse_t=float(ps[(pc == cell[i]) & (ps >= ts[0]) & (ps <= ts[-1])][0] - ts[0]) if n else np.nan))
-    kinds = set()
-    f.visititems(lambda n, o: kinds.add(o.attrs.get("neurodata_type", "")) if isinstance(o, h5py.Group) else None)
-    f.close()
-    return rows, sorted(k if isinstance(k, str) else k.decode() for k in kinds)
-
-def header(a):
-    f = lid.open_asset(a.asset_id)
-    g = lambda k: (f[k][()].decode() if isinstance(f[k][()], bytes) else str(f[k][()])) if k in f else None
-    rp = f["general/related_publications"][:] if "general/related_publications" in f else []
-    descs = []
-    def v(n, o):
-        if "description" in o.attrs:
-            d = o.attrs["description"]; descs.append((n, d.decode() if isinstance(d, bytes) else str(d)))
-    f.visititems(v)
-    out = dict(path=a.path, kind=a.kind, genotype_name=a.genotype, related=[x.decode() if isinstance(x, bytes) else x for x in rp],
-               session_description=g("session_description"), experiment_description=g("experiment_description") or g("general/experiment_description"),
-               subject_genotype=g("general/subject/genotype"), subject_description=g("general/subject/description"),
-               descs=descs)
-    f.close()
-    return out
-
-if __name__ == "__main__":
-    t0 = time.time()
-    with ProcessPoolExecutor(16) as ex:
-        heads = list(ex.map(header, [a for _, a in assets.iterrows()]))
-    print("headers", len(heads), time.time() - t0)
-    pickle.dump(heads, open(os.environ["TMPDIR"] + "/heads.pkl", "wb"))
-    sr_files = [a for _, a in assets.iterrows() if next(h for h in heads if h["path"] == a.path)["session_description"].startswith("Sr2+")]
-    with ProcessPoolExecutor(14) as ex:
-        res = list(ex.map(sr_check, sr_files))
-    pickle.dump(res, open(os.environ["TMPDIR"] + "/sr.pkl", "wb"))
-    print("done", time.time() - t0)
-EOF
-timeout 3000 $TMPDIR/venv/bin/python $TMPDIR/s2.py
-```
-
-```
-headers 391 166.32285022735596
-done 168.12105584144592
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; $TMPDIR/venv/bin/python - <<'EOF'
-import os, pickle, re, pandas as pd, numpy as np
-pd.set_option("display.width", 220); pd.set_option("display.max_rows", 400); pd.set_option("display.max_colwidth", 200)
-T=os.environ["TMPDIR"]
-res=pickle.load(open(T+"/sr.pkl","rb"))
-S=pd.DataFrame([r for rows,_ in res for r in rows])
-print("Sr files", len(res), "cells", S.groupby(["path","cell"]).ngroups, "sweeps", len(S))
-print("pulses per sweep", S.pulses.value_counts().to_dict(), "stim ref", S.stim_ref.value_counts().to_dict())
-print("pulse time", S.pulse_t.round(4).value_counts().to_dict())
-print("types", sorted(set(t for _,k in res for t in k)))
-H=pd.DataFrame(pickle.load(open(T+"/heads.pkl","rb")))
-print(H.related.astype(str).value_counts())
-pat=re.compile(r"bioRxiv|biorxiv|preprint|10\.1101|Figure 7J|Fig\. 7J|7J", re.I)
-hits=[]
-for _,h in H.iterrows():
-    for k in ["session_description","experiment_description","subject_description"]:
-        if h[k] and pat.search(h[k]): hits.append((h.path,k,h[k][:300]))
-    for n,d in h.descs:
-        if pat.search(d): hits.append((h.path,n,d[:300]))
-print(len(hits)); 
-for x in hits[:15]: print(x)
-print(pd.Series([m for h in H.session_description for m in re.findall(r"Figure \d+[A-Z]?", h or "")]).value_counts().to_string())
-# GRAB
-G=H[H.kind=="ophys"]
-for _,h in G.iterrows():
-    for n,d in h.descs:
-        if re.search(r"background|laser power|zero|PMT", d, re.I): print(h.path.split("/")[0], n, "|", d[:400])
-EOF
-```
-
-```
-Sr files 14 cells 33 sweeps 333
-pulses per sweep {1: 333} stim ref {True: 333}
-pulse time {0.02: 333}
-types ['', 'Device', 'Effector', 'ExcitationSource', 'ExcitationSourceModel', 'ExperimentalConditionsTable', 'HERD', 'IntracellularElectrode', 'IntracellularElectrodesTable', 'IntracellularRecordingsTable', 'IntracellularResponsesTable', 'IntracellularStimuliTable', 'OptogeneticEffectors', 'OptogeneticExperimentMetadata', 'OptogeneticPulsesTable', 'OptogeneticSitesTable', 'OptogeneticVirusInjections', 'OptogeneticViruses', 'RepetitionsTable', 'SequentialRecordingsTable', 'SimultaneousRecordingsTable', 'Subject', 'ViralVector', 'ViralVectorInjection', 'VoltageClampSeries', 'VoltageClampStimulusSeries']
-related
-['https://doi.org/10.1126/sciadv.adv8224']    391
-Name: count, dtype: int64
-0
-Figure 8     105
-Figure 10    105
-Figure 4      23
-Figure 1      18
-Figure 3      15
-Figure 7      14
-Figure 6      11
-Figure 5      11
-Figure 2       7
-Figure 9       5
-Figure 4I      1
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; $TMPDIR/venv/bin/python - <<'EOF'
-import os, pickle, re, pandas as pd, numpy as np
-pd.set_option("display.width", 250); pd.set_option("display.max_rows", 400); pd.set_option("display.max_colwidth", 80)
-T=os.environ["TMPDIR"]
-H=pd.DataFrame(pickle.load(open(T+"/heads.pkl","rb")))
-B=H[H.path.str.contains("ses-pan") & (H.kind!="ophys")].copy()
-m=B.session_description.str.extract(r"session (\d) of (\d) of mouse (\d+) \(([^,]+), Figure (\d+)\)")
-B["session"],B["mouse"],B["group"],B["figure"]=m[0],m[2],m[3],m[4]
-B["folder"]=B.path.str.split("/").str[0]
-B["file"]=np.where(B.kind=="image","video","AIM")
-print(B.groupby(["figure","group","genotype_name","subject_genotype","file"]).agg(mice=("mouse","nunique"),files=("path","size")).to_string())
-per=B.groupby("mouse").agg(fig=("figure",lambda x: sorted(set(x))),groups=("group",lambda x: sorted(set(x))),name_gt=("genotype_name",lambda x: sorted(set(x))),
-   subj_gt=("subject_genotype",lambda x: sorted(set(s.split(';')[0] for s in x))), files=("file",lambda x: sorted(set(x))))
-print("mice with more than one label:", per[(per.groups.str.len()>1)|(per.name_gt.str.len()>1)|(per.subj_gt.str.len()>1)].to_string())
-print(per.loc[[m for m in ["1945","2519","2587","2828","6572"] if m in per.index]].to_string())
-print(B[B.mouse.isna()].path.tolist()[:5])
-print(B.subject_description.str.slice(0,80).value_counts().head(5))
-EOF
-```
-
-```
-mice  files
-figure group         genotype_name subject_genotype                                                         file              
-10     M1R CRISPR    M1RCRISPR     Tg(Adora2a-cre)KG139Gsat (RRID:MMRRC_031168-UCD)                         video    10     50
-       control       WT            Tg(Adora2a-cre)KG139Gsat (RRID:MMRRC_031168-UCD)                         AIM       1      1
-                                                                                                            video    11     54
-8      CDGI knockout CDGIKO        CDGI knockout                                                            AIM       2     10
-                                   CDGI knockout; Tg(Drd2-EGFP)S118Gsat, hemizygous (RRID:MMRRC_000230-UNC) AIM       2      4
-                                                                                                            video     9     41
-       control       WT            Tg(Drd2-EGFP)S118Gsat, hemizygous (RRID:MMRRC_000230-UNC)                AIM       1      2
-                                                                                                            video    10     48
-mice with more than one label: Empty DataFrame
-Columns: [fig, groups, name_gt, subj_gt, files]
-Index: []
-       fig           groups   name_gt                                                      subj_gt         files
-mouse                                                                                                           
-1945   [8]  [CDGI knockout]  [CDGIKO]                                              [CDGI knockout]       [video]
-2519   [8]  [CDGI knockout]  [CDGIKO]                                              [CDGI knockout]       [video]
-2587   [8]        [control]      [WT]  [Tg(Drd2-EGFP)S118Gsat, hemizygous (RRID:MMRRC_000230-UNC)]       [video]
-2828   [8]  [CDGI knockout]  [CDGIKO]                                              [CDGI knockout]       [video]
-6572   [8]  [CDGI knockout]  [CDGIKO]                         
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; grep -n "^findings:" -A12 attempts/zhai-2025-02.yaml | head -30; grep -n "^verifications:" attempts/zhai-2025-02.yaml; tail -5 attempts/zhai-2025-02.yaml; grep -n "Fig 8A\|Fig 7E" -r $TMPDIR/nb01.ipynb | head -3
-```
-
-```
-Sun Nov 15 05:00:14 UTC 2026
-505:findings:
-506-- kind: data_missing
-507-  statement: 'Two cells with dendritic line scans were imaged at one dendritic site only, at two spots: 2016-05-26 cell
-508-    3 (CDGI knockout, off-state, Distal1 Spot1 and Spot2) and 2016-06-08 cell 1 (on-state, Proximal1 Spot1 and Spot2).
-509-    They have no proximal-distal pair and no index, while the paper counts them in Figures 3F and 7F (10 and 11 cells).'
-510-- kind: data_missing
-511-  statement: The first proximal-distal site pair of dSPN 2019-04-11 cell 1 (on-state with SCH 23390, Figure 1I) is not
-512-    deposited, as the dandiset description says. From its second pair alone the cell's index is 0.584, against the paper's
-513-    0.228, and the Figure 1I comparison of on-state with SCH 23390 gives P = 0.066 with the cell and 0.027 without it
-514-    (paper 0.0133).
-515-- kind: other
-516-  about: data
-517-  statement: The somatic spike counts of 33 of 123 cells, computed from the files with the paper's rule (upward crossings
-561:verifications:
-  - claim: fig10ef-open-field
-    agrees: true
-    outcome: reproduced
-    reason: Agrees with the stated outcome.
-    response: No change.
-[... 2 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-mkdir -p $TMPDIR/nb; cat > $TMPDIR/nb/build.py <<'PYEOF'
-import json, sys
-cells = []
-def md(s): cells.append({"cell_type": "markdown", "metadata": {}, "source": s.strip("\n")})
-def code(s): cells.append({"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [], "source": s.strip("\n")})
-
-md("""
-# Earlier findings checked on dandiset 001538 version draft
-
-This notebook belongs to the reconciliation of attempt zhai-2025-02 with attempt zhai-2025-01
-(docs/protocol.md, "Repeat attempts"). zhai-2025-01 was made on version 0.260527.1302 and
-zhai-2025-02 on the draft. Of the fifteen findings of zhai-2025-01, findings 3, 4, 9, 10, 11, 12,
-14 and 15 are not reported by zhai-2025-02, and each is checked here directly on
-[DANDI:001538](https://dandiarchive.org/dandiset/001538/draft), version draft. Findings 1, 6 and 7
-are reported by zhai-2025-02 in part; the parts it does not report are checked here too. Each
-section opens with the earlier statement. The files are streamed with the entry's helper module,
-`lid.py`, and only the tables, headers and stimulus series the checks need are read. Finding 14 is
-about the paper and is checked on the paper's per-cell tables (doi:10.5281/zenodo.17307059).
-The conclusion for each finding is in the reconciliation block of `attempts/zhai-2025-02.yaml`.
-""")
-
-code(r'''
-import re
-from concurrent.futures import ProcessPoolExecutor
-import warnings
-warnings.filterwarnings("ignore")
-import h5py
-import numpy as np
-import pandas as pd
-from scipy import stats
-import lid
-
-pd.set_option("display.width", 200)
-pd.set_option("display.max_rows", 200)
-pd.set_option("display.max_colwidth", 90)
-info = lid.version_info()
-assets = lid.list_assets()
-print("dandiset", lid.DANDISET, "version", lid.VERSION, "| modified", info["modified"], "| NWB files", len(assets))
-''')
-
-code(r'''
-def _s(x):
-    return x.decode() if isinstance(x, bytes) else str(x)
-
-
-def header(a):
-    """Header fields of one file, and every object that carries a description."""
-    f = lid.open_asset(a.asset_id)
-    get = lambda k: _s(f[k][()]) if k in f else ""
-    names, descs = [], []
-    def visit(n, o):
-        names.append(n)
-        if "description" in o.attrs:
-            descs.append((n, _s(o.attrs["description"])))
-    f.visititems(visit)
-    out = dict(path=a.path, kind=a.kind, name_genotype=a.genotype,
-               related=[_s(x) for x in f["general/related_publications"][:]] if "general/related_publications" in f else [],
-               session_description=get("session_description"), experiment_description=get("general/experiment_description"),
-               subject_genotype=get("general/subject/genotype"), names=names, descs=descs)
-    f.close()
-    return out
-
-
-def patch_tables(a):
-    """The per-sweep tables of one patch-clamp file, its dendritic stimulus series and, for the
-    Sr2+-oEPSC files, the light pulses found in each sweep."""
-    f = lid.open_asset(a.asset_id)
-    out = dict(path=a.path, date=a.date, cell_type=a.cell_type, name_drug=a.drug,
-               description=_s(f["session_description"][()]))
-    irt = f["general/intracellular_ephys/intracellular_recordings"]
-    resp, stim, cell = irt["responses/response"][:], irt["stimuli/stimulus"][:], irt["cell_id"][:]
-    if "processing/icephys/RecordingsIndexTable" in f:
-        t = f["processing/icephys/RecordingsIndexTable"]
-        rit = pd.DataFrame({k: lid._str(t[k][:]) if t[k].dtype.kind == "O" else t[k][:]
-                            for k in ["cell_id", "condition", "dendrite_type", "site", "stimulus_current_pA", "irt_row"]})
-        rit["drug"] = lid._str(irt["drug"][:])[rit.irt_row]
-        lengths = {}
-        for col in ["line_scan_alexa568", "line_scan_fluo4"]:
-            ok = []
-            for start, count, ref in t[col][:]:
-                if start < 0:
-                    ok.append(False)
-                    continue
-                ds = f[ref]
-                lengths.setdefault(ds.name, ds["data"].shape[0])
-                ok.append(start + count <= lengths[ds.name])
-            rit[col + "_ok"] = ok
-        out["rit"] = rit
-        out["dendritic_stimulus"] = [
-            dict(series=n, samples=len(d := f["stimulus/presentation"][n]["data"][:]),
-                 peak=float(np.max(np.abs(d))) if len(d) else np.nan,
-                 unit=_s(f["stimulus/presentation"][n]["data"].attrs.get("unit", "")))
-            for n in f["stimulus/presentation"] if "Dendritic" in n]
-    else:
-        p = f["intervals/optogenetic_pulses_table"]
-        ps, pc = p["start_time"][:], p["cell_id"][:]
-        ts, rows = {}, []
-        for i in range(len(resp)):
-            start, count, ref = resp[i]
-            ds = f[ref]
-            ts.setdefault(ds.name, lid._timestamps(ds))
-            sweep = ts[ds.name][start:start + count]
-            mine = ps[(pc == cell[i]) & (ps >= sweep[0]) & (ps <= sweep[-1])]
-            rows.append(dict(cell=int(cell[i]), pulses=len(mine), pulse_s=float(mine[0] - sweep[0]) if len(mine) else np.nan,
-                             stimulus_rows=int(stim[i][1]) if stim[i][0] >= 0 else 0))
-        out["sr"] = pd.DataFrame(rows)
-        types = set()
-        f.visititems(lambda n, o: types.add(_s(o.attrs.get("neurodata_type", ""))))
-        out["types"] = sorted(types - {""})
-    f.close()
-    return out
-
-
-with ProcessPoolExecutor(16) as ex:
-    heads = pd.DataFrame(list(ex.map(header, [a for _, a in assets.iterrows()])))
-    patch = assets[assets.kind.isin(["icephys", "icephys+ophys"]) & assets.path.str.contains("SPN")]
-    ptabs = list(ex.map(patch_tables, [a for _, a in patch.iterrows()]))
-cc = [p for p in ptabs if "rit" in p]
-srt = [p for p in ptabs if "sr" in p]
-R = pd.concat([p["rit"].assign(path=p["path"], date=p["date"], cell_type=p["cell_type"], name_drug=p["name_drug"]) for p in cc],
-              ignore_index=True)
-tables = lid.paper_tables()
-print("headers read:", len(heads), "| current-clamp files:", len(cc), "| Sr2+-oEPSC files:", len(srt))
-''')
-
-md("""
-## Earlier finding 1 (data_missing), the part not reported again
-
-> The dandiset holds no patch-clamp recordings from unlesioned control or 6-OHDA-lesioned mice,
-> which make up the control and 6-OHDA groups of Figures 1E, 1F, 1I, 3C, 3D and 3F (10, 12, 11 and
-> 9 dSPNs; 21, 11, 14 and 9 iSPNs), nor the oxo-M line scans of Figure 7E or the open-field data of
-> Figure 10. The paper's raw data on Zenodo (doi:10.5281/zenodo.17260198) list folders for all of
-> these.
-
-zhai-2025-02 reports the control and 6-OHDA recordings and the open-field data again (its finding
-11). The oxo-M line scans are checked here: the files by session-name fields and kind, and the
-oxo-M cells by condition.
-""")
-
-code(r'''
-print(assets.groupby(["cell_type", "state", "drug", "kind"]).size().to_string())
-ox = R[R.condition.str.contains("naive")]
-print("\noxo-M files: cells by condition and compartment")
-print(ox.groupby(["condition", "dendrite_type"]).apply(lambda g: g.groupby(["date", "cell_id"]).ngroups).to_string())
-print("\npatch-clamp files of unlesioned or 6-OHDA mice:",
-      int(patch.state.isin(["UnlesionedControl", "LesionedControl"]).sum()),
-      "| files of those states by kind:", assets[assets.state.isin(["UnlesionedControl", "LesionedControl"])].kind.replace("", "spine stacks").value_counts().to_dict())
-''')
-
-md("""
-## Earlier finding 3 (metadata_error)
-
-> Session names state a drug (D1RaSch, D2RaSul) for files that also hold baseline on-state
-> sweeps. 11 cells in such files have a baseline condition; 7 of them were also recorded with the
-> drug and 4 are baseline only (dSPN 20190507 cell 1, iSPN 20190408 cell 1, 20190409 cell 1 and
-> 20190508 cell 2). The condition of each sweep is only in the RecordingsIndexTable column
-> condition_subfolder; grouping by session name puts baseline cells in the drug groups.
-
-The somatic cells of the files whose session name states a drug, with the conditions their
-sweeps carry, and the columns that give each sweep's condition and drug.
-""")
-
-code(r'''
-named = R[(R.dendrite_type == "Soma") & R.name_drug.isin(["D1RaSch", "D2RaSul"])]
-c3 = named.groupby(["name_drug", "cell_type", "date", "cell_id"]).condition.apply(lambda x: sorted(set(x))).reset_index()
-c3["baseline"] = c3.condition.apply(lambda x: any("with" not in y for y in x))
-c3["with_drug"] = c3.condition.apply(lambda x: any("with" in y for y in x))
-print(c3.to_string(index=False))
-print("\ncells with a baseline condition:", int(c3.baseline.sum()), "| also recorded with the drug:",
-      int((c3.baseline & c3.with_drug).sum()), "| baseline only:", int((c3.baseline & ~c3.with_drug).sum()))
-print(c3[c3.baseline & ~c3.with_drug][["cell_type", "date", "cell_id"]].to_string(index=False))
-print("\ncondition and drug columns of the intracellular recordings table, in these files:")
-print(named.groupby(["name_drug", "condition", "drug"]).size().to_string())
-''')
-
-md("""
-## Earlier finding 4 (metadata_error)
-
-> The genotypes of the CDGI behaviour mice contradict each other. Subject genotype is Wild-type
-> CDGI and every session name says WT for all of them; the AIM table's genotype column says CDGI
-> Knockout, Wild Type or unknown, changing between sessions of one animal; the video files of mice
-> 1945, 2519, 2587, 2828 and 6572 say CDGI KO. The paper lists 2587 as wild type and the others as
-> KO.
-
-For every behaviour file (AIM scores and videos): the mouse and group in the session description,
-the genotype in the session name and the subject genotype, per mouse, against the groups of the
-paper's Figure 8 table.
-""")
-
-code(r'''
-beh = heads[heads.path.str.contains("ses-pan") & (heads.kind != "ophys")].copy()
-m = beh.session_description.str.extract(r"of mouse (\d+) \(([^,]+), Figure (\d+)\)")
-beh["mouse"], beh["group"], beh["figure"] = m[0].astype(int), m[1], m[2].astype(int)
-beh["subject_genotype"] = beh.subject_genotype.str.split(";").str[0]
-beh["file"] = np.where(beh.kind == "image", "video", "AIM")
-per = beh.groupby(["figure", "mouse"]).agg(groups=("group", lambda x: sorted(set(x))), name_genotype=("name_genotype", lambda x: sorted(set(x))),
-                                           subject_genotype=("subject_genotype", lambda x: sorted(set(x))), files=("file", lambda x: sorted(set(x)))).reset_index()
-mixed = per[(per.groups.str.len() > 1) | (per.name_genotype.str.len() > 1) | (per.subject_genotype.str.len() > 1)]
-print("behaviour files:", len(beh), "| mice:", len(per), "| mice with more than one label:", len(mixed))
-print(beh.groupby(["figure", "group", "name_genotype", "subject_genotype"]).mouse.nunique().to_string())
-p8 = tables["Fig 8"]["Fig 8B_total AIMs"].set_axis(["mouse", "pgroup", "session", "total"], axis=1)
-p8["mouse"] = p8.mouse.astype(str).str.extract(r"(\d+)")[0].astype(int)
-pg = p8.groupby("mouse").pgroup.apply(lambda x: sorted(set(x))).rename("paper_group")
-cmp8 = per[per.figure == 8].merge(pg, left_on="mouse", right_index=True, how="left")
-print("\nmice 1945, 2519, 2587, 2828 and 6572:")
-print(cmp8[cmp8.mouse.isin([1945, 2519, 2587, 2828, 6572])].to_string(index=False))
-both = cmp8.dropna(subset=["paper_group"])
-agree = both.apply(lambda r: ("knockout" in r.groups[0]) == any("KO" in g for g in r.paper_group), axis=1)
-print("\nFigure 8 mice in the paper's table:", len(both), "| dandiset group agrees with the paper's:", int(agree.sum()))
-''')
-
-md("""
-## Earlier finding 6 (metadata_error), the parts not reported again
-
-> Three dendritic site series hold six trials, two sites under one name, while the cell has no
-> series of the other compartment with that number (iSPN 20160526 cell 3 Distal1, iSPN 20160608
-> cell 1 Proximal1, dSPN 20170204 cell 1 Proximal1); their first and last three trials differ in
-> baseline and area. Split, they give the paper's values for these cells. One series holds a single
-> trial (iSPN 20160524 cell 2 Proximal1), one two and one four.
-
-zhai-2025-02 reports the first two cells (its finding 1). The sites of all four named cells, and
-every site whose trial count is not three.
-""")
-
-code(r'''
-den = R[R.dendrite_type != "Soma"]
-sites = den.groupby(["cell_type", "date", "cell_id", "condition", "dendrite_type", "site"]).size().rename("trials").reset_index()
-for ct, d, c in [("iSPN", "20160526", 3), ("iSPN", "20160608", 1), ("dSPN", "20170204", 1), ("iSPN", "20160524", 2)]:
-    print(sites[(sites.cell_type == ct) & (sites.date == d) & (sites.cell_id == c)].to_string(index=False), "\n")
-print("sites by number of trials:", sites.trials.value_counts().sort_index().to_dict())
-print(sites[sites.trials != 3].to_string(index=False))
-''')
-
-md("""
-## Earlier finding 7 (data_missing), the part not reported again
-
-> Two dendritic cells lack the sites the paper's values need. dSPN on+SCH 20190411 cell 1 has
-> only its second pair of sites, which gives 0.584 against the paper's 0.228; [...] iSPN on+sul
-> 20190508 cell 3 has only a distal site; with the paper's 0.217 the sulpiride test gives the
-> paper's P (0.0545), without it P = 0.0097. [...]
-
-zhai-2025-02 reports the first cell again (its finding 2). The sites of iSPN 20190508 cell 3, and
-its index from the entry's dendritic rule, against the paper's 0.217.
-""")
-
-code(r'''
-print(sites[(sites.cell_type == "iSPN") & (sites.date == "20190508")].to_string(index=False))
-a = patch[(patch.cell_type == "iSPN") & (patch.date == "20190508")].iloc[0]
-_, d7 = lid.load_patch_file(a)
-cells7, pairs7, _ = lid.dendritic_index(d7)
-print(cells7[["date", "cell", "condition", "index"]].round(3).to_string(index=False))
-''')
-
-md("""
-## Earlier finding 9 (metadata_error)
-
-> The stimulus series of every dendritic sweep (CurrentClampSeries_CellN_Dendritic_Stimulus) is all
-> zero, though the three spikes per sweep show the 2 nA injections were delivered; and the index
-> table gives no kymograph slice for 53 of 997 dendritic sweeps.
-
-The peak of each dendritic stimulus series, and whether each dendritic sweep's two line-scan
-(kymograph) references point at data.
-""")
-
-code(r'''
-ds = pd.DataFrame([dict(path=p["path"], **s) for p in cc for s in p["dendritic_stimulus"]])
-print("dendritic stimulus series:", len(ds), "| all zero:", int((ds.peak == 0).sum()),
-      "| peak values:", ds.peak.value_counts().to_dict(), "| units:", ds.unit.value_counts().to_dict())
-ok = den.line_scan_alexa568_ok & den.line_scan_fluo4_ok
-print("dendritic sweeps:", len(den), "| without a valid kymograph slice:", int((~ok).sum()))
-''')
-
-md("""
-## Earlier finding 10 (metadata_error)
-
-> In the Sr2+-oEPSC files the light-pulse OptogeneticSeries is all zero in 69 of 140 sweeps, and
-> the intracellular recordings table references no stimulus (its stimulus rows are empty). The
-> pulse time (0.02 s) is only in the optogenetic epochs table.
-
-For each Sr2+-oEPSC sweep: the light pulses in the file's optogenetic pulses table that fall in
-the sweep, their time from the sweep start, and the length of the stimulus the intracellular
-recordings table references; and the neurodata types in the files.
-""")
-
-code(r'''
-sr = pd.concat([p["sr"].assign(path=p["path"]) for p in srt], ignore_index=True)
-print("files:", len(srt), "| cells:", sr.groupby(["path", "cell"]).ngroups, "| sweeps:", len(sr))
-print("light pulses per sweep:", sr.pulses.value_counts().to_dict(), "| pulse time from sweep start (s):", sr.pulse_s.round(4).value_counts().to_dict())
-print("sweeps whose stimulus reference is empty:", int((sr.stimulus_rows == 0).sum()))
-types = sorted(set(t for p in srt for t in p["types"]))
-print("OptogeneticSeries in any file:", "OptogeneticSeries" in types)
-print("optogenetic and stimulus types:", [t for t in types if "Optogenetic" in t or "Stimulus" in t])
-''')
-
-md("""
-## Earlier finding 11 (metadata_error)
-
-> The GRAB-ACh background reference images are described as taken at zero laser power, but their
-> mean (381 to 525) is above the signal (F0 179 to 355), so they cannot be the PMT background the
-> Methods subtract.
-
-Every object of the GRAB-ACh3.0 files whose name or description mentions a background, the PMT or
-the laser power, and the description of the reference images the files hold.
-""")
-
-code(r'''
-grab = heads[heads.kind == "ophys"]
-pat = re.compile(r"background|laser power|PMT|zero", re.I)
-hits = [(h.path.split("/")[0], n) for _, h in grab.iterrows() for n in h.names if pat.search(n)]
-hits += [(h.path.split("/")[0], n, d[:200]) for _, h in grab.iterrows() for n, d in h.descs if pat.search(d)]
-print("GRAB-ACh3.0 files:", len(grab), "| objects that mention a background, the PMT, the laser power or zero:", len(hits))
-for x in hits:
-    print(x)
-refs = sorted({d for _, h in grab.iterrows() for n, d in h.descs if n.endswith("ImagesPrairieViewReferences")})
-print("\nreference image descriptions:", refs)
-''')
-
-md("""
-## Earlier finding 12 (metadata_error)
-
-> The files cite the bioRxiv preprint (related_publications) and describe the behaviour data with
-> the preprint's figure numbers ("Figure 7J" for the CDGI AIM scores, "Figure 8" for the M1R
-> study), which are Figures 8 and 10 in the published paper the dandiset names.
-
-The related publications of every file, any mention of the preprint, and the figures the
-behaviour files name.
-""")
-
-code(r'''
-print("related_publications over", len(heads), "files:", heads.related.astype(str).value_counts().to_dict())
-pre = re.compile(r"biorxiv|preprint|10\.1101|7J", re.I)
-texts = [(h.path, t) for _, h in heads.iterrows() for t in [h.session_description, h.experiment_description] + [d for _, d in h.descs]]
-print("descriptions that mention the preprint or Figure 7J:", sum(bool(pre.search(t)) for _, t in texts))
-print("behaviour files by figure named and group:", beh.groupby(["figure", "group"]).size().to_dict())
-''')
-
-md("""
-## Earlier finding 14 (paper_inconsistency)
-
-> Recomputed on the paper's own per-cell tables, some reported P values differ; the oxo-M test in
-> CDGI KO gives P = 0.47 where the paper reports 0.910, and the rotation test of Figure 8A gives
-> 0.012 where the text reports 0.0092. Others agree closely (0.009766 against 0.0098 for oxo-M in
-> wild type).
-
-On the paper's tables: the two-sided Wilcoxon tests of Figure 7E, before against after oxo-M,
-paired by experiment number, and the two-sided Mann-Whitney test of Figure 8A, as the claims file
-states them.
-""")
-
-code(r'''
-e7 = tables["Fig 7"]["Fig 7E_oxoM effect on DE"].set_axis(["id", "genotype", "treatment", "v"], axis=1)
-for gt in ["WT", "KO"]:
-    w = e7[e7.genotype == gt].pivot_table(index="id", columns="treatment", values="v")
-    r = stats.wilcoxon(w["before (control)"], w["oxoM"])
-    print(f"Figure 7E {gt}: n={len(w)}, Wilcoxon W={r.statistic:.1f}, P={r.pvalue:.4g}")
-a8 = tables["Fig 8"]["Fig 8A_rotations 5th"].set_axis(["id", "group", "v"], axis=1)
-r = stats.mannwhitneyu(a8[a8.group == "KO"].v, a8[a8.group == "WT"].v, alternative="two-sided")
-print(f"Figure 8A: KO n={int((a8.group == 'KO').sum())}, WT n={int((a8.group == 'WT').sum())}, Mann-Whitney U={r.statistic:.1f}, P={r.pvalue:.4g}")
-''')
-
-md("""
-## Earlier finding 15 (other, about the data)
-
-> 18 somatic cells miss one or more current steps between 20 and 300 pA and 14 repeat a step;
-> spike counts for these cells cannot be complete.
-
-For each somatic cell and condition, the steps from 20 to 300 pA (in steps of 20 pA) that have no
-sweep and the steps recorded more than once, from the RecordingsIndexTable.
-""")
-
-code(r'''
-steps = list(range(20, 301, 20))
-rows = []
-for (path, cell, cond), g in R[R.dendrite_type == "Soma"].groupby(["path", "cell_id", "condition"]):
-    c = g.stimulus_current_pA.round().astype(int)
-    rows.append(dict(file=re.search(r"ses-(.*)\.nwb", path).group(1), cell=cell, condition=cond,
-                     missing=[s for s in steps if s not in set(c)], repeated=sorted(set(c[c.duplicated()]))))
-f15 = pd.DataFrame(rows)
-print("somatic cells:", len(f15), "| missing a step from 20 to 300 pA:", int((f15.missing.str.len() > 0).sum()),
-      "| with a repeated step:", int((f15.repeated.str.len() > 0).sum()),
-      "| both:", int(((f15.missing.str.len() > 0) & (f15.repeated.str.len() > 0)).sum()))
-print(f15[(f15.missing.str.len() > 0) | (f15.repeated.str.len() > 0)].to_string(index=False))
-''')
-
-nb = {"cells": cells, "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
-      "language_info": {"name": "python"}}, "nbformat": 4, "nbformat_minor": 5}
-for i, c in enumerate(nb["cells"]):
-    c["id"] = f"cell-{i:02d}"
-json.dump(nb, open(sys.argv[1], "w"), indent=1)
-PYEOF
-cd  $TMPDIR/venv/bin/python $TMPDIR/nb/build.py entries/zhai-2025/earlier_findings.ipynb && head -c 300 entries/zhai-2025/earlier_findings.ipynb; python -c "import json;nb=json.load(open('entries/zhai-2025/reproduce_zhai_2025.ipynb'));print(nb['metadata'], nb['nbformat_minor'], nb['cells'][0].keys())"
-```
-
-```
-{
- "cells": [
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": "# Earlier findings checked on dandiset 001538 version draft\n\nThis notebook belongs to the reconciliation of attempt zhai-2025-02 with attempt zhai-2025-01\n(docs/protocol.md, \"Repeat attempts\"). zhai-2025-01 was made {'kernelspec': {'display_name': 'Python 3', 'language': 'python', 'name': 'python3'}} 5 dict_keys(['cell_type', 'id', 'metadata', 'source'])
-```
-
-**Agent**
-
-Now a quick test run of the notebook's code cells as one script before the real entry run.
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; python -c "
-import json;nb=json.load(open('earlier_findings.ipynb'))
-open('$TMPDIR/nbtest.py','w').write('\n\n'.join(c['source'] for c in nb['cells'] if c['cell_type']=='code'))
-"; PYTHONPATH=$PWD timeout 3000 $TMPDIR/venv/bin/python $TMPDIR/nbtest.py 2>&1 | tail -150
-```
-
-```
-dandiset 001538 version draft | modified 2026-11-09T19:30:00.396929Z | NWB files 391
-concurrent.futures.process._RemoteTraceback: 
-"""
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/concurrent/futures/process.py", line 255, in _process_worker
-    r = call_item.fn(*call_item.args, **call_item.kwargs)
-  File "/opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/concurrent/futures/process.py", line 204, in _process_chunk
-    return [fn(*args) for args in chunk]
-            ~~^^^^^^^
-  File "/tmp/claude-1001/nbtest.py", line 56, in patch_tables
-    for start, count, ref in t[col][:]:
-                             ~^^^^^
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/h5py/_hl/group.py", line 407, in __getitem__
-    return self._get(name)
-           ~~~~~~~~~^^^^^^
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/h5py/_hl/group.py", line 421, in _get
-    oid = h5o.open(self.id, self._e(name), lapl=lapl)
-  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
-[... 25 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-import os
-p=os.environ["TMPDIR"]+"/nb/build.py"; s=open(p).read()
-old='''        for col in ["line_scan_alexa568", "line_scan_fluo4"]:
-            ok = []
-            for start, count, ref in t[col][:]:'''
-new='''        for col in ["line_scan_alexa568", "line_scan_fluo4"]:
-            ok = []
-            for start, count, ref in (t[col][:] if col in t else [(-1, 0, None)] * len(rit)):'''
-assert old in s; s=s.replace(old,new); open(p,"w").write(s)
-EOF
-$TMPDIR/venv/bin/python $TMPDIR/nb/build.py entries/zhai-2025/earlier_findings.ipynb; cd entries/zhai-2025; python -c "
-import json;nb=json.load(open('earlier_findings.ipynb'))
-open('$TMPDIR/nbtest.py','w').write('\n\n'.join(c['source'] for c in nb['cells'] if c['cell_type']=='code'))
-"; PYTHONPATH=$PWD timeout 3000 $TMPDIR/venv/bin/python $TMPDIR/nbtest.py 2>&1 | tail -170
-```
-
-```
-dandiset 001538 version draft | modified 2026-11-09T19:30:00.396929Z | NWB files 391
-headers read: 391 | current-clamp files: 63 | Sr2+-oEPSC files: 14
-cell_type  state              drug      kind         
-dSPN       LesionedControl    none                         5
-           OffState           none                         8
-                                        icephys            4
-                                        icephys+ophys      7
-           OnState            D1RaSch   icephys+ophys      5
-                              none                         9
-                                        icephys            4
-                                        icephys+ophys      5
-           UnlesionedControl  none                         6
-iSPN       LesionedControl    none                        10
-           M1RAntag           none      icephys            2
-                                        icephys+ophys      4
-           M1RCRISPR          none      icephys            3
-           Naive              M1RaOxoM  icephys+ophys      5
-           OffState           M1RaThp                      5
-                              none                        24
-                                        icephys            5
-[... 144 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  date -u; grep -n -i "earlier" entries/kim-2022/README.md entries/park-2019/README.md | head; cat entries/zhai-2025/README.md
-```
-
-```
-Sun Nov 15 05:08:00 UTC 2026
-# Zhai et al. (2025) from dandiset 001538
-
-Tests the findings of [Zhai et al. (2025)](https://doi.org/10.1126/sciadv.adv8224) that can be tested
-on the draft of [DANDI:001538](https://dandiarchive.org/dandiset/001538/draft), as modified on
-2026-11-09. The draft holds the whole-cell somatic and dendritic excitability recordings of dSPNs and
-iSPNs in the on- and off-states of levodopa-induced dyskinesia (with SCH 23390, sulpiride, M1R
-antagonists, CDGI knockout and M1R deletion), the Sr2+-oEPSC recordings, the GRAB-ACh3.0 imaging,
-the AIM score sheets and videos, two-photon spine images and the confocal spine images of Figure 4I
-to 4K, but no spine counts. Control and 6-OHDA patch-clamp recordings, rotation counts and
-open-field data are not in it; the claims on those are tested on the paper's tables at Zenodo.
-
-| Claim | Outcome |
-|---|---|
-| Link: somatic recordings match the paper's per-cell spike counts | Partially reproduced |
-| Link: dendritic index matches the paper's per-cell values | Reproduced |
-| Link: Sr2+-oEPSC cells and events match the paper's | Partially reproduced |
-| Link: GRAB-ACh3.0 regions match the paper's areas | Not reproduced |
-| Link: AIM mice and scores match the paper's tables | Not reproduced |
-| dSPN rheobase lower and F-I higher on-state; SCH 23390 does not reverse it | Reproduced (3 claims) |
-[... 23 more lines not kept]
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/zhai-2025/entry.yaml",
- "old_string": "  runtime_minutes: 13\nhelpers:",
- "new_string": "  runtime_minutes: 13\n- path: earlier_findings.ipynb\n  title: Findings of attempt zhai-2025-01 checked on dandiset 001538 version draft\n  runtime_minutes: 5\nhelpers:"
-}
-```
-
-```
-The file entries/zhai-2025/entry.yaml has been updated successfully.
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/zhai-2025/README.md",
- "old_string": "- `lid.py`: loading",
- "new_string": "- `earlier_findings.ipynb`: the findings of the earlier attempt, zhai-2025-01, checked on the draft\n  for the reconciliation in the attempt record.\n- `lid.py`: loading"
-}
-```
-
-```
-The file entries/zhai-2025/README.md has been updated successfully.
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py lock entries/zhai-2025 2>&1 | tail -5; git diff --stat entries/zhai-2025; timeout 3600 python tools/entry.py all entries/zhai-2025 2>&1 | tail -30; date -u
-```
-
-```
-wrote zhai-2025/requirements.lock.txt (Python 3.13, with hashes)
- entries/zhai-2025/README.md  | 2 ++
- entries/zhai-2025/entry.yaml | 3 +++
- 2 files changed, 5 insertions(+)
-error: entries/zhai-2025/earlier_findings.ipynb: no code cell tagged `sanity` (the data check; see docs/protocol.md)
-1 error(s)
-Sun Nov 15 05:08:13 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json
-for e in ['kim-2022','park-2019','gao-2018']:
-    nb=json.load(open(f'entries/{e}/earlier_findings.ipynb'))
-    for i,c in enumerate(nb['cells']):
-        t=c['metadata'].get('tags')
-        if t: print(e,i,t, ''.join(c['source'])[:150].replace(chr(10),' | '))
-"; grep -n "sanity\|tags" tools/entry.py | head -20
-```
-
-```
-kim-2022 4 ['sanity'] fig2 = meta[meta.subject_id.str.startswith("Fig2")] | print("acquisition objects per file:", meta.groupby("path").size().unique().tolist()) | print("types
-kim-2022 7 ['sanity'] fig2 = fig2.assign(amp=[int(re.match(r"Fig2_(\d+)_(\d+)", s).group(1)) for s in fig2.subject_id], |                    dish_no=[int(re.match(r"Fig2_(\d+
-kim-2022 8 ['sanity'] use = [a for a in assets if re.search(r"sub-Fig2-(0|100)-", a["path"]) and "sub-Fig2-0-03" not in a["path"]] | with ProcessPoolExecutor(3) as ex: |     di
-park-2019 3 ['sanity'] sheets = pd.read_excel(io.BytesIO(z.read("data/TSD/FileNameList.xlsx")), sheet_name=None, header=None, |                        engine="openpyxl") | print
-park-2019 6 ['sanity'] def radius(x, y): |     x = np.asarray(x, float) |     y = np.asarray(y, float) |     r = np.hypot(x - 127.5, y - 127.5) |     r[(x == 0) & (y == 0)] = np.nan
-park-2019 9 ['sanity'] url = ("https://raw.githubusercontent.com/FentonLab/PyCode_MEC_HDC-NeuronMS_Park/545a738a/" |        "HD_Max_likelihood.py") | src = urllib.request.urlope
-gao-2018 3 ['sanity'] D = pd.DataFrame([dict(subject=s["subject"], group=s["group"], site=",".join(s["ogen"]), trials=len(s["trials"]), |                        units=len(s["
-21:- each notebook has a cell tagged `sanity` that prints what was loaded;
-236:        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
-237:            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
-388:                if not any(tag in c.metadata.get("tags", []) for c in nb.cells):
-462:        for tag in cell.get("metadata", {}).get("tags", []):
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 375,395p tools/entry.py; sed -n 455,470p tools/entry.py
-```
-
-```
-report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is not in the claims file")
-            notebook = outcome.get("notebook")
-            # A claim that was tested names the notebook that tested it. One whose outcome changed from blocked
-            # in a late revision can be left without (andrews-2024, 2026-11-13): the site then lists it with the
-            # claims no notebook tests.
-            if outcome.get("outcome") != "blocked" and not notebook:
-                report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r} "
-                             "and names no notebook; give the notebook that tests it (`notebook`) and its cell (`output`)")
-            if notebook and notebook not in listed:
-                report.error(path.relative_to(ROOT), f"notebook {notebook!r} is not in the entry")
-            tag = outcome.get("output")
-            if notebook in present and tag:
-                nb = nbformat.read(entry_dir / notebook, as_version=4)
-                if not any(tag in c.metadata.get("tags", []) for c in nb.cells):
-                    report.error(path.relative_to(ROOT), f"no cell tagged {tag!r} in {notebook}")
-    return report
-
-
-def _local_data(code: str, start: int) -> bool:
-    """Whether a local path in the code is inside the dataset directory `encore check` gave (ENCORE_LOCAL_DATA):
-[... 15 more lines not kept]
-```
-
-**Agent**
-
-The entry check requires a code cell tagged `sanity`. I'll tag the check cells, as the other `earlier_findings` notebooks do, and rerun.
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-import os
-p=os.environ["TMPDIR"]+"/nb/build.py"; s=open(p).read()
-s=s.replace('''for i, c in enumerate(nb["cells"]):
-    c["id"] = f"cell-{i:02d}"''','''n_code = 0
-for i, c in enumerate(nb["cells"]):
-    c["id"] = f"cell-{i:02d}"
-    if c["cell_type"] == "code":
-        n_code += 1
-        if n_code > 2:
-            c["metadata"]["tags"] = ["sanity"]''')
-open(p,"w").write(s)
-EOF
-$TMPDIR/venv/bin/python $TMPDIR/nb/build.py entries/zhai-2025/earlier_findings.ipynb; timeout 3600 python tools/entry.py all entries/zhai-2025 2>&1 | tail -30; date -u
-```
-
-```
-Installed kernelspec registry-zhai-2025 in executed/zhai-2025/.venv/share/jupyter/kernels/registry-zhai-2025
-0 error(s)
-pass  reproduce_zhai_2025.ipynb  (619 s)
-pass  earlier_findings.ipynb  (188 s)
-Sun Nov 15 05:22:00 UTC 2026
-```
-
-**Agent**
-
-Both notebooks pass: `reproduce_zhai_2025.ipynb` in 619 s and `earlier_findings.ipynb` in 188 s. I'll confirm the executed copy prints the same numbers.
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json;nb=json.load(open('executed/zhai-2025/earlier_findings.ipynb'))
-for c in nb['cells']:
-    if c['cell_type']=='code':
-        for o in c.get('outputs',[]):
-            t=o.get('text') or ''
-            t=''.join(t) if isinstance(t,list) else t
-            for l in t.splitlines():
-                if any(k in l for k in ['cells with a baseline','mice with more than','agrees with','sites by number','all zero','kymograph','light pulses','stimulus reference','OptogeneticSeries','objects that mention','related_pub','preprint','Figure 7E','Figure 8A','somatic cells:','patch-clamp files of','0.217']): print(l[:200])
-"
-```
-
-```
-patch-clamp files of unlesioned or 6-OHDA mice: 0 | files of those states by kind: {'spine stacks': 35, 'ophys': 6}
-cells with a baseline condition: 11 | also recorded with the drug: 7 | baseline only: 4
-behaviour files: 210 | mice: 42 | mice with more than one label: 0
-Figure 8 mice in the paper's table: 18 | dandiset group agrees with the paper's: 18
-sites by number of trials: {1: 1, 2: 1, 3: 421, 4: 1, 6: 1}
-20190508     3 LID on-state with sulpiride  0.217
-dendritic stimulus series: 102 | all zero: 0 | peak values: {2000.0: 102} | units: {'amperes': 102}
-dendritic sweeps: 1276 | without a valid kymograph slice: 0
-light pulses per sweep: {1: 333} | pulse time from sweep start (s): {0.02: 333}
-sweeps whose stimulus reference is empty: 0
-OptogeneticSeries in any file: False
-GRAB-ACh3.0 files: 11 | objects that mention a background, the PMT, the laser power or zero: 0
-related_publications over 391 files: {"['https://doi.org/10.1126/sciadv.adv8224']": 391}
-descriptions that mention the preprint or Figure 7J: 0
-Figure 7E WT: n=10, Wilcoxon W=3.0, P=0.009766
-Figure 7E KO: n=12, Wilcoxon W=29.0, P=0.4697
-Figure 8A: KO n=10, WT n=12, Mann-Whitney U=98.5, P=0.01198
-somatic cells: 123 | missing a step from 20 to 300 pA: 18 | with a repeated step: 14 | both: 14
-```
-
-**Agent**
-
-The dendritic stimulus prints a peak of 2000 with unit "amperes". I'll check its conversion factor before calling finding 9 fixed.
-
-**Agent calls Bash**
-
-```bash
-cd entries/zhai-2025; PYTHONPATH=$PWD $TMPDIR/venv/bin/python -c "
-import lid
-a=lid.list_assets(); r=a[a.kind=='icephys+ophys'].iloc[0]
-f=lid.open_asset(r.asset_id)
-for n in f['stimulus/presentation']:
-    d=f['stimulus/presentation'][n]['data']; print(n, dict(d.attrs))
-for n in f['acquisition']:
-    if 'CurrentClamp' in n: print(n, dict(f['acquisition'][n]['data'].attrs))
-"
-```
-
-```
-CurrentClampStimulusSeriesCell1Dendritic {'conversion': np.float64(1e-12), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-CurrentClampStimulusSeriesCell1Somatic {'conversion': np.float64(1e-12), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-CurrentClampStimulusSeriesCell2Dendritic {'conversion': np.float64(1e-12), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-CurrentClampStimulusSeriesCell2Somatic {'conversion': np.float64(1e-12), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-CurrentClampStimulusSeriesCell4Dendritic {'conversion': np.float64(1e-12), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-CurrentClampStimulusSeriesCell4Somatic {'conversion': np.float64(1e-12), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'amperes'}
-CurrentClampSeriesCell1Dendritic {'conversion': np.float64(0.01), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-CurrentClampSeriesCell1Somatic {'conversion': np.float64(0.01), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-CurrentClampSeriesCell2Dendritic {'conversion': np.float64(0.01), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-CurrentClampSeriesCell2Somatic {'conversion': np.float64(0.01), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-CurrentClampSeriesCell4Dendritic {'conversion': np.float64(0.01), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-CurrentClampSeriesCell4Somatic {'conversion': np.float64(0.01), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'volts'}
-```
-
-**Agent**
-
-The conversion is 1e-12, so the peak is 2 nA, which matches the paper's injection. I'll print the converted value in the notebook so the evidence shows it.
-
-**Agent calls Bash**
-
-```bash
-cd  python - <<'EOF'
-import os
-p=os.environ["TMPDIR"]+"/nb/build.py"; s=open(p).read()
-old='''                 unit=_s(f["stimulus/presentation"][n]["data"].attrs.get("unit", "")))'''
-new='''                 unit=_s(f["stimulus/presentation"][n]["data"].attrs.get("unit", "")),
-                 conversion=float(f["stimulus/presentation"][n]["data"].attrs.get("conversion", 1.0)))'''
-assert old in s; s=s.replace(old,new)
-old2='''      "| peak values:", ds.peak.value_counts().to_dict(), "| units:", ds.unit.value_counts().to_dict())'''
-new2='''      "| peak values:", ds.peak.value_counts().to_dict(), "| units:", ds.unit.value_counts().to_dict(),
-      "| conversion:", ds.conversion.value_counts().to_dict(), "| peak (nA):", (ds.peak * ds.conversion * 1e9).round(3).value_counts().to_dict())'''
-assert old2 in s; s=s.replace(old2,new2)
-open(p,"w").write(s)
-EOF
-$TMPDIR/venv/bin/python $TMPDIR/nb/build.py entries/zhai-2025/earlier_findings.ipynb; timeout 3600 python tools/entry.py all entries/zhai-2025 2>&1 | tail -4; python -c "
-import json;nb=json.load(open('executed/zhai-2025/earlier_findings.ipynb'))
-for c in nb['cells']:
-    for o in c.get('outputs',[]):
-        t=o.get('text') or ''; t=''.join(t) if isinstance(t,list) else t
-        for l in t.splitlines():
-            if 'dendritic stimulus' in l: print(l)
-"; date -u
-```
-
-```
-Installed kernelspec registry-zhai-2025 in executed/zhai-2025/.venv/share/jupyter/kernels/registry-zhai-2025
-0 error(s)
-pass  reproduce_zhai_2025.ipynb  (611 s)
-pass  earlier_findings.ipynb  (187 s)
-dendritic stimulus series: 102 | all zero: 0 | peak values: {2000.0: 102} | units: {'amperes': 102} | conversion: {1e-12: 102} | peak (nA): {2.0: 102}
-Sun Nov 15 05:35:50 UTC 2026
-```
-
-**Agent**
-
-Both notebooks pass again, and the dendritic stimulus peak is 2.0 nA in all 102 series. Next, the ten claims whose outcome differs between the two attempts.
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import yaml
-d={a:{o['claim']:o for o in yaml.safe_load(open(f'attempts/zhai-2025-{a}.yaml'))['outcomes']} for a in ['01','02']}
-for c in ['fig1i-dspn-dendritic-sch-lower','fig2h-dspn-sr-amplitude-on-larger','fig2i-dspn-sr-frequency-unchanged','fig3f-ispn-dendritic-sul-no-change','fig4g-ispn-sr-amplitude-on-smaller','fig4h-ispn-sr-frequency-unchanged','fig5f-ach-6ohda-elevated','fig5f-ach-d2-control','fig5f-ach-da-suppresses','fig10b-m1r-aims','fig8bc-cdgi-aims']:
-    for a in ['01','02']:
-        o=d[a][c]; print('==',a,c,o['outcome'],o.get('blocked_by',''),o.get('assumed',''))
-        print('  N:',o.get('notes','')[:900]); print('  D:',[x[:300] for x in o.get('deviations',[])])
-"
-```
-
-```
-== 01 fig1i-dspn-dendritic-sch-lower not_reproduced  
-  N: The criterion (P < 0.05 with the SCH median lower) is not met, though the difference has the stated direction. On-state with SCH 0.419 (9 cells) against on-state 0.476 (10 cells), P = 0.0662 (exact 0.0653), effect r = -0.51; with the stricter basal-ratio rule P = 0.524. The difference from the paper comes from one cell, SCH 20190411 cell 1, whose index is 0.584 here and 0.228 in the paper's table; the dandiset holds only its second pair of sites. Without that cell P = 0.0266; with the paper's value for it P = 0.016 (exact 0.0133, the paper's P). The other eight SCH cells differ from the paper's values by 2.4% to 10.9%. That the missing sites explain the difference is an inference from the recovered P, as the paper does not list each cell's sites.
-  D: ["Matching the SCH cells to the paper's rows by order is an assumption (link-dendritic-cells)."]
-== 02 fig1i-dspn-dendritic-sch-lower reproduced  True
-  N: Without 2019-04-11 cell 1, whose first site pair the dandiset does not hold (its description, item 3), the SCH 23390 median is 0.384 (8 cells) against 0.476 on-state (10 cells), P = 0.027, and 0.034 pairing every proximal with every distal site, the SCH median lower. With that cell, P = 0.066 (median 0.419, 9 cells) and 0.079. From its second pair alone the cell's index is 0.584, against the paper's 0.228; of the other eight SCH cells, seven are within 10% of the paper's rows and 2019-05-03 cell 3 differs by 10.9% (0.289 against 0.261). On the paper's own table the exact test gives P = 0.0133, the paper's value, and 0.027 without that row. No cell has an index in both conditions; the on-state cells are from 2017 and the SCH cells from 2019.
-  D: ["Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version of the dandiset does not have.", 'Assumption: 2019-04-11 cell 1 is left out of the SCH 23390 group. The dandiset holds only the second of its two pr
-[... 60 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  c=72c9fcd4cb0dd5935a0f92825fb534e8f15b401b; git diff --stat $c HEAD -- claims/zhai-2025.yaml; git diff $c HEAD -- claims/zhai-2025.yaml | head -80; grep -n "^#" docs/pilot-notes.md | head -60
-```
-
-```
-claims/zhai-2025.yaml | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-diff --git a/claims/zhai-2025.yaml b/claims/zhai-2025.yaml
-index 7d6eab0f346..ee0e6802482 100644
---- a/claims/zhai-2025.yaml
-+++ b/claims/zhai-2025.yaml
-@@ -417,9 +417,9 @@ claims:
-     p: 0.0001
-     p_relation: "<"
-     n: 13 unlesioned and 11 off-state ROIs
--  criterion: Single-pulse normalised area without drug, one region per mouse; two-sided
--    Mann-Whitney test, unlesioned against off-state. Reproduced when P < 0.05 with the off-state
--    higher.
-+  criterion: Single-pulse normalised area without drug, one value per region (ROI), as the
-+    paper's n counts ROIs; two-sided Mann-Whitney test, unlesioned against off-state. Reproduced
-+    when P < 0.05 with the off-state higher.
- - id: fig5f-ach-off-like-6ohda
-   statement: Evoked ACh release in the off-state is similar to that after a 6-OHDA lesion.
-   source: Figure 5F; Results, ACh Release was elevated in PD and LID off-state and inhibited by D2R
-@@ -431,7 +431,7 @@ claims:
-[... 21 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 218,600p docs/pilot-notes.md
-```
-
-```
-## Protocol pilot-8 (2026-10-19): the paper's own words
-
-A reviewer reading claims to check them found the statements hard to hold
-against the paper: a statement is the author's paraphrase, and `source`
-often named only a section ("Results, active/passive section"), so checking
-a claim meant searching the paper for it. pilot-8 adds `quote`, the
-sentence at `source` that states the finding, copied word for word, and asks
-that `source` name a figure panel or a section and paragraph. The quote is
-written only when the full text was read. The dashboard shows it, with its
-source, at the top of each claim's explanation.
-
-pilot-8 also adds `statistics`, the tests and intervals the paper reports
-for each finding: the test, its statistic, the p-value as a number with
-its relation when it is a bound, any correction, a confidence interval and
-the sample. Only tests whose result is the finding are recorded; the
-threshold used to count significant units or pairs is left out. The
-pipeline finds claims by their p-values, and until now the p-value lived
-only in the statement's wording, when at all, so it could not be listed or
-compared. Stored as a number it also no longer has to be quoted: a p-value
-written as a power of ten does not survive copying from the paper's text.
-[... 186 more lines not kept]
-```
-
-**Agent**
-
-No pilot-notes section exists for pilot-11 or pilot-15. I'll check where the shared claims file came from, so the protocol note can say what applied to this pair.
-
-**Agent calls Bash**
-
-```bash
-cd  head -40 claims/zhai-2025.yaml; grep -c "quote:" claims/zhai-2025.yaml; grep -n "check\|reader\|written" claims/zhai-2025.yaml | head; git log --oneline -6 -- claims/zhai-2025.yaml; ls questions/ | grep zhai; date -u
-```
-
-```
 # Claims for Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel & Surmeier (2025) on dandiset 001538.
 # Source: the full text of the version of record in PubMed Central (PMC12674127, CC BY), read from
 # its Results, figure legends and Materials and Methods.
@@ -2419,147 +242,1000 @@ cd  head -40 claims/zhai-2025.yaml; grep -c "quote:" claims/zhai-2025.yaml; grep
 # for paired data at P < 0.05, unless stated otherwise; the criteria use these. Where the dandiset
 # holds so few units that the paper's test cannot reach P < 0.05 whatever the data (the smallest
 # attainable two-sided P is 0.057 for 3 against 4, 0.10 for 3 against 3, 0.25 for 3 pairs and
-# 0.0625 for 5 pairs), the claim is blocked with `other`, and the numbers are shown under the link
-# claim for that data. Groups are formed from the file's condition_subfolder column, not from the
-# session name, because files named for a drug also hold baseline cells.
-#
-[... 27 more lines not kept]
+[... 10 more lines not kept]
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 280,330p transcripts/zhai-2025/author.md | cut -c1-3000
+```
+
+````
+cd $TMPDIR; curl -s https://api.dandiarchive.org/api/dandisets/001538/versions/ | python -m json.tool | head -60; curl -s https://api.dandiarchive.org/api/dandisets/001538/versions/0.261124.1858/info/ | python -c "import json,sys;d=json.load(sys.stdin);m=d['metadata'];print(m['name']);print(m.get('description'));print(d['asset_count'],d['size']);print(json.dumps(m.get('relatedResource'),indent=0)[:3000])"
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python - <<'E'
+import requests, json, collections
+url="https://api.dandiarchive.org/api/dandisets/001538/versions/0.261124.1858/assets/?page_size=1000"
+out=[]
+while url:
+    r=requests.get(url).json(); out+=r['results']; url=r['next']
+json.dump(out,open('assets.json','w'))
+print(len(out))
+c=collections.Counter(); s=collections.Counter()
+for a in out:
+    p=a['path']; parts=p.split('/')
+    sub=parts[0]; name=parts[-1]
+[... 31 more lines not kept]
+````
+
+**Agent calls Bash**
+
+```bash
+cd entries/zhai-2025; cat entry.yaml; cat requirements.in; wc -l zhai.py; grep -n "^def \|^[A-Z_]* =" zhai.py | head -80; cat ../../earlier-entry/entry.yaml
+```
+
+```
+schema_version: 1
+name: zhai-2025
+type: reproduction
+title: Spiny projection neurons in levodopa-induced dyskinesia (Zhai et al. 2025)
+description: Tests the findings of Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier
+  (2025) on dandiset 001538, which holds the patch-clamp, dendritic line-scan and Sr2+-oEPSC
+  recordings of the off-state, on-state and drug groups, the GRAB-ACh3.0 movies, the raw spine image
+  stacks and the AIM score sheets. It compares somatic and dendritic excitability, synaptic
+  strength and acetylcholine release between LID states and treatments, and AIM severity between
+  genotypes. Claims on the control and 6-OHDA recordings, rotations and open field are tested on
+  the paper's own tables from Zenodo.
+license: Apache-2.0
+python: "3.13"
+notebooks:
+- path: reproduce_zhai_2025.ipynb
+  title: Reproducing Zhai et al. (2025) from dandiset 001538
+  runtime_minutes: 10
+helpers:
+- zhai.py
+related:
+[... 70 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+for f in ['attempts/zhai-2025-02.yaml','attempts/zhai-2025-03.yaml']:
+    d=yaml.safe_load(open(f))
+    for o in d['outcomes']:
+        if o['claim'] in ('fig1i-dspn-dendritic-sch-lower','fig8bc-cdgi-aims','link-aim-mice','link-dendritic-cells'):
+            print('=====',f); print(yaml.safe_dump(o,width=150,sort_keys=False))
+EOF
+ls claims; python - <<'EOF'
+import yaml,glob
+f=glob.glob('claims/zhai-2025*')[0]; print(f)
+d=yaml.safe_load(open(f))
+cl=d['claims'] if isinstance(d,dict) else d
+for c in cl:
+    if c['id'] in ('fig1i-dspn-dendritic-sch-lower','fig8bc-cdgi-aims','link-aim-mice'):
+        print(yaml.safe_dump(c,width=150,sort_keys=False))
+EOF
+```
+
+```
+===== attempts/zhai-2025-02.yaml
+claim: link-dendritic-cells
+outcome: reproduced
+notes: The count of cells with an index equals the paper's n in 8 of 10 groups; iSPN on-state (9 against 10) and CDGI KO off-state (10 against 11) each
+  lack a cell imaged at one dendritic site only, at two spots. Over 90 matched cells the index differs from the paper's by a median of 2.8% of its value;
+  83.7% are within 10%. The Figure 6D identifiers line up with the files' cell numbers (letter c is cell 3), with median differences of 3.5% and 6.4%.
+notebook: reproduce_zhai_2025.ipynb
+output: claim:link-dendritic-cells
+deviations:
+- Groups come from the files' condition column; the claims file names a condition_subfolder column, which this version of the dandiset does not have.
+- The claims file's 'letter a, b, c for the first, second and third cell of the day' is read as cell number 1, 2, 3; the 6D identifiers include c for days
+  with cells 1 and 3 only.
+- Rows outside Figure 6D are aligned with every cell that has line scans, in date and cell order, so that a cell without a pair keeps its place.
+
+===== attempts/zhai-2025-02.yaml
+claim: link-aim-mice
+outcome: not_reproduced
+notes: 'Figure 8: 18 of the 21 dandiset mice are in the paper''s table (4123, 4124 and 5871 are not; 2346, 2347, 7741, 7742 and 7744 of the paper are missing),
+  and their session totals equal the paper''s in 6% (control) and 16% (CDGI KO) of sessions, as the dandiset description says. Figure 10: all 21 mice match
+  with their groups and 98% of sessions are equal; mouse 4790 session 3 (44 against 43) and mouse 5845 session 4 (39.5 against 36.5) differ. Genotype labels
+[... 494 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "^#" docs/pilot-notes.md | tail -30; git log --oneline -5 -- claims/zhai-2025.yaml; c=$(git log -1 --format=%H -- attempts/zhai-2025-02.yaml); echo $c; git diff --stat $c HEAD -- claims/zhai-2025.yaml
+```
+
+```
+1:# Pilot notes
+16:## Protocol pilot-3 (2026-10-13)
+59:## Protocol pilot-4 (2026-10-14)
+88:## Protocol pilot-5 (2026-10-14)
+113:## Protocol pilot-6 (2026-10-14), at the end of the pilot
+138:## After the pilot: the first batch (2026-10-14)
+156:## Protocol pilot-7 (2026-10-15): data in other archives
+218:## Protocol pilot-8 (2026-10-19): the paper's own words
+281:## Protocol pilot-9 (2026-10-20): the full text or nothing
+320:## Protocol pilot-10 (2026-10-20): the reader and the author
+381:## Protocol pilot-12 (2026-10-27): blind repeat attempts
+403:## Protocol pilot-13 (2026-10-31): a notebook may take an hour
+414:## Protocol pilot-14 (2026-11-09): papers first, and every dataset a paper rests on
+9c4e13d Agent run on zhai-2025: author-revise-2 (success)
+9c4e13dc70d5eebbdf53577695ed6864fa581345
+```
+
+**Agent calls Bash**
+
+```bash
+cd  git log --oneline | head; wc -l docs/pilot-notes.md; sed -n 381,500p docs/pilot-notes.md; grep -rn "pilot-1[5-9]" docs/ | head -30
+```
+
+```
+9c4e13d Agent run on zhai-2025: author-revise-2 (success)
+423 docs/pilot-notes.md
+## Protocol pilot-12 (2026-10-27): blind repeat attempts
+
+A repeat attempt used to start from the attempt before it: its author read the
+earlier record, edited the earlier entry in place, and said for each earlier
+finding whether it was fixed, with the earlier outcome next to each new one.
+That anchored it. An error in the earlier attempt was re-checked, not
+questioned; a problem the earlier attempt missed was less likely to be looked
+for; and two attempts on the same version could not be counted as two
+readings, which the registry's paper needs to measure how far results repeat
+(the attempts on 001754 are the example: attempt 03 marks each of its findings
+"still present" or "new").
+
+Now the author's runs are blind to earlier attempts (`tools/blind.sh` takes
+them, and the history, out of the checkout), and a separate run, `reconcile`,
+compares the verified attempt with the one before it, in a structured
+`reconciliation` block: each earlier finding fixed, partly fixed, still present
+or not checked, with a pointer to the new finding; findings the blind attempt
+missed but the comparison found are marked `found: on_prompt`; outcomes that
+[... 33 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat docs/pilot-notes/zhai-2025-02.md; grep -n -i "depend\|link fail\|link claim" docs/protocol.md | head -20
+```
+
+```
+# zhai-2025, Zhai et al. 2025, again on the draft (2026-11-15)
+
+The second attempt, made blind to the first (zhai-2025-01) under pilot-15,
+on the draft modified 2026-11-09, with the claims file the first attempt's
+author wrote after a data check. Twenty-five claims reproduced on the
+dandiset, none partially, none not reproduced and seven blocked, the six
+spine claims as `methods_underspecified` and `fig8bc-cdgi-aims` for missing
+data; five of the 25 rest on an assumption. Counted apart, the eight claims
+tested on the paper's per-cell tables on Zenodo (`data: elsewhere`)
+reproduced, and of the five link claims one reproduced, two partially and two
+not. Both verification rounds agreed with all 45 outcomes as they stood, and
+nothing was proposed after the second, so there was no third round. The
+paper reports, in a mouse model of levodopa-induced dyskinesia (LID), that
+dSPNs are more excitable in the on-state than in the off-state and iSPNs
+less, at the soma and in dendrites, that evoked ACh release is elevated in
+the off-state and suppressed by dopamine, that M1 receptors and CDGI underlie
+the off-state rise in iSPN dendritic excitability, and that deleting M1
+receptors in iSPNs attenuates AIMs. The somatic, dendritic, Sr2+-oEPSC and
+GRAB-ACh3.0 claims and the Figure 10 AIMs were tested on the dandiset; the
+spine densities could not be, as the counts used NeuronStudio and Imaris with
+[... 82 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 245,330p docs/protocol.md
+```
+
+```
+- Each claim says what its test uses: `data: dataset` (the default),
+     `data: with_labels`, `data: with_inputs` or `data: elsewhere`. The
+     `with_inputs` and `elsewhere` claims are counted apart, each group on
+     its own; the others count towards what is said about the dataset.
+   - `with_labels` is for outside sources that only name or map codes the
+     dataset already holds, such as stimulus names for its stimulus codes.
+     They bring in no measurements. A link claim must confirm the names, and
+     the missing names are recorded as a finding (`metadata_insufficient`).
+   - When outside data has to be matched to the dataset's cells, sessions
+     or subjects, a claim of its own (`kind: link`) tests the link. Link
+     claims are the registry's checks, not findings of the paper, so the
+     author adds them to the claims file; they are the only claims the
+     author writes. A link claim says how
+     records are matched (an identifier, or, where there is none, summary
+     values the paper or its code published, such as per-condition medians),
+     what fraction match, and whether the matched records agree on what both
+     describe, such as counts, layers, or the paper's own per-cell tables. A
+     dataset that cannot be linked to the data it was published with is a
+     finding about the dataset. Every claim that needs the match lists the
+     link claim in `depends_on`, so it is blocked when the link fails. When
+[... 66 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/zhai-2025; sed -n 1,200p zhai.py
+```
+
+```
+"""Loading and measures for dandiset 001538 (Zhai et al. 2025, Science Advances).
+
+Every file is streamed from the DANDI Archive with remfile and h5py; nothing is written to disk.
+The paper's own tables (Zenodo record 17307059) and analysis notebooks (Zenodo records
+14145776, 14163502 and 14163731) are read into memory from Zenodo.
+
+Where each parameter comes from:
+
+- Spike counts and rheobase: the paper's somatic script ("Input_output analysis ver2024.11",
+  Zenodo 14145776) counts upward crossings of 0 mV over the whole sweep (count_events with
+  threshold 0) and takes as rheobase the first positive step with a spike (rheobaseCal). The
+  claims file fixes the same rule. When a cell holds a step more than once, the first sweep of
+  that step is used: an assumption (the script numbers the sweeps in order and has no rule for
+  a repeated step); the notebook shows how many cells it touches.
+- Dendritic index: the paper's dendritic script ("PVAnalysis ver 2024.11", Zenodo 14163502):
+  backgrounds of 55 (red) and 161 (green) subtracted, a 6-sample running mean, the three trials
+  of a site averaged, R0 and G0 the means from 0.5 to 0.95 s, the area of (G - G0)/R0 from
+  0.95 to 1.5 s, the index the distal area over the proximal area, and the basal ratio
+  (G0/R0 distal over G0/R0 proximal). The claims file keeps pairs with a basal ratio between
+  0.5 and 2, pairs proximal and distal sites by their number, and averages pairs within a cell.
+[... 180 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/zhai-2025; sed -n 200,470p zhai.py
+```
+
+```
+st, n, ser = r[col]
+        if st < 0:
+            continue
+        g = h[ser]
+        x = g["data"][st:st + n].astype(float).ravel()
+        if "timestamps" in g:
+            ts = g["timestamps"][st:st + n]
+            dt = float(np.median(np.diff(ts)))
+        else:
+            dt = 1.0 / float(g["starting_time"].attrs["rate"])
+        traces.append(x)
+        dts.append(dt)
+    if not traces:
+        return None, None, 0
+    n = min(len(x) for x in traces)
+    sm = [pd.Series(x[:n] - bg).rolling(6).mean().to_numpy() for x in traces]
+    return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+
+
+def _areas(red, green, dt):
+[... 251 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+d=yaml.safe_load(open('attempts/zhai-2025-03.yaml'))
+for o in d['outcomes']:
+    if o['claim'] in ('fig7e-oxom-cdgi','fig8a-cdgi-rotations','link-sr-cells','link-grab-rois','fig10b-m1r-aims','fig4h-ispn-sr-frequency-unchanged','link-somatic-cells','fig3f-ispn-dendritic-on-lower','fig7f-cdgi-ko-dendritic-unchanged','fig1f-dspn-sch-no-change'):
+        print(o['claim'],'|',o['notes'],'|',o.get('deviations'),'\n')
+EOF
+```
+
+```
+link-somatic-cells | Groups are matched by condition label to the paper's sheets (Figures 1E, 3C, 6C, 7C, 9D). All 12 groups hold the paper's n (123 cells). 90 of 123 cells (73.2%) have an exact match over the steps from 20 to 300 pA, and 105 (85.4%) a best match within 3 spikes, below the 80% and 95% for reproduced and above the 50% exact for partially reproduced. 18 cells differ by more than 3 spikes; 6 of them are on-state dSPNs (6 of 15 exact) and 3 sulpiride iSPNs (4 of 7 exact). Rheobase equals that of the best-matching row in 105 cells. Best matches are not one to one: 9 paper rows are the best match of more than one cell (20 cells), and 6 cells tie between rows. The rheobase sheets (1F, 3D) are read by row number; in 115 of 124 rows their rheobase equals the first step with a spike in the same row of the F-I sheet. The last sweep of a repeated step gives the same counts (90 exact, 105 within 3). The dandiset's description says spike counts match the paper's table exactly in 90 of 123 cells, which this attempt finds too. | ["Spike counts and rheobase follow the paper's script (Zenodo 14145776, count_events with threshold 0 and rheobaseCal), as the claims file fixes. When a cell holds a step twice the first sweep is used, a choice the script does not make. 14 of 123 cells have a repeated step; taking the last sweep changes no cell's rheobase and one cell's summed spikes, by 1 (2020-02-17 cell 1, vehicle control, 170 to 171); all 14 somatic tests, rheobase and summed spikes, give the same U and P under it (output somatic-last-sweep).", 'Figures 6C, 7C and 9D have no rheobase sheet; there the rheobase of the best row is read from its spike counts.'] 
+
+link-sr-cells | All 33 dandiset cells match a paper identifier (date and letter, the letter being the file's cell number) and all 33 paper cells are in the dandiset. Mean amplitude and event count are both within 25% for 21 of 33 cells (64%), below the 75% for reproduced; amplitude alone for 25, count alone for 26;
+[... 16 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd earlier-entry; python - <<'EOF'
+import json
+nb=json.load(open('reproduce_zhai_2025.ipynb'))
+for i,c in enumerate(nb['cells']):
+    tags=c['metadata'].get('tags',[])
+    src=''.join(c['source'])
+    if any(k in src for k in ['7830','subject','Slice1Roi2','D1RaSch','median','sch-lower']) or any('finding' in t or 'sch-lower' in t for t in tags):
+        print('#### cell',i,tags); print(src[:2500])
+        outs=c.get('outputs',[])
+        for o in outs:
+            t=o.get('text') or o.get('data',{}).get('text/plain','')
+            print('>>>', ''.join(t)[:1500])
+EOF
+```
+
+```
+<persisted-output>
+Output too large (52.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/b3c8c687-640f-4d62-8e6f-eaee02398837/tool-results/bdy2be51l.txt
+
+Preview (first 2KB):
+#### cell 0 []
+# Zhai et al. (2025) on dandiset 001538
+
+Paper: Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel and Surmeier (2025), "State-dependent modulation of spiny projection neurons controls levodopa-induced dyskinesia in a mouse model of Parkinson's disease", Science Advances 11, eadv8224, doi:10.1126/sciadv.adv8224. The claims file (`claims/zhai-2025.yaml`) was written from the full text of the version of record in PubMed Central (PMC12674127), its Results, figure legends and Materials and Methods.
+
+Dataset: DANDI:001538, version `draft`. This attempt was asked to use the draft (a repeat attempt on data that changed after an earlier one). A draft can change: the archive gives its last modification as 2026-11-09T19:30:00Z, printed below as the notebook reads it. The draft holds 1288 assets (391 NWB files and the AIM session videos); the latest published version, 0.260527.1302, holds 468 and predates the changes.
+
+Outside inputs: the paper's per-cell and per-mouse tables (Zenodo doi:10.5281/zenodo.17307059), used by the link claims and by the claims the claims file marks `data: elsewhere`. Method details come from the paper's analysis scripts, cited in `lid.py` (doi:10.5281/zenodo.14145776, 14163502 and 14163731).
+
+No step uses random numbers.
+
+| Claim | Data | Tested here |
+|---|---|---|
+| link-somatic-cells | with inputs | tested |
+| link-dendritic-cells | with inputs | tested |
+| link-sr-cells | with inputs | tested |
+[... 8 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd earlier-entry; python - <<'EOF'
+import json
+nb=json.load(open('reproduce_zhai_2025.ipynb'))
+for i,c in enumerate(nb['cells']):
+    tags=c['metadata'].get('tags',[])
+    src=''.join(c['source'])
+    if c['cell_type']=='code' and any(k in src for k in ['7830','Slice1Roi2','D1RaSch','one site','single_site','subject_id','median(']):
+        print('#### cell',i,tags); print(src[:1800])
+        for o in c.get('outputs',[]):
+            t=o.get('text') or o.get('data',{}).get('text/plain','')
+            print('>>>', ''.join(t)[:1200])
+EOF
+```
+
+```
+#### cell 4 []
+fi = lid.cell_fi(somatic)
+fi_last = lid.cell_fi(somatic, keep="last")   # variant: a step recorded twice keeps its last sweep
+den_cells, den_pairs, den_sites = lid.dendritic_index(dendritic)
+grab = lid.grab_auc(grab_trials)
+KEYS = ["path", "subject", "date", "cell_type", "file_state", "cell", "condition", "drug"]
+# every cell with dendritic line scans, with its index where it has a proximal-distal pair
+den_all = den_sites[KEYS].drop_duplicates().merge(den_cells, on=KEYS, how="left")
+
+def mw(x, y):
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    x, y = x[~np.isnan(x)], y[~np.isnan(y)]
+    r = stats.mannwhitneyu(x, y, alternative="two-sided")
+    return r.statistic, r.pvalue
+
+def report(name_a, a, name_b, b, unit=""):
+    u, p = mw(a, b)
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    print(f"{name_a}: n={np.sum(~np.isnan(a))}, median {np.nanmedian(a):.4g}{unit} | "
+          f"{name_b}: n={np.sum(~np.isnan(b))}, median {np.nanmedian(b):.4g}{unit} | "
+[... 270 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd earlier-entry; grep -n "fmax\|acetylcholine\|def grab" lid.py | head -30
+```
+
+```
+25:  Fmax and Fmin the means from 2 to 4 s of the acetylcholine and tetrodotoxin
+432:def grab_auc(trials, signal="circle", fmin_rule="min"):
+451:        fmax = plateau("acetylcholine")
+453:        fmax_from = "region"
+454:        if np.isnan(fmax):
+455:            # No acetylcholine trial at this region: use the other regions of the
+459:                            (trials.region != region) & trials.drug.str.contains("acetylcholine")]
+462:            fmax = float(np.mean(vals)) if vals else np.nan
+463:            fmax_from = "same slice" if vals else "none"
+481:                            region=region, drug=drug, n_trials=len(h), fmax=fmax, fmax_from=fmax_from, fttx=fttx,
+483:                            auc=float(np.mean(aucs)) / (fmax - fmin)))
+```
+
+**Agent calls Bash**
+
+```bash
+cd earlier-entry; sed -n 432,465p lid.py
+```
+
+```
+def grab_auc(trials, signal="circle", fmin_rule="min"):
+    """Normalised single-pulse AUC per region and drug [code-grab, methods-grab].
+
+    fmin_rule: 'min' (TTX or the quinpirole baseline, whichever is smaller,
+    the Methods), 'ttx' (TTX only, as the script), 'quin' (quinpirole baseline only).
+    Returns one row per region and drug, with Fmax, Fmin and the number of trials averaged.
+    """
+    out = []
+    for (path, region), g in trials.groupby(["path", "region"], sort=False):
+        def plateau(drug):
+            h = g[g.drug.str.contains(drug)]
+            if h.empty:
+                return np.nan
+            vals = []
+            for _, r in h.iterrows():
+                tt = r.t - r.start
+                sel = (tt >= GRAB_FLIM[0]) & (tt < GRAB_FLIM[1])
+                vals.append(np.mean(r[signal][sel]))
+            return float(np.mean(vals))
+        fmax = plateau("acetylcholine")
+[... 14 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py --help 2>&1 | head -30; sed -n 482,500p docs/protocol.md; ls executed 2>/dev/null | head
+```
+
+```
+usage: entry.py [-h] [--output-dir OUTPUT_DIR] [--timeout TIMEOUT]
+                [--max-minutes MAX_MINUTES] [--fresh] [--python PYTHON]
+                [--before BEFORE]
+                {lock,check,run,all,handover,upgrade-python,hash}
+                entry [entry ...]
+
+Lock, check and run one entry. This is the whole local workflow for a deposit.
+
+    python tools/entry.py lock  entries/<name>   # pin the environment
+    python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py check entries/*/       # the same for every entry, in one process
+    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+    python tools/entry.py all   entries/<name>   # check, then run
+    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+
+`lock` compiles the entry's requirements.in (direct dependencies only) into
+requirements.lock.txt with every version pinned.
+
+`check` validates entry.yaml, and the claims and attempt files that mention
+the entry, against the schemas, and applies the conventions that keep a result
+[... 29 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+nb=json.load(open('earlier-entry/earlier_findings.ipynb'))
+for c in nb['cells'][:6]:
+    print('----',c['cell_type'],c['metadata']); print(''.join(c['source'])[:1200])
+print(len(nb['cells']))
+nb=json.load(open('entries/zhai-2025/reproduce_zhai_2025.ipynb'))
+for c in nb['cells'][:4]:
+    print('----',c['cell_type'],c['metadata']); print(''.join(c['source'])[:1500])
+EOF
+```
+
+```
+---- markdown {}
+# Earlier findings checked on dandiset 001538 version draft
+
+This notebook belongs to the reconciliation of attempt zhai-2025-02 with attempt zhai-2025-01
+(docs/protocol.md, "Repeat attempts"). zhai-2025-01 was made on version 0.260527.1302 and
+zhai-2025-02 on the draft. Of the fifteen findings of zhai-2025-01, findings 3, 4, 9, 10, 11, 12,
+14 and 15 are not reported by zhai-2025-02, and each is checked here directly on
+[DANDI:001538](https://dandiarchive.org/dandiset/001538/draft), version draft. Findings 1, 6 and 7
+are reported by zhai-2025-02 in part; the parts it does not report are checked here too. Each
+section opens with the earlier statement. The files are streamed with the entry's helper module,
+`lid.py`, and only the tables, headers and stimulus series the checks need are read. Finding 14 is
+about the paper and is checked on the paper's per-cell tables (doi:10.5281/zenodo.17307059).
+The conclusion for each finding is in the reconciliation block of `attempts/zhai-2025-02.yaml`.
+---- code {}
+import re
+from concurrent.futures import ProcessPoolExecutor
+import warnings
+warnings.filterwarnings("ignore")
+import h5py
+import numpy as np
+[... 133 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && uv venv -q -p 3.13 venv 2>&1 | tail -2; . venv/bin/activate && uv pip install -q -r entries/zhai-2025/requirements.lock.txt ipykernel nbclient 2>&1 | tail -3; python -c "import h5py,remfile,pandas;print('ok')"; date -u
+```
+
+```
+ok
+Thu Nov 26 19:00:38 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/zhai-2025 && . $TMPDIR/venv/bin/activate && python - <<'EOF'
+import zhai, pandas as pd
+pd.set_option("display.width",250); pd.set_option("display.max_rows",400)
+a=zhai.list_assets()
+a.to_pickle('/tmp/claude/a.pkl') if False else None
+print(len(a)); print(a[a.nwb].groupby(['cell_type','group','drug','genotype','kind']).size().to_string())
+print(a[a.nwb].path.head(5).tolist())
+print(a[a.date.isin(['20160526','20160608'])][['path','kind']].to_string())
+print(a.subject.nunique())
+EOF
+```
+
+```
+1288
+cell_type  group              drug      genotype    kind         
+dSPN       LesionedControl    none      WT                             5
+           OffState           none      WT                             8
+                                                    icephys            4
+                                                    icephys+ophys      7
+           OnState            D1RaSch   WT          icephys+ophys      5
+                              none      WT                             9
+                                                    icephys            4
+                                                    icephys+ophys      5
+           UnlesionedControl  none      WT                             6
+iSPN       LesionedControl    none      WT                            10
+           M1RAntag           none      WT          icephys            2
+                                                    icephys+ophys      4
+           M1RCRISPR          none      M1RCRISPR   icephys            3
+           Naive              M1RaOxoM  CDGIKO      icephys+ophys      3
+                                        WT          icephys+ophys      2
+           OffState           M1RaThp   WT                             5
+                              none      CDGIKO                         6
+                                                    icephys+ophys      5
+[... 26 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/venv/bin/activate && python - <<'EOF'
+import zhai, pandas as pd
+pd.set_option("display.width",250)
+a=zhai.list_assets()
+for i in (1201,1205):
+    r=a.loc[i]; h=zhai.open_h5(r.asset_id)
+    t=zhai.recordings_table(h)
+    print(r.path)
+    print(t[t.site.str.contains('Prox|Dist')].groupby(['cell_id','condition','site']).size().to_string())
+    d=zhai.dendritic_file(r,h); print(d[['cell','condition','proximal','distal','index','basal_ratio']].round(3).to_string())
+    s=h['general/subject']; print({k:zhai._str(s[k][()]) for k in s.keys()})
+EOF
+```
+
+```
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+entries/zhai-2025/zhai.py:216: RuntimeWarning: Mean of empty slice
+  return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
+[... 87 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/venv/bin/activate && python - <<'EOF' 2>&1 | grep -v Warning
+import zhai, pandas as pd
+pd.set_option("display.width",250)
+a=zhai.list_assets()
+print(a[a.path.str.contains('7830')][['path','kind']].to_string())
+T=zhai.paper_tables()
+for k in T:
+    if any(s in k for s in ['2G','2H','4F','4G','7E','8A','Fig 2I','4H']): print(k, T[k].shape, list(T[k].columns)); print(T[k].head(3).to_string())
+EOF
+```
+
+```
+path   kind
+729  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231208_image/01d685dd-2f22-4513-97f1-f2c2424b2447_external_file_0.mp4       
+730  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231208_image/e23aa6f0-f262-4d9b-a637-5644b932dda4_external_file_0.mp4       
+731  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231208_image/f4c1f370-b2e2-47de-9829-59a538c691d1_external_file_0.mp4       
+732                                                       sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231208_image.nwb  image
+733  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231208_image/bc1c96d9-1de6-4dc5-961d-8ff8406586a5_external_file_0.mp4       
+734  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231211_image/5795aa1e-c957-4a85-b029-5fd870508780_external_file_0.mp4       
+735  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231211_image/602add10-bfea-4829-8a71-825d69887662_external_file_0.mp4       
+737  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231211_image/9a0e1b12-0114-452c-9ce0-8325b17acde3_external_file_0.mp4       
+738  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231211_image/f9aebd7c-f979-45b4-a41c-0d215b2cd924_external_file_0.mp4       
+740                                                       sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT++20231211_image.nwb  image
+741  sub-Subject20231208CONTAdora2CreM7830/sub-Subject20231208CONTAdora2CreM7830_ses-pan++OnState++none++WT+
+[... 53 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/venv/bin/activate && python - <<'EOF' 2>&1 | grep -v Warning
+import zhai, pandas as pd
+pd.set_option("display.width",250)
+a=zhai.list_assets()
+sel=a[(a.kind=='icephys')]
+for _,r in sel.iterrows():
+    h=zhai.open_h5(r.asset_id); t=zhai.recordings_table(h)
+    t['vc']=t.r_series.str.contains('VoltageClamp')
+    print(r.subject, r.cell_type, r.group, r.genotype, t.groupby(['condition','vc']).cell_id.nunique().to_dict())
+EOF
+```
+
+```
+sub-Subject20170525LIDOFFtDTomato dSPN OffState WT {('LID off-state', False): 1}
+sub-Subject20200721M1RanteGFP iSPN M1RAntag WT {('LID off-state with M1R antagonists', False): 3}
+sub-Subject20200722M1RanteGFP iSPN M1RAntag WT {('LID off-state with M1R antagonists', False): 1}
+sub-Subject20221004M1RCRSPRAdora2Cre iSPN M1RCRISPR M1RCRISPR {('LID off-state, M1R deletion', False): 2}
+sub-Subject20221005M1RCRSPRAdora2Cre iSPN M1RCRISPR M1RCRISPR {('LID off-state, M1R deletion', False): 3}
+sub-Subject20221012CONTAdora2Cre iSPN OffState WT {('LID off-state, control (gRNA only)', False): 3}
+sub-Subject20221129M1RCRSPRAdora2Cre iSPN M1RCRISPR M1RCRISPR {('LID off-state, M1R deletion', False): 3}
+sub-Subject20230222LIDOFFeGFP iSPN OffState WT {('LID off-state', True): 2}
+sub-Subject20230330LIDOFFeGFP iSPN OffState WT {('LID off-state', True): 2}
+sub-Subject20230301LIDONeGFP iSPN OnState WT {('LID on-state', True): 2}
+sub-Subject20230228LIDONeGFP iSPN OnState WT {('LID on-state', True): 2}
+sub-Subject20230405LIDONeGFP iSPN OnState WT {('LID on-state', True): 2}
+sub-Subject20230331LIDONeGFP iSPN OnState WT {('LID on-state', True): 2}
+sub-Subject20230705LIDONtDTomato dSPN OnState WT {('LID on-state', True): 2}
+sub-Subject20230406LIDOFFeGFP iSPN OffState WT {('LID off-state', True): 3}
+sub-Subject20230706LIDOFFtDTomato dSPN OffState WT {('LID off-state', True): 3}
+sub-Subject20230710LIDONtDTomato dSPN OnState WT {('LID on-state', True): 2}
+sub-Subject20230713LIDOFFtDTomato dSPN OffState WT {('LID off-state', True): 3}
+sub-Subject20230816LIDONtDTomato dSPN OnState WT {('LID on-state', True): 2}
+sub-Subject20230802LIDONtDTomato dSPN OnState WT {('LID on-state', True): 2}
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls paper/ | head; grep -rl -i "Sr2" paper/ 2>/dev/null | head
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o -i -E "[^.]{0,200}(oEPSC|CRISPR)[^.]{0,40}(mice|animals)[^.]{0,120}" paper/10.1126-sciadv.adv8224.txt | head -12
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -o -E "[^.]{0,120}cells from [0-9]+ mice[^.]{0,80}" paper/10.1126-sciadv.adv8224.txt | head -40
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -o -E "[^.]{0,80}(from|in) (three|four|five|six|[0-9]+) (mice|animals)[^.]{0,60}" paper/10.1126-sciadv.adv8224.txt | head -40
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+mkdir -p $TMPDIR && cat > $TMPDIR/mk.py <<'PYEOF'
+import json
+cells = []
+def md(s): cells.append(dict(cell_type="markdown", metadata={}, source=s.strip("\n")))
+def code(s, tags=None):
+    cells.append(dict(cell_type="code", metadata={"tags": tags} if tags else {}, execution_count=None, outputs=[], source=s.strip("\n")))
+
+md("""
+# Earlier findings checked on dandiset 001538 version 0.261124.1858
+
+This notebook belongs to the reconciliation of attempt zhai-2025-03 with attempt zhai-2025-02
+(docs/protocol.md, "Repeat attempts"). zhai-2025-02 was made on the draft (modified 2026-11-09)
+and zhai-2025-03 on version 0.261124.1858. Of the fifteen findings of zhai-2025-02, findings 1, 5,
+6, 9, 13 and 14 are not reported by zhai-2025-03, and each is checked here directly on
+[DANDI:001538](https://dandiarchive.org/dandiset/001538/0.261124.1858), version 0.261124.1858.
+Each section opens with the earlier statement. The files are streamed with the entry's helper
+module, `zhai.py`, and only the files each check needs are read. Findings 9 and 14 are about the
+paper and are checked on the paper's per-cell tables (doi:10.5281/zenodo.17307059). The
+conclusion for each finding is in the reconciliation block of `attempts/zhai-2025-03.yaml`.
+""")
+code("""
+import warnings
+import numpy as np
+import pandas as pd
+from scipy import stats
+import zhai
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+pd.set_option("display.width", 250)
+pd.set_option("display.max_rows", 200)
+assets = zhai.list_assets()
+T = zhai.paper_tables()
+print("dandiset", zhai.DANDISET, "version", zhai.VERSION, "| assets", len(assets), "| NWB files", int(assets.nwb.sum()),
+      "| subjects", assets.subject.nunique())
+print("paper tables read:", len(T), "sheets")
+""", ["sanity"])
+
+md("""
+## Earlier finding 1 (data_missing)
+
+> Two cells with dendritic line scans were imaged at one dendritic site only, at two spots:
+> 2016-05-26 cell 3 (CDGI knockout, off-state, Distal1 Spot1 and Spot2) and 2016-06-08 cell 1
+> (on-state, Proximal1 Spot1 and Spot2). They have no proximal-distal pair and no index, while the
+> paper counts them in Figures 3F and 7F (10 and 11 cells).
+
+The line-scan sites of every cell in the two files, and the proximal-distal pairs with their
+index, computed as in the main notebook.
+""")
+code("""
+f1 = assets[assets.date.isin(["20160526", "20160608"]) & (assets.kind == "icephys+ophys")]
+for _, a in f1.iterrows():
+    h = zhai.open_h5(a.asset_id)
+    t = zhai.recordings_table(h)
+    t = t[t.site.str.contains("Prox|Dist")]
+    print(a.path)
+    print(t.groupby(["cell_id", "condition"]).site.apply(lambda s: sorted(set(s))).to_string())
+    d = zhai.dendritic_file(a, h)
+    print(d[["cell", "proximal", "distal", "index", "basal_ratio"]].round(3).to_string(), "\\n")
+""", ["finding:earlier-1"])
+
+md("""
+## Earlier finding 5 (other, data)
+
+> Mouse 7830 (Figure 10, control) has identical AIM sheets for sessions 4 and 5; the paper's table
+> has the same values for both sessions.
+
+The AIM scores of mouse 7830 per session, and the paper's Figure 10B totals for the mouse.
+""")
+code("""
+f5 = assets[assets.nwb & assets.path.str.contains("M7830")]
+aim = pd.concat([zhai.aim_file(a) for _, a in f5.iterrows()], ignore_index=True)
+print("sessions:", aim.groupby("session").path.first().to_dict())
+w = aim.pivot_table(index=["behavior", "timestamp"], columns="session", values="score")
+print(w.to_string())
+print("\\nsessions 4 and 5 identical at every time point and behaviour:", bool(w[4].equals(w[5])))
+tot = aim[aim.behavior.isin(["axial", "limb", "orolingual"])].groupby("session").score.sum()
+p10 = T["Fig 10B_total AIMs"].set_axis(["mouse", "group", "session", "total"], axis=1)
+p10 = p10[p10.mouse.astype(str).str.contains("7830")]
+print("session totals, dandiset:", tot.to_dict())
+print("session totals, paper:", dict(zip(p10.session, p10.total)))
+""", ["finding:earlier-5"])
+
+md("""
+## Earlier finding 6 (metadata_insufficient)
+
+> Subjects are defined per recording day. Mouse counts differ from the paper's legends in four
+> groups (Sr2+-oEPSC dSPN and iSPN off-state, 3 subjects against 4 mice; M1R CRISPR control and
+> deletion somatic cells, 2 and 3 against 3 and 4), which mice sharing a recording day would
+> explain; the files do not say which mouse each cell came from.
+
+Cells and subjects of these four groups, read from the files' recordings tables, and the subject
+description of one file. The paper's legends give 10 cells from four mice (Figure 2I, off-state),
+7 cells from four mice (Figure 4H, off-state), and 6 cells from three mice and 8 cells from four
+mice (Figure 9D, control and M1R deletion).
+""")
+code("""
+f6 = assets[(assets.kind == "icephys") & (((assets.group == "OffState") & assets.date.str.startswith("2023"))
+                                          | assets.date.isin(["20221004", "20221005", "20221012", "20221129", "20221130"]))]
+rows = []
+for _, a in f6.iterrows():
+    h = zhai.open_h5(a.asset_id)
+    t = zhai.recordings_table(h)
+    kind = np.where(t.r_series.str.contains("VoltageClamp"), "Sr2+-oEPSC", "somatic")
+    for (k, cond), g in t.assign(kind=kind).groupby(["kind", "condition"]):
+        rows.append(dict(cell_type=a.cell_type, kind=k, condition=cond, subject=a.subject, cells=g.cell_id.nunique()))
+    if a.date == "20221004":
+        s = h["general/subject"]
+        print("subject_id:", zhai._str(s["subject_id"][()]), "| description:", zhai._str(s["description"][()]), "\\n")
+g6 = pd.DataFrame(rows)
+print(g6.groupby(["cell_type", "kind", "condition"]).agg(cells=("cells", "sum"), subjects=("subject", "nunique")).to_string())
+""", ["finding:earlier-6"])
+
+md("""
+## Earlier finding 9 (other, paper)
+
+> The per-cell Sr2+-oEPSC amplitudes of Figures 2H and 4G, labelled average amplitude in the
+> paper's tables, equal the median of each cell's event list in the Figure 2G and 4F sheets for all
+> 33 cells and the mean for none.
+
+The paper's per-cell amplitudes against the mean and the median of each cell's events in its own
+event lists.
+""")
+code("""
+ev = pd.concat([T["Fig 2G_dSPN Sr-oEPSC histogram"].set_axis(["id", "group", "ev", "amp"], axis=1),
+                T["Fig 4F_iSPN Sr-oEPSC histogram"].set_axis(["id", "group", "ev", "amp"], axis=1)])
+pc = pd.concat([T["Fig 2H_dSPN Sr-oEPSC amp"].set_axis(["id", "group", "paper"], axis=1),
+                T["Fig 4G_iSPN Sr-oEPSC amp"].set_axis(["id", "group", "paper"], axis=1)])
+s = ev.groupby("id").amp.agg(["mean", "median", "size"]).reset_index().merge(pc, on="id")
+s["eq_median"] = np.isclose(s["median"], s.paper, atol=0.006)
+s["eq_mean"] = np.isclose(s["mean"], s.paper, atol=0.006)
+print("cells:", len(s), "| equal to the median (within 0.006 pA):", int(s.eq_median.sum()),
+      "| equal to the mean:", int(s.eq_mean.sum()))
+print(s.round(3).to_string())
+""", ["finding:earlier-9"])
+
+md("""
+## Earlier finding 13 (metadata_error)
+
+> The session names of the SCH 23390 and sulpiride files (D1RaSch, D2RaSul) state a drug, while 11
+> somatic cells in these files have baseline on-state sweeps and 4 of them are baseline only (dSPN
+> 2019-05-07 cell 1, iSPN 2019-04-08 cell 1, 2019-04-09 cell 1 and 2019-05-08 cell 2). Each sweep's
+> group is in the condition and drug columns of the intracellular recordings table; grouping by
+> session name puts these cells in the drug groups.
+
+The somatic cells of the files whose session name states a drug, with the conditions their
+sweeps carry.
+""")
+code("""
+rows = []
+for _, a in assets[assets.drug.isin(["D1RaSch", "D2RaSul"]) & assets.nwb].iterrows():
+    h = zhai.open_h5(a.asset_id)
+    t = zhai.recordings_table(h)
+    t = t[(t.site == "Soma") & t.r_series.str.contains("CurrentClamp")]
+    for c, g in t.groupby("cell_id"):
+        rows.append(dict(path=a.path.split("_ses-")[1], date=a.date, cell=c, name_drug=a.drug,
+                         conditions=sorted(set(g.condition)), drugs=sorted(set(g.drug.astype(str)))))
+g13 = pd.DataFrame(rows)
+g13["baseline"] = g13.conditions.apply(lambda c: "LID on-state" in c)
+g13["baseline_only"] = g13.conditions.apply(lambda c: c == ["LID on-state"])
+print(g13.to_string())
+print("\\nsomatic cells in drug-named files:", len(g13), "| with baseline on-state sweeps:", int(g13.baseline.sum()),
+      "| baseline only:", int(g13.baseline_only.sum()))
+""", ["finding:earlier-13"])
+
+md("""
+## Earlier finding 14 (paper_inconsistency)
+
+> Recomputed on the paper's per-cell tables (doi:10.5281/zenodo.17307059), two reported P values
+> differ. The Wilcoxon test of oxo-M in CDGI KO iSPNs (Figure 7E, 12 cells) gives P = 0.4697 where
+> the paper reports 0.910, and the Mann-Whitney test of rotations in Figure 8A (10 KO and 12
+> wild-type mice) gives P = 0.01198 where the paper reports 0.0092. The wild-type oxo-M test gives
+> P = 0.009766, as the paper's 0.0098.
+
+The same tests on the same tables, which do not depend on the dandiset's version.
+""")
+code("""
+e7 = T["Fig 7E_oxoM effect on DE"].set_axis(["id", "genotype", "treatment", "v"], axis=1)
+for gt in ["WT", "KO"]:
+    w = e7[e7.genotype == gt].pivot_table(index="id", columns="treatment", values="v")
+    print(f"Figure 7E {gt}: n = {len(w)}, Wilcoxon P = {stats.wilcoxon(w['before (control)'], w['oxoM']).pvalue:.4g}")
+r8 = T["Fig 8A_rotations 5th"].set_axis(["mouse", "genotype", "rot"], axis=1)
+ko, wt = r8[r8.genotype != "WT"].rot, r8[r8.genotype == "WT"].rot
+print("Figure 8A groups:", r8.genotype.value_counts().to_dict())
+print(f"Figure 8A: Mann-Whitney P = {stats.mannwhitneyu(ko, wt, alternative='two-sided').pvalue:.4g}")
+""", ["finding:earlier-14"])
+
+nb = dict(cells=cells, metadata={"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+                                 "language_info": {"name": "python"}}, nbformat=4, nbformat_minor=5)
+for i, c in enumerate(nb["cells"]):
+    c["id"] = f"c{i:02d}"
+json.dump(nb, open("entries/zhai-2025/earlier_findings.ipynb", "w"), indent=1)
+PYEOF
+. $TMPDIR/venv/bin/activate && python $TMPDIR/mk.py && cd entries/zhai-2025 && jupyter nbconvert --to notebook --execute earlier_findings.ipynb --output $TMPDIR/ef_out.ipynb 2>&1 | tail -3
+```
+
+```
+trust
+
+Jupyter command `jupyter-nbconvert` not found.
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/venv/bin/activate && cd entries/zhai-2025 && python - <<'EOF'
+import nbformat
+from nbclient import NotebookClient
+nb=nbformat.read('earlier_findings.ipynb',4)
+NotebookClient(nb,timeout=1200,kernel_name='python3',allow_errors=True).execute()
+for c in nb.cells:
+    if c.cell_type=='code':
+        print('=====',c.metadata.get('tags'))
+        for o in c.outputs:
+            print(o.get('text') or o.get('evalue') or o.get('data',{}).get('text/plain',''))
+EOF
+```
+
+```
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+===== ['sanity']
+dandiset 001538 version 0.261124.1858 | assets 1288 | NWB files 391 | subjects 173
+paper tables read: 46 sheets
+
+===== ['finding:earlier-1']
+sub-Subject20160526LIDOFFCDGIkoXeGFP/sub-Subject20160526LIDOFFCDGIkoXeGFP_ses-iSPN++OffState++none++CDGIKO++20160526_icephys+ophys.nwb
+cell_id  condition                   
+1        CDGI knockout, LID off-state    [Distal1, Distal2, Proximal1, Proximal2]
+2        CDGI knockout, LID off-state    [Distal1, Distal3, Proximal1, Proximal3]
+3        CDGI knockout, LID off-state                        [Distal1, Proximal1]
+
+   cell   proximal   distal  index  basal_ratio
+0     1  Proximal1  Distal1  0.588        0.923
+1     1  Proximal2  Distal2  0.535        0.880
+2     2  Proximal1  Distal1  0.215        1.283
+3     2  Proximal3  Distal3  0.392        0.987
+4     3  Proximal1  Distal1  0.293        0.910 
+
+
+[... 122 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
 cd  python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'))
+f=s['properties']['findings']
+print(json.dumps(f,indent=1)[:5000])
+"; python - <<'EOF'
 import yaml
-c={x['id']:x for x in yaml.safe_load(open('claims/zhai-2025.yaml'))['claims']}
-for k in ['fig5f-ach-6ohda-elevated','fig5f-ach-d2-control','fig5f-ach-da-suppresses','fig10b-m1r-aims','fig2h-dspn-sr-amplitude-on-larger','fig3f-ispn-dendritic-sul-no-change','fig1i-dspn-dendritic-sch-lower']: print(k,'|',c[k]['criterion'][:400]);print()
-"
+d=yaml.safe_load(open('attempts/zhai-2025-03.yaml'))
+print(yaml.safe_dump(d['findings'][4:6],width=150,sort_keys=False))
+EOF
+tail -c 1500 attempts/zhai-2025-03.yaml
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "<string>", line 4, in <module>
-    for k in ['fig5f-ach-6ohda-elevated','fig5f-ach-d2-control','fig5f-ach-da-suppresses','fig10b-m1r-aims','fig2h-dspn-sr-amplitude-on-larger','fig3f-ispn-dendritic-sul-no-change','fig1i-dspn-dendritic-sch-lower']: print(k,'|',c[k]['criterion'][:400]);print()
-                                                                                                                                                                                                                                    ~~~~^^^^^^^^^^^^^
-KeyError: 'criterion'
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import yaml
-c={x['id']:x for x in yaml.safe_load(open('claims/zhai-2025.yaml'))['claims']}
-for k in ['fig5f-ach-6ohda-elevated','fig5f-ach-d2-control','fig5f-ach-da-suppresses','fig10b-m1r-aims','fig2h-dspn-sr-amplitude-on-larger','fig3f-ispn-dendritic-sul-no-change','fig1i-dspn-dendritic-sch-lower']: print(k,'|',{a:str(b)[:300] for a,b in c[k].items() if a not in ('statement','quote','source','statistics')});print()
-"
-```
-
-```
-fig5f-ach-6ohda-elevated | {'id': 'fig5f-ach-6ohda-elevated'}
-
-fig5f-ach-d2-control | {'id': 'fig5f-ach-d2-control'}
-
-fig5f-ach-da-suppresses | {'id': 'fig5f-ach-da-suppresses'}
-
-fig10b-m1r-aims | {'id': 'fig10b-m1r-aims', 'data': 'with_labels', 'depends_on': "['link-aim-mice']"}
-
-fig2h-dspn-sr-amplitude-on-larger | {'id': 'fig2h-dspn-sr-amplitude-on-larger'}
-
-fig3f-ispn-dendritic-sul-no-change | {'id': 'fig3f-ispn-dendritic-sul-no-change', 'criterion': 'A claim of absence, two-sided Mann-Whitney test, on-state against on-state with sulpiride. Reproduced when P >= 0.05.'}
-
-fig1i-dspn-dendritic-sch-lower | {'id': 'fig1i-dspn-dendritic-sch-lower', 'criterion': 'Two-sided Mann-Whitney test, on-state against on-state with SCH. Reproduced when P < 0.05 and the SCH median is lower.'}
+{
+ "description": "What the attempt found, whatever the outcomes: about the dataset itself (`about: data`, for its owner and the archive, shown on the dataset's page) or about the paper (`about: paper`, shown on the paper's page).",
+ "type": "array",
+ "items": {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+   "kind",
+   "statement"
+  ],
+  "properties": {
+   "kind": {
+    "enum": [
+     "metadata_error",
+     "data_missing",
+     "identifier_missing",
+     "metadata_insufficient",
+     "selection_undocumented",
+     "methods_unavailable",
+     "format_error",
+[... 119 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "id: fig5f-ach-6ohda-elevated" -A28 claims/zhai-2025.yaml; grep -n "id: fig2h-dspn" -A30 claims/zhai-2025.yaml | grep -n "criterion\|blocked\|note"
+. $TMPDIR/venv/bin/activate && sed -i 's/"finding:earlier-/"earlier-finding-/' $TMPDIR/mk.py && python $TMPDIR/mk.py && grep -o '"earlier-finding-[0-9]*"' entries/zhai-2025/earlier_findings.ipynb
 ```
 
 ```
-435:- id: fig5f-ach-6ohda-elevated
-436-  statement: Evoked ACh release is markedly elevated in 6-OHDA-lesioned striatum compared with
-437-    unlesioned striatum.
-438-  source: Figure 5F (P < 0.0001)
-439-  quote: In ex vivo slices from 6-OHDA–lesioned mice, the GRABACh3.0 signal was markedly elevated
-440-  statistics:
-441-  - test: Mann-Whitney
-442-    p: 0.0001
-443-    p_relation: "<"
-444-    n: 13 unlesioned and 10 6-OHDA ROIs
-445-- id: fig5f-ach-d2-control
-446-  statement: In unlesioned striatum sulpiride increases and quinpirole suppresses evoked ACh
-447-    release.
-448-  source: Figure 5F (P = 0.0005 and 0.0034)
-449-  quote: Bath application of the D2R antagonist sulpiride (10 μM) increased the evoked ACh signal
-450-    ... bath application of a D2R agonist quinpirole (10 μM) suppressed the ACh signal
-451-  statistics:
-452-  - about: sulpiride
-453-    p: 0.0005
-454-  - about: quinpirole
-[... 9 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  git show --stat 74364703c81 | head -12; git show 74364703c81 -- claims/zhai-2025.yaml | head -30; grep -n "status\|claim:" questions/zhai-2025.yaml | head
-```
-
-```
-commit 74364703c81f2ee887ec4a820cf7931afc92ac40
-Author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
-Date:   Sun Nov 15 02:19:13 2026 +0000
-
-    Agent run on zhai-2025: answer (success)
-    
-    Run: https://github.com/catalystneuro/encore/actions/runs/43666569290
-    
-    Account: verified
-
- claims/zhai-2025.yaml                  |   8 +-
- questions/zhai-2025.yaml               |   7 ++
-commit 74364703c81f2ee887ec4a820cf7931afc92ac40
-Author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
-Date:   Sun Nov 15 02:19:13 2026 +0000
-
-    Agent run on zhai-2025: answer (success)
-    
-    Run: https://github.com/catalystneuro/encore/actions/runs/43666569290
-    
-[... 24 more lines not kept]
-```
-
-**Agent**
-
-Next I'll write the three on-prompt findings and the reconciliation block into the record.
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 548,562p attempts/zhai-2025-02.yaml; tail -c 200 attempts/zhai-2025-02.yaml | od -c | tail -3
-```
-
-```
-statement: The Sr2+-oEPSC events were detected with TaroTools in Igor Pro, followed by visual verification, with a
-    threshold of five SD above the noise; the paper gives no filter, noise window, baseline or event separation, and
-    does not say whether events were removed at verification. Which settings were used? A stand-in detector finds a median
-    1.33 times the paper's events at 5 SD, though the state comparisons agree.
-- kind: selection_undocumented
-  about: data
-  statement: The control and 6-OHDA patch-clamp recordings of Figures 1 and 3, the rotation counts and the open-field
-    data are not in the dandiset, as its description says; the claims on them can be tested only on the paper's tables.
-- kind: methods_unavailable
-  statement: Spine densities (Figures 2, 4, 6, 7 and 9 from two-photon stacks; Figure 4K from confocal stacks) were counted
-    in NeuronStudio and in Imaris with manual correction, and the dandiset holds the images but no counts. What did the
-    manual correction change (spines added or removed, by what rule), and could the counts per dendrite, with the file
-    and segment each comes from, be deposited with the images?
-verifications:
-- date: '2026-11-15'
-0000260               r   e   s   p   o   n   s   e   :       N   o    
-0000300   c   h   a   n   g   e   .  \n
-0000310
+"earlier-finding-1"
+"earlier-finding-5"
+"earlier-finding-6"
+"earlier-finding-9"
+"earlier-finding-13"
+"earlier-finding-14"
 ```
 
 **Agent calls Edit**
@@ -2567,201 +1243,76 @@ verifications:
 ```json
 {
  "replace_all": false,
- "file_path": "attempts/zhai-2025-02.yaml",
- "old_string": "    and segment each comes from, be deposited with the images?\nverifications:",
- "new_string": "    and segment each comes from, be deposited with the images?\n- kind: metadata_error\n  statement: The session names of the SCH 23390 and sulpiride files (D1RaSch, D2RaSul) state a drug, while 11 somatic\n    cells in these files have baseline on-state sweeps and 4 of them are baseline only (dSPN 2019-05-07 cell 1, iSPN\n    2019-04-08 cell 1, 2019-04-09 cell 1 and 2019-05-08 cell 2). Each sweep's group is in the condition and drug columns\n    of the intracellular recordings table; grouping by session name puts these cells in the drug groups.\n  found: on_prompt\n- kind: paper_inconsistency\n  statement: Recomputed on the paper's per-cell tables (doi:10.5281/zenodo.17307059), two reported P values differ. The\n    Wilcoxon test of oxo-M in CDGI KO iSPNs (Figure 7E, 12 cells) gives P = 0.4697 where the paper reports 0.910, and\n    the Mann-Whitney test of rotations in Figure 8A (10 KO and 12 wild-type mice) gives P = 0.01198 where the paper\n    reports 0.0092. The wild-type oxo-M test gives P = 0.009766, as the paper's 0.0098.\n  found: on_prompt\n- kind: other\n  about: data\n  statement: 18 of 123 somatic cells have no sweep at one or more current steps between 20 and 300 pA, and 14 of these\n    have another step recorded twice (dSPN 2017-07-07 cell 2, on-state, has none at 100 and at 220 to 300 pA and two at\n    -20 pA). Their spike counts over 20 to 300 pA cannot be complete.\n  found: on_prompt\nverifications:"
+ "file_path": "entries/zhai-2025/entry.yaml",
+ "old_string": "  runtime_minutes: 10\nhelpers:",
+ "new_string": "  runtime_minutes: 10\n- path: earlier_findings.ipynb\n  title: Findings of attempt zhai-2025-02 checked on dandiset 001538 version 0.261124.1858\n  runtime_minutes: 2\nhelpers:"
 }
 ```
 
 ```
-The file attempts/zhai-2025-02.yaml has been updated successfully.
+The file entries/zhai-2025/entry.yaml has been updated successfully.
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat >> attempts/zhai-2025-02.yaml <<'EOF'
-reconciliation:
-  earlier: zhai-2025-01
-  date: '2026-11-15'
-  blind: true
-  findings:
-  - finding: 1
-    status: partly_fixed
-    now: 11
-    note: The draft now holds the oxo-M line scans (5 wild-type and 6 CDGI KO cells, before and after oxo-M, in
-      earlier_findings.ipynb). It still has no patch-clamp file of unlesioned or 6-OHDA mice and no open-field data,
-      which zhai-2025-02 reports with the dandiset description now saying so.
-  - finding: 2
-    status: partly_fixed
-    now: 4
-    note: The draft holds all 33 Sr2+-oEPSC cells (14 files) and the 34 GRAB-ACh3.0 regions, where version 0.260527.1302
-      held one cell or region per mouse. The Figure 8 AIM sheets still lack five of the paper's mice and hold three not in
-      it (4123, 4124, 5871), now stated in the description, while all 21 Figure 10 mice are present.
-  - finding: 3
-    status: still_present
-    now: 13
-    note: In earlier_findings.ipynb the D1RaSch and D2RaSul files still hold 11 somatic cells with baseline on-state
-      sweeps, 4 of them baseline only (the same four cells). Each sweep's condition and drug are now in the intracellular
-      recordings table, so the group can be read from the standard columns.
-  - finding: 4
-    status: fixed
-    note: In earlier_findings.ipynb each of the 42 behaviour mice has one group, one session-name genotype and one subject
-      genotype across its AIM and video files. Mouse 2587 is a control and 1945, 2519, 2828 and 6572 are CDGI knockouts,
-      and all 18 Figure 8 mice in the paper's table have the paper's group.
-  - finding: 5
-    status: still_present
-    now: 4
-    note: Both find the Figure 8 session totals differ from the paper's table (earlier 20 of 25 sessions differ, now 6% of
-      control and 16% of CDGI KO sessions are equal) while the Figure 10 mice agree (now 103 of 105 sessions). The number
-      of time points per session was not checked again.
-  - finding: 6
-    status: partly_fixed
-    now: 1
-    note: The six-trial series of iSPN 2016-05-26 cell 3, iSPN 2016-06-08 cell 1 and dSPN 2017-02-04 cell 1 are now two
-      series of three trials, Spot1 and Spot2 of the same site, so the first two cells still have no proximal-distal pair
-      (zhai-2025-02 finding 1). In earlier_findings.ipynb the one-, two- and four-trial series remain (iSPN 2016-05-24
-      cell 2 Proximal1 has one trial), and a six-trial series appears in the oxo-M data (iSPN 2018-03-14 cell 2 Distal2).
-  - finding: 7
-    status: partly_fixed
-    now: 2
-    note: iSPN 2019-05-08 cell 3 now has a Proximal2 and Distal2 pair, and its index is 0.217, the paper's value
-      (earlier_findings.ipynb). dSPN 2019-04-11 cell 1 still lacks its first site pair and gives 0.584 against the paper's
-      0.228.
-  - finding: 8
-    status: still_present
-    now: 12
-    note: Both report that the dandiset holds the spine image stacks but no spine counts; zhai-2025-02 asks for the counts
-      per dendrite, and its finding 11 reports the rotation counts missing.
-  - finding: 9
-    status: fixed
-    note: In earlier_findings.ipynb all 102 dendritic stimulus series have a peak of 2000 with a conversion of 1e-12 to
-      amperes (2.0 nA), none is all zero, and all 1276 dendritic sweeps have a valid line-scan (kymograph) slice.
-  - finding: 10
-    status: fixed
-    note: In earlier_findings.ipynb each of the 333 Sr2+-oEPSC sweeps (33 cells) has one light pulse in the optogenetic
-      pulses table, at 0.02 s from the sweep start, and references a voltage-clamp stimulus; the all-zero OptogeneticSeries
-      are gone.
-  - finding: 11
-    status: fixed
-    note: No object in the 11 GRAB-ACh3.0 files mentions a background, the PMT, the laser power or zero; the reference
-      images are described as Prairie View field-of-view images, not as a background (earlier_findings.ipynb).
-  - finding: 12
-    status: fixed
-    note: All 391 NWB files give doi 10.1126/sciadv.adv8224 as their related publication, none mentions the preprint or
-      Figure 7J, and the behaviour files name Figures 8 and 10 as in the published paper (earlier_findings.ipynb).
-  - finding: 14
-    status: still_present
-    now: 14
-    note: On the paper's tables, earlier_findings.ipynb gives P = 0.4697 for oxo-M in CDGI KO (paper 0.910), P = 0.01198
-      for Figure 8A (paper 0.0092) and P = 0.009766 for oxo-M in wild type. zhai-2025-02 has the same values in its notes
-      (0.47 and 0.012) but did not record them as a finding.
-  - finding: 13
-    status: still_present
-    now: 6
-    note: Both report that subjects are defined per recording day and that the files do not say which mouse each cell came
-      from.
-  - finding: 15
-    status: still_present
-    now: 15
-    note: In earlier_findings.ipynb 18 of 123 somatic cells still miss a step between 20 and 300 pA and 14 repeat a step,
-      every one of them also missing one. zhai-2025-02 counts the 14 repeats in a deviation but did not record a finding.
-  outcomes:
-  - claim: fig1i-dspn-dendritic-sch-lower
-    earlier: not_reproduced
-    note: A difference in method. Both find dSPN 2019-04-11 cell 1 with only its second site pair and P = 0.0662 (0.066)
-      with it; zhai-2025-01 kept the cell, and zhai-2025-02 left it out as an assumption (P = 0.027), citing the draft's
-      description, which now says the first pair is not deposited.
-  - claim: fig2h-dspn-sr-amplitude-on-larger
-    earlier: blocked
-    note: A change in the dataset. Version 0.260527.1302 held one Sr2+-oEPSC cell per mouse (3 against 4 dSPNs, smallest
-      attainable P 0.057), and the draft holds all 33 cells. The new outcome rests on a stand-in event detector.
-  - claim: fig2i-dspn-sr-frequency-unchanged
-    earlier: blocked
-    note: A change in the dataset, as for fig2h-dspn-sr-amplitude-on-larger. With 3 against 4 cells the claim of absence
-      could not be judged; the draft's 10 and 8 cells give P = 0.122, on a stand-in event detector.
-  - claim: fig3f-ispn-dendritic-sul-no-change
-    earlier: not_reproduced
-    note: A change in the dataset. iSPN 2019-05-08 cell 3 had only a distal site in version 0.260527.1302 (P = 0.0097
-      without it); the draft holds its site pair, with the paper's index 0.217, and zhai-2025-02 gets P = 0.093 with 8
-      sulpiride cells. The on-state group also differs (10 cells against 9), as zhai-2025-01 split the six-trial series of
-      2016-06-08 cell 1 into two sites.
-  - claim: fig4g-ispn-sr-amplitude-on-smaller
-    earlier: blocked
-    note: A change in the dataset. Version 0.260527.1302 held 3 off-state and 4 on-state iSPNs, one per mouse, and the
-      draft holds the paper's 7 and 8. The new outcome rests on a stand-in event detector.
-  - claim: fig4h-ispn-sr-frequency-unchanged
-    earlier: blocked
-    note: A change in the dataset, as for fig4g-ispn-sr-amplitude-on-smaller; the draft's cells give P = 0.12, on a
-      stand-in event detector.
-  - claim: fig5f-ach-6ohda-elevated
-    earlier: blocked
-    note: A change in the dataset. Version 0.260527.1302 held one GRAB-ACh3.0 region per mouse (3 against 3, smallest
-      attainable P 0.10), and the draft holds 13 unlesioned and 10 6-OHDA regions. The claims file gives this claim no
-      criterion, as it was written blocked; zhai-2025-02 used the Methods' Mann-Whitney test.
-  - claim: fig5f-ach-d2-control
-    earlier: blocked
-    note: A change in the dataset. Version 0.260527.1302 held 3 unlesioned regions (smallest paired P 0.25), and the draft
-      holds 13. The claims file gives no criterion; zhai-2025-02 used paired Wilcoxon tests.
-  - claim: fig5f-ach-da-suppresses
-    earlier: blocked
-    note: A change in the dataset. Version 0.260527.1302 held 3 6-OHDA and 5 off-state regions, and the draft holds 10 and
-      11. The claims file gives no criterion; zhai-2025-02 used paired Wilcoxon tests.
-  - claim: fig10b-m1r-aims
-    earlier: blocked
-    note: A change in the dataset. Version 0.260527.1302 held AIM sheets for 2 of the 21 Figure 10 mice, and the draft
-      holds all 21, which match the paper's table in 103 of 105 sessions.
-  protocol: zhai-2025-01 was made under pilot-7 and zhai-2025-02 under pilot-15. pilot-8 added the paper's quotes and
-    statistics to claims files (added to this one on 2026-10-19) and marked link claims as kind link. pilot-9 required
-    the full text and methods taken from the paper, running every reading the paper allows and blocking a claim as
-    methods_underspecified when they disagree. pilot-10 gave the claims file to a reader who does not see the data and
-    bound the author to it. pilot-12 made repeat attempts blind and added this reconciliation; pilot-13 raised the
-    notebook limit to 60 minutes, and pilot-14 filed records by paper, with missing_datasets. For this pair the claims
-    file stayed the one zhai-2025-01's author wrote after a data check, as pilot-7 allowed, with the criteria of
-    fig5f-ach-off-elevated and fig5f-ach-off-like-6ohda changed by a reader's answer to count regions. The claims it
-    blocked for too few units (the Sr2+-oEPSC, three GRAB-ACh3.0 and fig10b claims) carry no criterion, and zhai-2025-02
-    tested them with the Methods' default tests. docs/pilot-notes.md has no section for pilot-11 or pilot-15.
-EOF
-grep -n "—\|rather" attempts/zhai-2025-02.yaml | head; python -c "
-import yaml;r=yaml.safe_load(open('attempts/zhai-2025-02.yaml'))
-print(len(r['findings']), [f.get('found') for f in r['findings']]); print([ (x['finding'],x['status'],x.get('now')) for x in r['reconciliation']['findings']])"
+cd  cp entries/zhai-2025/requirements.lock.txt $TMPDIR/lock.bak; python tools/entry.py lock entries/zhai-2025 2>&1 | tail -5; diff $TMPDIR/lock.bak entries/zhai-2025/requirements.lock.txt | head; python tools/entry.py check entries/zhai-2025 2>&1 | tail -10; date -u
 ```
 
 ```
-15 [None, None, None, None, None, None, None, None, None, None, None, None, 'on_prompt', 'on_prompt', 'on_prompt']
-[(1, 'partly_fixed', 11), (2, 'partly_fixed', 4), (3, 'still_present', 13), (4, 'fixed', None), (5, 'still_present', 4), (6, 'partly_fixed', 1), (7, 'partly_fixed', 2), (8, 'still_present', 12), (9, 'fixed', None), (10, 'fixed', None), (11, 'fixed', None), (12, 'fixed', None), (14, 'still_present', 14), (13, 'still_present', 6), (15, 'still_present', 15)]
+wrote zhai-2025/requirements.lock.txt (Python 3.13, with hashes)
+0 error(s)
+Thu Nov 26 19:03:42 UTC 2026
 ```
 
 **Agent**
 
-The record parses. I listed earlier findings 13 and 14 out of order, so I'll swap them.
+Lock unchanged and check passes. Now the full run (both notebooks).
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py run entries/zhai-2025 2>&1 | tail -15
+```
+
+```
+Installed kernelspec registry-zhai-2025 in executed/zhai-2025/.venv/share/jupyter/kernels/registry-zhai-2025
+pass  reproduce_zhai_2025.ipynb  (439 s)
+pass  earlier_findings.ipynb  (31 s)
+
+real	7m53.691s
+user	1m10.101s
+sys	0m7.614s
+```
 
 **Agent calls Bash**
 
 ```bash
 cd  python - <<'EOF'
-p="attempts/zhai-2025-02.yaml"; s=open(p).read()
-a=s.index("  - finding: 14\n"); b=s.index("  - finding: 13\n"); c=s.index("  - finding: 15\n")
-s=s[:a]+s[b:c]+s[a:b]+s[c:]
-open(p,"w").write(s)
+import json
+nb=json.load(open('executed/zhai-2025/earlier_findings.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        for o in c['outputs']:
+            t=''.join(o.get('text',''))
+            print([l for l in t.splitlines() if any(k in l for k in ['identical','totals','equal to','baseline only','P =','subjects','index'])][:8])
 EOF
-python -c "
-import yaml;r=yaml.safe_load(open('attempts/zhai-2025-02.yaml'))
-print([x['finding'] for x in r['reconciliation']['findings']])"; python tools/entry.py check entries/zhai-2025 2>&1 | tail -5; git status --short; date -u
+git status --short
 ```
 
 ```
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-0 error(s)
- M attempts/zhai-2025-02.yaml
- M entries/zhai-2025/README.md
+['dandiset 001538 version 0.261124.1858 | assets 1288 | NWB files 391 | subjects 173']
+[]
+['   cell   proximal   distal  index  basal_ratio']
+[]
+['   cell   proximal   distal  index  basal_ratio']
+['sessions 4 and 5 identical at every time point and behaviour: True', 'session totals, dandiset: {1: 25.5, 2: 33.0, 3: 40.5, 4: 39.5, 5: 39.5}', 'session totals, paper: {1: 25.5, 2: 33.0, 3: 40.5, 4: 39.5, 5: 39.5}']
+[]
+['                                                         cells  subjects']
+['cells: 33 | equal to the median (within 0.006 pA): 33 | equal to the mean: 0']
+['somatic cells in drug-named files: 21 | with baseline on-state sweeps: 11 | baseline only: 4']
+['Figure 7E WT: n = 10, Wilcoxon P = 0.009766', 'Figure 7E KO: n = 12, Wilcoxon P = 0.4697', 'Figure 8A: Mann-Whitney P = 0.01198']
  M entries/zhai-2025/entry.yaml
- M tools/build_site.py
- M tools/notify.py
- M tools/paper_match.py
- M tools/runner/chain.sh
- M tools/runner/run_requests.py
- M tools/site_assets/app.css
 ?? .bash_profile
 ?? .bashrc
 ?? .gitconfig
@@ -2770,89 +1321,448 @@ print([x['finding'] for x in r['reconciliation']['findings']])"; python tools/en
 ?? .profile
 ?? .ripgreprc
 ?? .vscode
-?? .zprofile
-[... 6 more lines not kept]
+[... 5 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la .bash_profile .bashrc .gitconfig .mcp.json .profile .ripgreprc .zprofile .zshrc .idea .vscode scripts 2>&1 | head -30
+cd  ls -la .bashrc .gitconfig .mcp.json scripts .idea .vscode 2>&1 | head -20; git check-ignore -v executed | head -2
 ```
 
 ```
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .bash_profile
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .bashrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .gitconfig
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .idea
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .mcp.json
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .profile
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .ripgreprc
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .vscode
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .zprofile
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 .zshrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Nov 15 04:39 scripts
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 26 18:52 .bashrc
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 26 18:52 .gitconfig
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 26 18:52 .idea
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 26 18:52 .mcp.json
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 26 18:52 .vscode
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 26 18:52 scripts
+.gitignore:6:executed/	executed
 ```
-
-**Agent**
-
-These are `/dev/null` placeholders the sandbox mounts, dated 04:39, before this run started. They are not real files, so I've left them alone. Last, I'll confirm the record diff only adds lines.
 
 **Agent calls Bash**
 
 ```bash
-cd  git diff --numstat attempts/zhai-2025-02.yaml entries/zhai-2025; git diff attempts/zhai-2025-02.yaml | grep "^-" | grep -v "^---" | head
+cd  timeout 120 git fetch --deepen=300 2>&1 | tail -3; git log --oneline | wc -l; git log --format='%h %ad %s' --date=short -- docs/protocol.md | head -20
 ```
 
 ```
-158	0	attempts/zhai-2025-02.yaml
-2	0	entries/zhai-2025/README.md
-3	0	entries/zhai-2025/entry.yaml
+Terminated                 timeout 120 git fetch --deepen=300 2>&1 | tail -3
+1
+```
+
+**Agent calls Bash**
+
+```bash
+cd  head -30 protocol.lock; grep -rln "pilot-1[6789]" --include=*.md . 2>/dev/null | grep -v node_modules | head
+```
+
+```
+v0.1.6
+./transcripts/fritsche-2022/claims-check.md
+./transcripts/fritsche-2022/verifier-1.md
+./transcripts/fritsche-2022/author.md
+./transcripts/fritsche-2022/author-revise-1.md
+./transcripts/fritsche-2022/claims.md
+./transcripts/yang-2026/claims-check.md
+./transcripts/yang-2026/verifier-1.md
+./transcripts/yang-2026/author.md
+./transcripts/yang-2026/author-revise-2.md
+./transcripts/yang-2026/author-revise-1.md
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "^[a-z_]*:" attempts/zhai-2025-03.yaml; awk 'NR>=0' attempts/zhai-2025-03.yaml | grep -n "finding-grab-calibration\|^- kind: methods_unavailable" ; sed -n "$(grep -n '^verifications:' attempts/zhai-2025-03.yaml | cut -d: -f1),+0p" attempts/zhai-2025-03.yaml
+```
+
+```
+1:schema_version: 3
+2:id: zhai-2025-03
+3:datasets:
+9:paper: doi:10.1126/sciadv.adv8224
+10:date: '2026-11-26'
+11:entry: zhai-2025
+12:provenance:
+23:inputs:
+34:outcomes:
+613:findings:
+701:verifications:
+686:  output: finding-grab-calibration
+687:- kind: methods_unavailable
+696:- kind: methods_unavailable
+verifications:
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "attempts/zhai-2025-03.yaml",
+ "offset": 686,
+ "limit": 16
+}
+```
+
+```
+686	  output: finding-grab-calibration
+687	- kind: methods_unavailable
+688	  about: paper
+689	  statement: 'The Sr2+-oEPSC events were detected with TaroTools in Igor Pro and checked by eye (Methods,
+690	    Data acquisition and statistical analysis). The settings (filter, template or derivative criterion,
+691	    the window the noise SD is taken from) and the sweeps used for cells with more than 10 are not given.
+692	    For the authors: which settings and sweeps were used? This attempt assumed the noise SD of the recorded
+693	    trace 500 to 900 ms after the flash and, for the two cells with 12 and 11 sweeps, the 10 consecutive
+694	    sweeps nearest the paper''s per-cell count; the iSPN frequency claim would change with the first 10
+695	    sweeps.'
+696	- kind: methods_unavailable
+697	  about: paper
+698	  statement: Spine densities were counted semi-automatically in NeuronStudio after AutoQuant deconvolution
+699	    (2PLSM) and in Imaris 10 with supervised learning and manual correction (confocal). Neither can be
+700	    repeated from the paper, so the six spine claims cannot be tested on the raw images.
+701	verifications:
+```
+
+**Agent calls Bash**
+
+```bash
+. $TMPDIR/venv/bin/activate && cd entries/zhai-2025 && python - <<'EOF' 2>&1 | grep -v Warn
+import zhai
+a=zhai.list_assets()
+r=a.loc[747]; h=zhai.open_h5(r.asset_id)
+h.visit(lambda n: print(n) if n.count('/')<3 else None)
+print(zhai._str(h['session_description'][()]))
+import re
+print(a[a.path.str.contains('(?i)rotat|openfield|open_field')].path.tolist()[:5])
+EOF
+```
+
+```
+acquisition
+analysis
+events
+events/aim_scores
+events/aim_scores/behavior
+events/aim_scores/duration
+events/aim_scores/id
+events/aim_scores/meanings_tables
+events/aim_scores/score
+events/aim_scores/timestamp
+file_create_date
+general
+general/experiment_description
+general/experimenter
+general/external_resources
+general/external_resources/entities
+general/external_resources/entity_keys
+general/external_resources/files
+general/external_resources/keys
+general/external_resources/object_keys
+[... 41 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  && cat > $TMPDIR/newfind.yaml <<'EOF'
+- kind: other
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: Mouse 7830 (Figure 10, control) has identical AIM scores in sessions 4 and 5 (the files of 2023-12-15
+    and 2023-12-18) at every time point and for every behaviour, with session totals of 39.5 each. The paper's
+    Figure 10B table has the same totals for both sessions; whether one session's sheet was copied into the other
+    cannot be told from the files.
+  versions:
+  - draft
+  - 0.261124.1858
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-5
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: Subjects are defined by recording day (for example Subject20221004M1RCRSPRAdora2Cre), and their
+    descriptions say the lab gave these mice no number. In four groups the dandiset has fewer subjects than the
+    paper's legends give mice. Off-state Sr2+-oEPSC dSPNs, 10 cells from 3 subjects against four mice (Figure 2I);
+    off-state Sr2+-oEPSC iSPNs, 7 cells from 3 subjects against four mice (Figure 4H); M1R deletion somatic cells,
+    8 cells from 3 subjects against four mice, and their controls, 6 cells from 2 subjects against three mice
+    (Figure 9D). The files do not say which mouse each cell came from.
+  versions:
+  - draft
+  - 0.261124.1858
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-6
+- kind: other
+  about: paper
+  found: on_prompt
+  statement: The per-cell Sr2+-oEPSC amplitudes of Figures 2H and 4G, labelled average amplitude in the paper's
+    tables (doi:10.5281/zenodo.17307059), equal the median of each cell's events in the Figure 2G and 4F event
+    lists for all 33 cells (within 0.006 pA) and the mean for none.
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-9
+- kind: metadata_error
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: The session names of the SCH 23390 and sulpiride files (D1RaSch, D2RaSul) state a drug, while 11 of
+    the 21 somatic cells in these files have baseline on-state sweeps and 4 have no other sweeps (dSPN 2019-05-07
+    cell 1, iSPN 2019-04-08 cell 1, 2019-04-09 cell 1 and 2019-05-08 cell 2). Each sweep's group is in the
+    condition and drug columns of the intracellular recordings table; grouping by session name puts these cells in
+    the drug groups.
+  versions:
+  - draft
+  - 0.261124.1858
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-13
+- kind: paper_inconsistency
+  found: on_prompt
+  statement: Recomputed on the paper's per-cell tables (doi:10.5281/zenodo.17307059), two reported P values differ.
+    The Wilcoxon test of oxo-M in CDGI KO iSPNs (Figure 7E, 12 cells) gives P = 0.4697 where the paper reports
+    0.910, and the Mann-Whitney test of rotations in Figure 8A (10 KO and 12 wild-type mice) gives P = 0.01198
+    where the paper reports 0.0092. The wild-type oxo-M test gives P = 0.009766, as the paper's 0.0098.
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-14
+EOF
+python - <<'EOF'
+import os
+p='attempts/zhai-2025-03.yaml'
+L=open(p).read().split('\n')
+i=L.index('verifications:')
+new=open(os.environ['TMPDIR']+'/newfind.yaml').read().rstrip('\n').split('\n')
+open(p,'w').write('\n'.join(L[:i]+new+L[i:]))
+EOF
+tail -c 200 attempts/zhai-2025-03.yaml | od -c | tail -3
+```
+
+```
+0000260   s   u   m   m   a   r   y       n   o   w       s   a   y   s
+0000300       e   i   g   h   t   .  \n
+0000310
+```
+
+**Agent calls Bash**
+
+```bash
+cat >> attempts/zhai-2025-03.yaml <<'EOF'
+reconciliation:
+  earlier: zhai-2025-02
+  date: '2026-11-26'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: Both cells now have a proximal-distal pair (Proximal1 and Distal1), with indexes of 0.293 (2016-05-26
+      cell 3) and 0.146 (2016-06-08 cell 1) (earlier_findings.ipynb, output earlier-finding-1), and zhai-2025-03
+      finds the paper's n in all 10 dendritic groups (92 cells).
+  - finding: 2
+    status: still_present
+    now: 3
+    note: Finding 3 reports the same missing first site pair of dSPN 2019-04-11 cell 1, with the same index (0.584
+      against the paper's 0.228) and the same P values for Figure 1I (0.066 with the cell, 0.027 without).
+  - finding: 3
+    status: still_present
+    now: 4
+    note: Finding 4 reports the same spike-count mismatch, 90 of 123 cells equal to a row of the paper's table (33
+      not) and 18 differing by more than 3 spikes.
+  - finding: 4
+    status: still_present
+    now: 2
+    note: Finding 2 reports the same Figure 8 AIM differences (12 of 90 matched session totals equal), the same
+      mice missing on each side (4123, 4124 and 5871; 2346, 2347, 7741, 7742 and 7744), and the Figure 10 match
+      in 103 of 105 sessions.
+  - finding: 5
+    status: still_present
+    now: 9
+    note: Sessions 4 and 5 of mouse 7830 are still identical at every time point and behaviour (totals 39.5 and
+      39.5), as in the paper's table (output earlier-finding-5).
+  - finding: 6
+    status: still_present
+    now: 10
+    note: Subjects are still recording days, and the four groups hold 3, 3, 3 and 2 subjects against the legends'
+      four, four, four and three mice (output earlier-finding-6). The subject descriptions now say the lab gave
+      these mice no number.
+  - finding: 7
+    status: still_present
+    now: 6
+    note: Finding 6 reports the same GRAB-ACh3.0 regions matched to the paper only by value (16 of 34 within 0.05)
+      and the missing tetrodotoxin trial of 2024-05-24 Slice1Roi1. For 2024-04-02 Slice1Roi2 it finds two
+      acetylcholine trials (4.4 and 1.2 s) where the earlier statement says none; the earlier helper
+      (lid.grab_auc) gives no Fmax when any acetylcholine trial of a region is shorter than 2 s, which may explain
+      that part.
+  - finding: 8
+    status: still_present
+    now: 5
+    note: Finding 5 reports the same two Sr2+-oEPSC cells with 12 and 11 sweeps (2023-02-22 cell 1, 2023-04-06
+      cell 1) and that the files do not say which sweeps the paper used.
+  - finding: 9
+    status: still_present
+    now: 11
+    note: On the same Zenodo tables the paper's per-cell amplitudes equal the median of each cell's events for all
+      33 cells and the mean for none (output earlier-finding-9).
+  - finding: 10
+    status: still_present
+    now: 7
+    note: Finding 7 asks the same question about the TaroTools settings (filter, noise window) and adds which
+      sweeps were used for the cells with more than 10.
+  - finding: 11
+    status: still_present
+    now: 1
+    note: Finding 1 reports the control and 6-OHDA patch-clamp recordings and the open-field data as not in the
+      dandiset. It does not name the rotation counts, which are not in this version either (the AIM session files
+      hold the rotation videos and no counts), and zhai-2025-03 tested both rotation claims on the paper's tables.
+  - finding: 12
+    status: still_present
+    now: 8
+    note: Finding 8 reports the same NeuronStudio and Imaris spine counting, which cannot be repeated, and finding 1
+      that the dandiset holds the spine stacks without counts.
+  - finding: 13
+    status: still_present
+    now: 12
+    note: The drug-named files still hold 11 somatic cells with baseline on-state sweeps, 4 of them baseline only,
+      the same cells (output earlier-finding-13). zhai-2025-03 grouped by the condition column and noted this in
+      its data check, without a finding.
+  - finding: 14
+    status: still_present
+    now: 13
+    note: The same tests on the same tables give P = 0.4697 (Figure 7E, KO) and 0.01198 (Figure 8A) against the
+      paper's 0.910 and 0.0092 (output earlier-finding-14); zhai-2025-03 gives these values in its outcome notes.
+  - finding: 15
+    status: still_present
+    now: 4
+    note: Finding 4 says 14 cells hold a step more than once and some skip steps, and the zhai-2025-03 notebook
+      counts the same 14 cells with a repeated step. It does not give the number of cells missing a step (18
+      earlier).
+  outcomes:
+  - claim: fig1i-dspn-dendritic-sch-lower
+    earlier: reproduced
+    cause: data_used
+    note: Both attempts compute the same numbers (SCH 23390 median 0.419 in 9 cells against 0.476 on-state, P =
+      0.066; without dSPN 2019-04-11 cell 1, P = 0.027 in 8 cells). zhai-2025-02 left that cell out, as an
+      assumption, because the files hold only its second site pair (index 0.584 against the paper's 0.228), and
+      zhai-2025-03 kept it, so the outcome turns on that one exclusion.
+    confidence: high
+  - claim: fig8bc-cdgi-aims
+    earlier: blocked
+    cause: error
+    error_in: this
+    note: The claim depends on link-aim-mice, which is not reproduced in both attempts because the Figure 8 session
+      totals differ from the paper's (12 of 90 equal), and the protocol (Author, step 1, item 4) blocks a claim
+      whose link fails. zhai-2025-02 blocked it; zhai-2025-03 tested it on the dandiset's own scores (group F(1,19)
+      = 31.24, P = 2.2e-05, KO lower), which its author's report names as going past that rule, on sheets the
+      description says are the lab's preprint scores.
+    supports: blocked
+    confidence: medium
+  protocol: zhai-2025-02 was made under pilot-15 and zhai-2025-03 under pilot-19. docs/pilot-notes.md has no section
+    for pilot-15 or any later version (its last is pilot-14), so the changes are read from docs/protocol.md. From
+    pilot-18 each finding about the data carries a severity, and from pilot-19 a finding gives the notebook and
+    output cell that show it and the versions it was seen in, with fixed_in when it is gone; zhai-2025-03's
+    findings carry these and zhai-2025-02's do not. not_runnable is now a blocked_by reason (zhai-2025-02's first
+    verifier said it was not allowed), which is why the six spine claims are blocked as not_runnable here and as
+    methods_underspecified before. None of these changes altered an outcome.
+EOF
+python - <<'EOF'
+import yaml
+d=yaml.safe_load(open('attempts/zhai-2025-03.yaml'))
+r=d['reconciliation']; print(len(r['findings']), len(d['findings']))
+def walk(o):
+    if isinstance(o,dict):
+        for v in o.values(): yield from walk(v)
+    elif isinstance(o,list):
+        for v in o: yield from walk(v)
+    elif isinstance(o,str): yield o
+for s in walk(r):
+    for bad in [' rather','—']:
+        if bad in s: print('BAD',bad,s[:80])
+EOF
+grep -n ": .*: " attempts/zhai-2025-03.yaml | sed -n '1,400p' | awk -F: '$1>700' | grep -v "'" | head
+```
+
+```
+15 13
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 215,245p docs/protocol.md | grep -n "^[0-9]\.\|^   *[0-9]\." ; grep -n "^[0-9]\. " docs/protocol.md | awk -F: '$1>215 && $1<380'; python tools/entry.py check entries/zhai-2025 2>&1 | tail -5
+```
+
+```
+5:1. List the dataset's files and read its metadata from the archive. Open a
+7:2. Work out which of the subjects, sessions, conditions and measured
+14:3. Choose the version to pin. Pin the version the paper cites, as the claims
+23:4. Decide what comes from outside the dataset. Data from elsewhere may be
+219:1. List the dataset's files and read its metadata from the archive. Open a
+221:2. Work out which of the subjects, sessions, conditions and measured
+228:3. Choose the version to pin. Pin the version the paper cites, as the claims
+237:4. Decide what comes from outside the dataset. Data from elsewhere may be
+292:5. Decide now which claims are blocked, and why; a block that depends on a
+318:6. Take from the paper what the claims file does not say. When a claim needs
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  git status --short | grep -v "^?? \.\|scripts$"; git diff --stat; date -u
+```
+
+```
+M attempts/zhai-2025-03.yaml
+ M entries/zhai-2025/entry.yaml
+?? earlier-entry/
+?? entries/zhai-2025/earlier_findings.ipynb
+ attempts/zhai-2025-03.yaml   | 173 +++++++++++++++++++++++++++++++++++++++++++
+ entries/zhai-2025/entry.yaml |   3 +
+ 2 files changed, 176 insertions(+)
+Thu Nov 26 19:15:31 UTC 2026
 ```
 
 **Agent**
 
-I've written the reconciliation block into `attempts/zhai-2025-02.yaml` and added the `earlier_findings.ipynb` notebook. `python tools/entry.py check entries/zhai-2025` reports 0 errors, and `entry.py all` ran both notebooks cleanly (`reproduce_zhai_2025.ipynb` in 611 s, `earlier_findings.ipynb` in 187 s). The record diff only adds lines: none of the blind attempt's outcomes, statements or notes changed. Nothing is committed.
+The reconciliation block is written into `attempts/zhai-2025-03.yaml`, and `python tools/entry.py check entries/zhai-2025` passes with 0 errors. I checked six earlier findings in a new notebook, `entries/zhai-2025/earlier_findings.ipynb`, which is listed in `entry.yaml`. The lock file came out unchanged. In the full entry run, `reproduce_zhai_2025.ipynb` passed in 439 s and `earlier_findings.ipynb` in 31 s. Nothing is committed.
 
-**1. Blind: yes.** The audit found one line: the runner URL in the attempt's own provenance block. A wider search found only the notebook header saying the draft postdates 0.260527.1302, and the author's report saying it did not look for earlier attempts.
+**1. Blind: yes.** The audit printed five lines, and none points at an earlier attempt's results. Three are links to the protocol and README, and one is this attempt's own runner URL. The fifth, from the author's report, flags the claims file's opening comment about an earlier data check (it names `lid.py` and a `condition_subfolder` column). The claims file is the one earlier item the author is allowed to keep. The author also noticed that the dandiset's own description gives the "90 of 123 cells" figure. That is the data owner's text, not an attempt record.
 
-**2. Earlier findings**
+**2. Earlier findings (zhai-2025-02)**
 
-| Earlier | Kind | Status | Now | Evidence |
-|---|---|---|---|---|
-| 1 | data_missing | partly_fixed | 11 | The oxo-M line scans are now in the draft (5 wild-type, 6 KO cells). Control and 6-OHDA patch-clamp files and open-field data are still missing. |
-| 2 | selection_undocumented | partly_fixed | 4 | All 33 Sr2+ cells and 34 GRAB regions are now there. Figure 8 AIM mice are still incomplete, but the description now says so. |
-| 3 | metadata_error | still_present | 13 (on_prompt) | The same 11 baseline cells (4 baseline only) are in files named for a drug. Condition and drug are now in standard columns. |
-| 4 | metadata_error | fixed | | All 42 behaviour mice have consistent labels, and 18 of 18 Figure 8 mice agree with the paper's groups. |
-| 5 | other | still_present | 4 | Figure 8 AIM totals still differ from the paper's; Figure 10 matches in 103 of 105 sessions. |
-| 6 | metadata_error | partly_fixed | 1 | The six-trial series are now two three-trial spots of one site, still with no proximal-distal pair. The 1-, 2- and 4-trial series remain. |
-| 7 | data_missing | partly_fixed | 2 | iSPN 2019-05-08 cell 3 now has a site pair (index 0.217, the paper's value). dSPN 2019-04-11 cell 1 is still incomplete. |
-| 8 | metadata_insufficient | still_present | 12 | Still no spine counts. |
-| 9 | metadata_error | fixed | | All 102 dendritic stimulus series peak at 2.0 nA, and all 1276 sweeps have a valid kymograph slice. |
-| 10 | metadata_error | fixed | | All 333 Sr2+ sweeps have one pulse at 0.02 s and a stimulus reference. |
-| 11 | metadata_error | fixed | | No GRAB object is described as a background, PMT or zero-laser image. |
-| 12 | metadata_error | fixed | | All 391 files cite the published paper; no mention of the preprint or "Figure 7J". |
-| 13 | identifier_missing | still_present | 6 | Subjects are still defined per recording day. |
-| 14 | paper_inconsistency | still_present | 14 (on_prompt) | Oxo-M in KO gives P = 0.4697 (paper 0.910); Figure 8A gives P = 0.01198 (paper 0.0092). |
-| 15 | other | still_present | 15 (on_prompt) | 18 of 123 cells miss a step and 14 repeat one, unchanged. |
+| # | Earlier finding | Status | Now |
+|---|---|---|---|
+| 1 | Two dendritic cells imaged at one site only | fixed (both cells now have a Proximal1/Distal1 pair) | – |
+| 2 | 2019-04-11 cell 1 missing its first site pair | still_present | 3 |
+| 3 | Somatic spike counts of 33 cells don't match the paper's table | still_present | 4 |
+| 4 | Figure 8 AIM sheets differ from the paper | still_present | 2 |
+| 5 | Mouse 7830 sessions 4 and 5 identical | still_present (checked) | 9 |
+| 6 | Subjects defined per recording day; mouse counts short | still_present (checked) | 10 |
+| 7 | GRAB-ACh3.0: no identifier, missing trials | still_present | 6 |
+| 8 | Two Sr2+-oEPSC cells with extra sweeps | still_present | 5 |
+| 9 | Paper's "average" Sr2+ amplitude is the median | still_present (checked) | 11 |
+| 10 | TaroTools settings not given | still_present | 7 |
+| 11 | Control/6-OHDA recordings, rotations, open field not deposited | still_present | 1 |
+| 12 | Spine counting cannot be repeated | still_present | 8 |
+| 13 | Drug-named session files hold baseline cells | still_present (checked) | 12 |
+| 14 | Two P values in the paper don't recompute | still_present (checked) | 13 |
+| 15 | Missing and repeated current steps | still_present | 4 |
 
-**3. New findings:** 3, 5, 7, 8, 9 and 10. Findings 13, 14 and 15 are the three I added with `found: on_prompt`.
+On finding 7, the earlier attempt said 2024-04-02 Slice1Roi2 has no acetylcholine trial, while zhai-2025-03 finds two (4.4 s and 1.2 s long). This may be an artefact of the earlier code, not a change in the files: its helper gives no Fmax when any acetylcholine trial of a region is shorter than 2 s.
+
+Findings 9 to 13 of zhai-2025-03 are the ones added with `found: on_prompt`. Each points at its cell in `earlier_findings.ipynb`.
+
+**3. New findings of zhai-2025-03:** none. Each of its findings 1 to 8 matches an earlier one.
 
 **4. Outcomes that changed**
-- **`fig1i-dspn-dendritic-sch-lower`** (not_reproduced → reproduced): a difference in method. Both attempts get P = 0.066 with dSPN 2019-04-11 cell 1 included. The new attempt leaves that incomplete cell out as an assumption and gets P = 0.027, citing the draft's description.
-- **`fig3f-ispn-dendritic-sul-no-change`** (not_reproduced → reproduced): a change in the dataset. The missing proximal site of iSPN 2019-05-08 cell 3 is now deposited, and P = 0.093. There is also a small method difference in the on-state group (10 cells against 9).
-- **`fig2h`, `fig2i`, `fig4g`, `fig4h`** (blocked → reproduced): a change in the dataset. The draft holds all 33 Sr2+ cells, where the earlier version held one per mouse and no test could reach P < 0.05. The new outcomes rest on a stand-in event detector.
-- **`fig5f-ach-6ohda-elevated`, `fig5f-ach-d2-control`, `fig5f-ach-da-suppresses`** (blocked → reproduced): a change in the dataset, from one GRAB region per mouse to all regions.
-- **`fig10b-m1r-aims`** (blocked → reproduced): a change in the dataset, from 2 of the 21 Figure 10 mice to all 21.
-- **`fig8bc-cdgi-aims`** is blocked in both attempts, but its reason changed from `other` to `data_missing`. The outcome is the same, so it is not listed under `outcomes`.
+- **`fig1i-dspn-dendritic-sch-lower`** (reproduced before, not_reproduced now). Cause `data_used`, high confidence. Both attempts get the same numbers: P = 0.066 with 2019-04-11 cell 1 and 0.027 without it. The earlier attempt left that cell out as an assumption, because only its second site pair is in the files; this attempt kept it. I left `supports` out.
+- **`fig8bc-cdgi-aims`** (blocked before, reproduced now). Cause `error`, in this attempt, medium confidence; I marked it as supporting blocked. The claim depends on `link-aim-mice`, which fails in both attempts, and the protocol (Author, step 1, item 4) blocks a claim whose link fails. This attempt tested it on the deposited preprint scores anyway (F(1,19) = 31.24), and its author's report says this goes past that rule.
 
-**5. What did not fit the protocol**
-- `docs/pilot-notes.md` has no section for pilot-11 or pilot-15, so the `protocol` note covers pilot-8 to pilot-14 only.
-- The claims file is still the one the earlier author wrote after seeing the data, which pilot-7 allowed and pilot-10 no longer does. The claims it blocked for having too few units have no criterion at all, so the new author tested them with the paper's default tests.
-- The checkout was a shallow clone, so `git log -1 -- attempts/zhai-2025-01.yaml` returned HEAD. I ran `git fetch --deepen=200` to reach the right commit (72c9fcd).
-- Earlier finding 14 is about the paper, so I checked it on the paper's tables on Zenodo, not on the dataset version.
-- The empty dotfiles that now show as untracked in the repository root (`.bashrc`, `.gitconfig`, `.idea`, `scripts` and others) are `/dev/null` mounts from the sandbox. I left them alone, but they should not be committed if the workflow runs `git add -A`.
+**5. Protocol points that did not fit**
+- `docs/pilot-notes.md` has no section for pilot-15 or any later version; its last is pilot-14. The `protocol` note is therefore read from `docs/protocol.md` itself. Findings now carry a severity (from pilot-18), and the notebook cell that shows them and the versions they were seen in (from pilot-19). `not_runnable` is now an allowed block reason, which explains why the spine claims are blocked as `not_runnable` here and as `methods_underspecified` before. None of these changes moved an outcome.
+- The checkout is a shallow clone with one commit, so `git show $c:entries/...` returns the current entry, and `git fetch --deepen` timed out. I used the `earlier-entry/` copy instead.
+- An exclusion choice like the fig1i one could be filed as `reading` or as `data_used`. I chose `data_used` because the only difference is one excluded cell.
+- `versions` on the new data findings lists `draft`, which is a version name that can change.
+- `git status` shows untracked dotfiles and `scripts` in the repository root. They are sandbox device nodes, not real files, so I left them alone.
 
 ## End of run
 
-73 turns, 53 minutes, $4.19 at API prices, result: success.
+52 turns, 18 minutes, $2.83 at API prices, result: success.
