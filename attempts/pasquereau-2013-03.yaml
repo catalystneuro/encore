@@ -504,6 +504,34 @@ findings:
     distribution. Either the files' centre target time is placed from the perturbation onset or the timing
     differs from the paper's; the spikes and analog series agree with the onset (data check), so the analyses
     aligned to the onset are not affected, but a delay from the centre target computed from the files would be.
+- kind: other
+  about: data
+  severity: minor
+  found: on_prompt
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-3
+  statement: The monkey L analog series, WristAngle and WristTorque in the 133 Leu files that have them, are sampled
+    every 10 ms (100 Hz), where the paper gives 200 Hz for monkey L. The Venus EMG is in arbitrary units (a.u.),
+    with no conversion to the microvolts of the paper's EMG figures. The dandiset description states both; the EMG
+    descriptions give the paper's processing (rectified, low-pass filtered at 100 Hz).
+- kind: paper_inconsistency
+  found: on_prompt
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-6
+  statement: The pre-MPTP resting rates of PTNs and CSNs are 16.3 and 3.6 spikes/s in the Results, which cite Table
+    1, and 18.3 and 3.2 spikes/s in Table 1. Table 1 marks the change in the CSN fraction of excitatory responses
+    p < 0.01 (chi-square test), but its own counts, 23 of 24 before MPTP and 19 of 22 after, give p = 0.54 with
+    the Yates correction, 0.25 without it and 0.34 with Fisher's exact test.
+- kind: other
+  about: data
+  severity: minor
+  found: on_prompt
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-7
+  statement: In three Venus sessions (v1401, v1402 and v1501) the trials table marks 51 perturbations, but the torque
+    command has no pulse at any of them (median pulse 0.0 units, largest 0.7), where the neighbouring sessions v1305,
+    v1403 and v1601 have median pulses of 91.0, 45.6 and 45.6 units. The ElbowTorque description says these sessions
+    have no pulses in the command; whether a torque was applied in their trials cannot be told from the files.
 verifications:
 - date: '2026-11-26'
   kind: agent
@@ -987,3 +1015,67 @@ verifications:
     response: Outcome kept as partially_reproduced; the proposal stays with the verifier's view added to its reason.
       The notes now say the small-pulse sessions are most pre-MPTP sessions, and the conclusion, summary and README
       say the verifier did not agree.
+reconciliation:
+  earlier: pasquereau-2013-02
+  date: '2026-11-26'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that the Leu files mark no torque perturbation and that the Leu torque command is NaN before
+      MPTP; this attempt counts all 5952 Leu trials as not_available and the command NaN in 114 of 148 files, consistent
+      with the earlier 15 post-MPTP files without analog data.
+  - finding: 2
+    status: still_present
+    now: 3
+    note: Both report the same three command pulse sizes and their split by state; this attempt gives a mean pulse
+      of 58.4 units before MPTP and 174.7 after, with 125 of 137 post-MPTP sessions at 120 to 250 units, as the
+      earlier gave 125 of 137 at about 183 units. Its statement does not mention the post-MPTP opposite swing or
+      the trial-to-trial variation the earlier one did.
+  - finding: 3
+    status: still_present
+    now: 8
+    note: This attempt did not report it. In earlier_findings.ipynb (cell earlier-finding-3) all 133 Leu files with
+      analog series are sampled every 10.0 ms and the Venus EMG unit is a.u., both stated in the dandiset description,
+      as on the draft.
+  - finding: 4
+    status: still_present
+    now: 7
+    note: Both report the near-fixed delay from center_target_appearance_time to the torque onset, 1.696 to 1.732
+      s in 90% of monkey V perturbations on the draft and 1.695 to 1.698 s in 88.4% of 5550 here, where the paper
+      gives 1 to 2 s at random.
+  - finding: 5
+    status: still_present
+    now: 5
+    note: Both find that the response detection as described gives a false-positive rate of 0.23 at a pseudo onset
+      against the 0.01 the paper states, and no published code. The undefined single-trial latency the earlier statement
+      also names is this attempt's finding 6.
+  - finding: 6
+    status: still_present
+    now: 9
+    note: This attempt did not report it; the paper is unchanged. In earlier_findings.ipynb (cell earlier-finding-6)
+      the text gives 16.3 and 3.6 spikes/s and Table 1 18.3 and 3.2, and Table 1's CSN counts give p = 0.54 with
+      the Yates-corrected chi-square test where the table marks p < 0.01.
+  - finding: 7
+    status: still_present
+    now: 10
+    note: This attempt did not report it. In earlier_findings.ipynb (cell earlier-finding-7) v1401, v1402 and v1501
+      hold 51 labelled perturbations with a largest pulse of 0.7 units, against 45.6 to 91.0 in the neighbouring
+      sessions, and the ElbowTorque description names the three sessions.
+  - finding: 8
+    status: fixed
+    note: Pull request 33 of catalystneuro/turner-lab-to-nwb was merged on 2026-11-24 at 15:55 UTC, and main is
+      ahead of its merge commit 9a6a9b327b39d39f14b54eb0f58f5aa38b749829 by 2 commits and behind by 0, before version
+      0.261124.1906 was published at 19:06 UTC that day (earlier_findings.ipynb, cell earlier-finding-8). The dandiset
+      still names the repository as the code that compiled it.
+  protocol: Of the versions after pilot-10, docs/pilot-notes.md describes pilot-12 (blind repeat attempts, compared
+    afterwards by a separate reconcile run), pilot-13 (a notebook may take 60 minutes) and pilot-14 (records filed
+    by paper, using every dataset the paper rests on). Pilot-12 is why this attempt wrote a new entry and notebook
+    without seeing the earlier attempt, and why its finding statements no longer open with still present or new;
+    it is also why findings 3, 6 and 7 of the earlier attempt, which this attempt did not report, were checked here
+    and added with found on_prompt. Pilot-13 and pilot-14 changed nothing here, as the main notebook ran in 851
+    s and the paper rests on one dataset. The notes have no section for pilot-15 to pilot-19; docs/protocol.md says
+    that from pilot-18 an attempt rates its findings about the data and from pilot-19 a critical or major one names
+    the cell that shows it, which this attempt does and the earlier one did not. No claim's outcome differs between
+    the two attempts.
