@@ -1,0 +1,27 @@
+# Questions from attempt pasquereau-2013-03 (author revision after verification round 1, 2026-11-26)
+# about the claims file claims/pasquereau-2013.yaml. Each is asked under docs/protocol.md, Author,
+# step 1.6. The attempt applied the claims file as written and showed the paper's reading as a variant.
+dataset: DANDI:001636
+paper: doi:10.3389/fnsys.2013.00098
+questions:
+- claim: false-positive-rate
+  asked: 2026-11-26
+  question: The claims file's opening comment fixes the detection as the trial-averaged SDF against
+    its baseline mean +/- t * SD of the trial-averaged SDF's own 500 baseline values. The Methods
+    describe a millisecond-by-millisecond 2-tailed t-test of SDF values against the cell's baseline
+    rate, which compares against a variance across trials or samples, and the verifier found that the
+    claims file's band crosses in 0.14 to 0.22 of cell-directions on stationary Poisson spike trains,
+    so it cannot give the paper's stated rate near 0.01. Should the detection be a t-test, and if so
+    with which variance (single-trial SDFs at each ms, or all single-trial baseline values)? The
+    answer also bears on the 15 claims that depend on torque-related-fractions.
+  passage: Methods, Data analysis, "Phasic responses to a torque perturbation were detected by comparing
+    SDF values (millisecond-by-millisecond) during a post-torque epoch (200-ms) relative to a cell's
+    baseline firing rate (2-tailed t-test). The threshold for significance was adjusted to account for
+    multiple comparisons [p < 0.01/(200-ms epoch/40-ms gamma filter half-width = 5 independent
+    comparisons) = 0.002]."
+  why: With the claims file's detection the false-positive rate is 0.230 and the selection claims are
+    blocked. The single-trial t-test (the claims file's variant) gives 0.465. A threshold from the SD
+    of all single-trial baseline values gives 0.013, inside the claims file's 0.0033 to 0.03, so under
+    it false-positive-rate would be reproduced and the dependent claims tested; it calls 20.0% and
+    18.5% of M1 cells torque-related (75 and 68% expected), so torque-related-fractions would not be
+    reproduced.

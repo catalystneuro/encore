@@ -1,91 +1,135 @@
-# 001636 · recorder · run 39695939039
+# pasquereau-2013 · recorder · run 45896280832
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-python tools/readme_row.py 001636 --write; git diff; ls claims/001636 transcripts/001636; grep -n '^### ' docs/pilot-notes.md | tail -6; wc -l docs/pilot-notes.md
+cd  git log --diff-filter=A --name-only --format= -- docs/pilot-notes | head -n 5; python tools/readme_row.py pasquereau-2013; ls transcripts/pasquereau-2013/; cat attempts/pasquereau-2013-03.yaml; python -c "
+import json;d=json.load(open('targets/dandisets.json'))
+it=d if isinstance(d,list) else d.get('dandisets',d)
+import sys
+s=json.dumps(d)
+" ; grep -n '001636' -A25 targets/dandisets.json | head -40
 ```
 
 ```
-claims/001636:
-10.3389-fnsys.2013.00098.yaml
+<persisted-output>
+Output too large (71.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/c01238df-5636-4ad2-bd85-c58bba3b1178/tool-results/be478niyh.txt
 
-transcripts/001636:
-answer-report.md
-answer.md
+Preview (first 2KB):
+docs/pilot-notes/allen-2026-01.md
+docs/pilot-notes/amjad-2025-01.md
+docs/pilot-notes/amjad-2025-02.md
+docs/pilot-notes/andreassen-2022-01.md
+docs/pilot-notes/andrews-2024-01.md
+| [001636](https://dandiarchive.org/dandiset/001636) | [Pasquereau et al. 2013](https://doi.org/10.3389/fnsys.2013.00098) | 4 | 3 | 3 | 18 | [`pasquereau-2013`](entries/pasquereau-2013) |
 attempt-01
-author-answers-report.md
-author-answers.md
+attempt-02
 author-report.md
 author-revise-1-report.md
 author-revise-1.md
 author-revise-2-report.md
 author-revise-2.md
+author-revise-3-report.md
+author-revise-3.md
 author.md
-verifier-1-report.md
-verifier-1.md
-verifier-2-report.md
-verifier-2.md
-5082:### 000061, Girardeau et al. 2017, second attempt
-[... 6 more lines not kept]
+[... 50 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/c01238df-5636-4ad2-bd85-c58bba3b1178/tool-results/be478niyh.txt"
+}
+```
+
+```
+1	docs/pilot-notes/allen-2026-01.md
+2	docs/pilot-notes/amjad-2025-01.md
+3	docs/pilot-notes/amjad-2025-02.md
+4	docs/pilot-notes/andreassen-2022-01.md
+5	docs/pilot-notes/andrews-2024-01.md
+6	| [001636](https://dandiarchive.org/dandiset/001636) | [Pasquereau et al. 2013](https://doi.org/10.3389/fnsys.2013.00098) | 4 | 3 | 3 | 18 | [`pasquereau-2013`](entries/pasquereau-2013) |
+7	attempt-01
+8	attempt-02
+9	author-report.md
+10	author-revise-1-report.md
+11	author-revise-1.md
+12	author-revise-2-report.md
+13	author-revise-2.md
+14	author-revise-3-report.md
+15	author-revise-3.md
+16	author.md
+17	reconcile-report.md
+18	reconcile.md
+19	verifier-1-report.md
+20	verifier-1.md
+[... 794 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/c01238df-5636-4ad2-bd85-c58bba3b1178/tool-results/be478niyh.txt",
+ "offset": 815,
+ "limit": 330
+}
+```
+
+```
+815	    agrees: true
+816	    outcome: partially_reproduced
+817	    reason: Agree (cell 37, CSN p = 0.019, above 0.0167).
+818	    response: No change of outcome.
+819	  - claim: false-positive-rate
+820	    agrees: true
+821	    outcome: blocked
+822	    reason: Agree. The false-positive rate is 0.230 (cell 40). The trial_sd reading, shown in cells 44 to 58, would
+823	      not reproduce torque-related-fractions either (20.0% and 18.5% of M1 cells against 75 and 68% expected, cell
+824	      44).
+825	    response: No change of outcome.
+826	  - claim: torque-related-fractions
+827	    agrees: true
+828	    outcome: blocked
+829	    reason: Agree, blocked with false-positive-rate (cells 40, 44). The notes said Blocked ... through torque-related-fractions,
+830	      which names the claim as its own gate.
+831	    response: No change of outcome. The notes now say the claim is blocked with false-positive-rate, on which the
+832	      selection depends.
+833	  - claim: prevalence-unchanged
+834	    agrees: true
+[... 298 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-git status; grep -n 001636 README.md; python tools/readme_row.py 001636 --write; echo "exit $?"
-```
-
-```
-On branch attempt/001636
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-	.bash_profile
-	.bashrc
-	.gitconfig
-	.idea
-	.mcp.json
-	.profile
-	.ripgreprc
-	.vscode
-	.zprofile
-	.zshrc
-	scripts
-
-nothing added to commit but untracked files present (use "git add" to track)
-70:| [001636](https://dandiarchive.org/dandiset/001636) | [Pasquereau et al. 2013](https://doi.org/10.3389/fnsys.2013.00098) | 4 | 3 | 3 | 18 | [`001636-pasquereau-2013`](entries/001636-pasquereau-2013) |
-exit 0
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,12p README.md | grep -n '|' ; grep -n 001636 docs/pilot-notes.md; sed -n 5300,5748p docs/pilot-notes.md
+cd  for f in allen-2026-01 amjad-2025-01 amjad-2025-02 andreassen-2022-01 andrews-2024-01 knierim-2000-02; do echo "=== $f"; cat docs/pilot-notes/$f.md; done; sed -n 7008,7040p targets/dandisets.json; ls docs/pilot-notes | grep pasquereau; ls summaries | grep -E 'pasquereau|knierim|amjad'
 ```
 
 ```
 <persisted-output>
-Output too large (31.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/620a31e8-fa0a-4e01-8a2a-bb1acd6be8a4/tool-results/bl2n5rit5.txt
+Output too large (33.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/c01238df-5636-4ad2-bd85-c58bba3b1178/tool-results/biduzkpts.txt
 
 Preview (first 2KB):
-1066:### 001636, Pasquereau et al. 2013
-### 000009, Guo et al. 2017
+=== allen-2026-01
+# allen-2026, Allen et al. 2026
 
-Seven claims reproduced, two partially, thirteen not reproduced and seventeen
-blocked on the dandiset. It pins version 0.220126.1903, the only published
-version, as the paper cites none. The author put six questions to a reader,
-who did not have Supplementary Table 1; the answers made the computed spike
-width (P1) the rule for unit classes, kept the files' labels (P2) as a reading
-and added all units (P3) for the thalamic claims of Fig. 2 and 6, and allowed
-both whole-cell photostimulus onsets the claims file names (E and M). This
-moved four whole-cell claims from blocked and `selectivity-time-course` from
-partially reproduced to reproduced. Round 1 gave its own outcome for each
-claim from the notebook with its conclusion cells and summary removed and
-agreed with 29 of 39. `task-performance` moved from partially reproduced to
-not reproduced, as no reading puts percent correct, lick-early and
-no-response rates within tolerance together. Round 1 also found that the
+Fifteen claims reproduced on the dataset, one partially, one not reproduced
+and four blocked, all four for missing data; the ten transcriptomic claims,
+whose reads and assembly are in NCBI SRA and TSA (`data: elsewhere`), are
+counted apart, with seven reproduced, two partially and one not reproduced.
+One outcome, `fig4a-pca`, rests on an assumption. The first verification round
+agreed with 28 of the 31 outcomes and gave `fig2g-attack-willingness` as
+reproduced where the record had not reproduced, and
+`sfig3-prey-velocity-unchanged` and `rnaseq-assembly` as partially reproduced
+where it had reproduced; the author took all three. The second round agreed
+with all 31, and nothing was proposed after it, so there was no third round. It
+pins version 439366, the only public version. The paper, Allen, Yan, Kuan et
+al., "Neurometabolic rewiring in squid (Sepioteuthis lessoniana) optic lobes
+drives behavioral plasticity and visual integration under environmental
 [... 14 more lines not kept]
 ```
 
@@ -93,229 +137,97 @@ no-response rates within tolerance together. Round 1 also found that the
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/620a31e8-fa0a-4e01-8a2a-bb1acd6be8a4/tool-results/bl2n5rit5.txt"
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/c01238df-5636-4ad2-bd85-c58bba3b1178/tool-results/biduzkpts.txt"
 }
 ```
 
 ```
-1	1066:### 001636, Pasquereau et al. 2013
-2	### 000009, Guo et al. 2017
+1	=== allen-2026-01
+2	# allen-2026, Allen et al. 2026
 3	
-4	Seven claims reproduced, two partially, thirteen not reproduced and seventeen
-5	blocked on the dandiset. It pins version 0.220126.1903, the only published
-6	version, as the paper cites none. The author put six questions to a reader,
-7	who did not have Supplementary Table 1; the answers made the computed spike
-8	width (P1) the rule for unit classes, kept the files' labels (P2) as a reading
-9	and added all units (P3) for the thalamic claims of Fig. 2 and 6, and allowed
-10	both whole-cell photostimulus onsets the claims file names (E and M). This
-11	moved four whole-cell claims from blocked and `selectivity-time-course` from
-12	partially reproduced to reproduced. Round 1 gave its own outcome for each
-13	claim from the notebook with its conclusion cells and summary removed and
-14	agreed with 29 of 39. `task-performance` moved from partially reproduced to
-15	not reproduced, as no reading puts percent correct, lick-early and
-16	no-response rates within tolerance together. Round 1 also found that the
-17	whole-cell files hold the laser trace in an OptogeneticSeries the loader never
-18	read; its onset is now shown as reading L, with a seventh question to a
-19	reader, and changes no outcome. For nine claims the author kept partially
-20	reproduced where round 1 gave not reproduced. Round 2 agreed with 30 of 39 and
-[... 431 more lines not kept]
+4	Fifteen claims reproduced on the dataset, one partially, one not reproduced
+5	and four blocked, all four for missing data; the ten transcriptomic claims,
+6	whose reads and assembly are in NCBI SRA and TSA (`data: elsewhere`), are
+7	counted apart, with seven reproduced, two partially and one not reproduced.
+8	One outcome, `fig4a-pca`, rests on an assumption. The first verification round
+9	agreed with 28 of the 31 outcomes and gave `fig2g-attack-willingness` as
+10	reproduced where the record had not reproduced, and
+11	`sfig3-prey-velocity-unchanged` and `rnaseq-assembly` as partially reproduced
+12	where it had reproduced; the author took all three. The second round agreed
+13	with all 31, and nothing was proposed after it, so there was no third round. It
+14	pins version 439366, the only public version. The paper, Allen, Yan, Kuan et
+15	al., "Neurometabolic rewiring in squid (Sepioteuthis lessoniana) optic lobes
+16	drives behavioral plasticity and visual integration under environmental
+17	acidification" (Communications Biology 9:229), rears bigfin reef squid at pH
+18	8.2, with 7 days at pH 7.8 after 90 days (acute-OA) or at pH 7.8 from hatching
+19	(chronic-OA), and reports a higher metabolic rate, lower ammonia excretion and
+20	higher blood pH, PCO2 and [HCO3-] under chronic-OA, more time in the upper half
+[... 492 more lines not kept]
 ```
+
+**Agent**
+
+I have the attempt record and the example notes. Next I'm reading the earlier pasquereau notes, the summaries, and the run reports.
 
 **Agent calls Bash**
 
 ```bash
-sed -n 1060,1110p docs/pilot-notes.md; sed -n 1,15p README.md; grep -n '001754' docs/pilot-notes.md; ls attempts | grep 001636
+cd  cat docs/pilot-notes/pasquereau-2013-02.md; echo ====; cat summaries/pasquereau-2013-02.md summaries/amjad-2025-02.md; echo ====; cd transcripts/pasquereau-2013; wc -w *report.md; cat author-report.md
 ```
 
 ```
-protocol to pilot-7 after checking that no claim needed the `elsewhere`
-kind. The author's points on the protocol: the data kind of a link claim
-whose source holds both labels and measurements; clock checks when the
-contrast is the claim itself; a criterion written after its result was
-seen in the data check; and linked code that holds none of the analysis.
-
-### 001636, Pasquereau et al. 2013
+# 001636, Pasquereau et al. 2013, second attempt
 
 Four claims reproduced, three partially, three not reproduced and eighteen
-blocked, all on the dandiset. Round 1 called `false-positive-rate` not
-reproduced where the author had it blocked; the author kept it blocked under
-the protocol's rule for a computed false-positive rate far from the paper's,
-and round 2 accepted that and agreed with all 28 outcomes, so there was no
-third round. The paper reports how pyramidal tract and corticostriatal
-neurons in the primary motor cortex of two monkeys respond to torque
-perturbations before and after MPTP. Only monkey V can be tested. The cell
-counts, resting rates, antidromic latencies, kinematics and EMG were tested;
-17 claims are blocked as `methods_underspecified`, because the response
-detection as described gives a false-positive rate of 0.22 against the 0.01
-its threshold implies, which blocks that claim and the 15 that use the
-[... 58 more lines not kept]
+blocked, all on the dandiset. The attempt was made on the draft of the
+dandiset, which holds a new conversion made after pasquereau-2013-01
+reported its findings; the claims file is unchanged, and every claim has the
+same outcome as in `-01`. The archive listed 4 uploads in progress on the
+draft while it was read, and between 23:00 and 23:10 UTC every asset was
+uploaded again; the first good run of the first revision read the draft
+mid-upload, with 23 pre-MPTP monkey V files missing and some monkey L files
+read twice, so the author waited and ran it twice more, both giving the
+numbers already recorded, and the record pins the draft as modified at
+2026-10-21T23:10:32Z. The author raised no questions, and the answer run
+found no questions file and changed nothing. Round 1 agreed with 27 of 28
+outcomes; it gave `false-positive-rate` as not reproduced, where the author
+kept it blocked as `methods_underspecified` under the rule that a computed
+false-positive rate far from the paper's shows the procedures differ. Round 2
+accepted that and agreed with all 28, so there was no third round. The paper,
+"Primary motor cortex of the parkinsonian monkey: altered neuronal responses
+to muscle stretch", reports how pyramidal tract and corticostriatal neurons
+[... 154 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -n '^| Dandiset\|^|--\|^| ---' README.md | head; cat attempts/001636-pasquereau-2013-02.yaml; python -c "
-import json;d=json.load(open('targets/dandisets.json'));
-x=d if isinstance(d,list) else d.get('targets',d)
-import sys
-for e in (x if isinstance(x,list) else x.values()):
-  if '001636' in json.dumps(e): print(json.dumps(e,indent=1))
-"
+cd transcripts/pasquereau-2013; for f in author-revise-1-report.md author-revise-2-report.md author-revise-3-report.md reconcile-report.md; do echo "=== $f"; cat $f; done
 ```
 
 ```
-<persisted-output>
-Output too large (65.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/620a31e8-fa0a-4e01-8a2a-bb1acd6be8a4/tool-results/boxnl79s0.txt
+=== author-revise-1-report.md
+I worked through every point in the round-1 report and re-ran the entry with `python tools/entry.py all entries/pasquereau-2013`. It passes with 0 errors and the notebook runs in about 11 minutes. All conclusions match the new numbers. Nothing is committed.
 
-Preview (first 2KB):
-52:| Dandiset | Paper | Reproduced | Partially | Not reproduced | Blocked | Entry |
-53:|---|---|---|---|---|---|---|
-# Repeat attempt on the draft of dandiset 001636, last modified 2026-10-21T20:16:41Z, which holds a
-# new conversion made after 001636-pasquereau-2013-01, on version 0.260518.1819, reported its
-# findings. The code that built it is in an open pull request of catalystneuro/turner-lab-to-nwb
-# (#33, branch fix_errors, head 5f9bf6320a0160e4e56301d5409fb9242c1d8cf4). The draft was asked for.
-# When it was read, the archive listed 4 uploads in progress on the draft. Between 23:00 and 23:10 UTC
-# on the same day every asset of the draft was uploaded again; the revision after the first
-# verification round read the draft as modified at 23:10:32 UTC (no asset changed after 23:08:46),
-# and every number recorded here from the earlier state is unchanged. The claims file is unchanged.
-#
-# Status of the findings of 001636-pasquereau-2013-01 on the draft (outputs in the notebook's data check):
-# - No torque perturbation in any monkey L file (data_missing): still present; the description and the
-#   files now say so. Recorded below.
-# - Analog streams not on the clock of the trials (format_error): fixed. Each analog segment starts at
-#   its trial's start (lag 0 ms at every perturbation), and on the stored clock the torque command steps
-[... 9 more lines not kept]
-```
+**Outcomes.** None changed. The only disagreement is on kinematic-latency-unchanged: the verifier would block it because the measure moves onsets early, and I kept not_reproduced and recorded the disagreement. The new outputs show the verifier is right that the forwards-backwards filter moves onsets early: 6.7% of post-MPTP onsets land at 0 ms, against 0.1% before. But every way of measuring the onset still finds shorter latencies after MPTP:
+- requiring the velocity to stay below threshold for the 20 ms before onset: F = 596.5
+- a causal 25 Hz filter: F = 422.5
+- both again at matched torque commands: F = 214.3 and 146.2
+- the unfiltered velocity also rises earlier after MPTP.
 
-**Agent calls Read**
+The artifact narrows the difference but does not create it.
 
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/620a31e8-fa0a-4e01-8a2a-bb1acd6be8a4/tool-results/boxnl79s0.txt"
-}
-```
-
-```
-1	52:| Dandiset | Paper | Reproduced | Partially | Not reproduced | Blocked | Entry |
-2	53:|---|---|---|---|---|---|---|
-3	# Repeat attempt on the draft of dandiset 001636, last modified 2026-10-21T20:16:41Z, which holds a
-4	# new conversion made after 001636-pasquereau-2013-01, on version 0.260518.1819, reported its
-5	# findings. The code that built it is in an open pull request of catalystneuro/turner-lab-to-nwb
-6	# (#33, branch fix_errors, head 5f9bf6320a0160e4e56301d5409fb9242c1d8cf4). The draft was asked for.
-7	# When it was read, the archive listed 4 uploads in progress on the draft. Between 23:00 and 23:10 UTC
-8	# on the same day every asset of the draft was uploaded again; the revision after the first
-9	# verification round read the draft as modified at 23:10:32 UTC (no asset changed after 23:08:46),
-10	# and every number recorded here from the earlier state is unchanged. The claims file is unchanged.
-11	#
-12	# Status of the findings of 001636-pasquereau-2013-01 on the draft (outputs in the notebook's data check):
-13	# - No torque perturbation in any monkey L file (data_missing): still present; the description and the
-14	#   files now say so. Recorded below.
-15	# - Analog streams not on the clock of the trials (format_error): fixed. Each analog segment starts at
-16	#   its trial's start (lag 0 ms at every perturbation), and on the stored clock the torque command steps
-17	#   4 to 6 ms after the labelled onset.
-18	# - Three torque command sizes, differing between the states (other): partly fixed. The data are the
-19	#   same; the torque description now states the sizes, the post-MPTP trial-to-trial variation and the
-20	#   missing scale. Recorded below.
-[... 820 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/620a31e8-fa0a-4e01-8a2a-bb1acd6be8a4/tool-results/boxnl79s0.txt",
- "offset": 840
-}
-```
-
-```
-840	    agrees: true
-841	    outcome: blocked
-842	    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
-843	      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
-844	      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
-845	      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
-846	      on it.
-847	    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
-848	      as run and blocked. Outcome unchanged.
-849	  - claim: magnitude-unchanged
-850	    agrees: true
-851	    outcome: blocked
-852	    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
-853	      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
-854	      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
-855	      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
-856	      on it.
-857	    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
-858	      as run and blocked. Outcome unchanged.
-859	  - claim: venus-response-magnitudes
-[... 194 more lines not kept]
+**Added or corrected, by point in the report:**
+- **B1, response detection.** The 15 blocked claims are now also shown under the `trial_sd` reading, whose false-positive rate is 0.013. They stay blocked: that reading is not the claims file's detection. It also calls only 20.0% and 18.5% of M1 cells torque-related (75% and 68% expected) and finds only increases. Whether the claims file misreads the Methods' "2-tailed t-test" is now a question for a reader in the new file `questions/pasquereau-2013.yaml`. I did not change the claim.
+- **B2, movement onset.** Added the fraction of onsets at 0 ms, the velocity at torque onset, the two onset variants above and the unfiltered velocity. The variants are documented in the `pasq.py` docstring.
+- **B3, EMG and torque size.** All four EMG claims were re-run on perturbations with matched command pulses (60 to 250 units). Their outcomes are the same: m2 is larger after MPTP in every channel, KS p from 7.5e-08 t
+[... 102 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 1110,1135p docs/pilot-notes.md; cd transcripts/001636; wc -w author-report.md verifier-1-report.md author-revise-1-report.md verifier-2-report.md author-revise-2-report.md; ls attempt-01; cat author-report.md
-```
-
-```
-change in the fraction of excitatory responses p < 0.01, where its own
-counts give p = 0.54.
-
-An earlier author run, cut short by the session limit, had left a draft
-helper and its transcript on the branch; the author read the end of that
-transcript, replaced the helper, and flagged it as possible contamination of
-the protocol-alone test. The author's other points on the protocol: the
-paper states a per-comparison threshold, not a false-positive rate, and the
-block that follows from treating it as one spreads to latency results that
-match the paper; no rule for how to compute a false-positive rate; "the
-stated spread" for a mean and SD over cells; supplementary material and a
-dandiset that holds one of two subjects; counting each recording once
-against matching counts that include duplicated units; a stimulus that
-differs between conditions, which fits no finding kind; absence claims with
-many tests; and no field in the attempt schema for the code repository and
-commit read.
-
-### 001933 again, Chen et al. 2026, under pilot-7 (2026-10-15)
-
-The second attempt, made because pilot-7 changed the protocol; the dandiset
-[... 81 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd transcripts/001636; ls -la --time-style=full-iso; for f in answer-report.md author-answers-report.md author-revise-1-report.md verifier-2-report.md author-revise-2-report.md; do echo "=== $f"; cat $f; done
-```
-
-```
-total 476
-drwxr-xr-x   4 runner runner   4096 2026-10-21 23:51:15.326261817 +0000 .
-drwxr-xr-x 120 runner runner   4096 2026-10-21 23:50:19.410469666 +0000 ..
-drwxr-xr-x   3 runner runner   4096 2026-10-21 23:51:15.326261817 +0000 .claude
--rw-r--r--   1 runner runner    743 2026-10-21 23:50:20.149073767 +0000 answer-report.md
--rw-r--r--   1 runner runner   6343 2026-10-21 23:50:20.149073767 +0000 answer.md
-drwxr-xr-x   2 runner runner   4096 2026-10-21 23:50:20.153073853 +0000 attempt-01
--rw-r--r--   1 runner runner   1654 2026-10-21 23:50:20.153073853 +0000 author-answers-report.md
--rw-r--r--   1 runner runner   8836 2026-10-21 23:50:20.153073853 +0000 author-answers.md
--rw-r--r--   1 runner runner   5036 2026-10-21 23:50:20.153073853 +0000 author-report.md
--rw-r--r--   1 runner runner   3634 2026-10-21 23:50:20.153073853 +0000 author-revise-1-report.md
--rw-r--r--   1 runner runner 101588 2026-10-21 23:50:20.153073853 +0000 author-revise-1.md
--rw-r--r--   1 runner runner   2515 2026-10-21 23:50:20.154073874 +0000 author-revise-2-report.md
--rw-r--r--   1 runner runner  45487 2026-10-21 23:50:20.154073874 +0000 author-revise-2.md
--rw-r--r--   1 runner runner 186711 2026-10-21 23:50:20.155073896 +0000 author.md
--rw-r--r--   1 runner runner   9308 2026-10-21 23:50:20.155073896 +0000 verifier-1-report.md
--rw-r--r--   1 runner runner  30380 2026-10-21 23:50:20.155073896 +0000 verifier-1.md
--rw-r--r--   1 runner runner   5551 2026-10-21 23:50:20.155073896 +0000 verifier-2-report.md
--rw-r--r--   1 runner runner  29364 2026-10-21 23:50:20.155073896 +0000 verifier-2.md
-=== answer-report.md
-[... 139 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  head -40 claims/001636/*.yaml; head -c 3000 transcripts/001636/verifier-1-report.md
+cd  head -40 claims/pasquereau-2013.yaml; grep -nE '^\s*- id:|^\s*id:|figure|source:|where:|location' claims/pasquereau-2013.yaml | head -90
 ```
 
 ```
@@ -339,357 +251,111 @@ cd  head -40 claims/001636/*.yaml; head -c 3000 transcripts/001636/verifier-1-re
 # (supplementary table). Where the paper gives only values pooled over both monkeys, these are
 # the expected values and the difference is a deviation.
 #
-[... 40 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-tail -c 300 docs/pilot-notes.md | od -c | tail -3
-```
-
-```
-0000420   t       d   e   c   i   d   e       w   h   a   t   e   v   e
-0000440   r       t   h   e       d   a   t   a   .  \n
-0000454
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> docs/pilot-notes.md <<'EOF'
-
-### 001636, Pasquereau et al. 2013, second attempt
-
-Four claims reproduced, three partially, three not reproduced and eighteen
-blocked, all on the dandiset. The attempt was made on the draft of the
-dandiset, which holds a new conversion made after 001636-pasquereau-2013-01
-reported its findings; the claims file is unchanged, and every claim has the
-same outcome as in `-01`. The archive listed 4 uploads in progress on the
-draft while it was read, and between 23:00 and 23:10 UTC every asset was
-uploaded again; the first good run of the first revision read the draft
-mid-upload, with 23 pre-MPTP monkey V files missing and some monkey L files
-read twice, so the author waited and ran it twice more, both giving the
-numbers already recorded, and the record pins the draft as modified at
-2026-10-21T23:10:32Z. The author raised no questions, and the answer run
-found no questions file and changed nothing. Round 1 agreed with 27 of 28
-outcomes; it gave `false-positive-rate` as not reproduced, where the author
-kept it blocked as `methods_underspecified` under the rule that a computed
-false-positive rate far from the paper's shows the procedures differ. Round 2
-accepted that and agreed with all 28, so there was no third round. The paper,
-"Primary motor cortex of the parkinsonian monkey: altered neuronal responses
-to muscle stretch", reports how pyramidal tract and corticostriatal neurons
-(PTNs and CSNs) in the primary motor cortex of two monkeys respond to torque
-perturbations before and after MPTP. Only monkey V can be tested. The cell
-counts, resting rates, antidromic latencies, the false-positive rate of the
-response detection, kinematics and EMG were tested. The detection gives a
-false-positive rate of 0.2279 against the 0.01 its threshold implies, which
-blocks that claim and the 15 that use the detected responses;
-`trial-correlations` is blocked because the paper defines no single-trial
-latency, and `monkey-l-perturbations` as `data_missing`. `cell-counts` is
-reproduced with 115 and 157 cells (51 and 54 PTNs, 32 and 48 CSNs), where
-`-01` matched the paper's table exactly, as the draft adds the trials of a
-second source file for 12 units; counting each unit from its first source
-file only gives 112 and 157. `antidromic-latency` is partially reproduced as
-the CSN p = 0.019 is just above the paper's 0.05/3 = 0.0167. The kinematic
-and EMG outcomes rest on weak ground, as the torque command differs between
-the states: `emg-m2-larger` is reproduced on the criterion, but at the one
-per-trial command step with enough data the median m2 over the triceps
-channels is 44.9 before and 1.8 after MPTP (p = 0.004, 66 and 11
-channel-sessions), though on triceps longus 2 it is larger after MPTP (52.2
-against 113.0, p = 0.36). In `session-correlations` the m2 correlation now
-gives p = 0.023, above the paper's 0.0125, where in `-01` it reached it.
-
-The dataset was converted by CatalystNeuro (catalystneuro/turner-lab-to-nwb).
-The monkey L (Leu) files still mark no torque perturbation, the Leu torque
-command is NaN in every pre-MPTP file and 15 of 50 post-MPTP Leu files have
-no analog data, so the monkey L half of the paper (115 and 73 cells, and its
-EMG and kinematics) cannot be tested; the description and the files now say
-the Leu source files contain no perturbation times. The torque command's 50
-ms pulse still has three session sizes (about 46, 91 and 183 units above
-rest), the smallest in most pre-MPTP monkey V sessions (105 of 154) and the
-largest in most post-MPTP sessions (125 of 137), with an opposite swing after
-the post-MPTP pulses and a step that varies from trial to trial; the torque
-description now states this and that no conversion to newton-metres is
-available, while the paper describes one 0.1 Nm, 50 ms impulse. Fixed since
-`-01`: the analog segments start at their trial's start (lag 0 ms at every
-perturbation, the command stepping 4 to 6 ms after the labelled onset); the
-reference frame says positive is flexion in all 424 files with an angle and
-the monkey L series are WristAngle and WristTorque; no file repeats another's
-trials and the two unit copies are stored once (v4527.2 and v5811.2, both
-PTNs); `unit_also_in_session_id` is gone and neurons recorded across two
-source files are one unit (13 units); and the dandiset description now says
-intracarotid MPTP, the wrist for Leu, and Leu from August 1992 to December
-1993. The EMG description now gives the paper's processing, but the monkey L
-analog streams are still sampled at 100 Hz (the paper says 200 Hz) and the
-EMG is in uncalibrated A/D units, now stated in the description. Still
-present: the torque onset comes 1.696 to 1.732 s after
-center_target_appearance_time in 90% of monkey V perturbations, where the
-Methods put it 1 to 2 s after center capture at random; no analysis code is
-published, and stationary Poisson spike trains give 0.16 to 0.21 against the
-0.23 observed, so most of the excess comes from the detection procedure; and
-the paper gives the pre-MPTP PTN and CSN resting rates as 16.3 and 3.6
-spikes/s in the text and 18.3 and 3.2 in Table 1, and marks the CSN change in
-the fraction of excitatory responses p < 0.01 where its own counts (23 of 24
-against 19 of 22) give p = 0.54. New findings: three monkey V sessions
-(v1401, v1402, v1501) have 51 labelled perturbations but no pulse in the
-torque command, as the torque description says; and the dandiset names
-catalystneuro/turner-lab-to-nwb as its code, but the main branch is still at
-the commit read for `-01` and the code that built the draft is in open pull
-request 33 (https://github.com/catalystneuro/turner-lab-to-nwb/pull/33,
-branch fix_errors at 5f9bf6320a0160e4e56301d5409fb9242c1d8cf4). The claims
-file's comment that no unit appears in two files no longer holds for the
-draft, so the author applied the criteria per unit within its own trials and
-showed the first-file reading as a variant.
-
-`entry.py all` passed in every run, the notebook taking 1.8 min in the first
-and 4.1 min in the last (1.7 to 5.2 min in the others). Round 1's points led
-to a per-cell table of the detection, each antidromic test printed against
-its threshold, kinematic, latency and EMG comparisons at the same per-trial
-command step, a run of the zero-phase filter on synthetic movements (onsets
-14 ms early to 5 ms late), the counts of channel-sessions with m2 of zero or
-less, and a check that every spike window lies inside its trial; none changed
-an outcome. Round 2 found sentences the outputs did not support, among them
-the m2 result at the matched step stated without its limits, a count of 16
-claims blocked by the false-positive rate that included that claim itself,
-and 14 cell-directions said never to respond where near-silent ones with a
-threshold of about 0 can, and these were corrected. Neither verifier nor the
-author could check the claims file's expected values against the
-supplementary table, as no PDF reader was available. The author's points on
-the protocol: `entry.py check` fails on the `-01` record once `entry.yaml`
-points at the new version and passes only after the `-02` record exists, so
-it cannot be run before the record is written; the schema has no field for
-whether an earlier finding is fixed, so the status of each was put in the
-record's header comment as in 001754-knierim-2000-02; the protocol records a
-draft's modification time but says nothing about uploads in progress or
-checking the draft again at the end; and showing how the versions differ, as
-step 1.3 asks, means loading the earlier version's units too, which adds
-streaming time to every run.
-EOF
-git diff --stat
-```
-
-```
-docs/pilot-notes.md | 107 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 107 insertions(+)
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='docs/pilot-notes.md'
-s=open(p).read()
-a="""threshold of about 0 can, and these were corrected. Neither verifier nor the
-author could check the claims file's expected values against the
-supplementary table, as no PDF reader was available. The author's points on"""
-b="""threshold of about 0 can, and these were corrected. Round 2 could not check
-the claims file's expected values against the supplementary table, as no PDF
-reader was available, and the author did not check them either. The author's
-points on"""
-c="""`entry.py all` passed in every run, the notebook taking 1.8 min in the first
-and 4.1 min in the last (1.7 to 5.2 min in the others). Round 1's points led"""
-d="""`entry.py all` passed, the notebook taking 1.8 min in the first run and 4.1
-min in the last. Round 1's points led"""
-assert a in s and c in s
-s=s.replace(a,b).replace(c,d)
-open(p,'w').write(s)
-EOF
-start=$(grep -n '^### 001636, Pasquereau et al. 2013, second attempt' docs/pilot-notes.md | cut -d: -f1); tail -n +$start docs/pilot-notes.md | grep -n -i 'rather\|—\|\*\*' ; echo done
-```
-
-```
-done
-```
-
-**Agent calls Bash**
-
-```bash
-start=$(grep -n '^### 001636, Pasquereau et al. 2013, second attempt' docs/pilot-notes.md | cut -d: -f1); tail -n +$start docs/pilot-notes.md | tail -30
-```
-
-```
-request 33 (https://github.com/catalystneuro/turner-lab-to-nwb/pull/33,
-branch fix_errors at 5f9bf6320a0160e4e56301d5409fb9242c1d8cf4). The claims
-file's comment that no unit appears in two files no longer holds for the
-draft, so the author applied the criteria per unit within its own trials and
-showed the first-file reading as a variant.
-
-`entry.py all` passed, the notebook taking 1.8 min in the first run and 4.1
-min in the last. Round 1's points led
-to a per-cell table of the detection, each antidromic test printed against
-its threshold, kinematic, latency and EMG comparisons at the same per-trial
-command step, a run of the zero-phase filter on synthetic movements (onsets
-14 ms early to 5 ms late), the counts of channel-sessions with m2 of zero or
-less, and a check that every spike window lies inside its trial; none changed
-an outcome. Round 2 found sentences the outputs did not support, among them
-the m2 result at the matched step stated without its limits, a count of 16
-claims blocked by the false-positive rate that included that claim itself,
-and 14 cell-directions said never to respond where near-silent ones with a
-threshold of about 0 can, and these were corrected. Round 2 could not check
-the claims file's expected values against the supplementary table, as no PDF
-reader was available, and the author did not check them either. The author's
-[... 10 more lines not kept]
+[... 78 more lines not kept]
 ```
 
 **Agent**
 
-Rewrapping that paragraph.
+Now the three verifier reports, which describe how the rounds went.
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import textwrap
-p='docs/pilot-notes.md'
-s=open(p).read()
-i=s.index("`entry.py all` passed, the notebook taking 1.8 min")
-para=s[i:].rstrip('\n')
-s=s[:i]+textwrap.fill(' '.join(para.split()),width=77)+'\n'
-open(p,'w').write(s)
-EOF
-start=$(grep -n '^### 001636, Pasquereau et al. 2013, second attempt' docs/pilot-notes.md | cut -d: -f1); tail -n +$start docs/pilot-notes.md
+cd transcripts/pasquereau-2013; for f in verifier-1-report.md verifier-2-report.md verifier-3-report.md; do echo "=== $f"; cat $f; done
 ```
 
 ```
-### 001636, Pasquereau et al. 2013, second attempt
+=== verifier-1-report.md
+**Verifier report, round 1: Pasquereau & Turner 2013 on DANDI:001636 (0.261124.1906)**
 
-Four claims reproduced, three partially, three not reproduced and eighteen
-blocked, all on the dandiset. The attempt was made on the draft of the
-dandiset, which holds a new conversion made after 001636-pasquereau-2013-01
-reported its findings; the claims file is unchanged, and every claim has the
-same outcome as in `-01`. The archive listed 4 uploads in progress on the
-draft while it was read, and between 23:00 and 23:10 UTC every asset was
-uploaded again; the first good run of the first revision read the draft
-mid-upload, with 23 pre-MPTP monkey V files missing and some monkey L files
-read twice, so the author waited and ran it twice more, both giving the
-numbers already recorded, and the record pins the draft as modified at
-2026-10-21T23:10:32Z. The author raised no questions, and the answer run
-found no questions file and changed nothing. Round 1 agreed with 27 of 28
-outcomes; it gave `false-positive-rate` as not reproduced, where the author
-kept it blocked as `methods_underspecified` under the rule that a computed
-false-positive rate far from the paper's shows the procedures differ. Round 2
-accepted that and agreed with all 28, so there was no third round. The paper,
-"Primary motor cortex of the parkinsonian monkey: altered neuronal responses
-to muscle stretch", reports how pyramidal tract and corticostriatal neurons
-[... 86 more lines not kept]
+The claims file has 28 claims. I re-ran the helpers `detect`, `sdf_trials` and `kinematics` on synthetic inputs and queried the archive's metadata; I did not download data or re-run the notebook.
+
+**A. Outcomes**
+
+| Claim | My outcome | Reason |
+|---|---|---|
+| cell-counts | reproduced | Cell 20: 115/157 cells, 51/54 PTNs, 32/48 CSNs, 3 dual-projecting. All are within tolerance. |
+| monkey-l-perturbations | blocked (data_missing) | Cell 15: all 5952 Leu trials are `not_available`. The dandiset description confirms "The Leu files contain no perturbation times". |
+| baseline-rate | reproduced | Cell 24: all six means are within tolerance (PTN pre 18.49 vs 20.3±2.46). PTN p = 0.0198 (< 0.05), CSN p = 0.651 (≥ 0.05). The M1 test gives p = 0.0022, below the paper's 0.05/2. |
+| ptn-faster-than-csn | reproduced | Cell 26: PTN 18.5 vs CSN 3.5 spikes/s, Mann-Whitney p = 6.3e-12. |
+| antidromic-latency | partially_reproduced | Cell 28: all four means are within tolerance (CSN post 6.85 vs 6.1±0.89) and PTN p = 0.68 holds. The CSN test fails: p = 0.019, above 0.05/3 = 0.0167. The variant adding Leu units gives p = 0.0072. |
+| false-positive-rate | blocked (methods_underspecified) | Cell 30: the pseudo-onset rate is 0.230, outside 0.0033–0.03. My synthetic test shows the claims file's procedure gives this rate on pure noise (B1). Only the `trial_sd` reading (0.013) falls in range. |
+| torque-related-fractions | blocked (methods_underspecified) | Blocked through false-positive-rate, as the claims file's opening comment requires. For information only: under the blocked detection 2 of 6 are within tolerance (cell 32). |
+| prevalence-unchanged | blocked (methods_underspecified) | Same gate. Cell 33 would give p > 0.39 for all three groups. |
+| ptn-more-responsive | blocked (methods_underspecified) | Same gate. Cell 34: 70.5% vs 17.5%, χ² = 49. |
+| one-direction-half | bl
+[... 126 more lines not kept]
 ```
 
 **Agent**
 
-I added the subsection to `docs/pilot-notes.md` and left it uncommitted. `python tools/readme_row.py 001636 --write` ran without error but changed nothing: README.md already had the row (4 | 3 | 3 | 18). Because `docs/pilot-notes.md` already has a `### 001636, Pasquereau et al. 2013` subsection for the `-01` attempt, I headed this one as the second attempt.
+I've read all the sources. Writing the notes and the summary now.
 
-Two things in the sources disagree with the attempt record, and I followed the record:
-- The author's report counts the earlier findings as 5 fixed, 3 partly fixed and 3 still present. The record's header lists 5 fixed, 2 partly fixed and 4 still present, so I named them without giving counts.
-- The author-answers report gives 5, 4, 3 and 16, which does not match the record or the README row (4, 3, 3, 18).
+**Agent calls Write**
 
-### 001636, Pasquereau et al. 2013, second attempt
+```json
+{
+ "file_path": "docs/pilot-notes/pasquereau-2013-03.md",
+ "content": "# pasquereau-2013, Pasquereau et al. 2013, third attempt\n\nFour claims reproduced, three partially, three not reproduced and eighteen\nblocked, all on the dandiset; seventeen are blocked as `methods_underspecified`\nand `monkey-l-perturbations` as `data_missing`. Round 1 agreed with 27 of 28\noutcomes; it gave `kinematic-latency-unchanged` as blocked, since the\nforwards-backwards filter moves movement onsets early (the post-MPTP flexion\nmean, 3.05 ms, falls before the command leaves rest at 4 ms), and the author\nkept not reproduced and added onset variants, of which only a causal 25 Hz\nfilter avoids the filter's spread and it also gives shorter latencies after\nMPTP (F = 422.5). Round 2 agreed with all 28 and asked that the finding on\ntorque pulse sizes be raised to major. The author then compared the states at\nthe two pulse sizes both use and proposed four changes of outcome\n(`kinematic-latency-unchanged` and `emg-onset-unchanged` to reproduced,\n`emg-duration-longer` to not reproduced, `emg-m1-weak` to reproduced), so a\nthird round reviewed those four; it agreed with none, as the criteria compare\nall sessions and the equal-pulse subsets are small (5 pre-MPTP channel-sessions\nnear 180 units, 14 post-MPTP near 90), and the outcomes stand with the\nproposals on record. It pins version 0.261124.1906, the newest published. The\nattempt was blind to `pasquereau-2013-02`, and the reconciliation found no\nclaim with a different outcome. The paper, Pasquereau and Turner, \"Primary\nmotor cortex of the parkinsonian monkey: altered neuronal responses to muscle\nstretch\", reports how pyramidal tract and corticostriatal neurons (PTNs and\nCSNs) in the primary motor cortex of two monkeys respond to torque\nperturbations before and after MPTP; only monkey V can be tested. The cell\ncounts (115 and 157 cells, 51 and 54 PTNs, 32 and 48 CSNs), the resting rates\nand the faster firing of PTNs than CSNs reproduce; `antidromic-latency` is\npartial, as the CSN p = 0.019 is above 0.05/3. The claims file's response\ndetection crosses its threshold after a pseudo onset in 0.230 of\ncell-directions, where the paper implies 0.01, which blocks\n`false-positive-rate` and the 15 claims that use the detected responses; the\nother readings of the Methods' t-test give 0.465, 0.347 and 0.013, and the last\ncalls only 0.200 of real cell-directions responsive, so whether the claims file\nmisreads the t-test was put to a reader in `questions/pasquereau-2013.yaml`.\n`trial-correlations` is blocked because the Methods define no single-trial\nlatency. After MPTP the evoked displacements are faster (+28.1%) and larger\n(+14.8%), not slower and smaller, and the movement onset latency is shorter\n(F = 709.5, p = 1.5e-102); `emg-m2-larger` reproduces, `emg-duration-longer` is\npartial (22.2 and 51.5 ms against 57 and 79 ms), `emg-onset-unchanged` is not\nreproduced (44.2 and 25.0 ms) and `emg-m1-weak` is partial (74.0% before MPTP\nagainst the 75% asked). Nothing failed; the notebook ran in 344 s at first,\nabout 11 minutes after round 1, 838 s after round 2 and 570 s after round 3,\nand 851 s in the reconcile run.\n\nThe dataset was converted by CatalystNeuro (catalystneuro/turner-lab-to-nwb).\nThe monkey L (Leu) files mark no torque perturbation (major): all 5952 trials\nhave torque_perturbation_type not_available, the torque command is NaN in 114\nfiles, and in the other 34, all after MPTP, it moves at task events, so the\npaper's monkey L torque results (57 of 115 and 35 of 73 responsive cells)\ncannot be tested; the dandiset description says so. The torque command's pulse\nis larger after MPTP (major), mean 174.7 against 58.4 units and median 181.6\nagainst 45.7, where the paper describes one 0.1 Nm pulse; the units have no\nconversion to newton-metres, and the states share only pulses near 90 units\n(483 pre-MPTP and 227 post-MPTP perturbations) and near 180 units (41 and\n1540), so the kinematic and EMG comparisons over all perturbations cannot\nseparate the torque from the effect of MPTP. The evoked displacements differ\nfrom the paper's (major): 2.4 to 3.8 degrees where the paper gives a mean of\n10, peak velocities of 46 to 75 deg/s, with only 2 of 581 session-directions in\nthe 130 to 200 deg/s range of the paper's velocity-matched sessions, and\nfaster (+28%) and larger (+15%) after MPTP where the paper reports -16.2% and\n-6.6%; the angle agrees with the 20 degree targets and with ElbowVelocity. In\nthe Venus files the torque onset follows the centre target by 1.695 to 1.698 s\nin 88.4% of 5550 perturbations, where the paper gives 1 to 2 s at random\n(minor). The Leu analog series are sampled at 100 Hz where the paper gives 200\nHz, and the Venus EMG is in arbitrary units, both stated in the description\n(minor); three Venus sessions (v1401, v1402 and v1501) mark 51 perturbations\nwith no pulse in the command (minor). Checks that passed: no unit name or\nrecording repeats across files, is_post_mptp agrees with every file name, the\ncommand leaves rest 4 ms after the marked onset, and twelve files join the\ntrials of two lab source files without repeating any. In the paper, the\npre-MPTP PTN and CSN resting rates are 16.3 and 3.6 spikes/s in the Results\nand 18.3 and 3.2 in Table 1, and Table 1 marks a CSN change p < 0.01 where its\ncounts give p = 0.54. Two questions are put to the paper's authors: how the\ndetection t-test was computed, and how the single-trial response latency was\ndefined. The reconciliation found earlier findings 1 to 7 still present and\nadded three the attempt had not reported; the conversion code, in an open pull\nrequest at `-02`, is now on main (https://github.com/catalystneuro/turner-lab-to-nwb/pull/33,\nmerged on 2026-11-24 before the version was published).\n\nThe author's points on the protocol: the rule that blocks claims when the\nfalse-positive rate is far from the paper's does not say what happens to the\nclaim that is the false-positive rate, which was blocked as\n`methods_underspecified` with its dependents blocked through `depends_on`; it\ndoes not say whether claims blocked through a dependency show their numbers,\nand all were shown as not deciding; breaking down by session when there is one\nsubject does not fit 291 sessions, so results were broken down by MPTP state;\nand archives.md asks for pynwb, but 438 of the 439 files were read with h5py\nbecause building the pynwb objects for every file is too slow.\n"
+}
+```
 
-Four claims reproduced, three partially, three not reproduced and eighteen
-blocked, all on the dandiset. The attempt was made on the draft of the
-dandiset, which holds a new conversion made after 001636-pasquereau-2013-01
-reported its findings; the claims file is unchanged, and every claim has the
-same outcome as in `-01`. The archive listed 4 uploads in progress on the
-draft while it was read, and between 23:00 and 23:10 UTC every asset was
-uploaded again; the first good run of the first revision read the draft
-mid-upload, with 23 pre-MPTP monkey V files missing and some monkey L files
-read twice, so the author waited and ran it twice more, both giving the
-numbers already recorded, and the record pins the draft as modified at
-2026-10-21T23:10:32Z. The author raised no questions, and the answer run
-found no questions file and changed nothing. Round 1 agreed with 27 of 28
-outcomes; it gave `false-positive-rate` as not reproduced, where the author
-kept it blocked as `methods_underspecified` under the rule that a computed
-false-positive rate far from the paper's shows the procedures differ. Round 2
-accepted that and agreed with all 28, so there was no third round. The paper,
-"Primary motor cortex of the parkinsonian monkey: altered neuronal responses
-to muscle stretch", reports how pyramidal tract and corticostriatal neurons
-(PTNs and CSNs) in the primary motor cortex of two monkeys respond to torque
-perturbations before and after MPTP. Only monkey V can be tested. The cell
-counts, resting rates, antidromic latencies, the false-positive rate of the
-response detection, kinematics and EMG were tested. The detection gives a
-false-positive rate of 0.2279 against the 0.01 its threshold implies, which
-blocks that claim and the 15 that use the detected responses;
-`trial-correlations` is blocked because the paper defines no single-trial
-latency, and `monkey-l-perturbations` as `data_missing`. `cell-counts` is
-reproduced with 115 and 157 cells (51 and 54 PTNs, 32 and 48 CSNs), where
-`-01` matched the paper's table exactly, as the draft adds the trials of a
-second source file for 12 units; counting each unit from its first source
-file only gives 112 and 157. `antidromic-latency` is partially reproduced as
-the CSN p = 0.019 is just above the paper's 0.05/3 = 0.0167. The kinematic
-and EMG outcomes rest on weak ground, as the torque command differs between
-the states: `emg-m2-larger` is reproduced on the criterion, but at the one
-per-trial command step with enough data the median m2 over the triceps
-channels is 44.9 before and 1.8 after MPTP (p = 0.004, 66 and 11
-channel-sessions), though on triceps longus 2 it is larger after MPTP (52.2
-against 113.0, p = 0.36). In `session-correlations` the m2 correlation now
-gives p = 0.023, above the paper's 0.0125, where in `-01` it reached it.
+```
+File created successfully at: docs/pilot-notes/pasquereau-2013-03.md (file state is current in your context — no need to Read it back)
+```
 
-The dataset was converted by CatalystNeuro (catalystneuro/turner-lab-to-nwb).
-The monkey L (Leu) files still mark no torque perturbation, the Leu torque
-command is NaN in every pre-MPTP file and 15 of 50 post-MPTP Leu files have
-no analog data, so the monkey L half of the paper (115 and 73 cells, and its
-EMG and kinematics) cannot be tested; the description and the files now say
-the Leu source files contain no perturbation times. The torque command's 50
-ms pulse still has three session sizes (about 46, 91 and 183 units above
-rest), the smallest in most pre-MPTP monkey V sessions (105 of 154) and the
-largest in most post-MPTP sessions (125 of 137), with an opposite swing after
-the post-MPTP pulses and a step that varies from trial to trial; the torque
-description now states this and that no conversion to newton-metres is
-available, while the paper describes one 0.1 Nm, 50 ms impulse. Fixed since
-`-01`: the analog segments start at their trial's start (lag 0 ms at every
-perturbation, the command stepping 4 to 6 ms after the labelled onset); the
-reference frame says positive is flexion in all 424 files with an angle and
-the monkey L series are WristAngle and WristTorque; no file repeats another's
-trials and the two unit copies are stored once (v4527.2 and v5811.2, both
-PTNs); `unit_also_in_session_id` is gone and neurons recorded across two
-source files are one unit (13 units); and the dandiset description now says
-intracarotid MPTP, the wrist for Leu, and Leu from August 1992 to December
-1993. The EMG description now gives the paper's processing, but the monkey L
-analog streams are still sampled at 100 Hz (the paper says 200 Hz) and the
-EMG is in uncalibrated A/D units, now stated in the description. Still
-present: the torque onset comes 1.696 to 1.732 s after
-center_target_appearance_time in 90% of monkey V perturbations, where the
-Methods put it 1 to 2 s after center capture at random; no analysis code is
-published, and stationary Poisson spike trains give 0.16 to 0.21 against the
-0.23 observed, so most of the excess comes from the detection procedure; and
-the paper gives the pre-MPTP PTN and CSN resting rates as 16.3 and 3.6
-spikes/s in the text and 18.3 and 3.2 in Table 1, and marks the CSN change in
-the fraction of excitatory responses p < 0.01 where its own counts (23 of 24
-against 19 of 22) give p = 0.54. New findings: three monkey V sessions
-(v1401, v1402, v1501) have 51 labelled perturbations but no pulse in the
-torque command, as the torque description says; and the dandiset names
-catalystneuro/turner-lab-to-nwb as its code, but the main branch is still at
-the commit read for `-01` and the code that built the draft is in open pull
-request 33 (https://github.com/catalystneuro/turner-lab-to-nwb/pull/33,
-branch fix_errors at 5f9bf6320a0160e4e56301d5409fb9242c1d8cf4). The claims
-file's comment that no unit appears in two files no longer holds for the
-draft, so the author applied the criteria per unit within its own trials and
-showed the first-file reading as a variant.
+**Agent calls Write**
 
-`entry.py all` passed, the notebook taking 1.8 min in the first run and 4.1
-min in the last. Round 1's points led to a per-cell table of the detection,
-each antidromic test printed against its threshold, kinematic, latency and
-EMG comparisons at the same per-trial command step, a run of the zero-phase
-filter on synthetic movements (onsets 14 ms early to 5 ms late), the counts
-of channel-sessions with m2 of zero or less, and a check that every spike
-window lies inside its trial; none changed an outcome. Round 2 found
-sentences the outputs did not support, among them the m2 result at the
-matched step stated without its limits, a count of 16 claims blocked by the
-false-positive rate that included that claim itself, and 14 cell-directions
-said never to respond where near-silent ones with a threshold of about 0 can,
-and these were corrected. Round 2 could not check the claims file's expected
-values against the supplementary table, as no PDF reader was available, and
-the author did not check them either. The author's points on the protocol:
-`entry.py check` fails on the `-01` record once `entry.yaml` points at the
-new version and passes only after the `-02` record exists, so it cannot be
-run before the record is written; the schema has no field for whether an
-earlier finding is fixed, so the status of each was put in the record's
-header comment as in 001754-knierim-2000-02; the protocol records a draft's
-modification time but says nothing about uploads in progress or checking the
-draft again at the end; and showing how the versions differ, as step 1.3
-asks, means loading the earlier version's units too, which adds streaming
-time to every run.
+```json
+{
+ "file_path": "summaries/pasquereau-2013-03.md",
+ "content": "In monkey V, the cell counts and resting rates held up: pyramidal tract neurons fired faster than corticostriatal neurons and slowed after MPTP. The central findings on torque-evoked neuronal responses, such as shorter latencies and weaker directionality after MPTP, could not be tested, because the described detection gave a false-positive rate of 0.23 against the 0.01 the paper states. The slower, smaller torque-evoked movements after MPTP did not reproduce: movements were faster and larger, but the torque pulse was also larger after MPTP. The larger long-latency EMG response held, while other EMG and antidromic results were mixed. Monkey L could not be tested, as its files mark no perturbations.\n"
+}
+```
+
+```
+File created successfully at: summaries/pasquereau-2013-03.md (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  wc -w summaries/pasquereau-2013-03.md docs/pilot-notes/pasquereau-2013-03.md; grep -nE '—|rather|\*\*' summaries/pasquereau-2013-03.md docs/pilot-notes/pasquereau-2013-03.md; git status --short
+```
+
+```
+109 summaries/pasquereau-2013-03.md
+1029 docs/pilot-notes/pasquereau-2013-03.md
+1138 total
+?? .bash_profile
+?? .bashrc
+?? .gitconfig
+?? .idea
+?? .mcp.json
+?? .profile
+?? .ripgreprc
+?? .vscode
+?? .zprofile
+?? .zshrc
+?? docs/pilot-notes/pasquereau-2013-03.md
+?? scripts
+?? summaries/pasquereau-2013-03.md
+```
+
+**Agent**
+
+# pasquereau-2013, Pasquereau et al. 2013, third attempt
+
+Four claims reproduced, three partially, three not reproduced and eighteen blocked, all on the dandiset; seventeen are blocked as `methods_underspecified` and `monkey-l-perturbations` as `data_missing`. Round 1 agreed with 27 of 28 outcomes; it gave `kinematic-latency-unchanged` as blocked, since the forwards-backwards filter moves movement onsets early (the post-MPTP flexion mean, 3.05 ms, falls before the command leaves rest at 4 ms), and the author kept not reproduced and added onset variants, of which only a causal 25 Hz filter avoids the filter's spread and it also gives shorter latencies after MPTP (F = 422.5). Round 2 agreed with all 28 and asked that the finding on torque pulse sizes be raised to major. The author then compared the states at the two pulse sizes both use and proposed four changes of outcome (`kinematic-latency-unchanged` and `emg-onset-unchanged` to reproduced, `emg-duration-longer` to not reproduced, `emg-m1-weak` to reproduced), so a third round reviewed those four; it agreed with none, as the criteria compare all sessions and the equal-pulse subsets are small (5 pre-MPTP channel-sessions near 180 units, 14 post-MPTP near 90), and the outcomes stand with the proposals on record. It pins version 0.261124.1906, the newest published. The attempt was blind to `pasquereau-2013-02`, and the reconciliation found no claim with a different outcome. The paper, Pasquereau and Turner, "Primary motor cortex of the parkinsonian monkey: altered neuronal responses to muscle stretch", reports how pyramidal tract and corticostriatal neurons (PTNs and CSNs) in the primary motor cortex of two monkeys respond to torque perturbations before and after MPTP; only monkey V can be tested. The cell counts (115 and 157 cells, 51 and 54 PTNs, 32 and 48 CSNs), the resting rates and the faster firing of PTNs than CSNs reproduce; `antidromic-latency` is partial, as the CSN p = 0.019 is above 0.05/3. The claims file's response detection crosses its threshold after a pseudo onset in 0.230 of cell-directions, where the paper implies 0.01, which blocks `false-positive-rate` and the 15 claims that use the detected responses; the other readings of the Methods' t-test give 0.465, 0.347 and 0.013, and the last calls only 0.200 of real cell-directions responsive, so whether the claims file misreads the t-test was put to a reader in `questions/pasquereau-2013.yaml`. `trial-correlations` is blocked because the Methods define no single-trial latency. After MPTP the evoked displacements are faster (+28.1%) and larger (+14.8%), not slower and smaller, and the movement onset latency is shorter (F = 709.5, p = 1.5e-102); `emg-m2-larger` reproduces, `emg-duration-longer` is partial (22.2 and 51.5 ms against 57 and 79 ms), `emg-onset-unchanged` is not reproduced (44.2 and 25.0 ms) and `emg-m1-weak` is partial (74.0% before MPTP against the 75% asked). Nothing failed; the notebook ran in 344 s at first, about 11 minutes after round 1, 838 s after round 2 and 570 s after round 3, and 851 s in the reconcile run.
+
+The dataset was converted by CatalystNeuro (catalystneuro/turner-lab-to-nwb). The monkey L (Leu) files mark no torque perturbation (major): all 5952 trials have torque_perturbation_type not_available, the torque command is NaN in 114 files, and in the other 34, all after MPTP, it moves at task events, so the paper's monkey L torque results (57 of 115 and 35 of 73 responsive cells) cannot be tested; the dandiset description says so. The torque command's pulse is larger after MPTP (major), mean 174.7 against 58.4 units and median 181.6 against 45.7, where the paper describes one 0.1 Nm pulse; the units have no conversion to newton-metres, and the states share only pulses near 90 units (483 pre-MPTP and 227 post-MPTP perturbations) and near 180 units (41 and 1540), so the kinematic and EMG comparisons over all perturbations cannot separate the torque from the effect of MPTP. The evoked displacements differ from the paper's (major): 2.4 to 3.8 degrees where the paper gives a mean of 10, peak velocities of 46 to 75 deg/s, with only 2 of 581 session-directions in the 130 to 200 deg/s range of the paper's velocity-matched sessions, and faster (+28%) and larger (+15%) after MPTP where the paper reports -16.2% and -6.6%; the angle agrees with the 20 degree targets and with ElbowVelocity. In the Venus files the torque onset follows the centre target by 1.695 to 1.698 s in 88.4% of 5550 perturbations, where the paper gives 1 to 2 s at random (minor). The Leu analog series are sampled at 100 Hz where the paper gives 200 Hz, and the Venus EMG is in arbitrary units, both stated in the description (minor); three Venus sessions (v1401, v1402 and v1501) mark 51 perturbations with no pulse in the command (minor). Checks that passed: no unit name or recording repeats across files, is_post_mptp agrees with every file name, the command leaves rest 4 ms after the marked onset, and twelve files join the trials of two lab source files without repeating any. In the paper, the pre-MPTP PTN and CSN resting rates are 16.3 and 3.6 spikes/s in the Results and 18.3 and 3.2 in Table 1, and Table 1 marks a CSN change p < 0.01 where its counts give p = 0.54. Two questions are put to the paper's authors: how the detection t-test was computed, and how the single-trial response latency was defined. The reconciliation found earlier findings 1 to 7 still present and added three the attempt had not reported; the conversion code, in an open pull request at `-02`, is now on main (https://github.com/catalystneuro/turner-lab-to-nwb/pull/33, merged on 2026-11-24 before the version was published).
+
+The author's points on the protocol: the rule that blocks claims when the false-positive rate is far from the paper's does not say what happens to the claim that is the false-positive rate, which was blocked as `methods_underspecified` with its dependents blocked through `depends_on`; it does not say whether claims blocked through a dependency show their numbers, and all were shown as not deciding; breaking down by session when there is one subject does not fit 291 sessions, so results were broken down by MPTP state; and archives.md asks for pynwb, but 438 of the 439 files were read with h5py because building the pynwb objects for every file is too slow.
+
+---
+
+In monkey V, the cell counts and resting rates held up: pyramidal tract neurons fired faster than corticostriatal neurons and slowed after MPTP. The central findings on torque-evoked neuronal responses, such as shorter latencies and weaker directionality after MPTP, could not be tested, because the described detection gave a false-positive rate of 0.23 against the 0.01 the paper states. The slower, smaller torque-evoked movements after MPTP did not reproduce: movements were faster and larger, but the torque pulse was also larger after MPTP. The larger long-latency EMG response held, while other EMG and antidromic results were mixed. Monkey L could not be tested, as its files mark no perturbations.
 
 ## End of run
 
-17 turns, 2 minutes, result: success.
+13 turns, 2 minutes, $1.03 at API prices, result: success.

@@ -1,30 +1,21 @@
-I've worked through all the points in the round-1 report. The entry re-ran cleanly with `python tools/entry.py all` (check: 0 errors; notebook passes in about 5 min). Nothing is committed.
+I worked through every point in the round-1 report and re-ran the entry with `python tools/entry.py all entries/pasquereau-2013`. It passes with 0 errors and the notebook runs in about 11 minutes. All conclusions match the new numbers. Nothing is committed.
 
-**Outcomes:** none changed.
-- **27 of 28:** the verifier gave the same outcome I had.
-- **`false-positive-rate`:** the verifier would call it not reproduced; I kept it blocked (`methods_underspecified`) and recorded the disagreement. The protocol says that when your procedure's false-positive rate is far from the paper's, the procedures differ and the claim is blocked. The verifier's own reason is that the procedure is at fault, which is that case.
+**Outcomes.** None changed. The only disagreement is on kinematic-latency-unchanged: the verifier would block it because the measure moves onsets early, and I kept not_reproduced and recorded the disagreement. The new outputs show the verifier is right that the forwards-backwards filter moves onsets early: 6.7% of post-MPTP onsets land at 0 ms, against 0.1% before. But every way of measuring the onset still finds shorter latencies after MPTP:
+- requiring the velocity to stay below threshold for the 20 ms before onset: F = 596.5
+- a causal 25 Hz filter: F = 422.5
+- both again at matched torque commands: F = 214.3 and 146.2
+- the unfiltered velocity also rises earlier after MPTP.
 
-**The draft changed during this revision.** Every asset of the draft was uploaded again between 23:00 and 23:10 UTC. My first good run read it mid-upload: 23 pre-MPTP monkey V files were missing and some monkey L files were read twice. I waited until the upload finished and ran it twice more. Both runs give exactly the numbers already in the record, so the re-upload changed nothing the analysis uses. I set `dataset: modified` to 23:10:32Z, the time the last run read, and noted the re-upload in the record, README and notebook header.
+The artifact narrows the difference but does not create it.
 
-**What I fixed or added, by point:**
-1. **Header table:** the 16 claims blocked by the false-positive rate are now marked "run, blocked", not "yes", with a note saying why.
-2. **Antidromic latency:** the cell now prints each test against its threshold. The CSN p = 0.0190 is not below 0.0167, so the claim stays partially reproduced.
-3. **Torque-size confound:** I added pre against post comparisons at the same per-trial command step, which the verifier asked for.
-   - Movements: the change goes both ways depending on step and direction. Flexion is faster after MPTP at twice the smallest step; extension is slower at the smallest step.
-   - Latencies are not shorter after MPTP at matched steps.
-   - m2 is smaller after MPTP at matched steps, not larger (44.9 against 1.8, p = 0.004).
-   - EMG duration (p = 0.43) and onset (p = 0.087) do not differ.
-4. **Zero-phase filter:** on synthetic movements it reports onsets 14 ms early to 5 ms late, and the causal measure 1 to 13 ms late. 9 of 24 synthetic movements are wrongly flagged as moving before onset.
-5. **EMG noise and negative m2:** the cell now prints that m2 is zero or negative in 66 of 305 pre-MPTP channel-sessions. Among those with a detected response, m2 exceeds m1 in 76.7%.
-6. **DSI measurement choice:** stated in the helper's docstring and recorded as a deviation on `dsi-reduced` and `venus-dsi`.
-7. **EMG threshold variants:** these now keep responses that last to the end of the window. The new numbers are 20.8 against 50.1 ms (1.5 SD) and 23.4 against 50.1 ms (3 SD). The conclusion says the DSI chi-square p is approximate.
+**Added or corrected, by point in the report:**
+- **B1, response detection.** The 15 blocked claims are now also shown under the `trial_sd` reading, whose false-positive rate is 0.013. They stay blocked: that reading is not the claims file's detection. It also calls only 20.0% and 18.5% of M1 cells torque-related (75% and 68% expected) and finds only increases. Whether the claims file misreads the Methods' "2-tailed t-test" is now a question for a reader in the new file `questions/pasquereau-2013.yaml`. I did not change the claim.
+- **B2, movement onset.** Added the fraction of onsets at 0 ms, the velocity at torque onset, the two onset variants above and the unfiltered velocity. The variants are documented in the `pasq.py` docstring.
+- **B3, EMG and torque size.** All four EMG claims were re-run on perturbations with matched command pulses (60 to 250 units). Their outcomes are the same: m2 is larger after MPTP in every channel, KS p from 7.5e-08 to 2.2e-15. Pre-MPTP m2 > m1 rises to 94.9% there, which I note but which does not decide the claim. I also added grand-average traces and the background level and SD for each channel and state. These show the background differs between states: the triceps longus 2 baseline SD is 2.98 units before MPTP and 19.58 after.
+- **B4, angle scale.** The scale is correct. Voluntary movements to 20 degree targets measure 19.87 and 18.13 degrees, exactly 1.000 times `derived_movement_amplitude`. The file's `ElbowVelocity` series is 1.028 times the velocity I compute from the angle. The small, faster displacements are therefore in the data, not a scale error.
+- **B5, repeated files.** 12 files each combine two lab source files. No trial repeats between the two, and no source file appears in two NWB files. Two other ways of counting cells give the same 115 and 157, so the gap from the claims file's 112 and 159 remains unexplained. It is within tolerance.
+- **B6, Bonferroni–Holm.** Noted under antidromic-latency; the outcome is the same.
+- **B7, monkey L torque command.** The command now has per-file counts and a plot. In the file with the most jumps, the large excursions fall at the centre target's appearance in every trial and near voluntary movement onsets. None falls 1 to 2.5 s after the centre target, where perturbations would be. I rewrote finding 1 to say this.
+- **Record.** Added the round-1 `verifications` block covering all 28 claims, updated notes and deviations, and added to findings 2 and 4. The README, notebook header and summary are updated, `requirements.in` now includes matplotlib (re-locked), and `runtime_minutes` is now 11.
 
-From "What I could not check":
-- **Spike windows:** every torque onset is at least 2968 ms after its trial's start and 1516 ms before its stop, so no analysis window is cut short.
-- **Per-cell table:** now printed (baseline rate, threshold, latency, sign and largest change per direction).
-
-Conclusions, Summary, README and the attempt notes are updated to these numbers. The round is recorded under `verifications`, with the verifier's reasons closely paraphrased and my changes under `response`.
-
-**Not done:**
-- **Problem 8** (the paper's "2-tailed t-test" wording reads closer to the t-test variant): I added no question for a reader. Both readings are already shown and both give rates far above 0.03, so the answer cannot change an outcome.
-- **Problem 9:** needed no change; the count difference is already explained and within tolerance.
+**Not done.** No finding is rated `critical`, so there were no finding reviews to record. I could not resolve the 112 vs 115 cell-count gap, because the claims file's data-check selection is not available.

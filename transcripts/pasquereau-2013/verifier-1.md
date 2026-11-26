@@ -1,4 +1,4 @@
-# 001636 · verifier-1 · run 39687315667
+# pasquereau-2013 · verifier-1 · run 45863880761
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
@@ -10,33 +10,33 @@ cd  ls -la; ls paper docs 2>/dev/null
 
 ```
 Exit code 2
-total 624
-drwxr-xr-x 6 runner runner    4096 Oct 21 22:40 .
-drwxr-xr-x 7 runner runner    4096 Oct 21 22:40 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 21 22:32 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 21 22:32 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 21 22:40 .claude
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env.development
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env.local
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env.production
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env.test
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .env.test.local
-drwx------ 2 runner runner      40 Oct 21 22:40 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 21 22:32 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 21 22:32 .github
--rw-r--r-- 1 runner runner       0 Oct 21 22:40 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 21 22:32 .idea
-[... 27 more lines not kept]
+total 164
+drwxr-xr-x 6 runner runner   4096 Nov 26 17:22 .
+drwxr-xr-x 8 runner runner   4096 Nov 26 17:22 ..
+crw-rw-rw- 1 nobody nogroup  1, 3 Nov 26 17:00 .bash_profile
+crw-rw-rw- 1 nobody nogroup  1, 3 Nov 26 17:00 .bashrc
+drwxr-xr-x 5 runner runner   4096 Nov 26 17:22 .claude
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env.development
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env.development.local
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env.local
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env.production
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env.production.local
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env.test
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .env.test.local
+drwx------ 2 runner runner   4096 Nov 26 17:22 .git
+crw-rw-rw- 1 nobody nogroup  1, 3 Nov 26 17:00 .gitconfig
+crw-rw-rw- 1 nobody nogroup  1, 3 Nov 26 17:00 .github
+-rw-r--r-- 1 runner runner      0 Nov 26 17:22 .gitmodules
+crw-rw-rw- 1 nobody nogroup  1, 3 Nov 26 17:00 .idea
+[... 23 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "10.3389-fnsys.2013.00098.yaml"
+ "file_path": "pasquereau-2013.yaml"
 }
 ```
 
@@ -68,32 +68,32 @@ crw-rw-rw- 1 nobody nogroup   1, 3 Oct 21 22:32 .idea
 
 ```json
 {
- "file_path": "stretch.py"
+ "file_path": "pasq.py"
 }
 ```
 
 ```
-1	"""Loading and measures for the torque perturbation (muscle stretch) trials of dandiset 001636.
+1	"""Loading and measures for the torque perturbation data of dandiset 001636 (monkey V).
 2	
-3	Pasquereau & Turner (2013), Frontiers in Systems Neuroscience 7:98, doi:10.3389/fnsys.2013.00098.
+3	Pasquereau & Turner (2013), Front. Syst. Neurosci. 7:98, doi:10.3389/fnsys.2013.00098.
 4	
-5	Each NWB file holds one recording session of one or more single units in M1 of monkey Venus (V,
-6	elbow task) or Leu (L, wrist task): a trials table with the task events and the torque
-7	perturbations, the manipulandum angle, the torque command and, in many Venus sessions, rectified
-8	EMG. Files are streamed from the archive at the pinned version; nothing is written to disk.
-9	
-10	Sessions. In the draft of 2026-10-21, source files recorded on the same day and linked in the
-11	lab's metadata table are merged into one session, and a unit is observed only during the trials
-12	of its own source files (its obs_intervals). A unit's perturbations are therefore the perturbation
-13	trials inside its obs_intervals (`load_session` stores them per unit).
-14	
-15	Clocks. The source files were trialized; the conversion placed the trials one after another with
-16	3 s gaps. In version 0.260518.1819 the analog streams (angle, torque, EMG) were laid end to end by
-17	their own sample counts and fell further behind the trials table with every trial. `realign` puts
-18	each analog segment back at the start time of its trial; in the draft it moves nothing, which the
-19	notebook shows (the lag it would correct is printed in the data check).
-20	
-[... 499 more lines not kept]
+5	Each NWB file holds one recording (one or two units) with a trials table whose
+6	`torque_perturbation_type` and `torque_perturbation_onset_time` mark the perturbations, the elbow
+7	angle and the torque command at 1 kHz, and up to six EMG channels. Files are streamed from the
+8	archive at the pinned version with remfile and h5py (reading the NWB paths directly is much
+9	faster than building the pynwb objects of 291 files); nothing is written to disk. Only windows
+10	around each perturbation are kept.
+11	
+12	Where the parameters come from. "Claims" means the opening comment and criteria of
+13	claims/pasquereau-2013.yaml, which cite the paper's Methods; "Methods" means the paper's
+14	Methods, Data analysis.
+15	
+16	- Cells studied: units with at least 5 perturbations of each direction (Methods, "for neurons
+17	  studied during at least 5 repetitions of each torque direction"; claims).
+18	- SDF: spikes convolved at 1 ms with a gamma kernel, k = 1.5, theta = 20 ms (Methods). The
+19	  kernel is truncated at 400 ms, where its tail is below 1e-7 of its mass (a standard choice
+20	  that cannot change a result).
+[... 433 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -106,187 +106,202 @@ for i,c in enumerate(nb['cells']):
     print('='*20,i,c['cell_type'])
     print(''.join(c['source']))
     for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--');print(''.join(o['text'])[:6000])
+        if 'text' in o: print('--OUT--');print(''.join(o['text']))
         elif 'data' in o:
             d=o['data']
-            if 'text/plain' in d: print('--OUT--');print(''.join(d['text/plain'])[:6000])
-            if 'image/png' in d: print('[image]')
-        elif o.get('output_type')=='error': print('ERROR',o['ename'],o['evalue'])
-" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
+            if 'text/plain' in d: print('--OUT--');print(''.join(d['text/plain']))
+            else: print('--OUT-- [',list(d.keys()),']')
+        elif o.get('output_type')=='error': print('--ERR--',o['ename'],o['evalue'])
+"
 ```
 
 ```
-2276 /tmp/claude-1001/nb.txt
+<persisted-output>
+Output too large (50.1KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/a86358e7-52b1-496a-92b7-878dc37d7b28/tool-results/b6lpogtr0.txt
+
+Preview (first 2KB):
+==================== 0 markdown
+# Pasquereau & Turner (2013) on DANDI:001636
+
+Paper: Pasquereau B, Turner RS (2013). Primary motor cortex of the parkinsonian monkey: altered
+neuronal responses to muscle stretch. *Front. Syst. Neurosci.* 7:98,
+[doi:10.3389/fnsys.2013.00098](https://doi.org/10.3389/fnsys.2013.00098).
+
+Dataset: [DANDI:001636](https://dandiarchive.org/dandiset/001636/0.261124.1906), version
+`0.261124.1906` (doi:10.48324/dandi.001636/0.261124.1906). This version was asked for in the
+prompt of this attempt; it is also the newest published version (published 2026-11-24). The
+paper cites no version.
+
+Claims: `claims/pasquereau-2013.yaml`, written from the full text in PubMed Central
+(PMC3840326), its Methods, Results, Table 1, figure legends and supplementary data sheet
+(DataSheet1.PDF), whose table gives the results for each monkey.
+
+[... 23 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/nb.txt",
- "limit": 800
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/a86358e7-52b1-496a-92b7-878dc37d7b28/tool-results/b6lpogtr0.txt"
 }
 ```
 
 ```
 1	==================== 0 markdown
-2	# Reproducing Pasquereau & Turner (2013) from dandiset 001636
+2	# Pasquereau & Turner (2013) on DANDI:001636
 3	
 4	Paper: Pasquereau B, Turner RS (2013). Primary motor cortex of the parkinsonian monkey: altered
-5	neuronal responses to muscle stretch. *Frontiers in Systems Neuroscience* 7:98.
-6	[doi:10.3389/fnsys.2013.00098](https://doi.org/10.3389/fnsys.2013.00098). The claims file was
-7	written from the full text (open access, PubMed Central PMC3840326) and its supplementary data
-8	sheet, whose table gives the neuronal results of each monkey separately.
-9	
-10	Dandiset: [DANDI:001636](https://dandiarchive.org/dandiset/001636/draft), version draft, as asked
-11	for this attempt. The draft was last modified on 2026-10-21 at 20:16:41 UTC (the first cell prints
-12	the modification time read at run time); a draft can change, and when it was read the archive
-13	listed 4 uploads in progress. This is a repeat attempt: the earlier one,
-14	`001636-pasquereau-2013-01`, used the published version 0.260518.1819. Since then the files were
-15	reconverted to fix what that attempt found, and the fixes are not yet published, so the draft is
-16	tested here. The paper (2013) cites no DANDI version.
-17	
-18	How the draft differs from 0.260518.1819, in what the analysis uses (shown in the data check): it
-19	holds 439 files where the published version held 447. Source files recorded on the same day and
-20	linked through a neuron recorded across them are merged into one session, and a unit is observed
-[... 780 more lines not kept]
+5	neuronal responses to muscle stretch. *Front. Syst. Neurosci.* 7:98,
+6	[doi:10.3389/fnsys.2013.00098](https://doi.org/10.3389/fnsys.2013.00098).
+7	
+8	Dataset: [DANDI:001636](https://dandiarchive.org/dandiset/001636/0.261124.1906), version
+9	`0.261124.1906` (doi:10.48324/dandi.001636/0.261124.1906). This version was asked for in the
+10	prompt of this attempt; it is also the newest published version (published 2026-11-24). The
+11	paper cites no version.
+12	
+13	Claims: `claims/pasquereau-2013.yaml`, written from the full text in PubMed Central
+14	(PMC3840326), its Methods, Results, Table 1, figure legends and supplementary data sheet
+15	(DataSheet1.PDF), whose table gives the results for each monkey.
+16	
+17	The files of monkey L mark no torque perturbation, so every claim is tested on monkey V
+18	(Venus, elbow), as the claims file says.
+19	
+20	| Claim | Tested or blocked |
+[... 898 more lines not kept]
 ```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 800,
- "limit": 750
-}
-```
-
-```
-800	    sign = np.where(s["pert_direction"] == "flexion", 1.0, -1.0)[:, None]
-801	    rel = (w - np.nanmedian(w[:, (AX >= -100) & (AX < 0)], axis=1, keepdims=True)) * sign
-802	    m = np.nanmean(rel, axis=0)
-803	    command.append({"session": s["session_id"], "code": s["session_id"].split("++")[1], "post": s["post"],
-804	                    "date": s["date"], "step": float(np.nanmedian(rel[:, (AX >= 10) & (AX < 40)])),
-805	                    "width_ms": int((m > m.max() / 2).sum()), "after_pulse": float(m[(AX >= 70) & (AX < 150)].mean())})
-806	command = pd.DataFrame(command)
-807	command["level"] = np.round(command.step / command.step[command.step > 10].min()).astype(int)
-808	print("\nTorque command step (units above the pre-onset level) by state; level = step in multiples of the smallest:")
-809	print(pd.crosstab(command.level, command.post).to_string())
-810	print(command.groupby(["post", "level"])[["step", "width_ms", "after_pulse"]].median().round(1).to_string())
-811	# per-trial step, against the level of its session
-812	trial_steps = []
-813	for s, lv in zip(venus, command.level):
-814	    w = s["windows"]["torque_cmd"]
-815	    sign = np.where(s["pert_direction"] == "flexion", 1.0, -1.0)
-816	    rel = (w - np.nanmedian(w[:, (AX >= -100) & (AX < 0)], axis=1, keepdims=True)) * sign[:, None]
-817	    step = np.nanmedian(rel[:, (AX >= 10) & (AX < 40)], axis=1)
-818	    trial_steps.append(pd.DataFrame({"post": s["post"], "session_level": lv,
-819	                                     "trial_level": np.round(step / command.step[command.step > 10].min())}))
-[... 730 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1550,
- "limit": 730
-}
-```
-
-```
-1550	                         "in_tol": abs(v - e) <= 0.1 * e, "n": int((x.state == st).sum())})
-1551	mags = pd.DataFrame(rows)
-1552	print(mags.round(2).to_string(index=False))
-1553	print("\nWithin tolerance per reading (of 8):", mags.groupby("reading").in_tol.sum().to_dict())
-1554	--OUT--
-1555	      reading group direction state  value  expected  in_tol  n
-1556	 a max change    M1   flexion   pre  40.21      42.4    True 49
-1557	 a max change    M1   flexion  post  31.22      37.9   False 63
-1558	 a max change    M1 extension   pre  47.65      50.9    True 40
-1559	 a max change    M1 extension  post  33.20      42.6   False 52
-1560	 a max change   PTN   flexion   pre  31.74      33.4    True 27
-1561	 a max change   PTN   flexion  post  19.95      26.1   False 33
-1562	 a max change   PTN extension   pre  36.22      38.8    True 23
-1563	 a max change   PTN extension  post  23.79      29.3   False 26
-1564	  b mean rate    M1   flexion   pre  37.24      42.4   False 49
-1565	  b mean rate    M1   flexion  post  28.45      37.9   False 63
-1566	  b mean rate    M1 extension   pre  37.40      50.9   False 40
-1567	  b mean rate    M1 extension  post  28.06      42.6   False 52
-1568	  b mean rate   PTN   flexion   pre  33.99      33.4    True 27
-1569	  b mean rate   PTN   flexion  post  21.75      26.1   False 33
-[... 708 more lines not kept]
-```
-
-**Agent**
-
-Every claim downstream of the false-positive check needs the response selection, and the notebook runs them as tested. Next: synthetic tests of the helper and a check of the archive.
 
 **Agent calls Bash**
 
 ```bash
-cd  timeout 600 python3 -c "
-import numpy as np, stretch
-from scipy import stats
+cd paper; wc -c *.txt; grep -n -i -E "torque|deg|velocity|rectif|EMG|DSI|gamma|threshold|single.trial|trial-by-trial|latenc" 10.3389-fnsys.2013.00098.txt | head -150
+```
+
+```
+<persisted-output>
+Output too large (71.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/a86358e7-52b1-496a-92b7-878dc37d7b28/tool-results/b62if2ski.txt
+
+Preview (first 2KB):
+120971 10.3389-fnsys.2013.00098.txt
+7:642 frontsysneuro Frontiers in Systems Neuroscience Front Syst Neurosci Frontiers Media SA PMC3840326 3840326 3840326 24324412 10.3389/fnsys.2013.00098 Primary motor cortex of the parkinsonian monkey: altered neuronal responses to muscle stretch Pasquereau Benjamin 1 Turner Robert S 1 * 1 Department of Neurobiology, Center for Neuroscience and The Center for the Neural Basis of Cognition, University of Pittsburgh, Pittsburgh, PA, USA Edited by: Hagai Bergman, The Hebrew University of Jerusalem, Israel Reviewed by: M. Gustavo Murer, Universidad de Buenos Aires, Argentina; Yifat Prut, The Hebrew University of Jerusalem, Israel; Joshua Goldberg, The Hebrew University of Jerusalem, Israel ✉ *Correspondence: Robert S. Turner, Department of Neurobiology, Center for Neuroscience and The Center for the Neural Basis of Cognition, University of Pittsburgh, 4047 BST-3, 3501 Fifth Avenue, Pittsburgh, PA 15261, USA e-mail: [removed: an e-mail address] This article was submitted to the journal Frontiers in Systems Neuroscience. 26 11 2013 7 98 98 9 12 2013 Copyright © 2013 Pasquereau and Turner. This is an open-access article distributed under the terms of the Creative Commons Attribution License (CC BY). The use, distribution or reproduction in other forums is permitted, provided the original author(s) or licensor are credited and that the original publication in this journal is cited, in accordance with accepted academic practice. No use, distribution or reproduction is permitted which does not comply with these terms. Abstract Exaggeration of the long-latency stretch reflex (LLSR) is a characteristic neurophysiologic feature of Parkinson's disease (PD) that contributes to parkinsonian rigidity. To explore one frequently-hypothesized mechanism
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; python3 - <<'EOF'
+import re
+t=open('10.3389-fnsys.2013.00098.txt').read()
+s=re.split(r'(?<=[.!?])\s+',t)
+keys=['Nm','rectif','spike density','gamma','threshold','DSI','directional selectivity','trial-by-trial','single-trial','single trial','trial by trial','displacement','5 deg','onset of','Velmax','m2max','EMG signals','Hamming','low-pass','reciprocal','bi-directional','bidirectional','non-directional']
+for i,x in enumerate(s):
+    if any(k.lower() in x.lower() for k in keys):
+        print(i, x[:700]); print()
+EOF
+```
+
+```
+12 This was accompanied by a shortening of M1 neuronal response latencies and a degradation of directional selectivity, but surprisingly, no increase in single unit response magnitudes.
+
+19 In neurologically-intact animals, the stretch reflex appears to regulate limb stiffness to maintain precise control of multi-joint posture during interactions with an unstable environment (Rothwell, 1990 ; Shemmell et al., 2010 ; Pruszynski et al., 2011a ).
+
+59 On two-thirds of the trials (selected at random), single flexing or extending torque impulses (0.1 Nm–50 ms duration) were applied to the manipulandum by a DC brushless torque motor (TQ40W, Aerotech Inc., Pittsburgh PA) at an unpredictable time beginning 1–2 s (uniform randomized distribution) after initial capture of the center target.
+
+60 Each square-wave torque impulse induced an angular displacement of the joint (mean = 10-deg) causing a sudden stretch of arm extensor or flexor muscles.
+
+88 EMG signals were differentially amplified (gain = 10-K), band-pass filtered (20-Hz to 5-kHz), rectified and then low-pass filtered (100-Hz).
+
+101 The digitized signal reflecting manipulandum angle was filtered and differentiated [low-pass 25-Hz (Hamming, 1983 )].
+
+102 The onset of torque-evoked movement, peak velocity, and movement termination were detected automatically using angle, velocity, and duration criteria.
+
+103 A velocity threshold of 5-deg/s was used to detect movement.
+
+106 For each muscle, peri-torque means of the digitized EMG signals were constructed for all valid torque perturbations in each direction (flexion and extension).
+
+107 The signal was normalized by subtracting the background activity recorded 200-ms prior to the onset of the torque perturbation.
+
+[... 176 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; python3 - <<'EOF'
+import re
+t=open('10.3389-fnsys.2013.00098.txt').read()
+s=re.split(r'(?<=[.!?])\s+',t)
+for i in list(range(56,64))+list(range(86,112))+list(range(113,146))+list(range(160,176))+list(range(240,252)):
+    print(i, s[i][:900]); print()
+EOF
+```
+
+```
+56 The monkey maintained this position for the duration of a start-position hold period (random duration, 2–5 s), during which the animal could not predict the location of the upcoming lateral target.
+
+57 The target then shifted to the left or right (chosen at random), and the animal moved the cursor to capture the lateral target.
+
+58 The animal received a drop of juice for successful completion of the task.
+
+59 On two-thirds of the trials (selected at random), single flexing or extending torque impulses (0.1 Nm–50 ms duration) were applied to the manipulandum by a DC brushless torque motor (TQ40W, Aerotech Inc., Pittsburgh PA) at an unpredictable time beginning 1–2 s (uniform randomized distribution) after initial capture of the center target.
+
+60 Each square-wave torque impulse induced an angular displacement of the joint (mean = 10-deg) causing a sudden stretch of arm extensor or flexor muscles.
+
+61 The animals were not trained to produce a specific response to these unpredictable perturbations, but the animals naturally adopted a strategy that returned the joint to its initial pre-impulse position.
+
+62 Later aspects of the behavioral trial, which evaluated instruction-related neuronal activity, are irrelevant to the current study.
+
+63 Surgery The animals were prepared surgically using aseptic techniques under Isoflurane inhalation anesthesia (Pasquereau and Turner, 2011 ).
+
+86 The action potentials of single neurons (sampled at 60-kHz) were discriminated on-line using template-based spike sorting (MultiSpike Detector, Alpha Omega Engineering, Nazareth, Israel).
+
+87 The timing of detected spikes and of relevant task events was sampled digitally at 1 kHz and saved to disk for offline analysis.
+
+[... 170 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF'
+import numpy as np, pasq
 rng=np.random.default_rng(0)
-# kernel / sdf sanity
-x=stretch.sdfs([np.array([0.])])[0]
-print('sdf of one spike at 0: sum',x.sum()/1000,'peak at',stretch.GRID[np.argmax(x)],'nonzero before 0',(x[stretch.GRID<0]>0).sum())
-# constant rate 20 Hz -> sdf mean ~20
-tr=[np.sort(rng.choice(np.arange(-1800,700),50,replace=False)).astype(float) for _ in range(10)]
-X=stretch.sdfs(tr); print('mean sdf ~', X[:,stretch._mask(-500,0)].mean(), 'expected', 50/2.5)
-# false positive rate of main detection, Poisson null
-for rate in (2,10,30):
-  hits=[];resp=[]
-  for k in range(400):
-    trains=[np.flatnonzero(rng.random(2500)<rate/1000)-1800. for _ in range(10)]
-    d=stretch.detect(stretch.sdfs(trains)); hits.append(d['any_crossing_0_200']); resp.append(d['responds'])
-  print('rate',rate,'FP any crossing',np.mean(hits),'resp 20-60',np.mean(resp))
-# injected response at 30-80ms, +40 sp/s
-trains=[np.r_[np.flatnonzero(rng.random(2500)<10/1000)-1800., 30+np.flatnonzero(rng.random(50)<40/1000)] for _ in range(10)]
-trains=[np.sort(t) for t in trains]
-d=stretch.detect(stretch.sdfs(trains)); print({k:d[k] for k in ('responds','sign','latency','offset','fwhm','max_change') if k in d})
-# pseudo shift indexing
-d=stretch.detect(stretch.sdfs(trains),shift_ms=-600); print('pseudo',d['responds'],d['any_crossing_0_200'])
-# dsi
-print(stretch.dsi({'max_change_signed':10,'responds':True,'sign':1},{'max_change_signed':-5,'responds':True,'sign':-1}))
-print(stretch.dsi({'max_change_signed':10,'responds':True,'sign':1},{'max_change_signed':8,'responds':True,'sign':1}))
-# emg
-ax=np.arange(-500,501); tr=np.zeros((5,len(ax)))+rng.normal(0,1,(5,len(ax))); tr[:,(ax>=45)&(ax<100)]+=20
-r=stretch.emg_response(tr,1); print('emg onset',r['onset_ms'],'dur',r['duration_ms'],'m1',round(r['m1'],2),'m2',round(r['m2'],2))
-# kinematics: step displacement starting at 20ms
-ang=np.where(ax>=20, np.minimum((ax-20)*0.1,5),0.)
-print(stretch.kinematics(ang,'flexion',1))
-# chi2 checks from claims
-for t in ([[89,131-89],[35,114-35]],):
-  print('chi2 yates PTN vs CSN paper counts', stats.chi2_contingency(np.array(t),correction=True)[:2])
-"
+def sim(rate, ntr, resp=None):
+    trials=[]
+    for _ in range(ntr):
+        t=np.sort(rng.uniform(-1.5,0.5,rng.poisson(rate*2)))
+        if resp:
+            extra=rng.uniform(0.03,0.08,rng.poisson(resp*0.05)); t=np.sort(np.r_[t,extra])
+        trials.append(t)
+    return pasq.sdf_trials(trials).mean(0)
+for rate in [3,10,20]:
+  for ntr in [8,15]:
+    fp=[pasq.detect(sim(rate,ntr),0)['any_crossing'] for _ in range(300)]
+    fr=[pasq.detect(sim(rate,ntr),0)['responds'] for _ in range(300)]
+    print(rate,ntr,'any crossing %.3f'%np.mean(fp),'respond20-60 %.3f'%np.mean(fr))
+m=sim(10,15,resp=200); r=pasq.detect(m,0); print({k:r[k] for k in ['responds','onset','offset','sign','max_change','fwhm']} if r['responds'] else r)
+# kinematics: synthetic step in velocity starting at 10 ms
+t=np.arange(-200,400)
+ang=np.where(t>10, 5*(1-np.exp(-(t-10)/30.)),0.0)
+print(pasq.kinematics(ang[None,:], np.array(['flexion'])))
+EOF
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import numpy as np, stretch
+  File "<stdin>", line 1, in <module>
 ModuleNotFoundError: No module named 'numpy'
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls node_modules; which -a python3 python; ls ~/.venv* /opt 2>/dev/null | head; pip --version 2>&1; uv --version 2>&1
+ls ~/.venv* /opt 2>/dev/null; which -a python python3 uv pip 2>/dev/null; python3 -m pip --version
 ```
 
 ```
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python3
-/usr/bin/python3
-/bin/python3
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python
-/opt/hostedtoolcache/Python/3.13.16/x64/python
-/usr/bin/python
-/bin/python
 /opt:
 actionarchivecache
 az
@@ -297,115 +312,98 @@ hostedtoolcache
 microsoft
 pipelinesagent-cache
 pipx
-pip 26.2.1 from /opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/pip (python 3.13)
-uv 0.13.4 (x86_64-unknown-linux-gnu)
+pipx_bin
+post-generation
+primer
+runner-cache
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
+/opt/hostedtoolcache/Python/3.13.18/x64/python
+/usr/bin/python
+/bin/python
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python3
+/usr/bin/python3
+[... 6 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-/usr/bin/python3 -c "import numpy, scipy, pandas; print('ok')" 2>&1; cd $TMPDIR && uv venv -q v 2>&1 | tail -2 && uv pip install -q -p v numpy scipy pandas h5py remfile dandi 2>&1 | tail -3; ls v/bin | head
+cd $TMPDIR && uv venv -q v && . v/bin/activate && uv pip install -q numpy scipy pandas h5py remfile dandi 2>&1 | tail -2; python -c "import numpy,scipy,pandas;print('ok')"
 ```
 
 ```
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import numpy, scipy, pandas; print('ok')
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'numpy'
-activate
-activate.bat
-activate.csh
-activate.fish
-activate.nu
-activate.ps1
-activate.xsh
-activate_this.py
-bids-validator-deno
-bst
+ok
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  timeout 900 $TMPDIR/v/bin/python -c "
-import numpy as np, stretch
-from scipy import stats
+cd  $TMPDIR/v/bin/python - <<'EOF'
+import numpy as np, pasq
 rng=np.random.default_rng(0)
-x=stretch.sdfs([np.array([0.])])[0]
-print('sdf one spike: integral',x.sum()/1000,'peak at',stretch.GRID[np.argmax(x)],'nonzero before 0',(x[stretch.GRID<0]>0).sum())
-tr=[np.sort(rng.choice(np.arange(-1800,700),50,replace=False)).astype(float) for _ in range(10)]
-X=stretch.sdfs(tr); print('mean sdf', X[:,stretch._mask(-500,0)].mean(), 'expected', 50/2.5)
-for rate in (2,10,30):
-  hits=[];resp=[]
-  for k in range(400):
-    trains=[np.flatnonzero(rng.random(2500)<rate/1000)-1800. for _ in range(10)]
-    d=stretch.detect(stretch.sdfs(trains)); hits.append(d['any_crossing_0_200']); resp.append(d['responds'])
-  print('Poisson rate',rate,'FP any crossing',np.mean(hits),'resp 20-60',np.mean(resp))
-trains=[np.sort(np.r_[np.flatnonzero(rng.random(2500)<10/1000)-1800., 30+np.flatnonzero(rng.random(50)<40/1000)]) for _ in range(10)]
-d=stretch.detect(stretch.sdfs(trains)); print({k:d[k] for k in ('responds','sign','latency','offset','fwhm','max_change') if k in d})
-d=stretch.detect(stretch.sdfs(trains),shift_ms=-600); print('pseudo',d['responds'],d['any_crossing_0_200'])
-print(stretch.dsi({'max_change_signed':10,'responds':True,'sign':1},{'max_change_signed':-5,'responds':True,'sign':-1}))
-print(stretch.dsi({'max_change_signed':10,'responds':True,'sign':1},{'max_change_signed':8,'responds':True,'sign':1}))
-ax=np.arange(-500,501); tr=rng.normal(0,1,(5,len(ax))); tr[:,(ax>=45)&(ax<100)]+=20
-r=stretch.emg_response(tr,1); print('emg onset',r['onset_ms'],'dur',r['duration_ms'],'m1',round(r['m1'],2),'m2',round(r['m2'],2))
-ang=np.where(ax>=20, np.minimum((ax-20)*0.1,5),0.)
-print(stretch.kinematics(ang,'flexion',1))
-print('chi2 yates paper PTN vs CSN', stats.chi2_contingency(np.array([[89,42],[35,79]]),correction=True)[:2])
-"
+def sim(rate, ntr, resp=None):
+    trials=[]
+    for _ in range(ntr):
+        t=np.sort(rng.uniform(-1.5,0.5,rng.poisson(rate*2)))
+        if resp:
+            extra=rng.uniform(0.03,0.08,rng.poisson(resp*0.05)); t=np.sort(np.r_[t,extra])
+        trials.append(t)
+    return pasq.sdf_trials(trials).mean(0)
+for rate in [3,10,20]:
+  for ntr in [8,15]:
+    fp=[];fr=[]
+    for _ in range(300):
+        r=pasq.detect(sim(rate,ntr),0); fp.append(r['any_crossing']); fr.append(r['responds'])
+    print(rate,ntr,'any crossing %.3f'%np.mean(fp),'respond20-60 %.3f'%np.mean(fr))
+m=sim(10,15,resp=200); r=pasq.detect(m,0); print({k:r.get(k) for k in ['responds','onset','offset','sign','max_change','fwhm']})
+t=np.arange(-200,400)
+ang=np.where(t>10, 5*(1-np.exp(-(t-10)/30.)),0.0)
+print(pasq.kinematics(ang[None,:], np.array(['flexion'])))
+ang2=ang+0.0
+print(pasq.kinematics(np.vstack([ang*3]), np.array(['flexion'])))
+EOF
 ```
 
 ```
-sdf one spike: integral 1.0 peak at 10 nonzero before 0 0
-mean sdf 20.25031342777385 expected 20.0
-Poisson rate 2 FP any crossing 0.2175 resp 20-60 0.065
-Poisson rate 10 FP any crossing 0.15 resp 20-60 0.04
-Poisson rate 30 FP any crossing 0.1775 resp 20-60 0.04
-{'responds': True, 'sign': 1.0, 'latency': 40, 'offset': 106, 'fwhm': 60.0, 'max_change': 31.92048310101201}
-pseudo False False
-(1.5, 'reciprocal')
-(0.19999999999999996, 'non-directional')
-emg onset 45.0 dur 55.0 m1 -0.09 m2 18.02
-{'valid': True, 'moving_before': True, 'latency_ms': 8.0, 'latency_causal_ms': 21.0, 'peak_velocity': 110.89713216440589, 'amplitude': 5.079627429394834}
-chi2 yates paper PTN vs CSN (np.float64(32.3400842996932), np.float64(1.294159182258593e-08))
-```
-
-**Agent calls Bash**
-
-```bash
-cd paper; grep -n -i -E "hamming|low-pass|lowpass|5 deg|single.trial|trial-by-trial|trial by trial|0\.1.?N|onset latenc|latencies of torque-induced|independent comparisons|gamma" 10.3389-fnsys.2013.00098.txt | cut -c1-400
-```
-
-```
-7:642 frontsysneuro Frontiers in Systems Neuroscience Front Syst Neurosci Frontiers Media SA PMC3840326 3840326 3840326 24324412 10.3389/fnsys.2013.00098 Primary motor cortex of the parkinsonian monkey: altered neuronal responses to muscle stretch Pasquereau Benjamin 1 Turner Robert S 1 * 1 Department of Neurobiology, Center for Neuroscience and The Center for the Neural Basis of Cognition, Univer
-48:10.1038/nn.3047 Hamming R. W. (1983). Digital Filters. Englewood Cliffs NJ: Prentice Hall Hammond P. H. (1955). Involuntary activity in biceps following the sudden application of velocity to the abducted forearm.
-243:title=Digital Filters&author=R. W. Hamming&publication_year=1983&
+3 8 any crossing 0.223 respond20-60 0.087
+3 15 any crossing 0.200 respond20-60 0.060
+10 8 any crossing 0.157 respond20-60 0.037
+10 15 any crossing 0.167 respond20-60 0.030
+20 8 any crossing 0.137 respond20-60 0.037
+20 15 any crossing 0.190 respond20-60 0.043
+{'responds': True, 'onset': 34, 'offset': 153, 'sign': 1.0, 'max_change': 179.7256600380569, 'fwhm': 55.0}
+   latency  peak_velocity  amplitude
+0      0.0     104.415202   5.026857
+   latency  peak_velocity  amplitude
+0      0.0     313.245607  15.080571
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd paper; wc -c 10.3389-fnsys.2013.00098.txt; grep -o -i -E ".{300}(Hamming|single trial|trial-by-trial|trial by trial|0\.1 Nm|0.1-Nm|independent comparisons|latencies of torque-induced).{300}" 10.3389-fnsys.2013.00098.txt | head -20
+cd  $TMPDIR/v/bin/python - <<'EOF'
+import numpy as np, pasq
+from scipy import signal
+t=np.arange(-200,400)
+for amp in [1,3,10]:
+    ang=np.where(t>10, amp*(1-np.exp(-(t-10)/30.)),0.0)
+    f=signal.filtfilt(pasq._FIR,[1.0],ang); v=np.gradient(f)*1000
+    print(amp,'first t with vel>5:', t[np.argmax(v>5)], 'ms; true onset 10 ms')
+EOF
 ```
 
 ```
-120971 10.3389-fnsys.2013.00098.txt
-. The target then shifted to the left or right (chosen at random), and the animal moved the cursor to capture the lateral target. The animal received a drop of juice for successful completion of the task. On two-thirds of the trials (selected at random), single flexing or extending torque impulses (0.1 Nm–50 ms duration) were applied to the manipulandum by a DC brushless torque motor (TQ40W, Aerotech Inc., Pittsburgh PA) at an unpredictable time beginning 1–2 s (uniform randomized distribution) after initial capture of the center target. Each square-wave torque impulse induced an angular displacemen
-ivity evoked by torque perturbation during the start-position hold period. The general features of task performance before and after MPTP have been reported previously (Pasquereau and Turner, 2011 ). The digitized signal reflecting manipulandum angle was filtered and differentiated [low-pass 25-Hz (Hamming, 1983 )]. The onset of torque-evoked movement, peak velocity, and movement termination were detected automatically using angle, velocity, and duration criteria. A velocity threshold of 5-deg/s was used to detect movement. Session-by-session means of kinematic measures were entered into Three-Way AN
- detected by comparing SDF values (millisecond-by-millisecond) during a post-torque epoch (200-ms) relative to a cell's baseline firing rate (2-tailed t -test). The threshold for significance was adjusted to account for multiple comparisons [ p < 0.01/(200-ms epoch/40-ms gamma filter half-width = 5 independent comparisons) = 0.002]. A neuron was judged to be torque-related if it generated a significant post-torque response for at least one movement direction. Response onset times, defined as the time at which the SDF first crossed the p = 0.002 threshold, were determined separately for each torque direction. For com
-( F > 49, p < 0.01). More specifically, the mean peak velocity and the amplitude of torque-induced displacements averaged acr
-[... 2 more lines not kept]
+1 first t with vel>5: 1 ms; true onset 10 ms
+3 first t with vel>5: -3 ms; true onset 10 ms
+10 first t with vel>5: -5 ms; true onset 10 ms
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/001636/versions/draft/info/" | $TMPDIR/v/bin/python -c "
-import json,sys; d=json.load(sys.stdin); m=d['metadata']
-print(d.get('modified'), d.get('asset_count'), d.get('status'))
-print(m.get('description','')[:6000])
-"
+cd $TMPDIR; curl -s "https://api.dandiarchive.org/api/dandisets/001636/versions/0.261124.1906/info/" | $TMPDIR/v/bin/python -c "
+import json,sys;d=json.load(sys.stdin);m=d['metadata'];print(d['asset_count'],d['size']);print(m.get('description','')[:3000]);print(json.dumps(m.get('assetsSummary',{}))[:1500])"
 ```
 
 Result: the fetched text is not kept.
@@ -413,84 +411,87 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; $TMPDIR/v/bin/python -c "
-import requests,collections
-url='https://api.dandiarchive.org/api/dandisets/001636/versions/draft/assets/?page_size=1000'
-paths=[]
-while url:
-    r=requests.get(url).json(); paths+= [a['path'] for a in r['results']]; url=r['next']
-c=collections.Counter((p.split('/')[0], 'Post' if 'PostMPTP' in p else 'Pre') for p in paths)
-print(len(paths),c)
-print([p for p in paths if not p.endswith('.nwb')][:5])
-" 2>&1 | tail -5
+cd $TMPDIR; $TMPDIR/v/bin/python - <<'EOF'
+from dandi.dandiapi import DandiAPIClient
+with DandiAPIClient() as c:
+    ds=c.get_dandiset("001636","0.261124.1906")
+    leu=[a for a in ds.get_assets() if a.path.startswith("sub-Leu/")]
+    post=[a for a in leu if "PostMPTP" in a.path]
+    print(len(leu),len(post))
+    md=post[0].get_raw_metadata()
+    print(post[0].path, md.get('variableMeasured'), md.get('description','')[:500])
+    print([w.get('name') for w in md.get('wasGeneratedBy',[])])
+EOF
 ```
 
 ```
-439 Counter({('sub-Venus', 'Pre'): 154, ('sub-Venus', 'Post'): 137, ('sub-Leu', 'Pre'): 98, ('sub-Leu', 'Post'): 50})
-[]
+148 50
+sub-Leu/sub-Leu_ses-Leu++l12701++PostMPTP++Depth23150um++19930612_behavior+ecephys.nwb [{'value': 'ElectrodeGroup', 'schemaKey': 'PropertyValue'}, {'value': 'SpatialSeries', 'schemaKey': 'PropertyValue'}, {'value': 'Units', 'schemaKey': 'PropertyValue'}, {'value': 'ProcessingModule', 'schemaKey': 'PropertyValue'}] 
+['Leu++l12701++PostMPTP++Depth23150um++19930612', 'Metadata generation']
 Shell cwd was reset to
 ```
 
 **Agent**
 
-**A. Outcomes** (the claims file holds 28 claims)
+**Verifier report, round 1: Pasquereau & Turner 2013 on DANDI:001636 (0.261124.1906)**
 
-| Claim | Outcome | Reason |
+The claims file has 28 claims. I re-ran the helpers `detect`, `sdf_trials` and `kinematics` on synthetic inputs and queried the archive's metadata; I did not download data or re-run the notebook.
+
+**A. Outcomes**
+
+| Claim | My outcome | Reason |
 |---|---|---|
-| cell-counts | reproduced | Cell 24: 115/157 cells, 51/54 PTNs, 32/48 CSNs, 3 dual, all within tolerance. Counting each merged unit from its first file only gives 112, 49 and 31 before MPTP. |
-| monkey-l-perturbations | blocked (data_missing) | Every Leu trial is labelled `not_available` (cell 3). One hold-window command excursion appears in 2048 Leu trials (cell 9). The archive's draft description says "The Leu files contain no perturbation times". Only Leu unit counts could be tested (138/72 against 115/73), and they are not the claim. |
-| baseline-rate | reproduced | Cell 27: all six means within tolerance. PTN Mann-Whitney p = 0.020 (< 0.05); CSN p = 0.65. The M1 test is reported (p = 0.0022). |
-| ptn-faster-than-csn | reproduced | Cell 29: 18.5 against 3.5 spikes/s, p = 6e-12. |
-| antidromic-latency | partially_reproduced | Cell 31: all four means are within tolerance and the PTN p is 0.68. The CSN p is 0.0190, above the criterion's 0.05/3 = 0.0167, so the CSN test fails. |
-| false-positive-rate | not_reproduced | Cell 33: 0.228 of cell-directions cross the threshold at the pseudo onset (t-test variant 0.463). The criterion range is 0.0033 to 0.03. Unperturbed trials (0.19, cell 34) and Poisson simulations (0.17–0.21, cell 35; 0.15–0.22 in my own test) agree, so the procedure itself is at fault. |
-| torque-related-fractions | blocked (methods_underspecified) | The claims file says these claims are blocked when the false-positive rate is above 0.03. For reference: 1 of 6 percentages within tolerance (cell 38). |
-| prevalence-unchanged | blocked (methods_underspecified) | Same rule. For reference: none of the three p values is below 0.0167 (cell 40). |
-| ptn-more-responsive | blocked (methods_underspecified) | Same rule. For reference: 70.5% against 16.2%, p = 7e-13; the CSN fraction is out of tolerance (cell 42). |
-| one-direction-half | blocked (methods_underspecified) | Same rule. For reference: 52.2% against 44 ± 4.4 (cell 44). |
-| excitatory-majority | blocked (methods_underspecified) | Same rule. For reference: 2 of 4 percentages within tolerance; PTN p = 0.34 (cell 46). |
-| magnitude-unchanged | blocked (methods_underspecified) | Same rule. For reference: 12 of 12 tests have p < 0.05, with magnitudes smaller after MPTP (cell 48). |
-| venus-response-magnitudes | blocked (methods_underspecified) | Same rule. For reference: at most 4 of 8 values within tolerance under any reading (cell 49). |
-| latency-shorter | blocked (methods_underspecified) | Same rule. For reference: all 4 KS p < 0.013 and 8 of 8 means within tolerance (cell 51). The t-test variant finds no shortening (KS p 0.17–0.73). |
-| latency-not-training | blocked (methods_underspecified) | Same rule. For reference: rho = −0.249, p = 0.0033 (cell 53). |
-| fwhm-shorter-ptn | blocked (methods_underspecified) | Same rule. For reference: flexion p = 0.027, extension p = 0.37; 2 of 4 means within tolerance (cell 55). |
-| dsi-reduced | blocked (methods_underspecified) | Same rule. For reference: −6.7 points, p = 0.127 (cell 57). |
-| venus-dsi | blocked (methods_underspecified) | Same rule. For reference: 3 of 6 within tolerance (cell 58). |
-| dsi-not-baseline | blocked (methods_underspecified) | Same rule. For reference: F = 0.40, p = 0.75 (cell 59). |
-| kinematics-slower | not_reproduced | Cell 63: peak velocity rises 28% and amplitude 15% after MPTP, under both readings. |
-| kinematic-latency-unchanged | not_reproduced | Cell 65: MPTP F = 1037, p ≈ 0 (latencies about 10 ms before MPTP, 3–6 ms after). |
-| emg-m2-larger | reproduced | Cell 69: median m2 is higher after MPTP in all three triceps channels, KS p ≤ 5e-15. The torque-size confound in problem 3 still applies. |
-| emg-duration-longer | partially_reproduced | Cell 71: 24.6 → 49.4 ms, KS p = 4e-36. Both means are outside 57 ± 6 and 79 ± 3. |
-| emg-onset-unchanged | not_reproduced | Cell 71: onset 40.3 → 24.0 ms, KS p = 9e-21. |
-| emg-m1-weak | partially_reproduced | Cell 73: after MPTP, m2 > m1 in 96.5% with median m1/m2 0.23. Before MPTP the share is 74.4%, just under the 75% the criterion asks for (median 0.10). |
-| velocity-matched-magnitude | blocked (methods_underspecified) | Same rule. It would be untestable anyway: session mean peak velocities top out at 145 deg/s, leaving 0 pre and 1 post responses in 130–200 deg/s (cell 75). |
-| session-correlations | blocked (methods_underspecified) | Same rule. For reference: p = 0.19 and 0.023, both above 0.0125 (cell 77). |
-| trial-correlations | blocked (methods_underspecified) | The paper gives no single-trial latency; I checked the Methods text. |
-
-Totals: 4 reproduced, 3 partially reproduced, 4 not reproduced, 17 blocked.
+| cell-counts | reproduced | Cell 20: 115/157 cells, 51/54 PTNs, 32/48 CSNs, 3 dual-projecting. All are within tolerance. |
+| monkey-l-perturbations | blocked (data_missing) | Cell 15: all 5952 Leu trials are `not_available`. The dandiset description confirms "The Leu files contain no perturbation times". |
+| baseline-rate | reproduced | Cell 24: all six means are within tolerance (PTN pre 18.49 vs 20.3±2.46). PTN p = 0.0198 (< 0.05), CSN p = 0.651 (≥ 0.05). The M1 test gives p = 0.0022, below the paper's 0.05/2. |
+| ptn-faster-than-csn | reproduced | Cell 26: PTN 18.5 vs CSN 3.5 spikes/s, Mann-Whitney p = 6.3e-12. |
+| antidromic-latency | partially_reproduced | Cell 28: all four means are within tolerance (CSN post 6.85 vs 6.1±0.89) and PTN p = 0.68 holds. The CSN test fails: p = 0.019, above 0.05/3 = 0.0167. The variant adding Leu units gives p = 0.0072. |
+| false-positive-rate | blocked (methods_underspecified) | Cell 30: the pseudo-onset rate is 0.230, outside 0.0033–0.03. My synthetic test shows the claims file's procedure gives this rate on pure noise (B1). Only the `trial_sd` reading (0.013) falls in range. |
+| torque-related-fractions | blocked (methods_underspecified) | Blocked through false-positive-rate, as the claims file's opening comment requires. For information only: under the blocked detection 2 of 6 are within tolerance (cell 32). |
+| prevalence-unchanged | blocked (methods_underspecified) | Same gate. Cell 33 would give p > 0.39 for all three groups. |
+| ptn-more-responsive | blocked (methods_underspecified) | Same gate. Cell 34: 70.5% vs 17.5%, χ² = 49. |
+| one-direction-half | blocked (methods_underspecified) | Same gate. Cell 35: 52.8% vs 44±4.4%. |
+| excitatory-majority | blocked (methods_underspecified) | Same gate (cell 36). |
+| magnitude-unchanged | blocked (methods_underspecified) | Same gate. Cell 37 would be not reproduced: all 12 tests have p < 0.05. |
+| venus-response-magnitudes | blocked (methods_underspecified) | Same gate (cell 38). |
+| latency-shorter | blocked (methods_underspecified) | Same gate. Cell 39 shows all four KS tests p < 0.011 with post-MPTP latencies shorter, and 7 of 8 means within tolerance. |
+| latency-not-training | blocked (methods_underspecified) | Same gate. Cell 40: pooled ρ = −0.26, p = 0.0016. |
+| fwhm-shorter-ptn | blocked (methods_underspecified) | Same gate (cell 41). |
+| dsi-reduced | blocked (methods_underspecified) | Same gate (cell 42: p = 0.09). |
+| venus-dsi | blocked (methods_underspecified) | Same gate (cell 43). |
+| dsi-not-baseline | blocked (methods_underspecified) | Same gate (cell 44: p = 0.31). |
+| kinematics-slower | not_reproduced | Cell 48: peak velocity changes by +28.1% pooled and +29.7% flexion; amplitude by +14.8% and +11.1%. Both rise after MPTP under both readings. The matched-command variant (cell 50) also rises (+47%, +40%). |
+| kinematic-latency-unchanged | blocked (other: the onset measure in `kinematics` is invalid) | Cell 52 gives F = 709, but the post-MPTP flexion mean onset (3.05 ms) comes before the command leaves rest (4 ms, cell 12). My synthetic test shows the measure finds onset at −5 to +1 ms for a true onset at 10 ms, then clips it to 0 (B2). The output does not test the claim. |
+| emg-m2-larger | reproduced (by the criterion; confounded) | Cell 55: m2 is higher after MPTP in all three triceps channels, KS p ≤ 4e-15, under both inclusion rules. The torque was about 3× larger after MPTP, which this comparison does not control (B3). |
+| emg-duration-longer | partially_reproduced | Cell 56: durations are longer after MPTP with KS p = 5e-33, but both means are outside tolerance: 22.2 vs 57±6 ms and 51.5 vs 79±3 ms. |
+| emg-onset-unchanged | not_reproduced | Cell 57: onset 44.2 → 25.0 ms, KS p = 6e-22. Both inclusion rules give the same result. |
+| emg-m1-weak | partially_reproduced | Cell 58: pre-MPTP m2 > m1 in 74.0% of channel-sessions (the criterion needs 75%; median m1/m2 = 0.14). Post-MPTP passes (98.3%, 0.25). The raw_sd rule gives 74.3% pre. |
+| velocity-matched-magnitude | blocked (methods_underspecified via the gate; also data) | Only 2 of 581 session-directions have mean peak velocity in 130–200 deg/s (cell 17), leaving 0 or 1 responses (cell 45). It would stay untestable without the gate. |
+| session-correlations | blocked (methods_underspecified) | Same gate. Cell 46 would be not reproduced: m2 ρ = −0.38, p = 0.0076 < 0.0125. |
+| trial-correlations | blocked (methods_underspecified) | Methods (sentence 144 of the paper text) uses "trial-to-trial response latency" but never defines it. Detection is defined only on the trial-averaged SDF. |
 
 **B. Problems**
 
-1. **[affects a conclusion]** Cells 0, 33, 37–59, 75 and 77: the claims file says response-dependent claims are blocked when the pseudo-onset rate is outside 0.0033–0.03. Cell 33 gives 0.228, yet the notebook still treats all 15 dependent claims as tested ("yes" in the cell 0 table). The t-test variant (0.463) does not rescue them.
-2. **[affects a conclusion]** Cell 31: the CSN antidromic p (0.0190) is printed with no comparison against 0.05/3. It fails that threshold, which makes the claim partial rather than reproduced.
-3. **[affects a conclusion: what the outcomes mean, not the criterion results]** Cell 19 and the kinematics/EMG cells: the torque command differs by state.
-   - Before MPTP, 105 of 154 sessions use the smallest pulse (~46 units). After MPTP, 125 of 137 use the largest (~183 units), followed by an opposite swing.
-   - This explains faster, larger displacements after MPTP and confounds the m2, EMG duration and EMG onset comparisons.
-   - In the middle-size variant (43 pre, 12 post sessions) the m2 rise does not hold (longus 1: 47.6 → 1.3) and duration does not change (p = 0.94). The emg-m2-larger result is therefore not evidence of an MPTP effect.
-4. **[affects a conclusion]** `stretch.kinematics`: a 101-tap FIR applied forwards and backwards smears motion about 50 ms backwards in time. In my synthetic test, a ramp starting at 20 ms is detected at 8 ms and flagged as `moving_before`. The data show 241 latencies of 0 ms and 503 trials moving before onset, so latencies are biased early and depend on the pulse shape. The forwards-backwards filter is the claims file's choice; the paper says only "low-pass 25-Hz". The causal variant is also significant (F = 791), so the outcome stands.
-5. **[does not affect a conclusion]** Cells 71 and 73: the pre-MPTP "EMG responses" are mostly noise crossings (median duration 9 ms, 63% ≤ 10 ms, median m2 3–5 A/D units). The onset and duration comparisons therefore set noise against real responses. Median m1/m2 also includes channel-sessions with negative m2.
-6. **[does not affect a conclusion]** `stretch.dsi` builds P and NP from the largest change over 0–200 ms, whether or not that falls in the response window. The claims file does not set this, so it is the author's choice.
-7. **[does not affect a conclusion]** Cell 57: the 2×4 chi-square has a smallest expected count of 1.8. Cell 71's threshold variant drops responses that last to the end of the window.
-8. **[does not affect a conclusion; claims-file reading]** The paper's Methods say SDF values were compared "relative to a cell's baseline firing rate (2-tailed t-test)". That reads closer to the t-test variant than to the claims file's main rule (mean ± t·SD, taken from Figure 3). Both give a false-positive rate far above 0.03, so the block holds either way.
-9. **[does not affect a conclusion]** Cells 3 and 24: the draft's merged sessions change the counts slightly from the supplementary table (115 against 112 cells, 51 against 49 PTNs, 32 against 31 CSNs). This is explained in cell 6 and stays within tolerance.
+1. [affects a conclusion] `detect`, cells 29–30. The false-positive gate could not have passed under the claims file's procedure. On stationary Poisson spike trains (3–20 spikes/s, 8–15 trials), `detect` gives an any-crossing rate of 0.14–0.22, close to the 0.230 found in the data. The paper's 0.01 is an analytic argument that ignores autocorrelation and the error in estimating the SD.
+   - The `trial_sd` reading meets the gate (0.013, cell 30), but the notebook never ran the 15 dependent claims under it. The paper leaves the threshold's SD open, so this reading could change their outcome from blocked to tested. At the torque onset it flags only 20% of cell-directions, so torque-related-fractions would likely fail.
+   - Possible misreading in the claims file, reported only: Methods (sentence 122) describes a "2-tailed t-test" of SDF values ms by ms against baseline. That matches the notebook's `ttest` variant, not the deciding mean ± t·SD band. The variant's rate (0.465) is worse, so the blocked outcome stands.
+2. [affects a conclusion] `kinematics`, cells 48, 50 and 52. The forwards-backwards FIR spreads the velocity rise earlier in time. The 0–200 ms search has no requirement that velocity start below threshold, so early crossings are clipped to 0 ms. Larger, faster post-MPTP displacements are pulled earlier more, so the pre/post latency difference is partly a measurement artifact. Peak velocity and amplitude are not affected.
+3. [affects a conclusion] Cells 16, 50 and 55–58. The torque command pulse is about 3× larger after MPTP (median 45.7 vs 181.6 a.u.). The paper reports one 0.1 Nm pulse, and the dandiset description does not mention the difference. For the kinematics a matched-command variant was run; for the EMG claims none was, so the m2, duration and onset differences cannot be separated from stimulus size. Pre-MPTP m2 is also tiny (median about 5 a.u. against 165–301 after), and many pre-MPTP channels have baseline SD below 1 a.u., which suggests the two periods may have different gain or signal quality. The notebook does not check this.
+4. [affects a conclusion] Cell 17. The data's displacements (about 3 deg, 46–75 deg/s) are about a third of the paper's (mean 10 deg; 130–200 deg/s for velocity-matched sessions). The angle calibration was never compared with the file's `processing/behavior/ElbowVelocity` or the trials table's `derived_peak_velocity` and `derived_movement_amplitude`. A scale error would not flip the sign in kinematics-slower, but it does make velocity-matched-magnitude untestable.
+5. [does not affect a conclusion] Cells 6 and 20. The notebook counts 115/157 cells; the claims file's data check found 112/159 exactly. The claims file says repeated files exist and should be left out of the session measures. The notebook's duplicate check (cell 10) finds none, and it loads `source_file` but never uses it. The counts are within tolerance either way.
+6. [does not affect a conclusion] Cell 28 and the claims file. The paper corrects subset tests with Bonferroni–Holm (sentence 138); the criterion uses a flat 0.05/3. Under Holm, CSN would still be the smallest p tested against 0.0167, so the outcome is unchanged.
+7. [does not affect a conclusion] Cell 15 and `load_meta`. The notebook computes `torque_cmd_steps` for the 34 post-MPTP Leu files that have a finite torque command but never prints it, so it is not shown whether perturbations could be recovered from the command in those files (B, C).
+8. [does not affect a conclusion] Checked and correct: the `gamma_kernel` normalisation (spikes/s, causal), the offset, area and FWHM logic in `detect` (synthetic response: onset 34 ms, offset 153 ms), Yates correction in the 2×2 tables, the DSI formula and categories against Methods (sentences 134–137), and the type II ANOVA.
 
-**C. What I could not check**
+**C. What I could not check, and the output that would settle it**
 
-- **Spike window against trial boundaries.** I could not tell whether the −1.8 s spike window, and the −1100 to −600 ms pseudo baseline, fall inside each trial. Spikes exist only inside trials, and trials are separated by gaps, so part of the window could be empty by construction. A printed distribution of (onset − trial start) would settle it. The unperturbed-trial null and the Poisson simulation make this unlikely to change the false-positive conclusion.
-- **Per-cell results.** No per-cell table (baseline rate, threshold, latency, sign) is saved, so I could not recompute any group statistic independently.
-- **Supplementary table values.** I did not check the claims file's expected values against the supplementary PDF table. Where I checked the main text against the claims file (the 0.002 threshold, the 25 Hz Hamming filter, the |rho| values, the Yates chi-square of 32.3 from 89/131 and 35/114), they match.
-- **Command size by state.** Per-trial command step size against kinematics within each state, binned by level, is printed only in aggregate. Pre/post comparisons at matched trial-level step size would show whether any MPTP effect survives the torque confound.
-- **Monkey L files.** I checked the archive's description and asset list but did not open any Leu file. Leu blocking rests on the notebook's file scan and the archive's own description.
+- monkey-l-perturbations: the archive confirms no Leu perturbation times. Pre-MPTP stays blocked. Post-MPTP could be partly testable only if the torque command in the 34 Leu files shows pulses. Needed: `torque_cmd_steps` per Leu file, and one plotted command trace.
+- The 15 claims blocked by the gate: needed are their results under the `trial_sd` reading (B1).
+- Kinematic latency: needed are the latency distribution per state (fraction at exactly 0 ms), the velocity at t = 0, and onsets from a causal filter or with a below-threshold requirement before onset.
+- Angle scale: needed is the computed per-trial peak velocity plotted against `derived_peak_velocity` or `ElbowVelocity`.
+- EMG confound: needed are the EMG claims rerun on perturbations with matched command size (60–250 a.u.), and grand-average pre and post traces per channel.
+- Repeated files and the 112 vs 115 discrepancy: needed are the files sharing a `source_file` value, and the units that differ from the claims file's data-check selection.
 
 ## End of run
 
-16 turns, 3 minutes, result: success.
+16 turns, 5 minutes, $1.50 at API prices, result: success.

@@ -1,19 +1,41 @@
-The round 2 verifier agreed with all 28 outcomes, so no outcome changed and I proposed no changes. It also now accepts `false-positive-rate` as blocked (methods underspecified), which settles its round-1 disagreement. I re-ran the entry twice with `python tools/entry.py all`; both runs passed with every number the same as before. `entry.py check` reports 0 errors.
+I addressed every point in the round-2 report. The entry re-ran cleanly (`tools/entry.py all` passed in 838 s, check reports 0 errors), and every number in the notes and conclusions matches the new outputs.
 
-**What I corrected (text only, no analysis changed):**
-- **README run time:** it now gives the latest run's 4.1 min (1.7 to 5.2 min in earlier runs).
-- **The m2 claim (Summary and README):** "the m2 response is smaller after MPTP, not larger" now says the comparison is possible at one command step only, with 66 against 11 channel-sessions. There the combined median is smaller after MPTP, but on triceps longus 2 it is larger (52.2 against 113.0, 4 post-MPTP channel-sessions, p = 0.36). The cell 95 conclusion and the record's notes now give that triceps longus 2 result too.
-- **m2 and command size (cell 95 and the record's notes):** they now say m2 does not rise with command size before MPTP but does after (1.81 to 194.4).
-- **Header count in the Summary:** it now reads "`false-positive-rate` and the 15 claims blocked by it" where it said "16 claims blocked by the false-positive rate".
-- **Cell 43:**
-  - The rates are now "about 23 and 46 times the paper's", where it said "more than 3 times".
-  - The two clashing sentences are merged: either the procedure here differs from the paper's, or the paper's stated rate does not hold, and the analysis cannot tell which.
-- **Cell-directions that "can never respond" (cell 43 and the record's notes):** this now applies only to the 14 with a baseline SD of exactly 0. Nearly silent cell-directions with a threshold of about 0 can still respond, and add to the false positives; v5801.1 is given as the example.
-- **Changes paragraph:** the Summary now has one for the second verification round.
+**Outcomes**
+No outcome changed. The verifier agreed with all 28, and the record keeps them. I did add four proposed changes for a third round to review.
 
-**Recorded:** I added round 2 under `verifications` in `attempts/001636-pasquereau-2013-02.yaml`. For each of the 28 claims it gives agrees: true, the outcome, the verifier's reason in its own words, and my response.
+The verifier said the two MPTP states "barely overlap" in torque pulse size. They do share two sizes, though: near 90 units (483 perturbations before MPTP, 227 after) and near 180 units (41 before, 1540 after). Comparing the states at these equal pulses changes four results by the claims' criteria:
+- **kinematic-latency-unchanged**: proposed reproduced. With the claims file's onset there is no MPTP effect (p = 0.16 near 90 units, p = 0.98 near 180).
+- **emg-onset-unchanged**: proposed reproduced (p = 0.40 and 0.057).
+- **emg-duration-longer**: proposed not reproduced. Durations are not longer after MPTP (p = 0.32 and 0.087).
+- **emg-m1-weak**: proposed reproduced. The criterion is met in both states at both sizes.
 
-**Not done:**
-- The verifier could not check the claims file's expected values against the supplementary table, because it had no PDF reader. I did not check them either; the record notes this as unchecked.
-- I left the round-1 cell numbers in the record as the round-1 report gave them, though the cells have since been renumbered.
-- Changes are not committed, as instructed.
+Each proposal states its weakness: few post-MPTP sessions near 90 units (14 EMG channel-sessions) and few pre-MPTP sessions near 180 (5). The causal-filter version of the latency also disagrees near 90 units: it finds post-MPTP latencies about 1 ms longer (p = 0.0027).
+
+I proposed nothing for two claims:
+- **kinematics-slower**: at equal pulses the movements are still not slower and smaller after MPTP, so the outcome would not change.
+- **emg-m2-larger**: the criterion needs the triceps lateralis, which has only 2 post-MPTP sessions near 90 units and no pre-MPTP session near 180, so it cannot be applied.
+
+**Corrected or added**
+- **Notebook text**: I fixed every sentence the verifier said the outputs did not support:
+  - The velocity range now holds 2 of 581 session-directions with one response.
+  - The 60 to 250 unit range is no longer called matched; the pulses there still differ about twofold.
+  - Only the causal filter avoids the onset artifact.
+  - The forwards-backwards filter enlarges the latency difference. This corrects my round-1 response, which said it shrank it.
+  - The torque pulse ratio is about three times for the means and four times for the medians.
+  - The cell counts are within 3 cells of the paper's table, not equal to it.
+  - Only one Leu file was timed against task events.
+  - The displacements are 2.4 to 3.8 degrees.
+- **Exact p**: the latency ANOVA's p is now printed as 1.5e-102, not 0.0000.
+- **torque-related-fractions notes**: they no longer name the claim as its own gate.
+- **EMG background**: the notes now give the triceps lateralis background and say the pre-MPTP m2 values are close to the noise.
+- **Finding 3** (torque pulse sizes): raised from minor to major, as the verifier asked. Its cell now prints the perturbation counts at the two shared pulse sizes.
+- **New finding 7** (minor, cell `finding-perturbation-timing`): 88% of Venus perturbations come 1.695 to 1.698 s after the centre target appears, where the paper describes a delay drawn uniformly from 1 to 2 s.
+- **README and summary**: rewritten to match the above.
+- **Verification record**: round 2 is recorded with the verifier's reasons and my responses, plus its view on finding 3. A note explains that the round-1 cell numbers point to the old notebook.
+
+**Not done**
+- No question was added to `questions/pasquereau-2013.yaml`: this round reported no new place where the claims file misreads the paper.
+- The round-1 responses that say "matched commands" and "the artifact shrinks the difference" are left as written. The round-2 responses correct them.
+- I did not time the other 33 Leu files against task events. The text now says only one file was checked, and the Leu outcome stays blocked either way, because no Leu trial marks a perturbation onset.
+
+Nothing was committed or pushed.

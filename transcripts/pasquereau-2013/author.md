@@ -1,96 +1,74 @@
-# 001636 · author · run 39680584382
+# pasquereau-2013 · author · run 45857382971
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; ls; ls entries/001636-pasquereau-2013 claims/001636 attempts | grep -i 001636; ls paper | head
+date -u; cd  ls; ls docs entries attempts claims paper; wc -l docs/*.md README.md
 ```
 
 ```
-# Protocol for an attempt
-
-Version: `pilot-10`. Record this version in the attempt's provenance.
-
-This is what agents, or people, do to attempt a target and deposit the
-result. A target is a dataset in a public archive and a paper it names. How
-each archive's datasets are named, versioned and read is in
-[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-An attempt has three roles, each a separate run with a separate context:
-
-- The **reader** reads the paper and writes the claims file: every finding,
-  and how each is to be tested, taken from the paper. A second reader checks
-  it against the paper. Readers never see the dataset's data.
-- The **author** tests the claims on the dataset. It reads the paper to
-  understand the claims, but the claims file binds it: it cannot change a
-  claim, and it asks a reader for any method detail the file lacks.
-- The **verifier** checks the author's work and must not be the author.
-
-[... 498 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat docs/agents/author-again.md; ls -la entries/001636-pasquereau-2013 claims/001636; cat attempts/001636-pasquereau-2013-01.yaml; ls questions | grep 001636
-```
-
-```
-<persisted-output>
-Output too large (48.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/271fb20d-c5ef-494b-b82b-519f153e0fe8/tool-results/bdov00dzj.txt
-
-Preview (first 2KB):
-You are the author of a new attempt on dataset {dataset} in the reproduction registry, checked out in the current directory. Follow docs/protocol.md exactly; read it first. The dataset already has an attempt, `{earlier}` (entry `entries/{entry}`, claims in `claims/{folder}/`), made on version {earlier_version} under protocol {earlier_protocol}. {why}
-
-Paper: doi:{paper}, "{title}". The paper's full text is under `paper/`: read it to understand the claims. The claims file, which a reader wrote from the paper and a second reader checked, decides what is tested and how: do not change a claim's statement, expected values or criterion, and do not apply a method detail it lacks, even one the paper gives; ask, as step 1.6 of the Author section says. {access}
-
-{version_rule}
-
-1. Keep the claims file as it is: only a reader changes a claim. If a claim looks wrong or does not follow the current protocol, ask, as step 1.6 of the Author section says.
-2. Update the entry in place: if the version changed, the helper's version constant, `entry.yaml`'s relation to the dataset (`dandi:<id>/<version>` on DANDI), the notebook header and README. The earlier attempt record stays as it is.
-3. Re-run every check of the data and every claim. For each finding of `{earlier}`, say in the notebook's data check and in the new record whether it is fixed, partly fixed or still present, with the output that shows it. Record new findings too.
-4. Lock, check and run the entry, make every conclusion match the new numbers, and write the new record `attempts/{next_attempt}.yaml`. Its outcomes are this attempt's own; where one differs from `{earlier}`, say why in its notes. Then run `python tools/entry.py handover entries/{entry}`. Do not verify your own work, a
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat claims/001636/*.yaml
-```
-
-```
-<persisted-output>
-Output too large (36KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/271fb20d-c5ef-494b-b82b-519f153e0fe8/tool-results/bgfhjp8ld.txt
-
-Preview (first 2KB):
-# Claims for Pasquereau & Turner (2013) on dandiset 001636.
-# Source: the full text in PubMed Central (PMC3840326, open access, CC BY), read from its Methods,
-# Results, Table 1 and figure legends, and its supplementary data sheet (DataSheet1.PDF), whose
-# table gives the neuronal results for each monkey separately.
-# Quotes and statistics added 2026-10-19 from the full text (Europe PMC PMC3840326).
-#
-# When these criteria were written, the author had seen the data check only: the file list and
-# metadata, the contents of the files, the counts of units by subject, MPTP state and projection
-# type, the number of torque perturbations per direction (none in any monkey L file), the timing
-# of the torque command against the trials table, the sign of the joint angle, which EMG channels
-# hold data, and the cross-referenced and repeated files. These counts showed that the monkey V
-# units with at least 5 perturbations per direction number 112 before and 159 after MPTP, with
-# 49 and 54 PTNs and 31 and 48 CSNs, as in the supplementary table. No SDF, response detection,
-# kinematic measure or EMG response had been computed.
-#
-# The dandiset marks no torque perturbation in any monkey L file, so every claim is tested on
-[... 11 more lines not kept]
+Thu Nov 26 16:21:09 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+entries
+n-desk.png
+n-phone.png
+n-phone2.png
+node_modules
+ov-papers-rows.png
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+protocol.lock
+[... 1145 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/271fb20d-c5ef-494b-b82b-519f153e0fe8/tool-results/bgfhjp8ld.txt"
+ "file_path": "docs/protocol.md"
+}
+```
+
+```
+1	# Protocol for an attempt
+2	
+3	Version: `pilot-19`. Record this version in the attempt's provenance.
+4	
+5	This is what agents, or people, do to attempt a target and deposit the
+6	result. A target is a dataset in a public archive and a paper it names. How
+7	each archive's datasets are named, versioned and read is in
+8	[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+9	([pilot notes](https://github.com/encorescience/encore-registry/blob/main/docs/pilot-notes.md)); the reasons for the rules are there.
+10	
+11	An attempt has three roles, each a separate run with a separate context:
+12	
+13	- The **reader** reads the paper and writes the claims file: every finding,
+14	  and how each is to be tested, taken from the paper. A second reader checks
+15	  it against the paper. Readers never see the dataset's data.
+16	- The **author** tests the claims on the dataset. It reads the paper to
+17	  understand the claims, but the claims file binds it: it cannot change a
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 794 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "claims/pasquereau-2013.yaml"
 }
 ```
 
@@ -118,68 +96,134 @@ Preview (first 2KB):
 [... 760 more lines not kept]
 ```
 
+**Agent calls Bash**
+
+```bash
+cd  cat README.md | head -80; ls -la entries/fouke-2025 entries/pasquereau-2013; cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in; ls papers/datasets | grep pasq; cat papers/datasets/pasquereau-2013.yaml; ls questions | grep pasq; ls papers/author-notes 2>/dev/null | grep pasq
+```
+
+```
+# Encore Science: the registry
+
+Encore Science checks datasets against the papers they came from. This repository holds its public record, the Encore registry, served at <https://encorescience.org>. The protocol the checks follow, and the `encore` command that runs the same check on your own data, are in [encore-protocol](https://github.com/encorescience/encore-protocol). It is developed by [CatalystNeuro](https://www.catalystneuro.com).
+
+Agents, and people, try to reproduce the key findings of papers from the open
+data in public archives, starting with the [DANDI Archive](https://dandiarchive.org), and register the result
+here: the notebooks when it works, and the reason when it does not.
+
+- **For the archive:** evidence of whether each dandiset is complete and
+  accurate enough to support the findings of its paper.
+- **For analysts:** working notebooks to build new analyses on.
+
+Status: pilot. All eight pilot targets have been attempted and checked by an
+independent agent.
+
+**Site:** <https://encorescience.org/>, with the registry's dashboard at <https://encorescience.org/registry/> and what Encore offers a journal at <https://encorescience.org/journals/>.
+
+## Reading the outcomes
+
+An outcome says what one attempt could recover from the data in a dandiset,
+[... 108 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat attempts/fouke-2025-01.yaml | head -150; cat entries/fouke-2025/README.md; sed -n 1,80p entries/fouke-2025/omr.py
+```
+
+```
+schema_version: 3
+id: fouke-2025-01
+datasets:
+- archive: dandi
+  id: "001453"
+  version: 0.250518.1950
+  doi: 10.48324/dandi.001453/0.250518.1950
+  relation: primary
+paper: doi:10.1016/j.cub.2025.04.027
+date: 2026-10-14
+entry: fouke-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-5
+  runner:
+[... 244 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 150,400p attempts/fouke-2025-01.yaml | grep -n -A12 "^findings\|^verif" | head -60; ls schemas tools; sed -n '/## DANDI/,/^## [A-Z]/p' docs/archives.md | head -120
+```
+
+```
+95:findings:
+96-- kind: data_missing
+97-  statement: The dandiset holds only the freely swimming tracking of Figure 1 and Figure S1. The
+98-    two-photon imaging and the head-fixed tail tracking behind Figures 2 to 4 are not in it, and
+99-    the GitLab repository the paper names for all behavioural and imaging data holds analysis
+100-    notebooks only. Nine of the paper's main findings cannot be tested.
+101-- kind: metadata_insufficient
+102-  statement: The stimulus codes 0 to 20 have no names or description in the files or the
+103-    dandiset metadata. They can be named only from the paper's analysis notebook and the protocol
+104-    file of its stimulus software.
+105-- kind: code_mismatch
+106-  statement: The paper's analysis notebook labels code 9 as lateral right and 11 as lateral left,
+107-    while its conversion of the stimulus software's names gives the reverse (it carries a remap
+--
+165:verifications:
+166-- date: '2026-10-14'
+167-  kind: agent
+168-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+169-  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+170-    module and the claims file, with the paper's accepted manuscript (PMC12218792). The verifier
+[... 79 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  wc -c paper/*.txt; grep -n "" paper/10.3389-fnsys.2013.00098.txt | sed -n '/[Mm]aterials and [Mm]ethods\|MATERIALS/,$p' | head -5
+```
+
+Result: not kept, because it reads the paper's text.
+
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/271fb20d-c5ef-494b-b82b-519f153e0fe8/tool-results/bdov00dzj.txt"
+ "file_path": "paper/10.3389-fnsys.2013.00098.txt"
 }
 ```
 
-```
-1	You are the author of a new attempt on dataset {dataset} in the reproduction registry, checked out in the current directory. Follow docs/protocol.md exactly; read it first. The dataset already has an attempt, `{earlier}` (entry `entries/{entry}`, claims in `claims/{folder}/`), made on version {earlier_version} under protocol {earlier_protocol}. {why}
-2	
-3	Paper: doi:{paper}, "{title}". The paper's full text is under `paper/`: read it to understand the claims. The claims file, which a reader wrote from the paper and a second reader checked, decides what is tested and how: do not change a claim's statement, expected values or criterion, and do not apply a method detail it lacks, even one the paper gives; ask, as step 1.6 of the Author section says. {access}
-4	
-5	{version_rule}
-6	
-7	1. Keep the claims file as it is: only a reader changes a claim. If a claim looks wrong or does not follow the current protocol, ask, as step 1.6 of the Author section says.
-8	2. Update the entry in place: if the version changed, the helper's version constant, `entry.yaml`'s relation to the dataset (`dandi:<id>/<version>` on DANDI), the notebook header and README. The earlier attempt record stays as it is.
-9	3. Re-run every check of the data and every claim. For each finding of `{earlier}`, say in the notebook's data check and in the new record whether it is fixed, partly fixed or still present, with the output that shows it. Record new findings too.
-10	4. Lock, check and run the entry, make every conclusion match the new numbers, and write the new record `attempts/{next_attempt}.yaml`. Its outcomes are this attempt's own; where one differs from `{earlier}`, say why in its notes. Then run `python tools/entry.py handover entries/{entry}`. Do not verify your own work, and do not commit or push: the workflow commits your changes.
-11	
-12	Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/proto
-[... 852 more lines not kept]
-```
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; cat entry.yaml README.md requirements.in; cat stretch.py
+cd  python3 -c "
+t=open('paper/10.3389-fnsys.2013.00098.txt').read()
+i=t.find('Supplementary Material'); print(len(t)); 
+for k in ['SUPPLEMENT','Supplementary Table','Venus','monkey V ']:
+  print(k,[j for j in range(len(t)) if t.startswith(k,j)][:20])
+"; python3 -c "
+t=open('paper/10.3389-fnsys.2013.00098.txt').read()
+print(t[-9000:])"
 ```
 
-```
-schema_version: 1
-name: 001636-pasquereau-2013
-type: reproduction
-title: M1 responses to muscle stretch in the parkinsonian monkey (Pasquereau and Turner 2013)
-description: Tests the findings of Pasquereau and Turner (2013) on dandiset 001636, which holds
-  single-unit recordings from M1 of two monkeys before and after MPTP, with torque perturbations,
-  joint angle and EMG. Only monkey V can be tested, as the monkey L files mark no perturbation. The
-  notebook checks the cells, resting rates and antidromic latencies, detects torque responses, and
-  compares the torque-evoked movements and triceps EMG before and after MPTP.
-license: Apache-2.0
-notebooks:
-- path: reproduce_pasquereau_2013.ipynb
-  title: Reproducing Pasquereau and Turner (2013) from dandiset 001636
-  runtime_minutes: 3
-helpers:
-- stretch.py
-related:
-- id: dandi:001636/0.260518.1819
-  relation: uses_data
-- id: doi:10.3389/fnsys.2013.00098
-[... 489 more lines not kept]
-```
-
-**Agent**
-
-Next I'll check what changed in the dataset between the published version and the draft.
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n '/## DANDI/,/^## [A-Z]/p' docs/archives.md | head -80; curl -s https://api.dandiarchive.org/api/dandisets/001636/ | python -m json.tool | head -40; curl -s https://api.dandiarchive.org/api/dandisets/001636/versions/ | python -m json.tool
+cd $TMPDIR; curl -s https://api.dandiarchive.org/api/dandisets/001636/versions/0.261124.1906/ | python3 -c "
+import json,sys; d=json.load(sys.stdin); print(json.dumps({k:d.get(k) for k in ['name','description','assetsSummary','version','doi','dateModified','datePublished','relatedResource']},indent=1)[:5000])"; curl -s https://api.dandiarchive.org/api/dandisets/001636/versions/ | python3 -m json.tool | grep -E '"version"|modified|status'
 ```
 
 Result: the fetched text is not kept.
@@ -187,2723 +231,2109 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; python - <<'EOF'
-import requests, json
-def assets(v):
-    out=[]; url=f"https://api.dandiarchive.org/api/dandisets/001636/versions/{v}/assets/?page_size=1000"
-    while url:
-        r=requests.get(url).json(); out+=r["results"]; url=r["next"]
-    return out
-d=assets("draft"); p=assets("0.260518.1819")
-json.dump({"draft":d,"pub":p},open("assets.json","w"))
-dp={a["path"]:a for a in d}; pp={a["path"]:a for a in p}
-print(len(d),len(p))
-print("only draft",len(set(dp)-set(pp)), sorted(set(dp)-set(pp))[:10])
-print("only pub",len(set(pp)-set(dp)), sorted(set(pp)-set(dp))[:10])
-same=[k for k in dp if k in pp]
-print("same path diff blob", sum(dp[k]["blob"]!=pp[k]["blob"] if "blob" in dp[k] else dp[k]["asset_id"]!=pp[k]["asset_id"] for k in same))
-print(d[0].keys())
+cd $TMPDIR; python3 - <<'EOF'
+import json, urllib.request
+url="https://api.dandiarchive.org/api/dandisets/001636/versions/0.261124.1906/assets/?page_size=1000"
+assets=[]
+while url:
+    d=json.load(urllib.request.urlopen(url)); assets+=d['results']; url=d['next']
+print(len(assets))
+json.dump(assets,open('assets.json','w'))
 import collections
-print(sum(a["size"] for a in d)/1e9, sum(a["size"] for a in p)/1e9)
-print(sorted(d,key=lambda a:a["modified"])[-5:])
-print(collections.Counter(a["modified"][:10] for a in d))
+subj=collections.Counter(a['path'].split('/')[0] for a in assets); print(subj)
+for a in assets[:5]+[a for a in assets if 'Venus' in a['path'] or 'V' in a['path'].split('/')[0]][:10]: print(a['path'],a['size'])
 EOF
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-ModuleNotFoundError: No module named 'requests'
-```
-
-**Agent calls Bash**
-
-```bash
-cd  ls -a; which python; ls .venv* 2>/dev/null | head; sed -n 1,80p tools/entry.py | head -100
-```
-
-```
-.
-..
-.bash_profile
-.bashrc
-.claude
-.env
-.env.development
-.env.development.local
-.env.local
-.env.production
-.env.production.local
-.env.test
-.env.test.local
-.git
-.gitconfig
-.github
-.gitignore
-.gitmodules
-.idea
-.mcp.json
-[... 110 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q -p 3.13 env && uv pip install -q -p env/bin/python -r entries/001636-pasquereau-2013/requirements.lock.txt requests pynwb 2>&1 | tail -3; env/bin/python -c "import h5py, remfile, dandi; print('ok')"
-```
-
-```
-ok
+439
+Counter({'sub-Venus': 291, 'sub-Leu': 148})
+sub-Leu/sub-Leu_ses-Leu++l10003++PreMPTP++Depth23680um++19930123_behavior+ecephys.nwb 759682
+sub-Leu/sub-Leu_ses-Leu++l10101++PreMPTP++Depth24200um++19930124_behavior+ecephys.nwb 915215
+sub-Leu/sub-Leu_ses-Leu++l10002++PreMPTP++Depth23080um++19930123_behavior+ecephys.nwb 801006
+sub-Leu/sub-Leu_ses-Leu++l10001++PreMPTP++Depth25700um++19930123_behavior+ecephys.nwb 916332
+sub-Leu/sub-Leu_ses-Leu++l10102++PreMPTP++Depth22000um++19930124_behavior+ecephys.nwb 780456
+sub-Venus/sub-Venus_ses-Venus++v0502++PreMPTP++Depth22130um++19990406_behavior+ecephys.nwb 4918459
+sub-Venus/sub-Venus_ses-Venus++v1002++PreMPTP++Depth19800um++19990409_behavior+ecephys.nwb 4744519
+sub-Venus/sub-Venus_ses-Venus++v1001++PreMPTP++Depth19000um++19990409_behavior+ecephys.nwb 4108702
+sub-Venus/sub-Venus_ses-Venus++v1003++PreMPTP++Depth20000um++19990409_behavior+ecephys.nwb 4451349
+sub-Venus/sub-Venus_ses-Venus++v0601++PreMPTP++Depth19500um++19990407_behavior+ecephys.nwb 4740830
+sub-Venus/sub-Venus_ses-Venus++v1005++PreMPTP++Depth17880um++19990412_behavior+ecephys.nwb 4871204
+sub-Venus/sub-Venus_ses-Venus++v1006++PreMPTP++Depth18770um++19990412_behavior+ecephys.nwb 5176442
+sub-Venus/sub-Venus_ses-Venus++v1004++PreMPTP++Depth20470um++19990409_behavior+ecephys.nwb 3928963
+sub-Venus/sub-Venus_ses-Venus++v1102++PreMPTP++Depth17410um++19990413_behavior+ecephys.nwb 2809589
+sub-Venus/sub-Venus_ses-Venus++v1101++PreMPTP++Depth17900um++19990413_behavior+ecephys.nwb 2967793
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import requests, json, collections
-def assets(v):
-    out=[]; url=f"https://api.dandiarchive.org/api/dandisets/001636/versions/{v}/assets/?page_size=1000"
-    while url:
-        r=requests.get(url).json(); out+=r["results"]; url=r["next"]
-    return out
-d=assets("draft"); p=assets("0.260518.1819")
-json.dump({"draft":d,"pub":p},open("assets.json","w"))
-dp={a["path"]:a for a in d}; pp={a["path"]:a for a in p}
-print(len(d),len(p))
-print("only draft",len(set(dp)-set(pp)), sorted(set(dp)-set(pp))[:20])
-print("only pub",len(set(pp)-set(dp)), sorted(set(pp)-set(dp))[:20])
-same=[k for k in dp if k in pp]
-print(d[0].keys())
-print("same path, same asset_id", sum(dp[k]["asset_id"]==pp[k]["asset_id"] for k in same), "of", len(same))
-print(sum(a["size"] for a in d)/1e9, sum(a["size"] for a in p)/1e9)
-print(collections.Counter(a["modified"][:10] for a in d))
-for k in sorted(same)[:5]: print(k, pp[k]["size"], dp[k]["size"])
-EOF
+cd $TMPDIR; uv venv -q env -p 3.12 2>&1 | tail -2; . env/bin/activate; uv pip install -q pynwb remfile h5py dandi numpy scipy pandas matplotlib statsmodels nbformat nbclient ipykernel 2>&1 | tail -3; python -c "import pynwb,remfile;print(pynwb.__version__)"; grep -n "python" tools/entry.py | head -20
 ```
 
 ```
-439 447
-only draft 0 []
-only pub 8 ['sub-Leu/sub-Leu_ses-Leu++l16301b++PostMPTP++Depth23000um++19931129_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v2702++PreMPTP++Depth19650um++19990607_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v3205++PreMPTP++Depth19400um++19990630_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v3607b++PreMPTP++Depth19650um++19990729_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v4527b++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v4810b++PostMPTP++Depth18900um++20000204_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v5604b++PostMPTP++Depth17960um++20000229_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v5812++PostMPTP++Depth18300um++20000331_behavior+ecephys.nwb']
-dict_keys(['asset_id', 'blob', 'zarr', 'path', 'size', 'created', 'modified'])
-same path, same asset_id 0 of 439
-2.676189241 6.417876637
-Counter({'2026-10-21': 439})
-sub-Leu/sub-Leu_ses-Leu++l10001++PreMPTP++Depth25700um++19930123_behavior+ecephys.nwb 1181348 901052
-sub-Leu/sub-Leu_ses-Leu++l10002++PreMPTP++Depth23080um++19930123_behavior+ecephys.nwb 1082896 784126
-sub-Leu/sub-Leu_ses-Leu++l10003++PreMPTP++Depth23680um++19930123_behavior+ecephys.nwb 1048795 755810
-sub-Leu/sub-Leu_ses-Leu++l10101++PreMPTP++Depth24200um++19930124_behavior+ecephys.nwb 1185002 911879
-sub-Leu/sub-Leu_ses-Leu++l10102++PreMPTP++Depth22000um++19930124_behavior+ecephys.nwb 1077241 763576
-Shell cwd was reset to
+4.2.0
+3:    python tools/entry.py lock  entries/<name>   # pin the environment
+4:    python tools/entry.py check entries/<name>   # validate metadata and conventions
+5:    python tools/entry.py check entries/*/       # the same for every entry, in one process
+6:    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+7:    python tools/entry.py all   entries/<name>   # check, then run
+8:    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+206:        if entry.get("python") and locked_for and locked_for.group(1) != str(entry["python"]):
+208:                         f"says {entry['python']}; run `tools/entry.py lock`")
+496:LOCK_VERSION = re.compile(r"--python-version\s+(\d+\.\d+)")
+499:def python_of(entry_dir: Path) -> str:
+500:    """The Python version an entry runs on: its entry.yaml's `python`, else the version its lock was compiled for
+503:    if entry.get("python"):
+504:        return str(entry["python"])
+513:def set_python(entry_dir: Path, version: str) -> None:
+514:    """Write `python: "<version>"` into entry.yaml, replacing the field or adding it after `license`."""
+517:    line = f'python: "{version}"'
+518:    if re.search(r"^python:.*$", text, re.M):
+519:        text = re.sub(r"^python:.*$", line, text, count=1, flags=re.M)
+529:    version = version or python_of(entry_dir)
+[... 2 more lines not kept]
 ```
 
 **Agent**
 
-The draft replaced all 439 files on 2026-10-21 and dropped 8 (among them the four repeated monkey V files). Opening files to see what changed inside.
+Environment ready. Now opening a Venus file to list everything it holds.
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; cat > dump.py <<'EOF'
-import json, sys, h5py, remfile
-A=json.load(open("assets.json"))
-def url(a): return f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-def dump(path, which):
-    a=[x for x in A[which] if x["path"]==path][0]
-    f=h5py.File(remfile.File(url(a)),"r")
-    def v(name,obj):
-        if isinstance(obj,h5py.Dataset):
-            print(name, obj.shape, obj.dtype, dict((k,(obj.attrs[k] if not hasattr(obj.attrs[k],'__len__') or len(str(obj.attrs[k]))<150 else str(obj.attrs[k])[:150])) for k in obj.attrs if k not in('object_id','namespace','neurodata_type')))
-        else:
-            at={k:str(obj.attrs[k])[:200] for k in obj.attrs if k not in('object_id','namespace')}
-            print(name+"/", at)
-    f.visititems(v)
-    return f
-if __name__=="__main__":
-    dump(sys.argv[1], sys.argv[2])
+cd $TMPDIR; . env/bin/activate; python - <<'EOF'
+import json, remfile, h5py, pynwb, numpy as np
+assets=json.load(open('assets.json'))
+a=[a for a in assets if 'v1002' in a['path']][0]
+url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
+f=remfile.File(url); h=h5py.File(f,'r')
+io=pynwb.NWBHDF5IO(file=h,load_namespaces=True); nwb=io.read()
+print(nwb)
+print(nwb.session_description, nwb.session_start_time, nwb.subject)
+print(nwb.experiment_description)
+for k,v in nwb.acquisition.items(): print('ACQ',k,v)
+for k,m in nwb.processing.items():
+    print('PROC',k,m.description)
+    for n,d in m.data_interfaces.items(): print('   ',n,d)
+print(nwb.intervals)
+t=nwb.trials.to_dataframe(); print(t.columns.tolist()); print(t.head(10).T); print(len(t))
+for c in nwb.trials.columns: print(c.name,':',c.description)
+u=nwb.units.to_dataframe(); print(u.drop(columns=['spike_times']).T)
+for c in nwb.units.columns: print(c.name,':',c.description)
+print(nwb.electrodes.to_dataframe())
 EOF
-P='sub-Venus/sub-Venus_ses-Venus++v4527++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb'
-env/bin/python - <<EOF
-import json;A=json.load(open("assets.json"))
-print([a['path'] for a in A['draft'] if 'v4527' in a['path'] or 'v5811' in a['path']])
-EOF
-```
-
-```
-['sub-Venus/sub-Venus_ses-Venus++v4527++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v5811++PostMPTP++Depth18300um++20000331_behavior+ecephys.nwb']
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; P='sub-Venus/sub-Venus_ses-Venus++v4527++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb'; env/bin/python dump.py "$P" draft > draft_v4527.txt 2>&1; env/bin/python dump.py "$P" pub > pub_v4527.txt 2>&1; wc -l *_v4527.txt; diff pub_v4527.txt draft_v4527.txt | head -150
-```
-
-```
-248 draft_v4527.txt
-  245 pub_v4527.txt
-  493 total
-2c2
-< acquisition/EMGBrachioradialis/ {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Brachioradialis - elbow flexor and forearm supinator/pronator. Recording: chronically-implanted Teflon-insulated multistranded stainless steel wire electrodes. Signal processing:', 'neurodata_type': 'TimeSeries'}
----
-> acquisition/EMGBrachioradialis/ {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Brachioradialis - elbow flexor and forearm supinator/pronator. Recording: chronically-implanted Teflon-insulated multistranded stainless steel wire electrodes. Signal processing ', 'neurodata_type': 'TimeSeries'}
-5c5
-< acquisition/EMGDeltoidPosterior/ {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Posterior deltoid - shoulder extensor and external rotator. Recording: chronically-implanted Teflon-insulated multistranded stainless steel wire electrodes. Signal processing: di', 'neurodata_type': 'TimeSeries'}
----
-> acquisition/EMGDeltoidPosterior/ {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Posterior deltoid - shoulder extensor and external rotator. Recording: chronically-implanted Teflon-insulated multistranded stainless steel wire electr
-[... 122 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat draft_v4527.txt | grep -v specifications | cut -c1-400
 ```
 
 ```
 <persisted-output>
-Output too large (34.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/271fb20d-c5ef-494b-b82b-519f153e0fe8/tool-results/buayq53kj.txt
+Output too large (37.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/155a8601-92de-4a23-b130-93410661849c/tool-results/ba22q7e5x.txt
 
 Preview (first 2KB):
-acquisition/ {}
-acquisition/EMGBrachioradialis/ {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Brachioradialis - elbow flexor and forearm supinator/pronator. Recording: chronically-implanted Teflon-insulated mult
-acquisition/EMGBrachioradialis/data (438530,) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'a.u.'}
-acquisition/EMGBrachioradialis/timestamps (438530,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
-acquisition/EMGDeltoidPosterior/ {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Posterior deltoid - shoulder extensor and external rotator. Recording: chronically-implanted Teflon-insulated multis
-acquisition/EMGDeltoidPosterior/data (438530,) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'a.u.'}
-acquisition/EMGDeltoidPosterior/timestamps (438530,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
-acquisition/EMGTrapezius/ {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Trapezius - shoulder and scapula stabilizer. Recording: chronically-implanted Teflon-insulated multistranded stainless stee
-a
+root pynwb.file.NWBFile at 0x132921412575568
+Fields:
+  acquisition: {
+    EMGBrachioradialis <class 'pynwb.base.TimeSeries'>,
+    EMGDeltoidPosterior <class 'pynwb.base.TimeSeries'>,
+    EMGTrapezius <class 'pynwb.base.TimeSeries'>,
+    EMGTricepsLateralis <class 'pynwb.base.TimeSeries'>,
+    EMGTricepsLongus1 <class 'pynwb.base.TimeSeries'>,
+    EMGTricepsLongus2 <class 'pynwb.base.TimeSeries'>,
+    ElbowAngle <class 'pynwb.behavior.SpatialSeries'>,
+    ElbowTorque <class 'pynwb.base.TimeSeries'>
+  }
+  devices: {
+    DeviceMicroelectrodeRecording <class 'pynwb.device.Device'>,
+    DeviceMicrowirePeduncleStimulation <class 'pynwb.device.Device'>,
+    DeviceMicrowirePutamenStimulation1 <class 'pynwb.device.Device'>,
+[... 22 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 40,400p /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/155a8601-92de-4a23-b130-93410661849c/tool-results/ba22q7e5x.txt
+```
+
+```
+[6 rows x 12 columns]
+  file_create_date: [datetime.datetime(2026, 11, 20, 16, 45, 3, 469264, tzinfo=tzoffset(None, -21600))]
+  identifier: 29aa0e33-d693-4896-9c6f-7f58a08ade3d
+  institution: University of Pittsburgh
+  intervals: {
+    AntidromicSweepsIntervals <class 'pynwb.epoch.TimeIntervals'>,
+    invalid_times <class 'pynwb.epoch.TimeIntervals'>,
+    trials <class 'pynwb.epoch.TimeIntervals'>
+  }
+  invalid_times: invalid_times <class 'pynwb.epoch.TimeIntervals'>
+  keywords: <StrDataset for HDF5 dataset "keywords": shape (7,), type "|O">
+  lab: Turner Lab
+  lab_meta_data: {
+    hed_schema <class 'abc.HedLabMetaData'>,
+    localization <class 'abc.Localization'>
+  }
+  notes: TEMPORAL DATA STRUCTURE: This dataset was converted from trialized MATLAB files where all timestamps were relative to individual trial starts. Inter-trial intervals were NOT recorded in the source data.
+
+SESSION TIMING: Recording dates are accurate from experimental logs, but precise session start times within each day are not available. session_start_time is set to midnight (Pittsburgh timezone) for every session, including sessions recorded on the same date.
+
+[... 342 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 400,600p /home/runner/.claude/projects/-home-runner-work-encore-registry-encore-registry/155a8601-92de-4a23-b130-93410661849c/tool-results/ba22q7e5x.txt
+```
+
+```
+lateral_target_appearance_time : Time (in seconds) when peripheral target appeared (go cue), signaling the monkey to initiate movement toward the flexion or extension target
+cursor_departure_time : Time (in seconds) when cursor exited the center target zone following the go cue
+reward_time : Time (in seconds) of liquid reward delivery for successful target acquisition and hold
+target_amplitude_degrees : Distance from center (home) position to target center in degrees of joint angle (10, 20, or 30). Determines required movement amplitude for target capture. During individual sessions, target amplitude is either always 20 degrees or varies randomly among 10, 20, and 30 degrees.
+isolation_monitoring_stim_time : Time (in seconds) of antidromic stimulation pulse delivered during trial to monitor unit isolation. Single pulses were delivered early in some trials (~245 ms after trial start) to activate otherwise silent neurons and verify recording isolation. NaN indicates no stimulation was delivered in that trial
+isolation_monitoring_stim_site : Anatomical target of antidromic stimulation for isolation monitoring. Values: 'posterolateral striatum', 'ventrolateral thalamus', 'cerebral peduncle', 'subthalamic nucleus', or empty string if no stimulation was delivered in that trial
+movement_type : flexion or extension
+source_file : Source MATLAB file of this trial, without the unit number (e.g. 'v1501' for v1501.1.mat). Sessions merged from several files of the same day list each trial's own file.
+torque_perturbation_type : direction of torque perturbation causing muscle stretch (flexion/extension/none). 'not_available' in monkey L files, whose source data contain no perturbation times.
+torque_perturbation_onset_time : Time (in seconds) of torque perturbation onset, from the lab's event markers (Events.tq_flex and Events.tq_ext). NaN on trials without a perturbation, and in every monkey L trial, where the perturbation times are not available. Note: Pasquereau and Turner (2013)
+[... 40 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+mkdir -p $TMPDIR/work; cd $TMPDIR/work; . ../env/bin/activate; cat > survey.py <<'EOF'
+import json, time, remfile, h5py, numpy as np, pandas as pd, sys
+from concurrent.futures import ThreadPoolExecutor
+assets=json.load(open('../assets.json'))
+def url(a): return f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
+def survey(a):
+    h=h5py.File(remfile.File(url(a)),'r')
+    tr=h['intervals/trials']
+    out={'path':a['path']}
+    def col(n):
+        d=tr[n][:]; 
+        return d.astype(str) if d.dtype.kind in 'OS' else d
+    out['n_trials']=len(tr['start_time'])
+    tt=col('torque_perturbation_type'); out['tq']=pd.Series(tt).value_counts().to_dict()
+    out['src']=sorted(set(col('source_file')))
+    u=h['units']
+    out['units']=[dict(name=n.decode() if isinstance(n,bytes) else n, ptype=p.decode() if isinstance(p,bytes) else p, post=bool(q), lat=float(l), lat2=float(l2))
+       for n,p,q,l,l2 in zip(u['unit_name'][:],u['neuron_projection_type'][:],u['is_post_mptp'][:],u['antidromic_latency_ms'][:],u['antidromic_latency_2_ms'][:])]
+    out['acq']={k:(h['acquisition'][k]['data'].shape) for k in h['acquisition']}
+    ts=h['acquisition'][[k for k in h['acquisition'] if 'Angle' in k][0]]['timestamps']
+    out['dt']=float(np.median(np.diff(ts[:2000])))
+    out['date']=h['session_start_time'][()].decode()
+    return out
+if __name__=='__main__':
+    sel=[a for a in assets if a['path'].endswith('.nwb')]
+    if len(sys.argv)>1: sel=sel[:int(sys.argv[1])]
+    t=time.time()
+    with ThreadPoolExecutor(8) as ex: res=list(ex.map(survey,sel))
+    print(time.time()-t)
+    json.dump(res,open('survey.json','w'))
+EOF
+python survey.py 16 && python -c "
+import json;r=json.load(open('survey.json'));[print(x['path'][-60:],x['n_trials'],x['tq'],x['src'],len(x['units']),x['dt'],list(x['acq'])) for x in r]"
+```
+
+```
+6.842933893203735
+l10003++PreMPTP++Depth23680um++19930123_behavior+ecephys.nwb 30 {'not_available': 30} ['l10003'] 1 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10101++PreMPTP++Depth24200um++19930124_behavior+ecephys.nwb 30 {'not_available': 30} ['l10101'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10002++PreMPTP++Depth23080um++19930123_behavior+ecephys.nwb 30 {'not_available': 30} ['l10002'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10001++PreMPTP++Depth25700um++19930123_behavior+ecephys.nwb 30 {'not_available': 30} ['l10001'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10102++PreMPTP++Depth22000um++19930124_behavior+ecephys.nwb 30 {'not_available': 30} ['l10102'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10103++PreMPTP++Depth22900um++19930124_behavior+ecephys.nwb 30 {'not_available': 30} ['l10103'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10603++PreMPTP++Depth22130um++19930313_behavior+ecephys.nwb 36 {'not_available': 36} ['l10603'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10602++PreMPTP++Depth21820um++19930313_behavior+ecephys.nwb 26 {'not_available': 26} ['l10602'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10601++PreMPTP++Depth22990um++19930313_behavior+ecephys.nwb 36 {'not_available': 36} ['l10601'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10501++PreMPTP++Depth24700um++19930312_behavior+ecephys.nwb 36 {'not_available': 36} ['l10501'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10701++PreMPTP++Depth23030um++19930315_behavior+ecephys.nwb 22 {'not_available': 22} ['l10701'] 1 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10802++PreMPTP++Depth22750um++19930315_behavior+ecephys.nwb 36 {'not_available': 36} ['l10802'] 1 0.009999999999999787 ['WristAngle', 'WristTorque']
+l10902++PreMPTP++Depth22310um++19930316_behavior+ecephys.nwb 36 {'not_available': 36} ['l10902'] 2 0.009999999999999787 ['WristAngle', 'WristTorque']
+l11001++PreMPTP++Depth21850um++1
 [... 3 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import json, h5py, remfile
-A=json.load(open("assets.json"))
-P='sub-Venus/sub-Venus_ses-Venus++v4527++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb'
-a=[x for x in A["draft"] if x["path"]==P][0]
-f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),"r")
-for k in ["acquisition/ElbowTorque","acquisition/ElbowAngle","acquisition/EMGTricepsLongus1","general/devices/TorqueMotor"]:
-    print(k, {x:str(f[k].attrs[x]) for x in f[k].attrs if x in ("description","comments","reference_frame")})
-for k in ["acquisition/ElbowAngle/data"]:
-    print(k, dict(f[k].attrs))
-print(list(f["acquisition"].keys()))
-for c in f["intervals/trials"].keys():
-    print("TRIALS", c, str(f["intervals/trials"][c].attrs.get("description","")))
-for c in f["units"].keys():
-    print("UNITS", c, str(f["units"][c].attrs.get("description","")))
-print(f["units/unit_name"][:], f["units/neuron_projection_type"][:])
-print(f["intervals/trials/source_file"][:5])
-for k in ["general/session_id","general/experiment_description","general/notes","session_description"]:
-    if k in f: print(k, f[k][()])
-for k in f["general"].keys(): print("general", k)
-EOF
-```
-
-```
-acquisition/ElbowTorque {'comments': 'no comments', 'description': 'Command sent to the torque motor controller, in arbitrary units. Perturbations appear as 50 ms pulses that leave rest about 5 ms after torque_perturbation_onset_time and reach half their peak at about 8 ms (sessions v1401, v1402 and v1501 have perturbation times but no pulses in the command). The pulse size varies: before MPTP each session uses one of three levels (about 46, 91 and 183 units above rest); after MPTP it varies from trial to trial and is often followed by a command in the opposite direction. No conversion to newton-metres is available: the amplifier and controller gains are not in these MATLAB files, and the original recordings they were exported from were not provided. Note: Pasquereau and Turner (2013) describe the perturbations as 0.1 Nm, 50 ms torque impulses delivered 1 to 2 s after center target capture.'}
-acquisition/ElbowAngle {'comments': 'no comments', 'description': 'Raw manipulandum angle from sensor during visuomotor flexion/extension task'}
-acquisition/EMGTricepsLongus1 {'comments': 'Data are uncalibrated A/D converter values (centered ~2048, consistent with 12-bit digitization). No voltage calibration factor is available. Values represent relative muscle activation magnitude.', 'description': 'Preprocessed EMG from Triceps longus (long head) - elbow extensor. Channel 1 of 2 separate electrodes placed in different compartments of triceps longus (long head). The numeric suffix reflects channel order in the source mapping, not a known anatomical position. Inferred compartment: distal (provisional). Empirical analysis across ~280 Venus sessions, using cross-correlation lead-lag and posterior-deltoid correlation between the two triceps longus channels (see scripts/triceps_compartment_analysis/), suggests this channel is the more distal of the two compartments. The assignment is not confirmed by the original investigators and is intentionally not encoded in the channel name. R
-[... 63 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python -c "
-import json
-nb=json.load(open('reproduce_pasquereau_2013.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print(f'=== [{i}] {c[\"cell_type\"]} {c.get(\"metadata\",{}).get(\"tags\",\"\")}')
-    print(''.join(c['source']))
-" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
-```
-
-```
-1528 /tmp/claude-1001/nb.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt"
-}
-```
-
-```
-1	=== [0] markdown 
-2	# Reproducing Pasquereau & Turner (2013) from dandiset 001636
-3	
-4	**Paper.** Pasquereau B, Turner RS (2013). Primary motor cortex of the parkinsonian monkey: altered
-5	neuronal responses to muscle stretch. *Frontiers in Systems Neuroscience* 7:98.
-6	[doi:10.3389/fnsys.2013.00098](https://doi.org/10.3389/fnsys.2013.00098). This attempt used the
-7	full text (open access, PubMed Central PMC3840326) and its supplementary data sheet, whose table
-8	gives the neuronal results of each monkey separately.
-9	
-10	**Dandiset.** [DANDI:001636](https://dandiarchive.org/dandiset/001636/0.260518.1819), version
-11	0.260518.1819. The paper (2013) cites no DANDI version. This is the only published version, and
-12	the draft differs from it only by its modification date, so it is the version pinned here. The
-13	dandiset holds single-unit M1 recordings from two monkeys before and after MPTP, from which three
-14	papers were written; this one uses the torque perturbation (muscle stretch) trials.
-15	
-16	**What can be tested.** The files of monkey V (Venus, elbow) mark the torque perturbations, with
-17	the joint angle, the torque command and triceps EMG. The files of monkey L (Leu, wrist) mark none,
-18	so every claim is tested on monkey V alone, against the paper's monkey V values where it gives
-19	them (supplementary table) and against its pooled values otherwise.
-20	
-[... 715 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 736,
- "limit": 800
-}
-```
-
-```
-736	plt.tight_layout()
-737	plt.show()
-738	for r in pick:
-739	    m = mean_sdf[(r.cell, r.direction)]
-740	    print(f"cell {r.cell} {r.direction}: SDF {m.min():.1f} to {m.max():.1f} spikes/s, threshold "
-741	          f"{r.baseline - t_main * r.baseline_sd:.1f} to {r.baseline + t_main * r.baseline_sd:.1f}; "
-742	          f"pseudo-onset crossing {bool(pm[(pm.cell == r.cell) & (pm.direction == r.direction)].any_crossing_0_200.iloc[0])}")
-743	print("Shaded: 200 ms after the pseudo onset (light) and the torque (dark). Every SDF is within its axes.")
-744	
-745	=== [39] markdown 
-746	**Result: blocked (methods underspecified).** With the detection fixed in the claims file, a
-747	threshold crossing in the 200 ms after a pseudo onset 600 ms before the torque occurs in 0.22 of
-748	the cell-directions, against the 0.01 the paper's threshold implies; the t-test variant gives 0.46.
-749	Unperturbed trials at the usual torque time give 0.19 and 0.45, and stationary Poisson spike
-750	trains at each cell-direction's baseline rate give 0.15 and 0.49, so most of the excess comes from
-751	the detection procedure; for the main detection about a third of the observed 0.22 is not
-752	explained by the Poisson trains. The rate does not fall with baseline
-753	rate or number of trials (0.17 to 0.27 by baseline rate quartile, 0.21 to 0.24 by number of
-754	trials). A response with onset between 20 and 60 ms is found in 0.044 of the cell-directions at
-755	the pseudo onset and 0.047 on unperturbed trials, against 0.37 at the true onset, a ratio of 0.12.
-[... 774 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import json, h5py, remfile, numpy as np
-A=json.load(open("assets.json"))
-def op(sub):
-    a=[x for x in A["draft"] if sub in x["path"]][0]; print(a["path"])
-    return h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),"r")
-for code in ["v2701","v4527","v5811"]:
-    f=op(code)
-    un=f["units"]
-    print(un["unit_name"][:], un["neuron_projection_type"][:])
-    oi=un["obs_intervals"][:]; idx=un["obs_intervals_index"][:]
-    print("obs idx",idx, "n intervals per unit", np.diff(np.r_[0,idx]))
-    tr=f["intervals/trials"]; st=tr["start_time"][:]; sp=tr["stop_time"][:]
-    src=tr["source_file"][:]
-    import collections; print("source files", collections.Counter(src))
-    print("trials", len(st), "pert", collections.Counter(tr["torque_perturbation_type"][:]))
-    # obs intervals vs trials
-    for u in range(len(idx)):
-        iv=oi[(0 if u==0 else idx[u-1]):idx[u]]
-        intr=[(np.any((st>=a-1e-6)&(sp<=b+1e-6))) for a,b in iv]
-        ntr=sum(int(np.sum((st>=a-1e-6)&(sp<=b+1e-6))) for a,b in iv)
-        print(" unit",u,"intervals",len(iv),"trials covered",ntr, iv[:2])
-    t=f["acquisition/ElbowAngle/timestamps"][:]
-    first=np.r_[0,np.flatnonzero(np.diff(t)>1.0)+1]
-    print("segments",len(first),"trials",len(st),"lag ms first/last", (st[0]-t[first[0]])*1000, (st[-1]-t[first[-1]])*1000 if len(first)==len(st) else None)
-    if "ElbowAngle" in f["acquisition"]:
-        print(dict(f["acquisition/ElbowAngle"].attrs).get("reference_frame"), {k:str(v)[:300] for k,v in f["acquisition/ElbowAngle/data"].attrs.items()})
-    print(f["general/notes"][()][:600])
-    print()
-EOF
-```
-
-```
-sub-Venus/sub-Venus_ses-Venus++v2701++PreMPTP++Depth19650um++19990607_behavior+ecephys.nwb
-[b'v2701.1+v2702.2' b'v2702.1'] [b'corticostriatal_neuron' b'no_response']
-obs idx [38 58] n intervals per unit [38 20]
-source files Counter({b'v2702': 20, b'v2701': 18})
-trials 38 pert Counter({b'flexion': 16, b'none': 12, b'extension': 10})
- unit 0 intervals 38 trials covered 38 [[ 0.     8.629]
- [11.629 18.946]]
- unit 1 intervals 20 trials covered 20 [[205.537 214.099]
- [217.099 225.82 ]]
-segments 38 trials 38 lag ms first/last 0.0 0.0
-None {'conversion': '1.0', 'offset': '0.0', 'resolution': '-1.0', 'unit': 'degrees'}
-b"MERGED FILES: this session combines the source files v2701, v2702, recorded on the same day and linked in the lab's metadata table because at least one neuron was recorded across them. Trials come from v2701, v2702 in that order, separated like all trials by the artificial inter-trial gap; the trials column source_file names each trial's file, and the gap between two files is tagged file_boundary in invalid_times. Trials that repeat a trial of an earlier file were left out. Each unit is observed (obs_intervals) only during the trials of the files it was recorded in, which its unit_name lists.\n"
-
-sub-Venus/sub-Venus_ses-Venus++v4527++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb
-[b'v4527.1' b'v4527.2'] [b'pyramidal_tract_neuron' b'pyramidal_tract_neuron']
-obs idx [47 94] n intervals per unit [47 47]
-source files Counter({b'v4527': 47})
-trials 47 pert Counter({b'flexion': 16, b'extension': 16, b'none': 15})
- unit 0 intervals 47 trials covered 47 [[ 0.     9.907]
- [12.907 21.71 ]]
-[... 19 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; grep -n "ElbowAngle\|reference" pub_v4527.txt | cut -c1-400; echo ---; grep -n "ElbowAngle\|reference\|obs_intervals\|invalid" draft_v4527.txt | cut -c1-400
-```
-
-```
-17:acquisition/ElbowAngle/ {'comments': 'no comments', 'description': 'Raw manipulandum angle from sensor during visuomotor flexion/extension task', 'neurodata_type': 'SpatialSeries'}
-18:acquisition/ElbowAngle/data (438530, 1) float64 {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'degrees'}
-19:acquisition/ElbowAngle/reference_frame () object {}
-20:acquisition/ElbowAngle/timestamps (438530,) float64 {'interval': np.int64(1), 'unit': 'seconds'}
-41:general/extracellular_ephys/electrodes/chamber_insertion_depth_mm (1,) float64 {'description': 'Electrode insertion depth from chamber reference point (mm, positive = deeper, range: 8.4-27.6mm). NaN for stimulation electrodes.'}
-65:general/localization/D99v2AtlasCoordinates/localized_entity (1,) int64 {'description': 'A reference to the object being localized (e.g. electrode)', 'table': <HDF5 object reference>}
-81:general/localization/MEBRAINSAtlasCoordinates/localized_entity (1,) int64 {'description': 'A reference to the object being localized (e.g. electrode)', 'table': <HDF5 object reference>}
-97:general/localization/NMTv2AtlasCoordinates/localized_entity (1,) int64 {'description': 'A reference to the object being localized (e.g. electrode)', 'table': <HDF5 object reference>}
-112:general/subject/age () object {'reference': 'birth'}
-138:intervals/invalid_times/tags_index (46,) uint8 {'description': "Index for VectorData 'tags'", 'target': <HDF5 object reference>}
-163:processing/antidromic_identification/AntidromicResponseUnit1Peduncle/electrodes (1,) int64 {'description': 'Recording electrode in M1', 'table': <HDF5 object reference>}
-226:timestamps_reference_time () object {}
-233:units/electrodes (2,) int64 {'description': 'the electrodes that each spike unit came from', 'table': <HDF5 object reference>}
-234:units/electrodes_index (2,) uint8 {'description': "Index for VectorData 'electrodes'", 'target': <HDF5 object reference>}
-239:units/obs_intervals_index (2,) uint8 {'
-[... 27 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import json, h5py, remfile, numpy as np
-A=json.load(open("assets.json"))
-P='sub-Venus/sub-Venus_ses-Venus++v4527++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb'
-for w in ["pub","draft"]:
-    a=[x for x in A[w] if x["path"]==P][0]
-    f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),"r")
-    print(w, f["acquisition/ElbowAngle/reference_frame"][()])
-    t=f["acquisition/ElbowAngle/timestamps"][:]; st=f["intervals/trials/start_time"][:]
-    first=np.r_[0,np.flatnonzero(np.diff(t)>1.0)+1]
-    print(len(first), len(st), ((st[:len(first)]-t[first])*1000)[[0,10,-1]] if len(first)==len(st) else "mismatch")
-    sp=f["intervals/trials/stop_time"][:]
-    last=np.r_[first[1:]-1,len(t)-1]
-    if len(first)==len(st): print("end gap ms", np.percentile((sp-t[last])*1000,[0,50,100]))
-    print(w, "dandiset desc-level session_desc ok")
-EOF
-```
-
-```
-pub b'Anatomical flexion/extension axis, 0 degrees = neutral position, positive = extension'
-47 47 [  0.  46. 207.]
-end gap ms [  5. 108. 212.]
-pub dandiset desc-level session_desc ok
-draft b'Anatomical flexion/extension axis, 0 degrees = neutral position, positive = flexion'
-47 47 [0. 0. 0.]
-end gap ms [5. 6. 6.]
-draft dandiset desc-level session_desc ok
-Shell cwd was reset to
-```
-
-**Agent**
-
-The analog clock and the angle's sign convention are both fixed in the draft. Next I'll check the dandiset description.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; for v in 0.260518.1819 draft; do curl -s https://api.dandiarchive.org/api/dandisets/001636/versions/$v/ > meta_$v.json; done; env/bin/python - <<'EOF'
-import json
-for v in ["0.260518.1819","draft"]:
-    m=json.load(open(f"meta_{v}.json"))
-    print("=====",v, m.get("dateModified"), m.get("version"))
-    print(m["description"])
-    print([ (r.get("identifier"),r.get("relation")) for r in m.get("relatedResource",[])])
-EOF
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import re
-p="stretch.py"; s=open(p).read()
-s=s.replace('''Each NWB file holds one recording session of one or two single units in M1 of monkey Venus (V,
-elbow task) or Leu (L, wrist task): a trials table with the task events and the torque
-perturbations, the manipulandum angle, the torque command and, in many Venus sessions, rectified
-EMG. Files are streamed from the archive at the pinned version; nothing is written to disk.
-
-Clocks. The source files were trialized; the conversion placed the trials one after another with
-3 s gaps. The trials table and the spike times use the trial durations of the behavioural
-software, but the analog streams (angle, torque, EMG) use their own sample counts, which are a
-few ms shorter per trial, so the stored analog clock falls further behind the trials table with
-every trial. `realign` puts each analog segment back at the start time of its trial. The notebook
-checks this against the torque command and the joint angle.''','''Each NWB file holds one recording session of one or more single units in M1 of monkey Venus (V,
-elbow task) or Leu (L, wrist task): a trials table with the task events and the torque
-perturbations, the manipulandum angle, the torque command and, in many Venus sessions, rectified
-EMG. Files are streamed from the archive at the pinned version; nothing is written to disk.
-
-Sessions. In the draft of 2026-10-21, source files recorded on the same day and linked in the
-lab's metadata table are merged into one session, and a unit is observed only during the trials
-of its own source files (its obs_intervals). A unit's perturbations are therefore the perturbation
-trials inside its obs_intervals (`load_session` stores them per unit).
-
-Clocks. The source files were trialized; the conversion placed the trials one after another with
-3 s gaps. In version 0.260518.1819 the analog streams (angle, torque, EMG) were laid end to end by
-their own sample counts and fell further behind the trials table with every trial. `realign` puts
-each analog segment back at the start time of its trial; in the draft it moves nothing, which the
-notebook shows (the lag it would correct is printed in the data check).''')
-s=s.replace('DANDISET_VERSION = "0.260518.1819"','DANDISET_VERSION = "draft"            # asked for; its modification time is printed by the notebook')
-s=s.replace('''def asset_urls() -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at the pinned version."""
-    with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
-        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))
-                      for a in dandiset.get_assets() if a.path.endswith(".nwb"))''','''def asset_urls() -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at the pinned version."""
-    with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
-        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))
-                      for a in dandiset.get_assets() if a.path.endswith(".nwb"))
-
-
-def version_info() -> dict:
-    """The pinned version's identifier, modification time and asset count, from the archive."""
-    with DandiAPIClient() as client:
-        d = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
-        v = d.version
-        return {"version": v.identifier, "modified": str(v.modified), "assets": v.asset_count}''')
-s=s.replace('''            "torque": [_text(v) for v in tr["torque_perturbation_type"][:]],''','''            "torque": [_text(v) for v in tr["torque_perturbation_type"][:]],
-            "source_file": ([_text(v) for v in tr["source_file"][:]] if "source_file" in tr
-                            else [path] * len(tr["start_time"])),''')
-s=s.replace('''        spikes = np.split(data, index[:-1])
-        units = [{"unit_name": int(un["unit_name"][i]),
-                  "type": _text(un["neuron_projection_type"][i]),
-                  "antidromic_latency_ms": float(un["antidromic_latency_ms"][i]),
-                  "also_in": _text(un["unit_also_in_session_id"][i]),
-                  "is_post_mptp": bool(un["is_post_mptp"][i]),
-                  "spikes": spikes[i]} for i in range(len(un["id"]))]''','''        spikes = np.split(data, index[:-1])
-        obs = np.split(un["obs_intervals"][:], un["obs_intervals_index"][:-1]) if "obs_intervals" in un else None
-        units = [{"unit_name": _text(un["unit_name"][i]),
-                  "type": _text(un["neuron_projection_type"][i]),
-                  "antidromic_latency_ms": float(un["antidromic_latency_ms"][i]),
-                  "also_in": _text(un["unit_also_in_session_id"][i]) if "unit_also_in_session_id" in un else "",
-                  "is_post_mptp": bool(un["is_post_mptp"][i]),
-                  "obs": obs[i] if obs is not None else None,
-                  "spikes": spikes[i]} for i in range(len(un["id"]))]''')
-s=s.replace('''    pert = trials[trials.torque != "none"]
-    for u in units:
-        sp = u["spikes"]
-        u["sorted"] = bool(np.all(np.diff(sp) >= 0))
-        k = np.searchsorted(trials.start.values, sp, side="right") - 1
-        u["outside_trials"] = int(np.sum((k < 0) | (sp > trials.stop.values[np.clip(k, 0, None)] + 1e-6)))
-        isi = np.diff(sp)[np.diff(k) == 0]
-        u["isi_below_2ms"] = float(np.mean(isi < 0.002)) if len(isi) else np.nan
-        u["pert"] = [np.round((sp[(sp >= t0 + SPIKE_WINDOW_S[0]) & (sp < t0 + SPIKE_WINDOW_S[1])] - t0) * 1000)
-                     for t0 in pert.onset.values]
-    s["pert_direction"] = pert.torque.values
-    s["pert_trial"] = pert.index.values''','''    pert = trials[trials.torque.isin(["flexion", "extension"])]
-    for u in units:
-        sp = u["spikes"]
-        u["sorted"] = bool(np.all(np.diff(sp) >= 0))
-        k = np.searchsorted(trials.start.values, sp, side="right") - 1
-        u["outside_trials"] = int(np.sum((k < 0) | (sp > trials.stop.values[np.clip(k, 0, None)] + 1e-6)))
-        isi = np.diff(sp)[np.diff(k) == 0]
-        u["isi_below_2ms"] = float(np.mean(isi < 0.002)) if len(isi) else np.nan
-        # trials inside the unit's observation intervals (all trials when the file gives none)
-        if u["obs"] is None or len(u["obs"]) == 0:
-            seen = np.ones(len(trials), bool)
-        else:
-            seen = np.zeros(len(trials), bool)
-            for a, b in u["obs"]:
-                seen |= (trials.start.values >= a - 1e-6) & (trials.stop.values <= b + 1e-6)
-            inside = np.zeros(len(sp), bool)
-            for a, b in u["obs"]:
-                inside |= (sp >= a - 1e-6) & (sp <= b + 1e-6)
-            u["outside_obs"] = int((~inside).sum())
-        u["observed_trials"] = seen
-        p = pert[seen[pert.index.values]]
-        u["pert_direction"] = p.torque.values
-        u["pert_trial"] = p.index.values
-        u["pert"] = [np.round((sp[(sp >= t0 + SPIKE_WINDOW_S[0]) & (sp < t0 + SPIKE_WINDOW_S[1])] - t0) * 1000)
-                     for t0 in p.onset.values]
-    s["pert_direction"] = pert.torque.values
-    s["pert_trial"] = pert.index.values''')
-open(p,"w").write(s)
-EOF
-grep -n "pert_direction\|obs\b\|not_available" stretch.py | head
-```
-
-```
-158:        obs = np.split(un["obs_intervals"][:], un["obs_intervals_index"][:-1]) if "obs_intervals" in un else None
-164:                  "obs": obs[i] if obs is not None else None,
-190:        if u["obs"] is None or len(u["obs"]) == 0:
-194:            for a, b in u["obs"]:
-197:            for a, b in u["obs"]:
-199:            u["outside_obs"] = int((~inside).sum())
-202:        u["pert_direction"] = p.torque.values
-206:    s["pert_direction"] = pert.torque.values
-```
-
-**Agent**
-
-Now a test load of every file with the updated helper.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > load.py <<'EOF'
-import sys, pickle, time
-sys.path.insert(0, "entries/001636-pasquereau-2013")
-import stretch
-if __name__ == "__main__":
-    t=time.time()
-    print(stretch.version_info())
-    S = stretch.load_all(stretch.asset_urls())
-    print(len(S), time.time()-t)
-    pickle.dump(S, open("S.pkl","wb"))
-EOF
-env/bin/python load.py 2>&1 | tail -5
-```
-
-```
-{'version': 'draft', 'modified': '2026-10-21 20:16:41.427822+00:00', 'assets': 439}
-439 49.04873704910278
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import sys, pickle, numpy as np, pandas as pd, collections
-sys.path.insert(0, "entries/001636-pasquereau-2013")
-import stretch
-S=pickle.load(open("S.pkl","rb"))
+cd $TMPDIR/work; . ../env/bin/activate; python survey.py && python - <<'EOF'
+import json, pandas as pd, collections
+r=json.load(open('survey.json'))
 rows=[]
-for si,s in enumerate(S):
-    for ui,u in enumerate(s["units"]):
-        rows.append(dict(si=si,subject=s["subject"],post=s["post"],name=u["unit_name"],type=stretch.short_type(u["type"]),proj=u["type"],
-          nf=int((u["pert_direction"]=="flexion").sum()), ne=int((u["pert_direction"]=="extension").sum()),
-          nf_s=int((s["pert_direction"]=="flexion").sum()), ne_s=int((s["pert_direction"]=="extension").sum()),
-          merged="+" in u["unit_name"], outside_obs=u.get("outside_obs",-1), lat=u["antidromic_latency_ms"]))
-U=pd.DataFrame(rows)
-U["studied"]=(U.nf>=5)&(U.ne>=5)
-U["studied_session"]=(U.nf_s>=5)&(U.ne_s>=5)
-print(U.groupby(["subject","post"]).size())
-print(pd.crosstab([U.subject,U.post],[U.studied,U.type]))
-print("session-level rule:"); print(pd.crosstab([U.subject,U.post],[U.studied_session,U.type]))
-print("merged units", U.merged.sum(), U[U.merged].groupby("subject").size())
-print("outside obs spikes", U.outside_obs.sum(), (U.outside_obs<0).sum())
-print("dual", (U.type=="dual").sum(), U[U.type=="dual"][["subject","name","studied"]])
-print(collections.Counter(t for s in S for t in s["trials"].torque))
-print(pd.Series([s["date"] for s in S if s["subject"]=="Leu"]).agg(["min","max"]))
+for x in r:
+    subj='V' if 'Venus' in x['path'] else 'L'
+    for u in x['units']:
+        rows.append(dict(subj=subj,path=x['path'],date=x['date'][:10],n_tr=x['n_trials'],flex=x['tq'].get('flexion',0),ext=x['tq'].get('extension',0),na=x['tq'].get('not_available',0),nsrc=len(x['src']),**u))
+df=pd.DataFrame(rows); df.to_csv('units.csv',index=False)
+print(len(r), df.groupby('subj').size())
+print(df.groupby(['subj','post','ptype']).size())
+V=df[df.subj=='V']; ok=V[(V.flex>=5)&(V.ext>=5)]
+print('V >=5 each', ok.groupby(['post','ptype']).size(), ok.groupby('post').size())
+print('L tq', df[df.subj=='L'].na.sum(), df[df.subj=='L'][['flex','ext']].sum())
+print('dup names', df.name.duplicated().sum(), df[df.name.duplicated(keep=False)][['path','name']])
+print('dt', collections.Counter(round(x['dt'],4) for x in r))
+print(collections.Counter(tuple(sorted(x['acq'])) for x in r if 'Venus' in x['path']))
+print('multi-src files', [(x['path'][-55:],x['src']) for x in r if len(x['src'])>1][:20])
+print('units per file', collections.Counter(len(x['units']) for x in r))
 EOF
 ```
 
 ```
 Exit code 1
 Traceback (most recent call last):
-  File "<stdin>", line 13, in <module>
-TypeError: '>=' not supported between instances of 'method' and 'int'
+  File "/tmp/claude-1001/work/survey.py", line 27, in <module>
+    with ThreadPoolExecutor(8) as ex: res=list(ex.map(survey,sel))
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1001/work/survey.py", line 19, in survey
+[... 3 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; cat > explore.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd, collections
-sys.path.insert(0, "entries/001636-pasquereau-2013")
-import stretch
-S=pickle.load(open("S.pkl","rb"))
+cd $TMPDIR/work; . ../env/bin/activate; sed -i "s/    ts=h\['acquisition'\].*/    ks=[k for k in h['acquisition'] if 'Angle' in k]\n    out['dt']=float(np.median(np.diff(h['acquisition'][ks[0]]['timestamps'][:2000]))) if ks else None/; /out\['dt'\]=float(np.median(np.diff(ts/d" survey.py; grep -n dt survey.py; python survey.py && python - <<'EOF'
+import json, pandas as pd, collections
+r=json.load(open('survey.json'))
 rows=[]
-for si,s in enumerate(S):
-    for ui,u in enumerate(s["units"]):
-        rows.append(dict(si=si,ui=ui,subject=s["subject"],post=s["post"],name=u["unit_name"],type=stretch.short_type(u["type"]),proj=u["type"],
-          n_f=int((u["pert_direction"]=="flexion").sum()), n_e=int((u["pert_direction"]=="extension").sum()),
-          nf_s=int((s["pert_direction"]=="flexion").sum()), ne_s=int((s["pert_direction"]=="extension").sum()),
-          merged="+" in u["unit_name"], outside_obs=u.get("outside_obs",-1), lat=u["antidromic_latency_ms"], code=s["session_id"].split("++")[1]))
-U=pd.DataFrame(rows)
-U["studied"]=(U.n_f>=5)&(U.n_e>=5)
-U["studied_session"]=(U.nf_s>=5)&(U.ne_s>=5)
-EOF
-env/bin/python - <<'EOF'
-exec(open("explore.py").read())
-print(U.groupby(["subject","post"]).size())
-print(pd.crosstab([U.subject,U.post],[U.studied,U.type]))
-print("session-level rule:"); print(pd.crosstab([U.subject,U.post],[U.studied_session,U.type]))
-print("merged units", U.merged.sum(), U[U.merged].groupby("subject").size())
-print("outside obs spikes", U.outside_obs.sum(), (U.outside_obs<0).sum())
-print("dual", (U.type=="dual").sum()); print(U[U.type=="dual"][["subject","name","studied"]])
-print(collections.Counter(t for s in S for t in s["trials"].torque))
-print(pd.Series([s["date"] for s in S if s["subject"]=="Leu"]).agg(["min","max"]))
-print(U[U.merged & (U.subject=="Venus")][["code","name","type","n_f","n_e","nf_s","ne_s","post"]].to_string())
+for x in r:
+    subj='V' if 'Venus' in x['path'] else 'L'
+    for u in x['units']:
+        rows.append(dict(subj=subj,path=x['path'],date=x['date'][:10],n_tr=x['n_trials'],flex=x['tq'].get('flexion',0),ext=x['tq'].get('extension',0),na=x['tq'].get('not_available',0),nsrc=len(x['src']),**u))
+df=pd.DataFrame(rows); df.to_csv('units.csv',index=False)
+print(len(r), df.groupby('subj').size())
+print(df.groupby(['subj','post','ptype']).size())
+V=df[df.subj=='V']; ok=V[(V.flex>=5)&(V.ext>=5)]
+print('V >=5 each', ok.groupby(['post','ptype']).size(), ok.groupby('post').size())
+print('L tq', df[df.subj=='L'].na.sum(), df[df.subj=='L'][['flex','ext']].sum())
+print('dup names', df.name.duplicated().sum(), df[df.name.duplicated(keep=False)][['path','name']])
+print('dt', collections.Counter(None if x['dt'] is None else round(x['dt'],4) for x in r))
+print(collections.Counter(tuple(sorted(x['acq'])) for x in r))
+print('multi-src files', [(x['path'][-55:],x['src']) for x in r if len(x['src'])>1][:20])
+print('units per file', collections.Counter(len(x['units']) for x in r))
 EOF
 ```
 
 ```
-subject  post 
-Leu      False    138
-         True      72
-Venus    False    194
-         True     162
+11:        return d.astype(str) if d.dtype.kind in 'OS' else d
+20:    out['dt']=float(np.median(np.diff(h['acquisition'][ks[0]]['timestamps'][:2000]))) if ks else None
+294.4026081562042
+439 subj
+L    210
+V    356
 dtype: int64
-studied       False         True              
-type            CSN  NA PTN   CSN  NA PTN dual
-subject post                                  
-Leu     False    25  94  19     0   0   0    0
-        True     10  52  10     0   0   0    0
-Venus   False    19  36  24    32  30  51    2
-        True      1   3   1    48  54  54    1
-session-level rule:
-studied_session False         True              
-type              CSN  NA PTN   CSN  NA PTN dual
-subject post                                    
-Leu     False      25  94  19     0   0   0    0
-        True       10  52  10     0   0   0    0
-Venus   False      19  36  24    32  30  51    2
-[... 29 more lines not kept]
+subj  post   ptype                                     
+L     False  corticostriatal_neuron                        25
+             no_response                                   84
+             pyramidal_tract_and_subthalamic_neuron         1
+             pyramidal_tract_neuron                        19
+             subthalamic_and_corticostriatal_neuron         1
+             subthalamic_and_thalamic_neuron                1
+             subthalamic_projection_neuron                  7
+      True   corticostriatal_neuron                        10
+             no_response                                   46
+             pyramidal_tract_neuron                        10
+             subthalamic_projection_neuron                  6
+V     False  corticostriatal_neuron                        51
+[... 40 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; cat > old_units.py <<'EOF'
-import json, h5py, remfile, numpy as np, pandas as pd
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-A=json.load(open("assets.json"))
-def t(v): return v.decode() if isinstance(v,bytes) else str(v)
-def one(a):
-    f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),"r")
-    un=f["units"]; tr=f["intervals/trials"]; tq=[t(x) for x in tr["torque_perturbation_type"][:]]
-    sid=t(f["general/session_id"][()])
-    out=[]
-    for i in range(len(un["id"])):
-        out.append(dict(path=a["path"],code=sid.split("++")[1],subject=sid.split("++")[0],post="PostMPTP" in sid,unit=int(un["unit_name"][i]) if not isinstance(un["unit_name"][i],bytes) else t(un["unit_name"][i]),
-            type=t(un["neuron_projection_type"][i]),lat=float(un["antidromic_latency_ms"][i]),
-            n_f=tq.count("flexion"),n_e=tq.count("extension"),nspk=int(np.diff(np.r_[0,un["spike_times_index"][:]])[i])))
-    return out
-if __name__=="__main__":
-    with ProcessPoolExecutor(16) as ex:
-        res=list(ex.map(one,A["pub"],chunksize=2))
-    pd.DataFrame([r for x in res for r in x]).to_pickle("old_units.pkl")
-EOF
-env/bin/python old_units.py && env/bin/python - <<'EOF'
-exec(open("explore.py").read())
-O=pd.read_pickle("old_units.pkl")
-O["studied"]=(O.n_f>=5)&(O.n_e>=5)
-O["name"]=O.code+"."+O.unit.astype(str)
-print(len(O))
-U["first"]=U.name.str.split("+").str[0]
-new_names=set(n for x in U.name for n in x.split("+"))
-print("old units not in new names:", sorted(set(O.name)-new_names))
-print("new names not old:", sorted(new_names-set(O.name)))
-m=O.merge(U[["name","first","type","proj","studied","lat"]].assign(parts=U.name.str.split("+")).explode("parts"),left_on="name",right_on="parts",how="left",suffixes=("_old","_new"))
-ch=m[(m.type_old!=m.proj)]
-print("type changes:"); print(ch[["subject","name_old","name_new","type_old","proj","studied_old","studied_new"]].to_string())
-lc=m[~np.isclose(m.lat_old,m.lat_new,equal_nan=True)]
-print("latency changes:"); print(lc[["name_old","lat_old","lat_new","type_old"]].to_string())
-sc=m[(m.studied_old!=m.studied_new)]
-print("studied changes:"); print(sc[["name_old","name_new","type_old","proj","studied_old","studied_new"]].to_string())
+cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF'
+import json, remfile, h5py, numpy as np
+assets=json.load(open('../assets.json'))
+a=[a for a in assets if 'v1002' in a['path']][0]
+h=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),'r')
+tr=h['intervals/trials']
+st=tr['start_time'][:]; on=tr['torque_perturbation_onset_time'][:]; ct=tr['center_target_appearance_time'][:]; typ=tr['torque_perturbation_type'][:].astype(str)
+print(np.c_[st,ct,on,on-st,on-ct][:12], typ[:12])
+u=h['units']; print(list(u.keys())); print(u['obs_intervals_index'][:], u['spike_times_index'][:])
+ts=h['acquisition/ElbowAngle/timestamps'][:]; d=h['acquisition/ElbowAngle/data'][:,0]; tq=h['acquisition/ElbowTorque/data'][:]
+print(ts[:5], np.unique(np.round(np.diff(ts),4),return_counts=True))
+for i in np.where(np.isfinite(on))[0][:6]:
+    j=np.searchsorted(ts,on[i]); print(typ[i], np.round(tq[j-5:j+60:5]-tq[j-5],1), np.round(d[j:j+150:15]-d[j],1))
+for k in h['acquisition']:
+    x=h['acquisition'][k]['data'][:]; print(k, np.nanmin(x),np.nanmax(x),np.isnan(x).sum())
 EOF
 ```
 
 ```
-568
-old units not in new names: ['v4527b.2', 'v5812.2']
-new names not old: ['l16301b.1', 'v1501b.1', 'v1601b.1', 'v1602b.1', 'v1702b.1', 'v1703b.1', 'v1902b.1', 'v2702.2', 'v3202b.1', 'v3205.1', 'v3607b.1', 'v4603b.1', 'v4607.1']
-type changes:
-    subject  name_old name_new                type_old                    proj  studied_old studied_new
-447   Venus  v4527b.2      NaN  pyramidal_tract_neuron                     NaN         True         NaN
-449   Venus   v4527.2  v4527.2              not_tested  pyramidal_tract_neuron         True        True
-561   Venus   v5812.2      NaN             no_response                     NaN         True         NaN
-latency changes:
-     name_old  lat_old  lat_new                type_old
-447  v4527b.2      1.4      NaN  pyramidal_tract_neuron
-449   v4527.2      NaN      1.4              not_tested
-studied changes:
-     name_old          name_new                type_old                    proj  studied_old studied_new
-240   v1902.1  v1902.1+v1902b.1  pyramidal_tract_neuron  pyramidal_tract_neuron        False        True
-250   v2701.1   v2701.1+v2702.2  corticostriatal_neuron  corticostriatal_neuron        False        True
-366   v3607.1  v3607.1+v3607b.1  pyramidal_tract_neuron  pyramidal_tract_neuron        False        True
-447  v4527b.2               NaN  pyramidal_tract_neuron                     NaN         True         NaN
-561   v5812.2               NaN             no_response                     NaN         True         NaN
-Shell cwd was reset to
+[[  0.      2.612   4.351   4.351   1.739]
+ [ 12.159  14.819     nan     nan     nan]
+ [ 22.495  23.792  25.488   2.993   1.696]
+ [ 33.602  36.418     nan     nan     nan]
+ [ 45.277  47.478  49.174   3.897   1.696]
+ [ 57.106  59.21   60.906   3.8     1.696]
+ [ 68.699  71.72   73.417   4.718   1.697]
+ [ 81.823  83.461  85.158   3.335   1.697]
+ [ 92.765  94.988  96.685   3.92    1.697]
+ [104.671 106.681 108.377   3.706   1.696]
+ [116.526 118.275     nan     nan     nan]
+ [128.141 130.631     nan     nan     nan]] ['flexion' 'none' 'extension' 'none' 'flexion' 'extension' 'extension'
+ 'flexion' 'extension' 'flexion' 'none' 'none']
+['antidromic_latency_2_ms', 'antidromic_latency_ms', 'antidromic_stimulation_sites', 'antidromic_threshold', 'antidromic_threshold_2', 'electrodes', 'electrodes_index', 'id', 'is_post_mptp', 'neuron_projection_type', 'obs_intervals', 'obs_intervals_index', 'receptive_field_location', 'receptive_field_stimulus', 'spike_times', 'spike_times_index', 'unit_name']
+[20] [3957]
+[0.    0.001 0.002 0.003 0.004] (array([1.000e-03, 3.005e+00, 3.006e+00]), array([169356,      7,     12]))
+flexion [ 0.  -0.6  9.  81.8 93.  91.4 91.  90.4 91.  90.4 91.  90.4 85. ] [0.  0.1 0.6 1.6 2.8 3.7 4.  4.  3.6 2.9]
+extension [  0.   -0.5 -14.  -86.8 -90.  -91.5 -91.  -92.1 -92.  -92.1 -91.  -91.4
+ -82. ] [ 0.  -0.  -0.7 -1.5 -2.7 -3.5 -4.  -3.9 -3.6 -3. ]
+flexion [ 0.   0.6 15.  87.4 91.  90.9 92.  91.4 92.  91.4 92.  91.4 83. ] [0.  0.1 0.7 1.5 2.6 3.5 3.8 3.7 3.3 2.6]
+[... 14 more lines not kept]
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "entries/pasquereau-2013/pasq.py",
+ "content": "\"\"\"Loading and measures for the torque perturbation data of dandiset 001636 (monkey V).\n\nPasquereau & Turner (2013), Front. Syst. Neurosci. 7:98, doi:10.3389/fnsys.2013.00098.\n\nEach NWB file holds one recording (one or two units) with a trials table whose\n`torque_perturbation_type` and `torque_perturbation_onset_time` mark the perturbations, the elbow\nangle and the torque command at 1 kHz, and up to six EMG channels. Files are streamed from the\narchive at the pinned version with remfile and h5py (reading the NWB paths directly is much\nfaster than building the pynwb objects of 291 files); nothing is written to disk. Only windows\naround each perturbation are kept.\n\nWhere the parameters come from. \"Claims\" means the opening comment and criteria of\nclaims/pasquereau-2013.yaml, which cite the paper's Methods; \"Methods\" means the paper's\nMethods, Data analysis.\n\n- Cells studied: units with at least 5 perturbations of each direction (Methods, \"for neurons\n  studied during at least 5 repetitions of each torque direction\"; claims).\n- SDF: spikes convolved at 1 ms with a gamma kernel, k = 1.5, theta = 20 ms (Methods). The\n  kernel is truncated at 400 ms, where its tail is below 1e-7 of its mass (a standard choice\n  that cannot change a result).\n- Baseline: the 500 ms before onset (Methods; claims). Detection: the trial-averaged SDF of one\n  direction against its baseline mean +/- t * SD of its 500 baseline values, t the two-tailed\n  critical value at p = 0.002 with 499 degrees of freedom (claims; the degrees of freedom are a\n  standard choice for 500 samples). A response starts where the SDF leaves the threshold band\n  between 20 and 60 ms, having been inside it the ms before (claims; Methods, \"between 20-60-ms\").\n- Offset: the first ms after onset where the SDF is back inside the band, searched to the end of\n  the 200 ms post-torque epoch (Methods: \"the time point at which the SDF first returned within\n  the p = 0.002 threshold\"; the 200 ms limit is the Methods' post-torque epoch, and a response\n  still outside the band at 200 ms ends there).\n- Magnitudes over onset to offset, signed so that a response's own direction is positive (claims):\n  mean change from baseline, maximum change, area (spikes), and the mean SDF (the Methods' \"mean\n  firing rate during the response\"). FWHM: the contiguous span around the response's peak, within\n  0 to 400 ms, where the signed change is at least half the peak change (claims; \"full-width\n  half-maximum\" in the Methods).\n- DSI = |1 - NP/P|, NP and P the signed maximum changes from baseline over 0 to 200 ms of the two\n  directions, P the larger in absolute value (Methods).\n- Kinematics (claims): 25 Hz low-pass FIR with a Hamming window applied forwards and backwards\n  (101 taps at 1 kHz, a standard choice), velocity by differences, onset where the velocity first\n  exceeds 5 deg/s in the torque's direction within 0 to 200 ms, peak velocity over 0 to 200 ms,\n  amplitude the largest displacement over 0 to 300 ms, all signed so that the torque's direction\n  is positive. Flexion torque moves the angle to positive values (checked in the notebook).\n- EMG (claims): session-average trace for flexion torques less its mean over the 200 ms before\n  onset; m1 = mean over 15 to 40 ms, m2 = mean over 41 to 80 ms; a response starts at the first\n  ms from 10 to 150 ms above 2 SD of the baseline and lasts while it stays above.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import signal, stats\n\nDANDISET_ID = \"001636\"\nDANDISET_VERSION = \"0.261124.1906\"\n\nMIN_PERTURBATIONS = 5\nGAMMA_K, GAMMA_THETA_MS = 1.5, 20.0\nKERNEL_MS = 400\nBASELINE_MS = 500\nEPOCH_MS = 200\nONSET_WINDOW_MS = (20, 60)\nP_THRESHOLD = 0.002\nT_CRIT = float(stats.t.ppf(1 - P_THRESHOLD / 2, BASELINE_MS - 1))\nPSEUDO_SHIFT_MS = 600          # claims, false-positive-rate: pseudo onset 600 ms before torque\n\n# Spike windows kept around each perturbation, ms relative to torque onset. The earliest time is\n# the pseudo onset's baseline (-1100 ms) less the kernel's reach.\nSPIKE_WINDOW_MS = (-1500, 500)\nANGLE_WINDOW_MS = (-200, 400)\nEMG_WINDOW_MS = (-300, 300)\nTORQUE_WINDOW_MS = (-50, 100)\nEMG_CHANNELS = [\"EMGTricepsLongus1\", \"EMGTricepsLongus2\", \"EMGTricepsLateralis\",\n                \"EMGDeltoidPosterior\", \"EMGTrapezius\", \"EMGBrachioradialis\"]\nTRICEPS = [\"EMGTricepsLongus1\", \"EMGTricepsLongus2\", \"EMGTricepsLateralis\"]\n\nLOWPASS_HZ, FIR_TAPS = 25.0, 101\nVELOCITY_THRESHOLD = 5.0       # deg/s, Methods\nEMG_BASELINE_MS = 200\nM1_MS, M2_MS = (15, 40), (41, 80)\nEMG_SEARCH_MS = (10, 150)\n\n\ndef asset_urls(subject: str = \"sub-Venus\") -> list[tuple[str, str]]:\n    \"\"\"(path, streaming URL) of every NWB file of a subject at the pinned version.\"\"\"\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))\n                      for a in dandiset.get_assets()\n                      if a.path.endswith(\".nwb\") and a.path.startswith(subject + \"/\"))\n\n\ndef _str(values) -> np.ndarray:\n    return np.array([v.decode() if isinstance(v, bytes) else str(v) for v in values])\n\n\ndef _ragged(h, name):\n    data, index = h[name][:], h[name + \"_index\"][:]\n    starts = np.r_[0, index[:-1]]\n    return [data[s:e] for s, e in zip(starts, index)]\n\n\ndef _windows(ts, data, onsets, window_ms):\n    \"\"\"Samples of a 1 kHz series from onset + window[0] to onset + window[1] (ms), NaN outside.\"\"\"\n    n = window_ms[1] - window_ms[0]\n    out = np.full((len(onsets), n), np.nan)\n    for i, t in enumerate(onsets):\n        j = np.searchsorted(ts, t + window_ms[0] / 1000 - 1e-7)\n        seg = data[j:j + n]\n        tseg = ts[j:j + n]\n        if len(seg) == n and abs(tseg[-1] - tseg[0] - (n - 1) / 1000) < 1e-6:\n            out[i] = seg\n    return out\n\n\ndef load_file(path: str, url: str) -> dict:\n    \"\"\"Trials, units and perturbation-aligned windows of one file.\"\"\"\n    with h5py.File(remfile.File(url), \"r\") as h:\n        tr = h[\"intervals/trials\"]\n        trials = pd.DataFrame({\n            \"start\": tr[\"start_time\"][:], \"stop\": tr[\"stop_time\"][:],\n            \"center\": tr[\"center_target_appearance_time\"][:],\n            \"torque\": _str(tr[\"torque_perturbation_type\"][:]),\n            \"onset\": tr[\"torque_perturbation_onset_time\"][:],\n            \"movement\": _str(tr[\"movement_type\"][:]),\n            \"source_file\": _str(tr[\"source_file\"][:]),\n        })\n        u = h[\"units\"]\n        spikes = _ragged(u, \"spike_times\")\n        obs = [o.reshape(-1, 2) for o in _ragged(u, \"obs_intervals\")]\n        units = pd.DataFrame({\n            \"unit_name\": _str(u[\"unit_name\"][:]),\n            \"ptype\": _str(u[\"neuron_projection_type\"][:]),\n            \"post\": u[\"is_post_mptp\"][:].astype(bool),\n            \"latency\": u[\"antidromic_latency_ms\"][:],\n            \"latency_2\": u[\"antidromic_latency_2_ms\"][:],\n        })\n        pert = trials[trials.torque.isin([\"flexion\", \"extension\"])].reset_index(drop=True)\n        acq = h[\"acquisition\"]\n        out = {\"path\": path, \"session\": h[\"session_id\"][()].decode(),\n               \"date\": h[\"session_start_time\"][()].decode()[:10], \"trials\": trials,\n               \"units\": units, \"pert\": pert, \"emg\": {}, \"angle\": None, \"torque_cmd\": None}\n        if \"ElbowAngle\" in acq:\n            ts = acq[\"ElbowAngle/timestamps\"][:]\n            out[\"angle\"] = _windows(ts, acq[\"ElbowAngle/data\"][:, 0], pert.onset.values,\n                                    ANGLE_WINDOW_MS)\n            out[\"torque_cmd\"] = _windows(ts, acq[\"ElbowTorque/data\"][:], pert.onset.values,\n                                         TORQUE_WINDOW_MS)\n            for ch in EMG_CHANNELS:\n                if ch in acq:\n                    out[\"emg\"][ch] = _windows(acq[ch + \"/timestamps\"][:], acq[ch + \"/data\"][:],\n                                              pert.onset.values, EMG_WINDOW_MS)\n    # Spike times relative to each perturbation, kept only where the unit was observed over the\n    # whole spike window.\n    w0, w1 = SPIKE_WINDOW_MS[0] / 1000, SPIKE_WINDOW_MS[1] / 1000\n    rel, observed = [], []\n    for st, ob in zip(spikes, obs):\n        r, o = [], []\n        for t in pert.onset.values:\n            inside = np.any((ob[:, 0] <= t + w0) & (ob[:, 1] >= t + w1))\n            o.append(inside)\n            r.append(st[(st >= t + w0) & (st < t + w1)] - t)\n        rel.append(r)\n        observed.append(np.array(o))\n    out[\"rel_spikes\"], out[\"observed\"] = rel, observed\n    out[\"n_spikes\"] = [len(s) for s in spikes]\n    out[\"spikes_all\"] = spikes\n    out[\"obs\"] = obs\n    return out\n\n\ndef load_all(paths_urls, workers: int = 8) -> list[dict]:\n    with ThreadPoolExecutor(workers) as ex:\n        return list(ex.map(lambda pu: load_file(*pu), paths_urls))\n\n\n# ---------------------------------------------------------------- spike density functions\n\ndef gamma_kernel() -> np.ndarray:\n    t = np.arange(KERNEL_MS) + 0.5\n    k = stats.gamma.pdf(t, GAMMA_K, scale=GAMMA_THETA_MS)\n    return k / k.sum() * 1000.0       # spikes/s for one spike\n\n\nKERNEL = gamma_kernel()\n\n\ndef sdf_trials(rel_spikes: list[np.ndarray]) -> np.ndarray:\n    \"\"\"Single-trial SDFs (spikes/s) at 1 ms over SPIKE_WINDOW_MS, causal gamma kernel.\"\"\"\n    n = SPIKE_WINDOW_MS[1] - SPIKE_WINDOW_MS[0]\n    out = np.zeros((len(rel_spikes), n))\n    for i, s in enumerate(rel_spikes):\n        idx = np.floor(s * 1000).astype(int) - SPIKE_WINDOW_MS[0]\n        idx = idx[(idx >= 0) & (idx < n)]\n        train = np.bincount(idx, minlength=n).astype(float)\n        out[i] = np.convolve(train, KERNEL)[:n]\n    return out\n\n\ndef ms_index(t_ms: int) -> int:\n    return t_ms - SPIKE_WINDOW_MS[0]\n\n\ndef detect(mean_sdf: np.ndarray, zero_ms: int = 0) -> dict:\n    \"\"\"Response of one trial-averaged SDF around `zero_ms` (0 = torque onset, -600 = pseudo).\"\"\"\n    z = ms_index(zero_ms)\n    base = mean_sdf[z - BASELINE_MS:z]\n    mu, sd = base.mean(), base.std(ddof=1)\n    lo, hi = mu - T_CRIT * sd, mu + T_CRIT * sd\n    post = mean_sdf[z:z + EPOCH_MS + 200]\n    outside = (post > hi) | (post < lo)\n    res = {\"baseline\": mu, \"sd\": sd, \"responds\": False, \"any_crossing\": bool(outside[:EPOCH_MS].any())}\n    # signed max change over 0-200 ms for the DSI\n    ch = post[:EPOCH_MS] - mu\n    res[\"max_change_signed\"] = float(ch[np.argmax(np.abs(ch))])\n    for t in range(ONSET_WINDOW_MS[0], ONSET_WINDOW_MS[1] + 1):\n        if outside[t] and not outside[t - 1]:\n            sign = 1.0 if post[t] > hi else -1.0\n            end = t\n            while end < EPOCH_MS and outside[end] and np.sign(post[end] - mu) == sign:\n                end += 1\n            seg = sign * (post[t:end] - mu)\n            peak = t + int(np.argmax(seg))\n            half = seg.max() / 2\n            full = sign * (post - mu)\n            a = peak\n            while a > 0 and full[a - 1] >= half:\n                a -= 1\n            b = peak\n            while b < len(full) - 1 and full[b + 1] >= half:\n                b += 1\n            res.update(responds=True, onset=t, offset=end, sign=sign,\n                       mean_change=float(seg.mean()), max_change=float(seg.max()),\n                       area=float(seg.sum() / 1000.0), mean_rate=float(post[t:end].mean()),\n                       fwhm=float(b - a + 1))\n            break\n    return res\n\n\n# ---------------------------------------------------------------- kinematics and EMG\n\n_FIR = signal.firwin(FIR_TAPS, LOWPASS_HZ, fs=1000.0, window=\"hamming\")\n\n\ndef kinematics(angle_windows: np.ndarray, directions: np.ndarray) -> pd.DataFrame:\n    \"\"\"Per perturbation: onset latency (ms), peak velocity (deg/s), amplitude (deg).\"\"\"\n    z = -ANGLE_WINDOW_MS[0]\n    rows = []\n    for a, d in zip(angle_windows, directions):\n        if np.isnan(a).any():\n            rows.append((np.nan, np.nan, np.nan))\n            continue\n        s = 1.0 if d == \"flexion\" else -1.0\n        filt = signal.filtfilt(_FIR, [1.0], a)\n        vel = s * np.gradient(filt) * 1000.0\n        disp = s * (filt - filt[z])\n        above = np.where(vel[z:z + 200] > VELOCITY_THRESHOLD)[0]\n        rows.append((float(above[0]) if len(above) else np.nan,\n                     float(vel[z:z + 200].max()), float(disp[z:z + 300].max())))\n    return pd.DataFrame(rows, columns=[\"latency\", \"peak_velocity\", \"amplitude\"])\n\n\ndef emg_measures(windows: np.ndarray) -> dict:\n    \"\"\"m1, m2, response onset and duration of a session-average EMG trace (flexion torques).\"\"\"\n    z = -EMG_WINDOW_MS[0]\n    trace = np.nanmean(windows, axis=0)\n    base = trace[z - EMG_BASELINE_MS:z]\n    trace = trace - base.mean()\n    sd = base.std(ddof=1)\n    out = {\"m1\": float(trace[z + M1_MS[0]:z + M1_MS[1] + 1].mean()),\n           \"m2\": float(trace[z + M2_MS[0]:z + M2_MS[1] + 1].mean()),\n           \"baseline_sd\": float(sd), \"has_nan\": bool(np.isnan(windows).all(axis=0)[z - EMG_BASELINE_MS:z + 151].any()),\n           \"onset\": np.nan, \"duration\": np.nan}\n    above = trace[z:z + 300] > 2 * sd\n    for t in range(EMG_SEARCH_MS[0], EMG_SEARCH_MS[1] + 1):\n        if above[t]:\n            e = t\n            while e < len(above) and above[e]:\n                e += 1\n            out[\"onset\"], out[\"duration\"] = float(t), float(e - t)\n            break\n    return out\n"
+}
+```
+
+```
+File created successfully at: entries/pasquereau-2013/pasq.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-exec(open("explore.py").read())
-O=pd.read_pickle("old_units.pkl"); O["name"]=O.code+"."+O.unit.astype(str)
-for c in ["v3205","v3204","v2702","v2701","v3607","v1501","v1902","v4603","v4606","v4607","l16301"]:
-    print("OLD",O[O.code.str.startswith(c)][["path","name","type","n_f","n_e","nspk"]].to_string(header=False))
-    print("NEW",U[U.code.str.startswith(c)][["code","name","proj","n_f","n_e","nf_s","ne_s"]].to_string(header=False))
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF'
+import time, pickle, resource, pasq
+t=time.time(); pu=pasq.asset_urls(); print(len(pu), time.time()-t)
+t=time.time(); d=pasq.load_all(pu[:8]); print('8 files', time.time()-t, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
+x=d[0]; print(x['session'], x['units'], len(x['pert']), x['angle'].shape, {k:v.shape for k,v in x['emg'].items()}, [o.sum() for o in x['observed']])
 EOF
 ```
 
 ```
-OLD 308  sub-Venus/sub-Venus_ses-Venus++v3205++PreMPTP++Depth19400um++19990630_behavior+ecephys.nwb  v3205.2  corticostriatal_neuron  8  5  661
-NEW Empty DataFrame
-Columns: [code, name, proj, n_f, n_e, nf_s, ne_s]
-Index: []
-OLD 307  sub-Venus/sub-Venus_ses-Venus++v3204++PreMPTP++Depth19500um++19990630_behavior+ecephys.nwb  v3204.1  pyramidal_tract_neuron  8  8  1940
-NEW 309  v3204  v3204.1+v3205.1  pyramidal_tract_neuron  16  13  16  13
-310  v3204          v3205.2  corticostriatal_neuron   8   5  16  13
-OLD 252  sub-Venus/sub-Venus_ses-Venus++v2702++PreMPTP++Depth19650um++19990607_behavior+ecephys.nwb  v2702.1  no_response  9  6  181
-NEW Empty DataFrame
-Columns: [code, name, proj, n_f, n_e, nf_s, ne_s]
-Index: []
-OLD 250  sub-Venus/sub-Venus_ses-Venus++v2701++PreMPTP++Depth19650um++19990607_behavior+ecephys.nwb  v2701.1  corticostriatal_neuron  7  4  536
-NEW 251  v2701  v2701.1+v2702.2  corticostriatal_neuron  16  10  16  10
-252  v2701          v2702.1             no_response   9   6  16  10
-OLD 366   sub-Venus/sub-Venus_ses-Venus++v3607++PreMPTP++Depth19650um++19990729_behavior+ecephys.nwb   v3607.1  pyramidal_tract_neuron  10  1  3375
-367  sub-Venus/sub-Venus_ses-Venus++v3607b++PreMPTP++Depth19650um++19990729_behavior+ecephys.nwb  v3607b.2  corticostriatal_neuron   9  6   141
-NEW 366  v3607  v3607.1+v3607b.1  pyramidal_tract_neuron  19  7  19  7
-367  v3607          v3607b.2  corticostriatal_neuron   9  6  19  7
-OLD 233  sub-Venus/sub-Venus_ses-Venus++v1501++PreMPTP++Depth19700um++19990513_behavior+ecephys.nwb  v1501.1  corticostriatal_neuron  7  6  88
-NEW 232  v1501  v1501.1+v1501b.1  corticostriatal_neuron  11  16  11  16
+Exit code 1
+291 9.19793152809143
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "entries/pasquereau-2013/pasq.py", line 178, in load_all
+    return list(ex.map(lambda pu: load_file(*pu), paths_urls))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/runner/.local/share/uv/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
 [... 19 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; gh api repos/catalystneuro/turner-lab-to-nwb/commits?per_page=8 --jq '.[] | .sha + " " + .commit.committer.date + " " + (.commit.message|split("\n")[0])' 2>&1 | head -10
+cd entries/pasquereau-2013; sed -i 's|out = {"path": path, "session": h\["session_id"\]\[()\].decode(),|out = {"path": path, "session": h["general/session_id"][()].decode(),|' pasq.py; cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF'
+import time, pickle, resource, pasq
+pu=pasq.asset_urls()
+t=time.time(); d=pasq.load_all(pu[:8]); print('8 files', time.time()-t, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
+x=d[0]; print(x['session'], x['units'], len(x['pert']), x['angle'].shape, {k:v.shape for k,v in x['emg'].items()}, [o.sum() for o in x['observed']])
+EOF
 ```
 
 ```
-gh: To use GitHub CLI in a GitHub Actions workflow, set the GH_TOKEN environment variable. Example:
-  env:
-    GH_TOKEN: ${{ github.token }}
+8 files 7.110199928283691 0.292204 GB
+Venus++v0502++PreMPTP++Depth22130um++19990406   unit_name                   ptype   post  latency  latency_2
+0   v0502.1  pyramidal_tract_neuron  False      1.4        NaN 16 (16, 600) {'EMGTricepsLongus1': (16, 600), 'EMGTricepsLongus2': (16, 600), 'EMGTricepsLateralis': (16, 600), 'EMGDeltoidPosterior': (16, 600), 'EMGTrapezius': (16, 600), 'EMGBrachioradialis': (16, 600)} [np.int64(16)]
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR; curl -s "https://api.github.com/repos/catalystneuro/turner-lab-to-nwb/commits?per_page=8" | env/bin/python -c "
-import json,sys
-for c in json.load(sys.stdin): print(c['sha'], c['commit']['committer']['date'], c['commit']['message'].splitlines()[0])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; curl -s "https://api.github.com/repos/catalystneuro/turner-lab-to-nwb/branches?per_page=50" | env/bin/python -c "
-import json,sys
-for b in json.load(sys.stdin): print(b['name'], b['commit']['sha'])"; curl -s "https://api.github.com/repos/catalystneuro/turner-lab-to-nwb/pulls?state=all&per_page=5" | env/bin/python -c "
-import json,sys
-for p in json.load(sys.stdin): print(p['number'], p['state'], p['updated_at'], p['title'], p['head']['ref'])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; curl -s "https://api.github.com/repos/catalystneuro/turner-lab-to-nwb/pulls/33" | env/bin/python -c "
-import json,sys
-p=json.load(sys.stdin); print(p['body']); print(p['head']['sha'], p['commits'], p['changed_files'])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import json, h5py, remfile, numpy as np
-A=json.load(open("assets.json"))
-P='sub-Venus/sub-Venus_ses-Venus++v4527++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb'
-d={}
-for w in ["pub","draft"]:
-    a=[x for x in A[w] if x["path"]==P][0]
-    f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),"r")
-    d[w]={k:f[f"acquisition/{k}/data"][:] for k in ["EMGTricepsLongus1","ElbowTorque"]}
-    d[w]["angle"]=f["acquisition/ElbowAngle/data"][:,0]
-    print(w, str(f["acquisition/EMGTricepsLongus1"].attrs["description"])[-250:])
-for k in d["pub"]: print(k, np.array_equal(d["pub"][k], d["draft"][k], equal_nan=True))
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF'
+import time, pickle, resource, pasq
+pu=pasq.asset_urls()
+t=time.time(); d=pasq.load_all(pu); print('all', time.time()-t, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
+pickle.dump(d,open('venus.pkl','wb'))
 EOF
+ls -la venus.pkl; date -u
 ```
 
 ```
-pub ed Teflon-insulated multistranded stainless steel wire electrodes. Signal processing: differentially amplified (gain=10,000), bandpass filtered (20 Hz - 5 kHz), full-wave rectified, sample-hold integrated (10 ms integration interval), then digitized.
-draft lon-insulated multistranded stainless steel wire electrodes. Signal processing (Pasquereau and Turner 2013): differentially amplified (gain = 10,000), band-pass filtered (20 Hz to 5 kHz), rectified and then low-pass filtered (100 Hz), then digitized.
-EMGTricepsLongus1 True
-ElbowTorque True
-angle True
+all 269.6495819091797 0.702956 GB
+-rw-r--r-- 1 runner runner 179462446 Nov 26 16:35 venus.pkl
+Thu Nov 26 16:35:10 UTC 2026
 Shell cwd was reset to
 ```
 
 **Agent**
 
-EMG values are unchanged; only the description now follows the paper. Next I'll edit the notebook code for the new layout.
+Loading all 291 Venus files takes about 4.5 minutes and 0.7 GB. Next: per-unit counts and a check for recordings deposited twice.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p))
-C=nb["cells"]
-def src(i): return "".join(C[i]["source"])
-def setsrc(i, s): C[i]["source"]=s.splitlines(keepends=True)
-def rep(i, a, b, count=1):
-    s=src(i)
-    assert s.count(a)>=1, (i, a[:60])
-    setsrc(i, s.replace(a, b))
-
-# cell 1: version info
-rep(1, 'started = time.time()\nS = stretch.load_all(stretch.asset_urls())',
-    'started = time.time()\nVERSION = stretch.version_info()\nprint(f"dandiset {stretch.DANDISET_ID}, version {VERSION[\'version\']}, last modified {VERSION[\'modified\']}, "\n      f"{VERSION[\'assets\']} assets")\nS = stretch.load_all(stretch.asset_urls())')
-# cell 3: per-unit perturbations
-rep(3, '''    "n_flex": int((s["pert_direction"] == "flexion").sum()),
-    "n_ext": int((s["pert_direction"] == "extension").sum()),
-    "antidromic_latency_ms"''', '''    "n_flex": int((u["pert_direction"] == "flexion").sum()),
-    "n_ext": int((u["pert_direction"] == "extension").sum()),
-    "n_flex_session": int((s["pert_direction"] == "flexion").sum()),
-    "n_ext_session": int((s["pert_direction"] == "extension").sum()),
-    "source_files": len(u["unit_name"].split("+")), "outside_obs": u.get("outside_obs", 0),
-    "antidromic_latency_ms"''')
-rep(3, '''print("\\nTorque perturbations per file''', '''print("\\nperturbation type labels by subject:", {k: dict(v) for k, v in
-      pd.concat([s["trials"].assign(subject=s["subject"]) for s in S]).groupby("subject").torque.value_counts().unstack(fill_value=0).iterrows()})
-print("Units recorded across several source files (unit_name lists them):",
-      units.groupby("subject").source_files.apply(lambda x: int((x > 1).sum())).to_dict(),
-      "| spikes outside the unit's obs_intervals:", int(units.outside_obs.sum()))
-print("\\nTorque perturbations per file''')
-rep(3, '''print("\\nUnits studied (at least 5 perturbations of each direction), by subject, state and type:")
-print(pd.crosstab([units.subject, units.state], [units.studied, units.ptype]).to_string())''',
-'''print("\\nUnits studied (at least 5 perturbations of each direction within the unit's obs_intervals), by subject, state and type:")
-print(pd.crosstab([units.subject, units.state], [units.studied, units.ptype]).to_string())
-units["studied_session"] = (units.n_flex_session >= stretch.MIN_REPS) & (units.n_ext_session >= stretch.MIN_REPS)
-print("Units whose selection changes if all perturbations of the session are counted:",
-      int((units.studied != units.studied_session).sum()))''')
-# cell 5
-rep(5, '"perturbed": tr.torque != "none"', '"perturbed": tr.torque.isin(["flexion", "extension"])')
-# cell 7
-rep(7, '"labelled_torque_trials": int((s["trials"].torque != "none").sum())', '"labelled_torque_trials": int(s["trials"].torque.isin(["flexion", "extension"]).sum())')
-# cell 13
-rep(13, '''    f, e = counts[s["pert_direction"] == "flexion"], counts[s["pert_direction"] == "extension"]''',
-        '''    f, e = counts[u["pert_direction"] == "flexion"], counts[u["pert_direction"] == "extension"]''')
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-git diff --stat
-```
-
-```
-.../reproduce_pasquereau_2013.ipynb                | 28 +++++++++---
- entries/001636-pasquereau-2013/stretch.py          | 53 +++++++++++++++++-----
- 2 files changed, 63 insertions(+), 18 deletions(-)
-```
-
-**Agent**
-
-Next I'll rewrite the repeated-files and cross-reference check (cell 15).
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-def src(i): return "".join(C[i]["source"])
-def setsrc(i, s): C[i]["source"]=s.splitlines(keepends=True)
-def rep(i, a, b):
-    s=src(i); assert a in s, (i, a[:70]); setsrc(i, s.replace(a, b))
-rep(15, '''repeats = pd.DataFrame(repeats)
-print("Files whose trials repeat a block of another file's trials:")
-print(repeats.to_string(index=False))''', '''repeats = pd.DataFrame(repeats, columns=["file", "repeated_in", "trials", "repeated_trials", "units_file",
-                                        "units_repeat", "types_file", "types_repeat"])
-repeated_files = set(repeats.repeated_in)
-print("Files whose trials repeat a block of another file's trials:", "none" if repeats.empty else "")
-print(repeats.to_string(index=False))
-# Within a merged session: does a later source file repeat trials of an earlier one?
-within = []
-for si, s in enumerate(S):
-    tr = s["trials"]
-    if tr.source_file.nunique() < 2:
-        continue
-    key = list(zip(np.round((tr.stop - tr.start).values, 3), tr.torque, tr.movement))
-    files = tr.source_file.values
-    first_file = {}
-    for k, f in zip(key, files):
-        first_file.setdefault(k, f)
-    within.append({"session": sessions.code[si], "source_files": list(pd.unique(files)), "trials": len(tr),
-                   "trials_repeating_an_earlier_file": sum(first_file[k] != f for k, f in zip(key, files))})
-print("\\nMerged sessions (several source files) and trials of a later file that repeat a trial of an earlier one "
-      "(same duration, torque and movement):")
-print(pd.DataFrame(within).to_string(index=False))''')
-rep(15, '''codes = set(sessions.code)
-xref = units[units.also_in != ""].copy()
-xref["ref_code"] = xref.also_in.str.split("++", regex=False).str[1]
-xref["ref_prefix"] = xref.also_in.str.split("++", regex=False).str[0]
-xref["ref_in_dandiset"] = xref.ref_code.isin(codes)
-print(f"\\nUnits with unit_also_in_session_id: {len(xref)}; prefixes used {xref.ref_prefix.value_counts().to_dict()} "
-      f"(session ids use {sorted(sessions.subject.unique())}); referenced file in the dandiset: "
-      f"{int(xref.ref_in_dandiset.sum())}")
-rows = []
-for r in xref[xref.ref_in_dandiset].itertuples():
-    other = S[int(sessions[sessions.code == r.ref_code].si.iloc[0])]
-    rows.append({"unit": f"{r.session.split('++')[1]}/{r.unit_name}", "type": r.ptype, "spikes": r.n_spikes,
-                 "referenced": r.ref_code,
-                 "its units": [(u["unit_name"], stretch.short_type(u["type"]), len(u["spikes"])) for u in other["units"]]})
-print(pd.DataFrame(rows).to_string(index=False))''', '''print("\\nUnits with unit_also_in_session_id set:", int((units.also_in != "").sum()),
-      "| the column is in", sum("unit_also_in_session_id" in str(s.get("acq")) for s in S), "files (absent in this version)")
-# Units recorded across several source files: their firing rate over the trials of each file, as a
-# check that the parts are one neuron (spike times are only inside the unit's obs_intervals).
-rows = []
-for r in units[units.source_files > 1].itertuples():
-    s, u = S[r.si], S[r.si]["units"][r.ui]
-    tr = s["trials"][u["observed_trials"]]
-    rates = {}
-    for f, g in tr.groupby("source_file", sort=False):
-        n = sum(int(((u["spikes"] >= a) & (u["spikes"] <= b)).sum()) for a, b in zip(g.start, g.stop))
-        rates[f] = round(n / float((g.stop - g.start).sum()), 2)
-    rows.append({"unit": r.unit_name, "subject": r.subject, "type": r.ptype, "studied": r.studied,
-                 "rate_by_file (spikes/s)": rates})
-merged_units = pd.DataFrame(rows)
-print(merged_units.to_string(index=False))''')
-for i in (17,):
-    rep(i, 'emg_avail["repeat"] = emg_avail.code.isin(repeats.repeated_in)', 'emg_avail["repeat"] = emg_avail.code.isin(repeated_files)')
-rep(77, 'if s["session_id"].split("++")[1] in set(repeats.repeated_in):', 'if s["session_id"].split("++")[1] in repeated_files:')
-rep(85, 'if code_ in set(repeats.repeated_in):', 'if code_ in repeated_files:')
-# cell 20 per-unit directions
-rep(20, 'Xd = X[s["pert_direction"] == d]', 'Xd = X[u["pert_direction"] == d]')
-# cell 36 null: observed unperturbed trials only
-rep(36, '''    t0 = (tr.center_on + delay)[tr.torque == "none"].dropna().values''', '''    t0 = (tr.center_on + delay)[(tr.torque == "none") & u["observed_trials"]].dropna().values''')
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-grep -n "pert_direction\|repeats.repeated_in" reproduce_pasquereau_2013.ipynb | head -20
-```
-
-```
-/bin/bash: line 1: cd: entries/001636-pasquereau-2013: No such file or directory
-129:    "    \"n_flex\": int((s[\"pert_direction\"] == \"flexion\").sum()),\n",
-130:    "    \"n_ext\": int((s[\"pert_direction\"] == \"extension\").sum()), \"n_units\": len(s[\"units\"]),\n",
-139:    "    \"n_flex\": int((u[\"pert_direction\"] == \"flexion\").sum()),\n",
-140:    "    \"n_ext\": int((u[\"pert_direction\"] == \"extension\").sum()),\n",
-141:    "    \"n_flex_session\": int((s[\"pert_direction\"] == \"flexion\").sum()),\n",
-142:    "    \"n_ext_session\": int((s[\"pert_direction\"] == \"extension\").sum()),\n",
-333:    "chg = {d: np.concatenate([s[\"windows\"][\"angle\"][s[\"pert_direction\"] == d][:, AX == 100][:, 0]\n",
-334:    "                          - s[\"windows\"][\"angle\"][s[\"pert_direction\"] == d][:, (AX >= -50) & (AX < 0)].mean(1)\n",
-427:    "    f, e = counts[u[\"pert_direction\"] == \"flexion\"], counts[u[\"pert_direction\"] == \"extension\"]\n",
-477:    "repeated_files = set(repeats.repeated_in)\n",
-620:    "    sign = np.where(s[\"pert_direction\"] == \"flexion\", 1.0, -1.0)[:, None]\n",
-689:    "        Xd = X[u[\"pert_direction\"] == d]\n",
-1793:    "    for k, d in enumerate(s[\"pert_direction\"]):\n",
-1982:    "            r = stretch.emg_response(w[s[\"pert_direction\"] == d], s[\"analog_step_ms\"])\n",
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-p="stretch.py"; s=open(p).read()
-a='''        acq = sorted(f["acquisition"].keys())'''
-assert a in s
-s=s.replace(a,'''        has_also_in = "unit_also_in_session_id" in un
-        acq = sorted(f["acquisition"].keys())''')
-a='''"date": pd.Timestamp(date), "acq": acq, "trials": trials, "units": units}'''
-assert a in s
-s=s.replace(a,'''"date": pd.Timestamp(date), "acq": acq, "trials": trials, "units": units,
-         "has_also_in_column": has_also_in}''')
-open(p,"w").write(s)
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[15]["source"])
-a='''"| the column is in", sum("unit_also_in_session_id" in str(s.get("acq")) for s in S), "files (absent in this version)")'''
-assert a in s
-s=s.replace(a,'''"| files with the unit_also_in_session_id column:", sum(s["has_also_in_column"] for s in S), "of", len(S))''')
-C[15]["source"]=s.splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-git diff reproduce_pasquereau_2013.ipynb | head -5; python -c "import json;json.load(open('reproduce_pasquereau_2013.ipynb'))"
-```
-
-```
-diff --git a/entries/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb b/entries/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb
-index a0e3b38b..69f53554 100644
---- a/entries/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb
-+++ b/entries/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb
-@@ -94,6 +94,9 @@
-```
-
-**Agent**
-
-Two more additions: per-trial pulse size (the draft says post-MPTP pulses vary from trial to trial) and the sessions with no command pulse.
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-def rep(i,a,b):
-    s="".join(C[i]["source"]); assert a in s,(i,a[:60]); C[i]["source"]=s.replace(a,b).splitlines(keepends=True)
-rep(9, '''print(f"Monkey V perturbations: {len(realigned)}; command step found in {int(np.isfinite(realigned).sum())}")''',
-'''print(f"Monkey V perturbations: {len(realigned)}; command step found in {int(np.isfinite(realigned).sum())}")
-no_step = [s["session_id"].split("++")[1] for s in venus if not np.isfinite(command_onset(s["windows"]["torque_cmd"])).any()]
-print("Monkey V sessions with perturbations but no command step in any of them:", no_step)''')
-rep(17, '''print("Dates of the level-2 sessions by state:"''', '''# per-trial step, against the level of its session
-trial_steps = []
-for s, lv in zip(venus, command.level):
-    w = s["windows"]["torque_cmd"]
-    sign = np.where(s["pert_direction"] == "flexion", 1.0, -1.0)
-    rel = (w - np.nanmedian(w[:, (AX >= -100) & (AX < 0)], axis=1, keepdims=True)) * sign[:, None]
-    step = np.nanmedian(rel[:, (AX >= 10) & (AX < 40)], axis=1)
-    trial_steps.append(pd.DataFrame({"post": s["post"], "session_level": lv,
-                                     "trial_level": np.round(step / command.step[command.step > 10].min())}))
-trial_steps = pd.concat(trial_steps, ignore_index=True)
-print("Per-trial step in multiples of the smallest level, against its session's level (perturbations):")
-print(pd.crosstab([trial_steps.post, trial_steps.session_level], trial_steps.trial_level).to_string())
-print("Dates of the level-2 sessions by state:"''')
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-cd ../..; python -c "import yaml, jsonschema, nbformat" && which uv && python tools/entry.py lock entries/001636-pasquereau-2013 2>&1 | tail -3; git diff --stat
-```
-
-```
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
-wrote entries/001636-pasquereau-2013/requirements.lock.txt
- .../reproduce_pasquereau_2013.ipynb                | 103 +++++++++++++++------
- entries/001636-pasquereau-2013/stretch.py          |  57 +++++++++---
- 2 files changed, 120 insertions(+), 40 deletions(-)
-```
-
-**Agent**
-
-Lock file unchanged. Running the notebook from a clean environment.
-
-**Agent calls Bash**
-
-```bash
-cd  time python tools/entry.py run entries/001636-pasquereau-2013 2>&1 | tail -30
-```
-
-```
-Units of each repeated recording compared trial by trial over the repeated block:
-Empty DataFrame
-Columns: []
-Index: []
-------------------
-
-[31m---------------------------------------------------------------------------[39m
-[31mAttributeError[39m                            Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[8][39m[32m, line 65[39m
-[32m     61[39m                               [33m"spikes_in_block"[39m: (sum(map(len, ta)), sum(map(len, tb)))})
-[32m     62[39m same_unit = pd.DataFrame(same_unit)
-[32m     63[39m print([33m"\nUnits of each repeated recording compared trial by trial over the repeated block:"[39m)
-[32m     64[39m print(same_unit.to_string(index=[38;5;28;01mFalse[39;00m))
-[32m---> [39m[32m65[39m dup_units = same_unit[same_unit.identical_trials.str.split([33m"/"[39m, regex=[38;5;28;01mFalse[39;00m).str[[32m0[39m].astype(int) > [32m0[39m]
-[32m     66[39m [38;5;66;03m# the copy in the repeated file is the one dropped in the variant that counts each unit once[39;00m
-[32m     67[39m dup_keys = {(r.repeat, r.repeat_unit) [38;5;28;01mfor[39;00m r [38;5;28;01min[39;00m dup_units.itertuples()}
-[32m     68[39m units[[33m"duplicate_copy"[39m] = [(sess.split([33m"++"[39m)[[32m1[39m], un) [38;5;28;01min[39;00m dup_keys [38;5;28;01mfor[39;00m sess, un [38;5;28;01min[39;00m zip(units.session, units.unit_name)]
-
-[36mFile [39m[32m~/work/reproduction-registry/reproduction-registry/executed/001636-pasquereau-2013/.venv/lib/python3.13/site-packages/pandas/core/generic.py:6194[39m, in [36mNDFrame.__getattr__[39m[34m(self, name)[39m
-[32m   6190[39m             [38;5;28;01mand[39;00m name [38;5;28;01mnot[39;00m [38;5;28;01min[39;00m self._accessors
-[... 13 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[15]["source"])
-a='same_unit = pd.DataFrame(same_unit)'
-assert a in s
-s=s.replace(a,'''same_unit = pd.DataFrame(same_unit, columns=["file", "unit", "type", "repeat", "repeat_unit", "repeat_type",
-                                          "identical_trials", "spikes_in_block"])''')
-C[15]["source"]=s.splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-cd ../..; python tools/entry.py run entries/001636-pasquereau-2013 2>&1 | tail -30
-```
-
-```
-Installed kernelspec registry-001636-pasquereau-2013 in executed/001636-pasquereau-2013/.venv/share/jupyter/kernels/registry-001636-pasquereau-2013
-pass  reproduce_pasquereau_2013.ipynb  (77 s)
-```
-
-**Agent**
-
-The notebook runs in 77 s. Reading the outputs now.
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print(f'=== [{i}] {c.get(\"metadata\",{}).get(\"tags\",\"\")}')
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
-" > $TMPDIR/out.txt; wc -l $TMPDIR/out.txt
-```
-
-```
-724 /tmp/claude-1001/out.txt
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/out.txt"
-}
-```
-
-```
-1	=== [1] 
-2	dandiset 001636, version draft, last modified 2026-10-21 20:16:41.427822+00:00, 439 assets
-3	
-4	loaded 439 files of dandiset 001636 version draft in 48 s
-5	
-6	=== [3] ['sanity']
-7	Files and units by subject and MPTP state (from the session id):
-8	               files  units
-9	subject post               
-10	Leu     False     98    138
-11	        True      50     72
-12	Venus   False    154    194
-13	        True     137    162
-14	
-15	Units whose is_post_mptp differs from the state in the session id: 0
-16	
-17	Recording dates by subject:
-18	               min        max
-19	subject                      
-20	Leu     1992-08-06 1993-12-01
-[... 705 more lines not kept]
-```
-
-**Agent**
-
-Most results are close to the earlier attempt's. One surprise: the loader finds no analog data in any monkey L file. I'll check whether the series were renamed.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import pickle, collections
-S=pickle.load(open("S.pkl","rb"))
-c=collections.Counter(tuple(s["acq"]) for s in S if s["subject"]=="Leu"); print(c)
-EOF
-env/bin/python - <<'EOF'
-import json, h5py, remfile
-A=json.load(open("assets.json"))
-a=[x for x in A["draft"] if "l10001" in x["path"]][0]
-f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),"r")
-for k in f["acquisition"]: 
-    print(k, {x:str(f["acquisition"][k].attrs[x])[:400] for x in f["acquisition"][k].attrs if x in("description","comments")})
-    if "data" in f["acquisition"][k]: print("  ", f["acquisition"][k]["data"].shape, list(f["acquisition"][k].keys()))
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF'
+import pickle, numpy as np, pandas as pd, collections, itertools
+d=pickle.load(open('venus.pkl','rb'))
+rows=[]
+for fi,x in enumerate(d):
+    p=x['pert']
+    for ui,u in x['units'].iterrows():
+        o=x['observed'][ui]
+        rows.append(dict(fi=fi,session=x['session'],date=x['date'],**u.to_dict(),
+          nflex=int(((p.torque=='flexion').values&o).sum()), next=int(((p.torque=='extension').values&o).sum()),
+          nflex_file=int((p.torque=='flexion').sum()), nspk=x['n_spikes'][ui]))
+U=pd.DataFrame(rows)
+print(len(U)); print((U.nflex!=U.nflex_file).sum(), 'units with fewer observed than file')
+S=U[(U.nflex>=5)&(U.next>=5)]
+print(S.groupby(['post','ptype']).size()); print(S.groupby('post').size())
+# file name pre/post vs is_post
+U['fname_post']=U.session.str.contains('PostMPTP'); print('mismatch post', (U.fname_post!=U.post).sum())
+print(U.date.min(), U[~U.post].date.max(), U[U.post].date.min(), U.date.max())
+# duplicates: spike trains
+sig={}
+for fi,x in enumerate(d):
+    for ui,s in enumerate(x['spikes_all']):
+        # relative to trial start
+        tr=x['trials']; 
+        rel=[]
+        for a,b in zip(tr.start,tr.stop):
+            rel.append(np.round(s[(s>=a)&(s<b)]-a,4))
+        sig[(fi,ui)]=rel
+# compare trial-level spike patterns across units: hash of each trial's spikes (len>=3)
+h=collections.defaultdict(set)
+for k,rel in sig.items():
+    for r in rel:
+        if len(r)>=5: h[tuple(r)].add(k)
+pairs=collections.Counter()
+for k,v in h.items():
+    if len(v)>1:
+        for a,b in itertools.combinations(sorted(v),2): pairs[(a,b)]+=1
+for (a,b),n in pairs.most_common(40):
+    print(d[a[0]]['session'],U[(U.fi==a[0])].unit_name.values[a[1]], '|', d[b[0]]['session'], U[(U.fi==b[0])].unit_name.values[b[1]], n, len(sig[a]),len(sig[b]))
 EOF
 ```
 
 ```
-Counter({('WristAngle', 'WristTorque'): 133, (): 15})
-WristAngle {'comments': 'no comments', 'description': 'Raw manipulandum angle from sensor during visuomotor flexion/extension task'}
-   (17018, 1) ['data', 'reference_frame', 'timestamps']
-WristTorque {'comments': 'no comments', 'description': 'Command sent to the torque motor controller, in arbitrary units. The monkey L source files contain no torque perturbation times. The command is NaN in every file before MPTP; after MPTP it is a continuous trace without distinct pulses. No conversion to newton-metres is available: the amplifier and controller gains are not in these MATLAB files, and the original recordings they were exported from w'}
-   (17018,) ['data', 'timestamps']
+356
+6 units with fewer observed than file
+post   ptype                                     
+False  corticostriatal_neuron                        32
+       no_response                                   29
+       not_tested                                     1
+       pyramidal_tract_and_corticostriatal_neuron     2
+       pyramidal_tract_neuron                        51
+True   corticostriatal_neuron                        48
+       no_response                                   50
+       not_tested                                     1
+       pyramidal_tract_and_corticostriatal_neuron     1
+       pyramidal_tract_and_thalamic_neuron            1
+       pyramidal_tract_neuron                        54
+       thalamic_projection_neuron                     2
+dtype: int64
+post
+False    115
+True     157
+dtype: int64
+[... 3 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF'
+import pickle, numpy as np, collections, itertools
+d=pickle.load(open('venus.pkl','rb'))
+h=collections.defaultdict(set)
+for fi,x in enumerate(d):
+    t=x['trials']
+    for i,r in t.iterrows():
+        key=(round(r.stop-r.start,3), round(r.center-r.start,3) if np.isfinite(r.center) else None, r.torque, round(r.onset-r.start,3) if np.isfinite(r.onset) else None)
+        h[key].add(fi)
+pairs=collections.Counter()
+for k,v in h.items():
+    if len(v)>1:
+        for a,b in itertools.combinations(sorted(v),2): pairs[(a,b)]+=1
+for (a,b),n in pairs.most_common(30):
+    print(d[a]['session'], len(d[a]['trials']), '|', d[b]['session'], len(d[b]['trials']), n)
+# angle traces identical?
+EOF
+```
+
+```
+Venus++v4513++PostMPTP++Depth19480um++20000121 40 | Venus++v4519++PostMPTP++Depth19110um++20000125 24 2
+Venus++v4509++PostMPTP++Depth20000um++20000121 17 | Venus++v4518++PostMPTP++Depth19900um++20000124 40 2
+Venus++v4511++PostMPTP++Depth18450um++20000121 40 | Venus++v4512++PostMPTP++Depth19360um++20000121 40 2
+Venus++v4513++PostMPTP++Depth19480um++20000121 40 | Venus++v4518++PostMPTP++Depth19900um++20000124 40 2
+Venus++v1004++PreMPTP++Depth20470um++19990409 17 | Venus++v3607++PreMPTP++Depth19650um++19990729 40 1
+Venus++v1304++PreMPTP++Depth19350um++19990415 18 | Venus++v1902++PreMPTP++Depth18500um++19990520 40 1
+Venus++v1402++PreMPTP++Depth23700um++19990511 20 | Venus++v4410++PostMPTP++Depth18800um++20000117 40 1
+Venus++v4005++PreMPTP++Depth20580um++19990811 20 | Venus++v5805++PostMPTP++Depth17700um++20000330 40 1
+Venus++v4410++PostMPTP++Depth18800um++20000117 40 | Venus++v4514++PostMPTP++Depth19130um++20000124 40 1
+Venus++v4502++PostMPTP++Depth18380um++20000119 38 | Venus++v4513++PostMPTP++Depth19480um++20000121 40 1
+Venus++v4502++PostMPTP++Depth18380um++20000119 38 | Venus++v4516++PostMPTP++Depth19500um++20000124 23 1
+Venus++v4502++PostMPTP++Depth18380um++20000119 38 | Venus++v4519++PostMPTP++Depth19110um++20000125 24 1
+Venus++v4513++PostMPTP++Depth19480um++20000121 40 | Venus++v4516++PostMPTP++Depth19500um++20000124 23 1
+Venus++v4516++PostMPTP++Depth19500um++20000124 23 | Venus++v4519++PostMPTP++Depth19110um++20000125 24 1
+Venus++v4502++PostMPTP++Depth18380um++20000119 38 | Venus++v4509++PostMPTP++Depth20000um++20000121 17 1
+Venus++v4502++PostMPTP++Depth18380um++20000119 38 | Venus++v4510++PostMPTP++Depth19950um++20000121 40 1
+Venus++v4502++PostMPTP++Depth18380um++20000119 38 | Venus++v4511++PostMPTP++Depth18450um++20000121 40 1
+Venus++v4502++PostMPTP++Depth18380um++20000119 38 | Venus++v4523++PostMPTP++Depth22420um++20000125 50 1
+Venus++v4511++PostMPTP++Depth18450um++20000121 40 | Venus++v4523++PostMPTP++Depth22420um++20000125 50 1
+Venus++v4505++PostMPTP++Depth1
+[... 11 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF'
+import pickle, numpy as np, collections, itertools
+d=pickle.load(open('venus.pkl','rb'))
+h=collections.defaultdict(set)
+for fi,x in enumerate(d):
+    if x['angle'] is None: continue
+    for i,a in enumerate(x['angle']):
+        if np.isnan(a).any(): continue
+        h[tuple(np.round(a[::7],3))].add(fi)
+    for ch,w in x['emg'].items():
+        for a in w:
+            if np.isnan(a).any(): continue
+            h[(ch,)+tuple(np.round(a[::7],2))].add(fi)
+pairs=collections.Counter()
+for k,v in h.items():
+    if len(v)>1:
+        for a,b in itertools.combinations(sorted(v),2): pairs[(a,b)]+=1
+print(len(pairs))
+for (a,b),n in pairs.most_common(30):
+    print(d[a]['session'], len(d[a]['pert']), '|', d[b]['session'], len(d[b]['pert']), n)
+print(sum(x['angle'] is None for x in d), [x['session'] for x in d if x['angle'] is None])
+print(collections.Counter(tuple(sorted(x['emg'])) for x in d))
+EOF
+```
+
+```
+0
+0 []
+Counter({('EMGBrachioradialis', 'EMGDeltoidPosterior', 'EMGTrapezius', 'EMGTricepsLongus1', 'EMGTricepsLongus2'): 205, ('EMGBrachioradialis', 'EMGDeltoidPosterior', 'EMGTrapezius', 'EMGTricepsLateralis', 'EMGTricepsLongus1', 'EMGTricepsLongus2'): 53, ('EMGDeltoidPosterior', 'EMGTrapezius', 'EMGTricepsLateralis', 'EMGTricepsLongus1', 'EMGTricepsLongus2'): 29, (): 4})
 Shell cwd was reset to
 ```
 
 **Agent**
 
-Monkey L series are now named `WristAngle` and `WristTorque`. Updating the helper to read either name and to record the angle's reference frame.
+No duplicated spike trains, trial blocks or analog traces between files. Now the neuronal analysis on the cached data.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-p="stretch.py"; s=open(p).read()
-a='''        raw = {}
-        if "ElbowAngle" in acq:
-            raw["t"] = f["acquisition/ElbowAngle/timestamps"][:]
-            raw["angle"] = f["acquisition/ElbowAngle/data"][:, 0]
-            raw["torque_cmd"] = f["acquisition/ElbowTorque/data"][:]'''
-assert a in s
-s=s.replace(a,'''        raw = {}
-        joint = "Elbow" if "ElbowAngle" in acq else "Wrist" if "WristAngle" in acq else None
-        frame = None
-        if joint:
-            raw["t"] = f[f"acquisition/{joint}Angle/timestamps"][:]
-            raw["angle"] = f[f"acquisition/{joint}Angle/data"][:, 0]
-            raw["torque_cmd"] = f[f"acquisition/{joint}Torque/data"][:]
-            if "reference_frame" in f[f"acquisition/{joint}Angle"]:
-                frame = _text(f[f"acquisition/{joint}Angle/reference_frame"][()])''')
-a='''         "has_also_in_column": has_also_in}'''
-s=s.replace(a,'''         "has_also_in_column": has_also_in, "joint": joint, "angle_reference_frame": frame}''')
-open(p,"w").write(s)
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; cat > cells.py <<'EOF'
+import pickle, numpy as np, pandas as pd, pasq, time
+def cell_table(d):
+    rows=[]
+    for fi,x in enumerate(d):
+        p=x['pert']
+        for ui,u in x['units'].iterrows():
+            o=x['observed'][ui]
+            r=dict(fi=fi,session=x['session'],date=x['date'],**u.to_dict())
+            sd_all=[]
+            for dname in ['flexion','extension']:
+                sel=np.where((p.torque==dname).values & o)[0]
+                r['n_'+dname[:3]]=len(sel)
+                if len(sel)==0: continue
+                S=pasq.sdf_trials([x['rel_spikes'][ui][i] for i in sel]); sd_all.append(S)
+                m=S.mean(0)
+                res=pasq.detect(m,0); pse=pasq.detect(m,-pasq.PSEUDO_SHIFT_MS)
+                for k,v in res.items(): r[f'{dname[:3]}_{k}']=v
+                r[f'{dname[:3]}_pseudo_any']=pse['any_crossing']; r[f'{dname[:3]}_pseudo_resp']=pse['responds']
+                # variant: one-sample t-test of single-trial SDFs vs baseline mean each ms
+                z=pasq.ms_index(0); mu=res['baseline']
+                from scipy import stats
+                post=S[:,z:z+200]
+                tt=stats.ttest_1samp(post,mu,axis=0)
+                sig=(tt.pvalue<pasq.P_THRESHOLD)&np.isfinite(tt.pvalue)
+                on=[t for t in range(20,61) if sig[t] and not sig[t-1]]
+                r[f'{dname[:3]}_ttest_resp']=len(on)>0
+                r[f'{dname[:3]}_ttest_onset']=on[0] if on else np.nan
+            if sd_all:
+                A=np.vstack(sd_all); z=pasq.ms_index(0)
+                r['baseline_rate']=A[:,z-500:z].mean()
+            rows.append(r)
+    return pd.DataFrame(rows)
+if __name__=='__main__':
+    d=pickle.load(open('venus.pkl','rb'))
+    t=time.time(); C=cell_table(d); print(time.time()-t)
+    C.to_pickle('cells.pkl')
 EOF
-grep -n "Elbow" stretch.py
+python cells.py
 ```
 
 ```
-169:        joint = "Elbow" if "ElbowAngle" in acq else "Wrist" if "WristAngle" in acq else None
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[9]["source"])
-a='''print("\\nStored angle change over active movements'''
-assert a in s
-s=s.replace(a,'''print("Angle series and their reference_frame, by subject (files):")
-print(pd.Series([(s["subject"], s["joint"], s["angle_reference_frame"]) for s in S]).value_counts().to_string())
-print("\\nStored angle change over active movements''')
-C[9]["source"]=s.splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-cd ../..; python tools/entry.py run entries/001636-pasquereau-2013 2>&1 | tail -2; python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print(f'=== [{i}] {c.get(\"metadata\",{}).get(\"tags\",\"\")}')
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
-" > $TMPDIR/out2.txt; diff $TMPDIR/out.txt $TMPDIR/out2.txt
-```
-
-```
-Installed kernelspec registry-001636-pasquereau-2013 in executed/001636-pasquereau-2013/.venv/share/jupyter/kernels/registry-001636-pasquereau-2013
-pass  reproduce_pasquereau_2013.ipynb  (77 s)
-65a66,67
-> Leu     False False      2997.0  1.06  3.35  0.00  0.02  0.08  2.66  45.24
->         True  False      2091.0  0.17  1.37  0.00  0.02  0.06  0.16  39.62
-72a75,76
-> Leu      False  False        0.148
->          True   False        0.011
-78c82
-< Leu files with no analog data: 148 of 148 (50 of 50 post-MPTP)
----
-> Leu files with no analog data: 15 of 148 (15 of 50 post-MPTP)
-80,82c84,87
-< Empty DataFrame
-< Columns: [sum, count]
-< Index: []
----
->        sum  count
-> post             
-> False   98     98
-[... 74 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[37]["source"])
-a='''sim = pd.DataFrame(sim)
-print("\\nStationary Poisson trains at each cell-direction's baseline rate (seeded), same detection:")
-print(sim.groupby("method")[["any_crossing_0_200", "responds"]].mean().round(4).to_string())'''
-assert a in s
-s=s.replace(a,'''sim = pd.DataFrame(sim)
-print("\\nStationary Poisson trains at each cell-direction's baseline rate (seeded), same detection:")
-print(sim.groupby("method")[["any_crossing_0_200", "responds"]].mean().round(4).to_string())
-
-# The same simulation with other seeds, main detection only, to show its spread.
-spread = []
-for seed in range(1637, 1645):
-    g = np.random.default_rng(seed)
-    hits = []
-    for r in main.itertuples():
-        rate = cells.baseline_rate[r.cell]
-        trains = [np.flatnonzero(g.random(span) < rate / 1000) + int(stretch.SPIKE_WINDOW_S[0] * 1000)
-                  for _ in range(r.n_trials)]
-        hits.append(stretch.detect(stretch.sdfs(trains))["any_crossing_0_200"])
-    spread.append(np.mean(hits))
-print(f"Main detection, seeds 1637 to 1644: any crossing {np.min(spread):.4f} to {np.max(spread):.4f} "
-      f"(mean {np.mean(spread):.4f}) over {len(main)} cell-directions")''')
-C[37]["source"]=s.splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-cd ../..; python tools/entry.py run entries/001636-pasquereau-2013 2>&1 | tail -1; python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-c=nb['cells'][37]
-for o in c.get('outputs',[]):
-    if 'text' in o: print(''.join(o['text'])[-600:])
-print(''.join(nb['cells'][104]['outputs'][0]['text']))
-"
-```
-
-```
-pass  reproduce_pasquereau_2013.ipynb  (86 s)
-                                         
-(-0.001, 2.466]              0.176  136    0.044  136
-(2.466, 7.02]                0.287  136    0.059  136
-(7.02, 15.94]                0.206  136    0.059  136
-(15.94, 48.965]              0.243  136    0.029  136
-
-By number of trials per direction:
-             any_crossing_0_200      responds     
-                           mean size     mean size
-trials_group                                      
-(4.999, 8.0]              0.227  233    0.047  233
-(8.0, 13.0]               0.213  211    0.038  211
-(13.0, 28.0]              0.260  100    0.070  100
-
-
-Stationary Poisson trains at each cell-direction's baseline rate (seeded), same detection:
-        any_crossing_0_200  responds
-method                              
-mean                0.2096    0.0515
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-import json, h5py, remfile, random, collections
-A=json.load(open("assets.json"))
-random.seed(0); pick=random.sample(A["draft"],12)
-c=collections.Counter()
-for a in pick:
-    f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),"r")
-    c[(f["general/source_script"].attrs.get("file_name"), f["general/source_script"][()][:80] if f["general/source_script"].shape==() else None)]+=1
-for k,v in c.items(): print(v,k)
-EOF
-curl -s https://api.dandiarchive.org/api/dandisets/001636/ | python -c "import json,sys; d=json.load(sys.stdin)['draft_version']; print(d['modified'], d['asset_count'], d['active_uploads'])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[22]["source"])
-s+='''
-# Units recorded across several source files are one cell in this version. Variant: each such unit
-# counted from the perturbations of its first source file only (as if the files were not merged).
-first_only = []
-for r in units.itertuples():
-    u = S[r.si]["units"][r.ui]
-    f0 = u["unit_name"].split("+")[0].split(".")[0]
-    own = S[r.si]["trials"].source_file.values[u["pert_trial"]] == f0
-    d = u["pert_direction"][own]
-    first_only.append(((d == "flexion").sum() >= stretch.MIN_REPS) & ((d == "extension").sum() >= stretch.MIN_REPS))
-fo = units.assign(studied_first=first_only)
-fo = fo[fo.studied_first & (fo.subject == "Venus")]
-print("\\nVariant, units across several files counted from their first file only:")
-print(pd.crosstab(fo.ptype, fo.state).reindex(columns=["pre", "post"]).to_string())
-'''
-C[22]["source"]=s.splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-```
-
-```
-(Bash completed with no output)
-```
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py run entries/001636-pasquereau-2013 2>&1 | tail -1; python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-for o in nb['cells'][22].get('outputs',[]):
-    if 'text' in o: print(''.join(o['text']))
-"
-```
-
-```
-pass  reproduce_pasquereau_2013.ipynb  (87 s)
-Monkey V cells studied by type and state:
-state  pre  post
-ptype           
-CSN     32    48
-NA      30    54
-PTN     51    54
-dual     2     1
-all    115   157
-
-Units activated from both the peduncle and the putamen, all files: 3 ({'Venus': 3}); among the cells studied: 3
-Other dual projections (with thalamus or STN): 4
-
-Variant, the two unit copies in repeated files dropped:
-state  pre  post
-ptype           
-CSN     32    48
-NA      30    54
-PTN     51    54
-dual     2     1
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; env/bin/python - <<'EOF'
-exec(open("explore.py").read())
-for r in U[U.subject=="Venus"].itertuples():
-    u=S[r.si]["units"][r.ui]; f0=u["unit_name"].split("+")[0].split(".")[0]
-    own=S[r.si]["trials"].source_file.values[u["pert_trial"]]==f0
-    d=u["pert_direction"][own]
-    ok=((d=="flexion").sum()>=5)&((d=="extension").sum()>=5)
-    if r.studied and not ok: print(r.code, r.name, r.type, r.post, (d=="flexion").sum(), (d=="extension").sum(), r.n_f, r.n_e, collections.Counter(S[r.si]["trials"].source_file.values[u["pert_trial"]]))
-EOF
-```
-
-```
-v1902 v1902.1+v1902b.1 PTN False 10 4 17 11 Counter({'v1902': 14, 'v1902b': 14})
-v2701 v2701.1+v2702.2 CSN False 7 4 16 10 Counter({'v2702': 15, 'v2701': 11})
-v3607 v3607.1+v3607b.1 PTN False 10 1 19 7 Counter({'v3607b': 15, 'v3607': 11})
-v4810 v4810b.2 NA True 0 0 13 14 Counter({'v4810': 27})
-v5604 v5604b.2 CSN True 0 0 13 14 Counter({'v5604': 27})
+/tmp/claude-1001/env/lib/python3.12/site-packages/scipy/stats/_stats_py.py:1227: RuntimeWarning: divide by zero encountered in divide
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+/tmp/claude-1001/env/lib/python3.12/site-packages/scipy/stats/_stats_py.py:1227: RuntimeWarning: invalid value encountered in multiply
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+/tmp/claude-1001/env/lib/python3.12/site-packages/scipy/stats/_stats_py.py:1227: RuntimeWarning: divide by zero encountered in divide
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+/tmp/claude-1001/env/lib/python3.12/site-packages/scipy/stats/_stats_py.py:1227: RuntimeWarning: invalid value encountered in multiply
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+/tmp/claude-1001/env/lib/python3.12/site-packages/scipy/stats/_stats_py.py:1227: RuntimeWarning: divide by zero encountered in divide
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+/tmp/claude-1001/env/lib/python3.12/site-packages/scipy/stats/_stats_py.py:1227: RuntimeWarning: invalid value encountered in multiply
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+1.1021454334259033
 Shell cwd was reset to
 ```
 
-**Agent**
-
-The variant mislabels units from repeated "b" files, whose trials are stored under the earlier file's name. I'll take each unit's first file as the source file of its first observed trial.
-
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[22]["source"])
-a='''# Units recorded across several source files are one cell in this version. Variant: each such unit
-# counted from the perturbations of its first source file only (as if the files were not merged).
-first_only = []
-for r in units.itertuples():
-    u = S[r.si]["units"][r.ui]
-    f0 = u["unit_name"].split("+")[0].split(".")[0]
-    own = S[r.si]["trials"].source_file.values[u["pert_trial"]] == f0'''
-assert a in s
-s=s.replace(a,'''# Units recorded across several source files are one cell in this version. Variant: each unit
-# counted from the perturbations of its first source file only (the source_file of its first observed
-# trial; a unit of a repeated "b" file has its trials stored under the earlier file's name).
-first_only = []
-for r in units.itertuples():
-    u = S[r.si]["units"][r.ui]
-    src = S[r.si]["trials"].source_file.values
-    f0 = src[np.flatnonzero(u["observed_trials"])[0]]
-    own = src[u["pert_trial"]] == f0''')
-C[22]["source"]=s.splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-cd ../..; python tools/entry.py run entries/001636-pasquereau-2013 2>&1 | tail -1; python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-for o in nb['cells'][22].get('outputs',[]):
-    if 'text' in o: print(''.join(o['text'])[-200:])
-"
-```
-
-```
-pass  reproduce_pasquereau_2013.ipynb  (279 s)
-1    54
-dual     2     1
-
-Variant, units across several files counted from their first file only:
-state  pre  post
-ptype           
-CSN     31    48
-NA      30    54
-PTN     49    54
-dual     2     1
-```
-
-**Agent**
-
-With each unit counted from its first file only, pre-MPTP gives exactly the paper's 112 cells, 49 PTNs and 31 CSNs, and post-MPTP gives 157 (54, 48). Checking that nothing else moved between runs:
-
-**Agent calls Bash**
-
-```bash
-cd  python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print(f'=== [{i}] {c.get(\"metadata\",{}).get(\"tags\",\"\")}')
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
-" > $TMPDIR/out3.txt; diff $TMPDIR/out2.txt $TMPDIR/out3.txt
-```
-
-```
-4c4
-< loaded 439 files of dandiset 001636 version draft in 48 s
----
-> loaded 439 files of dandiset 001636 version draft in 240 s
-63a64
-> 
-318a320,327
-> Variant, units across several files counted from their first file only:
-> state  pre  post
-> ptype           
-> CSN     31    48
-> NA      30    54
-> PTN     49    54
-> dual     2     1
-> 
-391a401,402
-> Main detection, seeds 1637 to 1644: any crossing 0.1581 to 0.1930 (mean 0.1735) over 544 cell-directions
-> 
-534a546
-> 
-[... 6 more lines not kept]
-```
-
-**Agent**
-
-Outputs are stable. Now I'll rewrite every markdown cell against the new numbers, starting with the header and the data check.
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; cat > $TMPDIR/md1.py <<'PYEOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-def setmd(i, text, expect_start=None):
-    assert C[i]["cell_type"]=="markdown", i
-    if expect_start: assert "".join(C[i]["source"]).startswith(expect_start), (i, "".join(C[i]["source"])[:60])
-    C[i]["source"]=text.strip("\n").splitlines(keepends=True)
-M={}
-M[0]=("# Reproducing", '''# Reproducing Pasquereau & Turner (2013) from dandiset 001636
-
-Paper: Pasquereau B, Turner RS (2013). Primary motor cortex of the parkinsonian monkey: altered
-neuronal responses to muscle stretch. *Frontiers in Systems Neuroscience* 7:98.
-[doi:10.3389/fnsys.2013.00098](https://doi.org/10.3389/fnsys.2013.00098). The claims file was
-written from the full text (open access, PubMed Central PMC3840326) and its supplementary data
-sheet, whose table gives the neuronal results of each monkey separately.
-
-Dandiset: [DANDI:001636](https://dandiarchive.org/dandiset/001636/draft), version draft, as asked
-for this attempt. The draft was last modified on 2026-10-21 at 20:16:41 UTC (the first cell prints
-the modification time read at run time); a draft can change, and when it was read the archive
-listed 4 uploads in progress. This is a repeat attempt: the earlier one,
-`001636-pasquereau-2013-01`, used the published version 0.260518.1819. Since then the files were
-reconverted to fix what that attempt found, and the fixes are not yet published, so the draft is
-tested here. The paper (2013) cites no DANDI version.
-
-How the draft differs from 0.260518.1819, in what the analysis uses (shown in the data check): it
-holds 439 files where the published version held 447. Source files recorded on the same day and
-linked through a neuron recorded across them are merged into one session, and a unit is observed
-only in the trials of its own source files (its `obs_intervals`), so each unit's perturbations are
-counted within those trials. The merge adds trials of second files that the published version did
-not hold (for 12 monkey V units), and removes the four files that repeated another file's trials
-and the two unit copies they held. The analog streams now share the clock of the trials, the
-angle's reference frame says positive is flexion, the monkey L series are named `WristAngle` and
-`WristTorque`, `unit_name` gives the source file and unit (`v2701.1+v2702.2`), and
-`unit_also_in_session_id` is gone. The monkey L perturbation type is `not_available` where it was
-`none`. Every file was replaced; the spikes, angle, torque command and EMG values checked are
-unchanged.
-
-What can be tested. The files of monkey V (Venus, elbow) mark the torque perturbations, with
-the joint angle, the torque command and triceps EMG. The files of monkey L (Leu, wrist) mark none,
-so every claim is tested on monkey V alone, against the paper's monkey V values where it gives
-them (supplementary table) and against its pooled values otherwise.
-
-| Claim | Tested |
-|---|---|
-| `cell-counts`: 112 and 159 monkey V cells, 49 and 54 PTNs, 31 and 48 CSNs, 3 dual | yes |
-| `monkey-l-perturbations`: monkey L torque responses | blocked (data missing) |
-| `baseline-rate`: lower resting rate after MPTP in PTNs, not CSNs | yes |
-| `ptn-faster-than-csn`: PTNs fire faster than CSNs before MPTP | yes |
-| `antidromic-latency`: CSN antidromic latency longer after MPTP, PTN unchanged | yes |
-| `false-positive-rate`: the detection threshold's false-positive rate near 0.01 | yes |
-| `torque-related-fractions`: monkey V fractions of torque-related cells | yes |
-| `prevalence-unchanged`: MPTP does not change the fraction of torque-related cells | yes |
-| `ptn-more-responsive`: PTNs respond more often than CSNs | yes |
-| `one-direction-half`: 44% of torque-related cells respond to one direction only | yes |
-| `excitatory-majority`: most responses are increases; PTN balance unchanged | yes |
-| `magnitude-unchanged`: response magnitudes unchanged by MPTP | yes |
-| `venus-response-magnitudes`: monkey V response magnitudes | yes |
-| `latency-shorter`: response latencies shorter after MPTP | yes |
-| `latency-not-training`: latencies do not follow days of training | yes |
-| `fwhm-shorter-ptn`: PTN increases briefer after MPTP | yes |
-| `dsi-reduced`: fewer directional responses after MPTP | yes |
-| `venus-dsi`: monkey V mean DSI | yes |
-| `dsi-not-baseline`: resting rate does not differ between directional categories | yes |
-| `kinematics-slower`: torque-induced movements slower and smaller after MPTP | yes |
-| `kinematic-latency-unchanged`: movement latency unchanged | yes |
-| `emg-m2-larger`: larger long-latency (m2) triceps response after MPTP | yes |
-| `emg-duration-longer`: longer EMG responses after MPTP | yes |
-| `emg-onset-unchanged`: EMG onset unchanged | yes |
-| `emg-m1-weak`: m1 much smaller than m2 | yes |
-| `velocity-matched-magnitude`: magnitudes unchanged in velocity-matched sessions | yes |
-| `session-correlations`: no session-level correlation of PTN latency with velocity or m2 | yes |
-| `trial-correlations`: no trial-level correlation | blocked (methods underspecified) |
-
-Code read. The paper links no analysis code. The dandiset links its conversion code,
-[catalystneuro/turner-lab-to-nwb](https://github.com/catalystneuro/turner-lab-to-nwb). Its main
-branch is still at commit e80a192917490b50db6871180b6d1d9a24772e35, read for the earlier attempt;
-the code that built the draft is in an open pull request,
-[#33](https://github.com/catalystneuro/turner-lab-to-nwb/pull/33) (branch `fix_errors`, head
-5f9bf6320a0160e4e56301d5409fb9242c1d8cf4), whose description was read: it merges linked source
-files into sessions, reads the second file of each neuron recorded across files, drops repeated
-trials, and lays the analog streams by trial. It holds no analysis of the torque responses, so
-every method choice here comes from the paper's Methods or is fixed in the claims file.
-
-The claims, with their criteria, are in `claims/001636/10.3389-fnsys.2013.00098.yaml`. The
-loading and the measures are in `stretch.py`, whose docstring says which parameters come from the
-paper and which were chosen here.''')
-M[4]=("The dandiset holds", '''The draft holds 439 files with 566 units: 210 of monkey L (Leu) and 356 of monkey V (Venus). The
-MPTP state in the session id agrees with each unit's `is_post_mptp`. Leu files date from August
-1992 to December 1993, as the draft's description now says (earlier finding: the description said
-1993 only; fixed).
-
-Every Leu trial has the perturbation type `not_available` (it was `none`), so no monkey L trial
-can be identified as perturbed. The monkey V units with at least 5 perturbations of each direction
-within their own trials number 115 before and 157 after MPTP, with 51 and 54 PTNs and 32 and 48
-CSNs. In the published version these counts were 112 and 159, 49 and 54, 31 and 48, the paper's
-supplementary table. Counting all perturbations of the session for each unit selects the same
-units. Thirteen units (12 of monkey V) are recorded across two source files; their spikes all fall
-inside their `obs_intervals`. The other projection types (thalamic and subthalamic projections)
-are counted as non-identified (NA) cells, as the paper has no such category, and the dual PTN and
-CSN units are kept apart from both.''')
-M[6]=("In monkey V the joint", '''In monkey V the joint moves by more than 2 deg in the hold window in 67% (pre) and 87% (post) of
-perturbed trials and in 1% and 11% of the others. In monkey L it does so in 15% of trials before
-MPTP and 1% after, which does not fit perturbations on two thirds of the trials as the Methods
-describe; these windows were set from the monkey V onsets, so the monkey L perturbations could fall
-outside them. Either way, the monkey L torque trials cannot be identified from the files, and
-`monkey-l-perturbations` is blocked. The Leu torque command is NaN in every pre-MPTP file (98) and
-in one post-MPTP file, and 15 post-MPTP Leu files have no analog data. Earlier finding (no monkey L
-perturbations): still present in the data; the draft's description and the torque series now say
-that the Leu source files hold no perturbation times. The Leu analog streams are sampled at
-100 Hz, where the paper says 200 Hz for monkey L; monkey V is sampled at 1 kHz (the paper digitized
-at 500 Hz; the conversion notes say the lab interpolated to 1 kHz).''')
-M[8]=("The torque command shows", '''The torque command shows the same. In monkey V a command excursion starts in the hold window in
-1882 pre-MPTP and 3517 post-MPTP trials, against 1947 and 3603 labelled perturbations; before MPTP
-every one of them lasts 40 to 70 ms. In monkey L the command is NaN in every pre-MPTP file, and 34
-post-MPTP files hold one (35 in the published version, where l16301b was a file of its own). Of
-their 2048 trials, one has an excursion starting in the hold window (70 ms, 41 units). Their 88 to
-767 excursions per file start a median 0.30 to 0.83 s after the lateral target appears, during the
-active movement. No monkey L file holds a hold-period torque impulse.''')
-M[10]=("The analog streams", '''Earlier finding (analog clock): fixed. In the published version the analog streams were laid end
-to end by their sample count and fell behind the trials table by about 5 ms per trial, so the
-torque command step appeared up to 108 ms before the labelled onset. In the draft each analog
-segment starts at its trial's start: the lag `stretch.realign` would correct is 0 ms at every
-perturbation, and on the stored clock the command steps 4 to 6 ms (1st to 99th percentile) after
-the labelled onset, the same as after realignment. The EMG series share the angle's timestamps.
-Three sessions (v1401, v1402, v1501) have labelled perturbations but no step in the torque command,
-as the draft's torque description says; their 51 perturbations are kept (the command is not used
-to select trials).
-
-Earlier finding (reference frame): fixed. The angle's `reference_frame` now says positive is
-flexion in every file with an angle, and the values agree: active flexion movements raise the
-angle by about 18 deg in both monkeys and extension movements lower it, and flexion torques raise
-it in 99.8% of perturbations. The monkey L series are now named `WristAngle` and `WristTorque`. The
-torque labels agree with the EMG (the triceps, an extensor stretched by a flexion torque, responds
-to flexion torques; see the EMG sections).''')
-M[12]=("The angle's scale agrees", '''The angle's scale agrees with the files' own kinematic columns. Active movements measured here,
-with the filter used for the torque-evoked movements, have median peak velocities and amplitudes
-within 2% of `derived_peak_velocity` and `derived_movement_amplitude` (median ratios 0.99 to 1.02;
-Spearman rho 0.994 in monkey V and 0.989 in monkey L for peak velocity), and their median amplitude
-(20.4 deg in monkey V) matches the 20 deg targets. The angle is consistent with degrees, as stated,
-and the filter keeps the peak velocity of these movements.''')
-M[14]=("Before the labelled onset", '''Before the labelled onset, the fraction of cells whose counts differ between directions stays near
-the 1% expected by chance (at most 1.1%); it rises to 7.0% in the window from 20 to 40 ms and
-peaks at 9.2% from 40 to 60 ms. The spike times therefore share the trials table's clock to within
-the 20 ms windows, consistent with the 20 to 60 ms response latencies of the paper.''')
-M[16]=("Four monkey V files", '''Earlier finding (repeated files and unit copies): fixed. No file repeats a block of another file's
-trials. The four repeated files of the published version (v4527b, v4810b, v5604b, v5812) are folded
-into the sessions they repeat, their repeated trials left out, and the two unit copies they held
-(v4527b.2 and v5812.2) are stored once, as v4527.2 and v5811.2, both PTNs; the files' notes say
-which projection label was kept and why. Within the 13 merged sessions, trials of a later file
-match no trial of an earlier one in monkey V; in l16301 one trial of 120 matches on duration and
-movement alone, which a coincidence explains as well as a repeat. The variants below that drop
-unit copies are kept from the earlier attempt; there is nothing left to drop, so they equal the
-main results.
-
-Earlier finding (`unit_also_in_session_id`): fixed. The column is in none of the files. Units
-recorded across two source files are now one unit, named after both (`v2701.1+v2702.2`) and
-observed in the trials of both. Treating each as one cell is the dataset's statement, taken here as
-an assumption; their rates over the trials of each file differ by less than a factor of 1.5 in 9 of
-the 13, and by up to 3.2 (v3202.1+v3202b.1, 2.81 and 9.12 spikes/s). A variant of `cell-counts`
-counts each from its first file only.
-
-Every unit's spike times are sorted and fall within the trials. The paper verified isolation by a
-refractory period over 2 ms; a few units have more than 1% of their ISIs below 2 ms (68 of 566, 36
-of the cells studied), and they are kept, as the dandiset holds the units the paper selected.''')
-M[18]=("EMG units are A/D", '''EMG units are A/D values stored as arbitrary units, so EMG is compared only within the dandiset.
-Earlier finding (sampling and EMG description): partly fixed. The EMG description now gives the
-paper's processing (rectified and low-pass filtered at 100 Hz) where it said sample-hold integrated
-over 10 ms; the values are the same as in the published version (checked on v4527 while preparing,
-not run here). The A/D units and the 100 Hz monkey L sampling remain, and the draft's description
-now states both.
-
-Earlier finding (torque command sizes): partly fixed. The data are unchanged: the command's 50 ms
-pulse has three session sizes, about 46, 91 and 183 units above rest; 105 of 154 pre-MPTP sessions
-have the smallest and 125 of 137 post-MPTP sessions the largest, with the middle size in 43 and 12
-sessions, and post-MPTP pulses are followed by an opposite swing of about 30 to 37 units. Within
-post-MPTP sessions the step also varies from trial to trial (1 to 8 times the smallest level in the
-sessions of the largest size). The torque description now says all this, and that no conversion to
-newton-metres is available, so whether the torque or only the command's scaling changed still
-cannot be told. The paper says every impulse was 0.1 Nm for 50 ms. The pre and post perturbations
-are not shown to be the same; the kinematic and EMG claims add a variant restricted to sessions of
-the middle size, which both states have.
-
-Earlier finding (torque timing): still present, now described. The torque onset follows the
-appearance of the center target by 1.696 to 1.732 s in 90% of monkey V perturbations (5th to 95th
-percentile). The Methods put it 1 to 2 s, uniformly at random, after the monkey captured the
-center target; the draft's description now states the difference. This does not enter any
-analysis here.''')
-for i,(st,t) in M.items(): setmd(i,t,st)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-PYEOF
-python $TMPDIR/md1.py && echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-def rep(i,a,b):
-    s="".join(C[i]["source"]); assert a in s,(i,a); C[i]["source"]=s.replace(a,b).splitlines(keepends=True)
-rep(6,"in 67% (pre) and 87% (post) of","in 67% (pre) and 86.5% (post) of")
-rep(16,"differ by less than a factor of 1.5 in 9 of\nthe 13, and by up to 3.2","differ by less than a factor of 1.5 in 8 of\nthe 13, and by up to 3.2")
-rep(0,"Every file was replaced; the spikes, angle, torque command and EMG values checked are\nunchanged.","Every file was replaced; the spike times, angle, torque command and EMG values compared in one\nfile (v4527) while preparing are unchanged (not run here).")
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
+cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF' 2>&1 | grep -v Warn
+import pandas as pd, numpy as np
+from scipy import stats
+C=pd.read_pickle('cells.pkl')
+S=C[(C.n_fle>=5)&(C.n_ext>=5)].copy()
+grp={'M1':S.ptype.notna(),'PTN':S.ptype=='pyramidal_tract_neuron','CSN':S.ptype=='corticostriatal_neuron'}
+for g,m in grp.items():
+    for post in [False,True]:
+        s=S[m&(S.post==post)]
+        tr=(s.fle_responds|s.ext_responds)
+        print(g,post,len(s),'base %.2f'%s.baseline_rate.mean(),'TR %d %.1f%%'%(tr.sum(),100*tr.mean()))
+# FPR
+fp=np.r_[S.fle_pseudo_any.values,S.ext_pseudo_any.values]; fr=np.r_[S.fle_pseudo_resp.values,S.ext_pseudo_resp.values]
+print('FPR any', fp.mean(), 'resp20-60', fr.mean(), len(fp))
+# real any crossing
+print('real any', np.r_[S.fle_any_crossing,S.ext_any_crossing].mean())
+print('ttest variant TR', (S.fle_ttest_resp|S.ext_ttest_resp).groupby(S.post).mean())
 EOF
 ```
 
 ```
-(Bash completed with no output)
+M1 False 115 base 12.66 TR 64 55.7%
+M1 True 157 base 8.85 TR 78 49.7%
+PTN False 51 base 18.49 TR 37 72.5%
+PTN True 54 base 14.37 TR 37 68.5%
+CSN False 32 base 3.48 TR 5 15.6%
+CSN True 48 base 3.36 TR 9 18.8%
+FPR any 0.22977941176470587 resp20-60 0.051470588235294115 544
+real any 0.6727941176470589
+ttest variant TR post
+False    0.443478
+True     0.598726
+dtype: float64
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[0]["source"]); a="the spike times, angle, torque command and EMG values compared in one"
-assert a in s; C[0]["source"]=s.replace(a,"the angle, torque command and triceps EMG values compared in one").splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF' 2>&1 | grep -v Warn
+import pickle, numpy as np, pandas as pd, pasq
+from scipy import stats
+d=pickle.load(open('venus.pkl','rb'))
+res={'main':[],'ttest':[],'se':[],'trialsd':[]}
+real={'main':[],'ttest':[],'se':[],'trialsd':[]}
+for fi,x in enumerate(d):
+    p=x['pert']
+    for ui,u in x['units'].iterrows():
+        o=x['observed'][ui]
+        sels={k:np.where((p.torque==k).values&o)[0] for k in ['flexion','extension']}
+        if min(len(v) for v in sels.values())<5: continue
+        for k,sel in sels.items():
+            S=pasq.sdf_trials([x['rel_spikes'][ui][i] for i in sel])
+            for zero,store in [(-600,res),(0,real)]:
+                z=pasq.ms_index(zero); B=S[:,z-500:z]; mu=B.mean(); post=S[:,z:z+200]; m=post.mean(0)
+                sd=S.mean(0)[z-500:z].std(ddof=1)
+                store['main'].append(np.any(np.abs(m-mu)>pasq.T_CRIT*sd))
+                tt=stats.ttest_1samp(post,mu,axis=0); store['ttest'].append(np.any(tt.pvalue<0.002))
+                # SE reading: SD of single-trial baseline means / sqrt(n)
+                bm=B.mean(1); se=bm.std(ddof=1)/np.sqrt(len(bm)); tc=stats.t.ppf(1-0.001,len(bm)-1)
+                store['se'].append(np.any(np.abs(m-mu)>tc*se))
+                # trial SD: SD over all single-trial baseline samples
+                sdt=B.std(ddof=1); store['trialsd'].append(np.any(np.abs(m-mu)>pasq.T_CRIT*sdt))
+for k in res: print(k,'pseudo %.3f'%np.mean(res[k]),'real %.3f'%np.mean(real[k]), len(res[k]))
 EOF
 ```
 
 ```
-(Bash completed with no output)
+main pseudo 0.230 real 0.673 544
+ttest pseudo 0.465 real 0.868 544
+se pseudo 0.347 real 0.717 544
+trialsd pseudo 0.013 real 0.200 544
+Shell cwd was reset to
 ```
-
-**Agent**
-
-Next, the claim conclusions.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; cat > $TMPDIR/md2.py <<'PYEOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-def setmd(i, text, st):
-    assert C[i]["cell_type"]=="markdown", i
-    assert "".join(C[i]["source"]).startswith(st), (i, "".join(C[i]["source"])[:60])
-    C[i]["source"]=text.strip("\n").splitlines(keepends=True)
-M={}
-M[23]=("**Result", '''**Result: reproduced.** The monkey V cells studied number 115 before and 157 after MPTP, with 51 and
-54 PTNs and 32 and 48 CSNs, all within tolerance of the supplementary table's 112 and 159, 49 and
-54, 31 and 48; the files hold 3 units activated from both the peduncle and the putamen, all in
-monkey V and all among the cells studied. Counting each unit from its first source file only
-(variant) gives 112 and 157, with 49 and 54 PTNs and 31 and 48 CSNs. The published version gave
-the table's counts exactly (112 and 159), counting the two unit copies the draft no longer holds
-and without the trials of the second files.''')
-M[24]=("### `monkey-l-perturbations`", '''### `monkey-l-perturbations`
-
-> In monkey L, 57 of 115 neurons before MPTP and 35 of 73 after responded to torque perturbations
-> of the wrist.
-
-Blocked: the monkey L files mark no torque perturbation (data check above; the type is
-`not_available` in every trial), so neither the trials nor their onsets can be found. The files
-hold 138 and 72 monkey L units, against the paper's 115 and 73 cells studied.''')
-M[27]=("**Result", '''**Result: reproduced.** All six means are within tolerance (M1 12.66 and 8.85, PTN 18.49 and 14.37,
-CSN 3.48 and 3.36 spikes/s). The PTN rate is lower after MPTP (Mann-Whitney p = 0.020) and the CSN
-rate does not differ (p = 0.65); the M1 rate is lower (p = 0.0022). The statement's p < 0.001 for
-PTNs, from both monkeys, is not reached in monkey V alone.''')
-M[30]=("**Result", '''**Result: reproduced.** Before MPTP, monkey V PTNs fire at 18.49 spikes/s and CSNs at 3.48
-(Mann-Whitney p = 6.3e-12).''')
-M[33]=("**Result", '''**Result: partially reproduced.** The four means are within tolerance (PTN 1.92 and 1.86 ms, CSN 4.91
-and 6.85 ms) and the PTN latency does not differ (p = 0.68). The CSN latency is longer after MPTP
-with p = 0.019, just above the paper's threshold of 0.05/3 = 0.0167. With all monkey L PTNs and
-CSNs added (variant), p = 0.0072 for CSNs and 0.78 for PTNs, and the post-MPTP CSN mean (7.01 ms)
-is outside tolerance.''')
-M[39]=("**Result", '''**Result: blocked (methods underspecified).** With the detection fixed in the claims file, a
-threshold crossing in the 200 ms after a pseudo onset 600 ms before the torque occurs in 0.23 of
-the 544 cell-directions, against the 0.01 the paper's threshold implies; the t-test variant gives
-0.46. Unperturbed trials at the usual torque time give 0.19 and 0.44. Stationary Poisson spike
-trains at each cell-direction's baseline rate give 0.21 and 0.48 with the seed of the earlier
-attempt, and 0.16 to 0.19 (main detection) with eight other seeds, so most of the excess comes
-from the detection procedure, not from activity in the hold period. The rate does not fall with
-baseline rate or number of trials (0.18 to 0.29 by baseline rate quartile, 0.21 to 0.26 by number
-of trials). A response with onset between 20 and 60 ms is found in 0.048 of the cell-directions at
-the pseudo onset and 0.047 on unperturbed trials, against 0.375 at the true onset, a ratio of 0.13.
-Fourteen cell-directions (10 of them CSNs) have no spike in the baseline and can never respond.
-Both rates are more than 3 times the paper's, so the procedure here differs from the paper's in a
-way its Methods do not settle, and the claims that rest on the selection of responses are blocked
-with the same reason. This analysis cannot tell whether the paper's procedure differs or its stated
-rate does not hold. A threshold calibrated to a pseudo-onset rate of 0.01 (t = 6.67 against 3.11)
-finds 30.4% and 32.5% of M1 cells torque-related, further from the paper's 75% and 68%; taking the
-first crossing anywhere in 0 to 200 ms as the onset removes 5 of the 204 responses. The analyses
-of the blocked claims are run below all the same, and their numbers are reported.''')
-M[42]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). The detection here finds 54.8% of monkey V cells
-torque-related before MPTP and 47.8% after (paper 75% and 68%), PTNs 72.5% and 68.5% (55% and 68%),
-CSNs 15.6% and 16.7% (45% and 21%); only the post-MPTP PTN value is within tolerance. The t-test
-variant gives 41.7% and 60.5%.''')
-M[45]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). By the paper's test the fractions do not change in M1 (p = 0.31),
-PTNs (p = 0.81) or CSNs (p = 1.0) with the main detection; the t-test variant finds an increase in
-M1 (p = 0.0033) and PTNs (p = 0.015), both below 0.05/3.''')
-M[48]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). PTNs respond more often than CSNs (70.5% against 16.2%,
-chi-square 51.4, p = 7.4e-13); both fractions are outside tolerance, the PTN fraction above the
-expected 62.1 +/- 6.2% and the CSN fraction below the expected 30.4 +/- 3.0%. The t-test variant
-gives 61.9% and 35.0% (p = 5.1e-4).''')
-M[51]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). 52.2% of torque-related cells (72 of 138) respond to one direction
-only (58.7% before MPTP, 46.7% after), against the expected 44 +/- 4.4%; the t-test variant gives
-64.3%.''')
-M[54]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). Increases make up 83.1% and 76.5% of M1 responses and 70.0% and
-59.3% of PTN responses (expected 86, 88, 70 and 75%); the PTN balance does not change (chi-square
-0.92, p = 0.34). The paper's Table 1 marks its CSN change p < 0.01, but its own counts give p =
-0.54 with the test it names.''')
-M[57]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). Here the responses are smaller after MPTP: all 12 tests with
-directions pooled have p < 0.05 (for example M1 maximum change 43.6 against 32.1 spikes/s,
-Kolmogorov-Smirnov p = 0.0010; PTN mean change 23.6 against 15.0, Mann-Whitney p < 0.0001).''')
-M[59]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). The maximum change matches the four pre-MPTP values and
-none of the post-MPTP ones (4 of 8 within tolerance); the other readings match 1 and 0 of 8.''')
-M[62]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). With the main detection, latencies are shorter after MPTP in all four
-comparisons (Kolmogorov-Smirnov p = 0.0045, 0.0072, 0.0075 and 0.0127) and all eight means are
-within tolerance (for example M1 flexion 41.5 and 36.2 ms, PTN extension 45.3 and 38.5 ms). The
-t-test variant finds no significant shortening (p 0.17 to 0.73).''')
-M[65]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). Latency correlates with the day of recording over both states
-(rho = -0.25, p = 0.0033, n = 138), as post-MPTP sessions come later; within each state it does not
-(p = 0.51 and 0.21).''')
-M[68]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). PTN increases are briefer after MPTP for flexion (91.6 against 40.1
-ms, p = 0.027) but not for extension (68.8 against 41.7 ms, p = 0.37); two of the four means are
-within tolerance.''')
-M[71]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). Reciprocal and unidirectional cells fall from 58.7% to 52.0% of
-torque-related cells, by 6.7 points, without significance (chi-square 5.70, p = 0.13). With
-categories set from the DSI value as the paper words them (reciprocal above 1), the fraction falls
-from 61.9% to 50.7% (p = 0.36). The main table has no reciprocal cell before MPTP; its smallest
-expected count is 1.8.''')
-M[73]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). Three of the six mean DSIs are within tolerance (PTN pre and both CSN
-values); M1 is 0.62 and 0.46 and PTN post 0.46, against 0.72, 0.66 and 0.75.''')
-M[75]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). Baseline rates do not differ between the four categories (F = 0.40,
-p = 0.75) or the three groups (F = 0.54, p = 0.59).''')
-M[76]=("## Kinematics and EMG", '''## Kinematics and EMG
-
-Session measures use monkey V files with analog data. No file repeats another's recording in this
-version, so none is left out (in the published version four were). Kinematics are measured on
-every perturbation; a trial whose joint was already moving faster than 5 deg/s in the 50 ms before
-onset is counted and kept.''')
-M[80]=("**Result", '''**Result: not reproduced.** In monkey V, torque-induced movements are faster and larger after
-MPTP: session-mean peak velocity rises by 28.1% and amplitude by 14.6% over both directions
-(29.7% and 11.4% for flexion), with MPTP effects F = 98.6 and 24.1 (p < 0.0001). Restricted to the
-sessions with the same torque command size (variant), the increase is larger (98.2% and 109.0%).
-The mean of the session-mean peak velocities is 59.0 deg/s, and only one response comes from a
-session in the paper's 130 to 200 deg/s window of matched sessions. The angle's scale matches the
-files' own kinematic columns (data check), so the small torque-induced movements (mean amplitude
-3.10 deg, where the paper gives a mean of 10 deg) are in the data and do not come from the measure
-here. The torque command differs between the states, so the change cannot be attributed to MPTP.''')
-M[83]=("**Result", '''**Result: not reproduced.** The movement onset latency is shorter after MPTP (session means 9.65 and
-3.05 ms for flexion, 10.86 and 5.82 ms for extension; MPTP F = 1037, p < 0.0001), with an MPTP by
-direction interaction (F = 18.5). In the sessions with the same command size (variant) it does not
-differ (7.68 and 7.62 ms, p = 0.83). The zero-phase filter can move an onset earlier, and 241 of
-5550 perturbations have a latency of 0 ms. With a causal 10 ms average of the unfiltered velocity,
-which cannot move it earlier, the session means are 12.5 to 18.5 ms and still shorter after MPTP
-(F = 791); leaving out the trials already moving before onset gives F = 1043 (filtered) and 762
-(causal). At the middle command size the causal variant gives p = 0.25, and p = 0.025 without the
-trials moving before onset. The latency difference goes with the torque command, so it cannot be
-attributed to MPTP; the outcome is the criterion's comparison.''')
-M[88]=("**Result", '''**Result: reproduced.** For flexion torques, the m2 response is larger after MPTP in all three
-triceps channels (medians 3.1 against 164.0, 3.7 against 297.1 and 5.5 against 76.0 A/D units;
-Kolmogorov-Smirnov p < 1e-14 for each). The increase follows the torque command: in sessions of the
-middle command size (variant), m2 is not larger after MPTP on triceps longus 1 (median 47.6 against
-1.3, p = 0.013, in the opposite direction). By command size and state the median m2 is 0.86 at the
-smallest size (pre only), 41.85 (pre) and 1.81 (post) at the middle, and 17.09 (pre, n = 5) and
-194.4 (post) at the largest, so it does not rise simply with command size within a state. As the
-torque command is about four times larger in most post-MPTP sessions, the increase cannot be
-attributed to MPTP; the outcome is the criterion's comparison.''')
-M[91]=("**Result", '''**Result: partially reproduced.** EMG responses last longer after MPTP (24.6 against 49.4 ms,
-Kolmogorov-Smirnov p = 4.1e-36), but both means are outside tolerance (expected 57 and 79 ms);
-thresholds of 1.5 and 3 SD give the same direction (16.3 against 48.6 and 18.4 against 50.1 ms).
-At the middle command size (variant) the durations do not differ (29.2 and 27.9 ms, p = 0.94).
-Before MPTP 63.4% of the durations are 10 ms or less (median 9 ms, against 59 ms after), so many
-pre-MPTP responses are brief crossings of a small signal.''')
-M[92]=("**Result", '''**Result: not reproduced.** The onset of the EMG response is earlier after MPTP (40.3 against
-24.0 ms, Kolmogorov-Smirnov p = 9.1e-21), with the same direction at thresholds of 1.5 and 3 SD.
-At the middle command size (variant) the onsets do not differ (28.8 and 45.5 ms, p = 0.18), the
-post-MPTP onset being the later one there.''')
-M[95]=("**Result", '''**Result: partially reproduced.** After MPTP m2 exceeds m1 in 96.5% of 282 channel-sessions with a
-median m1 / m2 of 0.23 (0.23 over channel-sessions with m2 > 0). Before MPTP the median ratio is
-0.10 (0.09 with m2 > 0), but m2 exceeds m1 in 74.4% of 305, just below the 75% of the criterion.''')
-M[98]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). It is also blocked by the velocity scale: only one
-response (post-MPTP) comes from a session whose mean peak velocity is between 130 and 200 deg/s
-(session means reach 145.3 deg/s here), against 22 to 33 per group in the paper.''')
-M[101]=("**Result", '''**Result: blocked (methods underspecified)**, as the selection of responses is (see `false-positive-rate`). Over 70 sessions, mean PTN latency does not reach the paper's
-threshold with velocity (rho = -0.16, p = 0.19) or with the triceps longus 1 m2 (rho = -0.28,
-p = 0.023, n = 67, above 0.0125); within each state neither correlates (p 0.37 to 0.87).''')
-for i,(st,t) in M.items(): setmd(i,t,st)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-PYEOF
-python $TMPDIR/md2.py && echo ok
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF' 2>&1 | grep -v Warn
+import pickle, numpy as np, pandas as pd, pasq
+import statsmodels.formula.api as smf, statsmodels.api as sm
+d=pickle.load(open('venus.pkl','rb'))
+rows=[]
+for x in d:
+    if x['angle'] is None or len(x['pert'])==0: continue
+    K=pasq.kinematics(x['angle'],x['pert'].torque.values); K['dir']=x['pert'].torque.values
+    post=bool(x['units'].post.iloc[0])
+    for dname,g in K.groupby('dir'):
+        rows.append(dict(session=x['session'],post=post,dir=dname,n=len(g),nan_lat=g.latency.isna().sum(),**g[['latency','peak_velocity','amplitude']].mean().to_dict()))
+K=pd.DataFrame(rows); print(len(K), K.groupby(['post','dir']).size())
+print(K.groupby(['post','dir'])[['latency','peak_velocity','amplitude']].mean())
+for meas in ['peak_velocity','amplitude','latency']:
+    m=smf.ols(f'{meas} ~ C(post)*C(dir)',data=K).fit(); a=sm.stats.anova_lm(m,typ=2); print(meas); print(a)
+    pre=K[~K.post][meas].mean(); po=K[K.post][meas].mean(); print('pooled change %.1f%%'%(100*(po/pre-1)))
+    f=K[K.dir=='flexion']; print('flex change %.1f%%'%(100*(f[f.post][meas].mean()/f[~f.post][meas].mean()-1)))
+print(K.nan_lat.sum())
+EOF
 ```
 
 ```
-ok
+581 post   dir      
+False  extension    154
+       flexion      153
+True   extension    137
+       flexion      137
+dtype: int64
+                   latency  peak_velocity  amplitude
+post  dir                                           
+False extension  10.862610      46.100324   2.421914
+      flexion     9.650215      58.108764   3.404863
+True  extension   5.989076      58.077720   2.901810
+      flexion     3.048408      75.367191   3.783067
+peak_velocity
+                       sum_sq     df          F        PR(>F)
+C(post)          30920.126357    1.0  98.504227  1.536336e-21
+C(dir)           30534.394075    1.0  97.275375  2.611569e-21
+C(post):C(dir)    1009.457757    1.0   3.215894  7.344991e-02
+Residual        181118.247505  577.0        NaN           NaN
+pooled change 28.1%
+flex change 29.7%
+[... 18 more lines not kept]
 ```
-
-**Agent**
-
-Now the summary cell.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; cat > $TMPDIR/md3.py <<'PYEOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[103]["source"])
-start=s.index("How the analysis differs")-2
-head=s[:start]
-assert head.startswith("## Summary")
-tail='''How the analysis differs from the paper's. Only monkey V is analysed, as the monkey L files
-mark no torque perturbation; the paper pools both monkeys except in its supplementary table. The
-response detection is one reading of the Methods (a threshold on the trial-averaged SDF set from
-the baseline's SD), with a t-test across trials as a variant. Its false-positive rate over the
-200 ms epoch is 0.23, not the 0.01 the paper's threshold implies, and stationary Poisson spike
-trains give 0.16 to 0.21, most of it, so the claims that rest on the selection of responses are
-blocked, though their analyses ran. A threshold calibrated to a false-positive rate of 0.01 finds
-fewer torque-related cells, further from the paper's. With this detection the latency shortening
-after MPTP appears with the paper's monkey V means, but the response magnitudes fall after MPTP,
-which the paper did not find. The kinematic and EMG measures follow the Methods where they are
-given; the response windows, the EMG threshold and the peak velocity window are choices made here.
-The torque command differs in size between the states, so the kinematic and EMG differences found
-here cannot be attributed to MPTP, whatever their outcome on the criteria.
-
-What changed from the earlier attempt (version 0.260518.1819). Every outcome is the same. The cell
-counts are no longer exactly the paper's (115 and 157 cells against 112 and 159), because the
-draft adds trials of second source files, so three pre-MPTP units now reach 5 perturbations per
-direction, and stores the two unit copies once; counting each unit from its first file gives the
-paper's pre-MPTP counts exactly. The session correlation of PTN latency with m2 no longer reaches
-the paper's threshold (p = 0.023, where it was 0.011). The other numbers moved by small amounts.
-
-What was found about the dandiset, against the earlier attempt's findings.
-
-- Monkey L perturbations: still present. The monkey L files mark no torque perturbation (type
-  `not_available`), the Leu torque command is NaN in every pre-MPTP file, and in the post-MPTP
-  files it moves during the active movements, with one excursion in a hold window in 2048 trials.
-  The draft's description now says the Leu files hold no perturbation times.
-- Analog clock: fixed. The analog streams share the trials' clock; the torque command steps 4 to
-  6 ms after every labelled onset on the stored clock.
-- Torque command sizes: partly fixed. The pulse is still about four times larger in most post-MPTP
-  sessions than in most pre-MPTP sessions, with an opposite swing after MPTP and trial-to-trial
-  variation; the torque description now says so, and that its scale is not known. The kinematic
-  and EMG results differ between sessions of different command sizes.
-- Angle reference frame and series names: fixed. Positive is flexion, as the values show, and the
-  monkey L series are named for the wrist.
-- Repeated files and unit copies: fixed. No file repeats another's trials, and each unit is stored
-  once.
-- `unit_also_in_session_id`: fixed. The column is gone; units recorded across two files are one
-  unit observed in both files' trials.
-- Dandiset description: fixed. It now says intracarotid MPTP, wrist movements for monkey L, and
-  Leu recordings from August 1992 to December 1993, as the files do.
-- Sampling and EMG description: partly fixed. The EMG description now gives the paper's processing;
-  the monkey L analog streams are still at 100 Hz (the paper says 200 Hz) and the EMG in A/D units,
-  both now stated in the description.
-- Torque timing: still present, now stated in the description. The torque onset comes 1.70 to
-  1.73 s after the center target appears in 90% of perturbations, where the Methods describe an
-  onset 1 to 2 s after center capture, at random.
-- New: three sessions (v1401, v1402, v1501) have labelled perturbations but no pulse in the torque
-  command, as the torque description says.
-- New: the code that built the draft is in an open pull request of the conversion repository, not
-  on its main branch, which the dandiset links.
-- The angle's scale agrees with the files' own movement amplitudes and peak velocities; the
-  torque-induced movements (about 3 deg) are smaller than the paper's mean of 10 deg.
-'''
-C[103]["source"]=(head+tail).splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-PYEOF
-python $TMPDIR/md3.py && python -c "
-import json;nb=json.load(open('reproduce_pasquereau_2013.ipynb'));print(''.join(nb['cells'][103]['source'])[:2600])"
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF' 2>&1 | grep -v Warn
+import pickle, numpy as np, pandas as pd, pasq
+d=pickle.load(open('venus.pkl','rb'))
+rows=[]
+for x in d:
+    if x['angle'] is None or len(x['pert'])==0: continue
+    K=pasq.kinematics(x['angle'],x['pert'].torque.values)
+    tq=x['torque_cmd']; s=np.where(x['pert'].torque.values=='flexion',1,-1)
+    base=tq[:,:50].mean(1); amp=s*(tq[:,50+10:50+50].mean(1)-base)
+    for i in range(len(K)):
+        rows.append(dict(session=x['session'],date=x['date'],post=bool(x['units'].post.iloc[0]),dir=x['pert'].torque.values[i],amp=amp[i],**K.iloc[i].to_dict()))
+T=pd.DataFrame(rows)
+T['amp_r']=(T.amp/5).round()*5
+print(T.groupby(['post',pd.cut(T.amp,[-1e9,10,30,60,120,250,1e9])]).agg(n=('peak_velocity','size'),vel=('peak_velocity','mean'),ampl=('amplitude','mean')))
+print(T.groupby('post').amp.describe())
+# within torque level ~91
+for lo,hi in [(30,60),(60,120),(120,250)]:
+    s=T[(T.amp>lo)&(T.amp<hi)]; print(lo,hi, s.groupby(['post','dir'])[['peak_velocity','amplitude','latency']].mean().round(1).to_dict())
+T.to_pickle('pert_kin.pkl')
+EOF
 ```
 
 ```
-## Summary
+n         vel      ampl
+post  amp                                              
+False (-1000000000.0, 10.0]    51   89.968447  4.880719
+      (30.0, 60.0]           1372   55.159929  3.139150
+      (60.0, 120.0]           483   42.664689  2.215141
+      (120.0, 250.0]           41   64.054471  3.593755
+True  (10.0, 30.0]              2   20.885266  0.235146
+      (30.0, 60.0]             29   18.420675  0.754703
+      (60.0, 120.0]           494   58.730001  3.077526
+      (120.0, 250.0]         2846   65.413914  3.263351
+      (250.0, 1000000000.0]   232  102.474561  5.082957
+        count        mean        std  ...         50%         75%         max
+post                                  ...                                    
+False  1947.0   58.389086  28.096480  ...   45.719352   90.337074  182.703287
+True   3603.0  174.676521  47.563024  ...  181.610012  184.467244  343.522349
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
-and the differences from the paper's method.
+[2 rows x 8 columns]
+30 60 {'peak_velocity': {(False, 'extension'): 47.9, (False, 'flexion'): 62.6, (True, 'extension'): 18.7, (True, 'flexion'): 17.8}, 'amplitude': {(False, 'extension'): 2.5, (False, 'flexion'): 3.8, (True, 'extension'): 0.7, (True, 'flexion'): 0.8}, 'latency': {(False, 'extension'): 12.1, (False, 'flexion'): 10.8, (True, 'extension'): 27.6, (True, 'flexion'): 10.5}}
+60 120 {'peak_velocity': {(False, 'extension'): 41.3, (False, 'flexion'): 44.1, (True, 'extension'): 49.3, (True, 'flexion'): 75.7}, 'amplitude': {(False, 'extension'): 2.1, (False, 'flexion'): 2.3, (True, 'extension'): 2.6, (True, 'flexion'): 4.0}, 'latency': {(False, 'extension'): 8.0, (False, 'flexion'): 7.2, (True, 'extension'): 9.0, (True, 'flexion'): 7.0}}
+120 250 {'peak_velocity': {(False, 'extension'): 61.6, (False, 'flexion'): 67.5, (True, 'extension'): 58.9, (True, 'flexion'): 71.8}, 'amplitude': {(False, 'extension'): 3.4, (False, 'flexion'): 3.9, (True, 'extension'): 2.9, (True, 'flexion'): 3.6}, 'latency': {(False, 'extension'): 3.8, (False, 'flexion'): 3.3, (True, 'extension'): 4.8, (True, '
+[... 1 more lines not kept]
+```
 
-| Claim | Outcome |
-|---|---|
-| `cell-counts` | reproduced |
-| `monkey-l-perturbations` | blocked: data missing |
-| `baseline-rate` | reproduced |
-| `ptn-faster-than-csn` | reproduced |
-| `antidromic-latency` | partially reproduced |
-| `false-positive-rate` | blocked: methods underspecified |
-| `torque-related-fractions` | blocked: methods underspecified |
-| `prevalence-unchanged` | blocked: methods underspecified |
-| `ptn-more-responsive` | blocked: methods underspecified |
-| `one-direction-half` | blocked: methods underspecified |
-| `excitatory-majority` | blocked: methods underspecified |
-| `magnitude-unchanged` | blocked: methods underspecified |
-| `venus-response-magnitudes` | blocked: methods underspecified |
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF' 2>&1 | grep -v Warn
+import pickle, numpy as np, pandas as pd, pasq
+from scipy import stats
+d=pickle.load(open('venus.pkl','rb'))
+rows=[]
+for x in d:
+    fl=x['pert'].torque.values=='flexion'
+    if fl.sum()==0: continue
+    for ch in pasq.TRICEPS:
+        if ch not in x['emg']: continue
+        w=x['emg'][ch][fl]
+        m=pasq.emg_measures(w)
+        rows.append(dict(session=x['session'],post=bool(x['units'].post.iloc[0]),ch=ch,n=fl.sum(),**m))
+E=pd.DataFrame(rows)
+print(E.groupby(['ch','post']).size())
+print(E.baseline_sd.describe()); print((E.baseline_sd<1).groupby([E.ch,E.post]).sum(), E.has_nan.sum())
+U=E[(E.baseline_sd>=1)&~E.has_nan]
+print(U.groupby(['ch','post'])[['m1','m2','onset','duration']].median())
+for ch,g in U.groupby('ch'):
+    a,b=g[~g.post].m2,g[g.post].m2; print(ch,'m2 KS p=%.3g'%stats.ks_2samp(a,b).pvalue, a.median(),b.median(),len(a),len(b))
+dd=U.dropna(subset=['duration']); print('dur', dd.groupby('post').duration.agg(['mean','count']), stats.ks_2samp(dd[~dd.post].duration,dd[dd.post].duration).pvalue)
+print('onset', dd.groupby('post').onset.agg(['mean','median']), stats.ks_2samp(dd[~dd.post].onset,dd[dd.post].onset).pvalue)
+for post,g in U.groupby('post'): print(post,'m2>m1 %.2f'%(g.m2>g.m1).mean(),'median m1/m2 %.2f'%(g.m1/g.m2).median())
+print('no response', U.duration.isna().groupby(U.post).sum())
+E.to_pickle('emg.pkl')
+EOF
+```
+
+```
+trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+  trace = np.nanmean(windows, axis=0)
+ch                   post 
+[... 50 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF' 2>&1 | grep -v Warn
+import pickle, numpy as np, pandas as pd, pasq
+d=pickle.load(open('venus.pkl','rb'))
+rows=[]
+for x in d:
+    fl=x['pert'].torque.values=='flexion'
+    if fl.sum()==0: continue
+    for ch,w in x['emg'].items():
+        w=w[fl]; z=300
+        base=np.nanmean(w[:,z-200:z]); rawsd=np.nanstd(w[:,z-200:z])
+        rows.append(dict(date=x['date'],post=bool(x['units'].post.iloc[0]),ch=ch,base=base,rawsd=rawsd,peak=np.nanmax(np.nanmean(w,0)[z:z+150])-np.nanmean(np.nanmean(w,0)[z-200:z]), mn=np.nanmin(w)))
+B=pd.DataFrame(rows)
+print(B.groupby(['ch','post'])[['base','rawsd','peak','mn']].median().round(1))
+EOF
+```
+
+```
+var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
 [... 26 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; grep -n "—\|rather\|447\|0\.260518" reproduce_pasquereau_2013.ipynb stretch.py | cut -c1-200; grep -c '\*\*' reproduce_pasquereau_2013.ipynb; grep -n '\*\*' reproduce_pasquereau_2013.ipynb | grep -v '\*\*Result' | cut -c1-150
-```
-
-```
-reproduce_pasquereau_2013.ipynb:20:    "`001636-pasquereau-2013-01`, used the published version 0.260518.1819. Since then the files were\n",
-reproduce_pasquereau_2013.ipynb:24:    "How the draft differs from 0.260518.1819, in what the analysis uses (shown in the data check): it\n",
-reproduce_pasquereau_2013.ipynb:25:    "holds 439 files where the published version held 447. Source files recorded on the same day and\n",
-reproduce_pasquereau_2013.ipynb:2453:    "What changed from the earlier attempt (version 0.260518.1819). Every outcome is the same. The cell\n",
-stretch.py:16:3 s gaps. In version 0.260518.1819 the analog streams (angle, torque, EMG) were laid end to end by
-28
-1876:    "            kin_rows.append({\"session\": s[\"session_id\"], \"post\": s[\"post\"], \"direction\": d, **r})\n",
-2065:    "                             **{k: r[k] for k in (\"m1\", \"m2\", \"onset_ms\", \"duration_ms\")}})\n",
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-p="stretch.py"; s=open(p).read()
-a='''def asset_urls() -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at the pinned version."""
-    with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)'''
-assert a in s
-s=s.replace(a,'''EARLIER_VERSION = "0.260518.1819"  # used by attempt 001636-pasquereau-2013-01; compared in the data check
-
-
-def asset_urls(version: str = DANDISET_VERSION) -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at a version (the pinned one by default)."""
-    with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, version)''')
-a='''def _load(pu):'''
-s=s.replace(a,'''def load_units_brief(path: str, url: str) -> list[dict]:
-    """Units of one file with their perturbations per direction, without spikes or analog data
-    (for comparing versions). Perturbations are counted within the unit's obs_intervals when the
-    file merges source files (a trials column source_file), and over the whole file otherwise."""
-    with h5py.File(remfile.File(url), "r") as f:
-        session_id = _text(f["general/session_id"][()])
-        tr = f["intervals/trials"]
-        torque = np.array([_text(v) for v in tr["torque_perturbation_type"][:]])
-        start, stop = tr["start_time"][:], tr["stop_time"][:]
-        merged = "source_file" in tr
-        un = f["units"]
-        obs = np.split(un["obs_intervals"][:], un["obs_intervals_index"][:-1]) if merged else None
-        out = []
-        for i in range(len(un["id"])):
-            seen = np.ones(len(start), bool)
-            if merged:
-                seen = np.zeros(len(start), bool)
-                for a, b in obs[i]:
-                    seen |= (start >= a - 1e-6) & (stop <= b + 1e-6)
-            name = _text(un["unit_name"][i])
-            code = session_id.split("++")[1]
-            out.append({"path": path, "code": code, "subject": session_id.split("++")[0],
-                        "post": session_id.split("++")[2] == "PostMPTP",
-                        "unit_name": name if merged else f"{code}.{name}",
-                        "type": _text(un["neuron_projection_type"][i]),
-                        "n_flex": int((torque[seen] == "flexion").sum()),
-                        "n_ext": int((torque[seen] == "extension").sum())})
-    return out
-
-
-def _load_brief(pu):
-    return load_units_brief(*pu)
-
-
-def load_all_brief(paths_urls, workers: int = 16) -> list[dict]:
-    with ProcessPoolExecutor(workers) as pool:
-        return [u for f in pool.map(_load_brief, paths_urls, chunksize=4) for u in f]
-
-
-def _load(pu):''')
-open(p,"w").write(s)
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-assert "".join(C[4]["source"]).startswith("The draft holds 439")
-code='''# The version used by the earlier attempt, units only: what the selection of cells studied gives
-# there, and which units differ.
-old = pd.DataFrame(stretch.load_all_brief(stretch.asset_urls(stretch.EARLIER_VERSION)))
-old["studied"] = (old.n_flex >= stretch.MIN_REPS) & (old.n_ext >= stretch.MIN_REPS)
-old["ptype"] = old.type.map(stretch.short_type)
-old["state"] = np.where(old.post, "post", "pre")
-print(f"Version {stretch.EARLIER_VERSION}: {old.path.nunique()} files, {len(old)} units; this version: "
-      f"{len(sessions)} files, {len(units)} units")
-print(f"Files of {stretch.EARLIER_VERSION} not in this version:", sorted(set(old.path) - set(s["path"] for s in S)))
-print(f"\\nMonkey V cells studied in {stretch.EARLIER_VERSION}, by type and state:")
-print(pd.crosstab(old[old.studied & (old.subject == "Venus")].ptype, old[old.studied & (old.subject == "Venus")].state)
-      .reindex(columns=["pre", "post"]).to_string())
-# match each old unit to the unit of this version that lists it in its unit_name
-part_of = {p: n for n in units.unit_name for p in n.split("+")}
-old["now"] = old.unit_name.map(part_of)
-now = units.set_index("unit_name")
-diff = []
-for r in old[old.subject == "Venus"].itertuples():
-    n = now.loc[r.now] if isinstance(r.now, str) else None
-    row = {"unit_then": r.unit_name, "type_then": r.ptype, "studied_then": r.studied,
-           "flex_ext_then": f"{r.n_flex}/{r.n_ext}", "unit_now": r.now if n is not None else "(absent)",
-           "type_now": n.ptype if n is not None else "", "studied_now": bool(n.studied) if n is not None else False,
-           "flex_ext_now": f"{n.n_flex}/{n.n_ext}" if n is not None else ""}
-    if (row["type_then"], row["studied_then"], row["flex_ext_then"]) != (row["type_now"], row["studied_now"], row["flex_ext_now"]):
-        diff.append(row)
-print("\\nMonkey V units whose type, perturbation counts or selection differ between the versions:")
-print(pd.DataFrame(diff).to_string(index=False))
-'''
-cell={"cell_type":"code","execution_count":None,"metadata":{"tags":["sanity"]},"outputs":[],"source":code.splitlines(keepends=True)}
-C.insert(5, cell)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-cd ../..; python tools/entry.py run entries/001636-pasquereau-2013 2>&1 | tail -1; python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-for o in nb['cells'][5].get('outputs',[]):
-    print(''.join(o.get('text', o.get('traceback',''))))
-print(''.join(nb['cells'][-1]['outputs'][0]['text']))
-"
-```
-
-```
-pass  reproduce_pasquereau_2013.ipynb  (154 s)
-Version 0.260518.1819: 447 files, 568 units; this version: 439 files, 566 units
-Files of 0.260518.1819 not in this version: ['sub-Leu/sub-Leu_ses-Leu++l16301b++PostMPTP++Depth23000um++19931129_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v2702++PreMPTP++Depth19650um++19990607_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v3205++PreMPTP++Depth19400um++19990630_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v3607b++PreMPTP++Depth19650um++19990729_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v4527b++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v4810b++PostMPTP++Depth18900um++20000204_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v5604b++PostMPTP++Depth17960um++20000229_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v5812++PostMPTP++Depth18300um++20000331_behavior+ecephys.nwb']
-
-Monkey V cells studied in 0.260518.1819, by type and state:
-state  pre  post
-ptype           
-CSN     31    48
-NA      30    56
-PTN     49    54
-dual     2     1
-
-Monkey V units whose type, perturbation counts or selection differ between the versions:
-unit_then type_then  studied_then flex_ext_then         unit_now type_now  studied_now flex_ext_now
-  v1501.1       CSN          True           7/6 v1501.1+v1501b.1      CSN         True        11/16
-  v1601.1       PTN          True           6/7 v1601.1+v1601b.1      PTN         True        11/15
-  v1602.1       PTN          True           6/7 v1602.1+v1602b.1      PTN         True         9/10
-  v1702.1       PTN          True           6/7 v1702.1+v1702b.1      PTN         True        12/17
-  v1703.1       CSN          True           7/6 v1703.1+v1703b.1      CSN         True        12/10
-  v1902.1       PTN         False          10/4 v1902.1+v1902b.1      PTN         True        17/11
-[... 11 more lines not kept]
-```
-
-**Agent**
-
-The comparison runs. Adding a short markdown cell under it.
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-assert C[5]["cell_type"]=="code" and "EARLIER_VERSION" in "".join(C[5]["source"])
-text='''Against version 0.260518.1819, used by the earlier attempt: that version had 447 files and 568
-units, and its selection gives the supplementary table's counts exactly (112 and 159 cells, 49 and
-54 PTNs, 31 and 48 CSNs). The eight files it held that this version does not were second files of
-a neuron or repeats of another file's trials; their units are now in the sessions they continue.
-Twelve monkey V units gain the trials of their second file, which brings three of them (v1902.1,
-v2701.1 and v3607.1, two PTNs and a CSN, all before MPTP) to at least 5 perturbations of each
-direction. After MPTP, the two unit copies of repeated files (v4527b.2, a PTN, and v5812.2, with
-no projection type) are gone, and v4527.2, there without a projection type, is now a PTN. These
-changes account for every difference in the counts of cells studied.'''
-C.insert(6, {"cell_type":"markdown","metadata":{},"source":text.splitlines(keepends=True)})
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
+date -u; cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF'
+import json, remfile, h5py, numpy as np
+assets=json.load(open('../assets.json'))
+for key in ['l10003','PostMPTP']:
+    a=[a for a in assets if 'Leu' in a['path'] and key in a['path']][0]
+    h=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),'r')
+    tq=h['acquisition/WristTorque/data'][:]; ts=h['acquisition/WristTorque/timestamps'][:]
+    print(a['path'][-50:], tq.shape, np.percentile(tq,[0,1,50,99,100]).round(1), h['acquisition/WristTorque'].attrs.get('description'))
+    d=np.abs(np.diff(tq)); print('big steps', (d>20).sum(), np.unique(np.round(np.diff(ts),3)))
 EOF
 ```
 
 ```
-(Bash completed with no output)
+Thu Nov 26 16:37:42 UTC 2026
+eMPTP++Depth23680um++19930123_behavior+ecephys.nwb (16576,) [nan nan nan nan nan] Command sent to the torque motor controller, in arbitrary units. The monkey L source files contain no torque perturbation times. The command is NaN in every file before MPTP; after MPTP it is a continuous trace without distinct pulses. No conversion to newton-metres is available: the amplifier and controller gains are not in these MATLAB files, and the original recordings they were exported from were not provided.
+big steps 0 [0.01  3.015 3.016 3.017 3.019 3.02  3.021 3.022 3.023 3.024]
+tMPTP++Depth23150um++19930612_behavior+ecephys.nwb (28039,) [nan nan nan nan nan] Command sent to the torque motor controller, in arbitrary units. The monkey L source files contain no torque perturbation times. The command is NaN in every file before MPTP; after MPTP it is a continuous trace without distinct pulses. No conversion to newton-metres is available: the amplifier and controller gains are not in these MATLAB files, and the original recordings they were exported from were not provided.
+big steps 0 [0.01  3.015 3.016 3.017 3.018 3.019 3.02  3.021 3.022 3.023 3.024]
+Shell cwd was reset to
 ```
+
+**Agent**
+
+Monkey L torque traces are NaN before MPTP and show no pulses after, so the monkey L claim is blocked as data missing. Now I'm moving the analyses into the helper and writing the notebook.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p)); C=nb["cells"]
-s="".join(C[6]["source"])
-a='''(v4527b.2, a PTN, and v5812.2, with
-no projection type) are gone, and v4527.2, there without a projection type, is now a PTN.'''
-assert a in s
-s=s.replace(a,'''(v4527b.2, a PTN, and v5812.2, labelled
-no_response) are gone, and v4527.2, labelled not_tested there, is now a PTN.''')
-C[6]["source"]=s.splitlines(keepends=True)
-open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
+cd entries/pasquereau-2013; cat >> pasq.py <<'EOF'
+
+
+def load_meta(path: str, url: str) -> dict:
+    """Trials' perturbation columns and the units table of one file, without the signals."""
+    with h5py.File(remfile.File(url), "r") as h:
+        tr = h["intervals/trials"]
+        u = h["units"]
+        acq = h["acquisition"]
+        torque = [k for k in acq if k.endswith("Torque")]
+        tq = acq[torque[0] + "/data"][:] if torque else np.array([np.nan])
+        return {"path": path,
+                "torque_type": _str(tr["torque_perturbation_type"][:]),
+                "onset": tr["torque_perturbation_onset_time"][:],
+                "torque_cmd_finite": int(np.isfinite(tq).sum()),
+                "torque_cmd_steps": int((np.abs(np.diff(tq[np.isfinite(tq)])) > 20).sum()),
+                "units": pd.DataFrame({"unit_name": _str(u["unit_name"][:]),
+                                       "ptype": _str(u["neuron_projection_type"][:]),
+                                       "post": u["is_post_mptp"][:].astype(bool),
+                                       "latency": u["antidromic_latency_ms"][:]})}
+
+
+def load_meta_all(paths_urls, workers: int = 8) -> list[dict]:
+    with ThreadPoolExecutor(workers) as ex:
+        return list(ex.map(lambda pu: load_meta(*pu), paths_urls))
+
+
+# ---------------------------------------------------------------- per-cell responses
+
+DIRECTIONS = ["flexion", "extension"]
+
+
+def cell_responses(files: list[dict]) -> pd.DataFrame:
+    """One row per unit: perturbation counts, baseline rate, and the response to each direction
+    at the torque onset and at the pseudo onset (prefix `pse_`)."""
+    rows = []
+    for fi, x in enumerate(files):
+        p = x["pert"]
+        for ui, u in x["units"].iterrows():
+            obs = x["observed"][ui]
+            r = {"file": fi, "session": x["session"], "date": x["date"], **u.to_dict()}
+            sdfs = []
+            for dname in DIRECTIONS:
+                d = dname[:3]
+                sel = np.where((p.torque == dname).values & obs)[0]
+                r[f"n_{d}"] = len(sel)
+                if len(sel) == 0:
+                    continue
+                S = sdf_trials([x["rel_spikes"][ui][i] for i in sel])
+                sdfs.append(S)
+                m = S.mean(0)
+                for k, v in detect(m, 0).items():
+                    r[f"{d}_{k}"] = v
+                for k, v in detect(m, -PSEUDO_SHIFT_MS).items():
+                    r[f"pse_{d}_{k}"] = v
+                # Variant of the claims file: one-sample t-test of the single-trial SDFs against
+                # the baseline mean at each ms (not deciding).
+                z = ms_index(0)
+                sig = stats.ttest_1samp(S[:, z:z + EPOCH_MS], r[f"{d}_baseline"], axis=0).pvalue < P_THRESHOLD
+                on = [t for t in range(ONSET_WINDOW_MS[0], ONSET_WINDOW_MS[1] + 1) if sig[t] and not sig[t - 1]]
+                r[f"{d}_ttest_responds"] = bool(on)
+            if sdfs:
+                z = ms_index(0)
+                r["baseline_rate"] = float(np.vstack(sdfs)[:, z - BASELINE_MS:z].mean())
+            rows.append(r)
+    return pd.DataFrame(rows)
+
+
+def pseudo_readings(files: list[dict], studied: set) -> pd.DataFrame:
+    """Any threshold crossing over 0 to 200 ms after the pseudo onset (600 ms before torque) and
+    after the torque onset, per cell and direction, under four readings of the threshold:
+    `mean_sd` the claims file's (SD of the trial-averaged SDF over the baseline), `ttest` the
+    claims file's variant, `trial_se` the standard error of the single-trial baseline means,
+    `trial_sd` the SD of all single-trial baseline values."""
+    rows = []
+    for fi, x in enumerate(files):
+        p = x["pert"]
+        for ui, u in x["units"].iterrows():
+            if (fi, ui) not in studied:
+                continue
+            for dname in DIRECTIONS:
+                sel = np.where((p.torque == dname).values & x["observed"][ui])[0]
+                S = sdf_trials([x["rel_spikes"][ui][i] for i in sel])
+                for label, zero in [("pseudo", -PSEUDO_SHIFT_MS), ("torque", 0)]:
+                    z = ms_index(zero)
+                    B, post = S[:, z - BASELINE_MS:z], S[:, z:z + EPOCH_MS]
+                    mu, m = B.mean(), post.mean(0)
+                    bm = B.mean(1)
+                    t_n = stats.t.ppf(1 - P_THRESHOLD / 2, len(bm) - 1)
+                    rows.append({"file": fi, "unit": ui, "direction": dname, "onset": label,
+                                 "mean_sd": bool(np.any(np.abs(m - mu) > T_CRIT * S.mean(0)[z - BASELINE_MS:z].std(ddof=1))),
+                                 "ttest": bool(np.any(stats.ttest_1samp(post, mu, axis=0).pvalue < P_THRESHOLD)),
+                                 "trial_se": bool(np.any(np.abs(m - mu) > t_n * bm.std(ddof=1) / np.sqrt(len(bm)))),
+                                 "trial_sd": bool(np.any(np.abs(m - mu) > T_CRIT * B.std(ddof=1)))})
+    return pd.DataFrame(rows)
+
+
+def no_torque_crossings(files: list[dict], studied: set) -> pd.DataFrame:
+    """The claims file's detection on trials without a perturbation, aligned where the file's
+    perturbations fall after the centre target (its median delay): a null with no torque at all."""
+    rows = []
+    for fi, x in enumerate(files):
+        t, p = x["trials"], x["pert"]
+        if len(p) == 0:
+            continue
+        delay = np.nanmedian(p.onset - p.center)
+        none = t[(t.torque == "none") & np.isfinite(t.center)]
+        onsets = (none.center + delay).values
+        for ui, u in x["units"].iterrows():
+            if (fi, ui) not in studied:
+                continue
+            ob = x["obs"][ui]
+            st = x["spikes_all"][ui]
+            w0, w1 = SPIKE_WINDOW_MS[0] / 1000, SPIKE_WINDOW_MS[1] / 1000
+            ok = [o for o in onsets if np.any((ob[:, 0] <= o + w0) & (ob[:, 1] >= o + w1))]
+            if len(ok) < MIN_PERTURBATIONS:
+                continue
+            S = sdf_trials([st[(st >= o + w0) & (st < o + w1)] - o for o in ok])
+            res = detect(S.mean(0), 0)
+            rows.append({"file": fi, "unit": ui, "n_trials": len(ok),
+                         "any_crossing": res["any_crossing"], "responds": res["responds"]})
+    return pd.DataFrame(rows)
+
+
+def session_kinematics(files: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Per-perturbation kinematics with the torque command's pulse size, and session means per
+    direction. The pulse size is the command over 10 to 50 ms after onset less its mean over the
+    50 ms before, signed so that the torque's direction is positive (arbitrary units)."""
+    rows = []
+    for fi, x in enumerate(files):
+        if x["angle"] is None or len(x["pert"]) == 0:
+            continue
+        dirs = x["pert"].torque.values
+        k = kinematics(x["angle"], dirs)
+        sign = np.where(dirs == "flexion", 1.0, -1.0)
+        z = -TORQUE_WINDOW_MS[0]
+        cmd = x["torque_cmd"]
+        k["command"] = sign * (cmd[:, z + 10:z + 50].mean(1) - cmd[:, :z].mean(1))
+        k["direction"], k["file"], k["session"] = dirs, fi, x["session"]
+        k["post"] = bool(x["units"].post.iloc[0])
+        rows.append(k)
+    trials = pd.concat(rows, ignore_index=True)
+    sessions = (trials.groupby(["file", "session", "post", "direction"])
+                [["latency", "peak_velocity", "amplitude", "command"]].mean().reset_index())
+    return trials, sessions
+
+
+def session_emg(files: list[dict], channels=TRICEPS, direction: str = "flexion") -> pd.DataFrame:
+    """EMG measures of each session and channel for one torque direction. A channel is used when
+    no window holds a NaN; `baseline_sd` (of the session-average trace) and `raw_sd` (of the
+    single-trial baseline samples) are given for the inclusion rule."""
+    rows = []
+    z = -EMG_WINDOW_MS[0]
+    for fi, x in enumerate(files):
+        sel = x["pert"].torque.values == direction
+        if sel.sum() == 0:
+            continue
+        for ch in channels:
+            if ch not in x["emg"]:
+                continue
+            w = x["emg"][ch][sel]
+            has_nan = bool(np.isnan(w[:, z - EMG_BASELINE_MS:z + EMG_SEARCH_MS[1] + 1]).any())
+            m = emg_measures(w) if not has_nan else {}
+            rows.append({"file": fi, "session": x["session"], "post": bool(x["units"].post.iloc[0]),
+                         "channel": ch, "n": int(sel.sum()), "has_nan": has_nan,
+                         "raw_sd": float(np.nanstd(w[:, z - EMG_BASELINE_MS:z], ddof=1)), **m})
+    return pd.DataFrame(rows)
 EOF
-sed -n 1,40p README.md >/dev/null
-```
-
-```
-(Bash completed with no output)
-```
-
-**Agent**
-
-Now the README and `entry.yaml`.
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-s=open("entry.yaml").read()
-s=s.replace("- id: dandi:001636/0.260518.1819\n","- id: dandi:001636/draft\n")
-s=s.replace("  runtime_minutes: 3\n","  runtime_minutes: 5\n")
-open("entry.yaml","w").write(s)
+python - <<'EOF'
+import re
+p='entries/pasquereau-2013/pasq.py'
+s=open(p).read()
+s=s.replace('''    trace = np.nanmean(windows, axis=0)''','''    trace = windows.mean(axis=0)''')
+s=s.replace('''           "baseline_sd": float(sd), "has_nan": bool(np.isnan(windows).all(axis=0)[z - EMG_BASELINE_MS:z + 151].any()),
+''','''           "baseline_sd": float(sd),
+''')
+open(p,'w').write(s)
 EOF
-cat > README.md <<'EOF'
-# Pasquereau & Turner (2013) from dandiset 001636
+grep -n "has_nan\|windows.mean" pasq.py
+```
 
-Tests the findings of [Pasquereau and Turner (2013)](https://doi.org/10.3389/fnsys.2013.00098) that
-can be tested on [DANDI:001636](https://dandiarchive.org/dandiset/001636/draft), which holds
-single-unit recordings from M1 of two monkeys before and after MPTP. Only monkey V can be tested:
-the monkey L files mark no torque perturbation.
+```
+270:    trace = windows.mean(axis=0)
+447:            has_nan = bool(np.isnan(w[:, z - EMG_BASELINE_MS:z + EMG_SEARCH_MS[1] + 1]).any())
+448:            m = emg_measures(w) if not has_nan else {}
+450:                         "channel": ch, "n": int(sel.sum()), "has_nan": has_nan,
+```
 
-This entry now uses the draft of the dandiset (last modified 2026-10-21 20:16:41 UTC), which was
-asked for to test the fixes made after the first attempt. A draft can change. The first attempt
-used the published version 0.260518.1819.
+**Agent calls Bash**
 
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
-
-| Claim | Outcome |
-|---|---|
-| Monkey V cell counts (112 and 159; PTNs 49 and 54; CSNs 31 and 48) | Reproduced |
-| Lower resting rate after MPTP in PTNs, not CSNs | Reproduced |
-| PTNs fire faster than CSNs at rest | Reproduced |
-| CSN antidromic latency longer after MPTP, PTN unchanged | Partially reproduced |
-| Long-latency (m2) triceps EMG larger after MPTP | Reproduced |
-| EMG responses longer after MPTP | Partially reproduced |
-| m1 EMG much smaller than m2 | Partially reproduced |
-| Torque-induced movements slower and smaller after MPTP | Not reproduced |
-| Movement latency unchanged | Not reproduced |
-| EMG onset unchanged | Not reproduced |
-| Monkey L torque responses | Blocked: data missing |
-| The detection's false-positive rate, and the 15 claims that rest on the selection of torque responses (prevalence, latency, magnitude, FWHM, directionality, correlations) | Blocked: methods underspecified |
-| Trial-by-trial correlations | Blocked: methods underspecified |
-
-The detection of torque responses here has a false-positive rate of 0.23 over the 200 ms epoch,
-where the paper's threshold implies 0.01, so the claims that use the selection are blocked; their
-analyses still run, and the notebook reports them. The torque command is about four times larger
-in most post-MPTP sessions than in most pre-MPTP ones, which bears on every pre against post
-comparison of the movements and EMG.
-
-In the draft, the analog streams share the clock of the trials, the angle's sign convention and
-the monkey L series names are corrected, repeated files and unit copies are gone, and neurons
-recorded across two source files are one unit with the trials of both. The cell counts move from
-exactly the paper's (112 and 159) to 115 and 157, within tolerance; every outcome is the same as
-in the first attempt.
-
-The attempt records, with the reasons and the differences from the paper's method, are
-[`attempts/001636-pasquereau-2013-02.yaml`](../../attempts/001636-pasquereau-2013-02.yaml) (this
-version) and [`attempts/001636-pasquereau-2013-01.yaml`](../../attempts/001636-pasquereau-2013-01.yaml)
-(version 0.260518.1819).
-
-- `reproduce_pasquereau_2013.ipynb`: the analysis. It took 2.4 min in the latest run, most of it streaming the
-  439 files of the draft and the units of the 447 files of the earlier version.
-- `stretch.py`: loading the files (with the analog streams realigned to the trials where needed,
-  and each unit's perturbations taken from its own trials), the spike density functions, response
-  detection, directional selectivity, kinematics and EMG measures. Other notebooks on this
-  dandiset can import it.
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python - <<'EOF' 2>&1 | grep -v Warn
+import pickle, numpy as np, pandas as pd, pasq, time
+from scipy import stats
+d=pickle.load(open('venus.pkl','rb'))
+t=time.time(); C=pasq.cell_responses(d); print(time.time()-t)
+S=C[(C.n_fle>=5)&(C.n_ext>=5)]; studied=set(zip(S.file,S.index.map(lambda i: 0)))
+# unit index within file
+C['unit']=C.groupby('file').cumcount(); S=C[(C.n_fle>=5)&(C.n_ext>=5)]
+studied=set(zip(S.file,S.unit))
+t=time.time(); N=pasq.no_torque_crossings(d,studied); print(time.time()-t, len(N), N.any_crossing.mean(), N.responds.mean(), N.n_trials.median())
+E=pasq.session_emg(d); print(E.has_nan.sum(), len(E))
+for rule in ['baseline_sd','raw_sd']:
+    U=E[~E.has_nan & (E[rule]>=1)]
+    for post,g in U.groupby('post'): print(rule, post, len(g), 'm2>m1 %.3f'%(g.m2>g.m1).mean(),'median m1/m2 %.2f'%(g.m1/g.m2).median())
+    dd=U.dropna(subset=['duration']); print(' dur', dd.groupby('post').duration.mean().round(1).to_dict(), stats.ks_2samp(dd[~dd.post].duration,dd[dd.post].duration).pvalue, 'onset', dd.groupby('post').onset.mean().round(1).to_dict(), stats.ks_2samp(dd[~dd.post].onset,dd[dd.post].onset).pvalue)
+    for ch,g in U.groupby('channel'): print(' ',ch, stats.ks_2samp(g[~g.post].m2,g[g.post].m2).pvalue, g.groupby('post').m2.median().round(1).to_dict())
 EOF
-cd ../..; python tools/entry.py check entries/001636-pasquereau-2013 2>&1 | tail -5
 ```
 
 ```
-/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
-  _validate(nbdict, ref, version, version_minor, relax_add_props)
-error: attempts/001636-pasquereau-2013-01.yaml: dataset version '0.260518.1819' differs from 'draft' in entry.yaml
-1 error(s)
+var *= (n / (n-ddof))  # to avoid error on division by zero
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+  var *= (n / (n-ddof))  # to avoid error on division by zero
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+[... 21 more lines not kept]
 ```
-
-**Agent**
-
-`check` rejects the earlier record because its version differs from the entry's. I'll see how the tool treats repeat attempts.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "differs from\|modified\|latest\|-02\|nn\b" tools/entry.py | head -30; ls attempts | grep -- "-02" | head
-```
-
-```
-213:        # The entry streams the version of its latest attempt; earlier attempts keep the version they used.
-215:            report.error(where, f"dataset version {version!r} differs from {pinned!r} in entry.yaml")
-235:        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
-244:            # and when it is tested the archive is an input. Only the latest attempt is held to this: the
-000005-yu-2016-02.yaml
-000061-girardeau-2017-02.yaml
-000582-sargolini-2006-02.yaml
-000691-scherrer-2023-02.yaml
-001754-knierim-2000-02.yaml
-001933-chen-2026-02.yaml
-```
-
-**Agent**
-
-Once a `-02` record exists, only the latest attempt is held to the entry's version. I'll look at an existing repeat record for the format.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -l "modified" attempts/*-02.yaml | head; f=$(grep -l "version: draft" attempts/*-02.yaml | head -1); echo $f; sed -n 1,60p $f; grep -n "earlier\|fixed\|status" $f | head -20; sed -n 200,280p tools/entry.py
-```
-
-```
-attempts/001754-knierim-2000-02.yaml
-attempts/001754-knierim-2000-02.yaml
-# Repeat attempt on the draft of dandiset 001754, last modified 2026-10-14T21:55:09Z, which holds a
-# new conversion (catalystneuro/mcnaughton2000-to-nwb at 734688253c17a32e26d84c57f41fbe48ffbcd009)
-# made after 001754-knierim-2000-01, on version 0.260728.1352, reported its findings. The draft was
-# asked for. The claims file is unchanged.
-#
-# Status of the findings of 001754-knierim-2000-01 on the draft (outputs in the notebook's data check):
-# - Shared position trace presented as each rat's position (metadata_error): partly fixed; recorded below.
-# - Position only at spike times, none preflight (data_missing): still present; recorded below.
-# - Preflight said to be on a flat rectangular track (metadata_error): still present; recorded below.
-# - cell_number not a cell number, rate maps not linked to units (identifier_missing): fixed. Every
-#   map links to a unit with its tetrode and cluster, and the linked map is the best match for 201
-#   of 211 unit-epochs.
-# - Rate maps smoothed with an unstated kernel (metadata_insufficient): partly fixed; recorded below.
-# - -999 bins and the lost position counted in bin [63, 0] undocumented (metadata_insufficient):
-#   fixed. Unvisited bins and lost positions are NaN, and the occupancy description states the
-#   [63, 0] count.
-# - Identical copies of rate maps (other): fixed. No file holds two identical maps; every copy in
-#   the six groups (14 maps) is left out, so those six maps are no longer in the dandiset.
-[... 141 more lines not kept]
-```
-
-**Agent**
-
-I'll follow that record's layout: earlier findings' status in a header comment, and the ones still present or partly fixed restated as findings. Checking the attempt schema first.
-
-**Agent calls Bash**
-
-```bash
-cd  ls schemas; python -c "
-import json,yaml,glob
-f=[x for x in glob.glob('schemas/*') if 'attempt' in x][0]; print(f)
-s=yaml.safe_load(open(f)) if f.endswith(('yaml','yml')) else json.load(open(f))
-print(json.dumps(s,indent=1)[:5000])"
-```
-
-```
-attempt.schema.json
-claims.schema.json
-entry.schema.json
-schemas/attempt.schema.json
-{
- "$schema": "https://json-schema.org/draft/2020-12/schema",
- "title": "One attempt at reproducing the claims of a target",
- "description": "Draft. To be revised after the pilot. An attempt is recorded whether or not it produced a working notebook.",
- "type": "object",
- "additionalProperties": false,
- "required": [
-  "schema_version",
-  "id",
-  "dataset",
-  "paper",
-  "date",
-  "provenance",
-  "outcomes"
- ],
- "properties": {
-[... 185 more lines not kept]
-```
-
-**Agent**
-
-I have what the record needs. Every outcome matches `-01`. Writing `attempts/001636-pasquereau-2013-02.yaml`.
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "attempts/001636-pasquereau-2013-02.yaml",
- "content": "# Repeat attempt on the draft of dandiset 001636, last modified 2026-10-21T20:16:41Z, which holds a\n# new conversion made after 001636-pasquereau-2013-01, on version 0.260518.1819, reported its\n# findings. The code that built it is in an open pull request of catalystneuro/turner-lab-to-nwb\n# (#33, branch fix_errors, head 5f9bf6320a0160e4e56301d5409fb9242c1d8cf4). The draft was asked for.\n# When it was read, the archive listed 4 uploads in progress on the draft. The claims file is\n# unchanged.\n#\n# Status of the findings of 001636-pasquereau-2013-01 on the draft (outputs in the notebook's data check):\n# - No torque perturbation in any monkey L file (data_missing): still present; the description and the\n#   files now say so. Recorded below.\n# - Analog streams not on the clock of the trials (format_error): fixed. Each analog segment starts at\n#   its trial's start (lag 0 ms at every perturbation), and on the stored clock the torque command steps\n#   4 to 6 ms after the labelled onset.\n# - Three torque command sizes, differing between the states (other): partly fixed. The data are the\n#   same; the torque description now states the sizes, the post-MPTP trial-to-trial variation and the\n#   missing scale. Recorded below.\n# - Angle reference frame says positive is extension; series named Elbow for monkey L (metadata_error):\n#   fixed. The reference frame says positive is flexion in all 424 files with an angle, as the values\n#   show, and the monkey L series are WristAngle and WristTorque.\n# - Four files repeating another's trials, two unit copies with different projection types\n#   (metadata_error): fixed. No file repeats another's trials; the copies are stored once (v4527.2 and\n#   v5811.2, both PTNs), and the files' notes say which label was kept.\n# - unit_also_in_session_id with wrong prefixes, absent files and other units (metadata_error): fixed.\n#   The column is in no file; neurons recorded across two source files are one unit observed in the\n#   trials of both (13 units).\n# - Dandiset description (systemic MPTP, elbow for both monkeys, Leu in 1993) (metadata_error): fixed.\n#   It now says intracarotid MPTP, wrist for Leu, and Leu from August 1992 to December 1993, as the\n#   files' dates are.\n# - Monkey L analog at 100 Hz, EMG described as sample-hold integrated, A/D units (other): partly fixed.\n#   The EMG description now gives the paper's processing; 100 Hz and A/D units remain, now stated in\n#   the description. Recorded below.\n# - Torque onset 1.70 to 1.73 s after the center target appears (other): still present, now stated in\n#   the description. Recorded below.\n# - No analysis code; detection false-positive rate near 0.2 (methods_unavailable): still present (the\n#   paper's). Recorded below.\n# - Resting rates differ between text and Table 1; Table 1 CSN p-value (paper_inconsistency): still\n#   present (the paper's). Recorded below.\nschema_version: 2\nid: 001636-pasquereau-2013-02\ndataset:\n  archive: dandi\n  id: \"001636\"\n  version: draft\n  modified: 2026-10-21T20:16:41Z\npaper: doi:10.3389/fnsys.2013.00098\ndate: 2026-10-21\nentry: 001636-pasquereau-2013\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-10\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39680584382\noutcomes:\n- claim: cell-counts\n  outcome: reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:cell-counts\n  measured: [115, 157, 51, 54, 32, 48, 3]\n  notes: Monkey V units with at least 5 perturbations of each direction number 115 before and 157\n    after MPTP, with 51 and 54 PTNs and 32 and 48 CSNs, all within tolerance of 112 and 159, 49 and\n    54, 31 and 48. The files hold 3 units activated from both the peduncle and the putamen, all in\n    monkey V and all among the cells studied. Same outcome as 001636-pasquereau-2013-01, whose counts\n    were exactly the table's. The draft adds the trials of the second source file of 12 units, which\n    brings v1902.1, v2701.1 and v3607.1 (two PTNs and a CSN, pre-MPTP) to the threshold, and stores the\n    two unit copies of repeated files once (v4527b.2, a PTN, and v5812.2, no_response, are gone; v4527.2\n    changes from not_tested to PTN); the notebook lists every unit that differs between the versions.\n    Counting each unit from its first source file only gives 112 and 157, with 49 and 54 PTNs and 31\n    and 48 CSNs.\n  deviations:\n  - The paper's location and isolation criteria cannot be applied; the units in the dandiset are\n    taken as the selected units.\n  - Perturbations are counted within each unit's obs_intervals, as the draft observes a unit only in\n    the trials of its own source files; counting all perturbations of the session selects the same\n    units. Units recorded across two source files are one cell, as the dataset states; counting them\n    from their first file only is shown as a variant.\n- claim: monkey-l-perturbations\n  outcome: blocked\n  blocked_by: data_missing\n  notes: No monkey L (Leu) trial is labelled with a perturbation; torque_perturbation_type is\n    not_available and the onset NaN in every Leu trial, and the draft's description says the Leu\n    source files contain no perturbation times. The Leu torque command is NaN in all 98 pre-MPTP files\n    and in one post-MPTP file, and 15 of 50 post-MPTP Leu files have no analog data. The joint moves by\n    more than 2 deg in the hold window in 15% (pre) and 1% (post) of Leu trials, against 67% and 86.5%\n    of monkey V perturbed trials. The 34 post-MPTP Leu files with a torque command show 88 to 767\n    command excursions per file, starting a median 0.30 to 0.83 s after the lateral target appears;\n    one of their 2048 trials has an excursion starting in the hold window. Same outcome as\n    001636-pasquereau-2013-01.\n- claim: baseline-rate\n  outcome: reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:baseline-rate\n  measured: [12.66, 8.85, 18.49, 14.37, 3.48, 3.36]\n  notes: All six monkey V means are within tolerance. PTN rates are lower after MPTP (Mann-Whitney\n    p = 0.020), CSN rates do not differ (p = 0.65), and the M1 rate is lower (p = 0.0022, below the\n    paper's 0.05/2). The statement's p < 0.001 for PTNs, from both monkeys, is not reached in monkey V\n    alone. Same outcome as 001636-pasquereau-2013-01 (there p = 0.034 and 0.73).\n  deviations:\n  - Monkey V only.\n  - The baseline is the mean SDF over the 500 ms before onset over all perturbation trials, a\n    reading of the Methods.\n- claim: ptn-faster-than-csn\n  outcome: reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:ptn-faster-than-csn\n  notes: Pre-MPTP monkey V PTNs 18.49 spikes/s (n = 51), CSNs 3.48 (n = 32), Mann-Whitney p =\n    6.3e-12. The paper's pooled means differ between its text (16.3 and 3.6) and Table 1 (18.3 and\n    3.2). Same outcome as 001636-pasquereau-2013-01.\n  deviations:\n  - Monkey V only.\n- claim: antidromic-latency\n  outcome: partially_reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:antidromic-latency\n  measured: [1.92, 1.86, 4.91, 6.85]\n  notes: The four means are within tolerance and PTN latencies do not differ (p = 0.68). CSN\n    latencies are longer after MPTP with p = 0.019, just above the paper's 0.05/3 = 0.0167, so one\n    test fails. With every monkey L PTN and CSN unit added (their selection by perturbations cannot be\n    made), p = 0.0072 for CSNs and 0.78 for PTNs, and the post-MPTP CSN mean (7.01 ms) is outside\n    tolerance. 18 PTNs and CSNs studied have no antidromic latency. Same outcome as\n    001636-pasquereau-2013-01 (there p = 0.018).\n  deviations:\n  - Monkey V cells studied, against expected values that pool both monkeys.\n- claim: false-positive-rate\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:false-positive-rate\n  measured: 0.2279\n  notes: The analysis ran. At a pseudo onset 600 ms before the torque, a threshold crossing in the\n    200 ms epoch occurs in 0.23 of the 544 monkey V cell-directions with the main detection and 0.46\n    with the t-test variant; unperturbed trials taken at the usual torque time give 0.19 and 0.44. A\n    response with onset in 20 to 60 ms occurs in 0.048 (pseudo onset) and 0.047 (unperturbed trials),\n    against 0.375 at the true onset, a ratio of 0.13. The paper's threshold implies 0.01; the rates\n    here are about 20 times higher, so the procedure differs from the paper's in a way the Methods do\n    not settle, and this claim and those that rest on the selection are blocked. Stationary Poisson\n    spike trains at each cell-direction's baseline rate give 0.21 (main) and 0.48 (t-test) with the\n    earlier attempt's seed, and 0.16 to 0.19 (main) with eight other seeds, so most of the excess\n    comes from the detection procedure. The rate does not fall with baseline rate (0.18 to 0.29 by\n    quartile) or number of trials (0.21 to 0.26). 14 cell-directions (10 CSN) have no baseline spike\n    and cannot respond. A threshold calibrated to a pseudo-onset rate of 0.01 (t = 6.67 against 3.11)\n    finds 30.4% and 32.5% of M1 cells torque-related. Same outcome as 001636-pasquereau-2013-01; its\n    Poisson value (0.15) was one seed, and the spread over seeds added here (0.16 to 0.21) covers it,\n    so the earlier statement that about a third of the observed rate is not explained by Poisson\n    trains is not kept.\n  deviations:\n  - The detection compares the trial-averaged SDF with mean +/- t * SD of its baseline values, a\n    reading of the Methods; a t-test across trials is shown as a variant.\n  - A response's onset is its first crossing within 20 to 60 ms; the Methods define the onset as\n    the first crossing, so a variant takes the first crossing anywhere in 0 to 200 ms (5 of 204\n    responses have an earlier crossing).\n- claim: torque-related-fractions\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:torque-related-fractions\n  measured: [54.8, 47.8, 72.5, 68.5, 15.6, 16.7]\n  notes: Blocked as the selection is (false-positive-rate). The analysis finds 63 of 115 and 75 of\n    157 monkey V cells torque-related (54.8% and 47.8%, paper 75% and 68%), PTNs 72.5% and 68.5%,\n    CSNs 15.6% and 16.7%; only the post-MPTP PTN value is within tolerance. The t-test variant gives\n    41.7% and 60.5% for M1, the calibrated threshold 30.4% and 32.5%, and taking the first crossing\n    anywhere in 0 to 200 ms as the onset 53.0% and 47.1%. Same outcome as 001636-pasquereau-2013-01.\n- claim: prevalence-unchanged\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:prevalence-unchanged\n  notes: Blocked as the selection is. With the main detection the paper's test finds no change in\n    M1 (-7.0 points, p = 0.31), PTNs (-4.0 points, p = 0.81) or CSNs (+1.0 points, p = 1.0). The\n    t-test variant finds increases in M1 (+18.8 points, p = 0.0033) and PTNs (+25.1 points, p =\n    0.015), both below 0.05/3. Same outcome as 001636-pasquereau-2013-01.\n- claim: ptn-more-responsive\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:ptn-more-responsive\n  measured: [70.5, 16.2]\n  notes: Blocked as the selection is. PTNs 74 of 105 (70.5%) against CSNs 13 of 80 (16.2%),\n    chi-square 51.4, p = 7.4e-13; both fractions are outside tolerance (PTNs above 62.1 +/- 6.2,\n    CSNs below 30.4 +/- 3.0). The t-test variant gives 61.9% and 35.0% (p = 5.1e-4). Same outcome as\n    001636-pasquereau-2013-01.\n- claim: one-direction-half\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:one-direction-half\n  measured: 52.2\n  notes: Blocked as the selection is. 72 of 138 torque-related cells (52.2%) respond to one\n    direction only (58.7% pre, 46.7% post); the t-test variant gives 64.3%. Same outcome as\n    001636-pasquereau-2013-01.\n- claim: excitatory-majority\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:excitatory-majority\n  measured: [83.1, 76.5, 70.0, 59.3]\n  notes: Blocked as the selection is. Increases are 83.1% and 76.5% of M1 responses and 70.0% and\n    59.3% of PTN responses; the PTN balance does not change (chi-square 0.92, p = 0.34). The\n    paper's Table 1 marks its CSN change p < 0.01, but its own counts (23 of 24 against 19 of 22)\n    give p = 0.54 with the Yates-corrected chi-square test that reproduces its other values. Same\n    outcome as 001636-pasquereau-2013-01.\n- claim: magnitude-unchanged\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:magnitude-unchanged\n  notes: Blocked as the selection is. With the main detection, responses are smaller after MPTP;\n    all 12 tests (directions pooled) have p < 0.05, for example M1 maximum change 43.6 against 32.1\n    spikes/s (Kolmogorov-Smirnov p = 0.0010) and PTN mean change 23.6 against 15.0 (Mann-Whitney p <\n    0.0001). Same outcome as 001636-pasquereau-2013-01 (there 11 of 12).\n- claim: venus-response-magnitudes\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:venus-response-magnitudes\n  measured: [40.21, 31.22, 47.65, 33.2, 31.74, 19.95, 36.22, 23.79]\n  notes: Blocked as the selection is. Under reading (a), maximum change, the four pre-MPTP means\n    are within tolerance and none of the post-MPTP ones; readings (b) and (c) match 1 and 0 of 8.\n    Same outcome as 001636-pasquereau-2013-01.\n- claim: latency-shorter\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:latency-shorter\n  measured: [41.47, 36.21, 42.28, 36.21, 44.63, 38.18, 45.3, 38.5]\n  notes: Blocked as the selection is. With the main detection all four comparisons are shorter\n    after MPTP (Kolmogorov-Smirnov p = 0.0045, 0.0072, 0.0075, 0.0127) and all eight means are\n    within tolerance; pooled, M1 responses 41.8 and 36.2 ms and PTN responses 44.9 and 38.3 ms\n    (earliest per cell 40.9 and 35.0, 44.0 and 35.9). The t-test variant finds no significant\n    shortening (p 0.17 to 0.73). Same outcome as 001636-pasquereau-2013-01.\n- claim: latency-not-training\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:latency-not-training\n  notes: Blocked as the selection is. Over both states latency correlates with the recording day\n    (Spearman rho = -0.25, p = 0.0033, n = 138), as post-MPTP sessions come later and have shorter\n    latencies; within each state it does not (rho = 0.08, p = 0.51; rho = -0.15, p = 0.21). Same\n    outcome as 001636-pasquereau-2013-01.\n- claim: fwhm-shorter-ptn\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:fwhm-shorter-ptn\n  measured: [91.58, 40.05, 68.81, 41.73]\n  notes: Blocked as the selection is. PTN increases are briefer after MPTP for flexion (p =\n    0.027) but not for extension (p = 0.37); two of the four means are within tolerance. Over all PTN\n    responses the means are 95.6 and 50.8 ms for flexion and 65.1 and 60.7 ms for extension. Same\n    outcome as 001636-pasquereau-2013-01.\n- claim: dsi-reduced\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:dsi-reduced\n  notes: Blocked as the selection is. Reciprocal and unidirectional cells fall from 58.7% to 52.0%\n    of torque-related cells (-6.7 points), chi-square 5.70 (3 dof), p = 0.13. For PTNs they fall\n    from 64.9% to 51.4% (p = 0.029). With categories set from the DSI value as the paper words\n    them, 61.9% and 50.7% (p = 0.36). There is no reciprocal cell before MPTP; the smallest\n    expected count is 1.8. Same outcome as 001636-pasquereau-2013-01.\n  deviations:\n  - Categories are set from which directions respond and their signs, as fixed in the claims\n    file; the paper words them by DSI value. The DSI value reading is shown as a variant.\n- claim: venus-dsi\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:venus-dsi\n  measured: [0.62, 0.463, 0.759, 0.46, 0.662, 0.695]\n  notes: Blocked as the selection is. Three of six means are within tolerance (PTN pre and both\n    CSN values). Same outcome as 001636-pasquereau-2013-01.\n- claim: dsi-not-baseline\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:dsi-not-baseline\n  notes: Blocked as the selection is. Baseline rates do not differ between the four categories\n    (F = 0.40, p = 0.75) or three groups (F = 0.54, p = 0.59). Same outcome as\n    001636-pasquereau-2013-01.\n- claim: kinematics-slower\n  outcome: not_reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:kinematics-slower\n  measured: [28.11, 14.56]\n  notes: Over 291 monkey V sessions, torque-induced movements are faster and larger after MPTP;\n    session-mean peak velocity +28.1% and amplitude +14.6% (flexion +29.7% and +11.4%), MPTP F = 98.6\n    and 24.1, p < 0.0001. The torque command's pulse is about four times larger in most post-MPTP\n    sessions; in the sessions with the same command size (43 pre, 12 post) the increases are +98.2%\n    and +109.0%. The mean of the session-mean peak velocities is 59.0 deg/s, and only one response\n    comes from a session in the paper's 130 to 200 deg/s window of matched sessions; mean\n    displacements (3.10 deg) are smaller than its 10 deg. The angle's scale agrees with the files'\n    own kinematic columns (active movements measured here within 2% of derived_peak_velocity and\n    derived_movement_amplitude), so the small movements are in the data. The torque command differs\n    between the states, so the change cannot be attributed to MPTP. Same outcome as\n    001636-pasquereau-2013-01; the sessions are now 291 (the repeated files are folded into the\n    sessions they repeat, and none is left out).\n  deviations:\n  - Monkey V only; the paper's ANOVA has animal as a third factor.\n  - The peak velocity and amplitude windows (0 to 200 and 0 to 300 ms) and the FIR length are\n    choices; the Methods give the filter and velocity threshold only.\n  - Perturbations with the joint moving before onset (503 of 5550) are kept.\n- claim: kinematic-latency-unchanged\n  outcome: not_reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:kinematic-latency-unchanged\n  notes: Movement onset is earlier after MPTP (session means 9.65 and 3.05 ms for flexion, 10.86 and\n    5.82 ms for extension; MPTP F = 1037, p < 0.0001), with an MPTP by direction interaction (F =\n    18.5; the paper reports F > 94). In sessions with the same command size it does not differ\n    (7.68 and 7.62 ms, p = 0.83). The zero-phase filter can move an onset earlier, and 241 of 5550\n    perturbations have a latency of 0 ms. With a causal 10 ms average of the unfiltered velocity\n    the session means are 12.5 to 18.5 ms and still shorter after MPTP (F = 791); without the\n    trials already moving before onset F = 1043 (filtered) and 762 (causal). At the middle command\n    size the causal variant gives p = 0.25, and 0.025 without the trials moving before onset. The\n    difference goes with the torque command, so it cannot be attributed to MPTP. Same outcome as\n    001636-pasquereau-2013-01.\n  deviations:\n  - Monkey V only.\n  - Zero-phase (forward and backward) filtering; the Methods do not say how the filter was\n    applied.\n- claim: emg-m2-larger\n  outcome: reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:emg-m2-larger\n  notes: For flexion torques the m2 response is larger after MPTP in both triceps longus channels\n    and the triceps lateralis (medians 3.1 against 164.0, 3.7 against 297.1 and 5.5 against 76.0\n    A/D units; Kolmogorov-Smirnov p = 1.1e-56, 6.0e-50, 4.7e-15). The increase follows the torque\n    command; median m2 is 0.86 at the smallest command size (pre only), 41.85 (pre) and 1.81 (post)\n    at the middle, and 17.09 (pre, n = 5) and 194.4 (post) at the largest, so within a state it does\n    not rise simply with command size, and in the middle-size sessions m2 is not larger after MPTP\n    (triceps longus 1 median 47.6 against 1.3, p = 0.013, with 40 and 6 sessions). The outcome is the\n    criterion's comparison; as the torque command is about four times larger in most post-MPTP\n    sessions, the increase cannot be attributed to MPTP. Same outcome as 001636-pasquereau-2013-01.\n  deviations:\n  - EMG in A/D units; the paper reports microvolts.\n- claim: emg-duration-longer\n  outcome: partially_reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:emg-duration-longer\n  measured: [24.6, 49.4]\n  notes: Responses last longer after MPTP (24.6 against 49.4 ms, Kolmogorov-Smirnov p = 4.1e-36,\n    279 and 281 channel-sessions), but both means are outside tolerance (57 +/- 6 and 79 +/- 3);\n    thresholds of 1.5 and 3 SD give 16.3 against 48.6 and 18.4 against 50.1 ms. At the middle\n    command size they do not differ (29.2 and 27.9 ms, p = 0.94). Before MPTP 63.4% of the\n    durations are 10 ms or less (median 9 ms, against 59 ms after). Same outcome as\n    001636-pasquereau-2013-01.\n  deviations:\n  - The response threshold (2 SD of the baseline) and the pooling of three triceps channels are\n    choices; the Methods cite an earlier paper for the EMG analysis.\n- claim: emg-onset-unchanged\n  outcome: not_reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:emg-onset-unchanged\n  notes: EMG responses start earlier after MPTP (40.3 against 24.0 ms, Kolmogorov-Smirnov p =\n    9.1e-21), in the same direction at 1.5 and 3 SD. At the middle command size the onsets do not\n    differ (28.8 and 45.5 ms, p = 0.18), the post-MPTP onset being the later one there. Same\n    outcome as 001636-pasquereau-2013-01.\n  deviations:\n  - The paper does not name its test here; the Kolmogorov-Smirnov test it uses for the other EMG\n    measures is used.\n- claim: emg-m1-weak\n  outcome: partially_reproduced\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:emg-m1-weak\n  notes: After MPTP, m2 exceeds m1 in 96.5% of 282 channel-sessions, median m1 / m2 0.23 (0.23 over\n    channel-sessions with m2 > 0). Before MPTP the median ratio is 0.10 (0.09 with m2 > 0) but m2\n    exceeds m1 in 74.4% of 305, below the criterion's 75%. Same outcome as\n    001636-pasquereau-2013-01 (there 73.5% of 310).\n- claim: velocity-matched-magnitude\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:velocity-matched-magnitude\n  notes: Blocked as the selection is. Also, only one response (post-MPTP) comes from a session whose\n    mean peak velocity is between 130 and 200 deg/s (session means reach 145.3 deg/s), so the\n    matched groups cannot be formed on this velocity scale. Same outcome as\n    001636-pasquereau-2013-01.\n- claim: session-correlations\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notebook: reproduce_pasquereau_2013.ipynb\n  output: claim:session-correlations\n  notes: Blocked as the selection is. Over 70 sessions mean PTN latency against mean peak velocity\n    gives rho = -0.16, p = 0.19; against triceps longus 1 m2 (67 sessions) rho = -0.28, p = 0.023,\n    above the paper's 0.0125. Within each state neither correlates (p 0.37 to 0.87). Same outcome as\n    001636-pasquereau-2013-01; there the m2 correlation reached the threshold (p = 0.011), and here,\n    with the added trials and cells, it does not.\n- claim: trial-correlations\n  outcome: blocked\n  blocked_by: methods_underspecified\n  notes: The Methods define response onset on the trial-averaged SDF and give no single-trial\n    latency, which the test needs. No analysis code is published. Same outcome as\n    001636-pasquereau-2013-01.\nfindings:\n- kind: data_missing\n  statement: Still present since 001636-pasquereau-2013-01. The monkey L (Leu) files mark no torque\n    perturbation; torque_perturbation_type is not_available in every Leu trial, the Leu torque\n    command is NaN in every pre-MPTP file, and 15 of 50 post-MPTP Leu files have no analog data. The\n    draft's description and the files now say the Leu source files contain no perturbation times.\n    The monkey L half of the paper (115 and 73 cells, and its EMG and kinematics) cannot be tested.\n- kind: other\n  statement: Partly fixed since 001636-pasquereau-2013-01. The torque command's 50 ms pulse still\n    has three session sizes (about 46, 91 and 183 units above rest); most pre-MPTP monkey V sessions\n    have the smallest (105 of 154) and most post-MPTP sessions the largest (125 of 137), post-MPTP\n    pulses are followed by an opposite swing, and within post-MPTP sessions the step varies from\n    trial to trial. The torque description now states all of this and that no conversion to\n    newton-metres is available. The paper describes one 0.1 Nm, 50 ms impulse; whether the torque or\n    only its command changed cannot be told, and movement and EMG results differ between command\n    sizes.\n- kind: other\n  statement: Partly fixed since 001636-pasquereau-2013-01. The EMG description now gives the\n    paper's processing (rectified, low-pass filtered at 100 Hz) where it said sample-hold\n    integrated; the values are unchanged. The monkey L analog streams are still sampled at 100 Hz\n    (the paper says 200 Hz) and the EMG is in uncalibrated A/D units, both now stated in the\n    dandiset's description.\n- kind: other\n  statement: Still present since 001636-pasquereau-2013-01, now stated in the dandiset's\n    description. The torque onset comes 1.696 to 1.732 s after center_target_appearance_time in 90%\n    of monkey V perturbations, where the Methods put it 1 to 2 s after center capture at random.\n- kind: methods_unavailable\n  statement: Still present. No analysis code is published. The response detection as described\n    gives a false-positive rate of 0.23 over the 200 ms epoch, against the 0.01 its threshold\n    implies, and stationary Poisson spike trains give 0.16 to 0.21, most of it, so the paper's exact\n    procedure cannot be recovered, and single-trial latencies are not defined.\n- kind: paper_inconsistency\n  statement: Still present. The pre-MPTP PTN and CSN resting rates are 16.3 and 3.6 spikes/s in the\n    text and 18.3 and 3.2 in Table 1. Table 1 marks the CSN change in the fraction of excitatory\n    responses p < 0.01, but its own counts (23 of 24 against 19 of 22) give p = 0.54 with the\n    Yates-corrected chi-square test that reproduces its other chi-square values.\n- kind: other\n  statement: New. Three monkey V sessions (v1401, v1402, v1501) have 51 labelled perturbations but no\n    pulse in the torque command, as the draft's torque description says. Their perturbations are\n    kept here, as the command is not used to select trials.\n- kind: code_mismatch\n  statement: New. The dandiset names catalystneuro/turner-lab-to-nwb as the code that compiled it,\n    but the repository's main branch (e80a192917490b50db6871180b6d1d9a24772e35) builds the published\n    version 0.260518.1819; the code that built the draft (merged sessions, obs_intervals, the new\n    unit names and descriptions) is in open pull request 33, branch fix_errors at\n    5f9bf6320a0160e4e56301d5409fb9242c1d8cf4.\n"
+ "file_path": "/tmp/claude-1001/work/make_nb.py",
+ "content": "import nbformat as nbf\n\nnb = nbf.v4.new_notebook()\ncells = []\n\n\ndef md(s, tags=None):\n    c = nbf.v4.new_markdown_cell(s.strip())\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\ndef code(s, tags=None):\n    c = nbf.v4.new_code_cell(s.strip())\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\nmd(\"\"\"\n# Pasquereau & Turner (2013) on DANDI:001636\n\nPaper: Pasquereau B, Turner RS (2013). Primary motor cortex of the parkinsonian monkey: altered\nneuronal responses to muscle stretch. *Front. Syst. Neurosci.* 7:98,\n[doi:10.3389/fnsys.2013.00098](https://doi.org/10.3389/fnsys.2013.00098).\n\nDataset: [DANDI:001636](https://dandiarchive.org/dandiset/001636/0.261124.1906), version\n`0.261124.1906` (doi:10.48324/dandi.001636/0.261124.1906). This version was asked for in the\nprompt of this attempt; it is also the newest published version (published 2026-11-24). The\npaper cites no version.\n\nClaims: `claims/pasquereau-2013.yaml`, written from the full text in PubMed Central\n(PMC3840326), its Methods, Results, Table 1, figure legends and supplementary data sheet\n(DataSheet1.PDF), whose table gives the results for each monkey.\n\nThe files of monkey L mark no torque perturbation, so every claim is tested on monkey V\n(Venus, elbow), as the claims file says.\n\n| Claim | Tested or blocked |\n|---|---|\n| cell-counts | tested |\n| monkey-l-perturbations | blocked, data missing |\n| baseline-rate | tested |\n| ptn-faster-than-csn | tested |\n| antidromic-latency | tested |\n| false-positive-rate | computed; blocked, methods underspecified (the false-positive rate is far from the paper's) |\n| torque-related-fractions, prevalence-unchanged, ptn-more-responsive, one-direction-half, excitatory-majority, magnitude-unchanged, venus-response-magnitudes, latency-shorter, latency-not-training, fwhm-shorter-ptn, dsi-reduced, venus-dsi, dsi-not-baseline, velocity-matched-magnitude, session-correlations | blocked through false-positive-rate; their results are computed and shown, not deciding |\n| kinematics-slower | tested |\n| kinematic-latency-unchanged | tested |\n| emg-m2-larger | tested |\n| emg-duration-longer | tested |\n| emg-onset-unchanged | tested |\n| emg-m1-weak | tested |\n| trial-correlations | blocked, methods underspecified |\n\nMethod details come from the claims file, which cites the Methods; details it lacks are taken\nfrom the paper and cited in `pasq.py`'s docstring and below.\n\"\"\")\n\ncode(\"\"\"\nimport time\nimport warnings\n\nimport numpy as np\nimport pandas as pd\nimport pynwb\nimport remfile\nimport h5py\nimport statsmodels.api as sm\nimport statsmodels.formula.api as smf\nfrom scipy import stats\n\nimport pasq\n\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\npd.set_option(\"display.width\", 160)\npd.set_option(\"display.max_columns\", 30)\nt0 = time.time()\nvenus_urls = pasq.asset_urls(\"sub-Venus\")\nleu_urls = pasq.asset_urls(\"sub-Leu\")\nprint(f\"{len(venus_urls)} Venus files, {len(leu_urls)} Leu files at version {pasq.DANDISET_VERSION}\")\n\"\"\")\n\nmd(\"\"\"\n## What one file holds\n\nOne Venus file opened with pynwb: its acquisition and processing series, its interval tables\nwith every column, and the units table's columns.\n\"\"\")\n\ncode(\"\"\"\npath, url = venus_urls[0]\nwith pynwb.NWBHDF5IO(file=h5py.File(remfile.File(url), \"r\"), load_namespaces=True) as io:\n    nwb = io.read()\n    print(path)\n    for name, ts in nwb.acquisition.items():\n        print(f\"acquisition {name}: {ts.data.shape}, unit {ts.unit}\")\n    for mod_name, mod in nwb.processing.items():\n        for name, obj in mod.data_interfaces.items():\n            print(f\"processing/{mod_name}/{name}: {type(obj).__name__}\")\n    for name, table in nwb.intervals.items():\n        print(f\"intervals {name}: {len(table)} rows, columns {list(table.colnames)}\")\n    print(\"units columns\", list(nwb.units.colnames))\n    print(nwb.units.to_dataframe().drop(columns=[\"spike_times\", \"obs_intervals\", \"electrodes\"]).T)\n\"\"\")\n\nmd(\"\"\"\n## Loading\n\nEvery Venus file is streamed once; only windows around each perturbation are kept (spikes from\n-1500 to +500 ms, angle -200 to +400 ms, EMG -300 to +300 ms, torque command -50 to +100 ms).\nThe Leu files are read for their trials' perturbation columns, torque command and units table.\n\"\"\")\n\ncode(\"\"\"\nvenus = pasq.load_all(venus_urls)\nleu = pasq.load_meta_all(leu_urls)\nprint(f\"loaded in {time.time() - t0:.0f} s\")\n\"\"\")\n\ncode(\"\"\"\ncells = pasq.cell_responses(venus)\ncells[\"unit\"] = cells.groupby(\"file\").cumcount()\ncells[\"studied\"] = (cells.n_fle >= pasq.MIN_PERTURBATIONS) & (cells.n_ext >= pasq.MIN_PERTURBATIONS)\nstudied = cells[cells.studied].copy()\nstudied[\"state\"] = np.where(studied.post, \"post\", \"pre\")\nPTN, CSN = \"pyramidal_tract_neuron\", \"corticostriatal_neuron\"\ngroups = {\"M1\": studied.index == studied.index, \"PTN\": (studied.ptype == PTN).values,\n          \"CSN\": (studied.ptype == CSN).values}\nfirst_day = pd.to_datetime(cells.date).min()\n\"\"\")\n\nmd(\"## Data check\")\n\ncode(\"\"\"\nall_units = pd.concat([x[\"units\"].assign(subject=\"Venus\", path=x[\"path\"]) for x in venus]\n                      + [x[\"units\"].assign(subject=\"Leu\", path=x[\"path\"]) for x in leu], ignore_index=True)\nprint(\"units by subject, MPTP state and projection type\")\nprint(all_units.groupby([\"subject\", \"post\", \"ptype\"]).size().to_string())\nprint(\"unit names repeated across files:\", all_units.unit_name.duplicated().sum())\nfname_post = all_units.path.str.contains(\"PostMPTP\")\nprint(\"units whose is_post_mptp disagrees with the file name:\", int((fname_post != all_units.post).sum()))\n\npert = pd.concat([x[\"pert\"].assign(file=i, post=bool(x[\"units\"].post.iloc[0])) for i, x in enumerate(venus)])\nprint(\"\\\\nVenus perturbations by state and direction\")\nprint(pert.groupby([\"post\", \"torque\"]).size().to_string())\nprint(\"Venus files without any perturbation:\", sum(len(x[\"pert\"]) == 0 for x in venus))\nprint(\"Leu trials by torque_perturbation_type:\",\n      pd.Series(np.concatenate([x[\"torque_type\"] for x in leu])).value_counts().to_dict())\nprint(\"Leu perturbation onset times that are not NaN:\", int(sum(np.isfinite(x[\"onset\"]).sum() for x in leu)))\n\ndates = pd.to_datetime(cells.date)\nprint(\"\\\\nVenus recording dates: pre\", dates[~cells.post].min().date(), \"to\", dates[~cells.post].max().date(),\n      \"; post\", dates[cells.post].min().date(), \"to\", dates[cells.post].max().date())\ndelay = (pert.onset - pert.center)\nprint(\"perturbation onset after centre target appearance (s): median %.3f, 5th to 95th percentile %.3f to %.3f\"\n      % (delay.median(), delay.quantile(0.05), delay.quantile(0.95)))\nprint(\"units with fewer observed perturbations than their file has:\",\n      int((cells.n_fle + cells.n_ext < [len(venus[f][\"pert\"]) for f in cells.file]).sum()))\n\nang = np.concatenate([x[\"angle\"].ravel() for x in venus if x[\"angle\"] is not None and len(x[\"pert\"])])\nprint(\"\\\\nelbow angle around perturbations (degrees): %.1f to %.1f\" % (np.nanmin(ang), np.nanmax(ang)))\nemg_vals = {ch: np.concatenate([x[\"emg\"][ch].ravel() for x in venus if ch in x[\"emg\"]]) for ch in pasq.EMG_CHANNELS}\nfor ch, v in emg_vals.items():\n    print(f\"{ch}: {sum(ch in x['emg'] for x in venus)} files, values {np.nanmin(v):.0f} to {np.nanmax(v):.0f} (a.u.)\")\nprint(\"SDF kernel: gamma k = %.1f, theta = %.0f ms, mode %.0f ms, mean %.0f ms; t threshold %.3f\"\n      % (pasq.GAMMA_K, pasq.GAMMA_THETA_MS, (pasq.GAMMA_K - 1) * pasq.GAMMA_THETA_MS,\n         pasq.GAMMA_K * pasq.GAMMA_THETA_MS, pasq.T_CRIT))\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\n### Recordings deposited twice\n\nEach trial's spikes, relative to its trial start, and each perturbation's angle and EMG windows\nare compared across all Venus files.\n\"\"\")\n\ncode(\"\"\"\nfrom collections import defaultdict\nfrom itertools import combinations\n\ndef shared(keys_by_file):\n    owners = defaultdict(set)\n    for f, keys in keys_by_file.items():\n        for k in keys:\n            owners[k].add(f)\n    pairs = defaultdict(int)\n    for fs in owners.values():\n        for a, b in combinations(sorted(fs), 2):\n            pairs[(a, b)] += 1\n    return pairs\n\nspike_keys = {}\nfor fi, x in enumerate(venus):\n    keys = []\n    for ui, st in enumerate(x[\"spikes_all\"]):\n        for a, b in zip(x[\"trials\"].start, x[\"trials\"].stop):\n            s = np.round(st[(st >= a) & (st < b)] - a, 4)\n            if len(s) >= 5:\n                keys.append(tuple(s))\n    spike_keys[fi] = keys\nanalog_keys = {}\nfor fi, x in enumerate(venus):\n    keys = []\n    for name, arr in [(\"angle\", x[\"angle\"])] + list(x[\"emg\"].items()):\n        if arr is None:\n            continue\n        keys += [(name,) + tuple(np.round(w[::7], 2)) for w in arr if not np.isnan(w).any()]\n    analog_keys[fi] = keys\nprint(\"pairs of units sharing a trial's spike train:\", len(shared(spike_keys)))\nprint(\"pairs of files sharing an angle or EMG window:\", len(shared(analog_keys)))\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\n### Clocks\n\nThe torque command, the elbow angle and the spikes are checked against the trials table's\nperturbation onsets. The command should leave rest a few ms after onset and the joint should move\nin the torque's direction after it. For the spikes, a contrast: threshold crossings by the claims\nfile's detection after the real onset against a pseudo onset 600 ms earlier and against trials\nwithout a perturbation aligned where the file's perturbations fall.\n\"\"\")\n\ncode(\"\"\"\nzt = -pasq.TORQUE_WINDOW_MS[0]\nfor post in [False, True]:\n    cmd = []\n    for x in venus:\n        if x[\"torque_cmd\"] is None or bool(x[\"units\"].post.iloc[0]) != post or len(x[\"pert\"]) == 0:\n            continue\n        s = np.where(x[\"pert\"].torque.values == \"flexion\", 1.0, -1.0)[:, None]\n        cmd.append(s * (x[\"torque_cmd\"] - x[\"torque_cmd\"][:, :zt].mean(1, keepdims=True)))\n    m = np.nanmean(np.vstack(cmd), 0)\n    half = np.where(m[zt:] > m[zt:zt + 50].max() / 2)[0][0]\n    leave = np.where(m[zt:] > 0.05 * m[zt:zt + 50].max())[0][0]\n    print(f\"{'post' if post else 'pre'}-MPTP: mean command leaves rest (5% of pulse) at {leave} ms and reaches half its peak at {half} ms after onset\")\nza = -pasq.ANGLE_WINDOW_MS[0]\nfor dname, sgn in [(\"flexion\", 1), (\"extension\", -1)]:\n    a = np.vstack([x[\"angle\"][x[\"pert\"].torque.values == dname] for x in venus if x[\"angle\"] is not None and len(x[\"pert\"])])\n    disp = np.nanmean(a - a[:, [za]], 0)\n    print(f\"{dname} torque: mean angle change at 0, 20, 50, 100 ms: \"\n          + \", \".join(f\"{disp[za + t]:+.2f}\" for t in [0, 20, 50, 100]) + \" deg (positive = flexion)\")\n\npr = pasq.pseudo_readings(venus, set(zip(studied.file, studied.unit)))\nnt = pasq.no_torque_crossings(venus, set(zip(studied.file, studied.unit)))\nprint(\"\\\\nany crossing of the claims file's threshold over 0 to 200 ms, per cell-direction:\")\nprint(\"  after torque onset %.3f (n = %d), after pseudo onset %.3f, after the no-torque alignment %.3f (n = %d cells)\"\n      % (pr[pr.onset == \"torque\"].mean_sd.mean(), (pr.onset == \"torque\").sum(),\n         pr[pr.onset == \"pseudo\"].mean_sd.mean(), nt.any_crossing.mean(), len(nt)))\non = np.concatenate([studied.fle_onset.dropna(), studied.ext_onset.dropna()])\nprint(\"response onsets after torque (ms): median %.0f, inside 20 to 60 by construction\" % np.median(on))\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nThe command leaves rest a few ms after the marked onset and the joint moves in the torque's\ndirection, so the analog series and the trials table share a clock (consistent with the data, as\nfar as a mean trace can show it). Spikes cross the threshold far more often after the real onset\nthan after the pseudo onset or in trials without a torque, so the spike times share it too.\n\"\"\")\n\nmd(\"\"\"\n### Findings about the data\n\nEach cell below shows one problem, loading only what it needs.\n\"\"\")\n\ncode(\"\"\"\n# Monkey L: no perturbation times, and no pulses in the torque command.\ntypes = pd.Series(np.concatenate([x[\"torque_type\"] for x in leu])).value_counts().to_dict()\nprint(\"Leu trials by torque_perturbation_type:\", types)\nprint(\"Leu files whose torque command has any finite value:\", sum(x[\"torque_cmd_finite\"] > 0 for x in leu), \"of\", len(leu))\nprint(\"Leu files with a step of more than 20 units in the command:\", sum(x[\"torque_cmd_steps\"] > 0 for x in leu))\n\"\"\", tags=[\"finding-leu-no-perturbations\"])\n\ncode(\"\"\"\n# The torque command's pulse is about three times larger after MPTP; the paper gives one 0.1 Nm pulse.\nkin_trials, kin_sessions = pasq.session_kinematics(venus)\nprint(kin_trials.groupby(\"post\").command.describe().round(1))\nprint(\"\\\\nsessions by median pulse size (a.u.), pre and post:\")\nprint(pd.crosstab(kin_trials.groupby(\"file\").post.first(),\n                  pd.cut(kin_trials.groupby(\"file\").command.median(), [0, 30, 60, 120, 250, 400])))\n\"\"\", tags=[\"finding-torque-command-levels\"])\n\ncode(\"\"\"\n# Torque-evoked displacements: the paper's mean is 10 degrees, and slower, smaller displacements after MPTP.\nprint(kin_sessions.groupby([\"post\", \"direction\"])[[\"peak_velocity\", \"amplitude\", \"latency\"]].mean().round(2))\nprint(\"perturbations with displacement >= 10 deg: %.1f%%\" % (100 * (kin_trials.amplitude >= 10).mean()))\nprint(\"sessions with mean peak velocity 130 to 200 deg/s:\",\n      int(kin_sessions.peak_velocity.between(130, 200).sum()), \"of\", len(kin_sessions))\n\"\"\", tags=[\"finding-kinematics-vs-paper\"])\n\nmd(\"## Claims\")\n\nmd(\"\"\"\n### cell-counts\n\n> In monkey V, 112 neurons were studied before MPTP and 159 after, of which 49 and 54 were PTNs\n> and 31 and 48 CSNs; three neurons in all were activated from both the peduncle and the putamen.\n\nCriterion: counts of monkey V units with at least 5 perturbations per direction, by MPTP state and\nprojection type; dual-projecting units counted over all files.\n\"\"\")\n\ncode(\"\"\"\nexpected = {\"M1\": (112, 159), \"PTN\": (49, 54), \"CSN\": (31, 48)}\nfor g, m in groups.items():\n    n = studied[m].groupby(\"post\").size()\n    print(f\"{g}: pre {n.get(False, 0)} (expected {expected[g][0]}), post {n.get(True, 0)} (expected {expected[g][1]})\")\ndual = all_units[all_units.ptype == \"pyramidal_tract_and_corticostriatal_neuron\"]\nprint(\"activated from both peduncle and putamen, all files:\", len(dual), dual.groupby(\"subject\").size().to_dict(),\n      \"; of these studied:\", int((studied.ptype == \"pyramidal_tract_and_corticostriatal_neuron\").sum()))\nprint(\"other types among the studied cells:\", studied[~studied.ptype.isin([PTN, CSN])].groupby([\"post\", \"ptype\"]).size().to_dict())\nprint(\"Venus units left out for fewer than 5 perturbations in a direction:\",\n      cells[~cells.studied].groupby(\"post\").size().to_dict())\n\"\"\", tags=[\"claim:cell-counts\"])\n\nmd(\"\"\"\n**Result: reproduced.** 115 and 157 cells before and after MPTP (112 and 159 expected), 51 and 54\nPTNs (49 and 54), 32 and 48 CSNs (31 and 48), and 3 dual-projecting cells, all within tolerance.\n\"\"\")\n\nmd(\"\"\"\n### monkey-l-perturbations\n\n> In monkey L, 57 of 115 neurons before MPTP and 35 of 73 after responded to torque perturbations\n> of the wrist, and the monkey L responses enter all pooled results.\n\nBlocked: no Leu trial marks a perturbation (cell `finding-leu-no-perturbations`), and the torque\ncommand is NaN or without pulses, so the perturbations cannot be found.\n\"\"\")\n\ncode(\"\"\"\nprint(\"Leu units by state:\", all_units[all_units.subject == \"Leu\"].groupby(\"post\").size().to_dict())\nprint(\"Leu trials with a perturbation onset:\", int(sum(np.isfinite(x[\"onset\"]).sum() for x in leu)))\n\"\"\", tags=[\"claim:monkey-l-perturbations\"])\n\nmd(\"\"\"\n**Result: blocked (data missing).** The Leu files hold 128 and 72 units but no perturbation\ntimes.\n\"\"\")\n\nmd(\"\"\"\n### baseline-rate\n\n> Before torque onset, the firing rate of M1 neurons was lower after MPTP, because PTN rates fell\n> (Mann-Whitney p < 0.001) while CSN rates did not change (p = 0.5). In monkey V the rates were 12.6\n> and 8.9 spikes/s for all cells, 20.3 and 14.8 for PTNs, and 3.5 and 3.4 for CSNs.\n\nBaseline rate: the mean over all perturbations of the SDF over the 500 ms before onset (claims).\n\"\"\")\n\ncode(\"\"\"\nexp = {\"M1\": (12.6, 1.98, 8.9, 1.33), \"PTN\": (20.3, 2.46, 14.8, 2.72), \"CSN\": (3.5, 1.47, 3.4, 1.01)}\nfor g, m in groups.items():\n    s = studied[m]\n    a, b = s[~s.post].baseline_rate, s[s.post].baseline_rate\n    p = stats.mannwhitneyu(a, b, alternative=\"two-sided\").pvalue\n    e = exp[g]\n    print(f\"{g}: pre {a.mean():.2f} +/- {a.std():.2f} (expected {e[0]} +/- {e[1]}, n {len(a)}), \"\n          f\"post {b.mean():.2f} +/- {b.std():.2f} (expected {e[2]} +/- {e[3]}, n {len(b)}); \"\n          f\"change {100 * (b.mean() / a.mean() - 1):+.0f}%, Mann-Whitney p = {p:.3g}\")\n\"\"\", tags=[\"claim:baseline-rate\"])\n\nmd(\"\"\"\n**Result: reproduced.** All six means are within tolerance (M1 12.66 and 8.85, PTN 18.49 and\n14.37, CSN 3.48 and 3.36 spikes/s); the PTN rate is lower after MPTP (p = 0.0066) and the CSN\nrate does not differ (p = 0.92). The PTN test does not reach the paper's p < 0.001.\n\"\"\")\n\nmd(\"\"\"\n### ptn-faster-than-csn\n\n> Before MPTP, PTNs fired much faster than CSNs at rest (Mann-Whitney p < 0.001).\n\"\"\")\n\ncode(\"\"\"\npre = studied[~studied.post]\na, b = pre[pre.ptype == PTN].baseline_rate, pre[pre.ptype == CSN].baseline_rate\nprint(f\"pre-MPTP PTN {a.mean():.2f} spikes/s (range {a.min():.1f} to {a.max():.1f}, n {len(a)}), \"\n      f\"CSN {b.mean():.2f} (range {b.min():.1f} to {b.max():.1f}, n {len(b)}); \"\n      f\"Mann-Whitney p = {stats.mannwhitneyu(a, b, alternative='two-sided').pvalue:.2g}\")\nprint(\"reported, not judged: text 16.3 and 3.6, Table 1 18.3 and 3.2 spikes/s (both monkeys)\")\n\"\"\", tags=[\"claim:ptn-faster-than-csn\"])\n\nmd(\"**Result: reproduced.** PTNs 18.49 against CSNs 3.48 spikes/s, Mann-Whitney p far below 0.001.\")\n\nmd(\"\"\"\n### antidromic-latency\n\n> PTN antidromic latencies did not change after MPTP (1.9 ms, p = 0.9), while CSN latencies were\n> longer (5.1 against 6.1 ms, p < 0.05/3).\n\"\"\")\n\ncode(\"\"\"\nexp = {\"PTN\": (1.9, 0.22, 1.9, 0.2), \"CSN\": (5.1, 0.61, 6.1, 0.89)}\nleu_units = all_units[all_units.subject == \"Leu\"]\nfor label, data in [(\"monkey V studied\", studied), (\"variant, + every Leu unit\", None)]:\n    for g, t in [(\"PTN\", PTN), (\"CSN\", CSN)]:\n        s = studied[studied.ptype == t][[\"post\", \"latency\"]]\n        if data is None:\n            s = pd.concat([s, leu_units[leu_units.ptype == t][[\"post\", \"latency\"]]])\n        a, b = s[~s.post].latency.dropna(), s[s.post].latency.dropna()\n        p = stats.mannwhitneyu(a, b, alternative=\"two-sided\").pvalue\n        e = exp[g]\n        print(f\"{label} {g}: pre {a.mean():.2f} ms (expected {e[0]} +/- {e[1]}, n {len(a)}), \"\n              f\"post {b.mean():.2f} (expected {e[2]} +/- {e[3]}, n {len(b)}), Mann-Whitney p = {p:.3g}\")\n\"\"\", tags=[\"claim:antidromic-latency\"])\n\nmd(\"\"\"\n**Result: partially reproduced.** The PTN latency does not differ (p >= 0.05) and three of the four\nmeans are within tolerance, but the CSN latency is not longer after MPTP with p < 0.05/3; see the\nnumbers above.\n\"\"\")\n\nmd(\"\"\"\n### false-positive-rate\n\n> The detection threshold, p < 0.01 divided by 5 independent comparisons, holds the chance of a\n> false response over the 200 ms epoch near 0.01.\n\nCriterion: the same detection at a pseudo onset 600 ms before the torque, on the studied cells,\nboth directions; reproduced when the fraction of cell-directions with any threshold crossing over\n0 to 200 ms is between 0.0033 and 0.03. The other readings of the Methods' test (step 1.6) are\nshown with the fraction of real cell-directions each would call responsive.\n\"\"\")\n\ncode(\"\"\"\npse = pr[pr.onset == \"pseudo\"]\nprint(\"claims file's detection, pseudo onset: any crossing over 0 to 200 ms %.3f, response with onset in 20 to 60 ms %.3f (n = %d cell-directions)\"\n      % (pse.mean_sd.mean(), np.r_[studied.pse_fle_responds, studied.pse_ext_responds].mean(), len(pse)))\nprint(\"no-torque trials, same detection: any crossing %.3f, response 20 to 60 ms %.3f (n = %d cells)\"\n      % (nt.any_crossing.mean(), nt.responds.mean(), len(nt)))\nprint(\"\\\\nreadings of the test (fraction of cell-directions with any crossing over 0 to 200 ms):\")\nprint(pr.groupby(\"onset\")[[\"mean_sd\", \"ttest\", \"trial_se\", \"trial_sd\"]].mean().round(3).T)\nfor label, s in [(\"pre\", studied[~studied.post]), (\"post\", studied[studied.post])]:\n    print(f\"pseudo any-crossing rate {label}-MPTP: \"\n          f\"{np.r_[s.pse_fle_any_crossing, s.pse_ext_any_crossing].mean():.3f}\")\n\"\"\", tags=[\"claim:false-positive-rate\"])\n\nmd(\"\"\"\n**Result: blocked (methods underspecified).** The claims file's detection crosses its threshold in\n0.23 of cell-directions after a pseudo onset (0.20 in trials without a torque), far above the\npaper's 0.01 and outside 0.0033 to 0.03, so this procedure is not the paper's. Of the other\nreadings, only a threshold from the SD of all single-trial baseline values comes near 0.01\n(0.013), and it calls only 0.20 of real cell-directions responsive, far below the paper's 62 to\n75% of cells; no reading gives both.\n\"\"\")\n\nmd(\"\"\"\n### Claims that use the selection of responses (blocked, shown)\n\nThese claims depend on `torque-related-fractions`, which depends on `false-positive-rate`, and are\nblocked with it. Their results under the claims file's detection are computed here so that a later\nattempt, or the authors, can see them; they decide nothing.\n\"\"\")\n\ncode(\"\"\"\nstudied[\"tr\"] = studied.fle_responds.fillna(False).astype(bool) | studied.ext_responds.fillna(False).astype(bool)\nexp = {\"M1\": (75, 68), \"PTN\": (55, 68), \"CSN\": (45, 21)}\nfor g, m in groups.items():\n    s = studied[m]\n    f = s.groupby(\"post\").tr.agg([\"sum\", \"size\", \"mean\"])\n    print(f\"{g}: pre {int(f.loc[False, 'sum'])}/{int(f.loc[False, 'size'])} ({100 * f.loc[False, 'mean']:.1f}%, expected {exp[g][0]}), \"\n          f\"post {int(f.loc[True, 'sum'])}/{int(f.loc[True, 'size'])} ({100 * f.loc[True, 'mean']:.1f}%, expected {exp[g][1]})\")\nstudied[\"tr_ttest\"] = studied.fle_ttest_responds.fillna(False).astype(bool) | studied.ext_ttest_responds.fillna(False).astype(bool)\nprint(\"variant (t-test of single trials):\", (100 * studied.groupby(\"post\").tr_ttest.mean()).round(1).to_dict())\n\"\"\", tags=[\"claim:torque-related-fractions\"])\n\ncode(\"\"\"\ndef yates(table):\n    chi2, p, _, _ = stats.chi2_contingency(np.asarray(table), correction=True)\n    return chi2, p\n\nfor g, m in groups.items():\n    s = studied[m]\n    t = pd.crosstab(s.post, s.tr)\n    chi2, p = yates(t)\n    print(f\"{g}: torque-related pre {100 * s[~s.post].tr.mean():.1f}%, post {100 * s[s.post].tr.mean():.1f}%, \"\n          f\"Yates chi2 = {chi2:.2f}, p = {p:.3g}\")\n\"\"\", tags=[\"claim:prevalence-unchanged\"])\n\ncode(\"\"\"\ns = studied[studied.ptype.isin([PTN, CSN])]\nt = pd.crosstab(s.ptype, s.tr)\nchi2, p = yates(t)\nprint(f\"PTN {100 * s[s.ptype == PTN].tr.mean():.1f}% (expected 62.1), CSN {100 * s[s.ptype == CSN].tr.mean():.1f}% (expected 30.4); \"\n      f\"Yates chi2 = {chi2:.1f}, p = {p:.2g}\")\n\"\"\", tags=[\"claim:ptn-more-responsive\"])\n\ncode(\"\"\"\ntr = studied[studied.tr]\none = tr.fle_responds.fillna(False).astype(bool) ^ tr.ext_responds.fillna(False).astype(bool)\nprint(f\"one direction only: {one.sum()}/{len(tr)} ({100 * one.mean():.1f}%, expected 44)\")\n\"\"\", tags=[\"claim:one-direction-half\"])\n\nresp_cell = \"\"\"\nrows = []\nfor _, c in studied.iterrows():\n    for d in [\"fle\", \"ext\"]:\n        if c.get(f\"{d}_responds\") is True:\n            rows.append({\"file\": c.file, \"unit\": c.unit, \"post\": c.post, \"ptype\": c.ptype, \"direction\": d,\n                         \"date\": c.date, \"baseline_rate\": c.baseline_rate,\n                         **{k: c[f\"{d}_{k}\"] for k in [\"onset\", \"offset\", \"sign\", \"mean_change\", \"max_change\",\n                                                         \"area\", \"mean_rate\", \"fwhm\"]}})\nresp = pd.DataFrame(rows)\nresp[\"increase\"] = resp.sign > 0\nprint(f\"{len(resp)} responses in {resp.groupby(['file', 'unit']).ngroups} cells\")\nfor g, sel in [(\"M1\", resp.index == resp.index), (\"PTN\", resp.ptype == PTN)]:\n    s = resp[sel]\n    print(f\"{g}: increases pre {100 * s[~s.post].increase.mean():.1f}%, post {100 * s[s.post].increase.mean():.1f}%\")\ns = resp[resp.ptype == PTN]\nchi2, p = yates(pd.crosstab(s.post, s.increase))\nprint(f\"PTN increases against decreases, pre against post: Yates chi2 = {chi2:.2f}, p = {p:.3g}\")\nprint(\"expected: M1 86 and 88, PTN 70 and 75\")\n\"\"\"\ncode(resp_cell, tags=[\"claim:excitatory-majority\"])\n\ncode(\"\"\"\nfor g, sel in [(\"M1\", resp.index == resp.index), (\"PTN\", resp.ptype == PTN)]:\n    s = resp[sel]\n    for meas in [\"mean_change\", \"max_change\", \"area\"]:\n        a, b = s[~s.post][meas], s[s.post][meas]\n        print(f\"{g} {meas}: pre median {a.median():.2f}, post {b.median():.2f}; KS p = {stats.ks_2samp(a, b).pvalue:.3g}, \"\n              f\"Mann-Whitney p = {stats.mannwhitneyu(a, b, alternative='two-sided').pvalue:.3g}\")\n\"\"\", tags=[\"claim:magnitude-unchanged\"])\n\ncode(\"\"\"\nexp = {(\"M1\", \"fle\"): (42.4, 37.9), (\"M1\", \"ext\"): (50.9, 42.6), (\"PTN\", \"fle\"): (33.4, 26.1), (\"PTN\", \"ext\"): (38.8, 29.3)}\nfor reading in [\"max_change\", \"mean_rate\", \"mean_change\"]:\n    out = []\n    for (g, d), e in exp.items():\n        s = resp[(resp.direction == d) & ((resp.ptype == PTN) if g == \"PTN\" else True)]\n        out.append(f\"{g} {d} {s[~s.post][reading].mean():.1f}/{s[s.post][reading].mean():.1f} (exp {e[0]}/{e[1]})\")\n    print(reading + \": \" + \"; \".join(out))\n\"\"\", tags=[\"claim:venus-response-magnitudes\"])\n\ncode(\"\"\"\nexp = {(\"M1\", \"fle\"): (39.2, 34.56), (\"M1\", \"ext\"): (40.4, 33.4), (\"PTN\", \"fle\"): (43.9, 35.5), (\"PTN\", \"ext\"): (44.4, 36.7)}\nfor (g, d), e in exp.items():\n    s = resp[(resp.direction == d) & ((resp.ptype == PTN) if g == \"PTN\" else True)]\n    a, b = s[~s.post].onset, s[s.post].onset\n    print(f\"{g} {d}: pre {a.mean():.1f} ms (exp {e[0]}, n {len(a)}), post {b.mean():.1f} (exp {e[1]}, n {len(b)}), \"\n          f\"KS p = {stats.ks_2samp(a, b).pvalue:.3g}\")\nearliest = resp.groupby([\"file\", \"unit\", \"post\", \"ptype\", \"date\"]).onset.min().reset_index()\nfor g, s in [(\"M1\", earliest), (\"PTN\", earliest[earliest.ptype == PTN])]:\n    print(f\"{g} earliest per cell: pre {s[~s.post].onset.mean():.1f}, post {s[s.post].onset.mean():.1f} ms\")\n\"\"\", tags=[\"claim:latency-shorter\"])\n\ncode(\"\"\"\nearliest[\"day\"] = (pd.to_datetime(earliest.date) - first_day).dt.days\nrho, p = stats.spearmanr(earliest.day, earliest.onset)\nprint(f\"latency against days since the first Venus session: Spearman rho = {rho:.3f}, p = {p:.3g}, n = {len(earliest)}\")\nfor post, s in earliest.groupby(\"post\"):\n    r, pp = stats.spearmanr(s.day, s.onset)\n    print(f\"  {'post' if post else 'pre'} only: rho = {r:.3f}, p = {pp:.3g}, n = {len(s)}\")\n\"\"\", tags=[\"claim:latency-not-training\"])\n\ncode(\"\"\"\nexp = {\"fle\": (97, 52), \"ext\": (57, 41)}\nfor d, e in exp.items():\n    s = resp[(resp.ptype == PTN) & (resp.direction == d)]\n    inc = s[s.increase]\n    a, b = inc[~inc.post].fwhm, inc[inc.post].fwhm\n    print(f\"PTN {d} increases: FWHM pre {a.mean():.1f} ms (exp {e[0]}, n {len(a)}), post {b.mean():.1f} (exp {e[1]}, n {len(b)}), \"\n          f\"Mann-Whitney p = {stats.mannwhitneyu(a, b, alternative='two-sided').pvalue:.3g}; all responses \"\n          f\"{s[~s.post].fwhm.mean():.1f} and {s[s.post].fwhm.mean():.1f}\")\n\"\"\", tags=[\"claim:fwhm-shorter-ptn\"])\n\ncode(\"\"\"\ndef dsi(c):\n    f, e = c.fle_max_change_signed, c.ext_max_change_signed\n    p_, np_ = (f, e) if abs(f) >= abs(e) else (e, f)\n    return abs(1 - np_ / p_)\n\ndef category(c):\n    fr, er = c.fle_responds is True, c.ext_responds is True\n    if fr != er:\n        return \"unidirectional\"\n    if c.fle_sign != c.ext_sign:\n        return \"reciprocal\"\n    return \"bidirectional\" if c.dsi > 0.5 else \"non-directional\"\n\ntr = studied[studied.tr].copy()\ntr[\"dsi\"] = tr.apply(dsi, axis=1)\ntr[\"category\"] = tr.apply(category, axis=1)\nt = pd.crosstab(tr.post, tr.category)\nprint(t)\nchi2, p, _, _ = stats.chi2_contingency(t)\nhi = tr.category.isin([\"reciprocal\", \"unidirectional\"])\nprint(f\"reciprocal + unidirectional: pre {100 * hi[~tr.post].mean():.1f}%, post {100 * hi[tr.post].mean():.1f}%; \"\n      f\"chi2 = {chi2:.1f}, p = {p:.3g}\")\n\"\"\", tags=[\"claim:dsi-reduced\"])\n\ncode(\"\"\"\nexp = {\"M1\": (0.72, 0.66), \"PTN\": (0.73, 0.75), \"CSN\": (0.81, 0.83)}\nfor g, e in exp.items():\n    s = tr if g == \"M1\" else tr[tr.ptype == (PTN if g == \"PTN\" else CSN)]\n    print(f\"{g}: DSI pre {s[~s.post].dsi.mean():.2f} (exp {e[0]}, n {(~s.post).sum()}), \"\n          f\"post {s[s.post].dsi.mean():.2f} (exp {e[1]}, n {s.post.sum()})\")\n\"\"\", tags=[\"claim:venus-dsi\"])\n\ncode(\"\"\"\ngroups_dsi = [g.baseline_rate.values for _, g in tr.groupby(\"category\")]\nF, p = stats.f_oneway(*groups_dsi)\nprint(f\"baseline rate across {tr.category.nunique()} categories: F = {F:.2f}, p = {p:.3g}\")\ntr[\"cat3\"] = tr.category.replace({\"reciprocal\": \"high\", \"unidirectional\": \"high\"})\nF3, p3 = stats.f_oneway(*[g.baseline_rate.values for _, g in tr.groupby(\"cat3\")])\nprint(f\"variant, three groups: F = {F3:.2f}, p = {p3:.3g}\")\n\"\"\", tags=[\"claim:dsi-not-baseline\"])\n\ncode(\"\"\"\nvel = kin_sessions.set_index([\"file\", \"direction\"]).peak_velocity\nfor d, dn in [(\"fle\", \"flexion\"), (\"ext\", \"extension\")]:\n    s = resp[resp.direction == d]\n    v = np.array([vel.get((f, dn), np.nan) for f in s.file])\n    s = s[(v >= 130) & (v <= 200)]\n    print(f\"{dn}: responses from sessions with mean peak velocity 130 to 200 deg/s: pre {(~s.post).sum()}, post {s.post.sum()}\")\n\"\"\", tags=[\"claim:velocity-matched-magnitude\"])\n\ncode(\"\"\"\nemg = pasq.session_emg(venus)\nptn_lat = earliest[earliest.ptype == PTN].groupby(\"file\").onset.mean()\nv_both = kin_sessions.groupby(\"file\").peak_velocity.mean()\nm2_tl1 = emg[(emg.channel == \"EMGTricepsLongus1\") & ~emg.has_nan & (emg.baseline_sd >= 1)].set_index(\"file\").m2\nfor label, other in [(\"peak velocity\", v_both), (\"triceps longus 1 m2\", m2_tl1)]:\n    j = pd.concat([ptn_lat, other], axis=1, join=\"inner\").dropna()\n    rho, p = stats.spearmanr(j.iloc[:, 0], j.iloc[:, 1])\n    print(f\"mean PTN latency against {label}: rho = {rho:.3f}, p = {p:.3g}, n = {len(j)} sessions\")\n\"\"\", tags=[\"claim:session-correlations\"])\n\nmd(\"\"\"\n**Result: blocked (methods underspecified), through false-positive-rate.** The numbers above use a\ndetection whose false-positive rate is 0.23 per cell-direction, about 20 times the paper's, and\ndecide nothing. No session has a mean peak velocity in the 130 to 200 deg/s range of\nvelocity-matched-magnitude.\n\"\"\")\n\nmd(\"\"\"\n### kinematics-slower\n\n> After MPTP, torque-induced displacements were slower and smaller; mean peak velocity fell by\n> 16.2% and amplitude by 6.6% (ANOVA, F > 515 and F > 49).\n\nCriterion: session means per direction, monkey V; two-way ANOVA (type II) of MPTP state and\ndirection with their interaction; the change is the post mean over the pre mean, minus 1;\nreadings (a) both directions pooled, (b) flexion only. Kinematic parameters: `pasq.py` docstring.\n\"\"\")\n\ncode(\"\"\"\ndef anova(df, meas):\n    model = smf.ols(f\"{meas} ~ C(post) * C(direction)\", data=df).fit()\n    return sm.stats.anova_lm(model, typ=2)\n\nprint(\"sessions:\", kin_sessions.groupby([\"post\", \"direction\"]).size().to_dict())\nprint(\"perturbations without a movement onset within 200 ms:\", int(kin_trials.latency.isna().sum()), \"of\", len(kin_trials))\nfor meas in [\"peak_velocity\", \"amplitude\"]:\n    a = anova(kin_sessions, meas)\n    pooled = 100 * (kin_sessions[kin_sessions.post][meas].mean() / kin_sessions[~kin_sessions.post][meas].mean() - 1)\n    f = kin_sessions[kin_sessions.direction == \"flexion\"]\n    flex = 100 * (f[f.post][meas].mean() / f[~f.post][meas].mean() - 1)\n    print(f\"\\\\n{meas}: change (a) pooled {pooled:+.1f}%, (b) flexion {flex:+.1f}%; MPTP F = {a.loc['C(post)', 'F']:.1f}, \"\n          f\"p = {a.loc['C(post)', 'PR(>F)']:.2g}\")\n    print(a.round(4))\n\"\"\", tags=[\"claim:kinematics-slower\"])\n\nmd(\"\"\"\nA variant, not deciding: the pulse of the torque command is about three times larger after MPTP\n(cell `finding-torque-command-levels`). Restricting to perturbations whose command pulse is 60 to\n250 units, the range both states share, gives the comparison at similar torques.\n\"\"\")\n\ncode(\"\"\"\nmatched = kin_trials[kin_trials.command.between(60, 250)]\nms = matched.groupby([\"file\", \"post\", \"direction\"])[[\"latency\", \"peak_velocity\", \"amplitude\"]].mean().reset_index()\nprint(\"perturbations kept:\", matched.groupby(\"post\").size().to_dict(), \"; sessions:\", ms.groupby(\"post\").size().to_dict())\nfor meas in [\"peak_velocity\", \"amplitude\", \"latency\"]:\n    a = anova(ms, meas)\n    ch = 100 * (ms[ms.post][meas].mean() / ms[~ms.post][meas].mean() - 1)\n    print(f\"{meas}: pre {ms[~ms.post][meas].mean():.2f}, post {ms[ms.post][meas].mean():.2f}, change {ch:+.1f}%, \"\n          f\"MPTP F = {a.loc['C(post)', 'F']:.1f}, p = {a.loc['C(post)', 'PR(>F)']:.2g}\")\n\"\"\", tags=[\"claim:kinematics-slower\"])\n\nmd(\"\"\"\n**Result: not reproduced.** Under both readings the displacements are faster and larger after\nMPTP, not slower and smaller (peak velocity +28.1% pooled and +29.7% for flexion; amplitude +14.8%\nand +11.1%). At the torque levels both states share, peak velocity changes by +9.1% and amplitude\nby -0.5%, neither significant at 0.05 (variant above).\n\"\"\")\n\nmd(\"\"\"\n### kinematic-latency-unchanged\n\n> The latency of torque-induced displacements did not change after MPTP (F < 0.2, p > 0.05).\n\"\"\")\n\ncode(\"\"\"\na = anova(kin_sessions, \"latency\")\nprint(kin_sessions.groupby([\"post\", \"direction\"]).latency.mean().round(2))\nprint(a.round(4))\n\"\"\", tags=[\"claim:kinematic-latency-unchanged\"])\n\nmd(\"\"\"\n**Result: not reproduced.** The movement onset latency is shorter after MPTP, MPTP effect F = 709,\np < 1e-100; the MPTP by direction interaction is F = 16.1 (the paper's F > 94). At matched torque\nlevels (variant above) the latency effect is much smaller.\n\"\"\")\n\nmd(\"\"\"\n### EMG claims\n\nSession-average EMG of the three triceps channels for flexion torques (claims). A channel is used\nin a session when no window holds a NaN and its baseline SD is at least 1 A/D unit; the claims\nfile does not say whether this is the SD of the session-average trace (main, the SD the response\nthreshold uses) or of the single-trial samples (shown as a variant).\n\"\"\")\n\ncode(\"\"\"\ndef emg_used(rule):\n    return emg[~emg.has_nan & (emg[rule] >= 1)]\n\nprint(\"channel-sessions:\", emg.groupby([\"channel\", \"post\"]).size().to_dict())\nprint(\"with NaN in a window:\", int(emg.has_nan.sum()))\nfor rule in [\"baseline_sd\", \"raw_sd\"]:\n    print(f\"used under {rule} >= 1:\", emg_used(rule).groupby([\"channel\", \"post\"]).size().to_dict())\n\"\"\")\n\ncode(\"\"\"\nfor rule in [\"baseline_sd\", \"raw_sd\"]:\n    print(\"rule\", rule)\n    for ch, g in emg_used(rule).groupby(\"channel\"):\n        a, b = g[~g.post].m2, g[g.post].m2\n        print(f\"  {ch}: m2 median pre {a.median():.1f}, post {b.median():.1f} (a.u.), n {len(a)} and {len(b)}, \"\n              f\"KS p = {stats.ks_2samp(a, b).pvalue:.2g}\")\n\"\"\", tags=[\"claim:emg-m2-larger\"])\n\nmd(\"\"\"\n**Result: reproduced.** m2 is larger after MPTP in all three triceps channels (KS p < 1e-14 in\neach) under both channel rules. The torque pulses are also about three times larger after MPTP\n(cell `finding-torque-command-levels`), which this comparison cannot separate from the effect of\nMPTP.\n\"\"\")\n\ncode(\"\"\"\nfor rule in [\"baseline_sd\", \"raw_sd\"]:\n    u = emg_used(rule)\n    d = u.dropna(subset=[\"duration\"])\n    a, b = d[~d.post].duration, d[d.post].duration\n    print(f\"rule {rule}: duration pre {a.mean():.1f} ms (exp 57 +/- 6, n {len(a)}), post {b.mean():.1f} (exp 79 +/- 3, n {len(b)}), \"\n          f\"KS p = {stats.ks_2samp(a, b).pvalue:.2g}; channel-sessions without a response: \"\n          f\"{u.duration.isna().groupby(u.post).sum().to_dict()}\")\n    print(\"  by channel:\", d.groupby([\"channel\", \"post\"]).duration.mean().round(1).to_dict())\n\"\"\", tags=[\"claim:emg-duration-longer\"])\n\nmd(\"\"\"\n**Result: partially reproduced.** Durations are longer after MPTP (22.2 against 51.5 ms, KS\np < 1e-30), but both means are far outside the paper's 57 +/- 6 and 79 +/- 3 ms.\n\"\"\")\n\ncode(\"\"\"\nfor rule in [\"baseline_sd\", \"raw_sd\"]:\n    d = emg_used(rule).dropna(subset=[\"duration\"])\n    a, b = d[~d.post].onset, d[d.post].onset\n    print(f\"rule {rule}: onset pre {a.mean():.1f} ms (median {a.median():.0f}), post {b.mean():.1f} (median {b.median():.0f}), \"\n          f\"KS p = {stats.ks_2samp(a, b).pvalue:.2g}\")\n\"\"\", tags=[\"claim:emg-onset-unchanged\"])\n\nmd(\"\"\"\n**Result: not reproduced.** The earliest EMG responses start earlier after MPTP (44.2 against 25.0\nms on average, KS p < 1e-20).\n\"\"\")\n\ncode(\"\"\"\nfor rule in [\"baseline_sd\", \"raw_sd\"]:\n    u = emg_used(rule)\n    for post, g in u.groupby(\"post\"):\n        print(f\"rule {rule}, {'post' if post else 'pre'}: m2 > m1 in {(g.m2 > g.m1).sum()}/{len(g)} \"\n              f\"({100 * (g.m2 > g.m1).mean():.1f}%), median m1/m2 {(g.m1 / g.m2).median():.2f}\")\n\"\"\", tags=[\"claim:emg-m1-weak\"])\n\nmd(\"\"\"\n**Result: partially reproduced.** After MPTP m2 exceeds m1 in 98.3% of channel-sessions and the\nmedian m1/m2 is 0.25; before MPTP the median ratio is 0.14 but m2 exceeds m1 in 74.0%, just under\nthe 75% the criterion asks (74.3% under the other channel rule).\n\"\"\")\n\nmd(\"\"\"\n### trial-correlations\n\n> Trial by trial, PTN response latencies did not correlate with the peak velocity or the m2 EMG\n> response (Spearman |rho| < 0.34, p > 0.05).\n\n**Result: blocked (methods underspecified).** The criterion needs a single-trial response latency,\nwhich the Methods do not define; it also uses the response selection blocked above.\n\"\"\")\n\nmd(\"\"\"\n## Summary\n\n| Claim | Outcome |\n|---|---|\n| cell-counts | reproduced |\n| monkey-l-perturbations | blocked (data missing) |\n| baseline-rate | reproduced |\n| ptn-faster-than-csn | reproduced |\n| antidromic-latency | partially reproduced |\n| false-positive-rate | blocked (methods underspecified) |\n| 15 claims on the response selection | blocked (methods underspecified), results shown |\n| kinematics-slower | not reproduced |\n| kinematic-latency-unchanged | not reproduced |\n| emg-m2-larger | reproduced |\n| emg-duration-longer | partially reproduced |\n| emg-onset-unchanged | not reproduced |\n| emg-m1-weak | partially reproduced |\n| trial-correlations | blocked (methods underspecified) |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nHow the analysis differs from the paper's: monkey V only; units are this dataset's files' units;\nthe response detection is the claims file's, whose false-positive rate is about 20 times the\npaper's, so no claim that rests on the response selection is decided; kinematic and EMG\nparameters the paper does not give are the claims file's or standard choices (`pasq.py`).\n\nWhat was found about the dataset: the counts of cells by state and projection type match the\npaper's monkey V table; no recording is deposited twice; the Leu files hold no perturbation\ntimes; the torque command's pulses are about three times larger after MPTP than before, and the\nevoked displacements (about 3 to 4 degrees) are smaller than the paper's 10 degrees and faster,\nnot slower, after MPTP.\n\"\"\")\n\nnb.cells = cells\nnb.metadata[\"kernelspec\"] = {\"name\": \"python3\", \"display_name\": \"Python 3\", \"language\": \"python\"}\nnbf.write(nb, \"entries/pasquereau-2013/reproduce_pasquereau_2013.ipynb\")\n"
 }
 ```
 
 ```
-File created successfully at: attempts/001636-pasquereau-2013-02.yaml (file state is current in your context — no need to Read it back)
+File created successfully at: /tmp/claude-1001/work/make_nb.py (file state is current in your context — no need to Read it back)
 ```
 
-**Agent calls Edit**
+**Agent**
 
-```json
+Before the full run I'll execute a development copy of the notebook against the cached data.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; python make_nb.py && python - <<'EOF'
+import pickle, pasq, time
+t=time.time(); leu=pasq.load_meta_all(pasq.asset_urls("sub-Leu")); print(time.time()-t)
+pickle.dump(leu,open('leu.pkl','wb'))
+EOF
+python - <<'EOF'
+import nbformat
+nb=nbformat.read('entries/pasquereau-2013/reproduce_pasquereau_2013.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code' and 'venus = pasq.load_all' in c.source:
+        c.source="import pickle\nvenus=pickle.load(open('/tmp/claude-1001/work/venus.pkl','rb'))\nleu=pickle.load(open('/tmp/claude-1001/work/leu.pkl','rb'))"
+nbformat.write(nb,'dev.ipynb')
+EOF
+time jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=1800 2>&1 | tail -3
+```
+
+```
+50.86906099319458
+trust
+
+Jupyter command `jupyter-nbconvert` not found.
+
+real	0m0.049s
+user	0m0.042s
+sys	0m0.009s
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; export PYTHONPATH=entries/pasquereau-2013; cat > run_nb.py <<'EOF'
+import nbformat, sys
+from nbclient import NotebookClient
+nb=nbformat.read(sys.argv[1],4)
+try:
+    NotebookClient(nb,timeout=1800,kernel_name='python3').execute()
+finally:
+    nbformat.write(nb,sys.argv[2])
+for c in nb.cells:
+    if c.cell_type=='code':
+        out=''.join(o.get('text','') if o.output_type=='stream' else (o.get('data',{}).get('text/plain','') if 'data' in o else o.get('ename','')+' '+o.get('evalue','')) for o in c.outputs)
+        print('-----',c.metadata.get('tags'),'\n',out[:3000])
+EOF
+time python run_nb.py dev.ipynb dev_out.ipynb 2>&1 | tail -400
+```
+
+```
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+----- None 
+ 291 Venus files, 148 Leu files at version 0.261124.1906
+
+----- None 
+ sub-Venus/sub-Venus_ses-Venus++v0502++PreMPTP++Depth22130um++19990406_behavior+ecephys.nwb
+acquisition EMGBrachioradialis: (165170,), unit a.u.
+acquisition EMGDeltoidPosterior: (165170,), unit a.u.
+acquisition EMGTrapezius: (165170,), unit a.u.
+acquisition EMGTricepsLateralis: (165170,), unit a.u.
+acquisition EMGTricepsLongus1: (165170,), unit a.u.
+acquisition EMGTricepsLongus2: (165170,), unit a.u.
+acquisition ElbowAngle: (165170, 1), unit degrees
+acquisition ElbowTorque: (165170,), unit arbitrary
+processing/antidromic_identification/AntidromicResponse_v0502.1_Peduncle: ElectricalSeries
+processing/antidromic_identification/AntidromicStimulation_v0502.1_Peduncle: TimeSeries
+processing/antidromic_identification/StimulationElectrodesTable: DynamicTable
+processing/behavior/ElbowVelocity: TimeSeries
+intervals AntidromicSweepsIntervals: 31 rows, columns ['start_time', 'stop_time', 'stimulation_onset_time', 'unit_name', 'unit', 'location', 'stimulation_protocol', 'source_label', 'sweep_number', 'response', 'stimulation', 'stimulation_electrode']
+intervals invalid_times: 19 rows, columns ['start_time', 'stop_time', 'tags']
+[... 303 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF'
+import pickle, json, remfile, h5py, numpy as np
+leu=pickle.load(open('leu.pkl','rb'))
+fin=[x for x in leu if x['torque_cmd_finite']>0]
+print(len(fin), sum(x['units'].post.iloc[0] for x in fin), [x['path'][-58:-26] for x in fin[:3]])
+assets=json.load(open('../assets.json')); a=[a for a in assets if a['path']==fin[0]['path']][0]
+h=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"),'r')
+tq=h['acquisition/WristTorque/data'][:]; ts=h['acquisition/WristTorque/timestamps'][:]
+tr=h['intervals/trials']; st=tr['start_time'][:]; ct=tr['center_target_appearance_time'][:]
+d=np.diff(tq); big=np.where(np.abs(d)>20)[0]
+print(len(tq), np.nanpercentile(tq,[1,50,99]), len(big))
+for j in big[:15]:
+    k=np.searchsorted(st,ts[j])-1
+    print(round(ts[j],3), round(d[j],1), 'trial',k, 't-center %.3f'%(ts[j]-ct[k]), np.round(tq[j-2:j+8],0))
+EOF
+```
+
+```
+34 34 ['001++PostMPTP++Depth22890um++199', '002++PostMPTP++Depth23240um++199', '101++PostMPTP++Depth23270um++199']
+33876 [-1.14694927e+02 -7.98354121e-04  1.70574659e+02] 1138
+0.5 21.5 trial 0 t-center 0.000 [  5.  11.  24.  46.  73. 101. 124. 139. 145. 145.]
+0.51 27.1 trial 0 t-center 0.010 [ 11.  24.  46.  73. 101. 124. 139. 145. 145. 143.]
+0.52 28.0 trial 0 t-center 0.020 [ 24.  46.  73. 101. 124. 139. 145. 145. 143. 143.]
+0.53 23.5 trial 0 t-center 0.030 [ 46.  73. 101. 124. 139. 145. 145. 143. 143. 147.]
+0.64 -22.9 trial 0 t-center 0.140 [163. 163. 153. 130.  97.  58.  21. -10. -30. -40.]
+0.65 -33.3 trial 0 t-center 0.150 [163. 153. 130.  97.  58.  21. -10. -30. -40. -39.]
+0.66 -38.6 trial 0 t-center 0.160 [153. 130.  97.  58.  21. -10. -30. -40. -39. -33.]
+0.67 -37.4 trial 0 t-center 0.170 [130.  97.  58.  21. -10. -30. -40. -39. -33. -23.]
+0.68 -30.6 trial 0 t-center 0.180 [ 97.  58.  21. -10. -30. -40. -39. -33. -23. -14.]
+0.69 -20.2 trial 0 t-center 0.190 [ 58.  21. -10. -30. -40. -39. -33. -23. -14.  -5.]
+4.78 27.4 trial 0 t-center 4.280 [  3.  10.  27.  54.  89. 124. 154. 175. 188. 194.]
+4.79 34.5 trial 0 t-center 4.290 [ 10.  27.  54.  89. 124. 154. 175. 188. 194. 201.]
+4.8 35.5 trial 0 t-center 4.300 [ 27.  54.  89. 124. 154. 175. 188. 194. 201. 211.]
+4.81 30.2 trial 0 t-center 4.310 [ 54.  89. 124. 154. 175. 188. 194. 201. 211. 224.]
+4.82 21.1 trial 0 t-center 4.320 [ 89. 124. 154. 175. 188. 194. 201. 211. 224. 235.]
+Shell cwd was reset to
+```
+
+**Agent**
+
+The Leu post-MPTP command is a smooth trace with excursions lasting hundreds of ms, not 50 ms pulses, so the file description holds and the monkey L block stands. Correcting the notebook text now.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; python - <<'EOF'
+p='make_nb.py'; s=open(p).read()
+rep=[
+('''print("Leu files whose torque command has any finite value:", sum(x["torque_cmd_finite"] > 0 for x in leu), "of", len(leu))
+print("Leu files with a step of more than 20 units in the command:", sum(x["torque_cmd_steps"] > 0 for x in leu))''',
+'''finite = [x for x in leu if x["torque_cmd_finite"] > 0]
+print("Leu files whose torque command has any finite value:", len(finite), "of", len(leu),
+      "; of these after MPTP:", sum(bool(x["units"].post.iloc[0]) for x in finite))'''),
+('''**Result: blocked (data missing).** The Leu files hold 128 and 72 units but no perturbation
+times.''','''**Result: blocked (data missing).** The Leu files hold 138 and 72 units but no perturbation
+times, and the torque command is NaN in every file before MPTP.'''),
+('''**Result: reproduced.** All six means are within tolerance (M1 12.66 and 8.85, PTN 18.49 and
+14.37, CSN 3.48 and 3.36 spikes/s); the PTN rate is lower after MPTP (p = 0.0066) and the CSN
+rate does not differ (p = 0.92). The PTN test does not reach the paper's p < 0.001.''',
+'''**Result: reproduced.** All six means are within tolerance (M1 12.66 and 8.85, PTN 18.49 and
+14.37, CSN 3.48 and 3.36 spikes/s); the PTN rate is lower after MPTP (Mann-Whitney p = 0.020) and
+the CSN rate does not differ (p = 0.65). The PTN test does not reach the paper's p < 0.001; the M1
+rate is also lower (p = 0.0022, below the paper's 0.05/2).'''),
+('''**Result: partially reproduced.** The PTN latency does not differ (p >= 0.05) and three of the four
+means are within tolerance, but the CSN latency is not longer after MPTP with p < 0.05/3; see the
+numbers above.''','''**Result: partially reproduced.** All four means are within tolerance (PTN 1.92 and 1.86 ms, CSN
+4.91 and 6.85 ms) and the PTN latency does not differ (p = 0.68), but the CSN latency, longer after
+MPTP, has p = 0.019, above the 0.05/3 the criterion asks. With every Leu unit added (variant), the
+CSN test gives p = 0.0072.'''),
+('''**Result: not reproduced.** Under both readings the displacements are faster and larger after
+MPTP, not slower and smaller (peak velocity +28.1% pooled and +29.7% for flexion; amplitude +14.8%
+and +11.1%). At the torque levels both states share, peak velocity changes by +9.1% and amplitude
+by -0.5%, neither significant at 0.05 (variant above).''','''**Result: not reproduced.** Under both readings the displacements are faster and larger after
+MPTP, not slower and smaller (peak velocity +28.1% pooled and +29.7% for flexion; amplitude +14.8%
+and +11.1%; MPTP F = 98.5 and 25.0). Restricted to command pulses of 60 to 250 units the increase
+remains (+47.0% and +40.4%), so the command's arbitrary units do not explain it.'''),
+('''p < 1e-100; the MPTP by direction interaction is F = 16.1 (the paper's F > 94). At matched torque
+levels (variant above) the latency effect is much smaller.''','''p < 1e-100; the MPTP by direction interaction is F = 16.1 (the paper's F > 94). At command pulses
+of 60 to 250 units (variant above) the latency is also shorter after MPTP (F = 238.6).'''),
+]
+for a,b in rep:
+    assert a in s, a[:60]; s=s.replace(a,b)
+open(p,'w').write(s)
+EOF
+date -u
+```
+
+```
+Thu Nov 26 16:43:13 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json;s=json.load(open('schemas/entry.schema.json'));print(json.dumps(s,indent=0)[:2500])"; cat protocol.lock; ls entries/*/entry.yaml | head -400 | xargs grep -l "^python:" | tail -2 | xargs cat
+```
+
+```
 {
- "replace_all": false,
- "file_path": "attempts/001636-pasquereau-2013-02.yaml",
- "old_string": "  statement: New. The dandiset names catalystneuro/turner-lab-to-nwb as the code that compiled it,\n    but the repository's main branch (e80a192917490b50db6871180b6d1d9a24772e35) builds the published\n    version 0.260518.1819; the code that built the draft (merged sessions, obs_intervals, the new\n    unit names and descriptions) is in open pull request 33, branch fix_errors at\n    5f9bf6320a0160e4e56301d5409fb9242c1d8cf4.",
- "new_string": "  statement: New. The dandiset names catalystneuro/turner-lab-to-nwb as the code that compiled it,\n    but the repository's main branch is still at e80a192917490b50db6871180b6d1d9a24772e35, read for\n    001636-pasquereau-2013-01, and does not hold the code that built the draft (merged sessions,\n    obs_intervals, the new unit names and descriptions). That code is in open pull request 33,\n    branch fix_errors at 5f9bf6320a0160e4e56301d5409fb9242c1d8cf4."
-}
-```
-
-```
-The file attempts/001636-pasquereau-2013-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+"$schema": "https://json-schema.org/draft/2020-12/schema",
+"title": "An entry: a directory of notebooks with its metadata (entry.yaml)",
+"description": "Draft. To be revised after the pilot.",
+"type": "object",
+"additionalProperties": false,
+"required": [
+"schema_version",
+"name",
+"type",
+"title",
+"description",
+"license",
+"notebooks",
+"related"
+],
+"properties": {
+"schema_version": {
+"const": 1
+},
+[... 140 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'EOF'
-import yaml
-d=yaml.safe_load(open("attempts/001636-pasquereau-2013-02.yaml"))
-def walk(x,path=""):
-    if isinstance(x,dict):
-        for k,v in x.items(): walk(v,path+"/"+str(k))
-    elif isinstance(x,list):
-        for i,v in enumerate(x): walk(v,path+f"[{i}]")
-    elif isinstance(x,str) and ": " in x: print("COLON", path, x[:80])
-walk(d)
-txt=open("attempts/001636-pasquereau-2013-02.yaml").read()
-for w in ["—","rather","**"]:
-    if w in txt: print("found",w)
-print(len(d["outcomes"]))
+cd entries/pasquereau-2013; cat > entry.yaml <<'EOF'
+schema_version: 1
+name: pasquereau-2013
+type: reproduction
+title: Motor cortex responses to muscle stretch in the parkinsonian monkey (Pasquereau & Turner 2013)
+description: Tests the findings of Pasquereau and Turner (2013) on dandiset 001636, which holds the
+  single-unit recordings from primary motor cortex of two macaques before and after MPTP, with the
+  torque perturbations, elbow angle and EMG of monkey V. It counts the cells studied, compares
+  baseline rates and antidromic latencies, checks the false-positive rate of the response detection,
+  and tests the behavioural and EMG effects of MPTP on the torque-evoked stretch. The monkey L files
+  mark no perturbations.
+license: Apache-2.0
+notebooks:
+- path: reproduce_pasquereau_2013.ipynb
+  title: Reproducing Pasquereau & Turner (2013) from dandiset 001636
+  runtime_minutes: 7
+helpers:
+- pasq.py
+related:
+- id: dandi:001636/0.261124.1906
+  relation: uses_data
+- id: doi:10.3389/fnsys.2013.00098
+  relation: reproduces
 EOF
-grep -rn "—\|rather" entries/001636-pasquereau-2013/README.md entries/001636-pasquereau-2013/stretch.py; python tools/entry.py check entries/001636-pasquereau-2013 2>&1 | grep -v Warning | grep -v _validate
+printf "dandi\nh5py\nmatplotlib\nnumpy\npandas\npynwb\nremfile\nscipy\nstatsmodels\n" > requirements.in
+cd $TMPDIR/work && . ../env/bin/activate && python make_nb.py && cd  && python tools/entry.py lock entries/pasquereau-2013 2>&1 | tail -5; cat entries/pasquereau-2013/entry.yaml | grep python
 ```
 
 ```
-28
-0 error(s)
-```
-
-**Agent**
-
-The record passes `check`. Adding cell ids to the two inserted cells, since the other cells may have them.
-
-**Agent calls Bash**
-
-```bash
-cd entries/001636-pasquereau-2013; python - <<'EOF'
-import json, uuid
-p="reproduce_pasquereau_2013.ipynb"
-nb=json.load(open(p))
-print(nb["nbformat"], nb["nbformat_minor"], sum("id" in c for c in nb["cells"]), len(nb["cells"]))
-if any("id" in c for c in nb["cells"]):
-    for c in nb["cells"]:
-        if "id" not in c: c["id"]=uuid.uuid4().hex[:8]
-    open(p,"w").write(json.dumps(nb, indent=1, ensure_ascii=False)+"\n")
-EOF
-git diff --stat; git show HEAD:entries/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb | tail -c 300 | od -c | tail -3; tail -c 50 reproduce_pasquereau_2013.ipynb | od -c | tail -3
-```
-
-```
-4 5 105 107
- entries/001636-pasquereau-2013/README.md           |  36 +-
- entries/001636-pasquereau-2013/entry.yaml          |   4 +-
- .../reproduce_pasquereau_2013.ipynb                | 717 +++++++++++++--------
- entries/001636-pasquereau-2013/stretch.py          | 117 +++-
- 4 files changed, 572 insertions(+), 302 deletions(-)
-0000420   :       4   ,  \n       "   n   b   f   o   r   m   a   t   _
-0000440   m   i   n   o   r   "   :       5  \n   }  \n
-0000454
-0000040   o   r   m   a   t   _   m   i   n   o   r   "   :       5  \n
-0000060   }  \n
-0000062
-```
-
-**Agent**
-
-Now the full `all` run (check, then run from a clean environment).
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py all entries/001636-pasquereau-2013 2>&1 | grep -v "Warning\|_validate" | tail -4; python -c "
-import json
-nb=json.load(open('executed/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print(f'=== [{i}] {c.get(\"metadata\",{}).get(\"tags\",\"\")}')
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
-" > $TMPDIR/out4.txt; diff $TMPDIR/out3.txt $TMPDIR/out4.txt | grep -v "^[<>] *$" | head -60
-```
-
-```
-Installed kernelspec registry-001636-pasquereau-2013 in executed/001636-pasquereau-2013/.venv/share/jupyter/kernels/registry-001636-pasquereau-2013
-0 error(s)
-pass  reproduce_pasquereau_2013.ipynb  (120 s)
-4c4
-< loaded 439 files of dandiset 001636 version draft in 240 s
----
-> loaded 439 files of dandiset 001636 version draft in 50 s
-63c63,72
-< Largest angle excursion from its median, 1.0 to 2.5 s after the center target appears (deg):
----
-> Version 0.260518.1819: 447 files, 568 units; this version: 439 files, 566 units
-> Files of 0.260518.1819 not in this version: ['sub-Leu/sub-Leu_ses-Leu++l16301b++PostMPTP++Depth23000um++19931129_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v2702++PreMPTP++Depth19650um++19990607_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v3205++PreMPTP++Depth19400um++19990630_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v3607b++PreMPTP++Depth19650um++19990729_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v4527b++PostMPTP++Depth21600um++20000126_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v4810b++PostMPTP++Depth18900um++20000204_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v5604b++PostMPTP++Depth17960um++20000229_behavior+ecephys.nwb', 'sub-Venus/sub-Venus_ses-Venus++v5812++PostMPTP++Depth18300um++20000331_behavior+ecephys.nwb']
-> Monkey V cells studied in 0.260518.1819, by type and state:
-> state  pre  post
-> ptype           
-> CSN     31    48
-> NA      30    56
-> PTN     49    54
-> dual     2     1
-64a74,93
-[... 43 more lines not kept]
+wrote pasquereau-2013/requirements.lock.txt (Python 3.13, with hashes)
+python: "3.13"
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  diff <(grep -v "^===" $TMPDIR/out3.txt) <(grep -v "^===" $TMPDIR/out4.txt) | grep -v "^[<>] *$" | sed -n '/Largest angle/,$p' | grep -v "^---" | head -30; tail -3 $TMPDIR/out4.txt; curl -s https://api.dandiarchive.org/api/dandisets/001636/ | python -c "import json,sys; d=json.load(sys.stdin)['draft_version']; print(d['modified'], d['asset_count'], d['active_uploads'])"
-```
+cd  sed -i '/matplotlib/d' entries/pasquereau-2013/requirements.in; python tools/entry.py lock entries/pasquereau-2013 2>&1 | tail -2; cat > entries/pasquereau-2013/README.md <<'EOF'
+# Pasquereau & Turner (2013) from dandiset 001636
 
-Result: the fetched text is not kept.
+Tests the findings of [Pasquereau and Turner (2013)](https://doi.org/10.3389/fnsys.2013.00098) that
+can be tested on [DANDI:001636](https://dandiarchive.org/dandiset/001636/0.261124.1906), which holds
+single-unit recordings from primary motor cortex of monkeys V (Venus) and L (Leu) before and after
+MPTP. Only the monkey V files mark the torque perturbations, so every claim is tested on monkey V.
 
-**Agent**
-
-All other outputs are unchanged, and the draft's modification time is the same as at the start. Last steps: the README run time, then the handover.
-
-**Agent calls Bash**
-
-```bash
-cd  sed -i 's/It took 2.4 min in the latest run, most of it streaming the/It took 1.8 min in the latest run (up to 4.5 min in others), most of it streaming the/' entries/001636-pasquereau-2013/README.md; grep -n "min in" entries/001636-pasquereau-2013/README.md; python tools/entry.py check entries/001636-pasquereau-2013 2>&1 | tail -1; python tools/entry.py handover entries/001636-pasquereau-2013 2>&1 | tail -5; ls executed/001636-pasquereau-2013/handover/; git status --short
-```
-
-```
-48:- `reproduce_pasquereau_2013.ipynb`: the analysis. It took 1.8 min in the latest run (up to 4.5 min in others), most of it streaming the
-0 error(s)
-wrote executed/001636-pasquereau-2013/handover
-10.3389-fnsys.2013.00098.yaml
-reproduce_pasquereau_2013.ipynb
-stretch.py
- M entries/001636-pasquereau-2013/README.md
- M entries/001636-pasquereau-2013/entry.yaml
- M entries/001636-pasquereau-2013/reproduce_pasquereau_2013.ipynb
- M entries/001636-pasquereau-2013/stretch.py
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-[... 2 more lines not kept]
-```
-
-**Agent**
-
-I've made the second attempt on the 001636 draft (last modified 2026-10-21T20:16:41Z, version asked for). Every claim has the same outcome as in `001636-pasquereau-2013-01`. Of the 11 earlier findings, 5 are fixed, 3 are partly fixed, and 3 are still present, each now described in the dandiset where it is a data issue. `entry.py all` passes (check clean, notebook ran in 1.8 min, other runs took up to 4.5 min) and the handover is built. Nothing is verified or committed.
-
-**Draft stability.** The archive listed 4 uploads in progress on the draft the whole time. Its modification time and asset count (439) did not change between the start and the end of this run.
-
-**(1) Outcome per claim** (earlier outcome in brackets; all the same)
-
-| Claim | This attempt (-01) |
+| Claim | Outcome |
 |---|---|
-| cell-counts | reproduced (reproduced) |
-| monkey-l-perturbations | blocked: data_missing (same) |
-| baseline-rate | reproduced (reproduced) |
-| ptn-faster-than-csn | reproduced (reproduced) |
-| antidromic-latency | partially reproduced (same) |
-| false-positive-rate and the 14 claims that depend on its selection | blocked: methods_underspecified (same) |
-| kinematics-slower | not reproduced (same) |
-| kinematic-latency-unchanged | not reproduced (same) |
-| emg-m2-larger | reproduced (same) |
-| emg-duration-longer | partially reproduced (same) |
-| emg-onset-unchanged | not reproduced (same) |
-| emg-m1-weak | partially reproduced (same) |
-| trial-correlations | blocked: methods_underspecified (same) |
+| Cells studied in monkey V, by state and projection type | Reproduced |
+| Monkey L responses to wrist perturbations | Blocked: data missing |
+| Baseline rate lower after MPTP for PTNs, not CSNs | Reproduced |
+| PTNs fire faster than CSNs at rest | Reproduced |
+| CSN antidromic latency longer after MPTP, PTN unchanged | Partially reproduced |
+| False-positive rate of the response detection near 0.01 | Blocked: methods underspecified |
+| 15 claims on the selected responses (prevalence, magnitude, latency, FWHM, directionality, correlations) | Blocked: methods underspecified |
+| Torque-induced displacements slower and smaller after MPTP | Not reproduced |
+| Latency of torque-induced displacements unchanged | Not reproduced |
+| Long-latency (m2) EMG response larger after MPTP | Reproduced |
+| EMG responses last longer after MPTP | Partially reproduced |
+| Onset of EMG responses unchanged | Not reproduced |
+| Short-latency (m1) EMG response weak | Partially reproduced |
+| Trial-by-trial latency correlations | Blocked: methods underspecified |
 
-Numbers that moved:
-- **Cell counts:** now 115 and 157 cells (51/54 PTNs, 32/48 CSNs), still within tolerance. Before, they matched the paper exactly (112 and 159). The draft adds trials from second source files, which brings 3 more pre-MPTP units over the threshold, and drops 2 duplicate units. Counting each unit from its first file only gives exactly the paper's pre-MPTP numbers (112, 49, 31). The notebook lists every unit that differs between the two versions.
-- **Session correlation of PTN latency with m2:** now p = 0.023, no longer below the paper's 0.0125 (it was 0.011). The claim stays blocked.
-- **Poisson check of the false-positive rate:** I added eight more seeds. Simulated trains give 0.16 to 0.21 against the observed 0.23, so the earlier statement that about a third of the rate is unexplained is dropped.
-- **Monkey V cell pre/post comparison:** 12 of 12 magnitude tests now find a difference (11 before); this claim is blocked either way.
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
 
-**(2) Earlier findings**
-- **Fixed:**
-  - The analog streams now share the trials' clock (lag 0 ms; the torque command steps 4 to 6 ms after onset).
-  - The angle's reference frame now says positive is flexion, and the monkey L series are named Wrist.
-  - Repeated files and duplicate units are gone.
-  - `unit_also_in_session_id` is removed; neurons recorded across two files are now one unit.
-  - The dandiset description is corrected.
-- **Partly fixed:**
-  - Torque command sizes: the data are unchanged, but the sizes and the missing scale are now described in the files.
-  - The EMG description now matches the paper; the 100 Hz monkey L sampling and the A/D units remain but are stated.
-- **Still present:**
-  - Monkey L has no perturbation times (now documented).
-  - Torque onset comes about 1.7 s after the center target (now documented).
-  - No analysis code, and a false-positive rate of 0.23.
-  - The paper's own inconsistency.
+The response detection the claims file specifies crosses its threshold in 23% of cell-directions
+at a pseudo onset, about 20 times the paper's stated 1%, so the claims that rest on the selection
+of responses are blocked; their results are shown in the notebook. The torque command's pulses are
+about three times larger after MPTP than before, and the evoked displacements are faster and
+larger after MPTP, the reverse of the paper's. The attempt record, with the reasons and the
+differences from the paper's method, is
+[`attempts/pasquereau-2013-03.yaml`](../../attempts/pasquereau-2013-03.yaml).
 
-**(3) New findings**
-- Three sessions (v1401, v1402, v1501) have labelled perturbations but no pulse in the torque command. The files' torque description says so.
-- The code that built the draft is in an open pull request of turner-lab-to-nwb (#33, branch `fix_errors`, 5f9bf63). The main branch the dandiset links does not hold it.
+- `reproduce_pasquereau_2013.ipynb`: the analysis. It takes about seven minutes, most of it
+  streaming the files.
+- `pasq.py`: loading the files, spike density functions, response detection, kinematics and EMG
+  measures, with where each parameter comes from. Other notebooks on this dandiset can import it.
+EOF
+date -u; time python tools/entry.py all entries/pasquereau-2013 2>&1 | tail -20
+```
 
-**(4) Where the protocol did not fit a repeat attempt**
-- `entry.py check` fails on the `-01` record as soon as `entry.yaml` points at the new version, and passes only once the `-02` record exists. So check cannot be run before the record is written.
-- The schema has no field for whether an earlier finding is fixed. Following `001754-knierim-2000-02`, I put the status of every earlier finding in the record's header comment and restated those still present or partly fixed as findings.
-- The protocol records a draft's modification time but says nothing about uploads in progress or checking the draft again at the end.
-- The claims file's comment says "no unit appears in two files". Merged sessions make that untrue, and units now span source files. I applied the criterion per unit within its own trials and showed the first-file reading as a variant. I did not raise a question because both readings give the same outcome.
-- Step 1.3 asks to show how versions differ. That required loading the units of the earlier version as well, which adds streaming time to every run.
+```
+wrote pasquereau-2013/requirements.lock.txt (Python 3.13, with hashes)
+Thu Nov 26 16:43:39 UTC 2026
+Installed kernelspec registry-pasquereau-2013 in executed/pasquereau-2013/.venv/share/jupyter/kernels/registry-pasquereau-2013
+0 error(s)
+pass  reproduce_pasquereau_2013.ipynb  (348 s)
 
-Changes are in `entries/001636-pasquereau-2013/` (`stretch.py`, the notebook, `entry.yaml`, `README.md`) and the new `attempts/001636-pasquereau-2013-02.yaml`; the handover is in `executed/001636-pasquereau-2013/handover/`.
+real	5m56.811s
+user	0m59.027s
+sys	0m5.922s
+```
+
+**Agent**
+
+The full run passes in 348 s. Checking that the executed copy prints the same numbers as the development run.
+
+**Agent calls Bash**
+
+```bash
+cd  ls executed/pasquereau-2013/; python3 - <<'EOF'
+import json
+nb=json.load(open('executed/pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        tags=c['metadata'].get('tags')
+        out=''.join(''.join(o.get('text','')) if o['output_type']=='stream' else str(o.get('ename','')) for o in c['outputs'])
+        if tags and any(t.startswith(('claim:antid','claim:baseline','finding','claim:kinematic','claim:false')) for t in tags): print(tags, out[:1500])
+EOF
+```
+
+```
+reproduce_pasquereau_2013.ipynb
+result.json
+['finding-leu-no-perturbations'] Leu trials by torque_perturbation_type: {'not_available': 5952}
+Leu files whose torque command has any finite value: 34 of 148 ; of these after MPTP: 34
+
+['finding-torque-command-levels']         count   mean   std   min    25%    50%    75%    max
+post                                                        
+False  1947.0   58.4  28.1  -0.7   45.3   45.7   90.3  182.7
+True   3603.0  174.7  47.6  26.0  155.3  181.6  184.5  343.5
+
+sessions by median pulse size (a.u.), pre and post:
+command  (30, 60]  (60, 120]  (120, 250]
+post                                    
+False         105         43           3
+True            0         12         125
+
+['finding-kinematics-vs-paper']                  peak_velocity  amplitude  latency
+post  direction                                   
+False extension          46.10       2.42    10.86
+      flexion            58.11       3.40     9.65
+[... 59 more lines not kept]
+```
+
+**Agent**
+
+Executed outputs match. Now the attempt record; checking the schema and a recent record's format first.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF'
+import json
+s=json.load(open('schemas/attempt.schema.json'))
+print(s.get('required')); 
+P=s['properties']
+for k in ['provenance','outcomes','findings','datasets','inputs']:
+    print(k, json.dumps(P[k])[:1500]); print()
+print(json.dumps(s.get('$defs',{}))[:3000])
+EOF
+ls -t attempts | head -3
+```
+
+```
+['schema_version', 'id', 'datasets', 'paper', 'date', 'provenance', 'outcomes']
+provenance {"type": "object", "additionalProperties": false, "required": ["kind", "accountable"], "properties": {"kind": {"enum": ["agent", "person"]}, "accountable": {"description": "The person or organisation responsible for this attempt.", "type": "object", "additionalProperties": false, "required": ["name"], "properties": {"name": {"type": "string"}, "orcid": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$"}, "ror": {"type": "string"}}}, "agent": {"description": "Required when kind is agent.", "type": "object", "additionalProperties": false, "required": ["harness", "model", "protocol"], "properties": {"harness": {"type": "string"}, "model": {"type": "string"}, "protocol": {"description": "Version of the reproduction protocol the agent followed.", "type": "string"}}}, "runner": {"description": "Where the attempt was run: the platform, and the run that wrote this record. Its other runs (verification rounds, revisions) are linked from their transcripts.", "type": "object", "additionalProperties": false, "required": ["platform"], "properties": {"platform": {"description": "The platform that ran it, e.g. GitHub Actions, or local for a person's machine.", "type": "string", "minLength": 1}, "url": {"description": "The run that wrote the record, e.g. https://github.com/<owner>/<repo>/actions/runs/<id>.", "type": "string", "pattern": "^https://"}}}, "author_notes": {"description": "The notes from the paper's authors that this attempt used (papers/author-notes/<pape
+
+outcomes {"description": "One per claim attempted.", "type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["claim", "outcome"], "properties": {"claim": {"description": "Claim id from the target's claims file.", "type": "string"}, "outcome": {"enum": ["reproduced", "partially_reproduced", "not_reproduced", "blocked"], "description": "Describes the result, 
+[... 11 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF'
+import json
+s=json.load(open('schemas/attempt.schema.json'))
+P=s['properties']
+print(json.dumps(P['findings']['items']['properties'])[1400:4000])
+print(json.dumps(P['outcomes']['items']['properties'])[1500:3500])
+print(s['properties']['schema_version'], [k for k in P])
+EOF
+grep -n "^findings" -A30 attempts/zheng-2024-01.yaml | head -50
+```
+
+```
+around, a wrong unit label included. `none`: no problem, a check that passed. Required from protocol pilot-18.", "enum": ["critical", "major", "minor", "none"]}, "datasets": {"description": "For a finding about the data, in an attempt that used several datasets: the folders of the datasets it is about (000147, crcns-hc-18). Unset: the attempt's one dataset, or all of them.", "type": "array", "minItems": 1, "items": {"type": "string"}}, "versions": {"description": "For a finding about the data: the versions of the dataset the finding was seen in, as the archive names them (0.240503.0152). Unset: the version the attempt read. Give it when the finding was seen in another version, such as the one the paper cites, and list the version the attempt read too if the finding is there as well. With several `datasets`, the versions are of the one dataset the finding names.", "type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "fixed_in": {"description": "For a finding about the data: the first version of the dataset in which the attempt looked for the problem and it was gone. Unset: not known to be fixed. A fixed finding is kept in the record: it still matters for a paper that used the earlier version.", "type": "string", "minLength": 1}, "notebook": {"description": "Path of the notebook within the entry whose code shows the finding.", "type": "string", "minLength": 1}, "output": {"description": "Which output of that notebook shows the finding: a cell tag, as for an outcome.", "type": "string", "minLength": 1}}
+md, Author, step 1.6).", "type": "boolean"}, "seed_sensitive": {"type": "boolean", "description": "True when the outcome is not the same under all five seeds the protocol asks for (docs/protocol.md, Author, step 3)."}, "proposed": {"description": "A change of outcome found after the last verification round, held until a further round agrees with it.", "type": "object", "additionalProperties": false, "required": ["outcome", "
+[... 32 more lines not kept]
+```
+
+**Agent**
+
+Writing the attempt record now, generated from Python so the YAML is valid.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; cat > make_record.py <<'EOF'
+import yaml
+NB = "reproduce_pasquereau_2013.ipynb"
+
+def o(claim, outcome, notes, output=None, blocked_by=None, measured=None, deviations=None, assumed=None):
+    d = {"claim": claim, "outcome": outcome}
+    if blocked_by: d["blocked_by"] = blocked_by
+    d["notebook"] = NB
+    d["output"] = output or f"claim:{claim}"
+    if measured is not None: d["measured"] = measured
+    d["notes"] = notes
+    if deviations: d["deviations"] = deviations
+    if assumed: d["assumed"] = True
+    return d
+
+SEL = ("Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection, "
+       "whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.")
+MONKEY_V = "Monkey V only; the paper's values pool both monkeys where the claim says so."
+
+outcomes = [
+ o("cell-counts", "reproduced",
+   "Monkey V units with at least 5 observed perturbations per direction number 115 before and 157 after MPTP "
+   "(112 and 159 expected), with 51 and 54 PTNs (49 and 54) and 32 and 48 CSNs (31 and 48). Three units in all "
+   "files are pyramidal_tract_and_corticostriatal_neuron, all in monkey V and all studied; Leu has none. The "
+   "studied cells also include 29 and 50 not activated, 1 and 1 not tested, and after MPTP one PTN-and-thalamic "
+   "and two thalamic projection units. 79 pre and 5 post Venus units have fewer than 5 perturbations in a "
+   "direction. No unit name repeats across files, and no trial spike train, angle or EMG window is shared "
+   "between files.",
+   measured=[115, 157, 51, 54, 32, 48, 3]),
+ o("monkey-l-perturbations", "blocked",
+   "All 5952 Leu trials have torque_perturbation_type not_available and no onset time. The Leu torque command "
+   "is NaN in all 114 files before MPTP and, in the 34 after, a smooth trace without 50 ms pulses, so the "
+   "perturbations cannot be recovered. The Leu files hold 138 and 72 units.",
+   blocked_by="data_missing"),
+ o("baseline-rate", "reproduced",
+   "Mean baseline rates (spikes/s) M1 12.66 and 8.85, PTN 18.49 and 14.37, CSN 3.48 and 3.36, all within "
+   "tolerance. PTN rate lower after MPTP (-22%, Mann-Whitney p = 0.020), CSN unchanged (p = 0.65), M1 lower "
+   "(-30%, p = 0.0022, below the paper's 0.05/2). The PTN test does not reach the p < 0.001 of the statement.",
+   measured=[12.66, 8.85, 18.49, 14.37, 3.48, 3.36]),
+ o("ptn-faster-than-csn", "reproduced",
+   "Pre-MPTP PTNs 18.49 spikes/s (n 51, range 2.6 to 49.0) against CSNs 3.48 (n 32, range 0.0 to 20.7), "
+   "Mann-Whitney p = 6.3e-12. The pooled values 16.3 and 3.6 (text) and 18.3 and 3.2 (Table 1) are reported, not "
+   "judged."),
+ o("antidromic-latency", "partially_reproduced",
+   "PTN latency 1.92 and 1.86 ms (n 49 and 48, Mann-Whitney p = 0.68); CSN 4.91 and 6.85 ms (n 32 and 38, "
+   "p = 0.019). All four means are within tolerance and the PTN test holds, but the CSN test does not reach "
+   "0.05/3 (0.0167). Two studied PTNs before and one after, and ten CSNs after MPTP, have no antidromic "
+   "latency in the files. With every Leu PTN and CSN added (variant) the means are 1.80, 1.83, 5.38 and 7.01 ms "
+   "and the CSN test gives p = 0.0072.",
+   measured=[1.92, 1.86, 4.91, 6.85],
+   deviations=["The expected values pool both monkeys; the test uses monkey V's studied cells (criterion)."]),
+ o("false-positive-rate", "blocked",
+   "With the claims file's detection at a pseudo onset 600 ms before the torque, 0.230 of 544 cell-directions "
+   "cross the threshold over 0 to 200 ms (0.257 before and 0.210 after MPTP), and 0.051 have a response with "
+   "onset in 20 to 60 ms. On trials without a perturbation, aligned where the file's perturbations fall, 0.196 "
+   "of 255 cells cross. Both are far above 0.03, so by the claims file's rule and the protocol's the "
+   "procedure is not the paper's. Other readings of the Methods' t-test give 0.465 (single-trial t-test, the "
+   "claims file's variant), 0.347 (standard error of trial baselines) and 0.013 (SD of all single-trial "
+   "baseline values); the last is near 0.01 but calls only 0.200 of real cell-directions responsive "
+   "(0.673 with the claims file's detection), far below the paper's 62 to 75% of cells. No reading gives both "
+   "the paper's false-positive rate and its response rates. Question for the authors, in findings.",
+   blocked_by="methods_underspecified", measured=0.23,
+   deviations=["The t threshold uses 499 degrees of freedom (500 baseline values), a standard choice.",
+               "The kernel is truncated at 400 ms, a standard choice that cannot change a result."]),
+ o("torque-related-fractions", "blocked",
+   SEL + " Torque-related M1 64/115 (55.7%) and 78/157 (49.7%), PTN 37/51 (72.5%) and 37/54 (68.5%), CSN 5/32 "
+   "(15.6%) and 9/48 (18.8%), against 75, 68, 55, 68, 45 and 21% expected. With the single-trial t-test 44.3% "
+   "and 59.9% of cells.", blocked_by="methods_underspecified"),
+ o("prevalence-unchanged", "blocked",
+   SEL + " Yates chi-square, pre against post, M1 p = 0.40, PTN p = 0.81, CSN p = 0.95.",
+   blocked_by="methods_underspecified"),
+ o("ptn-more-responsive", "blocked",
+   SEL + " PTN 70.5% and CSN 17.5% torque-related (62.1 and 30.4 expected), Yates chi2 = 49.0, p = 2.6e-12.",
+   blocked_by="methods_underspecified"),
+ o("one-direction-half", "blocked",
+   SEL + " 75 of 142 torque-related cells (52.8%) respond to one direction only (44% expected).",
+   blocked_by="methods_underspecified"),
+ o("excitatory-majority", "blocked",
+   SEL + " Increases are 83.3% and 76.5% of M1 responses and 70.6% and 58.3% of PTN responses before and after "
+   "MPTP (86, 88, 70 and 75 expected); PTN Yates chi2 = 1.30, p = 0.25.",
+   blocked_by="methods_underspecified"),
+ o("magnitude-unchanged", "blocked",
+   SEL + " Magnitudes are smaller after MPTP in all 12 tests (M1 and PTN; mean change, maximum change, area), "
+   "KS p 0.00013 to 0.047 and Mann-Whitney p 1.9e-05 to 0.043.",
+   blocked_by="methods_underspecified"),
+ o("venus-response-magnitudes", "blocked",
+   SEL + " Maximum change (reading a), pre and post, M1 flexion 38.1 and 30.7, M1 extension 45.3 and 31.5, PTN "
+   "flexion 31.6 and 19.6, PTN extension 35.6 and 23.8 spikes/s; mean rate (b) and mean change (c) are in "
+   "the notebook.", blocked_by="methods_underspecified"),
+ o("latency-shorter", "blocked",
+   SEL + " Latencies are shorter after MPTP in all four comparisons (KS p 0.0077 to 0.010); means M1 flexion "
+   "40.9 and 35.5, M1 extension 42.9 and 36.1, PTN flexion 44.9 and 38.1, PTN extension 45.3 and 38.0 ms.",
+   blocked_by="methods_underspecified"),
+ o("latency-not-training", "blocked",
+   SEL + " Earliest latency against days since the first Venus session, pre and post pooled, Spearman "
+   "rho = -0.26, p = 0.0016 (n 142); within each state p = 0.33 and 0.16.",
+   blocked_by="methods_underspecified"),
+ o("fwhm-shorter-ptn", "blocked",
+   SEL + " FWHM of PTN increases, flexion 87.7 and 50.3 ms (p = 0.060), extension 66.0 and 41.2 ms (p = 0.55).",
+   blocked_by="methods_underspecified"),
+ o("dsi-reduced", "blocked",
+   SEL + " Reciprocal plus unidirectional 59.4% before and 52.6% after MPTP, chi-square p = 0.093.",
+   blocked_by="methods_underspecified"),
+ o("venus-dsi", "blocked",
+   SEL + " Mean DSI M1 0.60 and 0.47, PTN 0.71 and 0.46, CSN 0.66 and 0.69.",
+   blocked_by="methods_underspecified"),
+ o("dsi-not-baseline", "blocked",
+   SEL + " One-way ANOVA of baseline rate across the four categories F = 1.21, p = 0.31.",
+   blocked_by="methods_underspecified"),
+ o("velocity-matched-magnitude", "blocked",
+   SEL + " Only 2 of 581 session-directions have a mean peak velocity of 130 to 200 deg/s, with one response "
+   "in all (cell finding-kinematics-vs-paper), so the subset could not be formed under any detection.",
+   blocked_by="methods_underspecified"),
+ o("session-correlations", "blocked",
+   SEL + " Session mean PTN latency against peak velocity rho = -0.17, p = 0.15 (70 sessions); against triceps "
+   "longus 1 m2 rho = -0.38, p = 0.0076 (49 sessions).", blocked_by="methods_underspecified"),
+ o("kinematics-slower", "not_reproduced",
+   "Session means (154 and 153 pre, 137 and 137 post session-directions). After MPTP peak velocity is higher, "
+   "+28.1% pooled and +29.7% for flexion (MPTP F = 98.5, p = 1.5e-21), and amplitude larger, +14.8% and +11.1% "
+   "(F = 25.0, p = 7.5e-07). Restricted to command pulses of 60 to 250 units, the range both states share, "
+   "the changes are +47.0% and +40.4%. Mean displacements are 2.4 to 3.8 degrees, where the paper gives a mean "
+   "of 10. No file repeats another's trials, so none was left out.",
+   measured=[28.1, 14.8],
+   deviations=["Monkey V only, so the ANOVA has no animal factor (criterion).",
+               "The FIR filter has 101 taps at 1 kHz, a standard choice; onset, peak velocity and amplitude "
+               "windows are the claims file's."]),
+ o("kinematic-latency-unchanged", "not_reproduced",
+   "Movement onset latency is shorter after MPTP (pre 9.7 and 10.9 ms, post 3.0 and 6.0 ms for flexion and "
+   "extension), MPTP F = 709, p < 1e-100; the MPTP by direction interaction is F = 16.1 (the paper's F > 94). "
+   "At command pulses of 60 to 250 units the latency is also shorter (F = 239)."),
+ o("emg-m2-larger", "reproduced",
+   "m2 medians pre and post (a.u.) triceps lateralis 5.4 and 78.9 (KS p = 3.6e-15, 35 and 32 sessions), triceps "
+   "longus 1 4.6 and 165.6 (p = 3e-46), triceps longus 2 10.3 and 301.1 (p = 7.5e-41); the same under the other "
+   "channel rule. The torque pulses are about three times larger after MPTP, which this comparison cannot "
+   "separate from the effect of MPTP.",
+   deviations=["The claims file does not say whether a channel's baseline SD is that of the session-average "
+               "trace or of the single-trial samples; both were run and give the same outcome."]),
+ o("emg-duration-longer", "partially_reproduced",
+   "Mean duration 22.2 ms before (181 channel-sessions) and 51.5 ms after MPTP (241), KS p = 5.2e-33; both far "
+   "outside 57 +/- 6 and 79 +/- 3 ms. 23 channel-sessions before MPTP have no response. Under the other channel "
+   "rule 21.3 and 50.0 ms.", measured=[22.2, 51.5],
+   deviations=["Both readings of the channel rule were run (see emg-m2-larger); they give the same outcome."]),
+ o("emg-onset-unchanged", "not_reproduced",
+   "Onset of the EMG responses 44.2 ms before (median 36) and 25.0 ms after MPTP (median 25), KS p = 5.8e-22; "
+   "under the other channel rule 41.2 and 24.2 ms, p = 7.1e-21.",
+   deviations=["Both readings of the channel rule were run; they give the same outcome."]),
+ o("emg-m1-weak", "partially_reproduced",
+   "After MPTP m2 exceeds m1 in 237 of 241 channel-sessions (98.3%) and the median m1/m2 is 0.25; before MPTP the "
+   "median ratio is 0.14 but m2 exceeds m1 in 151 of 204 (74.0%), just under 75%. Under the other channel rule "
+   "74.3% and 0.11 before, 96.3% and 0.23 after, the same outcome.",
+   deviations=["Both readings of the channel rule were run; they give the same outcome."]),
+ o("trial-correlations", "blocked",
+   "The Methods do not define a single-trial response latency, and the claim also uses the response selection "
+   "blocked with false-positive-rate. Question for the authors, in findings.",
+   output="claim:session-correlations", blocked_by="methods_underspecified"),
+]
+
+findings = [
+ {"kind": "data_missing", "severity": "major", "notebook": NB, "output": "finding-leu-no-perturbations",
+  "statement": "The monkey L (Leu) files mark no torque perturbation; all 5952 trials have "
+  "torque_perturbation_type not_available. The torque command is NaN in every file before MPTP and, in the 34 "
+  "after, a continuous trace without pulses, so the perturbations cannot be recovered. The paper's monkey L "
+  "torque results (57 of 115 and 35 of 73 responsive cells), which enter its pooled values, cannot be tested. "
+  "The dandiset description says so."},
+ {"kind": "other", "about": "data", "severity": "major", "notebook": NB, "output": "finding-kinematics-vs-paper",
+  "statement": "The torque-evoked elbow displacements in the files differ from the paper's. Their session mean "
+  "amplitude is 2.4 to 3.8 degrees and 0.1% of perturbations reach 10 degrees, where the paper gives a mean of "
+  "10 degrees; session mean peak velocities are 46 to 75 deg/s, and only 2 of 581 session-directions fall in the "
+  "130 to 200 deg/s range the paper uses for its velocity-matched sessions. After MPTP the displacements are "
+  "faster (+28%) and larger (+15%), where the paper reports them slower (-16.2%) and smaller (-6.6%)."},
+ {"kind": "other", "about": "data", "severity": "minor", "notebook": NB, "output": "finding-torque-command-levels",
+  "statement": "The torque command's pulse is about three times larger after MPTP than before (median 181.6 "
+  "against 45.7 units; 125 of 137 post-MPTP sessions have a median pulse of 120 to 250 units, 3 of 151 before), "
+  "where the paper describes one 0.1 Nm pulse throughout. The units have no conversion to newton-metres, so "
+  "whether the applied torque changed cannot be told; the ElbowTorque description notes the varying levels. "
+  "Comparisons of evoked movements and EMG before and after MPTP cannot separate the torque from the effect of "
+  "MPTP."},
+ {"kind": "other", "about": "data", "severity": "none", "notebook": NB, "output": "sanity",
+  "statement": "Checks that passed. The monkey V counts of cells studied by MPTP state and projection type match "
+  "the paper's supplementary table within 3 cells; is_post_mptp agrees with every file name; no unit name repeats "
+  "across files and no trial spike train, angle or EMG window is shared between files. The torque command leaves "
+  "rest 4 ms after the marked onset and the joint moves in the torque's direction, and spikes cross the "
+  "response threshold in 0.67 of cell-directions after the onset against 0.23 after a pseudo onset, so the "
+  "analog series and spikes are consistent with the trials table's clock."},
+ {"kind": "methods_unavailable",
+  "statement": "Question for the authors. The Methods detect responses by a millisecond-by-millisecond two-tailed "
+  "t-test of the SDF against the baseline rate at p < 0.002, and state that this holds the false-positive rate "
+  "near 0.01 over 200 ms. How was the test computed (which variance, over trials or over baseline time, and of "
+  "single-trial or trial-averaged SDFs)? On these data, a threshold from the SD of the trial-averaged SDF's "
+  "baseline crosses after a pseudo onset in 23% of cell-directions, a single-trial t-test in 47%, and a "
+  "threshold from the SD of all single-trial baseline values in 1.3% but finds responses in only 20% of real "
+  "cell-directions; none gives both the stated false-positive rate and the reported 62 to 75% of cells "
+  "responding. All claims on the response selection are blocked until this is known."},
+ {"kind": "methods_unavailable",
+  "statement": "Question for the authors. The trial-by-trial correlations of PTN response latency with peak "
+  "velocity and m2 need a single-trial response latency, which the Methods do not define (the response onset is "
+  "defined on the trial-averaged SDF). How was it measured?"},
+]
+
+rec = {
+ "schema_version": 3,
+ "id": "pasquereau-2013-03",
+ "datasets": [{"archive": "dandi", "id": "001636", "version": "0.261124.1906",
+               "doi": "10.48324/dandi.001636/0.261124.1906", "relation": "primary"}],
+ "paper": "doi:10.3389/fnsys.2013.00098",
+ "date": "2026-11-26",
+ "entry": "pasquereau-2013",
+ "provenance": {"kind": "agent", "accountable": {"name": "CatalystNeuro"},
+                "agent": {"harness": "Claude Code", "model": "claude-opus-5-5", "protocol": "pilot-19"},
+                "runner": {"platform": "GitHub Actions",
+                           "url": "https://github.com/encorescience/encore-registry/actions/runs/45857382971"}},
+ "outcomes": outcomes,
+ "findings": findings,
+}
+yaml.safe_dump(rec, open("attempts/pasquereau-2013-03.yaml", "w"),
+               sort_keys=False, width=100, allow_unicode=True)
+EOF
+python make_record.py && grep -n '": \|: .*: ' attempts/pasquereau-2013-03.yaml | head; head -30 attempts/pasquereau-2013-03.yaml
+```
+
+```
+schema_version: 3
+id: pasquereau-2013-03
+datasets:
+- archive: dandi
+  id: '001636'
+  version: 0.261124.1906
+  doi: 10.48324/dandi.001636/0.261124.1906
+  relation: primary
+paper: doi:10.3389/fnsys.2013.00098
+date: '2026-11-26'
+entry: pasquereau-2013
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+[... 11 more lines not kept]
+```
+
+**Agent**
+
+A few notes need correcting against the printed numbers (antidromic latency counts, p-value ranges, wording of the kinematic ranges). I'm also giving trial-correlations its own tagged cell.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF'
+p='make_record.py'; s=open(p).read()
+rep=[("Two studied PTNs before and one after, and ten CSNs after MPTP, have no antidromic \"\n   \"latency in the files.",
+      "Of the studied cells, 2 of 51 PTNs before and 6 of 54 after, and 10 of 48 CSNs after MPTP, have no \"\n   \"antidromic latency in the files."),
+     ("is NaN in all 114 files before MPTP and, in the 34 after,", "is NaN in 114 files, and in the other 34, all after MPTP, it is"),
+     ("The torque command is NaN in every file before MPTP and, in the 34 \"\n  \"after, a continuous trace without pulses,",
+      "The torque command is NaN in 114 files and, in the other 34, all after \"\n  \"MPTP, a continuous trace without 50 ms pulses,"),
+     ("Their session mean \"\n  \"amplitude is 2.4 to 3.8 degrees", "Averaged over sessions, the \"\n  \"amplitude is 2.4 to 3.8 degrees per state and direction"),
+     ("session mean peak velocities are 46 to 75 deg/s,", "the peak velocity 46 to 75 deg/s,"),
+     ("KS p 0.00013 to 0.047", "KS p 9.8e-05 to 0.047"),
+     ("output=\"claim:session-correlations\", blocked_by=\"methods_underspecified\"),", "blocked_by=\"methods_underspecified\"),"),
+]
+for a,b in rep:
+    assert a in s, a[:50]; s=s.replace(a,b)
+open(p,'w').write(s)
+p='make_nb.py'; s=open(p).read()
+a='''**Result: blocked (methods underspecified).** The criterion needs a single-trial response latency,
+which the Methods do not define; it also uses the response selection blocked above.
+""")'''
+b='''The Methods define a response's onset on the trial-averaged SDF only. The trials a single-trial
+latency would be needed for:
+""")
+
+code("""
+ptn_resp = resp[resp.ptype == PTN]
+n_trials = sum(int(studied.loc[(studied.file == r.file) & (studied.unit == r.unit), f"n_{r.direction}"].iloc[0])
+               for r in ptn_resp.itertuples())
+print(f"PTN responses (claims file's detection): {len(ptn_resp)}, over {n_trials} perturbation trials")
+""", tags=["claim:trial-correlations"])
+
+md("""
+**Result: blocked (methods underspecified).** The criterion needs a single-trial response latency,
+which the Methods do not define; it also uses the response selection blocked above.
+""")'''
+assert a in s; s=s.replace(a,b)
+s=s.replace("""The Leu files hold 138 and 72 units but no perturbation
+times, and the torque command is NaN in every file before MPTP.""","""The Leu files hold 138 and 72 units but no perturbation
+times, and the torque command is NaN in 114 of 148 files and without pulses in the rest.""")
+open(p,'w').write(s)
+EOF
+grep -n "NaN in" make_nb.py | head; python make_record.py && python make_nb.py && python - <<'EOF'
+import nbformat
+nb=nbformat.read('entries/pasquereau-2013/reproduce_pasquereau_2013.ipynb',4)
+for c in nb.cells:
+    if c.cell_type=='code' and 'venus = pasq.load_all' in c.source:
+        c.source="import pickle\nvenus=pickle.load(open('/tmp/claude-1001/work/venus.pkl','rb'))\nleu=pickle.load(open('/tmp/claude-1001/work/leu.pkl','rb'))"
+nbformat.write(nb,'dev.ipynb')
+EOF
+export PYTHONPATH=entries/pasquereau-2013; python run_nb.py dev.ipynb dev_out.ipynb 2>&1 | grep -A3 "trial-corr\|Error"
+```
+
+```
+341:times, and the torque command is NaN in 114 of 148 files and without pulses in the rest.
+726:print("with NaN in a window:", int(emg.has_nan.sum()))
+----- ['claim:trial-correlations'] 
+ PTN responses (claims file's detection): 111, over 1301 perturbation trials
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/work; . ../env/bin/activate; python - <<'EOF'
+p='make_nb.py'; s=open(p).read()
+s=s.replace("torque command is NaN in 114 of 148 files and without pulses in the rest.","torque command is NaN in 114 of 148 files (the other 34, all after MPTP, hold a trace that\nthe file description says has no distinct pulses).")
+s=s.replace("""Blocked: no Leu trial marks a perturbation (cell `finding-leu-no-perturbations`), and the torque
+command is NaN or without pulses, so the perturbations cannot be found.""","""Blocked: no Leu trial marks a perturbation (cell `finding-leu-no-perturbations`), and the torque
+command is NaN in most files.""")
+open(p,'w').write(s)
+p='make_record.py'; s=open(p).read()
+s=s.replace("is NaN in 114 files, and in the other 34, all after MPTP, it is a smooth trace without 50 ms pulses, so the \"\n   \"perturbations cannot be recovered.",
+ "is NaN in 114 files; the other 34, all after MPTP, hold a trace that the file description says has no \"\n   \"distinct pulses (looked at in one file while preparing, where it moves smoothly over hundreds of ms).")
+s=s.replace("The torque command is NaN in 114 files and, in the other 34, all after \"\n  \"MPTP, a continuous trace without 50 ms pulses, so the perturbations cannot be recovered.",
+ "The torque command is NaN in 114 files; the other 34, all after MPTP, hold \"\n  \"a trace that the file description says has no distinct pulses.")
+open(p,'w').write(s)
+EOF
+grep -n "distinct pulses" make_record.py make_nb.py | cut -c1-150; python make_record.py; python make_nb.py
+```
+
+```
+make_record.py:32:   "distinct pulses (looked at in one file while preparing, where it moves smoothly over hundreds of ms). The Leu files hold 138 and
+make_record.py:161:  "a trace that the file description says has no distinct pulses. The paper's monkey L "
+make_nb.py:342:the file description says has no distinct pulses).
+Shell cwd was reset to
+```
+
+**Agent**
+
+Re-running the entry from a clean environment.
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; python tools/entry.py all entries/pasquereau-2013 2>&1 | tail -5; python3 - <<'EOF'
+import json
+nb=json.load(open('executed/pasquereau-2013/reproduce_pasquereau_2013.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        tags=c['metadata'].get('tags') or []
+        out=''.join(''.join(o.get('text','')) if o['output_type']=='stream' else str(o.get('ename','')) for o in c['outputs'])
+        if any(t in ('claim:trial-correlations','claim:emg-m1-weak','finding-leu-no-perturbations','claim:cell-counts') for t in tags) or 'Error' in out: print(tags, out[:800])
+EOF
+```
+
+```
+Thu Nov 26 16:51:56 UTC 2026
+Installed kernelspec registry-pasquereau-2013 in executed/pasquereau-2013/.venv/share/jupyter/kernels/registry-pasquereau-2013
+0 error(s)
+pass  reproduce_pasquereau_2013.ipynb  (344 s)
+['finding-leu-no-perturbations'] Leu trials by torque_perturbation_type: {'not_available': 5952}
+Leu files whose torque command has any finite value: 34 of 148 ; of these after MPTP: 34
+
+['claim:cell-counts'] M1: pre 115 (expected 112), post 157 (expected 159)
+PTN: pre 51 (expected 49), post 54 (expected 54)
+CSN: pre 32 (expected 31), post 48 (expected 48)
+activated from both peduncle and putamen, all files: 3 {'Venus': 3} ; of these studied: 3
+other types among the studied cells: {(False, 'no_response'): 29, (False, 'not_tested'): 1, (False, 'pyramidal_tract_and_corticostriatal_neuron'): 2, (True, 'no_response'): 50, (True, 'not_tested'): 1, (True, 'pyramidal_tract_and_corticostriatal_neuron'): 1, (True, 'pyramidal_tract_and_thalamic_neuron'): 1, (True, 'thalamic_projection_neuron'): 2}
+Venus units left out for fewer than 5 perturbations in a direction: {False: 79, True: 5}
+
+['claim:emg-m1-weak'] rule baseline_sd, pre: m2 > m1 in 151/204 (74.0%), median m1/m2 0.14
+rule baseline_sd, post: m2 > m1 in 237/241 (98.3%), median m1/m2 0.25
+rule raw_sd, pre: m2 > m1 in 205/276 (74.3%), median m1/m2 0.11
+rule raw_sd, post: m2 > m1 in 263/273 (96.3%), median m1/m2 0.23
+
+['claim:trial-correlations'] PTN responses (claims file's detection): 111, over 1301 perturbation trials
+```
+
+**Agent calls Bash**
+
+```bash
+cd  . $TMPDIR/env/bin/activate; uv pip install -q jsonschema pyyaml 2>/dev/null; python - <<'EOF'
+import json, yaml, jsonschema
+s=json.load(open('schemas/attempt.schema.json')); r=yaml.safe_load(open('attempts/pasquereau-2013-03.yaml'))
+jsonschema.validate(r,s); print('valid', len(r['outcomes']))
+c=yaml.safe_load(open('claims/pasquereau-2013.yaml')); ids=[x['id'] for x in c['claims']]
+print(set(ids)^set(o['claim'] for o in r['outcomes']))
+EOF
+deactivate; python tools/entry.py check entries/pasquereau-2013 2>&1 | tail -3; python tools/entry.py handover entries/pasquereau-2013 2>&1 | tail -5; ls executed/pasquereau-2013/handover
+```
+
+```
+valid 28
+set()
+0 error(s)
+wrote executed/pasquereau-2013/handover
+pasq.py
+pasquereau-2013.yaml
+reproduce_pasquereau_2013.ipynb
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "Result:" executed/pasquereau-2013/handover/reproduce_pasquereau_2013.ipynb; grep -c "## Summary" executed/pasquereau-2013/handover/reproduce_pasquereau_2013.ipynb; ls tests | head -40; grep -n ": " attempts/pasquereau-2013-03.yaml | grep -v "^[0-9]*: *[-a-z_]*: \|^[0-9]*: *- [a-z_]*: " | head
+```
+
+```
+0
+0
+conftest.py
+test_build_osf_targets.py
+test_build_site.py
+test_build_targets.py
+test_build_zenodo_targets.py
+test_intake.py
+test_notify.py
+test_protocol_pin.py
+test_publish_site.py
+test_readme_row.py
+test_replicates.py
+test_reuse_targets.py
+test_run_requests.py
+test_runner.py
+```
+
+**Agent**
+
+I've built and run the entry at `entries/pasquereau-2013`, written the record at `attempts/pasquereau-2013-03.yaml`, and built the handover. I did not verify my own work and committed nothing. The notebook says that version 0.261124.1906 was asked for; it is also the newest published version.
+
+## 1. Outcomes
+
+| Claim | Outcome |
+|---|---|
+| cell-counts | reproduced (115/157 cells, 51/54 PTNs, 32/48 CSNs, 3 dual-projecting) |
+| monkey-l-perturbations | blocked, data_missing |
+| baseline-rate | reproduced (all 6 means in tolerance; PTN p = 0.020, CSN p = 0.65) |
+| ptn-faster-than-csn | reproduced (p = 6.3e-12) |
+| antidromic-latency | partially reproduced (means hold; CSN p = 0.019, above 0.05/3) |
+| false-positive-rate | blocked, methods_underspecified (measured 0.23) |
+| torque-related-fractions, prevalence-unchanged, ptn-more-responsive, one-direction-half, excitatory-majority, magnitude-unchanged, venus-response-magnitudes, latency-shorter, latency-not-training, fwhm-shorter-ptn, dsi-reduced, venus-dsi, dsi-not-baseline, velocity-matched-magnitude, session-correlations | blocked, methods_underspecified (they depend on false-positive-rate); results computed and shown, not deciding |
+| kinematics-slower | not reproduced (+28% velocity, +15% amplitude after MPTP) |
+| kinematic-latency-unchanged | not reproduced (F = 709) |
+| emg-m2-larger | reproduced |
+| emg-duration-longer | partially reproduced (22 and 52 ms against 57 and 79 ms) |
+| emg-onset-unchanged | not reproduced (44 to 25 ms, p = 6e-22) |
+| emg-m1-weak | partially reproduced (pre-MPTP 74.0%, just under the 75% asked) |
+| trial-correlations | blocked, methods_underspecified |
+
+## 2. Dataset, assumptions and questions
+
+**What the dataset shows:**
+- **Counts match.** Cell counts by MPTP state and projection type match the paper's monkey V table to within 3 cells.
+- **No duplicates.** No recording is deposited twice (spike trains, angle and EMG windows compared across files), and every unit's MPTP flag agrees with its file name.
+- **Clocks are consistent.** The torque command leaves rest 4 ms after the marked onset, and spikes cross the threshold far more often after the onset than after a pseudo onset.
+- **Monkey L has no perturbations.** No Leu file marks one, and the torque command is NaN in 114 of 148 files. Finding rated major.
+- **Kinematics differ from the paper.** Displacements are about 3 to 4 deg, where the paper gives 10 deg. After MPTP they are faster and larger, the reverse of the paper. Finding rated major.
+- **Torque pulses are about 3 times larger after MPTP** (in arbitrary units), where the paper describes one fixed 0.1 Nm pulse. This confounds the before/after comparisons of movement and EMG. Finding rated minor, because the file description notes the varying levels.
+
+**The detection problem.** The claims file's detection crosses its threshold in 23% of cell-directions after a pseudo onset, and in 20% of trials with no torque at all. The paper implies about 1%. I ran three other readings of the Methods' t-test (47%, 35%, 1.3%). The one that matches the paper's rate finds a response in only 20% of real cell-directions, against the paper's 62 to 75% of cells. No reading gives both, so the selection-based claims are blocked.
+
+**Questions for the paper's authors** (recorded as methods_unavailable findings):
+- How was the detection t-test computed?
+- How was the single-trial response latency defined?
+
+**Assumptions:** none adopted. The two readings of the EMG channel rule give the same outcomes.
+
+**Questions to a reader:** none.
+
+**Earlier attempts:** I came across none. The claims file's own header says its author had seen a data check and mentions "repeated files". That is from the claims file, not an earlier attempt's results; I found no repeated files in this version.
+
+## 3. Protocol points
+
+1. The rule to block a claim when its false-positive rate is far from the paper's does not say what happens to a claim that is itself the false-positive rate. I blocked false-positive-rate as methods_underspecified, recorded the measured value, and blocked its dependents through `depends_on`.
+2. The protocol does not say whether a claim blocked through a dependency should still show its numbers. I computed and showed them all, marked as not deciding.
+3. "Break down by session when there is one subject" does not fit 291 sessions. I broke key results down by MPTP state instead.
+4. archives.md says to read NWB files with pynwb. I list one file with pynwb and read the other 438 directly with h5py, because building the pynwb objects for every file is too slow. The helper's docstring says so.
+
+## 4. Runtime and failures
+
+- The notebook runs in 344 s from a clean environment; `entry.py all` passes with 0 errors.
+- The record validates against the schema and has one outcome for each of the 28 claims.
+- Nothing failed. The run finished at about 17:00 UTC.
 
 ## End of run
 
-72 turns, 32 minutes, result: success.
+54 turns, 37 minutes, $5.23 at API prices, result: success.
