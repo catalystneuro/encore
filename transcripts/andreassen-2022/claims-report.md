@@ -1,24 +1,36 @@
-I'm stopping without writing a claims file, because the SI Appendix is missing from `paper/`.
+I wrote `claims/andreassen-2022.yaml` with 28 claims. Every claim has a quote, none needed an `inferred` note, and nothing was committed.
 
-**What I read:** `paper/10.1073-pnas.2207052119.txt`, taken from Europe PMC (PMC9522358, open-access JATS). It is the version of record and holds the main text, figure legends and Methods. There is no PDF and no supplement under `paper/`. The text only gives the link to it: https://www.pnas.org/lookup/suppl/doi:10.1073/pnas.2207052119/-/DCSupplemental
+The checker passes every quote and the schema but still exits non-zero on three p-values: 0.233 in Table S1, and 0.008 and 0.030 in Table S10. Those numbers exist only in table images, so the checker can't find them in the text. I read them on the rendered pages and say so in the file's opening comment, the way allen-2026 handles its one unfound value.
 
-**Why the results need the supplement:**
-- **Statistics:** Every model behind the reported P values is in SI Tables S1 to S10. The Methods (Statistical Analyses) leave the model details to the supplement: "For a detailed description of statistical analyses of all models, see SI Appendix, SI Statistical Analyses". Without it, I can't take fixed effects, interactions, outlier handling or random-effect structure from the paper. A claim would have needed these for:
-  - CTmax by age and by oxygen level
-  - medulla peak frequency over time and time²
-  - heart rate by temperature range
-  - depolarization onset, amplitude and recovery
-  - the binary light responses
-- **Findings shown only in the supplement:**
-  - Table S1: no difference in swimming speed.
-  - Fig. S1 and Tables S2 and S3: spiral swimming, loss of equilibrium and loss of response compared with controls.
-  - Fig. S2A: the medulla decrease at 39 to 41 °C.
-  - Fig. S2B: medulla activity in experiment 4.
-  - Fig. S3A to C: depolarization amplitude and recovery time by oxygen level.
-  - Fig. S3D: the drop before depolarization in every oxygen group.
-  - Fig. S4: tectal response amplitude and how responses were classified.
-- **Methods details:** The thresholds for medulla peak detection and the exclusion criteria are not in the main Methods. The supplement may give them.
+**Text read**
+- **Main text:** the version of record (PMC9522358, Europe PMC JATS): Results, figure legends, Discussion and Methods.
+- **Supplement:** the SI Appendix, with the legends of Figs. S1 to S4, the SI Statistical Analyses and the captions of Tables S1 to S10. The table bodies are images and are missing from the `.txt`. I rendered PDF pages 6 to 11 with PyMuPDF, installed in a temp folder, to read them.
+- **Code:** not read. The R script is one of the files in the figshare item, and I was told not to open the dataset's files. The opening comment asks the author to read it.
 
-**Code:** The paper's R code for the statistics and figures is deposited in the dataset itself (FIGSHARE:19640805). I did not open it, because my instructions forbid looking at the dataset's files. Whoever supplies the SI should also decide whether a reader may read that code as "the code the paper links".
+**Counts:** 28 quotes; 19 claims with statistics (32 p-values); 28 criteria. Six of the criteria have no reported test behind them, and the criterion sets the measure.
 
-**Result:** 0 claims, so 0 quotes, 0 statistics and 0 criteria. I created no files and ran no quote check. Once the SI Appendix PDF (with SI Statistical Analyses and Tables S1 to S10) is added under `paper/`, the reader run can be repeated.
+**Details the paper leaves open, and the readings named**
+- **Mixed-model p-values:** the paper doesn't say how lme4 models got p-values. Main reading is Satterthwaite tests via lmerTest; for Fig. 3D that equals a paired t-test with 6 df, which gives p ≈ 0.004. A normal approximation is shown as a variant.
+- **Outlier removal (Fig. 5A, Table S3):** quartiles taken within each group or over all fish. The models with all fish are shown as variants. They matter: with all 76 fish neither oxygen effect on CTmax is significant, and with all 16 adults the adult CTmax differs from 5 dpf (p = 0.038).
+- **Adult mean CTmax:** over 15 fish or 16.
+- **Binning:** time bins (Fig. 2F) and temperature bins (Figs. S2A, 5D, 6C) are not given. 1 °C bins are used as a standard choice; deposited bins are used if present.
+- **Peak values (3.6, 2.5, 3.3 peaks/min):** the peak of the group mean curve, or the mean of per-fish maxima.
+- **Q10:** neither the formula nor the endpoints are given. Read as the standard formula on group means, with the endpoints the sentence names; per-fish Q10 is shown as a variant. The 0.02 in hypoxia is judged as below 0.1, with the reason stated.
+- **Chi-squared test:** whether the continuity correction was used. The reported 15.6 matches R's default corrected statistic for the counts in Table S2; the uncorrected test is shown.
+- **Wilcoxon effect size r:** read as |Z|/√N.
+- **Swim speed (Fig. S1A):** Table S1 fits only a treatment main effect, while the legend speaks of the change over time. The model with a time × treatment interaction is shown as a variant.
+- **"Stable before / during depolarization" (heart rate):** judged on the Table S6 contrast of the depolarization category against 37 °C.
+- **Light-response threshold:** which SD the "2 SD above F0" uses. Read as the SD of the 2 s pre-flash signal.
+- **Pooling:** percentages pooled over flashes or averaged per fish; mean temperature in Table S10 over all flashes or per treatment.
+- **"Sharp" drop before depolarization (Fig. S3D):** window of 2 or 5 min. The threshold of half the group's maximum is set in the file, since the paper doesn't quantify "sharply".
+- **Depolarization magnitude ratio and Fig. 2E spread timing:** no method is given. Readings are named in each claim.
+
+**Missing from the paper:** nothing a claim needed. The text has four inconsistencies, listed in the opening comment:
+- Fig. S1C's legend swaps the heat-ramp and control n.
+- Fig. 2F's legend says 50 min before depolarization; the SI says 42.
+- The Methods say "experiment 2" for the freely swimming imaging, which is experiment 3.
+- Fig. S3D and Fig. 5D give different n.
+
+The figshare item is CSVs plus an R script (about 0.1 MB), so derived values only. Claims that need imaging (the Fig. 2E spread timing, the depolarization magnitude ratio) are likely untestable.
+
+The git status also shows untracked files I didn't create (dotfiles, `.idea`, `.vscode`, `scripts`); I left them alone.
