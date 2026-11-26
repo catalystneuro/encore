@@ -14,8 +14,9 @@
 # head-direction label (significant head-direction information against a time-reversed control,
 # a label set by the original authors and distributed with the dataset). Only the epoch of
 # square-environment exploration is analysed (tag wake_square in the NWB epochs table). Nine mice
-# also had an optogenetic epoch, recorded separately and never analysed (files named +ogen.nwb);
-# they contribute 315 of the 1,533 cells. Measured variables used are the head direction
+# also had an optogenetic epoch, recorded separately and never analysed; they contribute 315 of
+# the 1,533 cells. Where a session has a file named +ogen.nwb, ring/data.py reads that file and
+# takes the wake_square epoch from it. Measured variables used are the head direction
 # (processing/behavior/CompassDirection/head-direction, with timestamps), the spike times of each
 # unit, and the unit labels is_head_direction (and is_excitatory, is_fast_spiking). The four mice
 # with most head-direction cells are A3707 (117), A3716 (93), A3711 (90) and A3706 (86).
@@ -61,8 +62,9 @@ claims:
 - id: hd-cell-selection
   kind: link
   statement: The dandiset holds the 31 sessions, one per mouse, with 2,691 units, of which 1,533
-    carry the head-direction label; nine of the mice have an optogenetic file and contribute 315
-    of those cells; the four mice with most head-direction cells have 117, 93, 90 and 86.
+    carry the head-direction label; nine of the mice, which also underwent optogenetic
+    manipulation in a separate epoch, contribute 315 of those cells; the four mice with most
+    head-direction cells have 117, 93, 90 and 86.
   source: Methods, Statistics and reproducibility, Sample size and Data exclusions; Fig. 2 legend;
     Supplementary Fig. 13 legend
   quote: The size of the dataset was fixed by the original study, namely 31 recording sessions, 1
@@ -76,7 +78,7 @@ claims:
   - quantity: units in all sessions
     value: 2691
     tolerance: 0
-  - quantity: units labelled head-direction with a non-zero tuning curve
+  - quantity: units carrying the head-direction label
     value: 1533
     tolerance: 0
   - quantity: head-direction cells in the nine mice with an optogenetic epoch
@@ -90,8 +92,10 @@ claims:
     because the labels are distributed with the dataset and the paper reports exact counts. The
     paper calls the 1,533 cells excitatory, while the code selects on is_head_direction alone;
     the readings are (a) is_head_direction, as the code, and (b) is_head_direction and
-    is_excitatory. The link holds when the counts match under one reading; the count under the
-    other is reported. The counts for A3716, A3711 and A3706 (93, 90 and 86) are reported too.
+    is_excitatory. The code also drops units whose final tuning curve is all zero
+    (data_and_generative_model.ipynb, nz_mask); the count is reported with and without that
+    step. The link holds when the counts match under one reading; the count under the other is
+    reported. The counts for A3716, A3711 and A3706 (93, 90 and 86) are reported too.
 - id: tuning-curves-match-cache
   kind: link
   statement: Tuning curves computed from the dandiset with the paper's procedure agree with the
@@ -224,7 +228,7 @@ claims:
 - id: fig3c-correlation-approaches-circulant
   statement: Within a mouse, the two-point correlation function of the tuning curves approaches a
     circulant form as more neurons are included, as does the centered and variance-normalized
-    correlation function, whose leading eigenvectors are Fourier modes, as circular symmetry
+    correlation function, whose eigenvectors converge to Fourier modes, as circular symmetry
     predicts.
   source: Results, Statistical generative process, paragraph 3; Fig. 3c; Supplementary Fig. 13
   quote: This function approaches a circulant form (Fig. 3c), as does the centered and
@@ -276,7 +280,9 @@ claims:
     2, 20), b in linspace(0.01, 5, 30) and beta in linspace(0.01, 10, 30), seed 42. The tolerance
     on beta is one step of that grid (0.345), larger than 10% (0.277), because the fit can only
     land on grid points; the others are 10%, which is about one grid step for b and nearly three
-    for sigma.
+    for sigma. As written, gp_opt.py sets DEVICE 0 and builds a CUDA device, so on a GPU the
+    samples come from torch's generator; the draws of the paper's run need not be reproduced,
+    which the tolerances cover. The notebook loads the cached grid-search results.
 - id: fig5ab-profiles-match
   statement: The center-of-mass-aligned mean and fluctuation profiles predicted by the fitted
     generative process match those of the data.
@@ -305,7 +311,8 @@ claims:
   depends_on:
   - fig5d-peak-numbers
   - fig4-generative-fit
-  criterion: Peak-count histograms for 1 to 5 peaks, normalized to sum to one
+  criterion: Peak-count histograms for 1 to 5 peaks, normalized to sum to one over those five
+    counts, so curves with no peak or more than five are left out of the denominator
     (analysis.compute_peak_counts), for the 1,533 curves and 100,000 generative samples, at
     zthresh 1, 0.5 and 0. The paper gives no measure of agreement; the readings are (a) total
     variation distance and (b) Hellinger distance between the two histograms. Reproduced when,
@@ -371,7 +378,8 @@ claims:
     (beta 2), smoothed with a circular Gaussian filter of 2 bins, softplus again, Sinkhorn-Knopp
     normalization of both axes (1,000 alternating sweeps, data_driven._sinkhorn_normalize),
     inverse softplus, zero-padded Fourier resampling to 10,000 angles, softplus; weights by
-    regression.compute_J (dual form, lambda 1e-8, zero diagonal, Methods equation (39)). The
+    regression.compute_J (method opt, which takes its primal branch here because the 10,000
+    angles exceed the 1,533 neurons; lambda 1e-8, zero diagonal, Methods equation (39)). The
     matrix is shown before the uniform shift by c, as Supplementary Note 3, section 8.3, says.
     Neurons are sorted by the center of mass of the resampled curves (sort_weight_matrix). The
     profile is the mean of the sorted matrix along each circular diagonal (the first row of the
@@ -470,11 +478,13 @@ claims:
     the readings are (a) the median absolute circular difference between the angle of the peak
     of m and the mean head direction in the same 100-ms bin is below pi/8, and (b) their circular
     correlation is at least 0.9 (thresholds chosen here, open). Bins with untracked head direction
-    are left out. Reproduced under either reading. Curves from one partition applied to the
+    are left out of the comparison, which needs a head direction; the notebook does not drop
+    them from m, and this choice is made here. Reproduced under either reading. Curves from one partition applied to the
     other partition's spikes are shown as a variant.
 - id: figs8-s9-lambda-and-c
   statement: In the data-derived network, with no uniform inhibition activity diverges or
-    collapses to the origin, small c leaves the collapse, a large regularization destroys the
+    collapses to the origin, any c above 0 in the grid prevents the divergence but small c leaves
+    the collapse, a large regularization destroys the
     manifold, and the flow error rises at both large and small lambda, with lambda 1e-8 just above
     its minimum.
   source: Supplementary Note 3, section 8.4; Supplementary Figs. 8 and 9
@@ -487,11 +497,14 @@ claims:
   depends_on:
   - fig2b-sorted-weights-mexican-hat
   criterion: As in notebooks/data_driven_reconstruction.ipynb, the lambda values 1e-12, 1e-10,
-    1e-8, 1e-6, 1e-4 and 1e-2 and the c values of its grid, 100 perturbed initial conditions,
-    trajectories projected on the top two principal components of the target manifold. Collapse
+    1e-8, 1e-6, 1e-4 and 1e-2 and the c values 0, 0.25, 0.5, 0.75, 1, 1.25 and 1.5, 100
+    initial conditions perturbed by noise of standard deviation 3, Euler step 5 ms (Methods,
+    Simulation details), trajectories projected on the top two principal components of the
+    target manifold. Collapse
     to the origin, final firing rates with a norm below one tenth of the manifold's (threshold
     chosen here, open); divergence, non-finite or growing states. Flow error, the mean squared
-    flow on the target manifold. Reproduced when c 0 gives divergence or collapse, the largest
+    flow on the target manifold. Reproduced when c 0 gives divergence or collapse, no c above 0
+    gives divergence at any lambda up to 1e-4, the largest
     lambda gives collapse at c 1, and the flow error at 1e-8 is lower than at 1e-2 and at 1e-12.
 - id: figs11b-data-network-global-stability
   statement: In the data-derived network, initial conditions far from the manifold converge to
@@ -523,14 +536,14 @@ claims:
   - fig2b-sorted-weights-mexican-hat
   criterion: Eigenvalues of the matrix of fig2b-sorted-weights-mexican-hat (np.linalg.eigvals),
     sorted by real part. The paper gives no measure; one is fixed here and named as open. Among
-    the leading 11 eigenvalues, approximately real, the absolute imaginary part is under 10% of
+    the leading 10 eigenvalues, the ones Supplementary Fig. 14a plots (data_driven_reconstruction.ipynb), approximately real, the absolute imaginary part is under 10% of
     the real part; doublets, after setting aside the one eigenvalue that does not pair (the
     constant mode, as in Fig. 6c), the gap within each consecutive pair is smaller than the gap
     to the next pair for at least three of the first four pairs, and not every pair is exactly
     equal (not exact).
 - id: fig6cd-eigenvalues-real-degenerate
   statement: For tuning curves from the generative process at large N, the optimal weight matrix
-    has real, doubly degenerate eigenvalues, the products of the input-current and firing-rate
+    has real, doubly degenerate eigenvalues, the ratios of the input-current to the firing-rate
     Fourier coefficients scaled by the average activation slope, and they match numerical
     diagonalization at N = 2,500, with the ninth eigenvalue the unpaired constant mode.
   source: Results, Weights in the large-network limit, paragraphs 3 and 4; Fig. 6c,d
@@ -581,6 +594,29 @@ claims:
     sigma and beta shown, the bump's second eigenvalue is negative and the uniform state's
     leading eigenvalue positive at every grid point, and with Q fixed the bump has a positive
     eigenvalue at sigma 1.42 and beta 2.77.
+- id: fig7de-dmft-timescales
+  statement: In the mean-field theory, the convergence time to the bump manifold (-tau over the
+    bump Jacobian's second eigenvalue) and the divergence time from the uniform state (tau over
+    its leading eigenvalue) are both a few tau for beta of about 1 and above, decreasing with beta
+    and insensitive to sigma.
+  source: Results, Dynamical mean-field theory, paragraph 6; Fig. 7d,e
+  quote: for β ≳ 1, this timescale is a few τ, decreasing with β and relatively insensitive to σ
+    (Fig. 7d) ... which, like the previous timescale, is a few τ for β ≳ 1, decreasing with β and
+    insensitive to σ (Fig. 7e)
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/dmft.ipynb and ring/dmft.py (theory code; no recorded data)
+  depends_on:
+  - fig7-dmft-mexican-hat-and-stability
+  criterion: Run dmft.ipynb's stability grid (beta logspace(-2, 2, 40), sigma logspace(0, 2, 20),
+    N_theta 500), with t* = -tau / Re(bump eigenvalue 2) for Fig. 7d and t* = tau / Re(uniform
+    eigenvalue 1) for Fig. 7e, as the notebook plots them. The paper gives no measures for these
+    words, so they are fixed here and named as open, over the grid points with beta at least 1.
+    A few tau, t* between 0.5 tau and 10 tau at every such point with beta up to 10. Decreasing
+    with beta, for each sigma t* falls along beta with at most one increase. Insensitive to sigma,
+    at each beta the largest t* over sigma is at most twice the smallest (reading a) or three
+    times (reading b). Reproduced when all three hold for both timescales (the third under one
+    reading); partially when the first two hold for both.
 - id: fig7c-dmft-integrates-behavior
   statement: Under angular velocity input from mouse behaviour, the mean-field traveling-bump
     solutions track head direction by integrating angular velocity, matching the network
@@ -613,7 +649,10 @@ claims:
     figures/external/digitize_nayebi_fig3a.py, from data of Mallory et al. (Nat. Commun. 2021)
   criterion: Run grid_sims.ipynb (sigma 12.12, nu 3, 1,000 maps for each eta in 0.2 to 1.0 for
     the grid scores; sigma 4.04, beta 2.5, nu 1, N 25,000 for the network; N 2,500, lambda 1e-8
-    for the spectrum). Reproduced when the mean grid score increases at every step of eta, the
+    for the spectrum, Supplementary Fig. 15). The notebook sets these through radius 0.35, with
+    sigma = sqrt(2) / radius (4.04) times the number of periods (12.12 at nu 3), and N_period.
+    The paper gives no measure of convergence; the one below is chosen here and open. Reproduced
+    when the mean grid score increases at every step of eta, the
     final network states lie closer to the target manifold than the initial ones for every
     initial condition, and the leading eigenvalues after the constant mode fall in groups of six
     within 10% of each other.
@@ -656,10 +695,35 @@ claims:
   data: elsewhere
   where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
     notebooks/weight_matrix_analyses.ipynb (simulation code; no recorded data)
-  criterion: Run the notebook's rank-four Gaussian and mixture-of-Gaussians networks. Reproduced
-    when the two have the same leading eigenvalues within 5% and their dynamics differ as the
-    legends describe. With Gaussian loadings (N 10,000, K 4, 40 initial conditions, 10 tau) the
+  criterion: Run the notebook's rank-four Gaussian and mixture-of-Gaussians networks (initial
+    amplitude 5 for the Gaussian and 0.45 for the mixture, as the notebook sets them). The
+    notebook computes no eigenvalues; the supplement says the two share them by construction.
+    Reproduced when the eigenvalues of the two weight matrices, computed here, agree within 5%
+    (threshold chosen here, open) and their dynamics differ as the legends describe. With Gaussian loadings (N 10,000, K 4, 40 initial conditions, 10 tau) the
     final states form a ring in the dominant doublet and collapse to the origin in the
     subdominant one (a single ring). With mixture loadings they form a ring in both doublets (the
     full torus). Collapse is a final radius below one tenth of the ring radius (threshold chosen
     here, open). The notebook's printed ring radii and drift are reported.
+checks:
+- date: 2026-11-26
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig6cd-eigenvalues-real-degenerate. The statement called the eigenvalues products of the input-current and firing-rate Fourier coefficients. Equation (9), the mean-field section and the Supplementary equation after (71) give the ratio, alpha times Gamma_x_n over Gamma_phi_n. Corrected.
+  - fig3c-correlation-approaches-circulant. The statement said the leading eigenvectors are Fourier modes; the paper says they converge to Fourier modes. Corrected.
+  - hd-cell-selection. The statement said nine mice have an optogenetic file, which the paper does not say; it says they underwent optogenetic manipulation in a separately recorded epoch. Reworded. The expected count of 1,533 was described as units with a non-zero tuning curve, a code step (nz_mask); the paper says all 1,533 units carrying the label. Relabelled, and the criterion now reports the count with and without the code's step.
+  - Header. The comment implied the +ogen.nwb files hold only the unanalysed optogenetic epoch, while ring/data.py reads the wake_square epoch from the +ogen.nwb file where one exists. Reworded to say what the code does.
+  - fig2b-sorted-weights-mexican-hat. The criterion said compute_J runs in dual form; with 10,000 angles and 1,533 neurons it takes its primal branch (regression.py). The two give the same J. Corrected the label.
+  - fig5c-peak-counts-match. Added that compute_peak_counts normalizes over curves with 1 to 5 peaks only, as the code does.
+  - fig4-generative-fit. Added that gp_opt.py as written builds a CUDA device and then draws from torch, so the paper's draws need not be reproduced; the tolerances cover this.
+  - fig2l-recorded-bump-tracks-hd. Said that leaving out untracked head-direction bins is this file's choice; closing_the_loop.ipynb keeps them in m.
+  - figs8-s9-lambda-and-c. The supplement also says any c above 0 in the grid prevents the divergence; added to the statement and criterion. Named the c grid, the noise of the initial conditions and the 5-ms step from the notebook and the Methods.
+  - figs14-data-spectrum-doublets. The criterion took the leading 11 eigenvalues; Supplementary Fig. 14a and the notebook plot the leading 10, which hold the four pairs the criterion tests. Changed to 10.
+  - fig8-grid-scores-and-torus. Said how the notebook sets sigma (radius 0.35, sigma = sqrt(2) / radius times the number of periods), since 12.12 does not appear in the code, and that the convergence measure is this file's.
+  - figs1-s2-spectrum-does-not-fix-symmetry. The 5% eigenvalue test was not marked as chosen here; the notebook computes no eigenvalues. Marked it as open, and named the different initial amplitudes the notebook uses (5 and 0.45).
+  - Added claim fig7de-dmft-timescales (Results, Dynamical mean-field theory, paragraph 6; Fig. 7d,e), a main-text finding with no claim. Its measures are chosen here and named as open.
+  - Open. The notebooks print none of the Fig. 5d counts (412, 55, 24,271, 1,043); they load cached results, so these counts are checked only against the legend.
+  - Open. The code names no mouse; it picks sessions by head-direction cell count (session 10, 117 cells, for Figs. 2k, 2l and 7c). The names A3707, A3716, A3711 and A3706 and their counts come from the legends of Figs. 1e, 2 and Supplementary Fig. 13, which list the names in the same order as the counts.
+  - Open. Whether each +ogen.nwb file holds the wake_square epoch cannot be told without opening the data; the author is to confirm it.
+  - Open. The thresholds and agreement measures behind comparable, match, approaches, tracks, a few and similar words remain this file's choices, named as open in each criterion; the paper and code fix none of them.
