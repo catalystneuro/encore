@@ -243,12 +243,12 @@ def step_onset(y, level_before, level_after, lo, hi, smooth=15):
 
 
 def stage_windows(compound, y):
-    """Windows for the criterion's readings. (b) whole stage: clean air from the section start to
-    the O3 onset, O3 from its onset to the NO3 onset, NO3 from its onset to the section end;
-    (a) the last half of each. Onsets are found from the step in the monoterpene traces; for
-    compounds that show no step the stage extents are the code's windows (the only source of the
-    stage timing). (c) the code's own windows (clean-air mean over `clean`, test on `clean_test`
-    where the notebook uses a different window)."""
+    """Windows for the criterion. The code's own windows (clean-air mean over `clean`, test on
+    `clean_test` where the notebook uses a different window) are the paper's method, as the
+    criterion says. The variants: (b) whole stage, clean air from the section start to the O3
+    onset, O3 from its onset to the NO3 onset, NO3 from its onset to the section end; (a) the last
+    half of each. Onsets are found from the step in the monoterpene traces (a standard choice);
+    for compounds that show no step the stage extents are the code's windows."""
     c = VOCUS_CODE[compound]
     code = {"clean": c["clean"], "o3": c["o3"], "no3": c["no3"],
             "clean_test": c.get("clean_test", c["clean"])}

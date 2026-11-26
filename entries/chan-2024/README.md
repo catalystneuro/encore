@@ -13,7 +13,7 @@ are not in it; they are read from the paper's code release on Zenodo,
 | Fruit set under pollinator exclusion (Fig. 1E, three claims) | Reproduced |
 | Night pollinators account for about 40% of fruit set | Reproduced |
 | NO3 degrades b-pinene and ocimene by 84% and 67%, O3 by about 30% | Reproduced |
-| Other compounds are unchanged by either oxidant | Not reproduced |
+| Other compounds are unchanged by either oxidant | Reproduced |
 | In the whole blend, monoterpenes drop and aldoxime and eucalyptol do not change | Not reproduced |
 | NO3 yields organic nitrates, O3 only C10H16O4 and C10H18O4 | Partially reproduced (assumed) |
 | NO3 eliminates Hyles feeding in the wind tunnel | Not reproduced |
