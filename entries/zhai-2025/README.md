@@ -20,7 +20,7 @@ in it; claims on them are tested on the paper's own tables (Zenodo 17307059).
 | SCH 23390 lowers the on-state dSPN dendritic index | Not reproduced |
 | iSPN somatic excitability lower in the on-state; sulpiride without effect (three claims) | Reproduced |
 | iSPN dendritic index lower in the on-state; sulpiride without significant effect | Reproduced |
-| Sr2+-oEPSC amplitude and frequency in dSPNs and iSPNs (four claims) | Reproduced, resting on a stand-in event detector |
+| Sr2+-oEPSC amplitude and frequency in dSPNs and iSPNs (four claims) | Reproduced, resting on a stand-in event detector; the iSPN frequency claim also rests on which 10 sweeps of one cell are used (P = 0.064, or 0.049 with its first 10) |
 | GRAB-ACh3.0: release raised after the lesion and in the off-state, D2R and dopamine effects (five claims) | Reproduced |
 | M1R antagonist, CDGI KO and M1R CRISPR: somatic and dendritic claims (five claims) | Reproduced |
 | AIMs in CDGI KO and M1R CRISPR mice (two claims) | Reproduced |
