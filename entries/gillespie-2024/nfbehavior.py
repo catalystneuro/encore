@@ -12,7 +12,10 @@ from:
 - The trial parser itself (Frank lab filterframework) is not in the paper's repository. Its
   rules here are an assumption, stated in the attempt: a trial starts at a home port reward;
   its center port is the one whose pump delivers the small reward; the pre-reward period runs
-  from the first beam break at that port after the home reward to the pump onset; the outer
+  from the first beam break at that port after the home reward to the pump onset (the Methods,
+  Timewise SWR rate quantification, count each trial "from initial center port nosepoke"; the
+  other reading, rwstart_last, starts at the entry that follows the last withdrawal longer
+  than the statescript's 200 ms allowance, PROX_TIME); the outer
   arm is the first arm beam break after the center reward and before the next home reward,
   rewarded when that arm's pump turns on before the next home reward; a trial with a center
   reward and no arm visit is a lockout after center success.
@@ -181,6 +184,15 @@ def parse_trials(ev, start, stop):
             if len(u) == 0:
                 continue
             rwstart = u[0]
+            # withdrawals between the first entry and the pump: re-entries, and the longest
+            # time out of the port (B2 of the round-1 verification)
+            o_pre = off(f"{port}beam")
+            o_pre = o_pre[(o_pre > rwstart) & (o_pre < T)]
+            gaps = [(o, u[u > o][0]) for o in o_pre if np.any(u > o)]
+            out_max = max([b - a for a, b in gaps], default=0.0)
+            # other reading of RWstart: the entry after the last withdrawal over PROX_TIME
+            long_out = [b for a, b in gaps if b - a > PROX_TIME]
+            rwstart_last = long_out[-1] if long_out else rwstart
             # leaving (a): first off after T with no re-entry within PROX_TIME
             offs = off(f"{port}beam")
             offs = offs[offs >= T]
@@ -206,7 +218,8 @@ def parse_trials(ev, start, stop):
                 armt = best
                 p = armpump.get(arm, np.array([]))
                 rew = bool(np.any((p >= armt) & (p < nexth)))
-            rows.append(dict(port=port, home=h, rwstart=rwstart, rwend=T, leave_a=leave_a,
+            rows.append(dict(port=port, home=h, rwstart=rwstart, rwstart_last=rwstart_last,
+                             entries=len(u), out_max=out_max, rwend=T, leave_a=leave_a,
                              leave_b=leave_b, arm=arm, armtime=armt, armrew=rew,
                              lockout=not np.isfinite(best)))
     tr = pd.DataFrame(rows)
@@ -214,6 +227,7 @@ def parse_trials(ev, start, stop):
         return tr
     tr = tr.sort_values("rwend").reset_index(drop=True)
     tr["pre"] = tr.rwend - tr.rwstart
+    tr["pre_last"] = tr.rwend - tr.rwstart_last
     tr["post_a"] = tr.leave_a - tr.rwend
     tr["post_b"] = tr.leave_b - tr.rwend
     return tr
@@ -330,6 +344,7 @@ def _session_trials(row, px_cm=None, env=None):
         for s in SPEED_SIGMAS:
             v = speed(t, xy, s)
             tr[f"vel{s}"] = trial_mean_speed(tr, t, v, "rwstart", "rwend")
+            tr[f"vel{s}_last"] = trial_mean_speed(tr, t, v, "rwstart_last", "rwend")
         # clock check: head position at reward delivery, and at shifted times
         for sh in CLOCK_SHIFTS:
             tr[f"x{sh}"] = np.interp(tr.rwend + sh, t, xy[:, 0])
@@ -421,7 +436,8 @@ def survey_dio(dandiset, workers=8):
 def lme_cohort(ctrl, manip):
     """Linear mixed model Variable ~ Cohort + (1|Indiv), control samples against one
     manipulation trial type. ctrl and manip map rat -> array. Returns (coefficient of the
-    manipulation cohort, p)."""
+    manipulation cohort, p). Fit by maximum likelihood, the default of MATLAB fitlme; the
+    p-value is a Wald z test, where fitlme uses a t test (negligible with these n)."""
     import statsmodels.formula.api as smf
     rows = [(v, 0, r) for r, a in ctrl.items() for v in np.asarray(a, float)]
     rows += [(v, 1, r) for r, a in manip.items() for v in np.asarray(a, float)]
@@ -429,7 +445,7 @@ def lme_cohort(ctrl, manip):
     import warnings
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        m = smf.mixedlm("y ~ cohort", df, groups=df["rat"]).fit(reml=True)
+        m = smf.mixedlm("y ~ cohort", df, groups=df["rat"]).fit(reml=False)
     return float(m.params["cohort"]), float(m.pvalues["cohort"])
 
 
@@ -492,3 +508,97 @@ def yoking(trials):
                     diffs.append(np.min(np.abs(prev - t.pre)))
         out[port] = np.array(diffs)
     return out
+
+
+# --- reading the raw signal (for the too_large estimate of the SWR claims) ------------------
+
+LFP_FS = 1500  # Hz, the rate of the Frank lab LFP (a standard choice for the decimation)
+
+
+def ca1_channels(f, n):
+    """First channel of n of the electrode groups whose location is 'ca1', evenly spaced over
+    the groups in order (both hemispheres). The groups also hold 'bad_ca1', reference, 'dead'
+    and 'lost'; which 'ca1' tetrodes are in the cell layer is not stated (assumption: all are)."""
+    eg = f["general/extracellular_ephys"]
+    good = sorted(int(k) for k in eg if k != "electrodes" and eg[k].attrs.get("location") == "ca1")
+    el = eg["electrodes"]
+    gname = np.array([int(g) for g in el["group_name"][:]])
+    bad = el["bad_channel"][:]
+    pick = [good[i] for i in np.unique(np.linspace(0, len(good) - 1, n).round().astype(int))]
+    chans = []
+    for g in pick:
+        ix = np.where((gname == g) & ~bad)[0]
+        if len(ix):
+            chans.append(int(ix[0]))
+    return chans, len(good)
+
+
+def _search_sorted_remote(ts, x):
+    """Index of the first timestamp >= x in a remote, sorted timestamps dataset."""
+    lo, hi = 0, ts.shape[0]
+    while lo < hi:
+        mid = (lo + hi) // 2
+        v = ts[mid]
+        if not v >= x:  # NaN counts as earlier
+            lo = mid + 1
+        else:
+            hi = mid
+    return lo
+
+
+def ripple_lfp(asset_id, start, stop, channels, workers=32):
+    """Channels of the raw ElectricalSeries between start and stop (s), low-passed and
+    decimated to LFP_FS. The chunks (one channel by about 9 s, uncompressed) are fetched by
+    HTTP range requests in parallel, as h5py reads them one at a time. Returns times and an
+    array (channel, sample) in volts."""
+    from concurrent.futures import ThreadPoolExecutor
+    from scipy.signal import butter, sosfilt, sosfilt_zi
+    url = requests.head(f"{API}/assets/{asset_id}/download/", allow_redirects=True, timeout=60).url
+    f = h5py.File(remfile.File(url), "r")
+    e = f["acquisition/e-series/data"]
+    ts = f["acquisition/e-series/timestamps"]
+    conv = float(e.attrs["conversion"])
+    fs = 30000
+    q = fs // LFP_FS
+    n = e.chunks[0]
+    i0, i1 = _search_sorted_remote(ts, start), _search_sorted_remote(ts, stop)
+    k0, k1 = i0 // n, (i1 - 1) // n + 1
+    # time of the first sample of each chunk (and of the end), for the sample times
+    edges = np.minimum(np.arange(k0, k1 + 1) * n, e.shape[0] - 1)
+    tedge = np.array([ts[i] for i in edges])
+    sos = butter(8, 500, fs=fs, output="sos")
+    sess = requests.Session()
+    sess.mount("https://", requests.adapters.HTTPAdapter(pool_maxsize=workers))
+
+    def get(off_size):
+        off, size = off_size
+        for _ in range(5):
+            try:
+                r = sess.get(url, headers={"Range": f"bytes={off}-{off + size - 1}"}, timeout=120)
+                r.raise_for_status()
+                return np.frombuffer(r.content, "<i2")
+            except requests.RequestException:
+                continue
+        raise RuntimeError(f"chunk at {off} could not be read")
+
+    out = []
+    with ThreadPoolExecutor(workers) as ex:
+        for c in channels:
+            info = [e.id.get_chunk_info_by_coord((k * n, c)) for k in range(k0, k1)]
+            zi = None
+            pieces = []
+            for b in range(0, len(info), 4 * workers):
+                for j, x in enumerate(ex.map(get, [(s.byte_offset, s.size) for s in info[b:b + 4 * workers]])):
+                    k = k0 + b + j
+                    x = x[: min(n, e.shape[0] - k * n)].astype(np.float32)
+                    if zi is None:
+                        zi = sosfilt_zi(sos) * x[0]
+                    y, zi = sosfilt(sos, x, zi=zi)
+                    g = np.arange(k * n, k * n + len(x))
+                    keep = (g >= i0) & (g < i1) & ((g - i0) % q == 0)
+                    pieces.append(y[keep].astype(np.float32))
+            out.append(np.concatenate(pieces) * conv)
+    idx = np.arange(i0, i1, q)
+    t = np.interp(idx, edges, tedge)  # linear within each chunk
+    return t, np.vstack(out)
+

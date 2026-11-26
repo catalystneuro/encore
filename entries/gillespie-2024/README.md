@@ -10,7 +10,7 @@ and statescript logs, with no LFP, SWR detections, spikes or decodes.
 |---|---|
 | Control trial counts per rat (2490, 2629, 2027, 3021) | Reproduced |
 | Control epoch and trial counts of the replay analyses | Partially reproduced |
-| Control post-reward dwell time increases with experience | Reproduced (assumption) |
+| Control post-reward dwell time increases with experience | Partially reproduced |
 | Control head speed below 4 cm/s before reward | Reproduced |
 | Control search efficiency increases over epochs | Reproduced (assumption) |
 | Pre-reward time matched between NF and delay trials | Partially reproduced (three rats) |
