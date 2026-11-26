@@ -297,10 +297,10 @@ def occupancy_and_counts(s, d, speed, v1, unit_ids):
     return occ, counts
 
 
-def rate_maps(occ, counts):
-    so = smooth(occ)
+def rate_maps(occ, counts, sd_cm=SMOOTH_CM):
+    so = smooth(occ, sd_cm=sd_cm)
     with np.errstate(invalid="ignore", divide="ignore"):
-        sm = np.where(so > 0, smooth(counts) / so, 0.0)
+        sm = np.where(so > 0, smooth(counts, sd_cm=sd_cm) / so, 0.0)
         raw = np.where(occ > 0, counts / np.where(occ > 0, occ, 1), 0.0)
     return sm, raw
 
@@ -549,7 +549,7 @@ class Template:
     """A decoding template for one session and running direction: the smoothed rate maps of its place
     cells, and N_SHUF circular place-field shuffles of each (Methods, Bayesian Replay Analysis)."""
 
-    def __init__(self, cells, sm, raw, rng, n_shuf=N_SHUF):
+    def __init__(self, cells, sm, raw, rng, n_shuf=N_SHUF, sd_cm=SMOOTH_CM):
         self.cells = np.asarray(cells)
         self.f = sm + EPS_RATE
         self.logf = np.log(self.f)
@@ -559,7 +559,7 @@ class Template:
         F = np.empty((C, n_shuf, P))
         for c in range(C):
             idx = (np.arange(P)[None, :] - shifts[c][:, None]) % P
-            F[c] = smooth(raw[c][idx], axis=1)
+            F[c] = smooth(raw[c][idx], axis=1, sd_cm=sd_cm)
         self.F = F + EPS_RATE
         self.logF = np.log(self.F)
         self.S = DEC_BIN * self.f.sum(0)
