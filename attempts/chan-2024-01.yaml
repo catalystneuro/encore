@@ -3,7 +3,7 @@ id: chan-2024-01
 datasets:
 - archive: dryad
   id: vt4b8gtzk
-  version: "289757"
+  version: '289757'
   doi: 10.5061/dryad.vt4b8gtzk
   relation: primary
 paper: doi:10.1126/science.adi0858
@@ -23,24 +23,36 @@ provenance:
 inputs:
 - what: The paper's code release (its ref. 41), which holds data the Dryad deposit lacks, read for
     the claims marked data elsewhere. Used were the fruit-set counts in the pairwise.prop.test call
-    of "Figure 1/Fig 1D R script for analyzing Opall fruit set clean.R", the raw Vocus traces of
-    the five compounds in "Figure 2/", the wind tunnel counts in "Figure 3/Fig 3B Hyles and Manduca
-    wind tunnel behavior data.xlsx", and the GEOS-Chem 12.1.0 bottom-level fields and 13.2.1 factor
-    maps in "Figure 4/". Zenodo record 8411927, the only version, file Chan-et-al-v1.zip (md5
-    b28d968507206b9adafac0a428a6556d), a release of riffelllab/Chan-et-al at commit ffc1559.
+    of "Figure 1/Fig 1D R script for analyzing Opall fruit set clean.R", the raw Vocus traces of the
+    five compounds in "Figure 2/", the wind tunnel counts in "Figure 3/Fig 3B Hyles and Manduca wind
+    tunnel behavior data.xlsx", and the GEOS-Chem 12.1.0 bottom-level fields and 13.2.1 factor maps
+    in "Figure 4/". Zenodo record 8411927, the only version, file Chan-et-al-v1.zip (md5 b28d968507206b9adafac0a428a6556d),
+    a release of riffelllab/Chan-et-al at commit ffc1559.
   source: doi:10.5281/zenodo.8411927
 - what: Land mask for the GEOS-Chem grid, the package the Supplementary Methods name (Global models,
-    "a modified version of the global-land-mask 1.0.0 package"), used unmodified; a cell is land
-    when any 0.1 degree point in it is land. Wheel sha256
-    07751fbb4e3834ee508a84ea64d9bd5340fbd0a8c951e24b43c323fcc670bb62, locked in the entry.
+    "a modified version of the global-land-mask 1.0.0 package"), used unmodified; a cell is land when
+    any 0.1 degree point in it is land. Wheel sha256 07751fbb4e3834ee508a84ea64d9bd5340fbd0a8c951e24b43c323fcc670bb62,
+    locked in the entry.
   source: https://pypi.org/project/global-land-mask/1.0.0/ (https://github.com/toddkarin/global-land-mask)
+- what: Bottom-level (level 1) U and V of GEOS-Chem's processed MERRA-2 meteorology (A3dyn, 3-hourly
+    means, 0.5 x 0.625 degrees) for every day of July and January 2013, read by ranges from the public
+    GEOS-Chem data bucket (https://gcgrid.s3.amazonaws.com/GEOS_0.5x0.625/MERRA2/2013/), and averaged
+    to the 2 x 2.5 degree grid. The paper's distances use the bottom-level wind of its 12.1.0 run,
+    driven by MERRA-2 2013 (Supplementary Methods, Global models); that wind is not deposited and
+    the 2 x 2.5 degree 2013 files are not on the bucket.
+  source: doi:10.5067/SUOQESM06LPK (MERRA-2 tavg3_3d_asm_Nv), as processed for GEOS-Chem at https://gcgrid.s3.amazonaws.com/GEOS_0.5x0.625/MERRA2/2013/
+- what: City coordinates and 2018 populations of the 97 Table S13 cities, from UN World Urbanization
+    Prospects 2018, file WUP2018-F22-Cities_Over_300K_Annual.xls (sha256 4366cc15ecdda4d9ab420adfe730da6a7e35a8334615f50172a08d60b121c11c),
+    read from the Internet Archive's copy of 2024-08-24, as the UN site no longer serves it. Table
+    S13 cites WPP 2019 Highlights (ref. 79), which give no coordinates.
+  source: https://web.archive.org/web/20240824204902id_/https://population.un.org/wup/Download/Files/WUP2018-F22-Cities_Over_300K_Annual.xls
 outcomes:
 - claim: fig1d-assemblage-day-night
   outcome: blocked
   blocked_by: data_missing
   notes: The video log of pollinator visits behind Table S2 is in neither the Dryad deposit nor the
-    paper's Zenodo release (finding-missing-data lists both). Only the paper's table of counts
-    exists, so neither the counts nor the test behind Z = 17.67 can be computed from data.
+    paper's Zenodo release (finding-missing-data lists both). Only the paper's table of counts exists,
+    so neither the counts nor the test behind Z = 17.67 can be computed from data.
 - claim: fig1e-bagged-fewer-fruit
   outcome: reproduced
   notebook: reproduce_chan_2024.ipynb
@@ -48,10 +60,10 @@ outcomes:
   measured:
   - 0.794
   - 0.114
-  notes: From the counts in the paper's R script (Zenodo), unbagged 50 of 63 (0.794) and total
-    exclusion 5 of 44 (0.114); R's pairwise.prop.test (Yates, Holm) gives adjusted p 1.71e-10 for
-    the pair, as Table S4. The Dryad deposit holds no fruit-set data, and the flower-level records
-    are not deposited anywhere, so this repeats the paper's test on its published counts.
+  notes: From the counts in the paper's R script (Zenodo), unbagged 50 of 63 (0.794) and total exclusion
+    5 of 44 (0.114); R's pairwise.prop.test (Yates, Holm) gives adjusted p 1.71e-10 for the pair,
+    as Table S4. The Dryad deposit holds no fruit-set data, and the flower-level records are not deposited
+    anywhere, so this repeats the paper's test on its published counts.
   deviations:
   - The counts come from the paper's R script in the Zenodo release, not from the Dryad dataset.
 - claim: fig1e-nocturnal-exclusion
@@ -70,10 +82,10 @@ outcomes:
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig1e-groups
   notes: All ten Holm-adjusted p equal Table S4 at its printed precision (for example 0.5269 crossed
-    against unbagged, 0.4645 for diurnal exclusion against unbagged, nocturnal exclusion against
-    crossed and against diurnal exclusion, 1 for crossed against diurnal exclusion). Every pair
-    that shares a letter has p of 0.4645 or more and every other pair p of 0.0082 or less, so all
-    ten agree with the letters a, a,b, c, b, a,b.
+    against unbagged, 0.4645 for diurnal exclusion against unbagged, nocturnal exclusion against crossed
+    and against diurnal exclusion, 1 for crossed against diurnal exclusion). Every pair that shares
+    a letter has p of 0.4645 or more and every other pair p of 0.0082 or less, so all ten agree with
+    the letters a, a,b, c, b, a,b.
   deviations:
   - The counts come from the paper's R script in the Zenodo release, not from the Dryad dataset.
 - claim: nocturnal-share-of-fruit
@@ -84,9 +96,9 @@ outcomes:
   - 39.86
   - 28.12
   notes: Under the criterion's first reading the share is (0.794 - 0.477) / 0.794 = 39.9%, and with
-    the 70.6% drop in visitation of fig3d-visits-per-night (live flower) the reduction is 28.1%
-    (28.5% with the floral odor as the untreated flower). The second reading, diurnal exclusion
-    over unbagged, gives 82.8% and 58.4%, outside both tolerances.
+    the 70.6% drop in visitation of fig3d-visits-per-night (live flower) the reduction is 28.1% (28.5%
+    with the floral odor as the untreated flower). The second reading, diurnal exclusion over unbagged,
+    gives 82.8% and 58.4%, outside both tolerances.
   deviations:
   - Fruit-set counts from the paper's R script (Zenodo); visitation from the Dryad Table S10.
 - claim: fig2a-gcead-monoterpenes
@@ -99,10 +111,10 @@ outcomes:
 - claim: table-s6-emission-rates
   outcome: blocked
   blocked_by: data_missing
-  notes: Emission rates need the headspace samples and the synthetic standards that convert peak
-    areas to ng/h; neither is deposited. The Dryad deposit holds the TIC of the synthetic blend
-    (TableS8_MSdata_tic_front.csv) and the Zenodo release the raw GC-MS run of one field sample,
-    the alkane standard and the blend, with no calibration runs.
+  notes: Emission rates need the headspace samples and the synthetic standards that convert peak areas
+    to ng/h; neither is deposited. The Dryad deposit holds the TIC of the synthetic blend (TableS8_MSdata_tic_front.csv)
+    and the Zenodo release the raw GC-MS run of one field sample, the alkane standard and the blend,
+    with no calibration runs.
 - claim: fig2d-no3-degrades-monoterpenes
   outcome: reproduced
   notebook: reproduce_chan_2024.ipynb
@@ -112,78 +124,84 @@ outcomes:
   - -83.9
   - -29.78
   - -66.81
-  notes: On the raw Vocus traces (Zenodo) processed as the paper's notebook does, the windows of
-    the paper's Table S9 notebook, NO3 against clean air, give b-pinene -32.5% with O3 (Welch t,
-    p = 2.2e-120) and -83.9% with NO3 (Mann-Whitney U, p = 4.8e-67), ocimene -29.8% (Mann-Whitney
-    U, p = 5.0e-54) and -66.8% (Welch t, p = 2.2e-171), the tests and p values of Table S9. In the
-    notebook's own form, the difference of normalized means, ocimene gives -29.9% and -67.0%. As
-    variants, reading (a) (last half of each stage) gives -33.7%, -85.0%, -30.7% and -66.4%, and
-    reading (b) (whole stages) -33.1%, -82.4%, -29.2% and -64.6%, all within tolerance with every
-    p below 1e-52. Reading (ii), NO3 against the O3 stage, gives -76.1% and -52.7% under the
-    notebook's windows, and ocimene is then outside tolerance. The deposited Fig. 2D file gives
-    -28.9% and -74.4% for b-pinene under the paper's windows (finding). What the reader's answer
-    changed (questions/chan-2024.yaml) - the criterion now takes the notebook's windows as the
-    paper's method and keeps readings (a) and (b) as variants, so the measured values are now
-    those of the notebook's windows in place of reading (a); the outcome, reproduced before under
-    every reading, is unchanged.
+  notes: On the raw Vocus traces (Zenodo) processed as the paper's notebook does, the windows of the
+    paper's Table S9 notebook, NO3 against clean air, give b-pinene -32.5% with O3 (Welch t, p = 2.2e-120)
+    and -83.9% with NO3 (Mann-Whitney U, p = 4.8e-67), ocimene -29.8% (Mann-Whitney U, p = 5.0e-54)
+    and -66.8% (Welch t, p = 2.2e-171), the tests and p values of Table S9. In the notebook's own
+    form, the difference of normalized means, ocimene gives -29.9% and -67.0%. As variants, reading
+    (a) (last half of each stage) gives -33.7%, -85.0%, -30.7% and -66.4%, and reading (b) (whole
+    stages) -33.1%, -82.4%, -29.2% and -64.6%, all within tolerance with every p below 1e-52. Reading
+    (ii), NO3 against the O3 stage, gives -76.1% and -52.7% under the notebook's windows, and ocimene
+    is then outside tolerance. The deposited Fig. 2D file gives -28.9% and -74.4% for b-pinene under
+    the paper's windows (finding). What the reader's answer changed (questions/chan-2024.yaml) - the
+    criterion now takes the notebook's windows as the paper's method and keeps readings (a) and (b)
+    as variants, so the measured values are now those of the notebook's windows in place of reading
+    (a); the outcome, reproduced before under every reading, is unchanged.
   deviations:
-  - Tested on the raw traces in the Zenodo release; the Dryad deposit holds only the normalized
-    Fig. 2D traces, shown in finding-fig2d-file.
-  - Stage onsets for readings (a) and (b) are placed where the trace, smoothed by a 15-point
-    running mean, crosses half-way between the stage levels (a standard choice); the levels are
-    the means of the paper's notebook windows.
-  - Trace processing (section, detrend, baseline window) and the clean, O3 and NO3 windows are
-    those of the Dryad notebook Fig_S4_Table_S9_VOCUS_analysis_and_plotting.ipynb, cells 29 to 33,
-    which the criterion names as the paper's method.
-  - Changes are given as the ratio of stage means to the clean-air mean; the notebook prints the
-    difference of normalized means, which is the same for b-pinene (its clean window is its
-    baseline window) and differs by up to 0.23 points for ocimene; both are printed.
+  - Tested on the raw traces in the Zenodo release; the Dryad deposit holds only the normalized Fig.
+    2D traces, shown in finding-fig2d-file.
+  - Stage onsets for readings (a) and (b) are placed where the trace, smoothed by a 15-point running
+    mean, crosses half-way between the stage levels (a standard choice); the levels are the means
+    of the paper's notebook windows.
+  - Trace processing (section, detrend, baseline window) and the clean, O3 and NO3 windows are those
+    of the Dryad notebook Fig_S4_Table_S9_VOCUS_analysis_and_plotting.ipynb, cells 29 to 33, which
+    the criterion names as the paper's method.
+  - Changes are given as the ratio of stage means to the clean-air mean; the notebook prints the difference
+    of normalized means, which is the same for b-pinene (its clean window is its baseline window)
+    and differs by up to 0.23 points for ocimene; both are printed.
 - claim: fig2d-other-compounds-unchanged
   outcome: reproduced
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig2d-other-compounds-unchanged
-  notes: With the windows of the paper's Table S9 notebook (Dryad), NO3 against clean air, no p
-    for the three compounds is below 0.05 (smallest 0.065, aldoxime with O3), and the changes are
-    those of Table S9 (aldoxime -0.1% and -0.6%, benzaldehyde +0.4% and +2.1%, nonanal -0.4% and
-    -0.9%). As variants, which do not decide the outcome, reading (a) gives the aldoxime -0.56%
-    with O3 (p = 0.00093) and -0.70% with NO3 (p = 0.00017), and nonanal +4.0% with NO3 (p =
-    0.025); reading (b) gives the aldoxime -0.57% with NO3 (p = 5.2e-05). These aldoxime effects
-    are below 1% and reach significance because each window holds hundreds of time points. NO3
-    against the O3 stage, which the criterion does not use, gives the aldoxime -0.47% (p =
-    2.7e-05) under the notebook's windows. Benzaldehyde has no p below 0.05 under any reading
-    (changes -2.3% to +2.1%), and its data agree with Table S9 (0% and +2%), not the Fig. 2D
-    inset (-9% and -12%). What the reader's answer changed (questions/chan-2024.yaml) - the
-    criterion now judges this absence claim on the notebook's windows alone, with readings (a)
-    and (b) as variants; under (a) and (b) the claim was not reproduced, and under the notebook's
-    windows it is, so the outcome changes from not_reproduced to reproduced.
+  notes: With the windows of the paper's Table S9 notebook (Dryad), NO3 against clean air, no p for
+    the three compounds is below 0.05 (smallest 0.065, aldoxime with O3), and the changes are those
+    of Table S9 (aldoxime -0.1% and -0.6%, benzaldehyde +0.4% and +2.1%, nonanal -0.4% and -0.9%).
+    As variants, which do not decide the outcome, reading (a) gives the aldoxime -0.56% with O3 (p
+    = 0.00093) and -0.70% with NO3 (p = 0.00017), and nonanal +4.0% with NO3 (p = 0.025); reading
+    (b) gives the aldoxime -0.57% with NO3 (p = 5.2e-05). These aldoxime effects are below 1% and
+    reach significance because each window holds hundreds of time points. NO3 against the O3 stage,
+    which the criterion does not use, gives the aldoxime -0.47% (p = 2.7e-05) under the notebook's
+    windows. Benzaldehyde has no p below 0.05 under any reading (changes -2.3% to +2.1%), and its
+    data agree with Table S9 (0% and +2%), not the Fig. 2D inset (-9% and -12%). What the reader's
+    answer changed (questions/chan-2024.yaml) - the criterion now judges this absence claim on the
+    notebook's windows alone, with readings (a) and (b) as variants; under (a) and (b) the claim was
+    not reproduced, and under the notebook's windows it is, so the outcome changes from not_reproduced
+    to reproduced.
   deviations:
   - Tested on the raw traces in the Zenodo release; benzaldehyde and nonanal are not in the Dryad
     deposit.
-  - The clean, O3 and NO3 windows are those of the Dryad notebook
-    Fig_S4_Table_S9_VOCUS_analysis_and_plotting.ipynb, cells 31 to 33, including its test of the
-    aldoxime's clean air on rows 100 to 200 of its 0 to 300 window, as the criterion says.
+  - The clean, O3 and NO3 windows are those of the Dryad notebook Fig_S4_Table_S9_VOCUS_analysis_and_plotting.ipynb,
+    cells 31 to 33, including its test of the aldoxime's clean air on rows 100 to 200 of its 0 to
+    300 window, as the criterion says.
   - The compounds show no step at the oxidant onsets, so for the variants their stage extents are
-    the windows of the paper's notebook; readings (a) and (b) are the last half and the whole of
-    these.
+    the windows of the paper's notebook; readings (a) and (b) are the last half and the whole of these.
 - claim: figs5-blend-oxidation
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_chan_2024.ipynb
   output: claim:figs5-blend-oxidation
-  notes: After the NO3 onset (763 s) the monoterpene ion falls by 34.1% (reading a) or 32.9%
-    (reading b), but the aldoxime ion falls by 22.2% and 23.9% and the eucalyptol ion rises by
-    9.2% and 7.2%, all with p below 1e-52 by Table S9's procedure. With the linear detrend the
-    paper's notebook applies to the aldoxime, its change is +2.4% (p = 0.027, reading a) and -1.2%
-    (p = 0.14, reading b); eucalyptol still changes under both readings. What the reader's answer
-    changed (questions/chan-2024.yaml) - the criterion now says that the Table S9 notebook's index
-    windows belong to the single-compound Vocus runs and do not transfer to this run, and keeps
-    readings (a) and (b); the test is the same as before and the outcome, not_reproduced, is
-    unchanged.
+  notes: 'After the NO3 onset (763 s) the monoterpene ion falls by 34.1% (reading a) or 32.9% (reading
+    b), p below 1e-63, so the drop holds. The no-change half fails under the criterion''s test on
+    the raw traces: the eucalyptol ion rises by 9.2% and 7.2% (p below 1e-74) and the aldoxime ion
+    falls by 22.2% and 23.9% (p below 1e-52). On 30 s block means, which allow for the autocorrelation
+    of the 1 s points, the raw eucalyptol rise keeps p of 8.6e-06 and 9.3e-06. These changes may be
+    drift. With the linear detrend over the first 700 s that the paper''s notebook applies to the
+    aldoxime of this run, the aldoxime change is +2.4% (p = 0.027, reading a) and -1.2% (p = 0.14,
+    reading b) and the eucalyptol change +3.5% and +1.9% (p of 5.3e-17 and 6.2e-08; 0.012 and 0.22
+    on block means), but the same detrend takes the monoterpene drop to -3.7% and -4.3%, as its fit
+    window runs into the NO3 stage, so it cannot separate drift from chemistry. The paper''s notebook
+    divides each ion of this run by the reagent ion (C6D6), whose trace is not deposited; the outcome
+    may reflect that missing trace. Partially reproduced as the verifier gave it: the monoterpene
+    drop holds and the absence part does not. What the reader''s answer changed (questions/chan-2024.yaml)
+    - the criterion now says the Table S9 notebook''s index windows do not transfer to this run and
+    keeps readings (a) and (b); the test is the same as before.'
   deviations:
-  - The signals are not divided by the reagent ion (C6D6), as the paper's notebook does, because
-    that trace is not deposited.
+  - The signals are not divided by the reagent ion (C6D6), as the paper's notebook does, because that
+    trace is not deposited.
   - The clean-air stage is taken to start at 420 s, where the paper's notebook starts its plot and
-    baseline; the NO3 onset is placed where the smoothed monoterpene trace crosses half-way
-    between its clean-air level and its last 100 s (a standard choice).
+    baseline; the NO3 onset is placed where the smoothed monoterpene trace crosses half-way between
+    its clean-air level and its last 100 s (a standard choice).
+  - As a limitation, the eucalyptol and aldoxime changes may be instrument drift that the missing
+    reagent-ion trace would correct; detrended and block-mean variants are shown and decide nothing.
 - claim: fig2-dose-dependent
   outcome: blocked
   blocked_by: data_missing
@@ -194,35 +212,37 @@ outcomes:
   assumed: true
   notebook: reproduce_chan_2024.ipynb
   output: claim:figs6-oxidation-products
-  notes: In the second segment of the workbook (taken as NO3) the three nitrates rise 17 to 23 times
-    their clean-air level and C10H16O4 and C10H18O4 6.0 and 7.6 times. In the first segment (taken
+  notes: In the later segment of the workbook (taken as NO3) the three nitrates rise 17 to 23 times
+    their clean-air level and C10H16O4 and C10H18O4 6.0 and 7.6 times. In the earlier segment (taken
     as O3) C10H16O4 and C10H18O4 rise 6.8 and 9.3 times and the nitrates also rise, 1.18, 1.46 and
-    1.39 times, with one-sided Welch p of 0.0002 to 0.001. The criterion is met under the doubling
-    reading (r3) and not under the test (r1) or 3 SD (r2) readings, as the nitrates rise a little
-    with O3. Question for the paper's authors (finding) on which segment is which oxidant and what
-    counts as a product forming.
+    1.39 times, with one-sided Welch p of 0.0002 to 0.001 on 5 against 9 points. The criterion is
+    met only under the doubling reading (r3), a threshold this attempt chose and the deciding assumption;
+    under the test (r1) and 3 SD (r2) readings the nitrates also rise with O3. The NO3 part holds
+    under every reading and the O3 part under r3 only, so the claim holds in part. The README does
+    not name the segments. Question for the paper's authors (finding) on which segment is which oxidant
+    and what counts as a product forming.
   deviations:
-  - The workbook does not say which segment is which oxidant; the first is assumed to be the O3
-    stage and the second the NO3 stage, because only in the second do the nitrates rise many-fold,
-    as Fig. S6B shows.
-  - The paper does not define a rise above the clean-air level; three readings were run (one-sided
-    Welch test, every point above the clean mean plus 3 SD, at least a doubling). Adopted as the
-    best-supported reading of "rise" is the test (r1), under which the O3 part does not hold;
-    hence partially reproduced.
+  - The workbook does not say which segment is which oxidant; the earlier one is taken as the O3 stage
+    and the later as the NO3 stage, as the Supplementary Methods (Characterization of free-radical
+    oxidation) run each flowtube experiment as clean air, then O3 (stage II), then NO3 (stage III).
+  - The paper does not define a rise above the clean-air level; three readings were run (a one-sided
+    Welch test on 5 against 9 and 4 against 7 points, every point above the clean mean plus 3 SD,
+    a mean of at least twice the clean mean). All three are this attempt's choices. Only the doubling
+    reading meets the criterion, and the others do not, hence partially reproduced.
   - The oxidant onset in each segment is the first row where C10H16O4 exceeds twice the median of
     the segment's first five rows (a standard choice).
 - claim: fig3b-hyles-no3-eliminates
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig3b-hyles-no3-eliminates
   measured:
   - 0
   - 0
-  notes: No Hyles fed at the NO3-oxidized odor (0 of 19) or at clean air (0 of 42), as the claim
-    says, but only 5 of 35 fed at the floral odor, and the floral odor against the NO3-oxidized
-    odor gives p = 0.084 by the z-test and 0.22 by prop.test with Yates' correction. The
-    criterion's significance part fails, so the elimination is not shown to differ from the floral
-    odor. Floral odor against clean air gives p = 0.011 (z-test).
+  notes: 'No Hyles fed at the NO3-oxidized odor (0 of 19) or at clean air (0 of 42), as the claim
+    says, but only 5 of 35 fed at the floral odor, and the floral odor against the NO3-oxidized odor
+    gives p = 0.084 by the z-test and 0.22 by prop.test with Yates'' correction, so the criterion''s
+    significance part fails. Floral odor against clean air gives p = 0.011 (z-test). Partially reproduced
+    as the verifier gave it: both zero proportions hold and the significance part does not.'
   deviations:
   - Counts from the Fig. 3B sheet in the Zenodo release; the Dryad deposit has no Fig. 3B data.
 - claim: fig3b-manduca-no3-halves
@@ -230,21 +250,33 @@ outcomes:
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig3b-manduca-no3-halves
   measured: 54.1
-  notes: Feeding falls from 11 of 12 (0.917) to 8 of 19 (0.421), a relative decrease of 54.1% (49.6
-    percentage points under the second reading), with p = 0.0058 by the z-test and 0.017 by
-    prop.test; the paper gives 0.047. NO3-oxidized odor against clean air (5 of 15) gives p = 0.60
-    and 0.87. The floral-odor group has the counts of the 1x row of the dose-response file, not
-    the 0.01x row the Methods imply (finding).
+  notes: On the Fig. 3B sheet, feeding falls from 11 of 12 (0.917) to 8 of 19 (0.421), a relative
+    decrease of 54.1% (49.6 percentage points under the second reading), with p = 0.0058 by the z-test
+    and 0.017 by prop.test; the paper gives 0.047. NO3-oxidized odor against clean air (5 of 15) gives
+    p = 0.60 and 0.87. The sheet's floral-odor group has the counts of the 1x row of the dose-response
+    file, not the 0.01x row the Methods imply (finding). With the 0.01x row (10 of 14) as the floral
+    reference, the decrease is 41.1% (29.3 points), p = 0.094 (z-test) or 0.19 (prop.test), and the
+    claim would fail. The outcome rests on the sheet's group, adopted as an assumption. The sheet
+    holds 113 Manduca where the Methods give 138, and its floral group of 12 is below the Methods'
+    15 to 42 moths per stimulus. Question for the paper's authors (finding).
   deviations:
   - Counts from the Fig. 3B sheet in the Zenodo release.
+  - 'Assumption: the floral-odor reference is the Fig. 3B sheet''s group (11 of 12), the paper''s
+    own deposited data for Fig. 3B, whose 54% decrease matches the paper''s 50% where the 0.01x row''s
+    41% does not. The Methods say Manduca were tested at 1/100 floral equivalent in all Fig. 3B treatments
+    (Supplementary Methods, Behavioral wind tunnel experiments), which points to the 0.01x row of
+    Fig. S7C; both readings are run.'
+  assumed: true
 - claim: fig3b-o3-no2-no-effect
   outcome: reproduced
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig3b-o3-no2-no-effect
   notes: By the plain z-test the floral odor (0.917) against O3 (15 of 24, 0.625) gives p = 0.066
-    and against NO2 (17 of 24, 0.708) p = 0.16; differences 29 and 21 percentage points. With
-    Holm adjustment over the 15 Manduca pairs, p = 0.59 and 0.94. With 12 moths at the floral odor
-    the test has little power; the O3 difference is near the threshold.
+    and against NO2 (17 of 24, 0.708) p = 0.16; differences 29 and 21 percentage points. With Holm
+    adjustment over the 15 Manduca pairs, p = 0.59 and 0.94. With 12 moths at the floral odor the
+    test has little power; the O3 difference is near the threshold. With the 0.01x row of Fig. S7C
+    (10 of 14) as the floral reference, p = 0.58 (O3) and 0.97 (NO2), so the outcome is the same under
+    both floral references.
   deviations:
   - Counts from the Fig. 3B sheet in the Zenodo release.
 - claim: fig3b-proxy-mixture
@@ -253,9 +285,11 @@ outcomes:
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig3b-proxy-mixture
   notes: The proxy mixture (7 of 19, 0.368) is lower than the floral odor (p = 0.0026 by the z-test,
-    0.036 after Holm over the 15 pairs) and does not differ from clean air (p = 0.83) or the
-    NO3-oxidized odor (p = 0.74). Under prop.test with Yates' correction the comparison with the
-    floral odor gives p = 0.0083 unadjusted and 0.12 after Holm.
+    0.036 after Holm over the 15 pairs) and does not differ from clean air (p = 0.83) or the NO3-oxidized
+    odor (p = 0.74). Under prop.test with Yates' correction the comparison with the floral odor gives
+    p = 0.0083 unadjusted and 0.12 after Holm. With the 0.01x row of Fig. S7C (10 of 14) as the floral
+    reference, the proxy mixture against the floral odor gives p = 0.049 (z-test) and 0.107 (prop.test),
+    so the claim still holds under reading (i) and (a), marginally.
   deviations:
   - The sheet labels the proxy mixture "blend of oxidized scent"; it is taken to be the NO3-proxy
     mixture, the only Manduca treatment of the Methods left once the others are matched by name.
@@ -265,15 +299,14 @@ outcomes:
   notebook: reproduce_chan_2024.ipynb
   output: claim:figs7-manduca-sensitivity
   notes: Mean Manduca EAG exceeds mean Hyles EAG at all nine concentrations of the file (1e-6 13.1
-    against 10.0 mV, 1e-4 22.8 against 17.6, 1e-2 42.8 against 22.7), with or without the
-    duplicated Hyles series. In the wind tunnel 0.01x against 1x (10 of 14, 11 of 12) gives p =
-    0.19 by the z-test (0.42 by prop.test; the paper 0.09), and 0.001x against 1x (13 of 22) gives
-    p = 0.046 by the z-test, so 0.01x is the lowest dose not different from 1x under reading (i);
-    prop.test (p = 0.11) does not separate 0.001x.
+    against 10.0 mV, 1e-4 22.8 against 17.6, 1e-2 42.8 against 22.7), with or without the duplicated
+    Hyles series. In the wind tunnel 0.01x against 1x (10 of 14, 11 of 12) gives p = 0.19 by the z-test
+    (0.42 by prop.test; the paper 0.09), and 0.001x against 1x (13 of 22) gives p = 0.046 by the z-test,
+    so 0.01x is the lowest dose not different from 1x under reading (i); prop.test (p = 0.11) does
+    not separate 0.001x.
   deviations:
-  - The EAG file holds 9 concentrations (1e-6 to 3 floral equivalents) and about 18 values per
-    concentration, not the Methods' 8 concentrations and 159 moths; the comparison uses the
-    file's concentrations.
+  - The EAG file holds 9 concentrations (1e-6 to 3 floral equivalents) and about 18 values per concentration,
+    not the Methods' 8 concentrations and 159 moths; the comparison uses the file's concentrations.
 - claim: fig3d-field-no3-fewer-visits
   outcome: reproduced
   notebook: reproduce_chan_2024.ipynb
@@ -284,15 +317,15 @@ outcomes:
   - 0.081
   notes: The Poisson GLM on the Table S10 counts gives an NO3 coefficient of -1.253 (SE 0.567, z =
     -2.21, p = 0.027) under both readings, as Table S11, and NO3 against the no-odor control gives
-    p = 0.74. Visits per hour 0.283 (floral odor) and 0.081 (NO3). The deposit holds the pooled
-    counts and hours per treatment (Table S10 itself), not per-night counts, so this repeats the
-    paper's model on its table.
+    p = 0.74. Visits per hour 0.283 (floral odor) and 0.081 (NO3). The deposit holds the pooled counts
+    and hours per treatment (Table S10 itself), not per-night counts, so this repeats the paper's
+    model on its table.
 - claim: fig3d-real-and-synthetic-alike
   outcome: reproduced
   notebook: reproduce_chan_2024.ipynb
   output: claim:fig3d-real-and-synthetic-alike
-  notes: Live flower against the floral odor -0.027 (p = 0.94) and live floral scent 0.067 (p =
-    0.86) under reading (a); 0.93 and 0.86 under reading (b). Table S11 gives -0.027 and 0.069.
+  notes: Live flower against the floral odor -0.027 (p = 0.94) and live floral scent 0.067 (p = 0.86)
+    under reading (a); 0.93 and 0.86 under reading (b). Table S11 gives -0.027 and 0.069.
 - claim: fig3d-visits-per-night
   outcome: reproduced
   notebook: reproduce_chan_2024.ipynb
@@ -301,64 +334,146 @@ outcomes:
   - 1.928
   - 0.566
   - 70.7
-  notes: Visits per hour times 7 give 1.928 for the live flower and 0.566 for the NO3-oxidized
-    odor, a drop of 70.7%; with the synthetic floral odor as the untreated flower, 1.980 and a drop
-    of 71.4%. Both readings are within tolerance.
+  notes: Visits per hour times 7 give 1.928 for the live flower and 0.566 for the NO3-oxidized odor,
+    a drop of 70.7%; with the synthetic floral odor as the untreated flower, 1.980 and a drop of 71.4%.
+    Both readings are within tolerance.
 - claim: fig4ab-no3-shortens-recognition
-  outcome: blocked
-  blocked_by: data_missing
-  notes: The recognition distance is the degradation time times the bottom-level wind speed, and
-    the GEOS-Chem file in the Zenodo release holds NO3, O3, pressure, temperature and grid volume
-    but no wind; the Dryad deposit holds no model output. The "many populated areas below 400 m"
-    part needs absolute distances. What does not need the wind is shown, deciding nothing; the
-    NO3 time is shorter than the O3 time in 37% (reading i, either threshold) to 100% (reading
-    ii) of land cells.
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_chan_2024.ipynb
+  output: claim:fig4ab-no3-shortens-recognition
+  notes: Over the 4197 land cells kept, the NO3 map is shorter than the O3 map in all cells with NO3
+    and O3 together (ii), and in 37% (threshold a) or 51% (b) with NO3 alone (i). The Table S13 cities
+    below 400 m number 8, 10, 9 and 8 under four readings, all with the speed of the mean wind vector
+    and threshold (a), and 0 to 6 or 11 under the other 28. Both parts hold under two of the 32 readings,
+    density at the cell's T and P with the containing cell (10 cities) and Table S12's density with
+    interpolation (8 cities), both with NO3 and O3. Medians over land with density (1), threshold
+    (a) and the vector wind are 11.3 km for the O3 map and 31.4 km (i) or 6.8 km (ii) for the NO3
+    map. Of the cities below 400 m, 6 of the 10 and 5 of the 8 are among Table S13's nine, but Table
+    S13's distances are not matched (table-s13-recognition-distances), and the count falls to 0 or
+    1 with the monthly mean speed, so the second part rests on the wind reading. Before the revision
+    this claim was blocked (data_missing, no wind); the verifier pointed to the public MERRA-2 wind.
+  deviations:
+  - 'The recognition distance is the degradation time times the bottom-level wind, which the deposited
+    output lacks; it is taken from GEOS-Chem''s processed MERRA-2 files for July and January 2013
+    at 0.5 x 0.625 degrees, averaged to the 2 x 2.5 degree grid (input). This is an assumption: the
+    model''s own wind may differ (regridding, averaging), and the 2 x 2.5 degree 2013 files are not
+    public.'
+  - City coordinates and populations are those of UN World Urbanization Prospects 2018 (input), as
+    Table S13's source (ref. 79, WPP 2019 Highlights) gives none; all 97 cities match one agglomeration
+    each. An assumption.
+  - '"Many populated areas" is read, as the criterion says, as the count of Table S13 cities below
+    400 m within one of nine; the cities themselves are not compared.'
 - claim: table-s13-recognition-distances
-  outcome: blocked
-  blocked_by: data_missing
-  notes: Needs the bottom-level wind speed, which is not deposited (see fig4ab), and the city
-    coordinates of ref. 79. Five of the eight expected values are distances; at most three
-    (the percentages) could be computed without the wind, fewer than the six the criterion asks
-    for partial reproduction.
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_chan_2024.ipynb
+  output: claim:table-s13-recognition-distances
+  measured:
+  - 154.6
+  - 783.6
+  - 230.3
+  - 316.0
+  - 347.5
+  - 0.0
+  - 0.0
+  - 52.3
+  notes: No reading has more than 1 of the 8 values within tolerance (6 needed for partial). Measured
+    gives the first reading the criteria list (density at the cell's T and P, threshold a, NO3 alone,
+    speed of the mean wind vector, containing cell, nearest factor map), where Hong Kong and Tokyo
+    print as 0.0% (below 0.05). With NO3 and O3 and the same other choices Kabul is 134.5 m (73.1),
+    Santiago 634.3 (101.8), Milan 198.1 (157.6), Barcelona 281.4 (177.4), Los Angeles 326.3 (452.4),
+    Hong Kong 1.8% (4.9), Tokyo 2.2 to 2.4% (6.7) and Kinshasa 70.7 to 73.3% (89.8). The monthly mean
+    speed gives distances several times longer, and threshold (b) about 15 times longer. The four
+    shortest are Kabul, Milan, London and Delhi or Madrid under the vector-wind readings, and Riyadh,
+    Los Angeles, Lahore and others under the mean-speed readings, against Kabul, Santiago, Milan and
+    Barcelona. The percentages need no wind; the distances rest on the assumed wind. Before the revision
+    this claim was blocked (data_missing). Which wind field and averaging, and which coordinates,
+    the paper used is asked of its authors (finding).
+  deviations:
+  - 'The recognition distance is the degradation time times the bottom-level wind, which the deposited
+    output lacks; it is taken from GEOS-Chem''s processed MERRA-2 files for July and January 2013
+    at 0.5 x 0.625 degrees, averaged to the 2 x 2.5 degree grid (input). This is an assumption: the
+    model''s own wind may differ (regridding, averaging), and the 2 x 2.5 degree 2013 files are not
+    public.'
+  - City coordinates and populations are those of UN World Urbanization Prospects 2018 (input), as
+    Table S13's source (ref. 79, WPP 2019 Highlights) gives none; all 97 cities match one agglomeration
+    each. An assumption.
 - claim: fig4c-preindustrial-change
-  outcome: blocked
-  blocked_by: data_missing
-  notes: Depends on fig4ab-no3-shortens-recognition, which is blocked, and its readings need the
-    Table S13 cities. The ratio of present to preindustrial distance does not need the wind, and is
-    shown, deciding nothing; over land its median is 14% to 16% with NO3 alone and 42% to 48% with
-    NO3 and O3, and in a box around Greenland the median is 34% to 66%, with no reading putting
-    most Greenland cells above 75%.
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_chan_2024.ipynb
+  output: claim:fig4c-preindustrial-change
+  notes: The present over preindustrial distance needs no wind and no density. Most Table S13 cities
+    are at 25% or less under every reading (68% to 90% of the cities, reading a; 73% to 92% of their
+    population, reading b), so the first part holds. Over the Greenland box (227 land cells at 60
+    N or more, 73 to 12 W) the median is 34% to 66% and at most 0.4% of cells are above 75%, under
+    every reading, so the second part fails; this needs neither the wind nor the city coordinates.
+    The July NO3 factor over Greenland is 0.01 to 0.49 (printed). The partial outcome needs the Table
+    S13 percentages matched and no majority, and neither holds. The share of land cells at 25% or
+    less printed before the revision is not one of the criterion's readings and is no longer used.
+    Changed from blocked, as the verifier said.
+  deviations:
+  - City coordinates and populations are those of UN World Urbanization Prospects 2018 (input), as
+    Table S13's source (ref. 79, WPP 2019 Highlights) gives none; all 97 cities match one agglomeration
+    each. An assumption.
+  - Greenland is taken as land cells at 60 N or more between 73 W and 12 W, a standard box; the paper
+    gives no boundary.
 - claim: interannual-similar
   outcome: blocked
   blocked_by: data_missing
   notes: The 13.2.1 runs for 2013, 2019 and 2021 are not deposited; the Zenodo release holds only
     the preindustrial over 2013 factor maps, and the Dryad deposit no model output.
 - claim: figs8-no3-faster-than-o3
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_chan_2024.ipynb
   output: claim:figs8-no3-faster-than-o3
   measured:
   - 3.48
   - 42.98
-  notes: The July 2013 bottom-level means over land cells between 10 and 50 N are 3.48 ppt NO3 and
-    43.0 ppb O3, outside 2.6 +- 0.26 and 37 +- 3.7. No variant over the northern band (June,
-    August, mostly-land cells, all cells) gives both; June over land in both hemispheres (10 to 50
-    N and S) gives 2.69 ppt and 39.1 ppb, both within tolerance, but the criterion names the
-    northern band only. The rest of the criterion holds at the recomputed and at the paper's
-    concentrations; NO3 is faster for 17 of 23 compounds, a-humulene and b-caryophyllene are
-    faster with O3 (as are a-terpinene and the three green leaf volatiles), and a-terpinene, a
-    monoterpene, is the most reactive. Which cells and month give the paper's means is asked of
-    the paper's authors (finding).
+  notes: 'The July 2013 bottom-level means over land cells between 10 and 50 N are 3.48 ppt NO3 and
+    43.0 ppb O3, outside 2.6 +- 0.26 and 37 +- 3.7. Weighting by cell area (3.38 ppt, 42.4 ppb) or
+    by the model''s grid volume (3.39 ppt, 42.4 ppb) does not bring them within tolerance, and no
+    variant over the northern band (June, August, mostly-land cells, all cells) gives both; June over
+    land in both hemispheres (10 to 50 N and S) gives 2.69 ppt and 39.1 ppb, both within tolerance,
+    but the criterion names the northern band only. The rest of the criterion, the finding itself,
+    holds at the recomputed and at the paper''s concentrations; NO3 is faster for 17 of 23 compounds,
+    a-humulene and b-caryophyllene are faster with O3 (as are a-terpinene and the three green leaf
+    volatiles), and a-terpinene, a monoterpene, is the most reactive. Partially reproduced as the
+    verifier gave it: the rate comparison holds and the stated concentrations do not. Which cells
+    and month give the paper''s means is asked of the paper''s authors (finding).'
   deviations:
   - The GEOS-Chem output comes from the Zenodo release; the land mask from global-land-mask 1.0.0
     unmodified, where the paper used a modified version.
 - claim: figs9-urban-regressions
-  outcome: blocked
-  blocked_by: data_missing
-  notes: Depends on table-s13-recognition-distances, which is blocked (no wind field, no city
-    coordinates).
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_chan_2024.ipynb
+  output: claim:figs9-urban-regressions
+  measured: 0.379
+  notes: Over 128 readings (32 of the distance and percentage maps, population raw or log10, R2 plain
+    or adjusted), A (distance on population) has p of 0.089 or more in all; B (impact on population)
+    has p below 0.01 in 28, all with NO3 and O3, R2 0.094 to 0.111 (paper 0.09); C (impact on distance)
+    has p below 0.001 in 64, all with NO3 and O3, with shorter distances going with a larger impact
+    (Spearman 0.40 to 0.56), but R2 0.16 to 0.38. All parts hold in 4 readings, threshold (a), monthly
+    mean speed, containing cell, bilinear factor map, either density and either population scale,
+    with C R2 0.372 to 0.379 (measured gives the first). With NO3 alone neither B (p 0.12 or more)
+    nor C (p 0.065 or more) holds. The distances behind these regressions do not match Table S13,
+    and the populations are WUP 2018's, so the outcome rests on the assumed wind, coordinates and
+    populations and holds in few readings. Before the revision this claim was blocked (data_missing).
+  deviations:
+  - 'The recognition distance is the degradation time times the bottom-level wind, which the deposited
+    output lacks; it is taken from GEOS-Chem''s processed MERRA-2 files for July and January 2013
+    at 0.5 x 0.625 degrees, averaged to the 2 x 2.5 degree grid (input). This is an assumption: the
+    model''s own wind may differ (regridding, averaging), and the 2 x 2.5 degree 2013 files are not
+    public.'
+  - City coordinates and populations are those of UN World Urbanization Prospects 2018 (input), as
+    Table S13's source (ref. 79, WPP 2019 Highlights) gives none; all 97 cities match one agglomeration
+    each. An assumption.
+  - The regressions use the 97 listed cities with WUP 2018 populations for 2018, which equal Table
+    S13's for Tokyo, Delhi and Kinshasa.
 - claim: table-s1-field-conditions
-  outcome: not_reproduced
+  outcome: partially_reproduced
   notebook: reproduce_chan_2024.ipynb
   output: claim:table-s1-field-conditions
   measured:
@@ -366,32 +481,39 @@ outcomes:
   - 0.994
   - 1.698
   - 47.51
-  notes: From midnight to 6 am, over nightly means, O3 is 34.2 ppb (3 nights), NO2 0.994 ppb (6
-    nights) and RH 47.5% (14 nights), all within tolerance (over samples 34.5, 0.995 and 47.7, RH
-    then just outside). The horizontal wind speed is 1.70 m/s over the rows that would fall between
-    midnight and 6 am if the anemometer log ran without a break from its header time, and 2.11 m/s
-    over all rows, outside 1.14 +- 0.48; the speed of the mean wind vector is 1.83 m/s. The
-    anemometer rows cannot be placed in time (finding) and the paper's "stable conditions" are not
-    defined, so the wind comparison may rest on rows the paper did not use. All field files are
-    from 2018, where Table S1 averages 2018 and 2019.
+  notes: 'From midnight to 6 am, over nightly means, O3 is 34.2 ppb (3 nights), NO2 0.994 ppb (6 nights)
+    and RH 47.5% (14 nights), all within tolerance (over samples 34.5, 0.995 and 47.7, RH then just
+    outside). The horizontal wind speed is 1.70 m/s over the rows that would fall between midnight
+    and 6 am if the anemometer log ran without a break from its header time, and 2.11 m/s over all
+    rows, outside 1.14 +- 0.48; the speed of the mean wind vector is 1.83 m/s. The anemometer rows
+    cannot be placed in time (finding) and the paper''s "stable conditions" are not defined, so the
+    wind comparison may rest on rows the paper did not use. All field files are from 2018, where Table
+    S1 averages 2018 and 2019. The ozone and CAPS logs give no time zone; they are read as local time
+    (the iButtons state Timezone -7). As logged the ozone covers 23:00 to 07:59; read as UTC it would
+    hold only the hour after local midnight in the window, with O3 28.3 ppb (outside tolerance) and
+    NO2 0.950 (1.025 over nightly means), so the O3 result rests on the clock being local. Partially
+    reproduced as the verifier gave it: three of four values are within tolerance and the wind is
+    not.'
   deviations:
   - NO2 rows with a finite value were used; status 10004 only is shown as a variant (0.992 ppb).
-  - The wind is computed from u and v of every row selected; no stability selection is applied,
-    as the paper does not define one.
+  - The wind is computed from u and v of every row selected; no stability selection is applied, as
+    the paper does not define one.
   - Measured gives the nightly-mean reading for O3, NO2 and RH, and the 0 to 6 am rows for the wind.
+  - The ozone and CAPS clocks are taken as local time, as the logs cover the night as written; per-hour
+    means and the UTC reading are shown.
 findings:
 - kind: data_missing
   severity: major
   notebook: reproduce_chan_2024.ipynb
   output: finding-missing-data
-  statement: The Dryad deposit's description is the GEOS-Chem modelling, but it holds no model
-    output. It also holds no pollinator visit log (Table S2), no fruit-set data (Table S3), no
-    Fig. 3B wind tunnel counts, no raw Vocus traces, no GC-MS samples or calibration standards
-    (Tables S5 and S6), and one GC-EAD trace per species where the paper used 8 and 13 antennae.
-    The paper's Zenodo code release (doi:10.5281/zenodo.8411927) holds the fruit-set counts (in an
-    R script), the Fig. 3B counts, the Vocus traces, one field GC-MS run and the 2013 GEOS-Chem
-    fields, without wind and without the 2019 and 2021 runs; the visit log, the other GC-EAD
-    antennae, the GC-MS samples and standards, and the model winds are in neither.
+  statement: The Dryad deposit's description is the GEOS-Chem modelling, but it holds no model output.
+    It also holds no pollinator visit log (Table S2), no fruit-set data (Table S3), no Fig. 3B wind
+    tunnel counts, no raw Vocus traces, no GC-MS samples or calibration standards (Tables S5 and S6),
+    and one GC-EAD trace per species where the paper used 8 and 13 antennae. The paper's Zenodo code
+    release (doi:10.5281/zenodo.8411927) holds the fruit-set counts (in an R script), the Fig. 3B
+    counts, the Vocus traces, one field GC-MS run and the 2013 GEOS-Chem fields, without wind and
+    without the 2019 and 2021 runs; the visit log, the other GC-EAD antennae, the GC-MS samples and
+    standards, and the model winds are in neither.
 - kind: other
   about: data
   severity: critical
@@ -399,34 +521,36 @@ findings:
   output: finding-eag-duplicated-series
   statement: In Fig_S5_Manduca_Hyles_EAG_dose_response_mean_of_largest.csv the Hyles column repeats
     eight consecutive values of one dose series (1e-5 to 3 floral equivalents, file rows 12 to 19)
-    as the next series (rows 21 to 28); only the 1e-6 value differs. No other run of eight
-    identical values occurs in either column. One antenna's dose response appears to be deposited
-    twice, as two antennae.
+    as the next series (rows 21 to 28); only the 1e-6 value differs. No other run of eight identical
+    values occurs in either column. One antenna's dose response appears to be deposited twice, as
+    two antennae.
 - kind: metadata_error
   severity: major
   notebook: reproduce_chan_2024.ipynb
   output: finding-eag-counts
   statement: The EAG file holds 159 values per species, 16 to 18 at each of 9 concentrations (1e-6
-    to 3 floral equivalents), so about 18 antennae per species. The Methods state 159 moths per
-    species (318 in all) and 8 concentrations from 1:100,000,000 to 1:33. The file and README also
-    call this Fig. S5, which is Fig. S7 in the paper.
+    to 3 floral equivalents), so about 18 antennae per species. The Methods state 159 moths per species
+    (318 in all) and 8 concentrations from 1:100,000,000 to 1:33. The file and README also call this
+    Fig. S5, which is Fig. S7 in the paper.
 - kind: other
   about: paper
   notebook: reproduce_chan_2024.ipynb
   output: finding-fig3b-control-is-1x
   statement: In the Fig. 3B sheet of the Zenodo release, the Manduca floral-odor group is 11 of 12
-    moths, the same counts as the 1x row of the Dryad dose-response file (Fig. S7C), while the
-    0.01x row is 10 of 14. The Methods say Manduca were tested at 1/100 floral equivalent in all
-    Fig. 3B treatments, so the reference group of the 50% decrease appears to be the 1x data.
+    moths, the same counts as the 1x row of the Dryad dose-response file (Fig. S7C), while the 0.01x
+    row is 10 of 14. The Methods say Manduca were tested at 1/100 floral equivalent in all Fig. 3B
+    treatments, so the reference group of the 50% decrease appears to be the 1x data. The sheet holds
+    113 Manduca, where the Methods give 138, and the floral-odor group of 12 is below the Methods'
+    15 to 42 moths per stimulus.
 - kind: metadata_error
   severity: major
   notebook: reproduce_chan_2024.ipynb
   output: finding-fig2d-file
   statement: Fig2D_ToFdata.txt does not hold the traces Table S9 is computed from. Under the paper's
     windows its b-pinene trace gives -28.9% with O3 and -74.4% with NO3, while the raw trace in the
-    Zenodo release, processed by the paper's Dryad notebook, gives Table S9's -32.5% and -83.9%
-    (its ocimene trace agrees, -29.8% and -66.8%). Its time column steps by 1.0035, seconds as in
-    the raw files, where the README says minutes.
+    Zenodo release, processed by the paper's Dryad notebook, gives Table S9's -32.5% and -83.9% (its
+    ocimene trace agrees, -29.8% and -66.8%). Its time column steps by 1.0035, seconds as in the raw
+    files, where the README says minutes.
 - kind: metadata_insufficient
   severity: minor
   notebook: reproduce_chan_2024.ipynb
@@ -439,19 +563,19 @@ findings:
   severity: major
   notebook: reproduce_chan_2024.ipynb
   output: finding-anemometer-time
-  statement: Table_S1_anemometer_data.txt has no timestamps and one log header (2018-08-01
-    22:15:22), while the README says it concatenates the sampling times; its 1,387,308 rows are 12.0
-    h at 32 Hz. The midnight to 6 am rows of Table S1 cannot be located. Its mean horizontal speed
-    is 2.11 m/s over all rows and 1.70 m/s over the rows that would fall between midnight and 6 am
-    if continuous, against 1.14 m/s in Table S1.
+  statement: Table_S1_anemometer_data.txt has no timestamps and one log header (2018-08-01 22:15:22),
+    while the README says it concatenates the sampling times; its 1,387,308 rows are 12.0 h at 32
+    Hz. The midnight to 6 am rows of Table S1 cannot be located. Its mean horizontal speed is 2.11
+    m/s over all rows and 1.70 m/s over the rows that would fall between midnight and 6 am if continuous,
+    against 1.14 m/s in Table S1.
 - kind: metadata_insufficient
   severity: minor
   notebook: reproduce_chan_2024.ipynb
   output: finding-s6-unlabelled
   statement: FigS6_CIMS_data.xlsx holds two time segments (05:12 to 05:38 and 06:36 to 06:56 on 24
-    August 2019) with no label saying which is the O3 and which the NO3 oxidation. The
-    benzene-cation CIMS files (named Fig S4, the paper's Fig. S5) give no stage times and omit the
-    reagent-ion trace the paper's notebook normalizes by.
+    August 2019) with no label saying which is the O3 and which the NO3 oxidation. The benzene-cation
+    CIMS files (named Fig S4, the paper's Fig. S5) give no stage times and omit the reagent-ion trace
+    the paper's notebook normalizes by.
 - kind: other
   about: data
   severity: minor
@@ -459,20 +583,277 @@ findings:
   output: sanity
   statement: All field files are from 2018 (ozone on 26-27 July, 2 and 11 August; NO2 26 July to 12
     August; iButtons 11 July to 5 August), where Table S1 averages 2018 and 2019. The iButtons log
-    every 3 min, not at the 0.5 Hz of the Supplementary Methods, and give a night temperature of
-    22.7 C against Table S1's 20.65 C.
+    every 3 min, not at the 0.5 Hz of the Supplementary Methods, and give a night temperature of 22.7
+    C against Table S1's 20.65 C.
 - kind: paper_inconsistency
   statement: The Fig. 2D inset gives benzaldehyde -9% (O3) and -12% (NO3), and says all differences
-    have P < 0.001; Table S9 and the paper's notebook on the deposited trace give 0% and +2% with p
-    of 0.95 and 0.20, and the other non-monoterpenes also have p above 0.05.
+    have P < 0.001; Table S9 and the paper's notebook on the deposited trace give 0% and +2% with
+    p of 0.95 and 0.20, and the other non-monoterpenes also have p above 0.05.
 - kind: methods_unavailable
   statement: The Supplementary Methods give 2.6 ppt NO3 and 37 ppb O3 as the mean over land between
     10 and 50 degrees in the July 2013 12.1.0 output; the deposited output gives 3.48 ppt and 43.0
-    ppb for land cells with centres in that band (any land in the cell), and no northern variant
-    tried gives both values; June over both hemispheres gives 2.69 ppt and 39.1 ppb. Question for the authors - which cells, months and weighting give the published
-    means?
+    ppb for land cells with centres in that band (any land in the cell), and no northern variant tried
+    gives both values; June over both hemispheres gives 2.69 ppt and 39.1 ppb, and area or grid-volume
+    weighting gives 3.38 to 3.39 ppt and 42.4 ppb. Question for the authors - which cells, months
+    and weighting give the published means?
 - kind: methods_unavailable
-  statement: For Fig. S6 the workbook does not say which segment is the O3 and which the NO3
-    oxidation, and the three nitrate ions rise 1.2 to 1.5 times in the segment taken as O3.
-    Question for the authors - is the first segment the O3 oxidation, and is a rise of this size
-    read as no nitrate formation?
+  statement: For Fig. S6 the workbook does not say which segment is the O3 and which the NO3 oxidation,
+    and the three nitrate ions rise 1.2 to 1.5 times in the segment taken as O3. Question for the
+    authors - is the first segment the O3 oxidation, and is a rise of this size read as no nitrate
+    formation?
+- kind: metadata_insufficient
+  severity: minor
+  notebook: reproduce_chan_2024.ipynb
+  output: claim:table-s1-field-conditions
+  statement: The ozone logs and the CAPS NO2 files give no time zone, in the files or the README;
+    only the iButton files state one (Timezone -7). Read as local time the ozone logs cover 23:00
+    to 07:59; read as UTC the midnight to 6 am window would hold one hour of ozone, at 28.3 ppb against
+    34.5.
+- kind: methods_unavailable
+  statement: Fig. 3B, Manduca. The Methods test every treatment at 1/100 floral equivalent, but the
+    floral-odor group of the Fig. 3B sheet (11 of 12) has the counts of the 1x row of Fig. S7C; with
+    the 0.01x row (10 of 14) the NO3 decrease is 41% with p = 0.094. Question for the authors - which
+    group is the reference of the 50% decrease and P = 0.047, and where are the other 25 Manduca of
+    the 138?
+- kind: methods_unavailable
+  statement: Table S13 and Fig. 4. The bottom-level wind of the 12.1.0 run is not deposited, and ref.
+    79, cited for the city coordinates, gives none. With the MERRA-2 2013 bottom-level wind averaged
+    to 2 x 2.5 degrees and WUP 2018 coordinates, no reading matches more than 1 of the 8 Table S13
+    values checked (Kabul 105 to 155 m against 73.1 with the vector wind). Question for the authors
+    - which wind field and averaging, and which city coordinates, give Table S13?
+verifications:
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text. The verifier checked the Dryad file list
+    through the API (38 files) and the Zenodo listing, and tested the helpers on synthetic inputs
+    (r_prop_test, holm, z_prop_test, step_onset, number_density); all passed. It took the claims from
+    the claims file.
+  results:
+  - claim: fig1d-assemblage-day-night
+    agrees: true
+    outcome: blocked
+    reason: The Dryad file list (38 files, checked against the API) and the Zenodo listing in cell
+      16 contain no video visit log or Table S2.
+    response: No change.
+  - claim: fig1e-bagged-fewer-fruit
+    agrees: true
+    outcome: reproduced
+    reason: Cell 20 gives 0.794 and 0.114, exact. Holm p = 1.71e-10 (Table S4 gives 1.7e-10).
+    response: No change.
+  - claim: fig1e-nocturnal-exclusion
+    agrees: true
+    outcome: reproduced
+    reason: Cell 20 gives 0.477, Holm p = 0.00824, within 10% of 0.0082.
+    response: No change.
+  - claim: fig1e-groups
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: all 10 pairs agree with the letters, and all 10 Holm p match Table S4.'
+    response: No change.
+  - claim: nocturnal-share-of-fruit
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23, reading (1): share 39.9% and reduction 28.1% (live flower) or 28.5% (floral
+      odor), both within tolerance. Its dependency, fig3d-visits-per-night, is reproduced.'
+    response: No change.
+  - claim: fig2a-gcead-monoterpenes
+    agrees: true
+    outcome: blocked
+    reason: The archive has one GC-EAD trace per moth species. The paper used 8 Manduca and 13 Hyles
+      antennae.
+    response: No change. The verifier asked for the FID peak retention times compared with the Fig.
+      S2 labels; this was not done, as the labels would have to be read from the figure by eye and
+      one antenna per species cannot show a response in most antennae. The blocked-claims cell says
+      so.
+  - claim: table-s6-emission-rates
+    agrees: true
+    outcome: blocked
+    reason: Neither archive has the 35 headspace samples or the calibration standards needed to get
+      ng/h.
+    response: No change. A new cell (partial:table-s6) lists the Zenodo quantitation files beside
+      the one field sample, as asked; they hold a one-level calibration of 1,4-dimethoxybenzene only.
+  - claim: fig2d-no3-degrades-monoterpenes
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 27, code windows, NO3 against clean air: -32.5, -83.9, -29.8, -66.8%, all within
+      tolerance, max p 5e-54. All four p values and test choices match Table S9 exactly.'
+    response: No change. A new cell (code-table-s9) prints the Dryad notebook's functions and Table
+      S9 cells (29 to 33) beside VOCUS_CODE, as asked. The detrend m * (t - s) is the notebook's own,
+      transcribed as written.
+  - claim: fig2d-other-compounds-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28, deciding reading: smallest p is 0.065. The p values match Table S9 (0.07, 0.49,
+      0.95, 0.20, 0.78, 0.48). Benzaldehyde is +0.4% and +2.1%, which matches Table S9; the Fig. 2D
+      inset''s -9% and -12% are not matched.'
+    response: No change. The aldoxime test on the notebook's 0:300 clean window, which the verifier
+      raised (problem 7), is now printed as a variant (NO3 p = 5.2e-05, O3 p = 0.43); the criterion
+      decides on the notebook's windows as the notebook tests them, 100:200.
+  - claim: figs5-blend-oxidation
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 31: monoterpene falls 33 to 34% (p < 1e-60). Eucalyptol rises 7 to 9% with p < 1e-74
+      under both window readings, so the no change half fails the criterion. The raw aldoxime trace
+      also changes by -22 to -24%. The trace is not normalized to the reagent ion, which the Dryad
+      notebook does; that file is not deposited. The eucalyptol +7 to 9% and the raw aldoxime -22%
+      look like drift, and tests on autocorrelated 1 s points push p toward zero, so the outcome may
+      reflect the missing reagent-ion file and should be recorded as a limitation.'
+    response: 'Changed to partially_reproduced, as the verifier gave it: the monoterpene drop holds
+      and the absence part does not. The missing reagent-ion trace is recorded as a limitation. The
+      cell now shows the notebook''s detrend applied to all three ions, a detrend fitted on the clean
+      window, and a test on 30 s block means; the raw eucalyptol rise keeps p below 1e-4 on block
+      means, and the notebook''s detrend also removes most of the monoterpene drop, so drift and chemistry
+      cannot be separated here.'
+  - claim: fig2-dose-dependent
+    agrees: true
+    outcome: blocked
+    reason: Neither archive has flowtube runs at a second NO3 dose.
+    response: No change.
+  - claim: figs6-oxidation-products
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 34: the three nitrates rise 17 to 23 times in the NO3 segment, and both C10 ions
+      rise in both segments. In the O3 segment the nitrates also rise 1.2 to 1.5 times, with one-sided
+      p < 0.001 (r1) and C10H17NO6 above mean+3SD (r2). The claim holds only under the author''s own
+      >= 2x threshold (r3), which should be stated as the deciding assumption. The segment labels
+      are inferred from the outcome being tested; the run order clean, O3, NO3 supports the same assignment,
+      but the notebook does not cite it. r1 is a one-sided Welch test on 5 against 9 points.'
+    response: Outcome unchanged. The segment assignment now cites the Supplementary Methods' stage
+      order (clean air, O3 as stage II, NO3 as stage III); the conclusion and the deviations state
+      the doubling threshold as this attempt's own choice and the deciding assumption, and give the
+      5 against 9 points of r1. The README text on the file is printed; it does not name the segments.
+  - claim: fig3b-hyles-no3-eliminates
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cells 37 and 38: 0/19 and 0/42, as stated. Floral odor (5/35) against NO3 gives p = 0.084
+      (z-test) or 0.216 (Yates), so the p < 0.05 part fails under both readings.'
+    response: 'Changed to partially_reproduced, as the verifier gave it: the zero proportions hold
+      and the significance part does not.'
+  - claim: fig3b-manduca-no3-halves
+    agrees: true
+    outcome: reproduced
+    reason: On the sheet as deposited, cells 37 and 38 give a decrease of 54.1% relative or 49.6 points,
+      p = 0.0058 or 0.017, and NO3 against control p = 0.60 or 0.87. The paper's p = 0.047 is not
+      matched by any reading. The Fig. 3B sheet's Manduca odor blend row (11/12) is identical to the
+      1x row of Fig. S7C, while the Methods say Fig. 3B used 1/100 floral equivalent, the 0.01x row
+      (10/14). Rerun with 10/14 the decrease is 41%, p = 0.094 (z) or 0.187 (Yates), and the claim
+      would fail. Both readings should be run. The Methods' 15 to 42 moths per stimulus also excludes
+      n = 12, and the sheet totals 113 Manduca where the paper says 138, which the notebook never
+      checked.
+    response: Outcome kept, now marked as resting on an assumption. A new cell runs every Manduca
+      comparison with both floral references (sheet 11 of 12, Fig. S7C 0.01x row 10 of 14) and confirms
+      the verifier's numbers (41.1%, p = 0.094 and 0.19). The sheet's group is adopted, as it is the
+      paper's own Fig. 3B data and its 54% matches the paper's 50% where 41% does not. The finding
+      cell now prints the totals (113 Manduca against 138, 96 Hyles against 96) and the moths per
+      stimulus. A methods_unavailable finding asks the authors which group is the reference.
+  - claim: fig3b-o3-no2-no-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37: p = 0.066 (O3) and 0.156 (NO2) by uncorrected z-test; 1 after Holm. With the
+      0.01x floral reference, p = 0.58 and 0.97.'
+    response: No change; the 0.01x reference is now run in the notebook and gives the same outcome.
+  - claim: fig3b-proxy-mixture
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 37, reading (a): proxy against floral p = 0.0026, proxy against control p = 0.83,
+      proxy against NO3 p = 0.74. With 10/14 as the floral reference, proxy against floral gives p
+      = 0.049 (z) or 0.107 (Yates), and the claim becomes marginal.'
+    response: No change; the 0.01x reference is now run in the notebook (p = 0.049) and recorded in
+      the notes.
+  - claim: figs7-manduca-sensitivity
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 41: Manduca EAG is larger than Hyles at all 9 concentrations. 0.01x against 1x gives
+      p = 0.19, and 0.001x against 1x gives p = 0.046, under reading (i) only. Under (ii) that p is
+      0.11. The paper''s 0.09 is not matched. Marginal.'
+    response: No change.
+  - claim: fig3d-field-no3-fewer-visits
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 44 and 45: coefficient -1.253, SE 0.567, p = 0.027; NO3 against control p = 0.74.
+      Matches Table S11.'
+    response: No change.
+  - claim: fig3d-real-and-synthetic-alike
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 45: p = 0.944 and 0.858 under reading (a); 0.931 and 0.863 under (b).'
+    response: No change.
+  - claim: fig3d-visits-per-night
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46: 1.928, 0.566 and a 70.7% drop, recomputed from the Table S10 summary counts,
+      since there is no per-night data.'
+    response: No change.
+  - claim: fig4ab-no3-shortens-recognition
+    agrees: true
+    outcome: blocked
+    reason: 'The GEOS-Chem .mat file has no wind, so no distances can be computed. The wind-free more
+      severe part (cell 51) holds only under some readings (share 1.0 under (ii), 0.506 under (b)(i),
+      0.374 under (a)(i)). Data missing for wind is arguable: the model was driven by MERRA-2, whose
+      2013 bottom-level winds are public at NASA GES DISC (login required), and the notebook does
+      not consider this source.'
+    response: Changed to reproduced, resting on assumptions, after a new analysis for round 2 to review.
+      The MERRA-2 2013 bottom-level winds are also public without a login, as GEOS-Chem's processed
+      0.5 x 0.625 degree files on its data bucket; the notebook reads July and January 2013, averages
+      them to the 2 x 2.5 grid, and takes city coordinates from WUP 2018. Both parts hold under two
+      of 32 readings.
+  - claim: table-s13-recognition-distances
+    agrees: true
+    outcome: blocked
+    reason: The distances need wind. The three percentage values (Hong Kong, Tokyo, Kinshasa) do not
+      need wind and could have been computed; three values cannot reach the 6 of 8 needed for partial.
+      City coordinates (UN WPP 2019) are public.
+    response: 'Changed to not_reproduced, resting on assumptions, with the MERRA-2 wind and WUP 2018
+      coordinates (WPP 2019 gives none): at most 1 of 8 values is within tolerance under any reading;
+      the three percentages are 0.0 to 2.7% (Hong Kong, Tokyo) and 52 to 76% (Kinshasa) against 4.9,
+      6.7 and 89.8%.'
+  - claim: fig4c-preindustrial-change
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Not blocked: the present/preindustrial ratio does not depend on wind. Cell 51: under
+      all 8 readings only 0 to 0.4% of Greenland land cells are above 75% (medians 34 to 66%). The
+      criterion''s Greenland condition therefore fails whatever the city majority turns out to be.
+      The cell-51 statistic share of land cells <= 25% is not one of the criterion''s readings, which
+      are based on the Table S13 cities.'
+    response: Changed to not_reproduced, as the verifier gave it. The city readings (a) and (b) are
+      now computed on the Table S13 cities and replace the share of land cells; most cities are at
+      25% or less under every reading, and Greenland fails under every reading. The factor-map dimensions,
+      order and July values over Greenland, and the percentage map over the Greenland box, are printed,
+      as asked.
+  - claim: interannual-similar
+    agrees: true
+    outcome: blocked
+    reason: Neither archive has the 13.2.1 runs for 2019 or 2021; there are only the pi/pd factor
+      maps.
+    response: No change.
+  - claim: figs8-no3-faster-than-o3
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 49: NO3 3.48 ppt (expected 2.6 +- 0.26) and O3 43.0 ppb (expected 37 +- 3.7), both
+      outside tolerance. The rate comparison holds at both the recomputed and the paper''s concentrations:
+      NO3 faster for 17 of 23, both sesquiterpenes faster with O3, most reactive compound a monoterpene.
+      The means are unweighted over cells; area or volume weighting was not run, though a 34% shortfall
+      in NO3 is unlikely to close.'
+    response: Changed to partially_reproduced, as the verifier gave it. Area and grid-volume weighted
+      means are now printed (3.38 and 3.39 ppt, 42.4 ppb), still outside tolerance.
+  - claim: figs9-urban-regressions
+    agrees: true
+    outcome: blocked
+    reason: Depends on the distances, which need wind. Regression B (impact on population) does not
+      need wind.
+    response: 'Changed to reproduced, resting on assumptions, with the MERRA-2 wind and WUP 2018 coordinates
+      and populations: all parts hold in 4 of 128 readings, and B holds (p < 0.01) in 28.'
+  - claim: table-s1-field-conditions
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 54, nightly means: O3 34.2, NO2 0.99 (at the edge of 0.72 +- 0.28) and RH 47.5 are
+      within tolerance. Wind is 1.70 to 2.11 m/s against 1.14 +- 0.48 under every reading. The rows
+      cannot be placed in time, and stable conditions is undefined. Only 2018 data are deposited.
+      The time zone of the O3 and CAPS logs is assumed local and never checked, and the NO2 and RH
+      passes sit at the tolerance edge.'
+    response: Changed to partially_reproduced, as the verifier gave it. The cell now prints the README
+      lines on the clocks, the iButtons' Timezone -7, the per-hour O3 and NO2 means and the window
+      read as UTC; the logs cover 23:00 to 07:59 as written, supporting local time, and as UTC O3
+      would be 28.3 ppb. A new minor finding records the missing time zone.

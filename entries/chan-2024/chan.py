@@ -8,7 +8,10 @@ list by `check_dryad_files`.
 Data that the Dryad deposit lacks (the Fig. 2D raw Vocus traces, the Fig. 3B wind tunnel sheet, the
 fruit-set counts in the Fig. 1E R script, and the GEOS-Chem output) are read from the paper's own
 code release on Zenodo, record 8411927 (doi:10.5281/zenodo.8411927, the paper's ref. 41), streamed
-from the record's zip.
+from the record's zip. The recognition distances also need the model's bottom-level wind and the
+Table S13 city coordinates, which neither deposit holds; they are read from GEOS-Chem's processed
+MERRA-2 files and from the UN World Urbanization Prospects 2018 (`merra2_bottom_wind`,
+`table_s13_cities`).
 
 Where each parameter comes from is said beside it: the claim's criterion (claims/chan-2024.yaml),
 a passage of the paper ("SM" is the Supplementary Materials, "MM" its Materials and Methods), the
@@ -411,6 +414,131 @@ def factor_map(species):
     h = h5py.File(io.BytesIO(zread(f"Figure 4/GEOS-Chem 13.2.1 {species}_pi_pd_factor_map 2013.nc4")), "r")
     return {"lat": h["lat"][:], "lon": h["lon"][:], "time": h["time"][:],
             "factor": h[f"SpeciesConc_{species}"][:]}
+
+
+# Bottom-level wind. The paper's distances are "degradation times ... multiplied by the mean
+# horizontal wind speed of the bottom vertical grid" (SM, GEOS-Chem code availability) of the
+# 12.1.0 run, driven by MERRA-2 2013 meteorology (SM, Global models); the deposited output holds
+# no wind. GEOS-Chem reads that wind from its processed MERRA-2 files (A3dyn, U and V, 3-hourly
+# means, level 1 the lowest). The 2 x 2.5 degree files for 2013 are not on the public GEOS-Chem
+# bucket; the 0.5 x 0.625 files, from which the 2 x 2.5 files are made, are. They are read by
+# ranges (level 1 only) and averaged to the 2 x 2.5 grid by block means (`to_gc_grid`), an
+# assumption stated in the record. Source collection: MERRA-2 tavg3_3d_asm_Nv (M2T3NVASM),
+# doi:10.5067/SUOQESM06LPK.
+MERRA2_URL = "https://gcgrid.s3.amazonaws.com/GEOS_0.5x0.625/MERRA2/{y}/{m:02d}/MERRA2.{y}{m:02d}{d:02d}.A3dyn.05x0625.nc4"
+MERRA2_LAT = np.arange(-90, 90.01, 0.5)
+MERRA2_LON = np.arange(-180, 180, 0.625)
+
+
+def _merra2_day(args):
+    import h5py
+    y, m, d = args
+    with fsspec.open(MERRA2_URL.format(y=y, m=m, d=d), block_size=2**20).open() as fh:
+        f = h5py.File(fh, "r")
+        u, v = f["U"][:, 0].astype("f8"), f["V"][:, 0].astype("f8")
+    return u.sum(0), v.sum(0), np.hypot(u, v).sum(0), u.shape[0]
+
+
+def merra2_bottom_wind(month, year=2013, workers=4):
+    """Monthly means (m/s) of U, V and of the speed sqrt(U^2 + V^2) of the lowest model level,
+    over every 3-hourly field of the month, on the 0.5 x 0.625 grid (lat, lon)."""
+    import calendar
+    from concurrent.futures import ThreadPoolExecutor
+    days = [(year, month, d) for d in range(1, calendar.monthrange(year, month)[1] + 1)]
+    with ThreadPoolExecutor(workers) as ex:
+        parts = list(ex.map(_merra2_day, days))
+    n = sum(p[3] for p in parts)
+    u, v, s = (sum(p[i] for p in parts) / n for i in range(3))
+    return {"u": u, "v": v, "speed": s, "n_fields": n, "n_days": len(days)}
+
+
+def to_gc_grid(a, lat, lon, dlat=2.0, dlon=2.5):
+    """Block mean of a 0.5 x 0.625 field (lat, lon) over each cell of the GEOS-Chem 2 x 2.5 grid,
+    returned as (lon, lat) like the 12.1.0 arrays. A fine cell counts when its centre lies in the
+    coarse cell (half-open bounds); the polar half-cells take the points within 1 degree. A
+    standard choice."""
+    out = np.empty((len(lon), len(lat)))
+    for j, la in enumerate(lat):
+        mi = (np.abs(MERRA2_LAT - la) <= 1) if abs(la) > 89 else ((MERRA2_LAT >= la - dlat / 2) & (MERRA2_LAT < la + dlat / 2))
+        sub = a[mi]
+        for i, lo in enumerate(lon):
+            dd = (MERRA2_LON - lo + 180) % 360 - 180
+            out[i, j] = sub[:, (dd >= -dlon / 2) & (dd < dlon / 2)].mean()
+    return out
+
+
+# City coordinates. Table S13 says "City coordinates were obtained from (79)", the UN World
+# Population Prospects 2019 Highlights, which give no city coordinates. The UN Population
+# Division's file of agglomerations with coordinates is World Urbanization Prospects 2018, file
+# F22 (annual populations, 1950 to 2035, in thousands, with latitude and longitude); its 2018
+# column holds Table S13's populations for Tokyo (37,468,000), Delhi (28,514,000) and Kinshasa
+# (13,171,000). It is no longer served by the UN site and is read from the Internet Archive's
+# copy, pinned by snapshot time and SHA-256. Using it is an assumption stated in the record.
+WUP_F22_URL = ("https://web.archive.org/web/20240824204902id_/https://population.un.org/wup/"
+               "Download/Files/WUP2018-F22-Cities_Over_300K_Annual.xls")
+WUP_F22_SHA256 = "4366cc15ecdda4d9ab420adfe730da6a7e35a8334615f50172a08d60b121c11c"
+
+# The 97 cities of Table S13 (names as the table spells them, in alphabetical order), each with
+# its agglomeration and country in WUP 2018 where the names differ or are shared. Labels only.
+TABLE_S13_CITIES = {
+    "Abidjan": None, "Abuja": None, "Addis Ababa": None, "Ahmedabad": ("Ahmadabad", "India"),
+    "Alexandria": ("Al-Iskandariyah (Alexandria)", "Egypt"), "Ankara": None,
+    "Asuncion": ("Asunción", "Paraguay"), "Athens": ("Athínai (Athens)", "Greece"),
+    "Baghdad": None, "Bangalore": None, "Bangkok": ("Krung Thep (Bangkok)", "Thailand"),
+    "Barcelona": ("Barcelona", "Spain"), "Beijing": None, "Belo Horizonte": None, "Berlin": None,
+    "Bogota": ("Bogotá", "Colombia"), "Brasilia": ("Brasília", "Brazil"), "Buenos Aires": None,
+    "Cairo": ("Al-Qahirah (Cairo)", "Egypt"), "Cape Town": None,
+    "Casablanca": ("Dar-el-Beida (Casablanca)", "Morocco"), "Chennai": ("Chennai (Madras)", "India"),
+    "Chongqing": None, "Dakar": None, "Dar Es Salaam": ("Dar es Salaam", "United Republic of Tanzania"),
+    "Dehli": ("Delhi", "India"), "Dhaka": None, "Douala": None,
+    "Durban": ("Durban (Ethekwini)", "South Africa"),
+    "Guangzhou": ("Guangzhou, Guangdong", "China"), "Guatemala City": ("Ciudad de Guatemala (Guatemala City)", "Guatemala"),
+    "Guayaquil": None, "Hanoi": ("Hà Noi", "Viet Nam"),
+    "Ho Chi Minh City": ("Thành Pho Ho Chí Minh (Ho Chi Minh City)", "Viet Nam"), "Hong Kong": None,
+    "Hyderabad": ("Hyderabad", "India"), "Ibadan": None, "Istanbul": None, "Jakarta": None,
+    "Jiddah": None, "Johannesburg": None, "Kabul": None, "Kampala": None, "Kano": None,
+    "Karachi": None, "Khartoum": ("Al-Khartum (Khartoum)", "Sudan"), "Kiev": ("Kyiv (Kiev)", "Ukraine"),
+    "Kinshasa": None, "Kolkata": ("Kolkata (Calcutta)", "India"), "Kuala Lumpur": None, "Kumasi": None,
+    "Kuwait City": ("Al Kuwayt (Kuwait City)", "Kuwait"), "Lagos": None, "Lahore": None,
+    "Lima": ("Lima", "Peru"), "London": ("London", "United Kingdom"),
+    "Los Angeles": ("Los Angeles-Long Beach-Santa Ana", "United States of America"), "Luanda": None,
+    "Lusaka": None, "Madrid": None, "Manila": None, "Mashhad": None, "Medellin": ("Medellín", "Colombia"),
+    "Melbourne": ("Melbourne", "Australia"), "Mexico City": ("Ciudad de México (Mexico City)", "Mexico"),
+    "Milan": ("Milano (Milan)", "Italy"), "Montereal": ("Montréal", "Canada"), "Monterrey": None,
+    "Moscow": ("Moskva (Moscow)", "Russian Federation"), "Mumbai": ("Mumbai (Bombay)", "India"),
+    "Nairobi": None, "New York": ("New York-Newark", "United States of America"),
+    "Osaka": ("Kinki M.M.A. (Osaka)", "Japan"), "Ouagadougou": None, "Paris": None,
+    "Porto Alegre": ("Pôrto Alegre", "Brazil"), "Puebla": None, "Pyongyang": ("P'yongyang", "Dem. People's Republic of Korea"),
+    "Recife": None, "Rio De Janeiro": ("Rio de Janeiro", "Brazil"), "Riyadh": ("Ar-Riyadh (Riyadh)", "Saudi Arabia"),
+    "Rome": ("Roma (Rome)", "Italy"), "Sanaa": ("Sana'a'", "Yemen"), "Santiago": ("Santiago", "Chile"),
+    "Santo Domingo": ("Santo Domingo", "Dominican Republic"), "Sao Paulo": ("São Paulo", "Brazil"),
+    "Seoul": None, "Shanghai": None, "Singapore": None, "Sydney": None,
+    "Tehran": None, "Tel Aviv": ("Tel Aviv-Yafo (Tel Aviv-Jaffa)", "Israel"), "Tokyo": None,
+    "Toronto": None, "Xinbei": None, "Yangon": None, "Yaonde": ("Yaoundé", "Cameroon"),
+}
+
+
+def table_s13_cities():
+    """The Table S13 cities with WUP 2018 coordinates and 2018 population (persons). Every city
+    must match exactly one agglomeration."""
+    r = requests.get(WUP_F22_URL, timeout=300)
+    r.raise_for_status()
+    if hashlib.sha256(r.content).hexdigest() != WUP_F22_SHA256:
+        raise ValueError("WUP 2018 F22 file differs from the pinned copy")
+    w = pd.read_excel(io.BytesIO(r.content), header=16, engine="xlrd")
+    rows = []
+    for name, key in TABLE_S13_CITIES.items():
+        agg, country = key if key else (name, None)
+        m = w[w["Urban Agglomeration"] == agg]
+        if country:
+            m = m[m["Country or area"] == country]
+        if len(m) != 1:
+            raise ValueError(f"{name}: {len(m)} matches in WUP 2018")
+        m = m.iloc[0]
+        rows.append({"city": name, "wup_name": m["Urban Agglomeration"], "country": m["Country or area"],
+                     "lat": float(m["Latitude"]), "lon": float(m["Longitude"]),
+                     "population_2018": float(m[2018]) * 1000})
+    return pd.DataFrame(rows)
 
 
 def land_fraction(lat, lon, dlat=2.0, dlon=2.5, step=0.1):
