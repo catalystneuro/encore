@@ -34,7 +34,9 @@ outcomes:
     also 5.5 (reading a), with PD bursting and lvn firing between the PD bursts in every cycle; the same under gap
     factors 2 and 5, 1 or 4 lvn spikes per cycle and PD bursting alone. At 10.4 PD spikes per burst are 12.43 against
     13.10 at the control before base, and the PD slow-wave amplitude (VM1_2, last minute) 17.65 against 18.03 mV.
-    Both decreases are small. The reading cannot tell normal from weak triphasic.
+    Both decreases are small. The reading cannot tell normal from weak triphasic. The lvn condition hardly separates
+    the readings, as it changes the STG fraction rhythmic against PD bursting alone only at 5.5 in 877_121 (by 0.19)
+    and 887_049 (by 0.04), so "triphasic" rests mainly on PD bursting.
   deviations:
   - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
     They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
@@ -67,8 +69,9 @@ outcomes:
   notes: 'The criterion needs STG states 1 and 2 apart at 10.4, and states 2 to 4 at 5.5. The manual annotation
     is not in the dataset (no xlsx or annotation file in the project), and the states read from the pdn and lvn
     cannot separate state 1 from state 2, as LP and PY are not told apart. The parts that can be read are shown:
-    besides 897_037, 887_005, 887_097, 887_105 and 887_145 are rhythmic for most of 6.1 to 9.8 and not at 5.5; at
-    10.4, 887_005 has fraction 0 and the other three 1.0, with frequency 0.14 to 0.29 Hz below control. The two
+    besides 897_037, 887_005, 887_097, 887_105 and 887_145 are rhythmic for most of 6.1 to 9.8 and not at 5.5. 887_005
+    has no 10.4 file, so its fraction 0 there is the zero-fill of a missing step; the other three have fraction 1.0
+    at 10.4, with frequency 0.14 to 0.29 Hz below control. The two
     examples are not named in the paper or the code.'
 - claim: fig3c-stg-rhythmic-fraction
   outcome: not_reproduced
@@ -180,7 +183,13 @@ outcomes:
     from 6.7 to 10.4 and is silent at 5.5. All 9 PTX preparations have a silent, depolarized PD at 5.5. The other
     parts hold in 2 to 7 of the 9. The PD label of 903_052 holds: in 7 of its 9 files with PD spikes, 0.61 to 1.0
     of them are followed by a pdn spike 34 to 38 ms later, against 0.015 to 0.037 by chance; LP spikes are followed
-    at about chance (0.02 to 0.07). The outcome rests on this one preparation.'
+    at about chance (0.02 to 0.07). The outcome rests on this one preparation. Its bath electrode responds less than
+    the others (-37.6 mV per pH unit against -45.2 to -46.7 in the other eight, linear with r = -0.999), so its 10.4
+    and 5.5 files read as pH 9.75 and 5.87 on the common slope; the labels follow the rank of the signal within each
+    complete run, and the data cannot exclude that these two solutions were off. In the 6.7 file, which the slow-wave
+    part uses, PD spikes match the pdn at 0.02 against 0.011 by chance, so PD identity is not confirmed there; it
+    rests on the electrode staying in the same cell, as the 7.2 file (0.61) and the last recovery (0.21 against 0.008)
+    indicate.'
   deviations:
   - The PTX folders have no README; the pH of each file is taken from its recorded bath pH (crabph.assign_ptx_conditions),
     and a preparation missing a step is left out of that protocol's tests (8 complete of 9); assumed.
@@ -269,7 +278,8 @@ outcomes:
     per burst fall in acid (-6.05 at 5.5; rho +0.80 with pH), and the duty cycle in base does not fall (+0.018 at
     10.4; rho +0.20). Both parts fail under both readings, the 0.3 s burst rule and the code's window. The criterion
     has no partial condition. The LC isolation check shows 15 to 25 spikes per burst in this unit and counted spikes
-    at 5.5 and 10.4 3.1 and 3.4 times the control height, so its isolation is in doubt.
+    3.1 times the acid control height already at the control before base, and 3.1 and 3.4 times at 5.5 and 10.4,
+    so its isolation is in doubt and this outcome is weak evidence.
   deviations:
   - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
     assumed.
@@ -313,8 +323,11 @@ outcomes:
     0.33 against 0.99; corrected p 0.012 to 5.9e-04). The acid ANOVA is not (p = 0.058), so neither the full nor
     the partial condition is met and [RM] runs no acid t-tests; 5.5 (0.82) is not significant (p = 0.25). With gap
     factor 2 the acid ANOVA gives p = 0.023 and three of four t-tests hold (5.5 p = 0.12), which would be partial;
-    with factor 5 the acid ANOVA gives p = 0.29. Without the four units of doubtful isolation, the acid ANOVA gives
-    p = 0.045, 5.5 p = 0.50 and 9.3 p = 0.052.
+    with factor 5 the acid ANOVA gives p = 0.29. Without the four units of doubtful isolation, both ANOVAs are significant
+    (acid p = 0.045, base p = 1.3e-11) and so are 9.8 and 10.4 (p = 0.0018, 4.9e-05), while 5.5 (p = 0.50) and 9.3
+    (p = 0.052) are not, which would be partial. Without three more units whose isolation is doubtful at one step
+    (887_127 CG1L at 10.4, 897_041 CG1L at the control before base, 887_005 CG2L at 5.5; 7 units left), the acid
+    ANOVA gives p = 0.15, as in the main reading. The outcome is fragile.
   deviations:
   - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
     assumed.
@@ -348,7 +361,8 @@ outcomes:
     gives p = 0.056 and the acid ANOVA p = 0.037. No variant makes 10.4 significant (p 0.18 to 1). Frequency at
     5.5 is 0.059 Hz below the acid control. Without the four units of doubtful isolation (877_149 CG1L and CG2L,
     887_149 CG2L, 897_041 CG3L), the base ANOVA gives p = 2.9e-09 and 10.4 is significantly slower (-0.171 Hz, corrected
-    p = 8.7e-04), so this outcome depends on those units.
+    p = 8.7e-04), so this outcome depends on those units. Without three more (7 units), 10.4 is again significant
+    (-0.189 Hz, p = 9.4e-04).
   deviations:
   - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
     assumed.
@@ -373,7 +387,9 @@ outcomes:
     The acid ANOVA is not (p = 0.54), and the increases at 5.5 (+1.27) and 6.1 (+0.61) and the fall at 9.8 (p =
     0.26) are not significant. Under every variant the acid ANOVA fails (p 0.13 to 0.54), and one or two of the
     four t-tests hold. [RM] runs no acid t-tests after the non-significant acid ANOVA. Without the four units of
-    doubtful isolation the acid ANOVA gives p = 0.20.
+    doubtful isolation the acid ANOVA gives p = 0.20. Without three more (7 units), both ANOVAs are significant (acid
+    p = 0.020, base p = 1.1e-06) and so are the falls at 9.8 and 10.4 (p = 0.022, 0.019), while the rises at 5.5
+    (+1.65, p = 0.29) and 6.1 (+1.20, p = 0.37) are not, which would be partial. The outcome depends on the LC isolation.
   deviations:
   - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
     assumed.
@@ -395,7 +411,8 @@ outcomes:
   notebook: reproduce_haley_2018.ipynb
   output: claim:fig7e-cg-duty-cycle
   notes: Base ANOVA p = 4.8e-05, acid ANOVA p = 0.52 (14 units). Every variant gives the same outcome (base p 5.0e-04
-    to 0.0091; acid p 0.13 to 0.52). The acid effects are at most 0.014 in duty cycle.
+    to 0.0091; acid p 0.13 to 0.52). The acid effects are at most 0.014 in duty cycle. Without the four units of
+    doubtful isolation (base p = 1.7e-06, acid 0.33) or three more (base 7.8e-05, acid 0.50) the outcome is the same.
   deviations:
   - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
     assumed.
@@ -440,7 +457,10 @@ outcomes:
     not significantly (p = 0.36, 0.21). Both the full and the partial condition need all three t-tests. With gap
     factor 2, 9.8 is significant (p = 0.023) and 5.5 is not (p = 0.070); with factor 5, 5.5 holds and 9.3 and 9.8
     do not. With missing steps left out, the ganglion effects (p = 0.11, 0.12) and 5.5 (p = 0.12) are not significant.
-    Whether the criterion should count all ANOVA effects with some t-tests failing as partial is asked of a reader
+    The ANOVA part also depends on the gap factor (sum contrasts), as the acid ganglion effect gives p = 0.14 at factor
+    2 and the base ganglion effect p = 0.061 at factor 5. Without the four CG units of doubtful isolation, 5.5 (p
+    = 0.053), 9.3 (0.54) and 9.8 (0.064) fail; without three more, 5.5 holds (p = 0.013) and 9.3 and 9.8 fail (0.47,
+    0.25). Every variant fails the three t-tests. Whether the criterion should count all ANOVA effects with some t-tests failing as partial is asked of a reader
     (questions/haley-2018.yaml).
   deviations:
   - Spike thresholds are automatic (crabph.unit_threshold), where the authors set them by hand in Spike2 (spikenburst.s2s);
@@ -473,11 +493,13 @@ outcomes:
   - 2
   notes: STG ceased firing at 5.5 in 6 of 11 preparations with a 5.5 file under readings (a) and (b), and 4 under
     (c) (also with PD bursting alone). Counting the 2 without a 5.5 file as silent, as the code would, gives 8 of
-    13 against 14 of 15 (tolerance 1.4). 877_141, 887_141 and 897_037 burst throughout 5.5. CG units reduced at
+    13 against 14 of 15 (tolerance 1.4). 887_141 and 897_037 are rhythmic throughout 5.5 (fraction 1.0) and 877_141
+    for most of it (0.954). CG units reduced at
     5.5 are 5 of 14 under both readings (expected 6, tolerance 0.6; 3 under gap factor 5). CG units fully rhythmic
     everywhere are 2 under both readings (expected 3, tolerance 0.3); gap factor 5 gives 3 under (a). With missing
     steps left out, 5 CG units are reduced at 5.5 and 2 (a) or 4 (b) are normal in every condition they have. All
-    preparations are fully rhythmic at control.
+    preparations are fully rhythmic at control. The CG counts were not recomputed without the units of doubtful isolation,
+    as counts from fewer units cannot be set against the expected counts of 15.
   deviations:
   - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
     They are read from the spikes (crabph.rhythmic_seconds, triphasic_seconds): the pacemaker unit (PD, or LC) bursts
@@ -502,7 +524,7 @@ outcomes:
   notebook: reproduce_haley_2018.ipynb
   output: claim:fig8b-cross-predictive
   notes: Reading (a) fails in both ganglia. Of the 4 STG preparations reduced at 10.4, 877_121 keeps a fraction
-    of 0.59 at 5.5. In the CG, 1 of 5 units reduced at 5.5 is not reduced at 10.4. The Fisher tests give p = 1.0
+    of 0.40 at 5.5 (0.59 with PD bursting alone). In the CG, 1 of 5 units reduced at 5.5 is not reduced at 10.4. The Fisher tests give p = 1.0
     in both ganglia. Reading (a) fails in both ganglia with missing steps left out and with PD bursting alone too.
   deviations:
   - 'The manual state annotation is not in the dataset, and [STATE] asks for states annotated from its definitions.
@@ -617,13 +639,16 @@ findings:
   output: finding-ptx-order
 - kind: metadata_error
   about: data
-  severity: major
+  severity: critical
   statement: In 903_046_0002 the intracellular channels are named the other way round from the other ten files of
-    the experiment. The input the others call PD3 is LP3 there, and LP4 is PD4. Its spikes coincide with the pdn
-    spikes (0.62 of them within 5 ms) as in the other files, so the labels of 903_046_0002 are swapped. An analysis
-    by channel name exchanges PD and LP in that control file.
+    the experiment. The input the others call PD3 is LP3 there, and LP4 is PD4. The input named LP3 is followed by
+    a pdn spike 38 ms later for 1.00 of its spikes, as PD3 is in the other files, while the input named PD4 matches
+    at 0.13 against 0.15 by chance, so the labels of 903_046_0002 are swapped. Nothing in the file or the project
+    shows it, and an analysis by channel name exchanges PD and LP in that acid control file.
   notebook: reproduce_haley_2018.ipynb
   output: finding-ptx-label-swap
+  versions:
+  - '2019-01-08T14:49:50'
 - kind: metadata_insufficient
   about: data
   severity: minor
@@ -667,6 +692,15 @@ findings:
   statement: The paper reports 15 CG preparations, while its code lists 15 Large Cell units from 10 experiments
     (877_149, 887_149 and 897_041 contribute two or three units each). The statistics treat units of one ganglion
     as independent preparations, which the paper does not say.
+- kind: other
+  about: data
+  severity: minor
+  statement: The bath pH electrode of PTX experiment 903_052 responds less than those of the other eight (a slope
+    of -37.6 mV per pH unit against -45.2 to -46.7), so on the common slope its 10.4 and 5.5 files read as pH 9.75
+    and 5.87. The response is linear over all its files, so the steps can still be ranked, but with no README it
+    cannot be told whether the electrode or the solutions differed.
+  notebook: reproduce_haley_2018.ipynb
+  output: finding-ptx-electrode
 verifications:
 - date: '2026-11-26'
   kind: agent
@@ -880,3 +914,200 @@ verifications:
     reason: 'Cell 69: PD 7/7 and LP 5/5 preparations are depolarized at 5.5, with acid ANOVAs p 3e-11 and 7e-5 (both
       minimum-Vm readings).'
     response: No change.
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook (103 cells) after the round-1 revision, the helper module, the claims
+    file and the attempt record, with the paper''s full text under paper/. Points not tied to one claim and the
+    replies: the sentences the outputs did not support were corrected (fig8b-cross 877_121 fraction, finding 6, the
+    887_005 zero-fill at 10.4, the README run time and data volume, the read time and memory in the notebook, 877_141
+    at 5.5). The LC isolation variant now also drops the three units the verifier named (887_127 CG1L, 897_041 CG1L,
+    887_005 CG2L) and is printed for the CG measures and Figure 8A. The 903_052 bath electrode slope is now printed
+    for every PTX experiment, and the 6.7 file''s PD identity is stated as unconfirmed. Not done: a comparison of
+    the state reading with Figure 8B, as the values would have to be read off the figure, and the entry may not embed
+    numbers read from a figure; and trace overlays, as the entry has no plotting package and the height histograms
+    and pdn matches print what overlays would show. The gastric fallback stays unattempted (see those claims).'
+  results:
+  - claim: fig2a-stg1-traces
+    agrees: true
+    outcome: reproduced
+    reason: The lvn condition barely discriminates. 1, 2 and 4 lvn spikes and PD bursting alone give nearly identical
+      fractions (cell 21); they differ only at 5.5, in 877_121 and 887_049. So "triphasic" still rests mainly on PD
+      bursting.
+    response: No change of outcome. The conclusion and the notes now say that the lvn condition changes the fraction
+      only at 5.5 in 877_121 (0.19) and 887_049 (0.04), so the reading rests mainly on PD bursting.
+  - claim: fig2bcd-stg1-measures
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig3a-stg-variability-examples
+    agrees: true
+    outcome: blocked
+    reason: States 1 and 2 cannot be separated without telling LP from PY. Cell 32 and the notes say "at 10.4, 887_005
+      has fraction 0", but 887_005 has no 10.4 file (cell 12), so this 0 is the zero-fill, which the text does not
+      say.
+    response: Still blocked. The table now prints which candidates have a 10.4 file, and the conclusion and notes
+      say that 887_005's 0 at 10.4 is the zero-fill of a missing step.
+  - claim: fig3c-stg-rhythmic-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: 10.4 has p_corr 0.31; the criterion has no partial condition.
+    response: No change.
+  - claim: stg-state-transitions
+    agrees: true
+    outcome: blocked
+    reason: States 1 and 2 cannot be separated without telling LP from PY.
+    response: No change.
+  - claim: fig3d-stg-frequency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as the criterion is written. The criterion probably misreads "relatively invariant" (round-1 point
+      4, now sent to a reader).
+    response: No change; the question stays open in questions/haley-2018.yaml.
+  - claim: fig3e-stg-spikes-per-burst
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig3f-stg-duty-cycle
+    agrees: true
+    outcome: not_reproduced
+    response: No change.
+  - claim: fig3s2-stg-control-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under reading (b). Reading (b) passes almost any data (round-1 point 11).
+    response: No change; the question stays open in questions/haley-2018.yaml.
+  - claim: fig4a-ptx-example
+    agrees: true
+    outcome: reproduced
+    reason: Rests on one preparation (903_052). Its pH compression is unaddressed, as the "10.4" file estimates pH
+      9.75 and the "5.5" file 5.87 (cell 10). The 6.7 file used for the slow-wave part has a PD to pdn match of 0.02,
+      near its chance of 0.011, so PD identity in that file is unconfirmed.
+    response: 'No change of outcome. A new cell (finding-ptx-electrode) prints each PTX experiment''s electrode slope:
+      903_052 responds at -37.6 mV per pH unit against -45.2 to -46.7 in the other eight, linearly (r = -0.999), which
+      fits a less sensitive electrode; the labels follow the rank within complete runs, and the data cannot exclude
+      off solutions. Recorded as a new minor finding (13). The conclusion and notes now say PD identity in the 6.7
+      file is not confirmed and rests on the electrode staying in the same cell.'
+  - claim: fig4bc-membrane-potential
+    agrees: true
+    outcome: reproduced
+    reason: Fragile. LP 8.8 depends on 903_056 (p_corr 0.056 without it, cell 52).
+    response: No change; the notes already say so.
+  - claim: fig4de-spike-amplitude
+    agrees: true
+    outcome: partially_reproduced
+    response: No change.
+  - claim: fig4fg-ptx-frequency
+    agrees: true
+    outcome: partially_reproduced
+    response: No change.
+  - claim: gastric-like-rhythm-counts
+    agrees: true
+    outcome: blocked
+    reason: Accept, arguable. The claims file gives a fallback (rhythmic LG bursting on lgn or lvn with alternating
+      DG bursting on dgn where recorded). Blocking it for lack of thresholds is the attempt's choice; nothing in the
+      data or methods forces it.
+    response: Kept blocked. The fallback still has no threshold for rhythmic or alternating bursting in the paper or
+      its code, and in 6 of the 14 STG experiments in the project LG would have to be sorted from the lvn; the disagreement
+      is recorded here.
+  - claim: gastric-conditions-co-occur
+    agrees: true
+    outcome: blocked
+    reason: As the gastric counts claim.
+    response: Kept blocked, as above.
+  - claim: fig5-gastric-recovery-example
+    agrees: true
+    outcome: blocked
+    reason: As the gastric counts claim.
+    response: Kept blocked, as above.
+  - claim: fig6-cg1-measures
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as computed, but weak evidence. The isolation check (cell 23) shows 877_149 CG2L counting events
+      3.1 times the control height, already at ctl_base, with 15 to 25 spikes per burst.
+    response: No change of outcome. The conclusion and notes now say the counted heights are 3.1 times control already
+      at the control before base, and that the outcome is weak evidence.
+  - claim: fig6a-cg2-less-rhythmic
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  - claim: fig7b-cg-rhythmic-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees on the main reading, but fragile. With factor 2 it would be partial (stated). Without the four
+      doubtful units it would also be partial, as both ANOVAs pass (0.045 and 1.3e-11) and 9.8 and 10.4 pass (cell
+      23); the record does not say this. Isolation is also doubtful in units the variant keeps (887_127 CG1L at 10.4,
+      897_041 CG1L at ctl_base, 887_005 CG2L at 5.5).
+    response: No change of outcome. The conclusion and notes now say the four-unit variant would be partial. A variant
+      without the three further units is now run (7 units); its acid ANOVA gives p = 0.15, as in the main reading.
+  - claim: cg-state-transitions
+    agrees: true
+    outcome: blocked
+    reason: States cannot be separated from the LC unit alone.
+    response: No change.
+  - claim: fig7c-cg-frequency
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as computed. Depends on the four doubtful units (stated); without them both ANOVAs and 10.4 pass.
+    response: No change of outcome. Without the three further units too, 10.4 is again significant (p = 9.4e-04);
+      the notes say so.
+  - claim: fig7d-cg-spikes-per-burst
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Doubtful isolation in units the variant keeps affects fig7b to fig7d.
+    response: No change of outcome. Without the three further units (7 units) both ANOVAs and the falls at 9.8 and
+      10.4 are significant and the rises at 5.5 and 6.1 are not, which would be partial; the conclusion and notes
+      say the outcome depends on the LC isolation.
+  - claim: fig7e-cg-duty-cycle
+    agrees: true
+    outcome: reproduced
+    response: No change; the outcome is the same without the four units and without seven.
+  - claim: fig7s2-cg-control-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under reading (b). Reading (b) passes almost any data (round-1 point 11).
+    response: No change; the question stays open in questions/haley-2018.yaml.
+  - claim: fig8a-ganglion-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: The partial condition needs all three t-tests. The gap factor still matters, as the acid ganglion effect
+      has p 0.143 at factor 2 and the base effect p 0.061 at factor 5 (cell 84), which cell 85 does not mention.
+    response: No change of outcome. The conclusion and notes now give both p-values, and Figure 8A is now run without
+      the four and the seven CG units of doubtful isolation; every variant fails the three t-tests.
+  - claim: fig8b-individual-preparations
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 88 and the record say "877_141, 887_141 and 897_037 burst throughout 5.5", but 877_141 has fraction
+      0.954 there. This is minor.
+    response: Corrected; 887_141 and 897_037 have fraction 1.0 and 877_141 0.954. No change of outcome.
+  - claim: fig8b-cross-predictive
+    agrees: true
+    outcome: not_reproduced
+    reason: The notes' "877_121 keeps a fraction of 0.59 at 5.5" is wrong; in the main reading it is 0.398 (cells 19
+      and 87). 0.59 is the PD-alone value.
+    response: Corrected to 0.40 (0.59 with PD bursting alone). No change of outcome.
+  - claim: baseline-frequency-correlations
+    agrees: true
+    outcome: not_reproduced
+    response: No change.
+  - claim: robust-6-1-to-8-8
+    agrees: true
+    outcome: reproduced
+    reason: Still favoured by a proxy that hardly separates out state 3.
+    response: No change of outcome; the fig2a notes now say how little the lvn condition changes.
+  - claim: intact-depolarize-in-acid
+    agrees: true
+    outcome: reproduced
+    response: No change.
+  findings:
+  - finding: 6
+    agrees: false
+    severity: critical
+    reason: It is data filed under the wrong label, and nothing in the file's metadata shows it. An analysis by channel
+      name silently swaps PD and LP in that experiment's acid control. Cell 15 shows it, as the file's channels are
+      ['PY1', 'LP3', 'stn', 'PD4'] where the other files have ['PY1', 'PD3', 'stn', 'LP4']; the "LP3" channel matches
+      the pdn at 1.00 (38 ms lag), and the "PD4" channel at 0.13 against chance of 0.154. The finding gives no versions
+      or fixed_in.
+    response: Changed to critical, as the verifier would rate it. The statement now gives the match at the 38 ms lag
+      in place of the unprinted 5 ms figure, and the finding lists the version it was seen in; the live OSF listing
+      shows no file changed since, so there is no later version to check.

@@ -26,9 +26,9 @@ taken from their recorded bath pH. The attempt record, with the reasons and the 
 the paper's method, is [`attempts/haley-2018-01.yaml`](../../attempts/haley-2018-01.yaml).
 
 - `reproduce_haley_2018.ipynb`: the analysis. It streams every STG and CG file whole (about
-  64 GB, checking each SHA-256) and the last minute of each PTX file. It took 56 minutes in the
-  revision's run, reading OSF through WaterButler at a throttled request rate, as osf.io answers
-  bursts of requests with 429.
+  64 GB, as the notebook prints, checking each SHA-256) and the last minute of each PTX file.
+  The revisions' runs took 31 and 40 minutes (the last cell prints the time), reading OSF through
+  WaterButler at a throttled request rate, as osf.io answers bursts of requests with 429.
 - `crabph.py`: reading the .abf files from OSF, the READMEs, spikes and bursts, the intracellular
   measures, and the ANOVAs. Other notebooks on this project can import it.
 - `r7aes_files.py`: the pinned version, size and SHA-256 of every file.
