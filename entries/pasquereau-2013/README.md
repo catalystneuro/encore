@@ -28,12 +28,16 @@ reasoning and the differences from the paper's method.
 The response detection the claims file specifies crosses its threshold in 23% of cell-directions
 at a pseudo onset, about 20 times the paper's stated 1%, so the claims that rest on the selection
 of responses are blocked; their results are shown in the notebook. The torque command's pulses are
-about three times larger after MPTP than before, and the evoked displacements are faster and
-larger after MPTP, the reverse of the paper's; the angle's scale agrees with the task's 20 degree
-targets and with the files' own velocity series, so this is in the data. The shorter latency of
-the evoked movement after MPTP holds with a causal filter as well as with the claims file's, and
-the EMG results hold at matched torque commands. The attempt record, with the reasons and the
-differences from the paper's method, is
+larger after MPTP than before (mean 174.7 against 58.4 units, about three times; median 181.6
+against 45.7, about four times), and the evoked displacements are faster and larger after MPTP,
+the reverse of the paper's; the angle's scale agrees with the task's 20 degree targets and with
+the files' own velocity series, so this is in the data. Over all perturbations the evoked movement
+starts earlier after MPTP with a causal filter as well as with the claims file's. The two states
+share two pulse sizes, near 90 and near 180 units. Compared there, the latency of the evoked
+movement and the onset of the EMG response do not change after MPTP, the EMG response is not
+longer, and m1 is much smaller than m2 in both states. The record keeps the verified outcomes and
+proposes these four changes for a further round of verification. The attempt record, with the
+reasons and the differences from the paper's method, is
 [`attempts/pasquereau-2013-03.yaml`](../../attempts/pasquereau-2013-03.yaml).
 
 - `reproduce_pasquereau_2013.ipynb`: the analysis. It takes about eleven minutes, most of it
