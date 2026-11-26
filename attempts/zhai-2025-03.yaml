@@ -698,6 +698,64 @@ findings:
   statement: Spine densities were counted semi-automatically in NeuronStudio after AutoQuant deconvolution
     (2PLSM) and in Imaris 10 with supervised learning and manual correction (confocal). Neither can be
     repeated from the paper, so the six spine claims cannot be tested on the raw images.
+- kind: other
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: Mouse 7830 (Figure 10, control) has identical AIM scores in sessions 4 and 5 (the files of 2023-12-15
+    and 2023-12-18) at every time point and for every behaviour, with session totals of 39.5 each. The paper's
+    Figure 10B table has the same totals for both sessions; whether one session's sheet was copied into the other
+    cannot be told from the files.
+  versions:
+  - draft
+  - 0.261124.1858
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-5
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: Subjects are defined by recording day (for example Subject20221004M1RCRSPRAdora2Cre), and their
+    descriptions say the lab gave these mice no number. In four groups the dandiset has fewer subjects than the
+    paper's legends give mice. Off-state Sr2+-oEPSC dSPNs, 10 cells from 3 subjects against four mice (Figure 2I);
+    off-state Sr2+-oEPSC iSPNs, 7 cells from 3 subjects against four mice (Figure 4H); M1R deletion somatic cells,
+    8 cells from 3 subjects against four mice, and their controls, 6 cells from 2 subjects against three mice
+    (Figure 9D). The files do not say which mouse each cell came from.
+  versions:
+  - draft
+  - 0.261124.1858
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-6
+- kind: other
+  about: paper
+  found: on_prompt
+  statement: The per-cell Sr2+-oEPSC amplitudes of Figures 2H and 4G, labelled average amplitude in the paper's
+    tables (doi:10.5281/zenodo.17307059), equal the median of each cell's events in the Figure 2G and 4F event
+    lists for all 33 cells (within 0.006 pA) and the mean for none.
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-9
+- kind: metadata_error
+  about: data
+  severity: minor
+  found: on_prompt
+  statement: The session names of the SCH 23390 and sulpiride files (D1RaSch, D2RaSul) state a drug, while 11 of
+    the 21 somatic cells in these files have baseline on-state sweeps and 4 have no other sweeps (dSPN 2019-05-07
+    cell 1, iSPN 2019-04-08 cell 1, 2019-04-09 cell 1 and 2019-05-08 cell 2). Each sweep's group is in the
+    condition and drug columns of the intracellular recordings table; grouping by session name puts these cells in
+    the drug groups.
+  versions:
+  - draft
+  - 0.261124.1858
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-13
+- kind: paper_inconsistency
+  found: on_prompt
+  statement: Recomputed on the paper's per-cell tables (doi:10.5281/zenodo.17307059), two reported P values differ.
+    The Wilcoxon test of oxo-M in CDGI KO iSPNs (Figure 7E, 12 cells) gives P = 0.4697 where the paper reports
+    0.910, and the Mann-Whitney test of rotations in Figure 8A (10 KO and 12 wild-type mice) gives P = 0.01198
+    where the paper reports 0.0092. The wild-type oxo-M test gives P = 0.009766, as the paper's 0.0098.
+  notebook: earlier_findings.ipynb
+  output: earlier-finding-14
 verifications:
 - date: '2026-11-26'
   kind: agent
@@ -1340,3 +1398,118 @@ verifications:
     reason: 'I agree with all 45 outcomes. Summary, cell 134: "Seven claims rest on the paper''s own tables."
       The claims file has 8 claims with data elsewhere, and the README and cell 107 list 8.'
     response: No change of outcome. The summary now says eight.
+reconciliation:
+  earlier: zhai-2025-02
+  date: '2026-11-26'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: Both cells now have a proximal-distal pair (Proximal1 and Distal1), with indexes of 0.293 (2016-05-26
+      cell 3) and 0.146 (2016-06-08 cell 1) (earlier_findings.ipynb, output earlier-finding-1), and zhai-2025-03
+      finds the paper's n in all 10 dendritic groups (92 cells).
+  - finding: 2
+    status: still_present
+    now: 3
+    note: Finding 3 reports the same missing first site pair of dSPN 2019-04-11 cell 1, with the same index (0.584
+      against the paper's 0.228) and the same P values for Figure 1I (0.066 with the cell, 0.027 without).
+  - finding: 3
+    status: still_present
+    now: 4
+    note: Finding 4 reports the same spike-count mismatch, 90 of 123 cells equal to a row of the paper's table (33
+      not) and 18 differing by more than 3 spikes.
+  - finding: 4
+    status: still_present
+    now: 2
+    note: Finding 2 reports the same Figure 8 AIM differences (12 of 90 matched session totals equal), the same
+      mice missing on each side (4123, 4124 and 5871; 2346, 2347, 7741, 7742 and 7744), and the Figure 10 match
+      in 103 of 105 sessions.
+  - finding: 5
+    status: still_present
+    now: 9
+    note: Sessions 4 and 5 of mouse 7830 are still identical at every time point and behaviour (totals 39.5 and
+      39.5), as in the paper's table (output earlier-finding-5).
+  - finding: 6
+    status: still_present
+    now: 10
+    note: Subjects are still recording days, and the four groups hold 3, 3, 3 and 2 subjects against the legends'
+      four, four, four and three mice (output earlier-finding-6). The subject descriptions now say the lab gave
+      these mice no number.
+  - finding: 7
+    status: still_present
+    now: 6
+    note: Finding 6 reports the same GRAB-ACh3.0 regions matched to the paper only by value (16 of 34 within 0.05)
+      and the missing tetrodotoxin trial of 2024-05-24 Slice1Roi1. For 2024-04-02 Slice1Roi2 it finds two
+      acetylcholine trials (4.4 and 1.2 s) where the earlier statement says none; the earlier helper
+      (lid.grab_auc) gives no Fmax when any acetylcholine trial of a region is shorter than 2 s, which may explain
+      that part.
+  - finding: 8
+    status: still_present
+    now: 5
+    note: Finding 5 reports the same two Sr2+-oEPSC cells with 12 and 11 sweeps (2023-02-22 cell 1, 2023-04-06
+      cell 1) and that the files do not say which sweeps the paper used.
+  - finding: 9
+    status: still_present
+    now: 11
+    note: On the same Zenodo tables the paper's per-cell amplitudes equal the median of each cell's events for all
+      33 cells and the mean for none (output earlier-finding-9).
+  - finding: 10
+    status: still_present
+    now: 7
+    note: Finding 7 asks the same question about the TaroTools settings (filter, noise window) and adds which
+      sweeps were used for the cells with more than 10.
+  - finding: 11
+    status: still_present
+    now: 1
+    note: Finding 1 reports the control and 6-OHDA patch-clamp recordings and the open-field data as not in the
+      dandiset. It does not name the rotation counts, which are not in this version either (the AIM session files
+      hold the rotation videos and no counts), and zhai-2025-03 tested both rotation claims on the paper's tables.
+  - finding: 12
+    status: still_present
+    now: 8
+    note: Finding 8 reports the same NeuronStudio and Imaris spine counting, which cannot be repeated, and finding 1
+      that the dandiset holds the spine stacks without counts.
+  - finding: 13
+    status: still_present
+    now: 12
+    note: The drug-named files still hold 11 somatic cells with baseline on-state sweeps, 4 of them baseline only,
+      the same cells (output earlier-finding-13). zhai-2025-03 grouped by the condition column and noted this in
+      its data check, without a finding.
+  - finding: 14
+    status: still_present
+    now: 13
+    note: The same tests on the same tables give P = 0.4697 (Figure 7E, KO) and 0.01198 (Figure 8A) against the
+      paper's 0.910 and 0.0092 (output earlier-finding-14); zhai-2025-03 gives these values in its outcome notes.
+  - finding: 15
+    status: still_present
+    now: 4
+    note: Finding 4 says 14 cells hold a step more than once and some skip steps, and the zhai-2025-03 notebook
+      counts the same 14 cells with a repeated step. It does not give the number of cells missing a step (18
+      earlier).
+  outcomes:
+  - claim: fig1i-dspn-dendritic-sch-lower
+    earlier: reproduced
+    cause: data_used
+    note: Both attempts compute the same numbers (SCH 23390 median 0.419 in 9 cells against 0.476 on-state, P =
+      0.066; without dSPN 2019-04-11 cell 1, P = 0.027 in 8 cells). zhai-2025-02 left that cell out, as an
+      assumption, because the files hold only its second site pair (index 0.584 against the paper's 0.228), and
+      zhai-2025-03 kept it, so the outcome turns on that one exclusion.
+    confidence: high
+  - claim: fig8bc-cdgi-aims
+    earlier: blocked
+    cause: error
+    error_in: this
+    note: The claim depends on link-aim-mice, which is not reproduced in both attempts because the Figure 8 session
+      totals differ from the paper's (12 of 90 equal), and the protocol (Author, step 1, item 4) blocks a claim
+      whose link fails. zhai-2025-02 blocked it; zhai-2025-03 tested it on the dandiset's own scores (group F(1,19)
+      = 31.24, P = 2.2e-05, KO lower), which its author's report names as going past that rule, on sheets the
+      description says are the lab's preprint scores.
+    supports: blocked
+    confidence: medium
+  protocol: zhai-2025-02 was made under pilot-15 and zhai-2025-03 under pilot-19. docs/pilot-notes.md has no section
+    for pilot-15 or any later version (its last is pilot-14), so the changes are read from docs/protocol.md. From
+    pilot-18 each finding about the data carries a severity, and from pilot-19 a finding gives the notebook and
+    output cell that show it and the versions it was seen in, with fixed_in when it is gone; zhai-2025-03's
+    findings carry these and zhai-2025-02's do not. not_runnable is now a blocked_by reason (zhai-2025-02's first
+    verifier said it was not allowed), which is why the six spine claims are blocked as not_runnable here and as
+    methods_underspecified before. None of these changes altered an outcome.
