@@ -1,0 +1,431 @@
+schema_version: 3
+id: gillespie-2024-01
+datasets:
+- archive: dandi
+  id: "000115"
+  version: 0.210914.1732
+  doi: 10.48324/dandi.000115/0.210914.1732
+  relation: reuses
+paper: doi:10.7554/elife.90944
+date: 2026-11-26
+entry: gillespie-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45863271494
+inputs:
+- what: DANDI:000629, the neurofeedback cohort (rats remy, gus, bernard and fievel) that the paper
+    deposited for itself (Data availability). The registry does not list the paper on it; it is one
+    of the paper's datasets and should be. Read for the behavioural claims on rats 2 to 4 and for
+    the checks of its contents.
+  source: doi:10.48324/dandi.000629/0.240627.0646
+- what: The paper's analysis code, read for method details (trial selection, statistics, epoch
+    selection flags); no data from it.
+  source: https://github.com/LorenFrankLab/Gillespie_eLife_2024 at commit ad5801a28a0cf2a0ea97a1e25328db1c8376086c
+outcomes:
+- claim: control-cohort-trial-counts
+  outcome: reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:control-cohort-trial-counts
+  measured:
+  - 2557
+  - 2663
+  - 2042
+  - 3081
+  assumed: true
+  notes: Trials with a pre-reward period over all 116 run epochs are 2557, 2663, 2042 and 3081 for
+    jaq, roquefort, despereaux and montague (paper 2490, 2629, 2027 and 3021; all within 10%, the
+    largest difference +2.7%). Every run epoch is the goal_delay task and none is marked forage
+    assist, so readings (a) and (b) are the same set. The match supports the trial parser written
+    here.
+  deviations:
+  - The Frank lab trial parser is not public (the claims file header says so); trials are parsed
+    from the port DIO events by rules stated in the helper's docstring (a trial starts at a home
+    reward; the pre-reward period runs from the first beam break at the rewarded center port to
+    its pump onset; a center reward with no arm visit before the next home reward is a lockout
+    after center success). This is an assumption.
+  - The ripthresh, forageassist and environment flags of the code's epoch filter are not in the
+    files; all run epochs are used.
+- claim: control-decode-counts
+  outcome: partially_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:control-decode-counts
+  measured:
+  - 27
+  - 32
+  - 24
+  - 33
+  - 2366
+  - 2611
+  - 2018
+  - 2974
+  - 1617
+  - 1601
+  - 1530
+  - 2246
+  assumed: true
+  notes: The dandiset holds 27, 32, 24 and 33 run epochs (paper 24, 32, 23, 33); gooddecode is not
+    marked, so by the criterion the epoch counts are not comparable. Figure 4E trials (with a task
+    phase) are 2366, 2611, 2018 and 2974 (paper 2058, 2509, 1879, 2795) and Figure 4G trials (from
+    the second goal block of the epoch on) 1617, 1601, 1530 and 2246 (paper 1458, 1636, 1464,
+    2181). Both sets are within 10% for roquefort, despereaux and montague and miss for jaq (+15.0%
+    and +10.9%), the rat with three epochs more than the paper's decode set; without jaq's first
+    three epochs its Figure 4E count is 2076. The dependent claims (fig5) use all run epochs.
+  deviations:
+  - The task phase of each trial follows the rules of label_trial_interval.m as the claims file
+    header describes them, implemented here; a block's goal changes right after its last reward
+    (Methods, Behavioral training), and the second goal block is counted within each epoch.
+- claim: fig2s1c-control-prereward-swr-counts
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_gillespie_2024.ipynb
+  output: too-large-estimate
+  notes: The dandiset holds no LFP and no SWR detections, only the raw 30 kHz signal of 128
+    channels (9.1 TB for the 57 files). The consensus detection of the Methods needs the ripple
+    band of every CA1 cell layer tetrode over each whole epoch; one channel of each of 30 tetrodes
+    over the 166.9 h of control run epochs is 1082 GB, which at the measured 2.2 MB/s per stream
+    takes 8.2 h with 16 parallel streams. The electrode table also does not say which tetrodes are
+    in the CA1 cell layer (location None for every channel), a second reason (metadata_insufficient).
+- claim: fig2s1a-trigger-size-increase
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR sizes in DANDI:000629, which holds only the raw signal (16.8 TB); one
+    channel per tetrode over its 299.9 h of run epochs is 1943 GB (cell too-large-estimate). Rat 1's
+    port events are also corrupted from day 14 on.
+- claim: fig2s1b-faster-than-predicted
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection on DANDI:000629 over pretraining and training (see
+    fig2s1a-trigger-size-increase).
+- claim: fig2s1c-swr-size-not-increased
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR sizes in both cohorts; depends on fig2s1c-control-prereward-swr-counts,
+    blocked for the same reason.
+- claim: fig2s1d-twice-events-all-sizes
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR sizes in DANDI:000629 (see fig2s1a-trigger-size-increase).
+- claim: fig2c-prereward-rate
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection in both cohorts (cell too-large-estimate).
+- claim: fig2s1e-prereward-rate-excluding-suprathreshold
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig2c-prereward-rate, blocked as too large.
+- claim: fig2c-postreward-rate
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection in both cohorts (cell too-large-estimate).
+- claim: fig2s1f-rate-change-post-minus-pre
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection in both cohorts; depends on fig2s1f-control-rate-increase,
+    blocked as too large.
+- claim: fig2s1f-control-rate-increase
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_gillespie_2024.ipynb
+  output: too-large-estimate
+  notes: Needs offline SWR detection on DANDI:000115 (see fig2s1c-control-prereward-swr-counts).
+- claim: fig2b-control-timecourse
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_gillespie_2024.ipynb
+  output: too-large-estimate
+  notes: Needs offline SWR detection on DANDI:000115 (see fig2s1c-control-prereward-swr-counts).
+- claim: fig2b-manipulation-timecourse
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection in both cohorts; depends on fig2b-control-timecourse.
+- claim: fig2c-combined-rate
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection in both cohorts (cell too-large-estimate).
+- claim: fig2d-swr-counts
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection in both cohorts (cell too-large-estimate).
+- claim: fig2e-postreward-dwell
+  outcome: partially_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig2e-postreward-dwell
+  measured: 0.376
+  assumed: true
+  notes: On rats 2 to 4 (gus, bernard, fievel), post-reward dwell is shorter on NF than on delay
+    trials (medians 3.88 vs 4.63, 4.61 vs 4.79 and 2.76 vs 4.87 s; corrected ranksum p at most
+    0.002 under every reading), and both mixed models find control trials longer (coefficients
+    -6.26 and -5.09 s, p below 1e-10). The delay over control ratio of the inset means (mean over
+    rats of each rat's median) is 0.48 to 0.50, inside 0.4 to 0.6; the NF over control ratio is 0.36
+    to 0.39 under every plateau and leaving reading (0.37 to 0.40 as a ratio of means), just below
+    the tolerance. The measured value is the NF over control inset ratio under the adopted
+    readings; the delay over control ratio is 0.477. Rat 1 (remy) cannot be tested and would enter
+    both the ranksums and the inset mean.
+  deviations:
+  - Rats 2 to 4 only; the port events of rat 1 (remy) are corrupted from day 14 on (finding 4), and
+    the mixed models are fit on three manipulation rats.
+  - The plateau epochs are not marked in DANDI:000629. Adopted reading (assumption) is the final
+    whole days whose NF and delay trial counts are closest to the Figure 2C legend counts (gus days
+    26 to 30, 688/643 trials against 684/640; bernard 19 to 28, 1161/1205 against 1157/1201; fievel
+    18 to 29, 1609/1557 against 1602/1552). The final 7 and 10 days (Methods, "maintained at the
+    maximum threshold for 7-10 days") are run as other readings and give the same outcome.
+  - The NF port is the R port, shown by the yoked delays (90% of W-port waits within 0.1 s of one
+    of the 8 previous R-port waits, 7.9% the other way); the files do not say which port is which.
+  - Leaving the port is not defined by the paper; the last beam-off before the next port visit is
+    adopted (assumption, see fig2s1h-control-dwell-increases), and the first exit longer than 200 ms
+    is run as a variant, with the same outcome.
+- claim: fig2s1h-control-dwell-increases
+  outcome: reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig2s1h-control-dwell-increases
+  assumed: true
+  notes: With leaving read as the last beam-off at the port before the first beam break at any
+    other port, the per-epoch mean post-reward duration correlates positively with epoch order in
+    all four rats (r = 0.495, 0.319, 0.648, 0.516; p = 0.0087, 0.076, 0.0006, 0.0021). With leaving
+    read as the first beam-off lasting more than 200 ms, roquefort's r is -0.129 (p = 0.48) and the
+    other three are positive (0.605, 0.669, 0.511), which would be partially reproduced. The
+    question is recorded for the paper's authors (finding 8).
+  deviations:
+  - Leaving the port (leaveRW) is set by the unpublished trial parser. Adopted reading
+    (assumption) is the last beam-off before the next port visit, because the paper describes the
+    post-reward period as lasting until the rat leaves the port ("from initial center port
+    nosepoke to exit from the center port", Methods, Timewise SWR rate quantification), and a nose
+    withdrawn and put back into the same port before any other port is visited has not left it.
+    The first exit longer than the statescript's 200 ms allowance (proxTime) is the other reading.
+  - All run epochs are used (the epoch flags are not in the files).
+- claim: fig2s1g-no-refractory
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs offline SWR detection on DANDI:000629 (see fig2s1a-trigger-size-increase).
+- claim: fig3a-speed-below-immobility
+  outcome: partially_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig3a-speed-below-immobility
+  assumed: true
+  notes: Holds in all three rats that can be tested. Every rat and trial type is below 4 cm/s (the
+    largest median 3.02 cm/s, a control rat at 0.1 s smoothing; neurofeedback medians at most 2.17
+    cm/s). NF trials are slower than delay trials in gus, bernard and fievel (corrected p at most
+    0.0004 under every smoothing and plateau reading), and slower than control trials (mixed model
+    -1.17 cm/s at 0.1 s smoothing, p below 1e-5; -0.56 cm/s at 0.5 s, p = 0.00027). Rat 1 (remy)
+    cannot be tested, so the claim is shown for three of four rats.
+  deviations:
+  - The position series of DANDI:000629 have a conversion factor of 0 (finding 5); the 0.2 cm per
+    pixel of DANDI:000115's run camera is used, on the paper's statement that the maze is the same
+    as in Gillespie et al. 2021 (Methods, Behavioral training). With it, the head positions span
+    105.8 to 158.7 cm in x, as against 107.6 to 119.2 cm in 000115. This is an assumption.
+  - Speed smoothing is not given by the paper (done upstream of its code); Gaussian sd 0.1, 0.25
+    and 0.5 s are run, with the same outcome.
+  - Rats 2 to 4 only, and the plateau readings of fig2e-postreward-dwell.
+- claim: fig3a-control-speed
+  outcome: reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig3a-control-speed
+  assumed: true
+  notes: Under every smoothing and both summaries the pre-reward mean head speed is below 4 cm/s in
+    all four control rats (medians 2.27 to 3.02 cm/s at 0.1 s smoothing, 0.88 to 1.36 at 0.5 s;
+    means 2.32 to 3.01 and 1.05 to 1.59). The dandiset provides no speed, so reading (i) of the
+    criterion could not be run; reading (ii) was run with three smoothings. Between 0.0% and 5.1% of
+    a rat's trials exceed 4 cm/s.
+  deviations:
+  - Head position is the mean of the two LEDs; speed is the derivative of position smoothed with a
+    Gaussian of sd 0.1, 0.25 or 0.5 s (a choice the paper does not make; all give the same outcome).
+  - The pre-reward windows come from the trial parser written here (assumption, see
+    control-cohort-trial-counts).
+- claim: fig3bc-speed-matched-rates
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs pre-reward SWR rates from offline detection in both cohorts (cell too-large-estimate).
+    The speed part alone could be computed from the trials parsed here.
+- claim: trialwise-pre-post-correlation
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs per-trial SWR counts from offline detection on DANDI:000629 (see
+    fig2s1a-trigger-size-increase).
+- claim: fig4d-fraction-replay-preserved
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs clusterless decoding of every SWR, which needs the spike marks of every tetrode at
+    30 kHz, that is the whole files (9.1 TB for 000115, 16.8 TB for 000629), on top of SWR detection.
+- claim: fig4e-remote-replay-prereward
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs clusterless decoding (see fig4d-fraction-replay-preserved).
+- claim: fig4f-remote-replay-combined
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs clusterless decoding (see fig4d-fraction-replay-preserved).
+- claim: fig4g-control-replay-glm
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_gillespie_2024.ipynb
+  output: too-large-estimate
+  notes: Needs clusterless decoding of the control cohort's SWRs, which needs the whole 9.1 TB of
+    raw data of DANDI:000115 streamed and the spike marks extracted, as well as SWR detection.
+- claim: fig4g-manipulation-replay-glm
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs clusterless decoding (see fig4d-fraction-replay-preserved); depends on
+    fig4g-control-replay-glm.
+- claim: fig4s1-replay-glm-pre-post
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs clusterless decoding in both cohorts; depends on fig4g-manipulation-replay-glm.
+- claim: fig5a-search-efficiency
+  outcome: not_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig5a-search-efficiency
+  assumed: true
+  notes: On rats 2 to 4, no NF against delay ranksum is significant (corrected p at least 0.25)
+    and the NF against control model is not significant, as the claim says, but the delay against
+    control model does not find the improvement (adopted readings, mean search efficiency 0.732
+    control, 0.719 NF, 0.745 delay; coefficient +0.012, p = 0.75). Under reading (b) of a redundant
+    search the delay coefficient is +0.048 to +0.053 with p = 0.064 to 0.18; no reading gives
+    p below 0.05. The control epochs are all run epochs and the plateau epochs are not the paper's
+    gooddecode epochs (20, 20 and 26 epochs here against 14, 18 and 26), and rat 1 is missing,
+    any of which may move a small effect.
+  deviations:
+  - Rats 2 to 4 only, plateau readings as in fig2e-postreward-dwell.
+  - A redundant search trial is not defined in the text; label_trial_interval.m is not public.
+    Adopted reading (a), a revisit of an arm already searched in the block; reading (b) also counts
+    the arm of the trial that closed the previous block.
+  - Epochs are all plateau and all control run epochs; gooddecode is not marked.
+- claim: fig5s1-control-search-efficiency-increases
+  outcome: reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig5s1-control-search-efficiency-increases
+  assumed: true
+  notes: The per-epoch fraction of non-redundant search trials correlates positively with epoch
+    order in all four rats under both readings of a redundant search (r = 0.143, 0.333, 0.266,
+    0.301 under reading a; 0.156, 0.295, 0.224, 0.334 under reading b). No single correlation has
+    p below 0.05 (smallest 0.058); the paper reports no statistic and calls the increase subtle.
+  deviations:
+  - All run epochs (the criterion's variant), as gooddecode is not marked.
+  - Task phases from the rules written here (see control-decode-counts and fig5a-search-efficiency).
+- claim: fig5b-redundant-search-balanced
+  outcome: not_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig5b-redundant-search-balanced
+  assumed: true
+  notes: Under the adopted plateau reading, gus's redundant search trials lean to NF (median
+    fraction 0.600, sign test p = 0.013, 17 epochs; p = 0.004 under reading b of a redundant
+    search), while bernard (0.500, p = 1.0) and fievel (0.500, p = 0.83) do not. Under the final 7
+    and final 10 days no rat reaches p below 0.05 (smallest 0.26), which would be reproduced for
+    the three rats. The outcome rests on the epoch selection; the paper's test for rat 2 used 14
+    epochs.
+  deviations:
+  - Rats 2 to 4 only, plateau and redundant-search readings as in fig5a-search-efficiency.
+- claim: fig5c-repeat-accuracy-unchanged
+  outcome: partially_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig5c-repeat-accuracy-unchanged
+  assumed: true
+  notes: Holds in all three rats that can be tested. No test finds a difference under any plateau
+    reading (corrected NF against delay ranksums p at least 0.43; mixed models p at least 0.37;
+    mean repeat accuracy 0.635 control, 0.668 NF and 0.710 delay under the adopted reading). Rat 1
+    (remy) cannot be tested.
+  deviations:
+  - Rats 2 to 4 only; epochs as in fig5a-search-efficiency.
+- claim: fig5d-repeat-errors-balanced
+  outcome: partially_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig5d-repeat-errors-balanced
+  assumed: true
+  notes: Holds in all three rats that can be tested. Under the adopted reading one rat, fievel (rat
+    4), has p below 0.05 (median fraction 0.556, p = 0.015), as in the paper (rat 4, p = 0.0227);
+    gus and bernard do not (p = 0.80, 0.81). Under the final 10 days fievel again has p = 0.012 and
+    under the final 7 days no rat does. Rat 1 (remy) cannot be tested.
+  deviations:
+  - Rats 2 to 4 only; epochs as in fig5a-search-efficiency.
+- claim: fig1s1c-prereward-dwell-matched
+  outcome: partially_reproduced
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:fig1s1c-prereward-dwell-matched
+  assumed: true
+  notes: Under the adopted plateau reading the median NF and delay pre-reward durations differ by
+    -1.1% (gus), 10.2% (bernard) and 7.9% (fievel), so two of three rats are inside the criterion's
+    10%; bernard and fievel differ significantly (corrected p = 0.0035 and 0.0014), as the paper's
+    tests found for rats 3 and 4 (p = 0.005 and 0.002). Under the final 7 days all three rats are
+    within 10% (4.8%, 8.4%, 4.1%); under the final 10 days one is (8.2%, 10.2%, 11.1%). Both trial
+    types are longer than control trials (mixed models +3.84 s, p = 2.0e-06; +3.12 s, p = 0.00071).
+    Rat 1 (remy) cannot be tested.
+  deviations:
+  - Rats 2 to 4 only, plateau readings as in fig2e-postreward-dwell.
+findings:
+- kind: metadata_insufficient
+  about: data
+  severity: major
+  statement: DANDI:000115 holds, per session, the raw 30 kHz signal of 128 channels, head position,
+    port events and statescript logs, with no LFP, SWR detections, sorted units or decodes, and the
+    electrode table gives location None for every channel. The CA1 cell layer tetrodes on which the
+    paper detects SWRs cannot be identified, so no SWR or replay analysis of the paper can be
+    repeated from the files as they are, besides the size of the raw data (9.1 TB).
+  notebook: reproduce_gillespie_2024.ipynb
+  output: finding-no-lfp-no-ca1-labels
+- kind: metadata_insufficient
+  about: data
+  severity: minor
+  statement: DANDI:000115 does not mark the epoch flags the paper's code selects on (forage assist,
+    online SWR threshold, decode quality). All 116 run epochs give trial counts within 3% of the
+    paper's center port analyses, but jaq has 27 run epochs where the paper's replay and behaviour
+    analyses use 24, and the files do not say which three were left out.
+  notebook: reproduce_gillespie_2024.ipynb
+  output: claim:control-decode-counts
+- kind: format_error
+  about: data
+  severity: minor
+  statement: In DANDI:000115 the position timestamps of 110 of 116 run epochs include NaN values
+    (1 to 4 per epoch); they are dropped here.
+  notebook: reproduce_gillespie_2024.ipynb
+  output: finding-position-nan-timestamps
+- kind: format_error
+  about: data
+  severity: major
+  statement: In DANDI:000629 the port DIO events of rat remy on day 7 (one epoch) and days 14 to 34,
+    and of gus on days 16 and 17, hold thousands of onsets per epoch on every pump and beam channel,
+    sleep epochs included (remy day 33, run epoch 2, 20743 home pump onsets in 91 min; bernard's
+    run epochs have about 150). Remy's
+    plateau sessions cannot be used from the DIO, which removes rat 1 from every analysis here.
+    The statescript logs in the same files may hold the true events.
+  notebook: reproduce_gillespie_2024.ipynb
+  output: finding-nf-dio-corrupt
+- kind: metadata_error
+  about: data
+  severity: minor
+  statement: In DANDI:000629 every position series has a conversion factor of 0 (meters), so the
+    pixel coordinates cannot be converted from the metadata; the scale of DANDI:000115 (0.2 cm per
+    pixel) gives the same maze size. All 29 sessions of remy have session_start_time 1970-01-01.
+  notebook: reproduce_gillespie_2024.ipynb
+  output: finding-nf-metadata
+- kind: metadata_insufficient
+  about: data
+  severity: major
+  statement: DANDI:000629 does not mark the neurofeedback phase, the detection threshold, the
+    plateau (stable) period that every manipulation analysis of the paper uses, or which center
+    port is the neurofeedback port; every run task is described as pretraining. The port was
+    identified here from the yoked delays, and the plateau from the paper's trial counts.
+  notebook: reproduce_gillespie_2024.ipynb
+  output: finding-nf-metadata
+- kind: methods_unavailable
+  about: paper
+  statement: The plateau days of each neurofeedback rat are not stated in the text. The final
+    whole days whose trial counts match the Figure 2C legend within 1% are days 26 to 30 for gus,
+    19 to 28 for bernard and 18 to 29 for fievel, that is 5, 10 and 12 days, where the Methods say
+    the maximum threshold was kept for 7 to 10 days. Question for the authors, which days (and
+    which epochs, for the decode analyses) form each rat's plateau?
+- kind: methods_unavailable
+  about: paper
+  statement: The trial parser and label_trial_interval.m are not in the paper's repository, and
+    the text does not define when the rat leaves the center port after reward or which search
+    trials count as redundant. The outcome of fig2s1h-control-dwell-increases depends on the first
+    (the last beam-off before the next port visit gives 4 of 4 rats, the first exit longer than
+    200 ms gives 3 of 4), and fig5a and fig5b depend in part on the second. Question for the
+    authors, how is leaveRW defined, and is a redundant search a revisit of any arm searched since
+    the goal changed, including the old goal?
