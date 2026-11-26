@@ -23,8 +23,11 @@ import zlib
 # run on another processor (AVX-512 or not) gave other ICs and other AUCs. The linear algebra
 # (OpenBLAS in numpy and scipy, MKL in torch), numpy's own vector loops and torch's are pinned
 # to their AVX2 code, which every machine that runs the registry has. This must happen before
-# numpy is first imported: import pupilwf first.
-KERNELS = {"OPENBLAS_CORETYPE": "Haswell", "NPY_DISABLE_CPU_FEATURES": "X86_V4 AVX512_ICL",
+# numpy is first imported: import pupilwf first. The L2 cache size is given because numpy's
+# OpenBLAS, pinned to Haswell, crashes in matrix products when it detects the cache of an AMD Zen 5
+# processor itself; the size given does not change the results (the same bits at 0.5, 1 and 2 MiB).
+KERNELS = {"OPENBLAS_CORETYPE": "Haswell", "OPENBLAS_L2_SIZE": "1048576",
+           "NPY_DISABLE_CPU_FEATURES": "X86_V4 AVX512_ICL",
            "ATEN_CPU_CAPABILITY": "avx2", "MKL_CBWR": "AVX2,STRICT", "ONEDNN_MAX_CPU_ISA": "AVX2"}
 if "numpy" in sys.modules and any(os.environ.get(k) != v for k, v in KERNELS.items()):
     raise RuntimeError("import pupilwf before numpy, so that its kernel settings take effect")
