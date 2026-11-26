@@ -1,0 +1,364 @@
+schema_version: 3
+id: pasquereau-2013-03
+datasets:
+- archive: dandi
+  id: '001636'
+  version: 0.261124.1906
+  doi: 10.48324/dandi.001636/0.261124.1906
+  relation: primary
+paper: doi:10.3389/fnsys.2013.00098
+date: '2026-11-26'
+entry: pasquereau-2013
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45857382971
+outcomes:
+- claim: cell-counts
+  outcome: reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:cell-counts
+  measured:
+  - 115
+  - 157
+  - 51
+  - 54
+  - 32
+  - 48
+  - 3
+  notes: Monkey V units with at least 5 observed perturbations per direction number 115 before and 157
+    after MPTP (112 and 159 expected), with 51 and 54 PTNs (49 and 54) and 32 and 48 CSNs (31 and 48).
+    Three units in all files are pyramidal_tract_and_corticostriatal_neuron, all in monkey V and all studied;
+    Leu has none. The studied cells also include 29 and 50 not activated, 1 and 1 not tested, and after
+    MPTP one PTN-and-thalamic and two thalamic projection units. 79 pre and 5 post Venus units have fewer
+    than 5 perturbations in a direction. No unit name repeats across files, and no trial spike train,
+    angle or EMG window is shared between files.
+- claim: monkey-l-perturbations
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:monkey-l-perturbations
+  notes: All 5952 Leu trials have torque_perturbation_type not_available and no onset time. The Leu torque
+    command is NaN in 114 files; the other 34, all after MPTP, hold a trace that the file description
+    says has no distinct pulses (looked at in one file while preparing, where it moves smoothly over hundreds
+    of ms). The Leu files hold 138 and 72 units.
+- claim: baseline-rate
+  outcome: reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:baseline-rate
+  measured:
+  - 12.66
+  - 8.85
+  - 18.49
+  - 14.37
+  - 3.48
+  - 3.36
+  notes: Mean baseline rates (spikes/s) M1 12.66 and 8.85, PTN 18.49 and 14.37, CSN 3.48 and 3.36, all
+    within tolerance. PTN rate lower after MPTP (-22%, Mann-Whitney p = 0.020), CSN unchanged (p = 0.65),
+    M1 lower (-30%, p = 0.0022, below the paper's 0.05/2). The PTN test does not reach the p < 0.001 of
+    the statement.
+- claim: ptn-faster-than-csn
+  outcome: reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:ptn-faster-than-csn
+  notes: Pre-MPTP PTNs 18.49 spikes/s (n 51, range 2.6 to 49.0) against CSNs 3.48 (n 32, range 0.0 to
+    20.7), Mann-Whitney p = 6.3e-12. The pooled values 16.3 and 3.6 (text) and 18.3 and 3.2 (Table 1)
+    are reported, not judged.
+- claim: antidromic-latency
+  outcome: partially_reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:antidromic-latency
+  measured:
+  - 1.92
+  - 1.86
+  - 4.91
+  - 6.85
+  notes: PTN latency 1.92 and 1.86 ms (n 49 and 48, Mann-Whitney p = 0.68); CSN 4.91 and 6.85 ms (n 32
+    and 38, p = 0.019). All four means are within tolerance and the PTN test holds, but the CSN test does
+    not reach 0.05/3 (0.0167). Of the studied cells, 2 of 51 PTNs before and 6 of 54 after, and 10 of
+    48 CSNs after MPTP, have no antidromic latency in the files. With every Leu PTN and CSN added (variant)
+    the means are 1.80, 1.83, 5.38 and 7.01 ms and the CSN test gives p = 0.0072.
+  deviations:
+  - The expected values pool both monkeys; the test uses monkey V's studied cells (criterion).
+- claim: false-positive-rate
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:false-positive-rate
+  measured: 0.23
+  notes: With the claims file's detection at a pseudo onset 600 ms before the torque, 0.230 of 544 cell-directions
+    cross the threshold over 0 to 200 ms (0.257 before and 0.210 after MPTP), and 0.051 have a response
+    with onset in 20 to 60 ms. On trials without a perturbation, aligned where the file's perturbations
+    fall, 0.196 of 255 cells cross. Both are far above 0.03, so by the claims file's rule and the protocol's
+    the procedure is not the paper's. Other readings of the Methods' t-test give 0.465 (single-trial t-test,
+    the claims file's variant), 0.347 (standard error of trial baselines) and 0.013 (SD of all single-trial
+    baseline values); the last is near 0.01 but calls only 0.200 of real cell-directions responsive (0.673
+    with the claims file's detection), far below the paper's 62 to 75% of cells. No reading gives both
+    the paper's false-positive rate and its response rates. Question for the authors, in findings.
+  deviations:
+  - The t threshold uses 499 degrees of freedom (500 baseline values), a standard choice.
+  - The kernel is truncated at 400 ms, a standard choice that cannot change a result.
+- claim: torque-related-fractions
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:torque-related-fractions
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Torque-related M1 64/115 (55.7%) and 78/157 (49.7%), PTN 37/51 (72.5%) and 37/54 (68.5%), CSN 5/32
+    (15.6%) and 9/48 (18.8%), against 75, 68, 55, 68, 45 and 21% expected. With the single-trial t-test
+    44.3% and 59.9% of cells.
+- claim: prevalence-unchanged
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:prevalence-unchanged
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Yates chi-square, pre against post, M1 p = 0.40, PTN p = 0.81, CSN p = 0.95.
+- claim: ptn-more-responsive
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:ptn-more-responsive
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    PTN 70.5% and CSN 17.5% torque-related (62.1 and 30.4 expected), Yates chi2 = 49.0, p = 2.6e-12.
+- claim: one-direction-half
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:one-direction-half
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    75 of 142 torque-related cells (52.8%) respond to one direction only (44% expected).
+- claim: excitatory-majority
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:excitatory-majority
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Increases are 83.3% and 76.5% of M1 responses and 70.6% and 58.3% of PTN responses before and after
+    MPTP (86, 88, 70 and 75 expected); PTN Yates chi2 = 1.30, p = 0.25.
+- claim: magnitude-unchanged
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:magnitude-unchanged
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Magnitudes are smaller after MPTP in all 12 tests (M1 and PTN; mean change, maximum change, area),
+    KS p 9.8e-05 to 0.047 and Mann-Whitney p 1.9e-05 to 0.043.
+- claim: venus-response-magnitudes
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:venus-response-magnitudes
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Maximum change (reading a), pre and post, M1 flexion 38.1 and 30.7, M1 extension 45.3 and 31.5, PTN
+    flexion 31.6 and 19.6, PTN extension 35.6 and 23.8 spikes/s; mean rate (b) and mean change (c) are
+    in the notebook.
+- claim: latency-shorter
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:latency-shorter
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Latencies are shorter after MPTP in all four comparisons (KS p 0.0077 to 0.010); means M1 flexion
+    40.9 and 35.5, M1 extension 42.9 and 36.1, PTN flexion 44.9 and 38.1, PTN extension 45.3 and 38.0
+    ms.
+- claim: latency-not-training
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:latency-not-training
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Earliest latency against days since the first Venus session, pre and post pooled, Spearman rho = -0.26,
+    p = 0.0016 (n 142); within each state p = 0.33 and 0.16.
+- claim: fwhm-shorter-ptn
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:fwhm-shorter-ptn
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    FWHM of PTN increases, flexion 87.7 and 50.3 ms (p = 0.060), extension 66.0 and 41.2 ms (p = 0.55).
+- claim: dsi-reduced
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:dsi-reduced
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Reciprocal plus unidirectional 59.4% before and 52.6% after MPTP, chi-square p = 0.093.
+- claim: venus-dsi
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:venus-dsi
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Mean DSI M1 0.60 and 0.47, PTN 0.71 and 0.46, CSN 0.66 and 0.69.
+- claim: dsi-not-baseline
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:dsi-not-baseline
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    One-way ANOVA of baseline rate across the four categories F = 1.21, p = 0.31.
+- claim: velocity-matched-magnitude
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:velocity-matched-magnitude
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Only 2 of 581 session-directions have a mean peak velocity of 130 to 200 deg/s, with one response
+    in all (cell finding-kinematics-vs-paper), so the subset could not be formed under any detection.
+- claim: session-correlations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:session-correlations
+  notes: Blocked with false-positive-rate, through torque-related-fractions; the claims file's detection,
+    whose false-positive rate is 0.23 per cell-direction, gives the numbers here, which decide nothing.
+    Session mean PTN latency against peak velocity rho = -0.17, p = 0.15 (70 sessions); against triceps
+    longus 1 m2 rho = -0.38, p = 0.0076 (49 sessions).
+- claim: kinematics-slower
+  outcome: not_reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:kinematics-slower
+  measured:
+  - 28.1
+  - 14.8
+  notes: Session means (154 and 153 pre, 137 and 137 post session-directions). After MPTP peak velocity
+    is higher, +28.1% pooled and +29.7% for flexion (MPTP F = 98.5, p = 1.5e-21), and amplitude larger,
+    +14.8% and +11.1% (F = 25.0, p = 7.5e-07). Restricted to command pulses of 60 to 250 units, the range
+    both states share, the changes are +47.0% and +40.4%. Mean displacements are 2.4 to 3.8 degrees, where
+    the paper gives a mean of 10. No file repeats another's trials, so none was left out.
+  deviations:
+  - Monkey V only, so the ANOVA has no animal factor (criterion).
+  - The FIR filter has 101 taps at 1 kHz, a standard choice; onset, peak velocity and amplitude windows
+    are the claims file's.
+- claim: kinematic-latency-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:kinematic-latency-unchanged
+  notes: Movement onset latency is shorter after MPTP (pre 9.7 and 10.9 ms, post 3.0 and 6.0 ms for flexion
+    and extension), MPTP F = 709, p < 1e-100; the MPTP by direction interaction is F = 16.1 (the paper's
+    F > 94). At command pulses of 60 to 250 units the latency is also shorter (F = 239).
+- claim: emg-m2-larger
+  outcome: reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:emg-m2-larger
+  notes: m2 medians pre and post (a.u.) triceps lateralis 5.4 and 78.9 (KS p = 3.6e-15, 35 and 32 sessions),
+    triceps longus 1 4.6 and 165.6 (p = 3e-46), triceps longus 2 10.3 and 301.1 (p = 7.5e-41); the same
+    under the other channel rule. The torque pulses are about three times larger after MPTP, which this
+    comparison cannot separate from the effect of MPTP.
+  deviations:
+  - The claims file does not say whether a channel's baseline SD is that of the session-average trace
+    or of the single-trial samples; both were run and give the same outcome.
+- claim: emg-duration-longer
+  outcome: partially_reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:emg-duration-longer
+  measured:
+  - 22.2
+  - 51.5
+  notes: Mean duration 22.2 ms before (181 channel-sessions) and 51.5 ms after MPTP (241), KS p = 5.2e-33;
+    both far outside 57 +/- 6 and 79 +/- 3 ms. 23 channel-sessions before MPTP have no response. Under
+    the other channel rule 21.3 and 50.0 ms.
+  deviations:
+  - Both readings of the channel rule were run (see emg-m2-larger); they give the same outcome.
+- claim: emg-onset-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:emg-onset-unchanged
+  notes: Onset of the EMG responses 44.2 ms before (median 36) and 25.0 ms after MPTP (median 25), KS
+    p = 5.8e-22; under the other channel rule 41.2 and 24.2 ms, p = 7.1e-21.
+  deviations:
+  - Both readings of the channel rule were run; they give the same outcome.
+- claim: emg-m1-weak
+  outcome: partially_reproduced
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:emg-m1-weak
+  notes: After MPTP m2 exceeds m1 in 237 of 241 channel-sessions (98.3%) and the median m1/m2 is 0.25;
+    before MPTP the median ratio is 0.14 but m2 exceeds m1 in 151 of 204 (74.0%), just under 75%. Under
+    the other channel rule 74.3% and 0.11 before, 96.3% and 0.23 after, the same outcome.
+  deviations:
+  - Both readings of the channel rule were run; they give the same outcome.
+- claim: trial-correlations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: claim:trial-correlations
+  notes: The Methods do not define a single-trial response latency, and the claim also uses the response
+    selection blocked with false-positive-rate. Question for the authors, in findings.
+findings:
+- kind: data_missing
+  severity: major
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: finding-leu-no-perturbations
+  statement: The monkey L (Leu) files mark no torque perturbation; all 5952 trials have torque_perturbation_type
+    not_available. The torque command is NaN in 114 files; the other 34, all after MPTP, hold a trace
+    that the file description says has no distinct pulses. The paper's monkey L torque results (57 of
+    115 and 35 of 73 responsive cells), which enter its pooled values, cannot be tested. The dandiset
+    description says so.
+- kind: other
+  about: data
+  severity: major
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: finding-kinematics-vs-paper
+  statement: The torque-evoked elbow displacements in the files differ from the paper's. Averaged over
+    sessions, the amplitude is 2.4 to 3.8 degrees per state and direction and 0.1% of perturbations reach
+    10 degrees, where the paper gives a mean of 10 degrees; the peak velocity 46 to 75 deg/s, and only
+    2 of 581 session-directions fall in the 130 to 200 deg/s range the paper uses for its velocity-matched
+    sessions. After MPTP the displacements are faster (+28%) and larger (+15%), where the paper reports
+    them slower (-16.2%) and smaller (-6.6%).
+- kind: other
+  about: data
+  severity: minor
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: finding-torque-command-levels
+  statement: The torque command's pulse is about three times larger after MPTP than before (median 181.6
+    against 45.7 units; 125 of 137 post-MPTP sessions have a median pulse of 120 to 250 units, 3 of 151
+    before), where the paper describes one 0.1 Nm pulse throughout. The units have no conversion to newton-metres,
+    so whether the applied torque changed cannot be told; the ElbowTorque description notes the varying
+    levels. Comparisons of evoked movements and EMG before and after MPTP cannot separate the torque from
+    the effect of MPTP.
+- kind: other
+  about: data
+  severity: none
+  notebook: reproduce_pasquereau_2013.ipynb
+  output: sanity
+  statement: Checks that passed. The monkey V counts of cells studied by MPTP state and projection type
+    match the paper's supplementary table within 3 cells; is_post_mptp agrees with every file name; no
+    unit name repeats across files and no trial spike train, angle or EMG window is shared between files.
+    The torque command leaves rest 4 ms after the marked onset and the joint moves in the torque's direction,
+    and spikes cross the response threshold in 0.67 of cell-directions after the onset against 0.23 after
+    a pseudo onset, so the analog series and spikes are consistent with the trials table's clock.
+- kind: methods_unavailable
+  statement: Question for the authors. The Methods detect responses by a millisecond-by-millisecond two-tailed
+    t-test of the SDF against the baseline rate at p < 0.002, and state that this holds the false-positive
+    rate near 0.01 over 200 ms. How was the test computed (which variance, over trials or over baseline
+    time, and of single-trial or trial-averaged SDFs)? On these data, a threshold from the SD of the trial-averaged
+    SDF's baseline crosses after a pseudo onset in 23% of cell-directions, a single-trial t-test in 47%,
+    and a threshold from the SD of all single-trial baseline values in 1.3% but finds responses in only
+    20% of real cell-directions; none gives both the stated false-positive rate and the reported 62 to
+    75% of cells responding. All claims on the response selection are blocked until this is known.
+- kind: methods_unavailable
+  statement: Question for the authors. The trial-by-trial correlations of PTN response latency with peak
+    velocity and m2 need a single-trial response latency, which the Methods do not define (the response
+    onset is defined on the trial-averaged SDF). How was it measured?
