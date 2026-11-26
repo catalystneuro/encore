@@ -21,7 +21,7 @@ Claims whose data are elsewhere, tested on DANDI:000629 (26 claims: 7 tested, 19
 
 | Claim | Outcome |
 |---|---|
-| Pre-reward time matched between NF and delay trials | Partially reproduced (three rats); not reproduced proposed |
+| Pre-reward time matched between NF and delay trials | Not reproduced (three rats) |
 | Post-reward dwell shorter on NF trials, about half of control | Partially reproduced (three rats) |
 | Head speed below 4 cm/s, lower on NF trials | Partially reproduced (three rats) |
 | Search efficiency higher than control on delay trials | Not reproduced |
