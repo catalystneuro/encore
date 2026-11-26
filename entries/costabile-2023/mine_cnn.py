@@ -1,4 +1,5 @@
-"""The MINE CNN of Costabile et al. (2023), used here only to time a fit on this machine.
+"""The MINE CNN of Costabile et al. (2023), used here to time a fit on this machine and to fit a
+random subsample of the zebrafish components (mine_fits_subsample.ipynb).
 
 The architecture, training and data preparation follow the paper's code, github.com/haesemeyer/mine_pub
 at commit 368d756: model.py (ActivityPredictor, get_standard_model: 80 linear convolutional filters
@@ -71,10 +72,12 @@ def _model(n_pred: int):
 
 
 def fit_and_test(X: np.ndarray, y: np.ndarray, seed: int) -> float:
-    """Fit on the first two-thirds, return the test correlation on the last third."""
+    """Fit on the first two-thirds (windows ending before train_frames, as Data.training_data), return
+    the test correlation as rwave_data_fit.py computes it."""
     import tensorflow as tf
     tf.config.threading.set_intra_op_parallelism_threads(1)
     tf.config.threading.set_inter_op_parallelism_threads(1)
+    tf.keras.backend.clear_session()  # free the previous fit's graph, so memory stays flat over many fits
     tf.keras.utils.set_random_seed(seed % (2 ** 31))
     T = y.size
     train = (T * 2) // 3
@@ -98,5 +101,28 @@ def fit_and_test(X: np.ndarray, y: np.ndarray, seed: int) -> float:
     for _ in range(N_EPOCHS):
         for a, b in ds:
             step(a, b)
-    pred = m(win[ntr:], training=False).numpy().ravel()
-    return float(np.corrcoef(pred, yy[ntr:])[0, 1])
+    # rwave_data_fit.py scores p[train_frames:] of the prediction over frames HIST-1 onwards
+    # (Data.predict_response), so the test frames start HIST-1 frames after the last training frame.
+    pred = m(win[train:], training=False).numpy().ravel()
+    return float(np.corrcoef(pred, yy[train:])[0, 1])
+
+
+def fit_plane_components(asset_id: str, plane: int, comps: np.ndarray, temp5: np.ndarray, behavior: np.ndarray,
+                         seeds: np.ndarray, frame_duration: float) -> dict:
+    """Fit the CNN to the given components of one plane (CaImAn's calcium, on the 5 Hz base as
+    rwave_data_fit.py), one seed per fit. Returns the test correlations and the time of each fit."""
+    import time
+    import mine_data as md
+    with md.open_nwb(asset_id) as f:
+        C = f[f"processing/ophys/CaUnitRespones_Z{plane}/data"][:, np.sort(comps)]
+    order = np.argsort(np.argsort(comps))
+    C = C[:, order]
+    ca_t, i_t = md.time_base(C.shape[0], frame_duration)
+    X = prepare_predictors(temp5, behavior)
+    rs, ts = [], []
+    for j in range(len(comps)):
+        y = prepare_response(np.interp(i_t, ca_t, C[:, j]))
+        t = time.time()
+        rs.append(fit_and_test(X, y, int(seeds[j])))
+        ts.append(time.time() - t)
+    return dict(r=np.array(rs), t=np.array(ts))

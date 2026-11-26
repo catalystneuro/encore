@@ -210,7 +210,9 @@ def detect_bouts(metric: np.ndarray, min_frames: int, lo_thresh: float, zero_lim
 def behavior_5hz(bouts: np.ndarray, tail_t: np.ndarray, deriv: np.ndarray, tip: np.ndarray,
                  i_t: np.ndarray) -> np.ndarray:
     """Swim starts (count per 5 Hz bin), vigor and direction (per-bout sums placed at the start bin),
-    as bin_bout_starts and bin_time_discrete in rwave_data_fit.py. Returns 3 x len(i_t)."""
+    as bin_bout_starts and bin_time_discrete in rwave_data_fit.py. Returns 3 x len(i_t). When two
+    bouts start in the same 0.2 s bin the count adds and vigor and direction keep the later bout's
+    sum, as the code does (bin_time_discrete assigns, out[di] = np.sum(...); bin_bout_starts counts)."""
     out = np.zeros((3, i_t.size))
     if bouts.size == 0:
         return out
@@ -247,32 +249,82 @@ def lagged_corr(x: np.ndarray, Y: np.ndarray, lags: np.ndarray) -> np.ndarray:
     return out
 
 
-def heldout_shift_r(x: np.ndarray, Y: np.ndarray, offsets: np.ndarray, hist: int = 50, alpha: float = 1e-4) -> np.ndarray:
+def displaced(x_ext: np.ndarray, o: int, T: int) -> np.ndarray:
+    """The first T samples of x displaced by o samples (o > 0 delays x), without wrap-around: sample t
+    is x_ext[t - o], NaN where that lies outside x_ext. x_ext may run past T (an advance then reads
+    the samples after the end of imaging)."""
+    i = np.arange(T) - int(o)
+    out = np.full(T, np.nan)
+    ok = (i >= 0) & (i < x_ext.size)
+    out[ok] = x_ext[i[ok]]
+    return out
+
+
+def heldout_shift_r(x: np.ndarray, Y: np.ndarray, offsets: np.ndarray, hist: int = 50, alpha: float = 1e-4,
+                    x_ext: np.ndarray | None = None) -> np.ndarray:
     """Clock check by decoding with the labels shifted in time: Ridge regression (alpha 1e-4, as the
     paper's comparison model) of every component on the predictor x shifted by 0 to hist-1 samples,
     fit on the first two-thirds and scored by the test correlation on the last third; x is first
-    displaced by each offset (samples, circularly). Returns len(offsets) x n test correlations."""
+    displaced by each offset (samples; positive delays x). The displacement does not wrap around:
+    rows whose history reaches outside the trace are dropped. (Round 1 wrapped circularly, which put
+    a step into the last test rows for every advance and made the advanced curve collapse.) When
+    x_ext is given, it is x sampled on the same 5 Hz grid but continued past the end of imaging
+    (the temperature trace runs about 10.5 s longer), and advances read it instead of dropping rows.
+    Returns len(offsets) x n test correlations."""
     T = x.size
     tr = (T * 2) // 3
     out = np.full((offsets.size, Y.shape[1]), np.nan)
     Yv = Y[hist - 1:]
+    rows = np.arange(hist - 1, T)
+    src = x if x_ext is None else x_ext
     for i, o in enumerate(offsets):
-        xs = np.roll(x, int(o))
+        xs = displaced(src, int(o), T)
         Xm = np.stack([xs[h:T - hist + 1 + h] for h in range(hist)], axis=1)
-        Xm = (Xm - Xm[:tr].mean(0)) / (Xm[:tr].std(0) + 1e-9)
-        Xm = np.c_[np.ones(Xm.shape[0]), Xm]
-        ntr = tr - (hist - 1)
-        A = Xm[:ntr]
-        W = np.linalg.solve(A.T @ A + alpha * np.eye(A.shape[1]), A.T @ Yv[:ntr])
-        P = Xm[ntr:] @ W
-        Yt = Yv[ntr:]
+        ok = np.isfinite(Xm).all(1)
+        trm, tem = ok & (rows < tr), ok & (rows >= tr)
+        mu, sd = Xm[trm].mean(0), Xm[trm].std(0) + 1e-9
+        A = np.c_[np.ones(trm.sum()), (Xm[trm] - mu) / sd]
+        W = np.linalg.solve(A.T @ A + alpha * np.eye(A.shape[1]), A.T @ Yv[trm])
+        P = np.c_[np.ones(tem.sum()), (Xm[tem] - mu) / sd] @ W
+        Yt = Yv[tem]
         Pz = (P - P.mean(0)) / (P.std(0) + 1e-12)
         Yz = (Yt - Yt.mean(0)) / (Yt.std(0) + 1e-12)
         out[i] = (Pz * Yz).mean(0)
     return out
 
 
-CLOCK_OFFSETS = np.array([-150, -100, -50, -25, -10, -5, 0, 5, 10, 25, 50, 100, 150])  # samples at 5 Hz
+# Displacements of the temperature for the clock check, samples at 5 Hz: -15 to +10 s at 0.2 s steps
+# (the extra 10.5 s of temperature would put the best displacement near -10.5 s if it lay at the
+# start), and coarse steps out to +-30 s.
+CLOCK_OFFSETS = np.r_[-150, -100, np.arange(-75, 51), 75, 100, 150]
+
+
+def lm_test_r(P: np.ndarray, Y: np.ndarray, hist: int = 50, alpha: float = 1e-4) -> np.ndarray:
+    """The paper's linear comparison model, all components of a plane at once (rwave_data_fit.py,
+    analyze_experiment, and utilities.create_time_shifted_predictor_matrix at mine_pub 368d756): the
+    standardized predictors (T x m) shifted by 0 to hist-1 samples, the m*hist columns orthonormalized
+    by modified Gram-Schmidt, sklearn Ridge(alpha=1e-4) with an intercept fit on the first
+    train_frames rows of the shifted matrix and scored on the rows after them, train_frames being
+    two-thirds of the calcium frames (the code indexes the shifted matrix by it, as here). Y is the
+    T x n z-scored, smoothed calcium; returns the n test correlations."""
+    from mine_cnn import modified_gram_schmidt
+    T, m = P.shape
+    X = np.empty((T - hist + 1, m * hist))
+    for j in range(m):
+        for h in range(hist):
+            X[:, j * hist + h] = P[h:T - hist + 1 + h, j]
+    X = modified_gram_schmidt(X)
+    tr = (T * 2) // 3
+    y = Y[hist - 1:]
+    Xa, ya = X[:tr], y[:tr]
+    xm, ymu = Xa.mean(0), ya.mean(0)
+    Xc = Xa - xm
+    W = np.linalg.solve(Xc.T @ Xc + alpha * np.eye(Xc.shape[1]), Xc.T @ (ya - ymu))
+    pred = (X[tr:] - xm) @ W + ymu
+    yt = y[tr:]
+    pz = (pred - pred.mean(0)) / (pred.std(0) + 1e-12)
+    yz = (yt - yt.mean(0)) / (yt.std(0) + 1e-12)
+    return (pz * yz).mean(0)
 
 
 def plane_pass(asset_id: str, dandiset: str, p: int, with_movie: bool = True) -> dict:
@@ -292,11 +344,18 @@ def plane_pass(asset_id: str, dandiset: str, p: int, with_movie: bool = True) ->
         seg = tg["data"][:]
         tail_t = tg["timestamps"][:]
         cum = f[f"processing/behavior/Cumulative Tail Angle/TailCumAngle_Z{p}/data"][:]
+        tg_st = f[f"stimulus/presentation/Temperature_Z{p}/starting_time"]
+        clocks = dict(ca_start=float(ca["starting_time"][()]), temp_start=float(tg_st[()]),
+                      temp_rate=float(tg_st.attrs["rate"]), tail_first=float(tail_t[0]))
         pm, st, idx = masks(f, p)
         rois = f[f"processing/ophys/CaUnitRespones_Z{p}/rois"][:]
         proj = mean_projection(f, p, 0) if with_movie else None
         mshape = f[f"acquisition/Z{p}_0/data"].shape
         mshape1 = f[f"acquisition/Z{p}_1/data"].shape if f"Z{p}_1" in f["acquisition"] else None
+    dtail = np.diff(tail_t)
+    jump = int(np.argmax(np.abs(dtail - np.median(dtail))))
+    clocks.update(tail_max_step=float(dtail[jump]), tail_max_step_at=float(tail_t[jump]),
+                  tail_max_step_index=jump, tail_steps_over_1s=int(np.sum(np.abs(dtail) > 1)))
     deriv, sm = tail_metrics(seg)
     beh = {}
     nb = {}
@@ -313,7 +372,8 @@ def plane_pass(asset_id: str, dandiset: str, p: int, with_movie: bool = True) ->
                cum_matches_sum=float(np.nanmax(np.abs(seg.sum(1) - cum))), n_bouts=nb, behavior=beh,
                ca_min=float(C.min()), ca_max=float(C.max()), ca_nan=int(np.isnan(C).sum()),
                digest_ca=digest(C), digest_temp=digest(traw), digest_tail=digest(cum),
-               mask_x_max=int(pm["x"].max()) if pm.size else -1, mask_y_max=int(pm["y"].max()) if pm.size else -1)
+               mask_x_max=int(pm["x"].max()) if pm.size else -1, mask_y_max=int(pm["y"].max()) if pm.size else -1,
+               clocks=clocks, n_bins_multi_bout={k: int(np.sum(v[0] > 1)) for k, v in beh.items()})
     if proj is not None:
         br = component_brightness(pm, st, idx, proj)
         out["brightness"] = br
@@ -333,9 +393,19 @@ def plane_pass(asset_id: str, dandiset: str, p: int, with_movie: bool = True) ->
             # mismatch control: the temperature trace of the next plane of the same fish
             ro = lagged_corr(t5_other, Ci, lags)
             out["clock_temp_other_top"] = np.sort(np.abs(ro), axis=1)[:, -ntop:].mean(1)
-            ho = heldout_shift_r(t5, Ci, CLOCK_OFFSETS)
+            # the temperature on the 5 Hz grid over its whole length (it runs past the end of imaging)
+            t5_ext = np.interp(np.arange(int(traw.size / TEMP_RATE / DT)) * DT, np.arange(traw.size) / TEMP_RATE, traw)
+            ho = heldout_shift_r(t5, Ci, CLOCK_OFFSETS, x_ext=t5_ext)
             out["clock_ho_temp"] = np.sort(ho, axis=1)[:, -ntop:].mean(1)
             out["clock_ho_temp_mean"] = ho.mean(1)
+            out["clock_ho_offsets_s"] = CLOCK_OFFSETS * DT
+            # The linear comparison model of the paper on every bright component, under each bout reading
+            from mine_cnn import prepare_predictors
+            out["lm_r"] = {}
+            for name in BOUT_READINGS:
+                r_ = np.full(C.shape[1], np.nan)
+                r_[keep] = lm_test_r(prepare_predictors(t5, beh[name]).astype(np.float64), Ci)
+                out["lm_r"][name] = r_
             ho_o = heldout_shift_r(t5_other, Ci, CLOCK_OFFSETS[CLOCK_OFFSETS == 0])
             out["clock_ho_temp_other"] = float(np.sort(ho_o[0])[-ntop:].mean())
             s5 = beh[PRIMARY_BOUTS][0]
