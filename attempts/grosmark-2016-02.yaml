@@ -1049,6 +1049,22 @@ findings:
     The unit id rule is not stated in the data description.'
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:figs11-cluster-quality-similar
+- kind: data_missing
+  severity: major
+  datasets:
+  - '000044'
+  found: on_prompt
+  statement: The paper's derived data are not in the NWB files. No file holds anything under analysis, and no group,
+    table or units column holds candidate or ripple events, a place-cell list, sequence scores, per cell contributions
+    or rigid and plastic labels, so every selection of the paper has to be rebuilt and none can be checked against the
+    paper's own.
+  notebook: earlier_findings.ipynb
+  output: finding-derived-data
+- kind: methods_unavailable
+  about: paper
+  found: on_prompt
+  statement: Neither the paper nor DANDI:000044 links the paper's analysis code. The dandiset's related resources are
+    the two papers that describe it, and the NWB files name only the code that converted them to NWB (catalystneuro/buzsaki-lab-to-nwb).
 verifications:
 - date: '2026-11-26'
   kind: agent
@@ -1615,3 +1631,158 @@ verifications:
     response: Outcome kept as partially_reproduced, the outcome round 1 agreed with, and the change to not_reproduced
       left under proposed with the verifier's view added to its reason. The ripple-event intervals under L-b and S-b
       are an analysis not yet run, which waits for a new attempt; the result cell, the summary and the README say so.
+reconciliation:
+  earlier: grosmark-2016-01
+  date: '2026-11-26'
+  blind: true
+  findings:
+  - finding: 1
+    status: fixed
+    note: On 0.261106.0236 every position series stores a rate of 39.0625 to 39.0628 Hz, and its samples span the MAZE
+      epoch exactly in all eight files (earlier_findings.ipynb, cell finding-earlier-1). The earlier record already gave
+      0.261005.2101 as fixed_in.
+  - finding: 2
+    status: still_present
+    now: 2
+    note: This attempt's finding 2 reports the same session and values, the POST epoch of Gatsby_08022013 ending at 30413.6
+      s while the spikes, the LFP and the lab's states run to 32002.4 s.
+  - finding: 3
+    status: fixed
+    note: Every file now holds acquisition/neck_emg and acquisition/accelerometer at 1250 Hz (three channels each, one
+      EMG channel in Buddy_06272013), as the dandiset description lists (cell finding-earlier-3). Wide-band data are
+      still absent, but the description does not list them and the LFP's description says it is the wide-band signal
+      down-sampled by the lab.
+  - finding: 4
+    status: still_present
+    now: 14
+    note: No file holds anything under analysis, and no group, table or units column holds candidate or ripple events,
+      place cells, sequence scores, PCC values or rigid and plastic labels (cell finding-derived-data); this attempt
+      rebuilt all of them.
+  - finding: 5
+    status: partly_fixed
+    now: 15
+    note: The supplementary Materials and Methods were available to this attempt, whose claims file was written from
+      the PubMed Central author manuscript with its supplement. Analysis code is still not linked, since the dandiset's
+      related resources are the two papers and the files name only the NWB conversion code (cell finding-earlier-5).
+  - finding: 6
+    status: fixed
+    note: Electrodes are now located in the CA1 field of hippocampus, apart from the 8 extra sites in five files that
+      their groups describe as above CA1, and the 14 or 16 shank groups name the CA1 pyramidal layer; units carry hemisphere
+      and electrode group (cell finding-earlier-6). The age is still /, and the subject description now says the lab
+      did not record it.
+  - finding: 7
+    status: fixed
+    note: In the three circular-track files the description of the linearized position now says the rat ran mostly toward
+      decreasing position, reaching the reward at 0; from the samples, 0.522, 0.636 and 0.594 of them move lower and
+      0.212, 0.103 and 0.154 higher at more than 5 cm/s (cell finding-earlier-7).
+  outcomes:
+  - claim: fig1c-post-gt-pre
+    earlier: not_reproduced
+    cause: claims_changed
+    note: The earlier criteria fixed their own methods without the supplement, among them scoring each linear-track event
+      on the better of its two direction templates; pooled, that gave POST 0.763 against PRE 0.770 (p = 0.412), with
+      the lower-scoring circular-track sessions supplying 11161 of 23801 POST but 5912 of 16448 PRE events. The present
+      criterion takes events and scores from the supplement, each event scored on each direction's template, and gives
+      POST 0.311 against PRE 0.233, Tukey-Kramer p < 0.05 under all 24 readings. The earlier attempt also found POST
+      above PRE in 8 of 8 sessions and on each kind of track.
+    supports: reproduced
+    confidence: high
+  - claim: fig2b-strong-contributors
+    earlier: blocked
+    cause: claims_changed
+    note: The earlier criterion fixed its own PCC (|r| against 20 shifts of the cell's map, on the template the event
+      was selected for), which called 56.1% of cells significant with every map shifted, so that attempt blocked the
+      claim as methods_underspecified with 303 cells. The present criterion takes the cell-specific shuffle PCC of the
+      supplement and gives 246, 120, 212 and 86 against 216, 97, 190 and 71; under reading D-b, or with the kernel read
+      as its full width at half maximum, the counts come within tolerance, so no outcome can be said.
+    confidence: high
+  - claim: fig2-pre-post-overlap
+    earlier: blocked
+    cause: claims_changed
+    note: Blocked earlier because it depends on fig2b-strong-contributors, with 94.8% under the earlier PCC and 70.6%
+      under its best-template variant. With the supplement's PCC the overlap is 71.7% under D-a, within 73 +/- 7.3, and
+      54.1% under D-b, so the outcome rests on the direction reading of this attempt's finding 7.
+    confidence: high
+  - claim: fig2d-shuffle-high-dpcc
+    earlier: partially_reproduced
+    cause: claims_changed
+    note: With the earlier criterion's best-template scoring the pooled test found no replay before any shuffle (-0.008,
+      p = 0.916), so replay after shuffling the bottom 75% could not show (+0.022, p = 0.21); on the five linear-track
+      sessions alone it showed the claimed pattern (+0.101, +0.015 after the top 10%, +0.098 after the bottom 75%). The
+      present criterion asks at which percentage the bootstrapped POST - PRE rZ is first eliminated, and with replay
+      present at baseline (0.0772) finds 10% under five of six readings, with the bottom 75% shuffled still above zero.
+    confidence: medium
+  - claim: fig2e-remove-plastic
+    earlier: blocked
+    cause: claims_changed
+    note: Blocked earlier because it depends on fig2b-strong-contributors; its numbers already showed the claimed pattern
+      (plastic removed -0.168, p = 1.0; rigid removed +0.038, p = 0.019). The present criterion, with the supplement's
+      PCC and bootstrapped intervals, gives -0.0318 with the plastic cells removed and 0.102 with the rigid cells removed
+      under all six readings.
+    supports: reproduced
+    confidence: high
+  - claim: figs2-track-distribution
+    earlier: blocked
+    cause: claims_changed
+    note: Blocked earlier because it depends on fig2b-strong-contributors; its KS test found no difference (D = 0.145,
+      p = 0.072). The present criterion adds a rank-sum test of the distance to the nearer end, and neither finds a difference
+      (KS p 0.484, rank-sum p 0.0991 with the D-a groups; 0.833 and 0.264 with D-b).
+    supports: reproduced
+    confidence: high
+  - claim: fig3a-plastic-specificity
+    earlier: blocked
+    cause: claims_changed
+    note: Blocked earlier because it depends on fig2b-strong-contributors; plastic cells had more spatial information
+      (0.904 against 0.594 bits per spike, p = 1.9e-05) and not fewer fields (p = 0.073), one of its two measures. The
+      present criterion asks for six measures from the supplement and finds all six in the claimed direction, with four of the five specificity measures at p < 0.05 under D-a, and the number of fields again not (p 0.0641).
+    supports: partially_reproduced
+    confidence: high
+  - claim: fig3b-plastic-improve
+    earlier: blocked
+    cause: claims_changed
+    note: Blocked earlier because it depends on fig2b-strong-contributors; its measure, the change of the log in-field
+      over out-of-field ratio from the first to the last third of running, rose in both groups (plastic p = 0.0079, rigid
+      p = 0.030). The present criterion correlates three per-lap measures with lap number and finds plastic cells not
+      above zero under any (p 0.383 to 0.789) and rigid cells above zero under two. The measures and the rigid and plastic
+      groups both differ, so which result holds cannot be said.
+    confidence: medium
+  - claim: fig4a-rigid-faster
+    earlier: blocked
+    cause: claims_changed
+    note: Blocked earlier because it depends on fig2b-strong-contributors; rigid cells fired faster over the whole recording
+      without significance (0.700 against 0.591 Hz, p = 0.062). The present criterion asks for session-wide, PRE and
+      POST differences together; with the supplement's groups the whole recording gives 0.720 against 0.631 (p 0.108)
+      and PRE 0.652 against 0.532 (p 0.0659), so in both attempts rigid cells are faster without the significance the
+      criteria ask.
+    supports: not_reproduced
+    confidence: high
+  - claim: rate-split-medians
+    earlier: partially_reproduced
+    cause: claims_changed
+    note: The earlier criterion fixed the sleep rate as the non-REM rate, which gave a low-rate median of 0.435 Hz, outside
+      0.39 +/- 0.039, while its variant over all of PRE and POST gave 0.395 and 1.041. The present criterion takes the
+      offline rate (read as NREM, Intermediate and Drowsy time in the yoked windows) over 573 place cells per direction
+      where the earlier split 417 cells, and all six readings give medians within tolerance (0.392 and 1.104 for the
+      first).
+    supports: reproduced
+    confidence: medium
+  - claim: fig4d-slow-sequences
+    earlier: not_reproduced
+    cause: claims_changed
+    note: With the earlier criterion's best-template scoring the pooled test found no replay with all cells (-0.008)
+      nor with either half (-0.024 and -0.049); on the linear tracks both halves replayed (+0.077, and +0.044 with p
+      = 0.018). Under the present criterion only the low-rate half replays (0.046, interval 0.0158 to 0.0768; high-rate
+      -0.00306), with a different place-cell set (573 per direction against 417) and rate split, so which pattern holds
+      cannot be said.
+    confidence: medium
+  protocol: The earlier attempt was made under pilot-7 and this one under pilot-19. pilot-8 added quotes and statistics
+    to claims. pilot-9 required the full text with its supplement and took every method from the paper, running every
+    reading it allows. pilot-10 had a reader, who never sees the data, write the claims and an author test them without
+    changing them. Together these replaced the earlier claims file, whose author fixed the place-cell, event, scoring
+    and PCC methods without the supplement, with one written from the supplement with readings for each open choice;
+    every criterion of the eleven claims whose outcomes differ changed with it, and that is the main cause of each difference.
+    pilot-12 made this attempt blind and added this reconciliation. pilot-13 raised the notebook limit to 60 minutes,
+    which the 50-minute notebook of this attempt needed. pilot-14 filed records by paper, so this attempt used CRCNS
+    hc-11 beside DANDI:000044, with one claims file for both, and took spikes, positions and states from hc-11. Under
+    pilot-18 and pilot-19, named in the protocol but not in the pilot notes, findings about the data carry a severity
+    and the cell that shows them, which the earlier record's findings lack (its ratings are in findings_review).
