@@ -6,21 +6,29 @@ rats, and on [DANDI:000629](https://dandiarchive.org/dandiset/000629/0.240627.06
 neurofeedback cohort the paper deposited. Both hold raw 30 kHz signals, head position, port events
 and statescript logs, with no LFP, SWR detections, spikes or decodes.
 
+Claims on DANDI:000115 (9 claims: 5 tested, 4 blocked):
+
 | Claim | Outcome |
 |---|---|
 | Control trial counts per rat (2490, 2629, 2027, 3021) | Reproduced |
 | Control epoch and trial counts of the replay analyses | Partially reproduced |
-| Control post-reward dwell time increases with experience | Partially reproduced |
+| Control post-reward dwell time increases with experience | Partially reproduced (assumption) |
 | Control head speed below 4 cm/s before reward | Reproduced |
 | Control search efficiency increases over epochs | Reproduced (assumption) |
-| Pre-reward time matched between NF and delay trials | Partially reproduced (three rats) |
+| 4 claims on the control cohort's SWRs and replay | Blocked: too large |
+
+Claims whose data are elsewhere, tested on DANDI:000629 (26 claims: 7 tested, 19 blocked):
+
+| Claim | Outcome |
+|---|---|
+| Pre-reward time matched between NF and delay trials | Partially reproduced (three rats); not reproduced proposed |
 | Post-reward dwell shorter on NF trials, about half of control | Partially reproduced (three rats) |
 | Head speed below 4 cm/s, lower on NF trials | Partially reproduced (three rats) |
 | Search efficiency higher than control on delay trials | Not reproduced |
 | Redundant search trials balanced between NF and delay | Not reproduced |
 | Repeat accuracy unchanged | Partially reproduced (three rats) |
 | Repeat errors balanced between NF and delay | Partially reproduced (three rats) |
-| 23 claims on SWRs and replay | Blocked: too large |
+| 19 claims on the neurofeedback cohort's SWRs and replay | Blocked: too large |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

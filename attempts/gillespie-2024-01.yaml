@@ -97,9 +97,10 @@ outcomes:
     over the 166.9 h of control run epochs is 1082 GB, which at the measured 2 to 3 MB/s per stream
     would take about 7 h with 16 parallel streams, and h5py reads below 2 MB/s together in one
     process whatever the number of threads (cell too-large-estimate). The electrode table gives
-    location None for every channel; the electrode groups give ca1 (about 20 of 32 tetrodes),
-    bad_ca1, reference, dead or lost, which does not say which tetrodes are in the cell layer, so
-    the tetrode set would also be an assumption.
+    location None for every channel; in the file of cell finding-no-lfp-no-ca1-labels the electrode
+    groups give ca1 for 23 of 32 tetrodes, bad_ca1 for 4, an empty location for 3, can1ref for 1 and
+    lost for 1, which does not say which tetrodes are in the cell layer, so the tetrode set would
+    also be an assumption.
 - claim: fig2s1a-trigger-size-increase
   outcome: blocked
   blocked_by: too_large
@@ -145,11 +146,12 @@ outcomes:
   notes: Needs offline SWR detection on DANDI:000115 (see fig2s1c-control-prereward-swr-counts).
     A per-rat sign on a subset of epochs was considered (round-1 verification). h5py reads the
     raw series over the stream at below 2 MB/s together whatever the number of threads; with
-    parallel HTTP range requests, 180 s of one channel of 10 ca1 tetrodes took about 2 min to read and
-    decimate, so one run epoch per control rat (the least this criterion needs) is about 1 h in
-    four processes and two epochs about 2 h (cell too-large-estimate), before detection, over the
-    notebook limit with the rest of the notebook. A run of one session in preparation, outside the
-    notebook, did not finish within 60 min.
+    parallel HTTP range requests, 180 s of one channel of 10 ca1 tetrodes took 97 s to read and
+    decimate in the final run (110 s in the round-2 run), so one run epoch per control rat (the
+    least this criterion needs) is 0.8 h of reading in four processes (cell too-large-estimate),
+    before detection; with the rest of the notebook (about 8 min) this is at the notebook limit of
+    60 min (docs/protocol.md, Author, step 3), and the read rate over the stream varies between
+    runs.
 - claim: fig2b-control-timecourse
   outcome: blocked
   blocked_by: too_large
@@ -158,7 +160,8 @@ outcomes:
   notes: Needs offline SWR detection on DANDI:000115 (see fig2s1c-control-prereward-swr-counts).
     The criterion keeps bins with more than 100 trials, so a subset needs about two run epochs
     per control rat (about 90 trials each); reading and decimating 10 ca1 tetrodes of them is
-    estimated at about 2 h in four processes (cell too-large-estimate), over the notebook limit.
+    estimated at 1.6 h in four processes (cell too-large-estimate), over the notebook limit of 60
+    min.
 - claim: fig2b-manipulation-timecourse
   outcome: blocked
   blocked_by: too_large
@@ -197,8 +200,8 @@ outcomes:
   - The NF port is the R port, shown by the yoked delays (90% of W-port waits within 0.1 s of one
     of the 8 previous R-port waits, 7.9% the other way); the files do not say which port is which.
   - Leaving the port is not defined by the paper; the last beam-off before the next port visit is
-    adopted (assumption, see fig2s1h-control-dwell-increases), and the first exit longer than 200 ms
-    is run as a variant, with the same outcome.
+    adopted here (assumption), and the first exit longer than 200 ms is run as a variant, with the
+    same outcome. fig2s1h-control-dwell-increases runs both readings and adopts neither.
   - The mixed models are fit by maximum likelihood, the default of MATLAB fitlme, with Wald z
     p-values where fitlme gives t-based ones; the same holds for every claim that uses them.
 - claim: fig2s1h-control-dwell-increases
@@ -213,7 +216,10 @@ outcomes:
     is fixed by the paper or its code, so the outcome is the one both give, positive r in at least
     three rats (changed from reproduced after the round-1 verification). The question is recorded
     for the paper's authors (finding 8).
+  assumed: true
   deviations:
+  - The trials come from the trial parser written here (assumption, see
+    control-cohort-trial-counts). assumed was removed after round 1 and restored after round 2.
   - Leaving the port (leaveRW) is set by the unpublished trial parser. Two readings are run, the
     first exit longer than the statescript's 200 ms allowance (proxTime) and the last beam-off
     before the next port visit. The Methods ("from initial center port nosepoke to exit from the
@@ -229,8 +235,9 @@ outcomes:
   output: claim:fig3a-speed-below-immobility
   assumed: true
   notes: Holds in all three rats that can be tested. Every rat and trial type is below 4 cm/s (the
-    largest median 3.02 cm/s, a control rat at 0.1 s smoothing; neurofeedback medians at most 2.17
-    cm/s). NF trials are slower than delay trials in gus, bernard and fievel (corrected p at most
+    largest median 3.02 cm/s, a control rat at 0.1 s smoothing; the medians of the neurofeedback
+    cohort's NF and delay trials are at most 2.19 cm/s under every smoothing and plateau reading,
+    2.17 under the adopted one). NF trials are slower than delay trials in gus, bernard and fievel (corrected p at most
     0.0004 under every smoothing and plateau reading), and slower than control trials (mixed model
     -1.17 cm/s at 0.1 s smoothing, p below 1e-5; -0.56 cm/s at 0.5 s, p = 0.00002). The same holds
     with the pre-reward period started at the entry after the last withdrawal over 200 ms (largest
@@ -243,8 +250,8 @@ outcomes:
     data do not confirm it. With it, the x range of the head positions per run epoch has median
     112.6 cm and range 105.8 to 158.7 cm in 000629, against median 115.7 cm and range 107.6 to
     119.2 cm in 000115 (cell sanity after the plateau table). The NF against delay tests do not
-    depend on the scale, and the largest neurofeedback median (2.17 cm/s) stays below 4 cm/s
-    under a scale up to 80% larger.
+    depend on the scale, and the largest median of the neurofeedback cohort (2.19 cm/s) stays below
+    4 cm/s under a scale up to 80% larger.
   - Speed smoothing is not given by the paper (done upstream of its code); Gaussian sd 0.1, 0.25
     and 0.5 s are run, with the same outcome.
   - Rats 2 to 4 only, and the plateau readings of fig2e-postreward-dwell.
@@ -333,8 +340,9 @@ outcomes:
     0.301 under reading a; 0.156, 0.295, 0.224, 0.334 under reading b). No single correlation has
     p below 0.05 (smallest 0.058); the paper reports no statistic and calls the increase subtle.
     An epoch's first goal is the previous epoch's last goal in 8 of the 59 epochs that follow
-    another run epoch of the same day; they hold 39 of the 3201 search trials, so a goal carried
-    over between epochs does not bear on the result.
+    another run epoch of the same day; they hold 39 of the 3201 search trials. Without these 8
+    epochs r stays positive in all four rats (0.116, 0.357, 0.301, 0.302 under reading a; 0.119,
+    0.338, 0.248, 0.323 under reading b).
   deviations:
   - All run epochs (the criterion's variant), as gooddecode is not marked.
   - Task phases from the rules written here (see control-decode-counts and fig5a-search-efficiency).
@@ -348,7 +356,9 @@ outcomes:
     search), while bernard (0.500, p = 1.0) and fievel (0.500, p = 0.83) do not. Under the final 7
     and final 10 days no rat reaches p below 0.05 (smallest 0.26), which would be reproduced for
     the three rats. The outcome rests on the epoch selection; the paper's test for rat 2 used 14
-    epochs.
+    epochs. For gus the matched reading covers 5 days (26 to 30), below the 7 to 10 days of the
+    Methods; it is adopted because its trial counts (688 NF, 643 delay) match the Figure 2C legend
+    (684, 640) within 1%, which the final 7 days (914, 940) and 10 days (1312, 1331) do not.
   deviations:
   - Rats 2 to 4 only, plateau and redundant-search readings as in fig5a-search-efficiency.
 - claim: fig5c-repeat-accuracy-unchanged
@@ -388,6 +398,15 @@ outcomes:
     16.1% and gus's and fievel's -1.1% and 7.8%, again two of three. Both trial types are longer
     than control trials (mixed models +3.83 s, p = 2.0e-08; +3.12 s, p = 6.35e-05). Rat 1 (remy)
     cannot be tested.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion asks for the NF and delay medians to differ by less than 10% in all four
+      rats and names no partial level, the rule by which fig5b-redundant-search-balanced is judged
+      not reproduced. Under the adopted plateau reading bernard differs by 10.2%, and by 16.1% with
+      the pre-reward period started after the last withdrawal over 200 ms (cell
+      claim:fig1s1c-prereward-dwell-matched), so by the same rule the claim is not reproduced. Both
+      verification rounds gave not_reproduced; the recorded outcome stays until a third round
+      reviews this change.
   deviations:
   - Rats 2 to 4 only, plateau readings as in fig2e-postreward-dwell.
   - The pre-reward period starts at the first entry at the port after the home reward (Methods,
@@ -400,10 +419,12 @@ findings:
   statement: DANDI:000115 holds, per session, the raw 30 kHz signal of 128 channels, head position,
     port events and statescript logs, with no LFP, SWR detections, sorted units or decodes, so
     every SWR or replay analysis of the paper starts from the raw data (9.1 TB). The electrode
-    table gives location None for every channel; the electrode groups give ca1, bad_ca1,
-    reference, dead or lost per tetrode, without saying which ca1 tetrodes are in the cell layer
+    table gives location None for every channel; the electrode groups give a location per tetrode
+    (in the file printed, ca1 for 23 of 32, bad_ca1 for 4, empty for 3, can1ref for 1 and lost for
+    1), without saying which ca1 tetrodes are in the cell layer
     on which the paper detects SWRs. (Corrected after the round-1 verification, which found the
-    group locations; the first statement said the tetrodes could not be identified at all.)
+    group locations; the first statement said the tetrodes could not be identified at all. The
+    group counts were corrected after the round-2 verification.)
   notebook: reproduce_gillespie_2024.ipynb
   output: finding-no-lfp-no-ca1-labels
 - kind: metadata_insufficient
@@ -437,8 +458,11 @@ findings:
   about: data
   severity: minor
   statement: In DANDI:000629 every position series has a conversion factor of 0 (meters), so the
-    pixel coordinates cannot be converted from the metadata; the scale of DANDI:000115 (0.2 cm per
-    pixel) gives the same maze size. All 29 sessions of remy have session_start_time 1970-01-01.
+    pixel coordinates cannot be converted from the metadata. At the 0.2 cm per pixel of
+    DANDI:000115 the x range of the head positions per run epoch has median 112.6 cm in 000629
+    against 115.7 cm in 000115, but a wider spread (105.8 to 158.7 cm against 107.6 to 119.2 cm), so
+    the scale is not confirmed by the data. (Corrected after the round-2 verification; the statement
+    said this scale gives the same maze size.) All 29 sessions of remy have session_start_time 1970-01-01.
   notebook: reproduce_gillespie_2024.ipynb
   output: finding-nf-metadata
 - kind: metadata_insufficient
@@ -618,4 +642,152 @@ verifications:
     outcome: partially_reproduced
     reason: 'Cell 45: at most 1 rat has p < 0.05 under every reading, and it is fievel, the same rat as the
       paper''s p = 0.0227. Rat1 untested.'
+    response: No change.
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook after the round-1 revision, with its conclusions and summary, the
+    helper module, the claims file and the attempt record, with the paper under paper/. The verifier gave
+    outcomes for the same claims as in round 1 and did not review the other 18 data-elsewhere claims, which are
+    blocked. No finding is rated critical, and the verifier would raise none to critical (it found the major
+    ratings of findings 4 and 6 and the minor ratings of findings 1, 2, 3 and 5 right), so the round has no
+    findings to record. Points not tied to one claim. Finding 5 said the 0.2 cm per pixel scale gives the same
+    maze size, which cell 15 contradicts; the statement is corrected. The summary said "about 1 to 9 TB of
+    streaming per cohort" where cell 19 gives 16.8 TB for decoding in 000629; it now says 1 to 17 TB, and cell
+    too-large-estimate prints the 16.8 TB. On problem 1, the README and the notebook header and summary now list
+    the claims on 000115 and the data-elsewhere claims tested on 000629 under separate headings with their
+    counts (9 claims, 5 tested; 26 claims, 7 tested). After this round the notebook was re-run; the outcomes are unchanged, and a change of
+    outcome for fig1s1c-prereward-dwell-matched is proposed for a third round.'
+  results:
+  - claim: control-cohort-trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21. The assumption is the trial parser written here, and it is stated. Cell 3 now shows only 3
+      control trials with a withdrawal over 200 ms.'
+    response: No change.
+  - claim: control-decode-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 24: 3 of 4 rats within tolerance for both 4E and 4G. The assumption is stated.'
+    response: No change.
+  - claim: fig2s1h-control-dwell-increases
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 27: under leaving reading (a) 3 rats have positive r, under reading (b) 4 do. assumed was
+      removed, but the trials still come from the written parser, as in the two claims above that keep assumed:
+      true. It should be restored.'
+    response: assumed restored, with a deviation saying the trials come from the trial parser written here.
+  - claim: fig3a-control-speed
+    agrees: true
+    outcome: reproduced
+    reason: Cell 30. The stated assumptions (smoothing, parser) are reasonable.
+    response: No change.
+  - claim: fig5s1-control-search-efficiency-increases
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 33. The assumption about task-phase rules is stated. Separately (problem list, item 4), "too few
+      to move the correlations" / "does not bear on the result": the 39 carried-over search trials are printed,
+      but the correlations are not re-run without those 8 epochs; the statement is plausible but not shown.'
+    response: 'No change of outcome. The cell now re-runs the correlations without the 8 epochs whose first goal
+      was carried over: r stays positive in all four rats under both readings (0.116 to 0.357), and the
+      conclusion and notes give these numbers in place of the unshown statement.'
+  - claim: fig2s1c-control-prereward-swr-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Agreed (blocked). Separately (item 6), the notes give the groups as "ca1, bad_ca1, reference, dead or
+      lost" and "about 20 of 32"; cell 9 shows ca1 23, bad_ca1 4, empty 3, can1ref 1, lost 1. No "dead" group
+      appears, and ca1 is 23.'
+    response: No change of outcome. The notes, finding 1, the notebook header, the markdown before cell 9 and the
+      summary now give the group counts cell 9 prints.
+  - claim: fig4g-control-replay-glm
+    agrees: true
+    outcome: blocked
+    reason: Agreed (blocked).
+    response: No change.
+  - claim: fig4s1-replay-glm-pre-post
+    agrees: true
+    outcome: blocked
+    reason: Agreed (blocked), for the control part.
+    response: No change.
+  - claim: fig2s1f-control-rate-increase
+    agrees: true
+    outcome: blocked
+    reason: 'Accept, with a reservation. Now based on a measured rate (cell 19, 180 s of 10 tetrodes in 110 s; two
+      epochs per rat about 1.8 h in four processes). Three gaps: the "about 1 h for one epoch per rat" figure is
+      derived and not printed; the notebook time limit is not in my materials; "A run of one session ... did
+      not finish within 60 min" is shown by no output.'
+    response: 'No change of outcome. Cell too-large-estimate now prints the one-epoch-per-rat estimate (0.8 h of
+      reading in four processes in the final run, 97 s for the 180 s excerpt) and the notebook limit of 60 min,
+      which the markdown before it cites (docs/protocol.md, Author, step 3). The sentence about the run outside
+      the notebook is removed, as no output shows it. With the rest of the notebook (about 8 min) and the
+      detection still to run, one epoch per rat is at the limit and the read rate varies between runs (110 s
+      and 97 s for the same excerpt). Testing it now would be a change of outcome resting on an analysis not
+      yet run, which docs/protocol.md (Hand over for verification) leaves to a new attempt.'
+  - claim: fig2b-control-timecourse
+    agrees: true
+    outcome: blocked
+    reason: Accept, with a reservation, as for fig2s1f-control-rate-increase (the estimate rests on the notebook
+      time limit, which is not in my materials).
+    response: No change of outcome. The notes give the printed estimate (1.6 h of reading in four processes for two
+      epochs per rat) and the 60 min limit, which the notebook now states.
+  - claim: fig1s1c-prereward-dwell-matched
+    agrees: false
+    outcome: not_reproduced
+    reason: 'fig1s1c and fig5b are judged by opposite rules. For fig5b the author argues that the criterion "names
+      no partial level", so one rat failing means not_reproduced. The fig1s1c criterion also names no partial
+      level ("Reproduced when ... less than 10% in all four rats"), yet the record calls it partially_reproduced
+      with 2 of 3 rats within 10%. Applying the author''s own fig5b rule, fig1s1c is not_reproduced. The other
+      reading of the claim fails too: with the pre-reward period started after the last withdrawal, bernard
+      moves further out, to 16.1% (cell 36). The two claims should be judged by the same rule.'
+    response: 'The outcome stays partially_reproduced, as an outcome may not change in this round, and the change
+      to not_reproduced is proposed under proposed on the outcome: the verifier''s argument holds, and the rule
+      applied to fig5b gives not_reproduced here. The analysis behind it is the existing output of cell
+      claim:fig1s1c-prereward-dwell-matched; its conclusion now states the proposal.'
+  - claim: fig2e-postreward-dwell
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 39: the NF/control inset ratio is 0.36 to 0.39 under every reading. Separately (item 7), the
+      deviation says the leaving time is "adopted (assumption, see fig2s1h-control-dwell-increases)";
+      fig2s1h no longer adopts a reading.'
+    response: No change of outcome. The deviation now says the last beam-off is adopted for this claim as an
+      assumption, with the other reading as a variant, and that fig2s1h runs both and adopts neither.
+  - claim: fig3a-speed-below-immobility
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 42. The 0.2 cm/px scale is stated as an assumption, and the margin is given. Separately (items 1
+      and 5): cells 14 and 43 say the x range of the head positions per run epoch is wider in 000629 than in
+      000115, but cell 15 prints 000629 [105.8, 106.9, 112.6, 116.6, 158.7] against 000115 [107.6, 112.8,
+      115.7, 117.9, 119.2]; the median range in 000629 is smaller, only the spread and the maximum are larger.
+      "neurofeedback medians at most 2.17 cm/s" is shown only for the matched plateau, and the text applies it
+      more widely.'
+    response: 'No change of outcome. Cells 14 and 43 now say the median x range is smaller in 000629 and the
+      spread and maximum larger. Cell 42 now prints the largest median of the neurofeedback cohort''s NF and
+      delay trials under every reading: 2.19 cm/s at most (2.17 under the adopted reading), still below 4 cm/s
+      under a scale 80% larger; the conclusion and notes give these numbers.'
+  - claim: fig5a-search-efficiency
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 47: the delay model gives p = 0.60 to 0.80 under reading (a) and 0.062 to 0.14 under (b).'
+    response: No change.
+  - claim: fig5b-redundant-search-balanced
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Accepting the author''s rule: the criterion names no partial level. The "matched" plateau decides
+      fig5b. For gus that reading is 5 days, below the Methods'' 7 to 10. Under last7 and last10 no rat is
+      significant (cell 50). The record says the outcome rests on the epoch selection, but not that the adopted
+      reading falls outside the Methods'' range for this rat (problem 4).'
+    response: 'No change of outcome. The notes and the conclusion now say that the matched reading covers 5 days
+      for gus, below the Methods'' 7 to 10, and why it is kept: its trial counts (688 and 643) match the Figure
+      2C legend (684 and 640) within 1%, which the final 7 days (914, 940) and 10 days (1312, 1331) do not. The
+      legend counts are the paper''s own statement of the trials analysed, so they are kept as the better
+      supported reading.'
+  - claim: fig5c-repeat-accuracy-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 53.
+    response: No change.
+  - claim: fig5d-repeat-errors-balanced
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 56.
     response: No change.
