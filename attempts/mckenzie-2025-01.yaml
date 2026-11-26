@@ -1,0 +1,383 @@
+schema_version: 3
+id: mckenzie-2025-01
+datasets:
+- archive: dandi
+  id: "000552"
+  version: 0.230630.2304
+  doi: 10.48324/dandi.000552/0.230630.2304
+  relation: reuses
+paper: doi:10.7554/elife.105183
+date: 2026-11-26
+entry: mckenzie-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-19
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/encorescience/encore-registry/actions/runs/45862924456
+inputs:
+- what: CellExplorer putative cell types of every unit (units/putative_cell_type) and the environment names
+    of the epochs (intervals/epochs/environment), read from a later version of the same dandiset. The pinned
+    version has neither. The helper checks, file by file, that the later version's spike index is identical
+    to the pinned one before taking the labels, and the spike times were compared at both ends of every file
+    while preparing. The labels select the pyramidal cells (claims file E3) and name the environments.
+  source: DANDI:000552 version 0.261113.1035, doi:10.48324/dandi.000552/0.261113.1035
+outcomes:
+- claim: figs1a-desipramine
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The fiber photometry recordings are not in DANDI:000552, which holds the Huszar et al. (2022)
+    electrophysiology only. The paper has no data availability statement. A search of the DANDI archive for
+    GRAB-NE, norepinephrine hippocampus, McKenzie and event boundaries found no dandiset of these recordings
+    (001865 holds cortical GRAB-NE imaging from another lab).
+- claim: figs1b-yohimbine
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: fig1d-arena-decay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: figs1e-univariate-covariates
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: fig1e-arena-time-from-transition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: fig2c-track-time-from-transition
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: figs2-no-reward-modulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: fig3d-object-introduction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: figs3-object-order-and-sampling
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: fig4b-novel-object-on-track
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: fig5d-decay-hastens-with-days
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: figs4-behavior-day1-day2
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The DeepLabCut behaviour of the photometry mice is not deposited (see figs1a-desipramine).
+- claim: fig6-recent-history
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Photometry recordings not deposited (see figs1a-desipramine).
+- claim: ne-and-settling-time-course
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The NE half of the comparison is in the undeposited photometry recordings. The settling half is
+    tested by fig7e-novel-settling, fig7f-familiar-settling and fig7g-familiar-more-similar-early, all
+    reproduced; per-minute nearest-neighbour means rise from 0.393 to about 0.50 by minute 7 in novel runs
+    and from 0.430 to about 0.52 by minute 3 in familiar runs.
+- claim: ephys-ensemble-size
+  outcome: reproduced
+  notebook: settling.ipynb
+  output: claim:ephys-ensemble-size
+  measured:
+  - 259.38
+  - 191
+  - 363
+  notes: Under reading (b), all units, the eight tested sessions give a mean of 259.38 units (191 to 363),
+    within tolerance. The nine sessions with a familiar run and a tracked novel run give 253.78 (191 to 363),
+    the paper's numbers. Under reading (a), pyramidal cells only, the mean is 215.75 (158 to 318) over the
+    eight sessions and 211.00 over nine, outside the tolerance. The paper's count therefore matches all
+    units of nine sessions, while its Methods analyze only pyramidal cells and its tests have 8 sessions
+    (see the paper_inconsistency finding).
+  deviations:
+  - Sessions are those of claims file E1 found in the dataset (eight with a familiar run and a novel run of
+    at least 660 s); e13-26m1-211116, whose novel run is 344 s long, is added as a variant.
+- claim: figs6b-decorrelation-novel
+  outcome: not_reproduced
+  notebook: settling.ipynb
+  output: claim:figs6b-decorrelation-novel
+  notes: In the novel run the decay rate (1/tau) of minute 1 is not higher than that of minute 10 under any
+    reading. With 60 s windows the mean difference is +0.022 1/s (t(7) = 0.18, p = 0.865; minute 1 faster in
+    3 of 8 sessions) with minute 10 at 600 s and -0.001 (p = 0.987) at 540 s; with 100 s windows +0.119 (p =
+    0.25) and +0.096 (p = 0.234). On the seven sessions with clock-checked tracking +0.073 (p = 0.603). No fit
+    gave a time constant under 10 ms.
+  deviations:
+  - Pyramidal cells are those the later version 0.261113.1035 labels Pyramidal Cell (CellExplorer), the
+    pinned version having no labels (claims file E3).
+  - The paper's "100-s moving average" was read in the two ways the criterion names; both are shown.
+  - Units with no spike in the first 1000 s, where their z-score is undefined, are dropped (1 or 2 units in
+    a few runs, listed in the notebook).
+- claim: figs6d-decorrelation-familiar
+  outcome: reproduced
+  notebook: settling.ipynb
+  output: claim:figs6d-decorrelation-familiar
+  notes: Under the judged reading (60 s windows, minute 10 at 600 s) the familiar run's minute 1 decay rate
+    exceeds minute 10's by +0.062 1/s, t(7) = 0.78, p = 0.459, not significant. The other readings give p =
+    0.401 to 0.72. The contrast the paper draws with the novel run is not seen, as the novel run shows no
+    difference either (figs6b-decorrelation-novel).
+  deviations:
+  - As figs6b-decorrelation-novel.
+- claim: fig7ab-umap-embedding
+  outcome: partially_reproduced
+  assumed: true
+  notebook: settling.ipynb
+  output: claim:fig7ab-umap-embedding
+  notes: Under the claim's seed the 2D embedding predicts the linearized position better than the
+    block-shuffled position in 7 of 8 novel runs (R^2 0.185 to 0.717 against -0.194 to -0.108 shuffled),
+    and in 7 or 8 of 8 under all five seeds; the exception is e16-3m2-211211, whose tracking is misfiled.
+    First-minute bins are farther from the embedding's median than later bins in 1 of 8 sessions, and in 0
+    or 1 of 8 under all five seeds, so by this measure moments just after transfer are not at the periphery.
+    The position part holds and the periphery part does not.
+  deviations:
+  - The paper gives no UMAP parameters and no measure; the claims file's measures were used, with umap-learn
+    defaults.
+  - UMAP is run on every fifth 100 ms bin of the first 1000 s of each novel run (2000 vectors), to keep the
+    five seeds within the time limit.
+  - Position is the linearized position in cm; the x, y position is not in cm in five of the novel runs.
+    This is an assumption, as the paper shows a 2D location.
+- claim: fig7e-novel-settling
+  outcome: reproduced
+  assumed: true
+  notebook: settling.ipynb
+  output: claim:fig7e-novel-settling
+  notes: In the novel run the smoothed nearest-neighbour correlation of minute 1 is lower than that of minute
+    10 by 0.104 (t(6) = -4.07, p = 0.0066, over all bins with minute 10 at 600 s). e13-26m1-211119 enters only
+    from minute 2, as its tracking starts 63 s after the epoch start. Every combination of the E5, E6 and
+    session-set readings gives p of 0.0261 or less. Variants not judged; with time counted from the first
+    tracked frame 0.106 (t(7) = -6.44, p = 0.000355); neighbours from other visits only, t(6) = -6.77, p =
+    0.000508; all units, t(6) = -3.93, p = 0.00771; 1 x 1 cm bins of (x, y), possible in 4 novel runs only,
+    0.112 (t(3) = -2.83, p = 0.0663). The "several minutes" part is not judged; the session means rise from
+    0.393 in minute 1 to about 0.50 by minute 7.
+  deviations:
+  - Location bins are 1 cm bins of the linearized position. The Methods bin the location in 1 x 1 cm
+    (Place field detection), but the x, y position of five of the nine novel runs is in 0 to 1 units, so
+    the 2D reading can be run only on runs whose x, y are in cm; it is shown as a variant. This is an
+    assumption and the outcome rests on it.
+  - The Gaussian of the 1 s smoothing is taken as a standard deviation of 1 s, a standard choice for a
+    detail averaged over 60 s windows.
+  - In e16-3m2-211211 the novel-run tracking is filed in the open-field epoch (finding); the main reading
+    keeps it as filed, as the paper's eight sessions, and the seven other sessions are shown.
+- claim: fig7f-familiar-settling
+  outcome: reproduced
+  assumed: true
+  notebook: settling.ipynb
+  output: claim:fig7f-familiar-settling
+  notes: In the familiar run minute 1 is lower than minute 10 by 0.089 (t(7) = -5.74, p = 0.0007), p of
+    0.0053 or less under every combination of readings. With 1 x 1 cm (x, y) bins, possible in all eight
+    familiar runs, 0.084 (t(7) = -4.78, p = 0.00202).
+  deviations:
+  - As fig7e-novel-settling; here the 2D reading of the Methods could be run on every session and agrees.
+- claim: fig7g-familiar-more-similar-early
+  outcome: reproduced
+  assumed: true
+  notebook: settling.ipynb
+  output: claim:fig7g-familiar-more-similar-early
+  notes: Familiar minute 1 is higher than novel minute 1 by 0.037 over all bins (t(6) = 2.58, p = 0.0415) and by
+    0.079 above 5 cm/s (t(5) = 4.56, p = 0.0061). On the seven clock-checked sessions it is 0.036 (p = 0.0887)
+    over all bins and 0.082 (p = 0.017) above 5 cm/s. From the first tracked frame 0.056 (t(7) = 5.54, p =
+    0.000867); with (x, y) bins, on 4 sessions, 0.073 (p = 0.0417). The faster settling in the familiar run is
+    not judged; its mean reaches 0.52 by minute 3, the novel mean about 0.50 by minute 7.
+  deviations:
+  - As fig7e-novel-settling.
+- claim: figs7ab-in-field-out-field
+  outcome: partially_reproduced
+  assumed: true
+  notebook: settling.ipynb
+  output: claim:figs7ab-in-field-out-field
+  notes: In-field deviations rise over the first 10 minutes in both environments (reading a, novel +0.0231
+    per minute, t(7) = 2.98, p = 0.0207, familiar +0.0212, p = 0.017; reading b, p = 5.68e-05 and 0.000378).
+    Out-of-field deviations fall in the familiar run (reading a -0.0048 per minute, p = 0.00107; reading b
+    -0.0047, p = 0.00402) but not in the novel run (+0.0001, p = 0.966; reading b +0.0017, p = 0.387). The seven
+    clock-checked sessions give the same pattern. The claim holds in the familiar run and only in part in the
+    novel run.
+  deviations:
+  - Place maps use 1 cm bins of the linearized position (see fig7e-novel-settling), an assumption.
+  - Units with no field bin above 5 Hz are left out (27 to 209 units with a field per run).
+  - The per-session slope and the one-sample t-test are the claims file's standard choices, as the paper
+    gives no test.
+- claim: figs7cd-movement-not-time-locked
+  outcome: not_reproduced
+  assumed: true
+  notebook: settling.ipynb
+  output: claim:figs7cd-movement-not-time-locked
+  notes: In the novel run the movement differences of the nearest neighbours fall with time after transfer.
+    Under the judged reading (3 neighbours, Kalman filter, all bins, first 600 s) the mean Spearman correlation
+    is -0.110 for |dvel|NN (t(7) = -5.42, p = 0.0010) and -0.103 for |dacc|NN (t(7) = -5.77, p = 0.0007). In the
+    familiar run there is none (-0.016, p = 0.537; -0.005, p = 0.842). Over the 16 novel combinations of
+    readings 14 find a relationship at p < 0.05 (the other two p = 0.054 and 0.055); none of the 16 familiar
+    ones does.
+  deviations:
+  - Speed and acceleration are taken along the linearized path (its length per second); the x, y position
+    is not in cm in five novel runs. The Kalman filter's noise settings are standard choices, as the paper
+    gives none for the electrophysiology.
+  - Judged under the first reading of each open detail (3 neighbours, Kalman, all bins), as a claim of
+    absence is judged on one test; this choice is the assumption the outcome rests on, and two of the
+    sixteen novel combinations would not find the relationship.
+- claim: figs7ef-time-explains-similarity
+  outcome: not_reproduced
+  notebook: settling.ipynb
+  output: claim:figs7ef-time-explains-similarity
+  notes: Under no reading is time the only variable whose removal significantly worsens the prediction in
+    both environments. With the photometry model's form, 3 neighbours and the Kalman filter, dropping |dvel|NN
+    raises the CVMSE by 7.76% in the novel run (t(7) = 3.50, p = 0.0100) and 6.96% in the familiar run (p =
+    0.0003); dropping time raises it by 7.31% in the novel run (p = 0.0290) and 1.00% in the familiar run (p =
+    0.6086); dropping |dacc|NN does not matter (p = 0.67 and 0.51). The linear model and the other readings
+    give the same pattern (dropping |dvel|NN p of 0.0321 or less, dropping time in the familiar run p of 0.379
+    or more).
+  deviations:
+  - The photometry model's complexity penalty (lambda = 0.001, form not given) is left out; bounded least
+    squares replaces fmincon. The tau bounds of the photometry Methods (0.1 to 0.001 and 0.001 to 0.0001) are
+    read as decay rates per second.
+  - The model is fit on every tenth 100 ms bin (1 s steps) of the whole run, as the series is smoothed with a
+    1 s Gaussian; the paper does not say which bins enter.
+- claim: figs7gh-unconditioned-similarity
+  outcome: reproduced
+  notebook: settling.ipynb
+  output: claim:figs7gh-unconditioned-similarity
+  notes: Under reading (a), the 3 most correlated vectors anywhere in the run, minute 1 is lower than minute
+    10 in the novel run (-0.0236, t(7) = -3.01, p = 0.0198) and the familiar run (-0.0378, t(7) = -4.66, p =
+    0.00231), and with minute 10 at 540 s (p = 0.00301 and 0.000807). Reading (b), the mean correlation with
+    all other vectors, is near 0 in every window (-0.0016 to 0.0023), since each unit is z-scored and the
+    vectors average to about zero, and finds no difference (p = 0.13 and 0.604).
+- claim: fig8b-late-moments-reactivated
+  outcome: not_reproduced
+  notebook: reactivation.ipynb
+  output: claim:fig8b-late-moments-reactivated
+  notes: The false positive rate of the procedure is 0.001 (0.00093 to 0.00107 by session), the paper's.
+    Under the main reading (pre (a), z-scored vectors, pool (a)) post ripples reactivate 0.232% of
+    first-minute moments and 0.209% of moments at 10 to 11 minutes (late minus early -0.0236 percentage
+    points, t(7) = -1.40, p = 0.204). Under the five seeds the difference is -0.0148 to -0.0243 (p 0.189 to
+    0.387). No other reading finds late moments more reactivated at p < 0.05 (raw counts +0.0305, p = 0.1976;
+    pooled shuffles -0.0108, p = 0.509, and -0.0167, p = 0.2911). Without e16-3m2-211211, -0.0263 (p = 0.219).
+  deviations:
+  - The ripples are those deposited in the files (Huszar et al. 2022, 20 to 195 ms); the broadband LFP the
+    Methods detect them from is only in the raw files (120 to 180 GB each) and was not read.
+  - The moments are the 100 ms bins of minute 1 and of minutes 10 to 11 (1200 per run), not the whole run.
+  - The readings of E10 are run one at a time around a main reading (pre (b) also with pool (b)), not fully
+    crossed, to keep the notebook near half an hour.
+  - Each unit's values are permuted across the ripples of the pool, independently for each unit and
+    shuffle; a ripple reactivates a moment when its R is above all 1000 shuffles, which gives the paper's
+    false positive rate of 0.001.
+- claim: fig8d-familiar-no-difference
+  outcome: not_reproduced
+  assumed: true
+  notebook: reactivation.ipynb
+  output: claim:fig8d-familiar-no-difference
+  notes: The judged test finds a difference in the familiar run, with early moments reactivated more than late
+    ones (0.247% against 0.221%, -0.0255 percentage points, t(7) = -3.72, p = 0.0074), under all five seeds (p
+    0.0043 to 0.0074). The other readings find no difference (raw counts p = 0.7383, pooled shuffles p = 0.1497
+    and 0.2352). The difference is about a tenth of the reactivation rate, and opposite in sign to the novel
+    effect the paper reports.
+  deviations:
+  - As fig8b-late-moments-reactivated.
+  - The criterion judges absence under E10 (a) with z-scored vectors but does not name the shuffle pool; the
+    pool of the ripple's own set, the first the claims file lists, was used. With pre and post pooled the
+    difference is not significant, so the outcome rests on this choice.
+- claim: fig8-no-pre-reactivation
+  outcome: not_reproduced
+  notebook: reactivation.ipynb
+  output: claim:fig8-no-pre-reactivation
+  notes: Pre ripples reactivate on average 0.1334% of moments in the novel runs and 0.1461% in the familiar runs,
+    above the 0.1% false positive rate (one-sided t(7) = 2.82, p = 0.0129, and 7.90, p = 4.93e-05), under all
+    five seeds (p 0.0111 to 0.0132, and below 0.0001) and under every other reading (p of 0.0377 or less). Post
+    ripples reactivate more (0.2206% and 0.2342%), so the track patterns are more present in post than in pre
+    ripples, but they are not absent from pre ripples.
+  deviations:
+  - As fig8b-late-moments-reactivated; the mean is over the 1200 moments of minutes 1 and 10 to 11.
+findings:
+- kind: metadata_insufficient
+  severity: major
+  statement: The units of the pinned version carry no cell type (only clu_id, group_id and unit_name), and the
+    epochs carry no names, so pyramidal cells and the home cage, familiar and novel periods cannot be told
+    apart from the files. Session e13-26m1-211116 has no epochs table at all. Version 0.261113.1035 adds the
+    CellExplorer cell types, waveform metrics and the environment of each epoch, with identical spike times.
+  versions:
+  - 0.230630.2304
+  fixed_in: 0.261113.1035
+  notebook: settling.ipynb
+  output: finding-no-cell-types
+- kind: metadata_error
+  severity: critical
+  statement: In session e16-3m2-211211 the tracking and the 45 trials of the novel linear track
+    (linear_manu) are filed from 9575 to 11203 s, inside the epoch the later version names an open field
+    (openField_thomas, 9559 to 12002 s). Spikes carry no spatial information about this position at any
+    shift (0.246 bits per spike at zero shift, 0.245 to 0.256 at shifts of 5 and 30 s), while every other
+    run peaks at zero shift. Moved by 5564.5 s onto the epoch the later version names linear_manu (15124 to
+    16771 s), the same tracking gives 0.656 bits per spike at zero shift against 0.252 and 0.271 at 30 s. The
+    later version files its linear_manu tracking at the same wrong times.
+  versions:
+  - 0.230630.2304
+  - 0.261113.1035
+  notebook: settling.ipynb
+  output: finding-tracking-misfiled
+- kind: metadata_error
+  severity: minor
+  statement: The x, y position of five novel runs (e13-26m1-211019, 211116, 211119, e15-13f1-220120,
+    e16-3m2-211213) spans 0 to 1 while the series states cm; the familiar runs span 0 to about 92 cm. The
+    linearized position is in cm in all runs. The later version no longer states cm for these series but gives
+    no scale either.
+  versions:
+  - 0.230630.2304
+  fixed_in: 0.261113.1035
+  notebook: settling.ipynb
+  output: finding-position-not-cm
+- kind: data_missing
+  severity: major
+  statement: The pinned version has no tracking of the open-field environments. Three sessions
+    (e13-26m1-211124, e15-13f1-220117, e16-3m2-211210), whose only novel environment is an open field by the
+    later version's labels, have one tracked run, and in four sessions with two novel environments only one is
+    tracked. The later version adds the open-field tracking, in the lab's units without a scale.
+  versions:
+  - 0.230630.2304
+  fixed_in: 0.261113.1035
+  notebook: settling.ipynb
+  output: sanity
+- kind: other
+  about: data
+  severity: minor
+  statement: In the eight tested sessions tracking starts 14.6 to 63.3 s after the start of the maze epochs (63.3 s in the novel run of
+    e13-26m1-211119), and the files do not say when the mouse was placed in the maze, so the time of
+    transfer is known only to within this delay.
+  notebook: settling.ipynb
+  output: sanity
+- kind: metadata_error
+  severity: minor
+  statement: In three files (e13-26m1-211124, e15-13f1-220117, e16-3m2-211210) the description of the
+    behavior module lists its recordings as single letters ("a, l, t, e, r, n, a, t, i, o, n").
+  versions:
+  - 0.230630.2304
+  fixed_in: 0.261113.1035
+  notebook: settling.ipynb
+  output: finding-behavior-description
+- kind: paper_inconsistency
+  statement: The ensemble size the Results give (mean 253.8 neurons, range 191 to 363) is the count of all
+    units in the nine sessions of these mice that have a tracked novel run, while the Methods say only
+    pyramidal cells were analyzed (mean 211.0 over the same sessions) and every test has 7 degrees of freedom,
+    8 sessions. The Methods list 3 linear tracks, 3 figure-eight mazes and 1 arena, 7 environments for 8
+    sessions; the dataset's eight usable sessions hold 3 figure-eight mazes, 4 linear tracks and 1 session
+    whose novel epoch is an open field holding linear-track tracking.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors, as the paper links no code. (1) Is the location of the
+    nearest-neighbour search the 2D position or the linearized one, given that the x, y position of five
+    novel runs is not in cm? (2) Which eight sessions, and which open-field or track run in sessions with two
+    novel environments? (3) Is a speed filter applied to the nearest-neighbour search and the place field
+    deviations? (4) What is the "100-s moving average" of the decorrelation analysis? (5) Which 30 min of
+    ripples are "pre", are the track vectors z-scored for reactivation, and is the shuffle pool the pre or post
+    set or both? (6) What is the model form for Figure S7E and F, and over which bins? (7) What thresholds
+    separate pyramidal cells? The attempt adopted the first reading listed in the claims file for each, ran the
+    others, and marks the outcomes that depend on a choice as assumed.
