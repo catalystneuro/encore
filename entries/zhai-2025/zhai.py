@@ -168,11 +168,12 @@ def icephys_file(asset):
     return som, den
 
 
-def per_cell_somatic(sweeps):
-    """One row per cell and condition: first sweep of each step, rheobase, summed spikes 20-300 pA."""
+def per_cell_somatic(sweeps, keep="first"):
+    """One row per cell and condition: one sweep of each step (the first, or with keep="last" the
+    last), rheobase, summed spikes 20-300 pA."""
     s = sweeps.sort_values("start")
     key = ["path", "cell", "condition"]
-    first = s.drop_duplicates(key + ["step_pA"], keep="first")
+    first = s.drop_duplicates(key + ["step_pA"], keep=keep)
     out = []
     for k, g in first.groupby(key):
         g = g.sort_values("step_pA")
@@ -192,8 +193,8 @@ def per_cell_somatic(sweeps):
 BG_RED, BG_GREEN = 55.0, 161.0
 
 
-def _site_trace(h, rows, col):
-    """Average over trials of the background-subtracted, 6-sample smoothed ROI profile."""
+def _site_trace(h, rows, col, bg):
+    """Average over trials of the background-subtracted (bg), 6-sample smoothed ROI profile."""
     traces, dts = [], []
     for _, r in rows.iterrows():
         st, n, ser = r[col]
@@ -211,7 +212,6 @@ def _site_trace(h, rows, col):
     if not traces:
         return None, None, 0
     n = min(len(x) for x in traces)
-    bg = BG_RED if "Alexa" in col or "alexa" in col else BG_GREEN
     sm = [pd.Series(x[:n] - bg).rolling(6).mean().to_numpy() for x in traces]
     return np.nanmean(np.vstack(sm), axis=0) if len(sm) > 1 else sm[0], float(np.median(dts)), len(sm)
 
@@ -245,8 +245,8 @@ def dendritic_file(asset, h=None):
     t = t[t.site.str.contains("Prox|Dist")]
     sites = {}
     for (cell, cond, site), g in t.groupby(["cell_id", "condition", "site"]):
-        r, dt, ntr = _site_trace(h, g, "red")
-        gr, _, _ = _site_trace(h, g, "grn")
+        r, dt, ntr = _site_trace(h, g, "red", BG_RED)
+        gr, _, _ = _site_trace(h, g, "grn", BG_GREEN)
         if r is None:
             continue
         area, g0, r0, late = _areas(r, gr, dt)

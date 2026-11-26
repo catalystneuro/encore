@@ -33,7 +33,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/zhai-2025-03.yaml`](../../attempts/zhai-2025-03.yaml).
 
-- `reproduce_zhai_2025.ipynb`: the analysis. It takes about eight minutes, most of it streaming
+- `reproduce_zhai_2025.ipynb`: the analysis. It takes about seven minutes, most of it streaming
   the files.
 - `zhai.py`: loading the files, spike counts and rheobase, the dendritic index, the Sr2+-oEPSC
   detector, the GRAB-ACh3.0 areas, the AIM scores and the paper's tables, with where each
