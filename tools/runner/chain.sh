@@ -387,7 +387,10 @@ elif [ -n "$REPLICATE" ]; then
 elif [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
   log "main has checked claims; skipping the claims and their check"
   [ "${CLAIMS_ONLY:-}" = 1 ] && { rm -f "$mark"; end "$d CLAIMS MERGED (already on main)"; exit 0; }
-elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
+# A chain given a version keeps the paper's claims file: it is a repeat attempt on a new version of the dataset.
+# A first attempt has none to keep, whether or not a version was named (costabile-2023 on 2026-11-25: four run
+# requests named their published versions, the claims were never read, and the author found nothing to test).
+elif [ -z "$VERSION" ] || [ "$deprecated" = true ] || ! git cat-file -e "origin/main:claims/$d.yaml" 2>/dev/null; then
   step claims
   fetch
   # The reader writes no claims file when the paper's text is not enough to read them from (a missing
