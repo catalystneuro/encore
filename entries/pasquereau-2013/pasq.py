@@ -39,9 +39,18 @@ Methods, Data analysis.
   exceeds 5 deg/s in the torque's direction within 0 to 200 ms, peak velocity over 0 to 200 ms,
   amplitude the largest displacement over 0 to 300 ms, all signed so that the torque's direction
   is positive. Flexion torque moves the angle to positive values (checked in the notebook).
+  Variants of the onset, not deciding: the same filter with the velocity required to be at or
+  below threshold over the 20 ms before onset, and a causal 2nd-order Butterworth at 25 Hz (a
+  standard choice) with the same requirement. The forwards-backwards filter spreads the rise of
+  the velocity to earlier times, which these variants avoid.
 - EMG (claims): session-average trace for flexion torques less its mean over the 200 ms before
   onset; m1 = mean over 15 to 40 ms, m2 = mean over 41 to 80 ms; a response starts at the first
-  ms from 10 to 150 ms above 2 SD of the baseline and lasts while it stays above.
+  ms from 10 to 150 ms above 2 SD of the baseline and lasts while it stays above. A variant
+  averages only the perturbations whose command pulse is in a given range (`command_range`).
+- Reading `trial_sd` of the detection (not deciding): the same detection with the SD of all
+  single-trial SDF values over the baseline in place of the SD of the trial-averaged SDF. The
+  Methods describe the test only as "comparing SDF values (millisecond-by-millisecond) during a
+  post-torque epoch (200-ms) relative to a cell's baseline firing rate (2-tailed t-test)".
 """
 
 from __future__ import annotations
@@ -128,6 +137,11 @@ def load_file(path: str, url: str) -> dict:
             "onset": tr["torque_perturbation_onset_time"][:],
             "movement": _str(tr["movement_type"][:]),
             "source_file": _str(tr["source_file"][:]),
+            "target_amplitude": tr["target_amplitude_degrees"][:],
+            "mov_onset": tr["derived_movement_onset_time"][:],
+            "mov_end": tr["derived_movement_end_time"][:],
+            "derived_peak_velocity": tr["derived_peak_velocity"][:],
+            "derived_amplitude": tr["derived_movement_amplitude"][:],
         })
         u = h["units"]
         spikes = _ragged(u, "spike_times")
@@ -143,11 +157,22 @@ def load_file(path: str, url: str) -> dict:
         acq = h["acquisition"]
         out = {"path": path, "session": h["general/session_id"][()].decode(),
                "date": h["session_start_time"][()].decode()[:10], "trials": trials,
-               "units": units, "pert": pert, "emg": {}, "angle": None, "torque_cmd": None}
+               "units": units, "pert": pert, "emg": {}, "angle": None, "torque_cmd": None,
+               "velocity": None}
         if "ElbowAngle" in acq:
             ts = acq["ElbowAngle/timestamps"][:]
-            out["angle"] = _windows(ts, acq["ElbowAngle/data"][:, 0], pert.onset.values,
-                                    ANGLE_WINDOW_MS)
+            angle = acq["ElbowAngle/data"][:, 0]
+            out["angle"] = _windows(ts, angle, pert.onset.values, ANGLE_WINDOW_MS)
+            # Angle at the trials table's voluntary movement onset and end, to check the angle's
+            # scale against derived_movement_amplitude and the target distance.
+            for col in ["mov_onset", "mov_end"]:
+                t = trials[col].values
+                j = np.clip(np.searchsorted(ts, np.nan_to_num(t)), 0, len(ts) - 1)
+                trials["angle_at_" + col] = np.where(np.isfinite(t), angle[j], np.nan)
+            vel = h.get("processing/behavior/ElbowVelocity")
+            if vel is not None:
+                out["velocity"] = _windows(vel["timestamps"][:], vel["data"][:], pert.onset.values,
+                                           ANGLE_WINDOW_MS)
             out["torque_cmd"] = _windows(ts, acq["ElbowTorque/data"][:], pert.onset.values,
                                          TORQUE_WINDOW_MS)
             for ch in EMG_CHANNELS:
@@ -205,11 +230,14 @@ def ms_index(t_ms: int) -> int:
     return t_ms - SPIKE_WINDOW_MS[0]
 
 
-def detect(mean_sdf: np.ndarray, zero_ms: int = 0) -> dict:
-    """Response of one trial-averaged SDF around `zero_ms` (0 = torque onset, -600 = pseudo)."""
+def detect(mean_sdf: np.ndarray, zero_ms: int = 0, sd: float | None = None) -> dict:
+    """Response of one trial-averaged SDF around `zero_ms` (0 = torque onset, -600 = pseudo).
+    `sd` replaces the SD of the trial-averaged SDF's baseline (the claims file's) in the
+    threshold, for the `trial_sd` reading (SD of all single-trial baseline values)."""
     z = ms_index(zero_ms)
     base = mean_sdf[z - BASELINE_MS:z]
-    mu, sd = base.mean(), base.std(ddof=1)
+    mu = base.mean()
+    sd = base.std(ddof=1) if sd is None else sd
     lo, hi = mu - T_CRIT * sd, mu + T_CRIT * sd
     post = mean_sdf[z:z + EPOCH_MS + 200]
     outside = (post > hi) | (post < lo)
@@ -244,24 +272,40 @@ def detect(mean_sdf: np.ndarray, zero_ms: int = 0) -> dict:
 # ---------------------------------------------------------------- kinematics and EMG
 
 _FIR = signal.firwin(FIR_TAPS, LOWPASS_HZ, fs=1000.0, window="hamming")
+# Causal variant of the onset (not deciding): a 2nd-order Butterworth low-pass at the same 25 Hz,
+# applied forwards only, so that the velocity never rises before the joint moves (a standard
+# choice; its delay, about 9 ms at low frequencies, is added to every onset alike).
+_BUTTER = signal.butter(2, LOWPASS_HZ, fs=1000.0)
+QUIET_MS = 20                  # variants: velocity at or below threshold over the 20 ms before onset
+
+
+def _onset(vel: np.ndarray, z: int, quiet: bool) -> float:
+    if quiet and (vel[z - QUIET_MS:z + 1] > VELOCITY_THRESHOLD).any():
+        return np.nan
+    above = np.where(vel[z:z + 200] > VELOCITY_THRESHOLD)[0]
+    return float(above[0]) if len(above) else np.nan
 
 
 def kinematics(angle_windows: np.ndarray, directions: np.ndarray) -> pd.DataFrame:
-    """Per perturbation: onset latency (ms), peak velocity (deg/s), amplitude (deg)."""
+    """Per perturbation: onset latency (ms), peak velocity (deg/s), amplitude (deg), and for the
+    onset the velocity at torque onset and two variants: `latency_quiet`, the same filter with the
+    velocity required to be at or below threshold over the 20 ms before onset (NaN otherwise),
+    and `latency_causal`, the causal filter with the same requirement."""
     z = -ANGLE_WINDOW_MS[0]
     rows = []
     for a, d in zip(angle_windows, directions):
         if np.isnan(a).any():
-            rows.append((np.nan, np.nan, np.nan))
+            rows.append((np.nan,) * 6)
             continue
         s = 1.0 if d == "flexion" else -1.0
         filt = signal.filtfilt(_FIR, [1.0], a)
         vel = s * np.gradient(filt) * 1000.0
         disp = s * (filt - filt[z])
-        above = np.where(vel[z:z + 200] > VELOCITY_THRESHOLD)[0]
-        rows.append((float(above[0]) if len(above) else np.nan,
-                     float(vel[z:z + 200].max()), float(disp[z:z + 300].max())))
-    return pd.DataFrame(rows, columns=["latency", "peak_velocity", "amplitude"])
+        causal = s * np.gradient(signal.lfilter(*_BUTTER, a - a[0])) * 1000.0
+        rows.append((_onset(vel, z, False), float(vel[z:z + 200].max()), float(disp[z:z + 300].max()),
+                     float(vel[z]), _onset(vel, z, True), _onset(causal, z, True)))
+    return pd.DataFrame(rows, columns=["latency", "peak_velocity", "amplitude", "velocity_at_0",
+                                       "latency_quiet", "latency_causal"])
 
 
 def emg_measures(windows: np.ndarray) -> dict:
@@ -338,6 +382,12 @@ def cell_responses(files: list[dict]) -> pd.DataFrame:
                     r[f"{d}_{k}"] = v
                 for k, v in detect(m, -PSEUDO_SHIFT_MS).items():
                     r[f"pse_{d}_{k}"] = v
+                # Reading `trial_sd` (not deciding): the threshold from the SD of all single-trial
+                # SDF values over the baseline, the reading that meets the paper's false-positive
+                # rate (see pseudo_readings).
+                z = ms_index(0)
+                for k, v in detect(m, 0, sd=float(S[:, z - BASELINE_MS:z].std(ddof=1))).items():
+                    r[f"tsd_{d}_{k}"] = v
                 # Variant of the claims file: one-sample t-test of the single-trial SDFs against
                 # the baseline mean at each ms (not deciding).
                 z = ms_index(0)
@@ -421,23 +471,42 @@ def session_kinematics(files: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame]:
         z = -TORQUE_WINDOW_MS[0]
         cmd = x["torque_cmd"]
         k["command"] = sign * (cmd[:, z + 10:z + 50].mean(1) - cmd[:, :z].mean(1))
+        # Peak of the file's own ElbowVelocity series over 0 to 200 ms, signed as above
+        if x["velocity"] is not None:
+            za = -ANGLE_WINDOW_MS[0]
+            k["file_peak_velocity"] = (sign[:, None] * x["velocity"][:, za:za + 200]).max(1)
         k["direction"], k["file"], k["session"] = dirs, fi, x["session"]
         k["post"] = bool(x["units"].post.iloc[0])
         rows.append(k)
     trials = pd.concat(rows, ignore_index=True)
     sessions = (trials.groupby(["file", "session", "post", "direction"])
-                [["latency", "peak_velocity", "amplitude", "command"]].mean().reset_index())
+                [["latency", "peak_velocity", "amplitude", "command", "latency_quiet",
+                  "latency_causal"]].mean().reset_index())
     return trials, sessions
 
 
-def session_emg(files: list[dict], channels=TRICEPS, direction: str = "flexion") -> pd.DataFrame:
+def command_size(x: dict) -> np.ndarray:
+    """Pulse size of each perturbation's torque command (see session_kinematics)."""
+    z = -TORQUE_WINDOW_MS[0]
+    sign = np.where(x["pert"].torque.values == "flexion", 1.0, -1.0)
+    cmd = x["torque_cmd"]
+    return sign * (cmd[:, z + 10:z + 50].mean(1) - cmd[:, :z].mean(1))
+
+
+def session_emg(files: list[dict], channels=TRICEPS, direction: str = "flexion",
+                command_range: tuple[float, float] | None = None) -> pd.DataFrame:
     """EMG measures of each session and channel for one torque direction. A channel is used when
     no window holds a NaN; `baseline_sd` (of the session-average trace) and `raw_sd` (of the
-    single-trial baseline samples) are given for the inclusion rule."""
+    single-trial baseline samples) are given for the inclusion rule. With `command_range`, only
+    perturbations whose command pulse lies in that range are averaged. `level` is the mean raw
+    value over the baseline (A/D units)."""
     rows = []
     z = -EMG_WINDOW_MS[0]
     for fi, x in enumerate(files):
         sel = x["pert"].torque.values == direction
+        if command_range is not None and x["torque_cmd"] is not None:
+            c = command_size(x)
+            sel &= (c >= command_range[0]) & (c <= command_range[1])
         if sel.sum() == 0:
             continue
         for ch in channels:
@@ -448,5 +517,6 @@ def session_emg(files: list[dict], channels=TRICEPS, direction: str = "flexion")
             m = emg_measures(w) if not has_nan else {}
             rows.append({"file": fi, "session": x["session"], "post": bool(x["units"].post.iloc[0]),
                          "channel": ch, "n": int(sel.sum()), "has_nan": has_nan,
-                         "raw_sd": float(np.nanstd(w[:, z - EMG_BASELINE_MS:z], ddof=1)), **m})
+                         "raw_sd": float(np.nanstd(w[:, z - EMG_BASELINE_MS:z], ddof=1)),
+                         "level": float(np.nanmean(w[:, z - EMG_BASELINE_MS:z])), **m})
     return pd.DataFrame(rows)

@@ -29,11 +29,14 @@ The response detection the claims file specifies crosses its threshold in 23% of
 at a pseudo onset, about 20 times the paper's stated 1%, so the claims that rest on the selection
 of responses are blocked; their results are shown in the notebook. The torque command's pulses are
 about three times larger after MPTP than before, and the evoked displacements are faster and
-larger after MPTP, the reverse of the paper's. The attempt record, with the reasons and the
+larger after MPTP, the reverse of the paper's; the angle's scale agrees with the task's 20 degree
+targets and with the files' own velocity series, so this is in the data. The shorter latency of
+the evoked movement after MPTP holds with a causal filter as well as with the claims file's, and
+the EMG results hold at matched torque commands. The attempt record, with the reasons and the
 differences from the paper's method, is
 [`attempts/pasquereau-2013-03.yaml`](../../attempts/pasquereau-2013-03.yaml).
 
-- `reproduce_pasquereau_2013.ipynb`: the analysis. It takes about seven minutes, most of it
+- `reproduce_pasquereau_2013.ipynb`: the analysis. It takes about eleven minutes, most of it
   streaming the files.
 - `pasq.py`: loading the files, spike density functions, response detection, kinematics and EMG
   measures, with where each parameter comes from. Other notebooks on this dandiset can import it.
