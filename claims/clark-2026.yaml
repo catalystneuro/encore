@@ -1,0 +1,729 @@
+# Claims for Clark, Abbott & Sompolinsky (2026), Nature Neuroscience, "Symmetries and continuous
+# attractors in disordered neural circuits", doi:10.1038/s41593-026-02452-4, on dandiset 000939.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-26,
+# protocol pilot-18 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read. The version of record (PDF supplied by a person, extracted to text): main text,
+# figure legends, Methods, Data and Code availability and the Reporting Summary, and the
+# Supplementary Information PDF (41593_2026_2452_MOESM1_ESM.pdf, Supplementary Notes 1 to 4 with
+# Supplementary Figs. 1 to 16). No figure page was opened; no number below is read from a figure.
+#
+# Data the paper used, as it reports them. Recordings of Duszkiewicz et al. (Nat. Neurosci. 2024)
+# from the postsubiculum of freely moving mice, DANDI 000939 (version cited 0.240528.1542). 31
+# recording sessions, one per mouse, 2,691 units, of which 1,533 carry the dataset's
+# head-direction label (significant head-direction information against a time-reversed control,
+# a label set by the original authors and distributed with the dataset). Only the epoch of
+# square-environment exploration is analysed (tag wake_square in the NWB epochs table). Nine mice
+# also had an optogenetic epoch, recorded separately and never analysed; they contribute 315 of
+# the 1,533 cells. Where a session has a file named +ogen.nwb, ring/data.py reads that file and
+# takes the wake_square epoch from it. Measured variables used are the head direction
+# (processing/behavior/CompassDirection/head-direction, with timestamps), the spike times of each
+# unit, and the unit labels is_head_direction (and is_excitatory, is_fast_spiking). The four mice
+# with most head-direction cells are A3707 (117), A3716 (93), A3711 (90) and A3706 (86).
+# Fig. 2k and Fig. 7c use the head-direction trace of A3707 as an angular velocity input.
+#
+# Code read. github.com/davidclark1/symmetries-continuous-attractors at commit
+# 245726fa78457e10cdcf17e6be36fba1dec98061 (11 August 2026; archived as Zenodo
+# doi:10.5281/zenodo.21829584). It holds the package ring (data.py builds tuning curves from the
+# NWB files; analysis.py the centers of mass, peak counts, flip symmetry, information and the
+# Kuiper test; gp_opt.py the generative-process fit; data_driven.py and regression.py the
+# data-derived network; dmft.py the mean-field theory) and eleven notebooks, one per figure group
+# (data_and_generative_model for Figs. 1, 3, 4, 5 and S13; data_driven_attractor and
+# closing_the_loop for Fig. 2; spectra for Fig. 6; dmft for Fig. 7; grid_sims for Fig. 8 and
+# S15; weight_matrix_analyses for S1 to S4 and S10; data_driven_reconstruction for S7 to S9 and
+# S14; spurious_fixed_points for S11 and S12). The notebooks print the Kuiper results and the
+# fitted parameters. The paper's cached intermediate results are on Zenodo,
+# doi:10.5281/zenodo.21827768 (the code's README gives 21827767), including the tuning curves
+# mouse_data/tc_data.npz.
+#
+# Method choices the Methods leave open and the code settles (ring/data.py,
+# notebooks/data_and_generative_model.ipynb). Head direction is binned as floor(hd / (2 pi /
+# 100)); each head-direction sample counts as one 10-ms time bin; the epoch runs from the
+# timestamp nearest the wake_square start to that nearest its stop; untracked (NaN) samples are
+# dropped. Spikes are counted in 10-ms bins from the epoch start. The eight segments are
+# contiguous chunks of the epoch's head-direction samples, alternating between the two
+# partitions. Zero-rate bins are set to 1e-3 times the curve's mean before smoothing. The
+# smoothing widths are 100 values, logspace(-1, 2, 100) bins, applied with a circular
+# (wrap-around) Gaussian filter; for each partition the width maximising the Poisson
+# log-likelihood of the other partition's 10-ms spike counts is kept; the final curve is the mean
+# of the two partitions' smoothed curves. Units are kept when is_head_direction is true and the
+# final curve is not all zero; each curve is then divided by its mean over the 100 bins. The
+# center of mass uses the grid 2 pi (a - 1) / 100. These curves are used for every statistic and
+# for the generative-process fit; the network construction adds two further steps
+# (Supplementary Note 3, section 8.1).
+#
+# Details none of the paper, supplement or code fixes, and that a criterion needs, are named as
+# open in the criteria below with the readings the text allows. They are, in short, the measures
+# of agreement and the thresholds behind words such as "comparable", "match", "approaches",
+# "tracks", "a few" and "within ~1 s".
+schema_version: 2
+paper: doi:10.1038/s41593-026-02452-4
+claims:
+- id: hd-cell-selection
+  kind: link
+  statement: The dandiset holds the 31 sessions, one per mouse, with 2,691 units, of which 1,533
+    carry the head-direction label; nine of the mice, which also underwent optogenetic
+    manipulation in a separate epoch, contribute 315 of those cells; the four mice with most
+    head-direction cells have 117, 93, 90 and 86.
+  source: Methods, Statistics and reproducibility, Sample size and Data exclusions; Fig. 2 legend;
+    Supplementary Fig. 13 legend
+  quote: The size of the dataset was fixed by the original study, namely 31 recording sessions, 1
+    per mouse, comprising 2,691 units, of which Ndata = 1,533 were classified as head-direction
+    cells
+  data: dataset
+  expected:
+  - quantity: sessions (mice)
+    value: 31
+    tolerance: 0
+  - quantity: units in all sessions
+    value: 2691
+    tolerance: 0
+  - quantity: units carrying the head-direction label
+    value: 1533
+    tolerance: 0
+  - quantity: head-direction cells in the nine mice with an optogenetic epoch
+    value: 315
+    tolerance: 0
+  - quantity: head-direction cells of mouse A3707
+    value: 117
+    tolerance: 0
+  criterion: Counts are taken from the units tables of the NWB files, one file per session (the
+    +ogen.nwb file where a session has one, as ring/data.py chooses). The tolerances are zero
+    because the labels are distributed with the dataset and the paper reports exact counts. The
+    paper calls the 1,533 cells excitatory, while the code selects on is_head_direction alone;
+    the readings are (a) is_head_direction, as the code, and (b) is_head_direction and
+    is_excitatory. The code also drops units whose final tuning curve is all zero
+    (data_and_generative_model.ipynb, nz_mask); the count is reported with and without that
+    step. The link holds when the counts match under one reading; the count under the other is
+    reported. The counts for A3716, A3711 and A3706 (93, 90 and 86) are reported too.
+- id: tuning-curves-match-cache
+  kind: link
+  statement: Tuning curves computed from the dandiset with the paper's procedure agree with the
+    tuning curves in the paper's cached results on Zenodo.
+  source: Methods, Data processing, Tuning-curve estimation; Data availability
+  quote: The cached intermediate results used by the analysis notebooks are publicly available via
+    Zenodo at https://doi.org/10.5281/zenodo.21827768
+  data: with_inputs
+  depends_on:
+  - hd-cell-selection
+  criterion: Tuning curves computed as in the opening comment (ring/data.py, process_file, with
+    N_theta 100, the 100 widths, K 4) are compared with opt_tcs in mouse_data/tc_data.npz of the
+    Zenodo record, unit by unit in the same session order. The link holds when, over the 1,533
+    head-direction units, the Pearson correlation between the computed and cached
+    partition-averaged curves is at least 0.99 for at least 95% of units; partially when that
+    holds for at least 80%. The fraction of units whose chosen smoothing widths match exactly is
+    reported. Both thresholds are chosen here, as the paper reports no comparison.
+- id: fig1e-heterogeneous-peaks
+  statement: Mouse head-direction cells are heterogeneous, with variable numbers of irregularly
+    spaced peaks, unlike the classical prediction of tuning curves identical up to shifts.
+  source: Results, Failure of classical ring-attractor models, paragraph 3; Fig. 1e
+  quote: Mouse head-direction cells instead show substantial heterogeneity, with variable numbers
+    of irregularly spaced peaks (Fig. 1e)
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  criterion: Peaks are local maxima of the unit-mean, cross-validated curves (100 bins, circular)
+    whose z-score (value minus the curve's mean, over its standard deviation across angles) is
+    above zthresh, as in Methods equation (17) and analysis.find_local_maxima; zthresh 1, the
+    threshold of Fig. 5d. Reproduced when more than one peak count occurs among the 1,533 curves
+    and the angular separations between the two highest peaks of the multi-peaked curves are
+    spread, with an interquartile range above pi/4. The paper gives no measure of irregular
+    spacing; this one is chosen here and named as open, and the full distribution of
+    separations is shown.
+- id: fig5d-peak-numbers
+  statement: At zthresh 1, all 1,533 experimental curves have at least one peak, 412 have at least
+    two and 55 at least three; of 100,000 generative-process samples, 24,271 have at least two
+    and 1,043 at least three.
+  source: Fig. 5d legend
+  quote: using the 1,533, 412 and 55 experimental curves and the 100,000, 24,271 and 1,043
+    generative-process samples that have at least 1, 2 and 3 peaks
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  expected:
+  - quantity: experimental curves with at least one peak (zthresh 1)
+    value: 1533
+    tolerance: 153
+  - quantity: experimental curves with at least two peaks (zthresh 1)
+    value: 412
+    tolerance: 41
+  - quantity: experimental curves with at least three peaks (zthresh 1)
+    value: 55
+    tolerance: 5.5
+  - quantity: generative-process samples with at least two peaks, of 100,000
+    value: 24271
+    tolerance: 2427
+  - quantity: generative-process samples with at least three peaks, of 100,000
+    value: 1043
+    tolerance: 104
+  criterion: Peaks as in fig1e-heterogeneous-peaks (analysis.get_peak_values, zthresh 1). The
+    generative samples are drawn as in the notebook (gp_opt.gen_Phi_m at the fitted parameters
+    scale 1.4211, bias 1.7307, beta 2.7659, N_samples 100,000, N_theta 100, numpy seed 42, each
+    sample divided by its mean). The seed's draws may not be reproduced exactly, which the 10%
+    tolerance covers.
+- id: fig1fg-mean-and-fluctuation-profiles
+  statement: Aligned by their circular centers of mass within each of the 31 mice, the tuning
+    curves have unimodal, symmetric mean profiles, but fluctuations about them comparable in
+    magnitude to the means, and both profiles are consistent across mice.
+  source: Results, Failure of classical ring-attractor models, paragraph 3; Fig. 1f,g
+  quote: When tuning curves are aligned within each of the 31 mice by their circular centers of
+    mass, the mean profiles are unimodal and symmetric (Fig. 1f), but the fluctuations about them
+    are comparable in magnitude to the means (Fig. 1g), violating the classical prediction of zero
+    fluctuations. Both mean and fluctuation profiles are consistent across mice
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  criterion: Each unit-mean curve is rolled so that its center of mass falls on bin 0
+    (analysis.center_tuning_curves), and per mouse the mean and standard deviation across neurons
+    are taken at each of the 100 offsets (compute_mean_and_std_profiles_for_all_mice); the mouse
+    average is the mean of the 31 per-mouse profiles. The paper gives no measures for these
+    words, so they are fixed here and named as open. Unimodal, the mouse-average mean profile has
+    one local maximum, at offset 0 within 2 bins. Symmetric, its Pearson correlation with its
+    reflection about offset 0 is at least 0.9. Comparable in magnitude, the peak of the
+    mouse-average standard deviation profile is between half and twice the peak of the
+    mouse-average mean profile (reading a), or the standard deviation exceeds half the mean at
+    offset 0 (reading b). Consistent across mice, the median over mice of the correlation of each
+    mouse's profile with the mouse average is at least 0.9, for the mean and for the standard
+    deviation. Reproduced when all four hold (the third under one reading); partially when the
+    third holds with one other.
+- id: fig3ab-centers-of-mass-uniform
+  statement: Within each session the tuning-curve centers of mass are distributed uniformly; the
+    Kuiper test rejects uniformity in 2 of 31 sessions before correction and in none after
+    Benjamini-Hochberg correction, with corrected P values from 0.59 to 0.97.
+  source: Results, Statistical generative process, paragraph 2; Methods, Statistics and
+    reproducibility, Statistical tests; Fig. 3a,b
+  quote: the Kuiper test rejects uniformity in 2 of 31 sessions (P < 0.05) before
+    multiple-comparison correction and in none after Benjamini–Hochberg correction, where the
+    corrected P values across the 31 sessions range from 0.59 to 0.97
+  statistics:
+  - about: uniformity of center-of-mass angles within each session, lowest corrected P
+    test: Kuiper test, two-sided, against the uniform distribution on [0, 2 pi)
+    p: 0.59
+    corrected: Benjamini-Hochberg false discovery rate at 5%
+    n: 31 sessions, 1,533 neurons
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  expected:
+  - quantity: sessions with uncorrected P below 0.05
+    value: 2
+    tolerance: 0
+  - quantity: sessions significant after Benjamini-Hochberg correction
+    value: 0
+    tolerance: 0
+  - quantity: lowest corrected P
+    value: 0.59
+    tolerance: 0.059
+  - quantity: highest corrected P
+    value: 0.97
+    tolerance: 0.097
+  criterion: A claim of absence, judged on the paper's test. Centers of mass of the unit-mean
+    curves (Methods equation (14), analysis.circular_center_of_mass); per session the Kuiper test
+    against the uniform CDF x / 2 pi (astropy.stats.kuiper), then Benjamini-Hochberg over the 31
+    P values (statsmodels multipletests, fdr_bh, alpha 0.05). Reproduced when no session is
+    significant after correction, not reproduced when any is; the corrected and uncorrected P
+    values are reported either way. The counts of 2 and 0 are exact (tolerance 0) because they
+    are counts of sessions; the range of corrected P values follows the rule for a reported
+    range.
+- id: fig3c-correlation-approaches-circulant
+  statement: Within a mouse, the two-point correlation function of the tuning curves approaches a
+    circulant form as more neurons are included, as does the centered and variance-normalized
+    correlation function, whose eigenvectors converge to Fourier modes, as circular symmetry
+    predicts.
+  source: Results, Statistical generative process, paragraph 3; Fig. 3c; Supplementary Fig. 13
+  quote: This function approaches a circulant form (Fig. 3c), as does the centered and
+    variance-normalized correlation function, whose eigenvectors converge to Fourier modes
+    (Supplementary Fig. 13), both being predictions of circular symmetry
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  criterion: For the four mice with most cells (A3707, A3716, A3711, A3706), the correlation
+    function of equation (4) over random subsets of 5, 10, 20, 40 and 80 neurons, and the
+    centered and variance-normalized version of Supplementary Fig. 13 (each angle centered and
+    divided by its standard deviation across the subset's neurons, as the notebook does). The
+    paper shows single random subsets (seed 42) and gives no measure, so one is fixed here and
+    named as open. The distance from circulant form is the Frobenius norm of the matrix minus the
+    circulant matrix obtained by averaging it along its circular diagonals, over the Frobenius
+    norm of the matrix, averaged over 100 random subsets per size. Reproduced when, for each
+    mouse and both functions, the distance at 80 neurons is below that at 5 neurons and falls
+    across the sizes with at most one increase; and when the leading four eigenvectors of each
+    mouse's full centered and normalized function each have at least 80% of their power at one
+    Fourier frequency, with eigenvectors 1 and 2 sharing frequency 1 (threshold chosen here,
+    open). Partially reproduced when one of the two parts holds.
+- id: fig4-generative-fit
+  statement: A single parameter set of the generative process, fitted to the two-point
+    correlation function pooled over mice, is (sigma, beta, b) of about (1.42, 2.77, 1.73).
+  source: Results, Statistical generative process, paragraph 5; Fig. 4d to f; Methods, Model
+    settings, Setting 2
+  quote: This yields (σ, β, b) ≈ (1.42, 2.77, 1.73; Fig. 4d–f) and tuning curves closely
+    resembling the experimental ones (Fig. 4g)
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  expected:
+  - quantity: Fourier decay scale sigma
+    value: 1.42
+    tolerance: 0.142
+  - quantity: sharpness beta
+    value: 2.77
+    tolerance: 0.345
+  - quantity: soft threshold b
+    value: 1.73
+    tolerance: 0.173
+  criterion: As in ring/gp_opt.py and the notebook. The data target is the power spectrum of the
+    1,533 unit-mean curves (fn.calc_C, the mean over neurons of the squared moduli of the rfft
+    with norm forward). The model spectrum is computed the same way from 500,000 samples of the
+    Gaussian process (Fourier coefficients of the wrapped Gaussian exp(-n^2 / 2 sigma^2) / (sqrt(2
+    pi) sigma), as tc.wrapped_gaussian_cov) passed through the softplus of equation (19) and
+    divided by their means. The error is the Euclidean norm of the difference over the first 20
+    coefficients (indices 0 to 19, Fig. 4d legend), minimised over the grid sigma in linspace(1,
+    2, 20), b in linspace(0.01, 5, 30) and beta in linspace(0.01, 10, 30), seed 42. The tolerance
+    on beta is one step of that grid (0.345), larger than 10% (0.277), because the fit can only
+    land on grid points; the others are 10%, which is about one grid step for b and nearly three
+    for sigma. As written, gp_opt.py sets DEVICE 0 and builds a CUDA device, so on a GPU the
+    samples come from torch's generator; the draws of the paper's run need not be reproduced,
+    which the tolerances cover. The notebook loads the cached grid-search results.
+- id: fig5ab-profiles-match
+  statement: The center-of-mass-aligned mean and fluctuation profiles predicted by the fitted
+    generative process match those of the data.
+  source: Results, Statistical generative process, paragraph 6; Fig. 5a,b
+  quote: The predicted center-of-mass-aligned mean and fluctuation profiles match the data (Fig.
+    5a,b
+  data: dataset
+  depends_on:
+  - fig1fg-mean-and-fluctuation-profiles
+  - fig4-generative-fit
+  criterion: Generative profiles from 100,000 samples at the fitted parameters, unit-mean
+    normalized and aligned as for the data (plot.plot_mean_std_profiles with opt_params, numpy
+    seed 42). The paper gives no measure of match; the readings named here are (a) the
+    generative profile lies within the range of the 31 individual mouse profiles at no fewer
+    than 90% of the 100 offsets, and (b) its peak is within 10% of the peak of the mouse-average
+    profile. Reproduced when, under one reading, both the mean and the standard deviation
+    profiles match; partially when only one does. The fit is rerun on these data
+    (fig4-generative-fit); the profiles at the paper's parameters are shown as a variant.
+- id: fig5c-peak-counts-match
+  statement: The generative process reproduces the distribution of peak counts per tuning curve
+    across detection thresholds, with the strongest agreement at the higher thresholds.
+  source: Results, Statistical generative process, paragraph 6; Fig. 5c
+  quote: The process also reproduces the distribution ... of peak counts per tuning curve across
+    detection thresholds zthresh, with strongest agreement at higher thresholds (Fig. 5c)
+  data: dataset
+  depends_on:
+  - fig5d-peak-numbers
+  - fig4-generative-fit
+  criterion: Peak-count histograms for 1 to 5 peaks, normalized to sum to one over those five
+    counts, so curves with no peak or more than five are left out of the denominator
+    (analysis.compute_peak_counts), for the 1,533 curves and 100,000 generative samples, at
+    zthresh 1, 0.5 and 0. The paper gives no measure of agreement; the readings are (a) total
+    variation distance and (b) Hellinger distance between the two histograms. Reproduced when,
+    under one reading, the distance at zthresh 1 is the smallest of the three and is below 0.15
+    (threshold chosen here, open); partially when the distance at zthresh 1 is smaller than at
+    zthresh 0 but above 0.15. The distances are reported at every threshold.
+- id: fig5d-peak-heights-match
+  statement: The generative process reproduces the full distributions of tuning-curve values at
+    the three highest peaks.
+  source: Results, Statistical generative process, paragraph 6; Fig. 5d
+  quote: and the full distributions of tuning-curve values at the three highest peaks (Fig. 5d)
+  data: dataset
+  depends_on:
+  - fig5d-peak-numbers
+  - fig4-generative-fit
+  criterion: Heights of the three highest peaks at zthresh 1 (analysis.get_peak_values), for the
+    curves that have them. The paper gives no measure; for each of the three peaks, the median
+    generative height is within 10% of the median data height (reading a), or the two-sample
+    Kolmogorov-Smirnov distance is below 0.15 (reading b; threshold chosen here, open).
+    Reproduced when, under one reading, all three peaks agree; partially when one or two do.
+- id: fig5e-flip-symmetry-match
+  statement: The generative process captures the distribution of flip-symmetry correlations,
+    particularly its strongly asymmetric tail.
+  source: Results, Statistical generative process, paragraph 6; Fig. 5e
+  quote: It captures the distribution of flip-symmetry correlations ρflip (each curve’s
+    correlation with its center-of-mass reflection), particularly the strongly asymmetric tail
+    (Fig. 5e, inset)
+  data: dataset
+  depends_on:
+  - fig4-generative-fit
+  criterion: The flip-symmetry correlation of Methods equation (15), computed as
+    analysis.compute_symmetry_scores (the curve against its reflection about its center-of-mass
+    bin, np.roll(tc, -2 com - 1) reversed). The paper does not say where the tail begins; the
+    readings are curves with correlation below (a) 0.5 and (b) 0. Reproduced when, under one
+    reading, the generative fraction in the tail is within a factor of 1.5 of the data fraction
+    (threshold chosen here, open), and the data have such curves at all. The medians of the two
+    distributions are reported.
+- id: fig5f-information-match
+  statement: The generative process captures the distribution of head-direction information.
+  source: Results, Statistical generative process, paragraph 6; Fig. 5f; Methods, Tuning-curve
+    statistics, equation (16)
+  quote: and the distribution of head-direction information IHD (ref. 48; Fig. 5f)
+  data: dataset
+  depends_on:
+  - fig4-generative-fit
+  criterion: Information per curve as equation (16), the mean over the 100 bins of the unit-mean
+    curve times its base-2 logarithm (analysis.compute_bits_per_spike). The paper gives no
+    measure; the readings are (a) generative median within 10% of the data median, and (b)
+    two-sample Kolmogorov-Smirnov distance below 0.15 (threshold chosen here, open). Reproduced
+    under either reading.
+- id: fig2b-sorted-weights-mexican-hat
+  statement: The optimized data-derived weight matrix looks unstructured in arbitrary order, and
+    ordering neurons by their tuning-curve centers of mass reveals a noisy approximate Mexican hat
+    structure.
+  source: Results, Dynamics of the data-derived network model, paragraph 1; Fig. 2a,b
+  quote: Ordering neurons by the circular centers of mass of their tuning curves reveals a noisy
+    approximate Mexican hat structure (Fig. 2b
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  criterion: The network is built as in notebooks/data_driven_attractor.ipynb and Supplementary
+    Note 3, section 8.1. From the 1,533 unit-mean curves, input currents by the inverse softplus
+    (beta 2), smoothed with a circular Gaussian filter of 2 bins, softplus again, Sinkhorn-Knopp
+    normalization of both axes (1,000 alternating sweeps, data_driven._sinkhorn_normalize),
+    inverse softplus, zero-padded Fourier resampling to 10,000 angles, softplus; weights by
+    regression.compute_J (method opt, which takes its primal branch here because the 10,000
+    angles exceed the 1,533 neurons; lambda 1e-8, zero diagonal, Methods equation (39)). The
+    matrix is shown before the uniform shift by c, as Supplementary Note 3, section 8.3, says.
+    Neurons are sorted by the center of mass of the resampled curves (sort_weight_matrix). The
+    profile is the mean of the sorted matrix along each circular diagonal (the first row of the
+    notebook's create_circularized_matrix). Reproduced when the profile is highest at offsets
+    near 0 and falls below its mean over offsets at intermediate offsets, with local excitation
+    and longer-range inhibition; the paper gives no measure of noise and none is judged.
+- id: fig2ef-data-network-quasicontinuous
+  statement: Started at regularly spaced manifold points perturbed by noise, the data-derived
+    network's trajectories return to the manifold within about 1 s and then persist over 30 s, an
+    order-of-magnitude separation between convergence and drift timescales.
+  source: Results, Dynamics of the data-derived network model, paragraph 3; Fig. 2e,f
+  quote: Initialized at regularly spaced manifold points perturbed by noise, trajectories return to
+    the manifold within ~1 s (Fig. 2f) and then persist over 30 s (Fig. 2e), an order-of-magnitude
+    separation between convergence and drift timescales
+  data: dataset
+  depends_on:
+  - fig2b-sorted-weights-mexican-hat
+  criterion: The network of fig2b-sorted-weights-mexican-hat with softplus beta 2, tau 50 ms, Euler
+    step 1 ms, uniform inhibition c 1 (the mean stabilizer of Supplementary equation (137)), 100
+    initial conditions at every 100th of the 10,000 manifold angles with independent Gaussian
+    noise of standard deviation 3 added to the input currents (run_convergence_analysis), run for
+    30 s and saved every 10 ms. Distance is the smallest Euclidean distance between the firing
+    rates and the 10,000 target firing-rate points, over the square root of N
+    (compute_distances_to_ring). The thresholds are not given and are named as open. Returns
+    within about 1 s, the median distance at 1 s is at most one tenth of that at 0 s (reading a),
+    or at most twice its value at 20 s (reading b). Persists, the manifold angle of each
+    trajectory (the angle of its nearest target point) moves by less than 2 pi / 20 between 1 s
+    and 30 s for at least 90% of trajectories (reading c), or the 100 final angles occupy at
+    least 50 distinct bins of width 2 pi / 100 (reading d). Reproduced when one of (a, b) and one
+    of (c, d) hold.
+- id: fig2gi-circulant-noise-collapses
+  statement: The optimal weights keep a continuum of stable heterogeneous states; their circulant
+    average gives bumps identical up to translation, while the circulant matrix plus the scrambled
+    residuals collapses onto a few discrete states within 30 s, so the optimal weights are not a
+    noisy circulant matrix.
+  source: Results, Dynamics of the data-derived network model, paragraphs 4 and 5; Fig. 2c,d,g to
+    i; Supplementary Note 3, section 8.2
+  quote: The optimal weights (Fig. 2b) maintain a continuum of stable, heterogeneous states (Fig.
+    2g). Averaging the sorted weights along ... diagonals gives a circulant matrix (Fig. 2c) whose
+    bumps are identical up to translation ... this network collapses onto a few discrete states
+    within the 30-s window (Fig. 2i)
+  data: dataset
+  depends_on:
+  - fig2b-sorted-weights-mexican-hat
+  criterion: As in data_driven_attractor.ipynb. The sorted matrix; its circulant version, the
+    average over circular diagonals; and the circulant plus noise, the residuals (circulant minus
+    sorted) with all off-diagonal entries shuffled together, the asymmetric version used in Fig.
+    2d,i (numpy seed 42); both surrogates multiplied by 1.275. Each is run with c 1 from 100
+    initial conditions at regularly spaced manifold points with input-current noise of standard
+    deviation 2.5, for 30 s. A final state's position is the neuron index of the peak of its
+    activity, smoothed across sorted neurons with a Gaussian of 2.5 neurons, as the figure is
+    drawn. The paper gives no count or similarity measure; these are fixed here and named as
+    open. Final positions within 2 pi / 50 of each other (31 neurons) are merged into one state.
+    Reproduced when the sorted optimal matrix keeps at least 50 distinct states, the circulant
+    plus noise matrix at most 10, and the circulant matrix's final states are shifts of one
+    another (each correlates at least 0.99 with the best circular shift of the first). Partially
+    reproduced when the contrast between the optimal and the circulant plus noise holds alone.
+    The symmetric scrambled version is shown as a variant.
+- id: fig2jk-velocity-integration
+  statement: With the velocity-coupling weights added, the data-derived network's overlap order
+    parameter tracks a constant angular velocity input of 0.8 rad/s accurately and follows the
+    more complex trajectory of the mouse's own head-direction behaviour.
+  source: Results, Dynamics of the data-derived network model, paragraph 6; Fig. 2j,k; Methods,
+    Angular velocity integration
+  quote: m(θ, t) tracks the input accurately (Fig. 2j), and the network also follows the more
+    complex trajectories of the behavioral data (Fig. 2k)
+  data: dataset
+  depends_on:
+  - fig2b-sorted-weights-mexican-hat
+  criterion: As in the notebook's run_analysis. J and J' (the solution for the angular derivative
+    of the targets, Methods equation (41)), c 1, tau 50 ms, step 1 ms, started at the target
+    state of angle 0 and run for 110 s; omega is 0.8 rad/s from 20 s on (j), or the angular
+    velocity of A3707's wake_square head direction (k), with gaps interpolated on the circle,
+    unwrapped, 2,000 still samples prepended, smoothed with a Gaussian of 10 samples and
+    differenced (data_driven.preprocess_hd_data). The first 20 s are dropped. m(theta, t) is
+    equation (5) with the target firing rates; the target is the integral of omega. The paper
+    gives no measure of tracking; the readings are (a) the median absolute circular difference
+    between the angle of the peak of m and the target is below pi/8, and (b) the circular
+    correlation between them is at least 0.9 (thresholds chosen here, open). Reproduced when both
+    inputs track under one reading; partially when only the constant input does.
+- id: fig2l-recorded-bump-tracks-hd
+  statement: The overlap order parameter computed directly from the recordings, with the measured
+    tuning curves and binned spike counts of one mouse, forms a bump that tracks the animal's head
+    direction.
+  source: Results, Dynamics of the data-derived network model, paragraph 7; Fig. 2l
+  quote: The resulting bump tracks the animal’s head direction (Fig. 2l) and closely resembles
+    that of the model (Fig. 2k)
+  data: dataset
+  depends_on:
+  - hd-cell-selection
+  criterion: Mouse A3707 (the session with most head-direction cells, 117), wake_square epoch, as
+    in notebooks/closing_the_loop.ipynb. Spike counts of the 117 cells in 10-ms bins, averaged in
+    100-ms bins (10 bins), each cell's counts and curve divided by the mean of its curve; m is the
+    mean over cells of curve times counts at each of the 100 angles. The curves are those of the
+    whole session (mean of the two partitions), as the code uses. The paper gives no measure;
+    the readings are (a) the median absolute circular difference between the angle of the peak
+    of m and the mean head direction in the same 100-ms bin is below pi/8, and (b) their circular
+    correlation is at least 0.9 (thresholds chosen here, open). Bins with untracked head direction
+    are left out of the comparison, which needs a head direction; the notebook does not drop
+    them from m, and this choice is made here. Reproduced under either reading. Curves from one partition applied to the
+    other partition's spikes are shown as a variant.
+- id: figs8-s9-lambda-and-c
+  statement: In the data-derived network, with no uniform inhibition activity diverges or
+    collapses to the origin, any c above 0 in the grid prevents the divergence but small c leaves
+    the collapse, a large regularization destroys the
+    manifold, and the flow error rises at both large and small lambda, with lambda 1e-8 just above
+    its minimum.
+  source: Supplementary Note 3, section 8.4; Supplementary Figs. 8 and 9
+  quote: At c = 0 the activity either diverges or collapses to the origin, depending on the
+    initial condition. Any c > 0 in the grid prevents the divergence, but small c leaves the
+    collapse. Additionally, λ can be too large ... Supplementary Fig. 9 shows the mean squared
+    flow rising with larger λ and also rising at small λ, where the optimization kernel becomes
+    ill-conditioned
+  data: dataset
+  depends_on:
+  - fig2b-sorted-weights-mexican-hat
+  criterion: As in notebooks/data_driven_reconstruction.ipynb, the lambda values 1e-12, 1e-10,
+    1e-8, 1e-6, 1e-4 and 1e-2 and the c values 0, 0.25, 0.5, 0.75, 1, 1.25 and 1.5, 100
+    initial conditions perturbed by noise of standard deviation 3, Euler step 5 ms (Methods,
+    Simulation details), trajectories projected on the top two principal components of the
+    target manifold. Collapse
+    to the origin, final firing rates with a norm below one tenth of the manifold's (threshold
+    chosen here, open); divergence, non-finite or growing states. Flow error, the mean squared
+    flow on the target manifold. Reproduced when c 0 gives divergence or collapse, no c above 0
+    gives divergence at any lambda up to 1e-4, the largest
+    lambda gives collapse at c 1, and the flow error at 1e-8 is lower than at 1e-2 and at 1e-12.
+- id: figs11b-data-network-global-stability
+  statement: In the data-derived network, initial conditions far from the manifold converge to
+    points on it, with no spurious attractors, and initial conditions close to the origin converge
+    to one or a few states on the ring.
+  source: Supplementary Note 3, section 9.2; Supplementary Fig. 11b; Results, Dynamics of the
+    data-derived network model, paragraph 3
+  quote: Across the whole range, initial conditions converged to points on the target manifold,
+    with no spurious attractors apparent elsewhere in state space. In the data-derived network,
+    initial conditions close to the origin converge to one or a small number of states on the ring
+  data: dataset
+  depends_on:
+  - fig2b-sorted-weights-mexican-hat
+  criterion: Initial states i.i.d. Gaussian with zero mean and per-neuron standard deviations 1,
+    10, 50, 100 and 1,000, run for 30 s with c 1 (spurious_fixed_points.ipynb). Reproduced when,
+    at every standard deviation, at least 95% of final states lie within the distance to the
+    manifold reached at 20 s in fig2ef-data-network-quasicontinuous (threshold chosen here, open),
+    and at standard deviation 1 the final manifold angles fall in at most 5 states merged as in
+    fig2gi-circulant-noise-collapses.
+- id: figs14-data-spectrum-doublets
+  statement: In the data-derived weight matrix the leading eigenvalues are approximately real and
+    come in visible but inexact doublets.
+  source: Discussion, From world structure to circuit structure, paragraph 3; Supplementary Fig.
+    14a
+  quote: In our data-derived ... weight matrix, the eigenvalues are approximately real, and the
+    doublets are visible but not exact (Supplementary Fig. 14)
+  data: dataset
+  depends_on:
+  - fig2b-sorted-weights-mexican-hat
+  criterion: Eigenvalues of the matrix of fig2b-sorted-weights-mexican-hat (np.linalg.eigvals),
+    sorted by real part. The paper gives no measure; one is fixed here and named as open. Among
+    the leading 10 eigenvalues, the ones Supplementary Fig. 14a plots (data_driven_reconstruction.ipynb), approximately real, the absolute imaginary part is under 10% of
+    the real part; doublets, after setting aside the one eigenvalue that does not pair (the
+    constant mode, as in Fig. 6c), the gap within each consecutive pair is smaller than the gap
+    to the next pair for at least three of the first four pairs, and not every pair is exactly
+    equal (not exact).
+- id: fig6cd-eigenvalues-real-degenerate
+  statement: For tuning curves from the generative process at large N, the optimal weight matrix
+    has real, doubly degenerate eigenvalues, the ratios of the input-current to the firing-rate
+    Fourier coefficients scaled by the average activation slope, and they match numerical
+    diagonalization at N = 2,500, with the ninth eigenvalue the unpaired constant mode.
+  source: Results, Weights in the large-network limit, paragraphs 3 and 4; Fig. 6c,d
+  quote: These eigenvalues are real and doubly degenerate, features inherited from ... and they
+    match numerical diagonalization at N = 2,500 (Fig. 6c,d)
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/spectra.ipynb (simulation code; no recorded data)
+  criterion: Run spectra.ipynb with N 2,500, sigma 1.42, beta 2.77, error-function activation,
+    N_theta 500, lambda 1e-8 (Methods, Settings 3, Simulation details). Reproduced when the
+    leading real parts pair up and agree with equation (9) as the notebook computes it, within
+    10%, and the imaginary parts of the leading eigenvalues are under 10% of their real parts.
+- id: fig6fg-disordered-eigenvectors
+  statement: Spectral embedding finds rings in a circulant matrix with weak noise, whose
+    eigenvectors are Fourier modes, but not in the model, whose eigenvector point clouds are
+    structureless, while eigenvalue degeneracy is present in every case, so degeneracy is proposed
+    as a robust signature of ring-attractor structure.
+  source: Results, Weights in the large-network limit, paragraphs 6 to 8; Fig. 6b,e,f,g
+  quote: This procedure reveals rings in circulant matrices, whose eigenvectors are Fourier modes,
+    but not in our model, where the point clouds from Vx and Vφ are structureless (Fig. 6f ...
+    Eigenvalue degeneracy, however, is present in every one of these cases
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/spectra.ipynb (simulation code; no recorded data)
+  criterion: Run spectra.ipynb (the model matrix, and the circulant matrix with the same large-N
+    eigenvalues plus Gaussian noise of standard deviation 0.1 / sqrt(N)). For the leading
+    eigenvector pairs of J J^T, the radius of each neuron's point from the origin; ring, a
+    coefficient of variation of the radius below 0.2; structureless, above 0.4 (thresholds chosen
+    here, open). Reproduced when the circulant pairs are rings, the model pairs are
+    structureless, and both spectra show the doublets.
+- id: fig7-dmft-mexican-hat-and-stability
+  statement: In the mean-field theory the effective interactions are circulant with a Mexican hat
+    profile set by sigma and beta; at a bump state all Jacobian eigenvalues have negative real
+    parts except the symmetry-induced zero, the uniform state has a real positive eigenvalue for
+    all sigma and beta (a Turing instability), and fixing Q destabilizes the bump.
+  source: Results, Dynamical mean-field theory, paragraphs 3 to 6; Fig. 7a,b,d,e,f
+  quote: has the Mexican hat profile characteristic of pattern-forming systems, with shape set by
+    the Fourier decay scale ... σ and sharpness β (Fig. 7a) ... At a bump state, all eigenvalues of
+    M(θ, θ′) have negative real parts except the symmetry-induced zero (Fig. 7f, teal curve)
+    ... a real, positive eigenvalue ... for all σ and β (a Turing instability) ... Fixing Q at Γx(0)
+    for all time, a manipulation with no analog in the high-dimensional network, destabilizes the
+    bump, producing a positive eigenvalue (Fig. 7f, orange)
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/dmft.ipynb and ring/dmft.py (theory code; no recorded data)
+  criterion: Run dmft.ipynb over its 40 by 20 grid of beta and sigma. Reproduced when the
+    interaction profiles of Fig. 7a are positive at 0 and negative at some offset for every
+    sigma and beta shown, the bump's second eigenvalue is negative and the uniform state's
+    leading eigenvalue positive at every grid point, and with Q fixed the bump has a positive
+    eigenvalue at sigma 1.42 and beta 2.77.
+- id: fig7de-dmft-timescales
+  statement: In the mean-field theory, the convergence time to the bump manifold (-tau over the
+    bump Jacobian's second eigenvalue) and the divergence time from the uniform state (tau over
+    its leading eigenvalue) are both a few tau for beta of about 1 and above, decreasing with beta
+    and insensitive to sigma.
+  source: Results, Dynamical mean-field theory, paragraph 6; Fig. 7d,e
+  quote: for β ≳ 1, this timescale is a few τ, decreasing with β and relatively insensitive to σ
+    (Fig. 7d) ... which, like the previous timescale, is a few τ for β ≳ 1, decreasing with β and
+    insensitive to σ (Fig. 7e)
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/dmft.ipynb and ring/dmft.py (theory code; no recorded data)
+  depends_on:
+  - fig7-dmft-mexican-hat-and-stability
+  criterion: Run dmft.ipynb's stability grid (beta logspace(-2, 2, 40), sigma logspace(0, 2, 20),
+    N_theta 500), with t* = -tau / Re(bump eigenvalue 2) for Fig. 7d and t* = tau / Re(uniform
+    eigenvalue 1) for Fig. 7e, as the notebook plots them. The paper gives no measures for these
+    words, so they are fixed here and named as open, over the grid points with beta at least 1.
+    A few tau, t* between 0.5 tau and 10 tau at every such point with beta up to 10. Decreasing
+    with beta, for each sigma t* falls along beta with at most one increase. Insensitive to sigma,
+    at each beta the largest t* over sigma is at most twice the smallest (reading a) or three
+    times (reading b). Reproduced when all three hold for both timescales (the third under one
+    reading); partially when the first two hold for both.
+- id: fig7c-dmft-integrates-behavior
+  statement: Under angular velocity input from mouse behaviour, the mean-field traveling-bump
+    solutions track head direction by integrating angular velocity, matching the network
+    simulations and the recordings.
+  source: Results, Dynamical mean-field theory, paragraph 5; Fig. 7c
+  quote: These solutions track head direction by integrating angular velocity (Fig. 7c), matching
+    both the network simulations (Fig. 2j,k) and the recordings (Fig. 2l)
+  data: dataset
+  depends_on:
+  - fig2jk-velocity-integration
+  criterion: Run dmft.ipynb's velocity simulation with sigma 1.42 and beta 2.77, Euler step 1 ms
+    (Methods equations (43) to (45)), driven by the angular velocity of A3707 prepared as in
+    fig2jk-velocity-integration (the hd_timeseries from closing_the_loop.ipynb), first 20 s
+    dropped. Tracking judged with the readings and thresholds of fig2jk-velocity-integration;
+    reproduced under either.
+- id: fig8-grid-scores-and-torus
+  statement: In the toroidal extension, sampled input-current maps show a continuous spread of grid
+    scores, as experimental grid scores do, the mean grid score rises monotonically with eta, the
+    network of 25,000 neurons converges to the toroidal manifold, and the weight matrix has
+    eigenvalue degeneracies in multiples of six, the first few sixfold.
+  source: Results, Grid cells, paragraphs 3 to 5; Fig. 8b,c,f; Supplementary Fig. 15
+  quote: The sampled maps produce the continuous spread of grid scores, as seen in the data (Fig.
+    8b,c). The mean grid score rises monotonically with η ... The network converges to the
+    toroidal manifold from nearby initial conditions (Fig. 8f). The weight matrix at large N
+    exhibits eigenvalue degeneracies in multiples of six, with the first few being sixfold
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/grid_sims.ipynb (simulation code; no recorded data). The experimental grid scores
+    of Fig. 8b are digitized from Nayebi et al. (NeurIPS 2021, Fig. 3a) by
+    figures/external/digitize_nayebi_fig3a.py, from data of Mallory et al. (Nat. Commun. 2021)
+  criterion: Run grid_sims.ipynb (sigma 12.12, nu 3, 1,000 maps for each eta in 0.2 to 1.0 for
+    the grid scores; sigma 4.04, beta 2.5, nu 1, N 25,000 for the network; N 2,500, lambda 1e-8
+    for the spectrum, Supplementary Fig. 15). The notebook sets these through radius 0.35, with
+    sigma = sqrt(2) / radius (4.04) times the number of periods (12.12 at nu 3), and N_period.
+    The paper gives no measure of convergence; the one below is chosen here and open. Reproduced
+    when the mean grid score increases at every step of eta, the
+    final network states lie closer to the target manifold than the initial ones for every
+    initial condition, and the leading eigenvalues after the constant mode fall in groups of six
+    within 10% of each other.
+- id: figs10-robustness-comparable
+  statement: Under added weight noise the disordered network and a circulant network with
+    proportional eigenvalues fragment into discrete states alike, so the two are comparably
+    robust.
+  source: Supplementary Note 3, section 9.1; Supplementary Fig. 10; Discussion, Order and disorder
+  quote: Across the range, the two systems are comparably robust
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/weight_matrix_analyses.ipynb (simulation code; no recorded data)
+  criterion: Run the notebook's weight-noise sweep (N 2,500, sigma 1.42, beta 2.77, noise levels 0
+    to 1, 34 initial conditions, 120 s). Reproduced when both networks keep a continuum at noise 0
+    and neither does at 0.4, as the supplement states, with the number of final states (merged
+    as in fig2gi-circulant-noise-collapses) reported for each level.
+- id: figs11-s12-global-stability-model
+  statement: In the generative-process network of 2,500 neurons, initial conditions far from the
+    manifold converge to it with no spurious attractors, and with growing N the dynamics approach
+    the mean-field behaviour, reliably converging to a ring by N = 1,000.
+  source: Supplementary Note 3, section 9.2; Supplementary Figs. 11a and 12
+  quote: By N = 1,000 the target manifold resembles a geometric ring and initial conditions
+    reliably converge to it
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/spurious_fixed_points.ipynb (simulation code; no recorded data)
+  criterion: Run spurious_fixed_points.ipynb. Reproduced when, at N 2,500, every final state lies
+    on the target manifold for all initial standard deviations (1 to 1,000), and at N 1,000 all
+    perturbed initial conditions converge to it, judged as in figs11b-data-network-global-stability.
+- id: figs1-s2-spectrum-does-not-fix-symmetry
+  statement: Eigenvalue degeneracy suggests but does not fix the symmetry group, since ensembles
+    matching the model's second-order statistics, and hence its spectrum, can differ beyond second
+    order and give different symmetry groups and attractors (a single ring for Gaussian loadings,
+    the full torus for mixture-of-Gaussians loadings, in a rank-four network).
+  source: Discussion, Low-rank networks, symmetry and degeneracy, paragraph 1; Supplementary Figs.
+    1 and 2
+  quote: we can construct ensembles that match our model’s second-order statistics and hence its
+    spectrum, while differing beyond second order, yielding different symmetry groups and attractor
+    structures (Supplementary Figs. 1 and 2)
+  data: elsewhere
+  where: github.com/davidclark1/symmetries-continuous-attractors at commit 245726f,
+    notebooks/weight_matrix_analyses.ipynb (simulation code; no recorded data)
+  criterion: Run the notebook's rank-four Gaussian and mixture-of-Gaussians networks (initial
+    amplitude 5 for the Gaussian and 0.45 for the mixture, as the notebook sets them). The
+    notebook computes no eigenvalues; the supplement says the two share them by construction.
+    Reproduced when the eigenvalues of the two weight matrices, computed here, agree within 5%
+    (threshold chosen here, open) and their dynamics differ as the legends describe. With Gaussian loadings (N 10,000, K 4, 40 initial conditions, 10 tau) the
+    final states form a ring in the dominant doublet and collapse to the origin in the
+    subdominant one (a single ring). With mixture loadings they form a ring in both doublets (the
+    full torus). Collapse is a final radius below one tenth of the ring radius (threshold chosen
+    here, open). The notebook's printed ring radii and drift are reported.
+checks:
+- date: 2026-11-26
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig6cd-eigenvalues-real-degenerate. The statement called the eigenvalues products of the input-current and firing-rate Fourier coefficients. Equation (9), the mean-field section and the Supplementary equation after (71) give the ratio, alpha times Gamma_x_n over Gamma_phi_n. Corrected.
+  - fig3c-correlation-approaches-circulant. The statement said the leading eigenvectors are Fourier modes; the paper says they converge to Fourier modes. Corrected.
+  - hd-cell-selection. The statement said nine mice have an optogenetic file, which the paper does not say; it says they underwent optogenetic manipulation in a separately recorded epoch. Reworded. The expected count of 1,533 was described as units with a non-zero tuning curve, a code step (nz_mask); the paper says all 1,533 units carrying the label. Relabelled, and the criterion now reports the count with and without the code's step.
+  - Header. The comment implied the +ogen.nwb files hold only the unanalysed optogenetic epoch, while ring/data.py reads the wake_square epoch from the +ogen.nwb file where one exists. Reworded to say what the code does.
+  - fig2b-sorted-weights-mexican-hat. The criterion said compute_J runs in dual form; with 10,000 angles and 1,533 neurons it takes its primal branch (regression.py). The two give the same J. Corrected the label.
+  - fig5c-peak-counts-match. Added that compute_peak_counts normalizes over curves with 1 to 5 peaks only, as the code does.
+  - fig4-generative-fit. Added that gp_opt.py as written builds a CUDA device and then draws from torch, so the paper's draws need not be reproduced; the tolerances cover this.
+  - fig2l-recorded-bump-tracks-hd. Said that leaving out untracked head-direction bins is this file's choice; closing_the_loop.ipynb keeps them in m.
+  - figs8-s9-lambda-and-c. The supplement also says any c above 0 in the grid prevents the divergence; added to the statement and criterion. Named the c grid, the noise of the initial conditions and the 5-ms step from the notebook and the Methods.
+  - figs14-data-spectrum-doublets. The criterion took the leading 11 eigenvalues; Supplementary Fig. 14a and the notebook plot the leading 10, which hold the four pairs the criterion tests. Changed to 10.
+  - fig8-grid-scores-and-torus. Said how the notebook sets sigma (radius 0.35, sigma = sqrt(2) / radius times the number of periods), since 12.12 does not appear in the code, and that the convergence measure is this file's.
+  - figs1-s2-spectrum-does-not-fix-symmetry. The 5% eigenvalue test was not marked as chosen here; the notebook computes no eigenvalues. Marked it as open, and named the different initial amplitudes the notebook uses (5 and 0.45).
+  - Added claim fig7de-dmft-timescales (Results, Dynamical mean-field theory, paragraph 6; Fig. 7d,e), a main-text finding with no claim. Its measures are chosen here and named as open.
+  - Open. The notebooks print none of the Fig. 5d counts (412, 55, 24,271, 1,043); they load cached results, so these counts are checked only against the legend.
+  - Open. The code names no mouse; it picks sessions by head-direction cell count (session 10, 117 cells, for Figs. 2k, 2l and 7c). The names A3707, A3716, A3711 and A3706 and their counts come from the legends of Figs. 1e, 2 and Supplementary Fig. 13, which list the names in the same order as the counts.
+  - Open. Whether each +ogen.nwb file holds the wake_square epoch cannot be told without opening the data; the author is to confirm it.
+  - Open. The thresholds and agreement measures behind comparable, match, approaches, tracks, a few and similar words remain this file's choices, named as open in each criterion; the paper and code fix none of them.
