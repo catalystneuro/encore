@@ -48,6 +48,7 @@ inputs:
 outcomes:
 - claim: data-zebrafish-coverage
   outcome: reproduced
+  assumed: true
   notebook: reproduce_costabile_2023.ipynb
   output: claim:data-zebrafish-coverage
   measured:
@@ -67,7 +68,10 @@ outcomes:
   - Brightness is the unweighted mean, over each component's pixel mask, of the time-average of the GCaMP
     channel of the movie the NWB files hold (as experiment.py, avg_component_brightness). The code averages
     the projection of its own experiment store; whether that projection was of the raw or the motion-corrected
-    movie is not stated. The raw movie is assumed here; the count matches the paper's to 0.4%.
+    movie is not stated. The raw movie is assumed here, as it is the movie the files hold; the count matches
+    the paper's to 0.4%. The outcome depends little on it, as the count moves by about 4,000 per 0.01 of
+    the cut, against a tolerance of 43,288, so only a large difference in brightness between the two
+    projections would move it out of tolerance. The question is recorded for the paper's authors (findings).
 - claim: figs6-train-test-uncorrelated
   outcome: reproduced
   assumed: true
@@ -106,13 +110,18 @@ outcomes:
   notebook: reproduce_costabile_2023.ipynb
   output: claim:fig6d-mine-identifies-more-than-lm
   notes: 'Needs the paper''s CNN fit to each of the 432,882 bright components (434,651 here). One fit
-    of the paper''s architecture takes a median 1.89 s on one thread here (fits 2 to 20 of one plane,
-    main notebook section 5); in four parallel processes a fit takes about 4 s, 1.08 s of wall time per
-    fit over 600 fits (mine_fits_subsample.ipynb), so the 432,882 real-data fits come to about 130 h on
-    the runner''s four CPUs, and about 261 h with the rotated controls, against a run of five hours. The
-    linear comparison model is fit to every bright component (434,648; 2 planes with fewer than 5 bright
-    components are left out): 26,326 reach a test correlation of sqrt(0.5) under the main bout reading
-    (25,375 to 26,726 under the others), against about 25,300 implied by the paper (60% of 42,229). MINE''s
+    of the paper''s architecture takes a median 2.14 s on one thread here (fits 2 to 20 of one plane,
+    range 2.10 to 2.19 s; the first, 8.37 s, includes building the graph; main notebook section 5), which
+    is 257 h on one thread for the real-data fits and 64 h on four CPUs if four processes kept that speed.
+    They do not: in four parallel processes a fit takes a median 4.37 s, 1.17 s of wall time per fit over
+    600 fits (mine_fits_subsample.ipynb), so the 432,882 real-data fits come to 141 h on the runner''s
+    four CPUs, and 283 h with the rotated controls, against a run of five hours. These times vary between
+    runs by tens of percent (the run reviewed in round 2 printed 1.37 s, 3.08 s, 0.89 s, 107 h and 214
+    h), and every run puts the fits far beyond the run''s length. The linear comparison model is fit to
+    every bright component (434,648; 2 planes with fewer than 5 bright components are left out): 26,328
+    reach a test correlation of sqrt(0.5) under the main bout reading (25,373 to 26,726 under the others;
+    26,326 and 25,375 in the run reviewed in round 2, so a few components near the cut move between
+    runs), against about 25,300 implied by the paper (60% of 42,229). MINE''s
     side is estimated from a seeded random subsample of 600 components (20 in each of 30 random planes,
     16 fish), which decides no outcome. MINE identifies 45 and the linear model 30 of them; scaled to
     the dataset, the union is about 54,491 (95% interval over planes 26,711 to 86,594), 0.374 only by
@@ -130,8 +139,8 @@ outcomes:
 - claim: figs6-shuffle-enrichment
   outcome: blocked
   blocked_by: too_large
-  notes: 'Needs the CNN fits to the real data and again to the rotated control data, about 261 h on four
-    CPUs at the throughput measured in mine_fits_subsample.ipynb. A subsample cannot estimate the ratio:
+  notes: 'Needs the CNN fits to the real data and again to the rotated control data, 283 h on four
+    CPUs at the throughput measured in mine_fits_subsample.ipynb (section 5). A subsample cannot estimate the ratio:
     at the paper''s 93-fold enrichment, the 45 MINE fits found in 600 sampled components would leave an
     expected 0.5 in the rotated data.'
 - claim: figs6-mine-more-at-every-cutoff
@@ -139,10 +148,13 @@ outcomes:
   blocked_by: too_large
   notes: 'Depends on fig6d-mine-identifies-more-than-lm, blocked as too large. Estimated from the subsample
     of 600 fits (mine_fits_subsample.ipynb, no outcome rests on it): MINE''s estimated count is above
-    the linear model''s at every cutoff from 0.05 to 0.95, and at 0 they are about equal (362,799 against
-    371,188); no bootstrap interval of the difference lies wholly below zero. The linear model''s counts
-    over all bright components by cutoff are in the main notebook, section 5 (for example 45,149 at 0.6,
-    13,880 at 0.8, 1,162 at 0.95).'
+    the linear model''s at every cutoff from 0.05 to 0.95, and below it at 0 (362,580 against 371,878).
+    The criterion asks for MINE above the linear model at every cutoff where either count is above zero,
+    so the point estimate fails at 0; the bootstrap interval of the difference there (-22,008 to 4,230)
+    includes zero, and no interval lies wholly below zero. The 7 MINE fits with no test correlation count
+    as not identified at every cutoff, which probably accounts for part of the gap at 0. The linear model''s
+    counts over all bright components by cutoff are in the main notebook, section 5 (for example 45,144
+    at 0.6, 13,880 at 0.8, 1,162 at 0.95).'
   notebook: mine_fits_subsample.ipynb
   output: claim:figs6-mine-more-at-every-cutoff
 - claim: fig6e-functional-classes
@@ -170,7 +182,7 @@ outcomes:
     a pixel_mask column and no reference images, and the Texas-Red channel is there only as the raw movie
     (175 of 175 planes have a 1182 x 512 x 512 red movie, main notebook, finding-not-deposited). The claim
     would also need the fits of all 218,257 components of the six fish (the Bonferroni count is over all
-    fit neurons there), about 66 h on four CPUs at the measured throughput. The paper''s processed data
+    fit neurons there), 71 h on four CPUs at the throughput of mine_fits_subsample.ipynb (section 5). The paper''s processed data
     on Zenodo (doi:10.5281/zenodo.7737788, rs_analysis.hdf5) may hold the annotation; it was not opened.'
 - claim: fig7b-receptive-field-clusters
   outcome: blocked
@@ -251,7 +263,7 @@ outcomes:
   blocked_by: other
   notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
     simulations and models were not ported, so nothing was run. It would need 220 CNN fits on 15,000-frame
-    simulations, 0.2 h on four threads for the claim''s seed and 0.9 h for five by the notebook''s rough
+    simulations, 0.2 h on four threads for the claim''s seed and 1.0 h for five by the notebook''s rough
     estimate (section 5). Round 1 gave the reason as too_large; the notebook''s own estimates for some
     of these claims are within the run''s time, so the computation is not what blocked them.'
 - claim: fig2bcd-complexity-scores
@@ -266,8 +278,8 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: 'Data elsewhere, generated by the paper''s simulation code. Not attempted in this attempt: the
-    simulations and models were not ported, so nothing was run. It would need 2,000 CNN fits, about 1.6
-    h on four threads for one seed and 8.1 h for five by the notebook''s rough estimate. Round 1 gave
+    simulations and models were not ported, so nothing was run. It would need 2,000 CNN fits, about 1.8
+    h on four threads for one seed and 9.2 h for five by the notebook''s rough estimate. Round 1 gave
     the reason as too_large; the notebook''s own estimates for some of these claims are within the run''s
     time, so the computation is not what blocked them.'
 - claim: fig2s1-nonlinearity-metrics-agree
@@ -319,35 +331,35 @@ outcomes:
   blocked_by: other
   notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
     not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
-    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.1 h on four threads
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
     for one seed, on the zebrafish training length (the mouse sessions are longer).'
 - claim: fig5d-cortex-largely-linear
   outcome: blocked
   blocked_by: other
   notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
     not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
-    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.1 h on four threads
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
     for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
 - claim: fig5e-uninstructed-movements-dominate
   outcome: blocked
   blocked_by: other
   notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
     not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
-    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.1 h on four threads
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
     for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
 - claim: fig5fh-cortex-maps
   outcome: blocked
   blocked_by: other
   notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
     not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
-    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.1 h on four threads
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
     for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
 - claim: fig5i-cortex-receptive-fields
   outcome: blocked
   blocked_by: other
   notes: 'Data elsewhere: the mouse widefield data of Musall et al. 2019 are in the CSHL repository (doi:10.14224/1.38599),
     not in these dandisets. Not attempted in this attempt: the data were not fetched and processMusall.py
-    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.1 h on four threads
+    was not ported. For fig5c the notebook''s rough estimate is 2,600 CNN fits, about 2.4 h on four threads
     for one seed, on the zebrafish training length (the mouse sessions are longer). Depends on fig5c-cortex-components-fit.'
 findings:
 - kind: data_missing
@@ -406,7 +418,7 @@ findings:
     and with the paper's 495 s per plane (1,182 frames last 495.8 s); the paper's rate is rounded.
 - kind: other
   about: data
-  severity: major
+  severity: minor
   datasets:
   - '000235'
   - '000236'
@@ -417,9 +429,12 @@ findings:
     step is 4 ms (the largest step in the other planes is 0.70 s). The 125,300 or so samples then span
     about 629 s: in 8 planes the timestamps end at 623.8 s, 128 s after imaging ends, and in 2 they start
     at -133.5 s, where the others run from about -5.4 s to 495.8 s. The jump lies at tail times from -113.7
-    to 474.6 s, and nothing in the files says which side of it is placed correctly, so in each of these
-    planes part of the tail recording, and the bouts derived from it, are misplaced by 128 s relative
-    to the imaging. The affected planes are Fish31 planes 12 and 29, Fish47 planes 13 and 22, Fish58 planes
+    to 474.6 s, so in each of these planes part of the tail recording, and the bouts derived from it,
+    are misplaced by 128 s relative to the imaging. The time ranges show which part: in the 8 planes
+    ending at 623.8 s the start (-5.3 to -5.5 s) matches every other plane, and in the 2 starting at -133.5
+    s the end (495.80 s) does, and the sample counts (about 125,300 at 4 ms) are those of the other planes.
+    Moving the misplaced side by the jump (after it in the 8, before it in the 2) gives starts of -5.35
+    to -5.55 s and ends of 495.79 to 495.82 s, the range of the other planes. The affected planes are Fish31 planes 12 and 29, Fish47 planes 13 and 22, Fish58 planes
     0, 7 and 8, Fish10 plane 5, Fish36 plane 11 and Fish39 plane 16.'
 - kind: metadata_insufficient
   about: data
@@ -477,7 +492,8 @@ findings:
     No plane is deposited twice. The pixel masks line up with the movie (traces from the mask pixels correlate
     a median 0.834 with CaImAn's). The calcium is predicted far better by its own plane's temperature
     than by the next plane's (held-out correlation 0.656 against 0.393, in 98.5% of planes and every fish)
-    and rises after swim starts (peak at 1.8 s), consistent with shared clocks.
+    and its correlation with swim starts peaks 1.8 s after them (0.212 at 2 s, against 0.086 at -5 s
+    and 0.108 at -1 s), consistent with shared clocks.
 - kind: methods_unavailable
   about: paper
   statement: Question for the authors. Which threshold on the smoothed absolute angular derivative of
@@ -821,3 +837,244 @@ verifications:
     response: 'Block reason changed from too_large to other (not attempted), not to data_missing: the
       claims are data elsewhere, and the protocol keeps data_missing for data that are not public anywhere
       (author, step 1.4); the CSHL data are public. The disagreement on the reason is recorded here.'
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebooks of the round-1 revision (reproduce_costabile_2023.ipynb and
+    mine_fits_subsample.ipynb) with their conclusions and summary, the helper modules, the claims file and
+    the attempt record, with the paper under paper/. No finding was rated critical, so none was reviewed as
+    one.'
+  results:
+  - claim: data-zebrafish-coverage
+    agrees: true
+    outcome: reproduced
+    reason: 'Main notebook cells 24 and 25: 25 fish, 750 planes and 706,543 components, all exact. 434,651
+      components pass the cut, +0.41%, within the tolerance of 43,288. The deviation says the raw movie is
+      assumed here, but the outcome is not marked assumed: true. The assumption is reasonable, and the outcome
+      barely depends on it: the count moves about 4,000 per 0.01 of the cut, so only a large shift in brightness
+      would move it out of tolerance. It is still an assumption and should be flagged as one.'
+    response: 'No change of outcome. assumed: true is added, and the deviation now says why the raw movie was
+      taken and how little the outcome depends on it.'
+  - claim: figs6-train-test-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: 'Cells 28 to 30: the largest |median| is 0.051, under all four bout readings and in the orthogonalized
+      variant. The assumption (bouts re-derived at 5 or 10 rad/s, relative segment angles, sum_tail as the
+      direction metric) is stated and reasonable. Cell 17 shows the code''s default of 2 rad/s gives 4.9 bouts/s,
+      inside the noise, and the outcome does not change across readings.'
+    response: 'No change. In the clock check (cell 16), the sentence that calcium correlates with swim starts
+      "not before it" is corrected: the mean correlation is already 0.108 at -1 s against 0.086 at -5 s, and
+      peaks 1.8 s after the bout.'
+  - claim: fig6d-mine-identifies-more-than-lm
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls. The timing figures in cell 35 (1.89 s, 7.17 s, 227
+      h, 57 h) and in the record''s notes (1.89 s, about 4 s, 1.08 s, about 130 h, about 261 h) do not match
+      the outputs (1.37 s, 5.36 s, 164 h, 41 h; 3.08 s, 0.89 s, 107 h, 214 h); the round-1 response said the
+      per-fit time was corrected, and it still does not match.'
+    response: 'No change of outcome. The stale figures came from an earlier execution: the fit times vary between
+      runs by tens of percent. Cell 35 and the subsample''s conclusion no longer copy timing figures; they
+      refer to the printed ones, and cell 34 now prints how many five-hour runs the fits take (12.8, and 25.7
+      with the controls, in this run). The notes give the numbers of the new run (2.14 s on one thread, 257
+      h; 4.37 s in four processes, 1.17 s of wall time per fit, 141 h and 283 h), and the earlier run''s as
+      well. The linear model''s count moved from 26,326 to 26,328 in the new run; the notes give both, and
+      the notebook and README say about 26,300.'
+  - claim: figs6-shuffle-enrichment
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls. The record''s notes say about 261 h; the output is
+      214 h.'
+    response: No change of outcome. The notes give the new run's 283 h from the subsample's section 5, which
+      varies with the run's timing.
+  - claim: figs6-mine-more-at-every-cutoff
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls. Subsample cell 13 says "as figs6-mine-more-at-every-cutoff
+      states", but cell 10 shows MINE''s estimate below the linear model''s at cutoff 0 (362,799 against 371,188).
+      Under the claims file''s criterion (at every cutoff where either count is above zero) the point estimate
+      fails there; only the interval of the difference does not exclude zero. The same applies to "at 0 they
+      are about equal" in the record''s notes. The 7 MINE fits with no test correlation probably account for
+      part of this gap. This is an estimate and decides no outcome.'
+    response: No change of outcome. The subsample's conclusion and the notes now say that the point estimate
+      fails the criterion at cutoff 0 (362,580 against 371,878 in the new run), that the interval of the difference
+      there (-22,008 to 4,230) includes zero, and that the 7 fits without a test correlation probably account
+      for part of the gap.
+  - claim: fig6e-functional-classes
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig6e-mixed-selectivity-exists
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig6g-linear-model-bias
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig6f-reticulospinal-behavior
+    agrees: true
+    outcome: blocked
+    reason: 'fig6f, data_missing: agree. Cell 20: colnames [''pixel_mask''], no reference images; only the
+      raw red movie is present in 175 of 175 planes. The record''s notes say about 66 h on four CPUs; subsample
+      cell 12 prints 54 h, main cell 34 prints 21 h.'
+    response: No change of outcome. The notes now give the subsample's figure of the new run, 71 h on four
+      CPUs, and say where it is printed.
+  - claim: fig7b-receptive-field-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig7d-mixed-integration-modes
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: fig7e-complexity-by-cluster
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: lm-recovers-fewer-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: temperature-nonlinear-behavior-linear
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: interaction-terms-small
+    agrees: true
+    outcome: blocked
+    reason: 'The 12 fit claims, too_large: agree. Cell 34 gives 164 h on one thread; subsample cell 12 gives
+      107 h on 4 CPUs, 214 h with the rotated controls.'
+    response: No change of outcome.
+  - claim: figs6-stimulus-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: figs6-behavior-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: figs6-mixed-neuron-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig7a-behavior-feature-regions
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig7c-receptive-field-types
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig7f-complexity-anatomy
+    agrees: true
+    outcome: blocked
+    reason: 'The 6 anatomical claims, too_large: agree. I accept the author''s response. The claims file marks
+      them data: with_inputs (Zenodo centroids), so the dependence on the fits is the binding block.'
+    response: No change.
+  - claim: fig1f-mine-fits-ground-truth
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. The record says 0.2 h, 0.9 h for five
+      seeds; cell 34 prints 0.1 h, 0.6 h.'
+    response: No change of outcome. The notes give the new run's estimates, 0.2 h and 1.0 h for five seeds.
+  - claim: fig2bcd-complexity-scores
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig2e-linearity-roc
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. The record says 1.6 h and 8.1 h; cell
+      34 prints 1.2 h and 5.9 h.'
+    response: No change of outcome. The notes give the new run's estimates, 1.8 h and 9.2 h.
+  - claim: fig2s1-nonlinearity-metrics-agree
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig3-receptive-fields-slow-stimuli
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. The record says 0.2 h; cell 34 prints
+      0.1 h.'
+    response: No change of outcome. The new run's estimate is 0.2 h, as the notes say.
+  - claim: fig3-effective-degrees-of-freedom
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig3s1-white-noise-benchmark
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig3s1-training-length
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig4-taylor-metric-ranks-predictors
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree.'
+    response: No change.
+  - claim: fig5c-cortex-components-fit
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5d-cortex-largely-linear
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5e-uninstructed-movements-dominate
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5fh-cortex-maps
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.
+  - claim: fig5i-cortex-receptive-fields
+    agrees: true
+    outcome: blocked
+    reason: 'The 14 data-elsewhere claims, other (not attempted): agree. I also accept other in place of data_missing
+      for the mouse claims, because the CSHL data are public. The record says 2.1 h; cell 34 prints 1.5 h.'
+    response: No change of outcome. The notes give the new run's estimate, 2.4 h on four threads for one seed.

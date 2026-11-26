@@ -16,11 +16,12 @@ six fish with reticulospinal backfills.
 | Simulations (Figures 1 to 4) and mouse widefield data (Figure 5), data elsewhere (14) | Blocked: not attempted in this run |
 
 The files hold the paper's counts of fish, planes and components exactly, and the clock checks are consistent with one clock. Most of the paper's
-analyses rest on a CNN fit to each of about 433,000 neurons; on this runner that takes well over
-100 hours, so those claims are blocked. The paper's linear comparison model, fit here to every
-neuron, identifies 26,326, close to the roughly 25,300 the paper implies, and a random subsample of
+analyses rest on a CNN fit to each of about 433,000 neurons; on this runner that takes many times
+the five hours of a run (the hours are printed in `mine_fits_subsample.ipynb`, twice as many with
+the rotated controls), so those claims are blocked. The paper's linear comparison model, fit here to every
+neuron, identifies about 26,300, close to the roughly 25,300 the paper implies, and a random subsample of
 600 CNN fits gives estimates consistent with the paper's Figure 6D, with wide intervals
-(`mine_fits_subsample.ipynb`). In 10 planes the tail timestamps jump once by 128 s. The dandisets hold no swim bouts, no Z-Brain registration and
+(`mine_fits_subsample.ipynb`). In 10 planes the tail timestamps jump once by 128 s; the time ranges show which side is misplaced. The dandisets hold no swim bouts, no Z-Brain registration and
 no annotation of the backfilled neurons; the bouts are re-derived here from the tail tracking.
 
 The attempt record, with the reasons and the differences from the paper's method, is
