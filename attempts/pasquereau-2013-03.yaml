@@ -321,7 +321,12 @@ outcomes:
       gives no MPTP effect (85 to 95 units F = 2.0, p = 0.16, 41 and 42 pre and 15 and 43 post sessions; 175
       to 185 units F = 0.0, p = 0.98, 4 pre sessions per direction), which the criterion calls reproduced.
       The causal filter agrees at 175 to 185 units (p = 0.69) and at 85 to 95 units finds post-MPTP latencies
-      longer by under 1 ms (p = 0.0027), not shorter. Notebook, second cell under kinematics-slower.
+      longer by under 1 ms (p = 0.0027), not shorter. Notebook, second cell under kinematics-slower. The round-3
+      verifier did not agree and keeps not_reproduced. The criterion is applied to the session means over all
+      perturbations (F = 709.5, p = 1.5e-102); the equal-pulse subset is not defined by the claims file and
+      has 4 pre-MPTP sessions per direction at 175 to 185 units and 15 post-MPTP flexion sessions at 85 to
+      95 units, little power for an absence claim; and with the causal filter p = 0.0027 at 85 to 95 units,
+      which by the criterion is not reproduced.
 - claim: emg-m2-larger
   outcome: reproduced
   notebook: reproduce_pasquereau_2013.ipynb
@@ -367,6 +372,9 @@ outcomes:
       0.32; 175 to 185 units 27.0 against 46.7 ms, p = 0.087), and all means are outside tolerance, which the
       criterion calls not reproduced. Few channel-sessions enter (14 post-MPTP at 85 to 95 units, 5 pre-MPTP
       at 175 to 185). Notebook, cell tagged for the four EMG claims under EMG claims at other torque commands.
+      The round-3 verifier did not agree and keeps partially_reproduced. Over all channel-sessions, the comparison
+      the criterion specifies, it is met at partial (22.2 against 51.5 ms, KS p = 5.2e-33), and a non-significant
+      result on 14 and 5 channel-sessions cannot overturn it.
 - claim: emg-onset-unchanged
   outcome: not_reproduced
   notebook: reproduce_pasquereau_2013.ipynb
@@ -387,7 +395,10 @@ outcomes:
       185 units 37.4 against 24.9 ms, p = 0.057), which the criterion calls reproduced. Few channel-sessions
       enter (14 post-MPTP at 85 to 95 units, 5 pre-MPTP at 175 to 185), and at 175 to 185 units the onset is
       earlier after MPTP with p just above 0.05. Notebook, cell tagged for the four EMG claims under EMG claims
-      at other torque commands.
+      at other torque commands. The round-3 verifier did not agree and keeps not_reproduced. The criterion compares
+      all the responses (44.2 against 25.0 ms, KS p = 5.8e-22), and at 175 to 185 units the onset is 12.5 ms
+      earlier after MPTP with p = 0.057 on 5 pre-MPTP channel-sessions, a low-powered near-miss in the direction
+      of the effect, not evidence of absence.
 - claim: emg-m1-weak
   outcome: partially_reproduced
   notebook: reproduce_pasquereau_2013.ipynb
@@ -397,7 +408,8 @@ outcomes:
     channel rule 74.3% and 0.11 before, 96.3% and 0.23 after, the same outcome. Not deciding, at command pulses
     of 60 to 250 units m2 exceeds m1 in 94.9% before (59 channel-sessions, median ratio 0.10) and 97.1% after
     MPTP (0.26); at equal pulses of 85 to 95 units in 96.3% (54, 0.10) and 85.7% (14, 0.39), at 175 to 185
-    units in 80.0% (5, 0.19) and 95.2% (186, 0.32). The pre-MPTP shortfall comes from sessions with small pulses.
+    units in 80.0% (5, 0.19) and 95.2% (186, 0.32). The pre-MPTP shortfall comes from sessions with small pulses,
+    which are most pre-MPTP sessions (105 of 151 have a median pulse of 30 to 60 units).
   deviations:
   - Both readings of the channel rule were run; they give the same outcome.
   - Variants restricted to command pulses of 60 to 250 units and to equal pulses (85 to 95 and 175 to 185
@@ -409,7 +421,10 @@ outcomes:
       both states use, the criterion is met in both states (85 to 95 units 96.3% and 85.7%, median m1/m2 0.10
       and 0.39; 175 to 185 units 80.0% and 95.2%, 0.19 and 0.32), as it is at 60 to 250 units (94.9% and 97.1%).
       Few channel-sessions enter in one state at each size (14 post-MPTP, 5 pre-MPTP). Notebook, cell tagged
-      for the four EMG claims under EMG claims at other torque commands.
+      for the four EMG claims under EMG claims at other torque commands. The round-3 verifier did not agree and
+      keeps partially_reproduced. The small-pulse sessions are the majority of pre-MPTP sessions (105 of 151
+      have a median pulse of 30 to 60 units) and belong to the population the claims file fixes, so leaving
+      them out departs from the criterion.
 - claim: trial-correlations
   outcome: blocked
   blocked_by: methods_underspecified
@@ -921,3 +936,54 @@ verifications:
     response: Severity changed to major. The states do share two pulse sizes, near 90 units (483 pre-MPTP and 227
       post-MPTP perturbations) and near 180 units (41 and 1540), now printed in the finding's cell; the kinematic
       and EMG claims are compared there as variants, and four outcome changes are proposed from them.
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the four changes of outcome proposed after round 2 (kinematic-latency-unchanged, emg-duration-longer,
+    emg-onset-unchanged and emg-m1-weak) and the analysis behind them in the re-executed notebook (cells 21, 63
+    to 68 and 73 to 82), with the claims file and the paper. Report in transcripts/pasquereau-2013/verifier-3-report.md.
+  results:
+  - claim: kinematic-latency-unchanged
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion is applied to the session means over all perturbations: MPTP F = 709.5, p = 1.5e-102
+      (cell 68). The proposal decides instead on an equal-pulse subset the claims file does not define, from cell
+      65. That subset has 4 pre-MPTP sessions per direction at 175 to 185 units and 15 post-MPTP flexion sessions
+      at 85 to 95 units, which is little power for an absence claim. The subset results also depend on the filter.
+      With the claims file''s onset, p = 0.16 and 0.98. With the causal filter, p = 0.0027 at 85 to 95 units, which
+      by the criterion is not reproduced. In round 2 the author showed the claims file''s onset is the measure that
+      suffers the filter artifact. The numbers in cell 65 derive from the data as stated.'
+    response: Outcome kept as not_reproduced; the proposal stays with the verifier's view added to its reason. The
+      conclusion, summary and README now say the verifier did not agree.
+  - claim: emg-duration-longer
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'As written, the criterion is met at partial over all channel-sessions: 22.2 against 51.5 ms, KS p = 5.2e-33,
+      with both means outside tolerance (cell 78). The proposal rests on the subsets in cell 75. These have 14 post-MPTP
+      channel-sessions at 85 to 95 units and 5 pre-MPTP at 175 to 185 units. A non-significant result on so few
+      cannot overturn the comparison the criterion specifies. The cell 75 numbers (32.4 against 24.1 ms, p = 0.32;
+      27.0 against 46.7 ms, p = 0.087) match the record.'
+    response: Outcome kept as partially_reproduced; the proposal stays with the verifier's view added to its reason.
+      The conclusion, summary and README now say the verifier did not agree.
+  - claim: emg-onset-unchanged
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion compares all the responses used for emg-duration-longer and gives 44.2 against 25.0 ms,
+      KS p = 5.8e-22 (cell 80), so it is not reproduced. The proposal's "no difference" comes from the cell 75 subsets.
+      At 175 to 185 units the onset is 12.5 ms earlier after MPTP with p = 0.057 on 5 pre-MPTP channel-sessions.
+      That is a low-powered near-miss in the direction of the effect, not evidence of absence. At 85 to 95 units,
+      14 post-MPTP channel-sessions enter.
+    response: Outcome kept as not_reproduced; the proposal stays with the verifier's view added to its reason. The
+      conclusion, summary and README now say the verifier did not agree.
+  - claim: emg-m1-weak
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Over all channel-sessions, pre-MPTP m2 exceeds m1 in 151 of 204 (74.0%) under the main rule and in 74.3%
+      under the other rule, short of the 75% the criterion asks (cell 82). The proposal says the shortfall comes from
+      small-pulse sessions. Those are the majority of pre-MPTP sessions: 105 of 151 have a median pulse of 30 to 60
+      units (cell 21), and they belong to the population the claims file fixes. Leaving them out departs from the
+      criterion. The subsets meet it on 5 pre-MPTP channel-sessions at 175 to 185 units (80.0%, which is 4 of 5)
+      and 14 post-MPTP at 85 to 95 units (cell 75).'
+    response: Outcome kept as partially_reproduced; the proposal stays with the verifier's view added to its reason.
+      The notes now say the small-pulse sessions are most pre-MPTP sessions, and the conclusion, summary and README
+      say the verifier did not agree.

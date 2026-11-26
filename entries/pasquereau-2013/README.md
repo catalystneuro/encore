@@ -34,10 +34,14 @@ the reverse of the paper's; the angle's scale agrees with the task's 20 degree t
 the files' own velocity series, so this is in the data. Over all perturbations the evoked movement
 starts earlier after MPTP with a causal filter as well as with the claims file's. The two states
 share two pulse sizes, near 90 and near 180 units. Compared there, the latency of the evoked
-movement and the onset of the EMG response do not change after MPTP, the EMG response is not
-longer, and m1 is much smaller than m2 in both states. The record keeps the verified outcomes and
-proposes these four changes for a further round of verification. The attempt record, with the
-reasons and the differences from the paper's method, is
+movement (by the claims file's onset; the causal filter gives a difference under 1 ms, p =
+0.0027, at 85 to 95 units) and the onset of the EMG response do not change after MPTP, the EMG response is not
+longer, and m1 is much smaller than m2 in both states. Applied there, the criteria would change
+four outcomes. These changes were proposed for a third round of verification, and the verifier
+agreed with none of them: each criterion compares all sessions or channel-sessions, and the
+equal-pulse subsets are small. The verified outcomes stand, and the pulse-size difference is
+recorded as a finding about the data. The attempt record, with the reasons and the differences
+from the paper's method, is
 [`attempts/pasquereau-2013-03.yaml`](../../attempts/pasquereau-2013-03.yaml).
 
 - `reproduce_pasquereau_2013.ipynb`: the analysis. It takes about eleven minutes, most of it
