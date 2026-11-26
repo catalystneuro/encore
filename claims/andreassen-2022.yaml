@@ -1,0 +1,860 @@
+# Claims for Andreassen, Hall, Khatibzadeh, Jutfelt & Kermen (2022), "Brain dysfunction during
+# warming is linked to oxygen limitation in larval zebrafish", PNAS 119, e2207052119, on Figshare
+# item 19640805.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-26,
+# protocol as stated in docs/protocol.md (version pilot-19).
+#
+# Text read: the version of record (open access, PMC9522358), as served by Europe PMC from its
+# JATS XML, in paper/10.1073-pnas.2207052119.txt: Significance, introduction, Results, figure
+# legends of Figs. 1 to 6, Discussion, Methods and Data availability; and the SI Appendix
+# (pnas.2207052119.sapp.pdf), appended to the same file: legends of Figs. S1 to S4, Movies S1 to
+# S3, SI Statistical Analyses and the captions of Tables S1 to S10. The bodies of Tables S1 to
+# S10 are images and are not in the text; they were read from the rendered pages 6 to 11 of
+# paper/10.1073-pnas.2207052119.supp-sapp.pdf. Values quoted from those tables have no sentence
+# in the text and are marked as read from the table. The quote checker cannot find three
+# p-values printed only in those images (0.233 in Table S1; 0.008 and 0.030 in Table S10); they
+# were confirmed by reading the rendered pages.
+#
+# Code read: none. The R code for the statistical analyses and figures is deposited in the same
+# Figshare item as the data (doi:10.6084/m9.figshare.19640805, "Data and R script for ..."), and
+# the reader does not open the dataset's files. It may settle details named as open below
+# (outlier handling, temperature binning, the p-value method of the mixed models, the Q10
+# endpoints); the author should read it and record what it fixes.
+#
+# Data the paper used. All fish are Tg(elavl3:GCaMP6s) zebrafish in the nacre background
+# (Methods, Animals and Housing). Five experiments on different fish (Methods, Experimental
+# Design), heat ramp 0.3 °C/min from 28 °C:
+#   Experiment 1. CTmax (temperature at loss of response, first of three consecutive touches
+#     without escape) in freely swimming larvae: 5 dpf heat-ramp fish n = 12, 5 dpf controls
+#     held at 28 °C n = 14, 9 dpf n = 12; adults (7 to 10 months, loss of equilibrium for 2 s)
+#     n = 16 tested, 15 in Fig. 1C after one extreme outlier. Behaviour (manually tracked
+#     position, average speed at 28 to 29, 31 to 32, 34 to 35, 37 to 38 °C and the 1 °C before
+#     CTmax; spiral swimming and loss of equilibrium in the 12 min before CTmax).
+#   Experiment 2. Agar-embedded 5 dpf larvae, epifluorescence at 5 Hz: heat-ramp n = 11,
+#     control n = 8. Medulla calcium peak frequency (peaks/min, mean of left and right medulla),
+#     depolarization onset temperature (whole-brain fluorescence, low-pass 0.01 Hz, derivative
+#     above baseline mean + 5 SD).
+#   Experiment 3. Freely swimming larvae imaged at 5 Hz, n = 7: CTmax and depolarization onset
+#     (onset picked by two investigators, averaged) in the same fish.
+#   Experiment 4. Laterally embedded larvae, 20 Hz, n = 9 (1 of 10 excluded): heart rate by
+#     continuous wavelet transform in temperature categories 28, 31, 34, 37 °C, depolarization
+#     (60 s before to 30 s after peak) and after return to 28 °C; medulla peaks counted by eye.
+#   Experiment 5. Oxygen at 60% (hypoxia), 100% (normoxia), 150% (hyperoxia) air saturation,
+#     collected in two periods (July 2020, January 2021; "Experiment" factor). CTmax in freely
+#     swimming larvae (n = 24, 28, 21 after outliers; 76 before). Embedded larvae: depolarization
+#     onset, amplitude and recovery time (n = 14, 12, 14; recovery 14, 12, 13), medulla peak
+#     frequency (n = 12, 10, 11), optic tectum responses to 2 s red light flashes every 30 s,
+#     scored response or no response (n = 14, 11, 13).
+# The Figshare item's title and description say it holds the data and the R script for the
+# statistics and figures (CSV, R script and text; 12 files, about 0.1 MB), so it holds derived
+# per-fish values and no imaging. Which measures it holds is the author's to find.
+#
+# Statistics (Methods, Statistical Analyses; SI Statistical Analyses): R 4.1.1; ANOVAs (linear
+# models) on independent measures; linear mixed models with fish identity as a random intercept
+# (lme4 lmer, v1.1-27.1) on repeated measures; experiment period as a fixed factor for
+# experiment 5; models shown with and without extreme outliers (< Q1 - 3 IQR or > Q3 + 3 IQR);
+# alpha 0.05, and 0.001 for the releveled heart rate model. How p-values were obtained for the
+# mixed models is not said (lme4 gives none); see the claims concerned.
+#
+# Inconsistencies in the text, noted for the author: Fig. S1C's legend gives n = 14 heat-ramp
+# and 12 control fish, Table S2 and Fig. S1A give 12 heat-ramp and 14 control. Fig. 2F's legend
+# says 50 min before depolarization, SI Statistical Analyses says the trial start is 42 min
+# before. Methods, In freely moving fish, says experiment 2 where the freely swimming imaging is
+# experiment 3. Fig. S3D gives n = 14, 12, 14 for medulla frequency, Fig. 5D gives 12, 10, 11.
+# Table S7 heads both its second and third model columns "Model 2.1"; the caption makes the third
+# Model 2.2.
+#
+# Not claimed: the introduction and Discussion's literature comparisons (spreading depolarization
+# speeds, other species), the temperature homogeneity of the arena (a method check), and the
+# mortality of 6 of 92 larvae after CTmax (a method).
+schema_version: 2
+paper: doi:10.1073/pnas.2207052119
+claims:
+- id: fig1c-ctmax-5dpf
+  statement: Using loss of response as the end point, 5-day-old heat-ramp larvae reach CTmax at
+    41.4 ± 0.1 °C (mean ± SE, n = 12).
+  source: Results, CTmax Is Similar in Larval and Adult Zebrafish, paragraph 3; Figure 1C
+  quote: Using the loss of response as the end point for CT max , we found that 5-d-old heat-ramp
+    fish reached CT max at 41.4 ± 0.1 °C
+  expected:
+  - quantity: mean CTmax, 5 dpf heat-ramp larvae
+    value: 41.4
+    tolerance: 0.1
+    unit: °C
+  criterion: Mean over the 12 heat-ramp 5 dpf fish of experiment 1. The tolerance is the
+    reported SE.
+- id: fig1c-ctmax-similar-across-ages
+  statement: CTmax is similar in 5 dpf larvae, 9 dpf larvae (41.3 ± 0.2 °C, n = 12) and adults
+    tested by loss of equilibrium (41.0 ± 0.1 °C, n = 15), with no significant difference between
+    the ages.
+  source: Results, CTmax Is Similar in Larval and Adult Zebrafish, paragraph 3; Figure 1C; Table S3
+  quote: We repeated the experiment with 9-d-old fish ( n = 12) and found that they reached CT max
+    at similar temperatures (41.3 ± 0.2 °C ... adult zebrafish ( n = 15) tested using the
+    loss-of-equilibrium protocol ( 8 ) reached CT max at similar temperatures (41.0 ± 0.1 °C) as
+    those of larvae
+  statistics:
+  - about: 5 dpf against 9 dpf
+    test: linear model (ANOVA) of CTmax on age, extreme outlier removed (Table S3, Model 2)
+    p: 0.7
+    n: 12 5 dpf, 12 9 dpf and 15 adult fish
+  - about: 5 dpf against adult
+    test: linear model (ANOVA) of CTmax on age, extreme outlier removed (Table S3, Model 2)
+    p: 0.07
+  - about: 9 dpf against adult
+    test: linear model (ANOVA) of CTmax on age, extreme outlier removed
+    p: 0.2
+  - about: overall effect of age, outlier removed (Table S3, Model 2)
+    test: ANOVA
+    statistic: F(2,36) = 1.89
+    p: 0.17
+  expected:
+  - quantity: mean CTmax, 9 dpf larvae
+    value: 41.3
+    tolerance: 0.2
+    unit: °C
+  - quantity: mean CTmax, adults (outlier removed)
+    value: 41.0
+    tolerance: 0.1
+    unit: °C
+  criterion: A claim of absence, judged on the paper's test. As SI Statistical Analyses and Table
+    S3 describe, a linear model of CTmax on age (5 dpf, 9 dpf, adult) after removing the one adult
+    outside Q1 - 3 IQR (Model 2, 39 fish); the pairwise p-values the text gives (0.7, 0.07) are
+    those of Model 2, and the 9 dpf against adult p is from the model releveled to 9 dpf.
+    Reproduced when no pairwise contrast has p < 0.05; the contrasts and the overall F are
+    reported. Model 1, with all 16 adults (adult against 5 dpf p = 0.038 in Table S3), is shown
+    as a variant. The adult mean of 41.0 °C is over the 15 fish left after the outlier. Table S3
+    gives 41.36 - 0.41 = 40.95 °C in Model 2 and 41.36 - 0.54 = 40.82 °C over all 16 in Model 1.
+- id: figs1a-swim-speed-no-treatment-difference
+  statement: Swimming speed falls during the assay (from 2.9 ± 0.4 to 1.7 ± 0.4 mm/s), with no
+    difference between control and heat-ramp larvae.
+  source: Results, CTmax Is Similar in Larval and Adult Zebrafish, paragraph 2; Figure S1A; Table S1
+  quote: There was no difference in swimming speed between control and heat-ramp fish throughout
+    the assay
+  statistics:
+  - about: treatment (heat ramp against control), Table S1 model including treatment
+    test: linear mixed-effects model, fish as random factor
+    statistic: β = 0.76, SE 0.62, t = 1.22
+    p: 0.233
+    n: 26 fish (14 control, 12 heat ramp), 130 observations
+  - about: time interval 5 against time interval 1
+    test: linear mixed-effects model, fish as random factor
+    statistic: b = -1.2 ± 0.4 mm/s, t(100) = -2.4
+    p: 0.015
+  expected:
+  - quantity: mean speed, time interval 1 (Table S1 swim speed model intercept, 2.90)
+    value: 2.9
+    tolerance: 0.4
+    unit: mm/s
+  - quantity: mean speed, time interval 5
+    value: 1.7
+    tolerance: 0.4
+    unit: mm/s
+  criterion: A claim of absence, judged on the paper's test (SI Statistical Analyses, Table S1).
+    A linear mixed model of speed on time interval (five levels, categorical, interval 1 in the
+    intercept) plus treatment, random intercept per fish, 26 fish. Reproduced when the treatment
+    effect has p >= 0.05; its estimate is reported either way. The legend's "no difference in
+    the change" would need a time by treatment interaction, which Table S1 does not fit; that
+    model is shown as a variant. How the mixed model's p-values were obtained is not stated
+    (Satterthwaite t-tests via lmerTest are the reading the reported t(100) fits); the
+    expected values are the speed model's intercept and intercept plus time 5 estimate. The
+    Table S1 p for time 5 (0.017) and the legend's (0.015) differ; both are reported.
+- id: figs1bc-spiral-swimming
+  statement: Spiral swimming occurs in the 12 min before CTmax in 10 of 12 heat-ramp larvae and in
+    none of 14 controls, a significant difference.
+  source: Results, CTmax Is Similar in Larval and Adult Zebrafish, paragraph 2; Figure S1B and C;
+    Table S2
+  quote: Spiral swimming, loss of equilibrium and loss of response occurred toward the end of the
+    assay in heat-ramp fish ( SI Appendix , Fig. S1 C ) and were significantly more prevalent than
+    in control fish
+  statistics:
+  - test: Chi-squared test
+    statistic: X2(df=1,N=26) = 15.6
+    p: 0.001
+    p_relation: "<"
+    n: 14 control and 12 heat-ramp fish
+  expected:
+  - quantity: heat-ramp fish with spiral swimming
+    value: 10
+    tolerance: 0
+  - quantity: control fish with spiral swimming
+    value: 0
+    tolerance: 0
+  - quantity: chi-squared statistic
+    value: 15.6
+    tolerance: 1.56
+  criterion: Counts from Table S2's caption (0 of 14 control, 10 of 12 heat ramp); counts take
+    tolerance 0. A chi-squared test on the 2 by 2 table of fish with and without spiral swimming
+    by treatment. Whether the continuity correction was used is not said; R's chisq.test uses it
+    by default for a 2 by 2 table and the reported 15.6 equals the corrected statistic for these
+    counts (the uncorrected one is about 19.0), so the corrected test is the main reading and
+    the uncorrected one is shown. Reproduced when the counts match, the statistic is within
+    tolerance and p < 0.001.
+- id: figs1d-loss-of-equilibrium
+  statement: Heat-ramp larvae spend more of the 12 min before CTmax in loss of equilibrium than
+    controls do over the matching period.
+  source: Figure S1D; Table S2
+  quote: Loss of equilibrium (% time, see Methods and Movie S2) in heat ramp and control fish
+    during the same period as in C (Wilcoxon Rank Sum test
+  statistics:
+  - test: Wilcoxon rank sum test
+    statistic: W = 27, r = 0.58
+    p: 0.004
+    n: 14 control and 12 heat-ramp fish
+  expected:
+  - quantity: effect size r
+    value: 0.58
+    tolerance: 0.058
+  criterion: Per fish, the percentage of time in loss of equilibrium (tilted to the side for at
+    least 1 s, Methods, CTmax assay data analysis) over the 12 min before CTmax or the matching
+    control period; a two-sided Wilcoxon rank sum test of heat ramp against control. Reproduced
+    when p < 0.05 with the heat-ramp median higher, and r within tolerance. How r was computed is
+    not said; the reading named is r = |Z| / sqrt(N) with N = 26, the usual definition. W depends
+    on which group is first (27 fits control first with control lower), and is reported with
+    the order stated.
+- id: figs1e-loss-of-response-specific
+  statement: All heat-ramp larvae lose the escape response (loss of response) during warming, and
+    no control larva does.
+  source: Results, CTmax Is Similar in Larval and Adult Zebrafish, paragraph 2; Figure S1E
+  quote: all heat-ramp fish eventually became unresponsive to repeated trunk stimulation (loss of
+    response), and all control fish maintained a functional escape response throughout the assay
+  expected:
+  - quantity: heat-ramp fish reaching loss of response
+    value: 12
+    tolerance: 0
+  - quantity: control fish reaching loss of response
+    value: 0
+    tolerance: 0
+- id: fig2f-medulla-control-stable
+  statement: In embedded control larvae held at 28 °C, medulla activity stays stable at 1.6 ± 0.1
+    calcium peaks/min, with no effect of time.
+  source: Results, Warming Causes Neural Dysfunctions Near the Upper Thermal Limit, paragraph 2;
+    Figure 2F; Table S4
+  quote: Medullar activity remained stable at 1.6 ± 0.1 peaks/min in the control fish
+  statistics:
+  - about: linear time effect in controls
+    test: linear mixed-effects model, fish as random factor
+    p: 0.4
+    n: 8 control and 11 heat-ramp fish, 266 observations
+  - about: quadratic time effect in controls
+    test: linear mixed-effects model, fish as random factor
+    p: 0.3
+  expected:
+  - quantity: mean medulla calcium peak frequency, control fish
+    value: 1.6
+    tolerance: 0.1
+    unit: peaks/min
+  criterion: Model as SI Statistical Analyses and Table S4 give it. Peak frequency (mean of the
+    two medullae) on treatment, time (minutes from the start of the measuring period), time
+    squared and their interactions with treatment, random intercept per fish, 19 fish. A claim
+    of absence for the control time terms. Reproduced when the control time and time squared
+    terms both have p >= 0.05 and the control mean frequency is within tolerance. Open, with
+    readings shown, is the 1.6 itself (a) the mean over all control time bins and fish, (b) the
+    mean of per-fish means; and how p-values were obtained for lmer (Satterthwaite via lmerTest
+    as the main reading). The time bins are those of the deposited data if present; the paper
+    does not give their width (266 observations over 19 fish is about 14 bins per fish).
+- id: fig2f-medulla-heat-rise-then-fall
+  statement: In embedded heat-ramp larvae, medulla activity more than doubles with warming, to
+    3.6 ± 0.4 peaks/min, then falls sharply below control levels before the brain-wide
+    depolarization (significant time by heat ramp and time squared by heat ramp interactions).
+  source: Results, Warming Causes Neural Dysfunctions Near the Upper Thermal Limit, paragraph 2;
+    Figure 2F; Table S4
+  quote: in heat-ramp fish, the medullar activity more than doubled with temperature, and reached
+    3.6 ± 0.4 peaks/min prior to a sharp decline below control levels before a large seizure-like
+    brain-wide depolarization occurred
+  statistics:
+  - about: time by heat ramp
+    test: linear mixed-effects model, fish as random factor
+    statistic: β = 0.23, SE 0.03, t = 8.00
+    p: 0.001
+    p_relation: "<"
+    n: 11 heat-ramp and 8 control fish, 266 observations
+  - about: time squared by heat ramp
+    test: linear mixed-effects model, fish as random factor
+    statistic: β = -0.01, SE 0.00, t = -8.81
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: peak medulla calcium peak frequency, heat-ramp fish
+    value: 3.6
+    tolerance: 0.4
+    unit: peaks/min
+  depends_on:
+  - fig2f-medulla-control-stable
+  criterion: The Table S4 model as in fig2f-medulla-control-stable. Reproduced when both
+    interactions have p < 0.001 with a positive linear and a negative quadratic term, the peak
+    is within tolerance and at least twice the first time bin of the heat-ramp fish, and the
+    last bin before depolarization is below the control mean. The 3.6 can be read as (a) the
+    maximum of the heat-ramp group's mean curve over time bins, or (b) the mean of each fish's
+    maximum bin; both are shown.
+- id: figs2a-medulla-decrease-39-41
+  statement: Aligned to temperature, medulla activity of heat-ramp larvae drops strongly below the
+    control level at 39 to 41 °C.
+  source: Results, Warming Causes Neural Dysfunctions Near the Upper Thermal Limit, paragraph 2;
+    Figure S2A
+  quote: Plotting medullar activity across temperature confirmed this pattern ( SI Appendix , Fig.
+    S2 A ), with a strong decrease in medullar activity compared with the control, occurring at
+    39 to 41 °C
+  depends_on:
+  - fig2f-medulla-control-stable
+  criterion: No test is reported. Heat-ramp fish frequencies binned by temperature; the paper
+    does not give the bin width, so 1 °C bins are used as a standard choice. Reproduced when the
+    heat-ramp group mean is below the control mean frequency (control fish have no temperature
+    change, so their mean over the recording is the comparison) in the bins from 39 to 41 °C,
+    after being above it at lower temperatures.
+- id: fig2g-depolarization-onset-temperature
+  statement: In agar-embedded larvae the heat-induced brain-wide depolarization starts at 40.5 ±
+    0.4 °C (n = 11), close to the CTmax of freely swimming, age-matched fish.
+  source: Results, Warming Causes Neural Dysfunctions Near the Upper Thermal Limit, paragraph 3;
+    Figure 2G
+  quote: The heat-induced, brain-wide depolarizations started at 40.5 ± 0.4 °C in agar-embedded
+    fish ( Fig. 2 G ), which is close to the CT max temperature recorded in freely swimming,
+    age-matched fish in experiment 1 (41.4 ± 0.1 °C)
+  expected:
+  - quantity: mean depolarization onset temperature, experiment 2
+    value: 40.5
+    tolerance: 0.4
+    unit: °C
+  criterion: Mean over the 11 heat-ramp fish of experiment 2, onset as Methods, Calcium-Imaging
+    Data Analyses, In agar-embedded fish, defines it. The tolerance is the reported SE.
+- id: fig2e-depolarization-spread
+  statement: In a laterally mounted fish the depolarization spreads slowly, reaching dorsal brain
+    regions 10 to 12 s after its onset in the ventral diencephalon.
+  source: Results, Warming Causes Neural Dysfunctions Near the Upper Thermal Limit, paragraph 3;
+    Figure 2E; Movie S3
+  quote: it spread relatively slowly and reached the dorsal brain regions 10 to 12 s after the
+    onset in the ventral diencephalon
+  expected:
+  - quantity: delay from ventral diencephalon onset to dorsal brain regions
+    value: 11.1
+    tolerance: 2.1
+    unit: s
+  criterion: A single representative fish (Fig. 2E). Reproduced when the delay lies within the
+    reported range widened by 10% of each bound (9 to 13.2 s). How onset was timed per region is
+    not given; the whole-brain onset rule of the Methods (low-pass derivative above baseline
+    mean + 5 SD) applied per region is the reading named.
+- id: fig2d-recovery-after-depolarization
+  statement: After the depolarization, with the water returned to 28 °C, brain activity recovers
+    10 to 15 min later.
+  source: Results, Warming Causes Neural Dysfunctions Near the Upper Thermal Limit, paragraph 3;
+    Figure 2D
+  quote: Upon detection of the brain-wide depolarization, the water temperature was rapidly
+    decreased to 28 °C and brain activity recovered 10 to 15 min after the brain-wide
+    depolarization
+  expected:
+  - quantity: recovery time after depolarization
+    value: 12.75
+    tolerance: 3.75
+    unit: min
+  criterion: Reproduced when the recovery time lies within the reported range widened by 10% of
+    each bound (9 to 16.5 min). The paper shows this in one representative fish (Fig. 2D), whose
+    legend calls it the "recovery of normal brain activity and calcium peaks"; it gives no rule
+    for timing it. The recovery time the Methods define for experiment 5 (peak depolarization to
+    return to 0% ΔF/F0) is a different measure, about 2.5 min in normoxia (Table S8 intercept,
+    2.54 min), and does not apply. Open, with both shown, is the reading (a) time from peak
+    depolarization to the return of medulla calcium peaks, as the mean over the 11 heat-ramp
+    fish of experiment 2, or (b) the same in each fish. Likely untestable if the deposited data
+    hold no time series after the depolarization.
+- id: fig3d-ctmax-precedes-depolarization
+  statement: In freely swimming larvae imaged during the heat ramp, CTmax (40.9 ± 0.2 °C) precedes
+    the brain-wide depolarization (41.4 ± 0.2 °C) in every fish, by 0.5 °C on average.
+  source: Results, CTmax Precedes the Brain-Wide Depolarization, paragraph 1; Figure 3D; Table S5
+  quote: CT max (40.9 ± 0.2 °C) preceded the brain-wide depolarization (41.4 ± 0.2 °C) ( Fig. 3 C
+    ) in all individuals, by 0.5 °C on average ( P = 0.004)
+  statistics:
+  - test: mixed-effects model, response type as fixed effect, fish as random factor
+    statistic: β = 0.50, SE 0.11, t = 4.49
+    p: 0.004
+    n: 7 fish, 14 observations
+  expected:
+  - quantity: mean CTmax, experiment 3
+    value: 40.9
+    tolerance: 0.2
+    unit: °C
+  - quantity: mean depolarization onset, experiment 3
+    value: 41.4
+    tolerance: 0.2
+    unit: °C
+  - quantity: mean difference, depolarization minus CTmax
+    value: 0.5
+    tolerance: 0.11
+    unit: °C
+  - quantity: fish with depolarization after CTmax
+    value: 7
+    tolerance: 0
+  criterion: Model from SI Statistical Analyses and Table S5, temperature on response type (CTmax
+    or depolarization), random intercept per fish. The tolerance on the difference is the Table
+    S5 SE. Reproduced when the means and difference are within tolerance, p < 0.05, and all 7
+    fish have depolarization onset above CTmax. How lmer's p was obtained is open; with 7 fish
+    and two measures each, the Satterthwaite test (via lmerTest) equals a paired t-test with 6
+    df, whose p for t = 4.49 is about 0.004, the main reading; a normal approximation is shown.
+- id: fig4c-heart-rate-rises-to-34
+  statement: Heart rate of embedded larvae rises from 4.4 ± 0.1 Hz at 28 °C to 5.7 ± 0.1 Hz at 34
+    °C (Q10 1.5).
+  source: Results, Cardiac Function Is Reduced Prior to the Brain-Wide Depolarization, paragraph
+    1; Figure 4C; Table S6
+  quote: The heart rate increased with a Q 10 value (i.e., the rate of change with a 10 °C
+    increase in temperature) of 1.5 (from 4.4 ± 0.1 Hz to 5.7 ± 0.1 Hz) between 28 and 34 °C ( P <
+    0.001)
+  statistics:
+  - about: 34 °C against 28 °C
+    test: linear mixed-effects model, fish as random factor
+    statistic: β = 1.27, SE 0.19, t = 6.88
+    p: 0.001
+    p_relation: "<"
+    n: 9 fish, 50 observations
+  expected:
+  - quantity: mean heart rate, 28 °C category
+    value: 4.4
+    tolerance: 0.1
+    unit: Hz
+  - quantity: mean heart rate, 34 °C category
+    value: 5.7
+    tolerance: 0.1
+    unit: Hz
+  - quantity: Q10, 28 to 34 °C
+    value: 1.5
+    tolerance: 0.15
+  criterion: Model from SI Statistical Analyses and Table S6, heart rate on temperature category
+    (28, 31, 34, 37 °C, depolarization, after), random intercept per fish, 9 fish; alpha 0.001
+    for this releveled model. Q10 is computed as (R34 / R28) ^ (10 / 6) from the group means, the
+    standard formula, as the paper does not give its computation; per-fish Q10 averaged is
+    shown as a variant. Reproduced when the means and Q10 are within tolerance and the 34
+    against 28 °C term has p < 0.001.
+- id: fig4c-heart-rate-falls-then-stable
+  statement: From 34 to 37 °C the heart rate falls (Q10 0.6) to 4.7 ± 0.2 Hz, then stays stable up
+    to and through the brain-wide depolarization.
+  source: Results, Cardiac Function Is Reduced Prior to the Brain-Wide Depolarization, paragraph
+    1; Figure 4C, D and E; Table S6
+  quote: From 34 to 37 °C, the heart rate decreased (Q 10 = 0.6) to 4.7 ± 0.2 Hz ( P < 0.001),
+    after which it remained stable in the period prior to the brain-wide depolarization ( P =
+    0.6) ( Fig. 4 C ). The heart rate also remained unchanged during the brain-wide
+    depolarization
+  statistics:
+  - about: 37 °C against 34 °C
+    test: linear mixed-effects model, releveled, fish as random factor
+    p: 0.001
+    p_relation: "<"
+    n: 9 fish, 50 observations
+  - about: depolarization category against 37 °C
+    test: linear mixed-effects model, releveled, fish as random factor
+    p: 0.6
+  expected:
+  - quantity: mean heart rate, 37 °C category
+    value: 4.7
+    tolerance: 0.2
+    unit: Hz
+  - quantity: Q10, 34 to 37 °C
+    value: 0.6
+    tolerance: 0.06
+  depends_on:
+  - fig4c-heart-rate-rises-to-34
+  criterion: The Table S6 model, releveled to 34 °C and to 37 °C. The decrease holds when the 37
+    against 34 °C contrast is negative with p < 0.001. Stability is a claim of absence judged on
+    the paper's test, the depolarization category (60 s before to 30 s after peak) against 37 °C,
+    which holds at p >= 0.001 (the analysis's threshold); its p and size are reported. Q10 as
+    (R37 / R34) ^ (10 / 3) from group means. Reproduced when all of these hold and the values
+    are within tolerance. The paper reports no test for "unchanged during the depolarization"
+    (Fig. 4E traces); the same depolarization against 37 °C contrast is used for it.
+- id: figs2b-medulla-lateral-mount
+  statement: In laterally mounted larvae (experiment 4) medulla activity rises from 28 to 34 °C
+    and falls at 37 °C, as in experiment 2.
+  source: Results, Cardiac Function Is Reduced Prior to the Brain-Wide Depolarization, paragraph
+    1; Figure S2B
+  quote: The neural activity in the medulla displayed similar dynamics as in experiment 2, with an
+    increase from 28 to 34 °C and a decrease at 37 °C
+  criterion: No test is reported. Peaks were counted by eye in short recordings (Methods). Over
+    the 9 fish, reproduced when the mean frequency at 34 °C exceeds that at 28 °C and the mean at
+    37 °C is below that at 34 °C.
+- id: fig5a-ctmax-oxygen
+  statement: Oxygen level sets CTmax in freely swimming larvae. CTmax is 39.1 ± 0.1 °C in hypoxia
+    (n = 24), 0.5 °C below normoxia (39.6 ± 0.1 °C, n = 28), and 40.1 ± 0.2 °C in hyperoxia (n =
+    21), 0.5 °C above normoxia.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 1; Figure 5A;
+    Table S7
+  quote: CT max occurred at 39.1 ± 0.1 °C in the hypoxia treatment ( n = 24), 0.5 °C lower than in
+    normoxia (39.6 ± 0.1 °C; n = 28; P = 0.007) ... CT max occurred at 40.1 ± 0.2 °C in the
+    hyperoxia treatment ( n = 21), 0.5 °C higher than in normoxia ( P = 0.025)
+  statistics:
+  - about: hypoxia against normoxia
+    test: ANOVA (linear model), outliers removed, without Experiment (Table S7, Model 2.2)
+    statistic: β = -0.58, SE 0.21, t = -2.79
+    p: 0.007
+    n: 24 hypoxia, 28 normoxia, 21 hyperoxia fish (73 of 76)
+  - about: hyperoxia against normoxia
+    test: ANOVA (linear model), outliers removed, without Experiment (Table S7, Model 2.2)
+    statistic: β = 0.49, SE 0.21, t = 2.29
+    p: 0.025
+  - about: overall model, Model 2.2
+    test: ANOVA
+    statistic: F(2,70) = 11.67
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: mean CTmax, hypoxia
+    value: 39.1
+    tolerance: 0.1
+    unit: °C
+  - quantity: mean CTmax, normoxia
+    value: 39.6
+    tolerance: 0.1
+    unit: °C
+  - quantity: mean CTmax, hyperoxia
+    value: 40.1
+    tolerance: 0.2
+    unit: °C
+  criterion: As SI Statistical Analyses and Table S7 give it. Extreme outliers (< Q1 - 3 IQR) are
+    removed, two from hyperoxia and one from hypoxia, leaving 73 fish; a linear model of CTmax on
+    treatment (normoxia in the intercept) without the Experiment factor (Model 2.2), as
+    Experiment was not significant in Model 2.1. Reproduced when hypoxia is lower and hyperoxia
+    higher than normoxia, each at p < 0.05, and the means are within tolerance (the reported
+    SEs). Open is whether the quartiles for outliers are taken within each treatment (as "two
+    from the hyperoxia group" suggests) or over all fish; both are shown, and whether the same
+    three fish are removed is reported. Model 1 (all 76 fish, with Experiment), in which neither
+    contrast is significant (Table S7), is shown as a variant; the outcome rests on the outlier
+    removal the paper made.
+- id: fig5b-depolarization-oxygen
+  statement: Oxygen level sets the depolarization onset in embedded larvae. It occurs at 40.2 ±
+    0.3 °C in normoxia (n = 12), 2.5 °C lower in hypoxia (37.7 ± 0.5 °C, n = 14) and 1.3 °C higher
+    in hyperoxia (41.5 ± 0.2 °C, n = 14).
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 2; Figure 5B;
+    Table S8
+  quote: The brain-wide depolarization occurred at 40.2 ± 0.3 °C in normoxia ( n = 12) and occurred
+    at 2.5 °C lower in hypoxia (37.7 ± 0.5 °C; n = 14; P < 0.001) ... the hyperoxia treatment ( n =
+    14) increased the depolarization temperature by 1.3 °C compared with normoxia (41.5 ± 0.2 °C;
+    P = 0.003)
+  statistics:
+  - about: hypoxia against normoxia
+    test: ANOVA (linear model) with Experiment as fixed factor (Table S8)
+    statistic: β = -2.69, SE 0.39, t = -6.90
+    p: 0.001
+    p_relation: "<"
+    n: 14 hypoxia, 12 normoxia, 14 hyperoxia fish
+  - about: hyperoxia against normoxia
+    test: ANOVA (linear model) with Experiment as fixed factor (Table S8)
+    statistic: β = 1.22, SE 0.39, t = 3.13
+    p: 0.003
+  - about: overall model
+    test: ANOVA
+    statistic: F(3,36) = 45.5
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: mean depolarization onset, normoxia
+    value: 40.2
+    tolerance: 0.3
+    unit: °C
+  - quantity: mean depolarization onset, hypoxia
+    value: 37.7
+    tolerance: 0.5
+    unit: °C
+  - quantity: mean depolarization onset, hyperoxia
+    value: 41.5
+    tolerance: 0.2
+    unit: °C
+  criterion: A linear model of onset temperature on treatment (normoxia in the intercept) and
+    Experiment (period 1 or 2), 40 fish, as Table S8. Reproduced when hypoxia is lower and
+    hyperoxia higher than normoxia, each at p < 0.05, and the means are within tolerance (the
+    reported SEs). The text's differences (2.5, 1.3 °C) are differences of raw means and the
+    model estimates (-2.69, 1.22) are adjusted for Experiment; both are reported.
+- id: figs3b-amplitude-no-oxygen-effect
+  statement: Oxygen level does not change the amplitude of the brain-wide depolarization.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 2; Figure S3B;
+    Table S8
+  quote: Oxygen level did not change the amplitude of the brain-wide depolarization
+  statistics:
+  - about: hypoxia against normoxia
+    test: ANOVA (linear model) with Experiment as fixed factor (Table S8)
+    statistic: β = 14.88, SE 14.80, t = 1.00
+    p: 0.3
+    n: 14 hypoxia, 12 normoxia, 14 hyperoxia fish
+  - about: hyperoxia against normoxia
+    test: ANOVA (linear model) with Experiment as fixed factor (Table S8)
+    statistic: β = -10.60, SE 14.73, t = -0.72
+    p: 0.5
+  criterion: A claim of absence, judged on the paper's test. Amplitude is the maximum %ΔF/F0
+    returned by findpeaks after onset (Methods). A linear model of amplitude on treatment and
+    Experiment, 40 fish, as Table S8. Reproduced when neither contrast with normoxia has p < 0.05;
+    the contrasts are reported either way.
+- id: figs3c-recovery-longer-in-hypoxia
+  statement: Hypoxia prolongs the recovery time after the depolarization compared with normoxia;
+    hyperoxia does not shorten it significantly.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 2; Figure S3C;
+    Table S8
+  quote: the oxygen limitation significantly prolonged the recovery time after the depolarization
+  statistics:
+  - about: hypoxia against normoxia
+    test: ANOVA (linear model) with Experiment as fixed factor (Table S8)
+    statistic: β = 2.57, SE 0.44, t = 5.86
+    p: 0.001
+    p_relation: "<"
+    n: 14 hypoxia, 12 normoxia, 13 hyperoxia fish
+  - about: hyperoxia against normoxia
+    test: ANOVA (linear model) with Experiment as fixed factor (Table S8)
+    statistic: β = -0.71, SE 0.44, t = -1.60
+    p: 0.1
+  expected:
+  - quantity: hypoxia minus normoxia recovery time (model estimate)
+    value: 2.57
+    tolerance: 0.44
+    unit: min
+  criterion: Recovery time from peak depolarization to the return to 0% ΔF/F0, F0 the mean over
+    the 5 min before onset (Methods); one hyperoxic fish excluded as its recording ended before
+    baseline. A linear model of recovery time on treatment and Experiment, 39 fish, as Table S8.
+    Reproduced when hypoxia is longer than normoxia at p < 0.05 with the estimate within the
+    Table S8 SE, and the hyperoxia contrast has p >= 0.05.
+- id: figs3d-medulla-drops-before-depolarization
+  statement: In all three oxygen treatments, medulla activity drops sharply in the minutes before
+    the brain-wide depolarization.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 3; Figure S3D
+  quote: In all groups, the medullar activity sharply decreased in the minutes prior to the
+    brain-wide depolarization
+  criterion: No test is reported. Frequencies aligned to depolarization onset over the 30 min
+    before it (Fig. S3D). The paper gives no window for "the minutes prior"; the readings are the
+    group mean over the last 2 min and over the last 5 min before onset. Reproduced when, under
+    one reading, that mean is below half the group's maximum mean in the 30 min window in each
+    of the three treatments. The half is a threshold set here for "sharply", which the paper
+    does not quantify; the ratios are reported.
+- id: fig5d-medulla-normoxia
+  statement: In normoxia, medulla activity rises with warming until 36 °C (Q10 1.8), to a maximum
+    of 2.5 ± 0.4 peaks/min.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 3; Figure 5D;
+    Table S9
+  quote: Neural activity in the medulla increased until 36 °C (Q 10 = 1.8) in the normoxia
+    treatment ( n = 10), reaching a maximum frequency of 2.5 ± 0.4 peaks/min
+  expected:
+  - quantity: maximum medulla peak frequency, normoxia
+    value: 2.5
+    tolerance: 0.4
+    unit: peaks/min
+  - quantity: temperature of the maximum, normoxia
+    value: 36
+    tolerance: 1
+    unit: °C
+  - quantity: Q10 of medulla frequency, normoxia
+    value: 1.8
+    tolerance: 0.18
+  criterion: Frequencies binned by temperature, normoxia fish (n = 10). The bin width is not
+    given; 1 °C bins are used, the resolution of the reported temperatures, and the temperature
+    of the maximum takes a tolerance of one bin. The maximum is read as (a) the peak of the group
+    mean curve or (b) the mean of per-fish maxima. Q10 as (R2 / R1) ^ (10 / (T2 - T1)) on group
+    means, with endpoints read as 28 °C and the temperature of the maximum (36 °C), the span the
+    sentence names. Reproduced when, under one reading, all three values are within tolerance.
+- id: fig5d-medulla-hyperoxia
+  statement: In hyperoxia, medulla activity rises faster with warming (Q10 1.9) and reaches a
+    higher maximum, 3.3 ± 0.3 peaks/min at 37 °C.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 3; Figure 5D;
+    Table S9
+  quote: The frequency of calcium peaks increased at a higher rate in the hyperoxia treatment (Q 10
+    = 1.9; n = 11) and reached a higher maximum frequency of 3.3 ± 0.3 peaks/min at 37 °C
+  statistics:
+  - about: hyperoxia by temperature against normoxia (Table S9)
+    test: linear mixed-effects model, cubic temperature, fish as random factor
+    statistic: β = 0.09, SE 0.02, t = 3.75
+    p: 0.001
+    p_relation: "<"
+    n: 33 fish (12 hypoxia, 10 normoxia, 11 hyperoxia), 391 observations
+  expected:
+  - quantity: maximum medulla peak frequency, hyperoxia
+    value: 3.3
+    tolerance: 0.3
+    unit: peaks/min
+  - quantity: temperature of the maximum, hyperoxia
+    value: 37
+    tolerance: 1
+    unit: °C
+  - quantity: Q10 of medulla frequency, hyperoxia
+    value: 1.9
+    tolerance: 0.19
+  depends_on:
+  - fig5d-medulla-normoxia
+  criterion: Binning, maximum readings and Q10 as in fig5d-medulla-normoxia, with Q10 endpoints
+    28 and 37 °C (the temperature of the hyperoxic maximum). The model from SI Statistical
+    Analyses and Table S9, frequency on treatment by temperature (standardized so that 28 °C is
+    zero) plus temperature squared and cubed, random intercept per fish; the text does not say
+    whether temperature is in °C or bins, and the deposited data's form is used. Reproduced when
+    the values are within tolerance under one reading and the hyperoxia by temperature term is
+    positive with p < 0.05.
+- id: fig5d-medulla-hypoxia
+  statement: In hypoxia, medulla activity falls with temperature from the start of the ramp, at an
+    accelerating rate (Q10 0.8 from 28 to 34 °C, 0.02 from 34 to 38 °C).
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 3; Figure 5D;
+    Table S9
+  quote: In the hypoxia treatment ( n = 12), contrarily, the frequency decreased with temperature
+    from the start of the trial at an accelerating rate (Q 10 at 28 to 34 °C = 0.8; Q 10 at 34 to
+    38 °C = 0.02)
+  statistics:
+  - about: hypoxia by temperature against normoxia (Table S9)
+    test: linear mixed-effects model, cubic temperature, fish as random factor
+    statistic: β = -0.16, SE 0.03, t = -5.66
+    p: 0.001
+    p_relation: "<"
+    n: 33 fish (12 hypoxia, 10 normoxia, 11 hyperoxia), 391 observations
+  expected:
+  - quantity: Q10 of medulla frequency, hypoxia, 28 to 34 °C
+    value: 0.8
+    tolerance: 0.08
+  - quantity: Q10 of medulla frequency, hypoxia, 34 to 38 °C
+    value: 0.02
+    tolerance: 0.002
+  depends_on:
+  - fig5d-medulla-normoxia
+  criterion: Binning and Q10 formula as in fig5d-medulla-normoxia, with the endpoints the text
+    gives. The 0.02 rests on a near-zero rate at 38 °C and is very sensitive to that bin; it is
+    judged as reproduced when the computed Q10 is below 0.1 (the 10% tolerance on so small a
+    value would decide on bin noise; reason for the wider tolerance), and the value is
+    reported. The Table S9 model as in fig5d-medulla-hyperoxia. Reproduced when the first Q10 is
+    within tolerance, the second below 0.1, and the hypoxia by temperature term is negative with
+    p < 0.05.
+- id: figs4ab-light-response-amplitude-falls
+  statement: The amplitude of optic tectum responses to light flashes falls with increasing
+    temperature in all three oxygen treatments.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 5; Figure S4A
+    and B
+  quote: The amplitude of light-evoked responses decreased with increasing temperature in all
+    treatments
+  criterion: No test is reported. Amplitude is the mean %ΔF/F0 over the 4 s after flash onset, F0
+    the mean over the 2 s before (Methods). Per treatment, a Spearman correlation of amplitude
+    with temperature over all flashes of all fish, a standard choice the paper does not make.
+    Reproduced when it is negative with p < 0.05 in each treatment; a mixed model with a fish
+    intercept is shown as a variant.
+- id: fig6c-light-responsiveness-by-oxygen
+  statement: Optic tectum responsiveness to light declines with heating, and its resilience
+    depends on oxygen. In normoxia about 31% of flashes evoke a response until 31 °C, then fewer;
+    in hypoxia responses decline from 33% from the start; in hyperoxia 36% is kept up to 36 °C,
+    a gain in resilience of 5 °C.
+  source: Results, Oxygen Availability Affects Neural Function and CTmax, paragraph 5; Figure 6C
+  quote: In normoxia ( n = 11), the optic tectum responses were initially recorded to 31% of the
+    light flashes until 31 °C, after which the responsiveness gradually decreased with further
+    heating ... In hypoxia ( n = 14), the proportion of neural responses decreased from 33% from
+    the start of the heat ramp. The hyperoxic treatment ( n = 13) increased the resilience of
+    sensory response to heating by 5 °C, as a responsiveness of 36% was maintained up to 36 °C
+  expected:
+  - quantity: initial response percentage, normoxia
+    value: 31
+    tolerance: 3.1
+    unit: "%"
+  - quantity: initial response percentage, hypoxia
+    value: 33
+    tolerance: 3.3
+    unit: "%"
+  - quantity: maintained response percentage, hyperoxia
+    value: 36
+    tolerance: 3.6
+    unit: "%"
+  - quantity: temperature up to which responsiveness is kept, normoxia
+    value: 31
+    tolerance: 1
+    unit: °C
+  - quantity: temperature up to which responsiveness is kept, hyperoxia
+    value: 36
+    tolerance: 1
+    unit: °C
+  criterion: A flash is a response when the mean %ΔF/F0 over the 4 s after onset exceeds 2 SD
+    above F0 (Methods); which SD is open, read as the SD of the 2 s pre-flash signal, and the
+    deposited binary outcomes are used if present. Percentages are of flashes, pooled over fish,
+    in 1 °C bins (the bin width is not given; a standard choice). The initial percentage is the
+    mean over bins from 28 °C up to the stated temperature (normoxia 28 to 31, hyperoxia 28 to
+    36, hypoxia the first bin); a mean of per-fish percentages is shown as a variant. The
+    temperature of decline is the last bin before the percentage falls below the initial level
+    minus its tolerance. Reproduced when the percentages and temperatures are within tolerance
+    under one reading and the hypoxic percentage falls from its first bin.
+- id: tables10-light-response-model
+  statement: In a binomial mixed model, responsiveness at mean temperature is lower in hypoxia
+    (13%) and higher in hyperoxia (37%) than in normoxia (26%), falls with temperature, and
+    hyperoxia slows its decline with temperature.
+  source: Table S10 and its caption; SI Statistical Analyses, Effect of oxygen level on neural
+    activity
+  quote: At mean temperature control group had 26 % probability of responding, high had 37 % and
+    low had half of control (13%)
+  statistics:
+  - about: hypoxia against normoxia, logit scale
+    test: binomial mixed-effects model, logit link, fish as random factor
+    statistic: β = -0.85, SE 0.22
+    p: 0.001
+    p_relation: "<"
+    n: 38 fish, 2763 flashes
+  - about: hyperoxia against normoxia, logit scale
+    test: binomial mixed-effects model, logit link, fish as random factor
+    statistic: β = 0.49, SE 0.18
+    p: 0.008
+  - about: temperature (centered), normoxia
+    test: binomial mixed-effects model, logit link, fish as random factor
+    statistic: β = -0.13, SE 0.02
+    p: 0.001
+    p_relation: "<"
+  - about: hyperoxia by temperature
+    test: binomial mixed-effects model, logit link, fish as random factor
+    statistic: β = 0.07, SE 0.03
+    p: 0.03
+  expected:
+  - quantity: probability of response at mean temperature, normoxia
+    value: 26
+    tolerance: 2.6
+    unit: "%"
+  - quantity: probability of response at mean temperature, hyperoxia
+    value: 37
+    tolerance: 3.7
+    unit: "%"
+  - quantity: probability of response at mean temperature, hypoxia
+    value: 13
+    tolerance: 1.3
+    unit: "%"
+  depends_on:
+  - fig6c-light-responsiveness-by-oxygen
+  criterion: Model as SI Statistical Analyses and Table S10 give it. Response (1 or 0) per flash
+    on treatment, temperature centered on its mean, temperature squared, and their interactions
+    with treatment; logit link; random intercept per fish (lme4 glmer); 38 fish. Probabilities
+    are the inverse logit of the intercept and intercept plus treatment terms. Whether the mean
+    temperature is over all flashes or per treatment is open; both are shown. Reproduced when
+    the hypoxia term is negative and the hyperoxia term positive, each at p < 0.05, the
+    temperature term negative at p < 0.05, the hyperoxia by temperature term positive at p <
+    0.05, and the probabilities within tolerance.
+- id: discussion-depolarization-magnitude
+  statement: The brain-wide depolarizations are four to five times the magnitude of medulla
+    locomotor calcium peaks and last much longer.
+  source: Discussion, paragraph 1; Figure 2
+  quote: These brain depolarizations were four to five times the magnitude of medulla locomotor
+    calcium peaks and lasted considerably longer
+  expected:
+  - quantity: ratio of depolarization amplitude to medulla calcium peak amplitude
+    value: 4.55
+    tolerance: 0.95
+  criterion: The paper gives no method. Per fish of experiment 2, the depolarization's peak
+    %ΔF/F0 (findpeaks maximum after onset, Methods) over the mean amplitude of that fish's
+    medulla calcium peaks; open is whether both are taken in the medulla or the depolarization
+    on the whole brain, and both readings are shown. Reproduced when the median ratio lies in the
+    reported range widened by 10% of each bound (3.6 to 5.5). Likely untestable from derived
+    data if peak amplitudes are not deposited.
+checks:
+- date: 2026-11-26
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1c-ctmax-similar-across-ages. Removed the open question on whether the adult mean is over
+    15 or 16 fish. Table S3 settles it (Model 2, 41.36 - 0.41 = 40.95 °C over 15; Model 1, 40.82
+    °C over 16), so the 41.0 °C is the 15-fish mean.
+  - figs1a-swim-speed-no-treatment-difference. Named the intercept as that of the swim speed model
+    (2.90), since the model with treatment has a different intercept (2.55, control).
+  - fig2e-depolarization-spread. Expected 11 ± 2.2 s gave 8.8 to 13.2 s, not the 9 to 13.2 s the
+    criterion states for the 10 to 12 s range widened by 10% of each bound; set to 11.1 ± 2.1.
+  - fig2d-recovery-after-depolarization. Expected 12.5 ± 4 min gave 8.5 to 16.5 min; set to 12.75
+    ± 3.75 (9 to 16.5 min). Dropped the reading that applied the experiment 5 recovery time
+    (return to 0% ΔF/F0), as Table S8 puts that measure at about 2.5 min in normoxia, so it is not the
+    10 to 15 min recovery, which the Fig. 2D legend describes as the return of normal activity and
+    calcium peaks. Replaced the invented median rule with the mean over fish or each fish, both
+    named as readings.
+  - discussion-depolarization-magnitude. Expected 4.5 ± 1 gave 3.5 to 5.5; set to 4.55 ± 0.95
+    (3.6 to 5.5), the range the criterion states.
+  - Header. Noted the Table S7 column heading error (Model 2.1 printed twice).
+  - Checked all statistics against the rendered Tables S1 to S10, including the three p-values the
+    quote checker cannot find (0.233 in Table S1; 0.008 and 0.030 in Table S10); they match.
+  - Open, not settled. figs3d-medulla-drops-before-depolarization judges "sharply" with a
+    threshold of half the window maximum that the paper does not give; it is named as set by the
+    reader, and an outcome resting on it rests on an assumption.
+  - Open, not settled. figs4ab-light-response-amplitude-falls uses a Spearman correlation and
+    fig6c-light-responsiveness-by-oxygen a decline rule (below the initial level minus its
+    tolerance) and 1 °C bins, none of which the paper gives; the deposited R script may fix them.
+  - Open, not settled. Outlier quartiles (fig5a), temperature binning (fig2f, figs2a, fig5d,
+    fig6c), Q10 endpoints and the p-value method of the lmer models are not fixed by the text;
+    the deposited R script, which the reader did not open, may settle them.
