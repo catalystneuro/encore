@@ -2,7 +2,7 @@ schema_version: 3
 id: clark-2026-01
 datasets:
 - archive: dandi
-  id: "000939"
+  id: 000939
   version: 0.240528.1542
   doi: 10.48324/dandi.000939/0.240528.1542
   relation: reuses
@@ -21,16 +21,18 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/encorescience/encore-registry/actions/runs/45814018831
 inputs:
-- what: The paper's cached tuning curves, mouse_data/tc_data.npz of the record's tar
-    symmetries_caches_v1.tar, read by range requests and checked against the record's
-    CHECKSUMS.md5 (MD5 6e1f3a17ab67e2e0eb8fac35d89e2d57). Used only by the link claim
-    tuning-curves-match-cache.
+- what: 'The paper''s cached tuning curves, mouse_data/tc_data.npz of the record''s tar symmetries_caches_v1.tar,
+    read by range requests and checked against the record''s CHECKSUMS.md5 (MD5 6e1f3a17ab67e2e0eb8fac35d89e2d57),
+    used by the link claim tuning-curves-match-cache. Two more members of the same tar, read the same
+    way and checked against their MD5, are used only as variants for comparison: grid_search_results.npz
+    (the paper''s error grid of the Fig. 4 fit, MD5 a48c2eb26c3a6a095d901938dc63efc1) in fig4-generative-fit,
+    and pc_convergence_grid.npz (its err_grid, the flow error by lambda, MD5 60476aacc7f2eb2000a7c718846f46fc)
+    in figs8-s9-lambda-and-c.'
   source: doi:10.5281/zenodo.21827768
-- what: The paper's code (package ring and its notebooks), read for every method detail and
-    repeated in numpy in hdring.py; ring/dmft.py is copied as ring_dmft.py without its torch
-    imports (MIT licence). The simulation-only claims (data elsewhere) run this code.
-  source: https://github.com/davidclark1/symmetries-continuous-attractors at commit
-    245726fa78457e10cdcf17e6be36fba1dec98061
+- what: The paper's code (package ring and its notebooks), read for every method detail and repeated in
+    numpy in hdring.py; ring/dmft.py is copied as ring_dmft.py without its torch imports (MIT licence).
+    The simulation-only claims (data elsewhere) run this code, in theory.ipynb and model_sims.ipynb.
+  source: https://github.com/davidclark1/symmetries-continuous-attractors at commit 245726fa78457e10cdcf17e6be36fba1dec98061
 outcomes:
 - claim: hd-cell-selection
   outcome: reproduced
@@ -42,37 +44,34 @@ outcomes:
   - 1533
   - 315
   - 117
-  notes: 31 files, one per subject, 2,691 units, 1,533 with is_head_direction. All 1,533 are also
-    is_excitatory, so readings (a) and (b) give the same count; the code's drop of all-zero curves
-    removes none. The nine sessions with a wake_opto epoch (A1808, A1813, A1815, A1821, A1824,
-    A6211, A6215, A6216, A9701) are the nine +ogen.nwb files and hold 315 head-direction cells.
-    The four largest sessions are A3707 117, A3716 93, A3711 90 and A3706 86. Every file holds the
-    wake_square epoch, including the +ogen.nwb files, which settles the claims file's open
-    question.
+  notes: 31 files, one per subject, 2,691 units, 1,533 with is_head_direction. All 1,533 are also is_excitatory,
+    so readings (a) and (b) give the same count; the code's drop of all-zero curves removes none. The
+    nine sessions with a wake_opto epoch (A1808, A1813, A1815, A1821, A1824, A6211, A6215, A6216, A9701)
+    are the nine +ogen.nwb files and hold 315 head-direction cells. The four largest sessions are A3707
+    117, A3716 93, A3711 90 and A3706 86. Every file holds the wake_square epoch, including the +ogen.nwb
+    files, which settles the claims file's open question.
 - claim: tuning-curves-match-cache
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:tuning-curves-match-cache
-  notes: The cache's session order, unit counts and three label columns equal the files'. All
-    1,533 recomputed partition-averaged curves correlate with the cached ones at r = 1.000000
-    (largest absolute difference 1.4e-14 Hz; plain curves identical). The chosen smoothing widths
-    are equal for both partitions in 78.4% of units (88.6% of partition curves); where they differ
-    the smoothed curves still agree to 2e-14 Hz, so the widths are ties (scipy's kernel is the
-    identity for the smallest widths, and the largest flatten the curve). The labels in the files
-    match the paper's per-unit table, and the dataset's measures match the cached values unit by
+  notes: The cache's session order, unit counts and three label columns equal the files'. All 1,533 recomputed
+    partition-averaged curves correlate with the cached ones at r = 1.000000 (largest absolute difference
+    1.4e-14 Hz; plain curves identical). The chosen smoothing widths are equal to rounding (np.isclose,
+    rtol 1e-9) for both partitions in every unit; an exact comparison (==) gives 78.4% of units only because
+    the cache stores values such as 0.09999999999999999 where the grid here has 0.1. The labels in the
+    files match the paper's per-unit table, and the dataset's measures match the cached values unit by
     unit.
   deviations:
-  - The held-out Poisson log-likelihood is computed from per-angle sums of counts and occupancy,
-    which leaves out the sum of log k!, a term that does not depend on the curve (hdring.py,
-    tuning_curves_session); the chosen curve is the same.
+  - The held-out Poisson log-likelihood is computed from per-angle sums of counts and occupancy, which
+    leaves out the sum of log k!, a term that does not depend on the curve (hdring.py, tuning_curves_session);
+    the chosen curve is the same.
 - claim: fig1e-heterogeneous-peaks
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig1e-heterogeneous-peaks
-  notes: At zthresh 1 the curves have 1 to 6 peaks (1,121 with one, 357 with two, 48 with three,
-    5 with four, one each with five and six). The separation of the two highest peaks of the 412
-    multi-peaked curves runs from 0.13 to 3.14 rad, interquartile range 1.38 rad against pi/4
-    (0.79).
+  notes: At zthresh 1 the curves have 1 to 6 peaks (1,121 with one, 357 with two, 48 with three, 5 with
+    four, one each with five and six). The separation of the two highest peaks of the 412 multi-peaked
+    curves runs from 0.13 to 3.14 rad, interquartile range 1.38 rad against pi/4 (0.79).
 - claim: fig5d-peak-numbers
   outcome: reproduced
   notebook: tuning_curves.ipynb
@@ -83,21 +82,21 @@ outcomes:
   - 55
   - 23908
   - 1052
-  notes: The data counts (1,533, 412, 55) equal the paper's. Of 100,000 generative samples at the
-    paper's parameters, 23,908 have at least two peaks and 1,052 at least three under the claim's
-    seed; over the five seeds 23,908 to 24,267 and 1,001 to 1,082, all within tolerance.
+  notes: The data counts (1,533, 412, 55) equal the paper's. Of 100,000 generative samples at the paper's
+    parameters, 23,908 have at least two peaks and 1,052 at least three under the claim's seed; over the
+    five seeds 23,908 to 24,267 and 1,001 to 1,082, all within tolerance.
   deviations:
-  - Samples drawn from the claim's seed with numpy's Generator; the paper's notebook uses numpy
-    seed 42 with the legacy generator, whose draws are not repeated.
+  - Samples drawn from the claim's seed with numpy's Generator; the paper's notebook uses numpy seed 42
+    with the legacy generator, whose draws are not repeated.
 - claim: fig1fg-mean-and-fluctuation-profiles
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig1fg-mean-and-fluctuation-profiles
-  notes: The mouse-average mean profile has one local maximum, at offset 0 (4.72), and correlates
-    with its reflection at r = 0.9998. The standard deviation profile peaks at 2.64, 0.56 times
-    the mean's peak and 0.56 times the mean at offset 0, so both readings of comparable hold.
-    The median correlation of a mouse's profile with the average is 0.996 for the mean (lowest
-    0.966) and 0.974 for the standard deviation (lowest 0.952).
+  notes: The mouse-average mean profile has one local maximum, at offset 0 (4.72), and correlates with
+    its reflection at r = 0.9998. The standard deviation profile peaks at 2.64, 0.56 times the mean's
+    peak and 0.56 times the mean at offset 0, so both readings of comparable hold. The median correlation
+    of a mouse's profile with the average is 0.996 for the mean (lowest 0.966) and 0.974 for the standard
+    deviation (lowest 0.952).
 - claim: fig3ab-centers-of-mass-uniform
   outcome: reproduced
   notebook: tuning_curves.ipynb
@@ -107,18 +106,18 @@ outcomes:
   - 0
   - 0.592
   - 0.968
-  notes: Two sessions have uncorrected P < 0.05 (A3711, 0.044; A9701, 0.048); none is significant
-    after Benjamini-Hochberg correction; corrected P from 0.592 to 0.968, the paper's 0.59 to 0.97.
+  notes: Two sessions have uncorrected P < 0.05 (A3711, 0.044; A9701, 0.048); none is significant after
+    Benjamini-Hochberg correction; corrected P from 0.592 to 0.968, the paper's 0.59 to 0.97.
 - claim: fig3c-correlation-approaches-circulant
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig3c-correlation-approaches-circulant
-  notes: Mean relative distance from circulant form, 100 subsets per size, falls at every step from
-    5 to 80 neurons for all four mice and both functions (A3707, 0.73 to 0.27 raw and 0.71 to 0.16
-    centered and normalized; A3706, 0.77 to 0.33 and 0.73 to 0.19), under all five seeds (range at
-    80 neurons within 0.02 of the claim seed's). The leading four eigenvectors of each mouse's
-    full centered and normalized function hold 89% to 98% of their power at one frequency, the
-    first two at frequency 1 and the next two at frequency 2.
+  notes: Mean relative distance from circulant form, 100 subsets per size, falls at every step from 5
+    to 80 neurons for all four mice and both functions (A3707, 0.73 to 0.27 raw and 0.71 to 0.16 centered
+    and normalized; A3706, 0.77 to 0.33 and 0.73 to 0.19), under all five seeds (range at 80 neurons within
+    0.02 of the claim seed's). The leading four eigenvectors of each mouse's full centered and normalized
+    function hold 89% to 98% of their power at one frequency, the first two at frequency 1 and the next
+    two at frequency 2.
 - claim: fig4-generative-fit
   outcome: partially_reproduced
   notebook: tuning_curves.ipynb
@@ -127,284 +126,643 @@ outcomes:
   - 1.4737
   - 3.1103
   - 1.2145
-  notes: The final pass (500,000 samples) puts the minimum at sigma 1.4737, beta 3.1103, b 1.2145
-    under all five seeds (errors 0.0085 to 0.0089). Sigma and beta are within tolerance (beta by
-    0.34 of 0.345); b is 0.52 from 1.73, outside 0.173. The paper's grid point (sigma 1.4211, b
-    1.7307, beta 2.7659) is the minimum of the 25,000-sample shortlist pass (error 0.0061) and
-    second in the final pass (0.0095). In the float32 variant (draws and transform in float32, as
-    the paper's torch run) the paper's point has the lower error under the claim's seed (0.00902
-    against 0.00920) and the higher under the other four seeds. The error surface has two
-    near-equal minima along a ridge in b and beta, and which wins depends on the draws and the
-    arithmetic; the claims file's tolerance does not cover the second one.
+  notes: The final pass (500,000 samples) puts the minimum at sigma 1.4737, beta 3.1103, b 1.2145 under
+    all five seeds (errors 0.0085 to 0.0089). Sigma and beta are within tolerance (beta by 0.34 of 0.345);
+    b is 0.52 from 1.73, outside 0.173. The paper's grid point (sigma 1.4211, b 1.7307, beta 2.7659) is
+    the minimum of the 25,000-sample shortlist pass (error 0.0061) and second in the final pass under
+    every seed (0.00907 to 0.01006). Taking the 90 best shortlist points to 500,000 samples under the
+    claim's seed gives the same minimum (the best of points 31 to 90 has error 0.0180). A float32 final
+    pass over the 30 points (draws and transform in float32, as the paper's torch run) also ranks the
+    chosen point first (0.00889 against 0.00916); evaluated at the two points alone, float32 favours the
+    paper's point under the claim's seed (0.00902 against 0.00920) and the chosen one under the other
+    four. In the paper's own cached error grid (grid_search_results.npz, same grid) the paper's point
+    is the minimum (0.00890) and the chosen point second (0.00900), 1.1% apart. The error surface has
+    two near-equal minima along a ridge in b and beta, and which wins depends on the draws and the arithmetic;
+    the claims file's tolerance does not cover the second one. The fig5 claims are tested at both parameter
+    sets and give the same outcomes.
   deviations:
-  - The criterion asks for 500,000 samples at each of the 18,000 grid points, about 3 hours on
-    this runner. The whole grid was evaluated with 25,000 samples (the same draws at every point,
-    float32), and the 30 best points again with 500,000 fresh samples each (float64), which decide
-    the minimum.
+  - The criterion asks for 500,000 samples at each of the 18,000 grid points, about 3 hours on this runner.
+    The whole grid was evaluated with 25,000 samples (the same draws at every point, float32), and the
+    30 best points again with 500,000 fresh samples each (float64), which decide the minimum.
   - Draws from the claim's seed, not seed 42 on a CUDA device.
 - claim: fig5ab-profiles-match
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig5ab-profiles-match
-  notes: At the fitted parameters the generative mean profile is within the range of the 31 mouse
-    profiles at 100 of 100 offsets and the standard deviation profile at 97; the peaks are within
-    3.0% (4.57 against 4.72) and 1.3% (2.68 against 2.64) of the mouse-average peaks. Both
-    readings hold for both profiles under all five seeds. At the paper's parameters (variant),
-    100 and 100 offsets, peaks within 0.2% and 1.9%.
+  notes: At the fitted parameters the generative mean profile is within the range of the 31 mouse profiles
+    at 100 of 100 offsets and the standard deviation profile at 97; the peaks are within 3.0% (4.57 against
+    4.72) and 1.3% (2.68 against 2.64) of the mouse-average peaks. Both readings hold for both profiles
+    under all five seeds. At the paper's parameters (variant), 100 and 100 offsets, peaks within 0.2%
+    and 1.9%.
   deviations:
-  - The generative parameters are those of fig4-generative-fit, which differ from the paper's in
-    b and beta; the paper's are shown as a variant and give the same outcome.
+  - The generative parameters are those of fig4-generative-fit, which differ from the paper's in b and
+    beta; the paper's are shown as a variant and give the same outcome.
 - claim: fig5c-peak-counts-match
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig5c-peak-counts-match
-  notes: Total variation distance 0.022, 0.065 and 0.128 at zthresh 1, 0.5 and 0, Hellinger 0.061,
-    0.086 and 0.124; the distance at zthresh 1 is the smallest and below 0.15 under both readings
-    and all five seeds. At the paper's parameters 0.026, 0.040 and 0.105 (TV).
+  notes: Total variation distance 0.022, 0.065 and 0.128 at zthresh 1, 0.5 and 0, Hellinger 0.061, 0.086
+    and 0.124; the distance at zthresh 1 is the smallest and below 0.15 under both readings and all five
+    seeds. At the paper's parameters 0.026, 0.040 and 0.105 (TV).
 - claim: fig5d-peak-heights-match
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig5d-peak-heights-match
-  notes: Under reading (a) the generative medians of the three highest peaks are within 0.8%, 1.5%
-    and 5.3% of the data medians (5.63, 2.90, 2.26). Under reading (b) the KS distances are 0.058,
-    0.054 and 0.186, so (b) holds for two of three peaks; the third rests on 55 data curves. The
-    same under all five seeds; at the paper's parameters the third peak is 8.8% and KS 0.253.
+  notes: Under reading (a) the generative medians of the three highest peaks are within 0.8%, 1.5% and
+    5.3% of the data medians (5.63, 2.90, 2.26). Under reading (b) the KS distances are 0.058, 0.054 and
+    0.186, so (b) holds for two of three peaks; the third rests on 55 data curves. The same under all
+    five seeds; at the paper's parameters the third peak is 8.8% and KS 0.253.
 - claim: fig5e-flip-symmetry-match
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig5e-flip-symmetry-match
-  notes: Data, 23.7% of curves below 0.5 (363) and 10.3% below 0 (158), median 0.927; generative,
-    28.1% and 11.8%, median 0.834; ratios 1.19 and 1.14, within the factor 1.5 under both readings
-    and all five seeds (1.17 to 1.19 and 1.13 to 1.16).
+  notes: Data, 23.7% of curves below 0.5 (363) and 10.3% below 0 (158), median 0.927; generative, 28.1%
+    and 11.8%, median 0.834; ratios 1.19 and 1.14, within the factor 1.5 under both readings and all five
+    seeds (1.17 to 1.19 and 1.13 to 1.16).
 - claim: fig5f-information-match
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig5f-information-match
-  notes: Median information 1.288 (data) and 1.368 (generative), 6.2% apart; KS 0.138; both
-    readings hold under all five seeds (KS 0.138 to 0.141). At the paper's parameters 4.3% and
-    0.109.
+  notes: Median information 1.288 (data) and 1.368 (generative), 6.2% apart; KS 0.138; both readings hold
+    under all five seeds (KS 0.138 to 0.141). At the paper's parameters 4.3% and 0.109.
 - claim: fig2l-recorded-bump-tracks-hd
   outcome: reproduced
   notebook: tuning_curves.ipynb
   output: claim:fig2l-recorded-bump-tracks-hd
-  notes: A3707, 117 cells, 18,030 bins of 100 ms of which 17,990 have tracked head direction.
-    Median absolute difference between the angle of the peak of m and the head direction 0.168
-    rad, below pi/8 (reading a); circular correlation 0.896, just below 0.9 (reading b fails).
-    With the head direction shifted by 60 s the median error is 1.294 rad. Curves of one partition
-    applied to the other's spikes give 0.172 and 0.177 rad (r 0.899 and 0.889).
+  notes: A3707, 117 cells, 18,030 bins of 100 ms of which 17,990 have tracked head direction. Median absolute
+    difference between the angle of the peak of m and the head direction 0.168 rad, below pi/8 (reading
+    a); circular correlation 0.896, just below 0.9 (reading b fails). With the head direction shifted
+    by 60 s the median error is 1.294 rad. Curves of one partition applied to the other's spikes give
+    0.172 and 0.177 rad (r 0.899 and 0.889).
   deviations:
-  - The angle of a bin of m is its centre, (a + 0.5) 2 pi / 100, a standard choice that moves the
-    angle by 0.03 rad.
+  - The angle of a bin of m is its centre, (a + 0.5) 2 pi / 100, a standard choice that moves the angle
+    by 0.03 rad.
 - claim: fig2b-sorted-weights-mexican-hat
   outcome: reproduced
   notebook: network.ipynb
   output: claim:fig2b-sorted-weights-mexican-hat
-  notes: The network built from these data gives the paper's printed reconstruction error
-    (1.715236380e-08 against 1.7152363819e-08). Sorted, the diagonal profile peaks at offset -8
-    (0.0053), stays positive up to N/20 (mean 0.0040), and is below its mean at 88% of the offsets
-    from N/8 to 3N/8 and below zero at 80% (minimum -0.00099 at offset 571). In arbitrary order
-    the profile is flat (sd 0.00015 against 0.00147). An aligned sorted row correlates with the
-    profile at 0.356 on average (0.026 in arbitrary order), which is the noise the claim names.
+  notes: The network built from these data gives the paper's printed reconstruction error (1.715236380e-08
+    against 1.7152363819e-08). Sorted, the diagonal profile peaks at offset -8 (0.0053), stays positive
+    up to N/20 (mean 0.0040), and is below its mean at 88% of the offsets from N/8 to 3N/8 and below zero
+    at 80% (minimum -0.00099 at offset 571). In arbitrary order the profile is flat (sd 0.00015 against
+    0.00147). An aligned sorted row correlates with the profile at 0.356 on average (0.026 in arbitrary
+    order), which is the noise the claim names.
   deviations:
-  - Near the diagonal is read as within N/20 neurons and intermediate offsets as N/8 to 3N/8, a
-    standard reading of the criterion's words.
+  - Near the diagonal is read as within N/20 neurons and intermediate offsets as N/8 to 3N/8, a standard
+    reading of the criterion's words.
 - claim: fig2ef-data-network-quasicontinuous
   outcome: reproduced
   notebook: network.ipynb
   output: claim:fig2ef-data-network-quasicontinuous
-  notes: Median distance to the manifold 1.966 at 0 s, 0.0816 at 1 s (under one tenth, reading a)
-    and 0.00068 at 20 s; reading (b) fails because the distance keeps falling after 1 s (0.027 at
-    2 s, 0.0012 at 5 s). Every trajectory's manifold angle moves by less than 2 pi / 20 between 1 s
-    and 29.9 s (median 0.0025 rad, reading c), and the final angles occupy 77 of 100 bins (reading
-    d). Same outcome under all five seeds (70 to 77 bins).
+  notes: Median distance to the manifold 1.966 at 0 s, 0.0816 at 1 s (under one tenth, reading a) and
+    0.00068 at 20 s; reading (b) fails because the distance keeps falling after 1 s (0.027 at 2 s, 0.0012
+    at 5 s). Every trajectory's manifold angle moves by less than 2 pi / 20 between 1 s and 29.9 s (median
+    0.0025 rad, reading c), and the final angles occupy 77 of 100 bins (reading d). Same outcome under
+    all five seeds (70 to 77 bins).
   deviations:
-  - Distance and angle read every 100 ms (the paper saves every 10 ms); the last state is at 29.9
-    s, as the paper's run_sim loop ends one step before T.
+  - Distance and angle read every 100 ms (the paper saves every 10 ms); the last state is at 29.9 s, as
+    the paper's run_sim loop ends one step before T.
   - Simulated in numpy float32 (the paper's torch float32).
 - claim: fig2gi-circulant-noise-collapses
   outcome: partially_reproduced
   notebook: network.ipynb
   output: claim:fig2gi-circulant-noise-collapses
-  notes: The circulant plus scrambled residuals ends in 4 states under all three merging readings
-    (2 to 7 over five seeds; the symmetric version 2), and the circulant's 100 final states are
-    exact shifts (correlation 1.0000 with the best shift of the first). The sorted optimal matrix
-    keeps 24 (single linkage), 25 (greedy) or 31 (bins) states, short of 50. The position measure
-    the criterion fixes (peak neuron of the smoothed currents) gives only 24 to 33 states even for
-    the 100 initial states, so 50 is out of its reach; with the position read as the manifold angle
-    of the nearest target point (variant), the sorted matrix keeps all 50 bins at a median distance
-    of 0.0008 from the manifold, the circulant 47 and the circulant plus noise 7. The contrast
-    between the optimal matrix and the circulant plus noise holds, which the criterion rates
-    partial.
+  notes: 'The circulant plus scrambled residuals ends in 4 states under all three merging readings (2
+    to 7 over five seeds; the symmetric version 2), and the circulant''s 100 final states are exact shifts
+    (correlation 1.0000 with the best shift of the first). The sorted optimal matrix keeps 24 (single
+    linkage), 25 (greedy) or 31 (bins) states, short of 50, and 24 to 26 and 31 to 32 under the five seeds
+    of the initial noise. The position measure the criterion fixes (peak neuron of the smoothed currents)
+    gives only 24 to 33 states even for the 100 initial states, so 50 is out of its reach; this is asked
+    of a reader (questions/clark-2026.yaml), since Fig. 2g plots the steady states against the manifold
+    coordinate. Smoothing in wrap mode in place of the default reflect mode (the paper''s plotting code
+    uses the default) gives the same counts. Read on the manifold angle of the nearest target point, the
+    sorted matrix keeps the continuum: each trajectory''s angle moves from its start by a median 0.0050
+    rad (largest 0.057, all under 2 pi / 50), the final angles fill all 50 bins under all five seeds,
+    at a median distance of 0.0008 from the manifold, while the circulant plus noise fills 7 and the circulant
+    47. The contrast between the optimal matrix and the circulant plus noise holds, which the criterion
+    rates partial.'
   deviations:
-  - The criterion does not say how positions within 31 neurons are merged; single linkage,
-    greedy and bins were all run and give the same outcome.
-  - The residual shuffle and initial noise come from the claim's seed (numpy seed 42 in the
-    paper). The seed check reruns only the circulant plus noise matrix, the one with a random
-    construction.
+  - The criterion does not say how positions within 31 neurons are merged; single linkage, greedy and
+    bins were all run and give the same outcome.
+  - The residual shuffle and initial noise come from the claim's seed (numpy seed 42 in the paper). The
+    seed check reruns the circulant plus noise matrix (shuffle and initial noise) and the sorted matrix
+    (initial noise), the parts with random draws.
 - claim: fig2jk-velocity-integration
   outcome: reproduced
   notebook: network.ipynb
   output: claim:fig2jk-velocity-integration
-  notes: Over 20 to 110 s the peak of m follows the integrated constant input with a median error
-    of 0.011 rad (90th percentile 0.029) and circular correlation 1.000, and the integrated
-    angular velocity of A3707 (13.2 rad of net turning) with 0.013 rad and 1.000. Both readings
-    hold for both inputs. The inputs are deterministic; no seed is involved.
+  notes: Over 20 to 110 s the peak of m follows the integrated constant input with a median error of 0.011
+    rad (90th percentile 0.029) and circular correlation 1.000, and the integrated angular velocity of
+    A3707 (13.2 rad of net turning) with 0.013 rad and 1.000. Both readings hold for both inputs. The
+    inputs are deterministic; no seed is involved.
   deviations:
   - The two inputs run as two columns of one simulation, which changes nothing in the dynamics.
 - claim: figs14-data-spectrum-doublets
   outcome: reproduced
   notebook: network.ipynb
   output: claim:figs14-data-spectrum-doublets
-  notes: The leading 10 eigenvalues have |Im| at most 6.8% of Re. Setting aside the fifth (1.0894,
-    the eigenvector closest to uniform), the gaps within the first four pairs (0.027, 0.000,
-    0.0002, 0.000) are each below the gap to the next pair (0.139, 0.183, 0.036, 0.0002); the first
-    pair (1.4384, 1.4113) is not exact. Without setting one aside, two of the four pairs pass.
+  notes: 'The leading 10 eigenvalues have |Im| at most 6.8% of Re. Setting aside the fifth (1.0894, the
+    eigenvector closest to uniform), the gaps within the first four pairs (0.027, 0.000, 0.0002, 0.000)
+    are each below the gap to the next pair (0.139, 0.183, 0.036, 0.0002); the first pair (1.4384, 1.4113)
+    is not exact. The evidence is weaker than the count: pairs 2 and 4 are complex conjugates, equal in
+    real part by construction, so only pairs 1 and 3 are doublets of distinct real eigenvalues; eigenvectors
+    5 to 7 tie in their overlap with the uniform vector (0.041 each), and setting aside the sixth or the
+    seventh also passes 4 of 4 pairs (2 and 1 of them not conjugates). Without setting one aside, two
+    of the four pairs pass. The criterion as written is met.'
   deviations:
-  - The unpaired eigenvalue is identified as the one whose eigenvector overlaps most with the
-    uniform vector (the constant mode, as the criterion says), a standard choice.
+  - The unpaired eigenvalue is identified as the one whose eigenvector overlaps most with the uniform
+    vector (the constant mode, as the criterion says), a standard choice; eigenvectors 5 to 7 tie, and
+    each is set aside in turn as a variant, with the same outcome.
 - claim: figs11b-data-network-global-stability
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: network.ipynb
   output: claim:figs11b-data-network-global-stability
-  notes: From every initial spread (standard deviation 1 to 1,000) all 34 final states lie within
-    0.0016 of the manifold, against about 2 for the noisy starts of fig2ef, with none elsewhere,
-    and at standard deviation 1 all 34 end in one state (1.69 to 1.70 rad), under all five seeds.
-    Against the criterion's threshold, the largest distance at 20 s in fig2ef (0.00132), the
-    fraction within is 0.97, 0.94, 0.91, 0.97 and 0.94 at standard deviations 1, 10, 50, 100 and
-    1,000 under the claim's seed (0.91 to 1.00 over the five seeds), below the 95% asked at three
-    of five; against the median at 20 s (0.00068) 29% to 74%. Convergence to points on the
-    manifold and to one state from near the origin hold; the threshold test fails narrowly at
-    the resolution of the final distances (about 1e-3).
+  notes: From every initial spread (standard deviation 1 to 1,000, median starting distance 1.6 to 700)
+    all 34 final states lie within 0.0016 of the manifold, with none elsewhere, and at standard deviation
+    1 all 34 end in one state (1.69 to 1.70 rad), under all five seeds. The threshold the criterion names,
+    the distance reached at 20 s in fig2ef, is taken from the fig2ef protocol (its seed and its 100 noisy
+    starts) run with the 5-ms step of these runs (largest distance at 20 s 0.00141); against it 97% to
+    100% of final states are within at every standard deviation under all five seeds. Against the 1-ms
+    fig2ef run (largest 0.00132), the reading of round 1, 91% to 100% are within, below 95% at standard
+    deviations 10, 50 and 1,000 under the claim's seed (0.94, 0.91, 0.94); against its median (0.00068)
+    29% to 65%. The final distances sit at the network's resolution, about 1e-3, where the step of the
+    reference decides the test.
+  assumed: true
+  deviations:
+  - The threshold is the largest distance at 20 s of the fig2ef protocol run with the 5-ms step of spurious_fixed_points.ipynb,
+    not of the fig2ef run itself (1-ms step, as data_driven_attractor.ipynb). The claims file leaves the
+    threshold open; a reference on the same integrator as the runs it judges is assumed, since the 1-ms
+    run sits slightly closer to the targets and the final distances are at the network's resolution. The
+    1-ms thresholds (largest and median) are shown as variants and fail the 95% at three standard deviations.
 - claim: figs8-s9-lambda-and-c
   outcome: partially_reproduced
   notebook: network_grid.ipynb
   output: claim:figs8-s9-lambda-and-c
-  notes: At c 0 some runs diverge at every lambda up to 1e-4 (1 to 4 of 100) and, reading collapse
-    in the plane of the top two principal components (ii), 96 to 100 of 100 fall to the
-    homogeneous state (radius 0.65 to 0.80 against the manifold's 39.0) at every lambda; read as
-    the firing-rate norm (i) none collapses, as the homogeneous state keeps a norm of 17.3 to 17.7
-    against 72.5. No c above 0 diverges up to lambda 1e-4, and c 0.25 leaves the collapse (8 to
-    20 of 20 across lambda under ii, 12 at 1e-8). At lambda 1e-2 all runs with c up to 0.75 collapse (ii), but at c 1 the
-    states keep a radius of 4.6, just above the threshold of 3.9, so the criterion's test at c 1
-    fails under both readings. The flow error is 2.6e-9, 1.3e-10, 1.7e-8, 4.6e-6, 4.9e-4 and
-    2.1e-2 from lambda 1e-12 to 1e-2; it rises at both ends with its minimum at 1e-10, just
-    below 1e-8 as the supplement says, but 1e-8 is not below 1e-12, so that part of the
-    criterion fails. Two of the criterion's four parts hold. Under four more seeds (20 initial
-    conditions) the points the criterion reads give the same pattern (lambda 1e-8 and c 0, 0 to 3
-    diverge and 17 to 20 collapse under ii; lambda 1e-2 and c 1, none collapses).
+  notes: At c 0 some runs diverge at every lambda up to 1e-4 (1 to 4 of 100) and, reading collapse in
+    the plane of the top two principal components (ii), 96 to 100 of 100 fall to the homogeneous state
+    (radius 0.65 to 0.80 against the manifold's 39.0) at every lambda; read as the firing-rate norm (i)
+    none collapses, as the homogeneous state keeps a norm of 17.3 to 17.7 against 72.5. No c above 0 diverges
+    up to lambda 1e-4, and c 0.25 leaves the collapse (8 to 20 of 20 across lambda under ii, 12 at 1e-8).
+    At lambda 1e-2 all runs with c up to 0.75 collapse (ii), but at c 1 the states keep a radius of 4.6,
+    just above the threshold of 3.9, so the criterion's test at c 1 fails under both readings. The flow
+    error is 3.6e-9, 1.3e-10, 1.7e-8, 4.6e-6, 4.9e-4 and 2.1e-2 from lambda 1e-12 to 1e-2; it rises at
+    both ends with its minimum at 1e-10, just below 1e-8 as the supplement says, but 1e-8 is not below
+    1e-12, so that part of the criterion fails. Two of the criterion's four parts hold. Under four more
+    seeds (20 initial conditions) the points the criterion reads give the same pattern (lambda 1e-8 and
+    c 0, 0 to 3 diverge and 17 to 20 collapse under ii; lambda 1e-2 and c 1, none collapses). The paper's
+    cached flow errors (err_grid of pc_convergence_grid.npz) agree to three digits from 1e-10 to 1e-2
+    and give 3.8e-9 at 1e-12, so the same part fails on the paper's numbers; the supplement says only
+    that 1e-8 sits just above the minimum, which holds, and whether the criterion misreads it is asked
+    of a reader (questions/clark-2026.yaml).
   deviations:
-  - 20 initial conditions at most grid points (every 500th target angle) and 100 at lambda 1e-12,
-    1e-8, 1e-4 and 1e-2 with c 0 and 1; the paper runs 100 everywhere.
-  - Divergence is a non-finite state or a firing-rate norm above 10 times the manifold's and still
-    growing over the last 5 s, a standard reading of the criterion's "growing states".
-  - Collapse was read two ways, the firing-rate norm and the radius in the principal-component
-    plane, as the criterion places the test in that plane; the outcome is the same.
+  - 20 initial conditions at most grid points (every 500th target angle) and 100 at lambda 1e-12, 1e-8,
+    1e-4 and 1e-2 with c 0 and 1; the paper runs 100 everywhere.
+  - Divergence is a non-finite state or a firing-rate norm above 10 times the manifold's and still growing
+    over the last 5 s, a standard reading of the criterion's "growing states".
+  - Collapse was read two ways, the firing-rate norm and the radius in the principal-component plane,
+    as the criterion places the test in that plane; the outcome is the same.
 - claim: fig7-dmft-mexican-hat-and-stability
   outcome: reproduced
   notebook: theory.ipynb
   output: claim:fig7-dmft-mexican-hat-and-stability
-  notes: All twelve profiles of Fig. 7a are positive at 0 (4.9 to 38.5) and negative at some
-    offset (minimum -1.5 to -6.0). On the 40 by 20 grid the bump's second eigenvalue is negative
-    everywhere (largest -4.7e-8) and the uniform state's leading eigenvalue is real (|Im| below
-    1e-16) and positive everywhere (smallest 4.7e-5). With Q fixed, the bump at sigma 1.4211 and
-    beta 2.7659 has eigenvalue 0.446. At 293 of 800 grid points, mostly small beta and large
-    sigma, no zero eigenvalue is found at the bump (the leading one is below -1e-6); the criterion
-    does not test this.
+  notes: All twelve profiles of Fig. 7a are positive at 0 (4.9 to 38.5) and negative at some offset (minimum
+    -1.5 to -6.0). On the 40 by 20 grid the bump's second eigenvalue is negative everywhere (largest -4.7e-8,
+    effectively zero at some points) and the uniform state's leading eigenvalue is real (|Im| below 1e-16)
+    and positive everywhere (smallest 4.7e-5). With Q fixed, the bump at sigma 1.4211 and beta 2.7659
+    has eigenvalue 0.446. At 293 of 800 grid points, mostly small beta and large sigma, no zero eigenvalue
+    is found at the bump (the leading one is below -1e-6, down to -0.22); the bump there is not flat (amplitude,
+    max - min of m, median 0.95, below 1e-3 at 6 of the 293), so the missing zero mode is not explained
+    by a vanishing bump. The criterion tests only the second eigenvalue.
 - claim: fig7de-dmft-timescales
   outcome: not_reproduced
   notebook: theory.ipynb
   output: claim:fig7de-dmft-timescales
-  notes: Convergence time (bump) falls with beta at every sigma and varies across sigma by at
-    most 2.55 times (reading b holds), but reaches 20.5 tau at beta 1.1 and sigma 100, outside 0.5
-    to 10 tau. Divergence time (uniform) runs from 0.15 to 3.83 tau for beta 1 to 10, rises with
-    beta at small sigma (up to 11 increases) and varies by up to 24 times across sigma. The first
-    two parts do not hold for both timescales, so neither the full nor the partial rule is met.
-    Over sigma 1 to 10 the timescales stay within a few tau; the failures come from the grid's
-    large sigma, which the claims file's thresholds include.
+  notes: Convergence time (bump) falls with beta at every sigma and varies across sigma by at most 2.55
+    times (reading b holds), but reaches 20.5 tau at beta 1.1 and sigma 100, outside 0.5 to 10 tau. Divergence
+    time (uniform) runs from 0.15 to 3.83 tau for beta 1 to 10, rises with beta at small sigma (up to
+    11 increases) and varies by up to 24 times across sigma. The first two parts do not hold for both
+    timescales, so neither the full nor the partial rule is met. Over sigma 1 to 10 the timescales stay
+    within a few tau; the failures come from the grid's large sigma, which the claims file's thresholds
+    include.
 - claim: fig7c-dmft-integrates-behavior
   outcome: reproduced
   notebook: theory.ipynb
   output: claim:fig7c-dmft-integrates-behavior
-  notes: The peak of the mean-field bump follows the integrated angular velocity of A3707 over 20
-    to 110 s with a median error of 0.032 rad (90th percentile 0.10) and circular correlation
-    0.998, against 1.359 rad with the target shifted by 30 s; the bump keeps its contrast (0.75
-    to 0.73). Deterministic; no seed.
+  notes: The peak of the mean-field bump follows the integrated angular velocity of A3707 over 20 to 110
+    s with a median error of 0.032 rad (90th percentile 0.10) and circular correlation 0.998, against
+    1.359 rad with the target shifted by 30 s; the bump keeps its contrast (0.75 to 0.73). Deterministic;
+    no seed.
 - claim: fig6cd-eigenvalues-real-degenerate
   outcome: reproduced
   notebook: theory.ipynb
   output: claim:fig6cd-eigenvalues-real-degenerate
   seed_sensitive: true
-  notes: Under the claim's seed the leading 11 eigenvalues at N 2,500 are within 5.0% of alpha
-    Gamma_x_n / Gamma_phi_n (alpha 0.767), all with |Im| under 10% of Re, the first four pairs
-    closer within (0.023, 0, 0, 0.018) than to the next pair, and the ninth (0.181) is the
-    unpaired constant mode (theory 0.182, Fourier index 0). Over the five seeds the largest
-    difference from theory is 5.0%, 8.6%, 13.6%, 5.2% and 6.6%; one seed exceeds 10%.
+  notes: Under the claim's seed the leading 11 eigenvalues at N 2,500 are within 5.0% of alpha Gamma_x_n
+    / Gamma_phi_n (alpha 0.767), all with |Im| under 10% of Re, the first four pairs closer within (0.023,
+    0, 0, 0.018) than to the next pair, and the ninth (0.181) is the unpaired constant mode (theory 0.182,
+    Fourier index 0). Over the five seeds the largest difference from theory is 5.0%, 8.6%, 13.6%, 5.2%
+    and 6.6%; one seed exceeds 10%.
   deviations:
-  - Draws from the claim's seed (the paper's numpy seeds 42 and 45); the 50,000-curve theory
-    spectrum accumulated in chunks of 5,000.
+  - Draws from the claim's seed (the paper's numpy seeds 42 and 45); the 50,000-curve theory spectrum
+    accumulated in chunks of 5,000.
 - claim: fig6fg-disordered-eigenvectors
   outcome: reproduced
   notebook: theory.ipynb
   output: claim:fig6fg-disordered-eigenvectors
-  notes: Coefficient of variation of the radii in the planes of the two leading singular-vector
-    pairs, circulant plus noise 0.063 and 0.070 (rings), model 0.53 and 0.52 (structureless).
-    Both spectra show doublets in four of the four leading pairs, the unpaired eigenvalue ninth.
-    Same under all five seeds (circulant 0.063 to 0.072, model 0.516 to 0.534).
+  notes: Coefficient of variation of the radii in the planes of the two leading singular-vector pairs,
+    circulant plus noise 0.063 and 0.070 (rings), model 0.53 and 0.52 (structureless). Both spectra show
+    doublets in four of the four leading pairs, the unpaired eigenvalue ninth. Same under all five seeds
+    (circulant 0.063 to 0.072, model 0.516 to 0.534).
   deviations:
-  - Pairs are consecutive singular vectors, skipping one whose overlap with the uniform vector
-    exceeds 0.5 (none among the leading five), a standard choice.
+  - Pairs are consecutive singular vectors, skipping one whose overlap with the uniform vector exceeds
+    0.5 (none among the leading five), a standard choice.
 - claim: fig8-grid-scores-and-torus
   outcome: blocked
   blocked_by: too_large
-  notes: Not started. The network of 25,000 neurons needs a 25,000 by 25,000 weight matrix (5 GB
-    in float64) fitted by regression and simulated, and the grid-score sweep 1,000 maps for each
-    eta; with the four notebooks of this entry taking 52 minutes per run and two full runs needed,
-    it did not fit in the five hours of the author run.
+  notes: Not started. The network of 25,000 neurons needs a 25,000 by 25,000 weight matrix (5 GB in float64)
+    fitted by regression and simulated, and the grid-score sweep 1,000 maps for each eta; with the five
+    notebooks of this entry taking 77 minutes per run, it did not fit in the five hours of the revision
+    run either.
 - claim: figs10-robustness-comparable
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not started. Two networks of 2,500 neurons, 34 initial conditions, 120 s at a 5-ms step
-    (24,000 steps) for each noise level; estimated at about 2 minutes per run on this runner from
-    the 1,533-neuron timings, so about 45 minutes for 11 levels, more than the run's time left.
+  outcome: reproduced
+  notes: Without weight noise both networks keep all 34 states under every merging reading (median drift
+    0.013 rad for the disordered network, 0.025 for the circulant). At noise 0.4 the disordered network
+    ends in 8 states and the circulant in 9 (4 to 8 and 9 to 12 over five seeds), so neither keeps a continuum.
+    Final states for each noise level 0, 0.2, 0.4, 0.6, 0.8 and 1.0 (bins), disordered 34, 15, 8, 8, 6,
+    4 and circulant 34, 11, 9, 12, 9, 8, with median drifts of 0.29 to 0.47 rad and 0.16 to 0.30 rad from
+    noise 0.2 on; the two fragment alike, and both already at 0.2, which the criterion does not test.
+    Measured gives the states at noise 0 (disordered, circulant) and at 0.4.
+  notebook: model_sims.ipynb
+  output: claim:figs10-robustness-comparable
+  assumed: true
+  measured:
+  - 34
+  - 34
+  - 8
+  - 9
+  deviations:
+  - A network keeps a continuum when at least 31 of its 34 final angles (90%) remain distinct states under
+    all three merging readings of fig2gi (within 2 pi / 50). The criterion does not say how many states
+    make a continuum among 34 initial conditions spaced 2 pi / 34 apart; this is assumed. The counts are
+    given for each level, and at 0 and 0.4 they are far from the threshold (34 against 8 and 9).
+  - Draws from the claim's seed (the paper's numpy seed 123); the seed check reruns noise 0.4, the level
+    the criterion reads for fragmentation, with a new network, initial noise and weight noise for each
+    seed.
+  - Simulated in numpy float32 (the paper's torch float32); the angle read at 0, 30, 60 and 90 s and at
+    the end (119.995 s).
 - claim: figs11-s12-global-stability-model
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not started for lack of time in the author run (estimated 10 minutes of simulation for
-    N 2,500 at five initial spreads and N 50 to 1,000, plus a full re-run of the entry).
+  outcome: reproduced
+  notes: 'At N 2,500 the fraction of final states within the threshold (the largest distance at 20 s of
+    the network''s own fig2ef-protocol run, 0.0112) is 1.00, 0.97, 1.00, 1.00 and 1.00 at standard deviations
+    1, 10, 50, 100 and 1,000, none diverges, and all are within twice the threshold; from median starting
+    distances of 1.2 to 1.3. At N 1,000 all 34 perturbed initial conditions end within that threshold
+    (largest final distance 0.0106). Smaller networks converge less reliably: at N 50, 6% to 21% within
+    over the five seeds, at N 100 53% to 100%. Under the four other seeds the N 2,500 test holds for three;
+    the fourth gives 0.94 at standard deviation 50, and 0.94 at N 1,000. Measured gives the smallest fraction
+    within at N 2,500 and the fraction at N 1,000.'
+  notebook: model_sims.ipynb
+  output: claim:figs11-s12-global-stability-model
+  assumed: true
+  seed_sensitive: true
+  measured:
+  - 0.97
+  - 1.0
+  deviations:
+  - 'Judged as in figs11b, whose threshold comes from a fig2ef run on the same network: here the fig2ef
+    protocol (100 regularly spaced manifold points plus noise of standard deviation 3, 5-ms step, 30 s)
+    is run on the 2,500-neuron generative network itself, and its largest distance at 20 s is the threshold.
+    For N 1,000 and the smaller networks the same fixed normalized threshold is used, since each N''s
+    own reference run is nearly the protocol it would judge; the own thresholds are shown as a variant
+    (all 34 within at N 1,000). This is assumed.'
+  - Draws from the claim's seed (the paper's numpy seed 42); the distance to the manifold is that of the
+    firing rates to the nearest of the 500 target points, over sqrt(N), as figs11b.
 - claim: figs1-s2-spectrum-does-not-fix-symmetry
-  outcome: blocked
-  blocked_by: too_large
-  notes: Not started for lack of time in the author run (rank-four networks of 10,000 neurons, two
-    ensembles, and their eigenvalues).
+  outcome: partially_reproduced
+  notes: The dynamics differ as the legends describe under all five seeds. With Gaussian loadings the
+    final states form a ring in the dominant doublet (radius 0.80, coefficient of variation at most 0.006,
+    largest angle gap 0.32 to 0.45 rad) and collapse in the subdominant one (radius 0.012 to 0.024, below
+    one tenth of the ring radius); with mixture loadings both doublets form rings (radii 0.56 to 0.57;
+    the notebook's mean-field prediction 0.5642 and 0.5636, largest angle drift 0.24 to 0.65 rad). The
+    four nonzero eigenvalues of the two matrices differ by at most 5.18% under the claim's seed (Gaussian
+    102.72, 97.48, 25.40, 24.70; mixture 97.40, 96.55, 25.97, 25.79), just outside the 5% asked, and by
+    2.4% to 5.2% over the five seeds (within 5% under two). The two ensembles share their second moments
+    (population eigenvalues 100, 100, 25, 25) and each finite matrix deviates from them by sampling; the
+    paper's own seed-42 matrices agree within 3.3%. The dynamics part holds and the eigenvalue part fails
+    narrowly.
+  notebook: model_sims.ipynb
+  output: claim:figs1-s2-spectrum-does-not-fix-symmetry
+  seed_sensitive: true
+  measured:
+  - 0.0518
+  deviations:
+  - The nonzero eigenvalues of J = M M^T / N are computed as those of the 4 by 4 matrix M^T M / N, which
+    are the same, and J tanh(x) as M (M^T tanh(x)) / N.
+  - A doublet forms a ring when its 40 final radii vary by less than 10% and their angles leave no gap
+    wider than 2 pi / 10, a standard choice (the values are far from both limits); collapse as the claims
+    file fixes it.
+  - Draws from the claim's seed (the paper's numpy seed 42); the paper's seed-42 matrices are shown as
+    a variant.
 findings:
 - kind: other
   about: data
   severity: none
-  statement: At version 0.240528.1542, the version the paper cites, the 31 files hold what the paper
-    describes, one session per subject, 2,691 units of which 1,533 are labelled head-direction
-    (all also labelled excitatory), a wake_square epoch in every file, head direction in radians
-    sampled every 10 ms, and nine files with a wake_opto epoch holding 315 head-direction cells.
-    Tuning curves rebuilt from them match the paper's cached curves to 1e-14 Hz. Spikes and head
-    direction share a clock (in every session the head-direction information peaks within 0.05 s
-    of lag 0 and falls 4.5 times by 2 s), no recording appears twice, and no spike train is
-    unsorted.
+  statement: At version 0.240528.1542, the version the paper cites, the 31 files hold what the paper describes,
+    one session per subject, 2,691 units of which 1,533 are labelled head-direction (all also labelled
+    excitatory), a wake_square epoch in every file, head direction in radians sampled every 10 ms, and
+    nine files with a wake_opto epoch holding 315 head-direction cells. Tuning curves rebuilt from them
+    match the paper's cached curves to 1e-14 Hz. Spikes and head direction share a clock (in every session
+    the head-direction information peaks within 0.05 s of lag 0 and falls 4.5 times by 2 s), no recording
+    appears twice, and no spike train is unsorted.
 - kind: other
   about: data
   severity: none
-  statement: Every file was replaced after the cited version. In the latest published version,
-    0.261016.2310, the 31 assets have new names with session ids and sizes of 12.7 to 30.2 GB,
-    and none shares a blob with 0.240528.1542. The paper's code reads the cited version's file
-    names (sub-<id>_behavior+ecephys[+ogen].nwb); a user of a later version has to map the files.
+  statement: Every file was replaced after the cited version. In the latest published version, 0.261016.2310,
+    the 31 assets have new names with session ids and sizes of 12.7 to 30.2 GB, and none shares a blob
+    with 0.240528.1542. The paper's code reads the cited version's file names (sub-<id>_behavior+ecephys[+ogen].nwb);
+    a user of a later version has to map the files.
 - kind: other
   about: paper
-  statement: The generative fit of Fig. 4 has two near-equal minima on the paper's grid, (sigma, b,
-    beta) = (1.4211, 1.7307, 2.7659) and (1.4737, 1.2145, 3.1103), whose errors differ by less than
-    the sampling noise of 500,000 samples (0.0089 to 0.0095 depending on the draws and on float32
-    or float64 arithmetic). The reported b of 1.73 is one of two choices the fitting procedure
-    can return.
+  statement: The generative fit of Fig. 4 has two near-equal minima on the paper's grid, (sigma, b, beta)
+    = (1.4211, 1.7307, 2.7659) and (1.4737, 1.2145, 3.1103), whose errors differ by less than the sampling
+    noise of 500,000 samples (0.0085 to 0.0101 depending on the draws and on float32 or float64 arithmetic).
+    In the paper's own cached error grid on Zenodo they are 1.1% apart (0.00890 and 0.00900). The reported
+    b of 1.73 is one of two choices the fitting procedure can return.
 - kind: other
   about: paper
-  statement: In the mean-field stability grid of Fig. 7d,e (dmft.ipynb, run_analysis), at 293 of
-    the 800 grid points, mostly beta below 0.1 or sigma near 100, the bump Jacobian has no zero
-    eigenvalue (its leading eigenvalue is below -1e-6), so at those points the analytic bump
-    the code linearizes about does not show the symmetry-induced zero mode the Results describe.
+  statement: In the mean-field stability grid of Fig. 7d,e (dmft.ipynb, run_analysis), at 293 of the 800
+    grid points, mostly beta below 0.1 or sigma near 100, the bump Jacobian has no zero eigenvalue (its
+    leading eigenvalue is below -1e-6, down to -0.22), although the bump there is not flat (amplitude
+    median 0.95). So at those points the analytic bump the code linearizes about does not show the symmetry-induced
+    zero mode the Results describe.
+verifications:
+- date: '2026-11-26'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebooks of the first run (tuning_curves, network, network_grid, theory)
+    with the conclusion cells and the summaries removed, the helper modules and the claims file, with
+    the paper; not the attempt record. The verifier checked the pinned version's assets through the archive
+    API (31, 9 of them +ogen.nwb) and ran a synthetic test of count_states. It gave its own outcome for
+    the 26 claims with outputs, all agreeing with the record as it then stood, and none for the four claims
+    blocked for time, which had no outputs. Problems 3 and 4 report places where the claims file misreads
+    the paper; both are added to questions/clark-2026.yaml and the claims are tested as the file has them.
+    No finding was rated critical, so no finding was reviewed. Report in transcripts/clark-2026/verifier-1-report.md.
+  results:
+  - claim: hd-cell-selection
+    agrees: true
+    outcome: reproduced
+    reason: Cell 10 shows 31 sessions, 2,691 units, 1,533 head-direction units under both readings, 0
+      dropped by nz_mask, 9 opto mice with 315 cells, and counts of 117/93/90/86 for the right mice.
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: tuning-curves-match-cache
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12: Pearson r = 1.000000 for 100% of 1,533 units, largest curve difference 1.4e-14,
+      and the cache''s labels and session order equal the data''s. Problem 2: the printed fraction of
+      smoothing widths that match exactly (0.784) is wrong, as the comparison uses == on floats and the
+      cache stores values like 0.09999999999999999 where the notebook has 0.1; np.isclose would give the
+      real fraction.'
+    response: 'Outcome kept. The cell now also compares the widths with np.isclose (rtol 1e-9): they agree
+      for both partitions in every unit (1.0000); the == fraction is kept and labelled, and the conclusion
+      and notes now say the widths agree to rounding.'
+  - claim: fig1e-heterogeneous-peaks
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 16: peak counts of 1 to 6 occur, and the interquartile range of the separation between
+      the two highest peaks is 1.382 rad, above pi/4.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5d-peak-numbers
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 18: the data give exactly 1,533/412/55, and generative samples over five seeds give
+      23,908 to 24,267 curves with at least 2 peaks and 1,001 to 1,082 with at least 3, all within tolerance.
+      Problem 8: the samples come from a numpy Generator, not the legacy seed 42, but all 5 seeds fall
+      within tolerance.'
+    response: Outcome kept. The use of the claim's seed in place of the legacy seed 42 is already a recorded
+      deviation.
+  - claim: fig1fg-mean-and-fluctuation-profiles
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 20: one maximum, at offset 0; symmetry r = 0.9998; sd/mean = 0.56, so both readings
+      hold; median consistency r is 0.996 (mean) and 0.974 (sd).'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig3ab-centers-of-mass-uniform
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 22: 2 sessions with uncorrected P < 0.05, 0 after BH correction, corrected P from 0.592
+      to 0.968.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig3c-correlation-approaches-circulant
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 24: the distance from circulant form falls monotonically for all 4 mice and both functions
+      under all 5 seeds; the leading 4 eigenvectors have at least 0.89 Fourier purity, and eigenvectors
+      1 and 2 are at frequency 1.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig4-generative-fit
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 26: the 500k-sample pass chooses sigma 1.4737 and beta 3.1103, within tolerance, but
+      b 1.2145, outside 1.73 +- 0.173, under all 5 seeds. Problem 1: the paper''s point and the chosen
+      one are a near-tie (0.0089 and 0.0095) along a ridge where b and beta trade off; the 25k shortlist
+      with 30 re-evaluated points is the author''s deviation, which probably did not change the outcome
+      since both points were re-run at 500k; the float32 variant was run only at the two points and favours
+      the chosen point in 4 of 5 seeds; the 500k error at the paper''s point is shown for one seed only.
+      It asked for that error under all 5 seeds, a float32 final pass over all 30 shortlisted points,
+      and 500k errors for more than the top 30.'
+    response: 'Outcome kept. The cell now prints the 500k error at the paper''s grid point under every
+      seed (0.00907 to 0.01006, second of 30 each time, against 0.00853 to 0.00894 for the chosen point),
+      takes the 90 best shortlist points to 500k under the claim''s seed (same minimum; the best of points
+      31 to 90 has 0.0180), and runs a float32 final pass over all 30 (chosen point first, 0.00889 against
+      0.00916). As a further variant it reads the paper''s own cached error grid from Zenodo (grid_search_results.npz):
+      the paper''s point is its minimum (0.00890) and the chosen point second (0.00900), 1.1% apart. Notes
+      and finding 3 updated.'
+  - claim: fig5ab-profiles-match
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: the profiles lie within the mouse range at 0.97 or more of offsets and the peaks
+      differ by 3.0% (mean) and 1.3% (sd), at both the fitted and the paper''s parameters.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5c-peak-counts-match
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: total variation is 0.022 at zthresh 1, 0.065 at 0.5 and 0.128 at 0; smallest at
+      zthresh 1 and below 0.15.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5d-peak-heights-match
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34, reading (a): the medians differ by 0.8%, 1.5% and 5.3% for the three peaks. Reading
+      (b) fails for peak 3 (KS distance 0.186).'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5e-flip-symmetry-match
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: the generative fraction in the tail is 1.19 times the data''s below 0.5 and 1.14
+      times below 0, both within 1.5 times; medians 0.927 (data) and 0.834 (generative).'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig5f-information-match
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 38: the medians differ by 6.2% and the KS distance is 0.138, so both readings hold (KS
+      only narrowly).'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig2l-recorded-bump-tracks-hd
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 40: reading (a) holds, with a median error of 0.168 rad against pi/8; reading (b) narrowly
+      fails (circular r 0.896); applying each partition''s curves to the other''s spikes gives 0.172 and
+      0.177 rad. Problem 8: the curves are fitted on the same spikes they are tested on, and the cross-partition
+      variant shows this does not matter.'
+    response: Outcome kept; the cross-partition variant was already in the notes.
+  - claim: fig2b-sorted-weights-mexican-hat
+    agrees: true
+    outcome: reproduced
+    reason: 'Network cell 7: the profile peaks at offset -8; 88% of intermediate offsets lie below the
+      profile''s mean, and 80% are negative.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig2ef-data-network-quasicontinuous
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 9: readings (a) and (c) hold under all 5 seeds; the median distance falls from 1.97
+      at 0 s to 0.082 at 1 s, and the manifold angle moves a median 0.0025 rad. Reading (b) fails, because
+      the distance keeps falling until about 5 s.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig2gi-circulant-noise-collapses
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 11: the circulant-plus-noise matrix ends in 2 to 7 states (at most 10 under all 5 seeds)
+      and the circulant''s final states are exact shifts; the sorted matrix ends in 24 to 31 states, short
+      of 50, so the partial rule applies. Problem 3, a defect in the claims file: on 1,533 neurons 50
+      states merged within 31 neurons cannot be reached (a synthetic test of count_states on 103 evenly
+      spaced positions gives 1, 35 and 50; the initial states give 24 to 33); the nearest-target variant
+      is the author''s own measure; the sorted matrix was run under one seed only; gaussian_filter1d uses
+      reflect mode, not wrap, on a ring (problem 8). It asked for the initial-to-final angle shift of
+      each sorted-matrix trajectory.'
+    response: 'Outcome kept, as tested on the claims file. The misreading is added to questions/clark-2026.yaml
+      for a reader: Fig. 2g plots the steady states against the manifold coordinate, which supports placing
+      states by manifold angle. Added the initial-to-final manifold-angle shift of each sorted-matrix
+      trajectory (median 0.0050 rad, largest 0.057, all under 2 pi / 50; final angles in all 50 bins),
+      the sorted matrix under the four other seeds (24 to 26 and 31 to 32 states on the criterion''s measure,
+      50 of 50 bins on the manifold angle), and wrap-mode smoothing as a variant (same counts). The paper''s
+      plotting code uses the default mode, so the default is kept.'
+  - claim: fig2jk-velocity-integration
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: the median error is 0.011 rad for the constant input and 0.013 rad for A3707''s
+      behaviour; circular r = 1.000 for both.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: figs8-s9-lambda-and-c
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Network_grid cell 4: at c 0 there is divergence or collapse (reading ii) and no c > 0 diverges,
+      but lambda 1e-2 at c 1 does not collapse (radius 4.6 against 3.9) and err(1e-8) = 1.7e-8 is not
+      below err(1e-12) = 3.6e-9 (minimum at 1e-10). Problem 4: the criterion''s err(1e-8) < err(1e-12)
+      is stricter than Supplementary Note 3, section 8.4, which says 1e-8 sits just above the minimum,
+      and the output fits the paper''s wording, a claims-file misreading; reading (i) cannot detect collapse,
+      as the collapsed state has norm about 17, and reading (ii) is the sensible one; 34 of the 42 grid
+      points ran 20 initial conditions, not 100. It asked for 100 initial conditions everywhere and the
+      paper''s cached flow errors per lambda.'
+    response: 'Outcome kept, as tested on the claims file. The misreading is added to questions/clark-2026.yaml.
+      The cell now reads the paper''s err_grid (pc_convergence_grid.npz on Zenodo): it matches to three
+      digits from 1e-10 to 1e-2 and gives 3.8e-9 at 1e-12, so the same part fails on the paper''s numbers.
+      The notes gave 2.6e-9 at 1e-12, a slip; they now give 3.6e-9, as printed. The 100 initial conditions
+      at every point were not run: with the new claims added in this revision the entry''s run had to
+      stay under two hours, and the grid was kept as in round 1 (100 at the eight points the criterion
+      reads).'
+  - claim: figs11b-data-network-global-stability
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 17: at standard deviation 1 every final state merges into 1 state, but at several standard
+      deviations only 91 to 94% of final states fall within the largest fig2ef distance at 20 s, against
+      95%. Problem 5: that threshold comes from 100 fig2ef runs at 20 s with a 1-ms step and is compared
+      with 34 runs at 30 s with a 5-ms step, a comparison against the noise floor (final maxima 0.00118
+      to 0.00154 against 0.00132); with 34 runs the 95% rule fails as soon as 2 exceed it, so pass or
+      fail is close to chance. It asked for the fig2ef distance with a 5-ms step as a reference on the
+      same footing, and the initial distances.'
+    response: 'Outcome changed to reproduced, resting on an assumption. The threshold assumed in round
+      1 was not on the footing of the runs it judged, so it was revised: the fig2ef protocol (its seed
+      and 100 noisy starts) is now run with the 5-ms step of these runs, and its largest distance at 20
+      s (0.00141) is the threshold. Against it 97% to 100% of final states are within at every standard
+      deviation under all five seeds. The 1-ms thresholds are kept as variants (fail at three standard
+      deviations under the claim''s seed), and the median initial distances are printed (1.6 to 700).'
+  - claim: figs14-data-spectrum-doublets
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 15: the largest |Im|/Re among the leading 10 is 0.068, and 4 of 4 pairs are tighter
+      than the gap to the next pair. Problem 6: pairs 2 and 4 are complex-conjugate pairs, equal in real
+      part by construction, so they count as doublets trivially; the eigenvalue set aside as the constant
+      mode is an arbitrary pick, as eigenvectors 5 to 7 tie at a uniform overlap of 0.041; only pairs
+      1 and 3 are real evidence, so the criterion as written passes on weak evidence.'
+    response: Outcome kept, as the criterion is met as written. The cell now marks complex-conjugate pairs
+      and sets aside each of eigenvalues 5, 6 and 7 in turn (4 of 4 pairs pass each time, 2, 2 and 1 of
+      them not conjugates); the conclusion and notes say the evidence rests on pairs 1 and 3.
+  - claim: fig6cd-eigenvalues-real-degenerate
+    agrees: true
+    outcome: reproduced
+    reason: 'Theory cell 11, claim seed: the largest relative difference from equation (9) is 5.0%; eigenvalues
+      are real and paired, and the 9th is the Fourier-0 mode. One of 5 seeds exceeds 10% (13.6%).'
+    response: Outcome kept; it was already marked seed_sensitive.
+  - claim: fig6fg-disordered-eigenvectors
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: the model''s pair CVs are 0.52 to 0.53 (structureless) and the circulant''s 0.063
+      to 0.072 (ring); both spectra have 4 of 4 doublets, under all 5 seeds.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig7-dmft-mexican-hat-and-stability
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 5: all 12 profiles have a Mexican hat; the bump''s second eigenvalue is below 0 and
+      the uniform state''s first above 0 at all 800 grid points; with Q fixed the leading eigenvalue is
+      +0.446. Problem 7: at 293 of 800 grid points the bump Jacobian has no zero mode (eigenvalue 1 as
+      low as -0.22), so a bump state is not shown to exist there; the largest second eigenvalue is -4.7e-8,
+      effectively zero; the criterion checks only eigenvalue 2. It asked for the bump amplitude at the
+      293 points.'
+    response: 'Outcome kept. The cell now prints the amplitude (max - min of m) of the bump the Jacobian
+      is taken at: median 0.95 at the 293 points without a zero mode (below 1e-3 at 6 of them), so the
+      bump is not flat there. The conclusion, the notes and finding 4 say so, and that the largest second
+      eigenvalue is effectively zero.'
+  - claim: fig7de-dmft-timescales
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 7: ''a few tau'' fails for both timescales (bump convergence up to 20.5 tau; uniform
+      divergence down to 0.15 tau); ''decreasing'' fails for the divergence time, and the max/min ratio
+      over sigma reaches 24.3 for it.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig7c-dmft-integrates-behavior
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 9: median error 0.0315 rad, circular r 0.998.'
+    response: Outcome kept; nothing in the report bears on it beyond agreement.
+  - claim: fig8-grid-scores-and-torus
+    agrees: false
+    reason: 'Not tested: no notebook cell, and the notebook points to an attempt record the verifier did
+      not have. The claim needs only the paper''s code, not the archive. Problem 9: it has no outputs
+      in any notebook, so it has no outcome.'
+    response: 'Kept blocked (too_large): the 25,000-neuron network and the grid-score sweep do not fit
+      the run''s time. model_sims.ipynb now states the block in its own section.'
+  - claim: figs10-robustness-comparable
+    agrees: false
+    reason: 'Not tested: no notebook cell, and the notebook points to an attempt record the verifier did
+      not have. The claim needs only the paper''s code, not the archive. Problem 9: it has no outputs
+      in any notebook, so it has no outcome.'
+    response: 'Tested in the new notebook model_sims.ipynb, now reproduced, resting on an assumption (a
+      continuum is at least 31 of 34 distinct states): both networks keep 34 states at noise 0, and at
+      0.4 end in 8 (disordered) and 9 (circulant), 4 to 8 and 9 to 12 over five seeds.'
+  - claim: figs11-s12-global-stability-model
+    agrees: false
+    reason: 'Not tested: no notebook cell, and the notebook points to an attempt record the verifier did
+      not have. The claim needs only the paper''s code, not the archive. Problem 9: it has no outputs
+      in any notebook, so it has no outcome.'
+    response: 'Tested in model_sims.ipynb, now reproduced, resting on an assumption (the threshold from
+      the network''s own fig2ef-protocol run) and seed sensitive: at N 2,500 97% to 100% of final states
+      are within at every standard deviation and all at N 1,000, under the claim''s seed; one of four
+      other seeds gives 0.94 at standard deviation 50 and at N 1,000.'
+  - claim: figs1-s2-spectrum-does-not-fix-symmetry
+    agrees: false
+    reason: 'Not tested: no notebook cell, and the notebook points to an attempt record the verifier did
+      not have. The claim needs only the paper''s code, not the archive. Problem 9: it has no outputs
+      in any notebook, so it has no outcome.'
+    response: 'Tested in model_sims.ipynb, now partially reproduced and seed sensitive: the dynamics differ
+      as described under all five seeds, but the eigenvalues of the two matrices differ by 5.18% under
+      the claim''s seed, just outside the 5% asked (2.4% to 5.2% over five seeds; the paper''s seed-42
+      matrices 3.3%).'

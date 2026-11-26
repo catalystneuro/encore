@@ -23,13 +23,16 @@ match the paper's cached curves on Zenodo to 1e-14 Hz.
 | Circulant plus noise collapses (Fig. 2g to i) | Partially reproduced |
 | Velocity integration (Fig. 2j,k) | Reproduced |
 | Lambda and c grid (Supplementary Figs. 8, 9) | Partially reproduced |
-| Global stability of the data network (Supplementary Fig. 11b) | Partially reproduced |
+| Global stability of the data network (Supplementary Fig. 11b) | Reproduced (assumed) |
 | Spectrum doublets of the data network (Supplementary Fig. 14) | Reproduced |
 | Mean-field theory: Mexican hat and stability (Fig. 7) | Reproduced |
 | Mean-field timescales (Fig. 7d,e) | Not reproduced |
 | Mean-field bump integrates behaviour (Fig. 7c) | Reproduced |
 | Large-N eigenvalues and eigenvectors (Fig. 6c,d,f,g) | Reproduced (2 claims) |
-| Grid cells, weight noise, finite-N stability of the model, rank-four ensembles | Blocked: too large for the run's time |
+| Weight-noise robustness, disordered and circulant (Supplementary Fig. 10) | Reproduced (assumed) |
+| Global and finite-N stability of the generative network (Supplementary Figs. 11a, 12) | Reproduced (assumed, seed sensitive) |
+| Spectrum does not fix the symmetry, rank-four ensembles (Supplementary Figs. 1, 2) | Partially reproduced (seed sensitive) |
+| Grid cells and the toroidal network (Fig. 8) | Blocked: too large for the run's time |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -38,10 +41,12 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/clark-2026-01.yaml`](../../attempts/clark-2026-01.yaml).
 
 - `tuning_curves.ipynb`: the files, the tuning curves and their statistics, and the generative
-  process (about 17 minutes, most of it the generative fit).
-- `network.ipynb`: the data-derived network, its weights, dynamics and spectrum (about 25 minutes).
-- `network_grid.ipynb`: the lambda and c grid (about 9 minutes).
-- `theory.ipynb`: the mean-field theory and the large-N spectra (about 3 minutes).
+  process (about 15 minutes, most of it the generative fit).
+- `network.ipynb`: the data-derived network, its weights, dynamics and spectrum (about 22 minutes).
+- `network_grid.ipynb`: the lambda and c grid (about 8 minutes).
+- `theory.ipynb`: the mean-field theory and the large-N spectra (about 2 minutes).
+- `model_sims.ipynb`: the simulations of the generative-process and rank-four networks (about
+  31 minutes).
 - `hdring.py`: streaming the files, the paper's tuning-curve procedure, the statistics, the
   generative process and the network, in numpy, each function naming the function of the paper's
   code it repeats. Other notebooks on this dandiset can import it.

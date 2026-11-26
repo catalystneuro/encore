@@ -464,14 +464,17 @@ def compute_weights(X, Phi, lamda=1e-8):
 
 
 def simulate(J, x0, T, tau=0.05, dt=0.001, c=1.0, save_every=None, J_prime=None, omega=None,
-             on_save=None, dtype=np.float32):
+             on_save=None, dtype=np.float32, phi=None):
     """sim.run_sim as data_driven.run_simulation calls it: Euler steps of
     tau dx/dt = -x + J phi(x) + c (1 - mean_i phi(x)) [+ tau omega(t) J' phi(x)],
     phi the softplus of beta 2, in float32 as the paper's torch tensors. x0 (N, B).
     omega, when given, is a function of time returning one value or one per column.
     on_save(t, x) is called at t = 0 and every save_every seconds. Returns the final state.
     Steps are numbered as in run_sim: i = 1 .. int(T/dt) - 1, so the last state is at
-    t = T - dt (run_sim's loop is range(1, N_t))."""
+    t = T - dt (run_sim's loop is range(1, N_t)).
+    phi replaces the softplus when given (nonlin_idealized for the generative-process networks,
+    which spurious_fixed_points.ipynb and weight_matrix_analyses.ipynb run with c 0, no stabilizer)."""
+    phi = phi or nonlin
     J = J.astype(dtype)
     Jp = J_prime.astype(dtype) if J_prime is not None else None
     x = x0.astype(dtype).copy()
@@ -482,7 +485,7 @@ def simulate(J, x0, T, tau=0.05, dt=0.001, c=1.0, save_every=None, J_prime=None,
     a = dtype(dt / tau)
     with np.errstate(over="ignore", invalid="ignore"):
         for i in range(1, N_t):
-            r = nonlin(x)
+            r = phi(x)
             drive = J @ r + dtype(c) * (dtype(1.0) - r.mean(0))[None, :]
             if Jp is not None:
                 w = np.asarray(omega(i * dt), dtype=dtype)
@@ -544,3 +547,25 @@ def count_states(pos, n, width):
             start = v
     bins = len(np.unique(np.floor(p / width).astype(int)))
     return dict(single=single, greedy=greedy, bins=bins)
+
+
+# ---------------------------------------------------------------- the idealized generative process
+# ring/tc.py and ring/fn.py, as spectra.ipynb, spurious_fixed_points.ipynb and
+# weight_matrix_analyses.ipynb use them (sigma 1.4211, beta 2.7659, lambda 1e-8).
+
+def nonlin_idealized(x, beta=2.7659):
+    """ring/fn.py, nonlin_idealized: 1 + unity_erf(beta x), unity_erf(x) = erf(sqrt(pi) x / 2).
+    Keeps the dtype of x."""
+    from scipy.special import erf
+    return 1 + erf(x * x.dtype.type(np.sqrt(np.pi) / 2 * beta))
+
+
+def gen_idealized(n, n_theta, rng, scale=1.4211, beta=2.7659):
+    """ring/tc.py, gen_tuning_curves_idealized with sample_tcs, from a seeded Generator.
+    Returns X, Phi of shape (n_theta, n)."""
+    gft = wrapped_gaussian_ft(scale, n_theta)
+    nf = len(gft)
+    Z = (rng.standard_normal((nf, n)) + 1j * rng.standard_normal((nf, n))) / np.sqrt(2.0)
+    Z[0] = Z[0].real * np.sqrt(2.0)
+    Xg = np.fft.irfft(Z * np.sqrt(gft)[:, None], axis=0, norm="forward")
+    return Xg, nonlin_idealized(Xg, beta)
