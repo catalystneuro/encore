@@ -10,27 +10,30 @@ CRCNS sessInfo files and the LFP, for sharp wave-ripple detection, from the NWB 
 | Claim | Outcome |
 |---|---|
 | Four rats, eight sessions, PRE, MAZE and POST on linear and circular tracks | Reproduced |
-| 491 place cells of 562 pyramidal cells | Partially reproduced |
+| 491 place cells of 562 pyramidal cells | Not reproduced (573 place cells) |
 | Sequence scores above chance; POST and MAZE above PRE; observed above null | Reproduced (4 claims) |
 | Ripple-event duration unchanged from PRE to POST | Not reproduced |
 | More place cells participate in POST events | Reproduced |
 | Per cell contribution higher in POST | Partially reproduced |
-| Strongly contributing cells (216), 73% overlap, 105 rigid and 105 plastic | Partially reproduced, reproduced, not reproduced |
+| Strongly contributing cells (216), 73% overlap, 105 rigid and 105 plastic | Not reproduced, reproduced, not reproduced |
 | Per-cell PRE against POST PCC tests (2.2% and 21.4%) | Not reproduced |
-| Shuffling or excluding high-dPCC cells, removing plastic cells | Partially reproduced, reproduced, reproduced |
+| Shuffling or excluding high-dPCC cells, removing plastic cells | Reproduced (3 claims) |
 | Rigid and plastic fields along the track | Reproduced |
 | Plastic cells more specific; specificity rising over laps; out-of-field rate falling | Partially reproduced, not reproduced, not reproduced |
-| Rigid cells fire faster; plastic cells' ripple gain, bursting and synchrony | Partially reproduced (3), not reproduced (bursting) |
-| Cluster quality of rigid and plastic cells | Blocked: too large |
+| Rigid cells fire faster; plastic cells' ripple gain, bursting and synchrony | Not reproduced (4 claims) |
+| Cluster quality of rigid and plastic cells | Reproduced |
 | Rate split medians; low-rate cells' coding | Reproduced, partially reproduced |
-| Coactivity by firing rate (Figure 4C, three claims) | Reproduced, not reproduced, partially reproduced |
+| Coactivity by firing rate (Figure 4C, three claims) | Reproduced, not reproduced, not reproduced |
 | Replay carried by slow cells and high-gain cells | Reproduced, partially reproduced |
-| More ripples in POST; coactivity and temporal-bias preservation (four claims) | Partially reproduced |
+| More ripples in POST; coactivity preservation | Partially reproduced (2 claims) |
+| Coactivity and temporal-bias preservation by rigid and plastic pairs | Not reproduced (2 claims) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The notebook uses fewer shuffles than the paper (200 null templates per event and 100
-cell-specific shuffles, against 1,000) to fit the time limit. The attempt record, with the reasons
+cell-specific shuffles, against 1,000) to fit the time limit; one session rescored with 1,000 of
+each shows the effect. The cluster-quality claim streams the PCA features from the hc-11
+per-session tarballs. The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/grosmark-2016-02.yaml`](../../attempts/grosmark-2016-02.yaml).

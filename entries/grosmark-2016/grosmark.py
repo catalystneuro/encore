@@ -274,8 +274,8 @@ def track_bins(s):
     return nb
 
 
-def smooth(v, axis=-1):
-    return ndimage.gaussian_filter1d(v, SMOOTH_CM / BIN_CM, axis=axis, mode="nearest")
+def smooth(v, axis=-1, sd_cm=SMOOTH_CM):
+    return ndimage.gaussian_filter1d(v, sd_cm / BIN_CM, axis=axis, mode="nearest")
 
 
 def occupancy_and_counts(s, d, speed, v1, unit_ids):
@@ -305,27 +305,28 @@ def rate_maps(occ, counts):
     return sm, raw
 
 
-def place_field_test(occ, count_row, rng):
+def place_field_test(occ, count_row, rng, sd_cm=SMOOTH_CM, min_peak=PF_MIN_PEAK):
     """Methods, Place Field Analysis: 5,000 nulls drawn from the unsmoothed occupancy; a field is
     >= 5 consecutive bins above the null 99th percentile with an in-field peak >= 1 Hz.
-    Returns (is_place_cell, list of fields as (start, stop) bin ranges)."""
+    Returns (is_place_cell, list of fields as (start, stop) bin ranges). sd_cm and min_peak allow the
+    variants of the notebook (the 5 cm kernel read as its full width at half maximum; no 1 Hz rule)."""
     n = int(count_row.sum())
-    so = smooth(occ)
+    so = smooth(occ, sd_cm=sd_cm)
     with np.errstate(invalid="ignore", divide="ignore"):
-        obs = np.where(so > 0, smooth(count_row) / so, 0.0)
+        obs = np.where(so > 0, smooth(count_row, sd_cm=sd_cm) / so, 0.0)
     if n == 0:
         return False, []
     p = occ / occ.sum()
     null = rng.multinomial(n, p, size=N_PF_NULL).astype(float)
     with np.errstate(invalid="ignore", divide="ignore"):
-        null = np.where(so > 0, smooth(null, axis=1) / so, 0.0)
+        null = np.where(so > 0, smooth(null, axis=1, sd_cm=sd_cm) / so, 0.0)
     thr = np.percentile(null, 99, axis=0)
     above = (obs > thr) & (so > 0)
     fields = []
     lab, nl = ndimage.label(above)
     for k in range(1, nl + 1):
         idx = np.flatnonzero(lab == k)
-        if len(idx) >= PF_MIN_BINS and obs[idx].max() >= PF_MIN_PEAK:
+        if len(idx) >= PF_MIN_BINS and obs[idx].max() >= min_peak:
             fields.append((idx[0], idx[-1] + 1))
     return len(fields) > 0, fields
 
@@ -375,8 +376,8 @@ def detect_lfp_ripples(f, meta, channels_hint, nrem_iv, z_thresholds=(3.0, 5.0))
     # pick the channel on a NREM stretch
     nr = merge_intervals(nrem_iv)
     long_ = nr[np.argmax(nr[:, 1] - nr[:, 0])]
-    a = int(long_[0] * fs)
-    seg = d[a:a + int(min(60, long_[1] - long_[0]) * fs), col0:col0 + 16].astype(float)
+    a_seg = int(long_[0] * fs)
+    seg = d[a_seg:a_seg + int(min(60, long_[1] - long_[0]) * fs), col0:col0 + 16].astype(float)
     sos = signal.butter(4, RIPPLE_BAND, btype="band", fs=fs, output="sos")
     bp = signal.sosfiltfilt(sos, seg, axis=0)
     pw = np.mean(bp ** 2, 0)
@@ -401,12 +402,20 @@ def detect_lfp_ripples(f, meta, channels_hint, nrem_iv, z_thresholds=(3.0, 5.0))
     objs = ndimage.find_objects(lab)
     peaks, peakz = [], []
     for k, sl in enumerate(objs):
-        seg = z[sl[0]]
-        i = int(np.argmax(seg))
+        zs = z[sl[0]]
+        i = int(np.argmax(zs))
         peaks.append((sl[0].start + i) / fs)
-        peakz.append(float(seg[i]))
-    return {"channel": col0 + ch, "peak_t": np.array(peaks), "peak_z": np.array(peakz), "nrem_mean": mu,
-            "nrem_sd": sd}
+        peakz.append(float(zs[i]))
+    # check of the channel (verifier, round 1): ripple-triggered raw LFP (+-100 ms) on the 60 s NREM
+    # segment used to pick it, around the peaks with z >= 5 that fall in the segment
+    pk_ = np.array(peaks); pz_ = np.array(peakz)
+    i_seg = ((pk_ * fs).astype(int) - a_seg)
+    i_seg = i_seg[(pz_ >= 5.0) & (i_seg >= int(0.1 * fs)) & (i_seg < seg.shape[0] - int(0.1 * fs))]
+    w = int(0.1 * fs)
+    trig = np.array([seg[i - w:i + w + 1, ch] for i in i_seg]).mean(0) if len(i_seg) else np.full(2 * w + 1, np.nan)
+    return {"channel": col0 + ch, "peak_t": pk_, "peak_z": pz_, "nrem_mean": mu, "nrem_sd": sd,
+            "col_power": pw, "col_channel_index": ch, "trig_lfp": trig * meta["lfp_conversion"], "trig_n": len(i_seg),
+            "fs": fs}
 
 
 # ----------------------------------------------------------------------------- population events
@@ -1065,3 +1074,370 @@ def concat_isis(sp, iv, same_event=True):
     gaps = np.r_[0, np.cumsum(iv[1:, 0] - iv[:-1, 1])]
     xa = x - gaps[kk]
     return np.diff(xa)
+
+
+# ----------------------------------------------------------------------------- batched rescoring (reruns)
+# The reruns of Figures 2D, 2E, 4D, 4E and S12 score tens of thousands of events per template; these
+# kernels score many events in one call. They give the same r as _loglik/_null_r followed by _wcorr
+# (checked against score_event on synthetic templates to 1e-15 while preparing; the notebook checks
+# the baseline rerun against the main scores).
+
+_LOG2E = 1.4426950408889634
+_LN2_HI = 6.93147180369123816490e-01
+_LN2_LO = 1.90821492927058770002e-10
+
+
+@numba.njit(cache=True, fastmath=True)
+def _exp_shift(row, mx, bits):
+    """row[x] <- exp(row[x] - mx): Cody-Waite reduction and a degree-13 Taylor polynomial (relative
+    error ~1e-16), vectorisable; arguments below -700 are clamped (exp(-700) ~ 1e-304)."""
+    P = row.shape[0]
+    for x in range(P):
+        d = row[x] - mx
+        if d < -700.0:
+            d = -700.0
+        n = np.floor(d * _LOG2E + 0.5)
+        r = d - n * _LN2_HI - n * _LN2_LO
+        p = 1.0 + r * (1.0 + r * (1 / 2 + r * (1 / 6 + r * (1 / 24 + r * (1 / 120 + r * (1 / 720 + r * (
+            1 / 5040 + r * (1 / 40320 + r * (1 / 362880 + r * (1 / 3628800 + r * (1 / 39916800 + r * (
+                1 / 479001600 + r / 6227020800))))))))))))
+        row[x] = p
+        bits[x] = (np.int64(n) + 1023) << 52
+    sc = bits.view(np.float64)
+    for x in range(P):
+        row[x] *= sc[x]
+
+
+@numba.njit(cache=True, fastmath=True)
+def _wcorr_inplace(L, T, P):
+    """_wcorr in one pass (each time bin's posterior sums to 1, so the weighted moments reduce to
+    per-bin moments of position, taken about the track centre). L is overwritten."""
+    bits = np.empty(P, np.int64)
+    c0 = 0.5 * (P - 1)
+    mt = 0.5 * (T - 1)
+    sp1 = 0.0
+    sp2 = 0.0
+    ctp = 0.0
+    ctt = 0.0
+    for t in range(T):
+        mx = L[t, 0]
+        for x in range(1, P):
+            if L[t, x] > mx:
+                mx = L[t, x]
+        _exp_shift(L[t, :P], mx, bits)
+        s0 = 0.0
+        s1 = 0.0
+        s2 = 0.0
+        for x in range(P):
+            w = L[t, x]
+            u = x - c0
+            s0 += w
+            s1 += w * u
+            s2 += w * u * u
+        s1 /= s0
+        s2 /= s0
+        sp1 += s1
+        sp2 += s2
+        ctp += (t - mt) * s1
+        ctt += (t - mt) * (t - mt)
+    mp = sp1 / T
+    cpp = sp2 - T * mp * mp
+    if ctt <= 0 or cpp <= 0:
+        return 0.0
+    return ctp / np.sqrt(ctt * cpp)
+
+
+@numba.njit(cache=True, parallel=True, fastmath=True)
+def _batch_events(N, st, ln, act, logF, Ssum, R):
+    E = st.shape[0]
+    C = N.shape[0]
+    K, P = Ssum.shape
+    for i in numba.prange(E):
+        o = st[i]
+        T = ln[i]
+        if T < 1:
+            for k in range(K):
+                R[i, k] = np.nan
+            continue
+        L = np.empty((T, P))
+        cidx = np.empty(T * C, np.int64)
+        cnt = np.empty(T * C)
+        nnz = np.empty(T + 1, np.int64)
+        m = 0
+        nnz[0] = 0
+        for t in range(T):
+            for c in range(C):
+                if act[i, c]:
+                    v = N[c, o + t]
+                    if v > 0:
+                        cidx[m] = c
+                        cnt[m] = v
+                        m += 1
+            nnz[t + 1] = m
+        for k in range(K):
+            for t in range(T):
+                for x in range(P):
+                    L[t, x] = -Ssum[k, x]
+                for j in range(nnz[t], nnz[t + 1]):
+                    c = cidx[j]
+                    v = cnt[j]
+                    for x in range(P):
+                        L[t, x] += v * logF[c, k, x]
+            R[i, k] = _wcorr_inplace(L, T, P)
+
+
+def batch_r(N, st, ln, act, logF, Ssum):
+    """R[i, k], the signed weighted correlation of event i (columns st[i]:st[i]+ln[i] of the counts N,
+    C x time bins) decoded with template k (log rates logF, C x K x P; Ssum, K x P, DEC_BIN times the
+    summed rates of the template's cells); only cells with act[i, c] enter the spike term."""
+    R = np.empty((len(st), Ssum.shape[0]))
+    if len(st):
+        _batch_events(np.ascontiguousarray(N, np.float64), np.ascontiguousarray(st, np.int64),
+                      np.ascontiguousarray(ln, np.int64), np.ascontiguousarray(act, np.bool_),
+                      np.ascontiguousarray(logF, np.float64), np.ascontiguousarray(Ssum, np.float64), R)
+    return R
+
+
+def prepare_counts(spk_list, ev):
+    """Bin events as bin_event does, all events at once. Returns N (C x bins), start and length of each
+    event's bins, and the spike counts per event and cell (E x C)."""
+    ev = np.asarray(ev, float).reshape(-1, 2)
+    t0, t1 = ev[:, 0], ev[:, 1]
+    E = len(ev)
+    T = np.maximum(np.floor((t1 - t0) / DEC_BIN + 1e-9).astype(np.int64), 0)
+    st = np.r_[0, np.cumsum(T)[:-1]].astype(np.int64) if E else np.zeros(0, np.int64)
+    N = np.zeros((len(spk_list), int(T.sum())))
+    counts = np.zeros((E, len(spk_list)), np.int64)
+    tend = t0 + T * DEC_BIN
+    for c, sp in enumerate(spk_list):
+        a = np.searchsorted(sp, t0)
+        b = np.searchsorted(sp, tend)
+        m = np.maximum(b - a, 0)
+        counts[:, c] = m
+        tot = int(m.sum())
+        if tot == 0:
+            continue
+        e = np.repeat(np.arange(E), m)
+        start = np.cumsum(m) - m
+        idx = np.arange(tot) - start[e] + a[e]
+        k = np.minimum(((sp[idx] - t0[e]) / DEC_BIN).astype(int), T[e] - 1)
+        N[c] += np.bincount(st[e] + k, minlength=N.shape[1])
+    return N, st, T, counts
+
+
+def shuffled_maps(raw_rows, rng, n):
+    """n circular place-field shuffles of each row's unsmoothed map, re-smoothed (Methods, Bayesian
+    Replay Analysis), as in Template. Returns rates (C x n x P)."""
+    C, P = raw_rows.shape
+    shifts = rng.integers(1, P, size=(C, n))
+    F = np.empty((C, n, P))
+    for c in range(C):
+        idx = (np.arange(P)[None, :] - shifts[c][:, None]) % P
+        F[c] = smooth(raw_rows[c][idx], axis=1)
+    return F
+
+
+def rescore_batch(prep, keep_idx, rng, n_null, shuffle_idx=(), n_obs=1, rows=None, null=None):
+    """Rerun the replay analysis on one session and direction with a modified template (batched).
+
+    prep: dict with the template's smoothed and raw maps ('sm', 'raw', C x P), the binned events
+    ('N', 'st', 'ln', 'counts') and 'dur'. keep_idx: template cells kept (exclusion, Figure S12, 2E,
+    4D, 4E); the event criteria (>= 100 ms; >= max(5, 10%) of the kept cells active) are applied after
+    exclusion (Methods, Bayesian Replay Analysis). shuffle_idx: cells whose maps are circularly
+    shuffled in the decoding template (Figure 2D); n_obs such shuffled templates are drawn and each
+    event's rZ is the mean over them (assumption, see the notebook). The null is n_null shuffles of
+    all kept cells (equation 7); `null` may pass (mu, sd) per event computed beforehand for the same
+    kept cells. rows: the events to score (bool mask). Returns (event rows, rZ, rZ per observed
+    template, null mu, null sd)."""
+    sm, raw = prep["sm"], prep["raw"]
+    C, P = sm.shape
+    keep = np.zeros(C, bool)
+    keep[list(keep_idx)] = True
+    E = len(prep["st"])
+    rows = np.ones(E, bool) if rows is None else np.asarray(rows, bool)
+    if keep.sum() < 5:
+        return np.zeros(0, int), np.zeros(0), np.zeros((0, n_obs)), np.zeros(0), np.zeros(0)
+    need = max(5, int(np.ceil(0.1 * keep.sum())))
+    act = (prep["counts"] > 0) & keep[None, :]
+    ok = rows & (prep["dur"] >= REPLAY_MIN_DUR) & (act.sum(1) >= need)
+    ev = np.flatnonzero(ok)
+    act = act[ev]
+    st, ln = prep["st"][ev], prep["ln"][ev]
+    if null is None:
+        F = np.zeros((C, n_null, P))
+        F[keep] = shuffled_maps(raw[keep], rng, n_null)
+        F += EPS_RATE
+        Ssum = DEC_BIN * F[keep].sum(0)
+        Rn = np.abs(batch_r(prep["N"], st, ln, act, np.log(F), Ssum))
+        mu, sd = Rn.mean(1), Rn.std(1, ddof=1)
+    else:
+        mu, sd = null[0][ev], null[1][ev]
+    sh = np.zeros(C, bool)
+    sh[list(shuffle_idx)] = True
+    sh &= keep
+    if sh.any():
+        Fo = np.repeat((sm + EPS_RATE)[:, None, :], n_obs, axis=1)
+        Fo[sh] = shuffled_maps(raw[sh], rng, n_obs) + EPS_RATE
+    else:
+        Fo = (sm + EPS_RATE)[:, None, :]
+    So = DEC_BIN * Fo[keep].sum(0)
+    Ro = np.abs(batch_r(prep["N"], st, ln, act, np.log(Fo), So))
+    rzm = (Ro - mu[:, None]) / sd[:, None]
+    return ev, rzm.mean(1), rzm, mu, sd
+
+
+# ----------------------------------------------------------------------------- cluster quality (Figure S11)
+# PCA features (.fet) and cluster ids (.clu) of hc-11 are only in the per-session tarballs
+# (<session>.tar.gz, 0.8 to 2.3 GB). They are streamed (curl piped into gzip, read as a tar stream);
+# nothing is written to disk. Unit ids are shank * 100 + cluster id (checked: the row count of each
+# cluster equals the unit's spike count, and the .res times equal the spike times).
+
+import itertools  # noqa: E402
+import re  # noqa: E402
+import subprocess  # noqa: E402
+import xml.etree.ElementTree as _ET  # noqa: E402
+
+FS_SPIKES = 20000.0
+BURST_ISI = 0.006       # Figure S11 legend: first spikes of bursts (< 6 ms) only
+CQ_MIN_N = 5            # standard: a condition with fewer selected spikes gives NaN
+
+
+def _first_of_burst(t):
+    m = np.ones(len(t), bool)
+    if len(t) > 1:
+        m[1:] = np.diff(t) >= BURST_ISI
+    return m
+
+
+def _cond_label(t, conds):
+    lab = np.full(len(t), -1, np.int8)
+    for k, (_, iv) in enumerate(conds):
+        lab[(lab < 0) & in_intervals(t, iv)] = k
+    return lab
+
+
+def _mahal(X, mu, Pinv):
+    D = X - mu
+    return np.sqrt(np.maximum(np.einsum("ij,jk,ik->i", D, Pinv, D), 0))
+
+
+def session_cluster_quality(name, spikes, units, cond_iv, chunk=500_000):
+    """Figure S11 legend: cluster quality in a condition is the median Mahalanobis distance between the
+    PCA features of each spike in that condition and the cluster centre (mean over all of the unit's
+    spikes; the covariance of all its spikes is used, an assumption); stability between two
+    conditions is the symmetrical distance between one condition's spikes and the other condition's
+    centre: the mean of the two medians (assumption). First spikes of bursts only (a spike counts
+    when the unit's previous spike is >= 6 ms earlier). PCA columns: nChannels x nFeatures of the
+    shank's group in the session's .xml. Returns (table per unit, checks)."""
+    conds = list(cond_iv.items())
+    units = [int(u) for u in units]
+    by_shank = {}
+    for u in units:
+        by_shank.setdefault(u // 100, []).append(u)
+    checks = {"members": [], "count_mismatch": [], "res_maxerr": 0.0, "fet_rows_mismatch": []}
+    clu, rowlab, acc, sel, xml_groups = {}, {}, {}, {}, None
+    url = CRCNS_BASE + f"data/{name}.tar.gz"
+    p_curl = subprocess.Popen(["curl", "-s", "--fail", url], stdout=subprocess.PIPE)
+    p_gz = subprocess.Popen(["gzip", "-dc"], stdin=p_curl.stdout, stdout=subprocess.PIPE, bufsize=1 << 20)
+    p_curl.stdout.close()
+    tf = tarfile.open(fileobj=p_gz.stdout, mode="r|")
+    for m in tf:
+        base = m.name.split("/")[-1]
+        checks["members"].append((base, m.size))
+        if base.endswith(".xml"):
+            root = _ET.fromstring(tf.extractfile(m).read())
+            xml_groups = {gi: (len(grp.find("channels")), int(grp.find("nFeatures").text))
+                          for gi, grp in enumerate(root.find("spikeDetection").find("channelGroups"), start=1)}
+            continue
+        mt = re.match(r".*\.(clu|fet|res)\.(\d+)$", base)
+        if not mt or not m.isfile():
+            continue
+        kind, sh = mt.group(1), int(mt.group(2))
+        f = tf.extractfile(m)
+        if kind == "clu":
+            c = pd.read_csv(f, header=None, dtype=np.int32, engine="c").values[1:, 0]
+            clu[sh] = c
+            urow = np.full(len(c), -1, np.int32)
+            lab = np.full(len(c), -1, np.int8)
+            for j, u in enumerate(by_shank.get(sh, [])):
+                rws = np.flatnonzero(c == u % 100)
+                t = spikes[u]
+                if len(rws) != len(t):
+                    checks["count_mismatch"].append((u, len(rws), len(t)))
+                    continue
+                urow[rws] = j
+                lb = _cond_label(t, conds)
+                lb[~_first_of_burst(t)] = -1
+                lab[rws] = lb
+            rowlab[sh] = (urow, lab)
+        elif kind == "fet" and by_shank.get(sh):
+            nf = int(f.readline())
+            us = by_shank[sh]
+            urow, lab = rowlab[sh]
+            for u in us:
+                acc[u] = [0, np.zeros(nf), np.zeros((nf, nf))]
+                sel[u] = []
+            off = 0
+            for ch in pd.read_csv(f, sep=" ", header=None, dtype=np.int64, engine="c", chunksize=chunk,
+                                  skipinitialspace=True):
+                X = ch.values
+                n = len(X)
+                ur, lb = urow[off:off + n], lab[off:off + n]
+                for j, u in enumerate(us):
+                    ii = np.flatnonzero(ur == j)
+                    if len(ii):
+                        Xu = X[ii].astype(np.float64)
+                        a = acc[u]
+                        a[0] += len(ii)
+                        a[1] += Xu.sum(0)
+                        a[2] += Xu.T @ Xu
+                        kk = ii[lb[ii] >= 0]
+                        if len(kk):
+                            sel[u].append((X[kk].astype(np.float64), lb[kk].copy()))
+                off += n
+            if off != len(clu[sh]):
+                checks["fet_rows_mismatch"].append((sh, off, len(clu[sh])))
+        elif kind == "res" and by_shank.get(sh):
+            r = pd.read_csv(f, header=None, dtype=np.int64, engine="c").values[:, 0] / FS_SPIKES
+            for u in by_shank[sh]:
+                rr = r[clu[sh] == u % 100]
+                if len(rr) == len(spikes[u]):
+                    checks["res_maxerr"] = max(checks["res_maxerr"], float(np.abs(rr - spikes[u]).max()))
+    tf.close()
+    p_gz.wait()
+    p_curl.wait()
+    rows = []
+    pairs = list(itertools.combinations(range(len(conds)), 2))
+    for u in units:
+        rec = {"session": name, "cell": u}
+        if u not in acc or acc[u][0] < 2:
+            rows.append(rec)
+            continue
+        nch, nfe = xml_groups[u // 100]
+        npc = nch * nfe
+        n, s1, s2 = acc[u]
+        mu = s1 / n
+        Cv = ((s2 / n - np.outer(mu, mu)) * n / (n - 1))[:npc, :npc]
+        Pinv = np.linalg.pinv(Cv, hermitian=True)
+        mu = mu[:npc]
+        Xs = np.concatenate([s[0] for s in sel[u]])[:, :npc] if sel[u] else np.zeros((0, npc))
+        L = np.concatenate([s[1] for s in sel[u]]) if sel[u] else np.zeros(0, np.int8)
+        G = [Xs[L == k] for k in range(len(conds))]
+        rec["n_pca"] = npc
+        for k, (cn, _) in enumerate(conds):
+            rec[f"n_{cn}"] = len(G[k])
+            rec[f"q_{cn}"] = float(np.median(_mahal(G[k], mu, Pinv))) if len(G[k]) >= CQ_MIN_N else np.nan
+        for a, b in pairs:
+            na, nb = conds[a][0], conds[b][0]
+            if len(G[a]) >= CQ_MIN_N and len(G[b]) >= CQ_MIN_N:
+                dab = np.median(_mahal(G[a], G[b].mean(0), Pinv))
+                dba = np.median(_mahal(G[b], G[a].mean(0), Pinv))
+                rec[f"stab_{na}_{nb}"] = float((dab + dba) / 2)
+            else:
+                rec[f"stab_{na}_{nb}"] = np.nan
+        rows.append(rec)
+    return pd.DataFrame(rows), checks
+
+
+def _cq_worker(args):
+    return session_cluster_quality(*args)
