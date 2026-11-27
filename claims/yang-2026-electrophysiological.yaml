@@ -1,0 +1,558 @@
+# Claims for Yang & Xiao (2026), "Electrophysiological response geometries reveal shared and
+# protocol-specific cell-type organization", on dandiset 000020.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-27, protocol pilot-18 as stated in docs/protocol.md (Reader).
+#
+# Text read. The bioRxiv preprint, version 2 (posted 2026-08-20), as text
+# (paper/10.64898-2026.01.08.698522.txt): Abstract, Introduction, Results, Discussion, Methods
+# (sections 1 to 7), the legends of Figures 1 to 5 and the Data and Code Availability
+# statement. The supplement (one PDF, paper/10.64898-2026.01.08.698522.supp.pdf) holds only
+# Supplementary Table 1, the list of derived features per protocol; its table body is an image
+# and was read from the PDF. Table 1 (feature classes) was read from the main PDF. The text
+# reports no number: every value below (cell counts, variance explained, correlations, n) was
+# read from the figures in the PDF, and the statistics come from the text printed inside
+# Figure 5A, 5B and 4E. Values read off bars or box plots are approximate, and the claims say
+# so.
+#
+# Code read. None. The paper links no code: "The analysis code used in this study will be made
+# publicly available upon publication" (Data and Code Availability). No detail below is settled
+# by code.
+#
+# Data the paper used. Intracellular current-clamp recordings from genetically targeted
+# (Cre-line labelled) neurons of mouse visual cortex in the Allen Institute Patch-seq resource,
+# DANDI 000020, version 0.210913.1639 (Data and Code Availability; Methods 1). Raw NWB files were
+# converted to HDF5 holding per sweep the voltage response, the current command, the time
+# vector and cell metadata including the Cre line. Cre-line labels are the groups throughout
+# ("driver lines", abbreviated in the figures by marker gene). Sweeps were assigned to three
+# stimulus families from the stimulus description, the command waveform and the recording
+# mode: long pulse (sustained current steps), ramp, and brief pulse; for the brief pulse the
+# protocol X5SP_Search_DA_0 was used (Methods 1). Sweeps passed common and protocol-specific
+# quality control (Methods 2), and were aggregated to one feature vector per cell and protocol
+# (Methods 3; features in Supplementary Table 1). Cells in the PCA geometries (Figure 1C, read
+# off the bars): about 2270 long pulse, about 3220 ramp, 2154 brief pulse (the n printed in
+# Figure 4E). Driver lines: 9 in the long-pulse and ramp geometries (Sncg, Oxtr, Ndnf, Htr3a,
+# Gad2, Slc32a1, Pvalb, Sst, Vip; Figures 2 and 3) and 11 in the brief-pulse geometry (Gad2,
+# Htr3a, Ndnf, Oxtr, Pvalb, Sst, Vip, Sncg, Cck, Calb2, Crh; Figure 4). Measured variables: the
+# derived features of Supplementary Table 1 (firing rates, spike counts, response fractions,
+# first-spiking command, recruitment current, first-spike latency, peak and mean response
+# amplitudes, fast-response amplitudes, gain in mV/pA, baseline potential and noise).
+#
+# Method details the paper fixes. Features standardized and PCA run separately per protocol
+# and feature set with scikit-learn (Methods 4, 7); driver-line centroid is the mean PC score
+# vector of the line's cells; pairwise Euclidean distances between centroids; the upper
+# triangle of each distance matrix over shared driver lines correlated across geometries with
+# Pearson and Spearman (Methods 5); balanced resampling draws the same number of cells from
+# each retained line within each geometry and recomputes centroids, distances and correlations
+# from the PC scores; the null permutes driver labels within each balanced sample; empirical
+# p-values compare balanced true correlations against the shuffled-label null (Methods 6).
+# PC signs are arbitrary and interpretation is by feature composition (Methods 4).
+#
+# Method details the paper leaves open (no code to settle them). Each is named in the claims
+# that need it, with the readings the text allows:
+# - Quality-control thresholds (baseline stability and noise, trace length, ramp linearity,
+#   pulse detection); none are given (Methods 2).
+# - Spike detection (threshold or dV/dt criterion) and so every spike-based feature,
+#   recruitment current and first-spike latency.
+# - Which stimulus descriptions define long-pulse and ramp sweeps (only X5SP_Search_DA_0 is
+#   named), and the command-amplitude bins of the long-pulse command-binned features.
+# - The definitions of fast response, response windows and gain (gain is in mV/pA, Figure 4F).
+# - The missingness threshold for dropping features and the imputation statistic (mean or
+#   median).
+# - The exact membership of each feature set: the sustained-response long-pulse set, the
+#   recruitment-focused ramp set, the brief-pulse response-focused, gain-focused and base sets.
+# - How many PCs form the space where centroids and distances are computed (all PCs, the five
+#   shown in the figures, or PC1 and PC2).
+# - Minimum cells for a driver line to be included; how Cre lines sharing a marker gene are
+#   pooled; Figure 1D gives 7 lines shared by all three protocols where the figures' labels give
+#   8 (the nine long-pulse and ramp lines less Slc32a1).
+# - Balanced resampling: cells per line per draw, number of iterations, the exclusion rule for
+#   "insufficient representation", and how the empirical p-value is formed; the meaning of the
+#   stars in Figure 5C is not given.
+schema_version: 2
+paper: doi:10.64898/2026.01.08.698522
+claims:
+- id: fig1c-cells-per-protocol
+  statement: About 2270 cells entered the long-pulse geometry, about 3220 the ramp geometry and
+    2154 the brief-pulse geometry.
+  source: Figure 1C; Figure 4E (n printed in the panel)
+  quote: (C) Number of cells included in PCA-based response geometry construction for each
+    stimulation protocol.
+  expected:
+  - quantity: cells in the long-pulse PCA geometry (read off the Figure 1C bar)
+    value: 2270
+    tolerance: 227
+  - quantity: cells in the ramp PCA geometry (read off the Figure 1C bar)
+    value: 3220
+    tolerance: 322
+  - quantity: cells in the brief-pulse PCA geometry (n printed in Figure 4E)
+    value: 2154
+    tolerance: 215
+  criterion: Cells are counted after the common and protocol-specific quality control of
+    Methods 2 and aggregation to one vector per cell (Methods 3), with brief-pulse sweeps from
+    X5SP_Search_DA_0 (Methods 1). The quality-control thresholds and the stimulus descriptions
+    for long-pulse and ramp sweeps are not given (open). Readings for the long-pulse sweeps, all
+    long square current steps of the dataset or only the suprathreshold step family; for the
+    ramp, the ramp stimulus family. The claim is reproduced when each count is within its
+    tolerance under a reading; tolerance is 10% of the value, and the long-pulse and ramp values
+    are read off bars to about 50 cells.
+- id: fig1d-driver-line-coverage
+  statement: The long-pulse and ramp geometries each hold 9 driver lines and the brief-pulse
+    geometry 11, with a subset of lines shared across protocols used for cross-protocol
+    validation.
+  source: Figure 1D; driver lines named in Figures 2B, 3B and 4D
+  quote: (D) Driver-line coverage across protocol-specific geometries, including the
+    driver-defined groups shared across protocols and used for balanced cross-protocol
+    validation.
+  expected:
+  - quantity: driver lines in the long-pulse geometry
+    value: 9
+    tolerance: 0
+  - quantity: driver lines in the ramp geometry (labelled "Short pulse" in the Figure 1D diagram;
+      Figure 3 shows the same 9 lines)
+    value: 9
+    tolerance: 0
+  - quantity: driver lines in the brief-pulse geometry
+    value: 11
+    tolerance: 0
+  - quantity: driver lines shared by all three geometries (Figure 1D)
+    value: 7
+    tolerance: 1
+  criterion: Lines are Cre-line labels abbreviated by marker gene (Methods 1; Figure 2 legend).
+    The minimum number of cells for a line to be kept and how Cre lines with the same marker
+    are pooled are not given (open). The three per-protocol counts are exact. The shared count
+    has tolerance 1 because the paper is inconsistent; Figure 1D prints 7, while the lines named
+    in Figures 2 to 4 give 8 shared (all long-pulse lines but Slc32a1). Reproduced when the
+    per-protocol lines are those named in Figures 2B, 3B and 4D and the shared count is 7 or 8.
+- id: fig2a-longpulse-low-dimensional
+  statement: A few principal components capture most of the variance of the long-pulse
+    features; PC1 explains about 39%, PC2 about 15%, and the first five about 76%.
+  source: Results, Long-pulse stimulation defines a sustained-output response geometry,
+    paragraph 2; Figure 2A
+  quote: A small number of principal components captured most of the variance in long-pulse
+    responses (Fig. 2A)
+  expected:
+  - quantity: variance explained by long-pulse PC1 (read off Figure 2A)
+    value: 39
+    tolerance: 3.9
+    unit: percent
+  - quantity: variance explained by long-pulse PC2 (read off Figure 2A)
+    value: 15
+    tolerance: 1.5
+    unit: percent
+  - quantity: cumulative variance explained by long-pulse PC1 to PC5 (read off Figure 2A)
+    value: 76
+    tolerance: 7.6
+    unit: percent
+  criterion: PCA on the standardized long-pulse sustained-response feature set (Methods 3, 4),
+    after dropping features with excessive missingness and imputing the rest. Open, and named
+    as readings. The feature set, either all long-pulse features of Supplementary Table 1 or
+    those shown in Figure 2D plus the rest of Supplementary Table 1 without the command-binned
+    features. The imputation statistic, mean or median. The missingness threshold, a standard
+    choice (features with more than 50% missing dropped), recorded as an assumption.
+    Reproduced when the three values are within tolerance under a reading.
+- id: fig2b-longpulse-continuous-biased
+  statement: In the long-pulse PC1 to PC2 embedding cells form a continuum, not discrete
+    clusters, and driver lines occupy biased regions of it.
+  source: Results, Long-pulse stimulation defines a sustained-output response geometry,
+    paragraph 2; Figure 2B
+  quote: the PC1–PC2 embedding revealed a continuous response geometry ... (Fig. 2B).
+    Driver-defined groups were not randomly distributed within this
+    continuum.
+  criterion: The paper reports no test for either part. Continuity is judged as the paper does,
+    by inspecting the PC1 to PC2 scatter coloured by line (Figure 2B). For the bias the paper
+    gives no test, so the check here is a choice of this file and not the paper's method. It
+    borrows the driver-label shuffle of Methods 6. The mean pairwise centroid distance among the
+    9 lines (Methods 5) is compared with its distribution over label permutations of the same
+    cells, and the bias holds when fewer than 5% of permutations reach it (the 5% level is also
+    this file's choice). The number of PCs in the centroid space is open;
+    readings all PCs, the first five, and PC1 and PC2.
+  depends_on:
+  - fig2a-longpulse-low-dimensional
+- id: fig2d-longpulse-loadings
+  statement: Long-pulse PC1 is dominated by sustained firing features (firing rates, spike
+    counts, high-spiking and spiking fraction) with subthreshold fraction of opposite sign; PC2
+    has positive loadings from first-spiking current, maximum firing rate, maximum spike count,
+    subthreshold fraction and firing-rate slope, and negative ones from spiking fraction and
+    baseline variability.
+  source: Results, Long-pulse stimulation defines a sustained-output response geometry,
+    paragraph 3; Figure 2D1, 2D2
+  quote: PC1 was dominated by sustained spiking-output features, including firing-rate
+    measures, spike-count measures, high-spiking fraction, and spiking fraction, with
+    subthreshold fraction loading in the opposite direction (Fig. 2D1). ... PC2 captured a
+    complementary output-recruitment dimension, with positive loadings from first-spiking
+    current, maximum firing rate, maximum spike count, subthreshold fraction, and firing-rate
+    slope, and negative loadings from features including spiking fraction and baseline
+    variability (Fig. 2D2).
+  criterion: Loadings of the PCA of fig2a-longpulse-low-dimensional, under the same readings.
+    Signs are judged relative to each other, as PC signs are arbitrary (Methods 4). Figure 2D
+    shows the top 8 features by absolute loading of each PC. Reproduced when, for each PC, at
+    least 6 of the 8 features Figure 2D shows are among its 8 largest absolute loadings and
+    every feature the quote names has the stated sign relative to the others; partially
+    reproduced when this holds for one PC only.
+  depends_on:
+  - fig2a-longpulse-low-dimensional
+- id: fig2c-longpulse-centroid-distances
+  statement: Driver-line centroids are separated in long-pulse PC space; the Pvalb centroid is
+    farthest from Vip and Sncg.
+  source: Results, Long-pulse stimulation defines a sustained-output response geometry,
+    paragraph 4; Figure 2C
+  quote: Driver-line centroids were separated in PC space (Fig. 2C)
+  criterion: Centroids are the mean PC score vector of each line's cells and distances are
+    Euclidean (Methods 5). Which pairs are farthest is read off the Figure 2C heatmap (Pvalb to
+    Vip and Pvalb to Sncg darkest, about 3.4 and 3.2); no sentence states it. The number of PCs
+    in the space is open; readings all PCs, the first five, and PC1 and PC2. Reproduced when the
+    two largest of the 36 distances are Pvalb to Vip and Pvalb to Sncg under a reading.
+  depends_on:
+  - fig2a-longpulse-low-dimensional
+- id: fig2e-longpulse-pc2-pvalb-high-vip-low
+  statement: Along long-pulse PC2, Pvalb cells sit at the high end and Vip cells at the low end,
+    with the other lines between.
+  source: Results, Long-pulse stimulation defines a sustained-output response geometry,
+    paragraph 4; Figure 2E
+  quote: Pvalb-targeted cells were shifted toward the higher end of PC2 ... whereas Vip-targeted
+    cells occupied the lower end of the distribution. Other driverdefined groups occupied
+    intermediate positions
+  criterion: PC2 of fig2a-longpulse-low-dimensional, oriented so that first-spiking current
+    loads positively, as in Figure 2D2. The per-line summary is open; readings the median (the
+    box plots of Figure 2E) and the mean (the centroid, Figure 5A). Reproduced when Pvalb has the
+    highest and Vip the lowest value of the 9 lines under a reading.
+  depends_on:
+  - fig2d-longpulse-loadings
+- id: fig3a-ramp-variance
+  statement: The ramp feature space is low-dimensional; PC1 explains about 33%, PC2 about 21%,
+    and the first five about 87% of the variance.
+  source: Results, Ramp stimulation reveals a recruitment-threshold response geometry,
+    paragraph 2; Figure 3A
+  quote: The ramp feature space formed a structured response geometry with
+    driver-line-dependent occupancy (Fig. 3A-B).
+  expected:
+  - quantity: variance explained by ramp PC1 (read off Figure 3A)
+    value: 33
+    tolerance: 3.3
+    unit: percent
+  - quantity: variance explained by ramp PC2 (read off Figure 3A)
+    value: 21
+    tolerance: 2.1
+    unit: percent
+  - quantity: cumulative variance explained by ramp PC1 to PC5 (read off Figure 3A)
+    value: 87
+    tolerance: 8.7
+    unit: percent
+  criterion: PCA of the standardized ramp features (Methods 4). The recruitment-focused set is
+    the main ramp geometry (Methods 3, 4), but its members are not listed, and the Figure 3
+    legend says only "ramp-response features" (open). Readings. (a) The 8 features in Figure 3D
+    (minimum and median recruitment current, minimum and median first-spike latency, median and
+    maximum spike count, median and maximum firing rate). (b) All ramp features of
+    Supplementary Table 1. Imputation and missingness as in fig2a-longpulse-low-dimensional.
+    Reproduced when the three values are within tolerance under a reading.
+- id: fig3b-ramp-continuous-biased
+  statement: In the ramp PC1 to PC2 embedding cells form a continuum without isolated
+    driver-line clusters, and driver lines occupy biased regions of it.
+  source: Results, Ramp stimulation reveals a recruitment-threshold response geometry,
+    paragraph 2; Figure 3B
+  quote: As in the long-pulse geometry, cells did not form isolated driver-line clusters.
+    Instead, driver-defined groups occupied biased regions within a shared response continuum.
+  criterion: As in fig2b-longpulse-continuous-biased, on the ramp geometry of
+    fig3a-ramp-variance under its readings.
+  depends_on:
+  - fig3a-ramp-variance
+- id: fig3d-ramp-loadings
+  statement: Ramp PC1 is dominated by recruitment-current and first-spike-latency features
+    (minimum and median recruitment current, first-spike latency); PC2 by firing-rate and
+    spike-count output, with recruitment and latency features of opposite sign.
+  source: Results, Ramp stimulation reveals a recruitment-threshold response geometry,
+    paragraphs 3 and 4; Figure 3D1, 3D2
+  quote: PC1 was strongly defined by recruitment-current and first-spike-latency features,
+    including minimum recruitment current, median recruitment current, and latency to first
+    spike ... PC2 captured complementary outputrelated variation, with prominent contributions
+    from firing-rate and spike-count features once spiking had been recruited (Fig. 3D2).
+  criterion: Loadings of the PCA of fig3a-ramp-variance, under its readings, with signs judged
+    relative to each other (Methods 4). Reproduced when the 4 recruitment-current and latency
+    features are the 4 largest absolute loadings of PC1, and the 4 firing-rate and spike-count
+    features are the largest absolute loadings of PC2 with the recruitment and latency features
+    of opposite sign, as in Figure 3D2; partially reproduced when only one PC matches. Spike
+    detection, which defines recruitment current and latency, is not given (open); readings
+    the upward crossing of 0 mV, and a dV/dt threshold of 20 V/s.
+  depends_on:
+  - fig3a-ramp-variance
+- id: fig3e-ramp-recruitment-current-order
+  statement: Pvalb cells need the highest ramp recruitment current, Vip and Sncg cells the
+    lowest, and the other lines lie between.
+  source: Results, Ramp stimulation reveals a recruitment-threshold response geometry,
+    paragraph 4; Figure 3E
+  quote: Pvalb-targeted cells were shifted toward higher recruitment currents2,3, whereas Vip-
+    and Sncg-targeted cells occupied the lower-current end of the distribution, with other
+    driver-defined groups positioned between these extremes.
+  criterion: The per-cell value is the median recruitment current over the cell's ramp sweeps
+    (Supplementary Table 1; Figure 3E axis "Ramp median recruitment current (pA)"); recruitment
+    current is read as the command current at the first spike, the plain sense of the term,
+    which the Methods do not define (open). Spike detection is open (readings as in
+    fig3d-ramp-loadings). The per-line summary is the median of cells, as the box plots of
+    Figure 3E show. Reproduced when Pvalb has the highest line median and Vip and Sncg the two
+    lowest of the 9 lines. For scale only, Figure 3E shows a Pvalb median near 270 pA and Vip and
+    Sncg medians below 100 pA; these are read off the plot and are not tested.
+- id: fig4a-brief-response-variance
+  statement: The brief-pulse response-focused feature space is low-dimensional; PC1 explains
+    about 47%, PC2 about 19%, and the first five about 95% of the variance.
+  source: Results, Brief-pulse stimulation reveals a transient-gain response geometry,
+    paragraphs 1 and 2; Figure 4A
+  quote: The resulting brief-pulse response space formed a structured and low-dimensional
+    geometry
+  expected:
+  - quantity: variance explained by brief response PC1 (read off Figure 4A)
+    value: 47
+    tolerance: 4.7
+    unit: percent
+  - quantity: variance explained by brief response PC2 (read off Figure 4A)
+    value: 19
+    tolerance: 1.9
+    unit: percent
+  - quantity: cumulative variance explained by brief response PC1 to PC5 (read off Figure 4A)
+    value: 95
+    tolerance: 9.5
+    unit: percent
+  criterion: PCA of the standardized response-focused brief-pulse features from
+    X5SP_Search_DA_0 sweeps (Methods 1, 3, 4). The Results name its features (peak response
+    amplitude, mean response amplitude, fast response magnitude, input-normalized gain), and
+    Figure 4C shows 10 amplitude features, but the set is not listed (open). Readings. (a) The
+    peak, mean and fast voltage-response features of Supplementary Table 1 (median and maximum
+    peak response amplitude, median mean response amplitude, median and maximum fast-response
+    peak, median fast-response mean), with or without the two gain features. (b) The 10
+    features Figure 4C names (median fast-response mean, mean response amplitude, median
+    response amplitude, maximum fast-response mean, maximum response amplitude, median peak
+    response, median fast peak response, lower-quartile peak response, mean peak response,
+    maximum peak response), with or without the two gain features; several of these (maximum
+    fast-response mean, lower-quartile peak response, mean peak response) are not in
+    Supplementary Table 1. The fast-response window is not given (open). Reproduced when the
+    three values are within tolerance under a reading.
+- id: fig4b-brief-continuous-biased
+  statement: In the brief-pulse response embedding cells occupy a continuous space with biased
+    driver-line occupancy, and driver-line centroids are separated.
+  source: Results, Brief-pulse stimulation reveals a transient-gain response geometry,
+    paragraphs 2 and 3; Figure 4B, 4D
+  quote: Cells occupied a continuous response space with biased driver-line occupancy,
+    indicating that transient voltage responses were not distributed randomly across
+    genetically targeted cells.
+  criterion: As in fig2b-longpulse-continuous-biased, on the geometry of
+    fig4a-brief-response-variance under its readings, with the 11 brief-pulse lines.
+  depends_on:
+  - fig4a-brief-response-variance
+- id: fig4c-brief-response-pc1-loadings
+  statement: Brief response PC1 is dominated by fast and total voltage-response amplitude
+    features (fast response mean, response mean, response peak, response quantiles, fast peak
+    response), all loading with the same sign.
+  source: Results, Brief-pulse stimulation reveals a transient-gain response geometry,
+    paragraph 2; Figure 4C
+  quote: response PC1 was dominated by fast and total voltage-response amplitude features,
+    including fast response mean, response mean, response peak, response quantiles, and fast
+    peak response measures (Fig. 4C).
+  criterion: Loadings of PC1 of fig4a-brief-response-variance, under its readings. Reproduced
+    when the largest absolute PC1 loadings are amplitude features (peak, mean or fast response)
+    and these share one sign; not reproduced when a gain, timing or baseline feature is among
+    the top three.
+  depends_on:
+  - fig4a-brief-response-variance
+- id: fig4e-brief-response-base-alignment
+  statement: Across 2154 cells, brief response PC1 scores correlate strongly with PC2 of the
+    broader brief-pulse base geometry (Pearson r = 0.875, Spearman r = 0.900).
+  source: Results, Brief-pulse stimulation reveals a transient-gain response geometry,
+    paragraph 3; Figure 4E
+  quote: response PC1 aligned strongly with the corresponding response-related axis from the
+    broader brief-pulse base geometry (Fig. 4E).
+  expected:
+  - quantity: Pearson r between response PC1 and base PC2 (printed in Figure 4E)
+    value: 0.875
+    tolerance: 0.0875
+  - quantity: Spearman r between response PC1 and base PC2 (printed in Figure 4E)
+    value: 0.9
+    tolerance: 0.09
+  - quantity: cells (printed in Figure 4E)
+    value: 2154
+    tolerance: 215
+  criterion: The base geometry is a PCA of the broader brief-pulse feature set, which the
+    Methods do not define (open); reading, all brief-pulse features of Supplementary Table 1,
+    standardized and imputed as for the response set. PC signs are arbitrary (Methods 4), so
+    the absolute value of r is compared. The base axis is the one the paper names, PC2; if the
+    response-related base axis is another PC under a reading, that is reported as a deviation
+    and the correlation with the best-matching base PC is shown. Reproduced when both |r| are
+    within tolerance (capped at 1).
+  depends_on:
+  - fig4a-brief-response-variance
+- id: fig4f-brief-gain-vip-cck-high
+  statement: On peak response gain the driver-line order differs from long-pulse and ramp; Vip
+    and Cck cells have the highest gain, and Pvalb cells are not at the upper extreme.
+  source: Results, Brief-pulse stimulation reveals a transient-gain response geometry,
+    paragraph 4; Figure 4F
+  quote: Vip- and Cck-targeted cells occupied the higher-gain end of the distribution, whereas
+    Pvalb-targeted cells no longer defined the upper extreme observed in the sustained-output
+    and ramprecruitment geometries.
+  criterion: Per cell, the median peak-response gain over X5SP_Search_DA_0 sweeps (Supplementary
+    Table 1, "median peak-response gain"; Figure 4F, mV/pA), gain being peak voltage response
+    divided by command amplitude. The response window and baseline are not given (open);
+    readings the peak within the pulse plus 10 ms and the peak within the pulse plus 50 ms,
+    from the pre-pulse baseline. Line summary is the median of cells (box plots of Figure 4F).
+    Reproduced when Vip and Cck have the two highest line medians of the 11 lines and Pvalb's
+    median is below the median of the 11 line medians (Figure 4F shows Pvalb near 0.045 mV/pA,
+    among the lowest, and Vip and Cck near 0.08 mV/pA).
+- id: disc-brief-gain-sncg-cck-non-pvalb
+  statement: Cck and Sncg cells also lie toward the high-gain end of the brief-pulse
+    distribution, so high transient sensitivity is spread over several non-Pvalb inhibitory
+    groups.
+  source: Discussion, paragraph 4; Figure 4F
+  quote: Cck- and Sncg-targeted cells also contributed to the higher-gain end of the brief-pulse
+    distribution, indicating that transient-response sensitivity is distributed across multiple
+    non-Pvalb inhibitory groups.
+  criterion: Gain and line medians as in fig4f-brief-gain-vip-cck-high, under its readings.
+    Reproduced when Cck and Sncg line medians both exceed Pvalb's and lie in the upper half of
+    the 11 line medians (Figure 4F shows Sncg third, near 0.06 mV/pA).
+  depends_on:
+  - fig4f-brief-gain-vip-cck-high
+- id: fig5a-longpc2-ramppc1-centroids
+  statement: Across the 9 driver lines, centroids on long-pulse PC2 and ramp recruitment PC1 are
+    closely aligned (Spearman r = 0.883, p = 0.002), with Pvalb high and Vip low on both.
+  source: Results, Protocol-specific response geometries preserve shared cell-group structure,
+    paragraph 2; Figure 5A
+  quote: Driver-line centroids along the long-pulse PC2 output-recruitment axis were closely
+    aligned with centroids along the ramp recruitment PC1 axis (Fig. 5A).
+  statistics:
+  - test: Spearman correlation (printed in Figure 5A)
+    statistic: r = 0.883
+    p: 0.002
+    n: 9 driver lines
+  expected:
+    quantity: Spearman r between long-pulse PC2 and ramp recruitment PC1 centroids
+    value: 0.883
+    tolerance: 0.088
+  criterion: Centroid on an axis is the mean PC score of the line's cells (Methods 5), on PC2
+    of fig2a-longpulse-low-dimensional and PC1 of fig3a-ramp-variance (recruitment-focused set,
+    the main ramp representation, Methods 3), each under its readings. Axes are oriented so
+    that first-spiking current loads positively on long-pulse PC2 and recruitment current on
+    ramp PC1, as Figures 2D2 and 3D1 show. Reproduced when r is within tolerance (capped at 1)
+    and p < 0.05 by the Spearman test's own p-value.
+  depends_on:
+  - fig2e-longpulse-pc2-pvalb-high-vip-low
+  - fig3d-ramp-loadings
+- id: fig5b-long-ramp-distance-alignment
+  statement: Pairwise driver-line centroid distances in the long-pulse and ramp recruitment
+    geometries are positively correlated over 36 line pairs (Spearman r = 0.707, p < 0.001).
+  source: Results, Protocol-specific response geometries preserve shared cell-group structure,
+    paragraph 3; Figure 5B
+  quote: Long-pulse and ramp recruitment geometries showed a positive distance-matrix alignment,
+    demonstrating that their relationship was not limited to a single principal component
+    comparison.
+  statistics:
+  - test: Spearman correlation (printed in Figure 5B)
+    statistic: r = 0.707
+    p: 0.001
+    p_relation: "<"
+    n: 36 driver-line pairs
+  expected:
+  - quantity: Spearman r between long-pulse and ramp recruitment centroid distance vectors
+    value: 0.707
+    tolerance: 0.071
+  - quantity: driver-line pairs
+    value: 36
+    tolerance: 0
+  criterion: Euclidean distances between centroids in each PC space, upper triangles over the
+    shared lines vectorized and correlated (Methods 5), on the geometries of
+    fig2a-longpulse-low-dimensional and fig3a-ramp-variance. The number of PCs in each space is
+    open; readings all PCs, the first five, and PC1 and PC2. Methods 5 also names Pearson; it is
+    shown as a variant. Reproduced when Spearman r is within tolerance and p < 0.001 under a
+    reading.
+  depends_on:
+  - fig2c-longpulse-centroid-distances
+  - fig3a-ramp-variance
+- id: fig5c-balanced-correlations-positive
+  statement: Under balanced resampling, distance-matrix correlations are positive for every
+    protocol pair, with medians near 0.79 (long pulse against ramp recruitment) and 0.6 to 0.65
+    for the pairs involving brief response or brief gain.
+  source: Results, Protocol-specific response geometries preserve shared cell-group structure,
+    paragraph 4; Figure 5C
+  quote: Across comparisons, balanced distance-matrix correlations remained consistently
+    positive, including long-pulse versus brief-response, ramp recruitment versus
+    brief-response, ramp recruitment versus brief-gain, long-pulse versus brief-gain, and
+    brief-response versus brief-gain geometries.
+  expected:
+  - quantity: median balanced Spearman r, long pulse against ramp recruitment (read off Figure
+      5C)
+    value: 0.79
+    tolerance: 0.079
+  - quantity: median balanced Spearman r, ramp recruitment against brief response (read off
+      Figure 5C)
+    value: 0.65
+    tolerance: 0.065
+  - quantity: median balanced Spearman r, ramp recruitment against brief gain (read off Figure
+      5C)
+    value: 0.65
+    tolerance: 0.065
+  - quantity: median balanced Spearman r, long pulse against brief gain (read off Figure 5C)
+    value: 0.62
+    tolerance: 0.062
+  - quantity: median balanced Spearman r, brief response against brief gain (read off Figure 5C)
+    value: 0.62
+    tolerance: 0.062
+  - quantity: median balanced Spearman r, long pulse against brief response (read off Figure 5C)
+    value: 0.61
+    tolerance: 0.061
+  criterion: For each pair of geometries, lines with insufficient representation are dropped,
+    the same number of cells is drawn from each retained line within each geometry, centroids
+    and distance matrices are recomputed from the PC scores, and the Spearman correlation of
+    the distance vectors over shared lines is taken; repeated over iterations (Methods 6). The
+    brief gain geometry is PCA of the gain-focused brief-pulse set (Methods 3, 4), whose members
+    are not listed (open; reading, the two gain features and the peak-response command slopes of
+    Supplementary Table 1). Open, named as readings. Cells per line per draw, the smallest
+    retained line's count, or a fixed 20. The exclusion rule, lines with fewer cells than
+    that number in either geometry. Iterations, 1000 (a standard choice that cannot change the
+    outcome beyond resampling noise). PCs in the space, as in fig5b-long-ramp-distance-alignment.
+    Sampling with or without replacement, without (the Methods say "randomly sampled"),
+    recorded as a standard choice. Reproduced when every median is positive and within
+    tolerance under a reading; partially reproduced when all are positive but some fall outside
+    tolerance.
+  depends_on:
+  - fig5b-long-ramp-distance-alignment
+  - fig4a-brief-response-variance
+- id: fig5d-f-true-above-shuffle-null
+  statement: For every protocol pair, the balanced true distance-matrix correlations lie above
+    the driver-label shuffle null distribution, which centres near zero.
+  source: Results, Protocol-specific response geometries preserve shared cell-group structure,
+    paragraph 4; Figure 5C to 5F
+  quote: In each case, the true balanced alignments were shifted above driver-label shuffle null
+    distributions, showing that the preserved geometry could not be explained by unequal
+    sampling or random driver-line assignment.
+  criterion: The null permutes driver labels within each balanced sample, keeping the PC scores
+    and sample sizes, and recomputes centroids, distances and correlations; empirical p-values
+    compare the balanced true correlations with the null (Methods 6). How the p-value is formed
+    is not given (open); readings, the fraction of null correlations at or above the median true
+    correlation, and that fraction with one added to numerator and denominator. Whether the
+    labels are shuffled in one geometry or both is open; both readings are run. Figure 5C marks
+    each pair with one or two stars without saying what they mean. Reproduced when, for all six
+    pairs, the empirical p is below 0.05 under a reading and the null median is within 0.15 of
+    zero (Figures 5D to 5F show null modes near 0).
+  depends_on:
+  - fig5c-balanced-correlations-positive
+checks:
+- date: 2026-11-27
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4a-brief-response-variance, reading (b) said Figure 4C adds only the lower-quartile peak
+    response to Supplementary Table 1; Figure 4C names 10 features, of which maximum
+    fast-response mean, lower-quartile peak response and mean peak response are not in the
+    table. Reading (b) now lists the 10 features of Figure 4C.
+  - fig2b-longpulse-continuous-biased (and so fig3b and fig4b), the label-shuffle test of bias
+    and its 5% level are not a method the paper applies to this finding (Methods 6 uses the
+    shuffle only for cross-protocol alignment); the criterion now says the test is this file's
+    choice.
+  - fig3e-ramp-recruitment-current-order, recruitment current as the command at the first spike
+    was stated as fact; the Methods do not define it, so it is now marked as a reading.
+  - Confirmed by reading the PDF the values the checker could not find in the text, which are
+    printed inside figures (Figure 5A p = 0.002, r = 0.883, n = 9; Figure 5B r = 0.707, p <
+    0.001, 36 pairs; Figure 4E r values and n = 2154), and checked the figure-read values of
+    Figures 1C, 2A, 3A, 4A, 4F and 5C against the plots. No change.
+  - Open, not settled by the paper. Figure 1D prints 7 lines shared by all three geometries and
+    labels a circle "Short pulse" where the ramp geometry is meant; the lines named in Figures 2
+    to 4 give 8 shared. Figure 4B's legend lists 9 lines while Figures 4D and 4F show 11.
+  - Open, not settled by the paper. Feature-set membership, QC thresholds, spike detection,
+    response windows, number of PCs in the centroid space and all balanced-resampling settings
+    are not given and no code is public; the claims carry these as readings.

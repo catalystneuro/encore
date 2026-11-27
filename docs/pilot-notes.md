@@ -339,7 +339,7 @@ run can read them: they are kept in a private repository,
 catalystneuro/registry-papers, that only jobs in the `papers` environment can
 read, from main, with a read-only key. The steps from a target to a merged
 attempt, and the Pipeline page that shows where each target stands, are in
-[pipeline.md](pipeline.md).
+[pipeline.md](https://github.com/encorescience/encore-protocol/blob/main/docs/pipeline.md).
 
 The paper store started with 181 papers: 151 fetched (Europe PMC, PubMed
 Central, bioRxiv, eLife), 2 from arXiv, and 28 supplied by hand as PDFs,

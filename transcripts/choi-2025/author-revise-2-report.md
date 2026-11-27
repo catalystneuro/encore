@@ -1,24 +1,21 @@
-No outcome changed. The verifier agreed with all 13 in round 2: fig8a, fig8b, fig9a and fig9bc reproduced, fig9d partially reproduced, and 8 blocked for missing data. I found no reason to propose a change, so there is no `proposed` entry. I re-ran the entry with `python tools/entry.py all entries/002014-choi-2025` after the last edit: 0 errors, the notebook passes, and every number cited in the text matches the printed output.
+I went through every point in the round-2 report. No outcome changed and nothing is proposed: the verifier agreed with all 13. The entry was re-run with `python tools/entry.py all entries/choi-2025` (notebook passes, 0 errors), and `tools/entry.py check` passes on the final record. The re-run reproduced the earlier numbers.
 
-**New outputs:**
-- **Cell 30:** it now checks the 40 µV threshold on all 101733 spikes, where before only the first 20000 were checked. Every spike exceeds it; the smallest peak is 40.3 µV. Cells 13 and 31 and the fig9bc notes now cite this.
-- **Cell 14:** it now prints the share of per-spike trough lags within 0.5 ms of the -7.12 ms spike-triggered trough: 98.8% of 1633 spikes.
+**Outcomes:** 5 tested and 8 blocked (`data_missing`), as before.
+- Reproduced: fig8a, fig8b, fig9a, fig9bc.
+- Partially reproduced: fig9d (p = 0.112).
 
-**Text corrected:**
-- **Cell 17:** the largest |t| before V is 2.06, not 2.04.
-- **Cell 15 and the spike-lag finding:** they now say the check covers one 300 s segment (1633 spikes), and that -7.4 to -6.9 ms is the 10th to 90th percentile, not the full range. I dropped the claim that raw c5d shows a spike at every stored spike time.
-- **Summary (cell 35):** "up to five copies" is now "about five copies on average", with the counts (7221 stored trial-start events for 1412 distinct ones).
-- **README:** the run time now says a little over a minute (1.2 min in the last run), not about two minutes.
+**Output added:** the verifier warned that `da` might be smoothed and delayed like `iox`, which would bear on timing. The `iox` check in the data check now also measures `da`'s lag.
+- In the 13 of the 36 sampled trials with no NaN, `da` follows `iox` by a further 0.1 to 0.4 s, so it carries at least the same delay of about 1.5 s.
+- Matched directly against the raw current, `da`'s best lag is 1.2 to 5.0 s earlier (median 3.1 s). The 5.0 s end is the edge of the search window, so that range is loose. I report it only in finding 9.
 
-**Attempt record:**
-- I added the round-2 verification, with the verifier's reason and my response for each of the 13 claims.
-- I filled in the three points the verifier said were missing from my round-1 paraphrase of its reasons:
-  - for fig9bc, the Plexon unit's ISI counts;
-  - for fig9d, that the trials are not independent;
-  - for fig9d, that the edge distortion does not reach the ±1 s test windows.
+**Corrections, in the notebook and the record:**
+- **fig8b, wrong range:** the 5 to 8 s values now read 1.57 to 1.68. The 1.32 belongs to the 4 to 5 s window.
+- **fig8b, "especially between cue and reward":** the claim that this part "does not hold" is withdrawn. The text now says the difference builds between the cue and reward and then holds, and that only its level is as large after reward. The question to a reader stays, with its reasoning corrected.
+- **Timing caveat:** the fig8a and fig8b notes now say the delay in the trial-aligned dopamine trace may explain part of the rise after the cue (fig8a) and the null result for 0 to 2 s (fig8b).
+- **fig8a count:** the reference statistics cover 941 trials, not 950 (9 are NaN).
+- **Finding 2 and the summary:** the smoothing kernel is positive from about −2.8 s, not −2.4 s. The ~1.5 s lag of `iox` behind the raw current is now stated in the same place as the claim that it is tied to the scans.
+- **Finding 9:** severity raised from minor to major, as the verifier suggested. A response latency measured on the stored trial-aligned dopamine data comes out about 1.5 s late, and nothing in the file says so.
 
-**Not done:**
-- **Remaining weaknesses:** these cannot be fixed in this attempt, and the text already discloses them. fig8a's criterion is weak and was written after trial 133's values had been printed. fig9bc passes a criterion that could hardly fail. fig9d depends on band, window and test choices the paper does not state.
-- **Figures:** the verifier said it saw no figures, so the shapes of the panels have not been compared with the paper's Figures 8 and 9. The notebook prints numbers for each plot, but this comparison is still open.
+**Recorded:** round 2 is under `verifications`, with the verifier's reasons and my responses for all 13 claims. No finding is rated critical, so the round's `findings` list holds only the three the verifier commented on: 2, 5 and 9. Finding 9 is recorded as a disagreement, with my response.
 
-Nothing is committed, as instructed.
+**Not done:** the verifier reported no misreading of the paper by the claims file, so no new question was added. I left the round-1 responses as they were written, since they record that round. Nothing was committed or pushed.

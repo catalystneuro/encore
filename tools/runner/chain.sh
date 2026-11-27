@@ -243,7 +243,9 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
     if echo "$runlog" | grep -qE "$GITHUB_DOWN" \
        && [ $outage -lt "${OUTAGE_TRIES:-24}" ]; then
       outage=$((outage+1))
-      if ! echo "$runlog" | cut -f1 | grep -qvx commit; then
+      # The job is `commit`, or `attempt / commit` and `papers / commit` since the run is encore-protocol's,
+      # called from the registry's workflow of the same name.
+      if ! echo "$runlog" | cut -f1 | grep -qvE '^([a-z]+ / )?commit$'; then
         log "$role: its commit failed because GitHub is failing (run $id); its commit job again in 15 minutes, retry $outage"
         sleep 900
         until gh run rerun "$id" --failed >/dev/null 2>&1; do
@@ -357,7 +359,14 @@ esac
 # has no verdict yet has its paper match now, before the claims are read; one that matches is listed for the paper,
 # and the claims are then read again for all of them (describe.py, claims-cover). Not for a replicate, which
 # repeats an attempt as it was, nor from inside such a match.
-if [ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]; then
+# An attempt whose recorder has run has nothing left but to finish. A chain started again there (one that stopped at
+# its pull request) would otherwise decide each step again from what main and the branch hold now, which is not what
+# its first pass saw. On 2026-11-25 choi-2025 and senzai-2017, repeat attempts on a new version, which keep their
+# claims file, were started again by the paper's key alone: with no version given, the chain began to read their
+# claims again, after the attempt was verified and recorded.
+recorded=""
+if [ -z "$REPLICATE" ] && is_done recorder; then recorded=1; log "the recorder has run: only the finish is left"; fi
+if [ -z "$recorded" ] && [ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]; then
   for sib in $(python "$here/describe.py" siblings "$d" 2>/dev/null); do
     log "the paper is also named by $sib: its paper match first"
     SIBLINGS=0 MATCH_ONLY=1 RUNNER_NOTIFY=none "$here/chain.sh" "$sib" 2>&1 | tail -n 1 | while read -r line; do log "$line"; done
@@ -366,7 +375,9 @@ if [ -z "$REPLICATE" ] && [ "${SIBLINGS:-1}" != 0 ]; then
 fi
 deprecated=$(python "$here/describe.py" deprecated "$d")
 on_main=$(python "$here/describe.py" claims-ready "$d")
-if [ -n "$REPLICATE" ]; then
+if [ -n "$recorded" ]; then
+  :   # the claims are the ones the attempt tested
+elif [ -n "$REPLICATE" ]; then
   # A replicate tests the claims the current attempt tested: main's claims file, as it is, checked or from before
   # claims were checked. It never reads them again.
   if ! git cat-file -e "origin/main:claims/$d.yaml" 2>/dev/null || [ "$deprecated" = true ]; then
@@ -376,7 +387,10 @@ if [ -n "$REPLICATE" ]; then
 elif [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
   log "main has checked claims; skipping the claims and their check"
   [ "${CLAIMS_ONLY:-}" = 1 ] && { rm -f "$mark"; end "$d CLAIMS MERGED (already on main)"; exit 0; }
-elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
+# A chain given a version keeps the paper's claims file: it is a repeat attempt on a new version of the dataset.
+# A first attempt has none to keep, whether or not a version was named (costabile-2023 on 2026-11-25: four run
+# requests named their published versions, the claims were never read, and the author found nothing to test).
+elif [ -z "$VERSION" ] || [ "$deprecated" = true ] || ! git cat-file -e "origin/main:claims/$d.yaml" 2>/dev/null; then
   step claims
   fetch
   # The reader writes no claims file when the paper's text is not enough to read them from (a missing
@@ -413,7 +427,11 @@ fetch
 # author-answers roles for nothing, and a replicate, whose answer run the workflow refused, retried for ever.
 open_questions=$({ on_branch "questions/$d.yaml" || true; } | python -c "import yaml,sys; q=yaml.safe_load(sys.stdin) or []; q=q.get('questions', []) if isinstance(q, dict) else q; print(sum(1 for x in q if not x.get('answered')))" 2>/dev/null | tail -n 1)
 open_questions=${open_questions:-0}
-if [ "${open_questions:-0}" != 0 ] || is_done answer; then
+# Only before the verification rounds. A question the author writes while revising stays open in the record: the
+# chain does not come back for it. A chain started again after its rounds, to finish (mah-2023, 2026-11-25), counted
+# those questions and began the answer and author-answers runs, which would have changed the entry after its
+# verifiers had read it.
+if ! is_done verifier-1 && { [ "${open_questions:-0}" != 0 ] || is_done answer; }; then
   log "$open_questions open questions"
   step answer
   step author-answers
@@ -421,7 +439,7 @@ fi
 for role in verifier-1 author-revise-1 verifier-2 author-revise-2; do step "$role"; done
 fetch
 latest=$(records_on_branch | tail -n 1)
-if git show "origin/$br:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
+if [ -z "$recorded" ] && git show "origin/$br:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
   log "has proposed changes: third round"
   for role in verifier-3 author-revise-3; do step "$role"; done
 fi
@@ -462,6 +480,12 @@ merge_main(){
   fi
   git -C "$work" push -q origin "HEAD:refs/heads/$br" || return 3
 }
+# The protocol over the worktree, at the version its protocol.lock names. describe.py reads the attempt with the
+# protocol's tools (agent_run.py, datasets.py), which the registry's commits have not held since 2026-11-23
+# (tools/protocol.sh), so a new worktree has none. Until 2026-11-25 nothing laid them here: the title came out
+# blank and each of the seven attempts that finished in those two days stopped at "could not open a pull request".
+# A branch from before then has no protocol.sh until main is merged in, and holds the protocol itself.
+lay_protocol(){ [ ! -f "$work/tools/protocol.sh" ] || bash "$work/tools/protocol.sh" "$work" >/dev/null; }
 log "finishing"
 round=0
 while true; do
@@ -478,7 +502,10 @@ while true; do
   # The branch as the recorder left it, for the pull request's title and body (describe.py reads the tree).
   fetch; git -C "$work" checkout -q --detach "origin/$br" \
     || { end "$d STOPPED: could not check out $br after the recorder"; exit 1; }
+  lay_protocol || { last_why="tools/protocol.sh failed in the finish worktree"; end "$d STOPPED: could not lay the protocol over $br"; exit 1; }
   title=$(REGISTRY_ROOT="$work" python "$here/describe.py" title "$d")
+  [ -n "$title" ] || { last_why="describe.py could not read the attempt on $br; its error is in the chain's log"
+                       end "$d STOPPED: could not write the pull request's title"; exit 1; }
   pr=$(gh pr list --head "$br" --state open --json url --jq '.[0].url // empty')
   if [ -z "$pr" ]; then
     pr=$(gh pr create --base main --head "$br" --title "$title" \

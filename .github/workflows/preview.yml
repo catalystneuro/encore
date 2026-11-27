@@ -2,25 +2,25 @@ name: Preview the dashboard
 run-name: "${{ github.event.action == 'closed' && 'Remove the preview' || 'Preview' }} of PR #${{ github.event.pull_request.number }}"
 
 # Builds the dashboard from a pull request's branch and publishes it under
-# pr-preview/pr-<number>/ on the gh-pages branch, which GitHub Pages serves,
-# then comments the link on the pull request. The preview is removed when the
-# pull request is closed or merged, and closing it cancels any build of it still
-# running or waiting. Pull requests from forks cannot push here and get no
-# preview.
+# pr-preview/pr-<number>/ in the R2 bucket encore-site, which encorescience.org
+# is served from (tools/publish_site.py), then comments the link on the pull
+# request. The preview is removed when the pull request is closed or merged, and
+# closing it cancels any build of it still running or waiting. Pull requests
+# from forks have no access to the bucket's key and get no preview.
 
 on:
   pull_request:
     types: [opened, reopened, synchronize, closed]
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   actions: read
 
 # One run per pull request: a newer push, or closing the pull request, cancels the
 # run before it. Not shared with site.yml: in a shared group a queued preview
-# would replace a queued publish. Pushes to gh-pages that collide are retried by
-# the deploy action.
+# would replace a queued publish. A preview writes only under its own folder of
+# the bucket, so previews and the site's publish do not collide.
 concurrency:
   group: preview-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -32,7 +32,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Every commit, without the contents of files that are not checked out: the queue needs the history
+          # of the branches, and the files of every earlier commit made this checkout take over five minutes.
           fetch-depth: 0
+          filter: blob:none
+
+      - name: Lay the protocol over the checkout (tools/protocol.sh, at the version protocol.lock names)
+        run: bash tools/protocol.sh
 
       - uses: actions/setup-python@v5
         if: github.event.action != 'closed'
@@ -68,9 +74,47 @@ jobs:
           # GitHub Pages allows, and its builds failed.
           rm -rf site/notebooks
 
-      - uses: rossjrw/pr-preview-action@v1.8.1
-        with:
-          source-dir: site
-          preview-branch: gh-pages
-          umbrella-dir: pr-preview
-          qr-code: false
+      - name: Publish the preview to the site's bucket
+        if: github.event.action != 'closed'
+        env:
+          R2_ACCOUNT_ID: 008449f3dd09bf4fea5f86ee82695b6e
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          pip install --no-cache-dir boto3
+          python tools/publish_site.py site --prefix "pr-preview/pr-$PR/"
+
+      # An empty folder published under the preview's prefix deletes everything there.
+      - name: Remove the preview from the site's bucket
+        if: github.event.action == 'closed'
+        env:
+          R2_ACCOUNT_ID: 008449f3dd09bf4fea5f86ee82695b6e
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          python3 -m pip install --no-cache-dir --quiet boto3
+          mkdir -p "$RUNNER_TEMP/empty"
+          python3 tools/publish_site.py "$RUNNER_TEMP/empty" --prefix "pr-preview/pr-$PR/"
+
+      # One comment for the pull request, kept up to date: the last one this workflow made is edited.
+      - name: Say where the preview is
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          if [ "$ACTION" = closed ]; then
+            body="The preview of this pull request was removed when it was closed."
+          else
+            body="Preview: https://encorescience.org/pr-preview/pr-$PR/ (built from $(git rev-parse --short HEAD), $(date -u +'%Y-%m-%d %H:%M UTC'))"
+          fi
+          # The preview is published by now; a comment GitHub would not take (its API answered 500s on 2026-11-25)
+          # is tried again and then let go, with a warning that gives the address.
+          for try in 1 2 3; do
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --edit-last --body "$body" 2>/dev/null \
+              || gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$body" && exit 0
+            sleep $((try * 20))
+          done
+          echo "::warning::Could not comment on the pull request. $body"

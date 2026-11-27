@@ -1,0 +1,39 @@
+name: Tell the registry about an attempt from a fork of encore-runner
+description: Say that your organization has started an attempt on a paper, or send the attempt when it is finished.
+title: "Outside attempt: "
+labels: [outside-run]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        An organization can make a whole attempt from its own fork of [encore-runner](https://github.com/encorescience/encore-runner), with its own Claude account and its own copy of the papers (encore-protocol's docs/outside-runs.md). The fork tells the registry twice: when the attempt starts, so that the registry shows who is attempting the paper, and when it is finished. The registry's intake then checks every run's signature and takes the attempt as the branch `attempt/<paper>`. Someone at CatalystNeuro approves each; the intake comments here with what it found, and closes this issue when it is done.
+  - type: input
+    id: run
+    attributes:
+      label: Run
+      description: "The address of the attempt's run in your fork."
+      placeholder: "https://github.com/OWNER/encore-runner/actions/runs/123456789"
+    validations:
+      required: true
+  - type: input
+    id: paper
+    attributes:
+      label: Paper
+      description: "The paper's key in the registry (papers/keys.yaml)."
+      placeholder: "smith-2020"
+    validations:
+      required: true
+  - type: dropdown
+    id: what
+    attributes:
+      label: What
+      options:
+        - The attempt has started
+        - The attempt is finished
+    validations:
+      required: true
+  - type: textarea
+    id: note
+    attributes:
+      label: Note
+      description: "Anything the reviewer should know, such as who ran it."

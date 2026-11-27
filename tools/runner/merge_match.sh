@@ -29,6 +29,7 @@ if [ "$mode" = --adopt ]; then
     git fetch -q origin main
     git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
     git worktree add -q --detach "$tmp" origin/main
+    bash "$tmp/tools/protocol.sh" "$tmp" >/dev/null   # the protocol main names (paper_match.py, paper_records.py)
     [ "$(cd "$tmp" && python3 tools/paper_match.py status "$d")" = matched ] || { echo "$d: main's paper match settles on no paper"; exit 1; }
     paper=$(cd "$tmp" && python3 tools/paper_records.py adopt "$d") || { echo "$d: could not list the dataset for its paper"; exit 1; }
     git -C "$tmp" add papers/keys.yaml papers/datasets
@@ -44,6 +45,7 @@ for try in 1 2 3 4 5; do
   git fetch -q origin main "attempt/$d"
   git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
   git worktree add -q --detach "$tmp" origin/main
+  bash "$tmp/tools/protocol.sh" "$tmp" >/dev/null
   git -C "$tmp" checkout -q "origin/attempt/$d" -- "papers/match/$d.yaml"
   git -C "$tmp" ls-tree --name-only "origin/attempt/$d" "transcripts/match/$d/" | { grep '/paper-match[^/]*\.md$' || true; } \
     | xargs -r git -C "$tmp" checkout -q "origin/attempt/$d" --

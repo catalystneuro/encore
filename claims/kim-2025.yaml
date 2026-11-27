@@ -1,0 +1,688 @@
+# Claims for Kim & Shin (2025), doi:10.1101/2025.06.30.662469, read for dandiset 000248.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-21,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read: paper/10.1101-2025.06.30.662469.txt, the bioRxiv full text of the preprint posted
+# July 04, 2025, under the title "Neural variability structure in primary visual cortex is optimal
+# for robust representation of visual similarity". The registry lists the paper under a later
+# title ("Intrinsic geometry of trial-to-trial variability in primary visual cortex is optimal for
+# robust representation of visual similarity"); that later version was not supplied, and every
+# claim here is from the July 2025 text. That text holds the Results, Discussion, Methods and the
+# legends of Figures 1 to 4 and S1 to S6; the supplementary figures are part of it, and there is
+# no separate supplement. The equations of the Methods (slope manipulation, effective
+# dimensionality, orthogonal component, number of RSA trial pairs, modulated Poisson model) are
+# lost in the extraction, and the legends of Figures 2 and 3 are cut after "(Wilcoxon signed-rank
+# test". No PDF was supplied, so figure panels could not be read. Where the equations are needed
+# they are taken from the code below.
+#
+# Code read: GitHub jhk4839/Neural_variability_robustness at commit
+# ac3300b007c2348ccda73c0c87fb02f557791089 (2025-07-03), the last commit before the preprint was
+# posted; its README names the July 2025 title and maps the notebooks to this text's figure
+# numbers (fit_slope_histogram for 1B, 1C, S1 to S3, S5A; dimensionality_tangent for 1D, 2D;
+# box_counting_analysis for S5C; decode_noise_corr for 2B, S4, S6A; RSA_overlap_SCC for 2A, 2C,
+# 4, S4C, S6B, S6C; ortho_variance for 3A to 3D; local_global_alignment for 3E, 3F;
+# visualize_manifold for 1C, S5B, S5D; fit_slope_openscope fits slopes to the Illusion data and
+# makes no figure). The notebooks load pickles that are not in the repository. The head of the
+# repository (2026) belongs to the later version and uses other figure numbers; it was not used.
+#
+# Data the paper used.
+# (1) Main dataset, not in dandiset 000248. Allen Brain Observatory Visual Coding Neuropixels,
+#     "Brain Observatory 1.1" sessions, "natural scenes" block, read through AllenSDK. 32
+#     sessions, one mouse each; 2 excluded for V1 (more than 10% of natural scenes trials with no
+#     spikes in any unit), leaving 30 (the code drops session indices 0 and 6). 119 stimuli (118
+#     natural scenes and a gray image), 250 ms each, no interval, 50 repeats in random order (one
+#     session 47 to 50 repeats, subsampled to 47 for decoding and RSA). Spike counts in the 250 ms
+#     from onset. Units kept when isi_violations < 0.5, amplitude_cutoff < 0.1 and presence_ratio
+#     > 0.9. V1 has 64 +- 25 units per session (14 to 110). Higher visual areas LM, RL, AL, PM, AM
+#     (one RL session also excluded). Running speed (moving when the trial mean speed is >= 1
+#     cm/s) and pupil area (tertiles of the trial mean) for Figure S2. Natural movie one (30 s,
+#     60 repeats) from 23 of 26 "Functional Connectivity" sessions, in 12-frame (400 ms) bins, 75
+#     bins, for Figure S5A and S5B.
+# (2) Allen Institute OpenScope Illusion dataset, dandiset 000248, used only for the Isomap
+#     pictures of Figures 1C (bottom), 3A, 3E (left) and 3F (left). V1 spike counts in the 400
+#     ms from stimulus onset, all stimuli with 400 repeats in the "ICwcfg1" block of one example
+#     session. In the paper's code the data come from a post-processed MATLAB copy (folder
+#     "OpenScopeData_00248_v240130_postprocessed") with 11 subjects, sub_619296, sub_620333,
+#     sub_620334, sub_625545, sub_625554, sub_625555, sub_630506, sub_631510, sub_631570,
+#     sub_633229 and sub_637484; the example is index 6, sub_630506. V1 units are those whose
+#     location contains "VISp" and not "VISpm"; spike counts are the stored rate times 0.4 s; no
+#     unit quality filter is applied in the code (a waveform-duration filter is commented out).
+#     Stimulus codes are named by the code's map 0 Blank, 1 X, 2 Tc1, 3 Ic1, 4 Lc1, 5 Tc2, 6 Lc2,
+#     7 Ic2, 8 Ire1, 9 Ire2, 10 Tre1, 11 Tre2, 12 Xre1, 13 Xre2, 14 BR_in, 15 BL_in, 16 TL_in, 17
+#     TR_in, 18 BR_out, 19 BL_out, 20 TL_out, 21 TR_out. The code expects 12 stimuli with 400
+#     repeats. Figure 1C shows Ic1, Lc1 and Tre1; Figure 3A shows Ic1, Lc1 and Tre2; Figures 3E
+#     and 3F left show Lc1 and Tre2 against the rest.
+# Only the claims marked data dataset (illusion-*) can be tested on dandiset 000248. Every other
+# claim is on the Allen Visual Coding Neuropixels data (data elsewhere).
+#
+# Shared method, from the Methods unless stated.
+# - M1 slope fit. Per session and stimulus, across-trial mean and variance (ddof 1, code) of each
+#   neuron's spike count; neurons with zero count on all trials of the stimulus excluded; OLS of
+#   log10 variance on log10 mean across neurons (np.polyfit, code) gives slope s and intercept i.
+# - M2 slope manipulation (Methods, "Manipulation of slope by residual rescaling"; the equations
+#   are lost in the text and taken from the code). Target slopes s' from 0 to 2 in steps of 0.1.
+#   For each neuron, log10 var' = (s'/s)(log10 var - i) + (s - s') mean_n(log10 mean) + i, which
+#   keeps the mean log variance across neurons; each trial's residual (count minus the stimulus
+#   mean) is multiplied by sqrt(var'/var) and added back to the mean; neurons with zero mean stay
+#   0. Means, pairwise noise correlations and the summed log variance are unchanged.
+# - M3 overlap percentage of manifold A relative to B. The fraction of A's trials whose nearest
+#   trial of B is closer than the 5th percentile of the pairwise distances within B (Euclidean,
+#   in the N-neuron space; box_and_overlap.py uses np.percentile(..., 5)). The Methods speak of
+#   distances between pairs of points within B, read as pairs of distinct trials, which is the
+#   main reading. The code takes the percentile over the full cdist matrix of B with itself,
+#   zero diagonal included, and counts a trial when its distance is <= the threshold
+#   (compute_overlap_stimpairs, compute_overlap_stimpairs_consis); this is run as a variant.
+#   The overlap of a manifold relative to itself is 1 in the code.
+# - M4 statistics on curves. Each slope-changed value is compared with the as-is value by a
+#   Wilcoxon signed-rank test across sessions (or session pairs), p < 0.05, uncorrected (the
+#   notebooks call scipy wilcoxon per slope with no correction). n is 30 sessions or 435 session
+#   pairs for V1.
+# - M5 geodesic distances between centroids. Isomap (n_neighbors 5) fitted on all trials with the
+#   stimulus centroids appended; the geodesic distance matrix among the centroids
+#   (compute_geo_ortho.py, local_global_alignment.py).
+#
+# Details the paper leaves open, used by several criteria.
+# - O1 "peaks near (around) slope 1". The paper fixes no window. Readings, (a) the slope with the
+#   largest across-session mean lies in 0.8 to 1.2, (b) in 0.7 to 1.3; in both, the values at
+#   slopes 0 and 2 are lower than as-is and differ from it by the M4 test. Reproduced under
+#   either reading; both are reported.
+# - O2 "increases (decreases) with slope". Read as the across-session mean at slope 2 above (below)
+#   the mean at slope 1, which is above (below) the mean at slope 0, with slopes 0 and 2 both
+#   differing from as-is by the M4 test. "Monotonically" (Figure 2B) is read strictly, a change
+#   in the stated direction at every 0.1 step.
+# - O3 Illusion units. The paper states no unit filter for dandiset 000248. Readings, (a) all
+#   units located in VISp (not VISpm), as the code, (b) the same units restricted by the Allen
+#   quality criteria the Methods give for the main dataset. The code's post-processed input may
+#   already have been filtered; that cannot be checked. Both readings are run.
+# - O4 Illusion example session. The text says "one example session"; the code uses sub_630506.
+#   That session is the main reading; the other sessions with an ICwcfg1 block are a variant.
+schema_version: 2
+paper: doi:10.1101/2025.06.30.662469
+claims:
+- id: illusion-data-link
+  kind: link
+  statement: Dandiset 000248 holds the OpenScope Illusion recordings the paper used for its
+    Isomap pictures, an ICwcfg1 block in which stimuli are repeated 400 times, with V1 units, in
+    the example session the paper's code uses.
+  source: Methods, Visualization of stimulus manifold geometry, paragraph 2; Data and code
+    availability; visualize_manifold.ipynb cell 8 at commit ac3300b
+  data: with_labels
+  criterion: Reproduced when (i) sub_630506 is in the dandiset with an ICwcfg1 presentations block
+    whose 400-repeat stimuli number 12, as the code expects (num_trial_types 12), (ii) the stimuli
+    Ic1, Lc1, Tre1 and Tre2 can be identified in it, by the names the dandiset gives or through
+    the code's map of codes 0 to 21 (header), and (iii) the session has units located in VISp
+    (not VISpm). Partially reproduced when the block and units exist but the repeat count or the
+    number of 400-repeat stimuli differs. The presence of the code's other 10 subjects and their
+    ICwcfg1 blocks is reported.
+- id: illusion-fig1c-isomap-geometry
+  statement: In an example session of the Illusion data, three stimulus manifolds of V1 activity
+    appear continuous with little overlap in the as-is data, discontinuous at slope 0 and heavily
+    overlapping at slope 2.
+  source: Figure 1C bottom; Results, Neural variability structure is highly consistent across
+    visual stimuli and mice, paragraph 6
+  quote: As the slope increases from 0 to 2, the stimulus manifolds become increasingly
+    overlapping. At slope 0, the stimulus manifolds appear discontinuous with one another,
+    hindering smooth transitions between stimuli. At slope 2, the stimulus manifolds are hard to
+    discriminate due to the large overlap.
+  depends_on:
+  - illusion-data-link
+  criterion: Session sub_630506 (O4), V1 units (O3), spike counts in the 400 ms from onset, the 12
+    stimuli with 400 repeats. Slope manipulation M2 at target slopes 0, 1 and 2 with M1 fits on
+    these stimuli (fit_slope_openscope.ipynb). The Isomap pictures (n_neighbors 5, 2 components,
+    fitted on all trials of the 12 stimuli, visualize_manifold.ipynb cell 8) are drawn for Ic1,
+    Lc1 and Tre1 and shown, but the claim is judged on the measures the paper uses to formalize
+    this picture (Results, Neural variability structure enables maximal discriminability,
+    paragraph 1), computed in the full N-neuron space. Among Ic1, Lc1 and Tre1, with the M3
+    overlap percentages and a directed edge wherever one is above zero, (i) at slope 0 the three
+    do not form one strongly connected component, (ii) in the as-is data they do, (iii) the mean
+    of the six directed overlap percentages is larger at slope 2 than as-is and larger as-is than
+    at slope 0. The finding is stated of the 2D Isomap picture, so the same three tests on the 2D
+    Isomap coordinates of the three stimuli are a second reading; both are run. Reproduced when
+    all three hold, partially when two hold. The same measures over
+    all 12 stimuli (the size of the largest strongly connected component, the mean overlap) and
+    the other sessions are shown as variants.
+- id: illusion-fig3a-orthogonal-variance-example
+  statement: In the example session of the Illusion data, the Lc1 manifold has larger orthogonal
+    variance toward the faraway Ic1 manifold than toward the nearby Tre2 manifold.
+  source: Figure 3A (legend; the labels "Faraway stimulus, larger variance" on Ic1 and "Nearby
+    stimulus, smaller variance" on Tre2 are from ortho_variance.ipynb cell 9 at commit ac3300b)
+  quote: Purple and green arrows indicate the orthogonal variances of the orange manifold
+    relative to the purple and green manifolds, respectively.
+  depends_on:
+  - illusion-data-link
+  criterion: The arrows of Figure 3A are drawn in the 2D Isomap with lengths set by hand in the
+    code (60 toward Ic1, 22 toward Tre2), so the claim is tested with the paper's measures in the
+    N-neuron space. As-is data of sub_630506 (O4), V1 units (O3), the 12 stimuli with 400
+    repeats. Geodesic distance between centroids by M5. Orthogonal variance as the Methods define
+    it, the variance (ddof 1, code) across Lc1 trials of the norm of the component of each
+    trial's deviation from the Lc1 centroid along the line joining the two centroids, divided by
+    the summed per-neuron variance of Lc1. Reproduced when Ic1 is geodesically farther from Lc1
+    than Tre2 is and Lc1's orthogonal variance toward Ic1 is larger than toward Tre2; partially
+    reproduced when only the variance order holds. The Spearman correlation between geodesic
+    distance and orthogonal variance over all 132 ordered pairs of the 12 stimuli is shown as a
+    variant.
+- id: illusion-geometry-similar-across-datasets
+  statement: The changes in manifold geometry that come with changing the slope are qualitatively
+    the same in the Illusion data as in the natural scenes data.
+  source: Methods, Visualization of stimulus manifold geometry, paragraph 3
+  quote: The geometric changes accompanying log-mean vs. log-variance slope changes are
+    qualitatively similar across datasets, as well as across Isomap and UMAP.
+  depends_on:
+  - illusion-data-link
+  criterion: The paper does not say which geometric changes it compared. Read as the two changes
+    it reports for the main data, effective dimensionality falling with slope (Figure 1D) and
+    overlap rising with slope (Figure 2A). Every session of dandiset 000248 with an ICwcfg1
+    block, V1 units (O3), 400 ms counts, the stimuli with 400 repeats, M2 at slopes 0 to 2.
+    Effective dimensionality per stimulus as the Methods define it, the participation ratio of
+    the covariance eigenvalues divided by the number of neurons, averaged over stimuli; overlap
+    by M3, averaged over ordered stimulus pairs. Reproduced when, across sessions, the mean
+    dimensionality decreases and the mean overlap increases by the O2 reading (with the M4 test
+    across these sessions); partially reproduced when the direction holds for both but the tests
+    do not. The example session alone is shown as a variant.
+- id: data-v1-units
+  statement: The main analysis uses V1 units from 30 sessions of 30 mice, 64 +- 25 units per
+    session (14 to 110), 1920 units in all, with 119 stimuli per session (3570 stimulus fits).
+  source: Methods, Main dataset and visual stimuli, paragraph 4; Results, first section,
+    paragraph 1; Figure 1B legend
+  quote: The number of V1 neurons analyzed in the 30 sessions was 64 ± 25 (mean ± standard
+    deviation).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, Brain Observatory 1.1 sessions
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels), read with AllenSDK;
+    the paper gives no release
+  expected:
+  - quantity: V1 sessions analyzed
+    value: 30
+    tolerance: 0
+  - quantity: mean V1 units per session
+    value: 64
+    tolerance: 6.4
+  - quantity: SD of V1 units per session
+    value: 25
+    tolerance: 2.5
+  - quantity: total V1 units (across-stimulus fits)
+    value: 1920
+    tolerance: 192
+  criterion: Session count is exact (tolerance 0) because the exclusion rule is stated (more than
+    10% of natural scenes trials with no spike in any V1 unit, from 32 sessions). Units by the
+    Allen quality criteria of the Methods. The range 14 to 110 is checked within the 10% rule
+    (minimum 12.6 to 15.4, maximum 99 to 121).
+- id: fig1b-across-neuron-slope-near-1
+  statement: Across simultaneously recorded V1 neurons, the log-mean against log-variance relation
+    for each stimulus is fit by a line with slope near 1 (mean 1.048, SEM 0.001; SD 0.07 over 3570
+    session-stimulus fits).
+  source: Results, Neural variability structure is highly consistent across visual stimuli and
+    mice, paragraph 1; Figure 1B
+  quote: we found a highly consistent relationship across mice and stimuli that was well-fit by a
+    linear regression with a slope near 1 (mean ± standard error of the mean, or SEM, 1.048 ±
+    0.001
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, Brain Observatory 1.1 sessions,
+    natural scenes block (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  depends_on:
+  - data-v1-units
+  expected:
+  - quantity: mean across-neuron slope
+    value: 1.048
+    tolerance: 0.001
+  - quantity: SD of across-neuron slopes
+    value: 0.07
+    tolerance: 0.007
+  - quantity: number of across-neuron fits
+    value: 3570
+    tolerance: 0
+  criterion: M1 for every V1 session and stimulus, all fits pooled. The mean's tolerance is the
+    paper's SEM. The count is exact (30 sessions times 119 stimuli).
+- id: fig1b-across-stimulus-slope
+  statement: Fit across stimuli for each neuron, the log-mean against log-variance slope is larger
+    and more spread (1.13 +- 0.21 over 1920 neurons) than the across-neuron slope (1.05 +- 0.07).
+  source: Figure 1B legend; Figure S1A, S1E; Results, first section, paragraph 2
+  quote: Mean ± standard deviation was 1.13 ± 0.21 for across-stimulus fits (n = 1920, i.e.,
+    cumulative number of neurons across sessions), and 1.05 ± 0.07 for across-neuron fits
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.001
+    p_relation: "<"
+    n: 1920 across-stimulus fits and 3570 across-neuron fits
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  depends_on:
+  - data-v1-units
+  expected:
+  - quantity: mean across-stimulus slope
+    value: 1.13
+    tolerance: 0.21
+  - quantity: SD of across-stimulus slopes
+    value: 0.21
+    tolerance: 0.021
+  criterion: Across-stimulus fit per neuron as in M1 with stimuli as points (Methods,
+    Log-mean vs. log-variance relationship across stimuli). The mean's tolerance is the paper's
+    stated SD, as no SEM is given. Reproduced when both values are within tolerance, the
+    across-stimulus slopes are larger than the across-neuron slopes (higher mean and median), and
+    a two-sided Wilcoxon rank-sum test (Mann-Whitney U, as fit_slope_histogram.ipynb cell 25)
+    between the two sets of slopes gives p < 0.001.
+- id: figs1-gain-variance
+  statement: The gain variance of the modulated Poisson model is larger and more spread across
+    stimuli (0.78 +- 0.92, n 1519) than across neurons (0.26 +- 0.15, n 3535), after excluding
+    401 of 1920 neurons and 35 of 3570 stimuli that are not supralinear.
+  source: Figure S1B, S1F
+  quote: Mean ± standard deviation was 0.78 ± 0.92 for across-stimulus fits (n = 1519), and 0.26 ±
+    0.15 for across-neuron fits (n = 3535)
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.001
+    p_relation: "<"
+    n: 1519 across-stimulus and 3535 across-neuron fits
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  depends_on:
+  - data-v1-units
+  expected:
+  - quantity: mean across-stimulus gain variance
+    value: 0.78
+    tolerance: 0.078
+  - quantity: mean across-neuron gain variance
+    value: 0.26
+    tolerance: 0.026
+  - quantity: SD of across-stimulus gain variance
+    value: 0.92
+    tolerance: 0.092
+  - quantity: SD of across-neuron gain variance
+    value: 0.15
+    tolerance: 0.015
+  - quantity: neurons excluded from across-stimulus fits
+    value: 401
+    tolerance: 40
+  - quantity: stimuli excluded from across-neuron fits
+    value: 35
+    tolerance: 3.5
+  criterion: Negative binomial fit by maximum likelihood with Nelder-Mead for each neuron and
+    stimulus, gain variance from k as in the Methods (the formulas are lost in the text and are
+    taken from fit_slope_histogram.ipynb), fits kept only for neurons (stimuli) with more than
+    50% supralinear stimuli (neurons), median across stimuli (neurons). Reproduced when the means
+    are within tolerance and the two-sided rank-sum test gives p < 0.001.
+- id: figs2-behavioral-state
+  statement: The across-neuron slope is slightly but significantly modulated by behavioral state,
+    smallest when the mouse runs and when its pupils are dilated, while staying near 1.
+  source: Results, first section, paragraph 2; Figure S2A, S2C
+  quote: The slope was smallest when the mouse was running (Figure S2A) and had dilated pupils
+    (Figure S2C).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block with running
+    speed and pupil tracking (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  depends_on:
+  - data-v1-units
+  criterion: Trials split into moving (trial mean speed >= 1 cm/s) and stationary, and into pupil
+    area tertiles (0-33, 33-67, 67-100 percentiles of trial mean area; the Methods do not say over
+    which trials the percentiles are taken, and the code takes them over the trials of all
+    sessions pooled, fit_slope_histogram.ipynb cell 67, which is followed, with per-session
+    tertiles as a variant); M1 fit per session,
+    stimulus and state, all pooled. The legend names a Wilcoxon rank-sum test for locomotion and
+    a Kruskal-Wallis test for pupil, without printing p in the text; the code runs a two-sided
+    Mann-Whitney U test and scipy kruskal. Reproduced when moving slopes are lower than
+    stationary slopes at p < 0.05, the largest pupil tertile has the lowest median slope with
+    Kruskal-Wallis p < 0.05, and every state's median slope lies in 0.9 to 1.1 ("near 1" read as
+    within 10% of 1, the protocol default, as the paper gives no bound).
+- id: figs3-higher-visual-areas
+  statement: The across-neuron slope is concentrated around 1 in the five higher visual areas as
+    in V1.
+  source: Results, first section, paragraph 2; Figure S3
+  quote: Higher visual areas showed a similar mean-variance relationship as V1 (Figure S3;
+    lateromedial area LM, rostrolateral area RL, anterolateral area AL, posteromedial area PM, and
+    anteromedial area AM).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  expected:
+  - quantity: sessions with LM neurons
+    value: 24
+    tolerance: 2.4
+  - quantity: sessions with RL neurons
+    value: 27
+    tolerance: 2.7
+  - quantity: sessions with AL neurons
+    value: 24
+    tolerance: 2.4
+  - quantity: sessions with PM neurons
+    value: 20
+    tolerance: 2
+  - quantity: sessions with AM neurons
+    value: 26
+    tolerance: 2.6
+  criterion: M1 per area, sessions without neurons in the area excluded, all sessions and stimuli
+    pooled. The paper gives no bound for "around 1"; read as each area's median slope within 0.9
+    to 1.1 (10% of 1, the protocol default). Reproduced when all five areas meet it, partially
+    when three or four do.
+- id: figs4ab-noise-correlation-under-manipulation
+  statement: Rescaling residuals to change the slope leaves pairwise noise correlations unchanged
+    but changes population-wise noise correlation.
+  source: Figure S4A, S4B; Discussion, paragraph 5
+  quote: Notably, this manipulation does affect the population-wise noise correlation, defined as
+    the fraction of variance explained by the first principal component of the population
+    activity (Figure S4B)
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: M2 in each V1 session at slopes 0, 1 and 2. Reproduced when every neuron pair's noise
+    correlation per stimulus equals the as-is value to within 1e-6 (it must, by construction),
+    and the fraction of variance on the first PC of each stimulus manifold differs from as-is for
+    most stimuli at slopes 0 and 2 (the paper gives no count or test for S4B; "most" is read as
+    more than half, an open reading). The example in the figure is session index 7
+    (decode_noise_corr.ipynb cell 18); all sessions are reported.
+- id: fig1d-dimensionality-falls-with-slope
+  statement: The effective dimensionality of individual stimulus manifolds falls as the slope
+    rises from 0 to 2.
+  source: Figure 1D; Results, first section, paragraph 5
+  quote: When the slope is 0, the stimulus manifold has the same variance across all axes,
+    resulting in a spherical shape and a higher effective dimension. Conversely, when the slope
+    increases to 2, variance becomes even larger in the axes with larger means, resulting in a
+    more elliptical shape and a lower effective dimension.
+  statistics:
+  - test: Wilcoxon signed-rank test across sessions, slope-changed against as-is
+    p: 0.05
+    p_relation: "<"
+    n: 30 sessions
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Effective dimensionality per stimulus as the Methods define it, (sum of eigenvalues)
+    squared over the sum of squared eigenvalues of the covariance, divided by N; averaged over
+    stimuli per session; M2 slopes 0 to 2. Judged by O2 (decreasing) with M4.
+- id: figs5a-movie-slope-near-1
+  statement: In the natural movie data the across-neuron log-mean against log-variance relation
+    is also linear with slope near 1.
+  source: Figure S5A; Results, first section, paragraph 8
+  quote: The log-mean vs. log-variance of spike counts during a designated movie segment showed a
+    linear relationship across neurons with slope near 1, as in the natural scenes data
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, Functional Connectivity sessions,
+    natural movie one (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  expected:
+  - quantity: sessions analyzed
+    value: 23
+    tolerance: 0
+  - quantity: movie bins per session
+    value: 75
+    tolerance: 0
+  criterion: 12-frame (400 ms) bins treated as stimuli, M1 per bin and session, all pooled (23 of
+    26 sessions; 3 excluded for truncated movies or no V1 units). Counts are exact by
+    construction. The paper gives no bound for "near 1"; read as the median of the pooled slopes
+    within 0.9 to 1.1 (protocol default), with 0.85 to 1.15 as a second reading because the
+    paper's code printed a median of 1.11 for this panel (fit_slope_histogram.ipynb cell 46).
+    Reproduced under either reading; both are reported.
+- id: figs5c-space-occupancy-peak
+  statement: The fraction of the neural state space occupied by the 119 stimulus manifolds is
+    maximal when the slope is around 1.
+  source: Figure S5C; Results, first section, paragraph 9
+  quote: This analysis confirms that the neural state space occupancy (i.e., packing efficiency)
+    is maximal when slope is around 1.
+  statistics:
+  - test: Wilcoxon signed-rank test across sessions, slope-changed against as-is
+    p: 0.05
+    p_relation: "<"
+    n: 30 sessions
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Bounding box per neuron from the as-is data (minimum minus 1 to maximum plus 1), the
+    same box for the slope-changed data, count of occupied unit voxels (edge 1 spike) as in the
+    Methods and compute_percent_filled in box_and_overlap.py. Judged by O1.
+- id: fig2a-overlap-rises-with-slope
+  statement: The overlap percentage between stimulus manifolds increases with the slope.
+  source: Figure 2A; Results, Neural variability structure enables maximal discriminability,
+    paragraph 1
+  quote: We found that overlap percentage increases with slope, in good agreement with our
+    observations of the dimensionality reduced visual representation space.
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: M3 for every ordered pair of distinct stimuli (119 times 118), averaged per session,
+    as the Methods' "across all stimulus pairs". The code's Figure 2A cell (RSA_overlap_SCC.ipynb
+    cell 16) averages the full 119 by 119 matrix with its diagonal of self-overlaps; that mean is
+    shown as a variant (it sets the diagonal to 0 only for Figure 2C, cell 18). Judged by O2
+    (increasing) with M4. The legend's test is
+    Wilcoxon signed-rank; its threshold is cut from the text and taken from the code (0.05).
+- id: fig2b-decoding-falls-with-slope
+  statement: Linear SVM decoding accuracy of image identity decreases monotonically as the slope
+    increases, above the chance level of 1/119.
+  source: Figure 2B; Results, Neural variability structure enables maximal discriminability,
+    paragraph 2
+  quote: As expected, cross-validation accuracy decreases monotonically as a function of log-mean
+    vs. log-variance slope.
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: sklearn SVC with a linear kernel and default C (RSA_decoding.py), 10-fold stratified
+    cross-validation, counts centered by the training mean per fold, mean accuracy per session;
+    the 47-to-50-repeat session subsampled to 47. Judged by O2 in its strict reading (a decrease
+    at every 0.1 step of the across-session mean) with M4; partially reproduced when slopes 0 and
+    2 differ from as-is in the stated direction but the decrease is not strict. Accuracy above
+    1/119 at every slope is reported.
+- id: fig2c-continuity-from-slope-1
+  statement: The largest strongly connected component of the stimulus manifold network covers all
+    stimuli only from a slope of about 1 upward, so the representation space is discontinuous
+    below 1.
+  source: Figure 2C; Results, Neural variability structure enables maximal discriminability,
+    paragraph 4
+  quote: This analysis revealed that indeed, the visual representation space became continuous
+    starting around log-mean vs. log-variance slope of 1 (Figure 2C).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  depends_on:
+  - fig2a-overlap-rises-with-slope
+  criterion: Directed edge from A to B when the M3 overlap of A relative to B is above zero;
+    largest strongly connected component per session and slope (networkx, RSA_overlap_SCC.ipynb
+    cell 18). "Starting around 1" is open; readings, the smallest slope at which the
+    across-session mean size reaches 119 lies in (a) 0.8 to 1.2, (b) 0.7 to 1.3. Reproduced when,
+    under one reading, that holds and the mean size at slope 0 is below 119 and differs from
+    as-is by M4.
+- id: fig2d-tangent-angle-rises-below-1
+  statement: The tangent space angle between adjacent stimulus manifolds increases as the slope
+    decreases.
+  source: Figure 2D; Results, Neural variability structure enables maximal discriminability,
+    paragraph 5
+  quote: As predicted, the tangent space angle increased as the slope decreased (Figure 2D right).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Nearest neighbor stimulus by M5; points of tangency, local PCA on k = 5 neighbors,
+    weighted angle, and the 25%, 50% and 90% cut-offs as in the Methods (Tangent space angle) and
+    tangent_angle.py. Averaged over stimuli per session. Judged by O2 (decreasing with slope)
+    with M4.
+- id: fig3bc-geodesic-orthogonal-correlation
+  statement: Across stimulus pairs, the geodesic distance between manifold centroids correlates
+    positively with orthogonal variance, so variance is small toward nearby stimuli and large
+    toward faraway ones.
+  source: Figure 3B, 3C; Results, Neural variability structure of individual visual stimuli,
+    paragraph 2
+  quote: We found that the geodesic distance between the centroids of a pair of stimulus manifolds
+    has a positive correlation with the orthogonal variance (Figures 3B and 3C).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: As-is data. Geodesic distance by M5, orthogonal variance as in
+    illusion-fig3a-orthogonal-variance-example, Spearman correlation over the 14042 ordered pairs
+    per session. The text reports no test; the code tests the session correlations against 0 by
+    a one-sided Wilcoxon signed-rank test (ortho_variance.ipynb cell 13). Reproduced when the
+    mean session correlation is positive and that test gives p < 0.05.
+- id: fig3d-correlation-peaks-near-1
+  statement: The correlation between geodesic distance and orthogonal variance is highest near a
+    slope of 1.
+  source: Figure 3D; Results, Neural variability structure of individual visual stimuli,
+    paragraph 2
+  quote: When varying the log-mean vs. log-variance slope, the correlation between geodesic
+    distance and orthogonal variance was highest near the slope of 1 (Figure 3D).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  depends_on:
+  - fig3bc-geodesic-orthogonal-correlation
+  criterion: As fig3bc at each M2 slope, geodesic distances recomputed on the slope-changed data
+    (compute_geo_ortho.py). Judged by O1.
+- id: fig3e-local-alignment-peaks-near-1
+  statement: The alignment of each stimulus manifold's first principal component with that of its
+    nearest neighbor manifold is highest around a slope of 1.
+  source: Figure 3E right; Results, Neural variability structure of individual visual stimuli,
+    paragraph 4
+  quote: As predicted, the local alignment was highest when the log- mean vs. log-variance slope
+    was around 1 (Figures 3E right).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Absolute cosine similarity between PC1 of each manifold and PC1 of its nearest
+    neighbor by M5, in the N-neuron space, averaged over the 119 stimuli per session
+    (local_global_alignment.py). Judged by O1.
+- id: fig3f-global-alignment-peaks-near-1
+  statement: The alignment of each stimulus manifold's first principal component with that of the
+    rest of the global manifold is highest around a slope of 1.
+  source: Figure 3F right; Results, Neural variability structure of individual visual stimuli,
+    paragraph 5
+  quote: Global alignment was also highest when the log-mean vs. log-variance slope was around 1
+    (Figure 3F right).
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Absolute cosine similarity between PC1 of each manifold and PC1 of all trials of the
+    other 118 stimuli, averaged per session (local_global_alignment.py). Judged by O1.
+- id: fig4a-overlap-consistency-within-mice
+  statement: The consistency of overlap percentages between two random halves of the V1 neurons
+    of a session peaks near a slope of 1.
+  source: Figure 4A; Results, Neural variability structure is optimal for coding consistency,
+    paragraph 3
+  quote: The overlap consistency peaked near slope 1 (Figure 4A).
+  statistics:
+  - test: Wilcoxon signed-rank test across sessions, slope-changed against as-is
+    p: 0.05
+    p_relation: "<"
+    n: 30 sessions
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Neurons split at random into two equal halves, M3 overlap matrix (119 by 119) per
+    half, Spearman correlation of the two matrices, averaged over 10 partitions per session.
+    Whether the slope fit and manipulation are done on all neurons before splitting or on each
+    half is not stated; the code fits on all neurons and splits after (RSA_overlap_SCC.ipynb,
+    box_and_overlap.py compute_overlap_stimpairs_consis), which is followed. The Methods correlate
+    "the two matrices" without saying whether the diagonal (self-overlap) is included; the code
+    flattens the full 119 by 119 matrices, diagonal included (RSA_overlap_SCC.ipynb cell 13),
+    which is followed, and the off-diagonal correlation is shown as a variant. Judged by O1.
+- id: fig4c-rsm-similarity-within-mice
+  statement: Representational similarity matrices from two halves of the V1 neurons of a session
+    are most similar around a slope of 1.
+  source: Figure 4C; Results, Neural variability structure is optimal for coding consistency,
+    paragraph 4
+  quote: we found that the RSMs in distinct neuronal subsets within V1 were most consistent with
+    each other around slope 1 (Figure 4C).
+  statistics:
+  - test: Wilcoxon signed-rank test across sessions, slope-changed against as-is
+    p: 0.05
+    p_relation: "<"
+    n: 30 sessions
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Trial order randomized within each stimulus; for every unordered pair of trial
+    indices (r choose 2, itertools combinations in RSA_decoding.py), cosine similarity between
+    the population vectors of all stimulus pairs; the matrices averaged to an RSM per half;
+    Spearman correlation of the two flattened RSMs, averaged over 10 partitions. Judged by O1.
+- id: fig4d-overlap-consistency-across-mice
+  statement: The consistency of overlap percentages between pairs of mice peaks around a slope of
+    1.
+  source: Figure 4D; Results, Neural variability structure is optimal for representational
+    similarity robustness across different mice, paragraph 2
+  quote: We found that both overlap consistency and the similarity of RSMs peaked around log-mean
+    vs. log-variance slope of 1 (Figures 4D and 4E).
+  statistics:
+  - test: Wilcoxon signed-rank test across session pairs, slope-changed against as-is
+    p: 0.05
+    p_relation: "<"
+    n: 435 session pairs
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: M3 overlap matrix per session with all its V1 neurons, Spearman correlation between
+    the matrices of every pair of sessions, the full 119 by 119 matrices flattened with the
+    diagonal included as in the code (RSA_overlap_SCC.ipynb cell 16; the Methods do not say),
+    the off-diagonal correlation shown as a variant. Judged by O1 over session pairs.
+- id: fig4e-rsm-similarity-across-mice
+  statement: Representational similarity matrices of pairs of mice are most similar around a
+    slope of 1.
+  source: Figure 4E; Results, Neural variability structure is optimal for representational
+    similarity robustness across different mice, paragraph 2
+  quote: We found that both overlap consistency and the similarity of RSMs peaked around log-mean
+    vs. log-variance slope of 1 (Figures 4D and 4E).
+  statistics:
+  - test: Wilcoxon signed-rank test across session pairs, slope-changed against as-is
+    p: 0.05
+    p_relation: "<"
+    n: 435 session pairs
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: RSM per session as in fig4c with all its V1 neurons, Spearman correlation between
+    the RSMs of every pair of sessions (RSA_decoding.py). Judged by O1 over session pairs.
+- id: figs6-higher-areas-consistency
+  statement: Several higher visual areas, including LM and PM, have near maximal representational
+    consistency at a slope of 1, within and across mice.
+  source: Figure S6B, S6C; Results, Neural variability structure is optimal for representational
+    similarity robustness across different mice, paragraph 3
+  quote: In addition, several higher visual areas, including LM and PM, had near maximal
+    consistency at slope 1 (Figure S6B and S6C).
+  statistics:
+  - test: Wilcoxon signed-rank test across sessions or session pairs, slope-changed against as-is
+    p: 0.05
+    p_relation: "<"
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  criterion: Analyses of fig4c and fig4e for LM and PM, sessions without neurons in the area
+    excluded. "Near maximal" is open; readings, (a) the across-session (or across-pair) mean at
+    slope 1 is within one SEM of the curve's maximum, (b) the slope of the maximum lies within an
+    O1 window. The paper compares no slope with the maximum by a test, so none is used.
+    Reproduced when, under either reading, this holds for LM and PM in both S6B and S6C,
+    partially when it holds in two or three of the four panels. The other areas are reported.
+- id: figs4c-shuffling-alters-dependence
+  statement: Destroying pairwise noise correlations by shuffling trials within stimulus for each
+    neuron changes how decoding accuracy and RSM similarity depend on the slope.
+  source: Figure S4C; Discussion, paragraph 5
+  quote: When we destroyed the pairwise noise correlation structure by shuffling the trial order
+    for each neuron within each trial type, both the decoder accuracy and the representation
+    similarity analysis showed an altered dependence on the log-mean vs. log-variance slope
+    (Figure S4C).
+  statistics:
+  - test: Wilcoxon signed-rank test across sessions or session pairs, original against shuffled
+    p: 0.05
+    p_relation: "<"
+  data: elsewhere
+  where: Allen Brain Observatory Visual Coding Neuropixels, natural scenes block
+    (https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels)
+  depends_on:
+  - fig2b-decoding-falls-with-slope
+  - fig4c-rsm-similarity-within-mice
+  - fig4e-rsm-similarity-across-mice
+  criterion: The analyses of Figures 2B, 4C and 4E repeated on data shuffled within stimulus for
+    each neuron before slope manipulation. Reproduced when, for each of the three analyses, the
+    original and shuffled curves differ by the Wilcoxon signed-rank test at p < 0.05 at one or
+    more slopes (the green lines of the legend), partially when this holds for one or two.
+checks:
+- date: 2026-11-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header M3. The Methods take the 5th percentile over pairs of points within B; the code takes it over the full self-distance matrix with its zero diagonal and counts distances <= the threshold (box_and_overlap.py at ac3300b). Named the Methods reading as main and the code's as a variant, since it can change which overlaps are above zero.
+  - fig2a-overlap-rises-with-slope. The criterion said the diagonal is set to 0 as in RSA_overlap_SCC.ipynb; the code does that only for Figure 2C (cell 18) and averages the full matrix with its self-overlaps for Figure 2A (cell 16). Now averages over pairs of distinct stimuli, as the Methods say, with the code's mean as a variant.
+  - fig4a-overlap-consistency-within-mice, fig4d-overlap-consistency-across-mice. The Methods do not say whether the self-overlap diagonal enters the Spearman correlation; the code flattens the full matrices with it (RSA_overlap_SCC.ipynb cells 13 and 16). Said so, followed the code, and named the off-diagonal correlation as a variant.
+  - fig1b-across-stimulus-slope. The tolerance on the mean (the stated SD, 0.21) and a two-sided test did not fix the direction the statement gives. Added that the across-stimulus slopes must be larger than the across-neuron slopes.
+  - figs1-gain-variance. The statement says the across-stimulus values are more spread, but no SD was expected. Added the SDs 0.92 and 0.15 from the Figure S1B legend with 10% tolerances.
+  - figs2-behavioral-state. The Methods do not say over which trials the pupil tertiles are taken; the code pools all sessions (fit_slope_histogram.ipynb cell 67). Said so, followed the code, and named per-session tertiles as a variant.
+  - figs6-higher-areas-consistency. The criterion compared slope 1 with the maximum slope by a Wilcoxon test the paper never makes. Removed it and named two readings of "near maximal" (within one SEM of the maximum, or the maximum within an O1 window).
+  - figs4ab-noise-correlation-under-manipulation. "Most stimuli" is not from the paper; marked it as an open reading (more than half).
+  - illusion-fig1c-isomap-geometry. The finding is about the 2D Isomap picture, but the criterion judged it only in the N-neuron space. Added the same tests on the 2D Isomap coordinates as a second reading.
+  - Checked against the code at ac3300b and found to agree with it, M2 (the offset formula), M4 (statsmodels multipletests is imported but never called), the one-sided Wilcoxon test in ortho_variance.ipynb cell 13, the arrow lengths 60 and 22 and the Lc1, Ic1, Tre2 labels in cell 9, session index 6 and stimuli Ic1, Lc1, Tre1 in visualize_manifold.ipynb cell 8, the median 1.11 for 12-frame movie bins in fit_slope_histogram.ipynb cell 46, and session index 7 in decode_noise_corr.ipynb cell 18.
+  - Open. Figure S5B (the movie trajectory breaks into segments at slope 0 and blurs at slope 2) and Figure S5D have no claim. They are qualitative example pictures on the Allen data, not tested on dandiset 000248, and were not added.
+  - Open. The code normalizes orthogonal variance by the mean per-neuron variance where the Methods say the sum. The factor N is constant within a session and leaves the Spearman correlations and the Figure 3A comparison unchanged, so the criteria were not changed.
+  - Open. No PDF was supplied, and the legends of Figures 2 and 3 are cut in the text, so the p threshold for Figures 2A to 2D and 3D to 3F comes from the code only, and no figure panel could be read.
