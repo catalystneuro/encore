@@ -1,0 +1,477 @@
+# Claims for Cambrainha, Castro, de Vasconcelos, Carelli & Copelli (2025), PRX Life,
+# doi:10.1103/w49n-2vz8, "Criticality at Work: Scaling in the Mouse Cortex Enhances
+# Performance", on dandiset 000713 (Allen Institute, Visual Behavior, Neuropixels).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-27, protocol pilot-18 as stated in docs/protocol.md.
+#
+# Text read. arXiv preprint 2410.23508 version 2 (15 Sep 2025), standing in for the PRX Life
+# version of record, in paper/10.1103-w49n-2vz8.txt: main text, Appendix (Methods and
+# Materials, sections 1 to 6), and the Supplemental Material (sections I to VIII and Figures
+# S1 to S8). The PDF was opened to read Figures 3, 4, S1, S5, S7 and S8, whose axes the text
+# garbles. Values read from figures are marked as such.
+#
+# Code read. None. The paper links no analysis code and no repository (the contributions
+# statement says D.M.C. provided initial code and G.G.C. refined it, without a location).
+#
+# Data the paper used (Appendix 1, Figure 1A). The Allen Visual Behavior Neuropixels dataset
+# (ref. 60, DANDI), which the dandiset's title names. Mice trained to lick on an image change.
+# Each recording about 2 h 25 min, in three phases. Active: about 60 min of natural images in
+# 250-ms flashes, a change-detection task with reward, lick port present. Non-natural images
+# (NNI): Gabor patches for 15 min, full-field black and white flashes, and a gray screen for
+# 5 min. Passive: the same natural images in the same order, lick port retracted, no reward.
+# Spikes sorted with Kilosort2 by the Allen Institute; single-unit and multiunit activity both
+# kept. Units in primary visual cortex (V1). The 62 sessions (from 44 mice) with more than 128
+# V1 units. Measured variables used: V1 spike times, the phase boundaries (stimulus blocks),
+# and the task trials with their outcomes (hit or miss). Familiar and novel image sessions are
+# not told apart in the paper; all are pooled.
+#
+# Method fixed by the paper (Appendix, figure legends, Supplemental Material).
+# M1 Binning and windows. Spikes binned at 50 ms; each phase cut into 30-s windows (600 bins);
+#    windows with CV > 5 excluded, CV = sigma/mu of "the activity across the window"
+#    (Appendix 1).
+# M2 Surrogate. Per window, the interspike intervals of each unit shuffled within the window
+#    (Appendix 2).
+# M3 Momentum-space coarse graining (Appendix 3). Per window, the covariance of the units'
+#    binned counts (Eq. 2); eigenvectors ranked by eigenvalue; projector onto the top Ncutoff
+#    (Eq. 4); psi_i = Z_i sum_j P_ij (phi_j - <phi_j>) with Z_i making var(psi_i) = 1 (Eq. 5,
+#    which prints phi_i inside the sum; read as phi_j, the projection). Kurtosis at Ncutoff =
+#    N/16, kappa = <psi^4>/<psi^2>^2.
+# M4 Kurtosis threshold. A window with kappa > kappa_th is "scaling", otherwise "no scaling"
+#    (Results A; Figure 3A). kappa_surr_max is the largest surrogate kurtosis; it is about 7 in
+#    Figures 3C, 3D and 4A (read from the figures).
+# M5 Hit rate (Appendix 5, Eqs. 11 and 12). Pooled over all windows of all sessions above (or
+#    below) kappa_th, total hits over total trials. Relative performance (Eq. 13), scaling minus
+#    no-scaling hit rate over no-scaling hit rate. Standard error by bootstrap over windows,
+#    10^5 resamples.
+# M6 Trial-shuffled control (Appendix 6). For each trial, another trial of the same session
+#    chosen at random and their outcomes swapped; scaling-window hit rate computed as in M5;
+#    500 repetitions, mean and SD shown.
+# M7 Real-space coarse graining (Appendix 4; Results B, paragraph 3). Per window, the most
+#    correlated pair of units summed, repeated until none is left unpaired (Eq. 6); iterated k
+#    times to clusters of K = 2^k units. alpha from mean cluster variance M2 ~ K^alpha (Eq. 7);
+#    beta from F = -log P_silence ~ K^beta (Eq. 8); mu from the covariance spectrum
+#    lambda = A (K/rank)^mu (Eq. 9), windows with r^2 < 0.85 discarded for mu; z from the time
+#    tau_c at which the cluster-averaged autocorrelation reaches 1/e, tau_c ~ K^z (Eq. 10).
+#    Trivial values alpha = 1, beta = 1, z = 0. Exponents computed over all windows of a session
+#    (Supplement III), reported as mean and SD across sessions (Figure 4 legend; Supplement V).
+# M8 Tests. Mann-Whitney U between phases' distributions of session exponents (Figure 4
+#    legend; Supplement V).
+#
+# Details the paper leaves open, with the readings it allows. Criteria refer to these by
+# number. An outcome that rests on one of them rests on an assumption.
+# O1 Units and sessions. "more than 128 recorded units" (Appendix 1) against "N>=128" (Figure
+#    1D). The main analysis keeps a greedy sorting "potentially including noise units"
+#    (Supplement II), so units are read as all units whose structure is V1 (VISp), with no
+#    quality filter, reading (a). Reading (b) applies the dataset's default unit quality
+#    filters. The "more strict sorting criteria" of the 43-session variant (Supplement II) are
+#    not named. Readings: (i) the dataset's default quality filters (ISI violations, amplitude
+#    cutoff, presence ratio, as the dataset documents them); (ii) units labelled good by the
+#    sorter's curation. Counts > 128 and >= 128 are both run.
+# O2 CV of a window (M1). "The activity" can be (a) the population count (sum over units) per
+#    bin over the 600 bins; (b) the mean over units of each unit's CV; (c) the CV of all
+#    unit-bin counts pooled. Which windows each reading drops can change every later result.
+# O3 Kurtosis pooling (M3). "From the distribution" of the coarse-grained activity: read as
+#    (a) the psi_i(t) of all units and bins pooled into one distribution (as in Figure 2B), the
+#    reading the text supports; (b) the mean over units of each unit's kurtosis. Ncutoff =
+#    floor(N/16) when N is not a multiple of 16 (a standard choice).
+# O4 Phases. Active is the change-detection block; passive is the replay block. NNI can be
+#    (a) Gabors, flashes and the gray screen (Figure 1A names a gray background), or (b) Gabors
+#    and flashes only. Windows tile each phase from its start, without overlap, the last
+#    partial window dropped (a standard choice).
+# O5 Trials. "Hits and misses" read as go (change) trials with outcome hit or miss; catch and
+#    aborted trials left out. Auto-rewarded trials (a) left out or (b) kept as hits. A trial
+#    belongs to the window holding its change time (a standard choice; the trial start time is
+#    a variant).
+# O6 kappa_surr_max (M4). (a) The maximum of surrogate kurtosis over all surrogate windows of
+#    the phase analysed (active for Figure 3); (b) over all phases (Figure 4A uses one shaded
+#    area for all phases). One surrogate per window (a standard choice).
+# O7 Threshold grid. kappa_th is evaluated on a grid of step 0.05 (a standard choice). The
+#    range judged is the plotted one, from kappa_surr_max to 12.5 for Figure 3, to 15 for
+#    Figures 4A and S8.
+# O8 Bootstrap (M5). "averaging" can be (a) recomputing the pooled hit rate (Eq. 11) on the
+#    resampled windows, or (b) averaging the resampled windows' own hit rates. How the 3%
+#    error of the relative gain is propagated is not said; (c) the SD of Eq. 13 over the same
+#    bootstrap resamples is used for it.
+# O9 Real-space details (M7). Correlation is Pearson between binned counts, recomputed among
+#    clusters at each step; the unit left unpaired when the count is odd is dropped (standard
+#    choices following ref. 42). P_silence: (a) F = -log of the mean over clusters of each
+#    cluster's fraction of silent bins; (b) the mean over clusters of -log of that fraction.
+#    tau_c by linear interpolation between 50-ms lags (a standard choice). Fit range of K:
+#    (a) from K = 1 to the largest K with at least two clusters; (b) from K = 1 to N/16. mu:
+#    (a) one fit on the within-cluster spectra of all cluster sizes K >= 16 pooled against
+#    rank/K, (b) the spectrum of clusters of the single size K = 64 (the largest with two
+#    clusters at N = 128), ranks 1 to K. Fits are least squares on log-log axes.
+# O10 Session exponents (M7). (a) One fit per window, the session value the mean over its
+#    windows (supported by the per-window r^2 rule for mu); (b) the window quantities (M2, F,
+#    spectra, tau_c) averaged over the session's windows, one fit per session.
+# O11 Unit of the exponent test (M8). (a) Session values, 62 per phase, two-sided, unpaired, the
+#    reading the reported p-values fit (the smallest p printed, 8e-21, is about what complete
+#    separation of 62 against 62 gives); (b) window values pooled, shown as a variant.
+schema_version: 2
+paper: doi:10.1103/w49n-2vz8
+claims:
+- id: sessions-selected
+  statement: Of the dataset's sessions, 62 (from 44 mice) have more than 128 recorded V1 units,
+    and these are the sessions analysed.
+  source: Appendix, 1. Data, paragraph 1; Results A, paragraph 2
+  quote: We selected all 62 sessions from the dataset that had more than 128 recorded units,
+    which included both single-unit activity (SUA) and multiunit activity (MUA)
+  expected:
+  - quantity: sessions with more than 128 V1 units
+    value: 62
+    tolerance: 6.2
+  - quantity: mice of those sessions
+    value: 44
+    tolerance: 4.4
+  criterion: V1 units counted per session under the readings of O1 (a) and (b), with the
+    threshold > 128 and >= 128. Reproduced when, under one reading, both counts are within
+    tolerance.
+- id: fig3a-kurtosis-broader-than-surrogate
+  statement: Across windows of all sessions, the kurtosis of the coarse-grained activity spans a
+    broad range that overlaps the surrogate distribution and extends well above it; some
+    windows have kurtosis well above any surrogate value, others look like surrogates.
+    Surrogate kurtoses are lowest around 6.
+  source: Results A, paragraph 2; Figure 2B; Figure 3A; Appendix 3, last paragraph
+  quote: Across 62 sessions (from 44 mice), we observed a broad range of kurtosis values,
+    overlapping with the distribution from the surrogate data [Fig. 3A]
+  expected:
+  - quantity: lowest surrogate kurtoses (Appendix 3, "around 6")
+    value: 6
+    tolerance: 0.6
+  criterion: Kurtosis per window as in M1 to M3, with the readings of O2 and O3; surrogate as in
+    M2. Figure 3A pools "all subjects"; the phase is not named, read as the active phase
+    (Figure 3 is on the active phase), with all phases pooled as a variant. Reproduced when
+    the mode of the surrogate kurtoses is within tolerance of 6, the real windows' spread
+    (interquartile range) is larger than the surrogate windows', some real windows lie below
+    kappa_surr_max (O6) and a majority lie above it. Partially reproduced when the spread is
+    larger and some windows exceed kappa_surr_max but the surrogate mode is out of tolerance.
+- id: fig3c-scaling-hit-rate-higher
+  statement: In the active phase, for any kurtosis threshold above the surrogate values, the
+    hit rate pooled over scaling windows is higher than over no-scaling windows and higher
+    than the trial-shuffled control.
+  source: Results A, paragraph 3; Figure 3C
+  quote: For any value of κth above surrogate values, the average hit rate was consistently higher
+    when calculated over scaling windows than over no-scaling windows [Fig. 3C] ... we confirmed
+    that the results were better than those obtained when hits and misses were shuffled within
+    each session
+  criterion: Hit rates as in M5 (Eqs. 11 and 12), trial shuffle as in M6 (500 repetitions), on
+    active-phase windows with trials as in O5, at each kappa_th of the grid of O7 from
+    kappa_surr_max (O6) to 12.5. Reproduced when, under one reading, the scaling hit rate
+    exceeds both the no-scaling hit rate and the mean trial-shuffled hit rate at every grid
+    point. Partially reproduced when it holds at 90% or more of grid points and every failure is
+    within one bootstrap SE (O8) of the comparator. Not reproduced otherwise.
+  depends_on:
+  - fig3a-kurtosis-broader-than-surrogate
+- id: fig3c-hit-rate-rises-with-threshold
+  statement: As the threshold rises and only windows of higher kurtosis count as scaling, the hit
+    rate over the scaling windows rises.
+  source: Discussion, paragraph 2; Figure 3C
+  quote: as we consider only windows of progressively higher kurtosis (closer to the critical
+    state), the corresponding performance calculated across those windows also rises
+  criterion: The scaling hit rate of fig3c-scaling-hit-rate-higher on the grid of O7. Reproduced
+    when the Spearman correlation between kappa_th and the scaling hit rate over the grid from
+    kappa_surr_max to 12.5 is positive and the hit rate at 12.5 exceeds that at kappa_surr_max by
+    more than the sum of their bootstrap SEs (O8). The paper reports no test; this measure is
+    this file's.
+  depends_on:
+  - fig3c-scaling-hit-rate-higher
+- id: fig3d-relative-gain-24
+  statement: The relative performance gain of scaling over no-scaling windows grows with the
+    threshold and reaches up to 24% plus or minus 3%.
+  source: Results A, paragraph 3; Figure 3D; Discussion, paragraph 2
+  quote: with relative performance gain reaching up to 24% ± 3% [Fig. 3D]
+  expected:
+  - quantity: maximum relative performance gain (Eq. 13)
+    value: 24
+    tolerance: 3
+    unit: percent
+  criterion: Relative performance (Eq. 13) on the grid of O7 with the readings of O2 to O6.
+    The maximum is taken (a) over the plotted range, kappa_surr_max to 12.5, where Figure 3D
+    peaks near 12, or (b) over all thresholds at which both scaling and no-scaling windows hold
+    trials. Reproduced when, under one reading, the maximum is within tolerance (the paper's
+    own error) and the gain at kappa_th = 12 is larger than at kappa_th = 8 (Figure 3D rises
+    over that span, read from the figure).
+  depends_on:
+  - fig3c-scaling-hit-rate-higher
+- id: figs1-other-window-lengths
+  statement: With 10-s and 60-s windows the results are similar; hit rate over scaling windows
+    rises with the threshold, and the relative gain departs from zero around kappa of 7.
+  source: Results A, paragraph 3; Supplemental Material I; Figure S1
+  quote: Time windows of 10 and 60 s were also analyzed and showed similar results, associating
+    higher kurtosis with better performance
+  criterion: The analysis of fig3c-scaling-hit-rate-higher and fig3d-relative-gain-24 repeated
+    with 10-s and 60-s windows (200 and 1200 bins), with no surrogate range (Supplement I omits
+    it). For each length, reproduced when the scaling hit rate exceeds the no-scaling hit rate
+    at every grid point from kappa_th = 8 to 12 and the relative gain at 12 exceeds that at 8.
+    Reproduced when both lengths pass, partially when one does.
+  depends_on:
+  - fig3c-scaling-hit-rate-higher
+- id: figs2-strict-units
+  statement: Using only units passing stricter sorting criteria, 43 sessions keep more than 128
+    units, and the performance results stay qualitatively the same.
+  source: Supplemental Material II; Figure S2
+  quote: we repeated the analyses using only the 43 sessions that retained more than 128 units
+    after applying more strict sorting criteria ... The results remained qualitatively consistent
+    with those observed in the initial analyses
+  expected:
+  - quantity: sessions with more than 128 units after strict criteria
+    value: 43
+    tolerance: 4.3
+  criterion: Units under the strict readings of O1 (i) and (ii). Reproduced when, under one
+    reading, the session count is within tolerance and, on those sessions with those units,
+    the test of fig3c-scaling-hit-rate-higher is at least partially reproduced and the relative
+    gain at kappa_th = 12 is positive. Partially reproduced when the result holds but no
+    reading gives a count within tolerance.
+  depends_on:
+  - fig3c-scaling-hit-rate-higher
+- id: fig4a-active-most-scaling
+  statement: For any threshold, the fraction of windows above it is largest in the active phase,
+    smaller in the passive phase and smallest in the non-natural image phase; most non-natural
+    image windows still have higher kurtosis than surrogates.
+  source: Results B, paragraph 1; Figure 4A; Supplemental Material VI, paragraph 2
+  quote: For any κth, scaling windows were more abundant in the active phase than in the passive
+    phase [Fig. 4A] ... the shift towards lower levels in the kurtosis distribution was even more
+    pronounced, and scaling windows became less likely to ... [though most windows still
+    remained with higher kurtosis than those of surrogate data, Fig. 4A]
+  criterion: The complementary cumulative distribution of window kurtosis, pooled over sessions,
+    per phase (phases as in O4), on the grid of O7 from kappa_surr_max (O6) to 15, at points
+    where any phase is above zero. Reproduced when, under one reading, F_active > F_passive >
+    F_NNI at every such point and F_NNI at kappa_surr_max is above 0.5. Partially reproduced
+    when the order holds at 90% or more of points, or holds everywhere but the NNI fraction is
+    0.5 or below.
+  depends_on:
+  - fig3a-kurtosis-broader-than-surrogate
+- id: fig4-exponents-active
+  statement: In the active phase the real-space scaling exponents are alpha 1.41 +/- 0.05, beta
+    0.77 +/- 0.04, mu 0.73 +/- 0.08 and z 0.3 +/- 0.1 (mean and SD across sessions).
+  source: Results B, paragraph 3; Figures 4B to 4E
+  quote: For the active phase, we obtained α1 = 1.41±0.05, β1 = 0.77±0.04, μ1 = 0.73 ± 0.08 and z1 =
+    0.3 ± 0.1 [Figs. 4B-4E]
+  expected:
+  - quantity: alpha, active, mean across sessions
+    value: 1.41
+    tolerance: 0.05
+  - quantity: beta, active, mean across sessions
+    value: 0.77
+    tolerance: 0.04
+  - quantity: mu, active, mean across sessions
+    value: 0.73
+    tolerance: 0.08
+  - quantity: z, active, mean across sessions
+    value: 0.3
+    tolerance: 0.1
+  criterion: Exponents as in M7 with the readings of O9 and O10, on active-phase windows (O2).
+    Tolerances are the paper's SDs across sessions. Reproduced when, under one reading, all four
+    means are within tolerance; partially reproduced when three are.
+- id: fig4-exponents-passive
+  statement: In the passive phase the exponents are alpha 1.37 +/- 0.04, beta 0.78 +/- 0.04, mu
+    0.61 +/- 0.05 and z 0.36 +/- 0.06, differing significantly from the active phase for alpha,
+    z and mu but not for beta.
+  source: Results B, paragraph 3; Figures 4B to 4E; Supplemental Material V
+  quote: During the passive phase we found α2 = 1.37 ± 0.04, β2 = 0.78 ± 0.04, μ2 = 0.61 ± 0.05, z2
+    = 0.36 ± 0.06, with statistically significant differences with respect to the active phase for
+    α, z and μ
+  statistics:
+  - about: alpha, active against passive
+    test: Mann-Whitney U test
+    p: 8.0e-5
+    n: 62 sessions per phase
+  - about: beta, active against passive
+    test: Mann-Whitney U test
+    p: 0.17
+    n: 62 sessions per phase
+  - about: z, active against passive
+    test: Mann-Whitney U test
+    p: 6.0e-5
+    n: 62 sessions per phase
+  - about: mu, active against passive
+    test: Mann-Whitney U test
+    p: 4.0e-13
+    n: 62 sessions per phase
+  expected:
+  - quantity: alpha, passive, mean across sessions
+    value: 1.37
+    tolerance: 0.04
+  - quantity: beta, passive, mean across sessions
+    value: 0.78
+    tolerance: 0.04
+  - quantity: mu, passive, mean across sessions
+    value: 0.61
+    tolerance: 0.05
+  - quantity: z, passive, mean across sessions
+    value: 0.36
+    tolerance: 0.06
+  criterion: Exponents as in fig4-exponents-active on passive-phase windows. Tests as in M8 under
+    O11 (a), two-sided at 0.05 (Supplement V's significance convention). Reproduced when all
+    four means are within tolerance under one reading, alpha, z and mu differ significantly with
+    passive alpha lower, passive z higher and passive mu lower (Figures 4B, 4D, 4E), and beta does
+    not differ (p >= 0.05, a claim of absence judged on this test). Partially reproduced when
+    the tests agree but one mean is out of tolerance, or the means hold and one test disagrees.
+  depends_on:
+  - fig4-exponents-active
+- id: fig4-exponents-nni
+  statement: With non-natural images the exponents are alpha 1.28 +/- 0.03, beta 0.82 +/- 0.03,
+    mu 0.38 +/- 0.04 and z 0.4 +/- 0.1, all significantly different from both natural image
+    phases.
+  source: Results B, paragraph 3; Figures 4B to 4E; Supplemental Material V
+  quote: for non-natural stimuli the exponents were α3 = 1.28 ± 0.03, β3 = 0.82 ± 0.03, μ3 =
+    0.38±0.04 and z3 = 0.4±0.1, which are all different from the phases with natural images
+  statistics:
+  - about: alpha, passive against NNI
+    test: Mann-Whitney U test
+    p: 4.0e-19
+    n: 62 sessions per phase
+  - about: alpha, active against NNI
+    test: Mann-Whitney U test
+    p: 8.0e-21
+    n: 62 sessions per phase
+  - about: beta, passive against NNI
+    test: Mann-Whitney U test
+    p: 3.0e-10
+    n: 62 sessions per phase
+  - about: beta, active against NNI
+    test: Mann-Whitney U test
+    p: 3.0e-13
+    n: 62 sessions per phase
+  - about: z, passive against NNI
+    test: Mann-Whitney U test
+    p: 6.0e-6
+    n: 62 sessions per phase
+  - about: z, active against NNI
+    test: Mann-Whitney U test
+    p: 3.0e-10
+    n: 62 sessions per phase
+  - about: mu, passive against NNI
+    test: Mann-Whitney U test
+    p: 3.0e-8
+    n: 62 sessions per phase
+  - about: mu, active against NNI (printed as a second "μ1 vs μ2", the last entry of the list;
+      read as μ1 vs μ3, the only pair otherwise missing)
+    test: Mann-Whitney U test
+    p: 3.0e-8
+    n: 62 sessions per phase
+  expected:
+  - quantity: alpha, NNI, mean across sessions
+    value: 1.28
+    tolerance: 0.03
+  - quantity: beta, NNI, mean across sessions
+    value: 0.82
+    tolerance: 0.03
+  - quantity: mu, NNI, mean across sessions
+    value: 0.38
+    tolerance: 0.04
+  - quantity: z, NNI, mean across sessions
+    value: 0.4
+    tolerance: 0.1
+  criterion: Exponents as in fig4-exponents-active on NNI windows (O4 readings). Tests as in M8
+    under O11 (a), two-sided at 0.05. Reproduced when all four means are within tolerance under
+    one reading and all eight comparisons are significant with NNI alpha and mu lower, beta and
+    z higher than both other phases (Figures 4B to 4E). Partially reproduced when at least six
+    comparisons hold and at least three means are within tolerance.
+  depends_on:
+  - fig4-exponents-active
+- id: fig4bc-static-exponents-trend
+  statement: In the active phase alpha and beta deviate significantly from their trivial values
+    of 1; in the passive phase they lie closer to the trivial values, and closer still with
+    non-natural images, while z moves away from its trivial value 0 from active to passive to
+    non-natural images.
+  source: Discussion, paragraph 4; Figures 4B to 4D
+  quote: α and β ("static exponents" [51]) deviate significantly from trivial values α = 1 and β =
+    1 [Figs. 4B and 4C]. In contrast, during a passive replay of natural images, the static
+    exponents shift closer to trivial values, approaching this baseline even more closely when
+    non-natural images are used
+  criterion: The test of deviation from trivial values is not named. Readings, (a) session
+    alpha and beta of the active phase against those of the surrogate windows (the lighter bars
+    of Figures 4B and 4C), Mann-Whitney U (M8); (b) a one-sample two-sided Wilcoxon signed-rank
+    test of session values against 1. Reproduced when, under one reading, active alpha and beta
+    differ significantly (p < 0.05) from trivial with alpha above 1 and beta below 1, and the
+    mean distances |alpha - 1|, |1 - beta| and z are ordered active > passive > NNI for alpha,
+    active >= passive > NNI for beta (beta1 and beta2 do not differ, p = 0.17) and active <
+    passive < NNI for z. Partially reproduced when the deviation holds and one ordering fails.
+  depends_on:
+  - fig4-exponents-passive
+  - fig4-exponents-nni
+- id: figs3-exponents-stable-with-threshold
+  statement: Exponents computed only from windows with kurtosis above the threshold vary only
+    slightly with the threshold and stay within their error bars.
+  source: Results B, paragraph 3; Supplemental Material III; Figure S3
+  quote: We find that the exponent values vary only slightly and remain within their respective
+    error bars (Fig. S3)
+  criterion: Per phase, exponents as in fig4-exponents-active, the session value taken over the
+    session's windows with kappa > kappa_th, sessions with no such window left out, on the grid
+    of O7 from kappa_surr_max to 12. Reproduced when, for every phase and exponent, the mean
+    across sessions stays within one SD across sessions (at kappa_th = kappa_surr_max) of its
+    all-window value, at every grid point with at least 10 sessions contributing (the paper
+    attributes larger fluctuations at high kappa to few windows; 10 is this file's floor).
+    Partially reproduced when it holds for three of the four exponents.
+  depends_on:
+  - fig4-exponents-active
+- id: figs4-initial-kurtosis-poor-predictor
+  statement: The kurtosis of the activity before coarse graining is a very poor predictor of the
+    kurtosis after coarse graining.
+  source: Supplemental Material IV; Figure S4
+  quote: Our analysis shows that the initial kurtosis κ0 is a very poor predictor of the
+    coarse-grained kurtosis κfinal (Fig. S4)
+  criterion: kappa_0 as kappa of M3 at Ncutoff = N (the z-scored binned counts, pooled as in O3),
+    kappa_final at N/16, per window; the phase is not named, active as the main reading and all
+    phases pooled as a variant. The paper gives no measure; this file's is the Spearman
+    correlation across windows. Reproduced when its magnitude is below 0.3; partially
+    reproduced between 0.3 and 0.5.
+  depends_on:
+  - fig3a-kurtosis-broader-than-surrogate
+- id: figs5a-firing-rate-order
+  statement: Mean firing rate over windows above a kurtosis threshold decreases almost
+    monotonically with the threshold within each phase, and is ordered active < NNI < passive
+    for any threshold, unlike the kurtosis order of Figure 4A.
+  source: Supplemental Material VI; Figure S5A and S5B
+  quote: Indeed, firing rate varies almost monotonically with κth (Fig. S5A) ... The mean firing
+    rate, on the other hand, gives no clue about that, since ρactive < ρNNI < ρpassive, for any
+    κth (Fig. S5A)
+  criterion: Per window, the mean over units of spike counts per bin (Figure S5A values of 0.09
+    to 0.16 suggest this unit; the scale does not change the order). As in the S5A legend,
+    averaged over a mouse's windows above kappa_th, then over mice, on the grid of O7 from 5 to
+    12 at points where every phase has windows. Reproduced when active < NNI < passive at every
+    point and, within each phase, the Spearman correlation of rate against kappa_th is
+    negative. Partially reproduced when the order holds at 90% or more of points.
+  depends_on:
+  - fig4a-active-most-scaling
+- id: figs5c-hit-rate-firing-rate-nonmonotonic
+  statement: The hit rate over windows below a firing-rate threshold is not a monotonic function
+    of the threshold.
+  source: Supplemental Material VI; Figure S5C
+  quote: the hit rate below some threshold ρth is not a monotonic function of ρth (Fig. S5C)
+  criterion: Active-phase windows split by their mean firing rate (as in figs5a-firing-rate-order)
+    at rho_th on a grid of step 0.0025 from 0.05 to 0.20 (the plotted range); hit rate pooled as
+    in M5. Reproduced when the below-threshold hit rate has an interior maximum that exceeds its
+    values at both ends of the range by more than one bootstrap SE (O8); not reproduced when the
+    curve is monotonic within that margin.
+  depends_on:
+  - figs5a-firing-rate-order
+- id: figs7-fatigue-halves
+  statement: In each half of the active phase (first and last 30 min), the scaling hit rate still
+    rises above the no-scaling hit rate as the threshold grows, though the overall hit rate is
+    lower in the second half.
+  source: Results B, paragraph 2; Supplemental Material VIII; Figure S7
+  quote: in the second half of the active phase, we observe lower kurtoses than in the first half,
+    but the relation between performance and kurtosis is preserved
+  criterion: The analysis of fig3c-scaling-hit-rate-higher, separately for windows in the first
+    and the last 30 min of the active phase. Reproduced when, in each half, the relative gain
+    (Eq. 13) is positive at every grid point from kappa_th = 8 to 12 and larger at 12 than at 8,
+    and the overall hit rate (all windows) of the second half is lower than that of the first.
+    Partially reproduced when the gain holds in one half.
+  depends_on:
+  - fig3c-scaling-hit-rate-higher
+- id: figs8-halves-and-phase-order
+  statement: Kurtosis is lower in the second half of the active phase than in the first, yet both
+    halves keep more windows above threshold than the passive and non-natural image phases; the
+    non-natural image phase, though it precedes the passive phase, has the lowest kurtosis.
+  source: Supplemental Material VIII, paragraph 2; Figure S8
+  quote: The active phase - even subdivided into two halves - consistently exhibits higher kurtosis
+    levels compared to the other phases
+  criterion: Complementary cumulative distributions as in fig4a-active-most-scaling for four
+    groups (active first 30 min, active last 30 min, passive, NNI), on the grid of O7 from
+    kappa_surr_max to 15. Reproduced when, at every point where any group is above zero, active
+    first half >= active second half > passive > NNI. Partially reproduced when the order of
+    the second half over passive, or the first half over the second, fails at some points.
+  depends_on:
+  - fig4a-active-most-scaling
